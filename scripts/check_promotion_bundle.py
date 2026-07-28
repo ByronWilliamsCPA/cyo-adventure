@@ -279,12 +279,16 @@ def prove_shell(shell_path: Path, *, skeletons_root: Path) -> list[str]:
     reasons: list[str] = []
     name = shell_path.name
 
-    shell_doc: dict[str, object] | None
+    # Return on a read failure rather than carrying a None shell through the
+    # remaining checks. Every one of them (check_skeleton, the contract, the
+    # lineage sidecar, the parent hash) would also fail on an unreadable shell,
+    # burying the one real cause under four derived symptoms.
+    shell_doc: dict[str, object]
     try:
         shell_doc = _load_json_object(shell_path)
     except (OSError, json.JSONDecodeError, ValueError) as exc:
         reasons.append(f"{name}: shell could not be read: {exc}")
-        shell_doc = None
+        return reasons
 
     # A seed skeleton declares ``metadata.production_eligible: false`` and is a
     # legitimate, merged member of the catalog (3 of 61 shells at the time of
@@ -304,6 +308,17 @@ def prove_shell(shell_path: Path, *, skeletons_root: Path) -> list[str]:
     # #VERIFY: tests/unit/test_ws8_promotion.py asserts both directions -- a
     # seed proves clean, and flipping the same shell's flag to true re-arms the
     # strict check.
+    #
+    # #EDGE: data integrity: is_production_eligible's own contract says callers
+    # must pass schema-validated StoryMetadata, not raw JSON, because it treats
+    # unparseable metadata as eligible. This caller deliberately passes raw
+    # json.load output, and that is safe ONLY because the polarity inverts here:
+    # "eligible" selects the STRICTER envelope, so its permissive default is
+    # this gate's fail-closed direction. A malformed shell gets held to the
+    # production envelope, never waved through as a seed.
+    # #VERIFY: if this predicate is ever reused where "eligible" grants rather
+    # than withholds permission, validate the document through StoryMetadata
+    # first. test_declares_production_eligible_fails_closed pins the direction.
     skeleton_argv = [str(shell_path)]
     if not declares_production_eligible(shell_doc):
         skeleton_argv.append("--allow-mvp")
@@ -332,9 +347,6 @@ def prove_shell(shell_path: Path, *, skeletons_root: Path) -> list[str]:
     verify_reason = _verify_parent_hash(lineage, skeletons_root)
     if verify_reason is not None:
         reasons.append(f"{name}: {verify_reason}")
-
-    if shell_doc is None:
-        return reasons
 
     floor_reason = _floor_reason(shell_doc, lineage, skeletons_root)
     if floor_reason is not None:

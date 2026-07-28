@@ -246,6 +246,27 @@ def test_prove_shell_missing_lineage_fails(
     assert any("missing lineage" in reason for reason in reasons)
 
 
+def test_prove_shell_unreadable_shell_reports_only_the_read_failure(
+    mutant: _MutantParts, tmp_path: Path
+) -> None:
+    """An unreadable shell reports its one real cause, not four derived ones.
+
+    check_skeleton, the theme contract, the lineage sidecar, and the parent hash
+    would every one of them also fail on a shell that will not parse. Reporting
+    all five buries the only actionable line under noise, so the prover returns
+    as soon as the read fails.
+    """
+    bundle = tmp_path / mutant.slug
+    _write_valid_bundle(bundle, mutant)
+    shell = bundle / f"{mutant.slug}.json"
+    shell.write_text("{ not valid json", encoding="utf-8")
+
+    reasons = cpb.prove_shell(shell, skeletons_root=_REAL_SKELETONS)
+
+    assert len(reasons) == 1
+    assert "shell could not be read" in reasons[0]
+
+
 # --------------------------------------------------------------------------- #
 # check_promotion_bundle: the seed / production-envelope split.
 #
@@ -278,7 +299,19 @@ def test_declares_production_eligible_fails_closed(
 
 
 def _catalog_seed_shells() -> list[Path]:
-    """Return every merged catalog shell that declares itself a seed."""
+    """Return every merged catalog shell that declares itself a seed.
+
+    Returns:
+        list[Path]: Every shell whose ``metadata.production_eligible`` is
+            explicitly ``False``, sorted by path.
+
+    Raises:
+        AssertionError: If the catalog holds no seed at all. pytest turns an
+            empty parametrize list into a single ``SKIPPED [NOTSET]``
+            placeholder, so both regressions below would report green while
+            asserting nothing. Fail loudly at collection instead of silently
+            losing the coverage.
+    """
     seeds: list[Path] = []
     for path in sorted(_REAL_SKELETONS.rglob("*.json")):
         if path.name.endswith((".contract.json", ".lineage.json")):
@@ -290,11 +323,23 @@ def _catalog_seed_shells() -> list[Path]:
         metadata = doc.get("metadata")
         if isinstance(metadata, dict) and metadata.get("production_eligible") is False:
             seeds.append(path)
+    if not seeds:
+        msg = (
+            f"No seed shell (metadata.production_eligible=false) found under "
+            f"{_REAL_SKELETONS}; both prove_shell seed regressions would "
+            f"vacuously pass on an empty parametrize list."
+        )
+        raise AssertionError(msg)
     return seeds
 
 
+# Discovered once and shared by both parametrizations below: two independent
+# calls could disagree, leaving the pair testing different shells.
+_CATALOG_SEED_SHELLS = _catalog_seed_shells()
+
+
 @pytest.mark.parametrize(
-    "seed_shell", _catalog_seed_shells(), ids=lambda path: str(path.stem)
+    "seed_shell", _CATALOG_SEED_SHELLS, ids=lambda path: str(path.stem)
 )
 def test_prove_shell_real_catalog_seed_proves_clean(seed_shell: Path) -> None:
     """Every seed already merged into skeletons/ passes the promotion prover.
@@ -309,7 +354,7 @@ def test_prove_shell_real_catalog_seed_proves_clean(seed_shell: Path) -> None:
 
 
 @pytest.mark.parametrize(
-    "seed_shell", _catalog_seed_shells(), ids=lambda path: str(path.stem)
+    "seed_shell", _CATALOG_SEED_SHELLS, ids=lambda path: str(path.stem)
 )
 def test_prove_shell_seed_still_faces_the_blocking_gate(
     seed_shell: Path, tmp_path: Path
@@ -322,9 +367,13 @@ def test_prove_shell_seed_still_faces_the_blocking_gate(
 
     Note the shell is copied rather than synthesised by flipping a production
     shell's flag: an MVP shell is gated against a band-independent node
-    envelope (8..45, see generation.skeleton.is_production_eligible), so a
-    93-node production shell with the flag flipped fails for an unrelated
-    reason and would prove nothing about this behaviour.
+    envelope (MVP_MIN_NODES..MVP_MAX_NODES, 8..45, defined in
+    validator.band_profile.mvp_node_budget and applied through load_skeleton's
+    layer-1 pass), so a 93-node production shell with the flag flipped fails
+    for an unrelated reason and would prove nothing about this behaviour.
+    Do not cite generation.skeleton.is_production_eligible for the envelope:
+    that predicate is only `production_eligible is not False` and holds no
+    node-count logic.
     """
     broken = tmp_path / seed_shell.name
     doc = json.loads(seed_shell.read_text(encoding="utf-8"))
