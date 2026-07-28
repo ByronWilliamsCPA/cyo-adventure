@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.38.1] - 2026-07-28
+
+### Bug Fixes
+
+- **a11y**: Reach dialog textareas by keyboard + frontend test-suite review
+  ([#424](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/424),
+  [`38f9bbc`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/38f9bbc88b35e4526119da783347d03d72d29b04))
+
+
 ## [0.38.0] - 2026-07-28
 
 ### Features
@@ -2697,6 +2706,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.38.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.38.0...v0.38.1
 [0.38.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.37.0...v0.38.0
 [0.37.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.36.0...v0.37.0
 [0.36.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.35.0...v0.36.0
