@@ -113,6 +113,34 @@ class TestGuardianBookItem:
         assert "~}" not in item.title
         assert "Explorer" in item.title
 
+    @pytest.mark.unit
+    def test_themes_strip_sentinels(self) -> None:
+        """Themes are a second story-derived field on this same row.
+
+        ``themes`` is projected from ``blob["metadata"]["themes"]`` exactly as
+        ``title`` is projected from ``blob["title"]``, so it needs its own pin:
+        the title test above passes whether or not themes are stripped.
+        """
+        from cyo_adventure.db.models import Storybook, StorybookVersion
+
+        book = Storybook(id="story-1", family_id=uuid.uuid4())
+        book.visibility = "family"
+        version_row = StorybookVersion(
+            storybook_id="story-1",
+            version=1,
+            blob={
+                "title": "Plain Title",
+                "metadata": {"themes": [f"{wrap('PET', 'dog')} rescue", "friendship"]},
+            },
+            moderation_report=None,
+        )
+
+        item = assignments._guardian_book_item(
+            book, version_row, [], policy=ThresholdPolicy(rows={})
+        )
+
+        assert item.themes == ["dog rescue", "friendship"]
+
 
 class _FakeScalars:
     def __init__(self, rows: list[object]) -> None:

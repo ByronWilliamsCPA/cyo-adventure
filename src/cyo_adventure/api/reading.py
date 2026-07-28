@@ -33,6 +33,7 @@ from cyo_adventure.api.schemas import (
     SeriesNextView,
     error_responses,
 )
+from cyo_adventure.api.sentinel_log import strip_and_log
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     ResourceNotFoundError,
@@ -48,10 +49,12 @@ from cyo_adventure.db.models import (
 )
 from cyo_adventure.player.replay import validate_reading_state
 from cyo_adventure.publishing.state_machine import Visibility
-from cyo_adventure.storybook.sentinels import strip_sentinels
+from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+
+_logger = get_logger(__name__)
 
 router = APIRouter(
     prefix="/api/v1", tags=["reading"], responses=error_responses(401, 403, 404)
@@ -286,9 +289,9 @@ async def get_series_next(
     blob = version_row.blob
     # #CRITICAL: security: this is a kid-facing series-continuation feed, so
     # a raw personalization sentinel (e.g. {~HERO:Explorer~}) must never
-    # reach a non-opted-in reader (ADR-023 P3), the same leak class the
-    # library/reading-history/recommendations/notifications feeds already
-    # close.
+    # reach a non-opted-in reader (ADR-023 P3); see
+    # tests/unit/test_title_strip_registry.py for the authoritative
+    # strip-or-raw enumeration across every title-bearing response surface.
     # #VERIFY: test_reading_api_unit.py::TestGetSeriesNext::
     # test_next_book_title_strips_sentinels.
     title = blob.get("title")
@@ -304,11 +307,21 @@ async def get_series_next(
             raw_entry = series_block.get("series_entry_node")
             if isinstance(raw_entry, str):
                 entry = raw_entry
+    stripped_title = (
+        strip_and_log(
+            title,
+            at="series_next.title",
+            storybook_id=sibling.id,
+            version=published_version,
+        )
+        if isinstance(title, str)
+        else ""
+    )
     return SeriesNextView(
         next=SeriesNextBook(
             storybook_id=sibling.id,
             version=published_version,
-            title=strip_sentinels(title) if isinstance(title, str) else "",
+            title=stripped_title,
             series_entry_node=entry,
             carries_state=series_row.carries_state if series_row else False,
         )

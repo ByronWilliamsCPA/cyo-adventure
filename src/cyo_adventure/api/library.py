@@ -35,6 +35,7 @@ from cyo_adventure.api.schemas import (
     LibraryView,
     error_responses,
 )
+from cyo_adventure.api.sentinel_log import strip_and_log
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
 from cyo_adventure.covers.storage import generate_presigned_cover_urls
@@ -46,7 +47,6 @@ from cyo_adventure.db.models import (
     StorybookVersion,
 )
 from cyo_adventure.publishing.state_machine import Visibility
-from cyo_adventure.storybook.sentinels import strip_sentinels
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -230,8 +230,13 @@ def _library_item(
         LibraryItem: The listing item with safe, finite, correctly typed
             fields, with personalization sentinels stripped from the title
             to their generic word (ADR-023 P3). The raw, sentinel-bearing
-            blob is served verbatim only by ``get_storybook_version``, which
-            the client resolves personalization against.
+            blob is served verbatim by ``get_storybook_version`` (which the
+            client resolves personalization against) and by the admin
+            review surface (``build_review_surface`` in
+            ``api/review_surface.py``, reached via
+            ``api/approval.py::get_review_surface``); see
+            ``tests/unit/test_title_strip_registry.py`` for the authoritative
+            strip-or-raw enumeration across every title-bearing surface.
     """
     # #ASSUME: data integrity: an APPROVED published blob is well-formed, but a
     # malformed metadata field (wrong type, bool-as-number, NaN/Inf) must degrade
@@ -242,8 +247,19 @@ def _library_item(
     meta: Mapping[str, object] = metadata if isinstance(metadata, dict) else {}
     malformed: list[str] = []
 
-    title = strip_sentinels(
-        _str_field(blob.get("title"), storybook_id, "title", malformed)
+    # #CRITICAL: security: this is the library listing, not the read surface
+    # (get_storybook_version) the client resolves personalization against,
+    # so a raw personalization sentinel (e.g. {~HERO:Explorer~}) must never
+    # reach it (ADR-023 P3); see tests/unit/test_title_strip_registry.py for
+    # the authoritative strip-or-raw enumeration across every title-bearing
+    # response surface.
+    # #VERIFY: tests/unit/test_library_api_unit.py::TestLibraryItem::
+    # test_title_sentinels_are_stripped.
+    title = strip_and_log(
+        _str_field(blob.get("title"), storybook_id, "title", malformed),
+        at="library_item.title",
+        storybook_id=storybook_id,
+        version=version,
     )
     age_band = _str_field(meta.get("age_band"), "", "age_band", malformed)
     tier = _tier_field(meta.get("tier"), malformed)

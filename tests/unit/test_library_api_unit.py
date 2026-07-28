@@ -10,6 +10,7 @@ the _parse_profile_id and _library_item helpers directly.
 
 from __future__ import annotations
 
+import copy
 import json
 import math
 import uuid
@@ -266,6 +267,40 @@ class TestLibraryItem:
         assert "{~" not in item.title
         assert "~}" not in item.title
         assert "Explorer" in item.title
+
+    @pytest.mark.parametrize(
+        ("label", "malformed_token"),
+        [
+            ("lowercase slot id", "{~hero:Explorer~}"),
+            ("missing closing tilde", "{~HERO:Explorer}"),
+            ("unterminated opener", "{~HERO:Explorer"),
+        ],
+    )
+    @pytest.mark.unit
+    def test_malformed_sentinel_passes_through_verbatim(
+        self, label: str, malformed_token: str
+    ) -> None:
+        """A malformed sentinel is NOT stripped and reaches the title as-is.
+
+        This pins the CURRENT, accepted behavior of ``strip_sentinels`` at
+        this serialization boundary: its regex (``SENTINEL_RE``) only
+        substitutes a WELL-FORMED ``{~SLOTID:GenericWord~}`` token, so a
+        near-miss (a lowercase slot id, a missing closing tilde, or an
+        unterminated opener) passes through untouched, exactly the leak
+        class ``test_title_sentinels_are_stripped`` above exists to close
+        for well-formed tokens, reached by a different path. This is not a
+        gap in this test: it is a documented decision. Malformed tokens are
+        prevented from ever reaching storage by the publish-path gate
+        (``validator/sentinel_integrity.py`` plus
+        ``moderation/pipeline.py``'s ``find_malformed_sentinels`` check),
+        not by ``_library_item``. Do not change ``_library_item`` or
+        ``strip_sentinels`` to start stripping malformed tokens in response
+        to this test; that would be a design decision outside this test's
+        scope.
+        """
+        blob: dict[str, object] = {"title": f"{malformed_token} Adventure"}
+        item = _library_item("story-1", blob, 1)
+        assert malformed_token in item.title, label
 
     @pytest.mark.unit
     def test_missing_title_falls_back_to_storybook_id(self) -> None:
@@ -649,6 +684,13 @@ class TestGetStorybookVersion:
         personalization against; sentinels MUST survive it untouched, unlike
         the stripped library listing (ADR-023 P3). This pins the contrast:
         _library_item strips, get_storybook_version never does.
+
+        ``expected`` is a deep copy taken BEFORE the handler runs, so the
+        comparison below is against an independent snapshot rather than a
+        live alias of ``version.blob`` (the same object the handler
+        returns). Comparing to a live alias would make this test pass even
+        if the handler mutated the blob in place before returning it, since
+        both sides of the ``==`` would observe the same mutation.
         """
         family_id = uuid.uuid4()
         book = _published_book("story-1", family_id, version=1)
@@ -657,6 +699,7 @@ class TestGetStorybookVersion:
             "title": f"{token}'s Great Adventure",
             "nodes": [],
         }
+        expected = copy.deepcopy(blob)
         version = _version_row("story-1", 1, blob=blob)
         version.approved_by = uuid.uuid4()
         get_map: dict[tuple[type[object], object], object] = {
@@ -668,7 +711,7 @@ class TestGetStorybookVersion:
 
         result = await get_storybook_version("story-1", 1, principal, session)
 
-        assert result == blob
+        assert result == expected
         title = result["title"]
         assert isinstance(title, str)
         assert token in title
@@ -689,6 +732,18 @@ class TestGetStorybookVersion:
         never to shape what is returned. This test stands as the structural
         pin against that ever changing, even though (given the handler's
         current shape) it necessarily passes on the first run.
+
+        Both sessions share the SAME ``get_map`` (and therefore the same
+        underlying ``version.blob`` object), mirroring two viewers reading
+        the same stored row. Viewer A's snapshot is taken (via
+        ``json.dumps``, an independent serialization, not a live alias)
+        IMMEDIATELY after A's call and BEFORE B's call runs. If a future
+        handler mutated ``version_row.blob`` in place keyed to the calling
+        principal, that mutation would happen during B's call, after A's
+        snapshot was already taken; comparing the pre-B snapshot to B's own
+        result would then catch the divergence. Snapshotting both results
+        only after both calls (the original bug) would let such a mutation
+        compound consistently and never be observed.
         """
         family_id = uuid.uuid4()
         profile_a = uuid.uuid4()
@@ -709,15 +764,14 @@ class TestGetStorybookVersion:
         session_a = _FakeSession(get_map=get_map, scalar_result="story-1")
         principal_a = _child_principal(family_id, profile_a)
         result_a = await get_storybook_version("story-1", 1, principal_a, session_a)
+        snapshot_a = json.dumps(result_a, sort_keys=True)
 
         session_b = _FakeSession(get_map=get_map, scalar_result="story-1")
         principal_b = _child_principal(family_id, profile_b)
         result_b = await get_storybook_version("story-1", 1, principal_b, session_b)
+        snapshot_b = json.dumps(result_b, sort_keys=True)
 
-        assert result_a == result_b
-        assert json.dumps(result_a, sort_keys=True) == json.dumps(
-            result_b, sort_keys=True
-        )
+        assert snapshot_a == snapshot_b
 
     @pytest.mark.unit
     @pytest.mark.asyncio

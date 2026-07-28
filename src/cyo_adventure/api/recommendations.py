@@ -30,6 +30,7 @@ from sqlalchemy import and_, exists, or_, select, tuple_
 
 from cyo_adventure.api.deps import CurrentPrincipal, DbSession, authorize_profile
 from cyo_adventure.api.schemas import RecommendationItem, RecommendationsView
+from cyo_adventure.api.sentinel_log import strip_and_log
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
 from cyo_adventure.covers.storage import generate_presigned_cover_urls
@@ -42,13 +43,15 @@ from cyo_adventure.db.models import (
     StorybookVersion,
 )
 from cyo_adventure.publishing.state_machine import Visibility
-from cyo_adventure.storybook.sentinels import strip_sentinels
+from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
     from sqlalchemy import ScalarResult
     from sqlalchemy.ext.asyncio import AsyncSession
+
+_logger = get_logger(__name__)
 
 router = APIRouter(prefix="/api/v1", tags=["recommendations"])
 
@@ -77,16 +80,28 @@ def _parse_profile_id(raw: str) -> uuid.UUID:
         raise ValidationError(msg, field="profile_id", value=raw) from exc
 
 
-def _book_title(blob: Mapping[str, object], storybook_id: str) -> str:
+def _book_title(
+    blob: Mapping[str, object], storybook_id: str, version: int | None = None
+) -> str:
     """Return the blob's title, falling back to the storybook id.
 
     Mirrors ``reading_history.py::_book_title``; duplicated rather than
     imported across the module boundary (both are small, private helpers on
     the same stored-blob shape).
 
+    # #CRITICAL: security: this is the K17 recommendation feed, so a raw
+    # personalization sentinel (e.g. {~HERO:Explorer~}) must never reach it
+    # (ADR-023 P3); see tests/unit/test_title_strip_registry.py for the
+    # authoritative strip-or-raw enumeration across every title-bearing
+    # response surface.
+    # #VERIFY: tests/unit/test_recommendations_api_unit.py::
+    # test_book_title_strips_sentinels.
+
     Args:
         blob: The pinned version's stored Storybook content blob.
         storybook_id: The story id (title fallback).
+        version: The pinned version number, for the sentinel-stripped
+            warning log, or None when unavailable to the caller.
 
     Returns:
         str: ``blob["title"]``, with personalization sentinels stripped to
@@ -94,7 +109,14 @@ def _book_title(blob: Mapping[str, object], storybook_id: str) -> str:
             else ``storybook_id``.
     """
     title = blob.get("title")
-    return strip_sentinels(title) if isinstance(title, str) and title else storybook_id
+    if not (isinstance(title, str) and title):
+        return storybook_id
+    return strip_and_log(
+        title,
+        at="recommendation_item.title",
+        storybook_id=storybook_id,
+        version=version,
+    )
 
 
 async def _titles_and_cover_urls(
@@ -114,7 +136,7 @@ async def _titles_and_cover_urls(
     titles: dict[str, str] = {}
     ready_covers: list[tuple[str, int]] = []
     for row in version_rows:
-        titles[row.storybook_id] = _book_title(row.blob, row.storybook_id)
+        titles[row.storybook_id] = _book_title(row.blob, row.storybook_id, row.version)
         if row.cover_status == "ready":
             ready_covers.append((row.storybook_id, row.version))
     # #CRITICAL: security: covers are private-by-default in R2 (Phase 1d); the
