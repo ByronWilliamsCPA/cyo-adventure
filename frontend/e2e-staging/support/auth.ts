@@ -1,4 +1,4 @@
-import { expect, type Page } from '@playwright/test'
+import { errors, expect, type Page } from '@playwright/test'
 
 import { GUARDIAN_CONSENT_PATH, GUARDIAN_LOGIN_PATH } from '../../src/routes'
 import { requireStagingCredentials } from './staging-env'
@@ -72,19 +72,42 @@ export async function signInAsStagingTestUser(
  * cause plainly: `heading "Before you get started" [level=1]`.
  *
  * #VERIFY: this makes the otherwise read-only staging smoke tier perform exactly
- * one write, and only on a guardian who has never consented. If the seed ever
- * starts recording consent for the staging test guardian (scripts/seed_staging.py),
- * this becomes a no-op probe rather than dead code, which is the intended
- * steady state.
+ * one write, and only on a guardian who has never consented.
+ *
+ * The seed is NOT the gap. scripts/seed_staging.py already records
+ * consent_accepted_at, consent_policy_version, consent_signer_name, and
+ * consent_ip when it creates the guardian. What it does not do is backfill:
+ * it returns early when the guardian already exists, so the guardian seeded
+ * 2026-07-11, before those columns existed, still has no consent record and
+ * never acquires one no matter how often the seed re-runs. Once that row is
+ * backfilled (or a fresh staging project is seeded), this becomes a no-op
+ * probe rather than dead code, which is the intended steady state. Prefer
+ * fixing the backfill over widening this helper: 1518fc9 already established
+ * the seed layer as where this class of gap gets closed.
  */
 export async function acceptGuardianConsentIfPresent(page: Page): Promise<void> {
   const consentHeading = page.getByRole('heading', { name: 'Before you get started', level: 1 })
+  // Only a timeout means "no consent gate here". A closed page or context, a
+  // navigation abort, or any other Playwright failure is a real browser fault:
+  // swallowing it would let this return `false`, skip the write, and surface as
+  // a confusing assertion failure in the caller instead of at its cause.
   const gated = await consentHeading
     .waitFor({ state: 'visible', timeout: 5_000 })
     .then(() => true)
-    .catch(() => false)
+    .catch((error: unknown) => {
+      if (error instanceof errors.TimeoutError) return false
+      throw error
+    })
   if (!gated) return
 
+  // #CRITICAL: data integrity: everything below this line WRITES to staging. It
+  // records a persistent ADR-018 consent record against the seeded guardian, so
+  // this scheduled, unattended tier is no longer purely read-only. The write is
+  // idempotent in effect (a consented guardian never reaches here, because the
+  // `gated` probe above returns false) but it is not reversible from the test.
+  // #VERIFY: keep this the ONLY write in the staging tier. Before adding another,
+  // confirm it is safe to run unattended on a cron against shared staging data,
+  // and update guardian-admin-smoke.spec.ts's non-destructive claim to match.
   await page.getByLabel('Your full legal name').fill(CONSENT_SIGNER_NAME)
   await page
     .getByRole('checkbox', {
@@ -97,8 +120,11 @@ export async function acceptGuardianConsentIfPresent(page: Page): Promise<void> 
   // AuthStatus to 'signed-in' and ProtectedRoute re-renders past this component.
   // Assert on both halves of that transition so a consent POST that 4xxs surfaces
   // here, at its cause, instead of as a confusing assertion failure in the caller.
+  // Compare the pathname, not a URL suffix: a `?next=...` query or a `#section`
+  // hash would defeat an anchored regex and let this pass while the browser is
+  // still sitting on the consent interstitial.
   await expect(consentHeading).not.toBeVisible({ timeout: 15_000 })
-  await expect(page).not.toHaveURL(new RegExp(`${GUARDIAN_CONSENT_PATH}$`))
+  await expect(page).not.toHaveURL((url) => url.pathname === GUARDIAN_CONSENT_PATH)
 }
 
 /**
