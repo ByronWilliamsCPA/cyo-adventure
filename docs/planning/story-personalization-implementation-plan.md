@@ -1249,7 +1249,7 @@ child-linked production data, so there is no backward-compatibility obligation.
 | **R17** | **A sibling's name crosses ring 2 against that sibling's own settings.** Sibling B's name rides out inside sibling A's book because only A's consent was checked | High | Predicate condition 8 (8.4): the sibling slot resolves at ring 2 only if the **referenced** profile's own ring-2 enablement and consent cover that connection. Tested in all four A/B combinations (8.6) | P7 |
 | **R18** | **The ring-2 slot set grows by drift.** A future slot type is added with `ring2_enabled` allowed because the DB CHECK's set was widened casually | Medium | The ring-2-eligible set is a DB CHECK enumerating slot types (5.1), so widening it is a migration with a reviewer, not a config change. ADR-023's taxonomy section records the reasoning for each current ceiling so a change has something to argue against | P4 |
 | **R19** | **An authz-predicate bug leaks a value to an unconnected family.** A wrong join direction, a loosened condition, or a mis-resolved connection returns Alex's details to a household with no edge to the Ruiz family | High | Eight explicit conditions evaluated as Python booleans per row rather than as SQL a refactor can loosen (the house convention at `recommendations.py:214-221`); a dedicated `authorize_via_connection` helper never merged into `authorize_family`; a `ROUTE_TABLE` row in `tests/integration/test_authz_matrix.py`; and the 8.8 test asserting an unconnected family's response is indistinguishable from a non-personalized book. Note this route is the single highest-consequence authz surface the feature adds | P7 |
-| **R20** | **Shared-device sibling access to another child's values.** Two sibling payloads live in the same origin's IndexedDB, so a determined reader with devtools, or a sibling who switches profiles, can reach values the application would not render for them | Medium | **No mitigation is proposed in v1**, and that is a decision the owner should make explicitly rather than inherit. The store holds compact per-child personal details, which is a different exposure from the existing device-wide `storybooks` cache (generic content, identical for everyone) even though both are origin-scoped. Options if it must be closed: per-profile encryption keyed on the profile PIN, or holding values in memory only and refetching per session. Recorded as still-open question 3 | P6 |
+| **R20** | **Shared-device sibling access to another child's values.** Two sibling payloads live in the same origin's IndexedDB, so a determined reader with devtools, or a sibling who switches profiles, can reach values the application would not render for them | Medium | **Accepted for v1 (owner decision, 2026-07-28)**: a shared family device is a shared trust boundary; the acceptance is recorded in the DPIA/privacy-model entries rather than silently inherited. The store holds compact per-child personal details, a different exposure from the device-wide `storybooks` cache (generic content, identical for everyone) even though both are origin-scoped. Options if a later release must close it: per-profile encryption keyed on the profile PIN, or holding values in memory only and refetching per session. See resolved question 3 | P6 |
 | **R8** | **English-only morphology produces bad prose.** "a Maya", possessive edge cases, and verb agreement break substituted sentences | Medium | v1 is English only and scoped to she/her and he/him (agreement-identical pairs). they/them is deferred because singular "they" changes verb conjugation ("she runs" vs "they run"), which a token swap cannot retrofit onto already-conjugated stored prose. Prefer name slots in dialogue and ending titles | P1, P10 |
 | **R9** | **Two rendering implementations drift.** The client resolver and the server-side strip helper disagree about what a sentinel is | Medium | One canonical sentinel definition. Carry it in the OpenAPI schema so the generated client picks it up and the CI `contract` job (`ci.yml:432`) fails on drift, rather than letting the frontend re-derive the regex | P1, P3, P5, P6 |
 | **R10** | **Consent records leak values into the event log.** A contributor adds the substituted name to a consent event payload for debuggability | Medium | The `_PAYLOAD_ALLOWLIST` mechanism (`events/writer.py:17-19`) already rejects unlisted keys. Write the new entries with keys only, and add a test asserting a value-bearing key is rejected | P3, P4 |
@@ -1299,15 +1299,16 @@ records are in ADR-023's "Owner decisions" section.
 2. **The exact sentinel delimiter.** Section 2.3.2 now proposes `{~HERO:Explorer~}` and discharges
    all four constraints against the live code, so this is a recommendation awaiting implementation
    rather than an open design question. Confirm it in code when writing the P2 check.
-3. **Shared-device isolation of the values store (risk R20).** Two siblings' values payloads live
-   in one origin's IndexedDB with no isolation beyond application logic. The plan currently accepts
-   this and says so in 7.4 and in ADR-023's success criteria, but "accepted" has still not been
-   decided by anyone: it was not part of the 2026-07-25 decision round. It needs a real answer:
-   accept it (a shared family device is a shared trust boundary, and the exposure is one sibling
-   learning another's pet name), or close it with per-profile encryption or in-memory-only values.
-   The comparison to the existing `storybooks` cache is **not** a justification: that cache holds
-   generic content identical for every reader, this store holds compact per-child personal details.
-   Still an owner call, tracked here rather than left as a footnote.
+3. **Shared-device isolation of the values store (risk R20). RESOLVED 2026-07-28 (owner):
+   accepted for v1.** A shared family device is a shared trust boundary; no per-profile
+   encryption and no in-memory-only mode ship in v1. The acceptance must be recorded in the
+   DPIA/privacy-model classification entries when P4's data-classification work lands (see the
+   execution plan, Tasks A6 and B7), not silently inherited. The prior framing of the question
+   is preserved below for the record: two siblings' values payloads live in one origin's
+   IndexedDB with no isolation beyond application logic; the exposure is one sibling learning
+   another's pet name, which differs from the `storybooks` cache (generic content identical for
+   every reader). Options if a later release must close it: per-profile encryption keyed on the
+   profile PIN, or holding values in memory only and refetching per session.
 
 ## 15. Related
 

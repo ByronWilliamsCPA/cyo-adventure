@@ -98,7 +98,11 @@ the design plan):
 - Line numbers in this plan were verified 2026-07-28 and drift; each stage's first step
   re-verifies the anchors it uses.
 - Local commands that need app settings run with `ENVIRONMENT=local` (the VS Code terminal
-  injects `.env`, and non-local guard families trip otherwise).
+  injects `.env`, and non-local guard families trip otherwise). Note `Settings` in
+  `core/config.py` declares **no `env_file`**: it reads the process environment only, so in a
+  bare shell or a worktree you must source the env yourself
+  (`set -a; . ./.env; set +a`) and symlink `certs/` (relative `OLLAMA_CA_BUNDLE` paths resolve
+  against the cwd). Worktrees share git, not untracked files.
 
 ---
 
@@ -125,8 +129,10 @@ Abort if: `git status` in the worktree is not clean.
 
 - [ ] **Step 2: baseline the gate**
 
-Run: `ENVIRONMENT=local uv run pytest tests/unit -q -x --timeout=120 -k "sentinel or covers or recommendations"`
-Expected: PASS (pins the pre-change behaviour of the files this stage edits).
+Run: `ENVIRONMENT=local uv run pytest tests/unit -q -x -k "sentinel or covers or recommendations"`
+Expected: PASS on the selected tests (no `--timeout` flag: pytest-timeout is not installed
+here). The global 80% coverage gate FAILS on any filtered run; that failure is expected noise,
+judge only the test outcomes.
 
 - [ ] **Step 3: copy this plan into the worktree and commit it**
 
@@ -140,13 +146,20 @@ git commit -S -m "docs(planning): staged execution plan for ADR-023 P3-P11"
 
 The instrument is standalone: no DB, no backend, reads `skeletons/` from disk, writes
 `report.json` and `report.md` under `results/sentinel-survival/<run-slug>/`. Provider
-credentials come from `core.config.settings` (`.env`), not from CLI flags; a missing key
-surfaces as `ConfigurationError`.
+credentials come from `core.config.settings`, which reads the **process environment only**
+(`Settings` has no `env_file`); `.env` reaches it via VS Code terminal injection or
+docker-compose, never directly. In a worktree, source it explicitly:
+`bash -c 'set -a; . ./.env; set +a; export ENVIRONMENT=local; exec uv run python scripts/measure_sentinel_survival.py ...'`
+and symlink `certs/` into the worktree (`ln -s ../../certs certs`) because `OLLAMA_CA_BUNDLE`
+is a cwd-relative path. A missing key surfaces as `ConfigurationError`.
 
 - [ ] **Step 1: mock smoke run (free, proves the harness)**
 
 Run: `ENVIRONMENT=local uv run python scripts/measure_sentinel_survival.py --providers mock --count 5`
-Expected: a run directory with `report.json` and `report.md`; clean-pass rate 100% on mock.
+Expected: a run directory with `report.json` and `report.md`. The mock provider echoes a
+fixed canned story unrelated to any specimen, so its clean-pass rate is 0% by construction;
+this step proves only the plumbing (specimen build, provider dispatch, report writing), not
+survival. Judge the run by "report produced", never by the mock rate.
 Abort if: the script errors before producing a report (fix the harness before spending money).
 
 - [ ] **Step 2: real measurement across two providers**
@@ -246,8 +259,9 @@ from cyo_adventure.storybook.sentinels import strip_sentinels
 
 - [ ] **Step 4: run tests, then the module's full suite**
 
-Run: `ENVIRONMENT=local uv run pytest tests/unit -q -k covers`
-Expected: PASS, no regressions.
+Run: `ENVIRONMENT=local uv run pytest tests/unit/test_cover_prompt.py -q`
+Expected: PASS, no regressions. (Select by file path: `-k covers` matches nothing because the
+test file is `test_cover_prompt.py`. The coverage-gate failure on a filtered run is expected.)
 
 - [ ] **Step 5: commit**
 
