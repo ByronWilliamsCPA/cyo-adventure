@@ -1,7 +1,8 @@
 ---
 title: "Process gap: catalog-first story inventory (admin authoring, guardian authorization, kid title requests)"
 schema_type: planning
-status: proposed
+status: superseded
+superseded_by: "src/cyo_adventure/db/models.py (CATALOG_FAMILY_ID sentinel, lines 56-71)"
 owner: core-maintainer
 purpose: "Record the ownership-model gap surfaced by the initial story-inventory run
   (stories require a family UUID at import), assess what the codebase already
@@ -16,10 +17,31 @@ tags:
 
 # Process gap: catalog-first story inventory
 
-> **Status**: Proposed (2026-07-17). Surfaced during the initial story-inventory
-> authoring run (`docs/planning/story-inventory-initial-run.md`), whose import
-> step (section 8) requires `--family <uuid>`, which is wrong for a base
-> inventory that no family owns.
+> **Status: SUPERSEDED (2026-07-28).** The "Gap A" fix proposed below, making
+> `Storybook.family_id` nullable, was **rejected**. The shipped design instead
+> owns catalog-origin content under a single fixed sentinel family,
+> `CATALOG_FAMILY_ID = 0ca7a109-0000-4000-8000-000000000000`, so `family_id`
+> stays a hard NOT NULL invariant everywhere and no family-scoped authz check
+> had to be reworked for a null owner. The decision and its rationale are stated
+> in code at `src/cyo_adventure/db/models.py` lines 56-71 (the authoritative
+> source, not this doc). A catalog book still becomes globally visible only when
+> an admin publishes it with `visibility='catalog'` (ADR-005 human approval
+> unchanged), which is exactly requirement 2/3 of the gap below.
+>
+> **What actually resolved the gap** (verified 2026-07-28): the sentinel design
+> was fully built and merged to `main`, and the 23 authored drafts were blocked
+> only because nobody had run the import command, not by any code or schema
+> defect. See the disposition notes at the end of this file. This document is
+> retained as the historical record of the rejected approach; do not implement
+> Gap A as written.
+>
+> ---
+>
+> _Original proposal (2026-07-17), preserved for history:_ Surfaced during the
+> initial story-inventory authoring run
+> (`docs/planning/story-inventory-initial-run.md`), whose import step (section
+> 8) requires `--family <uuid>`, which is wrong for a base inventory that no
+> family owns.
 
 ## The gap, as stated
 
@@ -121,3 +143,49 @@ guardian-mediated posture.
 with this note: the `--family` requirement is the documented gap, and the
 interim Library-family procedure above is the sanctioned path until PR 1
 lands. Publication still requires ADR-005 human approval either way.
+
+## Disposition (2026-07-28)
+
+This section records how each thread above actually resolved, so the next
+session does not re-derive it.
+
+- **Gap A (nullable `family_id`): REJECTED, superseded by the sentinel.**
+  Owning catalog content under `CATALOG_FAMILY_ID` (a permanent seed family)
+  keeps `family_id` NOT NULL and leaves every family-scoped authz check
+  untouched. Authoritative statement in `src/cyo_adventure/db/models.py`
+  lines 56-71. The shipped, live tooling is `generation/import_catalog.py`
+  (imports the authored drafts under the sentinel, never publishes) and
+  `publishing/catalog_publish.py::promote_catalog_story` (per-story admin
+  approval to `visibility='catalog'`). No `--library` import mode and no
+  `family_id` migration were built or are needed.
+
+- **`feat/catalog-first-admin-inventory` branch (the interim "Library family"
+  workaround, PR #286): DELETED 2026-07-28, SUPERSEDED.** That branch
+  (tip `d98137e`, recoverable from the reflog for roughly 90 days)
+  implemented a third approach: an admin-owned "Library family" sentinel
+  `00000000-0000-0000-0000-000000000001` plus `core/catalog.py` and migration
+  `20260718000000_library_family.sql`. It was deleted rather than revived for
+  two concrete reasons beyond simple redundancy. First, its migration version
+  prefix `20260718000000` is already taken on `main` by
+  `add_report_retention_purge.sql`, and Supabase keys
+  `supabase_migrations.schema_migrations` on that prefix, so the two collide
+  outright. Second, applying it anyway would seed a _second_ competing
+  sentinel family that no code on `main` filters on, leaving an orphan
+  "Library" row visible in `GET /families` (the exclusion at
+  `api/families.py` filters only `CATALOG_FAMILY_ID`). Do not resurrect it.
+  The one idea worth keeping is ergonomic, not structural: `import_cli.py`
+  still has no `--catalog` convenience flag, so a single-file catalog import
+  means typing the sentinel UUID by hand. Re-implement that fresh against
+  current `import_cli.py` if wanted; do not cherry-pick, since `_run` has
+  since gone keyword-only and gained `series_id`.
+
+- **Issue #173 (nullable `StoryRequest.family_id`): resolved by the sentinel
+  design.** Catalog-origin requests are owned by `CATALOG_FAMILY_ID` rather
+  than a null owner, so the nullable widening #173 asked for is no longer
+  wanted. The issue should be closed as superseded.
+
+- **Gap B (kid-initiated title requests of existing catalog titles): still
+  unbuilt, out of scope for the inventory-import work.** Children still see
+  only guardian-assigned books; there is no kid-facing catalog browse or
+  `title_request` surface. This remains a candidate for a future, deliberately
+  tiny feature and is not required to make the authored drafts readable.
