@@ -224,8 +224,11 @@ export function StoryRequestQueue({
 
   // #CRITICAL: concurrency: a double-click (or a slow response the reviewer
   // clicks again while waiting) must not fire a second approve/decline for the
-  // same row; approve enqueues a paid generation job server-side, so a
-  // duplicate call risks a duplicate job. Track in-flight ids per row (not a
+  // same row; approve spends one of the family's paid monthly story slots and
+  // creates a Concept server-side (generation is enqueued later, by the
+  // admin-only authoring-plan step, not here: see api/story_requests.py's
+  // module docstring), so a duplicate call risks double-spending the quota and
+  // creating a duplicate Concept. Track in-flight ids per row (not a
   // single page-level flag) so independent rows stay actionable while one is
   // pending, and disable both of a row's buttons while either of its actions
   // is in flight.
