@@ -3012,9 +3012,16 @@ the defined extension points:</p>
 <li><strong>OpenRouter free-tier limits</strong>: <code>:free</code> models allow 20 req/min and 50 req/day under $10 of
   purchased credits (1,000/day at &gt;=$10). A 20-story run is ~100 calls, so a one-time $10 top-up is
   required to complete a free-model run in a day; reserve free models for debug iterations.</li>
-<li><strong>Acceptable model families (minors' content, ADR-004)</strong>: production generation routes only to
-  providers with a defensible data policy (Anthropic, Google); other OpenRouter labs are for
-  local/free experimentation only.</li>
+<li><strong>Acceptable endpoints (minors' content)</strong>: <strong>re-scoped 2026-07-28.</strong> The rule here was
+  previously vendor identity, "production generation routes only to providers with a defensible
+  data policy (Anthropic, Google)", attributed to ADR-004. ADR-003's 2026-07-28 amendment retires
+  that rule (and records that ADR-004 never set a provider-selection rule in the first place).
+  Production eligibility is now decided by two content-and-route controls, neither naming a
+  vendor: every assembled prompt must pass <code>assert_prompt_pii_safe</code> before egress, and OpenRouter
+  traffic is confined by a workspace guardrail to endpoints enforcing zero data retention with all
+  data-training paths disabled. A lab is disqualified by failing the data-policy guardrail or by
+  not being allowlisted, not by which lab it is. Full state, scope, and limits: ADR-003's
+  2026-07-28 amendment.</li>
 <li><strong>No PII in prompts</strong>: the PII guard is the enforcement point; adapters must not construct
   prompts independently of the orchestrator.</li>
 <li><strong>MockProvider remains the default</strong> in CI and local development until
@@ -3050,7 +3057,7 @@ the defined extension points:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 22:14:45 UTC">July 10, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 21:05:21 UTC">July 28, 2026</span>
   </span>
 
     

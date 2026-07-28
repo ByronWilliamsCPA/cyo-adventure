@@ -3419,11 +3419,16 @@ justification for a design decision (Phase 3a's FK-cascade exceptions) already s
   <strong>Checklist drafted</strong>: <a href="../processor-dpa-checklist/"><code>processor-dpa-checklist.md</code></a>, with
   every DPA link live-verified (not reused from training-data memory) on 2026-07-20; execution
   itself is still the account owner's to-do.</li>
-<li><strong>5b. Prioritize zero-data-retention (ZDR) terms with OpenRouter</strong> specifically, since
-  ADR-018 already flags this as the standing blocker; resolve it explicitly rather than letting
-  it stay open indefinitely. The checklist's OpenRouter row is flagged as needing an actual
-  conversation (confirm account-wide ZDR is enabled and covers every downstream
-  model/provider), not just a click-through DPA.</li>
+<li><strong>5b. Prioritize zero-data-retention (ZDR) terms with OpenRouter</strong> specifically. <strong>Updated
+  2026-07-28</strong>: ZDR routing is now <em>configured</em> as a guardrail on a dedicated, key-scoped
+  OpenRouter workspace, so ADR-018's Blocker 1 is split rather than standing whole: 1a (the
+  generation leg) is narrowed to a documentation item and gates nothing, while 1b (the
+  directly-called Stage-0 classifier leg) is the standing blocker. A configured routing control
+  is not an executed contract, so this item does not close: the checklist's OpenRouter row is
+  still flagged as needing an actual conversation (execute the DPA / enterprise terms, and
+  confirm the guardrail covers every downstream model/provider), not just a click-through DPA,
+  and the guardrail state has to be re-confirmed at P7-08 and on any credential rotation. See
+  ADR-003's 2026-07-28 amendment.</li>
 <li><strong>5c. Record every outcome</strong> in <code>docs/planning/privacy-model.md</code>'s processor list, so Phase 7's
   Records of Processing document (below) has a single source of truth to pull from. Not yet
   done for any row (the checklist is the to-do list, not the durable record).</li>
@@ -3673,7 +3678,7 @@ statutory basis specifically rather than GDPR generally).</p>
 <tr>
 <td>Phase 5 (processor paperwork)</td>
 <td>P7-06, P7-12</td>
-<td>already-decided item 6, "Blocker 1"</td>
+<td>already-decided item 6, "Blocker 1" (split 2026-07-28 into 1a generation leg, narrowed, and 1b classifier leg, the standing gate)</td>
 </tr>
 <tr>
 <td>Phase 6 (security)</td>
@@ -4021,7 +4026,7 @@ advice or a certification of compliance.</em></p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 25, 2026 21:12:16 UTC">July 25, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 21:05:21 UTC">July 28, 2026</span>
   </span>
 
     

@@ -2934,11 +2934,10 @@ document.</p>
 <h2 id="1-context-and-scope">1. Context and scope<a class="headerlink" href="#1-context-and-scope" title="Permanent link">&para;</a></h2>
 <p>Two problems arrived together and are deliberately separated:</p>
 <ol>
-<li><strong>Google Perspective sunsets 2026-12-31</strong> with no migration path. The
-   config-layer risk is already closed (commit <code>43bfc72</code>: only
-   <code>OPENAI_API_KEY</code> now satisfies the classifier-presence invariant), and a
-   raw-score baseline capture script exists so a successor can be calibrated
-   rather than guessed.</li>
+<li><strong>Google Perspective sunsets 2026-12-31</strong> with no migration path. This PR
+   closes the config-layer risk (only <code>OPENAI_API_KEY</code> now satisfies the
+   classifier-presence invariant) and adds a raw-score baseline capture
+   script so a successor can be calibrated rather than guessed.</li>
 <li><strong>The review surface is unusable.</strong> In the owner's words: "Most stories
    have hundreds of flags that arent useful. We need to develop a more useful
    process for both admins and guardians so that they can make effective
@@ -2979,6 +2978,20 @@ after draft persistence and drives every story to <code>submit</code> (in_review
 <td>hard</td>
 </tr>
 <tr>
+<td>0: Classifier degraded</td>
+<td><code>classifiers.py:106-116</code></td>
+<td>whole story, per classifier</td>
+<td>ADVISORY (unscored)</td>
+<td>advisory</td>
+</tr>
+<tr>
+<td>0: Classifier coverage incomplete</td>
+<td><code>classifiers.py:119-153</code></td>
+<td>whole story, per classifier</td>
+<td>FLAG (unscored)</td>
+<td>soft</td>
+</tr>
+<tr>
 <td>1: LLM safety</td>
 <td><code>stages.py::run_safety_stage</code></td>
 <td>per node</td>
@@ -3008,6 +3021,17 @@ after draft persistence and drives every story to <code>submit</code> (in_review
 </tr>
 </tbody>
 </table>
+<p>Stage 0 also emits two whole-story, unscored findings that are easy to miss
+because they are not per-node content verdicts: <code>classifier_degraded</code>
+(ADVISORY, <code>classifiers.py:106-116</code>, emitted when a classifier fails or is
+required-but-unconfigured) and <code>classifier_coverage_incomplete</code> (FLAG,
+<code>classifiers.py:119-153</code>, emitted when the circuit breaker opens and nodes go
+unscreened). Both carry <code>score: null</code> by construction, so they sit in the
+same unscored-FLAG/ADVISORY blind spot G4 documents for the LLM stages:
+there are unscored Stage-0 FLAGs the noise floor cannot touch, not only LLM
+ones. A redesign that gives every gating signal a severity needs an explicit
+severity mapping for these two, since neither has a numeric score to derive
+one from.</p>
 <p>Key structural facts:</p>
 <ul>
 <li><strong>Stages 1 and 2 persist one <code>Finding</code> per node unconditionally</strong>, PASS
@@ -3027,6 +3051,16 @@ after draft persistence and drives every story to <code>submit</code> (in_review
   (<code>"mock" | "ollama" | "openrouter" | "modal"-deferred</code>), default <strong>mock</strong>
   (<code>core/config.py:556</code>). The mock returns the literal string <code>"{}"</code> for every
   call (<code>review_provider.py:77-78</code>).</li>
+<li><strong>Stage 0 runs a second time, outside this pipeline, at story-request
+  intake.</strong> <code>story_requests/screening.py::screen_request_text</code> (lines 58-122)
+  calls the same <code>run_classifiers</code> with <code>perspective_key</code> and surfaces every
+  non-PASS finding to the guardian queue via <code>_redact</code> (lines 46-55); it
+  passes <code>report_coverage=False</code>, so post-sunset a degraded classifier
+  reaches the guardian queue as an ADVISORY on every request (but not a
+  coverage FLAG, since intake is documented fail-open). Other call sites
+  passing <code>perspective_key</code> into the classifier layer: <code>api/node_edit.py:545</code>,
+  <code>api/story_requests.py:409</code>, <code>:674</code>, <code>:1020</code>, <code>moderation/rescreen.py:457</code>,
+  <code>moderation/pipeline.py:758</code>.</li>
 </ul>
 <h2 id="3-what-the-live-data-shows">3. What the live data shows<a class="headerlink" href="#3-what-the-live-data-shows" title="Permanent link">&para;</a></h2>
 <p>Source: the MCP-connected Supabase project, queried 2026-07-28. 29
@@ -3112,6 +3146,18 @@ total; the largest single book stores 1,494 findings (<code>sk_ninth_hand</code>
 <p>"Fail-safe message" counts findings whose message is exactly
 <code>unknown verdict; defaulted to fail-safe</code>, the string emitted by exactly one
 code path (<code>stages.py:164-166</code>).</p>
+<p><strong>18 vs 22, do not conflate them.</strong> 18 is the count of mock-moderated books:
+a mock-moderated book produces exactly one fail-safe <code>llm_coherence</code> PASS and
+one fail-safe <code>llm_engagement</code> PASS (both whole-story calls), so the 18
+fail-safe coherence findings above equal 18 mock-moderated books (cross-check:
+18 mock + 11 genuine = 29 total, matching the table above). 22 is the count
+of books carrying <em>any</em> <code>llm_safety</code> FLAG: the same 18 mock-moderated books
+plus the 4 genuinely-reviewed books that produced the 8 genuine safety FLAGs
+(5,056 - 5,048 = 8). The remediation set (G1 in section 6; requirement 8 in
+section 7) is the 18 mock-moderated books, derived from the coherence/
+engagement fail-safe rows, not the 22-book safety-FLAG row: sweeping 22 would
+destroy the only real reviewer output in the corpus, including some of the
+8 genuine safety FLAGs.</p>
 <h3 id="32-the-flood-per-book">3.2 The flood, per book<a class="headerlink" href="#32-the-flood-per-book" title="Permanent link">&para;</a></h3>
 <p>Every mass-flagged book shows the same signature: flag count equals node
 count, and every message is the identical fail-safe string.</p>
@@ -3158,17 +3204,20 @@ count, and every message is the identical fail-safe string.</p>
 </table>
 <p>By contrast, 11 books carry genuine reviewer output: real PASS reasons
 ("Gentle adventure narrative with no mature, dangerous, or inappropriate
-content") and exactly <strong>8 genuine safety FLAGs</strong> across the whole corpus (the
-beehive and wild-berries observations sampled in the 2026-07-28 handoff are
-from this set).</p>
+content") and exactly <strong>8 genuine safety FLAGs</strong> across the whole corpus.</p>
 <h3 id="33-correction-to-the-prior-working-hypothesis">3.3 Correction to the prior working hypothesis<a class="headerlink" href="#33-correction-to-the-prior-working-hypothesis" title="Permanent link">&para;</a></h3>
-<p>The 2026-07-28 handoff, sampling messages before the message-level breakdown
-existed, concluded "the individual flags are not wrong; expect the fix to be
-triage and synthesis, not a stricter threshold." The message-level data
-revises that: <strong>99.8% of safety FLAGs (5,048 of 5,056) are not reviewer
-judgments at all.</strong> They are the structural fail-safe of a reviewer that
-cannot answer. Triage and synthesis remain necessary (section 6), but the
-first-order fact is that the flooded books were moderated by the mock backend.</p>
+<p>A prior working hypothesis, formed by sampling messages before the
+message-level breakdown existed, held that "the individual flags are not
+wrong; expect the fix to be triage and synthesis, not a stricter threshold."
+Its provenance is unverified: earlier drafts of this document attributed it
+to a "2026-07-28 handoff," but no such file exists under <code>docs/planning/</code>
+(the handoffs there run 2026-07-11 through 2026-07-27); the hypothesis is
+kept here only because the data correction below stands on its own, not on
+that citation. The message-level data revises the hypothesis: <strong>99.8% of
+safety FLAGs (5,048 of 5,056) are not reviewer judgments at all.</strong> They are
+the structural fail-safe of a reviewer that cannot answer. Triage and
+synthesis remain necessary (section 6), but the first-order fact is that the
+flooded books were moderated by the mock backend.</p>
 <h3 id="34-resolved-data-anomaly">3.4 Resolved data anomaly<a class="headerlink" href="#34-resolved-data-anomaly" title="Permanent link">&para;</a></h3>
 <p><code>s_c250490d-80f7-499c-8490-47901fb09c9b</code> carries 143 openai findings with
 scores far below the 0.01 advisory floor (4.45e-8 to 6.1e-4). Explanation:
@@ -3242,12 +3291,17 @@ indistinguishable from genuine safety concerns in every dashboard metric.</p>
 <tr>
 <td>G1</td>
 <td>An operational/seed path can run the hard safety gate against the mock reviewer and persist the result as a real moderation report. Nothing marks the report as "reviewed by a backend that cannot answer".</td>
-<td>22 of 29 live books; <code>review_provider.py:77-78</code></td>
+<td>18 of 29 live books are mock-moderated (see 3.1 for the 18-vs-22 distinction; 22 is the count of books carrying any safety FLAG, not the mock-moderated count); <code>review_provider.py:77-78</code></td>
 </tr>
 <tr>
 <td>G2</td>
 <td>Fail-safe verdicts are invisible as a class. <code>verdict_parse_failed</code> / <code>verdict_unknown</code> are log-only warnings (<code>stages.py:162</code>, <code>:165</code>); no metric, event, dashboard, or finding field distinguishes a structural fail-safe from a genuine flag. The message string is the only discriminator and nothing parses it.</td>
 <td>Survey of logs/dashboards; <code>insights.py:154-254</code></td>
+</tr>
+<tr>
+<td>G2a</td>
+<td>Sub-item of G2: because a structural fail-safe is indistinguishable from a genuine flag, the flood can drive the threshold flywheel to <em>suppress real safety flags</em>. <code>suggest_thresholds</code> (<code>insights.py:272-317</code>) proposes raising a <code>(band, category)</code> threshold once <code>decided_versions &gt;= SUGGESTION_MIN_DECIDED</code> (5, <code>insights.py:34</code>) and <code>override_rate &gt;= SUGGESTION_MIN_OVERRIDE_RATE</code> (0.8, <code>insights.py:35</code>); version counts are deduped once per category, and the 18 mock-moderated books each contribute one decided <code>(band, "safety")</code> version. If enough of those were released despite their fail-safe FLAGs, the flywheel proposes <code>safety</code> <code>min_verdict</code> FLAG -&gt; BLOCK (<code>_VERDICT_RAISE</code>, <code>insights.py:41-44</code>), which would stop every <em>genuine</em> safety FLAG from surfacing to guardians and kids via <code>ThresholdPolicy.surfaces</code> (<code>thresholds.py:84</code>). Whether the gates are met today is unmeasured: the per-band release counts need checking before any suggestion is applied.</td>
+<td><code>insights.py:34-35</code>, <code>:41-44</code>, <code>:272-317</code>; <code>thresholds.py:84</code></td>
 </tr>
 <tr>
 <td>G3</td>
@@ -3256,13 +3310,13 @@ indistinguishable from genuine safety concerns in every dashboard metric.</p>
 </tr>
 <tr>
 <td>G4</td>
-<td>The noise floor structurally cannot suppress LLM findings: it requires ADVISORY plus a non-null score, and all LLM findings are unscored FLAGs/ADVISORYs.</td>
-<td><code>thresholds.py:217-219</code>; <code>stages.py:207</code> et al.</td>
+<td>The noise floor structurally cannot suppress LLM findings, nor the two unscored Stage-0 whole-story findings (<code>classifier_degraded</code>, <code>classifier_coverage_incomplete</code>, section 2): it requires ADVISORY plus a non-null score, and none of these carry a score.</td>
+<td><code>thresholds.py:217-219</code>; <code>stages.py:207</code> et al.; <code>classifiers.py:106-153</code></td>
 </tr>
 <tr>
 <td>G5</td>
 <td>No severity ranking, deduplication, or story-level synthesis exists for genuine findings either. Even a real reviewer on a 746-node book yields an unranked flat list; concerns repeated across nodes (same hazard in many passages) are not merged.</td>
-<td><code>ReviewDetailPage.tsx:473-519</code>; handoff samples</td>
+<td><code>ReviewDetailPage.tsx:473-519</code></td>
 </tr>
 <tr>
 <td>G6</td>
@@ -3282,12 +3336,17 @@ indistinguishable from genuine safety concerns in every dashboard metric.</p>
 <tr>
 <td>G9</td>
 <td>Perspective is dead weight: zero live findings, sunset 2026-12-31. <code>Source.PERSPECTIVE</code> is persisted-JSONB-coupled (<code>review_surface.py</code> raises on unrecognized sources at rest), so retirement needs a read-compat plan even though this environment holds zero rows. Verify staging and prod row counts before removal.</td>
-<td>Section 3.1; handoff item 5</td>
+<td>Section 3.1</td>
 </tr>
 <tr>
 <td>G10</td>
 <td>Stage-2 readability duplicates a deterministic check. LLM-judged reading level is approximate by its own RAD tag, while the validator already computes band-profile/reading-level deterministically. 5,703 stored rows bought 27 flags in 4 books.</td>
 <td><code>stages.py:244-246</code>; <code>validator/reading_level.py</code></td>
+</tr>
+<tr>
+<td>G11</td>
+<td>Malformed classifier payloads fail open silently, not just unavailably. <code>_run_openai</code> (<code>classifiers.py:465-527</code>) and <code>_run_perspective</code> (<code>classifiers.py:530-577</code>) return <code>[]</code> on a malformed response without raising <code>ClassifierUnavailable</code>; <code>_screen_one</code> (<code>classifiers.py:194-238</code>) then resets <code>consecutive_failures</code> to 0 on that <code>[]</code> and never appends the node to <code>state.unscreened</code>, so no <code>classifier_coverage_incomplete</code> FLAG and no <code>classifier_degraded</code> ADVISORY fire. A response-shape change on either provider (OpenAI is the one classifier this PR's config change now makes mandatory) reads as "screened, nothing found."</td>
+<td><code>classifiers.py:465-527</code>, <code>:530-577</code>, <code>:194-238</code></td>
 </tr>
 </tbody>
 </table>
@@ -3314,16 +3373,16 @@ indistinguishable from genuine safety concerns in every dashboard metric.</p>
 <li><strong>Stage-0 successor</strong> (post-Perspective) is chosen against the captured
    raw-score baseline, not swapped like-for-like; the comment-toxicity axis is
    domain-mismatched to children's fiction (PG-STORY: Perspective/Detoxify
-   unsafe F1 57.8 vs 96.9 for a task-specific model).</li>
-<li><strong>Catalog remediation</strong>: the 22 flooded books need re-moderation with a
+   unsafe F1 57.8, 67.1 macro F1, vs 96.9 macro F1 for a task-specific model).</li>
+<li><strong>Catalog remediation</strong>: the 18 mock-moderated books (see 3.1; distinct
+   from the 22 books carrying any safety FLAG) need re-moderation with a
    real reviewer once the new model lands; their current reports are
    evidence of nothing except the mock path.</li>
 </ol>
 <h2 id="8-measurement-provenance">8. Measurement provenance<a class="headerlink" href="#8-measurement-provenance" title="Permanent link">&para;</a></h2>
 <p>All counts in section 3 were queried 2026-07-28 via the read-only Supabase
-MCP (<code>execute_sql</code>) against the project this repo's MCP config targets, the
-same environment the 2026-07-28 handoff measured (its <code>sk_ninth_hand</code> = 746
-matches exactly). Query shapes: <code>jsonb_array_elements</code> over
+MCP (<code>execute_sql</code>) against the project this repo's MCP config targets.
+Query shapes: <code>jsonb_array_elements</code> over
 <code>storybook_version.moderation_report-&gt;'findings'</code>, grouped by source,
 verdict, and message. Numbers will drift as books are added; re-run before
 citing in the design doc.</p>
@@ -3349,7 +3408,7 @@ citing in the design doc.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 19:40:33 UTC">July 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 21:05:58 UTC">July 28, 2026</span>
   </span>
 
     

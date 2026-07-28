@@ -2919,11 +2919,56 @@ surface), G12 (export and deletion), K14 (safe room), and A14 (compliance ops).<
    OpenRouter and downstream model providers (generation), OpenAI Moderation and Google
    Perspective (Stage-0 classifiers over all generated prose and child-typed wishes),
    Google Gemini and Cloudflare R2 (cover art, ADR-017), Sentry (exceptions, no child
-   reading content). Every entry needs verified terms at P7-08; the OpenRouter ZDR
-   question is the standing Blocker 1.</li>
-<li><strong>Contact boundary</strong>: no messaging, no discovery, cross-family flows only through
-   dual-guardian-consented connections (ADR-016).</li>
+   reading content). Every entry still needs verified terms at P7-08.</li>
 </ol>
+<p><strong>Amended 2026-07-28: the counterparties are no longer one undifferentiated tier</strong>,
+   because they do not receive the same kind of data and were never well served by one
+   blocker covering all of them.</p>
+<ul>
+<li>
+<p><strong>Generation leg (OpenRouter and the endpoints it routes to): a documentation item,
+     not a gate.</strong> No registered child identifier can reach it: <code>assert_prompt_pii_safe</code>
+     hard-fails the job rather than redacting (<code>generation/pii.py:229-289</code>). <a href="../adr-023-story-personalization-slots/">ADR-023</a>
+     <em>proposes</em> to keep real values out of it permanently by resolving personalization
+     client-side at render time instead of at generation time, but that ADR is
+     <code>status: proposed</code>, its counsel sign-off is open, and no code exists for it yet, so it is
+     a design commitment rather than a shipped property; <strong>if ADR-023 is not adopted, this
+     reason lapses.</strong> Routing on the OpenRouter leg is additionally confined by a
+     platform guardrail on a dedicated, key-scoped OpenRouter workspace configured
+     2026-07-28: zero data retention required across non-frontier, Anthropic, OpenAI,
+     Google, and xAI routing, and all three data-training paths disabled (paid-trains,
+     free-trains, free-publishes-prompts). That guardrail reaches the OpenRouter route only;
+     the built and admin-selectable direct-Anthropic leg bypasses it, which ADR-003's
+     amendment records as an open item rather than a closed control. See ADR-003's 2026-07-28
+     amendment for the full state and its limits. What the generation leg still carries is a
+     coarse age band, guardian-set <code>banned_themes</code> and content-flag caps, and free-typed
+     premise text carried through verbatim, so it is <strong>identifier-free, not PII-free</strong>, and its
+     terms still belong in the P7-08 record.</p>
+<p><strong>The sub-processor set changed on 2026-07-28 and this list changes with it.</strong> Enabling
+ ZDR for the frontier vendors disables their <em>first-party</em> endpoints rather than the
+ model families, so generation prompts now route to those families via <strong>AWS Bedrock,
+ Microsoft Azure, and Google Vertex</strong>. Those three enter scope as OpenRouter's
+ sub-processors for the generation leg and belong in the P7-08 processor record; they are
+ added to <code>docs/compliance/processor-dpa-checklist.md</code> accordingly. First-party Anthropic
+ and OpenAI endpoints leave scope <strong>for traffic routed through OpenRouter</strong>. They do not
+ leave the record: the direct-Anthropic leg is built and admin-selectable and does not go
+ through OpenRouter, so the "Anthropic (direct)" row stays, and
+ <code>records-of-processing-activities.md</code> continues to list it as a live recipient. Note that
+ this affects the <strong>generation</strong> leg only: OpenAI Moderation on the classifier leg is a
+ separate, directly-called integration and is unaffected.
+   - <strong>Classifier leg (OpenAI Moderation, Google Perspective): this is where the gate
+ lives now.</strong> It receives child-typed request text at intake
+ (<code>story_requests/screening.py</code>) and every node of generated prose during moderation.
+ That is child-provided free text crossing to third parties, and nothing in ADR-023
+ changes it. Blocker 1 is therefore <strong>narrowed onto this leg rather than closed</strong>; see
+ privacy-model.md. The Perspective counterparty is separately in flux (see the Stage-0
+ Perspective sunset work), which changes who is on this list but not the requirement.
+   - <strong>Cover art (Google Gemini) and storage (Cloudflare R2)</strong> are unchanged: prompts derive
+ only from story metadata and no child PII reaches the image provider (ADR-017).
+7. <strong>Contact boundary</strong>: no messaging, no discovery, cross-family flows only through
+   dual-guardian-consented connections (ADR-016).</p>
+</li>
+</ul>
 <h2 id="open-decisions-the-reason-this-adr-exists-close-with-counsel-before-accepted">Open decisions (the reason this ADR exists; close with counsel before Accepted)<a class="headerlink" href="#open-decisions-the-reason-this-adr-exists-close-with-counsel-before-accepted" title="Permanent link">&para;</a></h2>
 <h3 id="d1-verifiable-parental-consent-vpc-mechanism">D1: Verifiable parental consent (VPC) mechanism<a class="headerlink" href="#d1-verifiable-parental-consent-vpc-mechanism" title="Permanent link">&para;</a></h3>
 <p>COPPA requires consent verification stronger than a tap-through; the App Store parental
@@ -3036,7 +3081,7 @@ deliverables with P7-08 as the checkpoint, and who drafts the notice.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 15:27:41 UTC">July 20, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 21:05:21 UTC">July 28, 2026</span>
   </span>
 
     

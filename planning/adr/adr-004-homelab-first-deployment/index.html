@@ -3417,6 +3417,15 @@ always-on uptime and managed backups if the need arises.</p>
   <strong>public tier</strong> by <a href="../adr-008-public-app-store-launch/">ADR-008</a> and
   <a href="../adr-009-supabase-platform/">ADR-009</a>: the public tier runs on Supabase-managed
   Postgres, a US processor. ADR-004 continues to govern the dev and family/homelab tier.</li>
+<li>⚠️ <strong>Scope clarification (2026-07-28).</strong> This ADR's "avoid third-party telemetry on
+  children" stance is about <strong>where minors' data is stored and what observes their
+  behavior</strong>: hosting, telemetry, analytics, and ad SDKs. It is not, and never was, a
+  vendor-selection rule for the outbound generation call. That call carries no registered
+  child identifier by construction (<a href="../adr-003-frontier-llm-generation/">ADR-003</a>'s
+  2026-07-28 amendment and the <code>generation/pii.py</code> hard fail), so ADR-003 cites this ADR
+  for its privacy <em>posture</em>, not as a source of provider restrictions. Reading it as the
+  latter is what produced the Anthropic/Google-only production rule that the ADR-003
+  amendment retires.</li>
 </ul>
 <h3 id="technical-debt">Technical Debt<a class="headerlink" href="#technical-debt" title="Permanent link">&para;</a></h3>
 <ul>
@@ -3487,7 +3496,7 @@ always-on uptime and managed backups if the need arises.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 22:14:45 UTC">July 10, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 21:05:21 UTC">July 28, 2026</span>
   </span>
 
     

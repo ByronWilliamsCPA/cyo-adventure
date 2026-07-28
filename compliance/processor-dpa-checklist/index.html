@@ -2830,15 +2830,36 @@ needs an actual conversation, not just a click-through (see its row).</p>
 <td>OpenRouter (+ downstream model providers it routes to)</td>
 <td>Story-generation prompts (PII-guarded)</td>
 <td><a href="https://openrouter.ai/docs/guides/features/zdr">openrouter.ai/docs/guides/features/zdr</a> for the Zero Data Retention feature itself; DPA/enterprise terms via <a href="https://openrouter.ai/enterprise">openrouter.ai/enterprise</a></td>
-<td>ZDR can be enforced account-wide via privacy settings (not just per-request) — confirm this is actually turned ON, not merely available, since ADR-018 already flags this as the standing blocker</td>
-<td><strong>Needs a real conversation, not just a click-through.</strong> Confirm (a) account-wide ZDR is enabled, and (b) it covers every downstream model/provider OpenRouter routes this app's traffic to, not just OpenRouter's own layer — the ZDR docs note plugins/tools you enable may have their own retention policies, so confirm this app enables none of those. Not yet executed.</td>
+<td>ZDR is enforced by a guardrail on a dedicated, key-scoped workspace (see Status). Since 2026-07-28 this backs ADR-003's production-routing control rather than a dispatch blocker, which makes keeping it verified more important, not less: it is now the control, not a second layer under a vendor rule</td>
+<td><strong>Routing controls CONFIGURED 2026-07-28; DPA still NOT EXECUTED.</strong> A dedicated OpenRouter workspace was created for this project with its own API key, and a guardrail set to require ZDR endpoints across non-frontier, Anthropic, OpenAI, Google, and xAI routing, plus all three data-training paths disabled (paid-trains, free-trains, free-publishes-prompts). No individual provider or model is blocked: eligibility is by data policy, by design. The plugins/tools carve-out is closed for this app and verified in code, not assumed: the generation request body has no <code>plugins</code> or <code>tools</code> key (<code>generation/providers/openrouter.py:154-164</code>). <strong>Still open</strong>: (a) execute the DPA / enterprise terms, which a routing guardrail does not substitute for; (b) re-confirm guardrail state at P7-08 and on any credential rotation, since console settings are mutable.</td>
+</tr>
+<tr>
+<td>AWS Bedrock (OpenRouter sub-processor)</td>
+<td>Story-generation prompts (PII-guarded), for Anthropic-family traffic OpenRouter routes here since the 2026-07-28 ZDR toggles disabled first-party Anthropic endpoints</td>
+<td>No direct link: coverage would flow through OpenRouter's own sub-processor terms, not a DPA CYO Adventure signs</td>
+<td><strong>Sub-processor, not a direct counterparty.</strong> There is no contractual relationship to execute here; the mechanism is whatever OpenRouter's DPA/enterprise terms commit for its sub-processors, which is part of what the OpenRouter row above has to establish</td>
+<td>Not applicable as a direct DPA. <strong>Open</strong>: confirm, as part of the OpenRouter conversation, that its terms name and bind its sub-processors, and that ZDR routing actually holds at this endpoint</td>
+</tr>
+<tr>
+<td>Microsoft Azure (OpenRouter sub-processor)</td>
+<td>Story-generation prompts (PII-guarded), for OpenAI-family traffic OpenRouter routes here since the 2026-07-28 ZDR toggles disabled first-party OpenAI endpoints</td>
+<td>As above: via OpenRouter's sub-processor terms</td>
+<td><strong>Sub-processor, not a direct counterparty</strong>; same mechanism as the Bedrock row</td>
+<td>Not applicable as a direct DPA; same open item as the Bedrock row</td>
+</tr>
+<tr>
+<td>Google Vertex (OpenRouter sub-processor)</td>
+<td>Story-generation prompts (PII-guarded), for Google-family traffic OpenRouter routes here since the 2026-07-28 ZDR toggle disabled AI Studio endpoints</td>
+<td>As above: via OpenRouter's sub-processor terms</td>
+<td><strong>Sub-processor, not a direct counterparty</strong>; same mechanism as the Bedrock row. Distinct from the Google Perspective / Gemini row below, which is a direct integration</td>
+<td>Not applicable as a direct DPA; same open item as the Bedrock row</td>
 </tr>
 <tr>
 <td>Anthropic (direct)</td>
 <td>Story-generation prompts (PII-guarded), same guard as above</td>
 <td><a href="https://privacy.claude.com/en/articles/7996862-how-do-i-view-and-sign-your-data-processing-addendum-dpa">privacy.claude.com/en/articles/7996862</a></td>
-<td>DPA is incorporated into Anthropic's <strong>Commercial</strong> Terms of Service automatically once accepted — confirm this account is actually on commercial terms, not the free/consumer terms, since the DPA does not apply to <code>claude.ai</code> free accounts</td>
-<td>Not yet confirmed which terms tier this account is under; execute after confirming</td>
+<td>DPA is incorporated into Anthropic's <strong>Commercial</strong> Terms of Service automatically once accepted; confirm this account is actually on commercial terms, not the free/consumer terms, since the DPA does not apply to <code>claude.ai</code> free accounts</td>
+<td>Not yet confirmed which terms tier this account is under; execute after confirming. <strong>Row stays as of 2026-07-28, and is not superseded by the OpenRouter ZDR toggles.</strong> Those toggles remove first-party Anthropic endpoints from the <em>OpenRouter</em> route only. The direct leg is a separate, built path: <code>AnthropicProvider</code> (<code>generation/providers/anthropic.py</code>) is dispatched whenever <code>generation_provider="anthropic"</code> (<code>generation/provider.py:659-660</code>), the admin allowlist seeds two direct-Anthropic models (<code>generation/allowlist.py</code>), and <code>records-of-processing-activities.md</code> lists "Anthropic (direct)" as a live recipient of request text. That leg inherits none of the OpenRouter guardrail, so this row is more load-bearing than before, not less</td>
 </tr>
 <tr>
 <td>OpenAI Moderation</td>
@@ -2882,6 +2903,15 @@ needs an actual conversation, not just a click-through (see its row).</p>
 <li>This checklist does not cover SCC/DPF execution specifically (only DPA execution); revisit
   that separately if/when the UK/EEA-user status decision (<code>coppa-gdpr-remediation-plan.md</code>
   Section 2) changes from "none."</li>
+<li><strong>Added 2026-07-28</strong>: the AWS Bedrock, Microsoft Azure, and Google Vertex rows are
+  sub-processor entries, present so the record follows the routing change ADR-003's 2026-07-28
+  amendment describes. They are not rows to execute; they are rows the OpenRouter conversation
+  has to cover.</li>
+<li><strong>Known gap, 2026-07-28</strong>: <strong>Modal</strong> is absent from this checklist despite being a hosted
+  third-party platform (ADR-010: "Modal is a second serverless vendor") with a built generation
+  adapter and configured endpoint settings (<code>core/config.py:529-554</code>). It is also absent from
+  ADR-018 item 6 and <code>docs/planning/privacy-model.md</code>. Add a row before the Modal leg is enabled
+  on any deployed tier; the omission is not an exemption.</li>
 </ul>
 <h2 id="relationship-to-other-compliance-documents">Relationship to other compliance documents<a class="headerlink" href="#relationship-to-other-compliance-documents" title="Permanent link">&para;</a></h2>
 <table>
@@ -2932,7 +2962,7 @@ needs an actual conversation, not just a click-through (see its row).</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 18:08:50 UTC">July 20, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 21:05:21 UTC">July 28, 2026</span>
   </span>
 
     

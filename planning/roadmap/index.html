@@ -4467,8 +4467,9 @@ in PROJECT-PLAN.md section 1's audit note):</p>
   <a href="../skeleton-corpus-story-generation-test-plan/">skeleton-corpus-story-generation-test-plan.md</a>
   (0/21 skeletons proven end-to-end).</li>
 <li>Issues #125 (Supabase RLS not enabled on 13 public tables) and #214 (R2 cover-art backfill),
-  both cited in <code>handoff-r2-readiness-2026-07-11.md</code>, appear in neither master document by
-  number or description.</li>
+  both cited in <code>handoff-r2-readiness-2026-07-11.md</code> (retired in PR #444; recoverable via
+  <code>git show 4afe490~1:docs/planning/handoff-r2-readiness-2026-07-11.md</code>), appear in neither
+  master document by number or description.</li>
 <li><strong>Update, same day</strong>: #321 (WS-5 structure/state variation, ADR-020), #323 (ADR-021, service
   accounts/RLS/worker deployment), and #311 (a second, larger COPPA/GDPR remediation pass:
   data rights, verifiable parental consent, self-signup approval, audit logging, plus new
@@ -5003,6 +5004,11 @@ runs on Supabase-managed infrastructure instead of the homelab; see
       4, 6).</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> The live-model adversarial safety run carried as Phase 3 debt (safety evaluation
       doc's model-dependent classes).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Moderation review-model redesign and post-Perspective Stage-0 successor
+      (owner decisions pending): see
+      <a href="../safety/moderation-review-current-state-2026-07-28/">moderation-review-current-state-2026-07-28.md</a>
+      and <a href="../safety/moderation-review-redesign-2026-07-28/">moderation-review-redesign-2026-07-28.md</a>.
+      Hard external deadline: Google Perspective API sunsets 2026-12-31.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <strong>Newly surfaced by the 2026-07-20 audit, from <code>security-hardening-plan-2026-07.md</code>,
       neither previously tracked here nor closed</strong>: H1, <code>assign_storybook</code> performs no
       band-ceiling comparison against the target profile, so a guardian can assign an
@@ -5096,6 +5102,12 @@ iteration; the reader itself is straightforward.</p>
 <td>M</td>
 <td>IndexedDB as cache only; Postgres canonical; sync on every choice</td>
 </tr>
+<tr>
+<td>Google Perspective API sunset (2026-12-31), classifiers.py has no live date gate</td>
+<td>H (calendar-driven)</td>
+<td>M</td>
+<td>Redesign proposes retiring the axis ahead of the deadline; see <code>safety/moderation-review-current-state-2026-07-28.md</code> and <code>safety/moderation-review-redesign-2026-07-28.md</code></td>
+</tr>
 </tbody>
 </table>
 <h2 id="definition-of-done">Definition of Done<a class="headerlink" href="#definition-of-done" title="Permanent link">&para;</a></h2>
@@ -5140,7 +5152,7 @@ and Tier-2 corpora.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 15:55:12 UTC">July 20, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 21:05:58 UTC">July 28, 2026</span>
   </span>
 
     
