@@ -11,17 +11,23 @@
 # a PR red, a failed scheduled run files/updates one tracking issue.
 #
 # Credentials: set the REPO-level secrets OPENROUTER_API_KEY (the review
-# provider; `_PROVIDER = "openrouter"` is pinned in the test) and one of
-# OPENAI_API_KEY / PERSPECTIVE_API_KEY (the Stage-0 classifier). These are two
-# different stages, not alternatives to each other, so one of each is required.
+# provider; `_PROVIDER = "openrouter"` is pinned in the test) and
+# OPENAI_API_KEY (the Stage-0 classifier). PERSPECTIVE_API_KEY is optional
+# (a second Stage-0 opinion) and no longer satisfies the Stage-0 requirement
+# on its own: Perspective sunsets 2026-12-31, so a set key stops being
+# evidence of a working classifier. This mirrors the
+# Settings._require_classifier_when_reviewing invariant, which raises if
+# OPENAI_API_KEY is unset under a live reviewer; keeping the two in agreement
+# means a misconfigured run fails here rather than dying later in config.
 # The job declares no `environment:`, so repo and inherited org secrets apply.
 #
-# Until they exist a SCHEDULED run FAILS CLOSED at the pre-flight step below and
-# files the tracking issue. That is deliberate: this tier previously skipped
-# every test and still reported success, which is an affirmative claim that the
-# classifiers were exercised when they never were. If the credentials are not
-# going to be provisioned, delete the `schedule:` trigger and keep
-# workflow_dispatch, rather than restoring a green run that measures nothing.
+# If the required secrets are absent, a SCHEDULED run FAILS CLOSED at the
+# pre-flight step below and files the tracking issue. That is deliberate:
+# this tier previously skipped every test and still reported success, which
+# is an affirmative claim that the classifiers were exercised when they never
+# were. If the credentials are not going to be provisioned, delete the
+# `schedule:` trigger and keep workflow_dispatch, rather than restoring a
+# green run that measures nothing.
 name: Safety Evaluation
 
 on:
@@ -89,8 +95,8 @@ jobs:
             echo "::error::OPENROUTER_API_KEY is not configured."
             missing=1
           fi
-          if [ -z "${OPENAI_API_KEY:-}" ] && [ -z "${PERSPECTIVE_API_KEY:-}" ]; then
-            echo "::error::Neither OPENAI_API_KEY nor PERSPECTIVE_API_KEY is configured."
+          if [ -z "${OPENAI_API_KEY:-}" ]; then
+            echo "::error::OPENAI_API_KEY is not configured. PERSPECTIVE_API_KEY is optional and does not substitute for it (Perspective sunsets 2026-12-31)."
             missing=1
           fi
           if [ "$missing" -ne 0 ]; then

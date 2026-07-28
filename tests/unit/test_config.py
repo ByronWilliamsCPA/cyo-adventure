@@ -352,6 +352,37 @@ class TestModerationReviewSettings:
         settings = Settings(review_provider="openrouter", openai_api_key="k")
         assert settings.review_provider == "openrouter"
 
+    @pytest.mark.unit
+    def test_non_mock_review_with_only_perspective_key_raises(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A Perspective-only deployment no longer satisfies the classifier gate.
+
+        Perspective sunsets 2026-12-31, after which the key still parses but the
+        API returns nothing. Counting it as a satisfying classifier would let a
+        live reviewer run over children's content with no working pre-filter.
+        """
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+        with pytest.raises(ConfigurationError):
+            Settings(review_provider="openrouter", perspective_api_key="k")
+
+    @pytest.mark.unit
+    def test_classifier_requirement_error_names_the_required_key(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The ConfigurationError names OPENAI_API_KEY so the fix is unambiguous."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+        monkeypatch.delenv("PERSPECTIVE_API_KEY", raising=False)
+        with pytest.raises(ConfigurationError) as excinfo:
+            Settings(review_provider="openrouter")
+        assert "OPENAI_API_KEY" in str(excinfo.value)
+
 
 class TestModalGenerationSettings:
     """Tests for the experimental Modal generation-leg settings (ADR-010)."""

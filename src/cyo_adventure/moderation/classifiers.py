@@ -30,6 +30,24 @@ _OPENAI_URL = "https://api.openai.com/v1/moderations"
 _OPENAI_MODEL = "omni-moderation-latest"
 _CLASSIFIER_TIMEOUT = 20.0
 
+# Perspective's endpoint and the exact attribute set this pipeline requests.
+# Public (not underscore-prefixed) so scripts/capture_stage0_baseline.py probes
+# the same endpoint and the same attributes the live gate does: a baseline taken
+# against a different attribute set would not be a baseline of this pipeline.
+#
+# #CRITICAL: security: the key goes in the x-goog-api-key header, never this URL's
+# query string. See the note in _run_perspective.
+PERSPECTIVE_URL = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze"
+PERSPECTIVE_ATTRIBUTES: tuple[str, ...] = (
+    "SEXUALLY_EXPLICIT",
+    "SEVERE_TOXICITY",
+    "THREAT",
+    "TOXICITY",
+    "PROFANITY",
+    "IDENTITY_ATTACK",
+    "INSULT",
+)
+
 # Graded scores below this floor are classifier noise, not signal: both APIs
 # return a nonzero float for every category on every call (observed ceiling on
 # clean children's prose ~6e-4), so without a floor every node emits every
@@ -517,19 +535,12 @@ async def _run_perspective(
     # query string. httpx.HTTPStatusError.__str__ embeds the request URL, so a keyed
     # URL would leak the credential into the perspective_failed log line on any 4xx/5xx.
     # #VERIFY: error=str(exc) below cannot contain the key because the URL is key-free.
-    url = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze"
     attributes: dict[str, dict[str, str]] = {
-        "SEXUALLY_EXPLICIT": {},
-        "SEVERE_TOXICITY": {},
-        "THREAT": {},
-        "TOXICITY": {},
-        "PROFANITY": {},
-        "IDENTITY_ATTACK": {},
-        "INSULT": {},
+        name: {} for name in PERSPECTIVE_ATTRIBUTES
     }
     try:
         response = await client.post(
-            url,
+            PERSPECTIVE_URL,
             headers={"x-goog-api-key": key},
             json={
                 "comment": {"text": prose},
