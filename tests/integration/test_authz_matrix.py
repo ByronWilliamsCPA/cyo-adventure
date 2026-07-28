@@ -123,6 +123,19 @@ def _storybook_path(seed: Seed) -> dict[str, str]:
     return {"storybook_id": seed.storybook_id}
 
 
+def _storybook_assignment_path(seed: Seed) -> dict[str, str]:
+    # The per-child unassign path carries BOTH ids. The profile id must be one
+    # the guardian actually owns: api/assignments.py::unassign_storybook runs
+    # authorize_profile after its guardian-only gate, so a random uuid would
+    # 403 the allowed role and make the matrix assert the wrong thing.
+    # seed.child_profile_id is family A's, matching seed.guardian_token, and
+    # matches what _assignment_body supplies to the POST twin.
+    return {
+        "storybook_id": seed.storybook_id,
+        "profile_id": str(seed.child_profile_id),
+    }
+
+
 def _storybook_version_path(seed: Seed) -> dict[str, str]:
     return {"storybook_id": seed.storybook_id, "version": str(seed.version)}
 
@@ -789,6 +802,12 @@ _ROUTE_SPECS: list[RouteSpec] = [
         json_body=_assignment_body,
     ),
     RouteSpec(
+        "DELETE",
+        "/api/v1/storybooks/{storybook_id}/assignments/{profile_id}",
+        frozenset({Role.GUARDIAN}),
+        path_params=_storybook_assignment_path,
+    ),
+    RouteSpec(
         "GET",
         "/api/v1/storybooks/{storybook_id}/assignments",
         frozenset({Role.GUARDIAN}),
@@ -1052,6 +1071,7 @@ _CROSS_FAMILY_ROUTE_KEYS: list[tuple[str, str]] = [
     ("POST", "/api/v1/completions"),
     ("GET", "/api/v1/storybooks/{storybook_id}/assignments"),
     ("POST", "/api/v1/storybooks/{storybook_id}/assignments"),
+    ("DELETE", "/api/v1/storybooks/{storybook_id}/assignments/{profile_id}"),
     ("GET", "/api/v1/storybooks/{storybook_id}/content-summary"),
     ("GET", "/api/v1/reading-history/{profile_id}"),
     ("PATCH", "/api/v1/storybooks/{storybook_id}/versions/{version}/nodes/{node_id}"),
@@ -1329,6 +1349,7 @@ _DEVICE_REJECTED_ROUTE_KEYS: list[tuple[str, str]] = [
     ("POST", "/api/v1/profiles"),
     ("PATCH", "/api/v1/profiles/{profile_id}"),
     ("POST", "/api/v1/storybooks/{storybook_id}/assignments"),
+    ("DELETE", "/api/v1/storybooks/{storybook_id}/assignments/{profile_id}"),
     # guardian-or-admin
     ("POST", "/api/v1/story-requests/authored"),
     ("POST", "/api/v1/child-sessions"),
