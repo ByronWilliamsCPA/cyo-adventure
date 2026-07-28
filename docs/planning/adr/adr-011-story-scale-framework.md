@@ -55,7 +55,9 @@ The empirical basis (recorded in `docs/planning/research/`):
   indegree 1.5). This anchors the 8-11 and 10-13 bands with high confidence.
 - The four-source reconciliation adds words/node (~100-150), total words (~8-15k at
   8-11), the age-gated fail-state policy, and the finding that many endings come from
-  **reconvergent leaves, not depth**.
+  **breadth, not depth** (many single-parent terminal nodes hung off a branchy spine,
+  not deeper paths; see the 2026-07-27 clarification in section 7 for the corrected
+  characterization of where reconvergence actually sits).
 - **5-8** node counts are measured (medium confidence); **13-16** rests on gamebook
   metadata; **3-5 and 16+ have no research** and are product-defined.
 
@@ -162,8 +164,13 @@ wpm (read aloud), 5-8 ~90, 8-11 ~120, 10-13 ~150, 13-16 ~190, 16+ ~220.
 ### 6. Constants (research-locked, all cells)
 
 Decisions per path **~4-8** (length adds breadth, not depth; do not inflate); choices
-per decision **2-3**; setup before first choice **~2-3 nodes**; endings via reconvergent
-leaves, scaling with node count (prose ~15-22%).
+per decision **2-3**; setup before first choice **~2-3 nodes**; endings as
+**predominantly single-parent terminals** scaling with node count (prose ~15-22%). The
+authoring target is single-parent, and the shipped corpus is close to it (54 of 61
+skeletons hold every ending at indegree 1; see the 2026-07-27 clarification), but it is a
+guideline rather than a gate. Reconvergence is an internal bottleneck/hub property
+governed per topology (section 7), not an ending property; see the 2026-07-27
+clarification.
 
 ### 7. Topologies (6) and flow primitives
 
@@ -205,6 +212,53 @@ referenced by "loops require state (tier 2)" above, which first apply at `8-11`
 `sorting_hat` costs `sort + N x (track arc)` nodes, so it buys replay diversity at a node
 premium and lives in Medium/Long cells, not Short; the table above annotates every band
 where it appears accordingly.
+
+#### Clarification (2026-07-27): reconvergence and endings
+
+Earlier drafts of this ADR described endings as coming from "reconvergent leaves." A
+measurement of the shipped skeleton corpus (61 skeletons) corrected that wording, and
+this note records the finding, how it lines up against the JHM "essentially a tree (max
+indegree 1.5)" anchor above, and the resulting enforcement stance.
+
+- **The JHM figure is a mean of per-book maxima, and we exceed it.** JHM's "max indegree
+  1.5 (range 1-3)" is the mean across books of each book's most-reconverged page, not a
+  hard ceiling. The like-for-like statistic on our corpus is the mean of each skeleton's
+  own maximum indegree, and that is **7.79** (median 4, range 1-126); only **25 of 61**
+  skeletons keep their busiest node inside JHM's 1-3 range. On that metric we do **not**
+  match JHM: our hub nodes are markedly more reconverged than the classic books', driven
+  by a handful of large `open_map` and bottleneck-heavy skeletons (the worst is a single
+  126-parent hub). Averaged over all 11,438 nodes the corpus is still tree-like, mean
+  indegree **1.17** (1.18 if the 58 indegree-0 roots are excluded), but that is a
+  different aggregate than JHM's and cannot be read as agreement with it. Earlier drafts
+  cited **1.21** here; that figure is not reproducible from the shipped corpus and is
+  superseded by the measured 1.17.
+- **Reconvergence is real but internal, not at endings.** 45 of 61 skeletons have at
+  least one reconvergent node, concentrated at bottleneck/hub nodes (a `branch_and_bottleneck`
+  is a bottleneck by construction). But **54 of 61 skeletons have every ending at indegree
+  exactly 1**; only 7 have any reconvergent ending, at a max of 4 parents. Endings are
+  single-parent terminals; the ~15-22% ending share is achieved by **breadth** (many
+  terminals off a branchy spine), the same mechanism as the genre, not by folding paths
+  into shared endings.
+- **Topology governs reconvergence; there is no per-band magnitude gate.** The validator
+  regulates reconvergence through PL-18 topology admissibility
+  (`validator/topology.py`), which splits on cycles first: a cyclic graph admits exactly
+  `loop_and_grow` and `open_map`, and an acyclic graph *with* reconvergence admits exactly
+  `branch_and_bottleneck` and `gauntlet` (`sorting_hat` is excluded there because it
+  forbids a cross-track bottleneck). An acyclic graph with no reconvergence at all is
+  `time_cave`, plus `gauntlet` when it is a pure linear spine or `sorting_hat` when it
+  branches; those are the pure-tree shapes. Note that `open_map` is
+  admissible only for cyclic graphs, so a DAG labelled `open_map` fails PL-18 whether or
+  not it reconverges. Kid bands lean on the pure-tree shapes. The per-band
+  Reconvergence column above ("minimal / light / moderate") is an **authoring guideline**,
+  not a gated magnitude. `BandProfile.reconvergence_ceiling` stays an intentionally optional
+  calibration dial: it is `None` for every band today and is read only by the mutation
+  operator, never by the validator gate. **Decision: keep it unset** unless a future
+  calibration shows kid-band skeletons drifting toward un-genre-like hub indegrees.
+- **Choices per decision (2-3) stays an authoring guideline, not a hard gate.** The PL-17
+  endings and decision floors already gate the two properties JHM tied to reader
+  satisfaction and sales; an outdegree ceiling is not added as a validator error. If
+  kid-band stories begin emitting overwhelming choice fans, revisit as an advisory finding
+  rather than a hard block.
 
 ### 8. Series (campaign continuity)
 
