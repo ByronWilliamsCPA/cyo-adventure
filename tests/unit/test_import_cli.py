@@ -167,6 +167,13 @@ def test_main_exits_0_on_success(tmp_path: Path) -> None:
     assert code == 0
 
 
+# mutation_deselect (this test and the two below): each `chdir`s into tmp_path so
+# the CLI resolves a relative story path, but mutmut's record_trampoline_hit
+# resolves its own relative source_paths ("src/cyo_adventure") with strict=True
+# against the current working directory on every mutated call, and raises
+# FileNotFoundError from inside mutmut once the CWD is no longer the repo root.
+# See the fuller note on TestLoadReferenceSkeleton in tests/unit/test_import_catalog.py.
+@pytest.mark.mutation_deselect
 def test_job_flag_makes_family_optional(tmp_path, monkeypatch) -> None:
     """--job resumes a parked job; --family is not required in that mode."""
     story_path = tmp_path / "story.json"
@@ -190,6 +197,7 @@ def test_job_flag_makes_family_optional(tmp_path, monkeypatch) -> None:
     assert "coro" in captured
 
 
+@pytest.mark.mutation_deselect
 def test_missing_family_and_job_is_an_error(tmp_path, monkeypatch) -> None:
     """Without --job, --family is still required."""
     story_path = tmp_path / "story.json"
@@ -201,6 +209,7 @@ def test_missing_family_and_job_is_an_error(tmp_path, monkeypatch) -> None:
     assert code == 1
 
 
+@pytest.mark.mutation_deselect
 def test_invalid_job_uuid_is_an_error(tmp_path, monkeypatch) -> None:
     """A malformed --job value exits 1 with a clear message, not a traceback."""
     story_path = tmp_path / "story.json"

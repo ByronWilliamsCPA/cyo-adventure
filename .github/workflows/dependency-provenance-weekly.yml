@@ -37,3 +37,14 @@ jobs:
     with:
       python-version: '3.14'
       open-issue: true
+      # The reusable workflow defaults to `uv sync --frozen --no-build`, which
+      # cannot install this project's editable root:
+      #   error: Distribution `cyo-adventure==X.Y.Z @ editable+.` can't be
+      #   installed because it is marked as `--no-build` but has no binary
+      #   distribution
+      # That killed the sync step, and with it the report, on every run since
+      # this workflow was added. `uv tree --invert` (the provenance tracer)
+      # needs a resolved environment, so opting out of --no-build is required
+      # rather than cosmetic. Same class of failure the mutation-testing.yml
+      # header records for the org python-mutation.yml workflow.
+      no-build: false

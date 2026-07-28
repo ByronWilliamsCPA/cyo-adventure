@@ -246,6 +246,151 @@ def test_prove_shell_missing_lineage_fails(
     assert any("missing lineage" in reason for reason in reasons)
 
 
+def test_prove_shell_unreadable_shell_reports_only_the_read_failure(
+    mutant: _MutantParts, tmp_path: Path
+) -> None:
+    """An unreadable shell reports its one real cause, not four derived ones.
+
+    check_skeleton, the theme contract, the lineage sidecar, and the parent hash
+    would every one of them also fail on a shell that will not parse. Reporting
+    all five buries the only actionable line under noise, so the prover returns
+    as soon as the read fails.
+    """
+    bundle = tmp_path / mutant.slug
+    _write_valid_bundle(bundle, mutant)
+    shell = bundle / f"{mutant.slug}.json"
+    shell.write_text("{ not valid json", encoding="utf-8")
+
+    reasons = cpb.prove_shell(shell, skeletons_root=_REAL_SKELETONS)
+
+    assert len(reasons) == 1
+    assert "shell could not be read" in reasons[0]
+
+
+# --------------------------------------------------------------------------- #
+# check_promotion_bundle: the seed / production-envelope split.
+#
+# Regression cover for the skeleton-promotion CI job, which failed on every run
+# it ever had. It passes the raw changed-file list of any PR touching
+# skeletons/**, and check_skeleton rejects a shell that declares
+# `metadata.production_eligible: false` unless --allow-mvp is supplied. Seeds
+# are merged catalog members, so any PR touching one failed unconditionally.
+# --------------------------------------------------------------------------- #
+
+
+@pytest.mark.parametrize(
+    ("shell_doc", "expected"),
+    [
+        pytest.param({"metadata": {"production_eligible": True}}, True, id="claims"),
+        pytest.param({"metadata": {"production_eligible": False}}, False, id="seed"),
+        # Every remaining case must report True so the caller applies the
+        # STRICTER envelope: a malformed shell must not be the cheap way past it.
+        pytest.param({"metadata": {}}, True, id="flag-absent"),
+        pytest.param({"metadata": "not-an-object"}, True, id="metadata-malformed"),
+        pytest.param({}, True, id="metadata-absent"),
+        pytest.param(None, True, id="shell-unreadable"),
+    ],
+)
+def test_declares_production_eligible_fails_closed(
+    shell_doc: dict[str, object] | None, *, expected: bool
+) -> None:
+    """Only an explicit `production_eligible: false` selects the seed envelope."""
+    assert cpb.declares_production_eligible(shell_doc) is expected
+
+
+def _catalog_seed_shells() -> list[Path]:
+    """Return every merged catalog shell that declares itself a seed.
+
+    Returns:
+        list[Path]: Every shell whose ``metadata.production_eligible`` is
+            explicitly ``False``, sorted by path.
+
+    Raises:
+        AssertionError: If the catalog holds no seed at all. pytest turns an
+            empty parametrize list into a single ``SKIPPED [NOTSET]``
+            placeholder, so both regressions below would report green while
+            asserting nothing. Fail loudly at collection instead of silently
+            losing the coverage.
+    """
+    seeds: list[Path] = []
+    for path in sorted(_REAL_SKELETONS.rglob("*.json")):
+        if path.name.endswith((".contract.json", ".lineage.json")):
+            continue
+        try:
+            doc = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        metadata = doc.get("metadata")
+        if isinstance(metadata, dict) and metadata.get("production_eligible") is False:
+            seeds.append(path)
+    if not seeds:
+        msg = (
+            f"No seed shell (metadata.production_eligible=false) found under "
+            f"{_REAL_SKELETONS}; both prove_shell seed regressions would "
+            f"vacuously pass on an empty parametrize list."
+        )
+        raise AssertionError(msg)
+    return seeds
+
+
+# Discovered once and shared by both parametrizations below: two independent
+# calls could disagree, leaving the pair testing different shells.
+_CATALOG_SEED_SHELLS = _catalog_seed_shells()
+
+
+@pytest.mark.parametrize(
+    "seed_shell", _CATALOG_SEED_SHELLS, ids=lambda path: str(path.stem)
+)
+def test_prove_shell_real_catalog_seed_proves_clean(seed_shell: Path) -> None:
+    """Every seed already merged into skeletons/ passes the promotion prover.
+
+    This is the exact input the CI job builds from a PR's changed-file list. It
+    reproduced as `check_skeleton (gate/cell/envelope) failed` for
+    the-lost-mitten, the-clocktower-cipher, and the-sunken-signal.
+    """
+    reasons = cpb.prove_shell(seed_shell, skeletons_root=_REAL_SKELETONS)
+
+    assert reasons == []
+
+
+@pytest.mark.parametrize(
+    "seed_shell", _CATALOG_SEED_SHELLS, ids=lambda path: str(path.stem)
+)
+def test_prove_shell_seed_still_faces_the_blocking_gate(
+    seed_shell: Path, tmp_path: Path
+) -> None:
+    """--allow-mvp relaxes ONLY the eligibility clause, never the blocking gate.
+
+    Guards the obvious misreading of the fix: "prove seeds as seeds" must not
+    decay into "skip seeds". A real seed is copied out of the catalog with a
+    dangling `start_node`, which breaks reachability, and must still be caught.
+
+    Note the shell is copied rather than synthesised by flipping a production
+    shell's flag: an MVP shell is gated against a band-independent node
+    envelope (MVP_MIN_NODES..MVP_MAX_NODES, 8..45, defined in
+    validator.band_profile.mvp_node_budget and applied through load_skeleton's
+    layer-1 pass), so a 93-node production shell with the flag flipped fails
+    for an unrelated reason and would prove nothing about this behaviour.
+    Do not cite generation.skeleton.is_production_eligible for the envelope:
+    that predicate is only `production_eligible is not False` and holds no
+    node-count logic.
+    """
+    broken = tmp_path / seed_shell.name
+    doc = json.loads(seed_shell.read_text(encoding="utf-8"))
+    doc["start_node"] = "n_does_not_exist"
+    broken.write_text(json.dumps(doc), encoding="utf-8")
+    for sidecar_suffix in (".lineage.json", ".contract.json"):
+        sidecar = seed_shell.with_name(f"{seed_shell.stem}{sidecar_suffix}")
+        if sidecar.is_file():
+            (tmp_path / sidecar.name).write_text(
+                sidecar.read_text(encoding="utf-8"), encoding="utf-8"
+            )
+
+    reasons = cpb.prove_shell(broken, skeletons_root=_REAL_SKELETONS)
+
+    assert any("check_skeleton" in reason for reason in reasons)
+
+
 # --------------------------------------------------------------------------- #
 # prepare_promotion_pr: refusals, dry run, and the worktree sandbox.
 # --------------------------------------------------------------------------- #

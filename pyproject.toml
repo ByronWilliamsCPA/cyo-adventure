@@ -837,6 +837,27 @@ pytest_add_cli_args = [
     "not mutation_deselect",
 ]
 also_copy = [
+    # #CRITICAL: external resources: every repo-root directory the unit suite
+    # imports must be listed here. mutmut re-runs `tests/unit` from inside the
+    # generated `mutants/` tree, so a directory absent from also_copy simply is
+    # not there, and pytest's `pythonpath = [".", "src"]` then resolves against
+    # a tree that is missing it. The failure is a collection-time
+    # ModuleNotFoundError under `-x`, which aborts the run before a single
+    # mutant is scored: every run since 2026-06-28 died this way, first on
+    # `fuzz` and then, once that was added, on `tools`.
+    # #VERIFY: `uv run mutmut run` must reach the mutant-scoring phase, not
+    # "failed to collect stats". To re-derive the list after adding a test that
+    # imports a new root package:
+    #   grep -rhoP '^\s*(?:from|import)\s+\K[a-z_][a-z0-9_]*' tests/unit/*.py \
+    #     | sort -u | while read -r m; do [ -e "$m" ] && echo "$m"; done
+    # (`tests/` itself is copied by mutmut and needs no entry.)
+    #
+    # fuzz/  -> tests/unit/test_fuzz_harnesses.py; exercises the condition
+    #           evaluator and storybook validation, both inside only_mutate, so
+    #           these are real mutant killers rather than dead weight here.
+    # tools/ -> tests/unit/test_generate_diagram_svgs.py.
+    "fuzz/",
+    "tools/",
     "schema/",
     "skeletons/",
     "configs/",
