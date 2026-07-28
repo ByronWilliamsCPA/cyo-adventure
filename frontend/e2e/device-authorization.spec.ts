@@ -110,6 +110,43 @@ test.describe('guardian console "This device" (ADR-014)', () => {
       deviceSection.getByRole('button', { name: 'Set up this device for your kids' })
     ).toBeVisible()
   })
+
+  test('hand device to a child signs the guardian out before landing on the picker', async ({
+    page,
+    context,
+  }) => {
+    // Same console entry as the roundtrip above, but this time drive the
+    // "Hand device to a child" button itself (ConsolePage.tsx's
+    // handDeviceToChild, ~lines 116-121): the #CRITICAL sign-out-before-handoff
+    // that stops a child from inheriting the family's guardian bearer (the
+    // PR #247 regression class). The authorize-device login flow above already
+    // covers the same guardian-bearer-clear assertion for a DIFFERENT code
+    // path (LoginPage's authorize-device effect); this test is the one that
+    // actually clicks the console button.
+    await seedGuardianSession(context)
+    await mockMe(page)
+    await mockEmptyConsole(page)
+    await mockDeviceGrants(page)
+
+    await page.goto('/guardian')
+    await expect(page.getByRole('heading', { name: 'Family console' })).toBeVisible()
+
+    const deviceSection = page.getByRole('region', { name: 'Device setup' })
+    await deviceSection.getByRole('button', { name: 'Set up this device for your kids' }).click()
+    await expect(
+      deviceSection.getByRole('button', { name: 'Hand device to a child' })
+    ).toBeVisible()
+
+    await deviceSection.getByRole('button', { name: 'Hand device to a child' }).click()
+
+    // #CRITICAL: security: the guardian bearer ('auth_token') must be cleared
+    // the instant the button is clicked, before the child ever sees a kid
+    // route. #VERIFY: fails the moment a regression re-leaks the session.
+    await expect
+      .poll(() => page.evaluate(() => window.localStorage.getItem('auth_token')))
+      .toBeNull()
+    await expect(page).toHaveURL('/kids')
+  })
 })
 
 test.describe('cold adult step-up (ADR-014 Phase 5 single boundary)', () => {

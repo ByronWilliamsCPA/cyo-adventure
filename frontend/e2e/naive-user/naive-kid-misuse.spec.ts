@@ -89,6 +89,270 @@ test.describe('double-submitting a story request', () => {
   })
 })
 
+// F-5: a naive kid's request can genuinely go offline mid-send, not just
+// hit the server-side 5-pending cap (already covered by the real-tier
+// mashing test). A transport failure (route.abort(), the same OfflineError
+// path a real outage throws; see readerApi.ts/classifyApiError.ts) must
+// leave a recoverable form, not a stuck "Sending…" button or a lost idea.
+test.describe('offline mid-request', () => {
+  test.beforeEach(async ({ context, page }) => {
+    await context.addInitScript(() => {
+      window.localStorage.setItem('auth_token', 'child-fox')
+    })
+    // ADR-014: an authorized device (grant present) so the kid surface renders.
+    await seedDeviceGrant(context)
+    await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: PROFILES }))
+  })
+
+  test('a transport failure while sending shows a recoverable error, not a stuck form', async ({
+    page,
+  }) => {
+    await page.route('**/api/v1/library*', (route) => route.fulfill({ json: { stories: [] } }))
+    let requests: Array<{ id: string; status: string }> = []
+    await page.route('**/api/v1/story-requests?profile_id=p1', (route) =>
+      route.fulfill({ json: { requests } })
+    )
+
+    let mode: 'offline' | 'online' = 'offline'
+    let createCalls = 0
+    // Only POST create requests reach this bare-path pattern (the list GET
+    // above always carries a `?profile_id=` query string); see
+    // story-requests-kid.spec.ts's identical comment on this convention.
+    await page.route('**/api/v1/story-requests', (route) => {
+      createCalls += 1
+      if (mode === 'offline') {
+        return route.abort('internetdisconnected')
+      }
+      requests = [{ id: 'req-1', status: 'pending' }]
+      return route.fulfill({ json: { id: 'req-1', status: 'pending' } })
+    })
+
+    await page.goto('/library/p1')
+    await page.getByRole('button', { name: 'Request a story' }).click()
+    await page
+      .getByLabel('What should your story be about?')
+      .fill('A brave fox who solves mysteries')
+    const sendButton = page.getByRole('button', { name: /^send$/i })
+    await sendButton.click()
+
+    await expect(page.getByText('Something went wrong. Try again!')).toBeVisible()
+    await expect(sendButton).toBeEnabled()
+    // The idea survives the failure so the kid can just retry, not retype it.
+    await expect(page.getByLabel('What should your story be about?')).toHaveValue(
+      'A brave fox who solves mysteries'
+    )
+
+    // Recovery: the same tap succeeds once the network is back.
+    mode = 'online'
+    await sendButton.click()
+    await expect(page.getByText('Waiting for a grown-up to say yes')).toBeVisible()
+    expect(createCalls).toBe(2)
+  })
+})
+
+// F-5: an anchored "ask for the next book" request can land after the
+// anchor storybook stopped being a valid continuation target (404/422); the
+// form must surface a distinct message and clear the anchor so a retry sends
+// a plain (anchor-less) request instead of repeating the same failure.
+test.describe('stale continuation anchor', () => {
+  test.beforeEach(async ({ context, page }) => {
+    await context.addInitScript(() => {
+      window.localStorage.setItem('auth_token', 'child-fox')
+    })
+    await seedDeviceGrant(context)
+    await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: PROFILES }))
+  })
+
+  test('a stale anchor shows the anchor error and clears so a retry sends a fresh request', async ({
+    page,
+  }) => {
+    const stories = {
+      stories: [
+        {
+          id: 's1',
+          title: 'The Lantern',
+          version: 2,
+          age_band: '6-8',
+          tier: 1,
+          reading_level_target: 2,
+          node_count: 10,
+          rating: null,
+          progress: null,
+          series_id: 'ser-1',
+          book_index: 1,
+        },
+      ],
+    }
+    await page.route('**/api/v1/library*', (route) => route.fulfill({ json: stories }))
+    let requests: Array<{ id: string; status: string }> = []
+    await page.route('**/api/v1/story-requests?profile_id=p1', (route) =>
+      route.fulfill({ json: { requests } })
+    )
+
+    let mode: 'stale' | 'recovered' = 'stale'
+    let createCalls = 0
+    let createBody: unknown = null
+    await page.route('**/api/v1/story-requests', (route) => {
+      createCalls += 1
+      createBody = route.request().postDataJSON()
+      if (mode === 'stale') {
+        // The anchor storybook is no longer a valid continuation target by
+        // the time the request lands (RequestStory.tsx's isStaleAnchor check).
+        return route.fulfill({ status: 404, json: { detail: 'not found' } })
+      }
+      requests = [{ id: 'req-1', status: 'pending' }]
+      return route.fulfill({ json: { id: 'req-1', status: 'pending' } })
+    })
+
+    await page.goto('/library/p1')
+    const shelf = page.getByRole('region', { name: 'More to Explore' })
+    await shelf.getByRole('button', { name: 'Ask for the next book' }).click()
+    await expect(page.getByText('Continuing: The Lantern')).toBeVisible()
+    await page.getByLabel('What should your story be about?').fill('More lantern adventures')
+    await page.getByRole('button', { name: /^send$/i }).click()
+
+    await expect.poll(() => createCalls).toBe(1)
+    expect(createBody).toEqual({
+      profile_id: 'p1',
+      request_text: 'More lantern adventures',
+      anchor_storybook_id: 's1',
+    })
+    await expect(
+      page.getByText("That story can't be continued right now. Pick another one, or send a new idea!")
+    ).toBeVisible()
+    // The anchor is cleared: the "Continuing: ..." banner is gone and the
+    // ordinary series-name field is back, so a retry cannot repeat the same
+    // stale anchor.
+    await expect(page.getByText('Continuing: The Lantern')).toHaveCount(0)
+    await expect(
+      page.getByLabel('Part of a series? Give it a name! (optional)')
+    ).toBeVisible()
+
+    // Retry: the same idea (untouched by the failure) now sends as a plain,
+    // anchor-less request.
+    mode = 'recovered'
+    await page.getByRole('button', { name: /^send$/i }).click()
+    await expect.poll(() => createCalls).toBe(2)
+    expect(createBody).toEqual({
+      profile_id: 'p1',
+      request_text: 'More lantern adventures',
+    })
+    await expect(page.getByText('Waiting for a grown-up to say yes')).toBeVisible()
+  })
+})
+
+// F-5 / F-6a: hardware/OS back on the kid surface. Neither an open request
+// form nor an in-progress reader session should leave the browser's own back
+// button producing a dead end or a broken page; a bfcache restore can hand
+// back a frozen pre-navigation snapshot, so each case forces a real remount
+// (page.reload()) after goBack/goForward, mirroring the admin "browser back
+// after a successful approve" test's own bfcache handling in
+// naive-misuse-shared.spec.ts.
+test.describe('hardware back button', () => {
+  test.beforeEach(async ({ context, page }) => {
+    await context.addInitScript(() => {
+      window.localStorage.setItem('auth_token', 'child-fox')
+    })
+    await seedDeviceGrant(context)
+    await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: PROFILES }))
+  })
+
+  test('pressing back with the request form open returns to the picker, not a broken page (F-5)', async ({
+    page,
+  }) => {
+    await page.route('**/api/v1/library*', (route) => route.fulfill({ json: { stories: [] } }))
+    await page.route('**/api/v1/story-requests?profile_id=p1', (route) =>
+      route.fulfill({ json: { requests: [] } })
+    )
+
+    await page.goto('/kids')
+    await page.getByRole('link', { name: 'Remy' }).click()
+    await expect(page).toHaveURL('/library/p1')
+    await page.getByRole('button', { name: 'Request a story' }).click()
+    await page.getByLabel('What should your story be about?').fill('A brave fox')
+
+    await page.goBack()
+    await expect(page).toHaveURL(/\/kids$/)
+    await page.reload()
+
+    // Graceful: the form's open client state is simply discarded by the
+    // navigation, not a broken or half-rendered page; the picker still works.
+    await expect(page.getByRole('link', { name: 'Remy' })).toBeVisible()
+
+    // Forward again remounts a fresh library page: no leftover open form or
+    // stale error survives the round trip.
+    await page.goForward()
+    await expect(page).toHaveURL('/library/p1')
+    await page.reload()
+    await expect(page.getByRole('button', { name: 'Request a story' })).toBeVisible()
+    await expect(page.getByLabel('What should your story be about?')).toHaveCount(0)
+  })
+
+  test('pressing back mid-reading returns to the library, not a stuck reader (F-6a)', async ({
+    page,
+  }) => {
+    const stories = {
+      stories: [
+        {
+          id: 's_lantern_cave',
+          title: 'The Lantern Cave',
+          version: 1,
+          age_band: '6-8',
+          tier: 1,
+          reading_level_target: 2,
+          node_count: 6,
+          rating: null,
+          progress: null,
+        },
+      ],
+    }
+    await page.route('**/api/v1/library*', (route) => route.fulfill({ json: stories }))
+    await page.route('**/api/v1/storybooks/**', (route) => route.fulfill({ json: lantern }))
+    await page.route('**/api/v1/reading-state/**', (route) => {
+      if (route.request().method() === 'GET') {
+        return route.fulfill({ status: 404, json: { error: 'not found' } })
+      }
+      return route.fulfill({
+        status: 200,
+        json: {
+          current_node: 'n_entrance',
+          var_state: {},
+          path: ['n_entrance'],
+          visit_set: ['n_entrance'],
+          version: 1,
+          state_revision: 1,
+          save_slots: {},
+        },
+      })
+    })
+
+    await page.goto('/kids')
+    await page.getByRole('link', { name: 'Remy' }).click()
+    await expect(page).toHaveURL('/library/p1')
+    await page.getByRole('link', { name: /the lantern cave/i }).click()
+    await expect(page).toHaveURL(/\/read\/p1\/s_lantern_cave\/1$/)
+    await expect(page.getByTestId('reader')).toBeVisible()
+    await page.getByTestId('choice-c_take_lantern').click()
+    await expect(page.getByTestId('passage-body')).toContainText('The cave splits.')
+
+    await page.goBack()
+    await expect(page).toHaveURL(/\/library\/p1$/)
+    await page.reload()
+
+    // Graceful recovery: no dead end, and never the "Hmm, that page got
+    // stuck." error screen; the browser's own back lands on the library.
+    await expect(page.locator('.reader-error')).toHaveCount(0)
+    await expect(page.getByRole('link', { name: /the lantern cave/i })).toBeVisible()
+
+    // Forward again reopens the reader cleanly, not stuck on the error state.
+    await page.goForward()
+    await expect(page).toHaveURL(/\/read\/p1\/s_lantern_cave\/1$/)
+    await page.reload()
+    await expect(page.getByTestId('reader')).toBeVisible()
+    await expect(page.locator('.reader-error')).toHaveCount(0)
+  })
+})
+
 test.describe('refresh mid-reader', () => {
   test.beforeEach(async ({ context }) => {
     await context.addInitScript(() => {

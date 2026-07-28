@@ -62,7 +62,9 @@ describe('FlagButton (K15)', () => {
     })
 
     it('submits the picked reason with profile/storybook/version/node and shows the confirmation', async () => {
-      const submitFlag = vi.fn<SubmitFlagMock>().mockResolvedValue({ id: 'flag1', reason: 'scared_me' })
+      const submitFlag = vi
+        .fn<SubmitFlagMock>()
+        .mockResolvedValue({ id: 'flag1', reason: 'scared_me' })
       renderFlagButton(submitFlag)
       fireEvent.click(screen.getByRole('button', { name: /tell a grown-up/i }))
       fireEvent.click(screen.getByRole('button', { name: /^it scared me$/i }))
@@ -124,6 +126,97 @@ describe('FlagButton (K15)', () => {
         expect.anything()
       )
       expect(consoleError.mock.calls[0]?.[0]).toContain('did_not_like')
+    })
+
+    describe('reason icons and speech (P-5 pre-reader accessibility)', () => {
+      class MockUtterance {
+        text: string
+        onend: (() => void) | null = null
+        onerror: (() => void) | null = null
+        constructor(text: string) {
+          this.text = text
+        }
+      }
+
+      const speakMock = vi.fn()
+      const cancelMock = vi.fn()
+
+      beforeEach(() => {
+        speakMock.mockReset()
+        cancelMock.mockReset()
+        vi.stubGlobal('speechSynthesis', { speak: speakMock, cancel: cancelMock })
+        vi.stubGlobal('SpeechSynthesisUtterance', MockUtterance)
+      })
+
+      afterEach(() => {
+        vi.unstubAllGlobals()
+      })
+
+      it('renders a recognizable icon for each reason alongside its text label', () => {
+        renderFlagButton(vi.fn<SubmitFlagMock>())
+        fireEvent.click(screen.getByRole('button', { name: /tell a grown-up/i }))
+        expect(screen.getByText('👎')).toBeInTheDocument()
+        expect(screen.getByText('😨')).toBeInTheDocument()
+        expect(screen.getByText('😕')).toBeInTheDocument()
+        // The icon is decorative; the accessible name is still the text label.
+        expect(screen.getByRole('button', { name: /^it scared me$/i })).toBeInTheDocument()
+      })
+
+      it("auto-announces the first reason when the dialog opens (Dialog's focus-trap moves focus to it)", () => {
+        renderFlagButton(vi.fn<SubmitFlagMock>())
+        fireEvent.click(screen.getByRole('button', { name: /tell a grown-up/i }))
+
+        expect(speakMock).toHaveBeenCalledTimes(1)
+        const utterance = speakMock.mock.calls[0][0] as MockUtterance
+        expect(utterance.text).toBe("I didn't like it")
+      })
+
+      it('speaks a reason label aloud when it gains keyboard focus', () => {
+        renderFlagButton(vi.fn<SubmitFlagMock>())
+        fireEvent.click(screen.getByRole('button', { name: /tell a grown-up/i }))
+        speakMock.mockClear() // discard the dialog-open auto-focus announcement
+        fireEvent.focus(screen.getByRole('button', { name: /^it scared me$/i }))
+
+        expect(speakMock).toHaveBeenCalledTimes(1)
+        const utterance = speakMock.mock.calls[0][0] as MockUtterance
+        expect(utterance.text).toBe('It scared me')
+      })
+
+      it('speaks a reason label aloud on hover', () => {
+        renderFlagButton(vi.fn<SubmitFlagMock>())
+        fireEvent.click(screen.getByRole('button', { name: /tell a grown-up/i }))
+        speakMock.mockClear() // discard the dialog-open auto-focus announcement
+        fireEvent.mouseEnter(screen.getByRole('button', { name: /^it was confusing$/i }))
+
+        expect(speakMock).toHaveBeenCalledTimes(1)
+        const utterance = speakMock.mock.calls[0][0] as MockUtterance
+        expect(utterance.text).toBe('It was confusing')
+      })
+
+      it('speaks a reason label aloud when tapped (activated)', () => {
+        const submitFlag = vi
+          .fn<SubmitFlagMock>()
+          .mockResolvedValue({ id: 'f1', reason: 'confusing' })
+        renderFlagButton(submitFlag)
+        fireEvent.click(screen.getByRole('button', { name: /tell a grown-up/i }))
+        speakMock.mockClear() // discard the dialog-open auto-focus announcement
+        fireEvent.click(screen.getByRole('button', { name: /^it was confusing$/i }))
+
+        expect(speakMock).toHaveBeenCalled()
+        const utterance = speakMock.mock.calls[0][0] as MockUtterance
+        expect(utterance.text).toBe('It was confusing')
+      })
+
+      it('gracefully renders and submits with no speech when speechSynthesis is unsupported', () => {
+        vi.unstubAllGlobals()
+        const submitFlag = vi
+          .fn<SubmitFlagMock>()
+          .mockResolvedValue({ id: 'f1', reason: 'scared_me' })
+        renderFlagButton(submitFlag)
+        fireEvent.click(screen.getByRole('button', { name: /tell a grown-up/i }))
+        fireEvent.click(screen.getByRole('button', { name: /^it scared me$/i }))
+        expect(submitFlag).toHaveBeenCalled()
+      })
     })
 
     it('Cancel closes the dialog without submitting', () => {

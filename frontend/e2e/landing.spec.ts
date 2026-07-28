@@ -43,3 +43,18 @@ test('landing kid door routes through guardian login when the device is not auth
   const kidsDoor = page.getByRole('link', { name: /kids/i })
   await expect(kidsDoor).toHaveAttribute('href', '/guardian/login?intent=authorize-device')
 })
+
+// P-6e: the Kids/Grown-ups doors both assume an existing account; a
+// brand-new visitor previously had no affordance at all. This proves the new
+// "Get started" link reaches the real ordinary guardian login page (where
+// "Continue with Google/Apple" is the actual self-signup mechanism), not
+// just that the href string looks right.
+test('a new visitor follows "Get started" straight to guardian sign-in', async ({ page }) => {
+  await page.goto('/')
+
+  await expect(page.getByText(/new here\?/i)).toBeVisible()
+  await page.getByRole('link', { name: /get started/i }).click()
+
+  await expect(page).toHaveURL('/guardian/login')
+  await expect(page.getByRole('heading', { name: 'Guardian sign-in' })).toBeVisible()
+})

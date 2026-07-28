@@ -117,3 +117,31 @@
     transform: none;
   }
 }
+
+/* P-6e: new-visitor affordance under the Kids/Grown-ups doors. Same
+   --color-ink-secondary as .landing__tagline on this page's
+   --color-parchment background: 8.81:1, computed with the standard WCAG
+   relative-luminance formula (well over the 4.5:1 AA text minimum;
+   .claude/skills/frontend-design/scripts/wcag-contrast.py was not present
+   in this environment, so the ratio was computed by hand with the same
+   formula the script implements). */
+.landing__new-visitor {
+  margin: 0;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+/* --color-ink (15.05:1 on --color-parchment) plus an underline so the link
+   reads as interactive on its own, without relying on color alone. */
+.landing__new-visitor-link {
+  color: var(--color-ink, #2c1a0e);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+/* Same focus treatment as .landing-door:focus-visible; --color-amber-deep on
+   --color-parchment is 3.09:1, clearing the 3:1 AA minimum for a non-text
+   focus indicator. */
+.landing__new-visitor-link:focus-visible {
+  outline: 2px solid var(--color-amber-deep, #c17b2a);
+  outline-offset: 2px;
+}

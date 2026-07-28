@@ -228,9 +228,7 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
   }
 
   if (loadState.kind === 'loading') {
-    return (
-      <LoadingStatus>Loading request form…</LoadingStatus>
-    )
+    return <LoadingStatus>Loading request form…</LoadingStatus>
   }
   if (loadState.kind === 'error') {
     return (
@@ -248,10 +246,27 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
         if (canSubmit) void submit()
       }}
     >
-      <h3 className="request-form__heading">Request a story</h3>
+      {/* P-6b: this heading previously read "Request a story" in both
+          modes, duplicating IntakePage's own "Request a story" heading and
+          making the guardian console's two request surfaces read as the
+          same feature. The two surfaces are intentionally both kept (this
+          one authors a pre-approved request directly; IntakePage is the
+          fuller concept-authoring flow), so the fix is disambiguating
+          copy, not a merge. */}
+      <h3 className="request-form__heading">
+        {mode === 'guardian' ? 'Quick story request' : 'Request a story'}
+      </h3>
+      {mode === 'guardian' ? (
+        <p className="request-form__intro cyo-text-muted">
+          Already know what you want? Describe it here and it skips straight to being made, no
+          review needed.
+        </p>
+      ) : null}
       {result.kind === 'success' ? (
         <p role="status" className="request-form__notice">
-          Request approved and sent for authoring.
+          {mode === 'guardian'
+            ? "Sent! Your story is being made. You'll find it under Books once it's ready."
+            : 'Request approved. Story generation has started.'}
         </p>
       ) : null}
       {result.kind === 'blocked' ? (

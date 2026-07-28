@@ -133,6 +133,15 @@ export interface ProfilesApi {
   list(): Promise<ProfileView[]>
   create(body: ProfileCreateBody): Promise<ProfileView>
   update(id: string, body: ProfileUpdateBody): Promise<ProfileView>
+  /**
+   * P-6c: permanently deletes a child profile. Mirrors DELETE
+   * /v1/profiles/{id} (api/profiles.py's delete_profile), which cascades
+   * the child's reading state, completions, ratings, assignments, kid
+   * flags, and picker-PIN row server-side (GDPR Article 17 / COPPA 312.10);
+   * story requests are de-linked, not deleted. The backend has enforced
+   * this for a while; only the UI entry point was missing.
+   */
+  deleteProfile(id: string): Promise<void>
 }
 
 export function makeProfilesApi(api: AxiosInstance): ProfilesApi {
@@ -148,6 +157,9 @@ export function makeProfilesApi(api: AxiosInstance): ProfilesApi {
     async update(id: string, body: ProfileUpdateBody): Promise<ProfileView> {
       const res = await api.patch<ProfileView>(`/v1/profiles/${id}`, body)
       return res.data
+    },
+    async deleteProfile(id: string): Promise<void> {
+      await api.delete(`/v1/profiles/${id}`)
     },
   }
 }

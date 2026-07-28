@@ -182,6 +182,55 @@ _CANNED_STORY: dict[str, object] = {
 
 _CANNED_STORY_JSON: str = json.dumps(_CANNED_STORY)
 
+# ---------------------------------------------------------------------------
+# DEV/TEST-ONLY invalid fixture: a structurally broken Storybook the mock
+# provider serves when Settings.mock_story_fixture == "invalid". Its single
+# non-ending node has an empty ``choices`` list, which the deterministic
+# validator gate (validator/) flags as an ERROR-severity topology violation on
+# every attempt, so the full pipeline reaches a HARD-BLOCK / needs-review
+# outcome that no repair can rescue. This lets the crown-jewel full-pipeline
+# test drive the gate to BLOCK over the real HTTP path (review finding S-5).
+# The mock provider is forbidden outside local by the provider allowlist, so
+# this fixture never ships to a non-local environment.
+# ---------------------------------------------------------------------------
+_INVALID_STORY: dict[str, object] = {
+    "schema_version": "2.0",
+    "id": "s_bad_story",
+    "version": 1,
+    "title": "Bad Story",
+    "metadata": {
+        "age_band": "8-11",
+        "reading_level": {
+            "scheme": "flesch_kincaid",
+            "target": 3.0,
+            "tolerance": 1.0,
+        },
+        "tier": 1,
+        "themes": [],
+        "estimated_minutes": 5,
+        "ending_count": 1,
+        "topology": "branch_and_bottleneck",
+        "content_flags": {
+            "violence": "none",
+            "scariness": "none",
+            "peril": "none",
+        },
+    },
+    "variables": [],
+    "start_node": "n_start",
+    "nodes": [
+        # Non-ending node with NO choices: the gate blocks with an L1 error.
+        {
+            "id": "n_start",
+            "body": "You are stuck.",
+            "is_ending": False,
+            "choices": [],
+        }
+    ],
+}
+
+_INVALID_STORY_JSON: str = json.dumps(_INVALID_STORY)
+
 
 class GenerationProvider(Protocol):
     """Structural protocol for LLM completion backends.
@@ -590,7 +639,19 @@ def build_provider(
         # Queue enough copies for Stage A + Stage B + up to 3 repairs.
         # Extra copies are safe: MockProvider raises only if the queue is
         # exhausted before the pipeline finishes, not if there are leftovers.
-        return MockProvider(responses=[_CANNED_STORY_JSON] * 8)
+        #
+        # DEV/TEST-ONLY (review finding S-5): when mock_story_fixture is
+        # "invalid", serve the structurally broken fixture instead so the
+        # deterministic validator gate blocks the run to a HARD-BLOCK /
+        # needs-review outcome over the real HTTP path. "safe" (default) is a
+        # zero-behavior change. This branch is mock-only; no live provider is
+        # affected, and the allowlist already forbids mock outside local.
+        fixture = (
+            _INVALID_STORY_JSON
+            if settings.mock_story_fixture == "invalid"
+            else _CANNED_STORY_JSON
+        )
+        return MockProvider(responses=[fixture] * 8)
 
     if provider == "ollama":
         return build_ollama_leg(settings, model_override)

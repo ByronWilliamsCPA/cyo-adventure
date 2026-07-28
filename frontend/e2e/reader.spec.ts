@@ -190,6 +190,28 @@ test('shows the endings tracker on the ending screen once reading-history resolv
   )
 })
 
+test('Back to my books on the ending screen returns to the kid library (P-3)', async ({
+  page,
+}) => {
+  // KidShell/KidNav (mounted once /library/:profileId renders) fetches
+  // profiles unconditionally, same as library.spec.ts's beforeEach; the
+  // library shelf itself is empty here since only the navigation is under
+  // test, not the shelf contents.
+  await page.route('**/api/v1/profiles', (route) =>
+    route.fulfill({ json: { profiles: [{ id: 'child-a' }] } })
+  )
+  await page.route('**/api/v1/library*', (route) => route.fulfill({ json: { stories: [] } }))
+
+  await page.goto(READER_PATH)
+  await expect(page.getByTestId('reader')).toBeVisible()
+  await page.getByTestId('choice-c_take_lantern').click()
+  await page.getByTestId('choice-c_dark_passage').click()
+  await expect(page.getByTestId('ending-screen')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Back to my books' }).click()
+  await expect(page).toHaveURL(/\/library\/child-a$/)
+})
+
 test('resumes from server state when the local cache is empty (cross-device)', async ({
   page,
 }) => {

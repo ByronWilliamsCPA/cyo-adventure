@@ -104,3 +104,44 @@ test('turns on auto-approve with a monthly limit and sends both fields', async (
   await expect.poll(() => patched).not.toBeNull()
   expect(patched).toMatchObject({ request_auto_approve: true, monthly_request_envelope: 3 })
 })
+
+// P-6c: there was no UI at all to delete a child profile despite the backend
+// supporting it. The confirm dialog names the child and warns of permanence
+// before DELETE /v1/profiles/{id} fires; Cancel must be a true no-op.
+test('deletes a child profile after confirming, naming the child and warning it is permanent', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/families/me/budget', (route) =>
+    route.fulfill({ json: { quota: 5, spent_this_month: 0, remaining: 5, children: [] } })
+  )
+  let profiles = [READER_A]
+  let deleteRequests = 0
+  await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: { profiles } }))
+  await page.route('**/api/v1/profiles/p1', (route) => {
+    if (route.request().method() === 'DELETE') {
+      deleteRequests += 1
+      profiles = []
+      return route.fulfill({ status: 204, body: '' })
+    }
+    return route.fulfill({ json: READER_A })
+  })
+
+  await page.goto('/guardian/profiles')
+  await expect(page.getByText('Reader A')).toBeVisible()
+
+  // Cancel is a true no-op: no DELETE fires, the card stays.
+  await page.getByRole('button', { name: 'Delete Reader A' }).click()
+  await expect(page.getByRole('heading', { name: /delete reader a.?s profile/i })).toBeVisible()
+  await expect(page.getByText(/permanently deletes/i)).toBeVisible()
+  await page.getByRole('button', { name: 'Cancel' }).click()
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  expect(deleteRequests).toBe(0)
+  await expect(page.getByText('Reader A')).toBeVisible()
+
+  // Confirming fires the DELETE and removes the card.
+  await page.getByRole('button', { name: 'Delete Reader A' }).click()
+  await page.getByRole('button', { name: 'Delete profile' }).click()
+
+  await expect.poll(() => deleteRequests).toBe(1)
+  await expect(page.getByText('Reader A')).toHaveCount(0)
+})

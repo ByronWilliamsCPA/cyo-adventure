@@ -53,6 +53,19 @@ beforeEach(() => {
 
 describe('RequestStoryForm', () => {
   describe('guardian mode', () => {
+    // P-6b: this heading and intro previously duplicated IntakePage's own
+    // "Request a story" heading verbatim; guardian mode now gets distinct
+    // copy naming this as the quick, pre-approved path.
+    it('shows a distinct heading and intro instead of duplicating IntakePage\'s "Request a story"', async () => {
+      mockGuardianLoad()
+      render(<RequestStoryForm mode="guardian" />)
+      expect(
+        await screen.findByRole('heading', { name: /quick story request/i })
+      ).toBeInTheDocument()
+      expect(screen.queryByRole('heading', { name: /^request a story$/i })).not.toBeInTheDocument()
+      expect(screen.getByText(/skips straight to being made/i)).toBeInTheDocument()
+    })
+
     it('renders a child select from listProfiles with a "No specific child" option, and no family select', async () => {
       mockGuardianLoad()
       render(<RequestStoryForm mode="guardian" />)
@@ -152,9 +165,7 @@ describe('RequestStoryForm', () => {
           profile_id: 'child-a',
         })
       )
-      expect(await screen.findByRole('status')).toHaveTextContent(
-        /approved and sent for authoring/i
-      )
+      expect(await screen.findByRole('status')).toHaveTextContent(/you'll find it under books/i)
     })
 
     it('includes series_title in the body when a series title is entered', async () => {
@@ -210,9 +221,7 @@ describe('RequestStoryForm', () => {
       resolvePost({
         data: { id: 'req-1', status: 'approved', concept_id: 'concept-1' },
       })
-      expect(await screen.findByRole('status')).toHaveTextContent(
-        /approved and sent for authoring/i
-      )
+      expect(await screen.findByRole('status')).toHaveTextContent(/you'll find it under books/i)
     })
 
     it('shows the blocked notice instead of the success notice when the response status is blocked', async () => {
@@ -227,7 +236,7 @@ describe('RequestStoryForm', () => {
       fireEvent.change(screen.getByLabelText('Story length'), { target: { value: 'medium' } })
       fireEvent.click(screen.getByRole('button', { name: /send request/i }))
       expect(await screen.findByRole('alert')).toHaveTextContent(/did not pass/i)
-      expect(screen.queryByText(/approved and sent for authoring/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/you'll find it under books/i)).not.toBeInTheDocument()
     })
 
     it('shows a transient error alert and re-enables submit when the create call rejects', async () => {
@@ -252,6 +261,30 @@ describe('RequestStoryForm', () => {
   })
 
   describe('admin mode', () => {
+    // P-6b's disambiguation is guardian-console-specific (IntakePage has no
+    // admin counterpart to collide with); admin mode keeps the neutral
+    // default heading and success copy unchanged.
+    it('keeps the neutral heading and success copy (no guardian-specific disambiguation)', async () => {
+      mockAdminLoad()
+      mockPost.mockResolvedValue({
+        data: { id: 'req-2', status: 'approved', concept_id: 'concept-2' },
+      })
+      render(<RequestStoryForm mode="admin" />)
+      expect(await screen.findByRole('heading', { name: /^request a story$/i })).toBeInTheDocument()
+
+      fireEvent.change(screen.getByLabelText(/family/i), { target: { value: 'fam-a' } })
+      fireEvent.change(screen.getByLabelText(/what should the story be about/i), {
+        target: { value: 'A story about a brave fox' },
+      })
+      fireEvent.change(screen.getByLabelText('Age band'), { target: { value: '8-11' } })
+      fireEvent.change(screen.getByLabelText('Story length'), { target: { value: 'medium' } })
+      fireEvent.click(screen.getByRole('button', { name: /send request/i }))
+
+      expect(await screen.findByRole('status')).toHaveTextContent(
+        /request approved\. story generation has started\./i
+      )
+    })
+
     it('renders a required family select from listFamilies, no child select, and keeps submit disabled until a family is chosen', async () => {
       mockAdminLoad()
       mockPost.mockResolvedValue({

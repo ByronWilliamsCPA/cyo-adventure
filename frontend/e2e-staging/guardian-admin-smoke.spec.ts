@@ -27,7 +27,7 @@ test.describe('guardian console renders on staging', () => {
   for (const [path, heading] of [
     ['/guardian', 'Family console'],
     ['/guardian/intake', 'Request a story'],
-    ['/guardian/requests', 'Story requests'],
+    ['/guardian/requests', 'Requests from your kids'],
     ['/guardian/books', 'Books'],
     ['/guardian/profiles', 'Profiles'],
   ] as const) {

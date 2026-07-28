@@ -117,8 +117,14 @@ test.beforeEach(async ({ context }) => {
   // See file header #ASSUME: timing dependencies. Only the real-audio side
   // effect is stubbed; useReadAloud's speak()/stop() state machine, and every
   // component under test, run unmodified.
+  // F-3: also record what was actually handed to speak(), so the test below
+  // can assert the spoken text matches the real, live passage body rather
+  // than only checking the toggle's aria-pressed state.
   await context.addInitScript(() => {
-    window.speechSynthesis.speak = () => {}
+    ;(window as unknown as { __spokenTexts: string[] }).__spokenTexts = []
+    window.speechSynthesis.speak = (utterance: SpeechSynthesisUtterance) => {
+      ;(window as unknown as { __spokenTexts: string[] }).__spokenTexts.push(utterance.text)
+    }
   })
 })
 
@@ -168,6 +174,15 @@ test('a kid toggles real read-aloud on and off once the real tts_enabled flag is
   const stopToggle = page.getByRole('button', { name: 'Stop reading aloud' })
   await expect(stopToggle).toBeVisible()
   await expect(stopToggle).toHaveAttribute('aria-pressed', 'true')
+
+  // F-3: the spoken text must actually be the visible passage, not merely a
+  // toggle-state side effect of some other (possibly empty/fixed) call.
+  const normalize = (text: string) => text.replace(/\s+/g, ' ').trim()
+  const spokenTexts = await page.evaluate(
+    () => (window as unknown as { __spokenTexts: string[] }).__spokenTexts
+  )
+  expect(spokenTexts.length).toBeGreaterThan(0)
+  expect(normalize(spokenTexts[0])).toBe(normalize(passageText ?? ''))
 
   await stopToggle.click()
   const listenToggleAgain = page.getByRole('button', { name: 'Read this page aloud' })

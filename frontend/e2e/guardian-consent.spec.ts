@@ -144,3 +144,54 @@ test('guardian pending admin approval sees the awaiting-approval interstitial', 
     page.getByText('Your account is awaiting approval')
   ).toBeVisible()
 })
+
+// P-6d: the interstitial used to be a dead end (Sign out was the only way
+// off it); "Check again" re-resolves status from the current session without
+// a sign-out/sign-in round trip. This mocks /v1/onboarding as a mutable state
+// machine (same technique as mockConsentOnboarding above) so the test can
+// flip 'pending' -> 'active' mid-test and prove the manual recheck picks it
+// up, which component tests cannot reach for the same reason noted above.
+test('an awaiting-approval guardian rechecks manually via Check again and advances once approved', async ({
+  page,
+  context,
+}) => {
+  await seedGuardianSession(context)
+  let onboardingStatus: 'pending' | 'active' = 'pending'
+  await page.route('**/api/v1/onboarding', (route) =>
+    route.fulfill({
+      json: {
+        family_id: 'fam-1',
+        user_id: 'e2e-user',
+        role: 'guardian',
+        created: true,
+        status: onboardingStatus,
+        consent_recorded: true,
+      },
+    })
+  )
+  await mockMe(page)
+  await mockEmptyConsole(page)
+  await page.route('**/api/v1/story-requests**', (route) =>
+    route.fulfill({ json: { requests: [] } })
+  )
+  await page.route('**/api/v1/notifications**', (route) =>
+    route.fulfill({ json: { notifications: [], unread_count: 0 } })
+  )
+
+  await page.goto('/guardian/intake')
+  await expect(page).toHaveURL(/\/guardian\/awaiting-approval$/)
+  const checkAgain = page.getByRole('button', { name: 'Check again' })
+  await expect(checkAgain).toBeVisible()
+
+  // Still pending server-side: rechecking is a no-op, the guardian stays put.
+  await checkAgain.click()
+  await expect(page).toHaveURL(/\/guardian\/awaiting-approval$/)
+  await expect(page.getByRole('heading', { name: 'Almost there' })).toBeVisible()
+
+  // An admin approves the account server-side; the next manual recheck
+  // resolves straight to the family console, no sign-out/sign-in needed.
+  onboardingStatus = 'active'
+  await checkAgain.click()
+  await expect(page).toHaveURL(/\/guardian$/)
+  await expect(page.getByRole('heading', { name: 'Family console' })).toBeVisible()
+})

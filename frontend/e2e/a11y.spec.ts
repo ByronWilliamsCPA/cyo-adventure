@@ -208,7 +208,7 @@ test('the guardian requests page has no detectable accessibility violations', as
   // jobs fetch does on the intake page above.
   await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: { profiles: [] } }))
   await page.goto('/guardian/requests')
-  await expect(page.getByRole('heading', { name: 'Story requests' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Requests from your kids' })).toBeVisible()
   await assertNoViolations(page)
 })
 

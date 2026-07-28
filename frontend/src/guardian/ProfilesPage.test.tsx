@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -8,7 +8,8 @@ import { ProfilesPage } from './ProfilesPage'
 const mockGet = vi.fn()
 const mockPost = vi.fn()
 const mockPatch = vi.fn()
-const fakeApi = { get: mockGet, post: mockPost, patch: mockPatch }
+const mockDelete = vi.fn()
+const fakeApi = { get: mockGet, post: mockPost, patch: mockPatch, delete: mockDelete }
 vi.mock('../hooks/useApi', () => ({
   useApi: () => fakeApi,
 }))
@@ -51,6 +52,7 @@ beforeEach(() => {
   mockProfilesAndBudget([readerA])
   mockPost.mockReset()
   mockPatch.mockReset()
+  mockDelete.mockReset()
 })
 
 describe('ProfilesPage', () => {
@@ -231,5 +233,55 @@ describe('ProfilesPage', () => {
       screen.getByRole('checkbox', { name: /Auto-approve this child's requests/i })
     ).toBeChecked()
     expect(screen.getByLabelText(/Monthly auto-approve limit/i)).toHaveValue(3)
+  })
+
+  // P-6c: no UI existed to delete a profile despite the backend already
+  // supporting it (api/profiles.py's DELETE /v1/profiles/{id}). Delete is
+  // confirm-gated: Cancel must be a true no-op, and the confirm dialog must
+  // name the child so it cannot be mistaken for another one.
+  describe('deleting a profile', () => {
+    it('names the child in the confirm dialog and warns of permanence', async () => {
+      const user = userEvent.setup()
+      renderPage()
+      await user.click(await screen.findByRole('button', { name: /Delete Reader A/i }))
+      expect(
+        await screen.findByRole('heading', { name: /delete reader a.?s profile\??/i })
+      ).toBeInTheDocument()
+      expect(screen.getByText(/permanently deletes/i)).toBeInTheDocument()
+      expect(screen.getByText(/cannot be undone/i)).toBeInTheDocument()
+      expect(mockDelete).not.toHaveBeenCalled()
+    })
+
+    it('Cancel closes the dialog without calling the endpoint or changing the list', async () => {
+      const user = userEvent.setup()
+      renderPage()
+      await user.click(await screen.findByRole('button', { name: /Delete Reader A/i }))
+      await user.click(await screen.findByRole('button', { name: /^Cancel$/i }))
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+      expect(mockDelete).not.toHaveBeenCalled()
+      expect(screen.getByText('Reader A')).toBeInTheDocument()
+    })
+
+    it('confirming calls DELETE /v1/profiles/:id, closes the dialog, and removes the card', async () => {
+      const user = userEvent.setup()
+      mockDelete.mockResolvedValue({ data: undefined })
+      renderPage()
+      await user.click(await screen.findByRole('button', { name: /Delete Reader A/i }))
+      await user.click(await screen.findByRole('button', { name: /^Delete profile$/i }))
+      expect(mockDelete).toHaveBeenCalledWith('/v1/profiles/p1')
+      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+      expect(screen.queryByText('Reader A')).not.toBeInTheDocument()
+    })
+
+    it('shows an inline error and keeps the profile when the delete call fails', async () => {
+      const user = userEvent.setup()
+      mockDelete.mockRejectedValue(new Error('boom'))
+      renderPage()
+      await user.click(await screen.findByRole('button', { name: /Delete Reader A/i }))
+      await user.click(await screen.findByRole('button', { name: /^Delete profile$/i }))
+      expect(await screen.findByText(/could not delete this profile/i)).toBeInTheDocument()
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+      expect(screen.getByText('Reader A')).toBeInTheDocument()
+    })
   })
 })

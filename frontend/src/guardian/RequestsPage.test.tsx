@@ -106,6 +106,20 @@ beforeEach(() => {
 })
 
 describe('RequestsPage', () => {
+  // P-6b: disambiguates this surface (reviewing a child's own idea) from
+  // the sibling IntakePage surface (a guardian authoring a request from
+  // scratch), which previously shared the exact "Story requests" wording
+  // with no distinguishing copy.
+  it('shows a guardian-specific heading and intro distinguishing it from IntakePage', async () => {
+    renderPage()
+    expect(
+      await screen.findByRole('heading', { name: /requests from your kids/i })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(/review the story ideas your children have asked for/i)
+    ).toBeInTheDocument()
+  })
+
   it('renders pending rows with their request text', async () => {
     mockPending([DRAGON_REQUEST, FLAGGED_REQUEST])
     renderPage()
@@ -329,7 +343,9 @@ describe('RequestsPage', () => {
     })
     fireEvent.click(screen.getByRole('button', { name: 'Approve' }))
     expect(
-      await screen.findByText('Approved! The story is being made; track it under Story requests.')
+      await screen.findByText(
+        'Approved! Your story is in the queue and will be written soon. Track its progress under Requests from your kids.'
+      )
     ).toBeInTheDocument()
     expect(screen.getByTestId('toast')).toHaveClass('toast--success')
   })

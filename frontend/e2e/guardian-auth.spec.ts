@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test'
 
 import {
+  SUPABASE_SESSION_KEY,
   makeGuardianSession,
   mockEmptyConsole,
   mockMe,
   mockOnboarding,
-  seedGuardianSession,
 } from './support/auth'
 
 /**
@@ -89,8 +89,27 @@ test('wrong password shows the credentials error and stays on login', async ({ p
   await expect(page).toHaveURL(/\/guardian\/login$/)
 })
 
-test('sign-out returns to the login page and re-locks the console', async ({ page, context }) => {
-  await seedGuardianSession(context)
+test('sign-out returns to the login page and re-locks the console', async ({ page }) => {
+  // S-7(b) needs a genuine re-navigation to the protected console AFTER
+  // sign-out to prove the session was actually cleared, not just that
+  // sign-out changed the URL once. seedGuardianSession's context.addInitScript
+  // would replay on that later navigation too and silently re-plant the
+  // session, masking a real sign-out regression -- so this test seeds the
+  // session once via page.evaluate (a single localStorage write) instead of
+  // the context-level init script every other spec in this file uses.
+  await page.goto('/guardian/login')
+  await page.evaluate(
+    ([key, value, token]) => {
+      window.localStorage.setItem(key, value)
+      window.localStorage.setItem('auth_token', token)
+    },
+    [
+      SUPABASE_SESSION_KEY,
+      JSON.stringify(makeGuardianSession('e2e-guardian-token')),
+      'e2e-guardian-token',
+    ] as const
+  )
+  await mockOnboarding(page)
   await mockMe(page)
   await mockEmptyConsole(page)
   await page.route('**/auth/v1/logout**', (route) => route.fulfill({ status: 204, body: '' }))
@@ -100,4 +119,11 @@ test('sign-out returns to the login page and re-locks the console', async ({ pag
 
   await page.getByRole('button', { name: 'Sign out' }).click()
   await expect(page).toHaveURL(/\/guardian\/login$/)
+
+  // Re-navigate to the protected console and confirm ProtectedRoute re-gates
+  // it (redirects back to login) instead of rendering the console from a
+  // lingering session.
+  await page.goto('/guardian')
+  await expect(page).toHaveURL(/\/guardian\/login$/)
+  await expect(page.getByRole('heading', { name: 'Family console' })).not.toBeVisible()
 })

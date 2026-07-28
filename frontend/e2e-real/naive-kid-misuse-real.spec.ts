@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 import type { DeviceGrant } from '../src/auth/deviceGrant'
 
-import { authorizeDevice, requireBackend, revokeDevice } from './real-stack'
+import { authorizeDevice, BACKEND, requireBackend, revokeDevice } from './real-stack'
 
 /**
  * Real-API naive-child misuse: the button-mashing a small child actually does,
@@ -126,6 +126,57 @@ test('mashing "Send" on a story request creates exactly one request', async ({ p
       .getByText('Waiting for a grown-up to say yes')
       .or(page.getByText('You have lots of ideas waiting already!'))
   ).toBeVisible()
+  await expect(page.getByText('Something went wrong. Try again!')).toHaveCount(0)
+})
+
+// F-5: the "mashing" test above only checks friendly copy (busy OR pending),
+// tolerant of whichever the shared, order-independent real DB happens to be
+// in. This test instead drives the real 5-pending cap deterministically and
+// asserts the literal HTTP status the server returns, not just the copy the
+// component shows for it.
+//
+// #EDGE: data-integrity: this creates real story_request rows for the seeded
+// Dev Family via direct authenticated fetches (same 'dev-child' bearer the
+// UI already uses; ENVIRONMENT=local trusts it as the authn subject per
+// real-stack.ts). Like the "mashing" test's own single created row, these are
+// leaf-table rows scripts/reset_e2e_real_state.py deletes for the seed family
+// on the next full-suite reset; this file does not call resetRealState()
+// itself (see the file header's shared-DB, no-file-ordering note), so the
+// pre-fill loop below stops as soon as the server itself reports the cap,
+// tolerant of however many pending requests already exist rather than
+// assuming a starting count of 0.
+test('mashing "Send" once the 5-pending cap is hit returns an explicit 409', async ({ page }) => {
+  await openDevReaderLibrary(page)
+  const match = /\/library\/([^/?#]+)/.exec(page.url())
+  expect(match, 'could not extract the profile id from the library URL').toBeTruthy()
+  const profileId = (match as RegExpExecArray)[1]
+
+  // Drive the profile to the real cap directly. MAX_PENDING_PER_PROFILE is 5
+  // (story_requests/service.py), so at most 5 successful creates plus one
+  // 409 covers every possible starting count from 0 to 5 pending.
+  for (let i = 0; i < 6; i += 1) {
+    const preFillResponse = await fetch(`${BACKEND}/api/v1/story-requests`, {
+      method: 'POST',
+      headers: { Authorization: 'Bearer dev-child', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ profile_id: profileId, request_text: `cap-fill idea ${i}` }),
+      signal: AbortSignal.timeout(5000),
+    })
+    if (preFillResponse.status === 409) break
+  }
+
+  await page.getByRole('button', { name: 'Request a story' }).click()
+  await page.getByLabel('What should your story be about?').fill('One idea too many')
+
+  const responsePromise = page.waitForResponse(
+    (res) => res.request().method() === 'POST' && /\/v1\/story-requests(?:\?|$)/.test(res.url())
+  )
+  await page.getByRole('button', { name: /^send$/i }).click()
+  const response = await responsePromise
+
+  // The explicit, on-the-wire assertion F-5 calls for: the cap really is a
+  // real HTTP 409, not merely a component-level guess at friendly copy.
+  expect(response.status()).toBe(409)
+  await expect(page.getByText('You have lots of ideas waiting already!')).toBeVisible()
   await expect(page.getByText('Something went wrong. Try again!')).toHaveCount(0)
 })
 

@@ -188,6 +188,8 @@ class Settings(BaseSettings):
         database_url: Async SQLAlchemy connection URL for PostgreSQL.
         redis_url: Redis connection URL for the RQ task queue.
         generation_provider: Which LLM provider to use for story generation.
+        mock_story_fixture: DEV/TEST-ONLY selector for the mock provider's
+            canned fixture ("safe" default, or "invalid" to trip the gate).
     """
 
     model_config = SettingsConfigDict(
@@ -359,6 +361,33 @@ class Settings(BaseSettings):
     generation_provider: Literal[
         "mock", "anthropic", "ollama", "openrouter", "modal"
     ] = "mock"
+
+    # DEV/TEST-ONLY: which canned fixture the deterministic mock provider serves.
+    # "safe" (default) is the gate-clean canned story ("The Forest Path") the
+    # whole test/dev stack has always used, so the default is a zero-behavior
+    # change. "invalid" makes build_provider's mock branch queue a structurally
+    # broken Storybook that deterministically trips the validator gate to an
+    # ERROR-severity block, so the full pipeline can be driven to a
+    # HARD-BLOCK / needs-review outcome over the real HTTP path in local dev and
+    # E2E tests (closes review finding S-5). It has NO effect on any non-mock
+    # provider, and the mock provider is never selectable through the admin
+    # provider allowlist, so this stays dev/test-only and never weakens prod.
+    # #ASSUME: security: nothing rejects this setting, or
+    # generation_provider="mock" itself, at startup outside local; neither has a
+    # model_validator (unlike _reject_dev_database_url_outside_local below).
+    # Safety rests on deployment convention (production sets
+    # generation_provider="openrouter", see the note above) plus the DB
+    # allowlist never carrying a "mock" row (ALLOWLIST_PROVIDERS in
+    # generation/allowlist.py, mirrored by the
+    # ck_provider_model_allowlist_provider CHECK in db/models.py), so no admin
+    # can select it either. A deployed tier that set
+    # CYO_ADVENTURE_GENERATION_PROVIDER=mock would serve canned stories, and
+    # with "invalid" would hard-block every generation, raising no startup error.
+    # #VERIFY: if this must be enforced rather than conventional, add a
+    # model_validator rejecting generation_provider="mock" when environment is
+    # not "local", same shape as _require_oidc_config_outside_local below; until
+    # then, confirm each deployed .env sets an explicit non-mock provider.
+    mock_story_fixture: Literal["safe", "invalid"] = "safe"
 
     # Model ids are pinned in config, not code (ADR-003): a model swap is a
     # config change. OpenRouter rosters churn weekly, so pin first-party families

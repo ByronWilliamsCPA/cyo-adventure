@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -555,6 +555,7 @@ describe('Reader read-aloud (K7)', () => {
     text: string
     onend: (() => void) | null = null
     onerror: (() => void) | null = null
+    onboundary: ((event: { charIndex: number; name?: string }) => void) | null = null
     constructor(text: string) {
       this.text = text
     }
@@ -674,6 +675,35 @@ describe('Reader read-aloud (K7)', () => {
 
     unmount()
     expect(cancelMock).toHaveBeenCalled()
+  })
+
+  it('highlights the spoken word in the passage as onboundary events fire, and clears it once speech moves to the choices (P-5)', () => {
+    installSpeechSynthesis()
+    renderLantern(true)
+    fireEvent.click(screen.getByLabelText('Read this page aloud'))
+    const bodyUtterance = speakMock.mock.calls[0][0] as MockUtterance
+    expect(bodyUtterance.text).toBe('A lantern lies near the entrance.')
+
+    expect(document.querySelector('mark.cyo-passage__highlight')).toBeNull()
+
+    act(() => {
+      bodyUtterance.onboundary?.({ charIndex: 0, name: 'word' })
+    })
+    let mark = document.querySelector('mark.cyo-passage__highlight')
+    expect(mark).toHaveTextContent('A')
+
+    act(() => {
+      bodyUtterance.onboundary?.({ charIndex: 2, name: 'word' })
+    })
+    mark = document.querySelector('mark.cyo-passage__highlight')
+    expect(mark).toHaveTextContent('lantern')
+
+    // Moving on to "Your choices are: ..." clears the highlight: there is
+    // no rendered choice-list text in the passage to highlight against.
+    act(() => {
+      bodyUtterance.onend?.()
+    })
+    expect(document.querySelector('mark.cyo-passage__highlight')).toBeNull()
   })
 
   it('does not show the toggle on the corrupted-transition error screen', () => {

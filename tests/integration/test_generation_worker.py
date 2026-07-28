@@ -27,6 +27,7 @@ import pytest
 import pytest_asyncio
 from sqlalchemy import select
 
+from cyo_adventure.core.config import settings as app_settings
 from cyo_adventure.db.models import (
     ChildProfile,
     Concept,
@@ -39,7 +40,11 @@ from cyo_adventure.db.models import (
 from cyo_adventure.generation import worker as worker_module
 from cyo_adventure.generation.fidelity import parse_fill_directive
 from cyo_adventure.generation.orchestrator import GenerationOutcome
-from cyo_adventure.generation.provider import _CANNED_STORY_JSON, MockProvider
+from cyo_adventure.generation.provider import (
+    _CANNED_STORY_JSON,
+    _INVALID_STORY_JSON,
+    MockProvider,
+)
 from cyo_adventure.generation.skeleton import load_skeleton
 from cyo_adventure.generation.worker import run_generation_job
 
@@ -52,46 +57,12 @@ if TYPE_CHECKING:
 # Helpers
 # ---------------------------------------------------------------------------
 
-# A structurally invalid story JSON that fails the gate on every attempt.
+# The structurally invalid story JSON that fails the gate on every attempt now
+# lives in generation/provider.py as the shared ``_INVALID_STORY_JSON`` fixture
+# (imported above), so build_provider's mock branch can serve it over the real
+# HTTP path when Settings.mock_story_fixture == "invalid" (review finding S-5).
 # The gate requires 'nodes' to be non-empty and each non-ending node to have
-# choices; this dict has a non-ending node with no choices, which triggers L1.
-_INVALID_STORY_JSON = json.dumps(
-    {
-        "schema_version": "2.0",
-        "id": "s_bad_story",
-        "version": 1,
-        "title": "Bad Story",
-        "metadata": {
-            "age_band": "8-11",
-            "reading_level": {
-                "scheme": "flesch_kincaid",
-                "target": 3.0,
-                "tolerance": 1.0,
-            },
-            "tier": 1,
-            "themes": [],
-            "estimated_minutes": 5,
-            "ending_count": 1,
-            "topology": "branch_and_bottleneck",
-            "content_flags": {
-                "violence": "none",
-                "scariness": "none",
-                "peril": "none",
-            },
-        },
-        "variables": [],
-        "start_node": "n_start",
-        "nodes": [
-            # Non-ending node with NO choices: gate will block with L1 error.
-            {
-                "id": "n_start",
-                "body": "You are stuck.",
-                "is_ending": False,
-                "choices": [],  # invalid: must have at least one choice
-            }
-        ],
-    }
-)
+# choices; that fixture's single non-ending node has no choices, tripping L1.
 
 # A real, production skeleton library file (ADR-011). worker.py resolves the
 # authoring_metadata.skeleton_slug through Path("skeletons") / age_band / f"{slug}.json"
@@ -504,6 +475,96 @@ async def test_needs_review_run_creates_no_storybook_version(
             .where(Storybook.family_id == gen_seed["family_id"])
         )
         assert result.first() is None, "StorybookVersion must not be created"
+
+
+# ---------------------------------------------------------------------------
+# Test 5b (review finding S-5): the mock_story_fixture="invalid" setting drives
+# the SAME provider-resolution code path the HTTP POST .../generate uses (an
+# uninjected provider, resolved by build_provider) to a HARD-BLOCK outcome.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_mock_invalid_fixture_setting_blocks_over_build_provider(
+    sessions: async_sessionmaker[AsyncSession],
+    gen_seed: dict[str, object],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """S-5: with mock_story_fixture="invalid", the gate HARD-BLOCKS the run.
+
+    Unlike the other tests in this module, this one does NOT inject a provider.
+    It leaves ``provider=None`` so ``run_generation_job`` resolves the provider
+    through ``build_provider(_default_settings, ...)`` exactly as the RQ worker
+    does when it picks up a job created by ``POST /api/v1/concepts/{id}/generate``
+    (that endpoint creates a queued job with no authoring_metadata, so the
+    worker falls to the ``build_provider`` branch at worker.py:1918). Flipping
+    ``mock_story_fixture`` to "invalid" on the shared settings object is
+    therefore the only thing that differs from a normal mock run, and it is
+    enough to route the deterministic canned-fixture story into the validator
+    gate as an ERROR-severity block. The job must end needs_review/failed with
+    no Storybook: the story is NOT passed and can never be published.
+    """
+    # Mutate the SAME settings object worker.py imported as _default_settings;
+    # monkeypatch restores it after the test. This is the seam the real HTTP
+    # path reads, so the assertion below exercises production wiring, not a
+    # test-only injection.
+    monkeypatch.setattr(app_settings, "mock_story_fixture", "invalid")
+
+    job_id: uuid.UUID = gen_seed["job_id"]  # type: ignore[assignment]
+
+    await run_generation_job(
+        job_id,
+        provider=None,
+        session_factory=_make_session_factory(sessions),
+    )
+
+    async with sessions() as session:
+        job = await session.get(GenerationJob, job_id)
+        assert job is not None
+        assert job.status in {
+            "needs_review",
+            "failed",
+        }, f"Expected needs_review or failed, got {job.status}"
+        assert job.storybook_id is None, "Blocked story must not be persisted"
+
+        result = await session.execute(
+            select(StorybookVersion)
+            .join(Storybook, Storybook.id == StorybookVersion.storybook_id)
+            .where(Storybook.family_id == gen_seed["family_id"])
+        )
+        assert result.first() is None, "StorybookVersion must not be created"
+
+
+@pytest.mark.asyncio
+async def test_mock_safe_fixture_default_still_passes_over_build_provider(
+    sessions: async_sessionmaker[AsyncSession],
+    gen_seed: dict[str, object],
+) -> None:
+    """S-5 regression: the default "safe" fixture still yields the passing run.
+
+    Same uninjected-provider path as the test above (``provider=None`` ->
+    ``build_provider``), but with ``mock_story_fixture`` left at its "safe"
+    default. The gate-clean canned story must still pass and persist a real
+    Storybook + StorybookVersion, proving the S-5 hook is default-inert.
+    """
+    job_id: uuid.UUID = gen_seed["job_id"]  # type: ignore[assignment]
+
+    await run_generation_job(
+        job_id,
+        provider=None,
+        session_factory=_make_session_factory(sessions),
+    )
+
+    async with sessions() as session:
+        job = await session.get(GenerationJob, job_id)
+        assert job is not None
+        assert job.status == "passed", f"Expected passed, got {job.status}"
+        assert job.storybook_id is not None
+        assert job.version == 1
+
+        sv = await session.get(StorybookVersion, (job.storybook_id, 1))
+        assert sv is not None
+        assert sv.blob is not None
 
 
 # ---------------------------------------------------------------------------

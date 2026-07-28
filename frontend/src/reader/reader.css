@@ -214,6 +214,15 @@
   justify-content: flex-start;
 }
 
+/* P-5: a recognizable icon beside each reason's text, for a pre-reader who
+   cannot yet read the label itself. Decorative only (aria-hidden; the text
+   label is still the button's accessible name), sized to read clearly
+   without dominating the row. */
+.reader-flag-reason__icon {
+  font-size: var(--text-xl);
+  line-height: 1;
+}
+
 .reader-save-warning {
   margin: 0;
   padding: var(--space-2) var(--space-3);

@@ -51,9 +51,7 @@ const DECLINE_PREVIEW_MAX = 160
 
 function declinePreview(req: StoryRequestView): string {
   const text = req.request_text ?? 'Idea hidden by content check'
-  return text.length > DECLINE_PREVIEW_MAX
-    ? `${text.slice(0, DECLINE_PREVIEW_MAX)}…`
-    : text
+  return text.length > DECLINE_PREVIEW_MAX ? `${text.slice(0, DECLINE_PREVIEW_MAX)}…` : text
 }
 
 /**
@@ -73,7 +71,9 @@ function declinePreview(req: StoryRequestView): string {
  */
 export function StoryRequestQueue({
   scope,
-  approveSuccessMessage = 'Approved! The story is being made.',
+  approveSuccessMessage = 'Approved! The story is in the queue and will be written soon.',
+  heading = 'Story requests',
+  intro,
 }: {
   scope: StoryRequestQueueScope
   /**
@@ -83,6 +83,19 @@ export function StoryRequestQueue({
    * would be wrong on the admin cross-family queue.
    */
   approveSuccessMessage?: string
+  /**
+   * P-6b: the page heading, overridable per call site so the guardian
+   * console (reviewing a *child's* own ideas) reads differently from the
+   * admin cross-family console; the shared default stays neutral.
+   */
+  heading?: string
+  /**
+   * P-6b: an optional one-line explainer under the heading, disambiguating
+   * this surface from the sibling "request a story for your child" surface
+   * (IntakePage/RequestStoryForm). Omitted (not shown) by default so the
+   * admin queue, which has no such sibling-surface ambiguity, is unchanged.
+   */
+  intro?: string
 }) {
   const api = useApi()
   const { showToast } = useToast()
@@ -308,13 +321,23 @@ export function StoryRequestQueue({
     void decline(id)
   }
 
+  // P-6b: the heading + optional intro are shared across the three
+  // non-loading, non-error branches below so every caller's copy stays
+  // consistent regardless of which one renders.
+  const headingBlock = (
+    <>
+      <h1>{heading}</h1>
+      {intro !== undefined ? <p className="console__intro cyo-text-muted">{intro}</p> : null}
+    </>
+  )
+
   let content: ReactElement
   if (state.kind === 'loading') {
     content = <LoadingStatus>Loading story requests…</LoadingStatus>
   } else if (state.kind === 'forbidden') {
     content = (
       <section className="console">
-        <h1>Story requests</h1>
+        {headingBlock}
         <p className="console__notice cyo-text-muted">
           Story requests are reviewed by your family&apos;s safety reviewer.
         </p>
@@ -329,7 +352,7 @@ export function StoryRequestQueue({
   } else if (state.requests.length === 0) {
     content = (
       <section className="console">
-        <h1>Story requests</h1>
+        {headingBlock}
         <EmptyState
           title="No requests to review"
           description={
@@ -343,7 +366,7 @@ export function StoryRequestQueue({
   } else {
     content = (
       <section className="console">
-        <h1>Story requests</h1>
+        {headingBlock}
         <ul className="console-list">
           {state.requests.map((req) => {
             const isInFlight = pendingIds.has(req.id)

@@ -70,9 +70,9 @@ describe('AdminRequestsPage', () => {
 
   it('shows the neutral default approve toast, without the guardian tracking hint', async () => {
     // The cross-family queue passes no approveSuccessMessage prop, so the
-    // component's neutral default renders; the guardian-specific "track it
-    // under Story requests" hint would be wrong on this surface (covered in
-    // RequestsPage.test.tsx).
+    // component's neutral default renders; the guardian-specific "Track its
+    // progress under Requests from your kids" hint would be wrong on this
+    // cross-family surface (that hint is covered in RequestsPage.test.tsx).
     mockPost.mockResolvedValue({
       data: { id: 'r1', status: 'approved', concept_id: 'concept-1', job_id: 'job-1' },
     })
@@ -85,7 +85,9 @@ describe('AdminRequestsPage', () => {
       target: { value: 'medium' },
     })
     fireEvent.click(within(row).getByRole('button', { name: 'Approve' }))
-    expect(await screen.findByText('Approved! The story is being made.')).toBeInTheDocument()
-    expect(screen.queryByText(/track it under Story requests/)).not.toBeInTheDocument()
+    expect(
+      await screen.findByText('Approved! The story is in the queue and will be written soon.')
+    ).toBeInTheDocument()
+    expect(screen.queryByText(/Requests from your kids/)).not.toBeInTheDocument()
   })
 })

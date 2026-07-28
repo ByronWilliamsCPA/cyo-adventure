@@ -5,12 +5,7 @@ import type { ReactNode } from 'react'
 import type { MeResponse } from '../client/types.gen'
 import { useApi } from '../hooks/useApi'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
-import {
-  AuthContext,
-  type AuthContextValue,
-  type AuthError,
-  type AuthStatus,
-} from './authContext'
+import { AuthContext, type AuthContextValue, type AuthError, type AuthStatus } from './authContext'
 import { clearChildSession } from './childSession'
 import { CONSENT_POLICY_VERSION, makeOnboardingApi } from './onboardingApi'
 import { clearAdultGate, warmAdultGate } from './parentalGateState'
@@ -410,6 +405,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           policy_version: CONSENT_POLICY_VERSION,
           signer_name: signerName,
         })
+        const { data } = await supabase.auth.getSession()
+        await syncPrincipal(data.session)
+      },
+      // P-6d: same tail as recordConsent above, minus the onboarding submit:
+      // re-reads the current Supabase session and re-runs syncPrincipal's
+      // onboarding-then-me resolution. For a still-awaiting-approval
+      // guardian this correctly re-hits the same short-circuit that keeps
+      // GET /v1/me from ever being called (see 'awaiting-approval' doc on
+      // AuthStatus), so a recheck before approval is a harmless no-op that
+      // just leaves status unchanged.
+      // #VERIFY: AuthContext.test.tsx / GuardianAwaitingApprovalPage.test.tsx
+      // refreshStatus cases.
+      refreshStatus: async () => {
         const { data } = await supabase.auth.getSession()
         await syncPrincipal(data.session)
       },

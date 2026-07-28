@@ -136,6 +136,29 @@ relate to the Supabase project constraints.
   registered here rather than under a single journey. Intended for the nightly
   real-stack job (a worker must be started before it runs, or its poll deadline
   fails with an explicit worker-not-running message).
+- **Full generation pipeline, the BLOCKING direction (S-5)**:
+  `frontend/e2e-real/full-pipeline-negative-real.spec.ts`: the negative twin of
+  the spec above. Where `full-pipeline-real.spec.ts` proves the gate *passing*
+  on the gate-clean canned story, this one drives the same real
+  request -> generate -> gate path to a HARD BLOCK: a guardian `POST
+  /api/v1/concepts` + `/generate`, a real `generation_job` polled through the
+  real RQ worker to a terminal `needs_review`/`failed` status, then two
+  containment assertions, that no Storybook row is persisted for the blocked
+  run, and that the would-be storybook id never appears in the admin
+  `GET /api/v1/review-queue` (so a blocked story can never be approved,
+  published, or assigned to a child). Requires the backend to run with
+  `ENVIRONMENT=local`, `CYO_ADVENTURE_GENERATION_PROVIDER=mock`, and
+  `CYO_ADVENTURE_MOCK_STORY_FIXTURE=invalid`; that last var (added for S-5,
+  see `core/config.py::Settings.mock_story_fixture`) serves the structurally
+  broken `_INVALID_STORY` fixture the validator's topology check rejects at
+  ERROR severity on every repair attempt. It defaults to `safe`, so a default
+  backend produces a passing run and fails this spec's block assertion with an
+  explicit "is MOCK_STORY_FIXTURE=invalid set?" message rather than a silent
+  pass. Spans every backend stage between request and gate, so it is registered
+  here rather than under a single journey. **Authored, not yet executed**: the
+  remediation session that wrote it had no local backend, so only `tsc -b`,
+  ESLint, and `playwright --list` verified it; run it against a real stack (with
+  the env vars above and a running worker) before trusting it as proven.
 - **Per-PR real-stack smoke (G4, Phase 7.4)**: `frontend/e2e-real/kid-reads.spec.ts`,
   run on the PR path via the `real-backend-pr-smoke` Playwright project
   (`npm run test:e2e:real:pr-smoke`, workflow `.github/workflows/e2e-real-pr-smoke.yml`).
@@ -406,7 +429,7 @@ detail when a storybook has more than one version).
 
 - E2E-mocked: `frontend/e2e/kid-read-aloud.spec.ts` (the speaker toggle appears only for a profile with `tts_enabled: true`, picked through the real picker flow rather than a deep link, since the flag rides the picker's profiles fetch; tapping it toggles a "speaking" state, and both a re-tap and a choice navigation cancel speech; a fake `speechSynthesis` stands in for headless Chromium's real one, which has no installed voices)
 - E2E-real: `frontend/e2e-real/kid-read-aloud-real.spec.ts` (the `tts_enabled` gate is real: a guardian `PATCH /v1/profiles/{id}` turns it on, then the kid picker's real `GET /v1/profiles` reads it back and threads it into the reader as the `ttsEnabled` prop; the toggle itself is client-only, Web Speech, with only its own speak/stop state asserted, not audio output, and `window.speechSynthesis.speak` stubbed to remove a real timing race between the browser's own `onend` and the test's stop click)
-- Component: `frontend/src/kid/readAloudPreference.test.ts`, `frontend/src/reader/useReadAloud.test.ts`
+- Component: `frontend/src/kid/readAloudPreference.test.ts`, `frontend/src/reader/useReadAloud.test.ts`, `frontend/src/reader/readAloudHighlight.test.ts` (the follow-along word highlight's pure range math, `wordRangeAtIndex`: the word at a `boundary` event's `charIndex`, the forward walk when an engine reports the boundary a character early and lands in whitespace, multi-paragraph text across a blank line, and the null-returning guards for negative, non-finite, past-the-end, and trailing-whitespace indices)
 - **Gap**: no `e2e-staging` or `e2e-prod` coverage yet; no tier asserts real audio output, the real tier above exercises the toggle and the real `tts_enabled` gate but stubs the speech call itself.
 
 ## Kid: flag a passage (K15)
@@ -422,6 +445,22 @@ detail when a storybook has more than one version).
 - E2E-real: `frontend/e2e-real/kid-go-back-real.spec.ts` (after two real choices, "Go back" reverts the reader to the prior node and the real `PUT /v1/reading-state/{profile_id}/{storybook_id}` this triggers persists the reverted `current_node`/`path`, confirmed not just via the PUT's own response but via an independent guardian-authorized `GET` re-fetch of the same row, proving the server, not only client state, holds the reverted position)
 - Component: `frontend/src/reader/BackToLibrary.test.tsx`, `frontend/src/player/engine.test.ts` (go-back is a bounded replay computation in the player engine)
 - **Gap**: no `e2e-staging` or `e2e-prod` coverage yet.
+- **Gap (F-6c), registered but deliberately skipped**:
+  `frontend/e2e-real/kid-go-back-gated-real.spec.ts` is a single
+  `test.skip` with no implementation, committed so the missing case is tracked
+  in this matrix rather than forgotten. It does not run and proves nothing
+  today. The case it would cover, going back *past a variable-gated choice*
+  against the real backend, is blocked on seed data, not on effort: the mocked
+  `reader-go-back.spec.ts` covers gated replay against a mocked PUT, and
+  `kid-go-back-real.spec.ts` covers real persistence but on "The Tide Pool
+  Mystery", which declares no variables at all. Every other seeded story with a
+  variable gate is unusable here, "The Clockwork Garden" and "The Bridge
+  Builder" are each exclusively owned by a sibling real-backend spec's fixture
+  lifecycle (no cross-file ordering guarantee in this tier), and the Ember Trail
+  series' only gated choice is reachable solely through a continuation read,
+  where `player/engine.ts` fails go-back closed by design. The spec's header
+  carries a `TODO(seed)` describing the small dedicated fixture
+  `scripts/seed_dev_data.py` needs before it can be implemented.
 
 ## Kid: offline reading + sync/conflict resolution
 

@@ -96,7 +96,7 @@ describe('GuardianShell', () => {
 
     expect(screen.getByRole('link', { name: 'Console' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Request a story' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Story requests' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Requests from your kids' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Reading' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Sign out' })).not.toBeInTheDocument()
     // Books, Profiles, and Connections are all guardian-only
@@ -115,7 +115,7 @@ describe('GuardianShell', () => {
     renderShell()
     // G9's reading-summary endpoint accepts guardian OR admin
     // (api/reading_history.py), unlike Books/Profiles; the nav link is
-    // unconditional like Console/Request a story/Story requests.
+    // unconditional like Console/Request a story/Requests from your kids.
     expect(screen.getByRole('link', { name: 'Reading' })).toHaveAttribute(
       'href',
       '/guardian/reading'
@@ -238,7 +238,7 @@ describe('GuardianShell', () => {
     it('renders the pending count with an accessible link name', async () => {
       routeGet(pendingRequests(3))
       renderShell()
-      const link = await screen.findByRole('link', { name: 'Story requests, 3 waiting' })
+      const link = await screen.findByRole('link', { name: 'Requests from your kids, 3 waiting' })
       expect(within(link).getByText('3')).toBeInTheDocument()
       expect(mockGet).toHaveBeenCalledWith(PENDING_URL)
     })
@@ -248,7 +248,7 @@ describe('GuardianShell', () => {
       renderShell()
       // Wait for the fetch to settle before asserting absence.
       await waitFor(() => expect(mockGet).toHaveBeenCalledWith(PENDING_URL))
-      const link = screen.getByRole('link', { name: 'Story requests' })
+      const link = screen.getByRole('link', { name: 'Requests from your kids' })
       expect(link).not.toHaveAttribute('aria-label')
       expect(within(link).queryByText('0')).not.toBeInTheDocument()
     })
@@ -257,7 +257,7 @@ describe('GuardianShell', () => {
       routeGet(new Error('backend down'))
       renderShell()
       await waitFor(() => expect(mockGet).toHaveBeenCalledWith(PENDING_URL))
-      const link = screen.getByRole('link', { name: 'Story requests' })
+      const link = screen.getByRole('link', { name: 'Requests from your kids' })
       expect(link).not.toHaveAttribute('aria-label')
     })
 
@@ -271,13 +271,13 @@ describe('GuardianShell', () => {
     it('refetches when the queue signals a change (approve/decline landed)', async () => {
       routeGet(pendingRequests(2), pendingRequests(1))
       renderShell()
-      await screen.findByRole('link', { name: 'Story requests, 2 waiting' })
+      await screen.findByRole('link', { name: 'Requests from your kids, 2 waiting' })
 
       act(() => {
         window.dispatchEvent(new Event(STORY_REQUESTS_CHANGED_EVENT))
       })
       expect(
-        await screen.findByRole('link', { name: 'Story requests, 1 waiting' })
+        await screen.findByRole('link', { name: 'Requests from your kids, 1 waiting' })
       ).toBeInTheDocument()
     })
 
@@ -285,12 +285,12 @@ describe('GuardianShell', () => {
       const user = userEvent.setup()
       routeGet(pendingRequests(1), pendingRequests(4))
       renderShell()
-      await screen.findByRole('link', { name: 'Story requests, 1 waiting' })
+      await screen.findByRole('link', { name: 'Requests from your kids, 1 waiting' })
 
       await user.click(screen.getByRole('link', { name: 'Request a story' }))
       await screen.findByText('intake content')
       expect(
-        await screen.findByRole('link', { name: 'Story requests, 4 waiting' })
+        await screen.findByRole('link', { name: 'Requests from your kids, 4 waiting' })
       ).toBeInTheDocument()
     })
   })

@@ -95,3 +95,123 @@ test('a 409 on save moves the reader to the server position, no dialog', async (
   await expect(page.getByText('The cave splits.')).toBeVisible()
   await expect(page.getByTestId('conflict-dialog')).toHaveCount(0)
 })
+
+/**
+ * F-6d: the OTHER wired conflict path, the offline queue's reconnect flush
+ * (useReplayOnReconnect in ReaderRoute.tsx, exercised in isolation by
+ * ReaderRoute.test.tsx's "silently discards a replayed 409 without showing a
+ * conflict dialog"), proven here end to end against a real IndexedDB queue
+ * instead of a mocked queue module.
+ *
+ * A single route handler models three phases via closure state, mirroring
+ * reader-reload-resume.spec.ts's one-handler-per-test convention rather than
+ * re-registering page.route mid-test:
+ *   1. normal: the mount-time save succeeds, establishing a real, confirmed
+ *      server revision.
+ *   2. offline: a choice tap's save transport-fails (route.abort(), which
+ *      readerApi.ts maps to the same OfflineError a genuine outage would
+ *      throw), so offline/sync.ts's saveProgress queues it into the real
+ *      offline_queue store instead of throwing (this test captures that
+ *      write's event_id before aborting the request). The engine still
+ *      advances the passage locally and optimistically (same mechanism as
+ *      this file's sibling reader.spec.ts "plays to an ending with the
+ *      network disabled").
+ *   3. reconnect: on page.reload(), TWO independent saves fire for the same
+ *      story: ReaderPage's own fresh mount-time save (a brand-new event_id,
+ *      resumed from the local cache) and ReaderRoute's queued-write replay
+ *      (the SAME event_id captured in step 2). The mock routes on event_id,
+ *      not call order, so the replay's write is deterministically the one
+ *      that 409s, which is the exact case F-6d targets: a conflict
+ *      discovered DURING the reconnect flush, not during a live in-session
+ *      save (that path is already covered by the tests above).
+ */
+test('an offline choice queued for replay is silently resolved on reconnect', async ({
+  page,
+}) => {
+  let mode: 'normal' | 'offline' | 'reconnect' = 'normal'
+  let offlineAttempts = 0
+  let queuedEventId: string | null = null
+  let reconnectPuts = 0
+  let replayPuts = 0
+  await page.route('**/api/v1/reading-state/**', (route) => {
+    if (route.request().method() === 'GET') {
+      return route.fulfill({ status: 404, json: { error: 'not found' } })
+    }
+    const body = route.request().postDataJSON() as { event_id?: string }
+    if (mode === 'offline') {
+      offlineAttempts += 1
+      queuedEventId = body.event_id ?? null
+      return route.abort('internetdisconnected')
+    }
+    if (mode === 'reconnect') {
+      reconnectPuts += 1
+      if (body.event_id === queuedEventId) {
+        // The queued-write replay: this is the write F-6d targets, so it is
+        // the one that discovers the cross-device conflict.
+        replayPuts += 1
+        return route.fulfill({
+          status: 409,
+          json: { current_row: { ...SERVER_ROW, state_revision: 1 } },
+        })
+      }
+      // ReaderPage's own fresh mount-time save (a new event_id): unrelated to
+      // the queue replay, accepted normally so it does not itself confuse
+      // the assertions below.
+      return route.fulfill({ status: 200, json: { ...SERVER_ROW, state_revision: 1 } })
+    }
+    // 'normal': establish a confirmed revision for the initial mount-time save.
+    return route.fulfill({
+      status: 200,
+      json: { ...SERVER_ROW, current_node: 'n_entrance', path: ['n_entrance'], state_revision: 1 },
+    })
+  })
+
+  await page.goto(READER_PATH)
+  await expect(page.getByTestId('reader')).toBeVisible()
+
+  mode = 'offline'
+  await page.getByTestId('choice-c_take_lantern').click()
+  await expect(page.getByTestId('passage-body')).toContainText('The cave splits.')
+  await expect.poll(() => offlineAttempts).toBeGreaterThanOrEqual(1)
+  expect(queuedEventId).not.toBeNull()
+
+  // Confirm the write actually landed in the real offline queue (not merely
+  // attempted) before reloading, so the reconnect flush below replays a real
+  // queued item rather than racing an in-flight IndexedDB write.
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          new Promise<number>((resolve) => {
+            const req = indexedDB.open('cyo-reader', 3)
+            req.onerror = () => resolve(-1)
+            req.onsuccess = () => {
+              const countReq = req.result
+                .transaction('offline_queue', 'readonly')
+                .objectStore('offline_queue')
+                .count()
+              countReq.onsuccess = () => resolve(countReq.result)
+              countReq.onerror = () => resolve(-1)
+            }
+          })
+      )
+    )
+    .toBeGreaterThanOrEqual(1)
+
+  mode = 'reconnect'
+  await page.reload()
+
+  // Graceful reconnect: the reader stays put at the queued passage (never a
+  // dead end, never the error screen), the replay conflict is silently
+  // discarded (ReaderRoute.tsx's #ASSUME "newest-write-wins... the child is
+  // never shown a ... dialog"), and the success toast is suppressed because a
+  // conflict, not a clean replay, occurred.
+  await expect(page.getByTestId('reader')).toBeVisible()
+  await expect(page.getByTestId('passage-body')).toContainText('The cave splits.')
+  await expect(page.locator('.reader-error')).toHaveCount(0)
+  await expect(page.getByTestId('conflict-dialog')).toHaveCount(0)
+  await expect(page.getByText('You were reading on another device')).toHaveCount(0)
+  await expect(page.getByText('All caught up! Your reading is saved.')).toHaveCount(0)
+  await expect.poll(() => reconnectPuts).toBeGreaterThanOrEqual(1)
+  await expect.poll(() => replayPuts).toBe(1)
+})

@@ -96,6 +96,83 @@ test('inviting a guardian posts the expected body and refreshes the roster', asy
     })
 })
 
+test('checking "Also grant admin capability" on invite posts is_admin: true', async ({ page }) => {
+  // S-3 (privilege escalation): the only prior invite coverage above always
+  // posts is_admin: false. Granting is_admin is a real, audited server action
+  // (admin_users.py::create_user forces is_admin=True for role='admin' but
+  // otherwise trusts this flag as-is for role='guardian'), so the client's
+  // "Also grant admin capability" checkbox must actually carry that intent
+  // through to the wire.
+  let capturedBody: unknown
+  await page.route('**/api/v1/admin/users', (route) => {
+    if (route.request().method() === 'POST') {
+      capturedBody = route.request().postDataJSON()
+      return route.fulfill({
+        status: 201,
+        json: {
+          id: 'user-3',
+          family_id: 'fam-a',
+          email: 'dual@example.com',
+          role: 'guardian',
+          is_admin: true,
+          status: 'pending',
+          created_at: '2026-01-06T00:00:00Z',
+        },
+      })
+    }
+    return route.fulfill({ json: { users: [USER_A] } })
+  })
+
+  await page.goto('/admin/users')
+  await page.getByLabel('Email').fill('dual@example.com')
+  await page.getByLabel('Family').selectOption('fam-a')
+  await page
+    .getByRole('checkbox', { name: /also grant admin capability/i })
+    .check()
+  await page.getByRole('button', { name: 'Send invite' }).click()
+
+  await expect
+    .poll(() => capturedBody)
+    .toEqual({
+      email: 'dual@example.com',
+      family_id: 'fam-a',
+      role: 'guardian',
+      is_admin: true,
+    })
+})
+
+test('the self-lockout guard 403 surfaces as an inline error, not a crash', async ({ page }) => {
+  // S-3 (self-lockout): admin_users.py::update_user refuses ANY self-edit
+  // (family/role/capability/status) with a 403 before a "last admin" check
+  // even applies -- the server-side guard this exercises. The click-through
+  // below drives the real Edit -> Save round trip in a real browser; the
+  // per-field behavior matrix (which payload gets sent, which copy renders)
+  // is already pinned in Vitest (UsersTab.test.tsx "shows the self-lockout
+  // forbidden message when saving an edit fails with 403").
+  await page.route('**/api/v1/admin/users/user-1', (route) => {
+    if (route.request().method() === 'PATCH') {
+      return route.fulfill({
+        status: 403,
+        json: {
+          error: 'AuthorizationError',
+          message: 'cannot manage your own account through this endpoint',
+        },
+      })
+    }
+    return route.continue()
+  })
+
+  await page.goto('/admin/users')
+  await page.getByRole('button', { name: 'Edit' }).click()
+  await page.getByRole('button', { name: 'Save' }).click()
+
+  await expect(page.getByRole('alert')).toHaveText(/cannot edit your own account/i)
+  // The row stays in edit mode (the save did not silently "succeed"): the
+  // roster still shows the pre-edit values, not a state the failed PATCH
+  // never actually applied.
+  await expect(page.getByRole('button', { name: 'Save' })).toBeVisible()
+})
+
 test('a plain guardian visiting /admin/users is sent back to the guardian console', async ({
   page,
 }) => {

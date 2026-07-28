@@ -207,7 +207,7 @@ test('the guardian requests page matches its visual baseline', async ({ page, co
   // jobs fetch does on the intake page above.
   await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: { profiles: [] } }))
   await page.goto('/guardian/requests')
-  await expect(page.getByRole('heading', { name: 'Story requests' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Requests from your kids' })).toBeVisible()
   await expect(page).toHaveScreenshot('guardian-requests-page.png', { animations: 'disabled' })
 })
 
