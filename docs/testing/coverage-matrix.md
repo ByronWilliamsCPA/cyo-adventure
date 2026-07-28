@@ -324,6 +324,18 @@ behind a confirmation dialog.
 - **Note**: the admin-side of connections (creating the link) is covered separately under WS-J (`frontend/src/admin/ConnectionsTab.test.tsx`).
 - **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet.
 
+## Guardian: data-privacy page (G11 trust surface)
+
+The plain-language account of how family data is handled, at
+`/guardian/privacy`, reached from the guardian shell footer. Static content
+with no data layer, so the tests are not about behaviour: they pin the
+sentences that would become false if someone edited the page without checking
+the code behind it. That is the real risk for a trust surface, because a
+guardian acts on what it says.
+
+- Component: `frontend/src/guardian/PrivacyPage.test.tsx` (pins the load-bearing claims: the "not the legal privacy notice" disclaimer, "stops with an error rather than carrying on" for the PII guard's hard fail, the outside-classifier disclosure, AI authorship plus the human approval gate, no-training, and "stays with your family by default" rather than an absolute never-shared claim), `frontend/src/guardian/GuardianShell.test.tsx` (footer link present for guardian and admin, and deliberately NOT inside the main nav)
+- **Gap**: no E2E coverage at any tier. The page is static and its claims are pinned at the component tier; an E2E would only re-assert that a link navigates.
+
 ## Admin: review queue (single story review)
 
 - E2E-mocked: `frontend/e2e/guardian-review.spec.ts`, `frontend/e2e/review-edit.spec.ts` (passage-edit save: PATCHes a reachable node's body + choice_labels and an unreachable/orphan node's body-only from the review detail, asserting the exact `PATCH /v1/storybooks/{id}/versions/{v}/nodes/{node}` contract at the network layer), `frontend/e2e/guardian-console.spec.ts` (navigation), `frontend/e2e/naive-user/naive-admin-misuse.spec.ts`, `frontend/e2e/naive-user/naive-misuse-shared.spec.ts`
