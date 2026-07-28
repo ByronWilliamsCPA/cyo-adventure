@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.38.0] - 2026-07-28
+
+### Features
+
+- **validator**: Story-quality gates, author feedback, and an authoring lessons log
+  ([#416](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/416),
+  [`2bb1249`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/2bb1249a7742a3d1b4561d6b5e74b124ebe83b43))
+
+
 ## [0.37.0] - 2026-07-27
 
 ### Features
@@ -2688,6 +2697,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.38.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.37.0...v0.38.0
 [0.37.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.36.0...v0.37.0
 [0.36.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.35.0...v0.36.0
 [0.35.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.34.0...v0.35.0
