@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
 import { signInAsProdTestAdmin, unlockParentalGateIfPresent } from './support/auth'
-import { gotoResilient } from './support/rate-limit'
+import { gotoResilient, paceNavigation } from '../e2e-support/rate-limit'
 
 /**
  * The one prod spec that WRITES: it exercises the real ADR-014 device-grant
@@ -11,8 +11,11 @@ import { gotoResilient } from './support/rate-limit'
  * console UI, the authorized device opens the seeded "E2E Test Kid" library,
  * and the guardian then revokes it. The write is deliberately narrow and fully
  * reversible: exactly one grant, removed by the final test and, if that never
- * runs, by the afterAll safety net. Manual trigger only (see
- * playwright.e2e-prod.config.ts); every run authenticates a real account.
+ * runs, by the afterAll safety net. That reversibility matters more than it
+ * used to: this tier now also runs unattended on a daily cron (see
+ * playwright.e2e-prod.config.ts and .github/workflows/e2e-prod.yml), so a
+ * leaked grant would sit on production until someone read the alert issue.
+ * Every run authenticates a real account.
  *
  * Serial + one shared page: mint, use, and revoke are a single stateful thread
  * and must run in order against one authenticated session, not four separate
@@ -129,6 +132,11 @@ test.describe('kid access via a real device grant', () => {
 
     // The picker tile is a link whose accessible name is the display name (its
     // avatar is aria-hidden); the E2E Test Family holds only this one kid.
+    // Paced by hand because this is an in-app route change, not a goto: the
+    // library mount fans out into its own list and recommendations fetches, so
+    // it spends request budget exactly like a navigation and must advance the
+    // same floor.
+    await paceNavigation(sharedPage)
     await sharedPage.getByRole('link', { name: TEST_KID_NAME }).click()
     await expect(sharedPage).toHaveURL(/\/library\//)
 
@@ -143,8 +151,16 @@ test.describe('kid access via a real device grant', () => {
     // discriminating power: every failure mode renders neither. The loading
     // state shows its own "Loading your books" text, the auth and permission
     // states render EmptyState with different titles ("Time to find your
-    // grown-up", "This bookshelf isn't yours"), and a crash renders the error
-    // boundary's "Something went wrong".
+    // grown-up", "This bookshelf isn't yours"), a transient fetch failure with
+    // no offline cache renders "We lost the bookshelf", and a crash renders the
+    // error boundary's "Something went wrong".
+    //
+    // "We lost the bookshelf" is the one a rate limit produces: LibraryPage
+    // classifies a 429 as transient and, finding no IndexedDB cache in a fresh
+    // CI browser, falls through to its error state. That copy is matched by
+    // neither branch here nor by RATE_LIMIT_ALERT, so a 429 on this route fails
+    // the test (correctly) but reports a missing heading. The paceNavigation
+    // call above is what keeps that from happening in the first place.
     //
     // The RequestStory form also renders here; do NOT submit it (it POSTs a
     // real story request, which this non-destructive tier must not create).

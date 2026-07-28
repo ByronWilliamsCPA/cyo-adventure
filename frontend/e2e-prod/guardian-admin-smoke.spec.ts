@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
 import { signInAsProdTestAdmin, unlockParentalGateIfPresent } from './support/auth'
-import { gotoResilient } from './support/rate-limit'
+import { gotoResilient } from '../e2e-support/rate-limit'
 
 /**
  * Read-only render smoke for both adult consoles on LIVE production, driven by
@@ -17,8 +17,10 @@ import { gotoResilient } from './support/rate-limit'
  * Every listed page does only GETs on mount, so navigating and asserting a
  * heading is non-destructive. /admin/review/:id is deliberately excluded (it
  * needs a real storybook id and its heading is the dynamic story title). Kept
- * small and manual-trigger-only, never wired into CI, since every run
- * authenticates a real account against a live system.
+ * small because every run authenticates a real account against a live system,
+ * and this tier is no longer manual-only: it also runs unattended on a daily
+ * cron (see playwright.e2e-prod.config.ts and .github/workflows/e2e-prod.yml),
+ * so each page added here is paid for once a day, forever.
  */
 test.describe('dual-role account across both adult consoles', () => {
   // Serial (also enforced by fullyParallel:false/workers:1 in

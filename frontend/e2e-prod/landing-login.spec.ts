@@ -1,15 +1,18 @@
 import { expect, test } from '@playwright/test'
 
 import { GUARDIAN_LOGIN_PATH } from '../src/routes'
-import { gotoResilient } from './support/rate-limit'
+import { gotoResilient } from '../e2e-support/rate-limit'
 
 /**
  * Unauthenticated public surfaces on LIVE production. These are the lightest
  * possible prod checks: no sign-in, no writes, just that the two doors a first
- * visitor sees (the landing page and the guardian sign-in form) render. Manual
- * trigger only, never wired into CI (see playwright.e2e-prod.config.ts and
- * requireProdCredentials()'s CI guard, which these tests do not even reach
- * because they need no credentials).
+ * visitor sees (the landing page and the guardian sign-in form) render.
+ *
+ * Runs ad hoc and on the tier's daily cron (see playwright.e2e-prod.config.ts
+ * and .github/workflows/e2e-prod.yml). These two tests are the only ones here
+ * that never reach requireProdCredentials()'s CI guard, because they need no
+ * credentials at all; the rest of the tier depends on that workflow clearing
+ * CI deliberately.
  */
 test.describe('public surfaces (unauthenticated)', () => {
   test('the landing page renders its title and both doors', async ({ page }) => {

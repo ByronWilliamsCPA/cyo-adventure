@@ -2,7 +2,12 @@ import { expect, type Page } from '@playwright/test'
 
 import { GUARDIAN_LOGIN_PATH } from '../../src/routes'
 import { requireProdCredentials } from './prod-env'
-import { backoffDelayMs, RATE_LIMIT_ALERT } from './rate-limit'
+import {
+  assertPositiveAttempts,
+  backoffDelayMs,
+  paceNavigation,
+  RATE_LIMIT_ALERT,
+} from '../../e2e-support/rate-limit'
 
 /**
  * Signs in through the real login form against live production. Unlike the
@@ -14,14 +19,32 @@ import { backoffDelayMs, RATE_LIMIT_ALERT } from './rate-limit'
  * Retries the whole sign-in on a transient rate-limit blip. The Supabase auth
  * itself succeeds (JWT + JWKS verified server-side), but a 429 on the immediate
  * `/v1/me` follow-up makes AuthContext render "we couldn't load your account",
- * which is indistinguishable from a real auth break at the UI. A real failure
- * (bad password, 5xx) shows a different alert and surfaces immediately; only a
- * rate-limit alert triggers backoff-and-retry.
+ * which is indistinguishable from a real auth break at the UI.
+ *
+ * Be precise about what that costs. A wrong password fails at the Supabase call
+ * and renders a distinct alert, so it does surface on the first attempt. A 5xx
+ * on `/v1/me` does NOT: AuthContext maps every non-200 from that endpoint
+ * (500, 401, 403, and its own unexpected-role throw) to the same
+ * "couldn't load your account" copy, so a genuine backend outage is retried
+ * here before it surfaces. That is a deliberate trade: the copy alone cannot
+ * distinguish the two, and a real outage still fails, just one backoff cycle
+ * later and reported with rate-limit wording. Nothing is swallowed.
+ *
+ * #CRITICAL: security: this loop re-submits real production credentials, so an
+ * upstream auth throttle could be deepened by the retry rather than waited out.
+ * #VERIFY: keep `maxAttempts` at 3 or lower, and keep the retry gated on
+ * RATE_LIMIT_ALERT so a wrong-password alert can never loop.
  */
 export async function signInAsProdTestAdmin(page: Page, maxAttempts = 3): Promise<void> {
   const { email, password } = requireProdCredentials()
+  assertPositiveAttempts(maxAttempts, 'signInAsProdTestAdmin')
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    // Through the shared pacer, not a bare goto: sign-in is the heaviest burst
+    // in a run (the Supabase grant plus /v1/me plus the landing console's own
+    // data), and leaving it unpaced also left `lastNavAt` stale, so the first
+    // gotoResilient after it skipped its floor entirely.
+    await paceNavigation(page)
     await page.goto(GUARDIAN_LOGIN_PATH)
     await page.getByLabel('Email').fill(email)
     await page.getByLabel('Password').fill(password)
@@ -53,9 +76,12 @@ export async function signInAsProdTestAdmin(page: Page, maxAttempts = 3): Promis
       return
     }
 
-    // An alert surfaced. A rate-limit / account-load blip (a 429 on /v1/me) is
-    // transient, so back off and retry the whole sign-in; any other alert (bad
-    // password, 5xx) is a real failure and must surface on the first attempt.
+    // An alert surfaced. A rate-limit / account-load blip is usually transient,
+    // so back off and retry the whole sign-in. Any alert the regex does NOT
+    // match (a wrong password, which fails at the Supabase call and renders its
+    // own copy) is a real failure and surfaces on the first attempt. A `/v1/me`
+    // 5xx shares the account-load copy and so is retried first; see the
+    // function docstring for why that is accepted rather than worked around.
     if (!RATE_LIMIT_ALERT.test(alertText) || attempt === maxAttempts) {
       throw new Error(`Production login failed: ${alertText}`)
     }
