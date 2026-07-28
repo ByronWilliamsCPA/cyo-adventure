@@ -23,13 +23,21 @@
 # CI-proof, delete this workflow rather than fighting the guard.
 #
 # -----------------------------------------------------------------------
-# Required GitHub Environment: `production`
+# Required GitHub Environment: `production-e2e` (NOT `production`)
 # -----------------------------------------------------------------------
-# The repo owner must create a `production` Environment (repo Settings ->
-# Environments) and add the secrets below before the first scheduled run;
-# until then every run fails fast at the credential check in
+# The repo owner must create a `production-e2e` Environment with NO
+# protection rules and add the secrets below before the first scheduled
+# run; until then every run fails fast at the credential check in
 # frontend/e2e-prod/support/prod-env.ts. Env var names below match that
 # file exactly.
+#
+#   gh api -X PUT repos/:owner/:repo/environments/production-e2e
+#   gh secret set E2E_PROD_TEST_EMAIL    --env production-e2e
+#   gh secret set E2E_PROD_TEST_PASSWORD --env production-e2e
+#
+# It is a separate environment from `production` on purpose: see the
+# #CRITICAL note on the job's `environment:` key. A required-reviewer rule
+# here silently converts every scheduled run into a cancelled one.
 #
 #   E2E_PROD_TEST_EMAIL     (required) Login email for the dedicated e2e-prod
 #                            test account. Read in
@@ -76,7 +84,19 @@ jobs:
     name: Playwright (e2e-prod tier)
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment: production
+    # #CRITICAL: timing: deliberately NOT the `production` environment. That
+    # environment carries a required-reviewer protection rule, which is correct
+    # for supabase-production.yml (it applies migrations to the live database)
+    # but fatal here: a scheduled, unattended run enters `waiting` for a human
+    # who is not watching, and GitHub allows only ONE pending run per
+    # concurrency group, so the next day's cron displaces it as `cancelled`.
+    # Every run from 2026-07-18 onward cancelled this way and the tier never
+    # executed a single test. This environment must stay UNPROTECTED; it holds
+    # only the dedicated e2e test account's credentials, never a deploy key.
+    # #VERIFY: `gh api repos/:owner/:repo/environments/production-e2e --jq
+    # '.protection_rules'` returns `[]`, and a scheduled run reaches the
+    # Playwright step instead of sitting in `waiting`.
+    environment: production-e2e
     permissions:
       contents: read
       issues: write
