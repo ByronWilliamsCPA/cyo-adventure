@@ -63,22 +63,49 @@ false, `/me` rejection clears the bearer AND any child session).
 
 ## 4. Prioritized findings
 
+The finding text below is the pre-fix baseline, recorded as it stood at the
+start of this review. Where a finding was closed later in this same PR, a
+`Status:` line says so directly under it; the original wording is left intact
+rather than rewritten, so the audit trail of what was wrong and what fixed it
+survives the merge.
+
 ### P1 - Accessibility is a happy-path smoke, not a WCAG 2.1 AA floor
+
 The a11y suite (axe + touch-targets) is well-built where it runs, but:
+
 - **No keyboard-navigation coverage anywhere**: no Tab/focus-order (2.4.3), no
   dialog focus-trap or Escape-to-close (2.1.2) assertions on any of the many
   dialogs (review approve/send-back/edit, assign-children, profile form).
   `review-edit.spec.ts:13` claims to drive "through the focus trap" but only clicks.
+  Status: closed in this PR (commit 87600b1). `frontend/e2e/keyboard-nav.spec.ts`
+  asserts focus-in, both-direction Tab-trap wrap, and Escape-restores-trigger on
+  three representative `cyo-dialog` modals, plus keyboard reachability of the
+  Send Back and Edit passage textareas. Writing it surfaced a real WCAG 2.1.1
+  defect: the shared Dialog focus-trap selector omitted `textarea`, locking
+  keyboard-only admins out of both flows. Fixed in the same commit.
 - **Admin pages scanned with EMPTY fixtures** (`a11y.spec.ts:138-145,231-306`):
   severity pills, content-flag badges, valence badges, the exact colored status
   indicators where contrast/name-role-value issues hide, are never rendered under axe.
+  Status: closed in this PR (commit 87600b1). Populated-fixture scans now cover
+  the admin thresholds, dashboard, provider-allowlist, and review-queue surfaces.
 - **`/admin/review/:id` excluded from axe entirely** (`a11y.spec.ts:15-17`), the
   richest admin page (flagged-passage cards, jump buttons, alerts, inline 422 errors).
+  Status: closed in this PR (commit 87600b1). The exclusion rested on the page
+  having no fixed heading to assert on, which an axe scan does not need; it is
+  now scanned against a seeded review surface in both its flagged-passage and
+  approve-failure-alert states.
 - **Touch-target check is height-only** (`admin-touch-targets.spec.ts:77-78`);
   WCAG 2.5.5 is 44x44. Also admin-scoped; kid reader choice buttons unverified.
+  Status: closed in this PR (commit 87600b1). The admin sweep now asserts width
+  as well, and `frontend/e2e/kid-touch-targets.spec.ts` measures every visible
+  kid-reader choice button on both axes at a phone viewport.
 - **Only resting render scanned**; no open menus, error toasts, loading, 422 panels.
+  Status: partially closed in this PR (commit 87600b1). Populated rows and the
+  review detail's approve-failure alert are now scanned; open menus, toasts, and
+  loading states still are not. This one stays open.
 
 ### P2 - Half-built two-device conflict resolution (product decision needed)
+
 `resolveConflict(..., 'continue_from_this_device')` is unit-tested
 (`sync.test.ts:287-307`) but no component ever calls it or renders a choosing UI;
 every test asserts `conflict-dialog` is ABSENT. Reader only does silent
@@ -87,15 +114,31 @@ test, or build+test the "ask the user" dialog. Right now the test implies a user
 flow that does not exist.
 
 ### P3 - Small, high-value untested units
+
+Status: closed in this PR (commit 65087ce). All four now have tests; see the
+per-item notes below.
+
 - `src/env.ts flagEnabled` has NO test, yet exists specifically to dodge the
   `Boolean("false") === true` trap. 3-line table test, high regression value.
+  Closed by `frontend/src/env.test.ts`.
 - `src/reader/useReaderFontScale.ts`: no direct test that bumping text size
   actually enlarges the passage / persists across mounts (the child-observable payoff).
+  Closed by `frontend/src/reader/useReaderFontScale.test.ts`, including the
+  per-profile scoping of the storage key.
 - Condition evaluator: add a metamorphic property (double-negation / De Morgan)
   to the fast-check layer, which today only asserts the return is boolean.
+  Closed by three fast-check properties in `frontend/src/player/evaluator.test.ts`.
 - `useApi` 403 interceptor pass-through boundary (only 500 is asserted).
+  Closed in `frontend/src/hooks/useApi.test.ts`.
 
 ### P4 - Minor implementation-coupling nits (low urgency)
+
+Status: partially closed in this PR (commit 65087ce). `ReaderChrome.test.tsx`
+and `LibraryPage.test.tsx` now assert observable behavior instead of class
+names. The rest were kept deliberately: they have no jsdom-observable
+alternative (jsdom applies no stylesheets, so a class is the only evidence the
+styling hook fired), and each is now annotated in place with that reasoning.
+
 CSS-class assertions used as proxies for observable state, each sitting beside a
 genuine assertion so not urgent: `Reader.test.tsx:367-388` (celebrate class),
 `ReaderChrome.test.tsx:81,97`, `KidShell.test.tsx:87,117-133` (data-attrs for
@@ -103,6 +146,13 @@ theme/reduce-motion, no visible-effect assertion), `BudgetBanner.test.tsx:26,36`
 various `toHaveClass('toast--*')`. Prefer role/label/`toHaveFocus()` over class tokens.
 
 ## 5. Recommendation
+
+Status: acted on in this PR (commits 87600b1, 65087ce). The recommendation below
+is kept as written, as the reasoning that motivated the work; what it recommends
+was then done rather than deferred. What remains open after that pass is P2 (a
+product decision, not a test gap) and the non-resting a11y states (open menus,
+toasts, loading) noted under P1.
+
 Test health and coverage are in excellent shape; the flake is fixed. The one area
 that does not yet meet "tests what a user would expect" is **accessibility for
 keyboard and assistive-tech users** (P1). Recommend a focused a11y hardening pass
