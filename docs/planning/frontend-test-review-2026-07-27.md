@@ -28,7 +28,7 @@ parallel load the React state flush that removes the row + unmounts the dialog
 lagged the mocked POST that `expect.poll` awaits, so both elements briefly
 coexisted. CI `retries: 1` masked it. Fixed by scoping the assertion to the row
 testid (unambiguous, and the true user-observable outcome). Verified 12/12 under
-4x parallel-repeat stress. Committed `54be69b`.
+4x parallel-repeat stress. Committed `65de4ba`.
 
 Not run here (environment-gated, correctly local-only per project setup):
 `e2e-real/` (needs seeded local backend), `e2e-staging/`, `e2e-prod/`,
