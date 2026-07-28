@@ -71,7 +71,7 @@ function declinePreview(req: StoryRequestView): string {
  */
 export function StoryRequestQueue({
   scope,
-  approveSuccessMessage = 'Approved! The story is being made.',
+  approveSuccessMessage = 'Approved! The story is in the queue and will be written soon.',
   heading = 'Story requests',
   intro,
 }: {

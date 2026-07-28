@@ -343,7 +343,9 @@ describe('RequestsPage', () => {
     })
     fireEvent.click(screen.getByRole('button', { name: 'Approve' }))
     expect(
-      await screen.findByText('Approved! The story is being made; track it under Story requests.')
+      await screen.findByText(
+        'Approved! Your story is in the queue and will be written soon. Track its progress under Requests from your kids.'
+      )
     ).toBeInTheDocument()
     expect(screen.getByTestId('toast')).toHaveClass('toast--success')
   })

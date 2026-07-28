@@ -295,7 +295,7 @@
   font-size: var(--text-lg, 1.25rem);
 }
 
-/* Pending story-request count on the "Story requests" nav link
+/* Pending story-request count on the "Requests from your kids" nav link
    (GuardianShell.tsx). Same small-text contrast constraint as
    .flag-badge--flag below: a solid amber-deep fill with ink text (4.86:1),
    because amber-deep text on parchment cannot clear 4.5:1 at this size.
@@ -369,7 +369,7 @@
 
 /* P-6b: one-line explainer under the page heading, disambiguating this
    full concept-authoring flow from the quick pre-approved request embedded
-   on Story requests; color comes from cyo-text-muted added alongside it. */
+   on Requests from your kids; color comes from cyo-text-muted added alongside it. */
 .intake__intro {
   font-size: 0.875rem;
   margin: 0 0 1rem;

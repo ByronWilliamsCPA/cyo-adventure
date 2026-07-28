@@ -149,9 +149,7 @@ test('approve removes the approved row, then decline empties the list', async ({
 
   // P-6b: a guardian-specific heading/intro distinguishes this queue from
   // IntakePage's "Request a story" surface, which lives at a different route.
-  await expect(
-    page.getByRole('heading', { name: 'Requests from your kids' })
-  ).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Requests from your kids' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Request a story' })).toHaveCount(0)
 
   await expect(page.getByText('A story about a friendly dragon')).toBeVisible()
@@ -161,7 +159,7 @@ test('approve removes the approved row, then decline empties the list', async ({
   await expect(page.getByTestId('budget-banner')).toHaveText('4 of 5 stories left this month')
 
   // The shell's nav badge counts the same pending list.
-  await expect(page.getByRole('link', { name: 'Story requests, 2 waiting' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Requests from your kids, 2 waiting' })).toBeVisible()
 
   const dragonRow = page.getByTestId('request-req-1')
   await dragonRow.getByLabel('Story length').selectOption('medium')
@@ -179,9 +177,11 @@ test('approve removes the approved row, then decline empties the list', async ({
   // A confirmed approve toasts (the guardian call site's family-scoped copy)
   // and the badge refetches down to the one remaining pending request.
   await expect(
-    page.getByText('Approved! The story is being made; track it under Story requests.')
+    page.getByText(
+      'Approved! Your story is in the queue and will be written soon. Track its progress under Requests from your kids.'
+    )
   ).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Story requests, 1 waiting' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Requests from your kids, 1 waiting' })).toBeVisible()
 
   const pirateRow = page.getByTestId('request-req-2')
   await pirateRow.getByRole('button', { name: 'Decline' }).click()
@@ -196,7 +196,9 @@ test('approve removes the approved row, then decline empties the list', async ({
   // Confirmed decline gets its own closure toast; the emptied queue also
   // hides the badge (accessible name falls back to the plain link text).
   await expect(page.getByText('Request declined.')).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Story requests', exact: true })).toBeVisible()
+  await expect(
+    page.getByRole('link', { name: 'Requests from your kids', exact: true })
+  ).toBeVisible()
 })
 
 test('approving a proposed-series request includes the prefilled series title', async ({

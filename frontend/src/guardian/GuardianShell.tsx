@@ -126,14 +126,12 @@ export function GuardianShell() {
           Console
         </NavLink>
         <NavLink to="/guardian/intake">Request a story</NavLink>
-        {/* G9: family-scoped like Console/Request a story/Story requests
-            above (the reading-summary endpoint accepts guardian OR admin,
+        {/* G9: family-scoped like Console/Request a story/Requests from your
+            kids above (the reading-summary endpoint accepts guardian OR admin,
             api/reading_history.py::get_family_reading_summary), unlike
             Books/Profiles which are guardian-only family-management pages. */}
         <NavLink to="/guardian/reading">Reading</NavLink>
-        {principal?.role === 'guardian' ? (
-          <NavLink to="/guardian/books">Books</NavLink>
-        ) : null}
+        {principal?.role === 'guardian' ? <NavLink to="/guardian/books">Books</NavLink> : null}
         {/* aria-label folds the count into the accessible name; when the
             badge is hidden (zero or failed fetch) the name stays the plain
             link text. The span is aria-hidden so the bare number is never
@@ -141,10 +139,12 @@ export function GuardianShell() {
         <NavLink
           to="/guardian/requests"
           aria-label={
-            pendingBadgeCount > 0 ? `Story requests, ${pendingBadgeCount} waiting` : undefined
+            pendingBadgeCount > 0
+              ? `Requests from your kids, ${pendingBadgeCount} waiting`
+              : undefined
           }
         >
-          Story requests
+          Requests from your kids
           {pendingBadgeCount > 0 ? (
             <span className="guardian-shell__nav-badge" aria-hidden="true">
               {pendingBadgeCount}

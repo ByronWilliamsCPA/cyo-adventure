@@ -54,9 +54,9 @@ describe('IntakePage', () => {
   // P-6b: this page and RequestsPage's embedded RequestStoryForm previously
   // both said "Request a story" with nothing telling them apart; this line
   // cross-links to the other surface instead.
-  it('cross-links to Story requests to disambiguate from the other request surface', async () => {
+  it('cross-links to Requests from your kids to disambiguate from the other request surface', async () => {
     renderPage()
-    const link = await screen.findByRole('link', { name: /story requests/i })
+    const link = await screen.findByRole('link', { name: /requests from your kids/i })
     expect(link).toHaveAttribute('href', '/guardian/requests')
   })
 

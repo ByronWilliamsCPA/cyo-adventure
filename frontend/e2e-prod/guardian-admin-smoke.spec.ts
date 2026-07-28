@@ -42,7 +42,7 @@ test.describe('dual-role account across both adult consoles', () => {
   for (const [path, heading] of [
     ['/guardian', 'Family console'],
     ['/guardian/intake', 'Request a story'],
-    ['/guardian/requests', 'Story requests'],
+    ['/guardian/requests', 'Requests from your kids'],
     ['/guardian/books', 'Books'],
     ['/guardian/profiles', 'Profiles'],
     ['/admin', 'Review queue'],

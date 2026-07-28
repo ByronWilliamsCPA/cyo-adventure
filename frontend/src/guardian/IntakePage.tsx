@@ -340,13 +340,13 @@ export function IntakePage() {
       <h1>Request a story</h1>
       {/* P-6b: this is the full concept-authoring flow (describe an idea,
           pick a child, wait for it to be made); it is deliberately distinct
-          from the quick pre-approved request embedded on Story requests
+          from the quick pre-approved request embedded on Requests from your kids
           (RequestStoryForm), which this line cross-links to rather than
           silently duplicating "Request a story" on both surfaces. */}
       <p className="intake__intro cyo-text-muted">
         Describe an idea below and we&apos;ll make a full story for your child. Reviewing your
-        kids&apos; own story ideas happens under <Link to="/guardian/requests">Story requests</Link>
-        .
+        kids&apos; own story ideas happens under{' '}
+        <Link to="/guardian/requests">Requests from your kids</Link>.
       </p>
       {loadError ? (
         <ErrorBanner className="intake-form__error" onRetry={() => void loadData()}>

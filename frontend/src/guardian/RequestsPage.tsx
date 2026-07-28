@@ -22,14 +22,15 @@ export function RequestsPage() {
           the banner's own family-budget read is always the right one here,
           for either a guardian or a dual-role admin. */}
       <BudgetBanner />
-      {/* The tracking hint is guardian-specific (this family's Story
-          requests view); the admin cross-family queue keeps the component's
-          neutral default message. */}
+      {/* The tracking hint is guardian-specific (this family's "Requests from
+          your kids" view, named identically to the heading and the nav link so
+          one surface carries one name); the admin cross-family queue keeps the
+          component's neutral default message. */}
       <StoryRequestQueue
         scope="family"
         heading="Requests from your kids"
         intro="Review the story ideas your children have asked for, and approve or decline each one."
-        approveSuccessMessage="Approved! The story is being made; track it under Story requests."
+        approveSuccessMessage="Approved! Your story is in the queue and will be written soon. Track its progress under Requests from your kids."
       />
     </>
   )
