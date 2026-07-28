@@ -47,7 +47,7 @@ Extend `moderation/report.py::Finding` (persisted JSONB is additive-safe;
 readers must tolerate absent new fields on old reports):
 
 | Field | Type | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `severity` | `high \| medium \| low`, required on FLAG/ADVISORY | The ranking key surfaces sort on. LLM stages emit it from a rubric in the prompt; Stage-0 maps score bands to it. |
 | `concern` | short slug from a fixed taxonomy (e.g. `real_world_danger`, `too_mature`, `frightening_content`, `cruelty`, `reviewer_unavailable`) | The dedup/merge key. Free-text `message` remains for detail. |
 | `node_ids` | `list[str]` (replaces single `node_id` on merged findings; `node_id` kept for compat) | One finding can now reference every node it applies to. |
@@ -223,6 +223,13 @@ vendor's marketing blog or a wrong-entity privacy policy.
    (true negatives), scored against the captured baseline; per-category
    calibration (Platt for sparse categories, isotonic only above ~1,000
    dual-scored samples); rank-correlation sanity check first.
+   **APPROVED (owner, 2026-07-28).** Cost basis: the account carries $30/mo
+   in Modal free credits; an eval sweep over the corpus with these model
+   sizes is a few GPU-hours on per-second billing, and production Stage-0
+   traffic is infrequent book creation, so both phases sit well inside the
+   credit allowance. #ASSUME: external-resources: pricing and credit terms
+   as of 2026-07-28. #VERIFY: re-check Modal's current per-second GPU rates
+   and the credit grant when the eval harness is implemented.
 4. **Age-appropriateness is a distinct axis from platform harm** (both
    reports converge here). If the guard-model eval underwhelms, the honest
    fallback is a small labeled eval set of our own story passages by band
@@ -257,19 +264,61 @@ After Stages A and B land (below):
    (ADR-005: rescreen never auto-unpublishes; the same posture applies);
    new reports replace the mock ones and route through normal review.
 
-## 5. Staged delivery plan
+## 5. Moderation QA corpus (staging)
+
+Owner-proposed (2026-07-28): a set of test stories in the staging
+environment for moderation testing, so inappropriate content never needs to
+exist in production. Design:
+
+1. **Ground truth lives in the repo, not a table.** Extend the existing
+   labeled-corpus pattern (`adversarial-corpus.json`: 13 passages with
+   `expected_min_verdict` / `age_band` / `target_stage` labels) to whole
+   storybooks with per-node prose and per-node/story expected labels, so
+   verdict expectations are versioned, reviewable, and diffable when the
+   model changes.
+2. **Seeded into staging as real `storybook` rows**, not a parallel table:
+   the value is end-to-end fidelity (worker, queue, classifiers, reviewer,
+   repair, routing, surfaces all process a known-bad book). A dedicated
+   table would need parallel plumbing and would test a copy of the
+   pipeline, not the pipeline.
+3. **Containment layers** (#CRITICAL: security: QA content must be
+   unreachable from production and from kid surfaces in any environment):
+   - the seed script hard-refuses `ENVIRONMENT=production` (same posture
+     as the existing seeders);
+   - ids are namespaced (`mqa_` prefix) and rows belong to a dedicated
+     Moderation QA family, never assigned to real profiles;
+   - the existing read gate (approved AND assigned) already makes
+     unapproved test books invisible to kid surfaces;
+   - `publishing/service.py` refuses to approve/publish an `mqa_`-prefixed
+     story outside staging (defense in depth against an admin misclick).
+   - #VERIFY: seed-script env-guard test; publishing-guard unit test; a
+     staging e2e assertion that no `mqa_` book is kid-visible.
+4. **Scorecard**: after moderation runs over the seeded set, compare stored
+   reports against expected labels and emit a pass/fail diff. This is the
+   Stage B UI QA fixture (admins inspect a known-bad book's merged decision
+   cards), the Stage C eval/calibration set, and the regression harness for
+   any reviewer-model or prompt change.
+5. **Authoring guideline**: depth goes to band-borderline content (too
+   mature for one band, acceptable for a higher one), which is where the
+   review model must discriminate; a handful of bright-line BLOCK cases
+   suffices. Production needs no unsafe content at any point: prod's
+   catalog was audited clean (2026-07-24) and Stage D only re-moderates
+   those existing books.
+
+## 6. Staged delivery plan
 
 | Stage | Content | Size | Depends on |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **A: stop the bleeding** | Structural-failure collapse (2.3), mock environment guard (2.4), observability (2.5), fenced-JSON regression test | Small PR, no schema change readers must migrate for | nothing |
 | **B: the review model** | Finding schema (2.1), structured verdicts + chunking (2.2), merge stage, surfaces (2.6), RL-13/PL-19 visibility, Stage-2 disposition per owner choice (2.7) | The main PR series | A |
 | **C: Stage-0 successor** | Baseline capture run, Modal guard-model eval, calibration report, Perspective emission retirement at sunset | Experiment + small PRs | capture ASAP; rest independent of A/B |
 | **D: catalog remediation** | Re-moderate entry point + the 22-book sweep | Small PR + ops run | A, B |
+| **QA corpus (staging)** | Labeled storybook fixtures (section 5), staging seed script + containment guards, scorecard diff | Repo fixtures + small PR | authored anytime; seeded before B's UI QA; feeds C's eval |
 
 Stage A is deliberately shippable alone: it prevents every future flood and
 makes the failure class visible, even if B's surface redesign takes longer.
 
-## 6. Decisions requested from the owner
+## 7. Decisions requested from the owner
 
 1. **Stage-2 disposition**: option (a) retire + surface RL-13 (recommended),
    (b) whole-story LLM readability, or (c) keep per-node.
@@ -277,12 +326,16 @@ makes the failure class visible, even if B's surface redesign takes longer.
    surfaces and prompts) vs numeric 0-1.
 3. **Guardian summary contract**: merged concern list (recommended) vs
    verdict-only.
-4. **Approve the Modal guard-model experiment** (Stage C item 3) before any
-   spend, or defer and ship OpenAI-only Stage-0 at sunset.
+4. **Modal guard-model experiment**: **DECIDED 2026-07-28: approved.**
+   Owner basis: $30/mo in Modal free credits; current per-second GPU pricing
+   keeps an eval sweep nowhere near that cap (see 3.2 item 3).
 5. **Remediation timing**: sweep the 22 books right after B, or batch with
    the first real catalog refresh.
+6. **Moderation QA corpus** (section 5): owner-proposed 2026-07-28; the
+   design above (repo ground truth, staging-only seeding, containment
+   layers) awaits confirmation alongside decisions 1-3.
 
-## 7. RAD summary
+## 8. RAD summary
 
 - #CRITICAL: security: the Stage-1 fail-safe (unparseable safety verdict
   never passes) is preserved through every change above; 2.3 changes its
@@ -298,3 +351,8 @@ makes the failure class visible, even if B's surface redesign takes longer.
 - #EDGE: concurrency: re-moderation of a published book racing a guardian
   action reuses the existing FOR UPDATE lock in `run_moderation_pipeline`.
   #VERIFY: existing lock test covers the re-moderate entry point too.
+- #CRITICAL: security: QA corpus content must never reach production or any
+  kid surface (section 5 containment layers: seed script env refusal,
+  `mqa_` namespace + dedicated family, read gate, publishing guard).
+  #VERIFY: seed-script env-guard test, publishing-guard unit test, and a
+  staging e2e assertion that no `mqa_` book is kid-visible.
