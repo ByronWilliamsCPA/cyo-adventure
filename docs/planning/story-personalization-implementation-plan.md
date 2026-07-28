@@ -356,20 +356,26 @@ not negligible and it should be visible in the decision to proceed, not discover
 Record actual measured numbers in `docs/planning/authoring-lessons-log.md` once PR #416's directive
 is live.
 
-**MEASURED 2026-07-28** (`scripts/measure_sentinel_survival.py`, run
-`results/sentinel-survival/20260728T205008Z`, 30 stories x 4 slots, first attempt only, the
-`fill_bound.md` "Verbatim tokens" preservation instruction present in every prompt):
+**MEASURED 2026-07-28** (`scripts/measure_sentinel_survival.py`, run slug
+`20260728T205008Z`, 30 stories x 4 slots, first attempt only, the `fill_bound.md` "Verbatim
+tokens" preservation instruction present in every prompt. The raw run artifact under
+`results/sentinel-survival/20260728T205008Z/` is local-only and gitignored, so every number a
+reader needs is restated here rather than left to that path):
 
 - **Clean-pass rate: 3.3% (1/30) on `openrouter:anthropic/claude-haiku-4.5`**, which is
-  production's primary fill route (`openrouter_model` in `core/config.py`). This is far below
-  the ~80% floor: **the below-80% branch applies. G1 verdict: STOP for prompt-only survival.**
-  Stage B onward must not proceed on the preserve-through-the-LLM design; the deterministic
-  post-fill re-insertion fallback described above graduates from "prototype in parallel" to
-  the primary design, and Stage B+ needs re-planning around it.
-- Failure taxonomy: dropped 1,738 (dominant by 8x), forged/mutated 207, relocated 111,
-  in-choice-label 3, malformed wrapper 7. The dominance of *dropped* means the model simply
-  writes prose without the token despite the verbatim instruction; this is not a delimiter
-  problem to iterate, it is the model treating the token as guidance rather than payload.
+  production's primary fill route (`openrouter_model` in `core/config.py`). This is a
+  **run-level** rate: 1 of the 30 stories had every one of its slots survive the fill cleanly.
+  This is far below the ~80% floor: **the below-80% branch applies. G1 verdict: STOP for
+  prompt-only survival.** Stage B onward must not proceed on the preserve-through-the-LLM
+  design; the deterministic post-fill re-insertion fallback described above graduates from
+  "prototype in parallel" to the primary design, and Stage B+ needs re-planning around it.
+- Failure taxonomy (**node-level violation counts**, per `validator/sentinel_integrity.py`:
+  each violation is emitted per node per token, not per slot instance, so these do not sum to
+  30 stories x 4 slots = 120 and are not directly comparable to the clean-pass rate above):
+  dropped 1,738 (dominant by 8x), forged/mutated 207, relocated 111, in-choice-label 3,
+  malformed wrapper 7. The dominance of *dropped* means the model simply writes prose without
+  the token despite the verbatim instruction; this is not a delimiter problem to iterate, it is
+  the model treating the token as guidance rather than payload.
 - A one-retry policy at this rate would add ~97% to fill spend, i.e. nearly double every
   fill: economically equivalent to no retry policy at all.
 - Scope note: the Anthropic direct leg was attempted and hit an account-billing 400, but the
@@ -401,10 +407,21 @@ about defense in depth.
 | Text-to-speech | `frontend/src/reader/useReadAloud.ts:34-99` | Uses the browser `window.speechSynthesis` API on already-substituted text | Not a server guard. Record in the privacy model that on platforms with cloud-backed voices, a personalized passage read aloud may leave the device through a path the app does not control. Surface it in the guardian consent copy |
 | Save-state export and sync | `frontend/src/player/types.ts:71` (`ReadingState`) | Carries node ids and variable state only | **Already safe.** No change; add a regression test so it stays that way |
 | Ring-3 aggregates | Unbuilt (ADR-016, "Technical Debt") | N/A | Forward-binding constraint: when ring-3 aggregation is built, it must render fully generic. Land this as a test in that workstream, not only as a sentence in ADR-023 |
+| Series-next book title | `src/cyo_adventure/api/reading.py:294,311` (`get_series_next`) | Kid-facing series-continuation feed surfaces the next series book's `blob["title"]`. Found by the R2 registry test (`tests/unit/test_title_strip_registry.py`), which the original hand-enumerated version of this table missed | Strip sentinels before returning. Guarded in this PR |
+| Guardian browse-and-assign list | `src/cyo_adventure/api/assignments.py:538,541` (`_guardian_book_item`) | Guardian browse-and-assign listing surfaces `version_row.blob["title"]` for every published book. Found by the same R2 registry test | Strip sentinels before returning. Guarded in this PR |
+| Stage A anchor context | `src/cyo_adventure/story_requests/anchoring.py` (`_safe_title`, `_ending_excerpt`) | Builds the ending title and node-body excerpt fed into the Stage A generation prompt from raw blob text | Strip sentinels before building the anchor context. Being guarded in this same PR |
 
 Implementation note: prefer **one shared strip helper** applied at the serialization boundary over
 per-call-site strips. A per-call-site approach is exactly the pattern that gets forgotten on the
-29th router.
+29th router. **Satisfied**: every API egress site routes through
+`src/cyo_adventure/api/sentinel_log.py::strip_and_log`, which both strips and emits a single
+`api.served_field_sentinel_stripped` warning naming the call site. Centralizing matters here beyond
+tidiness: the helper carries a PII-redaction rule (a personalization value may be a child's first
+name, so it must never reach a log sink), and duplicating that rule per router would give it six
+places to drift. The enumerating registry test
+(`tests/unit/test_title_strip_registry.py`) remains the second layer, failing closed when a
+title-bearing response model is added without a recorded stripping decision. See the matching note
+on risk R2 (section 13).
 
 ## 5. P4: data model
 
@@ -1265,7 +1282,7 @@ child-linked production data, so there is no backward-compatibility obligation.
 | ID | Risk | Severity | Mitigation | Phase |
 |---|---|---|---|---|
 | **R1** | **Sentinel forgery in prose.** The fill LLM emits an extra, mutated, or relocated sentinel; a human approves a blob containing an unreviewed substitution point | High | The P2 exact-multiset, per-node integrity check, fail-closed, run before the approval queue and again after any repair | P2 |
-| **R2** | **A guard point is missed on a new surface.** The 29th router serializes a blob title without stripping | High | One shared strip helper at the serialization boundary, not per-call-site strips; a test enumerating title-bearing response models | P3 |
+| **R2** | **A guard point is missed on a new surface.** The 29th router serializes a blob title without stripping | High | One shared strip helper at the serialization boundary, not per-call-site strips; a test enumerating title-bearing response models. **Satisfied**: `api/sentinel_log.py::strip_and_log` is that shared helper (it also emits one `api.served_field_sentinel_stripped` warning per leak, so a missed guard point is detectable in logs rather than silent), and `tests/unit/test_title_strip_registry.py` is that enumerating test, failing closed on an unstripped title-bearing response model | P3 |
 | **R3** | **Offline cache poisoning across siblings.** A future change adds a profile dimension to the story response and the shared `id@version` key starts serving one sibling's copy to another | High | The architecture prevents it, but nothing enforces it. Add a test asserting the story response is byte-identical for two profiles with different toggle states | P6 |
 | **R4** | **Slot values are under-validated.** `display_name` is length-bounded free text only (`api/schemas.py:1032-1034`), written straight to the row (`api/profiles.py:102-103`, `:286`), while sibling fields that reach a prompt are far stricter (`PinCode` at `:1038`, banned themes at `:1050-1051`) | High | Apply `structural_value_violations` plus the band-mandatory denylist floor **twice**: at write time and at payload-build time. The second is not redundant: names set before this feature shipped were never checked | P4, P6 |
 | **R5** | **Revocation residue.** A device retains a synced values payload after a flag flip or consent revocation | Medium | Purge on flip, revoke, deactivation, sign-out, and policy-version change. Document the offline-device window in code and keep guardian copy prospective | P6 |
