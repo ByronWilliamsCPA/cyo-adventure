@@ -2902,6 +2902,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#guardian-data-privacy-page-g11-trust-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guardian: data-privacy page (G11 trust surface)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#admin-review-queue-single-story-review" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3465,6 +3476,17 @@ behind a confirmation dialog.</p>
 <li><strong>Note</strong>: the admin-side of connections (creating the link) is covered separately under WS-J (<code>frontend/src/admin/ConnectionsTab.test.tsx</code>).</li>
 <li><strong>Gap</strong>: no <code>e2e-real</code>, <code>e2e-staging</code>, or <code>e2e-prod</code> coverage yet.</li>
 </ul>
+<h2 id="guardian-data-privacy-page-g11-trust-surface">Guardian: data-privacy page (G11 trust surface)<a class="headerlink" href="#guardian-data-privacy-page-g11-trust-surface" title="Permanent link">&para;</a></h2>
+<p>The plain-language account of how family data is handled, at
+<code>/guardian/privacy</code>, reached from the guardian shell footer. Static content
+with no data layer, so the tests are not about behaviour: they pin the
+sentences that would become false if someone edited the page without checking
+the code behind it. That is the real risk for a trust surface, because a
+guardian acts on what it says.</p>
+<ul>
+<li>Component: <code>frontend/src/guardian/PrivacyPage.test.tsx</code> (pins the load-bearing claims: the "not the legal privacy notice" disclaimer, "stops with an error rather than carrying on" for the PII guard's hard fail, the outside-classifier disclosure, AI authorship plus the human approval gate, no-training, and "stays with your family by default" rather than an absolute never-shared claim), <code>frontend/src/guardian/GuardianShell.test.tsx</code> (footer link present for guardian and admin, and deliberately NOT inside the main nav)</li>
+<li><strong>Gap</strong>: no E2E coverage at any tier. The page is static and its claims are pinned at the component tier; an E2E would only re-assert that a link navigates.</li>
+</ul>
 <h2 id="admin-review-queue-single-story-review">Admin: review queue (single story review)<a class="headerlink" href="#admin-review-queue-single-story-review" title="Permanent link">&para;</a></h2>
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/guardian-review.spec.ts</code>, <code>frontend/e2e/review-edit.spec.ts</code> (passage-edit save: PATCHes a reachable node's body + choice_labels and an unreachable/orphan node's body-only from the review detail, asserting the exact <code>PATCH /v1/storybooks/{id}/versions/{v}/nodes/{node}</code> contract at the network layer), <code>frontend/e2e/guardian-console.spec.ts</code> (navigation), <code>frontend/e2e/naive-user/naive-admin-misuse.spec.ts</code>, <code>frontend/e2e/naive-user/naive-misuse-shared.spec.ts</code></li>
@@ -3793,7 +3815,7 @@ closure. A companion action-level verdict for this audit lives at
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 21:05:48 UTC">July 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 21:09:10 UTC">July 28, 2026</span>
   </span>
 
     
