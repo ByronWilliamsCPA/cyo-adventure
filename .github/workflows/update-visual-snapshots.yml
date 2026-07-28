@@ -27,6 +27,12 @@
 #
 # Baseline bump 2026-07-25 (2): the library shelf gained the "Ask for a new
 # story" end-cap tile and the fresh-shelf "Pick a book!" heading.
+#
+# Baseline bump 2026-07-28: GuardianShell gained a persistent
+# .guardian-shell__footer carrying the privacy-page link, so it renders on
+# every guardian surface. That legitimately shifts the guardian books,
+# assign-children dialog, guardian profiles, and profile-form dialog
+# baselines. Pushing this branch runs the job and commits the refreshed PNGs.
 name: Update Visual Snapshots
 
 on:
