@@ -1162,11 +1162,36 @@
   margin: 0;
 }
 
+/* Row lays out the child label (left) and the per-child remove control
+   (right); the label grows so the Remove/confirm cluster sits at the end. */
+.assign__row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .assign__row label {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 0.5rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* G8 per-child unassign: the two-step inline confirm cluster (prompt + Keep +
+   Remove access) that replaces the Remove trigger after the first click. */
+.assign__remove-confirm {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 0 auto;
+}
+
+.assign__remove-prompt {
+  font-size: 0.85rem;
 }
 
 /* ============================================================================

@@ -62,6 +62,13 @@ function assignedNotice(count: number): string {
   return `Assigned to ${count} ${count === 1 ? 'child' : 'children'}.`
 }
 
+function removedNotice(count: number): string {
+  // count is the book's remaining assignment total after a per-child removal.
+  return count === 0
+    ? 'Removed. No children have access now.'
+    : `Removed. Now assigned to ${count} ${count === 1 ? 'child' : 'children'}.`
+}
+
 /**
  * Guardian concept intake + "My Requests" status list (C4a-5, wireframe 4.5).
  *
@@ -463,6 +470,7 @@ export function IntakePage() {
           // so the count reads "assigned to N total". Nothing else on this
           // page renders assignments, so the notice is the whole refresh.
           onAssigned={(profileIds) => setAssignNotice(assignedNotice(profileIds.length))}
+          onUnassigned={(profileIds) => setAssignNotice(removedNotice(profileIds.length))}
         />
       ) : null}
     </section>
