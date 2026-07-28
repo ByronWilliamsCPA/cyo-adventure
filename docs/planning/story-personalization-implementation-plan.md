@@ -356,6 +356,28 @@ not negligible and it should be visible in the decision to proceed, not discover
 Record actual measured numbers in `docs/planning/authoring-lessons-log.md` once PR #416's directive
 is live.
 
+**MEASURED 2026-07-28** (`scripts/measure_sentinel_survival.py`, run
+`results/sentinel-survival/20260728T205008Z`, 30 stories x 4 slots, first attempt only, the
+`fill_bound.md` "Verbatim tokens" preservation instruction present in every prompt):
+
+- **Clean-pass rate: 3.3% (1/30) on `openrouter:anthropic/claude-haiku-4.5`**, which is
+  production's primary fill route (`openrouter_model` in `core/config.py`). This is far below
+  the ~80% floor: **the below-80% branch applies. G1 verdict: STOP for prompt-only survival.**
+  Stage B onward must not proceed on the preserve-through-the-LLM design; the deterministic
+  post-fill re-insertion fallback described above graduates from "prototype in parallel" to
+  the primary design, and Stage B+ needs re-planning around it.
+- Failure taxonomy: dropped 1,738 (dominant by 8x), forged/mutated 207, relocated 111,
+  in-choice-label 3, malformed wrapper 7. The dominance of *dropped* means the model simply
+  writes prose without the token despite the verbatim instruction; this is not a delimiter
+  problem to iterate, it is the model treating the token as guidance rather than payload.
+- A one-retry policy at this rate would add ~97% to fill spend, i.e. nearly double every
+  fill: economically equivalent to no retry policy at all.
+- Caveat: single-provider measurement. The Anthropic direct leg (which would run
+  `claude-sonnet-4-6`) was blocked by an account-billing 400 on every trial; per-provider
+  variance is unmeasured. A stronger model may score materially higher, but the G1 gate is
+  defined on the worst configured provider, and the worst (and primary) provider has now
+  been measured at 3.3%.
+
 ## 4. P3: leak-surface guard points
 
 Each of these is a concrete place where a sentinel token or a real value could escape. The
@@ -1256,7 +1278,7 @@ child-linked production data, so there is no backward-compatibility obligation.
 | **R11** | **A real name lands in an antagonist or comic-mishap role.** A sibling name is bound to a `COMPANION`-style slot the skeleton later treats badly | Medium | `role_safety` metadata on the slot spec (2.2), audited per skeleton alongside the pronoun audit | P1, P10 |
 | **R12** | **Sentinels reach a rescreen classifier as unfamiliar tokens** and shift scores against the pre-migration baseline | Low | Strip to generic default before classification (3.3), so scores stay comparable | P3 |
 | **R13** | **The ADR-016 amendment gets written twice, racing.** This workstream and PR #415's B6 residual both edit the same document | Low | Single owner, single edit covering both asks; the parked addendum in ADR-016 says so | P11 |
-| **R14** | **Sentinel survival through the fill LLM is worse than assumed**, making retries a real cost line or the approach unworkable | High | Measure before scheduling P4 onward (3.4), with a deterministic post-fill re-insertion fallback prototyped in parallel if early numbers are poor | P2 |
+| **R14** | **Sentinel survival through the fill LLM is worse than assumed**, making retries a real cost line or the approach unworkable | High | **REALIZED 2026-07-28: measured 3.3% clean on the primary provider (see 3.4). The fallback is now the plan**: deterministic post-fill re-insertion replaces prompt-preserved sentinels as the primary design; Stage B+ re-plans around it | P2 |
 | **R15** | **The cross-family endpoint becomes the precedent for loosening `authorize_family`.** A future contributor generalises `authorize_via_connection` into something broader | Medium | Keep it a separate, narrowly-named helper with its own `ROUTE_TABLE` row (8.4); never widen `authorize_family` itself | P7 |
 | **R16** | **Ring-2 personalization has no book-delivery path narrower than the catalog.** `Visibility` is `family` or `catalog` only (`publishing/state_machine.py:45-55`) | Medium | Not a blocker: the values gate protects the content regardless of book visibility, so a catalog book renders generic for everyone unconnected. **Accepted for v1 on 2026-07-25 (owner choice, ADR-023 OD-4)**: the catalog surface is the v1 delivery path and connection-scoped visibility is explicitly not a prerequisite | P7 |
 
