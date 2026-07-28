@@ -6,6 +6,7 @@ import { Dialog } from '@ds/components/Dialog'
 import { EmptyState } from '@ds/components/EmptyState'
 import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
+import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
 import { AvatarCircle } from '../profiles/AvatarCircle'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
@@ -111,7 +112,10 @@ export function ProfilesPage() {
       setProfiles((rows) => (rows ?? []).filter((row) => row.id !== id))
       setDeletingProfile(null)
     } catch (err) {
-      console.error('profile delete failed', err)
+      // Redacted, never the raw AxiosError: its `config.headers.Authorization`
+      // carries the guardian bearer token. See logApiError's own doc comment
+      // for the "no auth material in the console" invariant.
+      logApiError('profile delete failed', err)
       setDeleteError(true)
     } finally {
       setDeleting(false)
