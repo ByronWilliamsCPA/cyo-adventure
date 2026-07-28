@@ -1,0 +1,4233 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/reviews/ceiling-scale-review-2026-07-25/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Adversarial Review Record: Ceiling-Scale Story at 746 Nodes - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#adversarial-review-record-ceiling-scale-story-at-746-nodes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Adversarial Review Record: Ceiling-Scale Story at 746 Nodes
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../template_feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Template Feedback
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="adversarial-review-record-ceiling-scale-story-at-746-nodes">Adversarial Review Record: Ceiling-Scale Story at 746 Nodes<a class="headerlink" href="#adversarial-review-record-ceiling-scale-story-at-746-nodes" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Date</strong>: 2026-07-25 | <strong>Subject</strong>: <code>out/the-ninth-hand.filled.json</code> (746 nodes, 232 endings,
+42,085 words, Tier-2, book 3 of the <code>wyrmreach</code> chain)</p>
+</blockquote>
+<p>Raw output of two independent adversarial reviewers, preserved verbatim below. Findings are
+labelled VERIFIED or SUSPECTED <strong>by the reviewer</strong>; a subset was independently re-verified before
+being promoted into the <a href="../../authoring-lessons-log/">authoring lessons log</a>, and the log rows are
+the actionable record. Read this file for the evidence and the measurements, the log for what we
+decided to do.</p>
+<p>Independently re-verified while triaging: the reader-side read-length collapse (reproduced on
+<code>player/engine.StoryEngine</code>), the absence of response compression, <code>revisionRef</code> advancing only on
+<code>saved</code>, the 409 adopt-and-remount path, the Stage 0 per-node classifier short-circuit, and the
+carried-variable bound mismatches between books 2 and 3.</p>
+<hr />
+<h1 id="part-1-reader-surfaces">Part 1: Reader surfaces<a class="headerlink" href="#part-1-reader-surfaces" title="Permanent link">&para;</a></h1>
+<h2 id="reader-side-adversarial-review-the-ninth-hand-746-nodes-232-endings-42085-words">Reader-side adversarial review: the-ninth-hand (746 nodes / 232 endings / 42,085 words)<a class="headerlink" href="#reader-side-adversarial-review-the-ninth-hand-746-nodes-232-endings-42085-words" title="Permanent link">&para;</a></h2>
+<p>Measured baseline for <code>out/the-ninth-hand.filled.json</code> (all numbers taken with read-only
+<code>node</code>/<code>python3</code> over the artifact, plus an inline faithful port of <code>frontend/src/player/engine.ts</code>
++ <code>evaluator.ts</code>):</p>
+<table>
+<thead>
+<tr>
+<th>metric</th>
+<th>the-ninth-hand</th>
+<th>vault-of-nine-iron (bk 1)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bytes on disk (pretty)</td>
+<td>526,306</td>
+<td>235,592</td>
+</tr>
+<tr>
+<td>bytes minified (what an API returns)</td>
+<td>405,742</td>
+<td>177,842</td>
+</tr>
+<tr>
+<td>nodes</td>
+<td>746</td>
+<td>305</td>
+</tr>
+<tr>
+<td>endings</td>
+<td>232</td>
+<td>105</td>
+</tr>
+<tr>
+<td>choices</td>
+<td>1,030</td>
+<td>-</td>
+</tr>
+<tr>
+<td>longest realizable route (choices)</td>
+<td>74</td>
+<td>71</td>
+</tr>
+<tr>
+<td>body prose</td>
+<td>225,812 chars / 42,085 words</td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>condition-aware random playthrough (n=5000)</strong></td>
+<td>p10 <strong>2 pages</strong>, median <strong>5 pages</strong>, p90 14, max 51</td>
+<td>-</td>
+</tr>
+<tr>
+<td>words per playthrough</td>
+<td>p10 137, median <strong>301</strong>, p90 803, mean 405</td>
+<td>-</td>
+</tr>
+<tr>
+<td>distinct endings hit across 5,000 random reads</td>
+<td><strong>100 of 232</strong></td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>That median of 5 pages / 301 words per completed read is the number every finding below
+turns on: 215 of the 514 non-ending nodes offer at least one choice that lands straight
+on an ending, so a child's typical encounter with this 42,085-word book is a ~90-second,
+300-word read that terminates. Nothing in the reader is calibrated for that.</p>
+<h3 id="the-k6-endings-mechanic-inverts-at-m232-it-stops-being-a-motivator-and-becomes-a-scoreboard-of-failure-verified">The K6 endings mechanic inverts at M=232: it stops being a motivator and becomes a scoreboard of failure [VERIFIED]<a class="headerlink" href="#the-k6-endings-mechanic-inverts-at-m232-it-stops-being-a-motivator-and-becomes-a-scoreboard-of-failure-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: "You found ending N of M! Read again to find more." is designed around a small M
+(the spec example and every test is 3-of-7, 2-of-5, 3-of-7). At M=232 the child finishes a
+read and is told <strong>"You found ending 1 of 232!"</strong> - 0.4% - and the same line greets them on
+the ending screen of every subsequent read (2 of 232, 3 of 232...). The shelf half degrades
+worse: <code>EndingsBadge</code> drops the dot row entirely once <code>total &gt; MAX_DOTS = 10</code>
+(EndingsBadge.tsx:19,25,29), so the <em>only</em> kid-legible part of the mechanic - the row of
+filled/empty dots, which is what a pre-literate-ish reader actually parses - is silently
+removed exactly for the books that need replay motivation most. What is left on a phone
+card is the bare string "1 of 232 endings found".
+WHY: The promise "read again to find more" is arithmetic the child can do. At a measured
+mean of 405 words per playthrough, filling the bar means ~232 separate reads and ~94,000
+words of reading, most of it re-reading shared prefixes. A denominator that large converts
+a reward ("you're 3/7 of the way, nearly there") into a permanent statement of
+incompleteness. It is also partly unachievable: 5,000 condition-aware random playthroughs
+reached only <strong>100 of the 232</strong> endings, so a large share of the denominator sits behind
+specific 8-variable states a child browsing by taste will not stumble into. The mechanic
+does not transfer to this scale - this is a design finding, not a layout bug. Layout itself
+survives (dots are capped, text wraps), which is why it will ship unnoticed.
+WHERE: frontend/src/reader/EndingsProgress.tsx:60-65 (renders whenever <code>total_endings &gt; 1</code>,
+no upper bound); frontend/src/library/EndingsBadge.tsx:19-40 (<code>MAX_DOTS = 10</code>, dots dropped
+above it); src/cyo_adventure/api/reading_history.py:324-328,360-362 (<code>total_endings</code> is the
+raw pinned-version ending count, 232, with no banding); frontend/src/library/LibraryPage.tsx:362.
+FIX: Stop showing a raw denominator above a threshold. Two options, both cheap:
+(1) switch to milestone framing for large M - "You found 3 new endings! There are lots more."
+with a tier ladder (3/10/25/50 endings -&gt; a named badge), and keep "N of M" only while
+<code>total_endings &lt;= MAX_DOTS</code>; or (2) scope the denominator to something reachable - count
+endings the child can still reach from their own visited frontier, or a curated
+"signature endings" subset declared in story metadata - and show that. Either way,
+<code>EndingsProgress</code> and <code>EndingsBadge</code> should take the same threshold constant so the ending
+screen and the shelf never disagree, and a book with 232 endings should never render a
+percent-like fraction to a child.</p>
+<h3 id="the-reading-progress-bar-is-frozen-near-zero-for-this-entire-book-verified">The reading-progress bar is frozen near zero for this entire book [VERIFIED]<a class="headerlink" href="#the-reading-progress-bar-is-frozen-near-zero-for-this-entire-book-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>readerProgressPercent</code> is <code>100 * visit_set.length / story.nodes.length</code>
+(readerProgress.ts:7-11). The denominator is all 746 nodes; the numerator is the pages the
+child has actually seen on this route. At the measured median playthrough (5 pages) the bar
+reads <strong>1%</strong>; at p90 (14 pages) <strong>2%</strong>; on the deepest realizable 71-choice route it peaks at
+<strong>10%</strong> just before the ending screen forces it to 100 (Reader.tsx:258).
+WHY: The bar is the only always-visible feedback in the reader chrome, and for this book it
+is a flat line that never visibly moves - each page tap advances it by 0.13%, below the
+rendering resolution of a phone-width bar. A child reading book 1 (305 nodes) sees the same
+route render as 23%, and a 100-node picture book as 71%: the bigger the book, the more
+broken the signal, so this degrades specifically at 746. Then the ending screen snaps 1% to
+100%, which reads as arbitrary rather than as an accomplishment. The numeric label is
+already withheld as untrustworthy (<code>showLabel</code> defaults false, ReaderChrome.tsx:73), so the
+team has effectively acknowledged the denominator is wrong and shipped the bar anyway; the
+<code>aria-label</code> still announces "5 of 746 pages explored" to a screen-reader child.
+WHERE: frontend/src/reader/readerProgress.ts:7-11,16-19; frontend/src/reader/Reader.tsx:257-259;
+frontend/src/reader/ReaderChrome.tsx:11-19,88.
+FIX: Progress within a read is route progress, not corpus coverage. Use the current route:
+<code>path.length / (path.length + longest remaining distance to an ending from current_node)</code>,
+computed once per book from a precomputed per-node depth-to-nearest/furthest-ending map
+(the same walk the validator already does), or simply drop the bar in the reader for books
+above some node count and show "Page 5" instead. Corpus coverage belongs on the shelf card
+(where "explored" framing is honest), not in the reader chrome during a read.</p>
+<h3 id="every-page-turn-synchronously-replays-the-whole-read-from-page-1-and-rebuilds-a-746-entry-index-300-times-while-doing-it-verified">Every page turn synchronously replays the whole read from page 1, and rebuilds a 746-entry index ~300 times while doing it [VERIFIED]<a class="headerlink" href="#every-page-turn-synchronously-replays-the-whole-read-from-page-1-and-rebuilds-a-746-entry-index-300-times-while-doing-it-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>canGoBack(story, reading)</code> calls <code>back()</code>, which calls <code>replayRecordedPath()</code>, which
+DFS-replays the entire recorded path from <code>start_node</code> through the real engine - and throws
+the result away, keeping only "yes/no". It is memoized on <code>[story, reading]</code>
+(Reader.tsx:216), so it runs once per <em>reading state</em>, i.e. <strong>once per page turn, inside the
+render pass</strong>, before the new passage paints. Compounding it, <code>nodeIndex(story)</code> builds a
+fresh <code>Map</code> of all 746 nodes on <em>every</em> engine entry point (engine.ts:17-19, called from
+<code>enterNode</code>:71, <code>visibleChoices</code>:157, <code>isEnding</code>:164, <code>currentEndingId</code>:169, <code>choose</code>:184),
+and <code>intBounds</code> rebuilds per <code>choose</code> (engine.ts:196, with an <code>#ASSUME</code> comment
+acknowledging it). A replay at depth 71 performs <strong>285 nodeIndex rebuilds = 212,610 Map
+insertions</strong>. Measured with a faithful inline port of engine.ts + evaluator.ts against the
+real artifact, walking the deepest realizable route:</p>
+<table>
+<thead>
+<tr>
+<th>depth</th>
+<th>the-ninth-hand (746 nodes)</th>
+<th>vault-of-nine-iron (305 nodes)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10</td>
+<td>5.1 ms / 30,586 Map entries</td>
+<td>1.5 ms / 12,505</td>
+</tr>
+<tr>
+<td>30</td>
+<td>11.0 ms / 90,266</td>
+<td>5.3 ms / 36,905</td>
+</tr>
+<tr>
+<td>50</td>
+<td>16.8 ms / 149,946</td>
+<td>8.4 ms / 61,305</td>
+</tr>
+<tr>
+<td>70</td>
+<td>26.1 ms / 209,626</td>
+<td>9.7 ms (at 67) / 82,045</td>
+</tr>
+</tbody>
+</table>
+<p>Cost is O(depth x nodes), so it is ~2.5x book 1 at equal depth purely because of the node
+count. Worse, a <strong>BACK press pays it three times</strong>: the machine's <code>canGoBack</code> guard runs a
+replay (machine.ts:111), <code>applyBack</code> runs <code>back()</code> again (machine.ts:99-100), and the
+resulting new <code>reading</code> invalidates Reader.tsx's <code>useMemo</code> for a third. That is ~72 ms of
+blocked main thread on this desktop measurement at depth 71; a mid-tier phone or an older
+iPad runs 4-6x slower, i.e. <strong>roughly 300-430 ms frozen</strong> on the one control built for
+"kids mis-tap constantly" (Reader.tsx:210).
+WHY: Deep routes are exactly the replay-motivated behavior the book is designed to reward.
+A child working a 40-70 choice route feels the reader get progressively stickier the further
+in they get - the page turn that was instant on page 3 stalls a fifth of a second on page 60,
+and the "Go back" button, which a mis-tapping child hammers, is the slowest thing in the app.
+On a 300-node book none of this is visible; it becomes visible at 746 and it gets worse the
+deeper the child commits. There is no spinner, so it reads as the app being broken.
+WHERE: frontend/src/player/engine.ts:17-19 (nodeIndex rebuilt per call), :71, :157, :164,
+:169, :184, :196 (intBounds rebuilt per choose), :253-307 (DFS replay), :325-347
+(<code>back</code>/<code>canGoBack</code>, <code>canGoBack</code> discards the computed state);
+frontend/src/reader/Reader.tsx:216; frontend/src/player/machine.ts:99-100,111.
+Also O(nodes) per render, unmemoized: <code>story.nodes.find(...)</code> at Reader.tsx:96.
+FIX: Three independent, low-risk changes, in order of payoff:
+1. Memoize the node index per Storybook object (<code>WeakMap&lt;Storybook, Map&lt;string, StoryNode&gt;&gt;</code>)
+   and the same for <code>intBounds</code>. Story identity is already stable for the reader's lifetime
+   (ReaderPage holds it in state, ReaderPage.tsx:99,255), so the <code>#ASSUME</code> at engine.ts:192
+   is satisfied by a WeakMap keyed on the story object. This alone removes ~99% of the work.
+2. Make <code>canGoBack</code> not compute the answer it discards: cache the replayed <code>states[]</code> per
+   reading state (or have the machine carry a <code>previous</code> state forward), so a BACK press
+   costs one replay instead of three, and a page turn costs zero.
+3. Cheap guard for the common case: <code>path.length &gt; 1 &amp;&amp; path[0] === story.start_node</code> is a
+   necessary condition and answers "no" instantly; only the "yes" answer needs the replay,
+   and it can be deferred off the render path (compute it in an effect and let the button
+   appear a frame later) rather than blocking the passage paint.</p>
+<h3 id="the-story-download-is-405-kb-uncompressed-no-response-compression-is-configured-anywhere-verified">The story download is 405 KB uncompressed: no response compression is configured anywhere [VERIFIED]<a class="headerlink" href="#the-story-download-is-405-kb-uncompressed-no-response-compression-is-configured-anywhere-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>GET /v1/storybooks/{id}/versions/{v}</code> returns <code>version_row.blob</code> whole
+(library.py:405-471), and nothing in the stack compresses it. <code>app.py</code> adds only
+<code>CorrelationMiddleware</code> and <code>add_security_middleware</code> (app.py:469, 58) - no
+<code>GZipMiddleware</code>; <code>grep -rn "GZip|gzip|brotli"</code> across <code>src/</code>, <code>frontend/</code>,
+<code>docker-compose.yml</code>, and <code>docker-compose.prod.yml</code> returns nothing. Measured: the ninth
+hand serialises to <strong>405,742 bytes</strong> minified and <strong>106,873 bytes</strong> gzipped (3.8x). So the
+child's device pulls <strong>396 KB instead of 104 KB</strong>, a 292 KB avoidable transfer for one book,
+and <strong>750 KB instead of 202 KB</strong> to take the whole 3-book series offline.
+WHY: This is the download-before-you-can-read step, and it is the one moment the child is
+stuck on a spinner with nothing to do. On a weak LTE/tethered connection (~1 Mbps effective,
+which is the normal case for "downloading the book in the car before the trip") 396 KB is
+about 3.2 s versus 0.8 s. It is also the step most likely to be interrupted: there is no
+range/resume, so a dropped connection restarts the whole 396 KB. The same book at book-1's
+size (174 KB) mostly hides this; at 2.3x the bytes it becomes a visible wait.
+WHERE: src/cyo_adventure/app.py:469 and the middleware block at :433-469 (no compression
+middleware); src/cyo_adventure/api/library.py:405-471 (returns the raw blob);
+frontend/src/reader/ReaderPage.tsx:175-190 (single <code>fetchStory</code> call, cache-first, no
+progress reporting).
+FIX: Add <code>app.add_middleware(GZipMiddleware, minimum_size=1024)</code> (or enable brotli/gzip at
+whatever terminates TLS in the homelab deployment). One line, ~4x on every story download and
+on the library listing. Separately, the download has no progress affordance: ReaderPage shows
+a bare "Opening your story..." (ReaderPage.tsx:460) for the entire transfer, so consider a
+determinate progress state for first-download of a book above some size.</p>
+<h3 id="every-library-shelf-load-deserialises-every-books-full-blob-server-side-verified">Every library-shelf load deserialises every book's full blob server-side [VERIFIED]<a class="headerlink" href="#every-library-shelf-load-deserialises-every-books-full-blob-server-side-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>list_library</code> runs <code>select(StorybookVersion)</code> for every published book on the shelf
+(library.py:346-351) - selecting the entire row, including the <code>blob</code> JSONB column - and then
+uses each blob only to read <code>title</code>, <code>metadata</code>, a node count (<code>len(nodes)</code>), and one
+<code>current_node in nodes</code> ending check (<code>_library_item</code>, library.py:197-270; <code>_node_count</code>
+:163-179; <code>_current_node_is_ending</code> :181-195). For this 3-book series that is <strong>768 KB of
+JSONB decoded per shelf render</strong>, of which 405 KB is the ninth hand, to produce three small
+cards. <code>_current_node_is_ending</code> additionally scans the node list linearly per book.
+WHY: The kid's shelf (<code>/library/:profileId</code>) is the app's front door and the screen they hit
+on every launch. Its latency now scales with the total prose volume of everything assigned to
+the child rather than with the number of books: adding one 746-node gamebook to a shelf costs
+the same server work as adding three 300-node books. A family that accumulates a dozen of
+these turns the shelf into a multi-megabyte decode per tap-through, and the child sees the
+skeleton/spinner state on a screen that should be instant.
+WHERE: src/cyo_adventure/api/library.py:346-351 (whole-row select incl. blob), :387
+(<code>blobs[(storybook_id, version)]</code> passed into <code>_library_item</code>), :163-179, :181-195, :197-270.
+FIX: Stop reading the blob on the listing path. Either (a) select only the columns needed
+(<code>load_only(...)</code> / an explicit <code>select(StorybookVersion.storybook_id,
+StorybookVersion.version, StorybookVersion.cover_status, ...)</code>) and denormalise <code>title</code>,
+<code>node_count</code>, <code>ending_count</code>, and an <code>ending_node_ids</code> set onto <code>StorybookVersion</code> at publish
+time; or (b) push the extraction into SQL with JSONB operators
+(<code>blob-&gt;&gt;'title'</code>, <code>jsonb_array_length(blob-&gt;'nodes')</code>) so Postgres never ships the prose to
+the app. (a) is preferable because the ending check needs set membership, which is exactly a
+publish-time-computable column.</p>
+<h3 id="reconnecting-mid-read-yanks-the-child-backwards-to-an-earlier-page-and-remounts-the-reader-verified-by-code-trace">Reconnecting mid-read yanks the child backwards to an earlier page and remounts the reader [VERIFIED by code trace]<a class="headerlink" href="#reconnecting-mid-read-yanks-the-child-backwards-to-an-earlier-page-and-remounts-the-reader-verified-by-code-trace" title="Permanent link">&para;</a></h3>
+<p>WHAT: The offline queue replay and the reader's live save both write the same row with no
+coordination, and the reader's local revision counter does not advance while offline. Traced:
+1. Offline, <code>persist()</code> gets <code>kind: 'queued'</code> and <strong>never updates <code>revisionRef</code></strong> - only the
+   <code>'saved'</code> branch does (ReaderPage.tsx:304-305). So after N offline choices <code>revisionRef</code>
+   still holds the pre-offline revision R, while N queued writes all carry base revision R.
+2. <code>useReplayOnReconnect</code> is mounted <strong>inside ReaderRoute</strong> (ReaderRoute.tsx:95), so it fires
+   on the <code>online</code> event <em>while the child is mid-story</em>, and <code>replayQueue</code> starts sending the
+   queued writes one at a time (sync.ts:285-325). The first one matches revision R and the
+   server bumps the row to R+1 (reading.py:371, 413).
+3. The child's next tap fires <code>persist()</code> with <code>state_revision: revisionRef.current</code> = R
+   (ReaderPage.tsx:296). The server now sees <code>body.state_revision != row.state_revision</code> and
+   returns <strong>409 with the replayed row as <code>current_row</code></strong> (reading.py:371, :87-89).
+4. ReaderPage's 409 handler adopts the server row unconditionally, writes it into the local
+   cache, sets it as <code>initialReading</code>, and <strong>bumps <code>readerKey</code> to remount the Reader</strong>
+   (ReaderPage.tsx:317-337). The adopted row is an <em>earlier</em> position from the offline
+   session, so the child is teleported back and the reader restarts from there.
+Then it repeats: the child reads on from the stale node, replay keeps advancing the revision,
+the next live save 409s again, adopt-and-remount again.
+WHY: This is not a narrow race, it is the expected outcome whenever the network returns while
+the child is still reading, and the size of this book is what makes it near-certain. Measured
+on the deepest realizable route: <strong>74 queued rows</strong> for one offline read-through
+(largest PUT body 2,270 bytes, 97.8 KB total), replayed as <strong>74 sequential round-trips</strong> -
+at a modest 150 ms RTT that is an ~11-second window in which every tap 409s. Book 1's shorter
+queue gives a proportionally narrower window; a 5-page picture book gives almost none. What
+the child experiences is the story jumping back several pages, the passage remounting (scroll
+reset, <code>Go back</code> history rebuilt), and a "All caught up! Your reading is saved." success toast
+(ReaderRoute.tsx:89-91) fired at the same moment their place was overwritten. The design note
+at ReaderPage.tsx:318-327 explicitly accepts losing this device's position to <em>another
+device</em>; it does not contemplate losing it to <strong>this same device's own queued past</strong>, which is
+what happens here.
+WHERE: frontend/src/reader/ReaderPage.tsx:146,237,296,304-305,317-337;
+frontend/src/reader/ReaderRoute.tsx:95; frontend/src/offline/sync.ts:186-201,277-325;
+src/cyo_adventure/api/reading.py:363,371,413-414,87-89.
+FIX: The reader's own writes must not compete with its own replay.
+1. Cheapest correct fix: have <code>persist()</code> participate in the same <code>navigator.locks</code>
+   <code>'cyo-replay'</code> lock so a live save cannot interleave with a replay, and have <code>replayQueue</code>
+   <strong>collapse the queue per <code>(profile_id, storybook_id)</code> before sending</strong> - only the newest
+   queued state per story is meaningful (the row is last-write-wins with a revision chain),
+   so 74 round-trips become 1 and the window nearly vanishes. Drop the superseded rows.
+2. Advance <code>revisionRef</code> optimistically on a <code>'queued'</code> result, or (better) have the queued
+   write path own the revision chain so the reader never sends a base revision the queue has
+   already consumed.
+3. Guard the adopt-and-remount branch: if the 409's <code>current_row</code> is a <strong>prefix of</strong> the local
+   <code>path</code> (same start, shorter, same book), it is this device's own stale past - re-save the
+   local state onto the server revision (<code>continue_from_this_device</code>, sync.ts:231-235) instead
+   of adopting backwards. Only adopt when the server row is genuinely divergent.</p>
+<p>ADDENDUM to the shelf finding: <code>/v1/reading-history</code> does the same whole-blob select
+(reading_history.py:246-251) purely to read <code>metadata.ending_count</code> (<code>_ending_count</code>:103-134)
+and run one node-membership check (<code>_is_ending_node</code>:137). <code>EndingsProgress</code> fires that
+endpoint <strong>on every ending-screen mount</strong> (EndingsProgress.tsx:37-39), and because the median
+playthrough of this book is 5 pages the child reaches an ending screen constantly - so the
+highest-frequency read in the kid's session is also the one that decodes every book's full
+prose server-side. Same fix (denormalised <code>ending_count</code> / <code>ending_node_ids</code> columns) closes
+both call sites.</p>
+<h3 id="at-746-nodes-the-typical-read-got-shorter-than-at-305-nodes-5-pages-304-words-vs-11-654-verified">At 746 nodes the typical read got SHORTER than at 305 nodes: 5 pages / 304 words vs 11 / 654 [VERIFIED]<a class="headerlink" href="#at-746-nodes-the-typical-read-got-shorter-than-at-305-nodes-5-pages-304-words-vs-11-654-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: The book grew 2.4x in nodes and 2.3x in bytes, but the typical child-visible read
+<em>halved</em>. Measured over 3,000 uniform walks per book (and confirmed at 5,000 walks with the
+real condition-aware engine for the ninth hand):</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>vault-of-nine-iron (305 nodes)</th>
+<th>the-ninth-hand (746 nodes)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>median pages per completed read</td>
+<td>11</td>
+<td><strong>5</strong></td>
+</tr>
+<tr>
+<td>median words per completed read</td>
+<td>654</td>
+<td><strong>304</strong></td>
+</tr>
+<tr>
+<td>mean pages</td>
+<td>11.7</td>
+<td>6.7</td>
+</tr>
+<tr>
+<td>choices that end the book immediately</td>
+<td>106 / 475 = 22.3%</td>
+<td>232 / 1030 = 22.5%</td>
+</tr>
+<tr>
+<td>decision nodes where &gt;=50% of choices end the book</td>
+<td>-</td>
+<td>54</td>
+</tr>
+<tr>
+<td>decision nodes where EVERY choice ends the book</td>
+<td>-</td>
+<td>3</td>
+</tr>
+<tr>
+<td>endings reachable within 2 choices of the start</td>
+<td>-</td>
+<td>7</td>
+</tr>
+</tbody>
+</table>
+<p>The per-choice termination density is identical across the two books (~22.5%), so the extra
+608 nodes went into <em>width</em> - more parallel early branches, each terminating - not into depth.
+The result: 7 of the 232 endings sit within two taps of the start, and the median encounter
+with a 42,085-word book is 304 words.
+WHY: This is the finding that makes the other four bite. The reader's feedback surfaces are
+all calibrated on "a read is a substantial journey": the progress bar advances 5/746 = 1% and
+then snaps to 100%; the endings tracker announces "1 of 232"; the only way back in is
+"Read again", which restarts at <code>n_start</code> and discards the whole 8-variable state
+(machine.ts <code>reset</code> -&gt; <code>safeStart</code>, engine.ts:90-106). So the loop a child actually lives is:
+~90 seconds of reading, an ending screen that reports 0.4% completion, restart from page one.
+Nothing in the reader recognises that a 5-page read of this book is normal rather than a
+failure, and nothing offers re-entry other than "one page back" (which is also the slowest
+control in the app - see the replay finding). A child does not conclude "this book is wide",
+they conclude "I keep doing it wrong".
+WHERE: measured from out/the-ninth-hand.filled.json and out/the-vault-of-nine-iron.filled.json;
+the reader surfaces that mis-serve it are frontend/src/reader/readerProgress.ts:7-11,
+frontend/src/reader/EndingsProgress.tsx:60-65, frontend/src/reader/Reader.tsx:372-387
+(ending-screen actions: Read again / Go back / Back to my books), frontend/src/player/machine.ts
+(<code>reset</code> restarts from <code>start_node</code>).
+FIX: Two halves, and both are needed.
+- Reader side: give the ending screen a re-entry that is not a full restart. A
+  "Try a different turn" action that returns to the <strong>last node that had an unexplored visible
+  choice</strong> on this route (computable from the replayed <code>states[]</code> that <code>back()</code> already builds,
+  and cheap once the index is memoized) turns a 5-page dead end into a branch retry instead of
+  a restart, and makes the 232 denominator approachable in one sitting.
+- Authoring/validator side: this is worth a validator signal, not just a reader fix. A
+  band/scale rule on <em>expected read length</em> (e.g. reject or warn when the median
+  uniform-walk playthrough for a 16+ "long" book falls below some page floor, or when</p>
+<blockquote>
+<p>20% of a node's choices terminate) would have caught this before the book was filled.
+  The measurement is ~20 lines on top of the walk machinery <code>validator/walk.py</code> already has.</p>
+</blockquote>
+<h2 id="checked-and-fine">Checked and fine<a class="headerlink" href="#checked-and-fine" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Reading-state caps are not remotely at risk.</strong> The graph is a verified DAG (no cycles),
+  the longest realizable route is 74 choices, and <code>path</code> only grows on a forward choice while
+  <code>back()</code> <em>shrinks</em> it by replaying a shorter prefix (engine.ts:325-341). So <code>path</code> maxes at
+  75 against <code>PATH_MAX_LENGTH = 2020</code>, and <code>visit_set</code> maxes at 75 against
+  <code>VISIT_SET_MAX_LENGTH = 505</code> (schemas.py:50-52,78-79) - and both reset on RESTART
+  (engine.ts:98-99). No legitimate reading pattern, including heavy backtracking or a
+  multi-hour session, gets within 6x of either cap. Explicit non-finding.</li>
+<li><strong>Per-save payload is small.</strong> Largest PUT body on the deepest route is 2,270 bytes; a whole
+  74-choice read sends 97.8 KB across 74 saves. The <code>JSON.stringify</code> dedup signature in
+  <code>persist()</code> (ReaderPage.tsx:279-285) is ~2 KB per choice. Fine. (The <em>number</em> of offline
+  round-trips is the problem, not their size - see the reconnect finding.)</li>
+<li><strong>IndexedDB capacity is a non-issue at this size.</strong> 526 KB pretty / 405 KB minified per
+  book, ~750 KB for the whole 3-book series as structured clones. Nowhere near any mobile
+  Safari or Chrome origin quota. <code>JSON.parse</code> of the full 526 KB blob measured at ~2 ms, and
+  it happens once per reader mount, not per render. <code>cacheStorybook</code> failures are swallowed
+  (ReaderPage.tsx:188-193) which would silently disable offline reading, but that is
+  size-independent and out of this review's scope.</li>
+<li><strong><code>EndingsBadge</code> layout does not break at 232.</strong> The dot row is capped at <code>MAX_DOTS = 10</code>
+  and simply omitted above it (EndingsBadge.tsx:19,25), and <code>clampedFound</code> prevents
+  "233 of 232". The failure is semantic, not visual - which is why it is filed as a design
+  finding above rather than a layout bug.</li>
+<li><strong><code>visibleChoices</code> per render is correctly memoized</strong> (Reader.tsx:101) and costs one node
+  index build, not a replay. <code>story</code> identity is stable for the reader's lifetime
+  (ReaderPage.tsx:99,255), so the <code>useMemo</code> deps do behave as intended; the replay cost is
+  once per page turn, not once per render.</li>
+<li><strong>The engine is not accidentally exponential on this book.</strong> The <code>MAX_REPLAY_STEPS = 5000</code>
+  budget (engine.ts:230) was never approached: the deepest route's replay consumed 285 steps
+  and always found a faithful reconstruction, so <code>Go back</code> never silently disappears here.</li>
+</ul>
+<h2 id="method-note">Method note<a class="headerlink" href="#method-note" title="Permanent link">&para;</a></h2>
+<p>All timings and payload sizes were measured with read-only <code>node</code>/<code>python3</code> over the real
+artifacts in <code>out/</code>, using an inline port of <code>frontend/src/player/engine.ts</code> +
+<code>evaluator.ts</code> (same transition order, same <code>nodeIndex</code>/<code>intBounds</code> call sites, same DFS
+replay and budget) so the replay costs reflect the shipped algorithm rather than an estimate.
+Wall-clock numbers are from this container's CPU; a phone or older tablet is conventionally
+4-6x slower, and I have flagged where I applied that multiplier rather than measuring it.
+The reconnect finding is a code trace end to end with line references, not an executed
+scenario - hence its label.</p>
+<hr />
+<h1 id="part-2-import-and-approve-and-publish-legs">Part 2: Import and approve-and-publish legs<a class="headerlink" href="#part-2-import-and-approve-and-publish-legs" title="Permanent link">&para;</a></h1>
+<h2 id="adversarial-review-import-and-approve-and-publish-legs-at-746-nodes-42085-words">Adversarial review: IMPORT and APPROVE-AND-PUBLISH legs at 746 nodes / 42,085 words<a class="headerlink" href="#adversarial-review-import-and-approve-and-publish-legs-at-746-nodes-42085-words" title="Permanent link">&para;</a></h2>
+<p>Target artifacts: out/the-ninth-hand.filled.json (746 nodes, 232 endings, Tier-2 stateful,
+book 3 of the wyrmreach series), skeletons/16+/the-ninth-hand.json, data/series/wyrmreach/book3.*</p>
+<p>Status: COMPLETE</p>
+<h3 id="moderation-is-1494-strictly-sequential-llm-calls-for-this-book-nothing-bounds-or-parallelizes-them-verified">Moderation is 1,494 strictly-sequential LLM calls for this book; nothing bounds or parallelizes them [VERIFIED]<a class="headerlink" href="#moderation-is-1494-strictly-sequential-llm-calls-for-this-book-nothing-bounds-or-parallelizes-them-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>_run_all_stages</code> runs Stage 1 (safety) and Stage 2 (readability) <strong>once per node, in a
+plain <code>for</code> loop, awaited one at a time</strong>, then Stage 3 and Stage 4 once each. There is no
+<code>asyncio.gather</code>, no semaphore, no batching, no chunking, and no per-story call budget.
+WHY: 746 nodes -&gt; 746 safety calls + 746 readability calls + 2 whole-story calls = <strong>1,494
+sequential provider round-trips</strong> for one import of the-ninth-hand. Per-call timeout is
+<code>llm_timeout_seconds = 120</code> (openrouter) / <code>ollama_timeout_seconds = 300</code>. At an optimistic
+1.5 s/call that is ~37 minutes; at 4 s/call ~100 minutes; a single slow call can legally
+consume 120-300 s of that. This is wall-clock inside one <code>import_filled_story</code> call, holding
+one open <code>AsyncSession</code> and one uncommitted Postgres transaction for the whole duration (see
+the transaction finding below). It also means one import fans out ~1.5k billable requests: at
+<code>review_openrouter_model = anthropic/claude-sonnet-4.6</code> with ~300 chars of prose per node the
+Stage 1+2 legs alone are cheap per call but the count is the cost driver, and Stage &frac34; each
+send the entire 225,812-char corpus (see next finding).
+WHERE: src/cyo_adventure/moderation/stages.py:196-216 (Stage 1 loop), :247-268 (Stage 2 loop),
+src/cyo_adventure/moderation/pipeline.py:544-575 (stage sequencing),
+src/cyo_adventure/core/config.py:423 (llm_timeout_seconds=120), :434 (ollama_timeout_seconds=300),
+:527-529 (review_provider/model defaults)
+FIX: Bound the per-node stages with a concurrency semaphore (<code>asyncio.gather</code> over chunks,
+limit ~5-8), and add an explicit per-story call budget + elapsed-time budget that, when
+exceeded, records a <code>BLOCK</code>/<code>FLAG</code> finding ("moderation incomplete") rather than silently
+returning a partial report. Batch several nodes per Stage &frac12; call with per-node verdicts in
+one JSON response.</p>
+<h3 id="the-whole-import-is-one-postgres-transaction-held-open-across-all-1494-llm-calls-with-the-storybook-row-for-update-locked-verified">The whole import is ONE Postgres transaction held open across all 1,494 LLM calls, with the Storybook row FOR UPDATE-locked [VERIFIED]<a class="headerlink" href="#the-whole-import-is-one-postgres-transaction-held-open-across-all-1494-llm-calls-with-the-storybook-row-for-update-locked-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>import_cli._run</code> opens a single <code>get_session()</code>, calls <code>import_filled_story</code> (gate -&gt;
+<code>persist_storybook</code> -&gt; full moderation pipeline), then series linkage, and only commits at the
+very end (import_cli.py:118). Inside that same transaction, <code>run_moderation_pipeline</code> takes
+<code>SELECT ... FOR UPDATE</code> on the Storybook row (pipeline.py:98) <em>before</em> the stages run. So the
+row lock and the write transaction are held for the entire multi-tens-of-minutes review run.
+WHY: at 746 nodes this is a ~40-100 minute <code>idle in transaction</code> session. Concretely:
+(a) <code>supabase/config.toml:50</code> sets <code>pool_mode = "transaction"</code>, and the code has an explicit
+transaction-pooler mode (<code>database_disable_prepared_cache</code> -&gt; NullPool); under Supavisor/PgBouncer
+transaction pooling one server backend is pinned for the transaction's whole life, and any
+<code>idle_in_transaction_session_timeout</code> or pooler <code>server_idle_timeout</code> kills it mid-run,
+discarding all 1,494 calls' worth of spend with the story never persisted. (b) <code>pool_pre_ping</code>
+does not help: the connection is mid-transaction, not idle-in-pool. &copy; Because the failure
+mode is "exception propagates -&gt; <code>get_session</code> rolls back" (import_story.py:99-105,
+import_cli.py:220-234), a review-backend hiccup at node 700 of 746 throws away the entire
+import; there is no checkpoint, no resume, and no partial-report persistence. Nothing about
+this is size-dependent in the code, but at 305 nodes it is a ~20-minute transaction and at 746
+it is over an hour, which is where real pooler/keepalive limits start firing.
+WHERE: src/cyo_adventure/generation/import_cli.py:92-119,
+src/cyo_adventure/generation/import_story.py:135-167,
+src/cyo_adventure/moderation/pipeline.py:98,
+src/cyo_adventure/core/database.py:161-172, supabase/config.toml:50
+FIX: Split the import into two transactions: commit the persisted draft first, then run
+moderation in its own short transaction per checkpoint (persist the partial <code>moderation_report</code>
+incrementally, take the <code>FOR UPDATE</code> lock only for the final <code>submit</code>/<code>auto_reject</code>
+transition). Since <code>publishing.service.approve</code> already refuses a version with
+<code>moderation_report=None</code>, a committed-but-unmoderated draft is already safe to leave behind and
+resume.</p>
+<h3 id="run_gate-is-a-37-second-synchronous-cpu-burn-called-directly-inside-async-def-route-handlers-verified"><code>run_gate</code> is a 3.7-second synchronous CPU burn called directly inside <code>async def</code> route handlers [VERIFIED]<a class="headerlink" href="#run_gate-is-a-37-second-synchronous-cpu-burn-called-directly-inside-async-def-route-handlers-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: I timed the real artifact: <code>run_gate(out/the-ninth-hand.filled.json)</code> takes <strong>3.72 s</strong>
+and peaks at ~238 MB RSS on this machine. Three FastAPI <code>async def</code> handlers call it inline,
+with no <code>run_in_executor</code> / <code>anyio.to_thread</code>:
+- <code>api/node_edit.py:444</code> (<code>edit_node</code>, every passage edit)
+- <code>api/generation.py:632</code> (<code>validate_version</code>, guardian-callable)
+- <code>moderation/rescreen.py:280</code> (the rescreen sweep, once per published book)
+WHY: 3.7 s of pure-Python CPU inside the single-threaded asyncio event loop <strong>stalls every
+other in-flight request</strong> for that whole window: a kid mid-read, another admin's queue load, the
+health probe. On the rescreen sweep it is 3.7 s x N published books back-to-back with no yield.
+On <code>edit_node</code> it is 3.7 s before the LLM re-review even starts, so one passage fix on this
+book is a ~6-10 s PATCH; the reviewer will be making dozens of them. <code>validate_version</code> is
+guardian-reachable, so any guardian can trigger a 3.7 s loop stall on demand for this book (a
+trivially cheap self-DoS on the whole API). At 305 nodes this is ~1.5 s; at 746 it is the kind
+of stall that trips a container liveness probe.
+WHERE: src/cyo_adventure/api/node_edit.py:444, src/cyo_adventure/api/generation.py:632,
+src/cyo_adventure/moderation/rescreen.py:280
+FIX: Wrap all three in <code>await anyio.to_thread.run_sync(run_gate, blob)</code>. Additionally cache the
+gate report per <code>(storybook_id, version)</code> so <code>validate_version</code> returns the already-stored
+<code>validation_report</code> instead of recomputing, and rate-limit it.</p>
+<h3 id="the-admin-review-surface-ships-the-whole-526-kb-blob-and-renders-all-746-passages-unvirtualized-with-no-pagination-anywhere-verified">The admin review surface ships the whole 526 KB blob and renders all 746 passages unvirtualized, with no pagination anywhere [VERIFIED]<a class="headerlink" href="#the-admin-review-surface-ships-the-whole-526-kb-blob-and-renders-all-746-passages-unvirtualized-with-no-pagination-anywhere-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>ReviewSurfaceView</code> carries <code>blob: dict[str, object]</code> verbatim (the whole story) plus
+<code>flagged_passages</code>, each re-carrying that node's prose. <code>get_review_surface</code> has no <code>limit</code>,
+<code>offset</code>, <code>cursor</code>, or node-range parameter. The client then renders every node: <code>readThrough.reachable.map(...)</code> followed by <code>readThrough.unreachable.map(...)</code>, one <code>&lt;article&gt;</code> per
+passage, no windowing/virtualization library anywhere in the file.
+WHY: I measured the real response by running <code>build_review_surface</code> over the real blob with a
+synthetic 1,492-finding report (10% flagged): the serialized <code>ReviewSurfaceView</code> is
+<strong>444,163 bytes</strong> with 75 flagged-passage cards, and the projection itself is cheap (7 ms), so
+this is a payload and DOM problem, not a CPU one. The page mounts <strong>746 passage components with
+232 ending badges and 1,030 choice rows in one DOM</strong>. That is the surface on which ADR-005's mandatory human approval is supposed to happen.
+There is no per-node reviewed/unreviewed tracking, no progress state, no "resume where I left
+off", and no way to review in sessions: the single Approve button at the bottom of a
+746-passage scroll is the entire recorded human judgment. A reviewer cannot in practice read
+42,085 words in one page load, so the realistic outcome is an approval that attests to far less
+than it claims.
+WHERE: src/cyo_adventure/api/schemas.py:1382-1392 (<code>blob</code> in the view),
+src/cyo_adventure/api/approval.py:222-285 (no pagination params),
+src/cyo_adventure/api/review_surface.py:100-117,
+frontend/src/admin/ReviewDetailPage.tsx:346, :534-565 (unvirtualized full render)
+FIX: Add node-range pagination to <code>GET /storybooks/{id}/review</code> (and stop echoing the whole
+blob; send only the passages for the requested window). Virtualize the read-through list.
+Persist per-node review progress keyed by <code>(storybook_id, version, node_id, reviewer)</code> so a
+multi-session review of a 746-node book is possible and the approval record can state what
+fraction was actually read.</p>
+<h3 id="the-review-queue-loads-every-in_review-books-full-blob-just-to-compute-a-title-and-a-count-verified">The review queue loads every in_review book's full blob just to compute a title and a count [VERIFIED]<a class="headerlink" href="#the-review-queue-loads-every-in_review-books-full-blob-just-to-compute-a-title-and-a-count-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>get_review_queue</code> bulk-selects whole <code>StorybookVersion</code> rows (<code>select(StorybookVersion)</code>)
+for every <code>in_review</code> storybook, then <code>build_review_queue_item</code> -&gt; <code>build_review_surface</code> builds
+a <strong>full prose index and full finding projection for each</strong> only to derive <code>title</code>,
+<code>flagged_count</code>, <code>age_band</code>, <code>themes</code>, <code>content_flags</code>. <code>GET /admin/storybooks</code> does the same
+across <em>every</em> status.
+WHY: with the three wyrmreach books in review that is ~1.3 MB of blob JSON plus ~750 KB of
+moderation-report JSONB read out of Postgres and hydrated per queue page-load, to produce a few
+hundred bytes per row. <code>/admin/storybooks</code> (no status filter) does it for the entire library
+including published and archived books, and the same reuse-<code>build_content_summary</code>-per-row pattern
+is on the <strong>guardian browse</strong> listing (<code>api/assignments.py:436-441</code>) and the guardian content
+summary (<code>:231-238</code>), so it is on a surface hit on every guardian page-load, not just an admin
+one. Honest scoping: I measured the projection at ~7 ms and ~250 KB report per book, so the CPU
+cost is negligible; the cost is the unbounded row-and-blob fetch, which grows linearly with the
+library and has no <code>LIMIT</code> on any of these four endpoints.
+WHERE: src/cyo_adventure/api/approval.py:312-317, :354-362, :644-664,
+src/cyo_adventure/api/review_surface.py:298-308,
+src/cyo_adventure/api/assignments.py:231-238, :436-441
+FIX: Project the queue in SQL (<code>blob['title']</code>, <code>blob['metadata']['age_band']</code> as JSONB
+expressions) and store <code>flagged_count</code> / gating flags as denormalized columns on
+<code>StorybookVersion</code> at moderation time. Paginate both listings.</p>
+<h3 id="import-silently-overwrites-the-authored-series-block-declared-book_index-3-is-replaced-by-import-order-and-nothing-ever-compares-the-two-verified">Import silently overwrites the authored series block: declared book_index 3 is replaced by import order, and nothing ever compares the two [VERIFIED]<a class="headerlink" href="#import-silently-overwrites-the-authored-series-block-declared-book_index-3-is-replaced-by-import-order-and-nothing-ever-compares-the-two-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>out/the-ninth-hand.filled.json</code> and <code>data/series/wyrmreach/book3.spec.json</code> both declare
+<code>metadata.series = {series_id: "wyrmreach", book_index: 3, series_entry_node: "n_start",
+is_final: false, carries_state: true}</code>. On <code>--series-id &lt;uuid&gt;</code> import, <code>assign_book_index</code>
+computes <code>max(book_index)+1</code> <strong>from the DB</strong> and <code>embed_series_block</code> then <em>replaces</em> the whole
+declared block: <code>series_id</code> becomes the DB UUID (not <code>"wyrmreach"</code>), <code>book_index</code> becomes the
+DB-assigned integer, <code>is_final</code> is hard-coded <code>False</code>, <code>series_entry_node</code> is overwritten with
+the blob's own <code>start_node</code>. There is <strong>no comparison anywhere</strong> between the declared
+<code>book_index</code> and the assigned one -- I grepped every <code>book_index</code> reference in <code>src/</code>.
+WHY: import order silently becomes the chain order. Import the-ninth-hand (declared book 3)
+first and it is stored as book 1; the declared 3 is overwritten with no warning, no log line
+naming the discrepancy, and no error. Every downstream consumer then trusts the wrong index:
+<code>api/reading.py:250-255</code> finds "the next book" by <code>book_index + 1</code>, so a reader who finishes the
+real book 1 is continued into the wrong story with the wrong carried state, and
+<code>validator/series.py::_check_indices</code> (SR-2) still passes because the assigned indices are
+contiguous 1..N by construction. The declared <code>is_final</code> is unconditionally flattened to
+<code>False</code>, so a series can never be marked closed by authoring. And the authored <code>series_id</code>
+string <code>"wyrmreach"</code> -- the identity the offline cross-book chain validator was run against --
+does not survive import, so the offline validation and the stored chain are keyed on different
+identifiers.
+WHERE: src/cyo_adventure/generation/series_link.py:131-136 (<code>_next_index</code> = max+1),
+:196-208 (block replaced wholesale, <code>is_final=False</code> hard-coded),
+src/cyo_adventure/generation/import_cli.py:104-117,
+src/cyo_adventure/validator/series.py:113-135 (SR-2 checks contiguity, not declared-vs-assigned)
+FIX: In <code>embed_series_block</code>, read the blob's declared <code>metadata.series</code> first; if it declares a
+<code>book_index</code> and it does not equal <code>storybook.book_index</code>, raise <code>ValidationError</code> rather than
+overwrite. Preserve the declared <code>is_final</code>. Add a <code>--book-index N</code> option to the import CLI that
+asserts the assigned index, so a 3-book series is imported deterministically instead of by
+whatever order the operator happened to run the commands in.</p>
+<h3 id="-job-the-provenance-route-and-series-id-the-linkage-route-are-mutually-exclusive-so-a-series-book-cannot-have-both-verified"><code>--job</code> (the provenance route) and <code>--series-id</code> (the linkage route) are mutually exclusive, so a series book cannot have both [VERIFIED]<a class="headerlink" href="#-job-the-provenance-route-and-series-id-the-linkage-route-are-mutually-exclusive-so-a-series-book-cannot-have-both-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>import_cli._run</code> returns immediately on the <code>--job</code> branch (<code>return await
+resume_manual_fill(...)</code>, line 93-94); the series-linkage block at :104-117 is unreachable from
+it, and the CLI help says so outright ("Ignored with --job"). <code>import_story.py</code> contains zero
+references to series (grepped: no matches).
+WHY: <code>--job</code> is the only route that records skeleton provenance (<code>skeleton_slug</code>, needed for
+recency-weighted skeleton picking) and the only route that runs the Stage 1 fidelity gate
+against the origin skeleton. <code>--series-id</code> is the only route that links a book into a series at
+all. For the three wyrmreach books the operator must pick one: either the books are
+fidelity-gated and provenance-stamped but <strong>have <code>series_id</code>/<code>book_index</code> NULL</strong> -- which means
+<code>api/reading.py:250</code> (<code>if book.series_id is None or book.book_index is None: return</code>) never
+offers a continuation, <code>publishing/service.py:299</code> skips <code>validate_series</code> entirely, and the
+whole state-carrying chain silently degrades to three unrelated standalone books -- or they are
+linked but ungated and unstamped. There is no combination that produces a correct Tier-2 series.
+And because <code>--series-id</code> is silently <em>ignored</em> rather than rejected with <code>--job</code>, an operator
+who passes both gets the broken outcome with a zero-exit "imported <id>" success message.
+WHERE: src/cyo_adventure/generation/import_cli.py:52-59, :92-119,
+src/cyo_adventure/generation/import_story.py (no series linkage),
+src/cyo_adventure/api/reading.py:250
+FIX: Move series linkage into <code>import_filled_story</code> (after moderation, before return) so both
+routes get it, and thread <code>series_id</code> through <code>ImportRequest</code>. At minimum, make <code>--job
+--series-id</code> a hard argument error instead of a silent ignore.</p>
+<h3 id="there-is-no-path-to-republish-a-corrected-mid-chain-book-and-re-importing-one-permanently-breaks-sr-2-verified">There is no path to republish a corrected mid-chain book, and re-importing one permanently breaks SR-2 [VERIFIED]<a class="headerlink" href="#there-is-no-path-to-republish-a-corrected-mid-chain-book-and-re-importing-one-permanently-breaks-sr-2-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>LEGAL_TRANSITIONS</code> has exactly one edge out of <code>published</code> (<code>archive</code>) and <strong>none out of
+<code>archived</code></strong>. <code>submit</code> is only legal from <code>draft</code>/<code>needs_revision</code>. So once book 2 is published
+there is no transition that returns it to review, and therefore no way to approve a v2 of it.
+WHY: on a 3-book chain, errata are found <em>while reviewing later books</em> -- that is the normal
+case, and it is exactly what a 746-node book 3 that depends on book 2's ending state will
+surface. The only workaround is importing the fix as a new storybook id, and
+<code>assign_book_index</code> then gives it <code>max+1 = 4</code> while the old book 2 still holds index 2 and a
+non-null <code>current_published_version</code> (so <code>_series_chain_docs</code> still counts it, deliberately, per
+the archived-sibling <code>#EDGE</code> note at publishing/service.py:160-165). The chain becomes indices
+{1,2,3,4} for 4 members and passes SR-2 only if all four are published -- but the replacement
+occupies slot 4, i.e. <em>after</em> book 3, so <code>api/reading.py</code>'s <code>book_index + 1</code> continuation walks
+1 -&gt; 2(stale) -&gt; 3 -&gt; 4(the fix), permanently. SR-2 gives no signal because it only checks
+contiguity, never that indices reflect narrative order.
+WHERE: src/cyo_adventure/publishing/state_machine.py:69-78,
+src/cyo_adventure/publishing/service.py:148-171,
+src/cyo_adventure/generation/series_link.py:131-136
+FIX: Add a <code>published -&gt; in_review</code> (or <code>published -&gt; needs_revision</code>) revision edge guarded by
+"a newer draft version exists", so a corrected version of an already-published book can be
+re-approved in place under the same <code>book_index</code>. Alternatively make <code>book_index</code> explicitly
+assignable so a replacement can claim the slot it is replacing.</p>
+<h3 id="moderation_report-is-the-one-jsonb-payload-with-no-byte-budget-and-it-is-the-only-one-that-scales-with-node-count-verified"><code>moderation_report</code> is the one JSONB payload with no byte budget, and it is the only one that scales with node count [VERIFIED]<a class="headerlink" href="#moderation_report-is-the-one-jsonb-payload-with-no-byte-budget-and-it-is-the-only-one-that-scales-with-node-count-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>persist_storybook</code> byte-checks <code>blob</code> and <code>validation_report</code> against
+<code>_MAX_BLOB_BYTES = 2_000_000</code> before any row is added, and <code>embed_series_block</code> re-checks the
+blob via <code>ensure_blob_within_budget</code>. <code>moderation_report</code> is assigned with no check at all:
+<code>version_row.moderation_report = report.to_dict()</code> (pipeline.py:180), and <code>node_edit.py</code>'s
+<code>_merge_moderation_report</code> rewrites it unchecked too.
+WHY: <code>moderation_report</code> is precisely the payload whose size is <code>O(nodes)</code>. For this book it holds
+<strong>&gt;= 1,494 findings</strong>, each carrying a free-text <code>message</code> taken verbatim from the review model's
+<code>reason</code> field, which is bounded only by <code>_MAX_REVIEW_TOKENS = 1024</code> (~4 KB) per finding. A
+merely verbose reviewer produces a multi-megabyte JSONB write that the guarded columns would have
+rejected, and that report is then re-serialized in full on <strong>every</strong> <code>get_review_queue</code> /
+<code>get_review_surface</code> / <code>edit_node</code> call. The <code>blob</code> guard (526 KB vs a 2 MB ceiling) gives ~4x
+headroom, which is comfortable; the unguarded column is the one at risk.
+WHERE: src/cyo_adventure/moderation/pipeline.py:180,
+src/cyo_adventure/generation/persistence.py:100-102, :129-144,
+src/cyo_adventure/api/node_edit.py:301-364,
+src/cyo_adventure/moderation/review_provider.py:28, src/cyo_adventure/moderation/pipeline.py:54
+FIX: Run <code>_check_byte_budget(report.to_dict(), field="moderation_report")</code> before the assignment
+in both writers, and truncate <code>Finding.message</code> at construction (e.g. 500 chars) so per-node
+report growth is bounded by node count alone.</p>
+<h3 id="book-3-narrows-renown-to-min3-so-carried-state-from-book-2-is-silently-clamped-upward-and-low-renown-outcomes-are-erased-verified">Book 3 narrows <code>renown</code> to min=3, so carried state from book 2 is silently clamped upward and low-renown outcomes are erased [VERIFIED]<a class="headerlink" href="#book-3-narrows-renown-to-min3-so-carried-state-from-book-2-is-silently-clamped-upward-and-low-renown-outcomes-are-erased-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>startContinuation</code> seeds carried variables by <strong>name</strong> and clamps carried ints into the
+<em>receiving</em> book's declared bounds, skipping any type mismatch, with no signal on either. The
+actual declared bounds across the chain:
+- book 1: <code>renown</code> int 0..3 (initial 0)
+- book 2: <code>renown</code> int 0..5 (initial 2)
+- book 3: <code>renown</code> int <strong>3..5</strong> (initial 3)
+WHY: <code>renown</code> is book 3's own reputation gate, and a reader can legitimately finish book 2 with
+<code>renown</code> 0, 1, or 2 (book 2 starts it at 2 in a 0..5 range). <code>clamp</code> then rewrites that to <strong>3</strong>
+-- the chain's maximum-reputation floor -- so every low-reputation playthrough of book 2 arrives
+at book 3 indistinguishable from a high-reputation one. That is the exact promise a
+<code>carries_state: true</code> Tier-2 series makes, silently broken, and the erasure happens in the
+<em>client</em> engine, not on a surface anyone reviews. Two more concrete corruptions in the same
+mechanism:
+1. Book 2 declares <code>deep_charts</code> and <code>oath_sworn</code>; book 3 declares neither. <code>startContinuation</code>
+   iterates <code>story.variables</code> (the receiving book's), so those two carried values are <strong>dropped
+   without trace</strong>. <code>oath_sworn</code> is precisely a book-2 commitment book 3 should honor.
+2. Book 3 declares <code>second_iron</code> initial <strong>True</strong>, but book 2 declares it initial <code>False</code> (earned
+   in play). A reader who finishes book 2 without earning it carries <code>false</code>, which <em>overrides</em>
+   book 3's declared premise; a reader who starts at book 3 directly gets <code>true</code>. The same 746
+   nodes are read under two contradictory premises, and the prose can only be right for one.
+Nothing validates any of this: <code>validator/series.py</code>'s SR-1..SR-7 check series id, index
+contiguity, entry-node existence, the final flag, win-ending presence, and <code>carries_state</code>
+uniformity -- <strong>there is no rule that compares variable names, types, or bounds across a
+state-carrying chain</strong>. And the backend has no continuation logic at all (<code>grep -n
+'continuation\|carried' src/cyo_adventure/player/engine.py src/cyo_adventure/api/reading.py</code>
+returns nothing), so this is client-only with no server-side cross-check.
+WHERE: frontend/src/player/engine.ts:119-153 (<code>startContinuation</code>), :31-40 (<code>clamp</code>), :21-29,
+frontend/src/reader/ContinueSeries.tsx:65,
+data/series/wyrmreach/book2.spec.json / book3.spec.json (variable blocks),
+src/cyo_adventure/validator/series.py:243-273 (SR-6/SR-7 are the only state-carry rules)
+FIX: Add an SR rule to <code>validate_series</code>: for a <code>carries_state</code> chain, every variable declared in
+book N must be declared in book N+1 with the same type, and book N+1's <code>[min,max]</code> must contain
+book N's, else ERROR. Report dropped variables as at least a WARNING. Make <code>startContinuation</code>
+record a per-variable carry audit (<code>carried</code> / <code>clamped</code> / <code>dropped</code> / <code>type-mismatch</code>) into the
+reading state so a corrupted carry is visible rather than silent, and surface it on the review
+surface for a series book.</p>
+<h3 id="nothing-gates-entry-into-a-mid-chain-book-book-3-can-be-assigned-and-opened-cold-and-archiving-book-2-leaves-a-hole-in-the-chain-the-reader-hits-at-runtime-verified">Nothing gates entry into a mid-chain book: book 3 can be assigned and opened cold, and archiving book 2 leaves a hole in the chain the reader hits at runtime [VERIFIED]<a class="headerlink" href="#nothing-gates-entry-into-a-mid-chain-book-book-3-can-be-assigned-and-opened-cold-and-archiving-book-2-leaves-a-hole-in-the-chain-the-reader-hits-at-runtime-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>/v1/library</code> returns <code>series_id</code> and <code>book_index</code> but performs no prerequisite check;
+<code>api/assignments.py</code> has <strong>zero</strong> references to series (grepped). A guardian can assign
+the-ninth-hand (book 3) to a child who has never opened books 1 or 2, and the reader opens it
+via the normal <code>start(story)</code> path, not <code>startContinuation</code>, so it initializes from book 3's
+declared initials (<code>renown: 3</code>, <code>iron_key: true</code>, <code>second_iron: true</code>, <code>knows_compact: true</code>).
+WHY: two distinct runtime holes a 3-book chain exposes that a 2-book chain does not:
+1. <strong>Cold mid-chain start.</strong> 746 nodes of prose whose Layer-2 configuration space is anchored on
+   book-2 outcomes are read by someone with no book-2 history. The declared initials make it
+   <em>mechanically</em> valid (the gate passes), which is exactly why nothing catches it: the failure is
+   narrative, and the only surface that could catch it is the human review of book 3, which has no
+   indication it is book 3 of anything (<code>ReviewSurfaceView</code> exposes no series fields at all --
+   <code>api/schemas.py:1382-1392</code>).
+2. <strong>G8 archive punches a hole.</strong> <code>archive</code> only flips status; it does not clear
+   <code>current_published_version</code>, so <code>publishing/service.py:148-171</code> deliberately keeps the archived
+   book in the chain for SR-2 contiguity. But <code>get_series_next</code> requires
+   <code>sibling.status == "published"</code> and returns <code>next: null</code> otherwise
+   (api/reading.py:257-259). So archiving book 2 makes the chain <em>dead-end at book 1</em> while book 3
+   stays fully published, assignable, and readable, with <code>book_index 3</code> and a
+   <code>series_entry_node</code> that expects carried state that can now never be produced. There is no
+   check on archive that warns "this book is mid-chain and N later books depend on it", and no
+   cascade.
+WHERE: src/cyo_adventure/api/reading.py:250-259, src/cyo_adventure/api/assignments.py (no series
+logic), src/cyo_adventure/api/library.py:204-223, :391-395,
+src/cyo_adventure/publishing/service.py:410-431 (<code>archive</code> is unconditional),
+src/cyo_adventure/api/schemas.py:1382-1392 (review view carries no series context)
+FIX: On <code>archive</code>, refuse (or require an explicit override flag) when the book has a published
+sibling at a higher <code>book_index</code> in the same series, and surface the dependent books in the
+error. In <code>assignments</code>, when assigning a book with <code>book_index &gt; 1</code> in a <code>carries_state</code> series,
+either require the prior book to be assigned/completed or warn the guardian explicitly. Add
+<code>series_id</code>/<code>book_index</code>/<code>carries_state</code> to <code>ReviewSurfaceView</code> so the human approver knows they
+are approving book 3 of a state-carrying chain.</p>
+<h3 id="the-soft-gate-auto-repair-is-structurally-impossible-at-this-size-it-must-emit-the-whole-story-but-is-capped-at-32k-output-tokens-verified">The soft-gate auto-repair is structurally impossible at this size: it must emit the whole story but is capped at 32k output tokens [VERIFIED]<a class="headerlink" href="#the-soft-gate-auto-repair-is-structurally-impossible-at-this-size-it-must-emit-the-whole-story-but-is-capped-at-32k-output-tokens-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>attempt_repair</code> serializes the <strong>entire</strong> story blob into one prompt and instructs the
+model to "Return ONLY the full revised story JSON, same schema", bounded by
+<code>_MAX_REPAIR_TOKENS = 32_000</code>. Measured on the real artifact: compact JSON is <strong>405,742 bytes ~=
+101,000 tokens</strong>. The required output is therefore ~3.2x the output cap.
+WHY: the repair fires whenever the report has any <code>FLAG</code> and no hard <code>BLOCK</code>
+(pipeline.py:166) -- and with 746 nodes running through two per-node stages whose Stage 1
+fail-safe is <code>FLAG</code> on any unparsable verdict, at least one FLAG is near-certain. The model
+cannot physically return the story, so the output is truncated mid-JSON, <code>json.loads</code> raises,
+<code>attempt_repair</code> returns <code>None</code>, and the pipeline proceeds -- after burning a ~101k-token input
+call. It is pure waste with a straight face: <code>_repair_is_adoptable</code> and
+<code>_repair_preserves_identity</code> are elaborate protections for an outcome that can never occur on a
+book this size. Worse on the Ollama leg: the stream byte ceiling is <code>max_tokens * 16 = 512,000</code>
+bytes, and the story blob alone is <strong>526,306 bytes</strong>, so a model that <em>did</em> try to emit the full
+revision trips the ceiling and raises a <strong>transient <code>ProviderError</code></strong> -- which
+<code>import_filled_story</code> deliberately does not catch (import_story.py:99-105), so the caller's
+session rolls back and <strong>the entire ~40-100 minute import is discarded</strong>.
+WHERE: src/cyo_adventure/moderation/repair.py:93-108,
+src/cyo_adventure/moderation/pipeline.py:55 (<code>_MAX_REPAIR_TOKENS = 32000</code>), :166-178,
+src/cyo_adventure/generation/providers/ollama.py:268 (<code>max_bytes = max_tokens * 16</code>)
+FIX: Make repair per-node: re-prompt only the flagged nodes' bodies and splice the revised prose
+back into the blob (which also removes the need for the identity/structure backstops). Add a
+guard that skips repair entirely, with a recorded finding, when
+<code>len(json.dumps(blob)) / 4 &gt; max_tokens</code>, so an impossible repair is never attempted.</p>
+<h3 id="the-ollama-review-leg-never-sets-num_ctx-so-the-two-whole-story-stages-silently-judge-a-truncated-fraction-of-the-book-verified-for-the-missing-setting-suspected-for-the-exact-truncation-behavior">The Ollama review leg never sets <code>num_ctx</code>, so the two whole-story stages silently judge a truncated fraction of the book [VERIFIED for the missing setting; SUSPECTED for the exact truncation behavior]<a class="headerlink" href="#the-ollama-review-leg-never-sets-num_ctx-so-the-two-whole-story-stages-silently-judge-a-truncated-fraction-of-the-book-verified-for-the-missing-setting-suspected-for-the-exact-truncation-behavior" title="Permanent link">&para;</a></h3>
+<p>WHAT: Stage 3 (coherence) and Stage 4 (engagement) concatenate <strong>every</strong> node's prose into a
+single prompt: measured <strong>267,483 chars ~= 67,000 tokens</strong> for this book. The Ollama adapter's
+request body sets <code>options.num_predict</code> (output budget) but <strong>no <code>num_ctx</code></strong>
+(<code>grep num_ctx src/cyo_adventure/generation/providers/*.py</code> -&gt; only <code>num_predict</code>). Ollama's
+default context window is a few thousand tokens unless <code>num_ctx</code> is set, and it truncates the
+prompt to fit rather than erroring.
+WHY: <code>review_provider = "ollama"</code> with <code>review_ollama_model = "qwen2.5:14b"</code> is a supported
+production configuration (core/config.py:527-529). On it, the only two whole-story checks in the
+entire pipeline receive a small truncated slice of a 42,085-word book and return a confident
+<code>pass</code>. Because Ollama truncates rather than failing, there is <strong>no error, no warning, and no
+finding</strong> -- the report says the story passed coherence when coherence was never evaluated. This
+is the silent-partial-coverage safety hole in its worst form: it looks identical to a clean pass.
+If the truncation drops the system-prompt end of the context, the "return ONLY JSON" and
+instruction-hierarchy framing go with it, and <code>_parse_verdict</code>'s <code>fail_safe=PASS</code> for stages 3-4
+converts the resulting garbage into another silent pass. I did not run a live Ollama call, hence
+SUSPECTED on the precise truncation semantics; the missing <code>num_ctx</code> and the 67k-token prompt are
+both verified from code and measurement.
+WHERE: src/cyo_adventure/moderation/stages.py:298-302 (coherence prompt), :346-350 (engagement),
+src/cyo_adventure/generation/providers/ollama.py:169 (<code>"options": {"num_predict": max_tokens}</code>),
+src/cyo_adventure/core/config.py:527-529
+FIX: Send <code>options.num_ctx</code> explicitly, computed from the prompt size, and have the adapter
+<strong>fail loudly</strong> when the estimated prompt exceeds the model's context rather than letting the
+server truncate. Independently, cap the whole-story stages: chunk the story into
+context-sized windows and require every window to return a verdict, so "coherence passed" can
+never mean "coherence saw 3% of the book".</p>
+<h3 id="the-safety-hole-one-classifier-error-stops-stage-0-for-every-remaining-node-and-the-only-signal-is-a-single-advisory-verified">THE SAFETY HOLE: one classifier error stops Stage 0 for every remaining node, and the only signal is a single ADVISORY [VERIFIED]<a class="headerlink" href="#the-safety-hole-one-classifier-error-stops-stage-0-for-every-remaining-node-and-the-only-signal-is-a-single-advisory-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>_screen_all_nodes</code> loops nodes sequentially calling OpenAI Moderation and Google
+Perspective <strong>once per node each</strong>. The instant either raises <code>ClassifierUnavailable</code>, its
+<code>*_reason</code> is set and the guard <code>if openai_key and openai_reason is None</code> skips that classifier
+<strong>for every remaining node</strong>. The docstring states this outright: "is not retried for the
+remaining nodes". The entire compensating signal is one whole-story
+<code>Finding(verdict=ADVISORY, category="classifier_degraded", node_id=None)</code>.
+WHY: this is size-dependent and lands squarely on this book. Stage 0 makes <strong>2 x 746 = 1,492
+sequential third-party HTTP calls</strong> for one import. Perspective's default per-project quota is on
+the order of 1 QPS and OpenAI Moderation rate-limits per minute; a burst of 746 back-to-back calls
+is exactly the shape that trips a 429. A 429 at node 50 means <strong>nodes 51-746 (93% of the book, ~39,000
+words) are never bright-line screened</strong>, and the resulting report is indistinguishable from a
+fully-screened clean one except for a single ADVISORY line sitting among ~3,000 findings on an
+unpaginated review page. The bright-line categories Stage 0 exists to catch
+(<code>sexual/minors</code>, <code>self-harm/instructions</code>, <code>illicit/violent</code>) are precisely the ones that must
+not be sampled. And Stage 0's own short-circuit at pipeline.py:542 (<code>if report.has_hard_block:
+return</code>) means a Stage-0 block skips the LLM stages entirely -- so the two layers do not back each
+other up on the nodes Stage 0 skipped; those nodes still get the LLM safety stage, but the
+bright-line net simply is not there for them.
+Compounding it: the degraded advisory carries <code>score=None</code>, and <code>admin_surfaces</code> never hides an
+unscored finding, so it does at least reach the admin view -- but as an advisory, not a gate. The
+report's <code>summary.hard_block</code>/<code>soft_flag</code> are both unaffected, so <code>submit()</code> and <code>approve()</code> both
+pass with 93% of the book unscreened by Stage 0.
+WHERE: src/cyo_adventure/moderation/classifiers.py:115-131 (<code>if ... and openai_reason is None</code>),
+:64-75 (<code>_degraded_finding</code>, ADVISORY, score=None), :151-158 (docstring stating the behavior),
+src/cyo_adventure/moderation/pipeline.py:529-542,
+src/cyo_adventure/moderation/thresholds.py:184-205
+FIX: Track per-node classifier coverage. If any node was not screened by a configured classifier,
+emit a <code>FLAG</code> (not ADVISORY) so the story cannot reach <code>in_review</code> clean, and record the
+unscreened node count and ids in the finding. Add bounded retry with backoff plus a concurrency
+limit so a rate limit is absorbed rather than abandoning the rest of the book. At minimum, make
+<code>submit</code>/<code>approve</code> refuse a version whose report declares incomplete Stage-0 coverage.</p>
+<h3 id="stage-0-adds-1492-more-sequential-third-party-calls-so-one-import-is-2986-network-round-trips-verified">Stage 0 adds 1,492 more sequential third-party calls, so one import is ~2,986 network round trips [VERIFIED]<a class="headerlink" href="#stage-0-adds-1492-more-sequential-third-party-calls-so-one-import-is-2986-network-round-trips-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: Combining the two loops: Stage 0 is 2 calls/node (classifiers.py:115-131) and Stages 1-2 are
+2 calls/node (stages.py:197, :248), plus 2 whole-story calls. For 746 nodes that is
+<strong>1,492 + 1,494 = 2,986 strictly sequential network round trips</strong> in a single
+<code>import_filled_story</code> call, inside a single open Postgres transaction.
+WHY: sets the real wall-clock and failure-probability floor for the import leg. Even at a
+generous 500 ms mean per call it is ~25 minutes; any one of the 2,986 calls raising a
+non-<code>ClassifierUnavailable</code>, non-<code>ValidationError</code> exception (a <code>ProviderError</code> from the review
+backend, which the pipeline documents as intentionally propagating) discards the whole run. With
+~3,000 independent chances to fail and no checkpointing, a successful import of this book is a
+coin flip against provider reliability rather than a deterministic operation.
+WHERE: src/cyo_adventure/moderation/classifiers.py:115-131,
+src/cyo_adventure/moderation/stages.py:197-216, :248-268,
+src/cyo_adventure/moderation/pipeline.py:529-575,
+src/cyo_adventure/generation/import_story.py:99-105 (documented propagate-and-roll-back contract)
+FIX: Same as the concurrency/checkpointing fixes above; additionally make the moderation pipeline
+resumable by persisting per-node findings as they are produced, so a retry re-screens only the
+nodes without a stored finding.</p>
+<h3 id="the-stage-1-fidelity-gate-is-one-120000-token-prompt-with-a-512-token-answer-undelimited-and-it-fails-open-verified">The Stage 1 fidelity gate is one ~120,000-token prompt with a 512-token answer, undelimited, and it fails open [VERIFIED]<a class="headerlink" href="#the-stage-1-fidelity-gate-is-one-120000-token-prompt-with-a-512-token-answer-undelimited-and-it-fails-open-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>run_semantic_fidelity_check</code> builds a <strong>single</strong> prompt containing, for every FILLed node,
+the skeleton beat description plus the final prose plus every choice's original-&gt;final label pair,
+then asks for one whole-story verdict with <code>_MAX_FIDELITY_TOKENS = 512</code>. Measured for this book:
+all 746 skeleton nodes carry <code>&lt;&lt;FILL ...&gt;&gt;</code> beats (171,845 chars) and the fill is 225,812 chars,
+plus 1,030 choice-label pairs -&gt; <strong>~480,000 chars ~= 120,000 tokens in one prompt</strong>. Every parse
+or contract failure returns <code>None</code>, which the caller reads as "pass".
+WHY: this is the gate that runs on the <code>--job</code> route (<code>resume_manual_fill</code> -&gt;
+<code>_finalize_resume</code> -&gt; <code>run_stage1_gate</code>), i.e. the cyo-author skill route these books were
+authored through. At 120k tokens the prompt exceeds the context of the default review model on the
+Ollama leg outright and sits near the ceiling on frontier models; a 512-token answer is being asked
+to adjudicate fidelity across 746 beats and 1,030 labels, which cannot produce anything but a
+coin-flip global verdict. And every degradation path is fail-open: non-str, non-JSON, or
+<code>verdict != "flag"</code> all return <code>None</code> -&gt; <code>violations</code> empty -&gt; job status <code>"passed"</code>. So on this
+book the Stage 1 fidelity gate reports a pass whether or not it ran.
+Separately, and unlike every prompt in <code>moderation/stages.py</code>, this prompt embeds untrusted
+generated prose <strong>raw</strong>: <code>lines.append(f"Prose: {body}")</code>, with no <code>&lt;untrusted_passage&gt;</code> wrapper,
+no <code>_sanitize_delimited</code> call, and <code>_FIDELITY_SYSTEM</code> carries no <code>_UNTRUSTED_SUFFIX</code>. The
+instruction-hierarchy hardening that stages.py documents as <code>#CRITICAL: security</code> is simply absent
+here, on a prompt whose entire input is model-generated text.
+WHERE: src/cyo_adventure/moderation/fidelity_review.py:226-261 (single prompt, raw <code>Prose:</code>),
+:49 (<code>_MAX_FIDELITY_TOKENS = 512</code>), :31-47 (<code>_FIDELITY_SYSTEM</code>, no untrusted suffix),
+:246-259 (three fail-open returns),
+src/cyo_adventure/generation/import_story.py:453-479 (the caller that maps this to "passed")
+FIX: Chunk the fidelity check into bounded node batches and require a verdict per batch, with a
+missing/unparseable batch verdict recorded as a violation rather than a pass. Wrap every embedded
+beat and prose in <code>&lt;untrusted_passage&gt;</code> via <code>_sanitize_delimited</code> and append <code>_UNTRUSTED_SUFFIX</code>
+to <code>_FIDELITY_SYSTEM</code>, matching stages.py.</p>
+<h3 id="carries_state-and-the-family-boundary-are-also-taken-from-the-db-series-row-not-the-blob-and-neither-is-checked-against-the-import-verified"><code>carries_state</code> and the family boundary are also taken from the DB Series row, not the blob, and neither is checked against the import [VERIFIED]<a class="headerlink" href="#carries_state-and-the-family-boundary-are-also-taken-from-the-db-series-row-not-the-blob-and-neither-is-checked-against-the-import-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: Same overwrite mechanism as the <code>book_index</code> finding, but with worse consequences.
+<code>embed_series_block</code> sets <code>carries_state=series_row.carries_state</code> (series_link.py:201),
+overwriting the <code>carries_state: true</code> all three wyrmreach blobs declare. The only production
+path that creates a <code>Series</code> row is <code>story_requests/service.py::_create_series</code>, which derives
+<code>carries_state = age_band not in _EPISODIC_BANDS</code> from the <strong>series row's own</strong> <code>age_band</code>. There
+is no CLI or admin endpoint to create a Series row for an offline-authored series at all (only
+<code>scripts/seed_dev_data.py</code>, <code>scripts/seed_series_catalog.py</code>, <code>scripts/series_e2e_local.py</code>), so
+the <code>--series-id</code> an operator passes must come from an in-app story request whose band may not be
+the books' band. Nothing compares <code>Series.age_band</code> to the blobs' <code>metadata.age_band</code>, and
+nothing compares <code>Series.family_id</code> to the <code>--family</code> the books were imported under (no check
+constraint on the <code>Series</code>/<code>Storybook</code> pair either).
+WHY: if the Series row's <code>age_band</code> is <code>"3-5"</code> or <code>"5-8"</code>, <code>carries_state</code> is <code>False</code>, and import
+silently rewrites all three 16+ books to <code>carries_state: false</code>. SR-7 then <strong>passes</strong> (the chain
+is uniformly false), SR-6 passes (16+ is not a young band), so <code>approve</code> raises nothing. At
+runtime <code>get_series_next</code> returns <code>carries_state: false</code> (api/reading.py:299) and
+<code>ContinueSeries.tsx:65</code> therefore omits the carried var state entirely -- the whole
+state-carrying campaign degrades to three episodic books, every book-2 outcome discarded, with no
+error anywhere in the import, the approval, or the read. The family mismatch is the other half:
+a <code>--series-id</code> from family A with <code>--family B</code> links B's books into A's series with no
+complaint, and <code>_series_chain_docs</code> then builds a cross-family chain.
+WHERE: src/cyo_adventure/generation/series_link.py:196-208,
+src/cyo_adventure/story_requests/service.py:432-441,
+src/cyo_adventure/db/models.py:243-263 (no cross-table family constraint),
+src/cyo_adventure/api/reading.py:299, frontend/src/reader/ContinueSeries.tsx:65,
+src/cyo_adventure/validator/series.py:243-273 (SR-6/SR-7 cannot see the mismatch)
+FIX: In <code>embed_series_block</code>, compare the blob's declared <code>carries_state</code> against
+<code>series_row.carries_state</code> and raise on mismatch instead of overwriting; likewise compare
+<code>series_row.age_band</code> to <code>blob.metadata.age_band</code> and <code>series_row.family_id</code> to
+<code>storybook.family_id</code>. Add a <code>create-series</code> admin CLI/endpoint so an offline-authored series does
+not have to borrow a UUID from an unrelated story request.</p>
+<h3 id="addendum-to-the-job-series-id-finding-the-standalone-route-also-disables-the-leaf-diversity-guard-verified">Addendum to the <code>--job</code> / <code>--series-id</code> finding: the standalone route also disables the leaf-diversity guard [VERIFIED]<a class="headerlink" href="#addendum-to-the-job-series-id-finding-the-standalone-route-also-disables-the-leaf-diversity-guard-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>run_leaf_diversity_check</code> returns <code>[]</code> immediately when <code>version_row.skeleton_slug is None</code>
+(leaf_diversity.py:161-163), and <code>import_cli</code> documents that a standalone <code>--family</code> import leaves
+<code>skeleton_slug</code> NULL on purpose (import_cli.py:96-101). <code>--series-id</code> only works on that
+standalone route.
+WHY: so the route that is the <em>only</em> way to link a series is also the route on which the
+anti-template guard never runs. For three books filled from the same authoring pipeline, template
+convergence across books is exactly the defect that guard exists to catch, and it is structurally
+unreachable for any series book.
+WHERE: src/cyo_adventure/moderation/leaf_diversity.py:161-163,
+src/cyo_adventure/generation/import_cli.py:96-101, :104-117
+FIX: Same fix as the parent finding (move series linkage into <code>import_filled_story</code> so <code>--job</code> can
+carry it), which restores <code>skeleton_slug</code> and the ATG guard for series books.</p>
+<h3 id="post-adminrescreen-runs-the-whole-sweep-synchronously-in-one-http-request-2700-classifier-calls-plus-11-s-of-event-loop-blocking-gate-for-these-three-books-verified"><code>POST /admin/rescreen</code> runs the whole sweep synchronously in one HTTP request: ~2,700 classifier calls plus ~11 s of event-loop-blocking gate for these three books [VERIFIED]<a class="headerlink" href="#post-adminrescreen-runs-the-whole-sweep-synchronously-in-one-http-request-2700-classifier-calls-plus-11-s-of-event-loop-blocking-gate-for-these-three-books-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>trigger_rescreen</code> awaits <code>rescreen_published_books</code> inline and returns the full summary in
+the response body; its own docstring says "Runs synchronously (see the module docstring for why no
+async/enqueue path is offered in this first cut)". The default scope is <strong>every</strong> published book
+(<code>select(Storybook).where(status == published)</code>, narrowed only if the caller supplies
+<code>storybook_ids</code>). Per book it runs <code>run_gate</code> (measured 3.72 s for the 746-node book) plus
+<code>run_classifiers</code> over every node -- the same 2-calls-per-node sequential loop as Stage 0.
+WHY: with the three wyrmreach books published (305 + 305 + 746 = 1,356 nodes) a single unscoped
+rescreen is <strong>~2,712 sequential third-party HTTP calls plus ~11 s of blocking CPU</strong> inside one
+request. That exceeds any normal reverse-proxy/ingress read timeout by orders of magnitude, so the
+admin gets a 504 while the sweep continues server-side against a request-scoped session that the
+disconnected client's unit-of-work may then roll back -- meaning the sweep's <code>RESCREEN_*</code> events
+and verdicts can be silently discarded after the full provider spend. The <code>run_gate</code> calls also
+block the event loop, so kid readers stall for ~11 s. And because it reuses <code>run_classifiers</code>
+verbatim, the "one failure abandons the rest of the nodes" hole above applies here too, with
+<code>require_classifiers</code> not even passed (defaults False), so an unconfigured classifier does not
+even produce the degraded advisory on this path.
+WHERE: src/cyo_adventure/api/rescreen.py:121-155,
+src/cyo_adventure/moderation/rescreen.py:161-165 (unscoped default), :280 (<code>run_gate</code>),
+:319-325 (<code>run_classifiers</code>, no <code>require_classifiers</code>),
+src/cyo_adventure/moderation/classifiers.py:115-131
+FIX: Enqueue the sweep on RQ and return a job id, streaming/polling the summary; or require an
+explicit <code>storybook_ids</code> scope and cap the node count per request. Pass
+<code>require_classifiers=settings.environment != "local"</code> to match the pipeline. Move <code>run_gate</code> off
+the event loop.</p>
+<h2 id="checked-and-fine_1">Checked and fine<a class="headerlink" href="#checked-and-fine_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>persist_storybook</code>'s 2 MB JSONB byte budget: the real blob is 526,306 bytes (405,742 compact),
+  so ~4x headroom; the guard runs before any row is added, and <code>embed_series_block</code> re-checks.
+  No per-node inserts anywhere -- one <code>Storybook</code> row plus one <code>StorybookVersion</code> row, two
+  flushes (generation/persistence.py:104-124).</li>
+<li><code>assign_book_index</code>'s concurrency handling itself is sound: savepoint + unique-constraint retry,
+  with a correct non-retry on non-unique <code>IntegrityError</code> (series_link.py:94-128). The problem is
+  <em>what</em> index it picks, not how it picks it safely.</li>
+<li><code>validate_series</code> SR-2 vs the G8 archive: <code>archive</code> leaves <code>current_published_version</code> set and
+  <code>_series_chain_docs</code> deliberately includes archived siblings, so archiving book 2 does not break
+  chain contiguity for later approvals (publishing/service.py:160-171). That specific 3-book
+  hazard is handled.</li>
+<li><code>publishing/service.approve</code>'s no-unmoderated-publish invariant holds at this scale: both
+  <code>submit</code> and <code>approve</code> refuse <code>moderation_report is None</code>, and <code>approve</code> is the only writer of
+  <code>status="published"</code> (service.py:86-92, :287-289, :307).</li>
+<li><code>buildReadThrough</code> has no node cap and covers every kept node exactly once across
+  reachable/unreachable, including duplicate-id nodes; it ignores choice conditions, which is
+  over-inclusive (safe) for a Tier-2 book rather than under-inclusive
+  (frontend/src/admin/reviewDiff.ts:172-209).</li>
+<li><code>anti_template_verdict</code> / leaf-diversity is O(nodes) paired, not O(nodes^2); 746 nodes is not a
+  cost problem there (src/cyo_adventure/diversity/leaf.py:239+).</li>
+<li>The review surface's corrupt-report isolation is per-row on both the queue and the guardian
+  browse listing, so one bad report cannot deny review or browse of every other book
+  (approval.py:403-416, assignments.py:426-450).</li>
+<li><code>_repair_preserves_identity</code> / <code>_repair_is_adoptable</code> are correct as written (id + tier + node
+  count, plus a full gate re-run); they are simply unreachable on a book this size, per the repair
+  finding above.</li>
+</ul>
+<hr />
+<h1 id="part-3-test-coverage-and-catalog-membership">Part 3: Test coverage and catalog membership<a class="headerlink" href="#part-3-test-coverage-and-catalog-membership" title="Permanent link">&para;</a></h1>
+<h2 id="adversarial-review-three-new-16-gamebook-skeletons-as-catalog-members">Adversarial review: three new 16+ gamebook skeletons as CATALOG members<a class="headerlink" href="#adversarial-review-three-new-16-gamebook-skeletons-as-catalog-members" title="Permanent link">&para;</a></h2>
+<p>9 findings, worst first. Environment note: <code>uv sync --extra api --extra dev</code> was needed to get
+a working pytest; the repo-root <code>pytest</code> on PATH cannot load the project config. All test runs
+below use <code>.venv/bin/python -m pytest</code>.</p>
+<h3 id="the-committed-mutation-floor-baseline-is-stale-test_skeleton_mutation_floorspy-fails-on-main-verified">The committed mutation-floor baseline is stale: <code>test_skeleton_mutation_floors.py</code> FAILS on main [VERIFIED]<a class="headerlink" href="#the-committed-mutation-floor-baseline-is-stale-test_skeleton_mutation_floorspy-fails-on-main-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: Adding the three skeletons to <code>skeletons/16+/</code> changes the calibrated anti-clone
+floors, and <code>docs/planning/ws5_floor_baseline.json</code> was never regenerated. The catalog-wide
+calibration test fails today, on a clean checkout of <code>main</code>, with no local edits:</p>
+<p><div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>FAILED tests/unit/test_skeleton_mutation_floors.py::test_calibration_is_deterministic_and_committed_baseline_is_current
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>E  AssertionError: assert 1 == 0   (calib.main([&quot;--check&quot;]) returned 1)
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>stderr: Stale mutation-floor baseline (re-run the calibrator and commit):
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        /home/user/cyo-adventure/docs/planning/ws5_floor_baseline.json
+</span></code></pre></div>
+(run: <code>.venv/bin/python -m pytest tests/unit/test_skeleton_mutation_floors.py -q</code>)</p>
+<p>Causation is arithmetic, not inference. The committed baseline records
+<code>same_cell_structural.n_pairs = 67</code> and <code>cross_tier2_state.n_pairs = 78</code>; recomputing gives 77
+and 120. Adding these exact three books takes (16+, medium, gamebook) from 3 to 5 members
+(3 -&gt; 10 pairs) and (16+, long, gamebook) from 3 to 4 (3 -&gt; 6 pairs), i.e. +10, matching
+67 -&gt; 77; and the Tier-2 count from 13 to 16, i.e. C(13,2)=78 -&gt; C(16,2)=120. TAU_STRUCT moved
+0.332507 -&gt; 0.329972. (TAU_CELL 0.05 and TAU_STATE 0.5 are unchanged, so the functional floors
+did not move; only the stats and the documentation-only TAU_STRUCT did. The failure is real
+regardless.)</p>
+<p>WHY: CI is red on main. Every subsequent PR inherits a failing required check, so the
+quality gate stops discriminating: the next author either disables/xfails the test or
+learns to ignore a red gate. The floors this baseline pins are the WS-5 anti-clone floors,
+so the thing that has silently drifted is exactly the mechanism meant to stop
+near-duplicate skeletons from entering the catalog.
+WHERE: tests/unit/test_skeleton_mutation_floors.py:95-104, docs/planning/ws5_floor_baseline.json,
+scripts/calibrate_mutation_floors.py
+FIX: re-run <code>uv run python scripts/calibrate_mutation_floors.py --write</code> and commit the
+regenerated <code>docs/planning/ws5_floor_baseline.json</code> in the same change that adds skeletons;
+better, make the skeleton-promotion gate (or a pre-commit hook) run <code>--check</code> so adding a
+skeleton without recalibrating cannot merge.</p>
+<h3 id="books-1-and-2-are-near-clones-of-each-other-distance-00139-36x-below-the-projects-own-anti-clone-floor-tau_cell005-verified">Books 1 and 2 are near-clones of each other: distance 0.0139, 3.6x BELOW the project's own anti-clone floor TAU_CELL=0.05 [VERIFIED]<a class="headerlink" href="#books-1-and-2-are-near-clones-of-each-other-distance-00139-36x-below-the-projects-own-anti-clone-floor-tau_cell005-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>the-vault-of-nine-iron</code> and <code>the-sunless-march</code> (both 16+/medium/gamebook, both 305
+nodes, both 105 endings, both branch_and_bottleneck) sit at
+<code>structural_distance = 0.013939</code>. Measured with the project's own metric
+(<code>cyo_adventure.diversity.structure.structural_distance</code>) over the production catalog:</p>
+<p><div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>0.000947  (13-16, long, gamebook)   the-harrowstone-keep  &lt;-&gt; the-sunken-temple   (pre-existing)
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>0.013939  (16+,   medium, gamebook) the-sunless-march     &lt;-&gt; the-vault-of-nine-iron   &lt;-- NEW
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>0.091226  (13-16, medium, gamebook) the-smugglers-cut     &lt;-&gt; the-sunspire-ascent
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>0.164429  (16+,   medium, gamebook) the-cinder-bazaar     &lt;-&gt; the-vault-of-nine-iron   &lt;-- NEW
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>0.172557  (16+,   medium, gamebook) the-cinder-bazaar     &lt;-&gt; the-sunless-march        &lt;-- NEW
+</span></code></pre></div>
+The new pair is the second-closest pair in the entire catalog. TAU_CELL, the floor a
+<em>mutant</em> must clear against every in-cell tree, is 0.05
+(scripts/calibrate_mutation_floors.py:85). Two hand-authored books were admitted at 0.0139,
+i.e. the catalog now contains a pair that the mutation gate would reject as a clone. Cell
+(16+, medium, gamebook) has 5 members and 3 of its 10 pairs are now under 0.18.</p>
+<p>WHY: three concrete consequences.
+1. Selection diversity in that cell is fake. <code>select_skeleton_for_cell</code>
+   (generation/skeleton_match.py:328) treats all in-cell candidates as interchangeable and
+   de-weights only by <em>slug</em> recency; a family that just read <code>the-vault-of-nine-iron</code> and
+   is then handed <code>the-sunless-march</code> gets the same tree with different prose, and the
+   recency weighting cannot see that because it keys on slug, not shape.
+2. The anti-clone bar is now asymmetric and self-inconsistent: mutants are held to 0.05
+   while hand-authored promotions are held to nothing. A future mutant of either book, or
+   of <code>the-cinder-bazaar</code>, is now measured against a denser cell and is more likely to be
+   rejected for landing near a tree that should not have been there.
+3. It moved the calibrated distribution: same-cell p05 fell 0.2306 -&gt; 0.1709 and P25
+   (TAU_STRUCT) 0.332507 -&gt; 0.329972, which is the drift that makes finding 1 fail.</p>
+<p>WHERE: skeletons/16+/the-vault-of-nine-iron.json, skeletons/16+/the-sunless-march.json,
+scripts/calibrate_mutation_floors.py:77-85 (TAU_CELL), src/cyo_adventure/diversity/structure.py
+FIX: apply the mutation-side anti-clone rule to hand-authored additions too: a promotion /
+CI check that computes <code>structural_distance</code> of a new skeleton against every in-cell
+catalog tree and fails below TAU_CELL. Then either re-shape book 2's graph (it was derived
+from book 1's topology, so re-shaping is the intent-preserving fix) or declare the pair a
+deliberate series-continuity exception and record it as an explicit allowlist entry so the
+check stays meaningful. The pre-existing 0.000947 harrowstone/sunken-temple pair is the
+same defect and would be caught by the same check.</p>
+<h3 id="the-matcher-can-select-the-ninth-hand-for-a-live-request-but-the-automated-fill-pipeline-cannot-emit-it-it-needs-101k-output-tokens-against-a-hard-32000-cap-verified">The matcher can select <code>the-ninth-hand</code> for a live request, but the automated fill pipeline cannot emit it: it needs ~101k output tokens against a hard 32,000 cap [VERIFIED]<a class="headerlink" href="#the-matcher-can-select-the-ninth-hand-for-a-live-request-but-the-automated-fill-pipeline-cannot-emit-it-it-needs-101k-output-tokens-against-a-hard-32000-cap-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>fill_skeleton</code> does a ONE-SHOT fill: the entire skeleton JSON goes in one prompt and
+the entire filled document must come back in one completion, capped at
+<code>_MAX_TOKENS_PROSE = 32000</code> (orchestrator.py:95, used at orchestrator.py:826). There is no
+chunking, batching, per-node loop, or act-by-act pass anywhere in <code>generation/</code>
+(grep for batch/chunk/per_node/window across orchestrator.py, prompts.py, worker.py returns
+nothing). The committed hand-authored fills let this be measured exactly rather than guessed
+(minified, ~4 chars/token):</p>
+<p><div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>the-ninth-hand.filled.json          746 nodes  405,742 chars  ~101,400 out-tokens  3.2x the cap
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>the-harrowstone-keep.filled.json    550 nodes  343,542 chars   ~85,900 out-tokens
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>the-ashfall-expedition.filled.json  505 nodes  292,396 chars   ~73,100 out-tokens
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>the-sunless-march.filled.json       305 nodes  184,425 chars   ~46,100 out-tokens
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>the-vault-of-nine-iron.filled.json  305 nodes  177,842 chars   ~44,500 out-tokens
+</span></code></pre></div>
+13 of the 26 committed fills are over the cap. Input side: <code>build_fill_prompt</code> for
+the-ninth-hand is 399,437 chars, ~99,900 prompt tokens.</p>
+<p>Nothing guards this. <code>candidates_for_cell</code> (skeleton_match.py:176) filters on band, length,
+style and <code>production_eligible</code> only; there is no node-count or token-budget predicate
+anywhere in selection, and all three new skeletons are <code>production_eligible: true</code>. The
+matcher therefore hands <code>the-ninth-hand</code> to <code>_run_skeleton_fill</code> (worker.py:737) like any
+other book.</p>
+<p>WHY: the request does not fail fast, it fails expensively. A truncated response is invalid
+JSON, which the gate reports as L1-1, which enters the repair loop (<code>max_repairs=3</code>); each
+repair prompt embeds the whole document again (<code>build_repair_prompt</code>, prompts.py:670), so a
+doomed job burns ~4 x 100k input tokens plus 4 x 32k output tokens before giving up, inside
+a 1800s <code>generation_job_timeout_seconds</code> (config.py:352). The guardian sees a failed
+generation with no explanation of the real cause, and the failure is deterministic: retrying
+the same slug fails again forever.</p>
+<p>Honest scoping: this is a PRE-EXISTING catalog-wide defect, not introduced by this commit;
+<code>the-tenfold-siege</code> (677 nodes) and <code>the-harrowstone-keep</code> (550) already had it. What this
+commit does is add the worst case yet, at the (16+, long, gamebook) node ceiling, and
+confirm that nothing in the promotion path checks fill feasibility.
+WHERE: src/cyo_adventure/generation/orchestrator.py:95, src/cyo_adventure/generation/orchestrator.py:826,
+src/cyo_adventure/generation/worker.py:737-860, src/cyo_adventure/generation/skeleton_match.py:176-194,
+src/cyo_adventure/core/config.py:352
+FIX: two parts, and the cheap one first. (1) Add a fill-feasibility predicate to selection:
+derive the expected output size from the skeleton (<code>sum(FILL words)</code> plus a structural
+overhead factor is already computable) and exclude any skeleton whose one-shot fill cannot
+fit <code>_MAX_TOKENS_PROSE</code>, or gate it behind an explicit admin override so it can never be
+drawn for an ordinary guardian request. Add a test that asserts every
+<code>production_eligible</code> skeleton is fill-feasible; today that assertion would fail for 13
+books, which is the point. (2) The real fix is an act-scoped / sub-graph fill loop so book
+size stops being bounded by one completion; the hand-authoring workflow already fills these
+books in acts, so the shape of that solution is known.</p>
+<h3 id="the-anti-clone-floor-is-architecturally-unreachable-for-a-hand-authored-skeleton-so-nothing-could-have-caught-the-near-clone-verified">The anti-clone floor is architecturally unreachable for a hand-authored skeleton, so nothing could have caught the near-clone [VERIFIED]<a class="headerlink" href="#the-anti-clone-floor-is-architecturally-unreachable-for-a-hand-authored-skeleton-so-nothing-could-have-caught-the-near-clone-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>scripts/check_promotion_bundle.py::prove_shell</code> is the only place the WS-5 anti-clone
+floor is applied in CI, and it can never run on a hand-authored addition, for two independent
+reasons:
+1. It returns early on a missing lineage sidecar (<code>check_promotion_bundle.py:262-265</code>:
+   <code>reasons.append(...); return reasons</code>) BEFORE <code>_floor_reason</code> is reached.
+2. Even with a lineage sidecar present, <code>_floor_reason</code> returns <code>None</code> when
+   <code>lineage.parent_slug is None</code> (<code>check_promotion_bundle.py:196-202</code>), and a hand-authored
+   book has no mutation parent by definition. <code>origin != "mutation"</code> is likewise exempted in
+   <code>_verify_parent_hash</code>.</p>
+<p>Verified by running the prover on the three new files:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$ .venv/bin/python scripts/check_promotion_bundle.py skeletons/16+/the-ninth-hand.json \
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    skeletons/16+/the-vault-of-nine-iron.json skeletons/16+/the-sunless-march.json
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>ok: skeleton passes gate and brief checks     (x3)
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>FAIL promotion-bundle proof:
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>  - the-ninth-hand.json: missing lineage sidecar the-ninth-hand.lineage.json
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>  - the-sunless-march.json: missing lineage sidecar ...
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>  - the-vault-of-nine-iron.json: missing lineage sidecar ...
+</span></code></pre></div>
+The floor never evaluated. (The lineage-sidecar failure itself is the already-logged issue;
+the point here is the different one: the floor is skipped, and would be skipped even if the
+sidecar existed.)</p>
+<p>WHY: the anti-clone bar exists to stop the catalog filling with near-identical trees, and it
+is enforced against machine-generated mutants only, i.e. against the source that has an
+automated distance check anyway, while the source that actually produced the two closest
+pairs in the catalog (hand authoring) is exempt. That asymmetry is why the 0.0139 pair and the
+pre-existing 0.000947 pair are both sitting in <code>skeletons/</code> today.
+WHERE: scripts/check_promotion_bundle.py:196-202, scripts/check_promotion_bundle.py:236-283,
+src/cyo_adventure/mutation/floors.py:262-332
+FIX: split the in-cell duplication check out of the lineage-gated block so it runs on ANY
+changed <code>skeletons/**</code> shell: load the in-cell catalog excluding the shell itself (the
+<code>content_sha256</code> self-exclusion at check_promotion_bundle.py:227-232 already exists) and fail
+below <code>TAU_CELL</code>. That is a ~10-line change and it makes the existing floor apply to the
+source that needs it most.</p>
+<h3 id="series-books-2-and-3-are-selectable-as-standalone-stories-the-matcher-has-no-series-filter-so-a-fresh-request-can-draw-book-2-of-3-with-its-carried-state-pre-seeded-verified">Series books 2 and 3 are selectable as standalone stories: the matcher has no series filter, so a fresh request can draw "book 2 of 3" with its carried state pre-seeded [VERIFIED]<a class="headerlink" href="#series-books-2-and-3-are-selectable-as-standalone-stories-the-matcher-has-no-series-filter-so-a-fresh-request-can-draw-book-2-of-3-with-its-carried-state-pre-seeded-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: All three books declare <code>metadata.series</code> with <code>carries_state: true</code> and
+<code>book_index</code> &frac12;/3, and all three are <code>production_eligible: true</code>. Selection is band/
+length/style/eligibility only; <code>skeleton_matches_cell</code> (skeleton_match.py:146-173) and
+<code>candidates_for_cell</code> (skeleton_match.py:176-194) never look at <code>metadata.series</code>, and
+<code>story_requests/authoring_plan.py</code> contains no occurrence of "series" at all
+(<code>grep -n series src/cyo_adventure/story_requests/authoring_plan.py</code> -&gt; no matches).</p>
+<p>Measured pool today:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>(16+, medium, gamebook) 5 candidates: cinder-bazaar, drowned-court, red-meridian-run,
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>                                     sunless-march (book 2), vault-of-nine-iron (book 1)
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>(16+, long,   gamebook) 4 candidates: ashfall-expedition, ninth-hand (book 3),
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>                                     pale-road, tenfold-siege
+</span></code></pre></div>
+So on an unweighted draw, ~40% of (16+, medium, gamebook) requests land on a Wyrmreach book
+and ~20% land specifically on book 2; ~25% of (16+, long, gamebook) requests land on book 3.</p>
+<p>The continuation books are not merely mid-series, they are pre-seeded with the previous
+book's outcome. From <code>skeletons/16+/the-sunless-march.json</code> (book 2) <code>variables</code>:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>renown       initial 2     &quot;Carried from Kar Duhn: the standing of the company that shut the first door.&quot;
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>iron_key     initial true  &quot;Carried: the ninth key-iron of Kar Duhn is in the company&#39;s keeping.&quot;
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>knows_compact initial true &quot;Carried: the company knows what the Compact is and what its doors hold.&quot;
+</span></code></pre></div>
+and its start node's beats: <code>'... the company known now, the ninth iron of Kar Duhn in the
+captain's pack ...'</code>. Book 3 is worse: <code>renown</code> has <code>min: 3</code> and beats
+<code>'... with two of the Compact's nine irons in the captain's pack ...'</code>.</p>
+<p>WHY: a guardian asks for a 16+ gamebook on any theme; the pipeline fills book 2 or book 3 of
+a trilogy against that theme and delivers it as a standalone story. The reader opens on a
+protagonist who already owns two artifacts and a reputation earned in a book they have never
+seen, and the fill has to render beats that name Kar Duhn / the Compact / the ninth iron
+regardless of the requested theme, so the Stage 1 fidelity gate is fighting the skeleton
+rather than checking it. There is no test asserting a continuation book is excluded from
+standalone selection (<code>grep -n series tests/unit/test_skeleton_match.py
+tests/unit/test_authoring_plan.py</code> -&gt; no matches), so nothing pins the intended behavior
+either way.
+WHERE: src/cyo_adventure/generation/skeleton_match.py:146-194,
+src/cyo_adventure/story_requests/authoring_plan.py:320-410,
+skeletons/16+/the-sunless-march.json (metadata.series, variables),
+skeletons/16+/the-ninth-hand.json (metadata.series, variables)
+FIX: exclude continuation books from ordinary cell matching. Cheapest correct version: in
+<code>_production_candidates</code>/<code>skeleton_matches_cell</code>, treat a skeleton with
+<code>metadata.series.book_index &gt; 1</code> as ineligible for a request that is not an explicit
+continuation of that series (the request already knows whether it is a series continuation:
+<code>generation/series_link.py</code> owns that flow), and keep book 1 selectable as a series entry
+point. Pin it with a test asserting <code>candidates_for_cell("16+", "medium", "gamebook")</code> does
+not contain <code>the-sunless-march</code> for a non-continuation request. Note <code>is_final: false</code> on
+book 3 is NOT a defect: <code>series_link.py:145,200</code> document v1 as always-False.</p>
+<h3 id="answering-are-they-protected-by-a-test-the-three-skeletons-are-covered-by-two-glob-discovered-suites-the-three-filled-stories-and-the-whole-dataserieswyrmreach-spec-set-have-zero-test-coverage-verified">Answering "are they protected by a test": the three SKELETONS are covered by two glob-discovered suites; the three FILLED STORIES and the whole <code>data/series/wyrmreach/</code> spec set have zero test coverage [VERIFIED]<a class="headerlink" href="#answering-are-they-protected-by-a-test-the-three-skeletons-are-covered-by-two-glob-discovered-suites-the-three-filled-stories-and-the-whole-dataserieswyrmreach-spec-set-have-zero-test-coverage-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: No test or CI workflow references the new artifacts by name:
+<code>grep -rn "wyrmreach|ninth-hand|vault-of-nine|sunless" tests/ scripts/ noxfile.py .github/</code>
+returns exactly one hit, a docstring in <code>scripts/build_series_book.py:12</code>.</p>
+<p>What DOES pick the skeletons up, via directory globs (all three pass):
+- <code>tests/unit/test_skeleton.py:116-153</code> (<code>Path("skeletons").glob("*/*.json")</code>) - full gate +
+  production-eligibility, per skeleton. 399 tests pass.
+- <code>tests/unit/test_skeleton_mutation_identity.py:50-76</code> - metadata resync, rename collision
+  freedom, per skeleton.
+- <code>tests/unit/test_skeleton_mutation_floors.py:95-104</code> - catalog-wide calibration. FAILS
+  (finding 1).</p>
+<p>What does NOT pick anything up:
+- <code>tests/unit/test_skeleton_contracts.py:36</code> globs <code>*/*.contract.json</code>, so a skeleton with no
+  contract is invisible to the WS-2 drift guard: the three new books simply are not tested by
+  it. Its guard-the-guard test (<code>test_the_catalog_has_theme_contracts</code>, line 73) only asserts
+  the list is non-empty, so contract coverage can fall arbitrarily without failing anything.
+  16+ now has 16 skeletons and 9 contracts.
+- <code>out/*.filled.json</code> - the 26 committed hand-authored fills, including the three new ones,
+  are referenced by NO test. Only <code>out/pilot/fills/*</code> are used, as diversity fixtures
+  (tests/unit/test_diversity_structure.py:18-20, test_diversity_leaf.py:22-24,
+  test_diversity_normalize.py:22). No CI job runs the gate over <code>out/</code> (ci.yml jobs are:
+  detect-release-pr, ci, frontend, design-system, contract, diversity, coverage-upload,
+  detect-api-collection, api-tests, ci-gate).
+- <code>data/series/wyrmreach/*</code> (24 spec/prose files) - referenced by no test at all.</p>
+<p>WHY: the filled stories are the deliverable, and the skeleton passing the gate does not prove
+the fill does. The two are separate documents and a fill can regress independently (prose
+edits, a hand-patched body, a broken <code>{SLOT}</code> render). Worse, the gate has a rule that says
+so out loud. Running it manually:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$ .venv/bin/python scripts/run_story_gate.py out/the-ninth-hand.filled.json
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>WARNING L2-13  L2-13 scale: Tier-2 story &#39;sk_ninth_hand&#39; has 746 nodes, past the
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>  hand-authoring ceiling of 460; the completed Layer-2 configuration walk is now its sole
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>  correctness guarantee (hand-review insufficient at this scale)
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>findings=1 blocked=False
+</span></code></pre></div>
+The validator states that for this book hand review is insufficient and the walk is the only
+guarantee, and the walk is never run on the filled book in CI. (The other two gate clean:
+<code>findings=0 blocked=False</code>.)
+WHERE: tests/unit/test_skeleton.py:116-153, tests/unit/test_skeleton_contracts.py:36-79,
+tests/unit/test_skeleton_mutation_identity.py:50-76, out/the-ninth-hand.filled.json,
+data/series/wyrmreach/, .github/workflows/ci.yml
+FIX: add a glob-discovered fill suite mirroring <code>_discover_production_skeletons</code>: for every
+<code>out/*.filled.json</code>, assert <code>run_gate</code> does not block and no FILL directive survives
+(<code>has_unfilled_directives</code> is False; <code>scripts/check_fill_integrity.py</code> already exists for
+this). It is cheap: measured <code>run_gate</code> cost is 1.73s (vault), 3.82s (sunless), 2.37s
+(ninth-hand), so all 26 fills are well inside the &lt;30s suite target. Separately, tighten
+<code>test_the_catalog_has_theme_contracts</code> from "non-empty" to a real coverage assertion, or an
+explicit allowlist of contract-exempt slugs, so contract coverage cannot silently decay.</p>
+<h3 id="the-ninth-hand-is-a-dead-end-mutation-parent-4-nodes-of-headroom-to-the-cell-ceiling-and-the-additive-operators-do-not-terminate-on-it-verified"><code>the-ninth-hand</code> is a dead-end mutation parent: 4 nodes of headroom to the cell ceiling, and the additive operators do not terminate on it [VERIFIED]<a class="headerlink" href="#the-ninth-hand-is-a-dead-end-mutation-parent-4-nodes-of-headroom-to-the-cell-ceiling-and-the-additive-operators-do-not-terminate-on-it-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: two independent problems.</p>
+<p>(a) Ceiling headroom. <code>(16+, long, gamebook)</code> is <code>(min 475, max 750, depth 93)</code>
+(band_profile.py:177). <code>the-ninth-hand</code> has 746 nodes, so 4 nodes of headroom.
+<code>_node_count_reason</code> (operators.py:3073-3096) hard-rejects any candidate with
+<code>count &gt; bounds[1]</code>, and <code>_graft_envelope</code>-style post-graft check does the same
+(operators.py:2283, "post-graft node count exceeds the cell envelope maximum"). Measured
+operator deltas: M4 insert-linear +1 node, M4 insert-decision +2 nodes (verified on
+<code>the-locked-carousel</code>: 71 -&gt; 72 and 71 -&gt; 73). So the only additive operators that can ever
+be admitted on this parent are the two smallest ones, and M3 graft, the operator that
+produces genuinely new structure, is dead for any donor region larger than 4 nodes.</p>
+<p>(b) The operators do not finish. Applying M4 to <code>the-ninth-hand</code> with a per-call alarm:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>M4 insert-linear   -&gt; TIMEOUT &gt;150s
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>M4 insert-decision -&gt; TIMEOUT &gt;150s
+</span></code></pre></div>
+Same wall on the two other new books and their in-cell neighbours (each 120s alarm):
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>the-vault-of-nine-iron  305 nodes  insert-linear / insert-decision / remove-linear  ALL &gt;120s
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>the-cinder-bazaar       453 nodes  insert-linear  &gt;120s
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>the-drowned-court       314 nodes  insert-linear 44.3s  insert-decision 44.9s  remove-linear 23.5s
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>the-locked-carousel      71 nodes  1.2s / 1.2s / 0.1s
+</span></code></pre></div>
+Note the cost is not driven by node count: <code>the-drowned-court</code> (314 nodes) completes in 44s
+while <code>the-vault-of-nine-iron</code> (305 nodes) does not finish. The difference is the
+state-configuration space the Layer-2 walk explores per candidate. Measured
+<code>walk_configurations</code> sizes:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>the-sunless-march       305 nodes  56,739 configs   (walk 2.09s, run_gate 3.82s)
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>the-ninth-hand          746 nodes  36,781 configs   (walk 1.54s, run_gate 2.37s)
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>the-vault-of-nine-iron  305 nodes  30,416 configs   (walk 0.97s, run_gate 1.73s)
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>the-tenfold-siege       677 nodes   9,832 configs
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>the-harrowstone-keep    550 nodes   7,280 configs
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>the-drowned-court       314 nodes     314 configs
+</span></code></pre></div>
+The three new books hold the three largest configuration spaces in the catalog, 100x
+<code>the-drowned-court</code> at the same node count, because their carried-state variable set is much
+richer. A single <code>run_gate</code> or <code>walk</code> is cheap (under 4s); it is the operators' repeated
+per-candidate re-walk that becomes unbounded.</p>
+<p>Honest scoping: the operator slowness is PRE-EXISTING, not caused by these skeletons
+(<code>the-glass-comet</code>, 105 nodes, also exceeds 120s on both insert modes). The new fact is that
+all three new books land on the wrong side of that wall, and <code>the-ninth-hand</code> additionally has
+no ceiling headroom, so the answer to "is a 746-node skeleton a valid mutation parent" is: it
+is a formally valid parent that the flywheel cannot actually use.</p>
+<p>WHERE: src/cyo_adventure/validator/band_profile.py:177,
+src/cyo_adventure/mutation/operators.py:3073-3096, src/cyo_adventure/mutation/operators.py:2283,
+src/cyo_adventure/mutation/operators.py:1565-1584
+FIX: (1) Record explicitly that a book authored at or near the cell node ceiling is not a
+mutation parent, and have the flywheel's parent-selection (<code>src/cyo_adventure/flywheel/strategy.py</code>)
+skip a parent whose headroom is below the smallest additive operator's delta, so the flywheel
+does not spend runs discovering it. (2) Bound the operators: give the candidate search a
+configuration-count budget and discard with a clear reason instead of running unbounded, so a
+high-state parent fails fast rather than hanging a flywheel run.</p>
+<h3 id="the-3-book-chain-should-be-a-validatorseriespy-fixture-it-passes-today-it-costs-002s-and-the-only-current-coverage-is-2-node-synthetic-books-verified">The 3-book chain should be a <code>validator/series.py</code> fixture: it passes today, it costs 0.02s, and the only current coverage is 2-node synthetic books [VERIFIED]<a class="headerlink" href="#the-3-book-chain-should-be-a-validatorseriespy-fixture-it-passes-today-it-costs-002s-and-the-only-current-coverage-is-2-node-synthetic-books-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>tests/unit/test_series.py</code> exercises SR-1..SR-7 entirely against a synthetic <code>_book()</code>
+helper that builds a 2-node story (<code>tests/unit/test_series.py:19-65</code>, <code>nodes=[start, end]</code>).
+There is no test of the meta-validator against a real chain. The Wyrmreach trilogy is the
+first real one in the repo and it validates clean:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>parse 3 filled books           0.02s
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>validate_series(books)         0.00s   ok=True   (0 findings)
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>validate_series(skeletons)             ok=True   (0 findings)
+</span></code></pre></div>
+CI cost is therefore negligible and the brief's feared expense does not materialize: the
+~37k-configuration Layer-2 walk is NOT what a series fixture needs. Measured separately, a
+full <code>run_gate</code> (which includes the walk) is 1.73s / 3.82s / 2.37s for the three books and
+<code>walk_configurations</code> alone is 0.97s / 2.09s / 1.54s, so even the maximal version of this
+fixture is single-digit seconds against ci.yml's <code>ci</code> job and the project's &lt;30s suite target.</p>
+<p>WHY: SR-2 contiguity, SR-3 entry nodes, SR-4 final flags, SR-5 continuity, SR-6/SR-7 state-carry
+uniformity are all currently proven only against a shape no author would ever write. A real
+3-book state-carrying chain at the 16+ band is exactly the input those rules were written for,
+and right now if a refactor broke SR-5's win-ending detection on real multi-ending books,
+nothing would notice.
+WHERE: tests/unit/test_series.py:19-65, src/cyo_adventure/validator/series.py:42-64,
+out/the-vault-of-nine-iron.filled.json, out/the-sunless-march.filled.json,
+out/the-ninth-hand.filled.json
+FIX: add a <code>tests/unit/test_series.py</code> case that loads the three <code>out/*.filled.json</code> Wyrmreach
+books and asserts <code>validate_series(books).ok</code>, plus negative variants built by mutating the
+real chain in memory (drop book 2 -&gt; SR-2; blank book 3's <code>series_entry_node</code> -&gt; SR-3;
+flip book 1's <code>carries_state</code> -&gt; SR-7). That converts a hand-verified artifact into a
+permanent regression asset at essentially zero runtime cost. Do it in the same change as the
+<code>out/*.filled.json</code> gate suite from the previous finding so <code>out/</code> stops being untested data.</p>
+<h3 id="the-generated-skeleton-catalog-doc-and-the-three-plantuml-diagrams-are-stale-and-nothing-in-ci-checks-them-verified">The generated skeleton-catalog doc and the three PlantUML diagrams are stale, and nothing in CI checks them [VERIFIED]<a class="headerlink" href="#the-generated-skeleton-catalog-doc-and-the-three-plantuml-diagrams-are-stale-and-nothing-in-ci-checks-them-verified" title="Permanent link">&para;</a></h3>
+<p>WHAT: <code>scripts/render_skeleton_diagrams.py --check</code> is the drift guard for the generated
+region of <code>docs/architecture/story-skeletons.md</code> (the documented-skeletons table + band
+coverage matrix, built by <code>generation/skeleton_catalog.py</code>) and for the per-skeleton <code>.puml</code>
+diagrams. It fails today:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$ .venv/bin/python scripts/render_skeleton_diagrams.py --check ; echo $?
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>Stale skeleton diagrams/catalog (re-run the generator and commit):
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>  docs/architecture/diagrams/skeletons/16+/the-ninth-hand.puml
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>  docs/architecture/diagrams/skeletons/16+/the-sunless-march.puml
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>  docs/architecture/diagrams/skeletons/16+/the-vault-of-nine-iron.puml
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>  docs/architecture/story-skeletons.md
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>1
+</span></code></pre></div>
+Unlike the floor baseline, this one is NOT wired into CI:
+<code>grep -rn "render_skeleton_diagrams|story-skeletons" .pre-commit-config.yaml .github/workflows/ noxfile.py</code>
+returns nothing. The tests in <code>tests/unit/test_render_skeleton_diagrams.py</code> exercise
+<code>check_outputs</code> and <code>main(--check)</code> against <code>tmp_path</code> fixtures only, never against the live
+<code>docs/</code> tree, which is why the suite is green while the artifacts are stale.</p>
+<p>WHY: <code>docs/architecture/story-skeletons.md</code> is the human-readable index of the catalog, the
+document an author or reviewer consults to answer "what is already in cell (16+, medium,
+gamebook)?". It currently omits all three new books, so the next author asking exactly the
+question that would have surfaced the near-clone (finding 2) gets an answer that predates it.
+This is also the second stale generated artifact in the same commit, which suggests the
+skeleton-addition workflow has no "regenerate derived artifacts" step at all.
+WHERE: scripts/render_skeleton_diagrams.py, docs/architecture/story-skeletons.md,
+docs/architecture/diagrams/skeletons/16+/, src/cyo_adventure/generation/skeleton_catalog.py,
+tests/unit/test_render_skeleton_diagrams.py:365-432
+FIX: regenerate and commit; then add both <code>--check</code> invocations
+(<code>render_skeleton_diagrams.py --check</code> and <code>calibrate_mutation_floors.py --check</code>) as steps in
+the existing <code>skeleton-promotion</code> workflow, which already triggers on <code>paths: skeletons/**</code>
+and is the natural home for "adding a skeleton keeps its derived artifacts current".</p>
+<h2 id="checked-and-fine_2">Checked and fine<a class="headerlink" href="#checked-and-fine_2" title="Permanent link">&para;</a></h2>
+<ul>
+<li>The FULL unit suite passes with the new skeletons present, with the single exception in
+  finding 1: <code>.venv/bin/python -m pytest tests/unit -q --deselect
+  tests/unit/test_skeleton_mutation_floors.py::test_calibration_is_deterministic_and_committed_baseline_is_current</code>
+  -&gt; <strong>4662 passed in 183s</strong>. So exactly one existing test newly fails, and no catalog test
+  became vacuous.</li>
+<li><code>tests/unit/test_skeleton.py</code> (glob-discovered full gate over every production skeleton),
+  <code>tests/unit/test_skeleton_contracts.py</code>, <code>tests/unit/test_skeleton_match.py</code>: 399 passed
+  with the three new skeletons present. All three pass the full blocking gate, the offered-cell
+  check, and the production node envelope (<code>check_skeleton</code> via <code>check_promotion_bundle</code>:
+  <code>746/232 -&gt; (16+, long, gamebook)</code>, <code>305/105 -&gt; (16+, medium, gamebook)</code>, both inside
+  <code>_PRODUCTION_CELLS</code> bounds of (475,750,93) and (300,475,73)).</li>
+<li><code>tests/unit/test_skeleton_mutation_identity.py</code>: metadata resync, topology re-declaration and
+  id-rename collision-freedom all hold over the enlarged catalog.</li>
+<li><code>scripts/run_diversity_eval.py --check</code> (the <code>diversity</code> CI gate): <code>findings=0</code>, exit 0.</li>
+<li><code>tests/unit/test_diversity_structure.py</code>, <code>test_diversity_aggregate.py</code>, <code>test_mutation_score.py</code>,
+  <code>test_run_story_gate.py</code>, <code>test_series.py</code>, <code>test_hand_authored_stories.py</code>: all pass; none
+  globs <code>skeletons/</code> catalog-wide except via the suites above, so none became vacuous.</li>
+<li><code>scripts/check_coverage_matrix.py</code> is unrelated to skeletons: it enumerates frontend
+  Playwright/Vitest test files against <code>docs/testing/coverage-matrix.md</code>. Unaffected.</li>
+<li><code>scripts/mutation_score.py</code> aggregates mutmut <code>.meta</code> files (code mutation testing), not
+  story-skeleton mutation. Unaffected by catalog changes.</li>
+<li>Matcher discoverability is correct in the mechanical sense: all three are found by
+  <code>candidates_for_cell</code> and by <code>find_skeleton_metadata</code>, sidecar skipping is unaffected, and
+  the <code>is_sidecar</code> convention is honoured consistently across <code>skeleton_match</code>, <code>floors</code>,
+  <code>calibrate_mutation_floors</code>, and <code>check_promotion_bundle</code>.</li>
+<li><code>is_final: false</code> on book 3 is NOT a bug: <code>generation/series_link.py:145,200</code> documents
+  <code>is_final</code> as always False in v1, and SR-4 only forbids a non-last book being final.</li>
+<li>The three skeletons' absence of a <code>*.contract.json</code> sidecar does not break the fill: the
+  no-sidecar path is the byte-identical WS-1 free-text path (<code>worker.py:812-860</code>), and four
+  pre-existing 16+ skeletons (<code>the-cinder-bazaar</code>, <code>the-longwinter-station</code>,
+  <code>the-quiet-harbor-protocol</code>, <code>the-tenfold-siege</code>) are already contract-less. The real
+  costs are (a) they can never be a WS-7 D7 re-route target ("skipping ... any contract-less
+  alternate", worker.py:605) and (b) they are invisible to the WS-2 drift guard, which is
+  folded into the test-coverage finding above.</li>
+<li><code>out/the-vault-of-nine-iron.filled.json</code> and <code>out/the-sunless-march.filled.json</code> gate clean
+  (<code>findings=0 blocked=False</code>); <code>out/the-ninth-hand.filled.json</code> produces only the L2-13
+  scale warning.</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 02:20:23 UTC">July 28, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 02:20:23 UTC">July 28, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

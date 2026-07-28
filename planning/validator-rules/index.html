@@ -2842,6 +2842,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#series-cross-book-chain-series-stories-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Series (Cross-Book Chain, Series Stories Only)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#series-cross-book-chain-rules-series-stories-only" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2938,7 +2949,7 @@ to this document.</p>
 </tr>
 <tr>
 <td>Policy (PL)</td>
-<td>Pass/fail (PL-19 story-mean sub-check is advisory)</td>
+<td>Pass/fail (PL-19 story-mean, PL-23 and PL-24 are advisory)</td>
 <td>Yes</td>
 </tr>
 <tr>
@@ -2950,6 +2961,11 @@ to this document.</p>
 <td>Reading Level (RL)</td>
 <td>Advisory</td>
 <td>No (warns only)</td>
+</tr>
+<tr>
+<td>Series (SR)</td>
+<td>Pass/fail</td>
+<td>Yes (blocks publish of a chain)</td>
 </tr>
 <tr>
 <td>Safety (SAFE)</td>
@@ -3086,8 +3102,8 @@ the closure of reachable configurations. The default configuration cap is 100,00
 <tr>
 <td>L2-13</td>
 <td>2</td>
-<td><strong>Hand-authoring scale ceiling</strong>: a Tier-2 story past the hand-review node ceiling is flagged so the record states plainly that the completed configuration walk, not human reading, is now its correctness guarantee. Informational about <em>who</em> guarantees the story, not a defect in it.</td>
-<td><code>L2-13 scale: Tier-2 story '{story_id}' has {node_count} nodes, past the hand-authoring ceiling of {ceiling}; the completed Layer-2 configuration walk is now its sole correctness guarantee (hand-review insufficient at this scale)</code></td>
+<td><strong>Hand-authoring scale advisory</strong>: a Tier-2 story past the hand-authoring node ceiling (<code>layer2.HAND_AUTHORING_NODE_CEILING</code>, 460) is past the size a human reviewer can meaningfully check by eye, so the completed Layer-2 configuration walk becomes its sole correctness guarantee. WARNING only: it never blocks, and it is the expected output for a procedurally-generated or series-scale book (the ADR-011 cells marked <code>dagger</code>). Its presence means the walk must be treated as the acceptance test rather than a lint pass.</td>
+<td><code>L2-13 scale: Tier-2 story '{story_id}' has {nodes} nodes, past the hand-authoring ceiling of {ceiling}; the completed Layer-2 configuration walk is now its sole correctness guarantee (hand-review insufficient at this scale)</code></td>
 </tr>
 <tr>
 <td>L2-14</td>
@@ -3112,7 +3128,7 @@ the closure of reachable configurations. The default configuration cap is 100,00
 <tr>
 <td>RL-13</td>
 <td>Advisory</td>
-<td><strong>Reading level</strong>: Flesch-Kincaid grade (computed by textstat) for each node <code>body</code> is compared to <code>metadata.reading_level.target +/- tolerance</code>. Any node outside the tolerance range generates a warning. This check warns and logs; it never hard-fails, because FK scores are noisy at passage length and the parent makes the final call.</td>
+<td><strong>Reading level</strong>: Flesch-Kincaid grade for each node <code>body</code> is compared to <code>metadata.reading_level.target +/- tolerance</code>. Any node outside the tolerance range generates a warning. This check warns and logs; it never hard-fails, because FK scores are noisy at passage length and the parent makes the final call. The grade comes from a <strong>vendored</strong> implementation (<code>validator/reading_level.py::_flesch_kincaid_grade</code>), not from textstat, which is not a dependency: the formula needs only word/sentence/syllable counts, so vendoring avoids a heavy NLP dependency tree for a check that never blocks, and keeps scores version-stable. Two nodes are skipped silently: a body under <code>_MIN_WORDS_FOR_FK</code> (20) words, where FK is statistically unreliable, and an unfilled skeleton body carrying a <code>&lt;&lt;FILL</code> directive, which is a directive rather than prose (PL-19 skips the same marker).</td>
 <td><code>RL-13 level: node '{node_id}' FK grade {actual:.1f} outside target {target} +/- {tolerance} in story '{story_id}' (advisory only)</code></td>
 </tr>
 </tbody>
@@ -3186,8 +3202,90 @@ age-safety rule in its own right; it is defined below.</p>
 <td><strong>Band profile fail-closed</strong>: added 2026-07-16 per the owner ruling (fail closed). When a story's age band has no configured <code>BandProfile</code> (<code>validator/band_profile.py::profile_for</code> returns <code>None</code>), the gate emits this single blocking finding and returns immediately instead of silently skipping PL-15/16/17 for that band. Unreachable through any valid, enum-constrained <code>age_band</code> today (a lockstep test pins the <code>AgeBand</code> enum against the configured profiles), so this is a runtime backstop, not a normal-path rule. See <code>validator/policy.py::validate_policy</code> and <code>tests/unit/test_policy.py::test_validate_policy_fails_closed_when_profile_is_none</code>.</td>
 <td><code>PL-22 policy: band profile not configured for band '{age_band}' in story '{story_id}'; refusing to validate age safety</code></td>
 </tr>
+<tr>
+<td>PL-23</td>
+<td>Policy</td>
+<td><strong>Declared read time</strong>: <code>metadata.estimated_minutes</code> is ADR-011 section 4's <em>fastest-finish</em> clock, the words on the shortest satisfying path divided by the band's <code>band_profile.reading_pace_wpm</code> anchor. A declared value differing from the derived one by more than 25% warns. Advisory: a rounded or deliberately padded editorial figure is legitimate, but the field is what a child sees when choosing a book, so a large mismatch is a broken promise. Skipped when the fastest-finish path is under <code>_MIN_PATH_WORDS_FOR_CLOCK</code> (200) words, where the derived clock is noise.</td>
+<td><code>PL-23 clock: declared estimated_minutes {declared} differs from the derived fastest-finish clock {derived} min ({words} words on the shortest satisfying path at {wpm} wpm) by {drift} in story '{story_id}' (advisory only)</code></td>
+</tr>
+<tr>
+<td>PL-24</td>
+<td>Policy</td>
+<td><strong>Ending mix</strong>: two advisory shape checks over the ending set, which PL-15 (forbidden kinds) and PL-17 (ending count) do not cover. (a) No single <code>ending.kind</code> may exceed 60% of endings. (b) A winnability floor that is <strong>style-aware</strong>: prose must have at least 10% positive-valence endings, while a gamebook must have at least 3 distinct positive-valence endings. The gamebook rule is an absolute count, not a share, because a share floor calibrated against the committed corpus would flag every gamebook (all sit at 2-5% positive against prose's 15-70%); that spread is ADR-011 section 5's declared 'few wins and many fails' shape, not nine defects.</td>
+<td><code>PL-24 mix: ending kind '{kind}' is {n} of {total} endings ({share}), above the {ceiling} share ceiling in story '{story_id}' (advisory only)</code></td>
+</tr>
 </tbody>
 </table>
+<hr />
+<h2 id="series-cross-book-chain-series-stories-only">Series (Cross-Book Chain, Series Stories Only)<a class="headerlink" href="#series-cross-book-chain-series-stories-only" title="Permanent link">&para;</a></h2>
+<p>Runs over a whole chain rather than one story (<code>validator/series.py::validate_series</code>), so it is
+invoked by the publishing path (<code>publishing/service.py</code>) and by the offline chain checker, not by
+<code>run_gate</code>. A chain is the set of books sharing one <code>series_id</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Rule ID</th>
+<th>Layer</th>
+<th>Description</th>
+<th>Failure Message Template</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SR-1</td>
+<td>Series</td>
+<td><strong>Series identity</strong>: every book in the chain must declare <code>metadata.series</code>, and all books must share one <code>series_id</code>.</td>
+<td><code>SR-1 series: book '{book_id}' declares no series metadata</code> / <code>SR-1 series: chain spans multiple series ids {ids}</code></td>
+</tr>
+<tr>
+<td>SR-2</td>
+<td>Series</td>
+<td><strong>Index contiguity</strong>: <code>book_index</code> values must form a contiguous <code>1..N</code> with no repeats. Note this checks contiguity only, not that indices reflect narrative order.</td>
+<td><code>SR-2 series: book_index values {indices} are not a contiguous 1..N</code></td>
+</tr>
+<tr>
+<td>SR-3</td>
+<td>Series</td>
+<td><strong>Entry node</strong>: a declared <code>series_entry_node</code> must exist in the book's nodes, and any book above index 1 must declare one.</td>
+<td><code>SR-3 series: book '{book_id}' declares series_entry_node '{node}' which does not exist</code></td>
+</tr>
+<tr>
+<td>SR-4</td>
+<td>Series</td>
+<td><strong>Final flag</strong>: a book below the highest index must not be <code>is_final</code>. A non-final top book is permitted, which is how a chain stays open for later books.</td>
+<td><code>SR-4 series: book {index} '{book_id}' is marked final but is not the highest index</code></td>
+</tr>
+<tr>
+<td>SR-5</td>
+<td>Series</td>
+<td><strong>Continuity</strong>: each non-final book must have a satisfying (win) ending, and the next book must declare an entry node, so the chain's declared initial state is reachable from a win.</td>
+<td><code>SR-5 series: non-final book {index} has no satisfying ending</code></td>
+</tr>
+<tr>
+<td>SR-6</td>
+<td>Series</td>
+<td><strong>Episodic bands</strong>: a young-band or Tier-1 book is episodic and must not carry state.</td>
+<td><code>SR-6 series: book '{book_id}' is a young or Tier-1 story and must not declare carries_state</code></td>
+</tr>
+<tr>
+<td>SR-7</td>
+<td>Series</td>
+<td><strong>Carry uniformity</strong>: every book in a chain must agree on <code>carries_state</code>; a chain cannot be half stateful.</td>
+<td><code>SR-7 series: chain disagrees on carries_state</code></td>
+</tr>
+<tr>
+<td>SR-8</td>
+<td>Series</td>
+<td><strong>Carried-variable integrity</strong> (added 2026-07-25): on a <code>carries_state</code> chain, a variable declared by book N must survive into book N+1. The client seeds a continuation by variable <strong>name</strong> and clamps carried ints into the <em>receiving</em> book's bounds, silently, so a narrower receiving range rewrites every outcome outside it (ERROR: data loss), a changed type makes the carried value be skipped entirely (ERROR), and a variable the receiver does not declare is dropped without trace (WARNING, since a closed storyline is a legitimate authorial choice).</td>
+<td><code>SR-8 carry: '{var}' is [{lo},{hi}] in book {n} but [{lo2},{hi2}] in book {n2} '{book_id}'; the receiving range must contain the sending range or the client clamps carried outcomes away</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Remaining gap</strong> (AL-038): SR-8 now covers the declaration side, but nothing yet records <em>which</em>
+carried values were clamped or dropped at read time. A per-variable carry audit in
+<code>startContinuation</code> would make a corrupted carry visible to a reviewer rather than only detectable
+from the declarations, and the continuation offer is still not gated on reaching a satisfying ending,
+so a reader who loses book N can still be handed book N+1.</p>
 <hr />
 <h2 id="series-cross-book-chain-rules-series-stories-only">Series: Cross-Book Chain Rules (Series Stories Only)<a class="headerlink" href="#series-cross-book-chain-rules-series-stories-only" title="Permanent link">&para;</a></h2>
 <p>Runs at publish time over the whole chain, not at generation time over one story: see the note
@@ -3265,11 +3363,12 @@ applies the rules below; <code>publishing/service.py</code> raises
 <p>The validator applies rules in this order:</p>
 <ol>
 <li>L1-1 through L1-7 (graph; all stories). Stop if any L1 rule fails.</li>
-<li>PL-15 through PL-21, plus the PL-22 fail-closed guard (age-policy gate; all stories).
-   PL-19 is advisory; the rest block. PL-22 fires only when the band has no configured
+<li>PL-15 through PL-21, the PL-22 fail-closed guard, and the PL-23/PL-24 advisories
+   (age-policy gate; all stories). PL-19's story-mean sub-check, PL-23 and PL-24 are
+   advisory; the rest block. PL-22 fires only when the band has no configured
    profile, in which case it is the sole finding and PL-15..PL-21 do not run.</li>
-<li>L2-8 through L2-14 (state-space; Tier-2 only). Stop if any L2 rule fails. L2-13 is
-   informational about which guarantee covers the story, not a defect in it.</li>
+<li>L2-8 through L2-14 (state-space; Tier-2 only). Stop if any L2 rule fails; L2-13 is a
+   non-blocking scale advisory and never stops the run.</li>
 <li>RL-13 (advisory; all stories). Log warnings; continue.</li>
 <li>SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.</li>
 <li>SR-1 through SR-9 (series chain; series stories only) run <strong>later and elsewhere</strong>, at
@@ -3324,7 +3423,7 @@ to address only the flagged node ids and rule violations, changing nothing else.
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 27, 2026 04:06:26 UTC">July 27, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 02:20:23 UTC">July 28, 2026</span>
   </span>
 
     

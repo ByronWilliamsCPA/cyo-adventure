@@ -12,7 +12,7 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/capability-register/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/wyrmreach-series-design/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Capability Register (Top-Down Expectation Map) - CYO Adventure</title>
+        <title>Wyrmreach: 16+ Gamebook Series Design (Three Books, D&D-Style Campaign) - CYO Adventure</title>
       
     
     
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#capability-register" class="md-skip">
+        <a href="#wyrmreach-16-gamebook-series-design-three-books-dd-style-campaign" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Capability Register (Top-Down Expectation Map)
+              Wyrmreach: 16+ Gamebook Series Design (Three Books, D&amp;D-Style Campaign)
             
           </span>
         </div>
@@ -2765,10 +2765,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#purpose-and-method" class="md-nav__link">
+  <a href="#1-scale-placement-adr-011" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Purpose and method
+        1. Scale placement (ADR-011)
       
     </span>
   </a>
@@ -2776,10 +2776,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#ratified-decisions-2026-07-16" class="md-nav__link">
+  <a href="#2-world-bible" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Ratified decisions (2026-07-16)
+        2. World bible
       
     </span>
   </a>
@@ -2787,10 +2787,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#k-kid-capabilities" class="md-nav__link">
+  <a href="#3-the-party-progression-across-books" class="md-nav__link">
     <span class="md-ellipsis">
       
-        K: Kid capabilities
+        3. The party (progression across books)
       
     </span>
   </a>
@@ -2798,10 +2798,60 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#g-guardian-capabilities" class="md-nav__link">
+  <a href="#4-state-model" class="md-nav__link">
     <span class="md-ellipsis">
       
-        G: Guardian capabilities
+        4. State model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. State model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#book-1-the-vault-of-nine-iron" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Book 1: The Vault of Nine Iron
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#book-2-the-sunless-march-carried-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Book 2: The Sunless March (carried + new)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#book-3-the-ninth-hand-carried-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Book 3: The Ninth Hand (carried + new)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-graph-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Graph conventions
       
     </span>
   </a>
@@ -2809,65 +2859,49 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#a-admin-capabilities" class="md-nav__link">
+  <a href="#6-authoring-pipeline" class="md-nav__link">
     <span class="md-ellipsis">
       
-        A: Admin capabilities
+        6. Authoring pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Authoring pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reading-level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading level
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#s-system-capabilities-cross-cutting" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#commands" class="md-nav__link">
     <span class="md-ellipsis">
       
-        S: System capabilities (cross-cutting)
+        Commands
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#known-doc-debt-this-register-supersedes-or-exposes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Known doc debt this register supersedes or exposes
-      
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#unregistered-scope-rulings" class="md-nav__link">
+  <a href="#7-adding-book-4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Unregistered scope: rulings
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#maintenance-rules" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Maintenance rules
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#related-documents" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Related documents
+        7. Adding book 4
       
     </span>
   </a>
@@ -2894,638 +2928,573 @@
   
 
 
-<h1 id="capability-register">Capability Register<a class="headerlink" href="#capability-register" title="Permanent link">&para;</a></h1>
-<blockquote>
-<p><strong>Status</strong>: Active | <strong>Version</strong>: 1.8 | <strong>Created</strong>: 2026-07-16 | <strong>Updated</strong>: 2026-07-25
-(v1.4: note corrections and ruling queue from the full traceability review, see
-<a href="../traceability-review-2026-07-16/">traceability-review-2026-07-16.md</a>;
-v1.5: owner rulings applied: K18 and A16 minted, back button ratified, ADR-007
-admin-first sequencing, repair re-gate and band fail-closed fixes ordered, G2 build
-confirmed; v1.6: A12 note extended to name the admin child-PIN set/reset authority
-explicitly, with an ADR-014 cross-reference, per the 2026-07-16 review condition;
-v1.7: comprehensive plan-audit correction (2026-07-20) - the 2026-07-17 delivery
-update below was never propagated into the per-row Docs column: K6, K15, G9 flipped
-❌-&gt;✅, K12/G10/S9 flipped ❌-&gt;🟡 (each shipped in PR #270 per its own banner note,
-just not synced into the table), with file-level evidence added to each row's note;
-see the 2026-07-20 plan-audit summary in roadmap.md for the full cross-doc reconciliation;
-v1.8 (2026-07-25): <strong>G18</strong> and <strong>K20</strong> minted for guardian opt-in story personalization
-(<a href="../adr/adr-023-story-personalization-slots/">ADR-023</a>, status Proposed), with scope notes
-added to G4, G17, K19, S10, S11, and S12; see the ruling entry under "Unregistered scope" for
-why two new IDs rather than cross-references alone)</p>
-<p><strong>Delivery update (2026-07-17, M4b-d execution on branch
-claude/app-capabilities-review-wm6gt3)</strong>: the following capabilities moved to DELIVERED
-(code, tests, and E2E where noted; commits 5fd1de7 through 6f729d5): K5 (Go Back pinned),
-K6 (tracker UI), K7 (read-aloud), K12 (complete incl. generation status), K15 (flag end
-to end: kid button, admin queue, guardian alert), K17 (shelf chips), G2 (controls UI and
-brief wiring), G3 (envelope backend, write path, and form UI), G5 (structure summaries),
-G6 (prose editor with gate and moderation re-run; admin surface, guardian UI awaits a
-guardian review surface), G7 (complete: consent debits quota on ALL spend paths incl.
-the legacy intake gate), G9 (Reading page), G10/S9 (notification feed and bell), G13
-(interim balance), G17/A15 (dual-guardian consent flow with the ENFORCED ring-2 guard,
-superseding the holds-by-omission note below), and the S8 flow now includes the budget
-stage. PR #267 (A12/A13, connection substrate) merged to main; PR #268 (A8 UI) in
-flight. Remaining for M4-full: G15 device/storage view (needs a design decision), G8
-offline revocation (Phase 5), and the owner-side items (secrets, redeploy, live
-checklist).</p>
-<p><strong>Delivery-state review (2026-07-16, open PRs and working docs)</strong>: the Docs column below
-measures <em>foundational-doc</em> coverage, but a review of
-<a href="../story-lifecycle-redesign/">story-lifecycle-redesign.md</a> (owner-ratified 2026-07-06,
-workstreams A-G merged 2026-07-10) and open PRs #267/#268 found several items further
-along in working docs and code than foundational coverage suggested. Affected rows carry
-delivery notes; treat the Notes column as the current truth.</p>
-</blockquote>
-<h2 id="purpose-and-method">Purpose and method<a class="headerlink" href="#purpose-and-method" title="Permanent link">&para;</a></h2>
-<p>This register was produced by a deliberate fresh-look exercise: start from the top-line goal only
-(an online and offline app where kids read choose-your-own-adventure books and use AI to generate
-new stories based on their interests), derive what a child, guardian, and application admin would
-expect the app to do, and only then compare against the foundational documents (project vision,
-tech spec, ADRs 001-014, privacy model, authorization matrix). It deliberately ignores code,
-sprints, and milestones.</p>
-<p>Each capability has a stable ID: <strong>K</strong> (kid), <strong>G</strong> (guardian), <strong>A</strong> (admin), <strong>S</strong> (system,
-cross-cutting). IDs are permanent; never renumber. New capabilities append at the end of their
-section. This register is the checkoff sheet for scope and the basis for acceptance testing:
-every item should eventually map to one or more tests, and every spec or feature should trace
-back to at least one ID.</p>
-<p>The <strong>Docs</strong> column records coverage in the foundational documents as of 2026-07-16:</p>
-<ul>
-<li>✅ covered (the docs spec this, often more deeply than the expectation)</li>
-<li>🟡 partial (mechanism or fragment exists; the user-facing capability is not fully specced)</li>
-<li>❌ missing (absent from the foundational docs)</li>
-</ul>
-<h2 id="ratified-decisions-2026-07-16">Ratified decisions (2026-07-16)<a class="headerlink" href="#ratified-decisions-2026-07-16" title="Permanent link">&para;</a></h2>
-<p>These rulings from the project owner resolve the open tensions the fresh-look surfaced. They are
-binding on the register below. Decisions 1-3 are recorded in
-<a href="../adr/adr-015-story-request-initiation-and-gating/">ADR-015</a>; all five are folded into the
-vision doc (v1.2):</p>
-<ol>
-<li><strong>Initiation is universal.</strong> A child, a guardian, or an admin may initiate a story request
-   (K11, G4, A10). The original guardian-only intake was scope inherited from the one-family era.</li>
-<li><strong>The guardian is the cost gate.</strong> A story request consumes generation budget only with
-   guardian consent; guardians control spend (G7, G13).</li>
-<li><strong>The admin is the AI gate.</strong> The admin remains the party who gates the AI output before it
-   can reach a child (A6), consistent with ADR-005 as amended 2026-06-30.</li>
-<li><strong>The kid feedback loop exists.</strong> Children get a simple flag/reaction signal that a grown-up
-   actually sees (K15, feeding G10 and A1).</li>
-<li><strong>Guardian visibility and notifications exist.</strong> Engagement visibility (G9) and a
-   digest-plus-alerts notification surface (G10, S9) are in scope.</li>
-<li><strong>The social boundary is three rings, not a flat exclusion</strong> (ruled 2026-07-16, recorded
-   in <a href="../adr/adr-016-recommendation-sharing-social-boundary/">ADR-016</a>): recommendations
-   flow within a family (ring 1) and between guardian-approved connected families, the
-   cousins case (ring 2, structured data only, dual-guardian consent, no
-   receive-from-everyone option); globally only the system recommends, from anonymized
-   aggregate scores (ring 3, future); never kid to kid beyond ring 2, and no messaging,
-   discovery, or contact outside active parental approval (K17, G17, A15, S11, S12).</li>
-</ol>
-<p>The resulting canonical request flow (S8):</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>initiate (K11 | G4 | A10)
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>   -&gt; guardian cost gate (G7; may be pre-authorized per child via G3)
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>   -&gt; staged generation (existing pipeline)
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>   -&gt; deterministic validation + independent moderation (S4, S7)
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>   -&gt; admin safety gate: approve and publish (A6)
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>   -&gt; child&#39;s shelf (K9), with honest status shown to the requester throughout (K12, G10)
+<h1 id="wyrmreach-16-gamebook-series-design-three-books-dd-style-campaign">Wyrmreach: 16+ Gamebook Series Design (Three Books, D&amp;D-Style Campaign)<a class="headerlink" href="#wyrmreach-16-gamebook-series-design-three-books-dd-style-campaign" title="Permanent link">&para;</a></h1>
+<p><strong>Date</strong>: 2026-07-25
+<strong>Branch</strong>: <code>claude/dnd-story-game-series-mqr9zy</code>
+<strong>Scope</strong>: A production 16+ <strong>gamebook</strong> (not prose) story built as a state-carrying series with
+Dungeons-and-Dragons-style party progression across the books, left open for later continuations. Books 1 and 2
+sit in the medium cell; book 3 is deliberately built at the top of the largest cell the matrix allows.</p>
+<p>This document is the authoring anchor: it fixes the scale cells, the world bible, the party, the state model, the
+graph conventions, and the build/verify commands, so books 4+ can be added the same way.</p>
+<hr />
+<h2 id="1-scale-placement-adr-011">1. Scale placement (ADR-011)<a class="headerlink" href="#1-scale-placement-adr-011" title="Permanent link">&para;</a></h2>
+<p>Books 1 and 2 occupy <strong>(16+, medium, gamebook)</strong>; book 3 occupies <strong>(16+, long, gamebook)</strong>, which is the
+largest cell in the matrix. Both cells are single-sourced in <code>validator/band_profile.py</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Constraint</th>
+<th>Books 1-2: medium</th>
+<th>Book 3: long</th>
+<th>Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Node budget</td>
+<td>300-475</td>
+<td><strong>475-750</strong></td>
+<td>L1-7 (below min warns, above max errors)</td>
+</tr>
+<tr>
+<td>Max branch depth</td>
+<td>73 hops</td>
+<td>93 hops</td>
+<td>L1-7</td>
+</tr>
+<tr>
+<td>Words per node</td>
+<td>mean 55-110 advisory, <strong>175 hard max</strong></td>
+<td>same</td>
+<td>PL-19 (mean warns, per-node max errors)</td>
+</tr>
+<tr>
+<td>Fastest satisfying finish</td>
+<td>&gt;= 29 nodes</td>
+<td>&gt;= 37 nodes</td>
+<td>PL-20</td>
+</tr>
+<tr>
+<td>Endings floor</td>
+<td><code>ceil(0.25 * nodes)</code></td>
+<td>same fraction</td>
+<td>PL-17 (gamebook breadth: few wins, many fails)</td>
+</tr>
+<tr>
+<td>Decision-node floor</td>
+<td><code>ceil(0.08 * nodes)</code></td>
+<td>same fraction</td>
+<td>PL-17</td>
+</tr>
+<tr>
+<td>Content ceiling</td>
+<td>violence moderate, scariness intense, peril intense</td>
+<td>same</td>
+<td>PL-16</td>
+</tr>
+<tr>
+<td>Forbidden endings</td>
+<td>none at 16+ (lethal outcomes allowed)</td>
+<td>same</td>
+<td>PL-15</td>
+</tr>
+<tr>
+<td>Reading level</td>
+<td>Flesch-Kincaid 9.5 &plusmn; 2.5 as declared</td>
+<td>same</td>
+<td>RL-13 (advisory)</td>
+</tr>
+<tr>
+<td>Hand-authoring ceiling</td>
+<td>n/a</td>
+<td><strong>advisory past 460 nodes</strong></td>
+<td>L2-13 (warning, never blocks)</td>
+</tr>
+</tbody>
+</table>
+<p>Why books 1-2 are medium: medium is the smallest <strong>scale-classified, production-eligible</strong> 16+ gamebook cell,
+which keeps each book a genuine full-length gamebook while leaving the long cell available for a later book in
+the same chain. Declaring no <code>length</code> at all would drop a book to the band budget (30-60 nodes), which is not a
+real book.</p>
+<p>Why book 3 is long, at 746 of 750 nodes: it is the deliberate ceiling test of the matrix. Past 460 nodes L2-13
+fires a permanent advisory saying that the completed Layer-2 configuration walk, not human review, is the sole
+correctness guarantee for the story. That warning is the expected and correct output at this scale, not a defect;
+it is the only finding book 3 produces.</p>
+<p>All three books are <strong>Tier 2</strong> (stateful), <code>production_eligible: true</code>, topology <code>branch_and_bottleneck</code>, and
+share <code>series_id: wyrmreach</code> with <code>carries_state: true</code>. Book 3 keeps <code>is_final: false</code> so the chain stays open
+(SR-4 permits a non-final top book).</p>
+<hr />
+<h2 id="2-world-bible">2. World bible<a class="headerlink" href="#2-world-bible" title="Permanent link">&para;</a></h2>
+<p><strong>The Wyrmreach</strong> is the frontier north of the Ledger cities: dwarf-cut roads gone to moss, an imperial legion
+that never came home, and mining charters nobody can enforce. Two powers matter locally: the <strong>Warden-Marshals</strong>,
+who hold a thin line of towers and pay in charter and salt, and the <strong>Ledger houses</strong>, merchant orders whose
+field-priests keep debts and souls in the same book.</p>
+<p><strong>The Compact</strong> is the frontier's oldest arrangement, and its worst secret. Under the Deep Road sleeps
+<strong>Ashendrel</strong>, a wyrm too large to kill and too old to bargain with honestly. The Compact does not slay it; the
+Compact <em>feeds</em> it, on a schedule, and keeps it sleeping behind the <strong>Ninefold Door</strong> - nine dwarven key-irons,
+nine hands, nine oaths. Everything the party is hired to do in book 1 is somebody else's move in that older game.</p>
+<p><strong>Gallowmere</strong> (book 1) is a wet stockade town on the Barrow Moor where the last legion pay-vault, <strong>Kar Duhn</strong>,
+was cut into the rock. The garrison's tax-iron never came out. <strong>The Deep Road</strong> (book 2) is the dwarven trunk
+road under the mountains, where the Compact's couriers move by lamp-count and the second key waits.</p>
+<p><strong>Kar Ashen</strong> (book 3) is the third door's city, and the reason the Compact has held for nine hundred years.
+It is not a ruin and not a cult: it is a working municipality of four thousand people, inside the mountain, at
+the top of the <strong>Ninefold Road</strong> up the spine of the Wyrmreach. It has a mint, an aqueduct, a bone registry, a
+surgeon, a lamp rota, an arrears auction, and a chapel whose evening office is arithmetic. Every institution in
+it is competent, legal by its own charter, and load-bearing for the count that keeps Ashendrel asleep. The
+<strong>crown door</strong> at the top of the city is the ninth door with nine sockets, eight of them filled; the ninth hand
+is a vacant office with a nine-year term and a start date this spring, and the city is expecting somebody to
+take it. Book 3's horror is bureaucratic, not monstrous: nothing in Kar Ashen is hiding, and everything in it
+adds up.</p>
+<p><strong>Tone in book 3</strong>: the same grim-practical register, with the pressure moved from danger to complicity. The
+company can force any door in the city and still lose, because the thing it is up against is a schedule that
+other people depend on.</p>
+<p><strong>Tone</strong>: 16+ grim-practical fantasy adventure. Combat is short, ugly, and consequential; failure is usually
+attrition, capture, or a bad bargain, and death is on the table. No gore for its own sake, no cruelty as
+spectacle.</p>
+<hr />
+<h2 id="3-the-party-progression-across-books">3. The party (progression across books)<a class="headerlink" href="#3-the-party-progression-across-books" title="Permanent link">&para;</a></h2>
+<p>The reader is the captain of a small free company, <strong>the Ninth Sword</strong>, hired by commission.</p>
+<table>
+<thead>
+<tr>
+<th>Companion</th>
+<th>Role (D&amp;D analogue)</th>
+<th>Arc across the chain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Dellach Voss</strong></td>
+<td>Warden-sergeant, poleaxe and shield (fighter)</td>
+<td>Book 1: takes the front. Book 2: the oath question splits him from the company. Book 3: he is the one the vacant ninth-hand office actually fits.</td>
+</tr>
+<tr>
+<td><strong>Sister Nyre Ostwyn</strong></td>
+<td>Field-priest of the Reckoning (cleric)</td>
+<td>Keeps the company's debts and wounds. Book 2: the Compact is a debt she can read. Book 3: her own order is a party to it, and the hearing at Sarnhold is hers.</td>
+</tr>
+<tr>
+<td><strong>Kettle</strong></td>
+<td>Fen-born scout, lockwork and traps (rogue)</td>
+<td>The only one who has been under Kar Duhn before, and lies about it. Book 3: a mint floor and a shift roll turn his trade into a record.</td>
+</tr>
+<tr>
+<td><strong>Ilsabet Crane</strong></td>
+<td>Hedge-thaumaturge, glass-and-salt sigils (wizard)</td>
+<td>Recruited in book 1 Act 0; by book 2 she is reading the Door's grammar. Book 3: she reads the crown ledger's tenth column before anybody else does.</td>
+</tr>
+</tbody>
+</table>
+<p>Progression is mechanical, not just narrative: the company's <strong>renown</strong> buys better terms, better intelligence,
+and late-act options that a nameless company cannot reach; <strong>vigor</strong> is the attrition clock that makes the
+back half of each book harder if the front half was careless; and the <strong>key-iron</strong> plus the <strong>truth of the
+Compact</strong> carry forward as the leverage book 2 opens with, then book 3.</p>
+<p>By book 3 the carried state is the point rather than the reward: two irons and the truth of the Compact make the
+company the only party on the frontier that can take the crown iron, and therefore the only party the city has a
+use for.</p>
+<hr />
+<h2 id="4-state-model">4. State model<a class="headerlink" href="#4-state-model" title="Permanent link">&para;</a></h2>
+<h3 id="book-1-the-vault-of-nine-iron">Book 1: The Vault of Nine Iron<a class="headerlink" href="#book-1-the-vault-of-nine-iron" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Init</th>
+<th>Bounds</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vigor</code></td>
+<td>int</td>
+<td>5</td>
+<td>0-6</td>
+<td>Company condition. Hard fights, wounds, and forced marches spend it; rest and Nyre restore it.</td>
+</tr>
+<tr>
+<td><code>renown</code></td>
+<td>int</td>
+<td>0</td>
+<td>0-3</td>
+<td>Standing with the Warden-Marshal and the Ledger. Earned by keeping terms.</td>
+</tr>
+<tr>
+<td><code>iron_key</code></td>
+<td>bool</td>
+<td>false</td>
+<td>-</td>
+<td>The ninth key-iron, lifted from Kar Duhn's pay-hall.</td>
+</tr>
+<tr>
+<td><code>knows_compact</code></td>
+<td>bool</td>
+<td>false</td>
+<td>-</td>
+<td>The party has read enough to know what the Door actually holds.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="book-2-the-sunless-march-carried-new">Book 2: The Sunless March (carried + new)<a class="headerlink" href="#book-2-the-sunless-march-carried-new" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Init</th>
+<th>Bounds</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vigor</code></td>
+<td>int</td>
+<td>5</td>
+<td>0-6</td>
+<td>Reset by the winter at Gallowmere; spent again on the Deep Road.</td>
+</tr>
+<tr>
+<td><code>renown</code></td>
+<td>int</td>
+<td>2</td>
+<td>0-5</td>
+<td><strong>Carried</strong>: the company that closed Kar Duhn starts known.</td>
+</tr>
+<tr>
+<td><code>iron_key</code></td>
+<td>bool</td>
+<td><strong>true</strong></td>
+<td>-</td>
+<td><strong>Carried</strong>: the ninth key-iron is in the company's hands from page one.</td>
+</tr>
+<tr>
+<td><code>knows_compact</code></td>
+<td>bool</td>
+<td><strong>true</strong></td>
+<td>-</td>
+<td><strong>Carried</strong>: book 2 opens already knowing what it is walking toward.</td>
+</tr>
+<tr>
+<td><code>deep_charts</code></td>
+<td>bool</td>
+<td>false</td>
+<td>-</td>
+<td>New: the dwarven route charts for the lower march.</td>
+</tr>
+<tr>
+<td><code>oath_sworn</code></td>
+<td>bool</td>
+<td>false</td>
+<td>-</td>
+<td>New: the company swore to the Warden of the Deep Road.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Carried-variable rule (finding F3 of the 13-16 stress test)</strong>: a carried variable initializes <code>true</code>, so any
+condition of the form <code>&lt;carried_var&gt; == false</code> is unsatisfiable and a hard <strong>L2-11</strong> dead-branch error. Book 2
+therefore contains <strong>no acquisition branch and no <code>!iron_key</code> / <code>!knows_compact</code> condition</strong>; carried state is
+only ever read as already held (a carried-state <em>gate</em>), and the <code>set</code> effects that acquired it in book 1 are
+dropped. Every new acquisition in book 2 is a book-local variable (<code>deep_charts</code>, <code>oath_sworn</code>).</p>
+<h3 id="book-3-the-ninth-hand-carried-new">Book 3: The Ninth Hand (carried + new)<a class="headerlink" href="#book-3-the-ninth-hand-carried-new" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Init</th>
+<th>Bounds</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vigor</code></td>
+<td>int</td>
+<td>5</td>
+<td>0-6</td>
+<td>Reset by the winter at Sarnhold; spent again on the Ninefold Road and inside the city.</td>
+</tr>
+<tr>
+<td><code>renown</code></td>
+<td>int</td>
+<td>3</td>
+<td><strong>3-5</strong></td>
+<td><strong>Carried</strong>: the company that shut two doors. Floor raised to the initial so the carried standing can never be spent below it.</td>
+</tr>
+<tr>
+<td><code>iron_key</code></td>
+<td>bool</td>
+<td><strong>true</strong></td>
+<td>-</td>
+<td><strong>Carried</strong>: the ninth key-iron of Kar Duhn.</td>
+</tr>
+<tr>
+<td><code>second_iron</code></td>
+<td>bool</td>
+<td><strong>true</strong></td>
+<td>-</td>
+<td><strong>Carried</strong>: the relay iron of Hollowmarch.</td>
+</tr>
+<tr>
+<td><code>knows_compact</code></td>
+<td>bool</td>
+<td><strong>true</strong></td>
+<td>-</td>
+<td><strong>Carried</strong>: the company knows what the doors hold.</td>
+</tr>
+<tr>
+<td><code>crown_iron</code></td>
+<td>bool</td>
+<td>false</td>
+<td>-</td>
+<td>New: the crown iron off the rack in the socket chamber.</td>
+</tr>
+<tr>
+<td><code>wyrm_pact</code></td>
+<td>bool</td>
+<td>false</td>
+<td>-</td>
+<td>New: terms accepted directly from Ashendrel.</td>
+</tr>
+<tr>
+<td><code>door_state</code></td>
+<td>int</td>
+<td>0</td>
+<td>0-6</td>
+<td>New: what the company did to the crown door, which the act 6 endings read.</td>
+</tr>
+</tbody>
+</table>
+<p><code>renown</code> is deliberately declared <strong>min 3, max 5</strong> rather than 0-5. At 746 nodes the Layer-2 walk enumerates one
+configuration per reachable (node, variable-state) pair, so every value an integer variable can take multiplies
+the walk. Narrowing a carried counter to the range the continuation can actually reach keeps book 3 at 36,781
+configurations against the L2-12 cap of 100,000, and it is also the truthful model: a company that shut two
+doors does not become unknown.</p>
+<p><strong>Continuity invariant (SR-5)</strong>: every satisfying (<code>success</code> / <code>completion</code>) ending of book 1 leaves the company
+holding the key-iron and the truth, so book 2's declared initials are reachable from any book-1 win. Book 2's
+<code>series_entry_node</code> is <code>n_start</code>: many book-1 wins converge on one book-2 entry. Book 3 repeats the pattern one
+level up: its initials are exactly what book 2's completion ending (<em>The Second of Nine</em>) leaves behind.</p>
+<hr />
+<h2 id="5-graph-conventions">5. Graph conventions<a class="headerlink" href="#5-graph-conventions" title="Permanent link">&para;</a></h2>
+<p>All books are <strong>acyclic</strong> (so L1-7 branch depth is defined and <code>branch_and_bottleneck</code> stays admissible under
+PL-18). Books 1-2 run a five-act spine with a hard bottleneck between acts:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>n_start -&gt; Act 0 (muster)   -&gt; a0_march   -&gt; Act 1 (approach) -&gt; a1_gate
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>        -&gt; Act 2 (upper vault) -&gt; a2_stair -&gt; Act 3 (deep)     -&gt; a3_door
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        -&gt; Act 4 (the Door)  -&gt; wins + terminal failures
 </span></code></pre></div>
-<h2 id="k-kid-capabilities">K: Kid capabilities<a class="headerlink" href="#k-kid-capabilities" title="Permanent link">&para;</a></h2>
+<p>Book 3 runs the same shape over seven acts, sized to the long cell (99 / 110 / 108 / 112 / 119 / 122 / 76 nodes):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>n_start -&gt; Act 0 (Sarnhold)      -&gt; Act 1 (the Ninefold Road)  -&gt; Act 2 (crown gate and wards)
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>        -&gt; Act 3 (the counted city) -&gt; Act 4 (the wyrm-road)   -&gt; Act 5 (the socket ring)
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        -&gt; Act 6 (the crown door, the escape, the reckoning)   -&gt; wins + terminal failures
+</span></code></pre></div>
 <table>
 <thead>
 <tr>
-<th>ID</th>
-<th>Capability</th>
-<th>Docs</th>
-<th>Notes</th>
+<th>Prefix</th>
+<th>Meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>K1</td>
-<td>Read with age-appropriate presentation: legible type, UI complexity, and reading level matched to the child's band</td>
-<td>🟡</td>
-<td>Bands and reading levels are deeply specced (ADR-011); per-band presentation/UX is not</td>
+<td><code>n_start</code></td>
+<td>The opening passage (the only node with no in-edges).</td>
 </tr>
 <tr>
-<td>K2</td>
-<td>Choices are obvious, tappable, impossible to get mechanically wrong; locked (state-gated) choices are hidden, never shown-and-disabled</td>
-<td>✅</td>
-<td>Tech spec runtime semantics</td>
+<td><code>a0_</code>..<code>a4_</code></td>
+<td>Act spine and act rooms, in order.</td>
 </tr>
 <tr>
-<td>K3</td>
-<td>Choices are consequential: paths genuinely differ, endings vary, the story remembers state (items, flags, counters)</td>
-<td>✅</td>
-<td>Storybook format, Tier 2 state, ADR-011 clocks; WS-5 (delivered 2026-07-20) adds the catalog-time mechanism to grow structural + state variation, the M1-M5 mutation operators re-proven by the unchanged gate plus the WS-5 acceptance floors, promoted via bundle + human PR (ADR-020); WS-8 (the catalog flywheel, delivered 2026-07-21, D1-D8) closes the demand loop end to end: the enum-only saturation trigger drives a bounded candidate strategy, human-gated draft-PR promotion, and a scheduled S1-S6 cadence runner behind six reviewed-PR-only caps, so K3 holds up for heavy readers in saturated cells with no standing authoring budget</td>
+<td><code>w0_</code>..<code>w9_</code></td>
+<td>Optional interludes: side rooms, rests, lore, market, shrine. Reconverge to the spine.</td>
 </tr>
 <tr>
-<td>K4</td>
-<td>Resume exactly where they left off, on any device, with no understanding of sync required</td>
-<td>✅</td>
-<td>Revision-based sync, version pinning</td>
+<td><code>e_</code></td>
+<td>Ending nodes. Ending id is <code>end_&lt;node_id&gt;</code>.</td>
 </tr>
 <tr>
-<td>K5</td>
-<td>Restart and re-read freely; replay is first-class, including a single-step "Go back" undo</td>
-<td>✅</td>
-<td>RULED 2026-07-16: the back button stays; tech spec Runtime Semantics amended (replay-based undo, no backward state mutation); shipped in the Reader</td>
-</tr>
-<tr>
-<td>K6</td>
-<td>Endings tracker as a replay motivator ("found 3 of 7 endings")</td>
-<td>✅</td>
-<td>Tracker UI shipped 2026-07-17 in PR #270: <code>frontend/src/reader/EndingsProgress.tsx</code> ("found N of M"), wired into <code>Reader.tsx</code>, tested; <code>completion</code> rows are the write path</td>
-</tr>
-<tr>
-<td>K7</td>
-<td>Read-aloud / narration for pre-readers and emerging readers</td>
-<td>✅</td>
-<td>Shipped 2026-07-17 in PR #270: Web Speech API read-aloud (<code>frontend/src/reader/useReadAloud.ts</code>), per-profile <code>tts_enabled</code> toggle wired into <code>Reader.tsx</code> and <code>ProfileFormDialog.tsx</code></td>
-</tr>
-<tr>
-<td>K8</td>
-<td>Picture support at lower bands: covers at minimum; per-passage illustrations as an explicit decision</td>
-<td>🟡</td>
-<td>Cover art ratified and recorded in <a href="../adr/adr-017-ai-cover-art/">ADR-017</a> (shipped: Gemini generation, R2 storage, kid-visible with fallback tile); per-passage art stays out of scope; pre-reader picture support beyond covers still open</td>
-</tr>
-<tr>
-<td>K9</td>
-<td>Visual library shelf with covers: what's new, in progress, finished</td>
-<td>🟡</td>
-<td>Library API exists; shelf presentation not specced</td>
-</tr>
-<tr>
-<td>K10</td>
-<td>Offline is invisible: identical experience offline; never a connectivity error; at most "this book isn't downloaded yet"</td>
-<td>🟡</td>
-<td>Offline reading fully specced; kid-facing connectivity UX not</td>
-</tr>
-<tr>
-<td>K11</td>
-<td>Express interests and initiate a story request in kid terms (picking interests, typing a wish)</td>
-<td>🟡</td>
-<td>Shipped end to end: <code>POST /story-requests</code> plus a kid-terms request UI (idea box, series continuation, own-status list in kid language); ADR-015 is the foundational record</td>
-</tr>
-<tr>
-<td>K12</td>
-<td>Kid-friendly waiting and error states: "your story is being written", sync conflicts, and failures presented in kid terms</td>
-<td>✅</td>
-<td>Shipped 2026-07-17 in PR #270 (per its own delivery banner, "K12 complete incl. generation status"): kid-language request statuses, plain-language conflict dialog, mascot error/empty states, honest save-retry banner, and the kid-facing generation-in-progress state</td>
-</tr>
-<tr>
-<td>K13</td>
-<td>Age-band content guarantee: themes, scariness, and ending intensity land within the band (e.g. no death endings in young bands)</td>
-<td>✅</td>
-<td>ADR-011 per-band allowances, content flags, moderation by band. <strong>Open gap (H1, security-hardening-plan-2026-07.md, unresolved as of 2026-07-20)</strong>: <code>assign_storybook</code> performs no band comparison against the target profile, so a guardian can assign an off-band book across children; the generation-time guarantee holds, the assignment-time enforcement does not yet</td>
-</tr>
-<tr>
-<td>K14</td>
-<td>Safe room: no ads, no purchases, no external links, no contact with strangers, no dark patterns in the kid context</td>
-<td>✅</td>
-<td>Permanent exclusions in vision; parental gate in ADR-008</td>
-</tr>
-<tr>
-<td>K15</td>
-<td>Feedback signal: "I didn't like this / this scared me", routed to a grown-up who actually sees it</td>
-<td>✅</td>
-<td>Shipped 2026-07-17 in PR #270: <code>KidFlag</code> model, kid-facing <code>POST /flags</code>, admin list/resolve (<code>src/cyo_adventure/api/flags.py</code>); feeds G10 alerts and the A1 queue as designed</td>
-</tr>
-<tr>
-<td>K16</td>
-<td>Pick "me" from a picker: name and avatar, no password or email; sibling shelves and progress never collide</td>
-<td>✅</td>
-<td>Profile picker, per-profile PIN, ADR-014 device grants, IDOR suite</td>
-</tr>
-<tr>
-<td>K17</td>
-<td>Give and receive structured book recommendations within the family and across guardian-connected families (cousins); a recommendation is a book pointer plus rating, never a message</td>
-<td>✅</td>
-<td>ADR-016 records the policy; PR #267 shipped the connection substrate, and PR #270 (2026-07-17) shipped the kid-facing recommendation chips ("made for you by / cousin X loved this") over <code>/v1/recommendations</code>, gated by G17's enforced consent guard; K18 ratings are the payload substrate</td>
-</tr>
-<tr>
-<td>K18</td>
-<td>Rate a finished book (1-5 stars): the enjoyment signal that feeds S12 aggregate scoring and K17 recommendation payloads</td>
-<td>✅</td>
-<td>RULED 2026-07-16: owner's variant of thumbs up/down for aggregate ratings; shipped (kid widget, <code>Rating</code> table, <code>api/ratings.py</code>); debt item U6 (cannot clear a rating) folds here; distinct from K15, which remains the safety-flag signal</td>
-</tr>
-<tr>
-<td>K19</td>
-<td>Request interpretation and expectation-setting: when a child submits a free-form story idea, the app reflects it back in kid terms before generation, what it understood and will build into the story versus what it set aside and why (outside the age band, not safe, or not part of this kind of story), so the child knows what to expect from their wish</td>
-<td>✅</td>
-<td>DELIVERED 2026-07-20 (WS-7 D1-D8): the interpretation core (<code>story_requests/interpretation.py</code>), the persisted <code>story_request.interpretation</code> column, the submission-time general layer, the contract-grounded refined layer (interpret-and-bind + worker wiring), the CANNOT_CARRY rejection surface, and the D8 API contract (<code>RequestInterpretationView</code> on the story-request view) are built, tested, and merged. Added 2026-07-18 (owner directive). Design record: <a href="../story-flexibility-plan/">story-flexibility-plan.md</a> WS-7 and <a href="../ws7-request-interpretation-design/">ws7-request-interpretation-design.md</a>. Gated by K13 (never echo unsafe input back); complements K11 (express a request) and K12 (kid-friendly states). The guardian-console view is the G-side companion surface. <strong>Copy dependency added 2026-07-25</strong>: this capability's kid-facing Route A line ("Heroes in our stories always have made-up names") becomes false for a family that enables <strong>G18</strong>, so ADR-023 makes rewording it a precondition on that feature's flag, not a follow-up; the wording also has to stay consistent with PR #415's A11 hero-name copy. <strong>Status checked 2026-07-26: this dependency is still OPEN, and note the collision of two different "A11"s.</strong> The register's own A11 (corpus quality tooling, above) is a separate item; the one named here is PR #415's plan item A11, a reader-UX change to <code>RequestStory.tsx</code>. That change is unstarted, gated behind a naive-user comprehension session, and PR #415 has touched zero frontend files, so the Route A hero-name copy is unchanged on both sides. Both halves of the dependency therefore remain to be done together, and neither G18 nor plan-A11 may ship its wording without the other</td>
-</tr>
-<tr>
-<td>K20</td>
-<td>Read a story that uses my own details: my name, and a small closed set of other things my grown-up has turned on (a pet, a brother or sister, what I call my grandma), appearing in the story itself; plus my own switch to turn that off and back on for my books</td>
-<td>❌</td>
-<td>Proposed 2026-07-25 in <a href="../adr/adr-023-story-personalization-slots/">ADR-023</a> (status Proposed, not yet Accepted). The kid-facing half of G18. Distinct from K16 (picking "me" from a picker is identity <em>in the app</em>; this is identity <em>in the story</em>) and from K11/K19 (what a child may <em>ask for</em> is unchanged: Route A's self-naming block stays fully in force, and this capability is reached only through a guardian setting, never by asking). The child's switch narrows within the guardian's envelope and can never widen it. <strong>Not offered at the 3-5 band</strong>: a control a pre-reader cannot exercise is not a safeguard, so for the youngest band this is guardian-controlled with no child-side surface (ADR-023 section 9)</td>
+<td><code>c_&lt;node&gt;_&lt;n&gt;</code></td>
+<td>Choice ids, generated by the builder.</td>
 </tr>
 </tbody>
 </table>
-<h2 id="g-guardian-capabilities">G: Guardian capabilities<a class="headerlink" href="#g-guardian-capabilities" title="Permanent link">&para;</a></h2>
+<p><strong>Room module</strong> (the repeated gamebook unit, 3-5 nodes deep): a room entry node offers 2-4 approaches
+(force / care / cleverness / avoidance); each approach is a short passage that may spend or grant state, may
+branch once more, and may end in a failure leaf; survivors reconverge on the room's exit node, which leads to
+the next room. Failure leaves are what carry the gamebook's 25% terminal fraction.</p>
+<p><strong>Room shapes (book 3)</strong>: at 746 nodes the room module was formalised into six reusable shapes, so the act
+structure could be generated and the <em>content</em> authored on top of it rather than both at once. Each shape is a
+node count plus a label count plus a fixed wiring:</p>
 <table>
 <thead>
 <tr>
-<th>ID</th>
-<th>Capability</th>
-<th>Docs</th>
-<th>Notes</th>
+<th>Shape</th>
+<th>Nodes / labels</th>
+<th>Wiring</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>G1</td>
-<td>One account, multiple child profiles; each profile's age band and reading level actually changes what the child sees</td>
-<td>✅</td>
-<td><code>child_profile</code> caps enforced in library filtering</td>
+<td><code>fork</code></td>
+<td>6 / 8</td>
+<td>Entry offers three approaches; two branch once more; one failure leaf.</td>
 </tr>
 <tr>
-<td>G2</td>
-<td>Per-child content controls: allowed and banned themes, content flags, family-specific exclusions (phobias, no-magic, no-weapons)</td>
-<td>✅</td>
-<td>Schema-deep only: <code>allowed_content_flags</code> and <code>content_nogo</code> exist in the data model, but the intake UI hardcodes empty lists and the profile form has no theme controls. RULED 2026-07-16: build confirmed, scheduling open</td>
+<td><code>monster</code></td>
+<td>6 / 8</td>
+<td>Entry, three approaches, two failure leaves (one fatal, one costly).</td>
 </tr>
 <tr>
-<td>G3</td>
-<td>Per-child permissions and limits: whether the child may initiate story requests (including pre-authorized auto-allow), screen-time norms if any</td>
-<td>🟡</td>
-<td>Pre-authorization envelope shipped 2026-07-17 in PR #270 (<code>request_auto_approve</code>, <code>monthly_request_envelope</code> on <code>child_profile</code>; form UI in <code>ProfileFormDialog.tsx</code>/<code>ProfilesPage.tsx</code>); screen-time norms remain unspecced and out of scope</td>
+<td><code>trap</code></td>
+<td>4 / 5</td>
+<td>Entry, two approaches, one failure leaf.</td>
 </tr>
 <tr>
-<td>G4</td>
-<td>Initiate story requests themselves, including personalized stories ("one about our camping trip for Maya")</td>
-<td>✅</td>
-<td>Concept-brief intake; PII rules keep real names out of prompts. Note the tension this row's own example carries: it names a real child, while the mechanism deliberately cannot. <strong>G18</strong> (proposed 2026-07-25, ADR-023) resolves it at a different layer, by substituting at render time on the family's own devices rather than at generation time, so G4's guarantee here is unchanged</td>
+<td><code>social</code></td>
+<td>4 / 5</td>
+<td>Entry, two lines of questioning, one leaf that closes a door socially.</td>
 </tr>
 <tr>
-<td>G5</td>
-<td>Fast review of a generated story without reading every path: summary, themes, flagged passages, branch structure</td>
-<td>✅</td>
-<td>Structure summaries shipped 2026-07-17 in PR #270 (per its delivery banner: "G5 structure summaries"); approval itself is on the admin surface (A6)</td>
+<td><code>loot</code></td>
+<td>4 / 6</td>
+<td>Entry, take / read / leave, one leaf that costs the take.</td>
 </tr>
 <tr>
-<td>G6</td>
-<td>Edit or reject a generated story (prose tweaks, veto) with re-review on edit</td>
-<td>🟡</td>
-<td>Shipped 2026-07-17 in PR #270: <code>PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}</code> (<code>src/cyo_adventure/api/node_edit.py</code>) re-runs the validation gate and moderation on edit, <code>needs_revision</code> exists; admin-side editor is built, a dedicated guardian-facing review/edit surface still awaits</td>
+<td><code>lore</code></td>
+<td>3 / 4</td>
+<td>Entry, two readings, no leaf (reconverges).</td>
 </tr>
 <tr>
-<td>G7</td>
-<td>Cost gate: a story request spends generation budget only with guardian consent; per-child auto-allow is a guardian setting</td>
-<td>✅</td>
-<td>Consent step shipped (guardian request approval precedes any concept/GenerationJob, WS-B); budget/credit debiting completed 2026-07-17 in PR #270 (per its delivery banner: "G7 complete: consent debits quota on ALL spend paths incl. the legacy intake gate"); pre-auth envelopes are G3</td>
-</tr>
-<tr>
-<td>G8</td>
-<td>Kill switch: pull any published book off a child's shelf immediately, including offline copies at next connection</td>
-<td>✅</td>
-<td><code>archived</code> state exists; offline-copy revocation delivered 2026-07-17 (client-side reconcile-on-fetch/reconnect against the authoritative <code>/v1/library</code> response, no backend change needed; <code>frontend/src/offline/revocation.ts</code>)</td>
-</tr>
-<tr>
-<td>G9</td>
-<td>Engagement visibility: what each child is reading, how much, endings found, re-reads; literacy signals, not surveillance</td>
-<td>✅</td>
-<td>Shipped 2026-07-17 in PR #270: <code>GET /families/me/reading-summary</code> (<code>src/cyo_adventure/api/reading_history.py</code>), guardian-facing <code>frontend/src/guardian/ReadingPage.tsx</code>. Open extension (proposed 2026-07-25, <a href="../reader-path-engagement-design/">reader-path-engagement-design.md</a> decision 4): whether a guardian sees their own child's <strong>stop points</strong>. "Started three times, furthest point chapter 3" is real reading-support value for a struggling reader and is the closest this capability comes to its own surveillance edge; the recommendation is book-granular support framing, never a choice-by-choice replay. Note the underlying data already arrives and is discarded: the offline client sends the full accumulated <code>path</code> on every save and the server overwrites it</td>
-</tr>
-<tr>
-<td>G10</td>
-<td>Notifications that matter: child flagged content, a story awaiting action, a story ready; digest by default, alert on safety</td>
-<td>🟡</td>
-<td>Shipped 2026-07-17 in PR #270: <code>GET /notifications</code> projects <code>pipeline_event</code> into a guardian feed (<code>src/cyo_adventure/api/notifications.py</code>, <code>notifications/service.py</code>), rendered by <code>frontend/src/guardian/NotificationBell.tsx</code>. Poll-based (client re-polls with <code>since</code>), no push channel and no server-scheduled digest job; "digest by default, alert on safety" is a client polling-cadence convention, not yet a distinct delivery tier</td>
-</tr>
-<tr>
-<td>G11</td>
-<td>Plain-language trust surface: what data is collected, where the AI text came from, who reviewed it, no training on child inputs, COPPA/GDPR-K posture</td>
-<td>🟡</td>
-<td>Privacy model and ADR-008 compliance are strong internally; no user-facing articulation specced</td>
-</tr>
-<tr>
-<td>G12</td>
-<td>Data export and full account/family deletion</td>
-<td>🟡</td>
-<td>Deletion-readiness and Apple revocation specced; user-facing export absent</td>
-</tr>
-<tr>
-<td>G13</td>
-<td>Predictable cost model: quotas, "3 stories left this month", no surprise bills a child can trigger</td>
-<td>🟡</td>
-<td>Interim balance surface shipped 2026-07-17 in PR #270 (<code>GET /families/me/budget</code>, <code>budgetApi.ts</code>/<code>ProfilesPage.tsx</code>); ADR-008 full credits/IAP model for the public tier remains Phase 8 scope</td>
-</tr>
-<tr>
-<td>G14</td>
-<td>Standard adult auth; multi-guardian households (two parents, a grandparent)</td>
-<td>🟡</td>
-<td>Supabase OIDC solid; multi-guardian implied by the data model, never specced</td>
-</tr>
-<tr>
-<td>G15</td>
-<td>Device management: authorize and revoke devices, see which books are downloaded where, storage use</td>
-<td>🟡</td>
-<td>ADR-014 grants list/revoke ✅; download/storage visibility ❌</td>
-</tr>
-<tr>
-<td>G16</td>
-<td>Browse the curated catalog and assign books to their own children</td>
-<td>✅</td>
-<td>WS-E catalog visibility + assignment gate</td>
-</tr>
-<tr>
-<td>G17</td>
-<td>Approve, decline, and revoke family connections for their own family, in each direction (share out and receive in); connections activate nothing without this consent</td>
-<td>✅</td>
-<td>ADR-016 requires dual-guardian consent; shipped 2026-07-17 in PR #270: paired consent columns (<code>db/models.py</code> <code>FamilyConnection</code>), <code>POST</code>/<code>DELETE /family-connections/{id}/consent</code>, and an enforced guard at the read path (<code>api/recommendations.py::_is_dual_consented()</code> requires both <code>consented_by_viewer_user_id</code> and <code>consented_by_sharer_user_id</code> before a connection is treated as active), superseding the prior holds-by-omission state Scope note (2026-07-25): this consent covers <strong>recommendations</strong> crossing ring 2, which is what ADR-016 and the substrate were built for. It is deliberately NOT read as consent to a child's real details appearing in story content in the connected household; <strong>G18</strong> adds a separate signed disclosure consent for that.</td>
-</tr>
-<tr>
-<td>G18</td>
-<td>Opt a child's real details into their stories, per child and per slot, scoped by ring: within our own family (ring 1) or additionally with a specific connected family (ring 2, behind its own signed disclosure consent); and revoke either at any time</td>
-<td>❌</td>
-<td>Proposed 2026-07-25 in <a href="../adr/adr-023-story-personalization-slots/">ADR-023</a> (status Proposed, not yet Accepted; OD-1 and OD-5 gate the ring-2 half). Everything defaults <strong>off</strong>. Extends G4 ("personalized stories") with a mechanism G4's own note could not offer: substitution happens client-side at render time, so the S10 invariant ("no child PII to providers") is preserved rather than traded away. The ring-2 consent is layered <strong>on top of</strong> G17's connection consent, never merged into it: G17 consents to recommendations crossing the boundary, G18 consents to a child's real details appearing in story content read in another household. Revocation is prospective (effective on the connected household's next connection), not a retroactive claw-back</td>
+<td><code>rest</code></td>
+<td>2 / 3</td>
+<td>Entry, spend time or move on; grants <code>vigor</code>.</td>
 </tr>
 </tbody>
 </table>
-<h2 id="a-admin-capabilities">A: Admin capabilities<a class="headerlink" href="#a-admin-capabilities" title="Permanent link">&para;</a></h2>
+<p>Rooms hang as parallel chains off an act hub and reconverge on the act gate, which is what keeps depth at 74 of
+93 while the node count is at the top of the cell: breadth, not length, is what a ceiling-scale gamebook needs.</p>
+<p><strong>Ending mix</strong>: 1 <code>completion</code> per book (the true close that advances the campaign), a handful of <code>success</code>
+(wins that do not resolve the door correctly), plus <code>death</code>, <code>capture</code>, <code>setback</code>, and <code>discovery</code> leaves.
+<strong>Breadth must reconverge, not terminate</strong> (the correction of 2026-07-25, AL-026). Book 3 was first
+built with breadth paid for in terminal failure leaves, at the same per-choice termination density as
+book 1 (~22.5%). Because it had 2.4x the nodes, that made the <em>typical</em> read shorter, not longer:
+a median of 5 pages and 302 words of a 42,085-word book, with 7 endings within two taps of the start.
+The fix was to convert the 45 shallowest failure leaves into <strong>pass-through nodes</strong>: the authored
+failure prose stays, the node costs <code>vigor</code> on entry, and the route rejoins the room's continuation.
+Median read went to 20 pages and 1,154 words, and the share of endings a reader actually reaches went
+from 39% to 56%. The rule for any future ceiling-scale book: a room should more often cost something
+and rejoin than end the run, and terminal leaves belong in the endgame acts where lethality is earned.</p>
+<p>Note the standing tension: PL-17's endings floor (<code>ceil(0.25 * nodes)</code> = 187 here) actively pushes a
+gamebook author toward terminal leaves, and book 3 now sits exactly on that floor with no headroom
+left. The floor's shape is worth revisiting (AL-026).</p>
+<p>Book 3 lands at 187 endings: 1 completion, 6 success, 2 discovery, 51 setback, 34 capture, 93 death. Lethal
+endings are allowed at 16+ and are earned by specific, telegraphed choices, never by a coin flip.</p>
+<hr />
+<h2 id="6-authoring-pipeline">6. Authoring pipeline<a class="headerlink" href="#6-authoring-pipeline" title="Permanent link">&para;</a></h2>
+<p>The source of truth for each book is a compact node <strong>spec</strong> under <code>data/series/wyrmreach/</code>; the committed
+skeleton and filled story are both compiled from it, so the two can never drift.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>data/series/wyrmreach/book1.spec.json    # metadata, variables, and an `include` list of act parts
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>data/series/wyrmreach/book1.a0..a4.json  # structure + beats + choice labels + effects, one file per act
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>data/series/wyrmreach/book1.prose.a0..a4.json   # node id -&gt; finished prose, one file per act
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>        |
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>        |  scripts/build_series_book.py
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>        v
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>skeletons/16+/the-vault-of-nine-iron.json   (bodies are &lt;&lt;FILL role=.. words=.. beats=&#39;..&#39;&gt;&gt;)
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>out/the-vault-of-nine-iron.filled.json      (bodies are prose)
+</span></code></pre></div>
+<p>The spec's <code>include</code> list resolves relative to the spec file, and <code>--prose</code> is repeatable and merged in order, so
+a book is authored one act at a time and compiled as a whole. Book 3 is seven act parts and seven prose parts.</p>
+<p>Spec node shorthand (expanded by the builder):</p>
 <table>
 <thead>
 <tr>
-<th>ID</th>
-<th>Capability</th>
-<th>Docs</th>
-<th>Notes</th>
+<th>Key</th>
+<th>Meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>A1</td>
-<td>Moderation queue: flagged, uncertain, and reader/guardian-reported items, each showing why; decisions feed back into automated rules</td>
-<td>✅</td>
-<td><code>needs_review</code> routing and global queue ✅; feedback-into-rules shipped as the WS-F propose-and-ratify suggestion dashboard over <code>pipeline_event</code>; kid/guardian reports (K15) shipped 2026-07-17 and feed this queue (<code>GET /admin/flags</code>)</td>
+<td><code>i</code></td>
+<td>node id</td>
 </tr>
 <tr>
-<td>A2</td>
-<td>Sample audits: random re-review of anything published without direct human review (becomes real if any auto-publish tier ever exists)</td>
-<td>❌</td>
-<td>Moot while A6 gates everything; register it so it survives any future gating change</td>
+<td><code>r</code></td>
+<td>role (<code>setup</code>, <code>rising</code>, <code>choice</code>, <code>climax</code>, <code>completion</code>, <code>failure</code>, ...)</td>
 </tr>
 <tr>
-<td>A3</td>
-<td>Global policy levers: age-band definitions, theme taxonomy, classifier thresholds, banned-content lists</td>
-<td>🟡</td>
-<td>Per-band moderation thresholds are DB-backed, admin-editable with an audit trail (WS-A); band definitions and taxonomy remain code-level</td>
+<td><code>w</code></td>
+<td>words target for the FILL directive</td>
 </tr>
 <tr>
-<td>A4</td>
-<td>Policy re-evaluation: re-screen the already-published catalog when policy or thresholds change</td>
-<td>🟡</td>
-<td>First cut delivered 2026-07-17 (Phase 5/M5): admin-only <code>POST /api/v1/admin/rescreen</code> (<code>moderation/rescreen.py</code>, <code>api/rescreen.py</code>) re-runs the deterministic policy/band gate plus Stage-0 classifiers over already-published family-tier books, scoped by an optional id list, and writes a <code>moderation_completed</code> pipeline event per book; a flagged book is never auto-unpublished (ADR-005), only surfaced for an admin to archive by hand. Full public-catalog re-screen (Phase 9) and an admin UI hook still ❌</td>
+<td><code>b</code></td>
+<td>beats (the narrative intent the prose must fulfill)</td>
 </tr>
 <tr>
-<td>A5</td>
-<td>Incident path: trace how content reached a child (prompt, model, gate version), pull it everywhere including offline, notify affected guardians</td>
-<td>🟡</td>
-<td>Provenance supports trace ✅; pull-everywhere (offline copies) delivered 2026-07-17, same client-side revocation reconcile as G8 (<code>frontend/src/offline/revocation.ts</code>); guardian notification still ❌</td>
+<td><code>c</code></td>
+<td>choices: <code>[label, target]</code>, <code>[label, target, condition]</code>, <code>[label, target, condition, effects]</code></td>
 </tr>
 <tr>
-<td>A6</td>
-<td>AI safety gate: the admin's recorded approval is the only path from generated content to a child (approve-and-publish)</td>
-<td>✅</td>
-<td>ADR-005 as amended; state machine with no bypass; ratified 2026-07-16 (decision 3)</td>
+<td><code>e</code></td>
+<td>ending: <code>"kind\|valence\|Title"</code></td>
 </tr>
 <tr>
-<td>A7</td>
-<td>Pipeline observability: success/failure rates, queue depth and latency, rejection reasons by stage, cost per story, per-provider quality</td>
-<td>🟡</td>
-<td><code>pipeline_event</code> captures every transition and the WS-F dashboard aggregates moderation outcomes; cost/latency/yield operational views still ❌</td>
+<td><code>x</code></td>
+<td><code>on_enter</code> effects</td>
 </tr>
 <tr>
-<td>A8</td>
-<td>Pipeline levers: switch or disable providers, tune prompts/templates, set rate limits and cost caps, kill a runaway job</td>
-<td>🟡</td>
-<td>Config-pinned swap + fallback cascade ✅; per-request provider/model against a server-side allowlist shipped (WS-C), with allowlist + authoring-queue admin UI in PR #268; kill-job and caps surfaces still ❌</td>
-</tr>
-<tr>
-<td>A9</td>
-<td>Curated/seed catalog management so a new child never sees an empty shelf</td>
-<td>🟡</td>
-<td>Catalog visibility + "curated starter library" (ADR-008); management surface thin</td>
-</tr>
-<tr>
-<td>A10</td>
-<td>Admin-initiated story generation (seeding the catalog, testing the pipeline)</td>
-<td>✅</td>
-<td>Shipped (WS-B): <code>POST /story-requests/authored</code>, admin catalog-targeted with no family; ADR-015 names it foundationally</td>
-</tr>
-<tr>
-<td>A11</td>
-<td>Structural quality tools across the corpus: broken graphs, reading-level drift, repetitive or template-y output</td>
-<td>🟡</td>
-<td>Per-story validator is world-class. <strong>Corpus-level repetition tooling delivered 2026-07-26</strong> (PR #415, plan items A8/A21 plus the WS-0 gate): <code>scripts/run_diversity_eval.py --check</code> is the regression gate over the committed panel; <code>scripts/check_incell_clones.py --check</code> is the A8 in-cell duplicate audit over the real catalog, blocking against the <code>tau_cell</code> floor and carrying a self-pruning allowlist that must shrink to zero (one entry, A9); <code>validator/theme_leak.py</code> is the A21 residual retired-theme scan, wired into both the per-skeleton acceptance runner and <code>tests/unit/test_skeleton_contracts.py</code> as a catalog-wide drift guard; and <code>tests/unit/test_validator_rules_catalog.py</code> holds the rule catalog itself in lockstep with the code. <strong>Author-feedback tooling added 2026-07-25</strong> from the Wyrmreach three-book run (PR #416): the <a href="../authoring-lessons-log/">authoring lessons log</a> is delivered (append-only per-run lessons with a proposed change per row, validated by <code>scripts/check_lessons_log.py</code>, mandated as a core directive in <code>CLAUDE.md</code>), while reader-outcome quality tooling is designed but unbuilt (<a href="../reader-path-engagement-design/">reader-path-engagement-design.md</a>: stop-rate per node, unreached endings, choice take rates, and a <code>skeleton_slug</code> join that separates a weak fill from a weak skeleton); ten further gaps are catalogued with fixes in <a href="../story-quality-lessons-2026-07/">story-quality-lessons-2026-07.md</a>, of which one is blocking: no hand-authored skeleton can pass the <code>skeleton-promotion</code> CI gate, because <code>check_promotion_bundle.py</code> requires a lineage sidecar unconditionally and none exists in <code>skeletons/</code>. <strong>Corpus-level <em>reading-level</em> drift tooling is still ❌</strong>: RL-13 is per-story and advisory, and nothing tracks its distribution across the catalog or over time, so this row stays 🟡 rather than ✅. <strong>Broken graphs</strong> are covered per-story (L1/L2) and, across a series chain, by SR-1..SR-9 at publish</td>
-</tr>
-<tr>
-<td>A12</td>
-<td>Account support ops: lockouts, deletion requests, abuse handling (an adult misusing generation)</td>
-<td>🟡</td>
-<td>PR #267 (open) delivers user/family lifecycle management: invites, edit, deactivate with auth-boundary enforcement and self-lockout guard; deletion-request and abuse workflows still ❌. Per the 2026-07-16 review condition: PR #267 also grants the admin console authority to set and reset a child profile's picker PIN (<code>PATCH /admin/profiles/{profile_id}</code>, <code>api/admin_profiles.py</code>), named here explicitly as an A12 admin-support capability rather than left implicit in the CRUD description; cross-reference <a href="../adr/adr-014-device-authorized-kid-access/">ADR-014</a>, which defines the picker PIN as a convenience lock behind an already-authenticated guardian/admin bearer, not a security boundary in its own right</td>
-</tr>
-<tr>
-<td>A13</td>
-<td>Admin action audit trail: admins touching child-related data leave a trail</td>
-<td>🟡</td>
-<td>Approver stamps and <code>acting_role</code> audit stamps ✅; no audit view/report</td>
-</tr>
-<tr>
-<td>A14</td>
-<td>Compliance and platform ops: retention enforcement, compliance reporting, backups and tested restore</td>
-<td>🟡</td>
-<td>ADR-007 retention, backups live, restore drill planned; compliance reporting ❌</td>
-</tr>
-<tr>
-<td>A15</td>
-<td>Administer family connections: broker, list, and remove connection records on request; admin action never substitutes for guardian consent</td>
-<td>🟡</td>
-<td>Console shipped in PR #267 (open); ADR-016 subordinates it to G17 consent</td>
-</tr>
-<tr>
-<td>A16</td>
-<td>Generate and manage AI cover art per storybook version, reviewed on the approval surface before it reaches a child</td>
-<td>🟡</td>
-<td>RULED 2026-07-16, recorded in <a href="../adr/adr-017-ai-cover-art/">ADR-017</a>; shipped (covers/ module, admin trigger, R2 storage, best-effort with fallback). <strong>Open gap (H2, security-hardening-plan-2026-07.md, unresolved as of 2026-07-20)</strong>: <code>generate_cover</code> flips <code>cover_status</code> straight <code>generating -&gt; ready</code> with no moderation/approval gate, so a cover image can reach a child's shelf without the human review this capability's own definition promises; the story text guarantee (A6) is unaffected</td>
+<td><code>s</code></td>
+<td><code>safety_scope</code> hints (<code>peril</code>, <code>scary_imagery</code>, <code>conflict</code>, <code>sad_moment</code>)</td>
 </tr>
 </tbody>
 </table>
-<h2 id="s-system-capabilities-cross-cutting">S: System capabilities (cross-cutting)<a class="headerlink" href="#s-system-capabilities-cross-cutting" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>Capability</th>
-<th>Docs</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>S1</td>
-<td>Offline as a first-class mode: reading, choices, progress, and flags all work offline and reconcile later</td>
-<td>✅</td>
-<td>ADR-002, sync rules, offline queue with idempotent replay</td>
-</tr>
-<tr>
-<td>S2</td>
-<td>Multi-device conflict resolution that never silently loses a child's progress</td>
-<td>✅</td>
-<td>Revision-based 409 model; kid-facing presentation tracked as K12</td>
-</tr>
-<tr>
-<td>S3</td>
-<td>Story representation that supports the format: branching graph, state, conditions, multiple ending types</td>
-<td>✅</td>
-<td>ADR-001, ADR-006, ADR-011; deeper than the expectation</td>
-</tr>
-<tr>
-<td>S4</td>
-<td>Deterministic pre-publication validation that a story is playable (no dead ends, orphans, traps, unsatisfiable paths)</td>
-<td>✅</td>
-<td>Two-layer gate incl. state-space walk; RULED 2026-07-16: repair output must re-run the gate and the band policy must fail closed on an unconfigured band (fixes implemented on this branch)</td>
-</tr>
-<tr>
-<td>S5</td>
-<td>Age-banding as the system-wide spine: reading level, theme intensity, safety thresholds keyed off one per-child band</td>
-<td>✅</td>
-<td>ADR-011</td>
-</tr>
-<tr>
-<td>S6</td>
-<td>Human-legible provenance per story: who or what created it, checks passed, approver, when</td>
-<td>✅</td>
-<td>Per-version model/provider/prompt/approver stamps</td>
-</tr>
-<tr>
-<td>S7</td>
-<td>Independent safety pipeline: moderation independent of the generator; no path to a child bypasses the automated gates plus the human gate</td>
-<td>✅</td>
-<td>ADR-005, ADR-010, prompt-injection defenses</td>
-</tr>
-<tr>
-<td>S8</td>
-<td>End-to-end request flow: initiate (K/G/A) -&gt; guardian cost gate -&gt; generation -&gt; validation/moderation -&gt; admin gate -&gt; shelf, with honest async status</td>
-<td>🟡</td>
-<td>Flow shipped end to end (WS-A..G: request -&gt; guardian approve -&gt; admin authoring plan -&gt; pipeline -&gt; admin release) except budget accounting at consent and kid-facing status; ADR-015 is the foundational record</td>
-</tr>
-<tr>
-<td>S9</td>
-<td>Notification/event delivery infrastructure underlying K12, G10, and admin alerts</td>
-<td>🟡</td>
-<td>Shipped 2026-07-17 in PR #270: <code>notifications/service.py</code> projects the append-only <code>pipeline_event</code> log into the K12/G10 feeds. Delivery is poll-based only (no WebSocket/SSE push, no scheduled digest job) - the "infrastructure" is a read projection, not a push transport</td>
-</tr>
-<tr>
-<td>S10</td>
-<td>Privacy architecture: no child PII to providers, data minimization, deletion-readiness, no third-party trackers in the kid context</td>
-<td>✅</td>
-<td>Privacy model, PII guard, ADR-007/008/009. <strong>Materially extended, not merely touched, by G18/K20</strong> (ADR-023, proposed 2026-07-25): the "no PII to providers" invariant is preserved by construction, but the feature adds a new child-linked data category (per-child slot values), a new client-held payload at rest on devices, and a new cross-family flow, all of which the classification, retention schedule, and deletion drill must cover</td>
-</tr>
-<tr>
-<td>S11</td>
-<td>Social boundary enforcement: no messaging or free text between users, no user/family discovery, no kid contact outside active parental approval; cross-family flows exist only through ring-2 connections</td>
-<td>✅</td>
-<td>ADR-016 + vision v1.3; enforcement is structural (no such surfaces exist) plus the ADR-016 validation criteria. <strong>G18 adds a second kind of ring-2 flow</strong> (personalization values, alongside recommendations) and is the first one whose enforcement is a runtime authorization predicate rather than the absence of a surface; ADR-023's implementation plan section 8.4 is where that predicate lives, and it is the highest-consequence authz surface the boundary now depends on</td>
-</tr>
-<tr>
-<td>S12</td>
-<td>System recommendations from anonymized aggregate book scores (ring 3): no identity in or inferable from a global recommendation; minimum-population threshold before aggregates surface</td>
-<td>🟡</td>
-<td>Named as permitted future scope in ADR-016; recommendation scoring itself still has no design. The <strong>aggregate substrate and its privacy contract</strong> are now designed (2026-07-25): <a href="../reader-path-engagement-design/">reader-path-engagement-design.md</a> specifies a de-identified <code>node_engagement</code> rollup carrying no child or device id, aggregate-by-construction endpoints that accept no profile parameter, a proposed 5-trail minimum-population floor with the population returned alongside every rate, and rollup-then-purge of the child-linked raw trails at 30 days on the ADR-007 precedent. This is the same threshold discipline S12 requires, built once for engagement and reusable for ring-3 scoring. <strong>Forward-binding constraint added the same day (ADR-023)</strong>: any story reachable through a ring-3 surface must render fully generic regardless of every G18 toggle. Story <em>content</em> satisfies this for free (the stored blob is always generic); the values <em>payload</em> path does not, and whoever builds S12 must land that as a test rather than assume it</td>
-</tr>
-</tbody>
-</table>
-<h2 id="known-doc-debt-this-register-supersedes-or-exposes">Known doc debt this register supersedes or exposes<a class="headerlink" href="#known-doc-debt-this-register-supersedes-or-exposes" title="Permanent link">&para;</a></h2>
-<p>All three items below were resolved in the 2026-07-16 alignment pass; kept for the record:</p>
-<ul>
-<li><del>The vision doc still says "no story reaches a child until a parent approves it"</del>:
-  resolved in vision v1.2 (TL;DR, success metrics, and MVP capability 5 now name the global
-  safety admin per ADR-005 as amended); the guardian's residual controls are G5/G6/G7/G8,
-  not approval.</li>
-<li><del>The vision doc's one-family target-user framing predates the public pivot</del>: resolved in
-  vision v1.2 (scope note generalizes to the three roles; the founding family is kept as
-  reference personas).</li>
-<li><del>The "children cannot request stories" narrowing was never a recorded decision</del>: resolved
-  by <a href="../adr/adr-015-story-request-initiation-and-gating/">ADR-015</a>, which reverses it
-  explicitly and refines ADR-008's "children never trigger generation" phrasing to the
-  enforceable invariant (no spend or provider egress without adult consent).</li>
-</ul>
-<h2 id="unregistered-scope-rulings">Unregistered scope: rulings<a class="headerlink" href="#unregistered-scope-rulings" title="Permanent link">&para;</a></h2>
-<p>Per maintenance rule 3, work serving no register ID gets a conscious call. Found in the
-2026-07-16 open-PR review; both now ruled:</p>
-<ul>
-<li><strong>Cross-family recommendation connections</strong> (PR #267): RULED 2026-07-16 (decision 6).
-  Registered as K17/G17/A15/S11/S12 and recorded in
-  <a href="../adr/adr-016-recommendation-sharing-social-boundary/">ADR-016</a>. The PR's substrate
-  stands; the binding constraint is that no connection activates child-facing visibility
-  until the dual-guardian consent flow (G17) exists.</li>
-<li><strong>Provider allowlist admin UI</strong> (PR #268): serves A8 and is cited there; no separate
-  ruling needed.</li>
-</ul>
-<p>Added by the full traceability review (2026-07-16, see
-<a href="../traceability-review-2026-07-16/">traceability-review-2026-07-16.md</a> section 2);
-RULED by the owner later the same day:</p>
-<ul>
-<li><strong>Star ratings</strong>: RULED, registered as <strong>K18</strong> (the owner's variant of thumbs up/down,
-  feeding aggregate ratings/S12). Debt item U6 folds under K18.</li>
-<li><strong>AI cover-art subsystem</strong>: RULED, wanted as a register item; K8 updated, <strong>A16</strong>
-  minted, recorded in <a href="../adr/adr-017-ai-cover-art/">ADR-017</a>.</li>
-<li><strong>Reader "Go back" button</strong>: RULED, the app should have one; tech spec Runtime
-  Semantics amended, K5 updated.</li>
-<li><strong>ADR-007 raw output</strong>: RULED, admin reviews first, then the parent (a dual-role adult
-  is covered by the admin capability); the job-detail endpoint is tightened to
-  admin-only <code>report</code> access and ADR-007 amended. The parent may ultimately receive
-  unedited LLM output when the admin approves without changes; accepted, since it has
-  passed the automated gates and admin review by then.</li>
-<li><strong>Repair re-gate and band fail-closed</strong>: RULED, both fixes ordered and implemented on
-  this branch (S4 note updated).</li>
-<li><strong>G2 content controls</strong>: RULED, will be built; scheduling open.</li>
-<li>
-<p><strong>Admin child-PIN set/reset</strong> (PR #267): still open, recommend naming in A12 with an
-  ADR-014 cross-reference at PR review time.
-Added 2026-07-25 by the ADR-023 authorship pass:</p>
-</li>
-<li>
-<p><strong>Guardian opt-in story personalization</strong> (render-time substitution of a child's real details
-  into story content, ring-scoped): <strong>registered as K20 and G18</strong>, with scope notes on G4, G17,
-  K19, S10, S11, and S12. Recorded in
-  <a href="../adr/adr-023-story-personalization-slots/">ADR-023</a> (status Proposed).</p>
-</li>
-</ul>
-<p><em>Why two new IDs and not cross-references alone</em>, since that was the live question. Three
-  existing rows are adjacent and none of them covers it. G4 already promises "personalized
-  stories" and its example even names a child, but its whole mechanism is generation-time with
-  real names kept out of prompts; this feature is a different layer reaching a different outcome,
-  so folding it into G4 would make one row mean two incompatible things. S10 and S11 are
-  <em>extended</em> by it (new data category, new cross-family flow) but are cross-cutting system
-  guarantees, not the capability itself; a feature cannot be checked off against "privacy
-  architecture". K16 is identity in the app, not in the story. So without a new ID, the single
-  most user-visible thing this feature does would trace to nothing, which is exactly the failure
-  maintenance rule 3 exists to catch.</p>
-<p><em>Why two and not more.</em> Two personas genuinely gain a capability: a guardian who can opt in and
-  scope it (G18), and a child who sees their own details and holds a switch over them (K20). The
-  admin side does <strong>not</strong> need one: an admin reviewing marker-bearing prose is a presentation
-  detail of A6's existing approval gate, not a new authority. Nor does the system side: the
-  sentinel and render architecture is an <em>implementation of</em> S10's invariant, not a new
-  cross-cutting guarantee, so S10/S11/S12 get extended notes instead of new IDs. Both new rows sit
-  at ❌ and stay there until ADR-023 is Accepted and the work lands.</p>
-<ul>
-<li><strong>Planned items lacking a design element</strong> (not schedulable until one exists): Android
-  release, web direct-billing channel, education/teacher persona, i18n catalog. Still
-  open as a batch.</li>
-</ul>
-<h2 id="maintenance-rules">Maintenance rules<a class="headerlink" href="#maintenance-rules" title="Permanent link">&para;</a></h2>
+<p>Condition shorthand: <code>iron_key</code> (held), <code>!iron_key</code> (not held), <code>vigor&gt;=3</code>, <code>renown&gt;=2</code>, joined with <code>&amp;</code> / <code>|</code>.
+Effect shorthand: <code>vigor-1</code>, <code>vigor+1</code>, <code>renown+1</code>, <code>iron_key=true</code>, comma-separated; a trailing <code>!</code> marks an
+<code>on_enter</code> effect as <code>once</code>.</p>
+<p><strong>Never use <code>once</code>.</strong> The Layer-2 walk's configuration key includes the set of visited nodes that carry a <code>once</code>
+effect, so a single <code>once</code> effect multiplies the config space by two and does it again for every additional one.
+In an acyclic graph <code>once</code> is redundant anyway, because no node is entered twice on a path.</p>
+<h3 id="reading-level">Reading level<a class="headerlink" href="#reading-level" title="Permanent link">&para;</a></h3>
+<p>All three books declare <code>reading_level</code> Flesch-Kincaid <strong>9.5 &plusmn; 2.5</strong>, and every filled node lands inside it.
+Flesch-Kincaid is dominated by words per sentence, so at a fixed ~60 words the same content scores near FK 5 in
+four or five sentences, FK 9-11 in three, and FK 13+ in two. The practical authoring rule is <strong>three sentences
+per passage, roughly 20 words each</strong>. An outlier can be retuned without rewriting a word: join two sentences with
+<code>;</code> or <code>, and</code> to raise the grade, split one at a coordinating boundary to lower it.</p>
+<h3 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># structural report while authoring (dangling targets, floors, depth, shortest win, word mean)</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/build_series_book.py<span class="w"> </span>data/series/wyrmreach/book1.spec.json<span class="w"> </span>--check
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># compile the skeleton and the filled story in one pass (the skeleton stays the FILL form)</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/build_series_book.py<span class="w"> </span>data/series/wyrmreach/book3.spec.json<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="k">$(for</span><span class="w"> </span>a<span class="w"> </span><span class="k">in</span><span class="w"> </span>a0<span class="w"> </span>a1<span class="w"> </span>a2<span class="w"> </span>a3<span class="w"> </span>a4<span class="w"> </span>a5<span class="w"> </span>a6<span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span>--prose<span class="w"> </span>data/series/wyrmreach/book3.prose.<span class="nv">$a</span>.json<span class="p">;</span><span class="w"> </span><span class="k">done)</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span>--skeleton<span class="w"> </span>skeletons/16+/the-ninth-hand.json<span class="w"> </span>--filled<span class="w"> </span>out/the-ninth-hand.filled.json
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="c1"># gate each artifact, then the chain</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/check_skeleton.py<span class="w"> </span>skeletons/16+/the-ninth-hand.json<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">    </span>--band<span class="w"> </span><span class="m">16</span>+<span class="w"> </span>--length<span class="w"> </span>long<span class="w"> </span>--style<span class="w"> </span>gamebook<span class="w"> </span>--topology<span class="w"> </span>branch_and_bottleneck<span class="w"> </span>--tier<span class="w"> </span><span class="m">2</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/run_story_gate.py<span class="w"> </span>out/the-ninth-hand.filled.json
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/check_fill_integrity.py<span class="w"> </span>skeletons/16+/the-ninth-hand.json<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">    </span>out/the-ninth-hand.filled.json
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/build_series_book.py<span class="w"> </span>--series<span class="w"> </span>out/the-vault-of-nine-iron.filled.json<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">    </span>out/the-sunless-march.filled.json<span class="w"> </span>out/the-ninth-hand.filled.json
+</span></code></pre></div>
+<hr />
+<h2 id="7-adding-book-4">7. Adding book 4<a class="headerlink" href="#7-adding-book-4" title="Permanent link">&para;</a></h2>
 <ol>
-<li>IDs are stable forever. Append, never renumber; mark dead items "Retired" with a reason.</li>
-<li>When a capability lands, flip Docs status and link the spec/ADR and the tests that cover it.</li>
-<li>Any new feature proposal must cite the ID(s) it serves; a proposal serving no ID is either
-   scope creep or a missing register entry, and that call gets made consciously.</li>
+<li>Copy <code>book3.spec.json</code> as the shape reference (or <code>book2.spec.json</code> for a medium-cell book) and write
+   <code>book4.spec.json</code> with new content and its own <code>include</code> list of act parts.</li>
+<li>Carried variables initialize to book 3's win state (<code>iron_key</code>, <code>second_iron</code>, <code>knows_compact</code>, <code>renown</code>, plus
+   <code>crown_iron</code> if book 4 assumes the crown iron was kept). Read them only as held; never gate on <code>== false</code>, and
+   never place a gate on a new variable earlier in the graph than the first node that grants it: both are hard
+   L2-11 dead branches.</li>
+<li>Narrow every carried integer variable's declared range to what the continuation can actually reach, or the
+   Layer-2 walk will spend its 100,000-configuration budget on states no reader can be in.</li>
+<li>Set <code>series.book_index: 4</code>, <code>series_entry_node: n_start</code>, and set <code>is_final: true</code> only if book 4 closes the
+   chain (<code>is_final: true</code> is legal only on the top-index book, SR-4).</li>
+<li>Re-run the chain validator over all four filled books.</li>
 </ol>
-<h2 id="related-documents">Related documents<a class="headerlink" href="#related-documents" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="../project-vision/">Project Vision</a> (update pending per doc debt above)</li>
-<li><a href="../tech-spec/">Tech Spec</a></li>
-<li><a href="../adr/">ADR index</a></li>
-<li><a href="../authorization-matrix/">Authorization Matrix</a></li>
-<li><a href="../privacy-model/">Privacy Model</a></li>
-</ul>
+<p>The next hook is already written: book 3's completion ending (<em>The Third of Nine</em>) names the six remaining doors
+in order with dates against each, and puts the nearest of them in Sarnhold's own chapel.</p>
 
 
 
@@ -3558,7 +3527,7 @@ Added 2026-07-25 by the ADR-023 authorship pass:</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 17, 2026 19:07:42 UTC">July 17, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 02:20:23 UTC">July 28, 2026</span>
   </span>
 
     

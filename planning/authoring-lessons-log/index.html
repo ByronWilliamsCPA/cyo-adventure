@@ -1,0 +1,3580 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/authoring-lessons-log/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Authoring Lessons Log - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#authoring-lessons-log" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Authoring Lessons Log
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../template_feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Template Feedback
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-this-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to use this log
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related documents
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="authoring-lessons-log">Authoring Lessons Log<a class="headerlink" href="#authoring-lessons-log" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Status</strong>: Accepted | <strong>Updated</strong>: 2026-07-25
+<strong>Serves</strong>: <a href="../capability-register/">A11</a> (structural quality tools across the corpus)
+<strong>Validated by</strong>: <code>uv run python scripts/check_lessons_log.py</code></p>
+</blockquote>
+<!-- -->
+
+<blockquote>
+<p><strong>Note on this first landing.</strong> The lessons below were learned building a
+three-book 16+ gamebook series (the Wyrmreach chain), and several <code>Ref</code> cells
+cite that series' spec, skeleton, and filled-story artifacts. Those artifacts
+are <strong>not</strong> part of this change: they land in a separate follow-up push so the
+process and tooling work can be reviewed on its own, alongside the other
+in-flight revisions to story development. Every lesson and every tooling change
+here stands without them; the story-dependent tests skip until they arrive
+(6 skips in the suite today), and the two Wyrmreach design and report documents
+are included because they are the evidence base each lesson cites.</p>
+</blockquote>
+<p>Every story development run appends here. The point is that a lesson learned once becomes a
+<strong>change to the tooling</strong> rather than folklore an author has to rediscover, so each row carries a
+proposed change and a status that tracks whether it landed.</p>
+<h2 id="how-to-use-this-log">How to use this log<a class="headerlink" href="#how-to-use-this-log" title="Permanent link">&para;</a></h2>
+<p><strong>When to append.</strong> At the end of any authoring run: a new story or series book, a skeleton
+promotion, a fill pass, or a validator/gate change made in service of authoring. If the run
+produced no lesson, append nothing; an empty run is a real outcome.</p>
+<p><strong>What counts as a lesson.</strong> Something a future author or a future tooling change should act on.
+Three tests, any one of which qualifies it:</p>
+<ol>
+<li>It cost real iteration to discover (a rule interaction, a calibration, an ordering constraint).</li>
+<li>The tooling let a defect through, or reported it in a way that did not point at the cause.</li>
+<li>It would be re-learned from scratch by the next person, because nothing in the repo records it.</li>
+</ol>
+<p>A one-off typo is not a lesson. "The gate reports band membership, so the floor reads as a pass"
+is.</p>
+<p><strong>Fields.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ID</code></td>
+<td><code>AL-NNN</code>, sequential, never reused or renumbered.</td>
+</tr>
+<tr>
+<td><code>Date</code></td>
+<td>ISO date the lesson was recorded.</td>
+</tr>
+<tr>
+<td><code>Source</code></td>
+<td>The run that produced it (story slug, series book, or workstream).</td>
+</tr>
+<tr>
+<td><code>Category</code></td>
+<td>One of <code>validator</code>, <code>tooling</code>, <code>authoring-craft</code>, <code>scale</code>, <code>metadata</code>, <code>process</code>, <code>docs</code>, <code>product</code>.</td>
+</tr>
+<tr>
+<td><code>Lesson</code></td>
+<td>What is true, stated so it is actionable without reading the source run.</td>
+</tr>
+<tr>
+<td><code>Proposed change</code></td>
+<td>The change that would stop this recurring, or <code>none (craft note)</code> when the lesson is guidance rather than a code change.</td>
+</tr>
+<tr>
+<td><code>Status</code></td>
+<td><code>open</code>, <code>accepted</code>, <code>applied</code>, <code>rejected</code>, or <code>superseded</code>.</td>
+</tr>
+<tr>
+<td><code>Ref</code></td>
+<td>Commit, PR, file, or doc. <strong>Required</strong> when status is <code>applied</code>, <code>rejected</code>, or <code>superseded</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Review cadence.</strong> Sweep the <code>open</code> rows whenever a phase is planned. An <code>open</code> row that has
+survived two phase boundaries is either genuinely low value (mark it <code>rejected</code>, with the reason in
+<code>Ref</code>) or it is real debt being avoided; either way, decide rather than let it sit.</p>
+<p><strong>Status discipline.</strong> <code>accepted</code> means the change is agreed but unbuilt, and it must appear in a
+plan somewhere. <code>applied</code> means the change is merged and the <code>Ref</code> proves it. Nothing moves to
+<code>applied</code> on the strength of intent.</p>
+<hr />
+<h2 id="log">Log<a class="headerlink" href="#log" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Date</th>
+<th>Source</th>
+<th>Category</th>
+<th>Lesson</th>
+<th>Proposed change</th>
+<th>Status</th>
+<th>Ref</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AL-001</td>
+<td>2026-07-25</td>
+<td>wyrmreach b1-b3</td>
+<td>tooling</td>
+<td>Compiling the FILL skeleton and the filled story from one spec makes drift between them structurally impossible; two hand-maintained artifacts drift silently.</td>
+<td>Keep one-spec compilation as the authoring pattern for any multi-artifact story.</td>
+<td>applied</td>
+<td><code>scripts/build_series_book.py</code></td>
+</tr>
+<tr>
+<td>AL-002</td>
+<td>2026-07-25</td>
+<td>wyrmreach b2</td>
+<td>authoring-craft</td>
+<td>In a <code>carries_state: true</code> continuation a carried variable initialises <code>true</code>, so every <code>== false</code> condition on it is unsatisfiable and a hard L2-11. Carried state must be read-only; acquisition moves to a new book-local variable.</td>
+<td>none (craft note); recorded in the series design doc's carried-variable rule.</td>
+<td>applied</td>
+<td><code>wyrmreach-series-design.md</code> section 4</td>
+</tr>
+<tr>
+<td>AL-003</td>
+<td>2026-07-25</td>
+<td>wyrmreach b2, b3</td>
+<td>validator</td>
+<td>A gate on a <em>new</em> variable placed earlier in the graph than any node granting it is also an L2-11 dead branch. This is the same class as AL-002 but not obvious from the rule text.</td>
+<td>Add a cause hint to the L2-11 message for both patterns; it also improves the Stage C repair prompt, which gets findings verbatim.</td>
+<td>applied</td>
+<td><code>validator/layer2.py::_dead_branch_cause</code> names carried-variable polarity or grant-order in the L2-11 message; both verified against the real book plus 3 tests</td>
+</tr>
+<tr>
+<td>AL-004</td>
+<td>2026-07-25</td>
+<td>wyrmreach b1-b3</td>
+<td>authoring-craft</td>
+<td>Flesch-Kincaid is driven by sentence count, not passage length: at a fixed ~60 words the same content scores FK 5 in four or five sentences, 9-11 in three, 13+ in two. The practical 16+ rule is three sentences per passage.</td>
+<td>none (craft note); recorded in the series design doc's reading-level section.</td>
+<td>applied</td>
+<td><code>wyrmreach-series-design.md</code> section 6</td>
+</tr>
+<tr>
+<td>AL-005</td>
+<td>2026-07-25</td>
+<td>wyrmreach b3</td>
+<td>authoring-craft</td>
+<td>An RL-13 outlier can be retuned without rewriting a word by joining or splitting sentence boundaries; 185 of 212 cleared this way. Two guards are required: only downcase a folded-in leading word if it is seen lowercase in the corpus and never capitalised mid-sentence, and only split where both sides are 8+ words and the right side opens with a subject.</td>
+<td>none (craft note); the guards are the reusable part.</td>
+<td>applied</td>
+<td><code>wyrmreach-series-report.md</code> N8</td>
+</tr>
+<tr>
+<td>AL-006</td>
+<td>2026-07-25</td>
+<td>wyrmreach b3</td>
+<td>validator</td>
+<td>RL-13 scores <code>&lt;&lt;FILL&gt;&gt;</code> directive text, so every skeleton emits one warning per node (746 for a ceiling-scale book), training reviewers to ignore the rule. PL-19 already skips FILL bodies and is the pattern to copy.</td>
+<td>Skip bodies containing the FILL marker in <code>check_reading_level</code>; hoist the marker constant so both modules import it.</td>
+<td>applied</td>
+<td><code>validator/reading_level.py</code> skips FILL bodies; the ceiling-scale skeleton now emits 0 RL-13 warnings instead of 746, with a regression test</td>
+</tr>
+<tr>
+<td>AL-007</td>
+<td>2026-07-25</td>
+<td>wyrmreach b1</td>
+<td>authoring-craft</td>
+<td>The Layer-2 configuration key includes the visited set of nodes carrying <code>once</code> effects, so each <code>once</code> effect doubles the config space. In an acyclic graph <code>once</code> is redundant, because no node is entered twice on a path.</td>
+<td>none (craft note): never use <code>once</code> in a DAG-shaped story.</td>
+<td>applied</td>
+<td><code>wyrmreach-series-design.md</code> section 6</td>
+</tr>
+<tr>
+<td>AL-008</td>
+<td>2026-07-25</td>
+<td>wyrmreach b3</td>
+<td>authoring-craft</td>
+<td>Declare a carried integer variable's range as what the continuation can actually reach, not what the variable could theoretically hold. Narrowing <code>renown</code> to 3-5 and dropping an unreachable carried flag is the difference between 36,781 configurations and risking the 100k L2-12 cap. <strong>Superseded</strong>: narrowing is right for the configuration budget but must never narrow below the range the SENDING book can end in, or the client clamps carried outcomes away.</td>
+<td>Corrected rule in AL-038: narrow toward what the continuation can reach, but the receiving range must contain the sending range.</td>
+<td>superseded</td>
+<td>AL-038; <code>renown</code> widened back to 0-5 in <code>data/series/wyrmreach/book3.spec.json</code></td>
+</tr>
+<tr>
+<td>AL-009</td>
+<td>2026-07-25</td>
+<td>wyrmreach b3</td>
+<td>scale</td>
+<td>A ceiling-scale gamebook needs breadth, not length: rooms hung as parallel chains off an act hub and reconverging on an act gate fit 746 nodes inside 74 of 93 permitted hops, and keep a reader's route at 52 nodes.</td>
+<td>none (craft note); the shape is recorded as the six room shapes.</td>
+<td>applied</td>
+<td><code>wyrmreach-series-design.md</code> section 5</td>
+</tr>
+<tr>
+<td>AL-010</td>
+<td>2026-07-25</td>
+<td>wyrmreach b3</td>
+<td>process</td>
+<td>Generate wiring, never voice. Structure was generated from six formal room shapes and every beat, label and ending title was then authored over it through a patch keyed by node id, with an assertion that label count equals choice count. That assertion caught eleven real mismatches that would have shipped as generated text.</td>
+<td>Keep the two-stage split for any story past the ~460-node hand-authoring ceiling; the label-count assertion is the load-bearing part.</td>
+<td>applied</td>
+<td><code>wyrmreach-series-report.md</code> N7</td>
+</tr>
+<tr>
+<td>AL-011</td>
+<td>2026-07-25</td>
+<td>wyrmreach b3</td>
+<td>scale</td>
+<td>L2-13 firing past 460 nodes is the expected and correct output, not a defect: it states that the completed Layer-2 walk, not human review, is the sole correctness guarantee. At that scale the walk has to be treated as the acceptance test rather than a lint pass. Every structural problem in book 3 was found by L2-11 or the budget report, none by reading the spec.</td>
+<td>none; behaviour is correct as designed. Document it so the warning is not "fixed" by someone later.</td>
+<td>accepted</td>
+<td><code>story-quality-lessons-2026-07.md</code> finding N6</td>
+</tr>
+<tr>
+<td>AL-012</td>
+<td>2026-07-25</td>
+<td>wyrmreach b1-b3</td>
+<td>metadata</td>
+<td><code>metadata.estimated_minutes</code> is ADR-011's fastest-finish clock, and nothing validates it, so on a hand-authored or imported book it is whatever the author typed. All three books were wrong by 3-6x (40/40/90 declared against 8/8/14 canonical).</td>
+<td>Fixed in the books. Still open: a PL-series advisory comparing the declared value against <code>mutation/identity.py::recompute_estimated_minutes</code>, which already exists and is tested.</td>
+<td>applied</td>
+<td>commit <code>86dafda</code> (books); gate advisory tracked as AL-021</td>
+</tr>
+<tr>
+<td>AL-013</td>
+<td>2026-07-25</td>
+<td>wyrmreach b1-b3</td>
+<td>validator</td>
+<td>PL-19 reports band membership only, so the 55 words/node advisory floor reads as a pass when the cell target is 80. Authoring to the floor put books 1 and 2 below their cell's intended whole-world range (77 and 82 minutes against ~110-175) and dragged the fastest-finish clock under its cell target.</td>
+<td>Report distance from target, not just band membership. Consider a tighter two-sided band for <code>production_eligible</code> stories, keeping the wide band for MVP/test tiers.</td>
+<td>open</td>
+<td><code>story-quality-lessons-2026-07.md</code> finding D</td>
+</tr>
+<tr>
+<td>AL-014</td>
+<td>2026-07-25</td>
+<td>wyrmreach b1-b3</td>
+<td>tooling</td>
+<td>No hand-authored skeleton can pass the <code>skeleton-promotion</code> CI gate: <code>check_promotion_bundle.py</code> requires a lineage sidecar unconditionally, and no sidecar exists anywhere in <code>skeletons/</code>. The thirteen existing hand-authored skeletons are green only because CI proves changed files and none has been touched since the workflow landed.</td>
+<td>Add an authored-bundle proof path (origin sidecar, <code>check_skeleton</code>, theme contract when present, WS-5 anti-clone floor), failing closed when neither sidecar is present. Not an exemption.</td>
+<td>open</td>
+<td><code>story-quality-lessons-2026-07.md</code> finding A</td>
+</tr>
+<tr>
+<td>AL-015</td>
+<td>2026-07-25</td>
+<td>wyrmreach b3</td>
+<td>validator</td>
+<td>Nothing checks the within-story ending mix. Book 3 is 118 death endings of 232 (51%) and gates clean; a 95%-death book would too. The normalised kind and valence histograms already exist in <code>diversity/structure.py</code>, used only for between-story anti-clone distance.</td>
+<td>A PL-series advisory over the existing histograms: warn when one ending kind exceeds a per-band share, or positive-valence endings fall below a floor.</td>
+<td>applied</td>
+<td>PL-24 in <code>validator/policy.py</code>: a 60% single-kind ceiling plus a style-aware winnability floor (prose share, gamebook absolute count). Fires on 6 pre-existing books, silent on the wyrmreach three</td>
+</tr>
+<tr>
+<td>AL-016</td>
+<td>2026-07-25</td>
+<td>wyrmreach b2</td>
+<td>process</td>
+<td>A comparison check is only as good as the independence of its two inputs. A builder bug wrote the prose story to the skeleton path, so <code>check_fill_integrity.py</code> compared a file with itself and <strong>passed</strong>, silently making an earlier verification vacuous. A check that cannot fail manufactures confidence.</td>
+<td>Give <code>check_fill_integrity.py</code> a self-test: assert the two inputs are not the same file, that the skeleton contains FILL markers, and that the filled story contains none. Apply the same reasoning to any proof comparing two generated files.</td>
+<td>applied</td>
+<td><code>scripts/check_fill_integrity.py</code> rejects same-file inputs and a marker-less skeleton; both negative cases verified</td>
+</tr>
+<tr>
+<td>AL-017</td>
+<td>2026-07-25</td>
+<td>wyrmreach b3</td>
+<td>docs</td>
+<td>The rule catalog has drifted from the code it documents, despite stating that rule changes require a revision to it: L2-13 is absent entirely, and RL-13's entry says the grade is "computed by textstat" when the implementation is deliberately vendored and textstat is not a dependency. <code>_MIN_WORDS_FOR_FK</code> (20) is also undocumented and changes which nodes get scored.</td>
+<td>Add the L2-13 row, correct RL-13, bump the catalog version, and add a test asserting every rule id the validator can emit appears in the catalog.</td>
+<td>applied</td>
+<td><code>validator-rules.md</code> v1.3 adds L2-13, PL-23, PL-24 and a whole missing SR-1..SR-7 section, and corrects RL-13's textstat claim; <code>tests/unit/test_rule_catalog_lockstep.py</code> makes drift a build failure</td>
+</tr>
+<tr>
+<td>AL-018</td>
+<td>2026-07-25</td>
+<td>wyrmreach b1-b3</td>
+<td>tooling</td>
+<td>The budget-headroom report is what made ceiling-scale authoring tractable (nodes against the cell, endings and decisions against floors, word mean, depth against the cap, fastest finish against the arc floor, ending mix). It lives in a series-only script; <code>check_skeleton.py</code> prints pass or fail with no sense of proximity to any edge.</td>
+<td>Move the headroom report into <code>check_skeleton.py</code>, computed from the typed Storybook rather than a spec format, so the generation pipeline and the guardian editor get it too.</td>
+<td>applied</td>
+<td><code>scripts/check_skeleton.py --headroom</code> reports nodes/depth/endings/decisions/words/arc-floor proximity from the typed document; 2 tests</td>
+</tr>
+<tr>
+<td>AL-019</td>
+<td>2026-07-25</td>
+<td>wyrmreach b1-b3</td>
+<td>product</td>
+<td>No reader outcome ever reaches an author. <code>Completion</code>, <code>ReadingState.path</code> and <code>Rating</code> all exist and <code>StorybookVersion.skeleton_slug</code> links a version to its skeleton, but <code>Completion</code> is read in five places and every one is a per-child read. Nobody can say which of book 3's 232 endings any reader has reached, or where readers stop.</td>
+<td>Designed: reader-path retention plus a de-identified engagement rollup, under S12's minimum-population constraint.</td>
+<td>accepted</td>
+<td><code>reader-path-engagement-design.md</code></td>
+</tr>
+<tr>
+<td>AL-020</td>
+<td>2026-07-25</td>
+<td>wyrmreach b1-b3</td>
+<td>product</td>
+<td>The offline client already transmits the full accumulated <code>path</code> on every save (<code>frontend/src/offline/sync.ts::toPutPayload</code>), and the server overwrites it (<code>api/reading.py</code>, <code>row.path = list(body.path)</code>). The route data we want for engagement analysis already arrives and is discarded, so retaining it needs no client change and no request-contract change.</td>
+<td>Append an immutable trail row on each reading-state write; see the design doc.</td>
+<td>accepted</td>
+<td><code>reader-path-engagement-design.md</code> section 3</td>
+</tr>
+<tr>
+<td>AL-021</td>
+<td>2026-07-25</td>
+<td>wyrmreach b1-b3</td>
+<td>validator</td>
+<td>Split from AL-012 so the gate change is tracked separately from the book fix: the declared/derived read-time mismatch is undetectable today.</td>
+<td>Add the PL-series <code>estimated_minutes</code> advisory comparing declared against <code>recompute_estimated_minutes</code>, tolerance ~25%, advisory not blocking.</td>
+<td>applied</td>
+<td>PL-23 in <code>validator/policy.py</code> compares declared <code>estimated_minutes</code> against the derived fastest-finish clock; found read-time drift in 13 pre-existing books</td>
+</tr>
+<tr>
+<td>AL-022</td>
+<td>2026-07-25</td>
+<td>wyrmreach b1-b3</td>
+<td>product</td>
+<td><code>estimated_minutes</code> is the fastest-finish clock, so a 746-node, 42,085-word gamebook whose whole-world clock is 3.2 hours advertises "14 min" to a child choosing a book. Technically correct, practically a broken promise. ADR-011 defines the whole-world clock; the schema surfaces one field.</td>
+<td>Derive both clocks, add <code>estimated_minutes_whole_world</code>, and show "about 15 minutes to finish, hours to explore" on the kid and guardian surfaces. Owner decision, not an implementation detail.</td>
+<td>open</td>
+<td><code>story-quality-lessons-2026-07.md</code> finding B</td>
+</tr>
+<tr>
+<td>AL-023</td>
+<td>2026-07-25</td>
+<td>wyrmreach b1-b3</td>
+<td>tooling</td>
+<td>The shipped client never sends <code>choice_path</code>, so the server-side engine replay that exists to stop a forged <code>current_node</code>/<code>var_state</code>/<code>path</code> is dormant (<code>api/reading.py</code> carries the <code>#ASSUME</code> admitting it). Any analytics derived from the client-supplied <code>path</code> is therefore unverified reader-reported data.</td>
+<td>Enable <code>choice_path</code> in <code>toPutPayload</code> and make the replay authoritative before trail data is used for anything beyond directional signal. Security and data-integrity relevance, not only analytics.</td>
+<td>open</td>
+<td><code>reader-path-engagement-design.md</code> section 6</td>
+</tr>
+<tr>
+<td>AL-024</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>tooling</td>
+<td>Committing a 746-node skeleton falsified the stated derivation of a resource cap without breaking anything. <code>api/schemas.py:38-52</code> derives <code>VISIT_SET_MAX_LENGTH</code> from "the largest currently-authored skeleton is the-ashfall-expedition.json with 505 nodes ... so 505 is the exact real ceiling", and tells the reader not to invent numbers. The largest is now 746. Not a live bug: <code>visit_set</code> resets per read-through (<code>player/engine.ts::start</code>) and shrinks on undo (<code>back()</code> replays from the start), and book 3's depth is 74, so a real read never approaches 505. Nothing tests the constant against the catalog, so the false basis is invisible.</td>
+<td>Update the derivation and the number to the real largest skeleton, and add a lockstep test asserting the constant matches the largest <code>production_eligible</code> skeleton in <code>skeletons/</code>, so the next oversized book fails a test instead of quietly invalidating a comment. Raising an audit-derived (F8) cap wants the audit owner's sign-off, so recommend rather than change unilaterally.</td>
+<td>open</td>
+<td><code>api/schemas.py:38-52</code>, <code>tests/unit/test_schemas.py</code></td>
+</tr>
+<tr>
+<td>AL-025</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>process</td>
+<td>An adversarial review is only as good as its ability to finish. Four review agents died on a session limit having delivered no findings, and the only value recovered came from two half-formed leads left in their reasoning traces. The reasoning trace, not the final report, was the durable artifact.</td>
+<td>For any delegated review, ask for findings incrementally (highest-value first) rather than one report at the end, so a truncated run still yields something. Recover partial work from <code>subagents/agent-*.jsonl</code> rather than assuming a failed agent produced nothing.</td>
+<td>applied</td>
+<td>this review; leads chased manually and closed</td>
+</tr>
+<tr>
+<td>AL-026</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>authoring-craft</td>
+<td><strong>Breadth built from terminating leaves halves the typical read.</strong> Reproduced with <code>player/engine.StoryEngine</code> over 3,000 condition-aware random reads: book 1 (305 nodes) has a median read of 11 pages / 650 words; book 3 (746 nodes) has a median of <strong>5 pages / 302 words</strong> of a 42,085-word book. Termination density is identical (22.3% vs 22.5% of choices land straight on an ending), so the extra 441 nodes went into <em>width made of failure leaves</em>, not into reader-visible journey. 7 endings sit within two taps of the start, 3 decision nodes have every choice end the book, and 3,000 random reads reached only 94 of 232 endings. This qualifies AL-009: hanging rooms off an act hub does control depth, but paying for breadth in terminating leaves makes the book <em>feel smaller</em> the bigger it gets.</td>
+<td>Author breadth as reconvergent detours, not terminal leaves: a room should more often cost <code>vigor</code> and rejoin than end the run. PL-17's endings floor actively pushes toward terminal leaves at gamebook breadth, so the floor and this lesson are in tension and the floor's shape should be revisited.</td>
+<td>applied</td>
+<td>45 shallowest failure leaves converted to vigor-costing pass-throughs; median read 5 -&gt; 20 pages, endings reached 39% -&gt; 56%; gate clean, chain clean, endings exactly on the 187 floor</td>
+</tr>
+<tr>
+<td>AL-027</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>validator</td>
+<td>Nothing constrains the <strong>typical</strong> path length. PL-20 floors only the <em>fastest satisfying</em> path (37 nodes for this cell), which book 3 satisfies at 52, while the median actual read is 5 pages. A book can pass every scale rule and still hand most readers a 90-second encounter.</td>
+<td>Add a scale advisory on expected read length over the walk machinery <code>validator/walk.py</code> already has: warn when the median uniform-walk playthrough falls below a per-cell page floor, or when more than ~20% of a node's choices terminate. Roughly 20 lines on existing infrastructure, and it would have caught AL-026 before the fill pass.</td>
+<td>open</td>
+<td><code>validator/walk.py</code>, <code>validator/policy.py</code></td>
+</tr>
+<tr>
+<td>AL-028</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>product</td>
+<td>K6's "found N of M endings" replay motivator inverts at large M. At M=232 a finished read reports "1 of 232" (0.4%), and <code>EndingsBadge</code> silently drops its dot row above <code>MAX_DOTS = 10</code>, removing the only kid-legible part of the mechanic precisely for the books that most need replay motivation. Part of the denominator is also effectively unreachable: 3,000 random reads found 94 of 232.</td>
+<td>Stop showing a raw denominator above a threshold: milestone framing ("3 new endings found, lots more to go") with a tier ladder, or scope the denominator to a curated signature-endings subset. <code>EndingsProgress</code> and <code>EndingsBadge</code> must share the threshold so the ending screen and the shelf never disagree.</td>
+<td>open</td>
+<td><code>frontend/src/reader/EndingsProgress.tsx:60-65</code>, <code>frontend/src/library/EndingsBadge.tsx:19-40</code></td>
+</tr>
+<tr>
+<td>AL-029</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>product</td>
+<td>The reader progress bar is <code>visit_set.length / story.nodes.length</code>, so it measures corpus coverage, not route progress. A median book-3 read shows 1% and then snaps to 100% at the ending screen; the bigger the book the more broken the signal. The numeric label is already suppressed as untrustworthy, but the <code>aria-label</code> still announces "5 of 746 pages explored".</td>
+<td>Make in-read progress route-relative (path length against distance-to-nearest-ending from the current node, precomputable from the walk the validator already does), or show "Page 5" for large books. Corpus coverage belongs on the shelf card, not in the reader chrome.</td>
+<td>open</td>
+<td><code>frontend/src/reader/readerProgress.ts:7-11</code>, <code>ReaderChrome.tsx:88</code></td>
+</tr>
+<tr>
+<td>AL-030</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>product</td>
+<td>Every page turn synchronously replays the entire read from page 1: <code>canGoBack</code> calls <code>back()</code>, which DFS-replays the recorded path, and discards everything but a boolean. Compounding it, <code>nodeIndex</code> rebuilds a 746-entry Map on every engine entry point, so a depth-71 replay performs ~285 rebuilds. Measured O(depth x nodes): 26 ms at depth 70 on a container CPU, and a BACK press pays it three times, so a phone plausibly freezes 300ms+ on the one control built for children who mis-tap. Cost grows with the depth the book is designed to reward.</td>
+<td>Memoize the node index and <code>intBounds</code> per Storybook in a <code>WeakMap</code> (story identity is stable for the reader's lifetime, satisfying the existing <code>#ASSUME</code>); stop <code>canGoBack</code> recomputing an answer it throws away; short-circuit the common "no" case off the render path.</td>
+<td>open</td>
+<td><code>frontend/src/player/engine.ts:17-19,325-347</code>, <code>reader/Reader.tsx:216</code>, <code>player/machine.ts:99-111</code></td>
+</tr>
+<tr>
+<td>AL-031</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>product</td>
+<td>No response compression is configured anywhere in the stack (no <code>GZipMiddleware</code> in <code>app.py</code>, nothing in either compose file), so a story download ships <strong>405 KB instead of 107 KB</strong> and the 3-book series costs 750 KB instead of 202 KB. Separately, <code>list_library</code> and <code>/v1/reading-history</code> <code>select(StorybookVersion)</code> whole-row including the <code>blob</code> JSONB for every book, decoding 768 KB of prose per shelf render to produce three small cards; the reading-history call fires on every ending-screen mount, which at a 5-page median read is constantly.</td>
+<td>Add <code>GZipMiddleware(minimum_size=1024)</code>, a one-line ~4x win on the one step where a child waits with nothing to do. Separately, denormalise <code>title</code>, <code>node_count</code>, <code>ending_count</code> and <code>ending_node_ids</code> onto <code>StorybookVersion</code> at publish time so the listing paths never load prose.</td>
+<td>applied</td>
+<td><code>GZipMiddleware(minimum_size=1024)</code> in <code>app.py</code>; the listing-path denormalisation half stays open under this id</td>
+</tr>
+<tr>
+<td>AL-032</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>product</td>
+<td>Reconnecting mid-read can teleport a child backwards to an earlier page and remount the reader, from <strong>this device's own queued past</strong>. <code>persist()</code> updates <code>revisionRef</code> only on <code>saved</code>, never on <code>queued</code>, so after offline reading the live save carries a stale base revision; the replay-on-reconnect advances the server revision, the next tap 409s, and the 409 handler adopts the server row unconditionally and bumps <code>readerKey</code> to remount. The existing <code>#ASSUME</code> deliberately accepts losing position to <em>another device</em>, but explicitly reasons about "another device advanced this story's row" and does not contemplate this case. A 74-choice offline read queues 74 sequential writes, so the 409 window is proportional to how much the child read offline. Traced end to end, not executed.</td>
+<td>Collapse the offline queue to the newest state per (profile, storybook) before replay so 74 round-trips become 1; advance <code>revisionRef</code> on <code>queued</code>; and guard the adopt branch so a <code>current_row</code> that is a strict prefix of the local path is recognised as this device's own stale past and re-saved rather than adopted.</td>
+<td>open</td>
+<td><code>frontend/src/reader/ReaderPage.tsx:296,304-305,317-337</code>, <code>offline/sync.ts:277-325</code>, <code>api/reading.py:363-371</code></td>
+</tr>
+<tr>
+<td>AL-033</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>validator</td>
+<td><strong>Safety hole.</strong> <code>_screen_all_nodes</code> calls the bright-line classifiers once per node in a sequential loop guarded by <code>if openai_key and openai_reason is None</code>, so the FIRST <code>ClassifierUnavailable</code> disables that classifier <strong>for every remaining node</strong>, with no retry and no per-node coverage record. At 746 nodes Stage 0 makes 1,492 sequential third-party calls, which is exactly the shape that trips a Perspective ~1 QPS quota or an OpenAI per-minute limit; a 429 at node 50 leaves 93% of the book unscreened for <code>sexual/minors</code>, <code>self-harm/instructions</code> and <code>illicit/violent</code>. The resulting report is indistinguishable from a fully-screened clean one apart from one whole-story ADVISORY, and <code>summary.hard_block</code>/<code>soft_flag</code> are unaffected, so <code>submit</code> and <code>approve</code> both pass. Verified by reading the loop; the docstring states the no-retry behaviour outright.</td>
+<td>Track per-node classifier coverage and emit a <strong>FLAG</strong>, not an advisory, naming the unscreened node count and ids, so the story cannot reach <code>in_review</code> clean. Add bounded retry with backoff plus a concurrency limit so a rate limit is absorbed rather than abandoning the book. Make <code>submit</code>/<code>approve</code> refuse a report declaring incomplete Stage-0 coverage.</td>
+<td>applied</td>
+<td><code>moderation/classifiers.py</code>: per-node coverage, bounded retry, circuit breaker, and a gating <code>classifier_coverage_incomplete</code> FLAG; 6 new tests</td>
+</tr>
+<tr>
+<td>AL-034</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>scale</td>
+<td>One import of this book is ~2,986 strictly sequential provider round trips (2 classifier calls plus 2 review calls per node, plus 2 whole-story stages), with no <code>gather</code>, semaphore, batching or call budget, all inside <strong>one</strong> Postgres transaction that also holds <code>SELECT FOR UPDATE</code> on the Storybook row. That is a 40 to 100 minute <code>idle in transaction</code> session against a pooler configured for <code>transaction</code> mode, and any single failure discards the entire run with no checkpoint or resume.</td>
+<td>Bound the per-node stages with a concurrency semaphore and a per-story call/time budget that records an explicit "moderation incomplete" finding when exceeded. Split the import: commit the draft first, then moderate in short transactions, persisting findings incrementally so a retry re-screens only unscreened nodes. <code>approve</code> already refuses a version with no moderation report, so a committed unmoderated draft is safe to leave behind.</td>
+<td>open</td>
+<td><code>moderation/stages.py:196-268</code>, <code>pipeline.py:98</code>, <code>generation/import_cli.py:92-119</code></td>
+</tr>
+<tr>
+<td>AL-035</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>scale</td>
+<td><code>run_gate</code> is a measured 3.72 second synchronous CPU burn on this book and is called inline from three <code>async def</code> handlers with no <code>to_thread</code>, so it stalls the whole event loop: every passage edit, an admin rescreen sweep, and <code>validate_version</code>, which is guardian-reachable and therefore a cheap self-DoS on the entire API.</td>
+<td>Wrap all three in <code>anyio.to_thread.run_sync</code>, cache the gate report per <code>(storybook_id, version)</code> so <code>validate_version</code> returns the stored report, and rate-limit it.</td>
+<td>applied</td>
+<td><code>anyio.to_thread.run_sync</code> around <code>run_gate</code> in <code>api/node_edit.py</code>, <code>api/generation.py</code>, <code>moderation/rescreen.py</code></td>
+</tr>
+<tr>
+<td>AL-036</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>product</td>
+<td>ADR-005 makes a human's recorded approval the only path to a child, and at 746 nodes that surface cannot deliver it: the review view ships the whole blob (measured 444 KB), renders all 746 passages, 232 ending badges and 1,030 choice rows unvirtualized in one DOM, and offers no pagination, no per-node reviewed state, no resume, and one Approve button at the bottom. A reviewer cannot read 42,085 words in one page load, so the recorded approval attests to far less than it claims. The queue and the guardian browse listing separately load every book's full blob to compute a title and a count.</td>
+<td>Add node-range pagination and stop echoing the whole blob; virtualize the read-through; persist per-node review progress keyed by <code>(storybook_id, version, node_id, reviewer)</code> so the approval record can state what fraction was actually read. Project listings in SQL or denormalise <code>title</code>/<code>ending_count</code>/<code>flagged_count</code> at publish time.</td>
+<td>open</td>
+<td><code>api/review_surface.py:100-117</code>, <code>api/approval.py:222-285</code>, <code>frontend/src/admin/ReviewDetailPage.tsx:534-565</code></td>
+</tr>
+<tr>
+<td>AL-037</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>tooling</td>
+<td>Import silently rewrites the authored series block. <code>embed_series_block</code> replaces the declared <code>series_id</code>, <code>book_index</code>, <code>is_final</code> and <code>series_entry_node</code> with DB-derived values, and nothing anywhere compares the declared <code>book_index</code> to the assigned one, so <strong>import order becomes chain order</strong>. <code>carries_state</code> is likewise taken from the <code>Series</code> row, whose value is derived from that row's own age band, so a mismatched row silently rewrites all three 16+ books to <code>carries_state: false</code>; SR-6 and SR-7 both still pass, and the campaign degrades to three episodic books with no error at import, approval, or read. <code>--job</code> (the only route that stamps <code>skeleton_slug</code>, runs the Stage 1 fidelity gate, and enables the leaf-diversity guard) and <code>--series-id</code> (the only route that links a series) are mutually exclusive, so no combination produces a correct Tier-2 series.</td>
+<td>Compare declared against assigned in <code>embed_series_block</code> and raise on mismatch rather than overwrite; preserve declared <code>is_final</code>; check <code>Series.age_band</code> and <code>Series.family_id</code>. Move series linkage into <code>import_filled_story</code> so both routes carry it, and make <code>--job --series-id</code> a hard error instead of a silent ignore.</td>
+<td>open</td>
+<td><code>generation/series_link.py:131-208</code>, <code>generation/import_cli.py:52-119</code></td>
+</tr>
+<tr>
+<td>AL-038</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>authoring-craft</td>
+<td><strong>Narrowing a carried range erases reader outcomes, which qualifies AL-008.</strong> Verified from the specs: book 2 declares <code>renown</code> <code>[0,5]</code>, book 3 declares <code>[3,5]</code>, and <code>startContinuation</code> clamps carried ints into the receiving book's bounds, so every reader who finishes book 2 with renown 0, 1 or 2 arrives at book 3 indistinguishable from a maximum-reputation reader. My AL-008 justification ("a company that shut two doors cannot become unknown") was wrong on book 2's own terms. Two more in the same mechanism: book 2's <code>deep_charts</code> and <code>oath_sworn</code> are dropped without trace because book 3 does not declare them, and book 3 declares <code>second_iron</code> initial <code>true</code> while book 2 earns it from <code>false</code>, so a reader who finishes book 2 without it carries <code>false</code> and reads 746 nodes under a premise the prose contradicts. All of it happens in the client with no server-side cross-check, and no SR rule compares variable names, types or bounds across a chain.</td>
+<td>Author side DONE (<code>renown</code> widened to <code>[0,5]</code>); the rest is not author-fixable. Validator side: add an SR rule that every variable declared in book N appears in book N+1 with the same type and a containing range, error on narrowing, warn on dropped. Make <code>startContinuation</code> record a per-variable carry audit. And gate the continuation offer on a satisfying ending: <code>get_series_next</code> offers book 3 after ANY book-2 ending, which is what lets a reader carry <code>second_iron: false</code> into a book whose premise is two irons.</td>
+<td>applied</td>
+<td>SR-8 in <code>validator/series.py</code> (ERROR on a narrowed range or changed type, WARNING on a dropped variable), catalogued and tested; it flags this chain's 2 dropped variables. Still open: the read-time carry audit and gating the continuation offer on a satisfying ending</td>
+</tr>
+<tr>
+<td>AL-039</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>scale</td>
+<td>Two moderation stages are structurally impossible at this size and fail open. The soft-gate auto-repair must return the entire revised story but is capped at 32k output tokens against a ~101k-token blob, so it always truncates, always fails to parse, and always returns <code>None</code> after burning a ~101k-token call; on the Ollama leg it can trip a byte ceiling and raise, discarding the whole import. The Stage 1 fidelity gate builds a single ~120k-token prompt (746 beats plus 1,030 label pairs) and asks for a 512-token verdict, with every parse failure returning "pass"; it also embeds untrusted generated prose raw, without the <code>&lt;untrusted_passage&gt;</code> wrapper and instruction-hierarchy suffix that <code>moderation/stages.py</code> documents as <code>#CRITICAL: security</code>.</td>
+<td>Make both per-node or per-batch with a required verdict per batch, treating a missing verdict as a violation rather than a pass. Skip repair with a recorded finding when the blob exceeds the output budget. Wrap fidelity prose in <code>_sanitize_delimited</code> and append the untrusted suffix, matching stages.py.</td>
+<td>open</td>
+<td><code>moderation/repair.py:93-108</code>, <code>moderation/fidelity_review.py:226-261</code></td>
+</tr>
+<tr>
+<td>AL-040</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>scale</td>
+<td><code>POST /admin/rescreen</code> runs its whole sweep synchronously in one HTTP request, defaulting to every published book: with these three books that is ~2,712 sequential classifier calls plus ~11 seconds of event-loop-blocking gate. The admin gets a gateway timeout while the sweep continues against a request-scoped session whose unit of work may then roll back, discarding the verdicts after the full provider spend. It also inherits AL-033's short-circuit and does not even pass <code>require_classifiers</code>.</td>
+<td>Enqueue on RQ and return a job id, or require an explicit <code>storybook_ids</code> scope with a node cap. Pass <code>require_classifiers</code> outside local, and move <code>run_gate</code> off the event loop.</td>
+<td>open</td>
+<td><code>api/rescreen.py:121-155</code>, <code>moderation/rescreen.py:161-165</code></td>
+</tr>
+<tr>
+<td>AL-041</td>
+<td>2026-07-25</td>
+<td>lessons-log tooling</td>
+<td>tooling</td>
+<td>The lessons-log validator passed while silently ignoring eight rows. A blank line ends a markdown table, so an appended block separated by one splits the log in two and <code>_collect_rows</code> stops at the gap; the reported count (32 of 40) was plausible enough not to notice. This is AL-016 recurring inside the tool built to record AL-016.</td>
+<td>Added an orphan check: scan the whole file for <code>AL-NNN</code> rows and fail when any sits outside the checked table. Negative-tested by reintroducing the split. The general rule stands: a validator must assert its own input coverage, not just the validity of what it happened to parse.</td>
+<td>applied</td>
+<td><code>scripts/check_lessons_log.py</code>, orphan check plus its negative test</td>
+</tr>
+<tr>
+<td>AL-042</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>tooling</td>
+<td><strong>Adding a skeleton left CI red on main.</strong> <code>skeletons/**</code> feeds a committed calibration baseline, and <code>docs/planning/ws5_floor_baseline.json</code> was never regenerated, so <code>test_skeleton_mutation_floors.py::test_calibration_is_deterministic_and_committed_baseline_is_current</code> failed on a clean checkout. The arithmetic is exact: same-cell pairs 67 -&gt; 77 and Tier-2 pairs C(13,2)=78 -&gt; C(16,2)=120 from adding three books, moving TAU_STRUCT 0.332507 -&gt; 0.329972. A red required check on main means every later PR inherits a failing gate, which is how a quality gate stops being one.</td>
+<td>Regenerated, and the <code>skeleton-promotion</code> workflow now runs <code>calibrate_mutation_floors.py --check</code>, so a skeleton cannot be added without recalibrating.</td>
+<td>applied</td>
+<td><code>docs/planning/ws5_floor_baseline.json</code> regenerated; the failing test now passes</td>
+</tr>
+<tr>
+<td>AL-043</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>docs</td>
+<td>Two derived artifacts went stale in the same change, which says the skeleton-addition workflow has no regenerate-derived-artifacts step. <code>render_skeleton_diagrams.py --check</code> failed for three <code>.puml</code> files plus <code>docs/architecture/story-skeletons.md</code>, the human-readable catalog index an author consults to ask what is already in a cell. Unlike the floor baseline, this guard is wired into nothing: no pre-commit hook and no workflow runs it, and its tests only exercise <code>tmp_path</code> fixtures, so the suite stayed green while the live docs were wrong. Regenerating also rewrites all 64 SVGs nondeterministically, which the checker does not verify, so that churn should be reverted rather than committed.</td>
+<td>Regenerated the three diagrams and the catalog index, and both <code>--check</code> invocations are now a step in the <code>skeleton-promotion</code> workflow.</td>
+<td>applied</td>
+<td><code>docs/architecture/story-skeletons.md</code> plus three new <code>.puml</code>/<code>.svg</code>; guard now exits 0</td>
+</tr>
+<tr>
+<td>AL-044</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>authoring-craft</td>
+<td><strong>Books 1 and 2 are near-clones by the project's own metric.</strong> Measured <code>structural_distance</code> = 0.013939, which is 3.6x below TAU_CELL (0.05), the floor a mutant must clear against every in-cell tree, and the closest pair in cell (16+, medium, gamebook). Deriving book 2 from book 1's topology was deliberate for series continuity, but it means the catalog now holds a pair the mutation gate would reject as a clone, and <code>select_skeleton_for_cell</code> de-weights by slug recency only, so a reader handed both gets the same tree twice. Nothing could have caught it: the anti-clone floor is architecturally unreachable for a hand-authored skeleton, since <code>check_promotion_bundle</code> returns early on the missing lineage sidecar and <code>_floor_reason</code> returns None when there is no mutation parent.</td>
+<td>Split the in-cell duplication check out of the lineage-gated block so it runs on any changed <code>skeletons/**</code> shell and fails below TAU_CELL. Then either reshape book 2's graph or record the pair as an explicit series-continuity allowlist entry so the check stays meaningful. The pre-existing 0.000947 harrowstone/sunken-temple pair is the same defect.</td>
+<td>open</td>
+<td><code>scripts/check_promotion_bundle.py:196-202</code>; <code>reviews/ceiling-scale-review-2026-07-25.md</code></td>
+</tr>
+<tr>
+<td>AL-045</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>product</td>
+<td>Continuation books are selectable as standalone stories. <code>skeleton_matches_cell</code> and <code>candidates_for_cell</code> filter on band, length, style and eligibility and never look at <code>metadata.series</code>, so roughly 40% of (16+, medium, gamebook) requests draw a Wyrmreach book and about 20% draw book 2 specifically. Book 2 opens pre-seeded with <code>iron_key: true</code>, <code>knows_compact: true</code> and <code>renown: 2</code>, and its start beats name Kar Duhn and the ninth iron, so a guardian asking for any theme gets a mid-trilogy book whose protagonist already owns artifacts from a story the reader has never seen, and the fidelity gate ends up fighting the skeleton.</td>
+<td>Treat a skeleton with <code>series.book_index &gt; 1</code> as ineligible for a request that is not an explicit continuation of that series, keeping book 1 selectable as the entry point, and pin it with a test.</td>
+<td>applied</td>
+<td><code>skeleton_match.is_continuation_skeleton</code> excludes book_index &gt; 1; books 2 and 3 left their cells, book 1 stayed</td>
+</tr>
+<tr>
+<td>AL-046</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>scale</td>
+<td>The automated fill pipeline cannot emit the books the matcher can select. <code>fill_skeleton</code> is one-shot: the whole skeleton in, the whole filled document out, capped at <code>_MAX_TOKENS_PROSE = 32000</code>, with no chunking anywhere in <code>generation/</code>. The 746-node book needs ~101k output tokens, 3.2x the cap, and 13 of the 26 committed fills already exceed it. Selection has no node-count or token-budget predicate, so a doomed job burns roughly four rounds of ~100k input tokens through the repair loop and fails deterministically forever. Pre-existing, but this run added the worst case and confirmed nothing on the promotion path checks fill feasibility.</td>
+<td>Add a fill-feasibility predicate to selection (expected output size is computable from the FILL word targets) and a test asserting every <code>production_eligible</code> skeleton is fill-feasible, which would fail for 13 books today. The real fix is an act-scoped fill loop; hand authoring already fills these books act by act.</td>
+<td>open</td>
+<td><code>generation/orchestrator.py:95,826</code>; <code>generation/skeleton_match.py:176-194</code></td>
+</tr>
+<tr>
+<td>AL-047</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>tooling</td>
+<td>The skeletons are protected by glob-discovered suites; the <strong>filled stories are not tested at all</strong>. No test or workflow references <code>out/*.filled.json</code> or <code>data/series/wyrmreach/</code>, and no CI job runs the gate over <code>out/</code>. A skeleton passing the gate does not prove its fill passes: they are separate documents and a fill regresses independently. The irony is pointed for the 746-node book, whose own L2-13 finding says the configuration walk is its sole correctness guarantee, and that walk never runs on the filled book in CI. Separately, <code>test_skeleton_contracts.py</code> globs <code>*.contract.json</code>, so the three contract-less new books are invisible to the WS-2 drift guard, and its guard-the-guard test only asserts the list is non-empty.</td>
+<td>Add a glob-discovered fill suite over <code>out/*.filled.json</code> asserting <code>run_gate</code> does not block and no FILL directive survives; measured cost is 1.7-3.8s per book, so all 26 fit the sub-30s target. Tighten the contract-coverage test to a real assertion or an explicit exempt-slug allowlist.</td>
+<td>applied</td>
+<td><code>tests/unit/test_filled_story_corpus.py</code> gates every <code>out/*.filled.json</code>; found 3 pre-schema-v2 fills (AL-050)</td>
+</tr>
+<tr>
+<td>AL-048</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>tooling</td>
+<td>SR-1..SR-7 are proven only against a synthetic 2-node book (<code>tests/unit/test_series.py:19-65</code>), a shape no author would write. The Wyrmreach trilogy is the repo's first real state-carrying chain and it validates in 0.02s, so the feared CI cost does not exist: a series fixture needs the meta-validator, not the configuration walk.</td>
+<td>Add a case loading the three filled books and asserting <code>validate_series(books).ok</code>, plus negative variants mutated in memory (drop book 2 for SR-2, blank book 3's entry node for SR-3, flip book 1's <code>carries_state</code> for SR-7). Turns a hand-verified artifact into a permanent regression asset at no meaningful runtime cost.</td>
+<td>applied</td>
+<td><code>tests/unit/test_series.py</code> validates the real 3-book chain plus SR-2/SR-3/SR-7 negative variants</td>
+</tr>
+<tr>
+<td>AL-049</td>
+<td>2026-07-25</td>
+<td>adversarial review</td>
+<td>scale</td>
+<td>A book authored at the cell node ceiling is a formally valid mutation parent the flywheel cannot use. <code>the-ninth-hand</code> has 4 nodes of headroom to the 750 maximum, so only the two smallest additive operators could ever be admitted and M3 graft is dead for any donor region above 4 nodes. Worse, the operators do not terminate on it: M4 insert-linear and insert-decision both exceeded 150s, and the cost tracks configuration-space size rather than node count (the three new books hold the catalog's three largest state spaces, ~100x a same-size book). Operator slowness is pre-existing; landing all three new books on the wrong side of it is new.</td>
+<td>Have flywheel parent-selection skip a parent whose ceiling headroom is below the smallest additive operator's delta, and give the operator candidate search a configuration-count budget so a high-state parent fails fast with a reason instead of hanging a run.</td>
+<td>open</td>
+<td><code>mutation/operators.py:3073-3096</code>; <code>validator/band_profile.py:177</code></td>
+</tr>
+<tr>
+<td>AL-050</td>
+<td>2026-07-25</td>
+<td>fill-corpus suite</td>
+<td>tooling</td>
+<td>The new filled-story suite immediately found three committed fills (<code>the-lost-mitten</code>, <code>the-sunken-signal</code>, <code>the-clocktower-cipher</code>) that cannot pass the gate at all: they carry the retired <code>ending.type</code> field instead of <code>ending.kind</code> plus <code>ending.valence</code>, and omit the now-required <code>metadata.topology</code>. Pre-existing legacy artifacts, invisible because nothing tested <code>out/</code>.</td>
+<td>Quarantined under <strong>strict</strong> xfail so migrating one makes its test XPASS and forces the list to be pruned, which stops the quarantine becoming a dumping ground. Migrate all three to schema v2 and delete <code>_LEGACY_PRE_V2</code>.</td>
+<td>open</td>
+<td><code>tests/unit/test_filled_story_corpus.py</code></td>
+</tr>
+<tr>
+<td>AL-051</td>
+<td>2026-07-25</td>
+<td>PL-24 calibration</td>
+<td>validator</td>
+<td>Calibrating a new advisory against the whole corpus changed its design. A single positive-valence share floor of 5% fired on <strong>every</strong> gamebook (all nine sit at 2.1-4.8%) and on no prose story (15.2-70.0%), with no overlap. That is not nine defects, it is ADR-011 section 5's declared few-wins-many-fails shape, whose denominator is inflated by failure leaves on purpose. A rule that fires on 100% of one style is a misunderstanding of the style, not a signal.</td>
+<td>Made the floor style-aware: a share for prose, an absolute count of winnable endings for gamebooks. General rule: calibrate a new threshold against the existing corpus before shipping it, and if it flags an entire class, suspect the threshold.</td>
+<td>applied</td>
+<td><code>validator/policy.py</code> PL-24; calibration recorded in the constant's comment</td>
+</tr>
+<tr>
+<td>AL-052</td>
+<td>2026-07-25</td>
+<td>PL-23/PL-24 rollout</td>
+<td>product</td>
+<td>The two new advisories immediately found real defects in pre-existing content that nothing had ever measured: 13 of 23 committed fills declare an <code>estimated_minutes</code> more than 25% from their derived clock (<code>the-vanishing-orchard</code> says 18 minutes for a 33-minute finish), and 6 books have one ending kind above 60%, including <code>the-ashfall-expedition</code> at 98% setback and <code>the-sunspire-ascent</code> with only 2 winnable endings in 74.</td>
+<td>Triage the 13 read-time drifts and the 6 mix outliers as content work. Both are advisory so nothing is blocked, but the numbers are now visible on every gate run.</td>
+<td>open</td>
+<td><code>validator/policy.py</code>; corpus scan in this commit's message</td>
+</tr>
+<tr>
+<td>AL-053</td>
+<td>2026-07-27</td>
+<td>PR #416 rebase onto main</td>
+<td>tooling</td>
+<td>The in-cell clone audit (#415) and the continuation filter (#416, AL-045) shared one predicate, <code>skeleton_matches_cell</code>, so #416's selection-only change to it silently changed the catalog audit. Rebasing #416 onto a <code>main</code> that now carries #415 made <code>iter_incell_pairs</code> inherit the <code>book_index &gt; 1</code> exclusion: the brass-lantern book1/book2 pair (the sole allowlisted breach) stopped being measured, no pair breached, and the #415 allowlist entry read as stale, turning two green #415 tests red with no conflict marker and no content change. A clean textual rebase hid a semantic collision that only the full suite surfaced.</td>
+<td>Decouple the audit from the selection filter: a keyword-only <code>include_continuations</code> on <code>skeleton_matches_cell</code>/<code>candidates_for_cell</code> (default False, so generation selection stays byte-identical) that the audit alone sets True, so a series book 2 which re-skins book 1 is still measured. Owner chose this "keep the gate honest" path over exempting continuations, consistent with #415's on-record rejection of metric-gaming. General rule: when a predicate is shared by a selection policy and a quality audit, a change for one silently rebinds the other; assert the audit's scope independently of the selector.</td>
+<td>applied</td>
+<td><code>generation.skeleton_match.skeleton_matches_cell</code> include_continuations flag; <code>diversity/incell.py</code> iter_incell_pairs; <code>tests/unit/test_incell_clone_audit.py</code> (unchanged, green)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="related-documents">Related documents<a class="headerlink" href="#related-documents" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../handoff-authoring-lessons-and-story-quality-2026-07-27/">Handoff document</a>, branch state, the rebase work the merged diversity and personalization PRs require, environment traps, and the open-work triage</li>
+<li><a href="../story-quality-lessons-2026-07/">Story quality lessons from the Wyrmreach build</a>, the narrative behind AL-001..AL-023</li>
+<li><a href="../reviews/ceiling-scale-review-2026-07-25/">Adversarial review record</a>, the raw evidence and measurements behind AL-026..AL-040</li>
+<li><a href="../wyrmreach-series-report/">Wyrmreach series build report</a>, the run that produced them</li>
+<li><a href="../reader-path-engagement-design/">Reader path and engagement design</a>, the design AL-019/AL-020 point at</li>
+<li><a href="../capability-register/">Capability register</a>, A11</li>
+<li><a href="../validator-rules/">Validation rule catalog</a>, the target of AL-003, AL-006, AL-013, AL-015, AL-017, AL-021</li>
+<li><a href="../../template_feedback/">Template feedback</a>, the parallel log for issues belonging to the cookiecutter template rather than to authoring</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 02:20:23 UTC">July 28, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 02:20:23 UTC">July 28, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
