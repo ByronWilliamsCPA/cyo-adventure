@@ -132,11 +132,27 @@ test.describe('kid access via a real device grant', () => {
     await sharedPage.getByRole('link', { name: TEST_KID_NAME }).click()
     await expect(sharedPage).toHaveURL(/\/library\//)
 
-    // The seeded test kid has no assigned stories, so the library renders its
-    // empty state, an <h2> "No books yet", never the populated "My Books" h1.
+    // Assert the library rendered in one of its two legitimate states, not that
+    // it is empty. This test's job is proving the device grant opens the kid
+    // surface; emptiness was incidental to that, and it is a property of shared
+    // production data rather than of the code. Catalog seeding has since
+    // assigned this kid real books, so an emptiness assertion encodes a
+    // snapshot of prod data and re-breaks on every future seed.
+    //
+    // Both branches are unique to a rendered LibraryPage, so this keeps its
+    // discriminating power: every failure mode renders neither. The loading
+    // state shows its own "Loading your books" text, the auth and permission
+    // states render EmptyState with different titles ("Time to find your
+    // grown-up", "This bookshelf isn't yours"), and a crash renders the error
+    // boundary's "Something went wrong".
+    //
     // The RequestStory form also renders here; do NOT submit it (it POSTs a
     // real story request, which this non-destructive tier must not create).
-    await expect(sharedPage.getByRole('heading', { name: 'No books yet' })).toBeVisible()
+    await expect(
+      sharedPage
+        .getByRole('heading', { name: 'My Books', level: 1 })
+        .or(sharedPage.getByRole('heading', { name: 'No books yet', level: 2 }))
+    ).toBeVisible()
   })
 
   test('the guardian revokes the device authorization', async () => {

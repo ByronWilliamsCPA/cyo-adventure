@@ -44,6 +44,13 @@ test.describe('dual-role account across both adult consoles', () => {
     await sharedPage.close()
   })
 
+  // Expected <h1> per path. /guardian/requests and /admin/requests render the
+  // same StoryRequestQueue component but with different headings on purpose:
+  // P-6b gave the guardian surface an explicit "Requests from your kids" to
+  // disambiguate it from the sibling IntakePage, which previously shared the
+  // exact "Story requests" wording; the admin cross-family queue keeps the
+  // component's neutral default. Keep these two rows distinct. See
+  // src/guardian/RequestsPage.tsx and src/admin/AdminRequestsPage.tsx.
   for (const [path, heading] of [
     ['/guardian', 'Family console'],
     ['/guardian/intake', 'Request a story'],
