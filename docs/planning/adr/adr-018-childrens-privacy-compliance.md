@@ -64,8 +64,31 @@ surface), G12 (export and deletion), K14 (safe room), and A14 (compliance ops).
    OpenRouter and downstream model providers (generation), OpenAI Moderation and Google
    Perspective (Stage-0 classifiers over all generated prose and child-typed wishes),
    Google Gemini and Cloudflare R2 (cover art, ADR-017), Sentry (exceptions, no child
-   reading content). Every entry needs verified terms at P7-08; the OpenRouter ZDR
-   question is the standing Blocker 1.
+   reading content). Every entry still needs verified terms at P7-08.
+
+   **Amended 2026-07-28: the counterparties are no longer one undifferentiated tier**,
+   because they do not receive the same kind of data and were never well served by one
+   blocker covering all of them.
+
+   - **Generation leg (OpenRouter and the models it routes to): a documentation item, not
+     a gate.** No registered child identifier can reach it: `assert_prompt_pii_safe` hard-
+     fails the job rather than redacting (`generation/pii.py:229-258`), and ADR-023 keeps
+     real values out of it permanently by resolving personalization client-side at render
+     time instead of at generation time. Production routing is additionally constrained to
+     an allowlisted model on a no-retention account (ADR-003, 2026-07-28 amendment), on a
+     dated owner attestation that is not yet independently verified. What the generation leg
+     does carry is a coarse age band, guardian-set `banned_themes` and content-flag caps,
+     and free-typed premise text, so it is **identifier-free, not PII-free**, and its terms
+     still belong in the P7-08 record.
+   - **Classifier leg (OpenAI Moderation, Google Perspective): this is where the gate
+     lives now.** It receives child-typed request text at intake
+     (`story_requests/screening.py`) and every node of generated prose during moderation.
+     That is child-provided free text crossing to third parties, and nothing in ADR-023
+     changes it. Blocker 1 is therefore **narrowed onto this leg rather than closed**; see
+     privacy-model.md. The Perspective counterparty is separately in flux (see the Stage-0
+     Perspective sunset work), which changes who is on this list but not the requirement.
+   - **Cover art (Google Gemini) and storage (Cloudflare R2)** are unchanged: prompts derive
+     only from story metadata and no child PII reaches the image provider (ADR-017).
 7. **Contact boundary**: no messaging, no discovery, cross-family flows only through
    dual-guardian-consented connections (ADR-016).
 

@@ -12,7 +12,8 @@ tags:
 
 # ADR-003: Frontier LLM for generation, local model as fallback
 
-> **Status**: Accepted (2026-07-03; amended 2026-06-22, see Amendment: OpenRouter primary)
+> **Status**: Accepted (2026-07-03; amended 2026-06-22, see Amendment: OpenRouter primary;
+> amended 2026-07-28, see Amendment: the production model-family limit is re-scoped)
 > **Date**: 2026-06-20
 
 ## TL;DR
@@ -171,6 +172,11 @@ understates it: model IDs appear and disappear weekly. Consequences pinned into 
 
 ### Minors' content data-handling constraint
 
+> **Superseded in part by the [2026-07-28 amendment](#amendment-2026-07-28-the-production-model-family-limit-is-re-scoped)
+> below.** The vendor-identity rule in the final sentence no longer governs; the PII-guard
+> description is corrected there as well. The section is kept as written so the original
+> reasoning stays contestable.
+
 Per [ADR-004](./adr-004-homelab-first-deployment.md), the provider's data handling
 matters because the app generates children's content. The PII guard
 (`generation/pii.py`) strips real-child names before every egress, but the *choice of
@@ -225,3 +231,107 @@ here:
   prompt)` protocol, and the PII guard now runs on both blocks before egress. This
   positions the static schema (~5k tokens) for the Anthropic `cache_control` discount the
   cost section anticipates, without changing the provider protocol.
+
+## Amendment (2026-07-28): the production model-family limit is re-scoped
+
+The 2026-06-22 amendment limited production generation to the Anthropic and Google model
+families on OpenRouter, on the reasoning that a vendor with "a defensible data policy" is
+the thing that protects children's content. **That vendor-identity rule is replaced by two
+content-and-route controls**, because the protection does not actually come from which lab
+trained the model.
+
+### First, a correction to the section above
+
+The original text says the PII guard "strips real-child names before every egress". It does
+not strip anything. `assert_prompt_pii_safe` **raises `ValidationError`** and fails the job
+(`generation/pii.py:229-258`), on a registered child name or on email-, phone-, or
+address-shaped text, over both the `system` and `user` blocks of a `StagePrompt`. The
+distinction matters for exactly the argument being made here: a hard fail cannot silently
+half-succeed the way a redactor can, so the guarantee is stronger than the original wording
+claimed, not weaker.
+
+### What changed in the system, and what did not
+
+Nothing about the egress invariant changed, and that is the point. The guard has been the
+sole chokepoint keeping real-child identifying data out of provider prompts since it was
+written (`generation/pii.py:3-5`), and brief derivation has always fallen back to a literal
+fictional `"Explorer"` rather than a real display name
+(`story_requests/brief.py:79-81`).
+
+What changed is that the invariant is now **settled against the one feature that could have
+broken it**. [ADR-023](./adr-023-story-personalization-slots.md) resolves guardian-opt-in
+personalization client-side, at render time, over generic sentinels the server always stores
+and serves unchanged. The alternative it rejected (Route B, generation-time substitution)
+would have sent a real child's name to every text and image provider and persisted it in
+`storybook_version.blob`. So the open question "will the generation leg eventually have to
+carry real child data?" is now answered no, by construction rather than by policy, and a
+vendor-identity restriction that partly existed to hedge that risk no longer has to carry
+the weight.
+
+### The replacement rule
+
+Production generation is governed by two controls, neither of which names a vendor:
+
+1. **Content**: every assembled prompt passes `assert_prompt_pii_safe` before egress. This
+   is unchanged and remains non-negotiable; no carve-out may be added to it (ADR-023,
+   "Constraints").
+2. **Route**: production traffic runs on a provider account configured for no data
+   retention, and the model id must be present and enabled in the admin-managed
+   `provider_model_allowlist` (`api/provider_allowlist.py`, ADR-022). The allowlist, not a
+   sentence in this ADR, is the enforcement point, and unlike a sentence it is auditable
+   (`ProviderModelAllowlistAudit`) and revocable without a doc change.
+
+A model family is therefore no longer disqualified by which lab trained it. It is
+disqualified by not being allowlisted, or by being reachable only on a retention-bearing
+route. Admins gain the operational freedom this amendment is for; they also inherit the
+responsibility, since the allowlist is now the whole control rather than a second layer
+under a vendor rule.
+
+### What this amendment does NOT relax
+
+Stated explicitly, because the argument above does not stretch this far and a later reader
+should not assume it does.
+
+- **The Stage-0 classifier leg is out of scope and keeps its terms requirement.**
+  Child-typed story-request text is sent to external classifiers at intake
+  (`story_requests/screening.py`), and all generated prose is sent per-node during
+  moderation. That is child-provided free text reaching third parties, and render-time slot
+  substitution does nothing about it. See
+  [ADR-018](./adr-018-childrens-privacy-compliance.md) item 6 and the narrowed Blocker 1 in
+  [privacy-model.md](../privacy-model.md).
+- **Briefs are identifier-free, not PII-free.** A brief still carries a coarse age band, the
+  guardian's `banned_themes`, content-flag caps rendered as plain-language constraints, and
+  free-typed premise text (`story_requests/brief.py:87-124`). The guard screens that free
+  text for email/phone/address patterns, and its own docstring records that "general
+  free-text PII detection can never be complete" (`pii.py:26-31`). **"No registered child
+  identifier reaches a provider" is the claim that holds. "Nothing child-derived reaches a
+  provider" is not, and must not be written into a compliance artifact.**
+
+### Basis, and its limits
+
+```python
+# #CRITICAL: external resource: the no-retention property of the production
+#            provider account is an owner attestation, not a verified term.
+#            Control 2 above depends on it.
+# #VERIFY: obtain written confirmation from OpenRouter that account-wide ZDR is
+#          enabled and covers every downstream model it routes to; record the
+#          outcome in docs/compliance/processor-dpa-checklist.md at P7-08.
+```
+
+**Recorded 2026-07-28 (account-owner attestation; not independently verified.)** The owner
+attests that the provider accounts used for production generation are configured not to
+retain data. It is recorded as a dated attestation rather than a verified fact because no
+written confirmation has been obtained from OpenRouter, and
+`docs/compliance/processor-dpa-checklist.md` still carries that item as unexecuted.
+
+If verification later shows retention on the production route, control 2 is violated and
+this amendment's premise fails. The correct response then is to revisit the re-scope, not to
+patch around it.
+
+### Related
+
+- [ADR-023](./adr-023-story-personalization-slots.md): the render-time substitution design
+  that settles the egress question permanently.
+- [ADR-022](./adr-022-tiered-rls-scoping.md): `provider_model_allowlist` scoping.
+- [ADR-018](./adr-018-childrens-privacy-compliance.md): the counterparty list and the
+  narrowed blocker.

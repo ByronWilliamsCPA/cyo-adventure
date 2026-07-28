@@ -67,6 +67,15 @@ zero-data-retention path) must be confirmed with the provider in writing before 
 real generation call in Phase 2. This is a Phase-0 hard blocker. See
 `docs/planning/privacy-model.md` for the open blocker tracking entry.
 
+**Superseded 2026-07-28** (this record is kept as the Phase-0 historical position). The
+dispatch gate above no longer applies to the generation leg: ADR-003's 2026-07-28 amendment
+re-scopes the restriction from vendor identity to PII-guarded content plus an allowlisted,
+no-retention route, and privacy-model.md's Blocker 1 is correspondingly split. Written
+confirmation is still owed, now as a P7-08 processor-record item rather than a gate, and the
+blocker's remaining force moves to the Stage-0 classifier leg, which receives child-typed
+free text. Note also that the Phase-0 framing was already overtaken by events: generation has
+been shipping since Phase 2b without the confirmation being obtained.
+
 ---
 
 ## Decision 3: Homelab-First Hosting

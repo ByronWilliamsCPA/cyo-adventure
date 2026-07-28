@@ -150,7 +150,10 @@ counterparties for two data categories:
 
 Consequences for the provider data-handling review (Blocker 1 below): OpenAI and Google
 (Perspective) must be included alongside the generation leg (OpenRouter) and the LLM
-review leg when confirming retention terms. Classifier calls should remain content-only:
+review leg when confirming retention terms. **Since the 2026-07-28 narrowing, this leg is
+where Blocker 1's force sits** (Blocker 1b): it is the only path on which a child's own
+typed words leave the system, so it is not covered by the generation-side PII guard and is
+untouched by ADR-023's render-time substitution. Classifier calls should remain content-only:
 no child identifier, profile id, or family id accompanies the text, and failures are
 logged by node id only.
 
@@ -215,38 +218,73 @@ Defense controls:
 
 ## OPEN BLOCKERS
 
-The following item gates both the Phase 0 exit and the first Phase 2 LLM call. No
-generation call may be made with a real concept brief until it is resolved. A second
-former blocker (homelab reachability through Pangolin) has since been resolved; see
-[Resolved Blockers](#resolved-blockers) below.
+The following item gates the classifier leg. A second former blocker (homelab reachability
+through Pangolin) has since been resolved; see [Resolved Blockers](#resolved-blockers)
+below.
 
-### Blocker 1: LLM Provider Data-Handling Terms (OpenRouter)
+### Blocker 1: LLM Provider Data-Handling Terms
+
+**Narrowed 2026-07-28.** This blocker was originally written as one undifferentiated gate
+over every model counterparty, and it stopped all generation ("No generation call may be
+made with a real concept brief until it is resolved"). It is now split, because the two
+legs do not carry the same data and never did.
+
+#### 1a. Generation leg (OpenRouter): NARROWED to a documentation item
 
 ```python
-# #CRITICAL: external resource: OpenRouter data-handling terms (standard retention
-#            vs zero-data-retention) for the generation leg are unconfirmed.
-# #VERIFY: confirm with the provider in writing before the first real generation call
-#          in Phase 2; record the outcome here.
+# #CRITICAL: external resource: the no-retention configuration of the production
+#            OpenRouter account is an owner attestation, not a verified term.
+# #VERIFY: obtain written confirmation that account-wide ZDR is enabled and covers
+#          every downstream model OpenRouter routes to; record it in
+#          docs/compliance/processor-dpa-checklist.md at P7-08.
 ```
 
-The production default routes generation through OpenRouter, which is the data-handling
-counterparty for the generation leg (not the direct Anthropic API). OpenRouter and its
-downstream model providers retain inputs and outputs per their terms unless a
-zero-data-retention (ZDR) path applies. Because concept briefs may carry age-band data
-and fictional content derived from a child's interests, the applicable terms must be
-confirmed before dispatch. The safety leg is subject to the same data-handling review, and
-it has three counterparties, not one: the Stage-0 external classifiers (OpenAI Moderation
-and Google Perspective, which receive all generated prose and child-typed request text;
-see the External Moderation Classifiers section above) and the LLM review provider.
+The generation leg no longer gates dispatch. The reasoning, in the order it matters:
 
-**Required action**: confirm whether the standard OpenRouter retention path or a ZDR path
-applies to this use case for both the generation leg and the review / moderation
-provider. Record the outcome (provider and route chosen, contract reference or API tier,
-effective date) in this section before Phase 2 begins. This is a hard blocker for the
-Phase 0 exit gate (plan item P0-09).
+1. **No registered child identifier can reach it.** `assert_prompt_pii_safe`
+   (`generation/pii.py:229-258`) raises and fails the job rather than redacting, over both
+   the `system` and `user` blocks, and briefs fall back to a fictional `"Explorer"`
+   (`story_requests/brief.py:79-81`).
+2. **That will not change under personalization.** ADR-023 resolves guardian-opt-in
+   personalization client-side at render time over sentinels the server stores and serves
+   unchanged, rather than at generation time (Route B), which would have put real names into
+   provider prompts and into `storybook_version.blob`.
+3. **Routing is constrained.** Production traffic goes to an allowlisted model on an account
+   the owner attests is configured for no data retention (ADR-003, 2026-07-28 amendment).
 
-**Status**: OPEN. Phase 2 cannot begin until this entry is completed and this file is
-committed with the resolution.
+**What is still true, and is why this is narrowed rather than closed**: briefs carry a
+coarse age band, guardian-set `banned_themes`, content-flag caps, and free-typed premise
+text. That is child-*derived* content, so the generation leg is identifier-free, not
+PII-free, and its terms still belong in the P7-08 processor record. The no-retention claim
+is also an attestation dated 2026-07-28, not a verified term.
+
+**Status**: NARROWED. Not a dispatch gate. Verification remains a P7-08 deliverable and
+`docs/compliance/processor-dpa-checklist.md` still carries the OpenRouter row as unexecuted.
+
+#### 1b. Classifier and review leg: OPEN, and this is now the real blocker
+
+```python
+# #CRITICAL: external resource: retention terms for the Stage-0 classifiers, which
+#            receive child-TYPED free text, are unconfirmed.
+# #VERIFY: confirm terms per counterparty before the public tier ships; record here.
+```
+
+This leg is different in kind, and the original blocker's force belongs here. The Stage-0
+external classifiers receive **child-typed request text** at intake
+(`story_requests/screening.py`) and **every node of generated prose** during moderation (see
+the External Moderation Classifiers section above). The LLM review provider is subject to the
+same review. Child-typed free text crossing to a third party is not protected by the PII
+guard on the generation path and is not touched by ADR-023's render-time substitution: it is
+the child's own words, sent verbatim, before storage.
+
+**Required action**: confirm the applicable retention path for each classifier counterparty
+and the review provider, and record the outcome (provider, route, contract reference or API
+tier, effective date) here. Note that the Perspective counterparty is separately in flux
+under the Stage-0 Perspective sunset work; that changes who is on this list, not whether the
+confirmation is needed.
+
+**Status**: OPEN. This is the standing Blocker 1 referenced by
+[ADR-018](./adr/adr-018-childrens-privacy-compliance.md) item 6.
 
 ---
 

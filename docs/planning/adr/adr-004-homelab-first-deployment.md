@@ -99,6 +99,15 @@ always-on uptime and managed backups if the need arises.
   **public tier** by [ADR-008](./adr-008-public-app-store-launch.md) and
   [ADR-009](./adr-009-supabase-platform.md): the public tier runs on Supabase-managed
   Postgres, a US processor. ADR-004 continues to govern the dev and family/homelab tier.
+- ⚠️ **Scope clarification (2026-07-28).** This ADR's "avoid third-party telemetry on
+  children" stance is about **where minors' data is stored and what observes their
+  behavior**: hosting, telemetry, analytics, and ad SDKs. It is not, and never was, a
+  vendor-selection rule for the outbound generation call. That call carries no registered
+  child identifier by construction ([ADR-003](./adr-003-frontier-llm-generation.md)'s
+  2026-07-28 amendment and the `generation/pii.py` hard fail), so ADR-003 cites this ADR
+  for its privacy *posture*, not as a source of provider restrictions. Reading it as the
+  latter is what produced the Anthropic/Google-only production rule that the ADR-003
+  amendment retires.
 
 ### Technical Debt
 
