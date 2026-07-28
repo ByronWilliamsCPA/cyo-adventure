@@ -24,9 +24,10 @@ catch-rate. A real evaluation needs a live review model::
 Live providers read their credential from the environment; for local runs the
 harness sources the gitignored ``.env`` (``--env-file``), exactly like the yield
 harness. The mock default keeps CI and casual runs free of network I/O. A live
-``--review-provider`` also needs a Stage-0 classifier credential (either
-``OPENAI_API_KEY`` or ``PERSPECTIVE_API_KEY``); see ``main()`` for how a missing
-one is surfaced.
+``--review-provider`` also needs the Stage-0 classifier credential
+``OPENAI_API_KEY``; see ``main()`` for how a missing one is surfaced.
+``PERSPECTIVE_API_KEY`` is an optional second opinion and does not substitute
+for it (Perspective sunsets 2026-12-31).
 """
 
 from __future__ import annotations
@@ -591,9 +592,8 @@ def _parse_args() -> argparse.Namespace:
         choices=("mock", "openrouter", "ollama"),
         help=(
             "Review provider for the LLM stages (default: mock, not evidence). "
-            "A live provider also needs a Stage-0 classifier credential "
-            "(OPENAI_API_KEY or PERSPECTIVE_API_KEY) in the environment or "
-            "--env-file."
+            "A live provider also needs the Stage-0 classifier credential "
+            "OPENAI_API_KEY in the environment or --env-file."
         ),
     )
     parser.add_argument(

@@ -10,10 +10,16 @@
 # credentials and real network I/O). Because a schedule-only failure never turns
 # a PR red, a failed scheduled run files/updates one tracking issue.
 #
-# Credentials: set the secrets OPENROUTER_API_KEY and one of OPENAI_API_KEY /
-# PERSPECTIVE_API_KEY. Until they exist the tier SKIPS (the run is green but
-# measures nothing); the pre-flight step warns loudly on a scheduled run so a
-# missing credential is visible rather than silently passing.
+# Credentials: set the secrets OPENROUTER_API_KEY and OPENAI_API_KEY.
+# PERSPECTIVE_API_KEY is optional (a second Stage-0 opinion) and no longer
+# satisfies the Stage-0 requirement on its own: Perspective sunsets 2026-12-31,
+# so a set key stops being evidence of a working classifier. This mirrors the
+# Settings._require_classifier_when_reviewing invariant, which raises if
+# OPENAI_API_KEY is unset under a live reviewer; keeping the two in agreement
+# means a misconfigured run skips here rather than dying later in config.
+# Until the secrets exist the tier SKIPS (the run is green but measures
+# nothing); the pre-flight step warns loudly on a scheduled run so a missing
+# credential is visible rather than silently passing.
 name: Safety Evaluation
 
 on:
@@ -65,8 +71,8 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           PERSPECTIVE_API_KEY: ${{ secrets.PERSPECTIVE_API_KEY }}
         run: |
-          if [ -z "$OPENROUTER_API_KEY" ] || { [ -z "$OPENAI_API_KEY" ] && [ -z "$PERSPECTIVE_API_KEY" ]; }; then
-            echo "::warning::Safety-eval credentials not configured; the llm_eval tier will skip and measure nothing. Set OPENROUTER_API_KEY and one of OPENAI_API_KEY / PERSPECTIVE_API_KEY."
+          if [ -z "$OPENROUTER_API_KEY" ] || [ -z "$OPENAI_API_KEY" ]; then
+            echo "::warning::Safety-eval credentials not configured; the llm_eval tier will skip and measure nothing. Set OPENROUTER_API_KEY and OPENAI_API_KEY (PERSPECTIVE_API_KEY is optional and does not substitute for OPENAI_API_KEY)."
           fi
 
       - name: Run adversarial safety evaluation

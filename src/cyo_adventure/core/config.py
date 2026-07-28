@@ -1154,25 +1154,38 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def _require_classifier_when_reviewing(self) -> Settings:
-        """Require at least one Stage-0 classifier whenever real review runs.
+        """Require a live Stage-0 classifier whenever real review runs.
 
         When ``review_provider`` is not ``"mock"`` the moderation pipeline makes
         real LLM calls over children's content; it must be preceded by at least
         one deterministic classifier. Mirrors ``_reject_dev_database_url_outside_local``:
         a posture invariant enforced conditionally, not blanket.
 
+        ``PERSPECTIVE_API_KEY`` deliberately does not satisfy this check.
+        Google is sunsetting Perspective on 2026-12-31 with no migration path,
+        after which the key still parses and still passes any presence test
+        while the API itself returns nothing. OpenAI Moderation is therefore
+        the only classifier whose configuration is evidence of a working
+        pre-filter; Perspective remains supported as an optional second
+        opinion (see :mod:`cyo_adventure.moderation.classifiers`) but can no
+        longer be the sole one.
+
         Raises:
-            ConfigurationError: when review runs with both classifier keys unset.
+            ConfigurationError: when review runs without ``OPENAI_API_KEY``.
         """
         # #CRITICAL: security: no real review of children's content without a
-        # deterministic pre-filter; both keys unset under a live reviewer is fatal.
-        # #VERIFY: test_non_mock_review_without_any_classifier_key_raises.
-        if self.review_provider != "mock" and not (
-            self.openai_api_key or self.perspective_api_key
-        ):
+        # deterministic pre-filter. Counting a sunset provider here would make
+        # this invariant pass vacuously the day Perspective goes dark, running a
+        # live reviewer over children's prose with zero classifiers in front of
+        # it and no configuration change to signal the regression.
+        # #VERIFY: test_non_mock_review_without_any_classifier_key_raises,
+        # test_non_mock_review_with_only_perspective_key_raises.
+        if self.review_provider != "mock" and not self.openai_api_key:
             msg = (
-                "at least one of OPENAI_API_KEY or PERSPECTIVE_API_KEY must be set "
-                f"when review_provider is '{self.review_provider}'"
+                "OPENAI_API_KEY must be set when review_provider is "
+                f"'{self.review_provider}'. PERSPECTIVE_API_KEY no longer "
+                "satisfies this requirement: Perspective sunsets 2026-12-31 "
+                "and a set key is not evidence of a working classifier."
             )
             raise ConfigurationError(msg)
         return self

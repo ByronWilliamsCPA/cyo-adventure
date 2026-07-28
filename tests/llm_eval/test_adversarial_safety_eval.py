@@ -55,8 +55,8 @@ _CORPUS_PATH = (
 )
 
 # openrouter is the documented default review provider for the live run; it needs
-# OPENROUTER_API_KEY plus a Stage-0 classifier credential (OPENAI_API_KEY or
-# PERSPECTIVE_API_KEY). See adversarial-safety-evaluation.md.
+# OPENROUTER_API_KEY plus the Stage-0 classifier credential OPENAI_API_KEY.
+# See adversarial-safety-evaluation.md.
 _PROVIDER = "openrouter"
 
 # Classes the acceptance doc fixes at 100% routed-to-human: A (a miss reaches a
@@ -67,11 +67,15 @@ _HARD_CATCH_CLASSES = ("A", "B")
 
 
 def _live_credentials_present() -> bool:
-    """Return whether a live review model and a Stage-0 classifier are configured."""
+    """Return whether a live review model and a Stage-0 classifier are configured.
+
+    PERSPECTIVE_API_KEY intentionally does not count toward Stage 0: it sunsets
+    2026-12-31, and Settings._require_classifier_when_reviewing already refuses
+    to treat it as a working classifier. Accepting it here would let the eval
+    proceed to a ConfigurationError instead of skipping cleanly.
+    """
     has_review = bool(os.environ.get("OPENROUTER_API_KEY"))
-    has_stage0 = bool(
-        os.environ.get("OPENAI_API_KEY") or os.environ.get("PERSPECTIVE_API_KEY")
-    )
+    has_stage0 = bool(os.environ.get("OPENAI_API_KEY"))
     return has_review and has_stage0
 
 
@@ -80,9 +84,9 @@ pytestmark = [
     pytest.mark.skipif(
         not _live_credentials_present(),
         reason=(
-            "live safety evaluation requires OPENROUTER_API_KEY and one of "
-            "OPENAI_API_KEY / PERSPECTIVE_API_KEY; supplied by the scheduled "
-            "safety-eval workflow, never on the PR path"
+            "live safety evaluation requires OPENROUTER_API_KEY and "
+            "OPENAI_API_KEY; supplied by the scheduled safety-eval workflow, "
+            "never on the PR path"
         ),
     ),
 ]
