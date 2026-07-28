@@ -164,10 +164,13 @@ Abort if: the script errors before producing a report (fix the harness before sp
 
 - [ ] **Step 2: real measurement across two providers**
 
-Confirm `ANTHROPIC_API_KEY` and `OPENROUTER_API_KEY` (as named by `core/config.py`) are set in
-`.env` first. Then:
+Confirm `OPENROUTER_API_KEY` (as named by `core/config.py`) is set in the process env first.
+(As executed 2026-07-28: the Anthropic direct leg was dropped by owner decision, all
+generation routes through OpenRouter, so "two providers" becomes "two OpenRouter models";
+the primary `anthropic/claude-haiku-4.5` run is done, the fallback
+`anthropic/claude-sonnet-4.6` leg is optional re-plan input.) Then:
 
-Run: `ENVIRONMENT=local uv run python scripts/measure_sentinel_survival.py --providers anthropic openrouter --count 30 --slots-per-story 4`
+Run: `ENVIRONMENT=local uv run python scripts/measure_sentinel_survival.py --providers openrouter --count 30 --slots-per-story 4`
 Expected: per-provider clean-pass rate plus the failure taxonomy (dropped, duplicated,
 relocated, mutated wrapper, mutated inner text) in `report.md`.
 Abort if: `ConfigurationError` (missing key), or provider spend is not authorized. Cost is

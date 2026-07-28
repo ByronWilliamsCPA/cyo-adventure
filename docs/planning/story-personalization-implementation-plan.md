@@ -372,11 +372,14 @@ is live.
   problem to iterate, it is the model treating the token as guidance rather than payload.
 - A one-retry policy at this rate would add ~97% to fill spend, i.e. nearly double every
   fill: economically equivalent to no retry policy at all.
-- Caveat: single-provider measurement. The Anthropic direct leg (which would run
-  `claude-sonnet-4-6`) was blocked by an account-billing 400 on every trial; per-provider
-  variance is unmeasured. A stronger model may score materially higher, but the G1 gate is
-  defined on the worst configured provider, and the worst (and primary) provider has now
-  been measured at 3.3%.
+- Scope note: the Anthropic direct leg was attempted and hit an account-billing 400, but the
+  owner then confirmed (2026-07-28) that the direct leg is dropped by design: all generation
+  routes through OpenRouter. Per-provider variance therefore means variance across OpenRouter
+  models; the configured fallback (`anthropic/claude-sonnet-4.6` via OpenRouter) remains
+  unmeasured. A stronger model may score materially higher, but the G1 gate is defined on the
+  worst configured route, and the worst (and primary) route has now been measured at 3.3%; a
+  fallback-model run would inform the re-plan (for example, pinning fills to a stronger
+  model), not reverse the STOP.
 
 ## 4. P3: leak-surface guard points
 
