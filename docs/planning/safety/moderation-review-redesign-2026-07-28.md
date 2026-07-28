@@ -9,7 +9,7 @@ tags:
   - safety
   - moderation
 component: Safety-Pipeline
-source: "Gap report docs/planning/safety/moderation-review-current-state-2026-07-28.md; owner constraints from the 2026-07-28 handoff; digests of tmp_cleanup/Perspective API Replacement Survey.md (Gemini) and tmp_cleanup/deep-research-report (9).md (ChatGPT); live Supabase measurements 2026-07-28"
+source: "Gap report docs/planning/safety/moderation-review-current-state-2026-07-28.md; live Supabase measurements 2026-07-28; digests of two external research reports (a Gemini Perspective API Replacement Survey and a ChatGPT deep-research report), restated inline in section 3.1 since their source files under tmp_cleanup/ are gitignored and unreachable in the repo"
 ---
 
 # Moderation Review Redesign: Decisions, Not Flags
@@ -53,6 +53,12 @@ readers must tolerate absent new fields on old reports):
 | `node_ids` | `list[str]` (replaces single `node_id` on merged findings; `node_id` kept for compat) | One finding can now reference every node it applies to. |
 | `structural` | `bool`, default false | Marks pipeline-condition findings (parse failure, unknown verdict, degraded classifier) so dashboards and surfaces can class them separately from content findings. |
 
+`severity` also applies to the two Stage-0 whole-story findings
+(`classifier_degraded`, `classifier_coverage_incomplete`; gap report section
+2 addendum): both are `score: null` by construction, so they need a fixed
+default mapping (for example, degraded -> medium, coverage-incomplete ->
+high) rather than a score-derived one.
+
 PASS is no longer persisted as rows. The report gains an aggregate block:
 `{"nodes_reviewed": N, "pass_counts": {"safety": n1, ...}}`. This removes
 roughly half of all stored findings (6,430 PASS rows in live data) and fixes
@@ -88,8 +94,11 @@ with three changes:
 
 ### 2.3 Structural-failure collapse (the flood killer)
 
-`_parse_verdict` failures no longer create per-node findings. The stage
-counts them and, if any occurred, emits **one** story-level finding:
+`_parse_verdict` failures no longer create per-node findings. This covers
+Stage 1's LLM fail-safe only; the Stage-0 malformed-payload fail-open (gap
+report G11) is a separate, currently-silent path handled in 2.5. The stage
+counts `_parse_verdict` failures and, if any occurred, emits **one**
+story-level finding:
 `category="pipeline"`, `concern="reviewer_unavailable"`, `structural=true`,
 `verdict=FLAG`, `severity=high`, message carrying the affected-node count.
 The fail-safe posture is intact (the story still cannot pass to a guardian
@@ -107,8 +116,10 @@ New config validator, mirroring `_require_classifier_when_reviewing`:
 with the mock (catalog seeding) must set an explicit
 `CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1` escape hatch, which also stamps the
 report (`reviewer_independent=false` plus a `structural` advisory) so a
-mock-moderated report is self-identifying forever. This closes G1: 22 of 29
-live books carry reports that look real but prove nothing.
+mock-moderated report is self-identifying forever. This closes G1: 18 of 29
+live books are mock-moderated and carry reports that look real but prove
+nothing (18, not the 22-book any-safety-FLAG count; see the gap report's
+3.1 for the distinction).
 
 ### 2.5 Observability for fail-safe verdicts
 
@@ -122,6 +133,22 @@ live books carry reports that look real but prove nothing.
   callers via a provider stub (G8): today fence-stripping exists only in the
   provider adapters and nothing proves the review path survives an adapter
   regression.
+- Stage-0 malformed-payload fail-open (G11): `_run_openai`/`_run_perspective`
+  (`classifiers.py:465-527`, `:530-577`) returning `[]` on a shape change
+  needs the same `structural=true` accounting as a `_parse_verdict` failure;
+  today it produces no finding at all, so a provider response-shape change
+  reads as a clean screen. #VERIFY before Stage A ships.
+- Threshold-flywheel containment (G2a), in Stage A scope because it is the
+  same indistinguishability defect pointed at the safety gate itself:
+  `suggest_thresholds` (`insights.py:272-317`) counts a mock-moderated book's
+  fail-safe FLAG as override evidence like any other. Once the structural
+  split above exists, structural fail-safes must be excluded from
+  `decided_versions` and `override_rate` so the flywheel can never propose
+  `safety` FLAG -> BLOCK on the strength of the flood, which would suppress
+  genuine safety FLAGs from guardian and kid surfaces. Before Stage A ships,
+  measure the current per-band `decided_versions` and `override_rate` for
+  `(band, "safety")`: the gates (5 decided, 0.8 override rate) may or may not
+  be met today, and no suggestion should be applied until that is known.
 
 ### 2.6 Surfaces
 
@@ -187,7 +214,8 @@ core negative results, from different evidence:
   one named commercial product is uncited). The off-the-shelf market for
   this exact need does not exist yet.
 - A like-for-like Detoxify swap reproduces a known-bad detector and is
-  rejected (already ratified in the 2026-07-28 handoff).
+  rejected (ratified in section 7, decision 7, on the evidence above, not
+  on a separate handoff document).
 
 Critical premise gap found in both reports: **neither evaluated serverless
 GPU hosting (Modal), which the owner explicitly offered.** Both rejected
@@ -201,14 +229,18 @@ the PG-STORY figures come from one source and report byte-identical
 Perspective/Detoxify scores (verify the primary paper); Gemini's
 "Detoxify is the exact Perspective model" claim is uncited and contradicted
 by ChatGPT's read; several pricing/retention cells trace to a competing
-vendor's marketing blog or a wrong-entity privacy policy.
+vendor's marketing blog or a wrong-entity privacy policy. The two source
+reports themselves are not reachable in the repo: `tmp_cleanup/*` is
+gitignored (`.gitignore:301`), so the Gemini survey and ChatGPT
+deep-research files are not committed; this paragraph and the summary above
+are the only durable record of their claims.
 
 ### 3.2 Recommended posture
 
 1. **At sunset, drop the Perspective axis; do not replace it
    like-for-like.** It contributes zero findings to live data today, and
    its taxonomy is domain-mismatched. Stage-0 remains OpenAI
-   omni-moderation (already the enforced minimum since `43bfc72`) plus the
+   omni-moderation (the enforced minimum as of this PR) plus the
    LLM Stage-1 hard gate.
 2. **Run the baseline capture now** (while Perspective answers):
    `PYTHONPATH=. uv run python scripts/capture_stage0_baseline.py
@@ -235,10 +267,26 @@ vendor's marketing blog or a wrong-entity privacy policy.
    fallback is a small labeled eval set of our own story passages by band
    (a few hundred, human-labeled) and a fine-tune later; not a toxicity
    drop-in.
-5. **`Source.PERSPECTIVE` retirement**: stop emitting at sunset; keep the
-   enum member for JSONB read-compat. Zero perspective rows exist in the
-   measured environment; verify the other environment(s) before deleting
-   anything. Config already refuses Perspective-only deployments.
+5. **`Source.PERSPECTIVE` retirement, hard-gated to the 2026-12-31 sunset.**
+   The operative action is unsetting `PERSPECTIVE_API_KEY`
+   (`core/config.py:564`) in every environment, or removing the Perspective
+   call leg from `classifiers.py` outright, no later than 2026-12-31; stop
+   emitting at sunset and keep the `Source.PERSPECTIVE` enum member for
+   JSONB read-compat. This is not optional cleanup: a dead endpoint past
+   sunset raises `ClassifierUnavailable` (`classifiers.py:556`) on every
+   call, opens the circuit breaker after `_MAX_CONSECUTIVE_FAILURES = 3`
+   (`classifiers.py:82`), and emits a `classifier_coverage_incomplete` FLAG
+   (`classifiers.py:375-376`) that soft-gates every book into repair plus
+   full re-moderation (`pipeline.py:300-304`) for an infrastructure reason,
+   not a content one, on every book, forever. The retirement touches every
+   call site that passes `perspective_key`, not just the main pipeline
+   (`moderation/pipeline.py:758`): `story_requests/screening.py` (intake,
+   `report_coverage=False`), `api/node_edit.py:545`,
+   `api/story_requests.py:409`, `:674`, `:1020`, and
+   `moderation/rescreen.py:457` all need the same change. Zero perspective
+   rows exist in the measured environment; verify the other environment(s)
+   before deleting anything. Config already refuses Perspective-only
+   deployments.
 
 Privacy note (verified this session): moderation egress carries stripped,
 un-personalized text (sentinels stripped at `pipeline.py:736`; per-node PII
@@ -249,17 +297,21 @@ provider remains a tradeoff to surface per the owner's stated posture.
 
 ## 4. Catalog remediation
 
-The 22 mock-moderated books carry reports that are evidence of nothing.
-After Stages A and B land (below):
+The 18 mock-moderated books (see the gap report's 3.1; not the 22-book
+any-safety-FLAG count) carry reports that are evidence of nothing. After
+Stages A and B land (below):
 
 1. Add a small admin-triggered "re-moderate" entry point that re-runs
    `run_moderation_pipeline` on an existing version (the pipeline already
    supports repeat invocation; the entry point is routing plus permissions,
    akin to `rescreen` but running the full pipeline, and stamping a
    re-moderation event).
-2. Re-moderate the 22 books with the real reviewer under the new model.
+2. Re-moderate the 18 books with the real reviewer under the new model.
    With chunked Stage-1 calls this is ~50-80 review calls per large book
-   instead of ~1,500.
+   instead of ~1,500, assuming Stage 2 is retired per option (a) in 2.7.
+   Under option (c) (keep Stage 2 per-node), `sk_ninth_hand` stays near
+   ~800 combined Stage-1+Stage-2 calls even after chunking Stage 1, since
+   Stage 2 remains one call per node.
 3. Published books among them stay published while re-moderation runs
    (ADR-005: rescreen never auto-unpublishes; the same posture applies);
    new reports replace the mock ones and route through normal review.
@@ -311,9 +363,9 @@ exist in production. Design:
 | --- | --- | --- | --- |
 | **A: stop the bleeding** | Structural-failure collapse (2.3), mock environment guard (2.4), observability (2.5), fenced-JSON regression test | Small PR, no schema change readers must migrate for | nothing |
 | **B: the review model** | Finding schema (2.1), structured verdicts + chunking (2.2), merge stage, surfaces (2.6), RL-13/PL-19 visibility, Stage-2 disposition per owner choice (2.7) | The main PR series | A |
-| **C: Stage-0 successor** | Baseline capture run, Modal guard-model eval, calibration report, Perspective emission retirement at sunset | Experiment + small PRs | capture ASAP; rest independent of A/B |
-| **D: catalog remediation** | Re-moderate entry point + the 22-book sweep | Small PR + ops run | A, B |
-| **QA corpus (staging)** | Labeled storybook fixtures (section 5), staging seed script + containment guards, scorecard diff | Repo fixtures + small PR | authored anytime; seeded before B's UI QA; feeds C's eval |
+| **C: Stage-0 successor** | Baseline capture run, Modal guard-model eval, calibration report, Perspective emission retirement (unset `PERSPECTIVE_API_KEY` / remove the leg, all call sites per 3.2 item 5) | Experiment + small PRs | capture ASAP; Perspective retirement due by 2026-12-31 sunset; rest independent of A/B |
+| **D: catalog remediation** | Re-moderate entry point + the 18-book sweep | Small PR + ops run | A, B |
+| **QA corpus (staging)** *(conditional: design awaits decision 6, section 7)* | Labeled storybook fixtures (section 5), staging seed script + containment guards, scorecard diff | Repo fixtures + small PR | authored anytime; seeded before B's UI QA; feeds C's eval |
 
 Stage A is deliberately shippable alone: it prevents every future flood and
 makes the failure class visible, even if B's surface redesign takes longer.
@@ -322,18 +374,27 @@ makes the failure class visible, even if B's surface redesign takes longer.
 
 1. **Stage-2 disposition**: option (a) retire + surface RL-13 (recommended),
    (b) whole-story LLM readability, or (c) keep per-node.
-2. **Severity scale**: three-level enum (recommended: maps cleanly to
-   surfaces and prompts) vs numeric 0-1.
-3. **Guardian summary contract**: merged concern list (recommended) vs
-   verdict-only.
+2. **Severity scale**: DECIDED by design in section 2.1: three-level enum
+   (`high | medium | low`). Listed here only if the owner wants to reopen it.
+3. **Guardian summary contract**: DECIDED by design in section 2.6:
+   story-level summary with a merged concern list, repaired flag, and
+   reviewer-independence; no per-node rows. Listed here only if the owner
+   wants to reopen it.
 4. **Modal guard-model experiment**: **DECIDED 2026-07-28: approved.**
    Owner basis: $30/mo in Modal free credits; current per-second GPU pricing
    keeps an eval sweep nowhere near that cap (see 3.2 item 3).
-5. **Remediation timing**: sweep the 22 books right after B, or batch with
+5. **Remediation timing**: sweep the 18 books right after B, or batch with
    the first real catalog refresh.
 6. **Moderation QA corpus** (section 5): owner-proposed 2026-07-28; the
    design above (repo ground truth, staging-only seeding, containment
    layers) awaits confirmation alongside decisions 1-3.
+7. **Perspective-axis retirement** (section 3.2 item 1): RATIFIED by the
+   evidence in this document, not a separate owner decision: Perspective
+   contributes zero findings to live data (gap report section 3) and its
+   comment-toxicity taxonomy is domain-mismatched to children's fiction
+   (section 3.1 above); no like-for-like replacement is proposed. Recorded
+   here for visibility since it is the largest architectural call in this
+   document.
 
 ## 8. RAD summary
 
