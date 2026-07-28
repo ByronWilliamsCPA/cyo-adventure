@@ -2422,8 +2422,6 @@
       
         
       
-        
-      
     
     
     
@@ -2556,41 +2554,6 @@
     
   
     Python Compatibility
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--published"></span>
-  
-
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../template_feedback/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Template Feedback
   
 
     
@@ -2893,19 +2856,25 @@ the last two.</p>
 <td>❌ none</td>
 </tr>
 <tr>
-<td>e2e-staging (PR #268)</td>
-<td>Daily cron 13:00 UTC + manual, once merged and its three <code>staging</code> environment secrets are set</td>
-<td>❌ passive only: a red run in the Actions tab, trace artifact, no notification</td>
+<td>e2e-staging</td>
+<td>Daily cron 13:00 UTC + manual, <code>e2e-staging.yml</code></td>
+<td>🟡 passive only: a red run in the Actions tab, trace artifact, no notification</td>
 </tr>
 <tr>
 <td>e2e-prod</td>
-<td>Nowhere; spec headers say manual trigger only</td>
-<td>❌ none, and no schedule exists</td>
+<td>Daily cron 13:30 UTC + manual, <code>e2e-prod.yml</code> (a deliberate override of <code>requireProdCredentials()</code>'s CI guard, action #3 below)</td>
+<td>✅ pinned-issue alert on failure, plus trace artifact</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Consequence</strong>: today, a production breakage in any workflow is discovered by a family
-member hitting it, not by CI. Closing that is the point of the actions list below.</p>
+<p><strong>Consequence</strong>: the gap this table was written to describe is closed. Both deployed tiers
+now run unattended, and a production breakage raises a pinned issue rather than waiting for
+a family member to hit it. Staging remains passive-only by choice: it fails on disposable
+seeded fixtures, so a red run in the Actions tab is proportionate.</p>
+<p>The tiers' shared exposure is now the backend's 60 rpm/IP rate limiter rather than the
+absence of a schedule. Both tiers walk their consoles from a single runner IP, so both pace
+navigations and back off through <code>frontend/e2e-support/rate-limit.ts</code>; see that module for
+the constants and the assumptions they encode.</p>
 <h2 id="capability-x-environment-matrix">Capability x environment matrix<a class="headerlink" href="#capability-x-environment-matrix" title="Permanent link">&para;</a></h2>
 <p>Legend: ✅ covered; 🟡 partial/smoke; ❌ gap (capability shipped, tier missing);
 PR268 = coverage arrives with PR #268; n/b = capability not built yet (no test possible;
@@ -3381,7 +3350,7 @@ else needs mocked + one real-environment tier minimum.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 19, 2026 00:29:53 UTC">July 19, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 18:41:11 UTC">July 28, 2026</span>
   </span>
 
     
