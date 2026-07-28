@@ -163,7 +163,17 @@ jobs:
     # See https://github.com/slsa-framework/slsa-github-generator#referencing-slsa-builders-and-generators
     # #VERIFY: if a future pinning sweep rewrites this to a SHA, the job fails
     # with "the workflow is not referenced by a tag"; restore the tag form.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@f7dd8c54c2067bafc12ca7a55595d5ee9b75204a # v2.1.0
+    #
+    # A pinning sweep DID rewrite this to
+    # @f7dd8c54c2067bafc12ca7a55595d5ee9b75204a (the v2.1.0 commit) and every
+    # run from that point failed. The tell is indirect and worth recording,
+    # because it is easy to misread: the `generator` job still reports
+    # conclusion=success, and only the `final` gate turns red with a bare
+    # `exit 27`. The real message is buried in the generator job log:
+    #   Fetching the builder with ref: f7dd8c54c2...
+    #   Invalid ref: f7dd8c54c2... Expected ref of the form refs/tags/vX.Y.Z
+    # DO NOT SHA-PIN THIS LINE. It is the one deliberate exception in this repo.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
     with:
       base64-subjects: ${{ needs.build.outputs.hashes }}
       upload-assets: true
