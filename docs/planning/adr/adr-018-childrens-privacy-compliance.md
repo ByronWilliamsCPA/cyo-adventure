@@ -70,16 +70,27 @@ surface), G12 (export and deletion), K14 (safe room), and A14 (compliance ops).
    because they do not receive the same kind of data and were never well served by one
    blocker covering all of them.
 
-   - **Generation leg (OpenRouter and the models it routes to): a documentation item, not
-     a gate.** No registered child identifier can reach it: `assert_prompt_pii_safe` hard-
-     fails the job rather than redacting (`generation/pii.py:229-258`), and ADR-023 keeps
-     real values out of it permanently by resolving personalization client-side at render
-     time instead of at generation time. Production routing is additionally constrained to
-     an allowlisted model on a no-retention account (ADR-003, 2026-07-28 amendment), on a
-     dated owner attestation that is not yet independently verified. What the generation leg
-     does carry is a coarse age band, guardian-set `banned_themes` and content-flag caps,
-     and free-typed premise text, so it is **identifier-free, not PII-free**, and its terms
-     still belong in the P7-08 record.
+   - **Generation leg (OpenRouter and the endpoints it routes to): a documentation item,
+     not a gate.** No registered child identifier can reach it: `assert_prompt_pii_safe`
+     hard-fails the job rather than redacting (`generation/pii.py:229-258`), and ADR-023
+     keeps real values out of it permanently by resolving personalization client-side at
+     render time instead of at generation time. Routing is additionally confined by a
+     platform guardrail on a dedicated, key-scoped OpenRouter workspace configured
+     2026-07-28: zero data retention required across non-frontier, Anthropic, OpenAI,
+     Google, and xAI routing, and all three data-training paths disabled (paid-trains,
+     free-trains, free-publishes-prompts). See ADR-003's 2026-07-28 amendment for the full
+     state and its limits. What the generation leg still carries is a coarse age band,
+     guardian-set `banned_themes` and content-flag caps, and free-typed premise text, so it
+     is **identifier-free, not PII-free**, and its terms still belong in the P7-08 record.
+
+     **The sub-processor set changed on 2026-07-28 and this list changes with it.** Enabling
+     ZDR for the frontier vendors disables their *first-party* endpoints rather than the
+     model families, so generation prompts now route to those families via **AWS Bedrock,
+     Microsoft Azure, and Google Vertex**. Those three enter scope as OpenRouter's
+     sub-processors for the generation leg and belong in the P7-08 processor record; direct
+     first-party Anthropic and OpenAI generation endpoints leave it. Note that this affects
+     the **generation** leg only: OpenAI Moderation on the classifier leg is a separate,
+     directly-called integration and is unaffected.
    - **Classifier leg (OpenAI Moderation, Google Perspective): this is where the gate
      lives now.** It receives child-typed request text at intake
      (`story_requests/screening.py`) and every node of generated prose during moderation.

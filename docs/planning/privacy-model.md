@@ -214,6 +214,15 @@ Defense controls:
   every job. Any anomaly in moderation flags can be correlated back to the brief that
   triggered it.
 
+**Available but not enabled (recorded 2026-07-28)**: the OpenRouter workspace offers a free,
+no-added-latency, OWASP-inspired regex scan for common injection techniques, with an
+allow-list for phrases that should never trigger it. Every defense listed above is ours and
+runs in-process; this would be an independent fourth layer at the egress boundary. It is
+**disabled** as of this record. The reason it is not simply switched on is false positives:
+a children's adventure brief can legitimately contain instruction-shaped phrasing, and a
+blocked generation is a visible product failure rather than a silent one. Worth trialling
+with the allow-list in reach; not a default yes.
+
 ---
 
 ## OPEN BLOCKERS
@@ -232,11 +241,11 @@ legs do not carry the same data and never did.
 #### 1a. Generation leg (OpenRouter): NARROWED to a documentation item
 
 ```python
-# #CRITICAL: external resource: the no-retention configuration of the production
-#            OpenRouter account is an owner attestation, not a verified term.
-# #VERIFY: obtain written confirmation that account-wide ZDR is enabled and covers
-#          every downstream model OpenRouter routes to; record it in
-#          docs/compliance/processor-dpa-checklist.md at P7-08.
+# #CRITICAL: external resource: retention posture on the generation leg rests on a
+#            mutable platform guardrail (dated snapshot), not on an executed DPA.
+# #VERIFY: re-confirm the OpenRouter workspace guardrail state at P7-08 and on any
+#          credential rotation; execute the DPA and record both in
+#          docs/compliance/processor-dpa-checklist.md.
 ```
 
 The generation leg no longer gates dispatch. The reasoning, in the order it matters:
@@ -249,17 +258,38 @@ The generation leg no longer gates dispatch. The reasoning, in the order it matt
    personalization client-side at render time over sentinels the server stores and serves
    unchanged, rather than at generation time (Route B), which would have put real names into
    provider prompts and into `storybook_version.blob`.
-3. **Routing is constrained.** Production traffic goes to an allowlisted model on an account
-   the owner attests is configured for no data retention (ADR-003, 2026-07-28 amendment).
+3. **Routing is constrained at the platform, not by policy.** A guardrail on a dedicated,
+   key-scoped OpenRouter workspace (configured 2026-07-28) requires zero-data-retention
+   endpoints across non-frontier, Anthropic, OpenAI, Google, and xAI routing, and disables
+   all three data-training paths (paid-trains, free-trains, free-publishes-prompts). The
+   guardrail's plugins-and-tools carve-out does not reach this app: the generation request
+   body contains no `plugins` or `tools` key
+   (`generation/providers/openrouter.py:154-164`). Full state and limits: ADR-003's
+   2026-07-28 amendment.
+4. **A second, independent egress chokepoint now exists.** Key-level Sensitive Info
+   Detection redacts email, phone, SSN, credit-card, and IP patterns request-side, outside
+   our process and after `assert_prompt_pii_safe` has already hard-failed on the overlapping
+   ones. Person-name and address redaction are deliberately **off**: the protagonist name is
+   intentional fictional story content, and addresses are already a hard fail here. See
+   ADR-003 for the full reasoning, which should be read before anyone "completes" those
+   checkboxes.
 
 **What is still true, and is why this is narrowed rather than closed**: briefs carry a
 coarse age band, guardian-set `banned_themes`, content-flag caps, and free-typed premise
 text. That is child-*derived* content, so the generation leg is identifier-free, not
-PII-free, and its terms still belong in the P7-08 processor record. The no-retention claim
-is also an attestation dated 2026-07-28, not a verified term.
+PII-free, and its terms still belong in the P7-08 processor record. A routing guardrail is
+also not a contract: no DPA has been executed, and console settings are mutable, so the
+configuration above is a dated snapshot rather than a permanent property.
 
-**Status**: NARROWED. Not a dispatch gate. Verification remains a P7-08 deliverable and
-`docs/compliance/processor-dpa-checklist.md` still carries the OpenRouter row as unexecuted.
+**Counterparty change, 2026-07-28**: the ZDR toggles disable first-party Anthropic, OpenAI,
+and Google AI Studio endpoints rather than those model families, so generation traffic now
+reaches them through AWS Bedrock, Microsoft Azure, and Google Vertex. Those three are in
+scope as sub-processors for the generation leg. This does not affect the classifier leg
+below, which calls OpenAI Moderation directly.
+
+**Status**: NARROWED. Not a dispatch gate. DPA execution and a re-confirmation of the
+guardrail state remain P7-08 deliverables; `docs/compliance/processor-dpa-checklist.md`
+still carries the OpenRouter row as unexecuted.
 
 #### 1b. Classifier and review leg: OPEN, and this is now the real blocker
 

@@ -275,17 +275,20 @@ Production generation is governed by two controls, neither of which names a vend
 1. **Content**: every assembled prompt passes `assert_prompt_pii_safe` before egress. This
    is unchanged and remains non-negotiable; no carve-out may be added to it (ADR-023,
    "Constraints").
-2. **Route**: production traffic runs on a provider account configured for no data
-   retention, and the model id must be present and enabled in the admin-managed
-   `provider_model_allowlist` (`api/provider_allowlist.py`, ADR-022). The allowlist, not a
-   sentence in this ADR, is the enforcement point, and unlike a sentence it is auditable
-   (`ProviderModelAllowlistAudit`) and revocable without a doc change.
+2. **Route**: production traffic is confined to endpoints that enforce zero data retention
+   and do not train on or publish request data. This is enforced at the provider platform,
+   not by this document, and is described in "Basis" below.
+
+There is also a third, unrelated control that should not be confused with either: the
+admin-managed `provider_model_allowlist` (`api/provider_allowlist.py`, ADR-022) bounds
+**which model ids this app will call at all**. Its stated purpose is keeping free-string
+model ids out of billing, and it is auditable (`ProviderModelAllowlistAudit`). It is an
+operational and cost control that happens to also narrow the blast radius; it is not the
+data-policy control, and the two must not be conflated when reasoning about either.
 
 A model family is therefore no longer disqualified by which lab trained it. It is
-disqualified by not being allowlisted, or by being reachable only on a retention-bearing
-route. Admins gain the operational freedom this amendment is for; they also inherit the
-responsibility, since the allowlist is now the whole control rather than a second layer
-under a vendor rule.
+disqualified by failing the platform's data-policy guardrail, or by not being allowlisted
+for this app's own operational reasons.
 
 ### What this amendment does NOT relax
 
@@ -307,25 +310,123 @@ should not assume it does.
   identifier reaches a provider" is the claim that holds. "Nothing child-derived reaches a
   provider" is not, and must not be written into a compliance artifact.**
 
-### Basis, and its limits
+### Basis: how control 2 is actually enforced
+
+**Configured 2026-07-28.** Control 2 is not a policy this document asks an operator to
+honour. It is a platform guardrail on a **dedicated OpenRouter workspace created for this
+project**, with a **new API key scoped to that workspace**, so enforcement is bound to the
+credential the app actually uses rather than asserted account-wide. The guardrail is set as
+follows.
+
+**Zero Data Retention**, which OpenRouter applies to provider routing:
+
+| Toggle | State | Routing effect |
+|---|---|---|
+| Non-frontier | ON | All non-frontier model requests require ZDR endpoints |
+| Anthropic | ON | First-party Anthropic endpoints disabled; Bedrock and Vertex remain |
+| OpenAI | ON | First-party OpenAI endpoints disabled; Azure remains |
+| Google | ON | AI Studio endpoints disabled; Vertex remains |
+| xAI | ON | xAI endpoints that retain data disabled |
+
+**Data training**, which OpenRouter treats as a separate axis from retention, all three
+disabled: paid endpoints that train on request data, free endpoints that train on request
+data, and free endpoints that publish prompts and completions to public datasets.
+
+No specific provider or model is individually blocked, and deliberately so. Eligibility is
+determined by the data policy an endpoint enforces, which is precisely the re-scope this
+amendment records: a lab is not disqualified by identity, and does not need to be, because
+the guardrail rejects the endpoint rather than the vendor.
+
+**The plugins-and-tools carve-out does not apply to this app, and that is verifiable rather
+than asserted.** OpenRouter states that the ZDR guardrail "only applies to provider routing,
+does not apply to plugins and tools you choose to enable". This app enables none: the
+request body assembled in `generation/providers/openrouter.py:154-164` contains exactly
+`model`, `messages`, `max_tokens`, and an optional `reasoning` effort. There is no `plugins`
+key and no `tools` key on the generation path. A future contributor adding either would
+silently reopen this hole, so it belongs in review criteria for that file.
+
+### Key-level egress controls: a second chokepoint, and why two of them are off
+
+Also configured 2026-07-28, at API-key level, is request-side **Sensitive Info Detection**
+in redact mode for five patterns: email address, phone number, Social Security number,
+credit card number, and IP address. This is genuinely a **second, independent chokepoint**,
+sitting outside our process, after `assert_prompt_pii_safe` has already run and failed the
+job on the overlapping patterns. The overlap is deliberate defense-in-depth, exactly as
+`pii.py`'s own docstring frames it, and it has a useful diagnostic property: because our
+guard hard-fails on email, phone, and address *before* egress, the platform's redactor
+firing on those patterns would mean our guard missed something. SSN, credit card, and IP are
+**not** in our guard, so those are net-new coverage, though they are silently redacted rather
+than failing the job.
+
+**Two patterns are deliberately left off, and both would be actively harmful here.** This is
+recorded so a later reviewer does not read the unchecked boxes as an oversight and "fix"
+them:
+
+- **Person name** would redact the *fictional* protagonist name, which is intentional story
+  content and the entire point of `ConceptBrief.Protagonist`. Turning it on would corrupt
+  generation output while protecting nothing: real child names are already blocked upstream
+  by a hard fail, not by redaction. It also carries a latency cost and is Beta.
+- **Address** is already a hard fail in our own guard, and story prose legitimately contains
+  fictional places. Redaction here would be redundant against real addresses and damaging
+  against fictional ones.
+
+**Prompt-injection detection is available and currently disabled.** OpenRouter offers a
+free, no-added-latency, OWASP-inspired regex scan with an allow-list escape hatch. The
+privacy model already names concept brief text as untrusted input and lists the defenses
+against it, all of which are ours. This would be a cheap fourth layer. It is not enabled as
+of this record, and the reason to think before enabling is false positives: a children's
+adventure brief can legitimately contain instruction-shaped phrasing, and a blocked
+generation is a visible product failure. Recommended as a candidate to trial with the
+allow-list in reach, not as an obvious yes. Tracked in
+[privacy-model.md](../privacy-model.md), Prompt-Injection Defense.
+
+### Consequence: routing through OpenRouter is now the preferred path, not merely the incumbent
+
+The 2026-06-22 amendment recorded a direct Anthropic SDK adapter as **deferred**, "a trivial
+future add via the existing seam" if direct access or cheaper prompt caching were ever
+wanted. That characterization is now incomplete, and this amendment revises it.
+
+The controls above (ZDR routing, training and publishing disabled, key-level sensitive-info
+redaction, and optionally injection scanning) are properties of **the OpenRouter path
+specifically**. A direct-to-vendor adapter does not inherit any of them; it would move
+generation traffic onto a leg where the only egress control is our own PII guard. So the
+seam still exists and a direct adapter is still cheap to build, but it is no longer
+cost-neutral: **adding one removes a defense layer**, and that trade now has to be argued on
+the record rather than treated as a pure cost optimization. Prefer OpenRouter as the default
+egress path for that reason, independent of price. The same reasoning applies to any future
+provider leg added behind `GenerationProvider`: legs that bypass the guardrail layer inherit
+a higher bar, and the self-hosted Modal leg (ADR-010) is the one clean exception, since it
+introduces no third-party vendor at all.
+
+### What this basis does not establish
 
 ```python
-# #CRITICAL: external resource: the no-retention property of the production
-#            provider account is an owner attestation, not a verified term.
-#            Control 2 above depends on it.
-# #VERIFY: obtain written confirmation from OpenRouter that account-wide ZDR is
-#          enabled and covers every downstream model it routes to; record the
-#          outcome in docs/compliance/processor-dpa-checklist.md at P7-08.
+# #CRITICAL: external resource: a platform guardrail is a routing control, not a
+#            contract. No DPA has been executed with OpenRouter.
+# #VERIFY: execute the DPA / enterprise terms at P7-08 and record it in
+#          docs/compliance/processor-dpa-checklist.md; re-confirm the guardrail
+#          state at the same checkpoint, since console settings can drift.
 ```
 
-**Recorded 2026-07-28 (account-owner attestation; not independently verified.)** The owner
-attests that the provider accounts used for production generation are configured not to
-retain data. It is recorded as a dated attestation rather than a verified fact because no
-written confirmation has been obtained from OpenRouter, and
-`docs/compliance/processor-dpa-checklist.md` still carries that item as unexecuted.
+Three limits, stated so the record does not overclaim:
 
-If verification later shows retention on the production route, control 2 is violated and
-this amendment's premise fails. The correct response then is to revisit the re-scope, not to
+1. **A configured control is not an executed contract.** The guardrail governs how requests
+   route today. It is not a data processing agreement, and `processor-dpa-checklist.md`
+   still carries the OpenRouter row as unexecuted. Both are needed; neither substitutes for
+   the other.
+2. **Console state can drift.** Guardrails, workspaces, and keys are mutable. The state
+   above is a dated snapshot, not a permanent property, and should be re-confirmed at P7-08
+   and on any credential rotation.
+3. **The counterparty set moved, and the processor record has to follow.** Disabling
+   first-party Anthropic, OpenAI, and Google AI Studio endpoints does not remove those model
+   families; it routes them through **AWS Bedrock, Microsoft Azure, and Google Vertex**
+   instead. Those platforms now receive generation prompts as OpenRouter's sub-processors.
+   This is a genuine improvement in retention posture and simultaneously a change to who is
+   in scope for [ADR-018](./adr-018-childrens-privacy-compliance.md) item 6, which is
+   updated accordingly.
+
+If a later check shows retention on the production route, control 2 is violated and this
+amendment's premise fails. The correct response then is to revisit the re-scope, not to
 patch around it.
 
 ### Related
