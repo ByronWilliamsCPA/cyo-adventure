@@ -336,3 +336,12 @@ out/diversity/
 # out/mutations/). Scratch: a mutant reaches the catalog only through a reviewed
 # skeletons/ PR (ADR-020, design CR-1), never by committing a raw bundle.
 out/mutations/
+
+# Template feedback is deliberately local-only. It is a running note to the
+# cookiecutter-python-template maintainers, not a project deliverable, and
+# tracking it made every session's observations part of this repo's history and
+# its published docs site. Keep writing to docs/template_feedback.md; it simply
+# stays on the machine that wrote it. Excluded from the docs build in
+# mkdocs.yml's exclude_docs, and still on cruft's skip list in pyproject.toml so
+# an update never overwrites it. Format reference: .standards/template_feedback.baseline.md
+docs/template_feedback.md

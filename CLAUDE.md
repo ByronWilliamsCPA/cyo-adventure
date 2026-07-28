@@ -32,7 +32,7 @@ This project was generated from the [cookiecutter-python-template](https://githu
 
 **MANDATORY**: When working on this project, if you identify any issue that should have been addressed in the template (missing files, incorrect configurations, documentation gaps, tooling issues, etc.), you MUST:
 
-1. Add the feedback to [docs/template_feedback.md](docs/template_feedback.md)
+1. Add the feedback to `docs/template_feedback.md`
 2. Include:
    - **Issue**: Clear description of what's wrong or missing
    - **Context**: How you discovered it
@@ -40,6 +40,19 @@ This project was generated from the [cookiecutter-python-template](https://githu
    - **Priority**: Critical / High / Medium / Low
 
 This feedback will be shared with the template team to improve the cookiecutter template for future projects.
+
+**That file is gitignored and local-only.** Keep appending to it exactly as before; just do not
+expect it in `git status`, do not stage it, and never open a PR that adds it back. It is a running
+note to the template maintainers rather than a project deliverable, so it does not belong in this
+repo's history or on its published docs site. Practical consequences:
+
+- A machine that has never written feedback has no such file. Create it from
+  `.standards/template_feedback.baseline.md`, which carries the format and stays tracked.
+- It is excluded from the docs build (`exclude_docs` in `mkdocs.yml`) so a local copy does not
+  trip `strict: true`, and it remains on cruft's skip list in `pyproject.toml` so an update never
+  overwrites accumulated notes.
+- Entries written before 2026-07-28 are in git history; `git log --oneline -- docs/template_feedback.md`
+  still reaches them.
 
 ---
 
@@ -1129,7 +1142,8 @@ does not currently); the table above is the operative guidance for now.
 - **Project README**: [README.md](README.md)
 - **Contributing Guide**: [CONTRIBUTING.md](CONTRIBUTING.md)
 - **Security Policy**: [SECURITY.md](SECURITY.md)
-- **Template Feedback**: [docs/template_feedback.md](docs/template_feedback.md)
+- **Template Feedback**: `docs/template_feedback.md` (gitignored, local-only; format reference in
+  [.standards/template_feedback.baseline.md](.standards/template_feedback.baseline.md))
 - **UV Documentation**: <https://docs.astral.sh/uv/>
 - **Ruff Documentation**: <https://docs.astral.sh/ruff/>
 
