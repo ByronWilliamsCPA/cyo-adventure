@@ -35,11 +35,18 @@ the last two.
 |------|---------------|----------------|
 | e2e (mocked) | `ci.yml` frontend job, every PR/push/merge-group | ✅ red PR check blocks merge |
 | e2e-real | Nowhere; deliberately local-only pre-PR | ❌ none |
-| e2e-staging (PR #268) | Daily cron 13:00 UTC + manual, once merged and its three `staging` environment secrets are set | ❌ passive only: a red run in the Actions tab, trace artifact, no notification |
-| e2e-prod | Nowhere; spec headers say manual trigger only | ❌ none, and no schedule exists |
+| e2e-staging | Daily cron 13:00 UTC + manual, `e2e-staging.yml` | 🟡 passive only: a red run in the Actions tab, trace artifact, no notification |
+| e2e-prod | Daily cron 13:30 UTC + manual, `e2e-prod.yml` (a deliberate override of `requireProdCredentials()`'s CI guard, action #3 below) | ✅ pinned-issue alert on failure, plus trace artifact |
 
-**Consequence**: today, a production breakage in any workflow is discovered by a family
-member hitting it, not by CI. Closing that is the point of the actions list below.
+**Consequence**: the gap this table was written to describe is closed. Both deployed tiers
+now run unattended, and a production breakage raises a pinned issue rather than waiting for
+a family member to hit it. Staging remains passive-only by choice: it fails on disposable
+seeded fixtures, so a red run in the Actions tab is proportionate.
+
+The tiers' shared exposure is now the backend's 60 rpm/IP rate limiter rather than the
+absence of a schedule. Both tiers walk their consoles from a single runner IP, so both pace
+navigations and back off through `frontend/e2e-support/rate-limit.ts`; see that module for
+the constants and the assumptions they encode.
 
 ## Capability x environment matrix
 

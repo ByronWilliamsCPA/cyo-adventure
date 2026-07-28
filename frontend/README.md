@@ -200,14 +200,20 @@ cd frontend && npm run test:e2e:staging
 See `docs/testing/README.md` for the shared-staging-project environment model and
 `docs/testing/coverage-matrix.md` for what this tier does and doesn't cover per journey.
 
-## Production smoke e2e (manual, never CI)
+## Production smoke e2e (manual, plus one scheduled workflow)
 
 A third tier, `e2e-prod/`, signs in through the real login form against LIVE production
 (`https://cyo.williamshome.family` by default) with a dedicated test account, rather than
 mocking or running a local stack. It has its own Playwright config
 (`playwright.e2e-prod.config.ts`, no `webServer`, since it targets an already-running
-external site) and is never wired into CI: every run authenticates a real account against a
-live system, so it is manual-trigger-only.
+external site).
+
+Because every run authenticates a real account against a live system, CI execution is
+default-deny: `requireProdCredentials()` throws whenever `CI` is set. Exactly one audited
+exception exists, `.github/workflows/e2e-prod.yml`, which runs the tier daily on cron and
+clears `CI` to an empty string for its test-run step. That is an owner-directed decision
+recorded in `docs/planning/test-traceability-matrix.md`, not a workaround: any *other*
+workflow that clears or unsets `CI` is an unreviewed second override.
 
 ```bash
 # Preferred: nothing touches disk
