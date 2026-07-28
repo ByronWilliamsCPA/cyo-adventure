@@ -2006,3 +2006,85 @@
   flex-shrink: 0;
   color: inherit;
 }
+
+/* Guardian shell footer: the G11 trust-surface link. Kept visually quiet so
+   it reads as reference material rather than competing with the nav, but
+   given a real target size and focus ring because it is a keyboard stop. */
+.guardian-shell__footer {
+  max-width: 64rem;
+  margin-inline: auto;
+  padding: var(--space-6, 1.5rem);
+  padding-bottom: max(var(--space-6, 1.5rem), env(safe-area-inset-bottom));
+  border-top: 1px solid var(--color-parchment-deeper, #e0d5b8);
+  font-size: var(--text-sm, 0.9375rem);
+}
+
+.guardian-shell__footer a {
+  display: inline-block;
+  min-height: 44px;
+  padding: var(--space-2, 0.5rem) 0;
+  color: var(--color-ink-muted, #6b5744);
+  line-height: 28px;
+}
+
+.guardian-shell__footer a:hover {
+  color: var(--color-ink, #2c1a0e);
+}
+
+/* Privacy page (PrivacyPage, register G11). A long-form reading page, so it
+   is narrower than the 64rem shell default: prose past ~70 characters a line
+   is measurably harder to read, and this page is meant to actually be read
+   rather than skimmed for a control. */
+.privacy {
+  max-width: 44rem;
+}
+
+.privacy h2 {
+  margin-top: var(--space-8, 2rem);
+  margin-bottom: var(--space-2, 0.5rem);
+  font-size: var(--text-lg, 1.125rem);
+}
+
+.privacy p,
+.privacy li {
+  line-height: 1.65;
+}
+
+.privacy p {
+  margin-block: var(--space-3, 0.75rem);
+}
+
+.privacy__intro {
+  font-size: var(--text-base, 1rem);
+}
+
+.privacy__summary {
+  margin-block: var(--space-6, 1.5rem);
+  padding: var(--space-4, 1rem) var(--space-5, 1.25rem);
+}
+
+.privacy__summary h2 {
+  margin-top: 0;
+}
+
+.privacy__summary ul {
+  margin: 0;
+  padding-left: var(--space-5, 1.25rem);
+}
+
+.privacy__steps,
+.privacy__nots,
+.privacy__controls {
+  padding-left: var(--space-5, 1.25rem);
+}
+
+.privacy__steps li,
+.privacy__nots li,
+.privacy__controls li {
+  margin-block: var(--space-3, 0.75rem);
+}
+
+.privacy__nots {
+  list-style: none;
+  padding-left: 0;
+}

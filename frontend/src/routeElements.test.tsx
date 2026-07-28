@@ -10,6 +10,7 @@ import {
   AuditPage,
   AuthoringQueuePage,
   NotFoundPage,
+  PrivacyPage,
   ProviderAllowlistPage,
   RouteError,
   RouteFallback,
@@ -34,6 +35,9 @@ vi.mock('./admin/ProviderAllowlistPage', () => ({
 }))
 vi.mock('./admin/UserManagementPage', () => ({
   UserManagementPage: () => <div>UserManagementPage loaded</div>,
+}))
+vi.mock('./guardian/PrivacyPage', () => ({
+  PrivacyPage: () => <div>PrivacyPage loaded</div>,
 }))
 
 describe('NotFoundPage', () => {
@@ -156,7 +160,7 @@ describe('router catch-all (router.tsx)', () => {
   })
 })
 
-describe('lazy admin page loaders', () => {
+describe('lazy page loaders', () => {
   // The loader thunk and its named-export mapper are the only code this file
   // adds per page; mounting each lazy component through Suspense executes both
   // without needing the real page's data layer. Pages exercised only through
@@ -168,6 +172,11 @@ describe('lazy admin page loaders', () => {
     ['AuthoringQueuePage', AuthoringQueuePage],
     ['ProviderAllowlistPage', ProviderAllowlistPage],
     ['UserManagementPage', UserManagementPage],
+    // Guardian G11 trust surface. Reached only from a footer link, so it is
+    // never pulled in by the router-navigation tests that incidentally cover
+    // the busier guardian chunks; without this entry its loader thunk is the
+    // one uncovered function that drops this file under the 70% per-file gate.
+    ['PrivacyPage', PrivacyPage],
   ] as const
 
   it.each(cases)('resolves the %s loader to the named export', async (name, LazyPage) => {

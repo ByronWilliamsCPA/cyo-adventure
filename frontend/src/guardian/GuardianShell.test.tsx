@@ -204,6 +204,30 @@ describe('GuardianShell', () => {
     expect(screen.getByText('console content')).toBeInTheDocument()
   })
 
+  it('shows the privacy footer link to every adult, guardian or admin-only', () => {
+    // G11's trust surface is reachable from every guardian page rather than
+    // being role-gated: an admin-only adult sees the same account of how data
+    // is handled as a guardian does, since it describes the system, not a
+    // family-management capability.
+    for (const role of ['guardian', 'admin'] as const) {
+      mockUseAuth.mockReturnValue({ principal: principal(role), signOut: mockSignOut })
+      const { unmount } = renderShell()
+      expect(
+        screen.getByRole('link', { name: /how we handle your family's data/i })
+      ).toHaveAttribute('href', '/guardian/privacy')
+      unmount()
+    }
+  })
+
+  it('keeps the privacy link out of the main nav', () => {
+    // Deliberately a footer link, not a ninth nav item. If it migrates into
+    // the nav that should be a decision, not a drive-by edit.
+    mockUseAuth.mockReturnValue({ principal: principal('guardian'), signOut: mockSignOut })
+    renderShell()
+    const nav = screen.getByRole('navigation', { name: 'Guardian' })
+    expect(within(nav).queryByRole('link', { name: /how we handle/i })).not.toBeInTheDocument()
+  })
+
   it('shows an "Admin" role hint for an admin principal', () => {
     mockUseAuth.mockReturnValue({ principal: principal('admin'), signOut: mockSignOut })
     renderShell()
