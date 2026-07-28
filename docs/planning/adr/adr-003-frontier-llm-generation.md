@@ -156,7 +156,11 @@ Revised provider posture:
   already isolates this swap.
 - **Deferred**: a direct Anthropic SDK adapter. Not implemented in Phase 2b (OpenRouter
   covers Claude); a trivial future add via the existing seam if direct Opus 4.8 or prompt
-  caching without the OpenRouter markup is ever wanted.
+  caching without the OpenRouter markup is ever wanted. **Reassessed 2026-07-28**: still
+  deferred, and now for a stronger reason than cost. The 2026-07-28 amendment attaches real
+  egress controls to the OpenRouter path that a direct adapter would not inherit, and BYOK
+  reaches both motivations above without leaving that path. See
+  [BYOK is the better answer than a direct adapter](#byok-is-the-better-answer-than-a-direct-adapter-and-it-retires-the-reason-for-one).
 
 ### Model availability is weekly-volatile, not monthly
 
@@ -397,6 +401,61 @@ egress path for that reason, independent of price. The same reasoning applies to
 provider leg added behind `GenerationProvider`: legs that bypass the guardrail layer inherit
 a higher bar, and the self-hosted Modal leg (ADR-010) is the one clean exception, since it
 introduces no third-party vendor at all.
+
+#### BYOK is the better answer than a direct adapter, and it retires the reason for one
+
+OpenRouter supports bring-your-own-key. The operator already holds an Anthropic API key
+(noted in the 2026-06-22 amendment), so that key can be supplied to OpenRouter rather than
+used through a separate SDK adapter. This matters because it **dominates** the deferred
+direct-adapter option rather than merely competing with it:
+
+- Traffic stays on the OpenRouter path, so the ZDR routing guardrail, the key-level
+  sensitive-info redaction, and any future injection scan all still apply.
+- The model call is nevertheless billed to, and governed by, the operator's own direct
+  Anthropic relationship and its terms tier.
+- No second adapter is built, so the `GenerationProvider` seam stays at its current fan-out.
+
+The two motivations the 2026-06-22 amendment gave for a direct adapter, direct model access
+and prompt caching without the OpenRouter markup, are therefore both reachable **without**
+giving up a defense layer. That strengthens the preceding section's conclusion rather than
+qualifying it: a direct SDK adapter should now be treated as an option with no remaining
+advantage, not merely one to argue for.
+
+**Not adopted as of this record, and one interaction must be resolved first.** BYOK is
+described here as the evaluated path, not the configured one. The open question is a direct
+conflict with the guardrail above:
+
+```python
+# #CRITICAL: security: the Anthropic ZDR toggle disables FIRST-PARTY Anthropic
+#            endpoints, which is exactly where a BYOK Anthropic key routes. BYOK
+#            and that toggle may be mutually exclusive.
+# #VERIFY: test a BYOK Anthropic request against the live guardrail before
+#          adopting. If it is refused, do NOT relax the toggle to make it work
+#          without first confirming ZDR on the Anthropic account itself.
+```
+
+The trap is that "add my own key" reads as strictly additive and may not be. Anthropic's
+first-party API retains request data for a bounded abuse-monitoring window unless a
+zero-retention arrangement exists on that account, which is why OpenRouter's ZDR toggle
+disables those endpoints in the first place. So BYOK-to-first-party-Anthropic without
+account-level ZDR would be a **worse** retention posture than the Bedrock and Vertex routing
+the guardrail currently forces, while feeling like an upgrade because a contractual
+relationship was added. Contract and retention are separate axes here, and only one of them
+improves by default.
+
+Three consequences if BYOK is later adopted:
+
+1. **The terms-tier question stops being hypothetical.**
+   `docs/compliance/processor-dpa-checklist.md` flags that the Anthropic row needs
+   confirmation the account is on commercial terms, since the DPA does not apply to consumer
+   accounts. Under BYOK that becomes load-bearing rather than a tidy-up item.
+2. **The counterparty list moves again.** Anthropic-direct returns to
+   [ADR-018](./adr-018-childrens-privacy-compliance.md) item 6 for whatever share of traffic
+   BYOK carries, and Bedrock or Vertex correspondingly leaves it. The processor record has to
+   follow the routing, in whichever direction it moves.
+3. **Retention posture must be established on the Anthropic account itself**, not inherited
+   from the OpenRouter guardrail, because on that leg the guardrail is no longer choosing the
+   endpoint.
 
 ### What this basis does not establish
 
