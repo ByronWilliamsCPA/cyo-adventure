@@ -23,13 +23,22 @@
 # CI-proof, delete this workflow rather than fighting the guard.
 #
 # -----------------------------------------------------------------------
-# Required GitHub Environment: `production`
+# Required GitHub Environment: `production-e2e` (NOT `production`)
 # -----------------------------------------------------------------------
-# The repo owner must create a `production` Environment (repo Settings ->
-# Environments) and add the secrets below before the first scheduled run;
-# until then every run fails fast at the credential check in
+# The repo owner must create a `production-e2e` Environment with NO
+# protection rules and add the secrets below before the first scheduled
+# run; until then every run fails fast at the credential check in
 # frontend/e2e-prod/support/prod-env.ts. Env var names below match that
 # file exactly.
+#
+#   gh api -X PUT repos/:owner/:repo/environments/production-e2e
+#   gh secret set E2E_PROD_TEST_EMAIL    --env production-e2e
+#   gh secret set E2E_PROD_TEST_PASSWORD --env production-e2e
+#
+# It is a separate environment from `production` on purpose: see the
+# #CRITICAL note on the job's `environment:` key. A required-reviewer rule
+# here parks the first scheduled run in `waiting` forever and starves every
+# run behind it.
 #
 #   E2E_PROD_TEST_EMAIL     (required) Login email for the dedicated e2e-prod
 #                            test account. Read in
@@ -76,7 +85,26 @@ jobs:
     name: Playwright (e2e-prod tier)
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment: production
+    # #CRITICAL: timing: deliberately NOT the `production` environment. That
+    # environment carries a required-reviewer protection rule, which is correct
+    # for supabase-production.yml (it applies migrations to the live database)
+    # but fatal here: a scheduled, unattended run enters `waiting` for a human
+    # who is not watching. Because `cancel-in-progress: false` protects it, that
+    # first waiting run holds the group's in-progress slot indefinitely; GitHub
+    # then allows only ONE pending run behind it, so each day's cron sits
+    # pending until the NEXT day's cron displaces it as `cancelled`. The tier
+    # never executed a single test from 2026-07-18 onward.
+    # #CRITICAL: external resources: the original 2026-07-18 run (id
+    # 29647203420) is still `waiting`, not cancelled, and will never resolve on
+    # its own. Switching this key to an unprotected environment does NOT clear
+    # it; it must be cancelled by hand (`gh run cancel 29647203420`) or it keeps
+    # occupying the in-progress slot and blocking every future scheduled run.
+    # This environment must stay UNPROTECTED; it holds only the dedicated e2e
+    # test account's credentials, never a deploy key.
+    # #VERIFY: `gh api repos/:owner/:repo/environments/production-e2e --jq
+    # '.protection_rules'` returns `[]`, no run for this workflow is left in
+    # `waiting`, and a scheduled run reaches the Playwright step.
+    environment: production-e2e
     permissions:
       contents: read
       issues: write

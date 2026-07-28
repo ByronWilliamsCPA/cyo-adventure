@@ -78,6 +78,17 @@
       "pinDigests": true
     },
     {
+      "description": "Never SHA-pin the SLSA generator (the #378 breakage). Its reusable workflow resolves its own builder from the calling ref and rejects anything that is not refs/tags/vX.Y.Z, so a digest pin fails with 'Invalid ref' while the generator job still reports success and only the final gate turns red on exit 27. This rule must stay after the pinDigests rule above to override it; see the DO-NOT-SHA-PIN comment in .github/workflows/slsa-provenance.yml.",
+      "matchManagers": ["github-actions"],
+      "matchPackageNames": [
+        "slsa-framework/slsa-github-generator",
+        "slsa-framework/slsa-github-generator/**"
+      ],
+      "pinDigests": false,
+      "automerge": false,
+      "labels": ["dependencies", "manual-review"]
+    },
+    {
       "description": "Pydantic v2 - maintain major version",
       "matchPackageNames": ["pydantic", "pydantic-settings"],
       "matchUpdateTypes": ["major"],

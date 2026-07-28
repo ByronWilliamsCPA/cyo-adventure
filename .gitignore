@@ -51,6 +51,11 @@ coverage.json
 .pytest_cache/
 pytest-html-report/
 test-results/
+# mutmut 3.x copies the whole working tree (source, tests, and everything in
+# [tool.mutmut] also_copy) into ./mutants/ on every `mutmut run` / `nox -s mutate`.
+# It is a large regenerable build artifact, and leaving it untracked-but-visible
+# invites a stray `git add .` in a repo that already runs concurrent sessions.
+mutants/
 
 # Translations
 *.mo

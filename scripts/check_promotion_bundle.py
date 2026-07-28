@@ -10,7 +10,11 @@ acceptance time, so a hand-tampered or stale bundle cannot ride an otherwise
 green PR:
 
 1. ``check_skeleton`` on the shell (the full blocking gate plus the offered-cell
-   and production-envelope checks);
+   and production-envelope checks). The production-eligibility clause is applied
+   according to the shell's own ``metadata.production_eligible`` claim: a shell
+   claiming production eligibility faces the full envelope, while a
+   self-declared seed is proved with ``--allow-mvp`` and the downgrade is
+   announced in the job log;
 2. ``check_theme_contract`` on the shell when a ``<slug>.contract.json`` sidecar
    is present (the WS-2 migration acceptance checks);
 3. the WS-5 anti-clone floor (``structural_floor_reason`` against the live
@@ -46,7 +50,7 @@ from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.diversity.structure import structure_fingerprint
-from cyo_adventure.generation.skeleton import is_sidecar
+from cyo_adventure.generation.skeleton import is_production_eligible, is_sidecar
 from cyo_adventure.mutation.bundle import LineageV2, content_sha256, load_lineage
 from cyo_adventure.mutation.floors import load_in_cell_catalog, structural_floor_reason
 
@@ -235,6 +239,31 @@ def _floor_reason(
         return None
 
 
+def declares_production_eligible(shell_doc: dict[str, object] | None) -> bool:
+    """Return whether the shell's own metadata claims production eligibility.
+
+    Delegates to ``generation.skeleton.is_production_eligible``, which is the
+    repo's single definition of this predicate (``production_eligible is not
+    False``) and the one the production story selector already uses. Re-deriving
+    it here would let the promotion gate and the runtime selector drift into
+    disagreeing about which shells are seeds.
+
+    The only case added on top is an unreadable shell, reported as
+    production-eligible so the caller applies the STRICTER envelope. Failing
+    closed matters: this return value selects which gate a promotion faces, and
+    an unparseable shell must never be the cheap way past the strict one.
+
+    Args:
+        shell_doc: The decoded shell document, or None when it could not be read.
+
+    Returns:
+        bool: False only when metadata explicitly declares the shell a seed.
+    """
+    if shell_doc is None:
+        return True
+    return is_production_eligible(shell_doc)
+
+
 def prove_shell(shell_path: Path, *, skeletons_root: Path) -> list[str]:
     """Re-prove one shell and its sidecars from scratch (design 4.3 point 4).
 
@@ -250,7 +279,54 @@ def prove_shell(shell_path: Path, *, skeletons_root: Path) -> list[str]:
     reasons: list[str] = []
     name = shell_path.name
 
-    if _run_check_skeleton([str(shell_path)]) != 0:
+    # Return on a read failure rather than carrying a None shell through the
+    # remaining checks. Every one of them (check_skeleton, the contract, the
+    # lineage sidecar, the parent hash) would also fail on an unreadable shell,
+    # burying the one real cause under four derived symptoms.
+    shell_doc: dict[str, object]
+    try:
+        shell_doc = _load_json_object(shell_path)
+    except (OSError, json.JSONDecodeError, ValueError) as exc:
+        reasons.append(f"{name}: shell could not be read: {exc}")
+        return reasons
+
+    # A seed skeleton declares ``metadata.production_eligible: false`` and is a
+    # legitimate, merged member of the catalog (3 of 61 shells at the time of
+    # writing). check_skeleton rejects such a shell by default with
+    # "cell: not production_eligible (pass --allow-mvp for seeds)", so the CI
+    # job -- which passes the raw changed-file list of any PR touching
+    # skeletons/** -- failed unconditionally whenever a seed was in the diff.
+    # That is why this workflow had never once gone green.
+    #
+    # The envelope a shell faces is chosen by the claim the shell itself makes:
+    # a shell claiming production eligibility is held to the production
+    # envelope exactly as before, and a self-declared seed is proved as a seed.
+    # #ASSUME: data integrity: ``metadata.production_eligible`` is the single
+    # source of truth for which envelope applies. A shell cannot dodge the
+    # production envelope without also declaring itself non-production, and
+    # that declaration is visible in the diff a human reviews.
+    # #VERIFY: tests/unit/test_ws8_promotion.py asserts both directions -- a
+    # seed proves clean, and flipping the same shell's flag to true re-arms the
+    # strict check.
+    #
+    # #EDGE: data integrity: is_production_eligible's own contract says callers
+    # must pass schema-validated StoryMetadata, not raw JSON, because it treats
+    # unparseable metadata as eligible. This caller deliberately passes raw
+    # json.load output, and that is safe ONLY because the polarity inverts here:
+    # "eligible" selects the STRICTER envelope, so its permissive default is
+    # this gate's fail-closed direction. A malformed shell gets held to the
+    # production envelope, never waved through as a seed.
+    # #VERIFY: if this predicate is ever reused where "eligible" grants rather
+    # than withholds permission, validate the document through StoryMetadata
+    # first. test_declares_production_eligible_fails_closed pins the direction.
+    skeleton_argv = [str(shell_path)]
+    if not declares_production_eligible(shell_doc):
+        skeleton_argv.append("--allow-mvp")
+        # Never downgrade a check silently: say so in the job log, so a reviewer
+        # reading a green run can see which shells were proved as seeds.
+        print(f"note: {name}: proved as a seed (metadata.production_eligible=false)")
+
+    if _run_check_skeleton(skeleton_argv) != 0:
         reasons.append(f"{name}: check_skeleton (gate/cell/envelope) failed")
 
     contract_path = shell_path.with_name(f"{shell_path.stem}.contract.json")
@@ -271,12 +347,6 @@ def prove_shell(shell_path: Path, *, skeletons_root: Path) -> list[str]:
     verify_reason = _verify_parent_hash(lineage, skeletons_root)
     if verify_reason is not None:
         reasons.append(f"{name}: {verify_reason}")
-
-    try:
-        shell_doc = _load_json_object(shell_path)
-    except (OSError, json.JSONDecodeError, ValueError) as exc:
-        reasons.append(f"{name}: shell could not be read: {exc}")
-        return reasons
 
     floor_reason = _floor_reason(shell_doc, lineage, skeletons_root)
     if floor_reason is not None:

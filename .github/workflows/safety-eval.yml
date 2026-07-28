@@ -10,16 +10,24 @@
 # credentials and real network I/O). Because a schedule-only failure never turns
 # a PR red, a failed scheduled run files/updates one tracking issue.
 #
-# Credentials: set the secrets OPENROUTER_API_KEY and OPENAI_API_KEY.
-# PERSPECTIVE_API_KEY is optional (a second Stage-0 opinion) and no longer
-# satisfies the Stage-0 requirement on its own: Perspective sunsets 2026-12-31,
-# so a set key stops being evidence of a working classifier. This mirrors the
+# Credentials: set the REPO-level secrets OPENROUTER_API_KEY (the review
+# provider; `_PROVIDER = "openrouter"` is pinned in the test) and
+# OPENAI_API_KEY (the Stage-0 classifier). PERSPECTIVE_API_KEY is optional
+# (a second Stage-0 opinion) and no longer satisfies the Stage-0 requirement
+# on its own: Perspective sunsets 2026-12-31, so a set key stops being
+# evidence of a working classifier. This mirrors the
 # Settings._require_classifier_when_reviewing invariant, which raises if
 # OPENAI_API_KEY is unset under a live reviewer; keeping the two in agreement
-# means a misconfigured run skips here rather than dying later in config.
-# Until the secrets exist the tier SKIPS (the run is green but measures
-# nothing); the pre-flight step warns loudly on a scheduled run so a missing
-# credential is visible rather than silently passing.
+# means a misconfigured run fails here rather than dying later in config.
+# The job declares no `environment:`, so repo and inherited org secrets apply.
+#
+# If the required secrets are absent, a SCHEDULED run FAILS CLOSED at the
+# pre-flight step below and files the tracking issue. That is deliberate:
+# this tier previously skipped every test and still reported success, which
+# is an affirmative claim that the classifiers were exercised when they never
+# were. If the credentials are not going to be provisioned, delete the
+# `schedule:` trigger and keep workflow_dispatch, rather than restoring a
+# green run that measures nothing.
 name: Safety Evaluation
 
 on:
@@ -64,15 +72,36 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-extras --locked
 
-      - name: Warn if credentials are absent on a scheduled run
+      # #CRITICAL: security: this step used to `echo "::warning::"` and carry on,
+      # which made the whole workflow report SUCCESS while every llm_eval test
+      # skipped. A green safety gate that measured nothing is strictly worse
+      # than a red one: it is an affirmative signal that the moderation
+      # classifiers were exercised against the adversarial corpus when they
+      # never were. Fail closed instead, so the absent credential is visible as
+      # a failure and files the tracking issue below.
+      # #VERIFY: with the secrets unset, this step fails and the run is red;
+      # with them set, it passes and the post-run guard below asserts a
+      # non-zero collected count.
+      - name: Require credentials on a scheduled run
         if: github.event_name == 'schedule'
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           PERSPECTIVE_API_KEY: ${{ secrets.PERSPECTIVE_API_KEY }}
         run: |
-          if [ -z "$OPENROUTER_API_KEY" ] || [ -z "$OPENAI_API_KEY" ]; then
-            echo "::warning::Safety-eval credentials not configured; the llm_eval tier will skip and measure nothing. Set OPENROUTER_API_KEY and OPENAI_API_KEY (PERSPECTIVE_API_KEY is optional and does not substitute for OPENAI_API_KEY)."
+          set -euo pipefail
+          missing=0
+          if [ -z "${OPENROUTER_API_KEY:-}" ]; then
+            echo "::error::OPENROUTER_API_KEY is not configured."
+            missing=1
+          fi
+          if [ -z "${OPENAI_API_KEY:-}" ]; then
+            echo "::error::OPENAI_API_KEY is not configured. PERSPECTIVE_API_KEY is optional and does not substitute for it (Perspective sunsets 2026-12-31)."
+            missing=1
+          fi
+          if [ "$missing" -ne 0 ]; then
+            echo "::error::The llm_eval tier would skip every test, so this run would report success while measuring nothing. Configure the secrets or disable the schedule; do not let this gate pass vacuously."
+            exit 1
           fi
 
       - name: Run adversarial safety evaluation
@@ -86,8 +115,45 @@ jobs:
           CYO_LLM_EVAL_OUT: safety-eval-results/adversarial-results.json
         run: |
           set -o pipefail
+          mkdir -p safety-eval-results
           uv run pytest -m llm_eval -o addopts="--import-mode=importlib" -v -ra \
+            --junitxml=safety-eval-results/junit.xml \
             | tee -a "$GITHUB_STEP_SUMMARY"
+
+      # Second half of the fail-closed contract. The credential check above
+      # covers the known skip path (the module-level skipif in
+      # tests/llm_eval/test_adversarial_safety_eval.py), but an all-skipped run
+      # still exits 0, so any FUTURE skip condition would silently restore the
+      # vacuous-green behaviour. Assert on the junit report instead of trusting
+      # the exit code: at least one llm_eval test must have actually executed.
+      # #VERIFY: temporarily add `@pytest.mark.skip` to the corpus test; this
+      # step must fail even though pytest itself exits 0.
+      - name: Assert the evaluation actually ran
+        if: ${{ !cancelled() }}
+        run: |
+          set -euo pipefail
+          uv run python - <<'PY'
+          import sys
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          report = Path("safety-eval-results/junit.xml")
+          if not report.is_file():
+              sys.exit("::error::No junit report; the evaluation step did not run.")
+          suites = ET.parse(report).getroot().iter("testsuite")
+          total = skipped = 0
+          for suite in suites:
+              total += int(suite.get("tests", 0))
+              skipped += int(suite.get("skipped", 0))
+          executed = total - skipped
+          print(f"llm_eval tests: total={total} skipped={skipped} executed={executed}")
+          if executed < 1:
+              sys.exit(
+                  "::error::Every llm_eval test skipped, so the adversarial "
+                  "corpus was never run against the moderation classifiers. "
+                  "This gate must not report success while measuring nothing."
+              )
+          PY
 
       - name: Upload evaluation results
         if: always()

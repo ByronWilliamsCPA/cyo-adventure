@@ -9,6 +9,12 @@ import { signInAsStagingTestUser, unlockParentalGateIfPresent } from './support/
  * creates (a guardian and an admin, not dual-role, unlike the prod tier's
  * single test account). Every listed page does only GETs on mount, so this
  * is non-destructive and safe to run unattended on a schedule.
+ *
+ * One qualifier on "read-only": signInAsStagingTestUser clears the ADR-018
+ * consent interstitial when it appears, which records consent for the staging
+ * test guardian. That is a single idempotent write, on the test account only,
+ * and only until the account has consented once. See
+ * acceptGuardianConsentIfPresent in ./support/auth.
  */
 test.describe('guardian console renders on staging', () => {
   test.describe.configure({ mode: 'serial' })

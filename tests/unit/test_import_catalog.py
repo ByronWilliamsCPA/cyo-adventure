@@ -340,6 +340,16 @@ class TestRealLegacyFilesNormalizeCleanly:
 
 
 @pytest.mark.unit
+# mutation_deselect: both tests below `chdir` into an empty tmp_path, because the
+# behaviour under test is "the skeletons/ tree is not there". mutmut's
+# record_trampoline_hit resolves its RELATIVE source_paths ("src/cyo_adventure")
+# with strict=True against the current working directory on every mutated call,
+# so the first one here (constructing ValidationError, which lives in the mutated
+# core/exceptions.py) raises FileNotFoundError from inside mutmut before the
+# assertion runs. Same class of mutmut-infrastructure limitation as the
+# async-generator note in tests/unit/test_api_deps.py; these tests are unaffected
+# and fully covered in every normal run.
+@pytest.mark.mutation_deselect
 class TestLoadReferenceSkeleton:
     def test_raises_when_skeleton_file_is_missing(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
