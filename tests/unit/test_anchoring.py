@@ -13,6 +13,7 @@ from cyo_adventure.story_requests.anchoring import (
     anchor_context_from_blob,
     load_anchor_context,
 )
+from cyo_adventure.storybook.sentinels import strip_sentinels
 
 
 def _blob() -> dict[str, object]:
@@ -291,3 +292,55 @@ def test_overlong_variable_name_is_truncated_not_rejected() -> None:
     blob["variables"] = [{"name": "x" * 500, "type": "bool", "initial": False}]
     ctx = anchor_context_from_blob(blob, character_names=[])
     assert ctx.variable_names == ["x" * 200]
+
+
+def test_sentinel_straddling_the_title_cut_is_stripped_before_truncation() -> None:
+    """A sentinel bisected by the 200-char title cut must not survive.
+
+    Anchor context feeds the *next* book's Stage A prompt, so a surviving
+    fragment does not merely display wrong: it teaches book 2's model that
+    ``{~HERO:Expl`` is ordinary story text. ``SENTINEL_RE`` matches only
+    well-formed ``{~SLOT:Word~}`` tokens, so a half-token is invisible to any
+    later strip; ordering is the only defence. The final assertion pins that
+    the pre-fix ordering genuinely leaked, so this test cannot pass vacuously.
+    """
+    title = "a" * 190 + "{~HERO:Explorer~} tail"
+    blob = _blob()
+    blob["title"] = title
+
+    ctx = anchor_context_from_blob(blob, character_names=[])
+
+    assert len(ctx.title) == 200
+    assert "{~" not in ctx.title
+    assert "~}" not in ctx.title
+    assert ctx.title == "a" * 190 + "Explorer t"
+    assert "{~" in strip_sentinels(title[:200])
+
+
+def test_sentinel_straddling_the_excerpt_cut_is_stripped_before_truncation() -> None:
+    """Same ordering guarantee on the 150-char per-ending-excerpt cut.
+
+    The excerpt path truncates at a different call site than the title path
+    (``_ending_excerpts_from_blob``), so it needs its own pin rather than
+    inheriting confidence from the title test.
+    """
+    body = "b" * 140 + "{~PET:dog~} tail"
+    blob = {
+        "title": "T",
+        "nodes": [
+            {
+                "id": "n1",
+                "body": body,
+                "is_ending": True,
+                "ending": {"id": "e1", "title": "End"},
+            }
+        ],
+    }
+
+    ctx = anchor_context_from_blob(blob, character_names=[])
+
+    assert len(ctx.ending_summary) == 150
+    assert "{~" not in ctx.ending_summary
+    assert "~}" not in ctx.ending_summary
+    assert ctx.ending_summary == "End: " + "b" * 140 + "dog t"
+    assert "{~" in strip_sentinels(f"End: {body}"[:150])

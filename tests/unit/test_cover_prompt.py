@@ -198,6 +198,15 @@ def test_opening_excerpt_strips_before_truncation() -> None:
 
     If the strip ran after truncation, the boundary below would bisect the
     sentinel token and leave an unmatched `{~HERO:Expl` fragment behind.
+
+    The expected value is computed by hand, not merely inferred from the
+    absence of "{~": after ``strip_sentinels`` replaces the token with
+    "Explorer", the body reads ``("x" * 235) + " Explorer tail"``, and the
+    240-char slice keeps indices 0-239, i.e. the 235 "x"s, one space, and
+    the first four characters of "Explorer" ("Expl"). An implementation that
+    dropped the excerpt entirely, or stripped a different (wrong) span,
+    would still satisfy a marker-absence-only check; pinning the exact
+    string closes that gap.
     """
     token = wrap("HERO", "Explorer")
     # Position the token so a strip-after-truncate would bisect it at 240 chars.
@@ -205,3 +214,4 @@ def test_opening_excerpt_strips_before_truncation() -> None:
     blob: dict[str, object] = {"nodes": [{"id": "n0", "body": body}]}
     excerpt = _opening_excerpt(blob)
     assert "{~" not in excerpt
+    assert excerpt == ("x" * 235) + " Expl"

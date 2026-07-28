@@ -118,4 +118,9 @@ def build_cover_prompt(
             "anywhere in the image."
         ),
     ]
-    return " ".join(p for p in parts if p)
+    # Final strip on the assembled prompt: themes and age_band above are read
+    # from blob["metadata"] with no per-field strip, unlike title/subject/
+    # excerpt. A strip here makes the no-sentinel property hold for every
+    # field present today and any field added later, without relying on each
+    # call site to remember its own strip.
+    return strip_sentinels(" ".join(p for p in parts if p))
