@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.39.2] - 2026-07-28
+
+### Bug Fixes
+
+- **docs**: Repair references left dangling by the handoff-doc deletion
+  ([#445](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/445),
+  [`0bef6bd`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/0bef6bd5af5cdb4cb640f3c89f4d7e1711d7ff92))
+
+- **moderation**: Stop the Stage-0 baseline defeating its own PII control
+  ([#446](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/446),
+  [`ec760ec`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/ec760ecfdf476de16fe0d7fdd7f39772344f2076))
+
+
 ## [0.39.1] - 2026-07-28
 
 ### Bug Fixes
@@ -2724,6 +2737,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.39.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.39.1...v0.39.2
 [0.39.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.39.0...v0.39.1
 [0.39.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.38.1...v0.39.0
 [0.38.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.38.0...v0.38.1
