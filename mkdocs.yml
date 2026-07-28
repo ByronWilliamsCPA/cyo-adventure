@@ -214,7 +214,6 @@ nav:
       - Project Setup: PROJECT_SETUP.md
       - OpenSSF Compliance: OPENSSF_COMPLIANCE.md
       - Python Compatibility: PYTHON_COMPATIBILITY.md
-      - Template Feedback: template_feedback.md
 
   - Reference:
       - Architecture Decision Records: ADRs/README.md
@@ -223,9 +222,13 @@ nav:
 # Docs exclusion
 # planning/README.md conflicts with planning/index.md (which is the proper index)
 # planning/project-plan-template.md is a template, not intended for publishing
+# template_feedback.md is gitignored and local-only, so it is absent in CI but
+# present in a working checkout. Excluding it keeps `strict: true` from failing
+# locally on a file that is deliberately not in the nav.
 exclude_docs: |
   planning/README.md
   planning/project-plan-template.md
+  template_feedback.md
 
 # Validation
 strict: true

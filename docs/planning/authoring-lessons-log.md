@@ -145,4 +145,7 @@ plan somewhere. `applied` means the change is merged and the `Ref` proves it. No
 - [Reader path and engagement design](./reader-path-engagement-design.md), the design AL-019/AL-020 point at
 - [Capability register](./capability-register.md), A11
 - [Validation rule catalog](./validator-rules.md), the target of AL-003, AL-006, AL-013, AL-015, AL-017, AL-021
-- [Template feedback](../template_feedback.md), the parallel log for issues belonging to the cookiecutter template rather than to authoring
+- `docs/template_feedback.md`, the parallel log for issues belonging to the cookiecutter template
+  rather than to authoring. Unlinked on purpose: unlike this log, that one is gitignored and
+  local-only, so it is absent from a fresh clone and from the published docs site (see the Template
+  Feedback Requirement in `CLAUDE.md`)
