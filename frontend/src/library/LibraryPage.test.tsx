@@ -130,11 +130,21 @@ describe('LibraryPage', () => {
     ).not.toBeInTheDocument()
     fireEvent.click(within(shelf).getByRole('button', { name: /ask for a new story/i }))
 
-    expect(
-      await screen.findByRole('textbox', { name: /what should your story be about/i })
-    ).toBeInTheDocument()
-    // Wayfinding: the tap moved the reader to the far-away form container.
-    expect(document.activeElement).toHaveClass('library__request')
+    const requestField = await screen.findByRole('textbox', {
+      name: /what should your story be about/i,
+    })
+    expect(requestField).toBeInTheDocument()
+    // Wayfinding: the tap moved focus to the far-away form container, so a
+    // keyboard or screen-reader user lands on the newly revealed form rather
+    // than being stranded on the shelf tile. Resolve that container by the
+    // attribute that makes it a programmatic focus target (tabindex="-1", the
+    // only one on this path) rather than by its CSS class name, then assert it
+    // holds focus DIRECTLY. `expect(document.activeElement).toContainElement(...)`
+    // would not do: document.body contains the field too, so that form passes
+    // even when the focus move never happened.
+    const requestContainer = requestField.closest('[tabindex="-1"]')
+    expect(requestContainer).not.toBeNull()
+    expect(requestContainer).toHaveFocus()
   })
 
   it('titles the shelf "Pick a book!" when nothing has been started yet', async () => {

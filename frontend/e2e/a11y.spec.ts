@@ -12,9 +12,20 @@ import { loadLanternStory } from './support/fixtures'
  * floor, not a substitute for manual testing: axe catches programmatically
  * detectable issues (missing labels, contrast, ARIA misuse) but not things
  * like keyboard-trap logic or whether an alternative text is actually
- * meaningful. `/admin/review/:id` is deliberately excluded, same reasoning
- * as e2e-prod/guardian-admin-smoke.spec.ts: it needs a real storybook id and
- * its heading is the dynamic story title, not a fixed one to assert on.
+ * meaningful (keyboard-trap/focus behavior is covered separately in
+ * keyboard-nav.spec.ts).
+ *
+ * Two coverage extensions live at the bottom of this file:
+ *   1. Populated + error-state admin scans. The admin scans above use empty
+ *      fixtures, so the colored severity pills, content-flag/valence badges,
+ *      and inline error alerts never render and never get contrast/name-role
+ *      checked. The "populated admin surfaces" block seeds real rows so axe
+ *      sees them.
+ *   2. `/admin/review/:id`. Previously excluded because its heading is the
+ *      dynamic story title (nothing fixed to assert on); an axe scan needs no
+ *      fixed heading, only a stable seeded fixture, so it is scanned with a
+ *      fixed review-surface fixture (its flagged-passage cards, verdict/valence
+ *      badges, and alert states included).
  */
 
 const lantern = loadLanternStory()
@@ -449,5 +460,325 @@ test('the profile-form dialog has no detectable accessibility violations', async
   await page.goto('/guardian/profiles')
   await page.getByRole('button', { name: 'Add child' }).click()
   await expect(page.getByRole('dialog')).toBeVisible()
+  await assertNoViolations(page)
+})
+
+// --- Populated admin surfaces ------------------------------------------
+//
+// The admin scans earlier in this file use empty fixtures, so the colored
+// severity pills, verdict/valence badges, table rows, and inline alerts never
+// render and are never contrast/name-role-value checked. These scans seed real
+// rows (mirroring the fixtures moderation.spec.ts / provider-allowlist.spec.ts /
+// admin-read-heavy.spec.ts already define) so axe sees the populated UI.
+
+const POPULATED_THRESHOLDS = {
+  default_min_verdict: 'flag',
+  rows: [
+    { age_band: '5-8', category: 'violence', min_verdict: 'block', min_score: null },
+    { age_band: '8-11', category: 'language', min_verdict: 'advisory', min_score: 0.4 },
+  ],
+  known_categories: ['violence', 'language'],
+}
+
+test('the admin moderation thresholds page (populated) has no detectable accessibility violations', async ({
+  page,
+  context,
+}) => {
+  await seedGuardianSession(context)
+  await mockMe(page, { role: 'admin' })
+  await page.route('**/api/v1/admin/moderation-thresholds', (route) =>
+    route.fulfill({ json: POPULATED_THRESHOLDS })
+  )
+  await page.route('**/api/v1/admin/moderation/noise-floor', (route) =>
+    route.fulfill({ json: { value: 0.2 } })
+  )
+  await page.goto('/admin/moderation-thresholds')
+  await expect(page.getByRole('cell', { name: 'violence', exact: true })).toBeVisible()
+  await assertNoViolations(page)
+})
+
+const POPULATED_DASHBOARD = {
+  insights: [
+    {
+      age_band: '5-8',
+      category: 'violence',
+      advisory_findings: 3,
+      flag_findings: 5,
+      decided_versions: 10,
+      released_versions: 6,
+      // At/above the 0.5 gate: renders the emphasized (at-gate) row styling.
+      override_rate: 0.6,
+      last_seen: '2026-07-20T10:00:00Z',
+    },
+    {
+      age_band: '8-11',
+      category: 'language',
+      advisory_findings: 1,
+      flag_findings: 0,
+      decided_versions: 4,
+      released_versions: 1,
+      override_rate: 0.25,
+      last_seen: '2026-07-19T10:00:00Z',
+    },
+  ],
+  recent_changes: [
+    {
+      event_type: 'noise_floor_changed',
+      entity_id: 'global',
+      occurred_at: '2026-07-20T09:00:00Z',
+      payload: { value: 0.2 },
+    },
+  ],
+}
+
+const POPULATED_SUGGESTIONS = {
+  min_decided_versions: 5,
+  min_override_rate: 0.5,
+  suggestions: [
+    {
+      age_band: '5-8',
+      category: 'violence',
+      decided_versions: 10,
+      released_versions: 6,
+      override_rate: 0.6,
+      current_min_verdict: 'advisory',
+      current_min_score: null,
+      suggested_min_verdict: 'flag',
+    },
+  ],
+}
+
+test('the admin moderation dashboard (populated) has no detectable accessibility violations', async ({
+  page,
+  context,
+}) => {
+  await seedGuardianSession(context)
+  await mockMe(page, { role: 'admin' })
+  await page.route('**/api/v1/admin/moderation/dashboard', (route) =>
+    route.fulfill({ json: POPULATED_DASHBOARD })
+  )
+  await page.route('**/api/v1/admin/moderation/suggestions', (route) =>
+    route.fulfill({ json: POPULATED_SUGGESTIONS })
+  )
+  await page.goto('/admin/moderation-dashboard')
+  await expect(page.getByRole('heading', { name: 'Threshold suggestions' })).toBeVisible()
+  await expect(page.getByRole('cell', { name: 'violence' }).first()).toBeVisible()
+  await assertNoViolations(page)
+})
+
+const POPULATED_ALLOWLIST = {
+  rows: [
+    {
+      id: 'a1',
+      provider: 'anthropic',
+      model_id: 'claude-sonnet-4-6',
+      enabled: true,
+      display_name: 'Claude Sonnet 4.6 (direct)',
+    },
+    {
+      id: 'a2',
+      provider: 'ollama',
+      model_id: 'qwen2.5:14b',
+      enabled: false,
+      display_name: null,
+    },
+  ],
+}
+
+test('the admin provider allowlist page (populated) has no detectable accessibility violations', async ({
+  page,
+  context,
+}) => {
+  await seedGuardianSession(context)
+  await mockMe(page, { role: 'admin' })
+  await page.route('**/api/v1/admin/provider-allowlist', (route) =>
+    route.fulfill({ json: POPULATED_ALLOWLIST })
+  )
+  await page.goto('/admin/provider-allowlist')
+  await expect(page.getByRole('cell', { name: 'Enabled', exact: true })).toBeVisible()
+  await expect(page.getByRole('cell', { name: 'Disabled', exact: true })).toBeVisible()
+  await assertNoViolations(page)
+})
+
+const REVIEW_QUEUE_ITEMS = {
+  items: [
+    {
+      storybook_id: 'sb-block',
+      title: 'The Stormy Night',
+      status: 'in_review',
+      version: 1,
+      screened: true,
+      flagged_count: 2,
+      // hard_block renders the danger "Hard block" pill; repaired stacks the
+      // "Repaired" pill alongside it.
+      summary: {
+        count: 2,
+        hard_block: true,
+        soft_flag: false,
+        repaired: true,
+        reviewer_independent: true,
+      },
+      age_band: '8-11',
+      waiting_since: '2026-07-20T08:00:00Z',
+    },
+    {
+      storybook_id: 'sb-flag',
+      title: 'The Quiet Meadow',
+      status: 'in_review',
+      version: 1,
+      screened: true,
+      flagged_count: 1,
+      summary: {
+        count: 1,
+        hard_block: false,
+        soft_flag: true,
+        repaired: false,
+        reviewer_independent: true,
+      },
+      age_band: '5-8',
+      waiting_since: '2026-07-21T08:00:00Z',
+    },
+    {
+      storybook_id: 'sb-unscreened',
+      title: 'The Unscreened Tale',
+      status: 'in_review',
+      version: 1,
+      // Renders the "Unscreened" pill (the not-screened severity badge).
+      screened: false,
+      flagged_count: 0,
+      summary: null,
+      age_band: null,
+      waiting_since: null,
+    },
+  ],
+}
+
+test('the admin review queue (populated) has no detectable accessibility violations', async ({
+  page,
+  context,
+}) => {
+  await seedGuardianSession(context)
+  await mockMe(page, { role: 'admin' })
+  await page.route('**/api/v1/profiles', (route) =>
+    route.fulfill({ json: { profiles: [{ id: 'p1' }] } })
+  )
+  await page.route('**/api/v1/review-queue', (route) => route.fulfill({ json: REVIEW_QUEUE_ITEMS }))
+  await page.route('**/api/v1/generation-jobs', (route) => route.fulfill({ json: { jobs: [] } }))
+  await page.goto('/admin')
+  await expect(page.getByRole('link', { name: /The Stormy Night/ })).toBeVisible()
+  await expect(page.getByText('Hard block')).toBeVisible()
+  await assertNoViolations(page)
+})
+
+// --- /admin/review/:id review detail, with flags + alert states --------
+//
+// screened+flagged renders the flagged-passage cards and verdict-strip badges;
+// a classifier_degraded story-level finding renders the degraded alert; the
+// ending node's kind/valence renders the "Ending: success, positive" badge.
+
+const REVIEW_DETAIL_SURFACE = {
+  storybook_id: 'sb-detail',
+  version: 1,
+  status: 'in_review',
+  screened: true,
+  summary: {
+    count: 2,
+    hard_block: true,
+    soft_flag: false,
+    repaired: true,
+    reviewer_independent: false,
+  },
+  blob: {
+    title: 'The Hidden Grove',
+    start_node: 'n1',
+    nodes: [
+      {
+        id: 'n1',
+        body: 'A dark cave yawned ahead of the two friends.',
+        choices: [{ id: 'c1', label: 'Step inside', target: 'n2' }],
+      },
+      {
+        id: 'n2',
+        body: 'Sunlight spilled across a hidden grove.',
+        choices: [],
+        is_ending: true,
+        ending: { kind: 'success', valence: 'positive' },
+      },
+    ],
+  },
+  flagged_passages: [
+    {
+      node_id: 'n1',
+      prose: 'A dark cave yawned ahead of the two friends.',
+      findings: [
+        {
+          stage: 1,
+          source: 'llm_safety',
+          category: 'safety',
+          node_id: 'n1',
+          verdict: 'flag',
+          score: null,
+          message: 'possibly scary for the younger band',
+        },
+      ],
+    },
+  ],
+  story_level_findings: [
+    {
+      stage: 2,
+      source: 'openai_moderation',
+      category: 'classifier_degraded',
+      node_id: null,
+      verdict: 'advisory',
+      score: null,
+      message: 'classifier unavailable at screening time',
+    },
+  ],
+}
+
+async function seedReviewDetailScan(page: Page): Promise<void> {
+  await mockMe(page, { role: 'admin' })
+  await mockEmptyConsole(page)
+  await page.route('**/api/v1/storybooks/sb-detail/review*', (route) =>
+    route.fulfill({ json: REVIEW_DETAIL_SURFACE })
+  )
+  await page.route('**/api/v1/storybooks/sb-detail/versions/1/cover', (route) =>
+    route.fulfill({ json: { cover_status: 'none', cover_url: null } })
+  )
+}
+
+test('the admin review detail page (flagged) has no detectable accessibility violations', async ({
+  page,
+  context,
+}) => {
+  await seedGuardianSession(context)
+  await seedReviewDetailScan(page)
+  await page.goto('/admin/review/sb-detail')
+  await expect(page.getByRole('heading', { name: 'The Hidden Grove' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Flagged passages' })).toBeVisible()
+  await assertNoViolations(page)
+})
+
+test('the admin review detail approve-failure alert has no detectable accessibility violations', async ({
+  page,
+  context,
+}) => {
+  await seedGuardianSession(context)
+  await seedReviewDetailScan(page)
+  // The approve POST fails, so the approve dialog renders its inline error
+  // alert (role="alert", cyo-text-error): an error state reached via route-mock.
+  await page.route('**/api/v1/storybooks/sb-detail/approve', (route) =>
+    route.fulfill({ status: 500, json: { detail: 'boom' } })
+  )
+  await page.goto('/admin/review/sb-detail')
+  await expect(page.getByRole('heading', { name: 'The Hidden Grove' })).toBeVisible()
+  await page.getByRole('button', { name: 'Approve' }).click()
+  await expect(page.getByRole('dialog')).toBeVisible()
+  await page.getByRole('button', { name: 'Confirm approve' }).click()
+  // Scope to the dialog's own alert: the page also carries the standing
+  // classifier_degraded alert, so a page-wide getByRole('alert') is ambiguous.
+  await expect(page.getByRole('dialog').getByRole('alert')).toContainText(
+    'We could not approve this story'
+  )
   await assertNoViolations(page)
 })

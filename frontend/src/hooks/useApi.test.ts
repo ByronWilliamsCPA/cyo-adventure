@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { getChildSession, setChildSession } from '../auth/childSession'
 import { getDeviceGrant, setDeviceGrant } from '../auth/deviceGrant'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
+import { classifyApiError } from './classifyApiError'
 import { useApi } from './useApi'
 
 // useApi's guardian 401 handler dynamically imports the Supabase client to
@@ -883,6 +884,10 @@ describe('useApi 401 interceptor device-grant clearing (ADR-014 Phase 3)', () =>
 
 describe('useApi 401 interceptor non-401 pass-through', () => {
   afterEach(() => {
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: originalLocation,
+    })
     localStorage.clear()
   })
 
@@ -908,6 +913,47 @@ describe('useApi 401 interceptor non-401 pass-through', () => {
 
     // A 500 is not a session problem: the token survives for the retry.
     expect(localStorage.getItem('auth_token')).toBe('test-token')
+  })
+
+  it('re-rejects a 403 forbidden error untouched, without refresh, retry, or teardown', async () => {
+    // The response interceptor special-cases 401 only; a 403 (authenticated but
+    // not permitted, e.g. wrong role) is a permanent authorization outcome, not
+    // a session problem, so it must pass straight through: same rejection object,
+    // no token teardown, no navigation, no Supabase refresh, no retry.
+    const location = setPathname('/guardian/console')
+    localStorage.setItem('auth_token', 'test-token')
+    const { result } = renderHook(() => useApi())
+    const requestSpy = vi.spyOn(result.current, 'request')
+    const rejected = getResponseRejectedHandler(result.current)
+
+    const forbiddenError = new AxiosError(
+      'Forbidden',
+      'ERR_BAD_REQUEST',
+      { headers: { Authorization: 'Bearer test-token' } } as InternalAxiosRequestConfig,
+      undefined,
+      {
+        status: 403,
+        statusText: 'Forbidden',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+        data: undefined,
+      }
+    )
+    await expect(rejected(forbiddenError)).rejects.toBe(forbiddenError)
+
+    // The 403 must not be mistaken for a 401: the guardian token survives, no
+    // redirect to login, and the guardian refresh-and-retry path never fires.
+    expect(localStorage.getItem('auth_token')).toBe('test-token')
+    expect(location.replace).not.toHaveBeenCalled()
+    expect(location.assign).not.toHaveBeenCalled()
+    expect(refreshSessionMock).not.toHaveBeenCalled()
+    expect(requestSpy).not.toHaveBeenCalled()
+
+    // And the app's error classifier maps the same 403 to the forbidden shape a
+    // page renders (a permission message, distinct from a transient retry).
+    const classified = classifyApiError(forbiddenError)
+    expect(classified.kind).toBe('forbidden')
+    expect(classified.message).toBe('You do not have permission to do that.')
   })
 })
 

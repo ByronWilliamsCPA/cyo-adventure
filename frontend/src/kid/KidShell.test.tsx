@@ -109,6 +109,15 @@ describe('KidShell route gating', () => {
   })
 })
 
+/**
+ * These assertions keep querying data-age-band / data-reduce-motion directly:
+ * those attributes are the ONLY signal KidShell exposes for band theming. They
+ * exist solely to drive band-tokens.css (visual sizing/spacing per age band and
+ * a reduce-motion switch), producing no role, accessible-name, or text change
+ * that jsdom can observe. The user-facing effect is CSS-only, so the attribute
+ * is the narrowest honest proxy; each test also asserts an observable signal
+ * (the visible "Library Page" / profile name) alongside.
+ */
 describe('KidShell band-tokens.css attributes', () => {
   it('sets data-age-band from the library route profile once it loads', async () => {
     renderShellAt('/library/p1')

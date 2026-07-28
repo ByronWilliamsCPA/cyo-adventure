@@ -33,6 +33,10 @@ describe('BudgetBanner', () => {
     render(<BudgetBanner />)
     const banner = await screen.findByTestId('budget-banner')
     expect(banner).toHaveTextContent('0 of 5 stories left this month')
+    // The banner carries role="status" in BOTH the normal and warning states,
+    // so the role does not distinguish them, and the copy has no "warning" word
+    // to assert. The budget-banner--warning class token is the only signal the
+    // component exposes for the zero-remaining tone, so the class check stays.
     expect(banner).toHaveClass('budget-banner--warning')
   })
 

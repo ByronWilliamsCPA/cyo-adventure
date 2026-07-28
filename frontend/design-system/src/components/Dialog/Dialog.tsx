@@ -1,6 +1,15 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react'
 import './Dialog.css'
 
+// The set of natively-tabbable elements the focus trap treats as its
+// boundary. `textarea` MUST be included: the Send Back (reason) and Edit
+// passage dialogs are textarea-primary, and omitting it left them
+// keyboard-inoperable (WCAG 2.1.1, Level A) and let Shift+Tab leak focus out
+// of the modal. Kept as one constant so the initial-focus and Tab-wrap
+// queries can never drift apart again.
+const FOCUSABLE_SELECTOR =
+  'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
+
 export interface DialogProps {
   title: string
   children: ReactNode
@@ -26,9 +35,7 @@ export function Dialog({ title, children, actions, open = true, onClose }: Dialo
 
     const previouslyFocused = document.activeElement as HTMLElement | null
 
-    const firstFocusable = dialogRef.current?.querySelector<HTMLElement>(
-      'button:not(:disabled), [href], input:not(:disabled), [tabindex]:not([tabindex="-1"])',
-    )
+    const firstFocusable = dialogRef.current?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR)
     // #EDGE: a11y: children/actions may render zero tabbable elements.
     // #VERIFY: fall back to focusing the dialog container itself so focus
     // always moves inside the modal, keeping the trap effective.
@@ -42,9 +49,7 @@ export function Dialog({ title, children, actions, open = true, onClose }: Dialo
       }
       if (event.key !== 'Tab') return
 
-      const focusables = dialogRef.current?.querySelectorAll<HTMLElement>(
-        'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), [tabindex]:not([tabindex="-1"])',
-      )
+      const focusables = dialogRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
       if (!focusables || focusables.length === 0) return
 
       const first = focusables[0]

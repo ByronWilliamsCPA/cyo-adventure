@@ -102,3 +102,40 @@ describe('evaluator totality', () => {
     )
   })
 })
+
+// --- Metamorphic properties -------------------------------------------------
+// These assert algebraic laws the evaluator must obey for EVERY schema-valid
+// input, reusing the same recursive `condition` generator. They exercise the
+// actual operator encoding the evaluator accepts: NOT is `{ '!': node }` and
+// the boolean n-ary operators are `{ and: [nodes] }` / `{ or: [nodes] }`.
+
+describe('evaluator metamorphic laws', () => {
+  it('double negation is identity: !!c evaluates to c', () => {
+    fc.assert(
+      fc.property(condition, varState, (cond, state) => {
+        const doubleNegated: Condition = { '!': { '!': cond } }
+        expect(evaluate(doubleNegated, state)).toBe(evaluate(cond, state))
+      })
+    )
+  })
+
+  it('De Morgan: !(a and b) equals (!a) or (!b)', () => {
+    fc.assert(
+      fc.property(condition, condition, varState, (a, b, state) => {
+        const negatedConjunction: Condition = { '!': { and: [a, b] } }
+        const disjunctionOfNegations: Condition = { or: [{ '!': a }, { '!': b }] }
+        expect(evaluate(negatedConjunction, state)).toBe(evaluate(disjunctionOfNegations, state))
+      })
+    )
+  })
+
+  it('De Morgan (dual): !(a or b) equals (!a) and (!b)', () => {
+    fc.assert(
+      fc.property(condition, condition, varState, (a, b, state) => {
+        const negatedDisjunction: Condition = { '!': { or: [a, b] } }
+        const conjunctionOfNegations: Condition = { and: [{ '!': a }, { '!': b }] }
+        expect(evaluate(negatedDisjunction, state)).toBe(evaluate(conjunctionOfNegations, state))
+      })
+    )
+  })
+})

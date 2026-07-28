@@ -33,9 +33,16 @@ relate to the Supabase project constraints.
   populated/empty, reader, guardian login/console/intake/requests/
   books/profiles, admin console/requests/moderation-thresholds/
   moderation-dashboard) and every modal/dialog surface (ConflictDialog,
-  AssignChildrenDialog, ProfileFormDialog). `/admin/review/:id` is excluded,
-  same reasoning as `e2e-prod/guardian-admin-smoke.spec.ts`: it needs a real
-  storybook id and a dynamic heading. Across two passes (2026-07-16) found
+  AssignChildrenDialog, ProfileFormDialog). `/admin/review/:id` was excluded
+  through 2026-07-22, same reasoning as `e2e-prod/guardian-admin-smoke.spec.ts`:
+  it needs a real storybook id and a dynamic heading. The 2026-07-27 pass lifted
+  that exclusion (an axe scan needs no fixed heading, only a stable seeded
+  fixture) and now scans the review detail in both its flagged-passage and
+  approve-failure-alert states. The same pass added populated-fixture scans of
+  the admin thresholds, dashboard, provider-allowlist, and review-queue
+  surfaces, whose colored severity pills, content-flag/valence badges, and
+  inline error alerts never rendered under the original empty-fixture scans and
+  so were never contrast- or name-role-checked. Across two passes (2026-07-16) found
   six real contrast failures, all traced to two design-system tokens
   (`--color-amber-deep`, `--color-ink-muted`) used against a darker
   background than their documented contrast math assumed; fixed the same
@@ -43,8 +50,26 @@ relate to the Supabase project constraints.
   `.cyo-btn--primary`/`.cyo-btn--ghost` fixes in `Button.css`, and the
   `--color-ink-secondary` swaps in `guardian.css`/`kid.css`/`library.css`/
   `landing.css`). The dialog pass found no new violations. Remaining gap:
-  only one fixed mock state per page/dialog is checked, not every
-  populated/error/loading variant.
+  outside the populated and error-alert scans added above, each remaining
+  page/dialog is still checked in one fixed mock state, not every
+  loading/error variant.
+- **Keyboard operability of dialogs (2026-07-27)**:
+  `frontend/e2e/keyboard-nav.spec.ts` — the focus behavior axe cannot see,
+  asserted against the real built app. Three representative `cyo-dialog` modals
+  (the admin review Approve dialog, the guardian Profile form dialog, and the
+  guardian Assign-children dialog) must each satisfy the same contract: opening
+  moves real DOM focus into the dialog, Tab off the last focusable wraps to the
+  first and Shift+Tab off the first wraps to the last (focus never escapes to
+  the page behind), and Escape closes the dialog and restores focus to the
+  trigger that opened it. Two further tests pin the textarea-primary dialogs
+  (admin review Send Back and Edit passage): pressing Tab from the opened dialog
+  must reach the reason/passage textarea. Those two are a regression guard for a
+  real WCAG 2.1.1 defect found and fixed in this pass: the shared Dialog
+  focus-trap selector omitted `textarea`, so a keyboard-only admin could neither
+  type a send-back reason nor edit a passage, and the trap leaked once a mouse
+  user clicked into the field. Remaining gap: the three dialogs above stand in
+  for the shared component, so a dialog that hand-rolls its own focus handling
+  instead of using `cyo-dialog` would not be caught here.
 - **Visual regression**: `frontend/e2e/visual.spec.ts` — screenshot
   baselines for every top-level page and every modal/dialog surface:
   landing, kid picker, reader (+ conflict dialog), library, guardian
@@ -126,9 +151,19 @@ relate to the Supabase project constraints.
   `frontend/e2e/admin-touch-targets.spec.ts` — asserts every action button in
   the six admin CRUD surfaces migrated to the `@ds` `Button` (FamiliesTab,
   KidsTab, ConnectionsTab, UsersTab, ProviderAllowlistPage, AuditPage) plus the
-  two moderation pages' trigger/submit buttons clears the 44px minimum height
-  (WCAG 2.5.5) at a phone viewport, scoped per `main section` content container
-  so the regression stays pinned to the migrated buttons rather than chrome.
+  two moderation pages' trigger/submit buttons clears the 44x44 minimum (WCAG
+  2.5.5) at a phone viewport, scoped per `main section` content container so the
+  regression stays pinned to the migrated buttons rather than chrome. Asserted
+  height-only until 2026-07-27, when the width assertion was added alongside the
+  kid sweep below; WCAG 2.5.5 is both axes.
+- **Kid reader tap targets (2026-07-27, both axes)**:
+  `frontend/e2e/kid-touch-targets.spec.ts` — the same 44x44 WCAG 2.5.5 floor for
+  the surface the app's primary users actually touch: every visible choice
+  button the reader renders (`.reader-choices button:visible`) is measured on
+  both axes at a 390x844 phone viewport, with a count assertion so a selector or
+  route typo cannot silently pass an empty check. The bullet above is
+  admin-scoped, which left the kid reader's choice buttons, the highest-traffic
+  control in the product, with no tap-target guard at all until this landed.
 - **Mobile-web narrow-width overflow sweep (Task A12, mobile-safari)**:
   `frontend/e2e/mobile-viewport.spec.ts` — runs under the `mobile-safari`
   project (`npm run test:e2e:mobile`); asserts zero horizontal overflow at real
@@ -507,10 +542,20 @@ in their journey sections instead.
   `frontend/src/library/recommendationsApi.test.ts`,
   `frontend/src/library/recommendationsUtils.test.ts`
 - Reader controls: `frontend/src/reader/EndingsProgress.test.tsx`,
-  `frontend/src/reader/TextSizeControl.test.tsx`
+  `frontend/src/reader/TextSizeControl.test.tsx`,
+  `frontend/src/reader/useReaderFontScale.test.ts` (drives the text-size hook's
+  own `setLevel` API: each level maps to the scale and `A`/`A+`/`A++` label the
+  reader renders, the choice is written through to
+  `cyo-reader-font-scale-<profileId>` and survives a real unmount/remount rather
+  than only a state update, and the key is profile-scoped so one child's larger
+  text does not follow another)
 - App shell / infrastructure: `frontend/src/AppErrorBoundary.test.tsx`,
   `frontend/src/routeElements.test.tsx`, `frontend/src/lazyWithReload.test.ts`,
-  `frontend/src/observability.test.ts`,
+  `frontend/src/observability.test.ts`, `frontend/src/env.test.ts` (table test
+  pinning `flagEnabled`'s exact contract, the switch behind every feature flag:
+  only the lowercase literal `"true"` is on, so `"TRUE"`/`"True"`/`"1"`/`"yes"`/
+  `"on"`/`""`/`undefined` are all off. Guards the `Boolean("false") === true`
+  trap the helper exists to dodge, since Vite exposes every env var as a string)
   `frontend/src/notifications/ToastProvider.test.tsx`,
   `frontend/src/hooks/classifyApiError.test.ts`,
   `frontend/src/hooks/logApiError.test.ts`

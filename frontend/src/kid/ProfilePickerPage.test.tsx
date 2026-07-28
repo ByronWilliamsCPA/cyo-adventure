@@ -337,6 +337,12 @@ describe('ProfilePickerPage child session mint (G1 / P6-04)', () => {
     // decorative; the live region carries the same text for assistive tech.
     expect(tile).toHaveAttribute('aria-busy', 'true')
     expect(screen.getByRole('status')).toHaveTextContent('Opening your books…')
+    // The meaningful, accessible signal lives on the PICKED tile (aria-busy=true
+    // and the live-region "Opening your books…" text, both asserted above). The
+    // sibling tile only "quiets down" visually via the picker-tile--waiting class;
+    // the component adds no aria-busy/aria-disabled to non-picked tiles (it keeps
+    // its real href), so this class token is the sole observable proxy for the
+    // sibling's dimmed state. Keep it.
     expect(screen.getByRole('link', { name: /Reader B/ })).toHaveClass('picker-tile--waiting')
     expect(mockNavigate).not.toHaveBeenCalled()
 

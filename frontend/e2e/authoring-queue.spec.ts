@@ -86,7 +86,15 @@ test('an admin builds a skill-mechanism authoring plan and the row disappears', 
     mechanism: 'skill',
     prep_model: 'sonnet',
   })
-  await expect(page.getByText('A story about a friendly dragon')).not.toBeVisible()
+  // Scope the disappearance assertion to the queue ROW, not raw text. The
+  // request title is a substring of the open dialog's heading ("Build
+  // authoring plan: A story about a friendly dr..."), whose full text lives
+  // in the DOM even while CSS-truncated. A bare getByText() therefore matches
+  // both the row and the dialog heading, and under parallel load the row/
+  // dialog state flush can lag the mocked POST that expect.poll awaits, so the
+  // two briefly coexist and trip Playwright strict mode. Asserting the row
+  // testid is unambiguous and is the real user-observable outcome.
+  await expect(page.getByTestId('request-req-1')).not.toBeVisible()
 })
 
 test('an automated-provider plan is constrained to the enabled allowlist', async ({ page }) => {
