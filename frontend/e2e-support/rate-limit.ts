@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test'
+import { errors, type Page } from '@playwright/test'
 
 /**
  * Shared by the e2e-prod and e2e-staging tiers. Every deployed environment
@@ -86,9 +86,13 @@ let lastNavAt = 0
  * false)` would fold a real fault (the page closed mid-check, a locator
  * resolution error) into "not rate limited", which is the answer most likely to
  * produce a confusing downstream failure.
+ *
+ * Matches on `errors.TimeoutError` rather than `err.name === 'TimeoutError'`,
+ * the idiom e2e-staging/support/auth.ts already uses: a name check would also
+ * swallow an unrelated DOMException that happens to carry that name.
  */
 function rethrowUnlessTimeout(err: unknown): void {
-  if (err instanceof Error && err.name === 'TimeoutError') return
+  if (err instanceof errors.TimeoutError) return
   throw err
 }
 

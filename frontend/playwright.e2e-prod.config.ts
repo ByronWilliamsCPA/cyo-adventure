@@ -38,6 +38,11 @@ export default defineConfig({
   // would re-run whole specs and re-authenticate, adding MORE prod requests
   // rather than fewer. Absorb rate limits in-test, not by replaying the spec.
   retries: 0,
+  // #EDGE: concurrency: e2e-support/rate-limit.ts paces navigations through
+  // per-worker module state, so one instance paces a whole run only while this
+  // stays at 1. Multi-worker would let each worker pace independently and the
+  // aggregate rate could still exceed the 60 rpm/IP ceiling.
+  // #VERIFY: raising this requires moving the pacing floor to shared state.
   workers: 1,
   reporter: 'list',
   use: {
