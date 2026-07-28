@@ -3,9 +3,14 @@
 Assigning is the read-gate for a story: a child's library listing and direct
 version fetch both filter on ``storybook_assignment``, so a child sees only
 stories explicitly assigned to their profile. This router is guardian-only; a
-child token is rejected. It is add-only and idempotent (re-assigning an already
-assigned profile is a no-op). There is no unassign endpoint: removing access has
-reading-state and offline-cache implications deferred past the first release.
+child token is rejected. Assigning is add-only and idempotent (re-assigning an
+already assigned profile is a no-op). Unassigning (the G8 per-child kill switch,
+``DELETE .../assignments/{profile_id}``) is likewise idempotent and revokes
+access ONLY: it removes the assignment row and leaves the child's reading state,
+completion, and rating untouched, so re-assigning later resumes the child's
+progress. The offline copy is evicted at the next sync by the client's
+``reconcileOfflineCache``; destroying child data is a separate, explicit privacy
+flow, never a side effect of revoking a shelf grant.
 
 Error ordering follows the repo convention in ``ratings.py`` and
 ``library.py`` (``get_storybook_version``): an unknown storybook id is 404,
@@ -332,6 +337,75 @@ async def list_assignments(storybook_id: str, ctx: Context) -> AssignmentListVie
     # #VERIFY: _require_guardian_visible_book raises 403 (role or visibility)
     # or 404 (missing) before any read.
     await _require_guardian_visible_book(ctx, storybook_id)
+    rows = await ctx.session.scalars(
+        _family_assignment_ids_stmt(storybook_id, ctx.principal.family_id)
+    )
+    return _assignment_list(storybook_id, rows)
+
+
+@router.delete(
+    "/storybooks/{storybook_id}/assignments/{profile_id}",
+    responses=error_responses(404),
+)
+async def unassign_storybook(
+    storybook_id: str, profile_id: str, ctx: Context
+) -> AssignmentListView:
+    """Revoke a single child's access to a story (G8 per-child kill switch).
+
+    Removing the assignment row is the whole operation: the child's library
+    listing and direct version fetch both gate on ``storybook_assignment``
+    (api/library.py), so deleting the row hides the book at the next sync and
+    the offline cache evicts it via ``reconcileOfflineCache``. Reading state,
+    completion, and rating rows are deliberately PRESERVED (invisible behind the
+    read gate) so re-assigning resumes the child's progress. Unlike the assign
+    path there is no published-status gate, so a guardian can still pull an
+    already-archived book off a child's shelf. The response is the book's full
+    remaining assignment set, matching the POST path.
+
+    Args:
+        storybook_id: The story to revoke.
+        profile_id: The child profile to revoke it from.
+        ctx: The request context (principal + unit-of-work session).
+
+    Returns:
+        AssignmentListView: The book's remaining assigned profile ids for the
+            caller's family.
+
+    Raises:
+        AuthorizationError: Non-guardian caller, a storybook that is neither
+            own-family nor catalog, or a profile outside the family.
+        ResourceNotFoundError: Unknown storybook id.
+        ValidationError: The profile id is not a UUID.
+    """
+    # #CRITICAL: security: guardian-only + own-family/visibility + own-profile
+    # gate BEFORE any delete so a guardian cannot revoke access on a foreign
+    # child or a book outside the family/catalog boundary. Same guard order as
+    # the POST path minus the published-status check (an archived book must
+    # still be unassignable).
+    # #VERIFY: guardian(403) -> missing book(404) -> not-visible(403) -> foreign
+    # profile(403); tests/integration/test_assignments_api.py::
+    # test_child_cannot_unassign_403 and the cross-family/foreign-profile arms.
+    await _require_guardian_visible_book(ctx, storybook_id)
+    pid = parse_uuid(profile_id, "profile_id")
+    authorize_profile(ctx.principal, pid)
+    existing = await ctx.session.get(StorybookAssignment, (pid, storybook_id))
+    if existing is not None:
+        await ctx.session.delete(existing)
+        # #ASSUME: data-integrity: emit book_unassigned once per row ACTUALLY
+        # removed; an idempotent no-op delete (already unassigned) must never
+        # write a spurious revocation event. Mirrors assign_storybook's
+        # emit-once-per-newly-created-row discipline.
+        # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
+        # test_unassign_writes_book_unassigned_event (second no-op emits none).
+        await record_event(
+            ctx.session,
+            Actor.from_principal(ctx.principal),
+            entity_type="storybook_assignment",
+            entity_id=f"{pid}:{storybook_id}",
+            event_type=EventType.BOOK_UNASSIGNED,
+            payload={"child_profile_id": str(pid)},
+        )
+    await ctx.session.flush()
     rows = await ctx.session.scalars(
         _family_assignment_ids_stmt(storybook_id, ctx.principal.family_id)
     )

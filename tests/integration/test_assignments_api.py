@@ -10,6 +10,7 @@ import pytest
 from cyo_adventure.db.models import (
     ChildProfile,
     Family,
+    ReadingState,
     Storybook,
     StorybookAssignment,
     StorybookVersion,
@@ -611,3 +612,165 @@ async def test_guardian_cannot_read_private_cross_family_summary(
         headers=auth(seed.other_guardian_token),
     )
     assert resp.status_code == 403, resp.text
+
+
+# ---------------------------------------------------------------------------
+# Per-child unassign (G8 kill switch): DELETE
+# /storybooks/{storybook_id}/assignments/{profile_id}
+#
+# Removing the row revokes a single child's access without touching sibling
+# assignments or the child's reading progress. The guard order mirrors the POST
+# path (guardian 403 -> missing book 404 -> not-visible 403 -> foreign profile
+# 403), but there is deliberately NO published-status gate: a guardian must be
+# able to pull an already-archived book off a child's shelf.
+# ---------------------------------------------------------------------------
+
+
+def _unassign_url(storybook_id: str, profile_id: str) -> str:
+    """Build the per-child unassign URL for the two path params."""
+    return f"/api/v1/storybooks/{storybook_id}/assignments/{profile_id}"
+
+
+async def test_child_cannot_unassign_403(client: AsyncClient, seed: Seed) -> None:
+    """A child token is 403 on the unassign endpoint (guardian-only)."""
+    resp = await client.delete(
+        _unassign_url(seed.storybook_id, str(seed.child_profile_id)),
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 403, resp.text
+
+
+async def test_cross_family_guardian_unassign_403(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """Family B's guardian cannot unassign against Family A's family-visibility
+    book: the visibility gate is 403, not 404. The owning guardian's 200 on the
+    same book is the positive control isolating the visibility denial.
+    """
+    denied = await client.delete(
+        _unassign_url(seed.storybook_id, str(seed.child_profile_id)),
+        headers=auth(seed.other_guardian_token),
+    )
+    assert denied.status_code == 403, denied.text
+    allowed = await client.delete(
+        _unassign_url(seed.storybook_id, str(seed.child_profile_id)),
+        headers=auth(seed.guardian_token),
+    )
+    assert allowed.status_code == 200, allowed.text
+
+
+async def test_unknown_storybook_unassign_404(client: AsyncClient, seed: Seed) -> None:
+    """An unknown storybook id is 404 for the guardian on DELETE.
+
+    Passing a real own-family profile isolates the missing-book 404 from the
+    role and profile checks (the book is looked up before the profile scope).
+    """
+    resp = await client.delete(
+        _unassign_url("does-not-exist", str(seed.child_profile_id)),
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 404, resp.text
+
+
+async def test_unassign_profile_outside_family_403(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """Unassigning a Family B profile from Family A's guardian is 403.
+
+    The book is own-family and visible, so guardian, family, and visibility all
+    pass; only the foreign profile fails, attributing the denial to that one
+    condition.
+    """
+    resp = await client.delete(
+        _unassign_url(seed.storybook_id, str(seed.other_child_profile_id)),
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 403, resp.text
+
+
+async def test_unassign_removes_row_and_hides_book(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """Unassigning removes the row, drops the id from the set, and re-closes the
+    read gate.
+
+    The ``seed`` fixture assigns ``seed.storybook_id`` to
+    ``seed.child_profile_id``, so the child's direct version fetch is 200 first
+    (positive control). After the guardian unassigns, the id is gone from the
+    returned set and the same fetch is 404, proving the read gate re-closed.
+    """
+    before = await client.get(
+        f"/api/v1/storybooks/{seed.storybook_id}/versions/{seed.version}",
+        headers=auth(seed.child_token),
+    )
+    assert before.status_code == 200, before.text
+
+    resp = await client.delete(
+        _unassign_url(seed.storybook_id, str(seed.child_profile_id)),
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 200, resp.text
+    assert str(seed.child_profile_id) not in resp.json()["profile_ids"]
+
+    after = await client.get(
+        f"/api/v1/storybooks/{seed.storybook_id}/versions/{seed.version}",
+        headers=auth(seed.child_token),
+    )
+    assert after.status_code == 404, after.text
+
+
+async def test_unassign_is_idempotent(client: AsyncClient, seed: Seed) -> None:
+    """Unassigning an already-unassigned (profile, book) is a 200 no-op.
+
+    DELETE is idempotent: the first call removes the seeded row, the second
+    finds nothing to remove and still returns 200 with the id absent.
+    """
+    first = await client.delete(
+        _unassign_url(seed.storybook_id, str(seed.child_profile_id)),
+        headers=auth(seed.guardian_token),
+    )
+    assert first.status_code == 200, first.text
+    second = await client.delete(
+        _unassign_url(seed.storybook_id, str(seed.child_profile_id)),
+        headers=auth(seed.guardian_token),
+    )
+    assert second.status_code == 200, second.text
+    assert str(seed.child_profile_id) not in second.json()["profile_ids"]
+
+
+async def test_unassign_preserves_reading_state(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """Unassign revokes access only; the child's reading progress survives.
+
+    A saved ``ReadingState`` for the (profile, book, version) is untouched by
+    the unassign so re-assigning later resumes the child's progress. Destroying
+    child data is a separate, explicit privacy flow, never a side effect of
+    revoking a shelf grant.
+    """
+    async with sessions() as session:
+        session.add(
+            ReadingState(
+                child_profile_id=seed.child_profile_id,
+                storybook_id=seed.storybook_id,
+                version=seed.version,
+                current_node="start",
+                state_revision=3,
+            )
+        )
+        await session.commit()
+
+    resp = await client.delete(
+        _unassign_url(seed.storybook_id, str(seed.child_profile_id)),
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 200, resp.text
+
+    async with sessions() as session:
+        preserved = await session.get(
+            ReadingState, (seed.child_profile_id, seed.storybook_id)
+        )
+        assert preserved is not None
+        assert preserved.state_revision == 3
