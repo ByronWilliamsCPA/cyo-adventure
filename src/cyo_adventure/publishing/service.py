@@ -24,7 +24,7 @@ from cyo_adventure.core.exceptions import (
     ResourceNotFoundError,
 )
 from cyo_adventure.db.models import GenerationJob, Storybook, StorybookVersion
-from cyo_adventure.events import ADMIN_ACTOR_ROLE, Actor, EventType, record_event
+from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.publishing.state_machine import (
     Action,
     Status,
@@ -347,9 +347,18 @@ async def approve(
     # back with the caller's unit of work).
     # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
     # test_approve_writes_released_event asserts exactly one "released" row.
+    # #CRITICAL: security: stamp the persona the caller actually acted as, not
+    # a blanket "admin". acting_role() returns the guardian base role when the
+    # caller is reviewing their OWN family's content (the owner-as-admin
+    # exception, ADR-005) and admin only for a genuine cross-family review, so
+    # the audit log distinguishes self-review from four-eyes review.
+    # #VERIFY: test_dual_role_{same,foreign}_family_publish_stamps_* in
+    # tests/integration/test_pipeline_event_instrumentation.py.
     await record_event(
         session,
-        Actor.from_principal(principal, acting_role=ADMIN_ACTOR_ROLE),
+        Actor.from_principal(
+            principal, acting_role=principal.acting_role(storybook.family_id).value
+        ),
         entity_type="storybook",
         entity_id=storybook.id,
         event_type=EventType.RELEASED,
@@ -396,9 +405,16 @@ async def send_back(
     # transition.
     # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
     # test_send_back_writes_sent_back_event asserts payload == {}.
+    # #CRITICAL: security: same own-family-aware persona stamping as the
+    # RELEASED event above; send-back is a review action too, so an owner
+    # sending back their own family's story records guardian, not admin.
+    # #VERIFY: test_dual_role_{same,foreign}_family_send_back_stamps_* in
+    # tests/integration/test_pipeline_event_instrumentation.py.
     await record_event(
         session,
-        Actor.from_principal(principal, acting_role=ADMIN_ACTOR_ROLE),
+        Actor.from_principal(
+            principal, acting_role=principal.acting_role(storybook.family_id).value
+        ),
         entity_type="storybook",
         entity_id=storybook.id,
         event_type=EventType.SENT_BACK,

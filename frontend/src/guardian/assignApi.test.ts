@@ -6,7 +6,8 @@ import { makeAssignApi } from './assignApi'
 function fakeAxios(data: unknown) {
   const get = vi.fn().mockResolvedValue({ data })
   const post = vi.fn().mockResolvedValue({ data })
-  return { api: { get, post } as unknown as AxiosInstance, get, post }
+  const del = vi.fn().mockResolvedValue({ data })
+  return { api: { get, post, delete: del } as unknown as AxiosInstance, get, post, del }
 }
 
 describe('makeAssignApi', () => {
@@ -24,6 +25,13 @@ describe('makeAssignApi', () => {
       profile_ids: ['p2'],
     })
     expect(result).toEqual(['p1', 'p2'])
+  })
+
+  it('remove deletes one child and returns the remaining list', async () => {
+    const { api, del } = fakeAxios({ storybook_id: 's1', profile_ids: ['p2'] })
+    const result = await makeAssignApi(api).remove('s1', 'p1')
+    expect(del).toHaveBeenCalledWith('/v1/storybooks/s1/assignments/p1')
+    expect(result).toEqual(['p2'])
   })
 })
 

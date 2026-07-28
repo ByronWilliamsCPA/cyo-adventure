@@ -1179,11 +1179,46 @@
   margin: 0;
 }
 
+/* Row lays out the child label (left) and the per-child remove control
+   (right); the label grows so the Remove/confirm cluster sits at the end. */
+.assign__row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .assign__row label {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 0.5rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* G8 per-child unassign: the Remove trigger and the confirm cluster that
+   replaces it swap in the same flex slot, so they must size the same way.
+   `.assign__row label` is `flex: 1 1 auto`, so without this the trigger (a
+   default `flex: 0 1 auto` item) can be squeezed by a long child name while
+   the confirm cluster it swaps to would not be, making the row jump width
+   mid-flow. */
+.assign__remove-trigger {
+  flex: 0 0 auto;
+}
+
+/* G8 per-child unassign: the two-step inline confirm cluster (prompt + Keep +
+   Remove access) that replaces the Remove trigger after the first click. */
+.assign__remove-confirm {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 0 auto;
+}
+
+.assign__remove-prompt {
+  font-size: 0.85rem;
 }
 
 /* ============================================================================

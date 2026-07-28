@@ -6,15 +6,30 @@ import { AssignChildrenDialog } from './AssignChildrenDialog'
 
 const mockGet = vi.fn()
 const mockPost = vi.fn()
-const fakeApi = { get: mockGet, post: mockPost }
+const mockDelete = vi.fn()
+const fakeApi = { get: mockGet, post: mockPost, delete: mockDelete }
 vi.mock('../hooks/useApi', () => ({ useApi: () => fakeApi }))
 
 const PROFILES = {
   profiles: [
-    { id: 'p1', display_name: 'Reader A', age_band: '10-13', reading_level_cap: 99,
-      avatar: 'fox', tts_enabled: false, created_at: '2026-07-02T00:00:00Z' },
-    { id: 'p2', display_name: 'Reader A2', age_band: '8-11', reading_level_cap: 99,
-      avatar: 'owl', tts_enabled: false, created_at: '2026-07-02T00:00:00Z' },
+    {
+      id: 'p1',
+      display_name: 'Reader A',
+      age_band: '10-13',
+      reading_level_cap: 99,
+      avatar: 'fox',
+      tts_enabled: false,
+      created_at: '2026-07-02T00:00:00Z',
+    },
+    {
+      id: 'p2',
+      display_name: 'Reader A2',
+      age_band: '8-11',
+      reading_level_cap: 99,
+      avatar: 'owl',
+      tts_enabled: false,
+      created_at: '2026-07-02T00:00:00Z',
+    },
   ],
 }
 
@@ -63,11 +78,11 @@ const STORY_BLOB = {
 beforeEach(() => {
   mockGet.mockReset()
   mockPost.mockReset()
+  mockDelete.mockReset()
   // /content-summary -> tags; /versions/ -> the story blob; /assignments ->
   // current assignments; else profiles.
   mockGet.mockImplementation((url: string) => {
-    if (url.includes('/content-summary'))
-      return Promise.resolve({ data: CONTENT_SUMMARY })
+    if (url.includes('/content-summary')) return Promise.resolve({ data: CONTENT_SUMMARY })
     if (url.includes('/versions/')) return Promise.resolve({ data: STORY_BLOB })
     if (url.includes('/assignments'))
       return Promise.resolve({ data: { storybook_id: 's1', profile_ids: ['p1'] } })
@@ -151,9 +166,7 @@ describe('AssignChildrenDialog', () => {
       return Promise.resolve({ data: PROFILES })
     })
     render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
-    expect(
-      await screen.findByRole('checkbox', { name: /Reader A$/ })
-    ).toBeInTheDocument()
+    expect(await screen.findByRole('checkbox', { name: /Reader A$/ })).toBeInTheDocument()
     expect(screen.getByText(/content review unavailable/i)).toBeInTheDocument()
   })
 
@@ -165,9 +178,7 @@ describe('AssignChildrenDialog', () => {
       return Promise.resolve({ data: PROFILES })
     })
     render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
-    expect(
-      await screen.findByText(/content review unavailable right now/i)
-    ).toBeInTheDocument()
+    expect(await screen.findByText(/content review unavailable right now/i)).toBeInTheDocument()
     expect(screen.getByText(/you can still assign/i)).toBeInTheDocument()
     // Never both: a load failure must never look identical to "no flags".
     expect(screen.queryByText('Clean')).not.toBeInTheDocument()
@@ -198,6 +209,150 @@ describe('AssignChildrenDialog', () => {
       expect(await screen.findByText('2 flagged')).toBeInTheDocument()
       expect(await screen.findByRole('checkbox', { name: /Reader A$/ })).toBeInTheDocument()
       expect(screen.queryByText('Story overview')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('per-child unassign (G8 kill switch)', () => {
+    it('offers a Remove control only for already-assigned children', async () => {
+      render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
+      // p1 (Reader A) is assigned; p2 (Reader A2) is not.
+      expect(
+        await screen.findByRole('button', { name: /Remove Reader A's access/i })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: /Remove Reader A2's access/i })
+      ).not.toBeInTheDocument()
+    })
+
+    it('requires a second confirm click before deleting, and reports the remaining list', async () => {
+      const user = userEvent.setup()
+      mockDelete.mockResolvedValue({ data: { storybook_id: 's1', profile_ids: [] } })
+      const onUnassigned = vi.fn()
+      render(
+        <AssignChildrenDialog storybookId="s1" onClose={vi.fn()} onUnassigned={onUnassigned} />
+      )
+
+      await user.click(await screen.findByRole('button', { name: /Remove Reader A's access/i }))
+      // First click only reveals the confirm; no DELETE yet.
+      expect(mockDelete).not.toHaveBeenCalled()
+      expect(screen.getByText(/Remove access\?/i)).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: /Confirm removing Reader A's access/i }))
+      await waitFor(() =>
+        expect(mockDelete).toHaveBeenCalledWith('/v1/storybooks/s1/assignments/p1')
+      )
+      expect(onUnassigned).toHaveBeenCalledWith([])
+      // Reader A is now unassigned: the checkbox is unchecked+enabled and the
+      // Remove control is gone.
+      const readerA = await screen.findByRole('checkbox', { name: /Reader A$/ })
+      expect(readerA).not.toBeChecked()
+      expect(readerA).toBeEnabled()
+      expect(
+        screen.queryByRole('button', { name: /Remove Reader A's access/i })
+      ).not.toBeInTheDocument()
+    })
+
+    it('cancels a queued removal with Keep and fires no DELETE', async () => {
+      const user = userEvent.setup()
+      render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
+      await user.click(await screen.findByRole('button', { name: /Remove Reader A's access/i }))
+      await user.click(screen.getByRole('button', { name: /Keep Reader A's access/i }))
+      expect(mockDelete).not.toHaveBeenCalled()
+      // The confirm collapses back to the Remove trigger.
+      expect(screen.getByRole('button', { name: /Remove Reader A's access/i })).toBeInTheDocument()
+      expect(screen.queryByText(/Remove access\?/i)).not.toBeInTheDocument()
+    })
+
+    it('surfaces a remove failure and keeps the child assigned', async () => {
+      const user = userEvent.setup()
+      mockDelete.mockRejectedValue(new Error('boom'))
+      const onUnassigned = vi.fn()
+      render(
+        <AssignChildrenDialog storybookId="s1" onClose={vi.fn()} onUnassigned={onUnassigned} />
+      )
+      await user.click(await screen.findByRole('button', { name: /Remove Reader A's access/i }))
+      await user.click(screen.getByRole('button', { name: /Confirm removing Reader A's access/i }))
+      expect(await screen.findByRole('alert')).toHaveTextContent(/could not remove/i)
+      expect(onUnassigned).not.toHaveBeenCalled()
+      // Reader A remains assigned (checkbox still checked+disabled).
+      const readerA = screen.getByRole('checkbox', { name: /Reader A$/ })
+      expect(readerA).toBeChecked()
+      expect(readerA).toBeDisabled()
+    })
+
+    // Each step of the two-step confirm unmounts the control the user just
+    // activated, which drops focus to document.body unless the component
+    // hands it off deliberately. A keyboard or screen-reader guardian would
+    // otherwise be silently ejected from a destructive flow.
+    describe('focus management across the two-step confirm', () => {
+      it('moves focus to the destructive button when the confirm opens', async () => {
+        const user = userEvent.setup()
+        render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
+        await user.click(await screen.findByRole('button', { name: /Remove Reader A's access/i }))
+        await waitFor(() =>
+          expect(
+            screen.getByRole('button', { name: /Confirm removing Reader A's access/i })
+          ).toHaveFocus()
+        )
+      })
+
+      it("returns focus to that row's Remove trigger when Keep dismisses the confirm", async () => {
+        const user = userEvent.setup()
+        render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
+        await user.click(await screen.findByRole('button', { name: /Remove Reader A's access/i }))
+        await user.click(screen.getByRole('button', { name: /Keep Reader A's access/i }))
+        await waitFor(() =>
+          expect(screen.getByRole('button', { name: /Remove Reader A's access/i })).toHaveFocus()
+        )
+      })
+
+      it("returns focus to that row's Remove trigger when the remove fails", async () => {
+        const user = userEvent.setup()
+        mockDelete.mockRejectedValue(new Error('boom'))
+        render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
+        await user.click(await screen.findByRole('button', { name: /Remove Reader A's access/i }))
+        await user.click(
+          screen.getByRole('button', { name: /Confirm removing Reader A's access/i })
+        )
+        await screen.findByRole('alert')
+        // The row kept its trigger (the child is still assigned), so focus
+        // goes back to it rather than to the dialog.
+        await waitFor(() =>
+          expect(screen.getByRole('button', { name: /Remove Reader A's access/i })).toHaveFocus()
+        )
+      })
+
+      it('parks focus on the dialog when the removal succeeds and the trigger is gone', async () => {
+        const user = userEvent.setup()
+        mockDelete.mockResolvedValue({ data: { storybook_id: 's1', profile_ids: [] } })
+        render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
+        await user.click(await screen.findByRole('button', { name: /Remove Reader A's access/i }))
+        await user.click(
+          screen.getByRole('button', { name: /Confirm removing Reader A's access/i })
+        )
+        await waitFor(() =>
+          expect(
+            screen.queryByRole('button', { name: /Remove Reader A's access/i })
+          ).not.toBeInTheDocument()
+        )
+        // Focus must stay inside the modal, never fall to document.body.
+        await waitFor(() => expect(screen.getByRole('dialog')).toHaveFocus())
+        expect(document.activeElement).not.toBe(document.body)
+      })
+    })
+
+    it('names the child on both confirm buttons and announces the prompt politely', async () => {
+      const user = userEvent.setup()
+      render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
+      await user.click(await screen.findByRole('button', { name: /Remove Reader A's access/i }))
+      // With several children listed, the generic "Keep"/"Remove access"
+      // labels would leave a screen-reader user unable to tell which child
+      // is being revoked.
+      expect(screen.getByRole('button', { name: "Keep Reader A's access" })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: "Confirm removing Reader A's access" })
+      ).toBeInTheDocument()
+      expect(screen.getByRole('status')).toHaveTextContent(/Remove access\?/i)
     })
   })
 })

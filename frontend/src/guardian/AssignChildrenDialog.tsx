@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
@@ -18,6 +18,14 @@ interface AssignChildrenDialogProps {
   storybookId: string
   onClose: () => void
   onAssigned?: (profileIds: string[]) => void
+  /**
+   * Fired after a successful per-child unassign (G8 kill switch), with the
+   * book's full remaining assignment list. Distinct from onAssigned so callers
+   * can word "removed" vs "assigned" honestly; both carry the authoritative
+   * post-change list, so a caller that only tracks the count can wire both to
+   * the same handler.
+   */
+  onUnassigned?: (profileIds: string[]) => void
 }
 
 /**
@@ -103,12 +111,19 @@ function StoryOverviewSection({
 /**
  * Guardian "Assign more" dialog (wireframe 4.5): a multi-select checklist of
  * family child profiles. Already-assigned children are shown checked and
- * disabled; Save posts only the newly selected ids (add-only, idempotent).
+ * disabled; Assign posts only the newly selected ids (add-only, idempotent).
+ *
+ * Each already-assigned row also carries a per-child "Remove" control (G8
+ * kill switch): a two-step inline confirm that revokes just that child's
+ * access immediately, separate from the additive Assign action. Removal only
+ * revokes access; the child's reading progress is preserved server-side and
+ * resurrects if the book is reassigned.
  */
 export function AssignChildrenDialog({
   storybookId,
   onClose,
   onAssigned,
+  onUnassigned,
 }: AssignChildrenDialogProps) {
   const api = useApi()
   const profilesApi = useMemo(() => makeProfilesApi(api), [api])
@@ -120,9 +135,58 @@ export function AssignChildrenDialog({
   const [loadError, setLoadError] = useState<string | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  // Per-child unassign (G8): confirmId is the row awaiting its second click,
+  // removingId is the row whose DELETE is in flight. Only one row can be in
+  // either state at a time.
+  const [confirmId, setConfirmId] = useState<string | null>(null)
+  const [removingId, setRemovingId] = useState<string | null>(null)
+  const [removeError, setRemoveError] = useState<string | null>(null)
   const [summary, setSummary] = useState<ContentSummary | null>(null)
   const [summaryError, setSummaryError] = useState(false)
   const [structureBlob, setStructureBlob] = useState<Record<string, unknown> | null>(null)
+  // G8 a11y: the row list is the query root for the focus handoff below. A ref
+  // on the container (rather than one ref per button) keeps the lookup keyed by
+  // profile id, which is the only stable identity a row has across the
+  // trigger <-> confirm-cluster swap that unmounts one and mounts the other.
+  const listRef = useRef<HTMLUListElement>(null)
+  const prevConfirmIdRef = useRef<string | null>(null)
+
+  // #CRITICAL: security: this is a destructive flow, so focus must never be
+  // silently dropped mid-confirm. Clicking Remove unmounts the trigger and
+  // clicking Keep/Remove access unmounts the confirm cluster; React returns
+  // focus to document.body both times, ejecting a keyboard or screen-reader
+  // user out of the dialog without any announcement. Entering confirm moves
+  // focus to the destructive button (whose aria-label names the child);
+  // leaving it returns focus to that row's Remove trigger, or to the dialog
+  // itself when the row no longer offers one (a successful removal).
+  // #VERIFY: AssignChildrenDialog.test.tsx "focus management" describe block
+  // covers all four transitions (enter, Keep, success, failure).
+  useEffect(() => {
+    const previous = prevConfirmIdRef.current
+    prevConfirmIdRef.current = confirmId
+    // First render (both null) and no-op re-renders must not steal the focus
+    // Dialog itself placed on mount.
+    if (previous === confirmId) return
+    const list = listRef.current
+    if (list === null) return
+    const focusable = (selector: string): HTMLElement | null => {
+      const el = list.querySelector<HTMLElement>(selector)
+      return el !== null && !(el as HTMLButtonElement).disabled ? el : null
+    }
+    if (confirmId !== null) {
+      focusable(`[data-confirm-remove="${confirmId}"]`)?.focus()
+      return
+    }
+    const trigger = previous === null ? null : focusable(`[data-remove-trigger="${previous}"]`)
+    if (trigger !== null) {
+      trigger.focus()
+      return
+    }
+    // The row lost its Remove trigger (the child was actually unassigned), so
+    // there is nothing row-level to return to; park focus on the dialog
+    // container, which is tabIndex=-1 and inside the focus trap.
+    list.closest<HTMLElement>('[role="dialog"]')?.focus()
+  }, [confirmId])
 
   useEffect(() => {
     let cancelled = false
@@ -246,6 +310,39 @@ export function AssignChildrenDialog({
     }
   }
 
+  // #ASSUME: external resources: the DELETE can fail (session expiry, backend
+  // down). On failure keep the child shown as assigned and surface a message
+  // rather than optimistically dropping the row; the endpoint is idempotent,
+  // so retrying after an uncertain failure is safe.
+  // #VERIFY: AssignChildrenDialog.test.tsx asserts a rejected remove() surfaces
+  // an alert and leaves the row assigned.
+  async function removeOne(profileId: string) {
+    setRemovingId(profileId)
+    setRemoveError(null)
+    try {
+      const remaining = await assignApi.remove(storybookId, profileId)
+      setAssigned(new Set(remaining))
+      // A just-removed child is no longer a pending addition either.
+      setPicked((prev) => {
+        const next = new Set(prev)
+        next.delete(profileId)
+        return next
+      })
+      onUnassigned?.(remaining)
+    } catch (err) {
+      console.error('unassign failed', err)
+      setRemoveError(
+        classifyApiError(err, {
+          transient: 'We could not remove this child. Please try again.',
+          server: 'We could not remove this child. Please try again.',
+        }).message
+      )
+    } finally {
+      setRemovingId(null)
+      setConfirmId(null)
+    }
+  }
+
   return (
     <Dialog
       title="Assign to children"
@@ -268,6 +365,7 @@ export function AssignChildrenDialog({
       ) : (
         <>
           {saveError ? <ErrorBanner>{saveError}</ErrorBanner> : null}
+          {removeError ? <ErrorBanner>{removeError}</ErrorBanner> : null}
           {summaryError ? (
             <p className="assign__content-summary console__notice cyo-text-muted">
               Content review unavailable right now. You can still assign, but flags could not be
@@ -287,7 +385,7 @@ export function AssignChildrenDialog({
               Add a child profile first, then assign books.
             </p>
           ) : (
-            <ul className="assign__list">
+            <ul className="assign__list" ref={listRef}>
               {profiles.map((profile) => {
                 const already = assigned.has(profile.id)
                 return (
@@ -302,6 +400,53 @@ export function AssignChildrenDialog({
                       <AvatarCircle avatar={profile.avatar} name={profile.display_name} />
                       {profile.display_name}
                     </label>
+                    {already ? (
+                      confirmId === profile.id ? (
+                        <span className="assign__remove-confirm">
+                          {/* role=status announces the state change for a
+                              screen-reader user who reached the cluster
+                              without the focus move (e.g. a virtual-cursor
+                              read). Its own text stays short for layout; the
+                              per-child identity lives on the two buttons'
+                              aria-labels below, which is what gets announced
+                              on the focus handoff. */}
+                          <span className="assign__remove-prompt cyo-text-muted" role="status">
+                            Remove access?
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setConfirmId(null)}
+                            disabled={removingId !== null}
+                            aria-label={`Keep ${profile.display_name}'s access`}
+                          >
+                            Keep
+                          </Button>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            data-confirm-remove={profile.id}
+                            onClick={() => void removeOne(profile.id)}
+                            disabled={removingId !== null}
+                            aria-label={`Confirm removing ${profile.display_name}'s access`}
+                          >
+                            {removingId === profile.id ? 'Removing…' : 'Remove access'}
+                          </Button>
+                        </span>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="assign__remove-trigger"
+                          data-remove-trigger={profile.id}
+                          onClick={() => setConfirmId(profile.id)}
+                          disabled={removingId !== null}
+                          aria-label={`Remove ${profile.display_name}'s access`}
+                        >
+                          Remove
+                        </Button>
+                      )
+                    ) : null}
                   </li>
                 )
               })}

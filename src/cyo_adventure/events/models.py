@@ -54,6 +54,10 @@ class EventType(StrEnum):
     THRESHOLD_CHANGED = "threshold_changed"
     NOISE_FLOOR_CHANGED = "noise_floor_changed"
     BOOK_ASSIGNED = "book_assigned"
+    # G8 per-child kill switch: a guardian revokes one child's access to a book
+    # (api/assignments.py::unassign_storybook). Emitted once per assignment row
+    # actually removed; a no-op unassign (already unassigned) writes nothing.
+    BOOK_UNASSIGNED = "book_unassigned"
     RATED = "rated"
     KID_FLAGGED = "kid_flagged"
     FLAG_RESOLVED = "flag_resolved"

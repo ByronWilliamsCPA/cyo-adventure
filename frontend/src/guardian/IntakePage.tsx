@@ -63,6 +63,13 @@ function assignedNotice(count: number): string {
   return `Assigned to ${count} ${count === 1 ? 'child' : 'children'}.`
 }
 
+function removedNotice(count: number): string {
+  // count is the book's remaining assignment total after a per-child removal.
+  return count === 0
+    ? 'Removed. No children have access now.'
+    : `Removed. Now assigned to ${count} ${count === 1 ? 'child' : 'children'}.`
+}
+
 // P-6a: the generation-jobs list (GenerationJobSummary) carries no assignment
 // count, so an Approved row cannot tell "assigned to nobody yet" from
 // "already assigned" without asking. A `count` of `undefined` means "not
@@ -535,9 +542,15 @@ export function IntakePage() {
           // so the count reads "assigned to N total". It also updates
           // assignedCounts directly (P-6a) so the row's button label flips
           // from "Assign to a child" to "Assign more" immediately, without
-          // waiting on the lazy-fetch effect to re-run.
+          // waiting on the lazy-fetch effect to re-run. onUnassigned carries
+          // the same post-removal list, so the count and the label stay in
+          // step when a removal empties the assignment set.
           onAssigned={(profileIds) => {
             setAssignNotice(assignedNotice(profileIds.length))
+            setAssignedCounts((prev) => ({ ...prev, [assigning]: profileIds.length }))
+          }}
+          onUnassigned={(profileIds) => {
+            setAssignNotice(removedNotice(profileIds.length))
             setAssignedCounts((prev) => ({ ...prev, [assigning]: profileIds.length }))
           }}
         />

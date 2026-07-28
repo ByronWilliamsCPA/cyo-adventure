@@ -197,6 +197,10 @@ export function BooksPage() {
           storybookId={assigning}
           onClose={() => setAssigning(null)}
           onAssigned={(profileIds) => onAssigned(assigning, profileIds)}
+          // A per-child removal returns the same authoritative list; the row's
+          // "Assigned to" line updates identically whether a child was added or
+          // removed.
+          onUnassigned={(profileIds) => onAssigned(assigning, profileIds)}
         />
       ) : null}
       {detailsBook !== null ? (
