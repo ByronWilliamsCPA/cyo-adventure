@@ -31,6 +31,7 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.db.models import Rating, ReadingState, Storybook, StorybookVersion
+from cyo_adventure.storybook.sentinels import wrap
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -251,6 +252,19 @@ class TestLibraryItem:
         assert item.age_band == "6-8"
         assert item.tier == 1
         assert item.reading_level_target == pytest.approx(2.5)
+
+    @pytest.mark.unit
+    def test_title_sentinels_are_stripped(self) -> None:
+        """A raw personalization sentinel in the title must never reach the
+        library listing; the listing is a generic card, not the read surface
+        the client resolves personalization against (ADR-023 P3).
+        """
+        token = wrap("HERO", "Explorer")
+        blob: dict[str, object] = {"title": f"{token}'s Great Adventure"}
+        item = _library_item("story-1", blob, 1)
+        assert "{~" not in item.title
+        assert "~}" not in item.title
+        assert "Explorer" in item.title
 
     @pytest.mark.unit
     def test_missing_title_falls_back_to_storybook_id(self) -> None:
@@ -626,6 +640,37 @@ class TestGetStorybookVersion:
         result = await get_storybook_version("story-1", 1, principal, session)
 
         assert result == blob
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_blob_sentinels_survive_verbatim(self) -> None:
+        """The version-blob endpoint is the artifact the client resolves
+        personalization against; sentinels MUST survive it untouched, unlike
+        the stripped library listing (ADR-023 P3). This pins the contrast:
+        _library_item strips, get_storybook_version never does.
+        """
+        family_id = uuid.uuid4()
+        book = _published_book("story-1", family_id, version=1)
+        token = wrap("HERO", "Explorer")
+        blob: dict[str, object] = {
+            "title": f"{token}'s Great Adventure",
+            "nodes": [],
+        }
+        version = _version_row("story-1", 1, blob=blob)
+        version.approved_by = uuid.uuid4()
+        get_map: dict[tuple[type[object], object], object] = {
+            (Storybook, "story-1"): book,
+            (StorybookVersion, ("story-1", 1)): version,
+        }
+        session = _FakeSession(get_map=get_map)
+        principal = _guardian_principal(family_id)
+
+        result = await get_storybook_version("story-1", 1, principal, session)
+
+        assert result == blob
+        title = result["title"]
+        assert isinstance(title, str)
+        assert token in title
 
     @pytest.mark.unit
     @pytest.mark.asyncio

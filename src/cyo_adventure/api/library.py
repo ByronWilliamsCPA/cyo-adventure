@@ -46,6 +46,7 @@ from cyo_adventure.db.models import (
     StorybookVersion,
 )
 from cyo_adventure.publishing.state_machine import Visibility
+from cyo_adventure.storybook.sentinels import strip_sentinels
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -226,7 +227,11 @@ def _library_item(
             (never read from the stored ``cover_image_url`` audit column).
 
     Returns:
-        LibraryItem: The listing item with safe, finite, correctly typed fields.
+        LibraryItem: The listing item with safe, finite, correctly typed
+            fields, with personalization sentinels stripped from the title
+            to their generic word (ADR-023 P3). The raw, sentinel-bearing
+            blob is served verbatim only by ``get_storybook_version``, which
+            the client resolves personalization against.
     """
     # #ASSUME: data integrity: an APPROVED published blob is well-formed, but a
     # malformed metadata field (wrong type, bool-as-number, NaN/Inf) must degrade
@@ -237,7 +242,9 @@ def _library_item(
     meta: Mapping[str, object] = metadata if isinstance(metadata, dict) else {}
     malformed: list[str] = []
 
-    title = _str_field(blob.get("title"), storybook_id, "title", malformed)
+    title = strip_sentinels(
+        _str_field(blob.get("title"), storybook_id, "title", malformed)
+    )
     age_band = _str_field(meta.get("age_band"), "", "age_band", malformed)
     tier = _tier_field(meta.get("tier"), malformed)
     target = _reading_level_target(meta, malformed)
