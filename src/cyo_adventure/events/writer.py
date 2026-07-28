@@ -40,6 +40,9 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     ),
     EventType.NOISE_FLOOR_CHANGED: frozenset({"value"}),
     EventType.BOOK_ASSIGNED: frozenset({"child_profile_id"}),
+    # G8 per-child unassign: mirrors BOOK_ASSIGNED. The revoked child's profile
+    # id is an id, not free text, so it fits the PII-free payload contract (D3).
+    EventType.BOOK_UNASSIGNED: frozenset({"child_profile_id"}),
     EventType.RATED: frozenset({"value", "is_update"}),
     # K15: a structured, no-free-text child signal (ADR-016). Only the closed
     # vocabulary reason and the storybook id are ever recorded here; the flag

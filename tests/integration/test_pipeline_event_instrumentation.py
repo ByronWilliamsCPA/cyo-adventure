@@ -1122,6 +1122,37 @@ async def test_assign_writes_book_assigned_event_per_new_assignment(
     assert event.payload == {"child_profile_id": str(sibling_id)}
 
 
+async def test_unassign_writes_book_unassigned_event(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """Unassigning the seeded book from its profile writes exactly one
+    book_unassigned event, attributed to the guardian; a second no-op unassign
+    writes none.
+
+    The ``seed`` fixture assigns ``seed.storybook_id`` to
+    ``seed.child_profile_id``, so the first DELETE removes that row and emits.
+    The second finds nothing to remove and must not emit, pinning the count at
+    exactly one (the idempotent-no-op arm of the emit-once-per-removed-row
+    discipline that mirrors ``assign_storybook``).
+    """
+    url = f"/api/v1/storybooks/{seed.storybook_id}/assignments/{seed.child_profile_id}"
+    first = await client.delete(url, headers=auth(seed.guardian_token))
+    assert first.status_code == 200, first.text
+    second = await client.delete(url, headers=auth(seed.guardian_token))
+    assert second.status_code == 200, second.text
+
+    event = await assert_single_event(
+        sessions,
+        event_type="book_unassigned",
+        entity_type="storybook_assignment",
+        actor_role="guardian",
+    )
+    assert event.entity_id == f"{seed.child_profile_id}:{seed.storybook_id}"
+    assert event.payload == {"child_profile_id": str(seed.child_profile_id)}
+
+
 async def test_rating_writes_rated_event_with_is_update_transition(
     client: AsyncClient,
     seed: Seed,
