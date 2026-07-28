@@ -4979,6 +4979,52 @@ export type AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostResponses = 
 
 export type AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostResponse = AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostResponses[keyof AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostResponses];
 
+export type UnassignStorybookApiV1StorybooksStorybookIdAssignmentsProfileIdDeleteData = {
+    body?: never;
+    path: {
+        /**
+         * Storybook Id
+         */
+        storybook_id: string;
+        /**
+         * Profile Id
+         */
+        profile_id: string;
+    };
+    query?: never;
+    url: '/api/v1/storybooks/{storybook_id}/assignments/{profile_id}';
+};
+
+export type UnassignStorybookApiV1StorybooksStorybookIdAssignmentsProfileIdDeleteErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UnassignStorybookApiV1StorybooksStorybookIdAssignmentsProfileIdDeleteError = UnassignStorybookApiV1StorybooksStorybookIdAssignmentsProfileIdDeleteErrors[keyof UnassignStorybookApiV1StorybooksStorybookIdAssignmentsProfileIdDeleteErrors];
+
+export type UnassignStorybookApiV1StorybooksStorybookIdAssignmentsProfileIdDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    200: AssignmentListView;
+};
+
+export type UnassignStorybookApiV1StorybooksStorybookIdAssignmentsProfileIdDeleteResponse = UnassignStorybookApiV1StorybooksStorybookIdAssignmentsProfileIdDeleteResponses[keyof UnassignStorybookApiV1StorybooksStorybookIdAssignmentsProfileIdDeleteResponses];
+
 export type ListGuardianBooksApiV1GuardianBooksGetData = {
     body?: never;
     path?: never;
