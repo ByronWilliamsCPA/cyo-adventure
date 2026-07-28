@@ -55,7 +55,9 @@ The empirical basis (recorded in `docs/planning/research/`):
   indegree 1.5). This anchors the 8-11 and 10-13 bands with high confidence.
 - The four-source reconciliation adds words/node (~100-150), total words (~8-15k at
   8-11), the age-gated fail-state policy, and the finding that many endings come from
-  **reconvergent leaves, not depth**.
+  **breadth, not depth** (many single-parent terminal nodes hung off a branchy spine,
+  not deeper paths; see the 2026-07-27 clarification in section 7 for the corrected
+  characterization of where reconvergence actually sits).
 - **5-8** node counts are measured (medium confidence); **13-16** rests on gamebook
   metadata; **3-5 and 16+ have no research** and are product-defined.
 
@@ -162,8 +164,10 @@ wpm (read aloud), 5-8 ~90, 8-11 ~120, 10-13 ~150, 13-16 ~190, 16+ ~220.
 ### 6. Constants (research-locked, all cells)
 
 Decisions per path **~4-8** (length adds breadth, not depth; do not inflate); choices
-per decision **2-3**; setup before first choice **~2-3 nodes**; endings via reconvergent
-leaves, scaling with node count (prose ~15-22%).
+per decision **2-3**; setup before first choice **~2-3 nodes**; endings as
+**single-parent terminals** scaling with node count (prose ~15-22%). Reconvergence is an
+internal bottleneck/hub property governed per topology (section 7), not an ending
+property; see the 2026-07-27 clarification.
 
 ### 7. Topologies (6) and flow primitives
 
@@ -205,6 +209,39 @@ referenced by "loops require state (tier 2)" above, which first apply at `8-11`
 `sorting_hat` costs `sort + N x (track arc)` nodes, so it buys replay diversity at a node
 premium and lives in Medium/Long cells, not Short; the table above annotates every band
 where it appears accordingly.
+
+#### Clarification (2026-07-27): reconvergence and endings
+
+Earlier drafts of this ADR described endings as coming from "reconvergent leaves." A
+measurement of the shipped skeleton corpus (61 skeletons) corrected that wording, and
+this note records both the finding and the resulting enforcement stance so the two are
+not read as contradicting the JHM "essentially a tree (max indegree 1.5)" anchor above.
+
+- **The JHM figure is a mean, and we match it.** JHM's "max indegree 1.5 (range 1-3)" is
+  the mean across books of each book's most-reconverged page, not a hard ceiling. The
+  corpus mean indegree is **1.21**, so our stories are "essentially a tree" in the same
+  sense: low average reconvergence, not zero.
+- **Reconvergence is real but internal, not at endings.** 45 of 61 skeletons have at
+  least one reconvergent node, concentrated at bottleneck/hub nodes (a `branch_and_bottleneck`
+  is a bottleneck by construction). But **54 of 61 skeletons have every ending at indegree
+  exactly 1**; only 7 have any reconvergent ending, at a max of 4 parents. Endings are
+  single-parent terminals; the ~15-22% ending share is achieved by **breadth** (many
+  terminals off a branchy spine), the same mechanism as the genre, not by folding paths
+  into shared endings.
+- **Topology governs reconvergence; there is no per-band magnitude gate.** The validator
+  regulates reconvergence through PL-18 topology admissibility (`time_cave` and
+  `sorting_hat` are pure-tree shapes; `branch_and_bottleneck` / `open_map` / reconverging
+  `gauntlet` permit it), and kid bands lean on the pure-tree shapes. The per-band
+  Reconvergence column above ("minimal / light / moderate") is an **authoring guideline**,
+  not a gated magnitude. `BandProfile.reconvergence_ceiling` stays an intentionally optional
+  calibration dial: it is `None` for every band today and is read only by the mutation
+  operator, never by the validator gate. **Decision: keep it unset** unless a future
+  calibration shows kid-band skeletons drifting toward un-genre-like hub indegrees.
+- **Choices per decision (2-3) stays an authoring guideline, not a hard gate.** The PL-17
+  endings and decision floors already gate the two properties JHM tied to reader
+  satisfaction and sales; an outdegree ceiling is not added as a validator error. If
+  kid-band stories begin emitting overwhelming choice fans, revisit as an advisory finding
+  rather than a hard block.
 
 ### 8. Series (campaign continuity)
 
