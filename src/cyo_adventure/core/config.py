@@ -188,6 +188,8 @@ class Settings(BaseSettings):
         database_url: Async SQLAlchemy connection URL for PostgreSQL.
         redis_url: Redis connection URL for the RQ task queue.
         generation_provider: Which LLM provider to use for story generation.
+        mock_story_fixture: DEV/TEST-ONLY selector for the mock provider's
+            canned fixture ("safe" default, or "invalid" to trip the gate).
     """
 
     model_config = SettingsConfigDict(
@@ -359,6 +361,18 @@ class Settings(BaseSettings):
     generation_provider: Literal[
         "mock", "anthropic", "ollama", "openrouter", "modal"
     ] = "mock"
+
+    # DEV/TEST-ONLY: which canned fixture the deterministic mock provider serves.
+    # "safe" (default) is the gate-clean canned story ("The Forest Path") the
+    # whole test/dev stack has always used, so the default is a zero-behavior
+    # change. "invalid" makes build_provider's mock branch queue a structurally
+    # broken Storybook that deterministically trips the validator gate to an
+    # ERROR-severity block, so the full pipeline can be driven to a
+    # HARD-BLOCK / needs-review outcome over the real HTTP path in local dev and
+    # E2E tests (closes review finding S-5). It has NO effect on any non-mock
+    # provider, and the mock provider is already forbidden outside local by the
+    # provider allowlist, so this stays dev/test-only and never weakens prod.
+    mock_story_fixture: Literal["safe", "invalid"] = "safe"
 
     # Model ids are pinned in config, not code (ADR-003): a model swap is a
     # config change. OpenRouter rosters churn weekly, so pin first-party families
