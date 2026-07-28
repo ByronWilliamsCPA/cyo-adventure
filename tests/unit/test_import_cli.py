@@ -342,7 +342,11 @@ async def test_run_links_series_when_series_id_given() -> None:
         ) as embed,
     ):
         story_id, status = await _run(
-            {"id": "sk_book2"}, uuid.uuid4(), None, None, series_id
+            {"id": "sk_book2"},
+            family_id=uuid.uuid4(),
+            model=None,
+            job_id=None,
+            series_id=series_id,
         )
 
     assert (story_id, status) == ("sk_book2", None)
@@ -379,7 +383,13 @@ async def test_run_no_series_linkage_without_series_id() -> None:
             new=AsyncMock(),
         ) as embed,
     ):
-        await _run({"id": "sk1"}, uuid.uuid4(), None, None, None)
+        await _run(
+            {"id": "sk1"},
+            family_id=uuid.uuid4(),
+            model=None,
+            job_id=None,
+            series_id=None,
+        )
 
     assign.assert_not_awaited()
     embed.assert_not_awaited()

@@ -404,6 +404,7 @@ async def _next_repair_prompt(
     gate_result: GateResult,
     current_doc: dict[str, object] | None,
     ctx: _RepairContext,
+    *,
     attempts: int,
     stage1_violations: list[str],
 ) -> StagePrompt | None:
@@ -531,7 +532,11 @@ async def _run_repair_loop(
 
     while True:
         repair_prompt = await _next_repair_prompt(
-            gate_result, current_doc, ctx, attempts, stage1_violations
+            gate_result,
+            current_doc,
+            ctx,
+            attempts=attempts,
+            stage1_violations=stage1_violations,
         )
         if repair_prompt is None:
             break

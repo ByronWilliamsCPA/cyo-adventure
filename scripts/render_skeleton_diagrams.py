@@ -134,7 +134,7 @@ def resolve_jar() -> Path | None:
         # #VERIFY: PLANTUML_URL is a pinned constant, not user-supplied input; the
         # post-download SHA-256 check below (against PLANTUML_SHA256) is what makes
         # this safe to execute, not the download itself.
-        urllib.request.urlretrieve(PLANTUML_URL, JAR_CACHE)  # noqa: S310  # nosec B310
+        urllib.request.urlretrieve(PLANTUML_URL, JAR_CACHE)  # nosec B310
     except OSError as exc:
         # This handler wraps both the cache-directory mkdir and the download
         # itself, so the message must not blame "download" for what could be

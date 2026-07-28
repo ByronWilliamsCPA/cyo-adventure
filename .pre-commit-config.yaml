@@ -159,7 +159,10 @@ repos:
   # Ruff Linting and Formatting (Fast, pre-commit stage)
   # ============================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: fa1ed65ba95bfa7771a71003a9d74402541f5a5c  # v0.14.6
+    # Kept in lockstep with the `ruff` pin in uv.lock: the hook and the CI
+    # quality gate must agree on rule behavior, or a noqa that one version
+    # requires becomes an unused-directive (RUF100) error in the other.
+    rev: cb8c523fd4835aba42af70f4cad5568db4df0b6c  # v0.16.0
     hooks:
       - id: ruff
         stages: [pre-commit]

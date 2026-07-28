@@ -441,18 +441,22 @@ def _personalizable_kind_errors(slot: SlotSpec) -> list[str]:
     """
     if slot.personalization_field not in PERSONALIZATION_FIELDS:
         return [
-            f"slot '{slot.id}' is kind='personalizable' but "
-            f"personalization_field={slot.personalization_field!r} is not a "
-            "member of PERSONALIZATION_FIELDS"
+            (
+                f"slot '{slot.id}' is kind='personalizable' but "
+                f"personalization_field={slot.personalization_field!r} is not a "
+                "member of PERSONALIZATION_FIELDS"
+            )
         ]
     if (
         slot.personalization_field in REAL_PERSON_PERSONALIZATION_FIELDS
         and slot.role_safety is None
     ):
         return [
-            f"slot '{slot.id}' personalizes a real-person field "
-            f"({slot.personalization_field!r}) and must declare a non-null "
-            "role_safety"
+            (
+                f"slot '{slot.id}' personalizes a real-person field "
+                f"({slot.personalization_field!r}) and must declare a non-null "
+                "role_safety"
+            )
         ]
     return []
 

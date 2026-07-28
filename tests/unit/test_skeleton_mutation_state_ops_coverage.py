@@ -651,12 +651,12 @@ def test_mint_choice_id_skips_a_taken_id() -> None:
 def test_append_choice_creates_a_choice_list_and_fails_closed() -> None:
     """A host without a choices list gets one; a missing host fails closed."""
     candidate: dict[str, object] = {"nodes": [1, {"id": "h"}]}
-    _append_choice(candidate, "h", "cnew", "t", {">=": [{"var": "oil"}, 1]})
+    _append_choice(candidate, "h", "cnew", "t", condition={">=": [{"var": "oil"}, 1]})
     host = cast("dict[str, object]", cast("list[object]", candidate["nodes"])[1])
     choices = cast("list[object]", host["choices"])
     assert cast("dict[str, object]", choices[0])["id"] == "cnew"
     with pytest.raises(ValidationError, match="vanished during apply"):
-        _append_choice({"nodes": []}, "missing", "c", "t", {})
+        _append_choice({"nodes": []}, "missing", "c", "t", condition={})
 
 
 @pytest.mark.unit

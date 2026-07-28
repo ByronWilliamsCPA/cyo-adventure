@@ -1772,10 +1772,18 @@ async def _handle_pipeline_failure(
         provider=effective_provider,
         report=report,
     )
-    logger.exception(
+    # This helper is called from `run_generation_job`'s pipeline `except`
+    # clause, but the traceback is attached from the `exc` we were handed
+    # rather than from ambient exception state: the helper is not lexically
+    # inside the handler, so `logger.exception()`'s implicit `sys.exc_info()`
+    # lookup would be a latent bug the moment this is called from anywhere
+    # else. Passing the exception explicitly is equivalent here and correct
+    # everywhere.
+    logger.error(
         "generation_job.pipeline_error",
         job_id=str(job_id),
         error=str(exc)[:512],
+        exc_info=exc,
     )
 
 

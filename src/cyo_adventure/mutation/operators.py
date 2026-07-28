@@ -2159,6 +2159,7 @@ def _evaluate_graft(  # noqa: PLR0911, PLR0913
     donor: Mapping[str, object],
     donor_slug: str,
     subtree_root: str,
+    *,
     host_decision: str,
     position: int | None,
 ) -> tuple[_GraftPlan | None, str | None]:
@@ -2226,7 +2227,13 @@ def _evaluate_graft(  # noqa: PLR0911, PLR0913
     if clean_reason is not None:
         return None, clean_reason
     return _build_graft_plan(
-        host, donor, donor_slug, subtree, host_decision, host_node, position
+        host,
+        donor,
+        donor_slug,
+        subtree,
+        host_decision=host_decision,
+        host_node=host_node,
+        position=position,
     )
 
 
@@ -2235,6 +2242,7 @@ def _build_graft_plan(  # noqa: PLR0913 -- the validated facts a graft plan need
     donor: Mapping[str, object],
     donor_slug: str,
     subtree: Subtree,
+    *,
     host_decision: str,
     host_node: Mapping[str, object],
     position: int | None,
@@ -2448,6 +2456,7 @@ def merge_graft_contract(  # noqa: PLR0913 -- one cohesive contract-merge transf
     donor_contract: ThemeContract,
     referenced_slot_ids: frozenset[str],
     k: int,
+    *,
     mutant_slug: str,
 ) -> ThemeContract:
     """Return the host contract with a graft's donor slots imported (design 4.4).
@@ -2714,8 +2723,8 @@ class M3PruneGraft:
             donor,
             donor_slug,
             subtree_root,
-            host_decision,
-            _int_param(params.get("position")),
+            host_decision=host_decision,
+            position=_int_param(params.get("position")),
         )
         if graft_reason is not None:
             return [f"graft is ineligible: {graft_reason}"]
@@ -2805,8 +2814,8 @@ class M3PruneGraft:
             donor,
             donor_slug,
             subtree_root,
-            host_decision,
-            _int_param(params.get("position")),
+            host_decision=host_decision,
+            position=_int_param(params.get("position")),
         )
         if plan is None:
             msg = f"M3 graft is ineligible: {graft_reason}"

@@ -301,6 +301,7 @@ async def _resolve_skeleton_fill(
     plan: AuthoringPlanRequest,
     concept: Concept,
     request: StoryRequest,
+    *,
     band: str,
 ) -> tuple[str, str, list[str], list[str], _Differentiation]:
     """Resolve the skeleton for a skeleton_fill plan: override or auto-pick.
@@ -516,6 +517,7 @@ async def build_authoring_plan(
     request: StoryRequest,
     concept: Concept,
     plan: AuthoringPlanRequest,
+    *,
     actor: Actor,
 ) -> AuthoringPlanResult:
     """Validate an authoring-plan choice and create the GenerationJob row.
@@ -577,7 +579,7 @@ async def build_authoring_plan(
             skeleton_alternatives,
             skeleton_warnings,
             differentiation,
-        ) = await _resolve_skeleton_fill(session, plan, concept, request, band)
+        ) = await _resolve_skeleton_fill(session, plan, concept, request, band=band)
 
     warnings = eligibility_warnings(method, mechanism, band, prep_model)
     warnings.extend(skeleton_warnings)

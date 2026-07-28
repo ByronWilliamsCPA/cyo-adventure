@@ -23,7 +23,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 from rq.exceptions import DuplicateJobError
-from testcontainers.redis import RedisContainer
+from testcontainers.community.redis import RedisContainer
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.db.models import Concept, Family, GenerationJob

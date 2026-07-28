@@ -390,11 +390,11 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     def __init__(
         self,
         app: ASGIApp,
+        *,
         requests_per_minute: int = 60,
         burst_size: int = 10,
         max_tracked_ips: int = 10000,
         cleanup_interval: int = 300,
-        *,
         backend: Literal["redis", "memory"] = "memory",
         redis_url: str | None = None,
         redis_client: Redis | None = None,

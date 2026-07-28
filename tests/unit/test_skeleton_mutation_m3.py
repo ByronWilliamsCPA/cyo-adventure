@@ -748,7 +748,7 @@ def _load_contract(slug: str) -> ThemeContract:
 def _graft_index(host: Mapping[str, object], mutant: Mapping[str, object]) -> int:
     """Return the m<k>_ index the graft used, read from a grafted node id."""
     new_ids = _node_ids(mutant) - _node_ids(host)
-    match = re.match(r"^m(\d+)_", sorted(new_ids)[0])
+    match = re.match(r"^m(\d+)_", min(new_ids))
     assert match is not None
     return int(match.group(1))
 
@@ -781,7 +781,7 @@ def test_m3_graft_contract_merge_imports_renamed_donor_slots() -> None:
         cast("list[Mapping[str, object]]", _donor_region_nodes(donor, _DONOR_SUBTREE))
     )
     merged = merge_graft_contract(
-        host_contract, donor_contract, referenced, k, "cave-graft-mutant"
+        host_contract, donor_contract, referenced, k, mutant_slug="cave-graft-mutant"
     )
 
     donor_by_id = {slot.id: slot for slot in donor_contract.slots}

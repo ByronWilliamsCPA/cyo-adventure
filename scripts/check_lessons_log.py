@@ -169,8 +169,11 @@ def _check_row(number: int, cells: list[str]) -> list[str]:
     """
     if len(cells) != len(_COLUMNS):
         return [
-            f"line {number}: expected {len(_COLUMNS)} columns, found {len(cells)} "
-            f"(a literal '|' inside a cell must be escaped as '\\|')"
+            (
+                f"line {number}: expected {len(_COLUMNS)} columns, "
+                f"found {len(cells)} "
+                f"(a literal '|' inside a cell must be escaped as '\\|')"
+            )
         ]
 
     row = dict(zip(_COLUMNS, cells, strict=True))

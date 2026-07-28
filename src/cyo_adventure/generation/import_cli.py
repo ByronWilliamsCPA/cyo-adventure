@@ -62,6 +62,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
 
 async def _run(  # noqa: PLR0913 -- cohesive CLI dispatch; one optional id added
     blob: dict[str, object],
+    *,
     family_id: uuid.UUID | None,
     model: str | None,
     job_id: uuid.UUID | None,
@@ -228,7 +229,15 @@ def main(argv: list[str] | None = None) -> int:
     # #VERIFY: test_arg_parser_* cover parsing; gate and moderation failures
     # both map to exit 1.
     try:
-        story_id, status = asyncio.run(_run(blob, family_id, model, job_id, series_id))
+        story_id, status = asyncio.run(
+            _run(
+                blob,
+                family_id=family_id,
+                model=model,
+                job_id=job_id,
+                series_id=series_id,
+            )
+        )
     except ProjectBaseError as exc:
         sys.stderr.write(f"import failed: {exc}\n")
         return 1

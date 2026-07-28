@@ -834,14 +834,20 @@ def test_evaluate_graft_rejection_ladder() -> None:
     """Ending host decision, series donor, and a missing/unclean donor subtree fail."""
     host = _tier1_story()
     # host decision is an ending node
-    reason = _evaluate_graft(host, host, "<self>", "a", "a", None)[1]
+    reason = _evaluate_graft(
+        host, host, "<self>", "a", host_decision="a", position=None
+    )[1]
     assert "ending node" in cast("str", reason)
     # series donor
     series_donor = _tier1_story(series="saga")
-    reason2 = _evaluate_graft(host, series_donor, "d", "a", "s", None)[1]
+    reason2 = _evaluate_graft(
+        host, series_donor, "d", "a", host_decision="s", position=None
+    )[1]
     assert "series" in cast("str", reason2)
     # donor subtree root absent
-    reason3 = _evaluate_graft(host, _tier1_story(), "d", "ghost", "s", None)[1]
+    reason3 = _evaluate_graft(
+        host, _tier1_story(), "d", "ghost", host_decision="s", position=None
+    )[1]
     assert "does not exist" in cast("str", reason3)
 
 
@@ -918,7 +924,7 @@ def test_merge_graft_contract_skips_unknown_and_unbound_slots() -> None:
     )
     # ``ABSENT`` is referenced but not declared by the donor -> skipped.
     merged = merge_graft_contract(
-        host, donor, frozenset({"GEM", "ABSENT"}), 1, "mutant"
+        host, donor, frozenset({"GEM", "ABSENT"}), 1, mutant_slug="mutant"
     )
     imported = {spec.id for spec in merged.slots}
     assert "M1_GEM" in imported
@@ -1323,7 +1329,9 @@ def test_evaluate_graft_rejects_a_non_self_contained_donor_subtree() -> None:
             {"id": "x", "choices": [{"id": "xc", "target": "m"}]},  # external -> m
         ],
     }
-    reason = _evaluate_graft(host, leaky_donor, "d", "g", "h", None)[1]
+    reason = _evaluate_graft(
+        host, leaky_donor, "d", "g", host_decision="h", position=None
+    )[1]
     assert "not self-contained" in cast("str", reason)
 
 

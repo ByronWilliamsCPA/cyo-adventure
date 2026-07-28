@@ -69,9 +69,16 @@ def validate_reading_state(
     # is present. Tests in tests/unit/test_replay.py.
     story = _parse(blob)
     _check_save_slots(save_slots)
-    _check_structure(story, current_node, var_state, path, visit_set)
+    _check_structure(story, current_node, var_state, path, visit_set=visit_set)
     if choice_path is not None:
-        _check_replay(story, current_node, var_state, path, visit_set, choice_path)
+        _check_replay(
+            story,
+            current_node,
+            var_state,
+            path,
+            visit_set=visit_set,
+            choice_path=choice_path,
+        )
 
 
 def _check_save_slots(save_slots: Mapping[str, object]) -> None:
@@ -114,7 +121,7 @@ def _check_save_slots(save_slots: Mapping[str, object]) -> None:
             "save_slots must be empty: no producer or consumer exists yet, so a "
             "slot cannot be validated and must not be persisted"
         )
-        raise ValidationError(msg, field="save_slots", value=sorted(save_slots)[0])
+        raise ValidationError(msg, field="save_slots", value=min(save_slots))
 
 
 def _parse(blob: dict[str, object]) -> Storybook:
@@ -155,6 +162,7 @@ def _check_structure(
     current_node: str,
     var_state: VarState,
     path: list[str],
+    *,
     visit_set: list[str],
 ) -> None:
     """Structural floor: node ids exist, current_node/path agree, var_state is complete.
@@ -309,6 +317,7 @@ def _check_replay(
     current_node: str,
     var_state: VarState,
     path: list[str],
+    *,
     visit_set: list[str],
     choice_path: list[str],
 ) -> None:
