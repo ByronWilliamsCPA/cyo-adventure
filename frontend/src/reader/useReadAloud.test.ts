@@ -9,6 +9,7 @@ class MockUtterance {
   text: string
   onend: (() => void) | null = null
   onerror: (() => void) | null = null
+  onboundary: ((event: { charIndex: number; name?: string }) => void) | null = null
   constructor(text: string) {
     this.text = text
   }
@@ -155,6 +156,81 @@ describe('useReadAloud', () => {
 
     expect(result.current.available).toBe(false)
     expect(result.current.speaking).toBe(false)
+  })
+
+  it('spokenWordRange is null before speech starts', () => {
+    installSpeechSynthesis()
+    const { result } = renderHook(() => useReadAloud(true))
+    expect(result.current.spokenWordRange).toBeNull()
+  })
+
+  it('advances spokenWordRange as onboundary word events are dispatched, and clears it when the body finishes', () => {
+    installSpeechSynthesis()
+    const { result } = renderHook(() => useReadAloud(true))
+
+    act(() => {
+      result.current.speak('Once upon a time.', ['Go north'])
+    })
+    expect(result.current.spokenWordRange).toBeNull()
+
+    const bodyUtterance = speakMock.mock.calls[0][0] as MockUtterance
+
+    act(() => {
+      bodyUtterance.onboundary?.({ charIndex: 0, name: 'word' })
+    })
+    expect(result.current.spokenWordRange).toEqual({ start: 0, end: 4 }) // "Once"
+
+    act(() => {
+      bodyUtterance.onboundary?.({ charIndex: 5, name: 'word' })
+    })
+    expect(result.current.spokenWordRange).toEqual({ start: 5, end: 9 }) // "upon"
+
+    // The body finishing (moving on to the choice list) clears the
+    // highlight: there is no rendered choice-list text to highlight against.
+    act(() => {
+      bodyUtterance.onend?.()
+    })
+    expect(result.current.spokenWordRange).toBeNull()
+  })
+
+  it('ignores a non-word onboundary event (e.g. "sentence") without changing spokenWordRange', () => {
+    installSpeechSynthesis()
+    const { result } = renderHook(() => useReadAloud(true))
+
+    act(() => {
+      result.current.speak('Once upon a time.', [])
+    })
+    const bodyUtterance = speakMock.mock.calls[0][0] as MockUtterance
+
+    act(() => {
+      bodyUtterance.onboundary?.({ charIndex: 0, name: 'word' })
+    })
+    expect(result.current.spokenWordRange).toEqual({ start: 0, end: 4 })
+
+    act(() => {
+      bodyUtterance.onboundary?.({ charIndex: 5, name: 'sentence' })
+    })
+    // Unchanged: a non-word boundary must not move the highlight.
+    expect(result.current.spokenWordRange).toEqual({ start: 0, end: 4 })
+  })
+
+  it('stop() clears spokenWordRange along with speaking', () => {
+    installSpeechSynthesis()
+    const { result } = renderHook(() => useReadAloud(true))
+
+    act(() => {
+      result.current.speak('Once upon a time.', [])
+    })
+    const bodyUtterance = speakMock.mock.calls[0][0] as MockUtterance
+    act(() => {
+      bodyUtterance.onboundary?.({ charIndex: 0, name: 'word' })
+    })
+    expect(result.current.spokenWordRange).not.toBeNull()
+
+    act(() => {
+      result.current.stop()
+    })
+    expect(result.current.spokenWordRange).toBeNull()
   })
 
   it('kid-safe failure: the broken latch persists so a later speak() call does not retry', () => {

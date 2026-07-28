@@ -362,7 +362,7 @@ export function Reader({
             className="reader-ending__body"
             aria-live="polite"
           >
-            <PassageText text={node?.body ?? ''} />
+            <PassageText text={node?.body ?? ''} highlightRange={readAloud.spokenWordRange} />
           </div>
           <p data-testid="ending-id" hidden>
             {currentEndingId(story, reading) ?? ''}
@@ -416,7 +416,7 @@ export function Reader({
           className="reader-passage"
           aria-live="polite"
         >
-          <PassageText text={node?.body ?? ''} />
+          <PassageText text={node?.body ?? ''} highlightRange={readAloud.spokenWordRange} />
         </div>
         <ul className="reader-choices">
           {choices.map((choice) => (

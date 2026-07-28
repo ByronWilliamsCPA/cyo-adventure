@@ -32,8 +32,29 @@
   .cyo-passage,
   .cyo-passage--multi p {
     font-size: calc(
-      max(var(--text-lg), var(--band-reader-text, var(--text-base))) *
-        var(--reader-font-scale, 1)
+      max(var(--text-lg), var(--band-reader-text, var(--text-base))) * var(--reader-font-scale, 1)
     );
+  }
+}
+
+/* Read-aloud word highlight (P-5: pre-reader read-along support). Reuses the
+   amber-light/ink pairing already verified for text-on-fill elsewhere in the
+   design system (Button primary/hover/selected states); computed directly
+   with wcag-contrast.py rather than re-estimated here: ink (#2c1a0e) on
+   amber-light (#f7e2c4) = 13.19:1 in light mode, ink (#f3e6d2) on amber-light
+   (#86602d) = 4.58:1 in dark mode, both clear the 4.5:1 AA normal-text
+   minimum. `color` is set explicitly (not inherited) because `<mark>`'s
+   user-agent default styling otherwise wins in some browsers. */
+.cyo-passage__highlight {
+  background: var(--color-amber-light);
+  color: var(--color-ink);
+  border-radius: var(--radius-sm);
+  padding: 0 0.15em;
+  transition: background-color var(--duration-fast) var(--easing-default);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cyo-passage__highlight {
+    transition: none;
   }
 }

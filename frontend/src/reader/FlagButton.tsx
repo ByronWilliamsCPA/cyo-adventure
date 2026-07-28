@@ -21,6 +21,7 @@ import { FlagCapReachedError, type FlagReason, type SubmitFlagParams } from '../
 import { getValidChildSession } from '../auth/childSession'
 import { logApiError } from '../hooks/logApiError'
 import { useToast } from '../notifications/useToast'
+import { useReadAloud } from './useReadAloud'
 import './reader.css'
 
 export interface FlagButtonProps {
@@ -36,10 +37,20 @@ export interface FlagButtonProps {
   submitFlag: (params: SubmitFlagParams) => Promise<KidFlagCreatedView>
 }
 
-const REASONS: Array<{ value: FlagReason; label: string }> = [
-  { value: 'did_not_like', label: "I didn't like it" },
-  { value: 'scared_me', label: 'It scared me' },
-  { value: 'confusing', label: 'It was confusing' },
+/**
+ * P-5: a pre-reader (many kid-surface users are 5-10 and cannot yet read
+ * fluently) may not be able to read these labels at all, least of all in
+ * the middle of the distress that led them to tap "Tell a grown-up". Each
+ * reason pairs a recognizable emoji with its text (never emoji-only: the
+ * label stays the button's real accessible name) and speaks its own label
+ * aloud on focus/hover/tap via the same read-aloud mechanism as the story
+ * narration (see `announceReason` below), so the choice is legible by ear
+ * as well as by eye and icon.
+ */
+const REASONS: Array<{ value: FlagReason; label: string; icon: string }> = [
+  { value: 'did_not_like', label: "I didn't like it", icon: '👎' },
+  { value: 'scared_me', label: 'It scared me', icon: '😨' },
+  { value: 'confusing', label: 'It was confusing', icon: '😕' },
 ]
 
 /**
@@ -65,12 +76,26 @@ export function FlagButton({
   const [open, setOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const { showToast } = useToast()
+  // Always offered when the browser supports it (P-5): unlike the story
+  // narration toggle, this is not gated by the profile's tts_enabled
+  // preference. A child who cannot read is exactly the child who needs a
+  // grown-up's help most, so speaking the reason options aloud should not
+  // depend on a separate setting having been turned on for them.
+  const readAloud = useReadAloud(true)
 
   const session = getValidChildSession()
   if (!session || session.profileId !== profileId) return null
 
+  function announceReason(reason: { label: string }) {
+    // A no-op when speech is unavailable (unsupported browser, or a prior
+    // throw latched it off); the icon and text label still communicate the
+    // reason on their own.
+    readAloud.speak(reason.label, [])
+  }
+
   function closeDialog() {
     if (submitting) return
+    readAloud.stop()
     setOpen(false)
   }
 
@@ -115,7 +140,7 @@ export function FlagButton({
         // label so the miss stays observable without carrying auth material.
         logApiError(
           `[reader] flag submit failed (profile=${profileId} story=${storybookId} reason=${reason})`,
-          err,
+          err
         )
         setOpen(false)
         showToast('Thanks for telling us. A grown-up will take a look.', { tone: 'info' })
@@ -153,8 +178,16 @@ export function FlagButton({
               key={reason.value}
               variant="ghost"
               disabled={submitting}
-              onClick={() => void pick(reason.value)}
+              onFocus={() => announceReason(reason)}
+              onMouseEnter={() => announceReason(reason)}
+              onClick={() => {
+                announceReason(reason)
+                void pick(reason.value)
+              }}
             >
+              <span aria-hidden="true" className="reader-flag-reason__icon">
+                {reason.icon}
+              </span>
               {reason.label}
             </Button>
           ))}

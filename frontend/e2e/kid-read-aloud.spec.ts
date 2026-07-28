@@ -67,6 +67,7 @@ test.beforeEach(async ({ context, page }) => {
       text: string
       onend: (() => void) | null = null
       onerror: (() => void) | null = null
+      onboundary: ((event: { charIndex: number; name?: string }) => void) | null = null
       constructor(text: string) {
         this.text = text
       }
@@ -77,11 +78,16 @@ test.beforeEach(async ({ context, page }) => {
     // page.evaluate; it is not part of the app, only this test's stub.
     ;(window as unknown as { __spokenTexts: string[] }).__spokenTexts = []
     const fakeSpeechSynthesis = {
-      speak: (utterance: { text: string }) => {
+      speak: (utterance: FakeSpeechSynthesisUtterance) => {
         // Deliberately never fires onend/onerror: this spec only asserts UI
         // states the toggle drives (speaking on tap, cancel on
         // toggle-off/navigation), not real audio completion.
         ;(window as unknown as { __spokenTexts: string[] }).__spokenTexts.push(utterance.text)
+        // P-5: fire a synthetic "word" boundary at the very start of the
+        // utterance, immediately (no real audio timing to wait on), so the
+        // read-aloud highlight test below can assert against it without
+        // depending on a real speech engine ever calling onboundary.
+        utterance.onboundary?.({ charIndex: 0, name: 'word' })
       },
       cancel: () => {},
     }
@@ -172,6 +178,27 @@ test('shows the read-aloud toggle for a tts_enabled profile picked through the p
   await page.getByRole('button', { name: 'Read this page aloud' }).click()
   await page.getByTestId('choice-c_take_lantern').click()
   await expect(page.getByRole('button', { name: 'Read this page aloud' })).toBeVisible()
+})
+
+test('highlights the first word of the passage once read-aloud starts speaking (P-5 pre-reader read-along)', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: profilesResponse(true) }))
+  await pickProfileIntoReader(page)
+
+  await page.getByRole('button', { name: 'Read this page aloud' }).click()
+
+  const highlight = page.locator('[data-testid="passage-body"] mark.cyo-passage__highlight')
+  await expect(highlight).toBeVisible()
+
+  const normalize = (text: string) => text.replace(/\s+/g, ' ').trim()
+  const passageText = normalize(await page.getByTestId('passage-body').innerText())
+  const highlightedWord = normalize(await highlight.innerText())
+  expect(passageText.startsWith(highlightedWord)).toBe(true)
+
+  // Stopping clears the highlight; there is nothing left to point at.
+  await page.getByRole('button', { name: 'Stop reading aloud' }).click()
+  await expect(highlight).toHaveCount(0)
 })
 
 test('does not show the read-aloud toggle for a profile with tts_enabled false', async ({
