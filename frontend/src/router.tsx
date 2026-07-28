@@ -27,6 +27,7 @@ import {
   ModerationThresholdsPage,
   NotFoundPage,
   PreviewAsChildPage,
+  PrivacyPage,
   ProfilePickerPage,
   ProfilesPage,
   ProviderAllowlistPage,
@@ -185,6 +186,12 @@ export const routes = [
                   { path: 'books', element: suspended(<BooksPage />) },
                   { path: 'profiles', element: suspended(<ProfilesPage />) },
                   { path: 'connections', element: suspended(<ConnectionsPage />) },
+                  // G11 trust surface. Sits inside the adult gate with every
+                  // other guardian page rather than being public: it describes
+                  // how THIS family's data is handled, and the generic
+                  // marketing-facing version of that argument belongs on the
+                  // landing page, not here.
+                  { path: 'privacy', element: suspended(<PrivacyPage />) },
                   {
                     // Guardian preview-as-child (read-only): deliberately a
                     // sibling of the other guardian-console pages, NOT nested

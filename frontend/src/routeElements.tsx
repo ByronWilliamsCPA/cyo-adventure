@@ -1,3 +1,21 @@
+/* eslint-disable react-refresh/only-export-components --
+ * False positive for this file's entire purpose. Every export here IS a
+ * component: RouteFallback/RouteError/NotFoundPage are plain ones, and the
+ * rest are lazy component objects from `lazyWithReload(...)`. The rule works
+ * syntactically and cannot see through that call expression, so it reports
+ * each lazy route chunk as a non-component export, once per page.
+ *
+ * Kept as a file-level disable rather than ~30 line-level ones because the
+ * condition is a property of the file, not of any single export. This was
+ * latent until 2026-07-28: the pre-commit ESLint hook runs --max-warnings 0
+ * over CHANGED files only, while CI's `npm run lint` allows warnings, so the
+ * 30 pre-existing instances stayed invisible until a new route was added and
+ * the file entered the hook's scope for the first time.
+ *
+ * Splitting components out is the real fix if Fast Refresh ever misbehaves
+ * here, but that is a refactor of the router's chunk topology, not a
+ * drive-by.
+ */
 import { Link, useRouteError } from 'react-router'
 
 import { LoadingStatus } from '@ds/components/LoadingStatus'
@@ -13,9 +31,7 @@ import './routeElements.css'
  * Neutral centered framing plus copy calm enough for a young reader.
  */
 export function RouteFallback() {
-  return (
-    <LoadingStatus className="route-fallback">Just a sec...</LoadingStatus>
-  )
+  return <LoadingStatus className="route-fallback">Just a sec...</LoadingStatus>
 }
 
 /**
@@ -56,9 +72,7 @@ export function NotFoundPage() {
   return (
     <main className="route-not-found">
       <h1 className="route-not-found__title">We can&apos;t find that page.</h1>
-      <p className="route-not-found__hint">
-        That link may be old, or the address may have a typo.
-      </p>
+      <p className="route-not-found__hint">That link may be old, or the address may have a typo.</p>
       <nav className="route-not-found__links" aria-label="Ways back in">
         <Link className="route-not-found__link" to="/">
           Go to the start
@@ -130,6 +144,9 @@ export const PreviewAsChildPage = lazyWithReload('PreviewAsChildPage', () =>
 )
 export const ConnectionsPage = lazyWithReload('ConnectionsPage', () =>
   import('./guardian/ConnectionsPage').then((m) => ({ default: m.ConnectionsPage }))
+)
+export const PrivacyPage = lazyWithReload('PrivacyPage', () =>
+  import('./guardian/PrivacyPage').then((m) => ({ default: m.PrivacyPage }))
 )
 export const AdminShell = lazyWithReload('AdminShell', () =>
   import('./admin/AdminShell').then((m) => ({ default: m.AdminShell }))

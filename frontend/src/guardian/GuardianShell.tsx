@@ -170,6 +170,13 @@ export function GuardianShell() {
       <main className="guardian-shell__main">
         <Outlet />
       </main>
+      {/* G11 trust surface. Deliberately a footer link rather than a ninth
+          nav item: the nav is the daily task surface and already renders up
+          to eight entries, while a privacy explanation is reference material
+          a guardian seeks out once rather than uses in a workflow. */}
+      <footer className="guardian-shell__footer">
+        <NavLink to="/guardian/privacy">How we handle your family&apos;s data</NavLink>
+      </footer>
     </div>
   )
 }
