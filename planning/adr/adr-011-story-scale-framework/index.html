@@ -3249,7 +3249,9 @@ coverage view. Genre-faithful scale is far larger (8-11 ~90-120 nodes, 13-16 ~35
   indegree 1.5). This anchors the 8-11 and 10-13 bands with high confidence.</li>
 <li>The four-source reconciliation adds words/node (~100-150), total words (~8-15k at
   8-11), the age-gated fail-state policy, and the finding that many endings come from
-  <strong>reconvergent leaves, not depth</strong>.</li>
+  <strong>breadth, not depth</strong> (many single-parent terminal nodes hung off a branchy spine,
+  not deeper paths; see the 2026-07-27 clarification in section 7 for the corrected
+  characterization of where reconvergence actually sits).</li>
 <li><strong>5-8</strong> node counts are measured (medium confidence); <strong>13-16</strong> rests on gamebook
   metadata; <strong>3-5 and 16+ have no research</strong> and are product-defined.</li>
 </ul>
@@ -3578,8 +3580,13 @@ scale, not a hand-authored seed.</p>
 wpm (read aloud), 5-8 ~90, 8-11 ~120, 10-13 ~150, 13-16 ~190, 16+ ~220.</p>
 <h3 id="6-constants-research-locked-all-cells">6. Constants (research-locked, all cells)<a class="headerlink" href="#6-constants-research-locked-all-cells" title="Permanent link">&para;</a></h3>
 <p>Decisions per path <strong>~4-8</strong> (length adds breadth, not depth; do not inflate); choices
-per decision <strong>2-3</strong>; setup before first choice <strong>~2-3 nodes</strong>; endings via reconvergent
-leaves, scaling with node count (prose ~15-22%).</p>
+per decision <strong>2-3</strong>; setup before first choice <strong>~2-3 nodes</strong>; endings as
+<strong>predominantly single-parent terminals</strong> scaling with node count (prose ~15-22%). The
+authoring target is single-parent, and the shipped corpus is close to it (54 of 61
+skeletons hold every ending at indegree 1; see the 2026-07-27 clarification), but it is a
+guideline rather than a gate. Reconvergence is an internal bottleneck/hub property
+governed per topology (section 7), not an ending property; see the 2026-07-27
+clarification.</p>
 <h3 id="7-topologies-6-and-flow-primitives">7. Topologies (6) and flow primitives<a class="headerlink" href="#7-topologies-6-and-flow-primitives" title="Permanent link">&para;</a></h3>
 <p>Flow primitives: <strong>linear passage</strong> (1-&gt;1), <strong>branch</strong> (1-&gt;N), <strong>bottleneck</strong> (M-&gt;1),
 <strong>loop</strong> (back-edge; needs state), <strong>terminal</strong> (1-&gt;0), <strong>restart-on-fail</strong> (negative
@@ -3700,6 +3707,52 @@ referenced by "loops require state (tier 2)" above, which first apply at <code>8
 <p><code>sorting_hat</code> costs <code>sort + N x (track arc)</code> nodes, so it buys replay diversity at a node
 premium and lives in Medium/Long cells, not Short; the table above annotates every band
 where it appears accordingly.</p>
+<h4 id="clarification-2026-07-27-reconvergence-and-endings">Clarification (2026-07-27): reconvergence and endings<a class="headerlink" href="#clarification-2026-07-27-reconvergence-and-endings" title="Permanent link">&para;</a></h4>
+<p>Earlier drafts of this ADR described endings as coming from "reconvergent leaves." A
+measurement of the shipped skeleton corpus (61 skeletons) corrected that wording, and
+this note records the finding, how it lines up against the JHM "essentially a tree (max
+indegree 1.5)" anchor above, and the resulting enforcement stance.</p>
+<ul>
+<li><strong>The JHM figure is a mean of per-book maxima, and we exceed it.</strong> JHM's "max indegree
+  1.5 (range 1-3)" is the mean across books of each book's most-reconverged page, not a
+  hard ceiling. The like-for-like statistic on our corpus is the mean of each skeleton's
+  own maximum indegree, and that is <strong>7.79</strong> (median 4, range 1-126); only <strong>25 of 61</strong>
+  skeletons keep their busiest node inside JHM's 1-3 range. On that metric we do <strong>not</strong>
+  match JHM: our hub nodes are markedly more reconverged than the classic books', driven
+  by a handful of large <code>open_map</code> and bottleneck-heavy skeletons (the worst is a single
+  126-parent hub). Averaged over all 11,438 nodes the corpus is still tree-like, mean
+  indegree <strong>1.17</strong> (1.18 if the 58 indegree-0 roots are excluded), but that is a
+  different aggregate than JHM's and cannot be read as agreement with it. Earlier drafts
+  cited <strong>1.21</strong> here; that figure is not reproducible from the shipped corpus and is
+  superseded by the measured 1.17.</li>
+<li><strong>Reconvergence is real but internal, not at endings.</strong> 45 of 61 skeletons have at
+  least one reconvergent node, concentrated at bottleneck/hub nodes (a <code>branch_and_bottleneck</code>
+  is a bottleneck by construction). But <strong>54 of 61 skeletons have every ending at indegree
+  exactly 1</strong>; only 7 have any reconvergent ending, at a max of 4 parents. Endings are
+  single-parent terminals; the ~15-22% ending share is achieved by <strong>breadth</strong> (many
+  terminals off a branchy spine), the same mechanism as the genre, not by folding paths
+  into shared endings.</li>
+<li><strong>Topology governs reconvergence; there is no per-band magnitude gate.</strong> The validator
+  regulates reconvergence through PL-18 topology admissibility
+  (<code>validator/topology.py</code>), which splits on cycles first: a cyclic graph admits exactly
+  <code>loop_and_grow</code> and <code>open_map</code>, and an acyclic graph <em>with</em> reconvergence admits exactly
+  <code>branch_and_bottleneck</code> and <code>gauntlet</code> (<code>sorting_hat</code> is excluded there because it
+  forbids a cross-track bottleneck). An acyclic graph with no reconvergence at all is
+  <code>time_cave</code>, plus <code>gauntlet</code> when it is a pure linear spine or <code>sorting_hat</code> when it
+  branches; those are the pure-tree shapes. Note that <code>open_map</code> is
+  admissible only for cyclic graphs, so a DAG labelled <code>open_map</code> fails PL-18 whether or
+  not it reconverges. Kid bands lean on the pure-tree shapes. The per-band
+  Reconvergence column above ("minimal / light / moderate") is an <strong>authoring guideline</strong>,
+  not a gated magnitude. <code>BandProfile.reconvergence_ceiling</code> stays an intentionally optional
+  calibration dial: it is <code>None</code> for every band today and is read only by the mutation
+  operator, never by the validator gate. <strong>Decision: keep it unset</strong> unless a future
+  calibration shows kid-band skeletons drifting toward un-genre-like hub indegrees.</li>
+<li><strong>Choices per decision (2-3) stays an authoring guideline, not a hard gate.</strong> The PL-17
+  endings and decision floors already gate the two properties JHM tied to reader
+  satisfaction and sales; an outdegree ceiling is not added as a validator error. If
+  kid-band stories begin emitting overwhelming choice fans, revisit as an advisory finding
+  rather than a hard block.</li>
+</ul>
 <h3 id="8-series-campaign-continuity">8. Series (campaign continuity)<a class="headerlink" href="#8-series-campaign-continuity" title="Permanent link">&para;</a></h3>
 <p>A <code>series</code> tag chains multiple books. <strong>Invariant:</strong> in any non-final book, every
 successful-completion ending converges on the next book's single <code>series_entry_node</code>
@@ -3808,7 +3861,7 @@ records which numbers are empirical and which are tunable product choices.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 27, 2026 04:06:26 UTC">July 27, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 03:08:29 UTC">July 28, 2026</span>
   </span>
 
     
