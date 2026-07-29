@@ -3021,8 +3021,8 @@ vision doc (v1.2):</p>
 <tr>
 <td>K11</td>
 <td>Express interests and initiate a story request in kid terms (picking interests, typing a wish)</td>
-<td>🟡</td>
-<td>Shipped end to end: <code>POST /story-requests</code> plus a kid-terms request UI (idea box, series continuation, own-status list in kid language); ADR-015 is the foundational record</td>
+<td>✅</td>
+<td>Verified 2026-07-29 shipped end to end on a real child principal (not guardian-on-behalf): <code>POST /story-requests</code> accepts a child token (<code>api/story_requests.py:313-363</code>, <code>Principal.can_access_profile</code>), stamps <code>initiator_role="child"</code>, proven by <code>tests/integration/test_story_requests_api.py::test_child_creates_own_profile_request</code>; kid-terms UI (idea box, series continuation, own-status list) in <code>frontend/src/library/RequestStory.tsx</code>; series continuation e2e in <code>frontend/e2e/story-requests-kid.spec.ts</code>. ADR-015 is the foundational record. Was 🟡 only because the register lagged the code</td>
 </tr>
 <tr>
 <td>K12</td>
@@ -3106,8 +3106,8 @@ vision doc (v1.2):</p>
 <tr>
 <td>G3</td>
 <td>Per-child permissions and limits: whether the child may initiate story requests (including pre-authorized auto-allow), screen-time norms if any</td>
-<td>🟡</td>
-<td>Pre-authorization envelope shipped 2026-07-17 in PR #270 (<code>request_auto_approve</code>, <code>monthly_request_envelope</code> on <code>child_profile</code>; form UI in <code>ProfileFormDialog.tsx</code>/<code>ProfilesPage.tsx</code>); screen-time norms remain unspecced and out of scope</td>
+<td>✅</td>
+<td>Pre-authorization envelope shipped 2026-07-17 in PR #270 (<code>request_auto_approve</code>, <code>monthly_request_envelope</code> on <code>child_profile</code>; form UI in <code>ProfileFormDialog.tsx</code>/<code>ProfilesPage.tsx</code>); screen-time norms are explicitly out of scope by the same note, not a remaining gap, so flipped to done 2026-07-29</td>
 </tr>
 <tr>
 <td>G4</td>
@@ -3299,8 +3299,8 @@ vision doc (v1.2):</p>
 <tr>
 <td>A15</td>
 <td>Administer family connections: broker, list, and remove connection records on request; admin action never substitutes for guardian consent</td>
-<td>🟡</td>
-<td>Console shipped in PR #267 (open); ADR-016 subordinates it to G17 consent</td>
+<td>✅</td>
+<td>Console shipped and merged in PR #267 (folded into #270 per roadmap.md M4d: "Delivered 2026-07-17"); this row said "open" only because it lagged the merge. ADR-016 subordinates it to G17 consent. Flipped to done 2026-07-29; empties Phase 4d down to the UW-A20 verification row</td>
 </tr>
 <tr>
 <td>A16</td>
@@ -3511,7 +3511,7 @@ Added 2026-07-25 by the ADR-023 authorship pass:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 21:09:10 UTC">July 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 18:10:34 UTC">July 29, 2026</span>
   </span>
 
     
