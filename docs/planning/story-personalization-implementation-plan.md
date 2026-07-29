@@ -360,7 +360,8 @@ is live.
 `20260728T205008Z`, 30 stories x 4 slots, first attempt only, the `fill_bound.md` "Verbatim
 tokens" preservation instruction present in every prompt. The raw run artifact under
 `results/sentinel-survival/20260728T205008Z/` is local-only and gitignored, so every number a
-reader needs is restated here rather than left to that path):
+reader needs is restated here, and the aggregate itself is committed at
+[evidence/sentinel-reinsertion/20260728T205008Z-g1-stop-survival.md](evidence/sentinel-reinsertion/20260728T205008Z-g1-stop-survival.md)):
 
 - **Clean-pass rate: 3.3% (1/30) on `openrouter:anthropic/claude-haiku-4.5`**, which is
   production's primary fill route (`openrouter_model` in `core/config.py`). This is a
@@ -388,8 +389,10 @@ reader needs is restated here rather than left to that path):
   model), not reverse the STOP.
 
 **RE-INSERTION PROTOTYPE MEASURED 2026-07-29** (`scripts/prototype_sentinel_reinsertion.py`
-over run `results/sentinel-survival/20260729T010024Z`, 30 fills persisted via `--save-fills`;
-prompt-preserved survival replicated the STOP result at 0/30):
+over run `20260729T010024Z`, 30 fills persisted via `--save-fills`; prompt-preserved survival
+replicated the STOP result at 0/30; aggregate committed at
+[evidence/sentinel-reinsertion/20260729T010024Z-reinsertion-dev.md](evidence/sentinel-reinsertion/20260729T010024Z-reinsertion-dev.md)
+because the run directory under `results/` is gitignored):
 
 - Strip-all-then-reinsert (never trust a model token; strip everything, match the generic
   inner word case-sensitively at word boundaries, wrap every match, verify with
@@ -435,13 +438,17 @@ zero provider spend; strict baseline preserved as `reinsertion-report-strict.*`)
   ENTRANCE) span 58-80% on small samples and are the residual soft spot the dedication
   overlay does not need to cover (they are not the child's name).
 - **G1-R CONFIRMED 2026-07-29** on 30 fresh, unseen fills
-  (`results/sentinel-survival/20260729T042510Z`): verify_manifest_ok **30/30 (100%)**.
+  (run `20260729T042510Z`, aggregate at
+  [evidence/sentinel-reinsertion/20260729T042510Z-g1r-confirmatory.md](evidence/sentinel-reinsertion/20260729T042510Z-g1r-confirmatory.md)):
+  verify_manifest_ok **30/30 (100%)**.
   Per-slot coverage proved run-variable (HERO 26.8% vs 42.4%, FOUNDER 78.6% vs 94.6% across
   the two runs; LISTENER/OPERATOR stable near 100%), confirming coverage is a per-fill
   property to report as cross-run ranges, never a stable point estimate (AL-061); the
   transform-correctness gate is the invariant.
 - **VOCATIVE NUDGE MEASURED AND REJECTED 2026-07-29** (owner-approved experiment; run
-  `results/sentinel-survival/20260729T054004Z`, 30 stories, template edit reverted): adding
+  `20260729T054004Z`, aggregate at
+  [evidence/sentinel-reinsertion/20260729T054004Z-vocative-nudge-rejected.md](evidence/sentinel-reinsertion/20260729T054004Z-vocative-nudge-rejected.md),
+  30 stories, template edit reverted): adding
   "let another character address the hero by name in dialogue at least once in that node
   ... second-person narration alone never surfaces the name" to `fill_bound.md` cut HERO
   coverage to **4.9%** (72/1458) versus the 26.8-42.4% baseline range; 10/30 stories ended

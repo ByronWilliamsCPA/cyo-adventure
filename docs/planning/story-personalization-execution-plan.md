@@ -402,8 +402,10 @@ below is the resulting re-plan and now owns the path to Stage B.**
 ## Stage R: deterministic re-insertion pipeline (re-plan of 2026-07-29; replaces prompt-preserved survival as the token supply)
 
 **Why this stage exists.** G1 fired STOP twice (3.3%, then 0/30 prompt-preserved survival),
-and the re-insertion prototype run (`results/sentinel-survival/20260729T010024Z`, fills
-persisted) showed the strict per-node expectation was itself wrong: the corpus is
+and the re-insertion prototype run (`20260729T010024Z`, fills persisted, aggregate committed
+at
+[evidence/sentinel-reinsertion/20260729T010024Z-reinsertion-dev.md](evidence/sentinel-reinsertion/20260729T010024Z-reinsertion-dev.md))
+showed the strict per-node expectation was itself wrong: the corpus is
 second-person, so the HERO name structurally cannot appear in most node bodies (42% node
 coverage, absent entirely from 11/30 stories) while named third-party slots re-insert at
 94-99%. The design that survives the data is **derive-not-prescribe**: after the fill, strip
@@ -565,9 +567,13 @@ credits; zero spend occurred; the Ollama fallback leg 404s on an unpulled model)
 after a top-up.** The optional vocative nudge was not exercised; it is an owner spend
 decision and the feature does not depend on it.
 
-**CONFIRMED 2026-07-29** (fresh run `results/sentinel-survival/20260729T042510Z`, 30 unseen
-fills through the production route after the credit top-up): **verify_manifest_ok 30/30
-(100%)**, the G1-R gate requirement, met on data the matcher was never tuned against.
+**CONFIRMED 2026-07-29** (fresh run `20260729T042510Z`, 30 unseen fills through the
+production route after the credit top-up): **verify_manifest_ok 30/30 (100%)**, the G1-R
+gate requirement, met on data the matcher was never tuned against. The run directory
+`results/sentinel-survival/20260729T042510Z/` is gitignored, so the aggregate report is
+committed at
+[evidence/sentinel-reinsertion/20260729T042510Z-g1r-confirmatory.md](evidence/sentinel-reinsertion/20260729T042510Z-g1r-confirmatory.md)
+and a reader can check these numbers rather than take them on trust.
 Second finding, load-bearing for how the record must be read: per-slot coverage varies
 materially run to run (HERO 26.8% here vs 42.4% on the dev fills; FOUNDER 78.6% vs 94.6%;
 CHAPERONE 30.6% vs 63.9%; LISTENER/OPERATOR stable near 100%). Coverage is a property of
@@ -593,7 +599,9 @@ the remaining G1-R clause is the owner's acknowledgment of this coverage posture
   feature does not depend on it. **MEASURED AND REJECTED 2026-07-29: HERO coverage fell to
   4.9% (72/1458) versus the 26.8-42.4% baseline range because the nudge's rationale clause
   was executed as an instruction (design plan section 3.4 block; AL-062). Template edit
-  reverted, never committed; the run is `results/sentinel-survival/20260729T054004Z`.**
+  reverted, never committed; the run is `20260729T054004Z`, aggregate report committed at
+  [evidence/sentinel-reinsertion/20260729T054004Z-vocative-nudge-rejected.md](evidence/sentinel-reinsertion/20260729T054004Z-vocative-nudge-rejected.md)
+  because `results/` is gitignored.**
 
 **Stage R exit (gate G1-R, replaces the fired G1 for Stage B onward):** round-trip
 integrity 100% on the production path; per-slot coverage profile recorded; owner
