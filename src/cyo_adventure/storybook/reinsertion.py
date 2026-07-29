@@ -868,7 +868,8 @@ def _index_nodes(document: dict[str, object]) -> dict[str, dict[str, object]]:
         dict[str, dict[str, object]]: Node id to its node dict, for every
             node with a string id. A node with no string id is silently
             excluded (schema validity is the validation gate's job, not
-            this module's).
+            this module's). On a DUPLICATE id the last node wins, and the
+            duplication is logged; see the note on that branch.
     """
     nodes = _as_list(document.get("nodes"))
     if nodes is None:
@@ -879,8 +880,25 @@ def _index_nodes(document: dict[str, object]) -> dict[str, dict[str, object]]:
         if node is None:
             continue
         node_id = node.get("id")
-        if isinstance(node_id, str):
-            indexed[node_id] = node
+        if not isinstance(node_id, str):
+            continue
+        # #ASSUME: data-integrity: node ids are unique. The validator's
+        # topology layer rejects a duplicate before any document reaches
+        # here, so this is defense in depth, not a live case. It is worth a
+        # line anyway because of HOW it would fail: the index keeps the last
+        # node, so the first node with that id is never wrapped, silently
+        # ships to a reader with no personalization at all, and is invisible
+        # in the token outcomes (which are keyed by node id, so both nodes
+        # collapse to one entry). A logged duplicate turns that into a
+        # question someone can answer.
+        # #VERIFY: the topology check in `validator/topology.py` is the
+        # enforcement; this branch only reports.
+        if node_id in indexed:
+            logger.warning(
+                "reinsertion.duplicate_node_id",
+                node_id=node_id,
+            )
+        indexed[node_id] = node
     return indexed
 
 
@@ -914,6 +932,63 @@ def _manifest_entries(tally: dict[_Token, int]) -> list[dict[str, object]]:
         {"slot_id": slot_id, "value": value, "count": count}
         for (slot_id, value), count in sorted(tally.items())
     ]
+
+
+def _node_manifest_surfaces(
+    node: dict[str, object],
+) -> dict[str, list[dict[str, object]]]:
+    """Return one node's non-empty manifest surfaces, keyed per the scheme.
+
+    Args:
+        node: A raw node mapping (never mutated).
+
+    Returns:
+        dict[str, list[dict[str, object]]]: Zero, one, or two entries: the
+            body surface under the bare node id and the ending-title surface
+            under the id plus `MANIFEST_ENDING_TITLE_SUFFIX`. A surface with
+            no sentinels contributes no key.
+    """
+    node_id = node.get("id")
+    if not isinstance(node_id, str):
+        return {}
+    # #ASSUME: data-integrity: no node id ends with the ending-title suffix.
+    # `MANIFEST_ENDING_TITLE_SUFFIX`'s own comment asserts this is impossible
+    # because node ids come from skeleton authors rather than user input, but
+    # nothing ENFORCES it: the schema constrains a node id only to
+    # `min_length=1`. A node literally named `"n1::ending_title"` would write
+    # its body surface to the same manifest key `n1`'s ending title uses, and
+    # `_reference_document_from_manifest` would split that key back into the
+    # wrong node. The round-trip property `build_manifest` claims to hold "by
+    # construction" would then fail, and `verify_manifest` would report a
+    # mismatch attributed to the wrong node. Logged so the cause is named
+    # rather than inferred from a confusing mismatch.
+    # #VERIFY: tests/unit/test_storybook_reinsertion.py::
+    # test_node_id_colliding_with_the_ending_title_suffix_is_logged.
+    if node_id.endswith(MANIFEST_ENDING_TITLE_SUFFIX):
+        logger.warning(
+            "reinsertion.node_id_collides_with_manifest_suffix",
+            node_id=node_id,
+        )
+
+    surfaces: dict[str, list[dict[str, object]]] = {}
+    body = node.get("body")
+    if isinstance(body, str):
+        body_tally = _tally_sentinels(body)
+        if body_tally:
+            surfaces[_manifest_key(node_id, ending_title=False)] = _manifest_entries(
+                body_tally
+            )
+
+    ending = _as_dict(node.get("ending"))
+    if ending is not None:
+        title = ending.get("title")
+        if isinstance(title, str):
+            title_tally = _tally_sentinels(title)
+            if title_tally:
+                surfaces[_manifest_key(node_id, ending_title=True)] = _manifest_entries(
+                    title_tally
+                )
+    return surfaces
 
 
 def build_manifest(document: Mapping[str, object]) -> dict[str, object]:
@@ -952,27 +1027,8 @@ def build_manifest(document: Mapping[str, object]) -> dict[str, object]:
     if nodes is not None:
         for raw_node in nodes:
             node = _as_dict(raw_node)
-            if node is None:
-                continue
-            node_id = node.get("id")
-            if not isinstance(node_id, str):
-                continue
-
-            body = node.get("body")
-            if isinstance(body, str):
-                body_tally = _tally_sentinels(body)
-                if body_tally:
-                    key = _manifest_key(node_id, ending_title=False)
-                    surfaces[key] = _manifest_entries(body_tally)
-
-            ending = _as_dict(node.get("ending"))
-            if ending is not None:
-                title = ending.get("title")
-                if isinstance(title, str):
-                    title_tally = _tally_sentinels(title)
-                    if title_tally:
-                        key = _manifest_key(node_id, ending_title=True)
-                        surfaces[key] = _manifest_entries(title_tally)
+            if node is not None:
+                surfaces.update(_node_manifest_surfaces(node))
 
     return {"tokens": {key: surfaces[key] for key in sorted(surfaces)}}
 
@@ -1238,12 +1294,22 @@ def reinsert_storybook(
         node_tokens = sorted(expected[node_id])
         owner_by_value = _value_owner(node_tokens)
         reinsertable_tokens: list[_Token] = []
+        # Two slots may declare the SAME generic value; that is exactly why
+        # `_value_owner` exists. `plural_occurrences` counts OCCURRENCES OF
+        # TEXT, not tokens, so tallying it per token double-counted every
+        # such node: the same `"Explorers"` in the prose was added once for
+        # each slot that named `"Explorer"`, inflating a diagnostic whose
+        # whole purpose is to say how much plural text a real fill produces.
+        # Counted once per distinct value instead.
+        plural_counted: set[str] = set()
         for slot_id, value in node_tokens:
             if node is None:
                 count = 0
             else:
                 count = _count_in_node_surfaces(node, value)
-                plural_occurrences += _count_plural_occurrences(node, value)
+                if value not in plural_counted:
+                    plural_counted.add(value)
+                    plural_occurrences += _count_plural_occurrences(node, value)
             status = _classify_token(count, owns_value=owner_by_value[value] == slot_id)
             outcomes.append(
                 TokenOutcome(

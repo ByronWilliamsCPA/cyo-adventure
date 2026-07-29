@@ -16,6 +16,7 @@ transform.
 from __future__ import annotations
 
 import json
+import logging
 import re
 import time
 from typing import cast
@@ -31,6 +32,7 @@ from cyo_adventure.storybook.reinsertion import (
     strip_model_sentinels,
     verify_manifest,
 )
+from cyo_adventure.storybook.sentinels import wrap
 from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity
 
 
@@ -962,3 +964,82 @@ def test_clean_reinsertion_logs_nothing(
         reinsert_storybook(pre_fill, filled)
 
     assert "reinsertion.tokens_not_reinserted" not in caplog.text
+
+
+@pytest.mark.unit
+def test_plural_occurrences_counts_text_once_per_distinct_value() -> None:
+    """Two slots sharing a value must not double-count the same plural text.
+
+    `plural_occurrences` counts occurrences of TEXT, not tokens. Tallied per
+    token it was added once for every slot naming the same generic value,
+    inflating a diagnostic whose entire job is to say how much plural text a
+    real fill produces.
+    """
+    pre_fill = _skeleton(
+        [
+            {
+                "id": "n1",
+                "body": f"{wrap('HERO', 'Explorer')} met {wrap('GUIDE', 'Explorer')}.",
+            }
+        ]
+    )
+    filled = _skeleton([{"id": "n1", "body": "Explorer met the Explorers today."}])
+
+    outcome = reinsert_storybook(pre_fill, filled)
+
+    assert outcome.plural_occurrences == 1
+
+
+@pytest.mark.unit
+def test_node_id_colliding_with_the_ending_title_suffix_is_logged(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A node id ending in the manifest suffix names itself in the log.
+
+    Nothing enforces the uniqueness this keying scheme assumes: the schema
+    bounds a node id only by `min_length=1`. Such a node writes its body
+    surface to the key another node's ending title uses, and the round-trip
+    property `build_manifest` claims to hold by construction quietly stops
+    holding.
+    """
+    document = _skeleton(
+        [
+            {
+                "id": f"n1{MANIFEST_ENDING_TITLE_SUFFIX}",
+                "body": f"The {wrap('HERO', 'Explorer')} set off.",
+            }
+        ]
+    )
+
+    with caplog.at_level(logging.WARNING):
+        build_manifest(document)
+
+    assert "reinsertion.node_id_collides_with_manifest_suffix" in caplog.text
+
+
+@pytest.mark.unit
+def test_duplicate_node_id_is_logged(caplog: pytest.LogCaptureFixture) -> None:
+    """A duplicated node id is reported rather than silently shadowed.
+
+    The index keeps the last node, so the FIRST node with that id is never
+    wrapped: it ships to a reader with no personalization, and it is
+    invisible in the token outcomes, which are keyed by node id and so
+    collapse both nodes into one entry.
+    """
+    pre_fill = _skeleton(
+        [
+            {"id": "n1", "body": f"The {wrap('HERO', 'Explorer')} set off."},
+            {"id": "n1", "body": f"The {wrap('HERO', 'Explorer')} returned."},
+        ]
+    )
+    filled = _skeleton(
+        [
+            {"id": "n1", "body": "The Explorer set off."},
+            {"id": "n1", "body": "The Explorer returned."},
+        ]
+    )
+
+    with caplog.at_level(logging.WARNING):
+        reinsert_storybook(pre_fill, filled)
+
+    assert "reinsertion.duplicate_node_id" in caplog.text
