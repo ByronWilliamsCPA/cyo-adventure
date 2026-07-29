@@ -164,6 +164,48 @@ def test_possessive_apostrophe_wraps_the_stem_and_round_trips() -> None:
 
 
 # ---------------------------------------------------------------------------
+# verify_manifest_ok: the G1-R gate metric, distinct from round_trip_ok
+# ---------------------------------------------------------------------------
+#
+# round_trip_ok proves fidelity to the ORIGINAL bound_skeleton's declared
+# expectations (measurement-specific, see the module docstring).
+# verify_manifest_ok proves the reinserted document is self-consistent with
+# its OWN derived manifest, via storybook.reinsertion.verify_manifest; it is
+# the required-100% gate metric for G1-R because any failure there is a
+# transform bug in reinsert_storybook itself, not a fill-quality signal.
+
+
+@pytest.mark.unit
+def test_verify_manifest_ok_true_on_a_normal_trial() -> None:
+    """verify_manifest_ok passes on an ordinary clean reinsertion."""
+    pre_fill = _skeleton([{"id": "n1", "body": "The {~HERO:Explorer~} sets off."}])
+    filled = _skeleton([{"id": "n1", "body": "The brave Explorer sets off."}])
+    result = reinsert_sentinels(pre_fill, filled)
+
+    assert result.verify_manifest_ok is True
+
+
+@pytest.mark.unit
+def test_verify_manifest_ok_true_even_when_round_trip_ok_is_false() -> None:
+    """verify_manifest_ok is distinct from round_trip_ok: a not_found token still passes it.
+
+    A not_found token fails round_trip_ok (the document no longer carries
+    every token the ORIGINAL bound_skeleton declared), but the document
+    remains self-consistent with the manifest reinsert_storybook derived
+    FROM it, so verify_manifest_ok still passes. This is the behavior that
+    makes verify_manifest_ok the right required-100% gate metric: a fill
+    that paraphrases a word away is a fill-quality problem, not a transform
+    bug, and must not fail the transform's own gate.
+    """
+    pre_fill = _skeleton([{"id": "n1", "body": "The {~HERO:Explorer~} sets off."}])
+    filled = _skeleton([{"id": "n1", "body": "A brave adventurer sets off."}])
+    result = reinsert_sentinels(pre_fill, filled)
+
+    assert result.round_trip_ok is False
+    assert result.verify_manifest_ok is True
+
+
+# ---------------------------------------------------------------------------
 # aggregate_reinsertion / render_json / render_markdown
 # ---------------------------------------------------------------------------
 
@@ -190,6 +232,7 @@ def _result(
     *,
     clean: bool,
     round_trip_ok: bool,
+    verify_manifest_ok: bool = True,
     sentence_start_hits: int = 0,
     plural_occurrences: int = 0,
 ) -> ReinsertionResult:
@@ -199,6 +242,7 @@ def _result(
         token_outcomes=tuple(outcomes),
         reinsertion_clean=clean,
         round_trip_ok=round_trip_ok,
+        verify_manifest_ok=verify_manifest_ok,
         sentence_start_hits=sentence_start_hits,
         plural_occurrences=plural_occurrences,
     )
@@ -295,6 +339,84 @@ def test_aggregate_reinsertion_sums_sentence_start_and_plural_fields() -> None:
 
 
 @pytest.mark.unit
+def test_aggregate_reinsertion_verify_manifest_ok_counts() -> None:
+    """verify_manifest_ok_trials/rate aggregate independently from round_trip_ok."""
+    trials = [
+        ReinsertionTrial(
+            specimen_slug="s0",
+            provider="mock",
+            result=_result(
+                [_outcome("reinsertable", 1)],
+                clean=True,
+                round_trip_ok=True,
+                verify_manifest_ok=True,
+            ),
+        ),
+        ReinsertionTrial(
+            specimen_slug="s1",
+            provider="mock",
+            result=_result(
+                [_outcome("not_found", 0)],
+                clean=False,
+                round_trip_ok=False,
+                verify_manifest_ok=False,
+            ),
+        ),
+    ]
+    data = aggregate_reinsertion(trials)
+
+    assert data.verify_manifest_ok_trials == 1
+    assert data.verify_manifest_ok_rate == pytest.approx(0.5)
+
+
+@pytest.mark.unit
+def test_aggregate_reinsertion_per_slot_coverage() -> None:
+    """Per-slot coverage tallies (node, token) outcomes by slot_id, sorted by slot_id.
+
+    Constructed scenario: HERO has 3 total expectations across two trials (2
+    reinsertable, 1 not_found); SIB has 2 total expectations in one trial (1
+    reinsertable, 1 not_found).
+    """
+    trials = [
+        ReinsertionTrial(
+            specimen_slug="s0",
+            provider="mock",
+            result=_result(
+                [
+                    _outcome("reinsertable", 1, slot_id="HERO", value="Explorer"),
+                    _outcome("not_found", 0, slot_id="HERO", value="Wanderer"),
+                ],
+                clean=False,
+                round_trip_ok=False,
+            ),
+        ),
+        ReinsertionTrial(
+            specimen_slug="s1",
+            provider="mock",
+            result=_result(
+                [
+                    _outcome("reinsertable", 1, slot_id="HERO", value="Adventurer"),
+                    _outcome("reinsertable", 1, slot_id="SIB", value="Buddy"),
+                    _outcome("not_found", 0, slot_id="SIB", value="Pal"),
+                ],
+                clean=False,
+                round_trip_ok=False,
+            ),
+        ),
+    ]
+    data = aggregate_reinsertion(trials)
+
+    by_slot = {stats.slot_id: stats for stats in data.per_slot_coverage}
+    assert [stats.slot_id for stats in data.per_slot_coverage] == sorted(by_slot)
+    assert by_slot["HERO"].reinsertable == 2
+    assert by_slot["HERO"].total == 3
+    assert by_slot["HERO"].coverage_rate == pytest.approx(2 / 3)
+    assert by_slot["SIB"].reinsertable == 1
+    assert by_slot["SIB"].total == 2
+    assert by_slot["SIB"].coverage_rate == pytest.approx(0.5)
+
+
+@pytest.mark.unit
 def test_render_json_shape() -> None:
     """render_json emits every field aggregate_reinsertion computed, JSON-serializable."""
     trials = [
@@ -323,6 +445,72 @@ def test_render_json_shape() -> None:
     assert payload["multiplicity_histogram"] == {"1": 1}
     assert payload["sentence_start_hits"] == 1
     assert payload["plural_occurrences"] == 2
+
+
+@pytest.mark.unit
+def test_render_json_contains_verify_manifest_and_per_slot_fields() -> None:
+    """render_json emits verify_manifest_ok_* and per_slot_coverage alongside the legacy fields."""
+    trials = [
+        ReinsertionTrial(
+            specimen_slug="s0",
+            provider="mock",
+            result=_result(
+                [
+                    _outcome("reinsertable", 1, slot_id="HERO", value="Explorer"),
+                    _outcome("not_found", 0, slot_id="SIB", value="Buddy"),
+                ],
+                clean=False,
+                round_trip_ok=False,
+                verify_manifest_ok=True,
+            ),
+        )
+    ]
+    data = aggregate_reinsertion(trials)
+    payload = render_json(data)
+
+    assert payload["verify_manifest_ok_trials"] == 1
+    assert payload["verify_manifest_ok_rate"] == pytest.approx(1.0)
+    assert payload["per_slot_coverage"] == [
+        {
+            "slot_id": "HERO",
+            "reinsertable": 1,
+            "total": 1,
+            "coverage_rate": pytest.approx(1.0),
+        },
+        {
+            "slot_id": "SIB",
+            "reinsertable": 0,
+            "total": 1,
+            "coverage_rate": pytest.approx(0.0),
+        },
+    ]
+
+
+@pytest.mark.unit
+def test_render_markdown_contains_verify_manifest_and_per_slot_table() -> None:
+    """render_markdown surfaces the verify-manifest rate and a per-slot coverage table."""
+    trials = [
+        ReinsertionTrial(
+            specimen_slug="s0",
+            provider="mock",
+            result=_result(
+                [
+                    _outcome("reinsertable", 1, slot_id="HERO", value="Explorer"),
+                    _outcome("not_found", 0, slot_id="SIB", value="Buddy"),
+                ],
+                clean=False,
+                round_trip_ok=False,
+                verify_manifest_ok=True,
+            ),
+        )
+    ]
+    data = aggregate_reinsertion(trials)
+    markdown = render_markdown(data)
+
+    assert "Verify-manifest" in markdown
+    assert "Per-slot coverage" in markdown
+    assert "| HERO |" in markdown
+    assert "| SIB |" in markdown
 
 
 @pytest.mark.unit

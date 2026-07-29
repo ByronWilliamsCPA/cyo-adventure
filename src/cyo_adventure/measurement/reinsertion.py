@@ -35,6 +35,7 @@ from typing import TYPE_CHECKING, cast
 from cyo_adventure.storybook.reinsertion import (
     TokenOutcome,
     reinsert_storybook,
+    verify_manifest,
 )
 from cyo_adventure.storybook.sentinels import find_sentinels, wrap
 from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity
@@ -77,7 +78,18 @@ class ReinsertionResult:
             capitalization widening `reinsert_storybook` itself applies. A
             token that stayed `not_found` still fails this check exactly as
             `check_sentinel_integrity` against the raw `bound_skeleton`
-            would.
+            would. This is BOUND-SKELETON-RELATIVE (a fill-quality signal);
+            see `verify_manifest_ok` for the transform-correctness signal.
+        verify_manifest_ok: Whether `document` still matches its own derived
+            `manifest`, per `cyo_adventure.storybook.reinsertion.verify_manifest`.
+            This is the ADR-023 G1-R gate metric (required 100%: any failure
+            here is a bug in `reinsert_storybook` itself, since the manifest
+            is scanned straight off `document`, never a fill-quality signal).
+            It is DISTINCT from `round_trip_ok`: that statistic is relative
+            to the ORIGINAL pre-fill `bound_skeleton`'s declared
+            expectations and legitimately fails on an ordinary `not_found`
+            token, while `verify_manifest_ok` only asks whether the
+            transform's own output is internally self-consistent.
         sentence_start_hits: How many occurrences across the whole document
             were classified `"reinsertable"` only because a sentence-start
             capitalized variant of a lowercase-starting expected value was
@@ -91,6 +103,7 @@ class ReinsertionResult:
     token_outcomes: tuple[TokenOutcome, ...]
     reinsertion_clean: bool
     round_trip_ok: bool
+    verify_manifest_ok: bool
     sentence_start_hits: int
     plural_occurrences: int
 
@@ -131,6 +144,25 @@ class ReinsertionProviderStats:
 
 
 @dataclass(frozen=True, slots=True)
+class SlotCoverageStats:
+    """Re-insertion coverage for one personalization slot, across every trial in a run.
+
+    Attributes:
+        slot_id: The slot id (e.g. ``"HERO"``).
+        reinsertable: Count of `(node, token)` expectations for this slot
+            whose `TokenOutcome.status` was ``"reinsertable"``.
+        total: Total `(node, token)` expectations for this slot, across
+            every trial (``"reinsertable"`` plus ``"not_found"``).
+        coverage_rate: ``reinsertable / total``.
+    """
+
+    slot_id: str
+    reinsertable: int
+    total: int
+    coverage_rate: float
+
+
+@dataclass(frozen=True, slots=True)
 class ReinsertionAggregate:
     """The full aggregated re-insertion-viability report.
 
@@ -138,10 +170,21 @@ class ReinsertionAggregate:
         total_trials: Total trials aggregated.
         clean_trials: Trials with `reinsertion_clean` True.
         reinsertion_clean_rate: ``clean_trials / total_trials``.
-        round_trip_ok_trials: Trials with `round_trip_ok` True.
+        round_trip_ok_trials: Trials with `round_trip_ok` True (the legacy,
+            bound-skeleton-relative fidelity statistic).
         round_trip_ok_rate: ``round_trip_ok_trials / total_trials``.
+        verify_manifest_ok_trials: Trials with `verify_manifest_ok` True
+            (the ADR-023 G1-R gate metric: transform self-consistency,
+            required 100%; distinct from `round_trip_ok_trials`, see
+            `ReinsertionResult.verify_manifest_ok`).
+        verify_manifest_ok_rate: ``verify_manifest_ok_trials / total_trials``.
         per_provider: Per-provider reinsertion-clean stats, sorted by
             provider name.
+        per_slot_coverage: Per-slot re-insertion coverage (the fraction of
+            `(node, token)` expectations classified ``"reinsertable"``),
+            sorted by `SlotCoverageStats.slot_id`. Makes the per-slot
+            coverage profile a permanent, reproducible report artifact
+            rather than an ad hoc computation.
         outcome_histogram: Counts of every `(node, token)` pair's `status`
             across every trial, keyed by ``"reinsertable"`` /
             ``"not_found"``. Deliberately NOT keyed by the literal node id or
@@ -166,7 +209,10 @@ class ReinsertionAggregate:
     reinsertion_clean_rate: float
     round_trip_ok_trials: int
     round_trip_ok_rate: float
+    verify_manifest_ok_trials: int
+    verify_manifest_ok_rate: float
     per_provider: tuple[ReinsertionProviderStats, ...]
+    per_slot_coverage: tuple[SlotCoverageStats, ...]
     outcome_histogram: dict[str, int]
     multiplicity_histogram: dict[str, int]
     sentence_start_hits: int
@@ -341,6 +387,7 @@ def reinsert_sentinels(
         bound_skeleton, outcome.document, outcome.token_outcomes
     )
     round_trip_ok = check_sentinel_integrity(reference, outcome.document).ok
+    verify_manifest_ok = verify_manifest(outcome.document, outcome.manifest)
 
     return ReinsertionResult(
         document=outcome.document,
@@ -348,6 +395,7 @@ def reinsert_sentinels(
         token_outcomes=outcome.token_outcomes,
         reinsertion_clean=reinsertion_clean,
         round_trip_ok=round_trip_ok,
+        verify_manifest_ok=verify_manifest_ok,
         sentence_start_hits=outcome.sentence_start_hits,
         plural_occurrences=outcome.plural_occurrences,
     )
@@ -404,11 +452,16 @@ def aggregate_reinsertion(trials: Sequence[ReinsertionTrial]) -> ReinsertionAggr
     total_trials = len(trials)
     clean_trials = sum(1 for trial in trials if trial.result.reinsertion_clean)
     round_trip_ok_trials = sum(1 for trial in trials if trial.result.round_trip_ok)
+    verify_manifest_ok_trials = sum(
+        1 for trial in trials if trial.result.verify_manifest_ok
+    )
     sentence_start_hits = sum(trial.result.sentence_start_hits for trial in trials)
     plural_occurrences = sum(trial.result.plural_occurrences for trial in trials)
 
     per_provider_totals: dict[str, int] = {}
     per_provider_clean: dict[str, int] = {}
+    per_slot_totals: dict[str, int] = {}
+    per_slot_reinsertable: dict[str, int] = {}
     outcome_histogram: dict[str, int] = {}
     multiplicity_histogram: dict[str, int] = {}
 
@@ -424,10 +477,16 @@ def aggregate_reinsertion(trials: Sequence[ReinsertionTrial]) -> ReinsertionAggr
             outcome_histogram[outcome.status] = (
                 outcome_histogram.get(outcome.status, 0) + 1
             )
+            per_slot_totals[outcome.slot_id] = (
+                per_slot_totals.get(outcome.slot_id, 0) + 1
+            )
             if outcome.status == "reinsertable":
                 bucket = _multiplicity_bucket(outcome.occurrence_count)
                 multiplicity_histogram[bucket] = (
                     multiplicity_histogram.get(bucket, 0) + 1
+                )
+                per_slot_reinsertable[outcome.slot_id] = (
+                    per_slot_reinsertable.get(outcome.slot_id, 0) + 1
                 )
 
     per_provider = tuple(
@@ -439,6 +498,15 @@ def aggregate_reinsertion(trials: Sequence[ReinsertionTrial]) -> ReinsertionAggr
         )
         for provider, total in sorted(per_provider_totals.items())
     )
+    per_slot_coverage = tuple(
+        SlotCoverageStats(
+            slot_id=slot_id,
+            reinsertable=per_slot_reinsertable.get(slot_id, 0),
+            total=total,
+            coverage_rate=per_slot_reinsertable.get(slot_id, 0) / total,
+        )
+        for slot_id, total in sorted(per_slot_totals.items())
+    )
 
     return ReinsertionAggregate(
         total_trials=total_trials,
@@ -446,7 +514,10 @@ def aggregate_reinsertion(trials: Sequence[ReinsertionTrial]) -> ReinsertionAggr
         reinsertion_clean_rate=clean_trials / total_trials,
         round_trip_ok_trials=round_trip_ok_trials,
         round_trip_ok_rate=round_trip_ok_trials / total_trials,
+        verify_manifest_ok_trials=verify_manifest_ok_trials,
+        verify_manifest_ok_rate=verify_manifest_ok_trials / total_trials,
         per_provider=per_provider,
+        per_slot_coverage=per_slot_coverage,
         outcome_histogram=outcome_histogram,
         multiplicity_histogram=multiplicity_histogram,
         sentence_start_hits=sentence_start_hits,
@@ -474,6 +545,8 @@ def render_json(data: ReinsertionAggregate) -> dict[str, object]:
         "reinsertion_clean_rate": data.reinsertion_clean_rate,
         "round_trip_ok_trials": data.round_trip_ok_trials,
         "round_trip_ok_rate": data.round_trip_ok_rate,
+        "verify_manifest_ok_trials": data.verify_manifest_ok_trials,
+        "verify_manifest_ok_rate": data.verify_manifest_ok_rate,
         "per_provider": [
             {
                 "provider": stats.provider,
@@ -482,6 +555,15 @@ def render_json(data: ReinsertionAggregate) -> dict[str, object]:
                 "clean_rate": stats.clean_rate,
             }
             for stats in data.per_provider
+        ],
+        "per_slot_coverage": [
+            {
+                "slot_id": stats.slot_id,
+                "reinsertable": stats.reinsertable,
+                "total": stats.total,
+                "coverage_rate": stats.coverage_rate,
+            }
+            for stats in data.per_slot_coverage
         ],
         "outcome_histogram": dict(data.outcome_histogram),
         "multiplicity_histogram": dict(data.multiplicity_histogram),
@@ -498,8 +580,10 @@ def render_markdown(data: ReinsertionAggregate) -> str:
 
     Returns:
         str: A markdown document stating the reinsertion-clean rate, the
-            round-trip-ok rate, per-provider variance, the per-(node, token)
-            outcome histogram, and the occurrence-multiplicity distribution.
+            round-trip-ok rate, the verify-manifest-ok rate (the ADR-023
+            G1-R gate metric), per-provider variance, the per-slot coverage
+            table, the per-(node, token) outcome histogram, and the
+            occurrence-multiplicity distribution.
     """
     lines: list[str] = ["# Sentinel re-insertion prototype report", ""]
     lines.append(
@@ -515,10 +599,25 @@ def render_markdown(data: ReinsertionAggregate) -> str:
     lines.append(
         " ".join(
             [
-                "Round-trip integrity-check pass rate (proves a clean",
-                "reinsertion restores the exact expected token multiset):",
+                "Round-trip integrity-check pass rate (bound-skeleton-relative:",
+                "proves a clean reinsertion restores the exact token multiset",
+                "the ORIGINAL pre-fill skeleton declared; a fill-quality signal,",
+                "legitimately below 100% on an ordinary not_found token):",
                 f"**{data.round_trip_ok_rate:.1%}**",
                 f"({data.round_trip_ok_trials}/{data.total_trials})",
+            ]
+        )
+    )
+    lines.append("")
+    lines.append(
+        " ".join(
+            [
+                "Verify-manifest pass rate (ADR-023 G1-R gate metric: proves the",
+                "reinserted document is self-consistent with its own derived",
+                "manifest; a transform-correctness signal, distinct from the",
+                "round-trip rate above, required at 100%):",
+                f"**{data.verify_manifest_ok_rate:.1%}**",
+                f"({data.verify_manifest_ok_trials}/{data.total_trials})",
             ]
         )
     )
@@ -550,6 +649,25 @@ def render_markdown(data: ReinsertionAggregate) -> str:
         f"| {stats.provider} | {stats.clean} | {stats.total} | {stats.clean_rate:.1%} |"
         for stats in data.per_provider
     )
+    lines.append("")
+
+    lines.append("## Per-slot coverage")
+    lines.append("")
+    lines.append("| Slot | Reinsertable | Total | Coverage |")
+    lines.append("| --- | --- | --- | --- |")
+    lines.extend(
+        " ".join(
+            [
+                f"| {stats.slot_id}",
+                f"| {stats.reinsertable}",
+                f"| {stats.total}",
+                f"| {stats.coverage_rate:.1%} |",
+            ]
+        )
+        for stats in data.per_slot_coverage
+    )
+    if not data.per_slot_coverage:
+        lines.append("| (none) | 0 | 0 | 0.0% |")
     lines.append("")
 
     lines.append("## Per-(node, token) outcome histogram")
