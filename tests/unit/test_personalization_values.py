@@ -232,3 +232,39 @@ def test_pronoun_set_shape_is_deliberately_unconstrained() -> None:
     )
 
     assert violations == []
+
+
+def test_payload_rejection_reports_rules_through_on_reject() -> None:
+    """A value dropped at render time hands its rules to the `on_reject` hook.
+
+    Dropping is correct (ADR-023's render-time fallback contract), but a
+    value reaching this point invalid was accepted at write time and has
+    since gone bad; without the hook the same row fails on every render and
+    nothing ever surfaces it.
+    """
+    seen: list[list[str]] = []
+
+    result = personalization_value_for_payload(
+        "pet_species",
+        AgeBand.BAND_5_8,
+        value_enum="not-in-the-vocabulary",
+        on_reject=lambda violations: seen.append([v.rule for v in violations]),
+    )
+
+    assert result is None
+    assert seen == [["enum_membership"]]
+
+
+def test_on_reject_is_not_called_for_a_valid_value() -> None:
+    """The hook fires only on rejection, never as a per-slot heartbeat."""
+    calls: list[object] = []
+
+    result = personalization_value_for_payload(
+        "protagonist_first_name",
+        AgeBand.BAND_5_8,
+        value_text="Rosa",
+        on_reject=calls.append,
+    )
+
+    assert result == "Rosa"
+    assert calls == []

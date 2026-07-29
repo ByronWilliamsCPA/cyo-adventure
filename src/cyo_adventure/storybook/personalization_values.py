@@ -83,7 +83,7 @@ from cyo_adventure.validator.slots import (
 
 if TYPE_CHECKING:
     import uuid
-    from collections.abc import Collection
+    from collections.abc import Callable, Collection, Sequence
 
     from cyo_adventure.storybook.models import AgeBand
 
@@ -170,6 +170,16 @@ def _shape_violations(
     return violations
 
 
+# Ruff PLR0913 (too many arguments) is suppressed on this function and on
+# `personalization_value_for_payload` below. Every parameter past `age_band`
+# is keyword-only and models one column of the row being checked, so the
+# count is the data's shape, not a design smell: a caller writes
+# `value_text=...` at the call site and cannot transpose two of them. The
+# usual remedy, folding them into a parameter object, would mean this pure
+# module either imports the ORM row type (it must not; that is what keeps it
+# importable without a database) or ships a second near-duplicate value type
+# for callers to construct. Neither is an improvement over five named
+# keywords.
 def validate_personalization_value(  # noqa: PLR0913
     slot_type: str,
     age_band: AgeBand,
@@ -272,6 +282,7 @@ def validate_personalization_value(  # noqa: PLR0913
     return violations
 
 
+# PLR0913: see the note above `validate_personalization_value`.
 def personalization_value_for_payload(  # noqa: PLR0913
     slot_type: str,
     age_band: AgeBand,
@@ -280,6 +291,7 @@ def personalization_value_for_payload(  # noqa: PLR0913
     value_enum: str | None = None,
     value_profile_id: uuid.UUID | None = None,
     family_profile_ids: Collection[uuid.UUID] = (),
+    on_reject: Callable[[Sequence[SlotViolation]], None] | None = None,
 ) -> str | uuid.UUID | None:
     """Return the render-ready value, or None to omit an invalid slot.
 
@@ -298,6 +310,16 @@ def personalization_value_for_payload(  # noqa: PLR0913
         value_profile_id: The stored sibling profile id, or None.
         family_profile_ids: The requesting family's own child profile ids;
             see `validate_personalization_value`.
+        on_reject: Called with the violations when a value is dropped, and
+            not called at all when it passes. The observability seam for
+            this function's silent-omission contract: a value reaching here
+            invalid means it was accepted at write time and has since gone
+            bad (a row written before this gate existed, a vocabulary that
+            tightened, a sibling profile that left the family), which is a
+            real event a reader silently loses a personalized detail to. The
+            module stays pure by taking a callback rather than logging
+            itself, so the impure caller decides where the signal goes.
+            Callers that genuinely do not care may omit it.
 
     Returns:
         `value_text`, `value_enum`, or `value_profile_id` (whichever is
@@ -305,14 +327,26 @@ def personalization_value_for_payload(  # noqa: PLR0913
         any check fails, signaling the caller to omit this slot from the
         payload.
     """
-    if validate_personalization_value(
+    # #ASSUME: data-integrity: dropping the slot is CORRECT (ADR-023's
+    # render-time fallback contract is that a bad value degrades to the
+    # story's generic default, never to an error), but dropping it without a
+    # trace is not: the same row will fail on every subsequent render and
+    # nothing would ever surface it. `on_reject` is how the caller learns.
+    # #VERIFY: violations carry the slot id and rule name only, never the
+    # candidate text, so a caller can log them directly; that is
+    # `SlotViolation.message`'s own documented contract and the reason the
+    # enum-membership message above names the slot instead of the value.
+    violations = validate_personalization_value(
         slot_type,
         age_band,
         value_text=value_text,
         value_enum=value_enum,
         value_profile_id=value_profile_id,
         family_profile_ids=family_profile_ids,
-    ):
+    )
+    if violations:
+        if on_reject is not None:
+            on_reject(violations)
         return None
     if value_text is not None:
         return value_text

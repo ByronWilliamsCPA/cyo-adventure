@@ -79,9 +79,51 @@ from cyo_adventure.storybook.personalization_values import (
     validate_personalization_value,
 )
 from cyo_adventure.storybook.theme_contract import PERSONALIZATION_FIELDS
+from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
+
     from sqlalchemy.ext.asyncio import AsyncSession
+
+    from cyo_adventure.validator.slots import SlotViolation
+
+_logger = get_logger(__name__)
+
+
+def _log_dropped_slot(
+    slot_type: str, profile_id: uuid.UUID
+) -> Callable[[Sequence[SlotViolation]], None]:
+    """Build the `on_reject` hook for one slot's render-time validation.
+
+    Args:
+        slot_type: The slot whose stored value is being checked.
+        profile_id: The subject profile the value belongs to.
+
+    Returns:
+        Callable[[Sequence[SlotViolation]], None]: A hook that logs the
+            violation rules and drops nothing else.
+    """
+
+    def _hook(violations: Sequence[SlotViolation]) -> None:
+        # #CRITICAL: security: rule ids only, never `violation.message` and
+        # never the candidate value. A stored personalization value is a real
+        # child's name, pet, or kinship term; application logs have no
+        # erasure path, so the signal is deliberately reduced to which slot
+        # failed which rule.
+        # #VERIFY: `SlotViolation.rule` is a fixed vocabulary
+        # (`non_empty`, `charset`, `forbid:<bundle>`, `enum_membership`,
+        # `sibling_outside_family`, `value_shape`), none of which is derived
+        # from the value.
+        _logger.warning(
+            "personalization.stored_value_failed_render_check",
+            slot_type=slot_type,
+            profile_id=str(profile_id),
+            rules=sorted({violation.rule for violation in violations}),
+        )
+
+    return _hook
+
 
 router = APIRouter(
     prefix="/api/v1", tags=["personalization"], responses=error_responses(401, 403)
@@ -865,6 +907,7 @@ async def _ring1_values(session: AsyncSession, subject: ChildProfile) -> dict[st
             value_enum=row.value_enum,
             value_profile_id=row.value_profile_id,
             family_profile_ids=family_profile_ids,
+            on_reject=_log_dropped_slot(row.slot_type, subject.id),
         )
         if rendered is None:
             continue
@@ -982,6 +1025,7 @@ async def _ring2_values(
             value_text=row.value_text,
             value_enum=row.value_enum,
             value_profile_id=row.value_profile_id,
+            on_reject=_log_dropped_slot(row.slot_type, subject.id),
         )
         if rendered is not None and not isinstance(rendered, uuid.UUID):
             # Same defense-in-depth guard as the ring-1 path above, and it
