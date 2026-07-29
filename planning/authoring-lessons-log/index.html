@@ -3460,6 +3460,76 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>applied</td>
 <td><code>tests/unit/test_anchoring.py::test_sentinel_straddling_the_title_cut_is_stripped_before_truncation</code>, <code>tests/unit/test_flywheel_reguide_draft.py::test_story_context_sentinel_is_stripped_before_the_600_char_cut</code>, <code>tests/unit/test_fidelity_review.py::test_sentinel_bearing_beats_and_body_never_reach_the_review_prompt</code></td>
 </tr>
+<tr>
+<td>AL-059</td>
+<td>2026-07-29</td>
+<td>ADR-023 re-insertion prototype measurement</td>
+<td>tooling</td>
+<td>Deterministic strip-all-then-reinsert scored only 10% story-clean against the strict every-expected-node multiset, but the per-slot decomposition showed the metric was wrong, not the transform: named third-party slots (OPERATOR, LISTENER, HUB, FOUNDER) re-insert at 94-99%, while HERO sits at 42% node coverage with zero prose occurrences in 11/30 stories, because the corpus is second-person and the protagonist is the addressee, named only in vocative dialogue. The skeleton's per-node expectation model prescribes a name where the narrative voice structurally cannot put one; no model quality or prompt wording can satisfy it. A further 154 of 1,026 misses were sentence-initial capitalization or inflected forms of lowercase descriptive values (the pup, the grown-up).</td>
+<td>Derive the at-rest sentinel expectation from what deterministic re-insertion actually finds in the prose (round-trip-verified), instead of prescribing per-node presence from beats; keep name coverage as a soft quality floor with the P8 dedication overlay guaranteeing one personalized surface. Make the matcher sentence-start case-aware and inflection-aware for lowercase multi-word values. General rule: when a measured failure clusters on one slot or structural position, suspect the expectation model before the generator.</td>
+<td>applied</td>
+<td>Commits 3fbf0807 and a63c06e9 (derive-not-prescribe re-insertion promoted into storybook/ and wired into the fill path; manifest derived from what re-insertion found, round-trip-verified) and 8916c2db (sentence-start case-aware matching); the inflection-aware half was deliberately not built after AL-060 proved the plural bucket was a classification artifact (0 real occurrences); dedication overlay made mandatory (Task C5) per the Stage R re-plan</td>
+</tr>
+<tr>
+<td>AL-060</td>
+<td>2026-07-29</td>
+<td>ADR-023 Stage R matcher hardening (Task R1)</td>
+<td>tooling</td>
+<td>The "72 inflected-form misses" bucket in the AL-059 analysis was an artifact of the crude prefix heuristic used to classify misses: exact re-measurement with a dedicated plural counter found 0 bare-plural occurrences across the whole 30-story corpus, because the heuristic had been counting possessives, which the word-boundary matcher already wraps correctly (<code>Explorer's</code> becomes <code>{~HERO:Explorer~}'s</code>). Only the sentence-start capitalization bucket was real (76 of 1,027 misses recovered; 120 widened occurrences wrapped). Building the speculative plural matcher first would have been dead code justified by a phantom number.</td>
+<td>Before implementing a matcher or repair policy sized from a bucketed failure analysis, re-derive the bucket with an exact counter for the specific phenomenon; a classification heuristic that merely prefixes or fuzzy-matches will conflate adjacent phenomena and inflate the case for the wrong fix. Ship the counter as a permanent report field so the decision stays checkable on future corpora.</td>
+<td>applied</td>
+<td>Commit 8916c2d (<code>plural_occurrences</code> report field, sentence-start widening, possessive test); design plan section 3.4 "MATCHER HARDENING RE-MEASURED 2026-07-29" block</td>
+</tr>
+<tr>
+<td>AL-061</td>
+<td>2026-07-29</td>
+<td>ADR-023 Stage R confirmatory run (Task R4)</td>
+<td>tooling</td>
+<td>Per-slot re-insertion coverage swung materially between two 30-story runs of the same pipeline (HERO 42.4% then 26.8%, FOUNDER 94.6% then 78.6%, CHAPERONE 63.9% then 30.6%), while the transform-correctness metric (verify_manifest) held at exactly 100% on both. Coverage is a property of each LLM fill, not of the code, so a single-run coverage number quoted as a stable property will mislead the next decision that cites it; only invariants of the deterministic transform are stable enough to gate on.</td>
+<td>When a measurement mixes model-behavior metrics with code-correctness metrics, report the model-behavior ones as cross-run ranges and gate only on the code-correctness ones; exit records and plans must quote coverage as a range with run count, never a point estimate.</td>
+<td>applied</td>
+<td>Execution plan Task R4 "CONFIRMED 2026-07-29" block; design plan section 3.4 "G1-R CONFIRMED 2026-07-29" bullet (both state ranges, not points)</td>
+</tr>
+<tr>
+<td>AL-062</td>
+<td>2026-07-29</td>
+<td>ADR-023 vocative nudge experiment (Stage R optional item)</td>
+<td>tooling</td>
+<td>A one-sentence fill-prompt nudge meant to raise HERO name coverage instead cut it 5x (26.8-42.4% baseline to 4.9%), because the sentence ended with an explanatory rationale clause ("second-person narration alone never surfaces the name") that the model executed as an instruction: it suppressed narration mentions and confined the name to dialogue it then rarely wrote. The A/B measurement caught the regression before the edit was ever committed.</td>
+<td>Fill-prompt edits must be imperative-only and additive (one behavior per sentence, no trailing rationale clauses, phrased "in addition to" existing behavior, never "instead of" framing or negative examples), and every prompt-template change that targets a measured metric must be A/B-measured with the saved-fills harness before it is committed.</td>
+<td>applied</td>
+<td>Design plan section 3.4 "VOCATIVE NUDGE MEASURED AND REJECTED 2026-07-29" block; execution plan Stage R optional bullet marked rejected; template edit reverted uncommitted</td>
+</tr>
+<tr>
+<td>AL-063</td>
+<td>2026-07-29</td>
+<td>ADR-023 Stage R+B PR review (PR #466)</td>
+<td>tooling</td>
+<td>A drift gate that declares one file authoritative but checks only a downstream copy of it leaves the authoritative file unguarded, and it drifts. <code>scripts/check_er_diagram.py</code> called <code>er-diagram.puml</code> "the authoritative source" in its own header while comparing only the two Mermaid copies against the ORM; the .puml had silently accumulated three missing columns (<code>child_profile.reduce_motion</code>, <code>device_grant.expires_at</code>, <code>story_request.interpretation</code>) that predate this branch and that a green gate reported as no drift. The gate was not weak, it was pointed at the wrong file.</td>
+<td>Every drift gate must check the artifact it names as authoritative, not only the copies generated from it; when the authoritative file carries richer prose annotations than the copies, check the subset that can silently disagree with the source of truth (here, column names) and say in the docstring why the rest is excluded. Verify a new gate by breaking the artifact deliberately and confirming the failure message names the break.</td>
+<td>applied</td>
+<td>Commit <code>cde11a75</code>, <code>scripts/check_er_diagram.py</code> <code>puml_problems</code> / <code>parse_puml</code> and the property-3 docstring paragraph</td>
+</tr>
+<tr>
+<td>AL-064</td>
+<td>2026-07-29</td>
+<td>ADR-023 Stage R+B PR review (PR #466)</td>
+<td>process</td>
+<td>Restating a measurement in prose is a claim about evidence, not evidence. Every Stage R number in the design and execution plans cited a run directory under <code>results/sentinel-survival/</code>, which <code>.gitignore</code> excludes, so a reader could see the figures but had no artifact to check them against and no way to tell a transcription slip from a real result. The gap was invisible while the run directories still existed on the authoring machine.</td>
+<td>When a planning document cites a measurement as the basis for a gate decision, commit the aggregate report (not the raw per-story fills) under <code>docs/planning/evidence/&lt;harness&gt;/</code> and cite that path; keep <code>results/</code> paths only in reproduce commands, where they are instructions rather than claims. Where two harnesses report similar-looking rates, the committed README must name which instrument produced each number.</td>
+<td>applied</td>
+<td>Commit <code>8c28f15f</code>, <code>docs/planning/evidence/sentinel-reinsertion/</code> (4 runs plus README); citations repointed in the design and execution plans</td>
+</tr>
+<tr>
+<td>AL-065</td>
+<td>2026-07-29</td>
+<td>ADR-023 Stage R+B PR review (PR #466)</td>
+<td>tooling</td>
+<td>A test that fails when you break the thing it guards is not yet proven useful; it also has to fail for the RIGHT reason. The new <code>_prefetch_personalizable_slots</code> empty-sweep test used a bare <code>AsyncMock</code> session, so deleting the guard killed the helper on <code>TypeError: 'coroutine' object is not iterable</code> several lines before the assertion ran. The break-it check went red, which looks like proof, but the red said nothing about the guard: any later refactor that changed the mock plumbing would have flipped it green while the defect stayed open. Separately, a scoped <code>-k</code> filter used to measure coverage excluded the very tests that covered the module, producing a confident "80%, 18 uncovered new lines" reading for a file that is actually at 100%.</td>
+<td>Extend the non-vacuity check from "does it go red" to "does the failure message name the break". When it does not, wire the double well enough that the code under test runs to completion and fails on the real assertion. For coverage measurement, never conclude a gap from a <code>-k</code>-filtered run: filters silently exclude covering tests, so scope by test FILE (or intersect missed lines against the diff's changed lines) before believing a number.</td>
+<td>applied</td>
+<td>Commit <code>fe4b53c5</code>, <code>tests/unit/test_rescreen_unit.py::test_prefetch_personalizable_slots_never_queries_for_an_empty_sweep</code> (docstring records the failure-mode reasoning); measurement correction recorded in the same commit message</td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -3499,7 +3569,7 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 00:29:40 UTC">July 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 19:49:11 UTC">July 29, 2026</span>
   </span>
 
     

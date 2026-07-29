@@ -1354,6 +1354,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#child_profile_personalization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        child_profile_personalization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#personalization_disclosure_consent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        personalization_disclosure_consent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#series" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3144,6 +3166,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#child_profile_personalization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        child_profile_personalization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#personalization_disclosure_consent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        personalization_disclosure_consent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#series" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3390,7 +3434,7 @@
 
   <h1>Data Model</h1>
 
-<p>CYO Adventure has twenty-two PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
+<p>CYO Adventure has twenty-four PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
 schema migrations applied as plain SQL via the Supabase CLI (<code>supabase/migrations/</code>,
 ADR-012; Alembic retired). All timestamps are <code>TIMESTAMP WITH TIME ZONE</code>. Enum-like
 columns (<code>role</code>, <code>status</code>, <code>age_band</code>) are stored as strings and validated at the
@@ -3400,7 +3444,7 @@ application boundary, which keeps schema migrations simple and avoids enum-type 
 <p>The PlantUML source above (<code>diagrams/er-diagram.puml</code>) is authoritative: it carries the
 full CHECK constraint list, ON DELETE semantics, and a note on pure-attribution foreign
 keys to <code>user.id</code> that are deliberately not drawn as edges. The Mermaid version below is a
-hand-maintained companion (<code>diagrams/er-diagram.mmd</code>) covering the same 22 tables and
+hand-maintained companion (<code>diagrams/er-diagram.mmd</code>) covering the same 24 tables and
 relationships, kept for inline rendering directly on GitHub without opening the SVG.</p>
 <pre class="mermaid"><code>erDiagram
     family ||--o{ user : "has users"
@@ -3434,6 +3478,11 @@ relationships, kept for inline rendering directly on GitHub without opening the 
     child_profile ||--o{ kid_flag : "flags"
     storybook ||--o{ kid_flag : "flagged in"
     storybook_version ||--o{ kid_flag : "pins version"
+    child_profile ||--o{ child_profile_personalization : "personalized by"
+    child_profile ||--o{ child_profile_personalization : "named as a sibling value"
+    child_profile ||--o{ personalization_disclosure_consent : "disclosed under"
+    family_connection ||--o{ personalization_disclosure_consent : "scopes disclosure"
+    child_profile |o--o{ storybook : "personalization subject of"
 
     family {
         uuid id PK
@@ -3441,6 +3490,7 @@ relationships, kept for inline rendering directly on GitHub without opening the 
         int monthly_story_quota "NULL = platform default, ADR-015"
         timestamptz created_at
         timestamptz deactivated_at "NULL = active; cascades to members"
+        boolean personalization_receive_enabled "default true; ADR-023 viewer-side ring-2 opt-out"
     }
 
     user {
@@ -3476,6 +3526,8 @@ relationships, kept for inline rendering directly on GitHub without opening the 
         timestamptz created_at
         timestamptz deactivated_at "NULL; soft-remove"
         timestamptz processing_restricted_at "NULL; GDPR Art 18/21"
+        boolean real_name_ring1_enabled "default false; ADR-023 own-family real name"
+        boolean real_name_ring2_enabled "default false; ADR-023 connected-family real name"
     }
 
     family_connection {
@@ -3488,6 +3540,33 @@ relationships, kept for inline rendering directly on GitHub without opening the 
         timestamptz consented_by_viewer_at "NULL"
         uuid consented_by_sharer_user_id FK "NULL"
         timestamptz consented_by_sharer_at "NULL"
+    }
+
+    child_profile_personalization {
+        uuid child_profile_id PK, FK "ON DELETE CASCADE"
+        varchar(32) slot_type PK "9 slot types; ck_cpp_slot_type"
+        text value_text "NULL; exactly one value column is set"
+        varchar(64) value_enum "NULL"
+        uuid value_profile_id FK "NULL; sibling reference, ON DELETE CASCADE"
+        boolean ring1_enabled "default false; own family only"
+        boolean ring2_enabled "default false; ck_cpp_ring2_ceiling caps which slots"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    personalization_disclosure_consent {
+        uuid id PK
+        uuid child_profile_id FK "ON DELETE CASCADE"
+        uuid family_connection_id FK "NULL once tombstoned; ON DELETE SET NULL; partial UNIQUE with child_profile_id"
+        varchar(200) connected_family_label "NULL; name snapshot at consent time"
+        jsonb covered_slot_types "NULL; the slot types this consent covers"
+        boolean sibling_authority_attested "default false"
+        timestamptz consent_accepted_at "NULL; ck_pdc_consent_pairing"
+        varchar(32) consent_policy_version "NULL"
+        varchar(200) consent_signer_name "NULL"
+        varchar(64) consent_ip "NULL"
+        timestamptz revoked_at "NULL"
+        timestamptz created_at
     }
 
     series {
@@ -3510,6 +3589,7 @@ relationships, kept for inline rendering directly on GitHub without opening the 
         uuid series_id FK "NULL for a standalone book"
         int book_index "NULL iff series_id is NULL; UNIQUE with series_id"
         timestamptz created_at
+        uuid personalization_subject_profile_id FK "NULL; ADR-023 subject, ON DELETE SET NULL"
     }
 
     storybook_version {
@@ -3530,6 +3610,9 @@ relationships, kept for inline rendering directly on GitHub without opening the 
         varchar(20) cover_status "none, generating, pending_review, ready, failed"
         uuid cover_approved_by FK "NULL; H2 cover-approval gate"
         timestamptz cover_approved_at "NULL"
+        boolean personalization_eligible "default false; ADR-023"
+        boolean pronoun_parameterized "default false; ADR-023"
+        jsonb sentinel_manifest "NULL; ADR-023 derived token manifest"
     }
 
     reading_state {
@@ -3747,6 +3830,11 @@ data.</p>
 <td>TIMESTAMPTZ NULL</td>
 <td>Soft-deactivate; cascades to member users/profiles in the same transaction (reactivation is manual, not cascaded)</td>
 </tr>
+<tr>
+<td>personalization_receive_enabled</td>
+<td>BOOLEAN</td>
+<td>ADR-023: the viewer-side switch. Default <code>true</code>; when a guardian turns it off, this family sees no ring-2 personalization from any connected family, whatever the sharer consented to. Evaluated before any sharer-side lookup in <code>api/personalization.py</code></td>
+</tr>
 </tbody>
 </table>
 <h3 id="user"><code>user</code><a class="headerlink" href="#user" title="Permanent link">&para;</a></h3>
@@ -3882,6 +3970,11 @@ one adult can be a guardian, an admin, or both.</p>
 <td>TTS feature flag</td>
 </tr>
 <tr>
+<td>reduce_motion</td>
+<td>BOOLEAN</td>
+<td>Default false; collapses the band's reader animations for a child who needs them off</td>
+</tr>
+<tr>
 <td>avatar</td>
 <td>VARCHAR(255) NULL</td>
 <td></td>
@@ -3915,6 +4008,16 @@ one adult can be a guardian, an admin, or both.</p>
 <td>processing_restricted_at</td>
 <td>TIMESTAMPTZ NULL</td>
 <td>GDPR Article 18/21 restriction-of-processing marker; distinct from <code>deactivated_at</code> (the profile still reads its library and logs in normally, but <code>api/story_requests.py</code> refuses a NEW request for it). Set/cleared via <code>api/profiles.py::update_profile</code> (guardian-only)</td>
+</tr>
+<tr>
+<td>real_name_ring1_enabled</td>
+<td>BOOLEAN</td>
+<td>ADR-023: default false. Permits the child's real <code>display_name</code> inside their OWN family's stories. Off by default because a real first name in prose is the one personalization value that is irreversibly identifying</td>
+</tr>
+<tr>
+<td>real_name_ring2_enabled</td>
+<td>BOOLEAN</td>
+<td>ADR-023: default false, and strictly narrower than ring 1. Permits the real name in stories read by a CONNECTED family, which additionally requires dual guardian consent, a <code>personalization_disclosure_consent</code> row, and the viewer family's <code>personalization_receive_enabled</code></td>
 </tr>
 </tbody>
 </table>
@@ -3987,6 +4090,172 @@ id/at pairs are set; either guardian may revoke by clearing their own pair. Two 
 (<code>ck_family_connection_viewer_consent_pairing</code>, <code>ck_family_connection_sharer_consent_pairing</code>)
 enforce the null-pairing, and a partial index <code>ix_family_connection_active_viewer</code> backs
 the active-viewer lookup.</p>
+<h3 id="child_profile_personalization"><code>child_profile_personalization</code><a class="headerlink" href="#child_profile_personalization" title="Permanent link">&para;</a></h3>
+<p>One guardian-set personalization value per <code>(child_profile_id, slot_type)</code> pair
+(ADR-023 P4). The <code>slot_type</code> vocabulary is closed and mirrored from
+<code>storybook/theme_contract.py::PERSONALIZATION_FIELDS</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>child_profile_id</td>
+<td>UUID PK FK</td>
+<td>child_profile.id; <code>ON DELETE CASCADE</code></td>
+</tr>
+<tr>
+<td>slot_type</td>
+<td>VARCHAR(32) PK</td>
+<td>One of the nine closed slot types; CHECK <code>ck_cpp_slot_type</code></td>
+</tr>
+<tr>
+<td>value_text</td>
+<td>TEXT NULL</td>
+<td>Free-text value</td>
+</tr>
+<tr>
+<td>value_enum</td>
+<td>VARCHAR(64) NULL</td>
+<td>Closed-vocabulary value</td>
+</tr>
+<tr>
+<td>value_profile_id</td>
+<td>UUID FK NULL</td>
+<td>child_profile.id when the value IS another profile (a sibling); <code>ON DELETE CASCADE</code>, indexed by <code>ix_cpp_value_profile_id</code></td>
+</tr>
+<tr>
+<td>ring1_enabled</td>
+<td>BOOLEAN</td>
+<td>Default false. Permits the value into this family's own stories</td>
+</tr>
+<tr>
+<td>ring2_enabled</td>
+<td>BOOLEAN</td>
+<td>Default false. Additionally permits it into stories shared with a connected family</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMPTZ</td>
+<td></td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>TIMESTAMPTZ</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Three CHECK constraints carry the rules the API must not be the only thing
+enforcing. <code>ck_cpp_exactly_one_value</code> requires exactly one of the three value
+columns to be set, so a row can never be ambiguous about what it holds.
+<code>ck_cpp_ring2_ceiling</code> makes <code>pronoun_set</code> and <code>dedication</code> rows structurally
+incapable of carrying <code>ring2_enabled = true</code>, which means a future API that
+skipped application-layer validation still could not widen those two slots past
+the owning family. <code>ck_cpp_slot_type</code> pins the vocabulary itself;
+<code>tests/unit/test_personalization_vocab_drift.py</code> pins both CHECK lists against
+<code>PERSONALIZATION_FIELDS</code> so the two cannot drift apart silently.</p>
+<p>Both foreign keys CASCADE: a personalization value is child-linked data and is
+purged with the owning profile or, for a sibling reference, with the referenced
+profile.</p>
+<h3 id="personalization_disclosure_consent"><code>personalization_disclosure_consent</code><a class="headerlink" href="#personalization_disclosure_consent" title="Permanent link">&para;</a></h3>
+<p>The sharer guardian's per-connection, per-slot-scoped consent to disclose ring-2
+personalization values across one <code>family_connection</code> (ADR-023 P4). This is a
+different thing from the connection's own dual-guardian consent: that one permits
+recommendations to flow (K17), this one permits child-identifying VALUES to flow
+over that same edge.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID PK</td>
+<td>Surrogate key</td>
+</tr>
+<tr>
+<td>child_profile_id</td>
+<td>UUID FK</td>
+<td>child_profile.id; <code>ON DELETE CASCADE</code></td>
+</tr>
+<tr>
+<td>family_connection_id</td>
+<td>UUID FK NULL</td>
+<td>family_connection.id; <code>ON DELETE SET NULL</code>, which is what turns a row into a tombstone</td>
+</tr>
+<tr>
+<td>connected_family_label</td>
+<td>VARCHAR(200) NULL</td>
+<td>The counterpart family's name, denormalized at signing time so the record stays legible after the connection row is gone</td>
+</tr>
+<tr>
+<td>covered_slot_types</td>
+<td>JSONB NULL</td>
+<td>The scope of the disclosure: which slot types this consent covers</td>
+</tr>
+<tr>
+<td>sibling_authority_attested</td>
+<td>BOOLEAN</td>
+<td>Default false; set only when the covered scope includes the sibling slot</td>
+</tr>
+<tr>
+<td>consent_accepted_at</td>
+<td>TIMESTAMPTZ NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>consent_policy_version</td>
+<td>VARCHAR(32) NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>consent_signer_name</td>
+<td>VARCHAR(200) NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>consent_ip</td>
+<td>VARCHAR(64) NULL</td>
+<td>Server-observed at signing; never client-supplied</td>
+</tr>
+<tr>
+<td>revoked_at</td>
+<td>TIMESTAMPTZ NULL</td>
+<td>Explicit revocation while the connection still exists, distinct from tombstoning</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMPTZ</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><code>family_connection_id</code> is <code>SET NULL</code> rather than CASCADE on purpose. Connections
+are hard-deleted, never soft-deactivated, but this row is evidence that consent
+was once given (GDPR Article 7(1), COPPA 312.5), so deleting the connection must
+leave behind a scrubbed tombstone recording that an authorization happened and
+what it covered, never a slot value. Deleting the <code>child_profile_id</code> does remove
+the row outright: once the data subject is gone there is nothing left to
+evidence.</p>
+<p>That tombstoning is also why the table uses a surrogate PK plus the PARTIAL
+unique index <code>uq_pdc_profile_connection ... WHERE family_connection_id IS NOT
+NULL</code> instead of a composite primary key. Tombstoning nulls half of what would
+otherwise be the natural key, and a composite PK cannot express "at most one
+live consent per (profile, connection), any number of tombstones after".
+<code>ix_pdc_family_connection_id</code> backs the deletion-side scan, which the partial
+unique index cannot serve: it is keyed on <code>child_profile_id</code> first and excludes
+exactly the NULL rows the deletion is about to create.</p>
+<p><code>ck_pdc_consent_pairing</code> keeps the four consent columns set or cleared together,
+so a row is either fully signed or entirely unsigned and never a partial claim.</p>
 <h3 id="series"><code>series</code><a class="headerlink" href="#series" title="Permanent link">&para;</a></h3>
 <p>A named, family-owned chain of storybooks (WS-B PR 3, decision B2). DB-level linkage
 only: books reference a series via <code>storybook.series_id</code>/<code>book_index</code>; the embedded
@@ -4098,6 +4367,11 @@ children.</p>
 <td>TIMESTAMPTZ</td>
 <td></td>
 </tr>
+<tr>
+<td>personalization_subject_profile_id</td>
+<td>UUID FK NULL</td>
+<td>ADR-023: child_profile.id, the one child this story is personalized FOR. <code>ON DELETE SET NULL</code>, so deleting the subject leaves the story readable and unpersonalized rather than orphaning the row</td>
+</tr>
 </tbody>
 </table>
 <p><strong>Status values:</strong> <code>draft</code>, <code>in_review</code>, <code>needs_revision</code>, <code>published</code>, <code>archived</code>
@@ -4203,6 +4477,21 @@ publication is the admin approve action.</p>
 <td>cover_approved_at</td>
 <td>TIMESTAMPTZ NULL</td>
 <td>When the cover approval in <code>cover_approved_by</code> was recorded</td>
+</tr>
+<tr>
+<td>personalization_eligible</td>
+<td>BOOLEAN</td>
+<td>ADR-023: default false. <strong>Declared but not yet written by any code path</strong>; the column exists so the flag has a home when the eligibility decision moves into the pipeline. Read it as "no version is eligible yet", not as a live per-version signal</td>
+</tr>
+<tr>
+<td>pronoun_parameterized</td>
+<td>BOOLEAN</td>
+<td>ADR-023: default false. Same status as the row above: declared, never written. Intended to mark a version whose prose was authored so pronouns can be substituted safely</td>
+</tr>
+<tr>
+<td>sentinel_manifest</td>
+<td>JSONB NULL</td>
+<td>ADR-023: the manifest of personalization tokens DERIVED from this version's blob after the fill, not prescribed before it. NULL for every version that predates Stage R or was never re-inserted. This is the artifact the G1-R gate's verify-manifest check validates against</td>
 </tr>
 </tbody>
 </table>
@@ -4465,6 +4754,11 @@ and mint metadata are, here.</p>
 <td>TIMESTAMPTZ NULL</td>
 <td><code>NULL</code> while active; set (not deleted) on revoke so the guardian-facing device list can show when a device was revoked</td>
 </tr>
+<tr>
+<td>expires_at</td>
+<td>TIMESTAMPTZ</td>
+<td>Stamped at mint from the same TTL the JWT is signed with. The token carries its own expiry, but persisting it lets the active-device list exclude an unrevoked-but-expired grant, so "present in the list" means "actually usable" (#252)</td>
+</tr>
 </tbody>
 </table>
 <p>Revocation is enforced online only: the token's <code>jti</code> is checked against this
@@ -4578,6 +4872,11 @@ family-scope authz check stay single-table.</p>
 <td>moderation_flags</td>
 <td>JSONB NULL</td>
 <td>Redacted screening findings; never raw classifier score/source</td>
+</tr>
+<tr>
+<td>interpretation</td>
+<td>JSONB NULL</td>
+<td>Serialized WS-7 <code>RequestInterpretation</code> (K19): what the system built in versus set aside, and why. NULL before the general layer runs. Phase-3 personal data: deletion rides this row, export must include it, and the declined/blocked 30-day purge nulls each element's premise-derived <code>element</code> phrase while keeping dispositions, reasons, and template text. Blocked rows never carry premise-derived element text (CR-1)</td>
 </tr>
 <tr>
 <td>reviewed_by</td>
@@ -5173,7 +5472,7 @@ primary authorization boundary; RLS is defense-in-depth beneath it, not a replac
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 18:53:44 UTC">July 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 19:49:11 UTC">July 29, 2026</span>
   </span>
 
     
