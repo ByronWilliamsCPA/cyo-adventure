@@ -22,6 +22,15 @@ export const GUARDIAN_AWAITING_APPROVAL_PATH = '/guardian/awaiting-approval'
  */
 export const GUARDIAN_CONSENT_PATH = '/guardian/consent'
 
+/**
+ * Backend-unreachable interstitial (AuthStatus 'backend-unreachable', #452):
+ * the third member of the pattern above. A guardian whose Supabase session is
+ * fine but whose principal could not be resolved because our own API is down
+ * lands here to retry, rather than being bounced to login, where the same
+ * session would be re-established and fail the same way.
+ */
+export const GUARDIAN_UNAVAILABLE_PATH = '/guardian/unavailable'
+
 /** Kid profile picker, relocated from `/` when the landing page took the root. */
 export const KID_PICKER_PATH = '/kids'
 

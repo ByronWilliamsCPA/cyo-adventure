@@ -1,4 +1,5 @@
 import type { Session } from '@supabase/supabase-js'
+import { isAxiosError } from 'axios'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
@@ -17,6 +18,39 @@ import {
 } from './supabaseClient'
 import { TOKEN_STORAGE_KEY } from './tokenStorageKey'
 import { isRole, type Principal } from './types'
+
+/**
+ * Splits a failed principal resolution into "the backend never answered"
+ * (transient, session still good) and "the backend answered and said no"
+ * (terminal, session must be discarded).
+ *
+ * #CRITICAL: security: this decides whether a Supabase session SURVIVES a
+ * failed resolution, so it fails closed by construction: 'terminal' is the
+ * default and only two explicit signals escape it. A non-axios throw (the
+ * unrecognized-role Error below, a TypeError, anything unforeseen) is
+ * terminal because it is unclassifiable. A 401/403 is terminal because the
+ * backend actively REJECTED this JWT; calling that transient would park a
+ * dead session behind a retry button and tell the guardian to keep waiting
+ * for a recovery that can never happen.
+ * #VERIFY: AuthContext.test.tsx classification cases: network error and 503
+ * reach 'backend-unreachable' with the token retained; 401, 403, 404, 422
+ * and a plain Error reach 'signed-out' with the token removed.
+ */
+function classifyPrincipalError(err: unknown): 'transient' | 'terminal' {
+  if (!isAxiosError(err)) return 'terminal'
+  // #ASSUME: external-resources: axios leaves `response` undefined precisely
+  // when the request never completed, which is the outage signature we care
+  // about: connection refused, DNS failure, or the ECONNABORTED/ETIMEDOUT
+  // timeout that the 2026-07-23 docker-host outage produced. Checking for the
+  // absent response rather than matching err.code keeps this robust across
+  // the several codes axios uses for that one situation.
+  // #VERIFY: AuthContext.test.tsx network-error case asserts the transient
+  // branch without setting err.code.
+  if (err.response === undefined) return 'transient'
+  // 5xx covers both our own API and an intermediary (Traefik 502/503/504),
+  // neither of which is a statement about this session's validity.
+  return err.response.status >= 500 ? 'transient' : 'terminal'
+}
 
 /**
  * Clears the stored bearer token, swallowing the DOMException that some
@@ -210,6 +244,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           'principal resolution failed after a Supabase session was established:',
           err instanceof Error ? err.message : err
         )
+        // A transient failure says nothing about whether this session is
+        // valid, so handling it identically to a rejection is what produced
+        // the 2026-07-23 login loop (#452): sign-out sent the guardian back to
+        // login, login re-established the same working Supabase session, and
+        // resolution failed again against the same downed backend. Keep the
+        // token and route to the retry interstitial instead. The terminal
+        // branch below is unchanged.
+        if (classifyPrincipalError(err) === 'transient') {
+          if (!isStale()) {
+            setPrincipal(null)
+            setStatus('backend-unreachable')
+            // Not an authError: LoginPage's inline "couldn't load your
+            // account" banner is for the terminal case, and this path is
+            // leaving the login page entirely.
+            setAuthError(null)
+          }
+          return
+        }
         safeRemoveToken()
         if (!isStale()) {
           setPrincipal(null)

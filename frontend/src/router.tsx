@@ -16,6 +16,7 @@ import {
   ConsolePage,
   GuardianAuthLayout,
   GuardianAwaitingApprovalPage,
+  GuardianBackendUnavailablePage,
   GuardianConsentPage,
   GuardianShell,
   IntakePage,
@@ -46,6 +47,7 @@ import {
   GUARDIAN_CONSENT_PATH,
   GUARDIAN_CONSOLE_PATH,
   GUARDIAN_LOGIN_PATH,
+  GUARDIAN_UNAVAILABLE_PATH,
   KID_PICKER_PATH,
 } from './routes'
 
@@ -138,6 +140,15 @@ export const routes = [
         // has a real session too, just not a 'signed-in' AuthStatus yet.
         path: GUARDIAN_CONSENT_PATH,
         element: suspended(<GuardianConsentPage />),
+      },
+      {
+        // Same reasoning again (#452): the guardian holds a real Supabase
+        // session, so AdultGate's session check would pass, but AuthStatus is
+        // 'backend-unreachable' rather than 'signed-in'. Putting this under
+        // ProtectedRoute would send it straight back to login, which is the
+        // loop this route exists to break.
+        path: GUARDIAN_UNAVAILABLE_PATH,
+        element: suspended(<GuardianBackendUnavailablePage />),
       },
       {
         // Adult step-up gate (ADR-014 Phase 5): ONE pathless layout at the

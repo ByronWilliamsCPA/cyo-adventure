@@ -19,6 +19,7 @@ import {
   GUARDIAN_AWAITING_APPROVAL_PATH,
   GUARDIAN_CONSENT_PATH,
   GUARDIAN_CONSOLE_PATH,
+  GUARDIAN_UNAVAILABLE_PATH,
   KID_PICKER_PATH,
 } from '../routes'
 import './guardian.css'
@@ -378,6 +379,13 @@ export function LoginPage() {
   }
   if (status === 'needs-consent') {
     return <Navigate to={GUARDIAN_CONSENT_PATH} replace />
+  }
+  // #452: without this, the loop survives the ProtectedRoute fix. A guardian
+  // who reaches /guardian/login while the backend is down (a bookmark, a
+  // back-button press, a still-open tab) would otherwise sit on the form,
+  // sign in again, re-establish the same session, and fail resolution again.
+  if (status === 'backend-unreachable') {
+    return <Navigate to={GUARDIAN_UNAVAILABLE_PATH} replace />
   }
 
   if (status === 'signed-in') {

@@ -10,6 +10,7 @@ import {
   GUARDIAN_CONSENT_PATH,
   GUARDIAN_CONSOLE_PATH,
   GUARDIAN_LOGIN_PATH,
+  GUARDIAN_UNAVAILABLE_PATH,
 } from '../routes'
 import { useAuth } from './useAuth'
 
@@ -75,6 +76,14 @@ export function GuardianAwaitingApprovalPage() {
   }
   if (status === 'needs-consent') {
     return <Navigate to={GUARDIAN_CONSENT_PATH} replace />
+  }
+  // #452: this page's own background poll can produce this status, since
+  // refreshStatus() runs the same resolution that now classifies an outage as
+  // transient. Without this branch the poll would drop the guardian onto the
+  // "not awaiting-approval, render nothing" path below and leave them looking
+  // at a blank page for the duration of the outage.
+  if (status === 'backend-unreachable') {
+    return <Navigate to={GUARDIAN_UNAVAILABLE_PATH} replace />
   }
   if (status === 'signed-in') {
     const home = principal?.role === 'admin' ? ADMIN_CONSOLE_PATH : GUARDIAN_CONSOLE_PATH
