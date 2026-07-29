@@ -33,6 +33,18 @@
 # every guardian surface. That legitimately shifts the guardian books,
 # assign-children dialog, guardian profiles, and profile-form dialog
 # baselines. Pushing this branch runs the job and commits the refreshed PNGs.
+#
+# Baseline bump 2026-07-29: exactly one baseline, admin-provider-allowlist-page,
+# moves by exactly 1 pixel. The prettier sweep pulled <Link> up onto the same
+# line as the text preceding it in ProviderAllowlistPage's intro paragraph,
+# which let prettier drop the explicit {' '} escape that had been holding the
+# space open across the old line break. The rendered STRING is unchanged (a
+# space on the same line as the tag survives; one adjacent to a newline is
+# collapsed, which is exactly why the escape existed). What changed is the DOM:
+# React previously emitted the text and the " " as two adjacent children and now
+# emits one merged text node, and browsers shape and kern per text run, so a
+# glyph pair spanning the old node boundary lands on a different subpixel.
+# Cosmetically and semantically inert; the baseline is simply pixel-exact.
 name: Update Visual Snapshots
 
 on:
