@@ -503,6 +503,76 @@ describe('ReviewDetailPage', () => {
     expect(generating).toBeDisabled()
   })
 
+  // ---------------------------------------------------------------------
+  // A16 (capability-register.md), H2 human-approval half
+  // (security-hardening-plan-2026-07.md): a generated cover sits at
+  // cover_status "pending_review" until an admin reviews the image on this
+  // surface and approves it. These tests cover the review-image render and
+  // the approve action; the real authz boundary (a non-admin gets 403 from
+  // the backend regardless of what this page renders) is covered server-side
+  // by tests/integration/test_cover_api.py::test_approve_cover_non_admin_forbidden.
+  // ---------------------------------------------------------------------
+
+  it('renders the pending cover image and an Approve action when a cover is pending review', async () => {
+    mockGet.mockImplementation((url: string) =>
+      typeof url === 'string' && url.endsWith('/cover')
+        ? Promise.resolve({
+            data: { cover_status: 'pending_review', cover_url: 'https://x/pending.webp' },
+          })
+        : Promise.resolve({ data: SURFACE })
+    )
+    renderAt('s1')
+    const image = await screen.findByRole('img', { name: /pending review/i })
+    expect(image).toHaveAttribute('src', 'https://x/pending.webp')
+    expect(screen.getByRole('button', { name: /Approve cover/i })).toBeEnabled()
+  })
+
+  it('approves a pending cover and reflects the approved state', async () => {
+    const user = userEvent.setup()
+    mockGet.mockImplementation((url: string) =>
+      typeof url === 'string' && url.endsWith('/cover')
+        ? Promise.resolve({
+            data: { cover_status: 'pending_review', cover_url: 'https://x/pending.webp' },
+          })
+        : Promise.resolve({ data: SURFACE })
+    )
+    mockPost.mockResolvedValue({
+      data: {
+        cover_status: 'ready',
+        cover_url: 'https://x/ready.webp',
+        cover_approved_by: 'admin-1',
+        cover_approved_at: '2026-07-28T00:00:00Z',
+      },
+    })
+    renderAt('s1')
+    const approveButton = await screen.findByRole('button', { name: /Approve cover/i })
+    await user.click(approveButton)
+    expect(mockPost).toHaveBeenCalledWith('/v1/storybooks/s1/versions/1/cover/approve')
+    const approvedImage = await screen.findByRole('img', { name: /approved cover/i })
+    expect(approvedImage).toHaveAttribute('src', 'https://x/ready.webp')
+    expect(screen.getByText(/cover approved\./i)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Approve cover/i })).not.toBeInTheDocument()
+  })
+
+  it('surfaces an alert when cover approval fails, and keeps the cover pending', async () => {
+    const user = userEvent.setup()
+    mockGet.mockImplementation((url: string) =>
+      typeof url === 'string' && url.endsWith('/cover')
+        ? Promise.resolve({
+            data: { cover_status: 'pending_review', cover_url: 'https://x/pending.webp' },
+          })
+        : Promise.resolve({ data: SURFACE })
+    )
+    mockPost.mockRejectedValue({ isAxiosError: true, response: { status: 403 } })
+    renderAt('s1')
+    const approveButton = await screen.findByRole('button', { name: /Approve cover/i })
+    await user.click(approveButton)
+    expect(await screen.findByRole('alert')).toHaveTextContent(/could not approve the cover/i)
+    // The cover stays pending: the review image and Approve action remain.
+    expect(screen.getByRole('img', { name: /pending review/i })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: /Approve cover/i })).toBeEnabled()
+  })
+
   it.each(['published', 'draft'] as const)(
     'disables Approve and Send Back for a %s story while keeping their labels',
     async (status) => {

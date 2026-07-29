@@ -1029,6 +1029,38 @@
   margin: 0;
 }
 
+/* A16 (capability-register.md): the pending/approved cover review surface
+   rendered just above the sticky action bar. */
+.review-cover-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+  border-radius: 8px;
+}
+
+.review-cover-preview__image {
+  max-width: 240px;
+  max-height: 240px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.review-cover-preview__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* color comes from the cyo-text-muted class added alongside this one in
+   ReviewDetailPage.tsx; the rest stays local. */
+.review-cover-preview__status {
+  margin: 0;
+}
+
 .review-actionbar {
   position: sticky;
   bottom: 0;

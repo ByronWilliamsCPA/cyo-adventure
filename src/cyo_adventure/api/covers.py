@@ -56,16 +56,26 @@ async def _cover_url(row: StorybookVersion) -> str | None:
 
     Returns:
         str | None: A short-lived signed GET URL when ``cover_status`` is
-        ``"ready"``; otherwise None. Never reads ``row.cover_image_url``
-        directly (that column is an upload-time audit value, not a URL to
-        serve to readers -- see ``covers/storage.py``'s module note).
+        ``"ready"`` or ``"pending_review"``; otherwise None. Never reads
+        ``row.cover_image_url`` directly (that column is an upload-time
+        audit value, not a URL to serve to readers -- see
+        ``covers/storage.py``'s module note).
     """
     # #CRITICAL: security: covers are private-by-default in R2 (Phase 1d); the
     # only way a client legitimately learns a cover's URL is a freshly
     # generated, short-lived signed GET URL, computed here rather than read
     # from the stored (permanent, audit-only) cover_image_url column.
-    # #VERIFY: test_covers_api.py::test_cover_status_returns_presigned_url_when_ready.
-    if row.cover_status != "ready":
+    # A pending_review cover is deliberately included here even though
+    # api/library.py's child-facing read gate excludes it (cover_status ==
+    # "ready" only): this function backs the three admin-only endpoints in
+    # this module (request_cover, cover_status, approve_cover), all gated by
+    # _require_admin before they ever call it, and the reviewer cannot judge
+    # a cover it cannot see. library.py and recommendations.py compute their
+    # own presigned URLs independently (via generate_presigned_cover_urls)
+    # and are unaffected by this widening.
+    # #VERIFY: test_covers_api.py::test_cover_status_returns_presigned_url_when_ready,
+    # ::test_cover_status_returns_presigned_url_when_pending_review.
+    if row.cover_status not in ("ready", "pending_review"):
         return None
     return await generate_presigned_cover_url(row.storybook_id, row.version, settings)
 
@@ -182,13 +192,13 @@ async def approve_cover(
 
     H2 fix (security-hardening-plan-2026-07.md): the human-approval gate that
     ``generate_cover`` stops short of. A cover generated successfully sits at
-    ``cover_status == "pending_review"``, carries no presigned URL (see
-    ``_cover_url``) and is withheld from every child library card (see
-    ``api/library.py``'s ``cover_status == "ready"`` filter) until an admin
-    calls this endpoint. That holds for every API read path; it says nothing
-    about direct access to the stored object, whose key is deterministic and
-    whose exposure is governed by the bucket-privacy invariant in
-    ``covers/storage.py``.
+    ``cover_status == "pending_review"``. ``_cover_url`` presigns it for this
+    admin review surface only, and it stays withheld from every child library
+    card (see ``api/library.py``'s ``cover_status == "ready"`` filter) until an
+    admin calls this endpoint. That holds for every API read path; it says
+    nothing about direct access to the stored object, whose key is
+    deterministic and whose exposure is governed by the bucket-privacy
+    invariant in ``covers/storage.py``.
     """
     # #CRITICAL: security: admin-only; covers.service.approve_cover re-checks
     # is_admin as defense in depth, mirroring approval.py::approve_storybook's
