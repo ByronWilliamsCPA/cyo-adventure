@@ -3766,7 +3766,7 @@ export type UserUpdateBody = {
     /**
      * Status
      */
-    status?: 'pending' | 'active' | 'deactivated' | 'awaiting_approval' | null;
+    status?: 'pending' | 'active' | 'deactivated' | 'awaiting_approval' | 'pending_guardian_invite' | null;
 };
 
 /**
@@ -3802,7 +3802,7 @@ export type UserView = {
     /**
      * Status
      */
-    status: 'pending' | 'active' | 'deactivated' | 'awaiting_approval';
+    status: 'pending' | 'active' | 'deactivated' | 'awaiting_approval' | 'pending_guardian_invite';
     /**
      * Created At
      */
@@ -6812,7 +6812,7 @@ export type ListUsersApiV1AdminUsersGetData = {
         /**
          * Status
          */
-        status?: 'pending' | 'active' | 'deactivated' | 'awaiting_approval' | null;
+        status?: 'pending' | 'active' | 'deactivated' | 'awaiting_approval' | 'pending_guardian_invite' | null;
     };
     url: '/api/v1/admin/users';
 };

@@ -1493,14 +1493,22 @@ export const deleteMyFamilyApiV1MeFamilyDelete = <ThrowOnError extends boolean =
  * body: The invitee's email; nothing else is caller-supplied.
  * ctx: The request context (principal + unit-of-work session).
  *
+ * The invited address is NOT thereby pulled into the caller's family. The
+ * row is created with ``status="pending_guardian_invite"``, which
+ * ``api/onboarding.py::_bind_pending_invite`` binds to
+ * ``"awaiting_approval"`` rather than ``"active"``: an admin must still
+ * approve before the invitee can authenticate at all. Only the
+ * admin-mediated ``POST /admin/users`` produces an invite that binds
+ * straight to ``"active"``.
+ *
  * Returns:
- * UserView: The created ``status="pending"`` row, scoped to the
- * caller's own family.
+ * UserView: The created ``status="pending_guardian_invite"`` row,
+ * scoped to the caller's own family.
  *
  * Raises:
  * AuthorizationError: If the caller is not a guardian (403).
- * StateTransitionError: If a pending invite already exists for this
- * email (409).
+ * StateTransitionError: If a pending invite of either kind already
+ * exists for this email (409).
  */
 export const inviteGuardianApiV1MeFamilyInviteGuardianPost = <ThrowOnError extends boolean = false>(options: Options<InviteGuardianApiV1MeFamilyInviteGuardianPostData, ThrowOnError>): RequestResult<InviteGuardianApiV1MeFamilyInviteGuardianPostResponses, InviteGuardianApiV1MeFamilyInviteGuardianPostErrors, ThrowOnError> => (options.client ?? client).post<InviteGuardianApiV1MeFamilyInviteGuardianPostResponses, InviteGuardianApiV1MeFamilyInviteGuardianPostErrors, ThrowOnError>({
     responseType: 'json',
@@ -2205,7 +2213,8 @@ export const createUserApiV1AdminUsersPost = <ThrowOnError extends boolean = fal
  * own account (403).
  * ResourceNotFoundError: If no guardian/admin row with this id exists
  * (404; a role='child' row 404s here too, see the module docstring).
- * ValidationError: If a ``status`` transition through/from 'pending' is
+ * ValidationError: If a ``status`` transition through/from either
+ * invite status ('pending', 'pending_guardian_invite') is
  * requested, or into 'awaiting_approval' directly, or
  * ``family_id`` is not a valid UUID (422).
  */

@@ -364,14 +364,22 @@ async def invite_guardian(body: GuardianInviteBody, ctx: Context) -> UserView:
         body: The invitee's email; nothing else is caller-supplied.
         ctx: The request context (principal + unit-of-work session).
 
+    The invited address is NOT thereby pulled into the caller's family. The
+    row is created with ``status="pending_guardian_invite"``, which
+    ``api/onboarding.py::_bind_pending_invite`` binds to
+    ``"awaiting_approval"`` rather than ``"active"``: an admin must still
+    approve before the invitee can authenticate at all. Only the
+    admin-mediated ``POST /admin/users`` produces an invite that binds
+    straight to ``"active"``.
+
     Returns:
-        UserView: The created ``status="pending"`` row, scoped to the
-        caller's own family.
+        UserView: The created ``status="pending_guardian_invite"`` row,
+        scoped to the caller's own family.
 
     Raises:
         AuthorizationError: If the caller is not a guardian (403).
-        StateTransitionError: If a pending invite already exists for this
-            email (409).
+        StateTransitionError: If a pending invite of either kind already
+            exists for this email (409).
     """
     # #CRITICAL: security: the target family is ALWAYS ctx.principal.family_id,
     # never taken from the request body (GuardianInviteBody has no family_id
@@ -389,12 +397,24 @@ async def invite_guardian(body: GuardianInviteBody, ctx: Context) -> UserView:
     # create an admin row.
     # #VERIFY: tests/integration/test_me_invite_guardian_api.py::
     # test_invite_guardian_created_row_is_never_admin.
+    # #CRITICAL: security: invited_by_admin=False is what stops this endpoint
+    # from being a family-capture primitive. It selects
+    # status='pending_guardian_invite', which onboarding binds to
+    # 'awaiting_approval'; passing True here (or reusing the admin path's
+    # 'pending') would let any guardian pre-claim an arbitrary email address
+    # and have its real owner bound into this family as an ACTIVE guardian on
+    # their first sign-in, exposing this family's child profiles to the
+    # inviter. There is no invite expiry and no revoke surface, so this flag
+    # is the only gate.
+    # #VERIFY: tests/integration/test_me_invite_guardian_api.py::
+    # test_guardian_invited_user_binds_to_awaiting_approval_not_active.
     user = await create_pending_invite(
         ctx.session,
         family_id=ctx.principal.family_id,
         role="guardian",
         is_admin=False,
         email=body.email,
+        invited_by_admin=False,
     )
     await record_event(
         ctx.session,
@@ -402,6 +422,6 @@ async def invite_guardian(body: GuardianInviteBody, ctx: Context) -> UserView:
         entity_type="user",
         entity_id=str(user.id),
         event_type=EventType.USER_MANAGED,
-        payload={"action": "invited", "role": "guardian", "status": "pending"},
+        payload={"action": "invited", "role": "guardian", "status": user.status},
     )
     return user_view(user)

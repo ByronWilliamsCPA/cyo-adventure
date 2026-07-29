@@ -19,13 +19,19 @@ import { makeInviteGuardianApi } from './inviteGuardianApi'
  * form is nothing more than an email field, matching that contract rather
  * than offering choices the endpoint would reject.
  *
- * A submitted invite creates a `status="pending"` row, the same shape
- * `POST /admin/users` creates: the co-parent becomes an active member of
- * this family the first time they sign in with that email
- * (`api/onboarding.py::_bind_pending_invite`). This form does not attempt to
- * show the pending invite afterward; there is no guardian-facing roster view
- * (that is the admin console's `/admin/users`), so a plain success message
- * is the honest end state.
+ * A submitted invite creates a `status="pending_guardian_invite"` row, which
+ * is NOT the same as the `status="pending"` row `POST /admin/users` creates.
+ * A guardian can type any email address, so nobody has vetted this invitee:
+ * when they first sign in with that email,
+ * `api/onboarding.py::_bind_pending_invite` binds them at
+ * `awaiting_approval`, and an admin must approve before they can use the
+ * account. The copy below says so; promising immediate membership would be a
+ * lie, and the gate is deliberate (it stops a guardian from pre-claiming a
+ * stranger's address and capturing them into this family).
+ *
+ * This form does not attempt to show the pending invite afterward; there is
+ * no guardian-facing roster view (that is the admin console's
+ * `/admin/users`), so a plain success message is the honest end state.
  */
 export function InviteCoParentSection() {
   const api = useApi()
@@ -61,8 +67,9 @@ export function InviteCoParentSection() {
     <section aria-label="Invite a co-parent" className="console-invite">
       <h2>Invite a co-parent</h2>
       <p className="console__notice cyo-text-muted">
-        Invite another adult to join your family account. They can sign in with the email below once
-        they accept, and will see everything you see for your family.
+        Invite another adult to join your family account. They sign in with the email below, and an
+        administrator reviews the request before they join. Once approved, they will see everything
+        you see for your family.
       </p>
       <form
         className="console-invite__form"
@@ -93,7 +100,8 @@ export function InviteCoParentSection() {
       </form>
       {status === 'sent' ? (
         <p className="console-invite__success" role="status">
-          Invite sent. They can sign in with that email to join your family.
+          Invite sent. After they sign in with that email, an administrator approves them before
+          they join your family.
         </p>
       ) : null}
       {status === 'duplicate' ? (

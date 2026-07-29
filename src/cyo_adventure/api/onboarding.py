@@ -23,10 +23,24 @@ hold.
 This self-service guardian provisioning path starts the new row at
 ``status="awaiting_approval"``, not ``"active"``: an admin must approve it
 (``PATCH /api/v1/admin/users/{id}``) before ``require_principal`` will
-authenticate the subject for anything else, including ``GET /v1/me``. This
-is a deliberately parallel track to the admin-invite ``"pending"`` status
-above; the two never share state (see ``db/models.py``'s
-``_USER_STATUS_VALUES`` comment).
+authenticate the subject for anything else, including ``GET /v1/me``.
+
+``awaiting_approval`` is therefore the DEFAULT landing state, and exactly one
+path skips it. Of the three ways a subject can arrive here:
+
+* an ADMIN-created invite (``status="pending"``, ``POST /admin/users``) binds
+  to ``"active"`` immediately, because an admin vetted the invitee by
+  creating the row. This is the sole approval-gate bypass.
+* a GUARDIAN-created invite (``status="pending_guardian_invite"``,
+  ``POST /me/family/invite-guardian``, G14) binds to ``"awaiting_approval"``.
+  A guardian can name any email address, so the row proves nothing about the
+  invitee; without this gate a guardian could pre-claim a stranger's address
+  and capture them into their own family on that person's first sign-in.
+* an uninvited self-signup is provisioned into a fresh family at
+  ``"awaiting_approval"``.
+
+See ``db/models.py``'s ``_USER_STATUS_VALUES`` comment for the full status
+vocabulary.
 """
 
 from __future__ import annotations
@@ -48,7 +62,12 @@ from cyo_adventure.api.schemas import (
 )
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.integrity import is_authn_subject_conflict
-from cyo_adventure.db.models import Family, User
+from cyo_adventure.db.models import (
+    USER_PENDING_INVITE_STATUSES,
+    USER_STATUS_GUARDIAN_INVITE,
+    Family,
+    User,
+)
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -204,17 +223,22 @@ async def _provision_guardian(
             family = Family(name=_DEFAULT_FAMILY_NAME)
             session.add(family)
             await session.flush()
-            # #CRITICAL: security: self-signup approval track, parallel to
-            # (never sharing state with) the admin-invite 'pending' track:
-            # an uninvited guardian's own first login starts
-            # 'awaiting_approval', not 'active', so require_principal
+            # #CRITICAL: security: an uninvited guardian's own first login
+            # starts 'awaiting_approval', not 'active', so require_principal
             # rejects every endpoint for them (including GET /v1/me) until
-            # an admin approves via PATCH /admin/users/{id}. An
-            # admin-created invite bypasses this entirely (_bind_pending_invite
-            # sets 'active' directly): the admin already vetted that case by
-            # creating the invite.
+            # an admin approves via PATCH /admin/users/{id}.
+            # Only ONE of the three onboarding paths bypasses this gate: an
+            # ADMIN-created invite (status='pending'), which
+            # _bind_pending_invite promotes to 'active' directly because the
+            # admin already vetted that case by creating the invite. A
+            # GUARDIAN-created invite (status='pending_guardian_invite', G14)
+            # does NOT bypass it: _bind_pending_invite lands it on
+            # 'awaiting_approval' too, since a guardian naming an arbitrary
+            # email address has vetted nobody.
             # #VERIFY: tests/integration/test_onboarding_api.py::
-            # test_self_signup_guardian_starts_awaiting_approval.
+            # test_self_signup_guardian_starts_awaiting_approval;
+            # tests/integration/test_me_invite_guardian_api.py::
+            # test_guardian_invited_user_binds_to_awaiting_approval_not_active.
             user = User(
                 family_id=family.id,
                 role=_GUARDIAN_ROLE,
@@ -255,16 +279,21 @@ async def _provision_guardian(
 async def _bind_pending_invite(
     session: AsyncSession, identity: OnboardingIdentity
 ) -> User | None:
-    """Bind a verified subject to a matching admin-created pending invite.
+    """Bind a verified subject to a matching unbound invite row.
+
+    Both invite kinds bind here, but they land on DIFFERENT statuses; see the
+    ``#CRITICAL`` note on the branch below for why that difference is the
+    whole point.
 
     Args:
         session: The request unit-of-work session.
         identity: The verified onboarding identity (subject + optional email).
 
     Returns:
-        User | None: The now-``active`` user row, or ``None`` when no
-        ``status="pending"`` row matches this identity's email (the caller
-        falls back to ``_provision_guardian``).
+        User | None: The bound user row, ``active`` for an admin-created
+        invite and ``awaiting_approval`` for a guardian-created one, or
+        ``None`` when no unbound invite row matches this identity's email
+        (the caller falls back to ``_provision_guardian``).
     """
     # #ASSUME: security: the match is an exact string comparison against the
     # verified Supabase email claim (no case-folding); an invite typed with
@@ -277,7 +306,10 @@ async def _bind_pending_invite(
     if identity.email is None:
         return None
     pending = await session.scalar(
-        select(User).where(User.status == "pending", User.email == identity.email)
+        select(User).where(
+            User.status.in_(USER_PENDING_INVITE_STATUSES),
+            User.email == identity.email,
+        )
     )
     if pending is None:
         return None
@@ -290,9 +322,35 @@ async def _bind_pending_invite(
     # #VERIFY: tests/integration/test_admin_users_api.py::
     # test_pending_invite_bind_race_is_idempotent.
     pending.authn_subject = identity.subject
-    pending.status = "active"
+    # #CRITICAL: security: which status an invite binds to is decided by WHO
+    # created it, never by the invitee. An ADMIN-created invite
+    # (status='pending') binds straight to 'active': the admin vetted the
+    # invitee by creating it. A GUARDIAN-created invite
+    # (status='pending_guardian_invite', POST /me/family/invite-guardian)
+    # was vetted by nobody, so it binds to 'awaiting_approval' and an admin
+    # must still approve via PATCH /admin/users/{id} before the account
+    # authenticates at all. Collapsing these two into one status would let
+    # any guardian pre-claim an arbitrary email address and have its real
+    # owner silently bound into the inviting family as an ACTIVE guardian on
+    # first sign-in, exposing that family's child profiles (names, age
+    # bands, reading history) to the inviter. There is no invite expiry and
+    # no guardian-facing revoke surface, so the approval gate is the only
+    # thing standing between an unvetted invite and family membership.
+    # #VERIFY: tests/integration/test_me_invite_guardian_api.py::
+    # test_guardian_invited_user_binds_to_awaiting_approval_not_active and
+    # test_admin_invited_user_still_binds_to_active.
+    bound_status = (
+        _AWAITING_APPROVAL_STATUS
+        if pending.status == USER_STATUS_GUARDIAN_INVITE
+        else "active"
+    )
+    pending.status = bound_status
     await session.flush()
-    logger.info("onboarding.pending_invite_bound", user_id=str(pending.id))
+    logger.info(
+        "onboarding.pending_invite_bound",
+        user_id=str(pending.id),
+        status=bound_status,
+    )
     return pending
 
 

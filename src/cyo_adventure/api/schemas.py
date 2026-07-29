@@ -1724,12 +1724,12 @@ class OnboardingView(BaseModel):
     role: str
     created: bool
     # Lets the frontend show a "your account is awaiting admin approval"
-    # state for a self-signed-up guardian (status="awaiting_approval")
-    # instead of proceeding to GET /v1/me, which api/deps.py::require_principal
-    # rejects for any non-"active" status. An admin-invited guardian is
-    # always "active" by the time onboarding resolves them (the invite bind
-    # sets it); this field only ever surfaces "awaiting_approval" for the
-    # self-signup track.
+    # state (status="awaiting_approval") instead of proceeding to
+    # GET /v1/me, which api/deps.py::require_principal rejects for any
+    # non-"active" status. Two tracks surface "awaiting_approval": an
+    # uninvited guardian's own self-signup, and a GUARDIAN-created invite
+    # (POST /me/family/invite-guardian) once bound. Only an ADMIN-created
+    # invite resolves straight to "active" (the invite bind sets it).
     status: str
     # Phase 2 / ADR-018 D1: lets the frontend decide whether to show the
     # consent-capture step without a separate lookup. Derived from
@@ -1927,7 +1927,19 @@ AdminEmail = Annotated[
 # ever the synthetic row api/child_sessions.py provisions for a ChildProfile,
 # never something an admin creates directly.
 AdminManagedRole = Literal["guardian", "admin"]
-UserStatus = Literal["pending", "active", "deactivated", "awaiting_approval"]
+# Mirrors db/models.py::_USER_STATUS_VALUES (the at-rest CHECK constraint).
+# 'pending' is an ADMIN-created invite; 'pending_guardian_invite' is a
+# GUARDIAN-created one (G14) that binds to 'awaiting_approval' rather than
+# 'active'. Both appear here only so the admin console can read and filter
+# them; neither is settable through PATCH /admin/users/{id}
+# (api/admin_users.py::_apply_status_transition rejects both directions).
+UserStatus = Literal[
+    "pending",
+    "active",
+    "deactivated",
+    "awaiting_approval",
+    "pending_guardian_invite",
+]
 
 
 class UserView(BaseModel):

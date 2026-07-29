@@ -37,7 +37,7 @@ describe('InviteCoParentSection', () => {
         family_id: 'family-1',
         role: 'guardian',
         is_admin: false,
-        status: 'pending',
+        status: 'pending_guardian_invite',
       },
     })
     render(<InviteCoParentSection />)
@@ -53,7 +53,7 @@ describe('InviteCoParentSection', () => {
   })
 
   it('clears the email field after a successful invite', async () => {
-    mockPost.mockResolvedValue({ data: { id: 'user-1', status: 'pending' } })
+    mockPost.mockResolvedValue({ data: { id: 'user-1', status: 'pending_guardian_invite' } })
     render(<InviteCoParentSection />)
     fillEmail('co-parent@example.com')
     submitForm()
@@ -89,7 +89,8 @@ describe('InviteCoParentSection', () => {
     let resolveRequest: () => void = () => {}
     mockPost.mockReturnValue(
       new Promise((resolve) => {
-        resolveRequest = () => resolve({ data: { id: 'user-1', status: 'pending' } })
+        resolveRequest = () =>
+          resolve({ data: { id: 'user-1', status: 'pending_guardian_invite' } })
       })
     )
     render(<InviteCoParentSection />)
