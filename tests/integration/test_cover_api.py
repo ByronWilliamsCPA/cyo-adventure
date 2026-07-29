@@ -193,3 +193,71 @@ async def test_cover_status_not_found_returns_404(
         headers=auth(seed.admin_token),
     )
     assert resp.status_code == 404
+
+
+# ---------------------------------------------------------------------------
+# H2 (security-hardening-plan-2026-07.md): admin cover-approval endpoint.
+# A cover cannot reach "ready" (and therefore a child library card, see
+# tests/integration/test_library_cover.py) without this endpoint.
+# ---------------------------------------------------------------------------
+
+
+async def test_approve_cover_non_admin_forbidden(
+    client: AsyncClient, seed: Seed
+) -> None:
+    resp = await client.post(
+        f"/api/v1/storybooks/{seed.storybook_id}/versions/{seed.version}/cover/approve",
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 403
+
+
+async def test_approve_cover_sets_ready_and_stamps_approver(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        row.cover_status = "pending_review"
+        await s.commit()
+
+    resp = await client.post(
+        f"/api/v1/storybooks/{seed.storybook_id}/versions/{seed.version}/cover/approve",
+        headers=auth(seed.admin_token),
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["cover_status"] == "ready"
+    assert body["cover_approved_by"] == str(seed.admin_user_id)
+    assert body["cover_approved_at"] is not None
+
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        assert row.cover_status == "ready"
+        assert row.cover_approved_by == seed.admin_user_id
+        assert row.cover_approved_at is not None
+
+
+async def test_approve_cover_not_pending_review_returns_400(
+    client: AsyncClient, seed: Seed
+) -> None:
+    # The seeded row's cover_status defaults to "none": never generated, so
+    # nothing is pending an admin's review yet.
+    resp = await client.post(
+        f"/api/v1/storybooks/{seed.storybook_id}/versions/{seed.version}/cover/approve",
+        headers=auth(seed.admin_token),
+    )
+    assert resp.status_code == 400
+
+
+async def test_approve_cover_not_found_returns_404(
+    client: AsyncClient, seed: Seed
+) -> None:
+    resp = await client.post(
+        "/api/v1/storybooks/does-not-exist/versions/1/cover/approve",
+        headers=auth(seed.admin_token),
+    )
+    assert resp.status_code == 404
