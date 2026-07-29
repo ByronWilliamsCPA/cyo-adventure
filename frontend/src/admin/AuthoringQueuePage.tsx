@@ -61,9 +61,7 @@ export function AuthoringQueuePage() {
   }, [authoringPlanApi, allowlistApi])
 
   if (state.kind === 'loading') {
-    return (
-      <LoadingStatus />
-    )
+    return <LoadingStatus />
   }
   if (state.kind === 'error') {
     return <ErrorBanner className="console__error">{state.message}</ErrorBanner>
@@ -76,9 +74,9 @@ export function AuthoringQueuePage() {
     <main>
       <h1>Authoring queue</h1>
       <p>
-        Approved requests waiting for an authoring plan (method, mechanism, and, for an
-        automated provider, the specific model). Age band, length, and style were already set
-        when the request was approved and cannot be changed here.
+        Approved requests waiting for an authoring plan (method, mechanism, and, for an automated
+        provider, the specific model). Age band, length, and style were already set when the request
+        was approved and cannot be changed here.
       </p>
       {requests.length === 0 ? (
         <p className="console__muted cyo-text-muted">

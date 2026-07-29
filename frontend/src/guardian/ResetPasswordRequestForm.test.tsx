@@ -36,9 +36,7 @@ describe('ResetPasswordRequestForm', () => {
     await waitFor(() =>
       expect(mockRequestPasswordReset).toHaveBeenCalledWith('guardian@example.com')
     )
-    expect(
-      await screen.findByText(/if an account exists for that email/i)
-    ).toBeInTheDocument()
+    expect(await screen.findByText(/if an account exists for that email/i)).toBeInTheDocument()
   })
 
   it('shows a neutral confirmation even when the address is not registered', async () => {

@@ -32,7 +32,13 @@ describe('StarRating', () => {
     const onRate = vi.fn()
     const outer = vi.fn()
     render(
-      <a href="/somewhere" onClick={(e) => { e.preventDefault(); outer() }}>
+      <a
+        href="/somewhere"
+        onClick={(e) => {
+          e.preventDefault()
+          outer()
+        }}
+      >
         <StarRating value={2} onRate={onRate} bookTitle="T" />
       </a>
     )

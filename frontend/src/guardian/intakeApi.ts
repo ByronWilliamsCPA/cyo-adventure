@@ -21,12 +21,7 @@ export const TONES: { value: ToneValue; label: string }[] = [
 ]
 
 export type JobStatus = 'queued' | 'running' | 'passed' | 'needs_review' | 'failed'
-export type StorybookStatus =
-  | 'draft'
-  | 'in_review'
-  | 'needs_revision'
-  | 'published'
-  | 'archived'
+export type StorybookStatus = 'draft' | 'in_review' | 'needs_revision' | 'published' | 'archived'
 
 export interface Protagonist {
   name: string
@@ -65,12 +60,7 @@ export interface GenerationJobSummary {
   created_at: string
 }
 
-export type StatusPill =
-  | 'Generating'
-  | 'Waiting for review'
-  | 'Approved'
-  | 'Archived'
-  | 'Failed'
+export type StatusPill = 'Generating' | 'Waiting for review' | 'Approved' | 'Archived' | 'Failed'
 
 // Per-band defaults. nodes/endings come from validator/band_profile.py
 // _PROFILES (min_nodes / min_endings); protagonistAge is the band lower bound.
@@ -140,9 +130,7 @@ export function buildBrief(params: BuildBriefParams): ConceptBriefBody {
   const band = BAND_DEFAULTS[params.ageBand]
   const name = params.protagonistName?.trim() || DEFAULT_PROTAGONIST_NAME
   const readingLevelTarget =
-    params.readingLevelCap < READING_CAP_SENTINEL
-      ? params.readingLevelCap
-      : band.fkTarget
+    params.readingLevelCap < READING_CAP_SENTINEL ? params.readingLevelCap : band.fkTarget
   return {
     title: null,
     premise: params.premise,
@@ -236,15 +224,11 @@ export function makeIntakeApi(api: AxiosInstance): IntakeApi {
       return res.data
     },
     async generate(conceptId: string): Promise<GenerationEnqueued> {
-      const res = await api.post<GenerationEnqueued>(
-        `/v1/concepts/${conceptId}/generate`
-      )
+      const res = await api.post<GenerationEnqueued>(`/v1/concepts/${conceptId}/generate`)
       return res.data
     },
     async listJobs(): Promise<GenerationJobSummary[]> {
-      const res = await api.get<{ jobs: GenerationJobSummary[] }>(
-        '/v1/generation-jobs'
-      )
+      const res = await api.get<{ jobs: GenerationJobSummary[] }>('/v1/generation-jobs')
       return res.data.jobs
     },
   }

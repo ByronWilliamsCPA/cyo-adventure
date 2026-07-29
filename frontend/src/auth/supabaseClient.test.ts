@@ -26,18 +26,18 @@ describe('hashIndicatesRecovery', () => {
     // Supabase's /verify?type=recovery redirect lands with an implicit-flow
     // hash carrying type=recovery alongside the access token.
     const { hashIndicatesRecovery } = await import('./supabaseClient')
-    expect(
-      hashIndicatesRecovery('#access_token=abc.def.ghi&expires_in=3600&type=recovery')
-    ).toBe(true)
+    expect(hashIndicatesRecovery('#access_token=abc.def.ghi&expires_in=3600&type=recovery')).toBe(
+      true
+    )
   })
 
   it('is false for an ordinary OAuth / bearer return hash', async () => {
     // A normal sign-in return must NOT be treated as a recovery, or every
     // login would show the set-new-password form.
     const { hashIndicatesRecovery } = await import('./supabaseClient')
-    expect(
-      hashIndicatesRecovery('#access_token=abc.def.ghi&expires_in=3600&type=bearer')
-    ).toBe(false)
+    expect(hashIndicatesRecovery('#access_token=abc.def.ghi&expires_in=3600&type=bearer')).toBe(
+      false
+    )
   })
 
   it('is false for a signup-confirmation hash', async () => {

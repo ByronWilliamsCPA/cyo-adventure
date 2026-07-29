@@ -98,12 +98,7 @@ describe('makeKidStoryRequestApi', () => {
     })
     const result = await makeKidStoryRequestApi(api).listForProfile('p1')
     expect(result).toHaveLength(4)
-    expect(result.map((r) => r.status)).toEqual([
-      'pending',
-      'approved',
-      'declined',
-      'blocked',
-    ])
+    expect(result.map((r) => r.status)).toEqual(['pending', 'approved', 'declined', 'blocked'])
   })
 
   it('listForProfile maps proposed_series_title per row (K12)', async () => {
@@ -127,9 +122,7 @@ describe('makeKidStoryRequestApi', () => {
           profile_id: 'p1',
           request_text: 'Please write a dragon story',
           created_at: '2026-07-04T12:00:00Z',
-          moderation_flags: [
-            { category: 'language', verdict: 'clean', message: '' },
-          ],
+          moderation_flags: [{ category: 'language', verdict: 'clean', message: '' }],
         },
         {
           id: 'req2',

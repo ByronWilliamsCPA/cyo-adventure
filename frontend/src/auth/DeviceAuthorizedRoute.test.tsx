@@ -73,7 +73,9 @@ describe('DeviceAuthorizedRoute', () => {
     // throwing on the mirror-hit path in a locked-down browser) must NOT leave
     // the guard stuck on 'checking' / "Loading…" forever. The route drops to
     // 'unauthorized' and redirects to guardian login instead of hanging.
-    const spy = vi.spyOn(deviceGrant, 'hydrateDeviceGrant').mockRejectedValue(new Error('hydrate boom'))
+    const spy = vi
+      .spyOn(deviceGrant, 'hydrateDeviceGrant')
+      .mockRejectedValue(new Error('hydrate boom'))
     try {
       renderGate()
       expect(await screen.findByText('Login page')).toBeInTheDocument()

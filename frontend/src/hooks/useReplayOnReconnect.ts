@@ -11,7 +11,9 @@ import { replayQueue, type ReplayOutcome, type SyncApi } from '../offline/sync'
  * without the Web Locks API (older browsers, jsdom) fall back to running `fn`
  * directly, relying on the in-tab `busy` guard alone as before.
  */
-async function withReplayLock(fn: () => Promise<ReplayOutcome>): Promise<ReplayOutcome | undefined> {
+async function withReplayLock(
+  fn: () => Promise<ReplayOutcome>
+): Promise<ReplayOutcome | undefined> {
   const locks = navigator.locks as LockManager | undefined
   if (!locks?.request) return fn()
   return locks.request('cyo-replay', { ifAvailable: true }, async (lock) =>

@@ -38,10 +38,9 @@ describe('makePassageEditApi', () => {
     const api = fakeAxios()
     api.patch.mockResolvedValue({ data: {} })
     await makePassageEditApi(api as never).editNode('s1', 1, 'n one/two', { body: 'x' })
-    expect(api.patch).toHaveBeenCalledWith(
-      '/v1/storybooks/s1/versions/1/nodes/n%20one%2Ftwo',
-      { body: 'x' }
-    )
+    expect(api.patch).toHaveBeenCalledWith('/v1/storybooks/s1/versions/1/nodes/n%20one%2Ftwo', {
+      body: 'x',
+    })
   })
 })
 

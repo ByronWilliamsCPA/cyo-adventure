@@ -211,7 +211,11 @@ export function UsersTab({ api, families, users, onChanged }: UsersTabProps) {
                 <td>
                   {editingId === user.id ? (
                     <>
-                      <Button variant="primary" disabled={busy} onClick={() => void saveEdit(user.id)}>
+                      <Button
+                        variant="primary"
+                        disabled={busy}
+                        onClick={() => void saveEdit(user.id)}
+                      >
                         Save
                       </Button>
                       <Button

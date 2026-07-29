@@ -11,7 +11,11 @@
 
 import type { AxiosInstance } from 'axios'
 
-import type { DeviceGrantCreateBody, DeviceGrantListItem, DeviceGrantView } from '../client/types.gen'
+import type {
+  DeviceGrantCreateBody,
+  DeviceGrantListItem,
+  DeviceGrantView,
+} from '../client/types.gen'
 
 export interface DeviceGrantApi {
   /**

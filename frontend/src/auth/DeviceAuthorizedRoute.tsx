@@ -76,9 +76,7 @@ export function DeviceAuthorizedRoute() {
   }, [status])
 
   if (status === 'checking') {
-    return (
-      <LoadingStatus />
-    )
+    return <LoadingStatus />
   }
 
   if (status === 'unauthorized') {

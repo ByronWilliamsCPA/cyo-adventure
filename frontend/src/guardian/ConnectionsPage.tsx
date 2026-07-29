@@ -41,10 +41,7 @@ function directionSummary(direction: ConnectionDirection, counterpart: string): 
  * copy is framed as "once both families agree"; revoking an active
  * connection takes effect immediately, so that copy says so plainly.
  */
-function consequenceCopy(
-  connection: FamilyConnectionMineItem,
-  action: PendingAction
-): string {
+function consequenceCopy(connection: FamilyConnectionMineItem, action: PendingAction): string {
   const summary = directionSummary(connection.direction, connection.counterpart_family_name)
   if (action === 'revoke') {
     return connection.active
@@ -111,8 +108,7 @@ export function ConnectionsPage() {
         if (!cancelled) {
           setState({
             kind: 'error',
-            message: classifyApiError(err, { transient: LOAD_ERROR, server: LOAD_ERROR })
-              .message,
+            message: classifyApiError(err, { transient: LOAD_ERROR, server: LOAD_ERROR }).message,
           })
         }
       }
@@ -149,10 +145,7 @@ export function ConnectionsPage() {
           : prev
       )
     } catch (err) {
-      console.error(
-        'connection consent action failed:',
-        err instanceof Error ? err.message : err
-      )
+      console.error('connection consent action failed:', err instanceof Error ? err.message : err)
       setRowErrors((prev) => ({ ...prev, [connection.id]: ACTION_ERROR }))
     } finally {
       setPendingId(null)
@@ -167,15 +160,11 @@ export function ConnectionsPage() {
   }
 
   if (state.kind === 'loading') {
-    return (
-      <LoadingStatus>Loading your family connections…</LoadingStatus>
-    )
+    return <LoadingStatus>Loading your family connections…</LoadingStatus>
   }
 
   if (state.kind === 'error') {
-    return (
-      <ErrorBanner className="connections__error">{state.message}</ErrorBanner>
-    )
+    return <ErrorBanner className="connections__error">{state.message}</ErrorBanner>
   }
 
   const { connections } = state
@@ -184,10 +173,9 @@ export function ConnectionsPage() {
     <section className="connections">
       <h1>Connections</h1>
       <p className="connections__intro cyo-text-muted">
-        A family connection lets book recommendations flow between two
-        families your admin has linked, like cousins sharing favorites. Only
-        book titles, ratings, and first names ever cross, and only once both
-        families&apos; guardians agree.
+        A family connection lets book recommendations flow between two families your admin has
+        linked, like cousins sharing favorites. Only book titles, ratings, and first names ever
+        cross, and only once both families&apos; guardians agree.
       </p>
       {connections.length === 0 ? (
         <EmptyState
@@ -239,7 +227,9 @@ export function ConnectionsPage() {
       )}
       {confirming !== null ? (
         <Dialog
-          title={confirming.action === 'revoke' ? 'Revoke this connection?' : 'Allow this connection?'}
+          title={
+            confirming.action === 'revoke' ? 'Revoke this connection?' : 'Allow this connection?'
+          }
           onClose={() => setConfirming(null)}
           actions={
             <>

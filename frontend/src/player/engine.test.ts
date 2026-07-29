@@ -4,7 +4,15 @@ import { fileURLToPath } from 'node:url'
 
 import { describe, expect, it } from 'vitest'
 
-import { back, canGoBack, choose, currentEndingId, start, startContinuation, visibleChoices } from './engine'
+import {
+  back,
+  canGoBack,
+  choose,
+  currentEndingId,
+  start,
+  startContinuation,
+  visibleChoices,
+} from './engine'
 import type { ReadingState, Storybook, VarState } from './types'
 
 const here = path.dirname(fileURLToPath(import.meta.url))

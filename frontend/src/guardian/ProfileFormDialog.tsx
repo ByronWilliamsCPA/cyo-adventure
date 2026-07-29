@@ -409,14 +409,19 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
         <fieldset className="profile-form__content-controls">
           <legend>Content limits</legend>
           <p className="profile-form__hint">
-            Leave a limit as &quot;No extra limit&quot; to use the age band&apos;s default; a
-            chosen limit can only make stories gentler for this child, never less gentle than the
-            age band already allows.
+            Leave a limit as &quot;No extra limit&quot; to use the age band&apos;s default; a chosen
+            limit can only make stories gentler for this child, never less gentle than the age band
+            already allows.
           </p>
           {(['violence', 'scariness', 'peril'] as const).map((flag) => {
-            const value = flag === 'violence' ? violenceCap : flag === 'scariness' ? scarinessCap : perilCap
+            const value =
+              flag === 'violence' ? violenceCap : flag === 'scariness' ? scarinessCap : perilCap
             const setValue =
-              flag === 'violence' ? setViolenceCap : flag === 'scariness' ? setScarinessCap : setPerilCap
+              flag === 'violence'
+                ? setViolenceCap
+                : flag === 'scariness'
+                  ? setScarinessCap
+                  : setPerilCap
             return (
               <label key={flag} className="cyo-field">
                 {CONTENT_FLAG_LABELS[flag]}
@@ -465,10 +470,7 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
             <ul className="profile-form__theme-chips">
               {bannedThemes.map((theme) => (
                 <li key={theme}>
-                  <Chip
-                    aria-label={`Remove ${theme}`}
-                    onClick={() => removeTheme(theme)}
-                  >
+                  <Chip aria-label={`Remove ${theme}`} onClick={() => removeTheme(theme)}>
                     {theme} ✕
                   </Chip>
                 </li>

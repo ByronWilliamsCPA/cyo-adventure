@@ -62,7 +62,13 @@ describe('ProviderAllowlistPage', () => {
 
   it('adds a new entry and refreshes the list', async () => {
     mockPost.mockResolvedValue({
-      data: { id: 'a2', provider: 'ollama', model_id: 'qwen2.5:14b', enabled: true, display_name: null },
+      data: {
+        id: 'a2',
+        provider: 'ollama',
+        model_id: 'qwen2.5:14b',
+        enabled: true,
+        display_name: null,
+      },
     })
     const user = userEvent.setup()
     renderPage()
@@ -130,7 +136,15 @@ describe('ProviderAllowlistPage', () => {
 
   it('renders a disabled row with no display name using its fallback label and button copy', async () => {
     mockList({
-      rows: [{ id: 'a1', provider: 'anthropic', model_id: 'claude-sonnet-4-6', enabled: false, display_name: null }],
+      rows: [
+        {
+          id: 'a1',
+          provider: 'anthropic',
+          model_id: 'claude-sonnet-4-6',
+          enabled: false,
+          display_name: null,
+        },
+      ],
     })
     renderPage()
     expect(await screen.findByText('claude-sonnet-4-6')).toBeInTheDocument()
@@ -199,7 +213,13 @@ describe('ProviderAllowlistPage', () => {
     // copy via refreshAfterMutation's own catch, distinct from the initial
     // load and add-failure error strings above.
     mockPost.mockResolvedValue({
-      data: { id: 'a2', provider: 'ollama', model_id: 'qwen2.5:14b', enabled: true, display_name: null },
+      data: {
+        id: 'a2',
+        provider: 'ollama',
+        model_id: 'qwen2.5:14b',
+        enabled: true,
+        display_name: null,
+      },
     })
     let getCalls = 0
     mockGet.mockImplementation(() => {
@@ -215,7 +235,9 @@ describe('ProviderAllowlistPage', () => {
     await user.click(screen.getByRole('button', { name: 'Add to allowlist' }))
 
     expect(
-      await screen.findByText('That change saved, but the list could not refresh. Reload to see it.')
+      await screen.findByText(
+        'That change saved, but the list could not refresh. Reload to see it.'
+      )
     ).toBeInTheDocument()
   })
 })

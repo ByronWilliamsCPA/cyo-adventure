@@ -155,12 +155,12 @@ describe('formatRelativeTime', () => {
 
 describe('statusPill', () => {
   it('maps queued/running to Generating', () => {
-    expect(
-      statusPill({ status: 'queued', storybook_id: null, storybook_status: null })
-    ).toBe('Generating')
-    expect(
-      statusPill({ status: 'running', storybook_id: null, storybook_status: null })
-    ).toBe('Generating')
+    expect(statusPill({ status: 'queued', storybook_id: null, storybook_status: null })).toBe(
+      'Generating'
+    )
+    expect(statusPill({ status: 'running', storybook_id: null, storybook_status: null })).toBe(
+      'Generating'
+    )
   })
 
   it('maps a published storybook to Approved', () => {
@@ -170,15 +170,15 @@ describe('statusPill', () => {
   })
 
   it('maps failed to Failed', () => {
-    expect(
-      statusPill({ status: 'failed', storybook_id: null, storybook_status: null })
-    ).toBe('Failed')
+    expect(statusPill({ status: 'failed', storybook_id: null, storybook_status: null })).toBe(
+      'Failed'
+    )
   })
 
   it('maps a gate-failed needs_review (no storybook) to Failed', () => {
-    expect(
-      statusPill({ status: 'needs_review', storybook_id: null, storybook_status: null })
-    ).toBe('Failed')
+    expect(statusPill({ status: 'needs_review', storybook_id: null, storybook_status: null })).toBe(
+      'Failed'
+    )
   })
 
   it('maps review-pending states to Waiting for review', () => {
@@ -198,8 +198,8 @@ describe('statusPill', () => {
   it('maps an archived (published-then-pulled) storybook to Archived', () => {
     // A terminal state: it must not fall through to the "Waiting for review"
     // default, which would read as though the story were still pending.
-    expect(
-      statusPill({ status: 'passed', storybook_id: 's1', storybook_status: 'archived' })
-    ).toBe('Archived')
+    expect(statusPill({ status: 'passed', storybook_id: 's1', storybook_status: 'archived' })).toBe(
+      'Archived'
+    )
   })
 })
