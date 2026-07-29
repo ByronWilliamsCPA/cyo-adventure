@@ -18,6 +18,7 @@ import {
   GuardianAwaitingApprovalPage,
   GuardianBackendUnavailablePage,
   GuardianConsentPage,
+  GuardianReviewDetailPage,
   GuardianShell,
   IntakePage,
   KidShell,
@@ -193,6 +194,16 @@ export const routes = [
                   { index: true, element: suspended(<ConsolePage />) },
                   { path: 'intake', element: suspended(<IntakePage />) },
                   { path: 'requests', element: suspended(<RequestsPage />) },
+                  {
+                    // G6 (edit half): a guardian's own path into the same
+                    // passage-edit capability node_edit.py already authorizes
+                    // at the API layer, deliberately separate from the admin
+                    // /admin/review/:storybookId route (see
+                    // GuardianReviewDetailPage.tsx's docstring for why this is
+                    // not a widened guard on that route instead).
+                    path: 'review/:storybookId',
+                    element: suspended(<GuardianReviewDetailPage />),
+                  },
                   { path: 'reading', element: suspended(<ReadingPage />) },
                   { path: 'books', element: suspended(<BooksPage />) },
                   { path: 'profiles', element: suspended(<ProfilesPage />) },
