@@ -105,8 +105,15 @@ _STORY_REQUEST_INITIATOR_VALUES = "'child', 'guardian', 'admin'"
 _STORY_REQUEST_LENGTH_VALUES = "'short', 'medium', 'long'"
 _STORY_REQUEST_STYLE_VALUES = "'prose', 'gamebook'"
 
-# The four cover-generation lifecycle states, named once for the CHECK constraint.
-_COVER_STATUS_VALUES = "'none', 'generating', 'ready', 'failed'"
+# The cover-generation lifecycle states, named once for the CHECK constraint.
+# 'pending_review' (H2, security-hardening-plan-2026-07.md) sits between
+# 'generating' and 'ready': a generated image never reaches 'ready' (and
+# therefore is never carried by an API response to a child library card, see
+# api/library.py's cover_status == "ready" gate) without an explicit admin
+# approval (StorybookVersion.cover_approved_by/cover_approved_at, stamped by
+# covers.service.approve_cover). The status gates API reads only; direct
+# object-storage reads are governed separately (covers/storage.py).
+_COVER_STATUS_VALUES = "'none', 'generating', 'pending_review', 'ready', 'failed'"
 
 # The append-only pipeline_event vocabularies, named once for their CHECK
 # constraints. event_type would ideally be derived from the EventType enum
@@ -944,6 +951,24 @@ class StorybookVersion(CreatedAtMixin, Base):
     cover_status: Mapped[str] = mapped_column(
         String(20), default="none", server_default="none"
     )
+    # #CRITICAL: security: H2 (security-hardening-plan-2026-07.md) closure --
+    # these two columns are the cover-art analogue of approved_by/published_at
+    # above: the sole record that a human (not the image provider, not the
+    # generation worker) reviewed a generated cover before any API read path
+    # could serve it to a child (direct object-storage access is a separate
+    # control, see covers/storage.py). NULL on a 'ready' row means the cover
+    # predates the gate, which the backfill in
+    # supabase/migrations/20260728000000_add_cover_approval_gate.sql demotes
+    # back to 'pending_review' rather than grandfathering as approved.
+    # covers.service.approve_cover is the only writer of both, and it
+    # requires cover_status == "pending_review" beforehand (see that
+    # function's docstring for the full transition contract).
+    # #VERIFY: tests/integration/test_cover_service.py::
+    # test_approve_cover_stamps_approver_and_timestamp.
+    cover_approved_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER, ondelete=_ONDELETE_SET_NULL), default=None
+    )
+    cover_approved_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
     # ADR-023 P4: does this version's blob carry any sentinel-bound slots at
     # all (safe to publish; says nothing about whose values). Off by default;
     # set by the fill/import path only when the skeleton contract declares

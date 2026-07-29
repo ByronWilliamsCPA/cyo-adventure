@@ -187,7 +187,9 @@ erDiagram
         varchar(120) skeleton_slug "NULL; WS-C PR2 provenance"
         timestamptz created_at
         varchar(512) cover_image_url "NULL"
-        varchar(20) cover_status "none, generating, ready, failed"
+        varchar(20) cover_status "none, generating, pending_review, ready, failed"
+        uuid cover_approved_by FK "NULL; H2 cover-approval gate"
+        timestamptz cover_approved_at "NULL"
         boolean personalization_eligible "default false; ADR-023"
         boolean pronoun_parameterized "default false; ADR-023"
         jsonb sentinel_manifest "NULL; ADR-023 derived token manifest"
@@ -607,7 +609,9 @@ An immutable snapshot of a story. Composite primary key `(storybook_id, version)
 | skeleton_slug | VARCHAR(120) NULL | Production skeleton (`skeletons/<band>/<slug>.json`) this version was filled from, or NULL for fresh generation, an imported book, or a row predating this column (WS-C PR2) |
 | created_at | TIMESTAMPTZ | |
 | cover_image_url | VARCHAR(512) NULL | AI-generated cover art URL |
-| cover_status | VARCHAR(20) | `none` (default), `generating`, `ready`, or `failed` |
+| cover_status | VARCHAR(20) | `none` (default), `generating`, `pending_review`, `ready`, or `failed`. Only `ready` is served to a child's library card, and only `covers.service.approve_cover` can reach it (H2) |
+| cover_approved_by | UUID FK NULL | Admin who approved the generated cover for child delivery; the cover-art analogue of `approved_by` (H2) |
+| cover_approved_at | TIMESTAMPTZ NULL | When the cover approval in `cover_approved_by` was recorded |
 | personalization_eligible | BOOLEAN | ADR-023: default false. **Declared but not yet written by any code path**; the column exists so the flag has a home when the eligibility decision moves into the pipeline. Read it as "no version is eligible yet", not as a live per-version signal |
 | pronoun_parameterized | BOOLEAN | ADR-023: default false. Same status as the row above: declared, never written. Intended to mark a version whose prose was authored so pronouns can be substituted safely |
 | sentinel_manifest | JSONB NULL | ADR-023: the manifest of personalization tokens DERIVED from this version's blob after the fill, not prescribed before it. NULL for every version that predates Stage R or was never re-inserted. This is the artifact the G1-R gate's verify-manifest check validates against |
