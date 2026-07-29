@@ -190,6 +190,14 @@ repos:
           bash -c 'cd frontend && files=(); for f in "$@"; do files+=("${f#frontend/}"); done; npx eslint --max-warnings=0 "${files[@]}"' --
         language: system
         files: ^frontend/(src|e2e|e2e-real|e2e-staging|e2e-prod)/.*\.tsx?$
+        # src/client/ is generated code that eslint.config.js's own `ignores`
+        # already exempts (same reason .prettierignore exempts it: the
+        # generator, not us, owns its style, and the contract CI job is the
+        # drift gate). Without this exclude, --max-warnings=0 turns ESLint's
+        # own "file ignored" warning into a hook failure on every client
+        # regeneration commit; excluding it here matches the exemption this
+        # hook is meant to defer to rather than fighting it.
+        exclude: ^frontend/src/client/
         stages: [pre-commit]
 
       - id: frontend-prettier
