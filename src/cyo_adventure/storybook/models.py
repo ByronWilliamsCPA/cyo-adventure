@@ -40,6 +40,53 @@ class AgeBand(StrEnum):
     BAND_16_PLUS = "16+"
 
 
+# Ordered rank for AgeBand. StrEnum values ("3-5", "5-8", ...) do not sort
+# safely by string comparison, and the age-band ceiling check (H1: a story or
+# a confirmed request band must never exceed the target profile's band) needs
+# "<=" semantics, so the order is defined once here, mirroring _LEVEL_RANK.
+_AGE_BAND_RANK: dict[AgeBand, int] = {
+    AgeBand.BAND_3_5: 0,
+    AgeBand.BAND_5_8: 1,
+    AgeBand.BAND_8_11: 2,
+    AgeBand.BAND_10_13: 3,
+    AgeBand.BAND_13_16: 4,
+    AgeBand.BAND_16_PLUS: 5,
+}
+
+
+def age_band_rank(band: AgeBand) -> int:
+    """Return the ordinal rank of an age band (3-5=0 .. 16+=5).
+
+    Args:
+        band: The age band.
+
+    Returns:
+        int: The band's rank, for ``<=`` comparisons against a ceiling.
+    """
+    return _AGE_BAND_RANK[band]
+
+
+def parse_age_band_rank(value: str) -> int | None:
+    """Best-effort parse of a raw age-band string into its rank.
+
+    Storybook blob metadata and ``ChildProfile.age_band`` are plain strings
+    (not validated ``AgeBand`` enum members at the DB layer), so callers doing
+    a defense-in-depth ceiling check need a tolerant parse rather than a
+    ``ValueError`` on malformed or missing data.
+
+    Args:
+        value: The raw age-band string (e.g. "8-11"), or "" / malformed.
+
+    Returns:
+        int | None: The band's rank, or None if ``value`` is not a
+        recognized ``AgeBand`` value.
+    """
+    try:
+        return _AGE_BAND_RANK[AgeBand(value)]
+    except ValueError:
+        return None
+
+
 class VariableType(StrEnum):
     """The type of a story state variable (v1 supports bool and int only)."""
 

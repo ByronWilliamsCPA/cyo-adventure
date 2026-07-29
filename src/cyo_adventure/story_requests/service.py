@@ -43,6 +43,7 @@ from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
 from cyo_adventure.story_requests.anchoring import load_anchor_context, resolve_anchor
 from cyo_adventure.story_requests.brief import brief_from_request
+from cyo_adventure.storybook.models import age_band_rank, parse_age_band_rank
 
 if TYPE_CHECKING:
     import uuid
@@ -491,8 +492,9 @@ async def approve_story_request(
             outside the family (-> 404).
         ValidationError: If the built brief still trips the PII guard; if an
             anchored request also carries a ``series_title``; if the anchor
-            storybook is no longer published; or if the confirmed age band
-            does not match the anchor's series band (-> 422).
+            storybook is no longer published; if the confirmed age band does
+            not match the anchor's series band; or if the confirmed age band
+            exceeds the requesting profile's own age band (H1) (-> 422).
     """
     # #CRITICAL: concurrency: ensure_pending's guard is an in-memory read of the
     # ``request`` object passed in by the caller; it is not itself a lock. Two
@@ -519,6 +521,27 @@ async def approve_story_request(
         if profile is None:
             msg = "requesting profile no longer exists"
             raise ResourceNotFoundError(msg)
+        # #CRITICAL: security: H1 (security-hardening-plan-2026-07.md): the
+        # guardian's confirmed band is stamped onto request.age_band below and
+        # becomes what the generation pipeline targets; with no ceiling check
+        # here, a guardian could confirm a band above the requesting child's
+        # own profile band, and nothing downstream would catch it (the H1
+        # assignment- and read-gate checks in assignments.py/library.py only
+        # compare an already-PUBLISHED story's band against a profile, never a
+        # request still being approved). Lenient when either band string is
+        # unparseable, matching those checks' fail-open posture on malformed
+        # data rather than blocking a legitimate approval on a data quirk.
+        # #VERIFY: tests/unit/test_story_requests.py::
+        # test_approve_rejects_confirmation_band_above_profile_band.
+        profile_rank = parse_age_band_rank(profile.age_band)
+        if (
+            profile_rank is not None
+            and age_band_rank(confirmation.age_band) > profile_rank
+        ):
+            msg = "confirmed age band exceeds the requesting profile's age band"
+            raise ValidationError(
+                msg, field="age_band", value=confirmation.age_band.value
+            )
 
     # WS-B PR 3: series ratification. An anchored (continuation) request
     # already carries its series; the guardian's confirmed band must match the
@@ -732,7 +755,9 @@ async def create_authored_request(
             transaction on any raised exception, so a quota-blocked authored
             request never persists, unlike a guardian-authored request that
             reaches ``pending`` through the create+approve two-step.
-        ValidationError: If the built brief trips the PII backstop (-> 422).
+        ValidationError: If the built brief trips the PII backstop, or if the
+            confirmed age band exceeds the target profile's own age band
+            (H1) (-> 422).
     """
     # #CRITICAL: security: initiator_role is derived from the authenticated
     # principal, never from the request body, so a guardian cannot mint an
@@ -751,6 +776,26 @@ async def create_authored_request(
     # #VERIFY: RequestStoryForm.tsx's submit guard is the only client-side
     # mitigation; add a server-side idempotency key before exposing this path
     # to less-trusted roles or higher volumes.
+    # #CRITICAL: security: H1 (security-hardening-plan-2026-07.md): same
+    # ceiling as approve_story_request above, applied here because an
+    # authored request skips the pending queue and is approved in this same
+    # call (see _build_concept below), so this is the only chance to catch a
+    # confirmed band above the target profile's band before it is stamped
+    # onto the request and used to build the brief. A profile-less authored
+    # request (profile is None, e.g. an admin catalog request) has no band to
+    # compare against and is unaffected.
+    # #VERIFY: tests/unit/test_story_requests.py::
+    # test_authored_create_rejects_confirmation_band_above_profile_band.
+    if profile is not None:
+        profile_rank = parse_age_band_rank(profile.age_band)
+        if (
+            profile_rank is not None
+            and age_band_rank(confirmation.age_band) > profile_rank
+        ):
+            msg = "confirmed age band exceeds the requesting profile's age band"
+            raise ValidationError(
+                msg, field="age_band", value=confirmation.age_band.value
+            )
     request = StoryRequest(
         family_id=family_id,
         profile_id=profile.id if profile is not None else None,

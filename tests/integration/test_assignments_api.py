@@ -120,8 +120,12 @@ async def _add_sibling(
         tuple[str, str]: The sibling's bearer token and its profile id.
     """
     async with sessions() as session:
+        # age_band matches the seed story's "10-13" band (H1): this helper's
+        # tests assign the seed story to the sibling and document that every
+        # predicate except the per-profile assignment clears, so the sibling's
+        # band must not itself trip the new age-band ceiling check.
         sibling = ChildProfile(
-            family_id=seed.family_id, display_name="Reader A2", age_band="8-11"
+            family_id=seed.family_id, display_name="Reader A2", age_band="10-13"
         )
         session.add(sibling)
         await session.flush()
@@ -283,6 +287,91 @@ async def test_non_published_story_400(
         json={"profile_ids": [str(seed.child_profile_id)]},
     )
     assert resp.status_code == 400, resp.text
+
+
+async def test_assign_storybook_rejects_band_above_profile_band(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """H1: a book banded above the target profile's band cannot be assigned.
+
+    ``seed.child_profile_id`` is age_band "10-13"; this book is banded "16+",
+    two ranks higher. The book is published, own-family, and the profile is
+    same-family, so every OTHER assign predicate clears; only the age-band
+    ceiling fails. Without the H1 fix, this would 200 and create an
+    assignment row a child could then read.
+    """
+    async with sessions() as session:
+        session.add(
+            Storybook(
+                id="teen-band-book",
+                family_id=seed.family_id,
+                status="published",
+                current_published_version=1,
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id="teen-band-book",
+                version=1,
+                blob={
+                    "id": "teen-band-book",
+                    "title": "Too Old",
+                    "metadata": {"age_band": "16+"},
+                },
+                moderation_report=make_clean_moderation_report(),
+                approved_by=seed.admin_user_id,
+                published_at=datetime.now(UTC),
+            )
+        )
+        await session.commit()
+    resp = await client.post(
+        "/api/v1/storybooks/teen-band-book/assignments",
+        headers=auth(seed.guardian_token),
+        json={"profile_ids": [str(seed.child_profile_id)]},
+    )
+    assert resp.status_code == 400, resp.text
+
+
+async def test_assign_storybook_allows_band_at_or_below_profile_band(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """H1 positive control: a book banded below the profile's band assigns fine.
+
+    Same setup as the rejection test above, except the book is banded "5-8",
+    below the profile's "10-13": every predicate, including the ceiling,
+    clears.
+    """
+    async with sessions() as session:
+        session.add(
+            Storybook(
+                id="younger-band-book",
+                family_id=seed.family_id,
+                status="published",
+                current_published_version=1,
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id="younger-band-book",
+                version=1,
+                blob={
+                    "id": "younger-band-book",
+                    "title": "Just Right",
+                    "metadata": {"age_band": "5-8"},
+                },
+                moderation_report=make_clean_moderation_report(),
+                approved_by=seed.admin_user_id,
+                published_at=datetime.now(UTC),
+            )
+        )
+        await session.commit()
+    resp = await client.post(
+        "/api/v1/storybooks/younger-band-book/assignments",
+        headers=auth(seed.guardian_token),
+        json={"profile_ids": [str(seed.child_profile_id)]},
+    )
+    assert resp.status_code == 200, resp.text
+    assert str(seed.child_profile_id) in resp.json()["profile_ids"]
 
 
 # ---------------------------------------------------------------------------

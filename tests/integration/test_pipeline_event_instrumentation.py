@@ -1098,8 +1098,12 @@ async def test_assign_writes_book_assigned_event_per_new_assignment(
     does not also emit an event.
     """
     async with sessions() as session:
+        # age_band matches the seed story's "10-13" band (H1): this test
+        # assigns the seed story to the sibling and needs the assignment
+        # itself to succeed, so the sibling's band must not trip the new
+        # age-band ceiling check.
         sibling = ChildProfile(
-            family_id=seed.family_id, display_name="Reader A2", age_band="8-11"
+            family_id=seed.family_id, display_name="Reader A2", age_band="10-13"
         )
         session.add(sibling)
         await session.commit()

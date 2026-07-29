@@ -25,7 +25,6 @@ from sqlalchemy import and_, exists, or_, select, tuple_
 from cyo_adventure.api.deps import (
     CurrentPrincipal,
     DbSession,
-    Role,
     authorize_family,
     authorize_profile,
 )
@@ -40,6 +39,7 @@ from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
 from cyo_adventure.covers.storage import generate_presigned_cover_urls
 from cyo_adventure.db.models import (
+    ChildProfile,
     Rating,
     ReadingState,
     Storybook,
@@ -47,6 +47,7 @@ from cyo_adventure.db.models import (
     StorybookVersion,
 )
 from cyo_adventure.publishing.state_machine import Visibility
+from cyo_adventure.storybook.models import parse_age_band_rank
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -195,6 +196,27 @@ def _current_node_is_ending(blob: Mapping[str, object], current_node: str) -> bo
     return False
 
 
+def _blob_age_band(blob: Mapping[str, object]) -> str:
+    """Return a story's age band from blob metadata, or "" if absent/malformed.
+
+    Mirrors ``assignments.py::_book_age_band``; kept local rather than shared
+    because that module's helper is typed for ``dict[str, object]`` while this
+    one runs over the read-only ``Mapping`` blobs library.py already handles.
+
+    Args:
+        blob: The stored Storybook content blob.
+
+    Returns:
+        str: ``metadata.age_band`` when present and a string, else ``""``.
+    """
+    metadata = blob.get("metadata")
+    if isinstance(metadata, dict):
+        age_band = metadata.get("age_band")
+        if isinstance(age_band, str):
+            return age_band
+    return ""
+
+
 def _library_item(
     storybook_id: str,
     blob: Mapping[str, object],
@@ -331,6 +353,20 @@ async def list_library(
     # storybook_assignment row for (this story, this profile).
     parsed = _parse_profile_id(profile_id)
     authorize_profile(principal, parsed)
+    # #CRITICAL: security: H1 defense in depth. assign_storybook is the
+    # PRIMARY gate for the age-band ceiling; this repeats the check at read
+    # time so a book banded above the profile is hidden here too even if a
+    # mismatched StorybookAssignment row exists (a bypassed assign call, a
+    # profile's band lowered after assignment, a hand-inserted row in a
+    # future migration/import path). Lenient (fail open) when the profile's
+    # own age_band string is not a recognized AgeBand: this is a filter on
+    # top of the existing family/assignment gates, not a new hard dependency
+    # on band data being present.
+    # #VERIFY: test_list_library_hides_book_banded_above_profile.
+    profile = await session.get(ChildProfile, parsed)
+    profile_rank = (
+        parse_age_band_rank(profile.age_band) if profile is not None else None
+    )
     rows = await session.scalars(
         select(Storybook)
         .join(
@@ -378,6 +414,22 @@ async def list_library(
         blobs[(row.storybook_id, row.version)] = row.blob
         if row.cover_status == "ready":
             ready_covers.append((row.storybook_id, row.version))
+    # #CRITICAL: security: H1 defense in depth (continued from the comment
+    # above authorize_profile): drop any blob banded above the profile's
+    # band. The item-construction loop below already skips any
+    # (storybook_id, version) missing from ``blobs``, so removing it here is
+    # the whole filter; downstream state/rating/cover lookups may still
+    # touch a filtered book's id, which wastes a lookup but leaks nothing
+    # (its result is never read).
+    # #VERIFY: test_list_library_hides_book_banded_above_profile.
+    if profile_rank is not None:
+        for key in [
+            key
+            for key, blob in blobs.items()
+            if (band_rank := parse_age_band_rank(_blob_age_band(blob))) is not None
+            and band_rank > profile_rank
+        ]:
+            del blobs[key]
     # #CRITICAL: security: covers are private-by-default in R2 (Phase 1d); the
     # only way a client legitimately learns a cover's URL is a freshly
     # generated, short-lived signed GET URL, never the stored (permanent,
@@ -471,24 +523,58 @@ async def get_storybook_version(
     ):
         msg = f"version {version} of storybook '{storybook_id}' not found"
         raise ResourceNotFoundError(msg)
-    # #CRITICAL: security: a child may fetch a story blob directly ONLY if it is
-    # assigned to their profile; an unassigned (but published+approved) book is
-    # 404 (existence hidden), matching the library-listing gate. A DEVICE
-    # principal is routed through the SAME gate: it carries no profile_ids
-    # (enforced in Principal.__post_init__), so the assignment lookup matches
-    # nothing and every direct blob read is 404. Content reaches a device only
-    # after it mints a child session, which then reads under its own assignment
-    # scope; the device grant itself never reads story content. Guardian and
-    # admin reads are unchanged (they skip this branch).
-    # #VERIFY: child + unassigned -> 404; child + assigned -> blob; device -> 404.
-    if principal.role in (Role.CHILD, Role.DEVICE):
-        assigned = await session.scalar(
-            select(StorybookAssignment.storybook_id).where(
+    # #CRITICAL: security: M2 - a non-admin may fetch a story blob directly
+    # ONLY if it is assigned to one of their own profiles; an unassigned (but
+    # published+approved) book is 404 (existence hidden), matching the
+    # library-listing gate. This WAS scoped to Role.CHILD/Role.DEVICE only,
+    # which let a guardian principal skip the gate entirely and fetch any
+    # published/approved blob, assigned or not; broadened to every non-admin
+    # caller so a guardian is held to the same assignment gate as their own
+    # children (principal.profile_ids for a guardian is every non-deactivated
+    # child in their family, so this reduces to "assigned to some child in
+    # this family"). A DEVICE principal is routed through the SAME gate: it
+    # carries no profile_ids (enforced in Principal.__post_init__), so the
+    # assignment lookup matches nothing and every direct blob read is 404.
+    # Content reaches a device only after it mints a child session, which then
+    # reads under its own assignment scope; the device grant itself never
+    # reads story content. Admin reads are unchanged (admin skips this branch
+    # entirely, matching its cross-family review authority elsewhere in this
+    # file).
+    # #VERIFY: child + unassigned -> 404; child + assigned -> blob; device ->
+    # 404; guardian + unassigned -> 404 (test_guardian_can_fetch_unassigned_
+    # version, updated for this fix); guardian + assigned -> blob.
+    if not principal.is_admin:
+        assignment_rows = await session.execute(
+            select(StorybookAssignment.child_profile_id, ChildProfile.age_band)
+            .join(
+                ChildProfile,
+                StorybookAssignment.child_profile_id == ChildProfile.id,
+            )
+            .where(
                 StorybookAssignment.storybook_id == storybook_id,
                 StorybookAssignment.child_profile_id.in_(principal.profile_ids),
             )
         )
-        if assigned is None:
+        assigned_bands = [age_band for _, age_band in assignment_rows]
+        if not assigned_bands:
             msg = f"version {version} of storybook '{storybook_id}' not found"
             raise ResourceNotFoundError(msg)
+        # #CRITICAL: security: H1 defense in depth. Even with a genuine
+        # assignment row, the assigned profile's band must not be exceeded by
+        # the book's band; lenient (fail open) when the book's band or EVERY
+        # assigned profile's band is unparseable, mirroring the same
+        # leniency in assign_storybook and list_library.
+        # #VERIFY: see the regression test for this behavior, named
+        # "hides book banded above assigned profile" in
+        # tests/integration/test_library_invariant.py.
+        book_rank = parse_age_band_rank(_blob_age_band(version_row.blob))
+        if book_rank is not None:
+            profile_ranks = [
+                r
+                for band in assigned_bands
+                if (r := parse_age_band_rank(band)) is not None
+            ]
+            if profile_ranks and book_rank > max(profile_ranks):
+                msg = f"version {version} of storybook '{storybook_id}' not found"
+                raise ResourceNotFoundError(msg)
     return version_row.blob

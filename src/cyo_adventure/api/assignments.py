@@ -60,7 +60,7 @@ from cyo_adventure.db.models import (
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_policy
 from cyo_adventure.publishing.state_machine import Visibility
-from cyo_adventure.storybook.models import ContentFlags
+from cyo_adventure.storybook.models import ContentFlags, parse_age_band_rank
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -279,6 +279,33 @@ async def assign_storybook(
     profile_ids = [parse_uuid(pid, "profile_ids") for pid in body.profile_ids]
     for pid in profile_ids:
         authorize_profile(ctx.principal, pid)
+    # #CRITICAL: security: H1 - a story's age band is a content-suitability
+    # ceiling, not a preference; a book banded above a target profile's band
+    # must never become assignable (e.g. a 13-16 book onto an 8-11 profile).
+    # This is the PRIMARY gate; library.py's read paths carry the same check
+    # as defense in depth in case an assignment row is ever created another
+    # way. Lenient (fail open) on missing/unparseable data on EITHER side:
+    # a legacy blob with no metadata.age_band, or a profile whose stored
+    # age_band string is not a recognized AgeBand, has no ceiling to compare
+    # against, and this is not the layer that should invent one.
+    # #VERIFY: test_assign_storybook_rejects_band_above_profile_band (allow
+    # equal/lower band, reject a book banded above the profile).
+    book_rank = await _book_age_band_rank(ctx, book)
+    if book_rank is not None:
+        profiles_by_id = {
+            p.id: p
+            for p in await ctx.session.scalars(
+                select(ChildProfile).where(ChildProfile.id.in_(profile_ids))
+            )
+        }
+        for pid in profile_ids:
+            profile = profiles_by_id.get(pid)
+            if profile is None:
+                continue
+            profile_rank = parse_age_band_rank(profile.age_band)
+            if profile_rank is not None and book_rank > profile_rank:
+                msg = "storybook's age band exceeds the target profile's age band"
+                raise BusinessLogicError(msg)
     # #EDGE: concurrency: two guardians assigning the same (profile, story) can
     # both read no existing row and both INSERT, raising a PK violation at flush
     # (a 500). Vanishingly rare for a family's assign UI; accepted rather than
@@ -428,6 +455,29 @@ def _book_age_band(blob: dict[str, object]) -> str:
         if isinstance(age_band, str):
             return age_band
     return ""
+
+
+async def _book_age_band_rank(ctx: Context, book: Storybook) -> int | None:
+    """Return the current published version's age-band rank, or None.
+
+    Args:
+        ctx: The request context (principal + session).
+        book: The storybook whose current published version supplies the band.
+
+    Returns:
+        int | None: The band's rank (for ``<=`` comparisons against a target
+            profile's band), or ``None`` when the book has no current
+            published version row, or its blob carries no parseable
+            ``metadata.age_band``.
+    """
+    if book.current_published_version is None:
+        return None
+    version_row = await ctx.session.get(
+        StorybookVersion, (book.id, book.current_published_version)
+    )
+    if version_row is None:
+        return None
+    return parse_age_band_rank(_book_age_band(version_row.blob))
 
 
 def _book_themes(blob: dict[str, object]) -> list[str]:
