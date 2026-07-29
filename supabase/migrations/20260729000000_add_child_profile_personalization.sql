@@ -43,3 +43,32 @@ CREATE TABLE IF NOT EXISTS "public"."child_profile_personalization" (
 ALTER TABLE "public"."child_profile"
     ADD COLUMN IF NOT EXISTS real_name_ring1_enabled BOOLEAN NOT NULL DEFAULT FALSE,
     ADD COLUMN IF NOT EXISTS real_name_ring2_enabled BOOLEAN NOT NULL DEFAULT FALSE;
+
+-- #CRITICAL: security: RLS is the ONLY gate on the PostgREST path. Supabase's
+-- platform-level `ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public`
+-- (applied by the platform, not present in this repo) grants `anon` and
+-- `authenticated` full arwdDxtm on every table `postgres` creates in `public`,
+-- and the anon key ships in the frontend bundle. Without this statement,
+-- `GET /rest/v1/child_profile_personalization?select=*` returns every child's
+-- real first name, sibling name, pet name, kinship label, and dedication
+-- across every family, unauthenticated, with writes included. This mirrors
+-- 20260711200745_enable_rls_all_tables.sql, which established the invariant
+-- that EVERY public table has RLS enabled; a new table that skips it is a
+-- silent hole in that invariant.
+-- ENABLE (not FORCE) is deliberate and matches 20260711200745: the app
+-- currently connects as `postgres`, the table owner, which Postgres always
+-- exempts from RLS. FORCE would lock the application out of its own table.
+-- Service-role access for the ADR-021 `cyo_api` / `cyo_worker` cutover is
+-- granted separately in 20260729040000_add_personalization_service_role_access.sql.
+-- #VERIFY: tests/integration/test_rls_service_roles.py
+-- ::test_no_public_table_ships_without_row_level_security asserts that no
+-- table in `public` has rowsecurity = false, so the next table that forgets
+-- this fails a test instead of shipping.
+ALTER TABLE "public"."child_profile_personalization" ENABLE ROW LEVEL SECURITY;
+
+-- Postgres indexes the referenced side of a foreign key automatically but
+-- never the referencing side. value_profile_id is ON DELETE CASCADE, so a
+-- sibling profile deletion sequentially scans this table without it. The
+-- (child_profile_id, slot_type) primary key already covers the other FK.
+CREATE INDEX IF NOT EXISTS ix_cpp_value_profile_id
+    ON "public"."child_profile_personalization" (value_profile_id);

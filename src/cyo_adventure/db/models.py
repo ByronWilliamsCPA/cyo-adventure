@@ -588,6 +588,11 @@ class ChildProfilePersonalization(CreatedAtMixin, UpdatedAtMixin, Base):
             f"({_PERSONALIZATION_RING2_SLOT_TYPE_VALUES})",
             name="ck_cpp_ring2_ceiling",
         ),
+        # Postgres indexes the referenced side of an FK automatically but never
+        # the referencing side, so a sibling-profile deletion would sequentially
+        # scan this table without it. The (child_profile_id, slot_type) primary
+        # key already covers the other FK.
+        Index("ix_cpp_value_profile_id", "value_profile_id"),
     )
 
     # #CRITICAL: data-integrity: CASCADE both FKs: a personalization value is
@@ -755,6 +760,12 @@ class PersonalizationDisclosureConsent(UUIDPrimaryKeyMixin, CreatedAtMixin, Base
             unique=True,
             postgresql_where=sa_text("family_connection_id IS NOT NULL"),
         ),
+        # Referencing-side FK index: family_connection_id is ON DELETE SET
+        # NULL, so every family_connection deletion scans this table without
+        # it. The partial unique index above does not serve that lookup,
+        # because it is keyed on child_profile_id first and excludes the NULL
+        # rows the deletion is about to create.
+        Index("ix_pdc_family_connection_id", "family_connection_id"),
         # Mirrors ck_user_consent_pairing (User, :306-329) exactly: the four
         # consent columns are set or cleared together, so this record is
         # either fully signed or entirely unsigned, never a partial claim.
@@ -830,6 +841,15 @@ class Storybook(CreatedAtMixin, Base):
         CheckConstraint(
             "(series_id IS NULL) = (book_index IS NULL)",
             name="ck_storybook_series_index_pairing",
+        ),
+        # Referencing-side FK index. This is the highest-value of the three
+        # personalization FK indexes: storybook is the largest table in the
+        # schema, and the ADR-023 8.5 erasure path fires this ON DELETE SET
+        # NULL once per profile deletion, sequentially scanning the whole
+        # table without it.
+        Index(
+            "ix_storybook_personalization_subject_profile_id",
+            "personalization_subject_profile_id",
         ),
     )
 

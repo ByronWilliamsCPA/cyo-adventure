@@ -56,6 +56,22 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_pdc_profile_connection
     ON "public"."personalization_disclosure_consent" (child_profile_id, family_connection_id)
     WHERE family_connection_id IS NOT NULL;
 
+-- #CRITICAL: security: see the RLS header in
+-- 20260729000000_add_child_profile_personalization.sql. This table is worse
+-- than that one: alongside the child's identity it holds consent_signer_name
+-- (an adult's legal name) and consent_ip. Without RLS the public anon key
+-- reads every signer name and IP in the system and can forge or revoke
+-- consent rows. ENABLE, not FORCE, for the owner-exemption reason given there.
+-- #VERIFY: tests/integration/test_rls_service_roles.py
+-- ::test_no_public_table_ships_without_row_level_security.
+ALTER TABLE "public"."personalization_disclosure_consent" ENABLE ROW LEVEL SECURITY;
+
+-- Postgres indexes the referenced side of a foreign key automatically but
+-- never the referencing side. family_connection_id is ON DELETE SET NULL, so
+-- every family_connection deletion sequentially scans this table.
+CREATE INDEX IF NOT EXISTS ix_pdc_family_connection_id
+    ON "public"."personalization_disclosure_consent" (family_connection_id);
+
 -- 8.6: the viewer-side receive switch. Default TRUE: signing a
 -- family_connection's own consent already implies willingness to receive
 -- from that connection, so this is an opt-out, not an opt-in.
@@ -70,6 +86,13 @@ ALTER TABLE "public"."family"
 ALTER TABLE "public"."storybook"
     ADD COLUMN IF NOT EXISTS personalization_subject_profile_id UUID
         REFERENCES "public"."child_profile"(id) ON DELETE SET NULL;
+
+-- Referencing-side index, same reason as ix_pdc_family_connection_id above.
+-- This one matters most: storybook is the largest table in the schema and
+-- the GDPR/COPPA profile-erasure path (8.5) fires this SET NULL once per
+-- profile deletion, sequentially scanning the whole table without it.
+CREATE INDEX IF NOT EXISTS ix_storybook_personalization_subject_profile_id
+    ON "public"."storybook" (personalization_subject_profile_id);
 
 -- Per-version eligibility flags and the derived sentinel manifest (Task R3).
 ALTER TABLE "public"."storybook_version"
