@@ -1988,6 +1988,22 @@ class UserUpdateBody(BaseModel):
     status: UserStatus | None = None
 
 
+class GuardianInviteBody(BaseModel):
+    """A guardian's self-service request to invite a co-parent (G14).
+
+    Unlike ``UserCreateBody``, there is no ``family_id`` or ``role`` field: the
+    target family is always the calling guardian's own (``ctx.principal.
+    family_id``, resolved server-side in ``api/me.py::invite_guardian``, never
+    client-supplied), and the invited role is always ``"guardian"``, never
+    ``"admin"``, so a guardian can never self-grant the admin capability
+    through this path.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    email: AdminEmail
+
+
 # ---------------------------------------------------------------------------
 # Admin profile-management schemas (WS-J): ChildProfile CRUD across any
 # family. Field-for-field mirrors of ProfileView/ProfileCreateBody/

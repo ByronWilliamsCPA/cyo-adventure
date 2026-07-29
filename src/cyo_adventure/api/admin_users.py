@@ -7,12 +7,19 @@ synthetic placeholder ``authn_subject``, no real login yet); it becomes
 ``role="child"`` rows: those are the synthetic accounts
 ``api/child_sessions.py`` provisions for a ``ChildProfile``, and are excluded
 from every read/write here.
+
+``create_pending_invite`` and ``user_view`` are exported (no leading
+underscore) so ``api/me.py``'s guardian-scoped self-invite endpoint
+(``POST /me/family/invite-guardian``, G14) can reuse the exact same pending-row
+creation and duplicate-email guard instead of re-implementing it; that
+endpoint hard-scopes ``family_id`` to the calling guardian's own family
+before calling in, so this module's cross-family reach never leaks to it.
 """
 
 from __future__ import annotations
 
 import uuid
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from fastapi import APIRouter
 from sqlalchemy import ColumnElement, select
@@ -35,6 +42,9 @@ from cyo_adventure.core.exceptions import (
 )
 from cyo_adventure.db.models import Family, User
 from cyo_adventure.events import ADMIN_ACTOR_ROLE, Actor, EventType, record_event
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(
     prefix="/api/v1", tags=["admin-users"], responses=error_responses(401, 403)
@@ -70,7 +80,7 @@ def _require_admin(ctx: Context) -> None:
         raise AuthorizationError(msg, required_permission="admin")
 
 
-def _view(row: User) -> UserView:
+def user_view(row: User) -> UserView:
     """Map an ORM row to its response schema.
 
     Args:
@@ -93,6 +103,71 @@ def _view(row: User) -> UserView:
         status=cast("UserStatus", row.status),
         created_at=row.created_at,
     )
+
+
+async def create_pending_invite(
+    session: AsyncSession,
+    *,
+    family_id: uuid.UUID,
+    role: AdminManagedRole,
+    is_admin: bool,
+    email: str,
+) -> User:
+    """Create a ``status="pending"`` invite row (shared by admin and guardian paths).
+
+    Extracted from ``create_user`` so ``api/me.py``'s guardian self-invite
+    endpoint reuses the exact same pending-row shape and duplicate-email
+    guard; the caller is responsible for resolving and validating
+    ``family_id`` (an admin from the request body, a guardian from their own
+    principal) and for recording its own audit event afterward.
+
+    Args:
+        session: The request unit-of-work session.
+        family_id: The family this invite belongs to (already validated to
+            exist by the caller).
+        role: ``"guardian"`` or ``"admin"``.
+        is_admin: Only meaningful with ``role="guardian"``; ``role="admin"``
+            always implies ``True`` regardless of what is passed here,
+            mirroring the DB CHECK ``ck_user_admin_role_flag``.
+        email: The invitee's email (already validated by the caller's
+            Pydantic body).
+
+    Returns:
+        User: The created ``status="pending"`` row.
+
+    Raises:
+        StateTransitionError: If a pending invite already exists for this
+            email (409) -- onboarding's email-match bind
+            (``select(...).scalar()``) requires at most one pending row per
+            email, so a second is rejected rather than left ambiguous.
+    """
+    # #CRITICAL: data-integrity: two 'pending' rows sharing an email would
+    # make api/onboarding.py::_bind_pending_invite's scalar() lookup
+    # ambiguous (MultipleResultsFound) on that person's first login. Rejected
+    # here, at creation time, rather than left to surface as a 500 later.
+    # #VERIFY: tests/integration/test_admin_users_api.py::
+    # test_duplicate_pending_invite_email_is_409; tests/integration/
+    # test_me_invite_guardian_api.py::test_duplicate_pending_invite_email_is_409.
+    existing_pending = await session.scalar(
+        select(User).where(User.status == "pending", User.email == email)
+    )
+    if existing_pending is not None:
+        msg = f"a pending invite already exists for '{email}'"
+        raise StateTransitionError(msg)
+    # role='admin' always implies is_admin=True (mirrors ck_user_admin_role_flag).
+    resolved_is_admin = True if role == "admin" else is_admin
+    user = User(
+        family_id=family_id,
+        role=role,
+        is_admin=resolved_is_admin,
+        authn_subject=f"{_PENDING_SUBJECT_PREFIX}{uuid.uuid4()}",
+        email=email,
+        status="pending",
+    )
+    session.add(user)
+    await session.flush()
+    await session.refresh(user, ["created_at"])
+    return user
 
 
 @router.get("/admin/users")
@@ -143,7 +218,7 @@ async def list_users(
             .limit(_USER_LIST_LIMIT)
         )
     ).all()
-    return UserListView(users=[_view(row) for row in rows])
+    return UserListView(users=[user_view(row) for row in rows])
 
 
 @router.post("/admin/users", status_code=201, responses=error_responses(404, 409))
@@ -172,31 +247,13 @@ async def create_user(body: UserCreateBody, ctx: Context) -> UserView:
     if family is None:
         msg = f"family '{body.family_id}' not found"
         raise ResourceNotFoundError(msg)
-    # #CRITICAL: data-integrity: two 'pending' rows sharing an email would
-    # make api/onboarding.py::_bind_pending_invite's scalar() lookup
-    # ambiguous (MultipleResultsFound) on that person's first login. Rejected
-    # here, at creation time, rather than left to surface as a 500 later.
-    # #VERIFY: tests/integration/test_admin_users_api.py::
-    # test_duplicate_pending_invite_email_is_409.
-    existing_pending = await ctx.session.scalar(
-        select(User).where(User.status == "pending", User.email == body.email)
-    )
-    if existing_pending is not None:
-        msg = f"a pending invite already exists for '{body.email}'"
-        raise StateTransitionError(msg)
-    # role='admin' always implies is_admin=True (mirrors ck_user_admin_role_flag).
-    is_admin = True if body.role == "admin" else body.is_admin
-    user = User(
+    user = await create_pending_invite(
+        ctx.session,
         family_id=family_uuid,
         role=body.role,
-        is_admin=is_admin,
-        authn_subject=f"{_PENDING_SUBJECT_PREFIX}{uuid.uuid4()}",
+        is_admin=body.is_admin,
         email=body.email,
-        status="pending",
     )
-    ctx.session.add(user)
-    await ctx.session.flush()
-    await ctx.session.refresh(user, ["created_at"])
     await record_event(
         ctx.session,
         Actor.from_principal(ctx.principal, acting_role=ADMIN_ACTOR_ROLE),
@@ -205,7 +262,7 @@ async def create_user(body: UserCreateBody, ctx: Context) -> UserView:
         event_type=EventType.USER_MANAGED,
         payload={"action": "invited", "role": body.role, "status": "pending"},
     )
-    return _view(user)
+    return user_view(user)
 
 
 def _apply_status_transition(user: User, new_status: UserStatus | None) -> str:
@@ -331,4 +388,4 @@ async def update_user(user_id: str, body: UserUpdateBody, ctx: Context) -> UserV
         event_type=EventType.USER_MANAGED,
         payload={"action": action, "role": user.role, "status": user.status},
     )
-    return _view(user)
+    return user_view(user)

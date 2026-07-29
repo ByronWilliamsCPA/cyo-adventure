@@ -473,6 +473,14 @@ known-first-party = ["cyo_adventure"]
 # obscure the cell contract that authoring_plan and the diversity audit share.
 "**/generation/skeleton_match.py" = ["PLR0913"]
 
+# create_pending_invite carries session plus the four keyword-only fields of a
+# pending invite row (family_id, role, is_admin, email); each is a distinct
+# concern and there is no sensible default for any of them. Shared by both
+# admin_users.py's admin-mediated create_user and me.py's guardian-scoped
+# self-invite (G14), so a config object here would obscure the contract both
+# call sites need to fill in explicitly.
+"**/api/admin_users.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests
