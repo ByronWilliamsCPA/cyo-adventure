@@ -1563,8 +1563,12 @@ class FamilyExportView(BaseModel):
             (id, role, is_admin, email, created_at); no ``pin_hash`` or
             ``authn_subject`` (credential material, never exported).
         profiles: Every child profile, each with its own nested
-            ``reading_state``, ``completions``, ``ratings``, and
-            ``assignments`` lists.
+            ``reading_state``, ``completions``, ``ratings``, ``assignments``,
+            ``personalization`` (ADR-023 P4 ``ChildProfilePersonalization``
+            rows, plus the two ``real_name_ring1_enabled``/
+            ``real_name_ring2_enabled`` booleans on the profile itself), and
+            ``disclosure_consents`` (``PersonalizationDisclosureConsent``
+            rows, including tombstoned ones) lists.
         story_requests: Every story request tied to the family.
     """
 
