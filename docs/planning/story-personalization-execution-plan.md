@@ -665,7 +665,20 @@ ALTER TABLE child_profile
 - [ ] **Step 2:** write the migration and the ORM model (`__table_args__` mirrors every CHECK
   by name; copy the `#CRITICAL`/`#VERIFY` marker style from `Rating` at `db/models.py:812-820`).
 - [ ] **Step 3:** run the schema-parity test and the drift guard: PASS.
-- [ ] **Step 4: commit** (`feat(db): child_profile_personalization store and ring toggles (ADR-023 P4)`).
+- [x] **Step 4: commit** (`feat(db): child_profile_personalization store and ring toggles (ADR-023 P4)`).
+
+**DONE 2026-07-29 (commit 920d7db, on the Stage R branch per the owner's proceed
+instruction; the off-origin/main branch note above is superseded for B1-B3).** Two
+deviations from the printed DDL, both forced by empirical failures: (1) table references
+schema-qualified as `"public"."..."`, because the baseline migration empties `search_path`
+session-wide and every post-baseline migration already qualifies for that reason; (2) the
+four boolean columns carry `server_default=sa_text("false")` in the ORM, matching
+`User.is_admin`, because Python-side-only defaults fail schema parity against the DDL's
+`DEFAULT FALSE`. Drift guard 5/5, schema parity green, failing-first proof recorded.
+**OPEN owner decision: `child_profile_personalization` has no RLS enabled, unlike most
+tables; it holds child-identifying values, so its ADR-021/ADR-022 tiered-scoping policy
+needs a deliberate decision rather than silent omission. No test fails today (the RLS
+suite iterates only rowsecurity=true tables).**
 
 ### Task B2: migration 2, consent evidence, viewer switch, subject link, eligibility
 
