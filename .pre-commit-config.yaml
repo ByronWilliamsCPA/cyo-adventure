@@ -190,6 +190,13 @@ repos:
           bash -c 'cd frontend && files=(); for f in "$@"; do files+=("${f#frontend/}"); done; npx eslint --max-warnings=0 "${files[@]}"' --
         language: system
         files: ^frontend/(src|e2e|e2e-real|e2e-staging|e2e-prod)/.*\.tsx?$
+        # eslint.config.ts's own `ignores: [..., 'src/client']` already skips
+        # the generated (but committed) OpenAPI client; excluding it here too
+        # keeps this hook consistent with that. Without this, --max-warnings=0
+        # turns eslint's own "file ignored" advisory into a hard failure on
+        # every legitimate contract-drift commit (npm run generate-client),
+        # since staged files under src/client/ still match the pattern above.
+        exclude: ^frontend/src/client/
         stages: [pre-commit]
 
       - id: frontend-prettier
