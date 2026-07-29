@@ -23,6 +23,7 @@ from cyo_adventure.measurement.reinsertion import (
     ReinsertionResult,
     ReinsertionTrial,
     TokenOutcome,
+    _multiplicity_bucket,
     _patch_node_reference,
     aggregate_reinsertion,
     reinsert_sentinels,
@@ -260,6 +261,40 @@ def test_aggregate_reinsertion_empty_trials_raises() -> None:
     """
     with pytest.raises(ValidationError, match="empty reinsertion trial sequence"):
         aggregate_reinsertion([])
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("count", [0, -1])
+def test_multiplicity_bucket_rejects_non_positive_counts(count: int) -> None:
+    """A count with no defined bucket raises rather than landing in one.
+
+    The bucket boundaries are open-ended upward (4+ is "many") but closed
+    downward: 0 belongs in `outcome_histogram` as "not_found", never in the
+    multiplicity distribution. `aggregate_reinsertion` only calls this for a
+    `"reinsertable"` outcome, and that status implies a count of at least 1,
+    but the pairing is set in a different module. Raising is what makes a
+    future decoupling there fail the measurement run instead of silently
+    under-reporting a histogram nobody re-derives.
+    """
+    with pytest.raises(ValidationError, match="multiplicity bucket undefined"):
+        _multiplicity_bucket(count)
+
+
+@pytest.mark.unit
+def test_multiplicity_bucket_boundaries() -> None:
+    """The three buckets split at exactly 1, 2-3, and 4+.
+
+    Pins the label strings, not just the partition: these are rendered
+    verbatim into `render_json`'s `multiplicity_histogram` keys, so a rename
+    is a report-format change for anything reading that file.
+    """
+    assert [_multiplicity_bucket(n) for n in (1, 2, 3, 4, 40)] == [
+        "1",
+        "2-3",
+        "2-3",
+        "4+",
+        "4+",
+    ]
 
 
 @pytest.mark.unit

@@ -403,6 +403,16 @@ def reinsert_sentinels(
     """
     outcome = reinsert_storybook(bound_skeleton, filled_blob)
 
+    # #CRITICAL: data-integrity: the `bool(outcome.token_outcomes)` half is
+    # load-bearing, not defensive noise. `all()` over an empty sequence is
+    # True, so without it a fill that produced NO expected tokens at all (a
+    # skeleton bound with no personalizable slot, or a document whose nodes
+    # never matched) would score as a perfectly clean re-insertion. This
+    # number is the plan 3.4 GO/NO-GO input, so a vacuous True here does not
+    # cause a crash somewhere later; it silently argues FOR shipping the
+    # design on evidence that measured nothing.
+    # #VERIFY: tests/unit/test_measurement_reinsertion.py::
+    # test_no_expected_tokens_is_not_clean.
     reinsertion_clean = bool(outcome.token_outcomes) and all(
         token_outcome.status == "reinsertable"
         for token_outcome in outcome.token_outcomes
@@ -505,6 +515,15 @@ def aggregate_reinsertion(trials: Sequence[ReinsertionTrial]) -> ReinsertionAggr
                 per_slot_totals.get(outcome.slot_id, 0) + 1
             )
             if outcome.status == "reinsertable":
+                # #ASSUME: data-integrity: `"reinsertable"` implies
+                # `occurrence_count >= 1`. That pairing is set in a DIFFERENT
+                # module (`storybook/reinsertion.py`), so nothing in this file
+                # enforces it and a future change there could decouple them.
+                # `_multiplicity_bucket` raises rather than inventing a bucket
+                # precisely so the break surfaces as a failed measurement run
+                # instead of a histogram that quietly under-reports.
+                # #VERIFY: tests/unit/test_measurement_reinsertion.py::
+                # test_multiplicity_bucket_rejects_non_positive_counts.
                 bucket = _multiplicity_bucket(outcome.occurrence_count)
                 multiplicity_histogram[bucket] = (
                     multiplicity_histogram.get(bucket, 0) + 1
