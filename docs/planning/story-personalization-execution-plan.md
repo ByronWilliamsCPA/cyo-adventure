@@ -69,7 +69,7 @@ validator or authoring behaviour appends its lessons to
 
 | Gate | What it blocks | Condition to pass |
 |---|---|---|
-| **G1: survival GO/NO-GO** | Stage B onward (everything after leak guards) | Task A1's measured clean-pass rate at or above ~95% is GO; 80-95% means iterate the prompt/delimiter and re-measure before proceeding, with the retry cost line made explicit; below ~80% is STOP: prototype deterministic post-fill re-insertion instead and re-plan Stage B+ |
+| **G1: survival GO/NO-GO** | Stage B onward (everything after leak guards) | Task A1's measured clean-pass rate at or above ~95% is GO; 80-95% means iterate the prompt/delimiter and re-measure before proceeding, with the retry cost line made explicit; below ~80% is STOP: prototype deterministic post-fill re-insertion instead and re-plan Stage B+. **FIRED 2026-07-28: measured 3.3% (1/30) on the primary provider; verdict STOP. Stage B+ as written is void pending a re-plan around deterministic post-fill re-insertion (design plan 3.4, MEASURED block)** |
 | **G2: counsel on OD-1/OD-5** | **Shipping** P7 (ring-2) and P9 (consent UI); building them is not blocked | Counsel confirms the ring-2 separate disclosure consent design and the sibling/pet-name raise |
 | **G3: Route A copy precedes the flag** | Enabling `VITE_FEATURE_PERSONALIZATION` anywhere a real family can reach | Task D1 (toggle-aware Route A copy) merged |
 
@@ -80,7 +80,7 @@ the design plan):
   design plan's own P4-waits-on-P2 rule, confirmed).
 - **R20 (shared-device IndexedDB isolation of values payloads): accepted for v1.** A shared
   family device is a shared trust boundary; no per-profile encryption, no in-memory-only mode.
-  The acceptance must be recorded in the DPIA/privacy-model entry (Tasks A6, B9), not silently
+  The acceptance must be recorded in the DPIA/privacy-model entry (Tasks A6, B7), not silently
   inherited.
 
 ## Standing constraints (apply to every task)
@@ -98,7 +98,11 @@ the design plan):
 - Line numbers in this plan were verified 2026-07-28 and drift; each stage's first step
   re-verifies the anchors it uses.
 - Local commands that need app settings run with `ENVIRONMENT=local` (the VS Code terminal
-  injects `.env`, and non-local guard families trip otherwise).
+  injects `.env`, and non-local guard families trip otherwise). Note `Settings` in
+  `core/config.py` declares **no `env_file`**: it reads the process environment only, so in a
+  bare shell or a worktree you must source the env yourself
+  (`set -a; . ./.env; set +a`) and symlink `certs/` (relative `OLLAMA_CA_BUNDLE` paths resolve
+  against the cwd). Worktrees share git, not untracked files.
 
 ---
 
@@ -125,8 +129,10 @@ Abort if: `git status` in the worktree is not clean.
 
 - [ ] **Step 2: baseline the gate**
 
-Run: `ENVIRONMENT=local uv run pytest tests/unit -q -x --timeout=120 -k "sentinel or covers or recommendations"`
-Expected: PASS (pins the pre-change behaviour of the files this stage edits).
+Run: `ENVIRONMENT=local uv run pytest tests/unit -q -x -k "sentinel or covers or recommendations"`
+Expected: PASS on the selected tests (no `--timeout` flag: pytest-timeout is not installed
+here). The global 80% coverage gate FAILS on any filtered run; that failure is expected noise,
+judge only the test outcomes.
 
 - [ ] **Step 3: copy this plan into the worktree and commit it**
 
@@ -140,25 +146,36 @@ git commit -S -m "docs(planning): staged execution plan for ADR-023 P3-P11"
 
 The instrument is standalone: no DB, no backend, reads `skeletons/` from disk, writes
 `report.json` and `report.md` under `results/sentinel-survival/<run-slug>/`. Provider
-credentials come from `core.config.settings` (`.env`), not from CLI flags; a missing key
-surfaces as `ConfigurationError`.
+credentials come from `core.config.settings`, which reads the **process environment only**
+(`Settings` has no `env_file`); `.env` reaches it via VS Code terminal injection or
+docker-compose, never directly. In a worktree, source it explicitly:
+`bash -c 'set -a; . ./.env; set +a; export ENVIRONMENT=local; exec uv run python scripts/measure_sentinel_survival.py ...'`
+and symlink `certs/` into the worktree (`ln -s ../../certs certs`) because `OLLAMA_CA_BUNDLE`
+is a cwd-relative path. A missing key surfaces as `ConfigurationError`.
 
 - [ ] **Step 1: mock smoke run (free, proves the harness)**
 
 Run: `ENVIRONMENT=local uv run python scripts/measure_sentinel_survival.py --providers mock --count 5`
-Expected: a run directory with `report.json` and `report.md`; clean-pass rate 100% on mock.
+Expected: a run directory with `report.json` and `report.md`. The mock provider echoes a
+fixed canned story unrelated to any specimen, so its clean-pass rate is 0% by construction;
+this step proves only the plumbing (specimen build, provider dispatch, report writing), not
+survival. Judge the run by "report produced", never by the mock rate.
 Abort if: the script errors before producing a report (fix the harness before spending money).
 
-- [ ] **Step 2: real measurement across two providers**
+- [ ] **Step 2: real measurement on the primary route**
 
-Confirm `ANTHROPIC_API_KEY` and `OPENROUTER_API_KEY` (as named by `core/config.py`) are set in
-`.env` first. Then:
+Confirm `OPENROUTER_API_KEY` (as named by `core/config.py`) is set in the process env first.
+(As executed 2026-07-28: the Anthropic direct leg was dropped by owner decision, all
+generation routes through OpenRouter, so this step measures the single primary
+`anthropic/claude-haiku-4.5` route; the fallback `anthropic/claude-sonnet-4.6` leg is optional
+re-plan input, run separately if needed.) Then:
 
-Run: `ENVIRONMENT=local uv run python scripts/measure_sentinel_survival.py --providers anthropic openrouter --count 30 --slots-per-story 4`
+Run: `ENVIRONMENT=local uv run python scripts/measure_sentinel_survival.py --providers openrouter --count 30 --slots-per-story 4`
 Expected: per-provider clean-pass rate plus the failure taxonomy (dropped, duplicated,
 relocated, mutated wrapper, mutated inner text) in `report.md`.
 Abort if: `ConfigurationError` (missing key), or provider spend is not authorized. Cost is
-roughly 60 frontier fill calls; approve the spend before this step, not after.
+roughly 30 frontier fill calls for this primary-route run; the optional fallback-model leg
+would add another 30. Approve the spend before this step, not after.
 
 - [ ] **Step 3: record the numbers where the next reader looks**
 
@@ -246,8 +263,9 @@ from cyo_adventure.storybook.sentinels import strip_sentinels
 
 - [ ] **Step 4: run tests, then the module's full suite**
 
-Run: `ENVIRONMENT=local uv run pytest tests/unit -q -k covers`
-Expected: PASS, no regressions.
+Run: `ENVIRONMENT=local uv run pytest tests/unit/test_cover_prompt.py -q`
+Expected: PASS, no regressions. (Select by file path: `-k covers` matches nothing because the
+test file is `test_cover_prompt.py`. The coverage-gate failure on a filtered run is expected.)
 
 - [ ] **Step 5: commit**
 
@@ -322,30 +340,37 @@ async def test_version_endpoint_returns_blob_verbatim(client, seeded_sentinel_bo
 - Create/extend: an integration test asserting the version response is identical across
   profiles.
 
-- [ ] **Step 1: the R2 registry test.** Every response model in `api/schemas.py` with a field
-  named `title` must have an explicit strip decision, so the 29th router cannot forget:
+- [ ] **Step 1: the R2 registry test.** Every response field in `api/schemas.py` that a story
+  blob is projected into must carry an explicit strip decision, so the 29th router cannot
+  forget.
+
+  **As delivered, this keys on `(model, field)`, not on the model alone.** The original
+  sketch here scanned for models with a field named `title`; that shape has a blind spot
+  wide enough to miss a guard point this workstream had to add, since
+  `NotificationView.body` is composed from a story title and needs stripping but carries no
+  `title` field. The same blind spot hid `GuardianBookItem.themes` and `FlaggedPassage.prose`.
 
 ```python
-from pydantic import BaseModel
-import cyo_adventure.api.schemas as schemas
+# tests/unit/test_title_strip_registry.py (shape only; see the file for the full table)
 
-# Explicit decisions; adding a title-bearing model without a row here fails the test.
-DECIDED: dict[str, str] = {
-    "LibraryItem": "strip",          # library.py::_library_item
-    # ... enumerate what the scan below finds, with "strip" or "raw" + a comment
+# The reviewable knob: response field names a storybook blob is projected into.
+# Scanning every string-bearing field instead sweeps in 224 pairs of ids, enums and
+# URLs, which would be classified by guesswork.
+_BLOB_TEXT_FIELDS = frozenset({"title", "body", "themes", "prose"})
+
+# Closed reason vocabulary; a bare "raw" is rejected, so a future developer cannot
+# silence a failing scan with one unexamined word.
+DECIDED: dict[tuple[str, str], str] = {
+    ("LibraryItem", "title"): "strip",
+    ("NotificationView", "body"): "strip",
+    ("FlaggedPassage", "prose"): "raw:review-surface",
+    ("NodeEditBody", "body"): "raw:legal-sentinel-surface",
+    ("ConceptBrief", "title"): "raw:adult-authored",
+    # ... one row per scanned pair; set equality makes it fail closed both ways
 }
 
-def test_every_title_field_has_a_strip_decision() -> None:
-    found = {
-        name
-        for name, obj in vars(schemas).items()
-        if isinstance(obj, type)
-        and issubclass(obj, BaseModel)
-        and "title" in getattr(obj, "model_fields", {})
-    }
-    assert found == set(DECIDED), (
-        "New title-bearing response model: add a strip/raw decision and, if strip, a test."
-    )
+# Each "strip" row additionally names the builder that enforces it and the test that
+# proves it, and a further test asserts both of those still exist.
 ```
 
 - [ ] **Step 2: the R3 byte-identity test** (integration): fetch the same

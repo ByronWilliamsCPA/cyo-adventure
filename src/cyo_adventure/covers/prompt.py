@@ -2,6 +2,8 @@
 
 from collections.abc import Mapping
 
+from cyo_adventure.storybook.sentinels import strip_sentinels
+
 _ELEVATED = {"moderate", "intense"}
 
 
@@ -37,7 +39,10 @@ def _opening_excerpt(blob: Mapping[str, object], limit: int = 240) -> str:
         first = nodes[0] if nodes else None
         if isinstance(first, dict) and isinstance(first.get("body"), str):
             body = first["body"]
-    return " ".join(body.split())[:limit]
+    # Strip sentinels before the limit slice: stripping after would let the
+    # slice bisect a token (e.g. "{~HERO:Expl"), leaving unparseable garbage
+    # that no longer matches SENTINEL_RE.
+    return strip_sentinels(" ".join(body.split()))[:limit]
 
 
 def build_cover_prompt(
@@ -57,7 +62,9 @@ def build_cover_prompt(
 
     title_val = blob.get("title")
     title = (
-        title_val if isinstance(title_val, str) and title_val else "a children's story"
+        strip_sentinels(title_val)
+        if isinstance(title_val, str) and title_val
+        else "a children's story"
     )
 
     themes_val = meta.get("themes")
@@ -74,7 +81,9 @@ def build_cover_prompt(
     flags_val = meta.get("content_flags")
     flags: Mapping[str, object] = flags_val if isinstance(flags_val, dict) else {}
 
-    subject = protagonist_name or "the main character"
+    subject = (
+        strip_sentinels(protagonist_name) if protagonist_name else "the main character"
+    )
     excerpt = _opening_excerpt(blob)
 
     # #CRITICAL: security: title/character/themes/excerpt are untrusted story
@@ -109,4 +118,9 @@ def build_cover_prompt(
             "anywhere in the image."
         ),
     ]
-    return " ".join(p for p in parts if p)
+    # Final strip on the assembled prompt: themes and age_band above are read
+    # from blob["metadata"] with no per-field strip, unlike title/subject/
+    # excerpt. A strip here makes the no-sentinel property hold for every
+    # field present today and any field added later, without relying on each
+    # call site to remember its own strip.
+    return strip_sentinels(" ".join(p for p in parts if p))

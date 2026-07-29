@@ -19,6 +19,7 @@ import pytest
 
 from cyo_adventure.api.deps import Principal
 from cyo_adventure.api.recommendations import (
+    _book_title,
     _dual_consented_connected_family_ids,
     _is_dual_consented,
     get_recommendations,
@@ -30,6 +31,7 @@ from cyo_adventure.db.models import (
     Rating,
     StorybookVersion,
 )
+from cyo_adventure.storybook.sentinels import wrap
 
 _T1 = datetime(2026, 1, 1, tzinfo=UTC)
 
@@ -179,6 +181,30 @@ def _connection(
         row.consented_by_sharer_user_id = uuid.uuid4()
         row.consented_by_sharer_at = _T1
     return row
+
+
+# ---------------------------------------------------------------------------
+# _book_title
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_book_title_uses_blob_title() -> None:
+    assert _book_title({"title": "Space Race"}, "fallback") == "Space Race"
+
+
+@pytest.mark.unit
+def test_book_title_falls_back_on_missing_title() -> None:
+    assert _book_title({}, "fallback-id") == "fallback-id"
+
+
+@pytest.mark.unit
+def test_book_title_strips_sentinels() -> None:
+    token = wrap("HERO", "Explorer")
+    title = _book_title({"title": f"{token} and the Map"}, "fallback-id")
+    assert "{~" not in title
+    assert "~}" not in title
+    assert "Explorer" in title
 
 
 # ---------------------------------------------------------------------------

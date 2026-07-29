@@ -31,6 +31,7 @@ from cyo_adventure.flywheel.reguide_draft import (
     _RULE_SLOT_DISCIPLINE,
     _RULE_STRUCTURAL,
     _RULE_SURFACE_PARITY,
+    _story_context,
     draft_resolutions,
     render_draft_prompt,
     screen_draft,
@@ -44,6 +45,7 @@ from cyo_adventure.mutation.operators import (  # pyright: ignore[reportPrivateU
 from cyo_adventure.mutation.ops import REGISTRY, OpParams, ReguideItem, ReguideTarget
 from cyo_adventure.mutation.reguide import reconcile, resolved_ids
 from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.storybook.sentinels import strip_sentinels
 from cyo_adventure.storybook.theme_contract import (
     SlotScope,
     SlotSpec,
@@ -412,3 +414,47 @@ def test_candidates_cli_default_is_no_draft() -> None:
     base = ["--band", "8-11", "--length", "short", "--style", "prose"]
     assert parser.parse_args(base).draft is False
     assert parser.parse_args([*base, "--draft"]).draft is True
+
+
+@pytest.mark.unit
+def test_story_context_sentinel_is_stripped_before_the_600_char_cut() -> None:
+    """A sentinel straddling the tone-context cut never reaches the prompt.
+
+    A node body may legally carry a personalization sentinel (ADR-023), and
+    ``_story_context`` truncates the parent's start-node body to 600 chars.
+    Slicing first bisects the token into ``{~PET``, which no later strip can
+    match, and that fragment would then land inside the fenced catalog-content
+    block of an LLM prompt. The last assertion pins that the pre-fix ordering
+    really did leak, so this test cannot pass vacuously.
+    """
+    body = "c" * 595 + "{~PET:dog~} tail"
+    parent: dict[str, object] = {
+        "start_node": "n1",
+        "nodes": [{"id": "n1", "body": body}],
+    }
+
+    context = _story_context(parent)
+
+    assert len(context) == 600
+    assert "{~" not in context
+    assert "~}" not in context
+    assert context == "c" * 595 + "dog t"
+    assert "{~" in strip_sentinels(body[:600])
+
+    item = ReguideItem(
+        target=ReguideTarget.NODE,
+        target_id="n_x",
+        reason="a reason",
+        current_text="before-text",
+    )
+    _system, user = render_draft_prompt(
+        item,
+        contract=None,
+        age_band=AgeBand.BAND_8_11,
+        length="short",
+        style="prose",
+        story_context=context,
+    )
+
+    assert "{~" not in user
+    assert "~}" not in user

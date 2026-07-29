@@ -298,3 +298,30 @@ async def test_malformed_and_unmatched_choices_are_skipped() -> None:
     assert "Go north." in prompt
     assert "Head up the hill path." in prompt
     assert "Only in skeleton." not in prompt
+
+
+async def test_sentinel_bearing_beats_and_body_never_reach_the_review_prompt() -> None:
+    """Personalization sentinels are stripped from both halves of the pair.
+
+    ``moderation/pipeline.py`` and ``moderation/rescreen.py`` already strip
+    before their own model calls. Without the matching strip here, this Stage 1
+    pass would score sentinel-noisy text while a later rescreen of the same
+    published content scores stripped text: the exact comparability break
+    rescreen's strip exists to prevent. The generic word must survive, so this
+    also pins that the strip is a substitution and not a deletion.
+    """
+    original = _skeleton(
+        "<<FILL role=setup words=10 beats='{~HERO:Robin~} finds a lantern'>>"
+    )
+    filled = _skeleton("{~HERO:Robin~} finds a glowing lantern in the woods.")
+    provider = _ScriptedReviewProvider(json.dumps({"verdict": "pass", "notes": ""}))
+
+    result = await run_semantic_fidelity_check(original, filled, provider)
+
+    assert result is None
+    assert len(provider.calls) == 1
+    system, prompt = provider.calls[0]
+    assert "{~" not in prompt
+    assert "~}" not in prompt
+    assert "{~" not in system
+    assert prompt.count("Robin") == 2

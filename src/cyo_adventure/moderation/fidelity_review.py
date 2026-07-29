@@ -24,6 +24,7 @@ import json
 from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.generation.fidelity import parse_fill_directive
+from cyo_adventure.storybook.sentinels import strip_sentinels
 
 if TYPE_CHECKING:
     from cyo_adventure.moderation.review_provider import ReviewProvider
@@ -92,7 +93,24 @@ def _beat_prose_pairs(
         directive = parse_fill_directive(body)
         filled_body = filled_by_id.get(node_id)
         if directive is not None and filled_body is not None:
-            pairs.append((node_id, directive["beats"], filled_body))
+            # #CRITICAL: data-integrity: strip any personalization sentinel
+            # from both the beats guidance and the filled body before this
+            # pair reaches run_semantic_fidelity_check's prompt, mirroring
+            # moderation/pipeline.py's and moderation/rescreen.py's own
+            # strip. Without this, this fidelity pass would score
+            # sentinel-noisy text (`{~SLOTID:Value~}` literally present in
+            # the prompt) while a later rescreen of the same published
+            # content scores stripped text, the exact comparability break
+            # rescreen's strip exists to prevent.
+            # #VERIFY: a test should assert no `{~` reaches the fidelity
+            # review prompt built from a sentinel-bearing beats/body pair.
+            pairs.append(
+                (
+                    node_id,
+                    strip_sentinels(directive["beats"]),
+                    strip_sentinels(filled_body),
+                )
+            )
     return pairs
 
 

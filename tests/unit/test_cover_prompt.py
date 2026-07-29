@@ -2,7 +2,8 @@
 
 import pytest
 
-from cyo_adventure.covers.prompt import build_cover_prompt
+from cyo_adventure.covers.prompt import _opening_excerpt, build_cover_prompt
+from cyo_adventure.storybook.sentinels import wrap
 
 pytestmark = pytest.mark.unit
 
@@ -178,3 +179,39 @@ def test_build_cover_prompt_overlong_excerpt_truncated_to_limit() -> None:
     prompt = build_cover_prompt(blob)
     assert "A" * 240 in prompt
     assert "A" * 241 not in prompt
+
+
+@pytest.mark.unit
+def test_cover_prompt_contains_no_sentinel_markers() -> None:
+    """A sentinel in the title and in protagonist_name never reaches the prompt."""
+    token = wrap("HERO", "Explorer")
+    blob: dict[str, object] = {"title": f"The {token} Chronicles", "nodes": []}
+    prompt = build_cover_prompt(blob, protagonist_name=token)
+    assert "{~" not in prompt
+    assert "~}" not in prompt
+    assert "Explorer" in prompt  # stripped to the generic default, not deleted
+
+
+@pytest.mark.unit
+def test_opening_excerpt_strips_before_truncation() -> None:
+    """Stripping happens before the 240-char slice, not after.
+
+    If the strip ran after truncation, the boundary below would bisect the
+    sentinel token and leave an unmatched `{~HERO:Expl` fragment behind.
+
+    The expected value is computed by hand, not merely inferred from the
+    absence of "{~": after ``strip_sentinels`` replaces the token with
+    "Explorer", the body reads ``("x" * 235) + " Explorer tail"``, and the
+    240-char slice keeps indices 0-239, i.e. the 235 "x"s, one space, and
+    the first four characters of "Explorer" ("Expl"). An implementation that
+    dropped the excerpt entirely, or stripped a different (wrong) span,
+    would still satisfy a marker-absence-only check; pinning the exact
+    string closes that gap.
+    """
+    token = wrap("HERO", "Explorer")
+    # Position the token so a strip-after-truncate would bisect it at 240 chars.
+    body = ("x" * 235) + f" {token} tail"
+    blob: dict[str, object] = {"nodes": [{"id": "n0", "body": body}]}
+    excerpt = _opening_excerpt(blob)
+    assert "{~" not in excerpt
+    assert excerpt == ("x" * 235) + " Expl"

@@ -22,6 +22,7 @@ from cyo_adventure.db.models import (
     StorybookVersion,
 )
 from cyo_adventure.generation.concept import AnchorContext
+from cyo_adventure.storybook.sentinels import strip_sentinels
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -223,7 +224,20 @@ _UNTITLED_STORY = "Untitled story"
 def _safe_title(blob: Mapping[str, object]) -> str:
     """Return the blob's title, or the untitled-story placeholder."""
     title = blob.get("title")
-    return title if isinstance(title, str) and title else _UNTITLED_STORY
+    if not (isinstance(title, str) and title):
+        return _UNTITLED_STORY
+    # #CRITICAL: security: strip sentinels before the caller's [:_TITLE_CHARS]
+    # slice in anchor_context_from_blob. AnchorContext is serialized wholesale
+    # into the Stage A generation prompt (generation/concept.py's
+    # build_structure_prompt via model_dump_json), so a title bisected
+    # mid-token (e.g. "{~HERO:Expl") would reach the external LLM provider as
+    # literal, unparseable text; the model can then echo or forge that
+    # fragment into the NEXT book, where check_sentinel_integrity hard-blocks
+    # it at moderation entry, pointing diagnostics at book 2 instead of the
+    # book 1 anchor where the defect actually originates.
+    # #VERIFY: tests/unit/test_anchoring.py must assert a sentinel-bearing
+    # title never survives into an AnchorContext field.
+    return strip_sentinels(title)
 
 
 def _ending_excerpt(node: Mapping[str, object]) -> str:
@@ -236,9 +250,17 @@ def _ending_excerpt(node: Mapping[str, object]) -> str:
     label = ending.get("title") if isinstance(ending, dict) else None
     body = node.get("body")
     body_text = body if isinstance(body, str) else ""
+    # #CRITICAL: security: strip sentinels before the callers' [:_EXCERPT_CHARS]
+    # and [:_SUMMARY_CHARS] slices (same reasoning as _safe_title above). A
+    # sentinel may legally appear in an ending title or a node body
+    # (validator/sentinel_integrity.py, storybook/slotted_surfaces.py), and
+    # truncating before stripping can bisect a token into unmatchable
+    # garbage that then reaches the Stage A generation prompt.
+    # #VERIFY: tests/unit/test_anchoring.py must assert a sentinel-bearing
+    # ending title/body never survives into an AnchorContext field.
     if isinstance(label, str) and label:
-        return f"{label}: {body_text}"
-    return body_text
+        return strip_sentinels(f"{label}: {body_text}")
+    return strip_sentinels(body_text)
 
 
 def _ending_excerpts_from_blob(blob: Mapping[str, object]) -> list[str]:

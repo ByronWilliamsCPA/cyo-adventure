@@ -19,6 +19,7 @@ from cyo_adventure.api import notifications
 from cyo_adventure.api.deps import Principal, RequestContext
 from cyo_adventure.core.exceptions import AuthorizationError, ValidationError
 from cyo_adventure.notifications.models import NotificationItem
+from cyo_adventure.storybook.sentinels import wrap
 
 
 def _principal(role: str) -> Principal:
@@ -232,3 +233,42 @@ class TestListNotificationsResponseShape:
         assert out.severity == item.severity
         assert out.title == item.title
         assert out.storybook_id == item.storybook_id
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_sentinels_are_stripped_from_title_and_body(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        token = wrap("HERO", "Explorer")
+        item = NotificationItem(
+            id="evt-2",
+            occurred_at=datetime(2026, 7, 1, tzinfo=UTC),
+            kind="story_ready",
+            severity="info",
+            title=f"{token}'s story is ready on the shelf",
+            body=f"{token} has a new adventure waiting.",
+            storybook_id="the-hero-chronicles",
+            request_id=None,
+            profile_id=None,
+        )
+
+        async def fake_list_guardian_notifications(
+            *_args: object, **_kwargs: object
+        ) -> list[NotificationItem]:
+            return [item]
+
+        monkeypatch.setattr(
+            notifications,
+            "list_guardian_notifications",
+            fake_list_guardian_notifications,
+        )
+
+        view = await notifications.list_notifications(_ctx("guardian"))
+
+        out = view.notifications[0]
+        assert "{~" not in out.title
+        assert "~}" not in out.title
+        assert "Explorer" in out.title
+        assert "{~" not in out.body
+        assert "~}" not in out.body
+        assert "Explorer" in out.body

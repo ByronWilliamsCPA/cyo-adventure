@@ -14,6 +14,8 @@ from cyo_adventure.core.exceptions import (
     AuthorizationError,
     ResourceNotFoundError,
 )
+from cyo_adventure.moderation.thresholds import ThresholdPolicy
+from cyo_adventure.storybook.sentinels import wrap
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -81,6 +83,63 @@ class TestBookDetailHelpers:
     @pytest.mark.unit
     def test_book_content_flags_metadata_without_flags_key_returns_none(self) -> None:
         assert assignments._book_content_flags({"metadata": {}}) is None
+
+
+class TestGuardianBookItem:
+    """The guardian browse row's title must not leak a raw personalization
+    sentinel (ADR-023 P3, registry: tests/unit/test_title_strip_registry.py).
+    This is the guardian browse-and-assign list, not an admin/review surface,
+    so it is structurally identical to the already-fixed LibraryItem site."""
+
+    @pytest.mark.unit
+    def test_title_strips_sentinels(self) -> None:
+        from cyo_adventure.db.models import Storybook, StorybookVersion
+
+        book = Storybook(id="story-1", family_id=uuid.uuid4())
+        book.visibility = "family"
+        token = wrap("HERO", "Explorer")
+        version_row = StorybookVersion(
+            storybook_id="story-1",
+            version=1,
+            blob={"title": f"{token} and the Map", "metadata": {}},
+            moderation_report=None,
+        )
+
+        item = assignments._guardian_book_item(
+            book, version_row, [], policy=ThresholdPolicy(rows={})
+        )
+
+        assert "{~" not in item.title
+        assert "~}" not in item.title
+        assert "Explorer" in item.title
+
+    @pytest.mark.unit
+    def test_themes_strip_sentinels(self) -> None:
+        """Themes are a second story-derived field on this same row.
+
+        ``themes`` is projected from ``blob["metadata"]["themes"]`` exactly as
+        ``title`` is projected from ``blob["title"]``, so it needs its own pin:
+        the title test above passes whether or not themes are stripped.
+        """
+        from cyo_adventure.db.models import Storybook, StorybookVersion
+
+        book = Storybook(id="story-1", family_id=uuid.uuid4())
+        book.visibility = "family"
+        version_row = StorybookVersion(
+            storybook_id="story-1",
+            version=1,
+            blob={
+                "title": "Plain Title",
+                "metadata": {"themes": [f"{wrap('PET', 'dog')} rescue", "friendship"]},
+            },
+            moderation_report=None,
+        )
+
+        item = assignments._guardian_book_item(
+            book, version_row, [], policy=ThresholdPolicy(rows={})
+        )
+
+        assert item.themes == ["dog rescue", "friendship"]
 
 
 class _FakeScalars:

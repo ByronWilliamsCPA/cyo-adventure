@@ -16,8 +16,12 @@ from fastapi import APIRouter
 
 from cyo_adventure.api.deps import Context
 from cyo_adventure.api.schemas import NotificationListView, NotificationView
+from cyo_adventure.api.sentinel_log import strip_and_log
 from cyo_adventure.core.exceptions import AuthorizationError, ValidationError
 from cyo_adventure.notifications.service import list_guardian_notifications
+from cyo_adventure.utils.logging import get_logger
+
+_logger = get_logger(__name__)
 
 router = APIRouter(prefix="/api/v1", tags=["notifications"])
 
@@ -118,6 +122,16 @@ async def list_notifications(
     items = await list_guardian_notifications(
         ctx.session, ctx.principal, since=since_dt, limit=_bound_limit(limit)
     )
+    # #CRITICAL: security: title/body are composed in
+    # notifications/registry.py (e.g. f"{_story_label(ctx)} is ready on the
+    # shelf"), from a story title that may itself carry personalization
+    # sentinels (notifications/service.py projects blob["title"] into
+    # EntityContext.storybook_title, unstripped). Strip them here, at the
+    # wire-serialization boundary, so a raw {~SLOTID:value~} token never
+    # reaches a guardian's feed.
+    # #VERIFY: tests/unit/test_notifications_api_unit.py::
+    # TestListNotificationsResponseShape::
+    # test_sentinels_are_stripped_from_title_and_body.
     return NotificationListView(
         notifications=[
             NotificationView(
@@ -125,8 +139,16 @@ async def list_notifications(
                 occurred_at=item.occurred_at,
                 kind=item.kind,
                 severity=item.severity,
-                title=item.title,
-                body=item.body,
+                title=strip_and_log(
+                    item.title,
+                    at="notification.title",
+                    storybook_id=item.storybook_id,
+                ),
+                body=strip_and_log(
+                    item.body,
+                    at="notification.body",
+                    storybook_id=item.storybook_id,
+                ),
                 storybook_id=item.storybook_id,
                 request_id=item.request_id,
                 profile_id=item.profile_id,

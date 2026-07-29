@@ -30,6 +30,7 @@ from cyo_adventure.api.schemas import (
     ReadingHistoryItem,
     ReadingHistoryView,
 )
+from cyo_adventure.api.sentinel_log import strip_and_log
 from cyo_adventure.core.exceptions import AuthorizationError, ValidationError
 from cyo_adventure.db.models import (
     ChildProfile,
@@ -86,18 +87,39 @@ def _parse_profile_id(raw: str) -> uuid.UUID:
         raise ValidationError(msg, field="profile_id", value=raw) from exc
 
 
-def _book_title(blob: Mapping[str, object], storybook_id: str) -> str:
+def _book_title(
+    blob: Mapping[str, object], storybook_id: str, version: int | None = None
+) -> str:
     """Return the blob's title, falling back to the storybook id.
+
+    # #CRITICAL: security: this is the reading-history feed (K6), so a raw
+    # personalization sentinel (e.g. {~HERO:Explorer~}) must never reach it
+    # (ADR-023 P3); see tests/unit/test_title_strip_registry.py for the
+    # authoritative strip-or-raw enumeration across every title-bearing
+    # response surface.
+    # #VERIFY: tests/unit/test_reading_history_api_unit.py::
+    # test_book_title_strips_sentinels.
 
     Args:
         blob: The pinned version's stored Storybook content blob.
         storybook_id: The story id (title fallback).
+        version: The pinned version number, for the sentinel-stripped
+            warning log, or None when unavailable to the caller.
 
     Returns:
-        str: ``blob["title"]`` when it is a non-empty string, else ``storybook_id``.
+        str: ``blob["title"]``, with personalization sentinels stripped to
+            their generic word (ADR-023 P3), when it is a non-empty string;
+            else ``storybook_id``.
     """
     title = blob.get("title")
-    return title if isinstance(title, str) and title else storybook_id
+    if not (isinstance(title, str) and title):
+        return storybook_id
+    return strip_and_log(
+        title,
+        at="reading_history_item.title",
+        storybook_id=storybook_id,
+        version=version,
+    )
 
 
 def _ending_count(blob: Mapping[str, object], storybook_id: str, version: int) -> int:
@@ -320,7 +342,11 @@ def _history_item(
     pinned_row = (
         versions.get((book_id, pinned_version)) if pinned_version is not None else None
     )
-    title = _book_title(pinned_row.blob, book_id) if pinned_row is not None else book_id
+    title = (
+        _book_title(pinned_row.blob, book_id, pinned_version)
+        if pinned_row is not None
+        else book_id
+    )
     total_endings = (
         _ending_count(pinned_row.blob, book_id, pinned_version)
         if pinned_row is not None and pinned_version is not None

@@ -44,6 +44,7 @@ from cyo_adventure.api.schemas import (
     GuardianBooksView,
     error_responses,
 )
+from cyo_adventure.api.sentinel_log import strip_and_log
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     BusinessLogicError,
@@ -494,8 +495,9 @@ def _guardian_book_item(
         policy: The resolved threshold policy shared across the whole listing.
 
     Returns:
-        GuardianBookItem: The browse row with title, content badge, and the
-            sorted assignment set.
+        GuardianBookItem: The browse row with title (personalization
+            sentinels stripped to their generic word, ADR-023 P3), content
+            badge, and the sorted assignment set.
     """
     # #EDGE: data integrity: build_content_summary raises ValidationError on a
     # moderation_report that no longer conforms at rest (e.g. an unrecognized
@@ -526,17 +528,43 @@ def _guardian_book_item(
         )
         screened = False
         flagged_count = 0
+    # #CRITICAL: security: this is the guardian browse-and-assign list, not
+    # an admin/review surface, so a raw personalization sentinel (e.g.
+    # {~HERO:Explorer~}) must never reach it (ADR-023 P3); see
+    # tests/unit/test_title_strip_registry.py for the authoritative
+    # strip-or-raw enumeration across every title-bearing response surface.
+    # Themes are stripped for the same reason: metadata.themes reaches this
+    # same guardian model two lines below the title.
+    # #VERIFY: test_assignments_api_unit.py::TestGuardianBookItem::
+    # test_title_strips_sentinels.
     title = version_row.blob.get("title")
     return GuardianBookItem(
         storybook_id=book.id,
-        title=title if isinstance(title, str) and title else book.id,
+        title=(
+            strip_and_log(
+                title,
+                at="guardian_book.title",
+                storybook_id=book.id,
+                version=version,
+            )
+            if isinstance(title, str) and title
+            else book.id
+        ),
         version=version,
         age_band=_book_age_band(version_row.blob),
         visibility=cast("Literal['family', 'catalog']", book.visibility),
         screened=screened,
         flagged_count=flagged_count,
         assigned_profile_ids=sorted(assigned_profile_ids),
-        themes=_book_themes(version_row.blob),
+        themes=[
+            strip_and_log(
+                theme,
+                at="guardian_book.themes",
+                storybook_id=book.id,
+                version=version,
+            )
+            for theme in _book_themes(version_row.blob)
+        ],
         content_flags=_book_content_flags(version_row.blob),
     )
 

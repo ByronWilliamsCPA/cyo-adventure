@@ -41,6 +41,7 @@ from typing import TYPE_CHECKING, cast
 from cyo_adventure.core.exceptions import BusinessLogicError
 from cyo_adventure.mutation.ops import ReguideTarget
 from cyo_adventure.mutation.reguide import ReguideResolutions, ResolvedReguide
+from cyo_adventure.storybook.sentinels import strip_sentinels
 from cyo_adventure.storybook.theme_contract import SLOT_TOKEN_RE, slot_ids
 from cyo_adventure.validator.slots import (
     band_mandatory_bundles,
@@ -442,7 +443,18 @@ def _story_context(parent: Mapping[str, object]) -> str:
             continue
         body = node.get("body")
         if isinstance(body, str):
-            return body[:600]
+            # #CRITICAL: security: strip sentinels before this [:600] slice.
+            # A node body may legally carry a personalization sentinel
+            # (validator/sentinel_integrity.py, storybook/
+            # slotted_surfaces.py), and truncating before stripping can
+            # bisect a token (e.g. "{~HERO:Expl") into unmatchable garbage
+            # that then reaches the drafting prompt's tone-context block
+            # (see module docstring: catalog content only, but still an LLM
+            # touchpoint).
+            # #VERIFY: a test should assert no `{~` reaches the rendered
+            # drafting prompt when the parent's start node carries a
+            # sentinel.
+            return strip_sentinels(body)[:600]
     return ""
 
 

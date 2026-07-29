@@ -356,6 +356,37 @@ not negligible and it should be visible in the decision to proceed, not discover
 Record actual measured numbers in `docs/planning/authoring-lessons-log.md` once PR #416's directive
 is live.
 
+**MEASURED 2026-07-28** (`scripts/measure_sentinel_survival.py`, run slug
+`20260728T205008Z`, 30 stories x 4 slots, first attempt only, the `fill_bound.md` "Verbatim
+tokens" preservation instruction present in every prompt. The raw run artifact under
+`results/sentinel-survival/20260728T205008Z/` is local-only and gitignored, so every number a
+reader needs is restated here rather than left to that path):
+
+- **Clean-pass rate: 3.3% (1/30) on `openrouter:anthropic/claude-haiku-4.5`**, which is
+  production's primary fill route (`openrouter_model` in `core/config.py`). This is a
+  **run-level** rate: 1 of the 30 stories had every one of its slots survive the fill cleanly.
+  This is far below the ~80% floor: **the below-80% branch applies. G1 verdict: STOP for
+  prompt-only survival.** Stage B onward must not proceed on the preserve-through-the-LLM
+  design; the deterministic post-fill re-insertion fallback described above graduates from
+  "prototype in parallel" to the primary design, and Stage B+ needs re-planning around it.
+- Failure taxonomy (**node-level violation counts**, per `validator/sentinel_integrity.py`:
+  each violation is emitted per node per token, not per slot instance, so these do not sum to
+  30 stories x 4 slots = 120 and are not directly comparable to the clean-pass rate above):
+  dropped 1,738 (dominant by 8x), forged/mutated 207, relocated 111, in-choice-label 3,
+  malformed wrapper 7. The dominance of *dropped* means the model simply writes prose without
+  the token despite the verbatim instruction; this is not a delimiter problem to iterate, it is
+  the model treating the token as guidance rather than payload.
+- A one-retry policy at this rate would add ~97% to fill spend, i.e. nearly double every
+  fill: economically equivalent to no retry policy at all.
+- Scope note: the Anthropic direct leg was attempted and hit an account-billing 400, but the
+  owner then confirmed (2026-07-28) that the direct leg is dropped by design: all generation
+  routes through OpenRouter. Per-provider variance therefore means variance across OpenRouter
+  models; the configured fallback (`anthropic/claude-sonnet-4.6` via OpenRouter) remains
+  unmeasured. A stronger model may score materially higher, but the G1 gate is defined on the
+  worst configured route, and the worst (and primary) route has now been measured at 3.3%; a
+  fallback-model run would inform the re-plan (for example, pinning fills to a stronger
+  model), not reverse the STOP.
+
 ## 4. P3: leak-surface guard points
 
 Each of these is a concrete place where a sentinel token or a real value could escape. The
@@ -376,10 +407,21 @@ about defense in depth.
 | Text-to-speech | `frontend/src/reader/useReadAloud.ts:34-99` | Uses the browser `window.speechSynthesis` API on already-substituted text | Not a server guard. Record in the privacy model that on platforms with cloud-backed voices, a personalized passage read aloud may leave the device through a path the app does not control. Surface it in the guardian consent copy |
 | Save-state export and sync | `frontend/src/player/types.ts:71` (`ReadingState`) | Carries node ids and variable state only | **Already safe.** No change; add a regression test so it stays that way |
 | Ring-3 aggregates | Unbuilt (ADR-016, "Technical Debt") | N/A | Forward-binding constraint: when ring-3 aggregation is built, it must render fully generic. Land this as a test in that workstream, not only as a sentence in ADR-023 |
+| Series-next book title | `src/cyo_adventure/api/reading.py:294,311` (`get_series_next`) | Kid-facing series-continuation feed surfaces the next series book's `blob["title"]`. Found by the R2 registry test (`tests/unit/test_title_strip_registry.py`), which the original hand-enumerated version of this table missed | Strip sentinels before returning. Guarded in this PR |
+| Guardian browse-and-assign list | `src/cyo_adventure/api/assignments.py:538,541` (`_guardian_book_item`) | Guardian browse-and-assign listing surfaces `version_row.blob["title"]` for every published book. Found by the same R2 registry test | Strip sentinels before returning. Guarded in this PR |
+| Stage A anchor context | `src/cyo_adventure/story_requests/anchoring.py` (`_safe_title`, `_ending_excerpt`) | Builds the ending title and node-body excerpt fed into the Stage A generation prompt from raw blob text | Strip sentinels before building the anchor context. Being guarded in this same PR |
 
 Implementation note: prefer **one shared strip helper** applied at the serialization boundary over
 per-call-site strips. A per-call-site approach is exactly the pattern that gets forgotten on the
-29th router.
+29th router. **Satisfied**: every API egress site routes through
+`src/cyo_adventure/api/sentinel_log.py::strip_and_log`, which both strips and emits a single
+`api.served_field_sentinel_stripped` warning naming the call site. Centralizing matters here beyond
+tidiness: the helper carries a PII-redaction rule (a personalization value may be a child's first
+name, so it must never reach a log sink), and duplicating that rule per router would give it six
+places to drift. The enumerating registry test
+(`tests/unit/test_title_strip_registry.py`) remains the second layer, failing closed when a
+title-bearing response model is added without a recorded stripping decision. See the matching note
+on risk R2 (section 13).
 
 ## 5. P4: data model
 
@@ -1240,7 +1282,7 @@ child-linked production data, so there is no backward-compatibility obligation.
 | ID | Risk | Severity | Mitigation | Phase |
 |---|---|---|---|---|
 | **R1** | **Sentinel forgery in prose.** The fill LLM emits an extra, mutated, or relocated sentinel; a human approves a blob containing an unreviewed substitution point | High | The P2 exact-multiset, per-node integrity check, fail-closed, run before the approval queue and again after any repair | P2 |
-| **R2** | **A guard point is missed on a new surface.** The 29th router serializes a blob title without stripping | High | One shared strip helper at the serialization boundary, not per-call-site strips; a test enumerating title-bearing response models | P3 |
+| **R2** | **A guard point is missed on a new surface.** The 29th router serializes a blob title without stripping | High | One shared strip helper at the serialization boundary, not per-call-site strips; a test enumerating title-bearing response models. **Satisfied**: `api/sentinel_log.py::strip_and_log` is that shared helper (it also emits one `api.served_field_sentinel_stripped` warning per leak, so a missed guard point is detectable in logs rather than silent), and `tests/unit/test_title_strip_registry.py` is that enumerating test, failing closed on an unstripped title-bearing response model | P3 |
 | **R3** | **Offline cache poisoning across siblings.** A future change adds a profile dimension to the story response and the shared `id@version` key starts serving one sibling's copy to another | High | The architecture prevents it, but nothing enforces it. Add a test asserting the story response is byte-identical for two profiles with different toggle states | P6 |
 | **R4** | **Slot values are under-validated.** `display_name` is length-bounded free text only (`api/schemas.py:1032-1034`), written straight to the row (`api/profiles.py:102-103`, `:286`), while sibling fields that reach a prompt are far stricter (`PinCode` at `:1038`, banned themes at `:1050-1051`) | High | Apply `structural_value_violations` plus the band-mandatory denylist floor **twice**: at write time and at payload-build time. The second is not redundant: names set before this feature shipped were never checked | P4, P6 |
 | **R5** | **Revocation residue.** A device retains a synced values payload after a flag flip or consent revocation | Medium | Purge on flip, revoke, deactivation, sign-out, and policy-version change. Document the offline-device window in code and keep guardian copy prospective | P6 |
@@ -1249,14 +1291,14 @@ child-linked production data, so there is no backward-compatibility obligation.
 | **R17** | **A sibling's name crosses ring 2 against that sibling's own settings.** Sibling B's name rides out inside sibling A's book because only A's consent was checked | High | Predicate condition 8 (8.4): the sibling slot resolves at ring 2 only if the **referenced** profile's own ring-2 enablement and consent cover that connection. Tested in all four A/B combinations (8.6) | P7 |
 | **R18** | **The ring-2 slot set grows by drift.** A future slot type is added with `ring2_enabled` allowed because the DB CHECK's set was widened casually | Medium | The ring-2-eligible set is a DB CHECK enumerating slot types (5.1), so widening it is a migration with a reviewer, not a config change. ADR-023's taxonomy section records the reasoning for each current ceiling so a change has something to argue against | P4 |
 | **R19** | **An authz-predicate bug leaks a value to an unconnected family.** A wrong join direction, a loosened condition, or a mis-resolved connection returns Alex's details to a household with no edge to the Ruiz family | High | Eight explicit conditions evaluated as Python booleans per row rather than as SQL a refactor can loosen (the house convention at `recommendations.py:214-221`); a dedicated `authorize_via_connection` helper never merged into `authorize_family`; a `ROUTE_TABLE` row in `tests/integration/test_authz_matrix.py`; and the 8.8 test asserting an unconnected family's response is indistinguishable from a non-personalized book. Note this route is the single highest-consequence authz surface the feature adds | P7 |
-| **R20** | **Shared-device sibling access to another child's values.** Two sibling payloads live in the same origin's IndexedDB, so a determined reader with devtools, or a sibling who switches profiles, can reach values the application would not render for them | Medium | **No mitigation is proposed in v1**, and that is a decision the owner should make explicitly rather than inherit. The store holds compact per-child personal details, which is a different exposure from the existing device-wide `storybooks` cache (generic content, identical for everyone) even though both are origin-scoped. Options if it must be closed: per-profile encryption keyed on the profile PIN, or holding values in memory only and refetching per session. Recorded as still-open question 3 | P6 |
+| **R20** | **Shared-device sibling access to another child's values.** Two sibling payloads live in the same origin's IndexedDB, so a determined reader with devtools, or a sibling who switches profiles, can reach values the application would not render for them | Medium | **Accepted for v1 (owner decision, 2026-07-28)**: a shared family device is a shared trust boundary; the acceptance is recorded in the DPIA/privacy-model entries rather than silently inherited. The store holds compact per-child personal details, a different exposure from the device-wide `storybooks` cache (generic content, identical for everyone) even though both are origin-scoped. Options if a later release must close it: per-profile encryption keyed on the profile PIN, or holding values in memory only and refetching per session. See resolved question 3 | P6 |
 | **R8** | **English-only morphology produces bad prose.** "a Maya", possessive edge cases, and verb agreement break substituted sentences | Medium | v1 is English only and scoped to she/her and he/him (agreement-identical pairs). they/them is deferred because singular "they" changes verb conjugation ("she runs" vs "they run"), which a token swap cannot retrofit onto already-conjugated stored prose. Prefer name slots in dialogue and ending titles | P1, P10 |
 | **R9** | **Two rendering implementations drift.** The client resolver and the server-side strip helper disagree about what a sentinel is | Medium | One canonical sentinel definition. Carry it in the OpenAPI schema so the generated client picks it up and the CI `contract` job (`ci.yml:432`) fails on drift, rather than letting the frontend re-derive the regex | P1, P3, P5, P6 |
 | **R10** | **Consent records leak values into the event log.** A contributor adds the substituted name to a consent event payload for debuggability | Medium | The `_PAYLOAD_ALLOWLIST` mechanism (`events/writer.py:17-19`) already rejects unlisted keys. Write the new entries with keys only, and add a test asserting a value-bearing key is rejected | P3, P4 |
 | **R11** | **A real name lands in an antagonist or comic-mishap role.** A sibling name is bound to a `COMPANION`-style slot the skeleton later treats badly | Medium | `role_safety` metadata on the slot spec (2.2), audited per skeleton alongside the pronoun audit | P1, P10 |
 | **R12** | **Sentinels reach a rescreen classifier as unfamiliar tokens** and shift scores against the pre-migration baseline | Low | Strip to generic default before classification (3.3), so scores stay comparable | P3 |
 | **R13** | **The ADR-016 amendment gets written twice, racing.** This workstream and PR #415's B6 residual both edit the same document | Low | Single owner, single edit covering both asks; the parked addendum in ADR-016 says so | P11 |
-| **R14** | **Sentinel survival through the fill LLM is worse than assumed**, making retries a real cost line or the approach unworkable | High | Measure before scheduling P4 onward (3.4), with a deterministic post-fill re-insertion fallback prototyped in parallel if early numbers are poor | P2 |
+| **R14** | **Sentinel survival through the fill LLM is worse than assumed**, making retries a real cost line or the approach unworkable | High | **REALIZED 2026-07-28: measured 3.3% clean on the primary provider (see 3.4). The fallback is now the plan**: deterministic post-fill re-insertion replaces prompt-preserved sentinels as the primary design; Stage B+ re-plans around it | P2 |
 | **R15** | **The cross-family endpoint becomes the precedent for loosening `authorize_family`.** A future contributor generalises `authorize_via_connection` into something broader | Medium | Keep it a separate, narrowly-named helper with its own `ROUTE_TABLE` row (8.4); never widen `authorize_family` itself | P7 |
 | **R16** | **Ring-2 personalization has no book-delivery path narrower than the catalog.** `Visibility` is `family` or `catalog` only (`publishing/state_machine.py:45-55`) | Medium | Not a blocker: the values gate protects the content regardless of book visibility, so a catalog book renders generic for everyone unconnected. **Accepted for v1 on 2026-07-25 (owner choice, ADR-023 OD-4)**: the catalog surface is the v1 delivery path and connection-scoped visibility is explicitly not a prerequisite | P7 |
 
@@ -1299,15 +1341,16 @@ records are in ADR-023's "Owner decisions" section.
 2. **The exact sentinel delimiter.** Section 2.3.2 now proposes `{~HERO:Explorer~}` and discharges
    all four constraints against the live code, so this is a recommendation awaiting implementation
    rather than an open design question. Confirm it in code when writing the P2 check.
-3. **Shared-device isolation of the values store (risk R20).** Two siblings' values payloads live
-   in one origin's IndexedDB with no isolation beyond application logic. The plan currently accepts
-   this and says so in 7.4 and in ADR-023's success criteria, but "accepted" has still not been
-   decided by anyone: it was not part of the 2026-07-25 decision round. It needs a real answer:
-   accept it (a shared family device is a shared trust boundary, and the exposure is one sibling
-   learning another's pet name), or close it with per-profile encryption or in-memory-only values.
-   The comparison to the existing `storybooks` cache is **not** a justification: that cache holds
-   generic content identical for every reader, this store holds compact per-child personal details.
-   Still an owner call, tracked here rather than left as a footnote.
+3. **Shared-device isolation of the values store (risk R20). RESOLVED 2026-07-28 (owner):
+   accepted for v1.** A shared family device is a shared trust boundary; no per-profile
+   encryption and no in-memory-only mode ship in v1. The acceptance must be recorded in the
+   DPIA/privacy-model classification entries when P4's data-classification work lands (see the
+   execution plan, Tasks A6 and B7), not silently inherited. The prior framing of the question
+   is preserved below for the record: two siblings' values payloads live in one origin's
+   IndexedDB with no isolation beyond application logic; the exposure is one sibling learning
+   another's pet name, which differs from the `storybooks` cache (generic content identical for
+   every reader). Options if a later release must close it: per-profile encryption keyed on the
+   profile PIN, or holding values in memory only and refetching per session.
 
 ## 15. Related
 
