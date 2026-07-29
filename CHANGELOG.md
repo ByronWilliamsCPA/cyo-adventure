@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.44.0] - 2026-07-29
+
+### Features
+
+- **guardian**: Add device list and revoke UI (G15)
+  ([#473](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/473),
+  [`8fc4b34`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/8fc4b342d03baffba3f7f143806c419b09653a78))
+
+
 ## [0.43.0] - 2026-07-29
 
 ### Features
@@ -2791,6 +2800,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.44.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.43.0...v0.44.0
 [0.43.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.42.0...v0.43.0
 [0.42.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.41.0...v0.42.0
 [0.41.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.40.2...v0.41.0
