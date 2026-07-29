@@ -2961,8 +2961,8 @@ vision doc (v1.2):</p>
 <tr>
 <td>K1</td>
 <td>Read with age-appropriate presentation: legible type, UI complexity, and reading level matched to the child's band</td>
-<td>🟡</td>
-<td>Bands and reading levels are deeply specced (ADR-011); per-band presentation/UX is not</td>
+<td>✅</td>
+<td>Bands/reading levels specced (ADR-011); per-band presentation/UX shipped PR #389 (2026-07-24): <code>KidShell.tsx</code> stamps <code>data-age-band</code>, <code>band-tokens.css</code> maps every <code>AgeBand</code> to typography/motion tiers, consumed live by <code>PassageText.css</code>/<code>reader.css</code>. Residual: <code>--band-tap-min</code> token defined but unconsumed by <code>Button.css</code> (tracked as a trivial follow-up, not a scope gap)</td>
 </tr>
 <tr>
 <td>K2</td>
@@ -3010,13 +3010,13 @@ vision doc (v1.2):</p>
 <td>K9</td>
 <td>Visual library shelf with covers: what's new, in progress, finished</td>
 <td>🟡</td>
-<td>Library API exists; shelf presentation not specced</td>
+<td><code>LibraryPage.tsx</code> ships a real "Continue Reading" hero plus a "More to Explore" grid, and <code>BookCard.tsx</code> shows "Finished!"/progress-bar/"Not started" states, all tested; the in-progress/finished halves are done, only "what's new" is unbuilt (no <code>published_at</code> surfaced on <code>LibraryItem</code>, no "New" badge/sort anywhere)</td>
 </tr>
 <tr>
 <td>K10</td>
 <td>Offline is invisible: identical experience offline; never a connectivity error; at most "this book isn't downloaded yet"</td>
-<td>🟡</td>
-<td>Offline reading fully specced; kid-facing connectivity UX not</td>
+<td>✅</td>
+<td>Specced in <code>docs/design/offline-conflict-ux.md</code>; <code>OfflineError</code> (<code>offline/sync.ts</code>) routes through <code>ReaderPage.tsx</code>'s distinct <code>'offline'</code> phase to <code>DownloadNeeded.tsx</code>, <code>LibraryPage.tsx</code> shows a cached-shelf banner, <code>BookCard.tsx</code> shows a "Needs internet to open" tile instead of a dead link. Tested in <code>ReaderPage.test.tsx</code></td>
 </tr>
 <tr>
 <td>K11</td>
@@ -3125,7 +3125,7 @@ vision doc (v1.2):</p>
 <td>G6</td>
 <td>Edit or reject a generated story (prose tweaks, veto) with re-review on edit</td>
 <td>🟡</td>
-<td>Shipped 2026-07-17 in PR #270: <code>PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}</code> (<code>src/cyo_adventure/api/node_edit.py</code>) re-runs the validation gate and moderation on edit, <code>needs_revision</code> exists; admin-side editor is built, a dedicated guardian-facing review/edit surface still awaits</td>
+<td>Edit half: <code>PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}</code> (<code>api/node_edit.py</code>) already authorizes guardians and re-runs the gate/moderation on edit; only the frontend route (<code>ReviewDetailPage.tsx</code>) is admin-only, a small UI-wiring gap. Reject/veto half is a bigger gap than previously stated: <code>approval.py</code>'s <code>_load_admin_story</code> hard-requires <code>is_admin</code> in every check (submit/approve/send-back/archive), guardians have <strong>no API path at all</strong> to reject or veto a generated story, not merely a missing UI. Whether guardians should get a veto, or admin is deliberately the sole safety gate per ADR-005, is an open product/ADR decision, not yet an engineering ticket</td>
 </tr>
 <tr>
 <td>G7</td>
@@ -3149,7 +3149,7 @@ vision doc (v1.2):</p>
 <td>G10</td>
 <td>Notifications that matter: child flagged content, a story awaiting action, a story ready; digest by default, alert on safety</td>
 <td>🟡</td>
-<td>Shipped 2026-07-17 in PR #270: <code>GET /notifications</code> projects <code>pipeline_event</code> into a guardian feed (<code>src/cyo_adventure/api/notifications.py</code>, <code>notifications/service.py</code>), rendered by <code>frontend/src/guardian/NotificationBell.tsx</code>. Poll-based (client re-polls with <code>since</code>), no push channel and no server-scheduled digest job; "digest by default, alert on safety" is a client polling-cadence convention, not yet a distinct delivery tier</td>
+<td>Shipped 2026-07-17 in PR #270: <code>GET /notifications</code> projects <code>pipeline_event</code> into a guardian feed (<code>src/cyo_adventure/api/notifications.py</code>, <code>notifications/service.py</code>), rendered by <code>frontend/src/guardian/NotificationBell.tsx</code>. Correction: "alert on safety" is a real, code-enforced delivery tier, not just a polling convention - <code>notifications/models.py</code>'s <code>severity</code> field fires an immediate toast only for <code>'alert'</code>-kind items (<code>NotificationBell.tsx:94-97</code>), <code>'info'</code> items sit passively. What remains genuinely missing is the async half: no push channel (no WebSocket route exists anywhere in this app, confirmed in <code>middleware/security.py</code>), no server-scheduled digest job. See S9, the shared infra this depends on</td>
 </tr>
 <tr>
 <td>G11</td>
@@ -3166,20 +3166,20 @@ vision doc (v1.2):</p>
 <tr>
 <td>G13</td>
 <td>Predictable cost model: quotas, "3 stories left this month", no surprise bills a child can trigger</td>
-<td>🟡</td>
-<td>Interim balance surface shipped 2026-07-17 in PR #270 (<code>GET /families/me/budget</code>, <code>budgetApi.ts</code>/<code>ProfilesPage.tsx</code>); ADR-008 full credits/IAP model for the public tier remains Phase 8 scope</td>
+<td>✅</td>
+<td><code>GET /families/me/budget</code> + <code>enforce_family_quota</code> (<code>story_requests/service.py:247</code>) blocks generation before job creation, at both the guardian-consent and admin-authored paths, plus a per-child envelope gate; <code>BudgetBanner.tsx</code> renders the "N of M stories left" copy this row asks for; 5 integration tests. Marked done for the R1 interim scope this row describes; ADR-008's full credits/IAP model for the public tier remains separate Phase 8 scope, not counted against this row</td>
 </tr>
 <tr>
 <td>G14</td>
 <td>Standard adult auth; multi-guardian households (two parents, a grandparent)</td>
 <td>🟡</td>
-<td>Supabase OIDC solid; multi-guardian implied by the data model, never specced</td>
+<td><code>User.family_id</code> already supports multiple guardians per family; <code>POST /admin/users</code> (merged, WS-J) lets an admin invite a second guardian into an existing family, live and tested (<code>test_pending_invite_binds_on_first_login_by_email</code>). Real remaining gap: admin-mediated only, no guardian-initiated self-service "invite my co-parent" path</td>
 </tr>
 <tr>
 <td>G15</td>
 <td>Device management: authorize and revoke devices, see which books are downloaded where, storage use</td>
 <td>🟡</td>
-<td>ADR-014 grants list/revoke ✅; download/storage visibility ❌</td>
+<td>Backend mint/list/revoke exists (<code>device_grants.py</code>) but the frontend <code>deviceGrantApi.ts.list()</code> call is never invoked anywhere; <code>ConsolePage.tsx</code> only manages "this device" via localStorage, not the family's device list. ADR-014 itself names a guardian-visible device list as its lost-device mitigation (never built), so this understates the gap rather than overstates it. Download/storage visibility: no backend <code>offline/</code> module exists at all, all download state is client-only</td>
 </tr>
 <tr>
 <td>G16</td>
@@ -3234,13 +3234,13 @@ vision doc (v1.2):</p>
 <td>A4</td>
 <td>Policy re-evaluation: re-screen the already-published catalog when policy or thresholds change</td>
 <td>🟡</td>
-<td>First cut delivered 2026-07-17 (Phase 5/M5): admin-only <code>POST /api/v1/admin/rescreen</code> (<code>moderation/rescreen.py</code>, <code>api/rescreen.py</code>) re-runs the deterministic policy/band gate plus Stage-0 classifiers over already-published family-tier books, scoped by an optional id list, and writes a <code>moderation_completed</code> pipeline event per book; a flagged book is never auto-unpublished (ADR-005), only surfaced for an admin to archive by hand. Full public-catalog re-screen (Phase 9) and an admin UI hook still ❌</td>
+<td>First cut delivered 2026-07-17 (Phase 5/M5): admin-only <code>POST /api/v1/admin/rescreen</code> (<code>moderation/rescreen.py</code>, <code>api/rescreen.py</code>) re-runs the deterministic policy/band gate plus Stage-0 classifiers over already-published family-tier books, scoped by an optional id list, and writes a <code>moderation_completed</code> pipeline event per book; a flagged book is never auto-unpublished (ADR-005), only surfaced for an admin to archive by hand. Backend is fully complete and tested; the remaining gap is UI-only, the generated client exposes the endpoint but zero admin pages call it. Full public-catalog re-screen (Phase 9) stays out of scope</td>
 </tr>
 <tr>
 <td>A5</td>
 <td>Incident path: trace how content reached a child (prompt, model, gate version), pull it everywhere including offline, notify affected guardians</td>
 <td>🟡</td>
-<td>Provenance supports trace ✅; pull-everywhere (offline copies) delivered 2026-07-17, same client-side revocation reconcile as G8 (<code>frontend/src/offline/revocation.ts</code>); guardian notification still ❌</td>
+<td>Provenance supports trace ✅; pull-everywhere (offline copies) delivered 2026-07-17, same client-side revocation reconcile as G8 (<code>frontend/src/offline/revocation.ts</code>); guardian notification still ❌: no incident/revocation <code>EventType</code> exists in <code>events/models.py</code> and no composer is registered in <code>notifications/registry.py</code>. Small gap: reuses G10/S9's existing delivery infrastructure, needs zero new frontend work, just a new event type plus one composer entry</td>
 </tr>
 <tr>
 <td>A6</td>
@@ -3287,8 +3287,8 @@ vision doc (v1.2):</p>
 <tr>
 <td>A13</td>
 <td>Admin action audit trail: admins touching child-related data leave a trail</td>
-<td>🟡</td>
-<td>Approver stamps and <code>acting_role</code> audit stamps ✅; no audit view/report</td>
+<td>✅</td>
+<td>Approver stamps and <code>acting_role</code> audit stamps ✅; the view/report half this row previously marked missing is also shipped: <code>AuditPage.tsx</code> is a complete, wired, admin-only filterable audit log (event kind, storybook/profile id, date range, paginated) over <code>GET /api/v1/admin/audit</code>, routed at <code>/admin/audit</code> and linked from <code>AdminShell.tsx</code>'s nav. The page's own docstring cites this row by ID</td>
 </tr>
 <tr>
 <td>A14</td>
@@ -3306,7 +3306,7 @@ vision doc (v1.2):</p>
 <td>A16</td>
 <td>Generate and manage AI cover art per storybook version, reviewed on the approval surface before it reaches a child</td>
 <td>🟡</td>
-<td>RULED 2026-07-16, recorded in <a href="../adr/adr-017-ai-cover-art/">ADR-017</a>; shipped (covers/ module, admin trigger, R2 storage, best-effort with fallback). <strong>H2 human-approval gate closed 2026-07-28</strong> (security-hardening-plan-2026-07.md): <code>generate_cover</code> now stops at <code>cover_status = "pending_review"</code> instead of writing <code>ready</code> directly; a new admin-only <code>covers.service.approve_cover</code> (<code>POST /storybooks/{id}/versions/{version}/cover/approve</code>) is the sole path to <code>ready</code>, stamping <code>cover_approved_by</code>/<code>cover_approved_at</code>; the existing <code>cover_status == "ready"</code> read filter in <code>api/library.py</code>, <code>api/recommendations.py</code>, and <code>api/covers.py</code> excludes any pending cover with no change needed, and the migration demotes pre-gate <code>ready</code> rows with a NULL approver back to <code>pending_review</code>. This row stays 🟡, not ✅, for two reasons: an automated image-safety classifier (the image analogue of the text <code>moderation/</code> gate) still does not exist, so human approval is the sole layer rather than a second independent one; and the gate binds the API read paths, not the stored bytes, whose deterministic R2 key is fetchable without credentials while the bucket is publicly served (verified 2026-07-28, tracked as <code>UW-M07</code>). The story text guarantee (A6) is unaffected</td>
+<td>RULED 2026-07-16, recorded in <a href="../adr/adr-017-ai-cover-art/">ADR-017</a>; shipped (covers/ module, admin trigger, R2 storage, best-effort with fallback). <strong>H2 human-approval gate closed 2026-07-28</strong> (security-hardening-plan-2026-07.md): <code>generate_cover</code> now stops at <code>cover_status = "pending_review"</code> instead of writing <code>ready</code> directly; a new admin-only <code>covers.service.approve_cover</code> (<code>POST /storybooks/{id}/versions/{version}/cover/approve</code>) is the sole path to <code>ready</code>, stamping <code>cover_approved_by</code>/<code>cover_approved_at</code>; the existing <code>cover_status == "ready"</code> read filter in <code>api/library.py</code>, <code>api/recommendations.py</code>, and <code>api/covers.py</code> excludes any pending cover with no change needed, and the migration demotes pre-gate <code>ready</code> rows with a NULL approver back to <code>pending_review</code>. This row stays 🟡, not ✅, for three reasons: an automated image-safety classifier (the image analogue of the text <code>moderation/</code> gate) still does not exist, so human approval is the sole layer rather than a second independent one; the gate binds the API read paths, not the stored bytes, whose deterministic R2 key is fetchable without credentials while the bucket is publicly served (verified 2026-07-28, tracked as <code>UW-M07</code>); and the backend fix touched zero frontend files, so no admin surface yet renders the cover image or exposes an approve action (<code>frontend/src/guardian/coverApi.ts</code> still declares <code>cover_status</code> as <code>'none' | 'generating' | 'ready' | 'failed'</code>, which excludes the status the backend now returns), leaving the literal "reviewed on the approval surface" clause unmet until PR #471 lands the review UI. The story text guarantee (A6) is unaffected</td>
 </tr>
 </tbody>
 </table>
@@ -3366,8 +3366,8 @@ vision doc (v1.2):</p>
 <tr>
 <td>S8</td>
 <td>End-to-end request flow: initiate (K/G/A) -&gt; guardian cost gate -&gt; generation -&gt; validation/moderation -&gt; admin gate -&gt; shelf, with honest async status</td>
-<td>🟡</td>
-<td>Flow shipped end to end (WS-A..G: request -&gt; guardian approve -&gt; admin authoring plan -&gt; pipeline -&gt; admin release) except budget accounting at consent and kid-facing status; ADR-015 is the foundational record</td>
+<td>✅</td>
+<td>Flow shipped end to end (WS-A..G: request -&gt; guardian approve -&gt; admin authoring plan -&gt; pipeline -&gt; admin release); ADR-015 is the foundational record. Both sub-gaps this row previously cited are already closed elsewhere: budget-at-consent is the same <code>enforce_family_quota</code> call G13 covers, kid-facing status is K12 (already ✅), confirmed live in <code>RequestStory.tsx</code>'s <code>STATUS_COPY</code>. No independent code of its own beyond what G7/G13/K12/G10/S9 already cover</td>
 </tr>
 <tr>
 <td>S9</td>
@@ -3511,7 +3511,7 @@ Added 2026-07-25 by the ADR-023 authorship pass:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 18:53:44 UTC">July 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 19:36:26 UTC">July 29, 2026</span>
   </span>
 
     
