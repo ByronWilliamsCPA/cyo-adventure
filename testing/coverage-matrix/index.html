@@ -3365,8 +3365,25 @@ relate to the Supabase project constraints.</p>
 <li>E2E-real: <code>frontend/e2e-real/approval-flow.spec.ts</code> (access-control checks)</li>
 <li>E2E-staging: <code>frontend/e2e-staging/guardian-admin-smoke.spec.ts</code> (real Supabase sign-in as both seeded guardian and admin accounts)</li>
 <li>E2E-prod: <code>frontend/e2e-prod/landing-login.spec.ts</code>, <code>frontend/e2e-prod/guardian-admin-smoke.spec.ts</code></li>
-<li>Component: <code>frontend/src/guardian/LoginPage.test.tsx</code>, <code>frontend/src/guardian/SetNewPasswordForm.test.tsx</code>, <code>frontend/src/auth/AuthContext.test.tsx</code>, <code>frontend/src/auth/AdultGate.test.tsx</code>, <code>frontend/src/auth/ProtectedRoute.test.tsx</code>, <code>frontend/src/auth/guardianToken.test.ts</code>, <code>frontend/src/auth/supabaseClient.test.ts</code>, <code>frontend/src/guardian/GuardianShell.test.tsx</code>, <code>frontend/src/guardian/ConsolePage.test.tsx</code></li>
+<li>Component: <code>frontend/src/guardian/LoginPage.test.tsx</code>, <code>frontend/src/guardian/SetNewPasswordForm.test.tsx</code>, <code>frontend/src/auth/AuthContext.test.tsx</code>, <code>frontend/src/auth/AdultGate.test.tsx</code>, <code>frontend/src/auth/ProtectedRoute.test.tsx</code>, <code>frontend/src/auth/GuardianBackendUnavailablePage.test.tsx</code>, <code>frontend/src/auth/guardianToken.test.ts</code>, <code>frontend/src/auth/supabaseClient.test.ts</code>, <code>frontend/src/guardian/GuardianShell.test.tsx</code>, <code>frontend/src/guardian/ConsolePage.test.tsx</code></li>
 <li>Integration: <code>frontend/src/test/App.test.tsx</code></li>
+<li><strong>Backend-unreachable branch (issue #452):</strong> when the Supabase session is
+  valid but principal resolution fails transiently (no response, or a 5xx from
+  our API or an intermediary), the session is KEPT and the guardian lands on
+  the <code>/guardian/unavailable</code> retry interstitial instead of being looped
+  through login. Covered at the component tier from both ends:
+  <code>frontend/src/auth/AuthContext.test.tsx</code> pins the classification matrix
+  (500/502/503/504 and a network error are transient and retain the token;
+  400/401/403/404/422 and a non-axios throw stay terminal and clear it), and
+  <code>frontend/src/auth/GuardianBackendUnavailablePage.test.tsx</code> covers the
+  interstitial itself, manual retry, the 15-attempt auto-retry cap, and the
+  redirect out on every recovered status. The three sibling status consumers
+  (<code>LoginPage</code>, <code>GuardianConsentPage</code>, <code>GuardianAwaitingApprovalPage</code>) each
+  carry a redirect test in their own file.</li>
+<li><strong>Gap</strong>: no E2E tier exercises the backend-unreachable branch. Reproducing it
+  needs the API to fail while Supabase keeps succeeding, which the mocked tier
+  can express (fulfil <code>/api/v1/**</code> with a 503 after sign-in) but no spec does
+  yet. Component coverage is the whole of it today.</li>
 <li><strong>Google OAuth sign-in (decision 2.6, manual-only flow + automated option
   presence):</strong> the full Google OAuth <em>round trip</em> is not automated at any tier
   and is not automatable without a live Google session (faking the provider
@@ -3815,7 +3832,7 @@ closure. A companion action-level verdict for this audit lives at
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 21:09:10 UTC">July 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 00:44:52 UTC">July 29, 2026</span>
   </span>
 
     
