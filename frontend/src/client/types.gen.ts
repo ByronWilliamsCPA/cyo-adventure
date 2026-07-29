@@ -1044,6 +1044,11 @@ export type ContentSummaryView = {
  * CoverStatusView
  *
  * Cover generation status for one story version.
+ *
+ * ``cover_approved_by``/``cover_approved_at`` are None until an admin
+ * approves a ``pending_review`` cover (H2, ``approve_cover`` endpoint
+ * below); they mirror ``ApprovedView.approved_by``/``published_at`` for
+ * story text.
  */
 export type CoverStatusView = {
     /**
@@ -1054,6 +1059,14 @@ export type CoverStatusView = {
      * Cover Url
      */
     cover_url?: string | null;
+    /**
+     * Cover Approved By
+     */
+    cover_approved_by?: string | null;
+    /**
+     * Cover Approved At
+     */
+    cover_approved_at?: string | null;
 };
 
 /**
@@ -5500,6 +5513,56 @@ export type RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostRespon
 };
 
 export type RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostResponse = RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostResponses[keyof RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostResponses];
+
+export type ApproveCoverApiV1StorybooksStorybookIdVersionsVersionCoverApprovePostData = {
+    body?: never;
+    path: {
+        /**
+         * Storybook Id
+         */
+        storybook_id: string;
+        /**
+         * Version
+         */
+        version: number;
+    };
+    query?: never;
+    url: '/api/v1/storybooks/{storybook_id}/versions/{version}/cover/approve';
+};
+
+export type ApproveCoverApiV1StorybooksStorybookIdVersionsVersionCoverApprovePostErrors = {
+    /**
+     * Domain rule violation (for example, an exhausted quota).
+     */
+    400: ErrorResponse;
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ApproveCoverApiV1StorybooksStorybookIdVersionsVersionCoverApprovePostError = ApproveCoverApiV1StorybooksStorybookIdVersionsVersionCoverApprovePostErrors[keyof ApproveCoverApiV1StorybooksStorybookIdVersionsVersionCoverApprovePostErrors];
+
+export type ApproveCoverApiV1StorybooksStorybookIdVersionsVersionCoverApprovePostResponses = {
+    /**
+     * Successful Response
+     */
+    200: CoverStatusView;
+};
+
+export type ApproveCoverApiV1StorybooksStorybookIdVersionsVersionCoverApprovePostResponse = ApproveCoverApiV1StorybooksStorybookIdVersionsVersionCoverApprovePostResponses[keyof ApproveCoverApiV1StorybooksStorybookIdVersionsVersionCoverApprovePostResponses];
 
 export type ListThresholdsApiV1AdminModerationThresholdsGetData = {
     body?: never;
