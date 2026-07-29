@@ -62,6 +62,77 @@ def test_mock_dry_run_writes_a_labeled_report(
 
 
 @pytest.mark.unit
+def test_save_fills_writes_recoverable_trial_data(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """--save-fills persists every trial under <run-dir>/fills/, recoverably.
+
+    Each fill file must carry everything
+    ``scripts/prototype_sentinel_reinsertion.py`` needs to recompute
+    expectations offline without re-running specimen construction:
+    specimen_slug, provider, slot_bindings, bound_skeleton, and
+    filled_storybook (exactly what ``classify_fill`` was given).
+    """
+    out_dir = tmp_path / "results"
+    exit_code = main(
+        [
+            "--providers",
+            "mock",
+            "--out-dir",
+            str(out_dir),
+            "--skeletons",
+            "3-5:puddle-jumping-day",
+            "--count",
+            "2",
+            "--save-fills",
+        ]
+    )
+    assert exit_code == 0
+
+    run_dir = next(out_dir.iterdir())
+    fills_dir = run_dir / "fills"
+    assert fills_dir.is_dir()
+
+    fill_files = sorted(fills_dir.glob("*.json"))
+    assert len(fill_files) == 2
+    for index, path in enumerate(fill_files):
+        assert path.name.startswith(f"{index}-mock-")
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        assert payload["specimen_slug"]
+        assert payload["provider"] == "mock"
+        assert "slot_bindings" in payload
+        assert isinstance(payload["bound_skeleton"], dict)
+        assert isinstance(payload["filled_storybook"], dict)
+
+    captured = capsys.readouterr()
+    assert "sentinel-survival:" in captured.out
+
+
+@pytest.mark.unit
+def test_without_save_fills_no_fills_directory_is_created(
+    tmp_path: Path,
+) -> None:
+    """Omitting --save-fills matches prior behavior exactly: no fills/ ever appears."""
+    out_dir = tmp_path / "results"
+    exit_code = main(
+        [
+            "--providers",
+            "mock",
+            "--out-dir",
+            str(out_dir),
+            "--skeletons",
+            "3-5:puddle-jumping-day",
+            "--count",
+            "2",
+        ]
+    )
+    assert exit_code == 0
+
+    run_dir = next(out_dir.iterdir())
+    assert not (run_dir / "fills").exists()
+
+
+@pytest.mark.unit
 def test_refuses_out_dir_under_skeletons(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
