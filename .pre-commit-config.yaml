@@ -190,6 +190,10 @@ repos:
           bash -c 'cd frontend && files=(); for f in "$@"; do files+=("${f#frontend/}"); done; npx eslint --max-warnings=0 "${files[@]}"' --
         language: system
         files: ^frontend/(src|e2e|e2e-real|e2e-staging|e2e-prod)/.*\.tsx?$
+        # frontend/src/client is generated (hey-api) build output: eslint.config.js
+        # already ignores it, and with --max-warnings=0 the resulting "file
+        # ignored" warning itself fails the hook for any commit staging it.
+        exclude: ^frontend/src/client/
         stages: [pre-commit]
 
       - id: frontend-prettier
@@ -198,6 +202,10 @@ repos:
           bash -c 'cd frontend && files=(); for f in "$@"; do files+=("${f#frontend/}"); done; npx prettier --check "${files[@]}"' --
         language: system
         files: ^frontend/src/.*\.(ts|tsx|css|json)$
+        # frontend/src/client is generated (hey-api) build output committed raw
+        # by design: the CI contract job diffs it against the generator's exact
+        # output, so prettier-formatting it would create permanent drift.
+        exclude: ^frontend/src/client/
         stages: [pre-commit]
 
   # ============================================================================
