@@ -762,9 +762,16 @@ EventType.RING2_CONSENT_GRANTED: frozenset({"connected_family_id", "slot_type_co
 EventType.RING2_CONSENT_REVOKED: frozenset({"connected_family_id"}),
 ```
 
-- [ ] TDD steps as above, plus one test asserting a value-bearing key (e.g. `pet_name`) is
+- [x] TDD steps as above, plus one test asserting a value-bearing key (e.g. `pet_name`) is
   rejected by the allowlist. Commit
   (`feat(events): personalization consent/toggle event types (ADR-023 P3/P4)`).
+
+**DONE 2026-07-29 (commit 0ede8917).** One deviation beyond the four named files:
+`db/models.py::_PIPELINE_EVENT_TYPE_VALUES` (the hand-maintained CHECK mirror embedded in
+the ORM CheckConstraint) gained the three values in the same commit, matching every prior
+EventType addition and keeping test_schema_parity.py green. New superset test parses the
+migration file directly, stripping `--` comment lines first because prose apostrophes in
+house-style headers corrupt a naive quoted-string regex.
 
 ### Task B5: write-time validation service
 
@@ -787,9 +794,18 @@ feature existed were never checked, risk R4):
    `api/deps.py:743-754`),
 5. `display_name` gets checks 1 and 2 on profile write too (`api/profiles.py:102-103`, `:286`).
 
-- [ ] TDD steps; include one test per rejection class and one asserting the render-time
+- [x] TDD steps; include one test per rejection class and one asserting the render-time
   fallback contract (invalid value at build time means the slot is omitted from the payload,
   never an error). Commit (`feat(storybook): personalization value validation (ADR-023 5.2)`).
+
+**DONE 2026-07-29 (commit 92fd602d), with one OPEN product decision.** ADR-023 rows 4a/5/6/7
+name categories and examples, not exhaustive lists, so `CLOSED_VOCABULARIES` ships all four
+keys as empty frozensets (fail-closed: every enum-slot value is rejected until real lists
+are supplied). RAD-tagged in the module; B6 can proceed because omission, not error, is the
+contract. Sibling authorization is a pure function taking the caller-supplied family roster
+(no api/ or DB imports); the route layer resolves the roster via authorize_family. Item 5
+(display_name checks on profile write) is NOT in this module and remains for B6's route work
+to confirm or add at `api/profiles.py:102-103`.
 
 ### Task B6: routes (ring 1) and the authz matrix
 
@@ -824,6 +840,11 @@ never re-derives it (risk R9).
 `docs/planning/privacy-model.md` ("Data Classification" and "If Shared Beyond Family"),
 including the R20 acceptance sentence for the client-held values payload. Commit
 (`docs(privacy): classify personalization data categories (ADR-023 5.6)`).
+
+**DONE 2026-07-29 (commit b6769486).** All four classification entries landed (slot-value
+rows at the child_profile tier, consent rows citing db/models.py, client-held payload with
+the R20 acceptance sentence verbatim), plus a "Ring-2 disclosure (existing,
+guardian-authorized)" subsection; privacy-model version 0.2 to 0.3.
 
 **Stage B exit:** full gate green, contract job green, deletion drill green, PR merged.
 
