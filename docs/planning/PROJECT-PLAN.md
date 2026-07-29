@@ -349,12 +349,16 @@ Key architectural decisions, each recorded in an ADR:
 **ADR status** (updated 2026-07-28; the 2026-07-20 revision missed ADR-020 and ADR-021,
 and ADR-022 through ADR-024 postdate it):
 
-- **Accepted**: ADR-001, ADR-002, ADR-003, ADR-004, ADR-005, ADR-006, ADR-009,
-  ADR-011, ADR-012, ADR-013, ADR-014, ADR-015, ADR-016, ADR-017, ADR-019, ADR-020, ADR-024.
-- **Proposed**: ADR-008, ADR-010, ADR-018, ADR-021, ADR-022, ADR-023.
-- **Contradictory, needs a status flip** (`UW-A40`): ADR-007's frontmatter says `proposed`
-  while its body says "Accepted (2026-07-16)" and its purge shipped 2026-07-17; ADR-021 is
-  still `proposed` although PR #323 merged. ADR-018 and ADR-023 are Proposed *by design*,
+- **Accepted**: ADR-001 through ADR-007, ADR-009, ADR-011 through ADR-017, ADR-019,
+  ADR-020, ADR-021, ADR-024.
+- **Proposed**: ADR-008, ADR-010, ADR-018, ADR-022, ADR-023.
+- ADR-007 and ADR-021 were flipped from `proposed` to `accepted` on 2026-07-28 (`UW-A40`):
+  ADR-007's body had said "Accepted (2026-07-16)" while its frontmatter said `proposed`, and
+  its purge shipped 2026-07-17 (migration `20260718000000_add_report_retention_purge.sql`,
+  enforced in `publishing/service.py` and covered by `tests/unit/test_report_retention.py`);
+  ADR-021's decision shipped in PR #323. Accepting ADR-021 records the decision, not the
+  completion of its follow-on work: the production cutover (`UW-A03`) is still open, so RLS
+  remains enabled but disarmed until it lands. ADR-018 and ADR-023 are Proposed *by design*,
   because a compliance-bearing ADR held open pending counsel is itself the tracking signal.
 
 ADR-010 and ADR-011 predate the table above; ADR-011 is the story-scale framework

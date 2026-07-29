@@ -192,7 +192,7 @@ Decisions that were accepted or proposed, whose consequent work was never schedu
 | UW-A37 | Consolidate cover storage into Supabase Storage if blobs externalize (conditional on UW-A38) | 017 | 9 | unscheduled |
 | UW-A38 | `blob_ref` object-storage externalization, and the MinIO leg. Named in PROJECT-PLAN prose only; absent from the roadmap Phase 5 checklist. | 001, 004 | 9 | unscheduled |
 | UW-A39 | ADR-018 Blocker 1 narrowed to the classifier leg, not closed | 018 | 7 | unscheduled |
-| UW-A40 | **Doc hygiene**: ADR-007 is still `proposed` though its purge shipped 2026-07-17; ADR-021 is still `proposed` though PR #323 merged. Flip both. | 007, 021 | now | unscheduled |
+| UW-A40 | **Doc hygiene**: ADR-007 is still `proposed` though its purge shipped 2026-07-17; ADR-021 is still `proposed` though PR #323 merged. Flip both. | 007, 021 | now | done |
 | UW-A41 | **Doc hygiene**: PROJECT-PLAN.md section 3's ADR table and the ADR status list omit ADR-020 through ADR-024. Corrected by the 2026-07-28 audit in commit `bcfc9ab`; keep them in sync going forward. | all | now | done |
 
 ## Cluster B: debt-register phase linkage
@@ -434,7 +434,7 @@ project's own inventory.
 
 | ID | Item | Phase | Status |
 |----|------|-------|--------|
-| UW-K01 | **Release blocker**: `docs/known-vulnerabilities.md` entries PYSEC-2022-42969 (`py`, via `interrogate` 1.7.0) and PYSEC-2026-89 (`markdown`, CVSS 7.5) are 68 days old with reassessment due 2026-07-20, now 8 days overdue. The OpenSSF release gate blocks releases for any vulnerability older than 60 days regardless of reassessment status. | now | unscheduled |
+| UW-K01 | **Release blocker**: `docs/known-vulnerabilities.md` entries PYSEC-2022-42969 (`py`, via `interrogate` 1.7.0) and PYSEC-2026-89 (`markdown`, CVSS 7.5) are 68 days old with reassessment due 2026-07-20, now 8 days overdue. The OpenSSF release gate blocks releases for any vulnerability older than 60 days regardless of reassessment status. Closed by PR #464 (`757ff8e`): PYSEC-2022-42969 was withdrawn upstream and PYSEC-2026-89 does not affect the pinned `markdown` 3.10.2, so neither needed a dependency change. That PR also resolved the release-gate contradiction the entries carried. | now | done |
 | UW-K02 | `docs/known-vulnerabilities.md`: libuuid1 and gawk entries name base image `dhi-python:3.12-debian13`; the project runs `3.14-debian13`. The Review History row is a `2026-MM-DD` placeholder and the Resolved Entries table is header-only. | doc | unscheduled |
 | UW-K03 | 2 fixable linux-libc-dev CVEs due 2026-08-24, blocked on a Renovate digest bump to a base carrying `linux-libc-dev` 6.12.96-1 | 5 | blocked |
 | UW-K04 | `docs/index.md` publishes `pip install cyo-adventure` on the docs home page. This is a deployed app; `publish-pypi.yml` was deleted. It also claims "Python 3.12+" against `>=3.11` and a 3.14 target. | now | unscheduled |
