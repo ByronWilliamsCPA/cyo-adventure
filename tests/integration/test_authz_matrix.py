@@ -659,6 +659,14 @@ _ROUTE_SPECS: list[RouteSpec] = [
     # generation-jobs above: no path params, family-scoped via
     # ctx.principal.family_id, admin rejected too (not a family-scoped role).
     RouteSpec("GET", "/api/v1/notifications", frozenset({Role.GUARDIAN})),
+    # -- notifications.py: SSE push transport, same guardian-only gate as the
+    # poll endpoint above (stream_notifications resolves and role-checks the
+    # principal directly rather than via Context, but the bearer contract and
+    # the guardian-only rejection are identical). An allowed-role request
+    # here does not return until Settings.notification_stream_max_seconds
+    # elapses (no seeded event ends the stream sooner): see that setting's
+    # docstring in core/config.py for why the default is kept modest.
+    RouteSpec("GET", "/api/v1/notifications/stream", frozenset({Role.GUARDIAN})),
     # -- reading.py: reading-state (ownership-scoped) ------------------------
     RouteSpec(
         "GET",

@@ -815,6 +815,29 @@ class Settings(BaseSettings):
     cover_max_bytes: int = 256_000
     cover_job_timeout_seconds: int = 180
 
+    # --- Notification push transport (S9/G10 SSE stream) ---
+    # How often api/notifications.py's stream endpoint re-queries
+    # notifications/service.py::list_guardian_notifications while a guardian
+    # has an SSE connection open. Short enough that a newly-arrived alert
+    # (a kid flag, a blocked story) reaches an open tab in near-real-time,
+    # unlike the 30s client-side badge poll it complements.
+    notification_stream_poll_seconds: float = Field(default=5.0, ge=0.5)
+    # #ASSUME: timing dependencies: the stream self-closes after this many
+    # seconds rather than staying open indefinitely, so the frontend's own
+    # reconnect loop (NotificationBell.tsx) periodically re-establishes the
+    # connection. This is a deliberate bound, not an oversight: it caps how
+    # long any one open tab holds server resources, and it protects against
+    # a reverse proxy or load balancer silently killing a long-idle
+    # connection with no client-visible signal (a self-close the client
+    # reconnects from is a clean handoff; a proxy-killed socket is not).
+    # #VERIFY: tests/unit/test_notifications_api_unit.py's stream tests pin
+    # the self-close behavior; tests/integration/test_authz_matrix.py's
+    # role-matrix cases for GET /api/v1/notifications/stream each wait up to
+    # this long for the allowed-role case, since httpx awaits the full
+    # response body and there is no seeded event to end the stream sooner --
+    # keep this value modest so that suite's runtime is not dominated by it.
+    notification_stream_max_seconds: float = Field(default=30.0, ge=1.0)
+
     # --- Observability: Sentry (M5 / Phase 5) ---
     # Read from the UNPREFIXED SENTRY_DSN env var: .env.example already
     # documents this name (Observability section), matching the
