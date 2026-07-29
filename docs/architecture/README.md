@@ -124,7 +124,7 @@ full decision records.
 | [ADR-004](../planning/adr/adr-004-homelab-first-deployment.md) | Homelab-first deployment | Accepted |
 | [ADR-005](../planning/adr/adr-005-mandatory-human-approval.md) | Mandatory human approval gate | Accepted |
 | [ADR-006](../planning/adr/adr-006-conditions-inhouse-evaluator.md) | Conditions: in-house evaluator | Accepted |
-| [ADR-007](../planning/adr/adr-007-raw-output-retention.md) | Raw LLM output retention policy | Proposed |
+| [ADR-007](../planning/adr/adr-007-raw-output-retention.md) | Raw LLM output retention policy | Accepted |
 | [ADR-008](../planning/adr/adr-008-public-app-store-launch.md) | Public App Store launch, tiered subscription | Proposed |
 | [ADR-009](../planning/adr/adr-009-supabase-platform.md) | Supabase: auth, database, and storage platform | Accepted |
 | [ADR-010](../planning/adr/adr-010-modal-review-and-gated-generation.md) | Modal for moderation review, evidence-gated generation | Proposed |
@@ -138,4 +138,4 @@ full decision records.
 | [ADR-018](../planning/adr/adr-018-childrens-privacy-compliance.md) | Children's-privacy compliance (COPPA, GDPR-K, AADC) | Proposed |
 | [ADR-019](../planning/adr/adr-019-parameterized-skeletons-theme-contracts.md) | Parameterized skeletons and theme contracts | Accepted |
 | [ADR-020](../planning/adr/adr-020-mutation-derived-skeletons-and-catalog-growth.md) | Mutation-derived skeletons and catalog growth | Accepted |
-| [ADR-021](../planning/adr/adr-021-service-account-rls-and-worker-deployment.md) | Service-account RLS and in-repo worker deployment | Proposed |
+| [ADR-021](../planning/adr/adr-021-service-account-rls-and-worker-deployment.md) | Service-account RLS and in-repo worker deployment | Accepted |

@@ -60,7 +60,7 @@ The RLS audit of 2026-07-24 established four facts about the live system (prod
    an immediate cross-family exposure of another family's children's data, with nothing
    underneath it.
 
-ADR-009 point 7 made the app layer the sole authority deliberately, and ADR-021 (Proposed)
+ADR-009 point 7 made the app layer the sole authority deliberately, and ADR-021 (Accepted 2026-07-28)
 plans to keep RLS as a blanket `USING(true)` placeholder even after the role cutover. This
 ADR revisits that specific posture for the highest-sensitivity subset of tables, on the
 grounds that the app being solo-maintained with heavy AI-assisted PR throughput makes "one
