@@ -387,6 +387,34 @@ reader needs is restated here rather than left to that path):
   fallback-model run would inform the re-plan (for example, pinning fills to a stronger
   model), not reverse the STOP.
 
+**RE-INSERTION PROTOTYPE MEASURED 2026-07-29** (`scripts/prototype_sentinel_reinsertion.py`
+over run `results/sentinel-survival/20260729T010024Z`, 30 fills persisted via `--save-fills`;
+prompt-preserved survival replicated the STOP result at 0/30):
+
+- Strip-all-then-reinsert (never trust a model token; strip everything, match the generic
+  inner word case-sensitively at word boundaries, wrap every match, verify with
+  `check_sentinel_integrity`): **story-level clean 3/30 (10%)** against the strict
+  every-expected-node multiset, but the per-slot decomposition shows the strict metric is
+  measuring the wrong thing:
+
+  | Slot | Node coverage | Note |
+  |---|---|---|
+  | OPERATOR / LISTENER / HUB / FOUNDER | 94-99% | named third-party characters re-insert almost perfectly |
+  | COMPANION | 84% | |
+  | HERO | **42%** (618/1457 nodes; name absent from ALL nodes in 11/30 stories) | structural, not a fill defect: the corpus is second-person ("You tug on your boots"), so the protagonist is the addressee and the name appears only in vocative dialogue |
+  | lowercase descriptive slots (the pup, the grown-up) | 82 misses are sentence-initial capitalization; 72 more are inflected forms | recoverable with a case/inflection-aware matcher |
+
+- **Conclusion for the re-plan**: the failed assumption was never "models can carry tokens";
+  it was that the skeleton can PRESCRIBE where a name appears. Second-person voice makes a
+  per-node prescription unsatisfiable for HERO regardless of model quality. The viable
+  design is **derive, not prescribe**: re-insert deterministically wherever the generic word
+  occurs, store that derived multiset as the at-rest expectation (integrity = blob matches
+  what re-insertion inserted, round-trip-verified), and treat name coverage as a soft
+  quality floor. At least one personalized surface is guaranteed independently of prose by
+  the title strip rules and the P8 dedication overlay. Two cheap lifts if HERO prose
+  coverage matters: a case/inflection-aware matcher (closes ~154 of 1,026 misses), and a
+  fill-prompt nudge to address the hero by name in dialogue occasionally.
+
 ## 4. P3: leak-surface guard points
 
 Each of these is a concrete place where a sentinel token or a real value could escape. The
