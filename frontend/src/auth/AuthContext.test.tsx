@@ -99,6 +99,23 @@ function Probe() {
   )
 }
 
+/**
+ * Probe plus the retry affordance the backend-unreachable interstitial uses
+ * (#452), so the recovery path can be driven from a test without pulling in
+ * the page component.
+ */
+function RefreshProbe() {
+  const { status, refreshStatus } = useAuth()
+  return (
+    <div>
+      <span data-testid="status">{status}</span>
+      <button type="button" onClick={() => void refreshStatus()}>
+        refresh
+      </button>
+    </div>
+  )
+}
+
 /** Exercises the recovery actions and surfaces the rejections they rethrow. */
 function RecoveryProbe() {
   const { recovery, requestPasswordReset, updatePassword } = useAuth()
@@ -134,7 +151,10 @@ function ActionsProbe() {
       <button type="button" onClick={() => void signInWithOAuth('google')}>
         sign in
       </button>
-      <button type="button" onClick={() => void signInWithPassword({ email: 'a@b.com', password: 'pw' })}>
+      <button
+        type="button"
+        onClick={() => void signInWithPassword({ email: 'a@b.com', password: 'pw' })}
+      >
         sign in password
       </button>
       <button type="button" onClick={() => void signOut()}>
@@ -180,7 +200,9 @@ function CatchingActionsProbe() {
       <button
         type="button"
         onClick={() =>
-          void signInWithPassword({ email: 'a@b.com', password: 'pw' }).catch((e: Error) => setCaught(e.message))
+          void signInWithPassword({ email: 'a@b.com', password: 'pw' }).catch((e: Error) =>
+            setCaught(e.message)
+          )
         }
       >
         sign in password
@@ -292,9 +314,7 @@ describe('AuthProvider', () => {
         <Probe />
       </AuthProvider>
     )
-    await waitFor(() =>
-      expect(screen.getByTestId('status')).toHaveTextContent('awaiting-approval')
-    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('awaiting-approval'))
     expect(screen.getByTestId('role')).toHaveTextContent('none')
     expect(mockGet).not.toHaveBeenCalled()
   })
@@ -502,6 +522,114 @@ describe('AuthProvider', () => {
     // A guardian session that never resolves to a principal also ends
     // whatever child session shared this device's storage (G1 / P6-04).
     expect(getChildSession()).toBeNull()
+  })
+
+  // #452 classification. The security-critical half of this fix is not the
+  // interstitial, it is that ONLY an unambiguous "our backend never answered"
+  // signal keeps a session alive. Everything else must land on the unchanged
+  // fail-closed path asserted by the test above.
+  describe('principal-resolution error classification', () => {
+    function arrangeSession() {
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+      })
+    }
+
+    // Faithful to the 2026-07-23 outage: axios leaves `response` undefined
+    // when the request never completed. Shape matches the repo's existing
+    // axios-error mocks (see reviewApi.test.ts).
+    it('keeps the session on a network error and routes to backend-unreachable', async () => {
+      arrangeSession()
+      mockPost.mockRejectedValue({ isAxiosError: true, code: 'ERR_NETWORK' })
+      render(
+        <AuthProvider>
+          <Probe />
+        </AuthProvider>
+      )
+      await waitFor(() =>
+        expect(screen.getByTestId('status')).toHaveTextContent('backend-unreachable')
+      )
+      // The token surviving is what lets a retry reach signed-in without a
+      // re-login; losing it here would recreate the loop.
+      expect(localStorage.getItem('auth_token')).toBe('tok-1')
+      // Not an authError: LoginPage's inline banner is for the terminal case.
+      expect(screen.getByTestId('authError')).toHaveTextContent('none')
+      expect(screen.getByTestId('role')).toHaveTextContent('none')
+    })
+
+    it.each([500, 502, 503, 504])(
+      'treats a %i from our own API as transient',
+      async (status: number) => {
+        arrangeSession()
+        mockGet.mockRejectedValue({ isAxiosError: true, response: { status } })
+        render(
+          <AuthProvider>
+            <Probe />
+          </AuthProvider>
+        )
+        await waitFor(() =>
+          expect(screen.getByTestId('status')).toHaveTextContent('backend-unreachable')
+        )
+        expect(localStorage.getItem('auth_token')).toBe('tok-1')
+      }
+    )
+
+    // #CRITICAL security: a 401/403 is the backend REJECTING this JWT. If
+    // that were ever classified transient we would park a dead session behind
+    // a retry button and imply the guardian is still signed in.
+    it.each([400, 401, 403, 404, 422])(
+      'fails closed on a %i, discarding the session',
+      async (status: number) => {
+        arrangeSession()
+        mockGet.mockRejectedValue({ isAxiosError: true, response: { status } })
+        render(
+          <AuthProvider>
+            <Probe />
+          </AuthProvider>
+        )
+        await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-out'))
+        expect(screen.getByTestId('authError')).toHaveTextContent('principal-unresolved')
+        expect(localStorage.getItem('auth_token')).toBeNull()
+      }
+    )
+
+    // The fail-closed default. An error we cannot classify says nothing about
+    // the session, so it must not be assumed recoverable.
+    it('fails closed on an unclassifiable non-axios error', async () => {
+      arrangeSession()
+      mockGet.mockRejectedValue(new TypeError('undefined is not a function'))
+      render(
+        <AuthProvider>
+          <Probe />
+        </AuthProvider>
+      )
+      await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-out'))
+      expect(localStorage.getItem('auth_token')).toBeNull()
+    })
+
+    // The recovery this whole change exists to enable.
+    it('refreshStatus reaches signed-in once the backend recovers, with no re-login', async () => {
+      arrangeSession()
+      mockPost.mockRejectedValue({ isAxiosError: true, code: 'ERR_NETWORK' })
+      render(
+        <AuthProvider>
+          <RefreshProbe />
+        </AuthProvider>
+      )
+      await waitFor(() =>
+        expect(screen.getByTestId('status')).toHaveTextContent('backend-unreachable')
+      )
+
+      // The host comes back: onboarding and /me answer normally again.
+      mockPost.mockResolvedValue(RESOLVED_ONBOARDING_RESPONSE)
+      mockGet.mockResolvedValue({
+        data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+      })
+      fireEvent.click(screen.getByRole('button', { name: 'refresh' }))
+
+      await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
+      expect(mockSignOut).not.toHaveBeenCalled()
+    })
   })
 
   it('re-syncs from an onAuthStateChange event (e.g. sign-out elsewhere)', async () => {
@@ -1110,14 +1238,19 @@ describe('AuthProvider password recovery', () => {
     // Supabase's expired/already-used redirect carries #error=... with no
     // type=recovery, so isPasswordRecovery never fires; LoginPage instead
     // needs recoveryError to show an actionable message.
-    mockRecoveryErrorFromUrl = { code: 'otp_expired', description: 'Email link is invalid or has expired' }
+    mockRecoveryErrorFromUrl = {
+      code: 'otp_expired',
+      description: 'Email link is invalid or has expired',
+    }
     mockGetSession.mockResolvedValue({ data: { session: null } })
     render(
       <AuthProvider>
         <Probe />
       </AuthProvider>
     )
-    await waitFor(() => expect(screen.getByTestId('recoveryError')).toHaveTextContent('otp_expired'))
+    await waitFor(() =>
+      expect(screen.getByTestId('recoveryError')).toHaveTextContent('otp_expired')
+    )
     expect(screen.getByTestId('recovery')).toHaveTextContent('false')
   })
 

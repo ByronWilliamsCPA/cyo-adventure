@@ -19,11 +19,12 @@ function renderWithRouter() {
       <Routes>
         <Route path="/guardian/login" element={<div>Login page</div>} />
         <Route path="/guardian/awaiting-approval" element={<div>Awaiting approval page</div>} />
+        <Route path="/guardian/unavailable" element={<div>Backend unavailable</div>} />
         <Route path="/guardian" element={<div>Guardian console</div>} />
         <Route path="/admin" element={<div>Admin console</div>} />
         <Route path="/guardian/consent" element={<GuardianConsentPage />} />
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   )
 }
 
@@ -43,6 +44,14 @@ describe('GuardianConsentPage', () => {
     mockAuth = { status: 'awaiting-approval', principal: null }
     renderWithRouter()
     expect(screen.getByText('Awaiting approval page')).toBeInTheDocument()
+  })
+
+  // #452: reachable from a sibling tab's poll or a direct URL. Handled so
+  // the catch-all below never renders a blank page during an outage.
+  it('redirects to the backend-unavailable interstitial when the backend is down', () => {
+    mockAuth = { status: 'backend-unreachable', principal: null }
+    renderWithRouter()
+    expect(screen.getByText('Backend unavailable')).toBeInTheDocument()
   })
 
   it('redirects an already-consented guardian to their console', () => {

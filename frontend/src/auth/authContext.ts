@@ -11,9 +11,21 @@ import type { Principal } from './types'
  * completed the Phase 2 / ADR-018 D1 signature-capture consent step. Never
  * set for a non-guardian role (an admin-only adult has no VPC consent
  * concept).
+ * 'backend-unreachable': a Supabase session exists, but principal resolution
+ * failed for a reason that says nothing about whether the session is valid
+ * (network error, timeout, or a 5xx from our own API). Distinct from
+ * 'signed-out' because the session is deliberately KEPT: the failure is
+ * transient, so a retry can reach 'signed-in' without a re-login. Only ever
+ * set by classifyPrincipalError's transient branch, which fails closed; see
+ * AuthContext.tsx.
  */
 export type AuthStatus =
-  'loading' | 'signed-out' | 'awaiting-approval' | 'needs-consent' | 'signed-in'
+  | 'loading'
+  | 'signed-out'
+  | 'awaiting-approval'
+  | 'needs-consent'
+  | 'signed-in'
+  | 'backend-unreachable'
 
 /**
  * A session was established with Supabase but the backend could not resolve it

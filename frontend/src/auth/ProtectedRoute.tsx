@@ -1,7 +1,12 @@
 import { Navigate, Outlet, useLocation } from 'react-router'
 
 import { LoadingStatus } from '@ds/components/LoadingStatus'
-import { GUARDIAN_AWAITING_APPROVAL_PATH, GUARDIAN_CONSENT_PATH, KID_PICKER_PATH } from '../routes'
+import {
+  GUARDIAN_AWAITING_APPROVAL_PATH,
+  GUARDIAN_CONSENT_PATH,
+  GUARDIAN_UNAVAILABLE_PATH,
+  KID_PICKER_PATH,
+} from '../routes'
 import type { Principal, Role } from './types'
 import { useAuth } from './useAuth'
 
@@ -47,9 +52,7 @@ export function ProtectedRoute({
   const location = useLocation()
 
   if (status === 'loading') {
-    return (
-      <LoadingStatus />
-    )
+    return <LoadingStatus />
   }
 
   // A real Supabase session exists in both cases below (AdultGate's own,
@@ -61,6 +64,13 @@ export function ProtectedRoute({
   }
   if (status === 'needs-consent') {
     return <Navigate to={GUARDIAN_CONSENT_PATH} replace />
+  }
+  // #452: the same reasoning one step further. Here the session is not just
+  // valid, it is provably fine; only our own backend is unreachable. Falling
+  // through to the redirect below is precisely what looped guardians through
+  // login during the 2026-07-23 outage.
+  if (status === 'backend-unreachable') {
+    return <Navigate to={GUARDIAN_UNAVAILABLE_PATH} replace />
   }
 
   if (status !== 'signed-in' || principal === null) {

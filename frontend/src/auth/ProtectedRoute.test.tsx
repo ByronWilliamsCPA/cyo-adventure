@@ -89,6 +89,30 @@ describe('ProtectedRoute', () => {
     expect(screen.queryByText('Login page')).not.toBeInTheDocument()
   })
 
+  // #452: this is the branch whose absence caused the 2026-07-23 login loop.
+  // Redirecting to login would re-establish the same valid Supabase session,
+  // fail principal resolution against the same downed backend, and land here
+  // again, forever.
+  it('redirects to the backend-unavailable interstitial, not login', () => {
+    mockUseAuth.mockReturnValue({ status: 'backend-unreachable', principal: null })
+    render(
+      <MemoryRouter initialEntries={['/protected']}>
+        <Routes>
+          <Route path="/login" element={<div>Login page</div>} />
+          <Route path="/guardian/unavailable" element={<div>Backend unavailable</div>} />
+          <Route
+            element={<ProtectedRoute redirectTo="/login" allowedRoles={['guardian', 'admin']} />}
+          >
+            <Route path="/protected" element={<div>Protected content</div>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    )
+    expect(screen.getByText('Backend unavailable')).toBeInTheDocument()
+    expect(screen.queryByText('Login page')).not.toBeInTheDocument()
+    expect(screen.queryByText('Protected content')).not.toBeInTheDocument()
+  })
+
   it('sends a signed-in but disallowed role to the kid picker, not the login page', () => {
     // Regression guard for the redirect loop: a child hitting /guardian must
     // NOT be bounced to the guardian login (redirectTo), because a login page

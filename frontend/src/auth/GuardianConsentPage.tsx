@@ -9,6 +9,7 @@ import {
   GUARDIAN_AWAITING_APPROVAL_PATH,
   GUARDIAN_CONSOLE_PATH,
   GUARDIAN_LOGIN_PATH,
+  GUARDIAN_UNAVAILABLE_PATH,
 } from '../routes'
 import { useAuth } from './useAuth'
 
@@ -40,6 +41,14 @@ export function GuardianConsentPage() {
 
   if (status === 'signed-out') {
     return <Navigate to={GUARDIAN_LOGIN_PATH} replace />
+  }
+  // #452: recordConsent rethrows a failed submit rather than reaching
+  // syncPrincipal, so this page cannot reach the status through its own
+  // action; it can still arrive here from a sibling tab's poll or a direct
+  // URL. Handled for the same reason as the branch on the awaiting-approval
+  // page: the alternative is a blank screen from the catch-all below.
+  if (status === 'backend-unreachable') {
+    return <Navigate to={GUARDIAN_UNAVAILABLE_PATH} replace />
   }
   if (status === 'awaiting-approval') {
     return <Navigate to={GUARDIAN_AWAITING_APPROVAL_PATH} replace />
@@ -89,9 +98,9 @@ export function GuardianConsentPage() {
     <section className="console" aria-labelledby="consent-title">
       <h1 id="consent-title">Before you get started</h1>
       <p className="console__notice cyo-text-muted">
-        Because CYO Adventure creates profiles and stories for children, we need your
-        confirmation that you are this child&apos;s parent or legal guardian and that you
-        agree to how we handle their information, described in our Privacy Notice.
+        Because CYO Adventure creates profiles and stories for children, we need your confirmation
+        that you are this child&apos;s parent or legal guardian and that you agree to how we handle
+        their information, described in our Privacy Notice.
       </p>
       <form className="guardian-login__form" onSubmit={(event) => void submit(event)}>
         <label className="guardian-login__field" htmlFor={nameId}>
@@ -106,7 +115,10 @@ export function GuardianConsentPage() {
             required
           />
         </label>
-        <label className="guardian-login__field guardian-login__field--checkbox" htmlFor={checkboxId}>
+        <label
+          className="guardian-login__field guardian-login__field--checkbox"
+          htmlFor={checkboxId}
+        >
           <input
             id={checkboxId}
             type="checkbox"

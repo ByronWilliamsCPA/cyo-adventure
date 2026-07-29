@@ -69,6 +69,7 @@ function loginUi(initialEntries: InitialEntry[] = ['/guardian/login']) {
       <Routes>
         <Route path="/guardian/login" element={<LoginPage />} />
         <Route path="/guardian" element={<div>console landing</div>} />
+        <Route path="/guardian/unavailable" element={<div>backend unavailable landing</div>} />
         <Route path="/guardian/review/:id" element={<div>review landing</div>} />
         <Route path="/admin" element={<div>admin landing</div>} />
         <Route path="/admin/moderation-dashboard" element={<div>admin moderation landing</div>} />
@@ -208,6 +209,18 @@ describe('LoginPage password form', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(/couldn't load your account/i)
   })
 
+  // #452: the terminal case above keeps its inline banner, but a TRANSIENT
+  // failure must leave the login page entirely. Without this, fixing
+  // ProtectedRoute alone would still loop a guardian who reaches
+  // /guardian/login by bookmark, back button, or an already-open tab: they
+  // would sign in again, re-establish the same session, and fail the same way.
+  it('forwards to the interstitial when the backend is unreachable', () => {
+    authStatus = 'backend-unreachable'
+    renderLogin()
+    expect(screen.getByText('backend unavailable landing')).toBeInTheDocument()
+    expect(screen.queryByLabelText('Email')).not.toBeInTheDocument()
+  })
+
   it('offers the Google button and hides Apple until it is configured', () => {
     renderLogin()
     expect(screen.getByRole('button', { name: /Continue with Google/ })).toBeInTheDocument()
@@ -308,9 +321,7 @@ describe('LoginPage password form', () => {
       ])('falls back to the default when state.from is %s', (_label, badPath) => {
         authStatus = 'signed-in'
         principalValue = principal('guardian')
-        renderLogin([
-          { pathname: '/guardian/login', state: { from: { pathname: badPath } } },
-        ])
+        renderLogin([{ pathname: '/guardian/login', state: { from: { pathname: badPath } } }])
         expect(screen.getByText('console landing')).toBeInTheDocument()
       })
     })
@@ -442,9 +453,7 @@ describe('LoginPage forgot-password request', () => {
       target: { value: 'parent@example.com' },
     })
     fireEvent.click(screen.getByRole('button', { name: /send reset link/i }))
-    await waitFor(() =>
-      expect(mockRequestPasswordReset).toHaveBeenCalledWith('parent@example.com')
-    )
+    await waitFor(() => expect(mockRequestPasswordReset).toHaveBeenCalledWith('parent@example.com'))
   })
 
   it('shows a neutral confirmation that does not reveal whether the account exists', async () => {
@@ -520,7 +529,10 @@ describe('LoginPage recovery landing (set new password)', () => {
 
 describe('LoginPage failed recovery-link landing', () => {
   it('shows an alert explaining the link is invalid or expired', () => {
-    recoveryErrorValue = { code: 'otp_expired', description: 'Email link is invalid or has expired' }
+    recoveryErrorValue = {
+      code: 'otp_expired',
+      description: 'Email link is invalid or has expired',
+    }
     renderLogin()
     expect(screen.getByRole('alert')).toHaveTextContent(/invalid or has expired/i)
   })
@@ -528,7 +540,10 @@ describe('LoginPage failed recovery-link landing', () => {
   it('pre-opens the reset-request panel instead of leaving it collapsed', () => {
     // A guardian who just landed on a dead recovery link should not have to
     // rediscover "Forgot your password?" on their own.
-    recoveryErrorValue = { code: 'otp_expired', description: 'Email link is invalid or has expired' }
+    recoveryErrorValue = {
+      code: 'otp_expired',
+      description: 'Email link is invalid or has expired',
+    }
     renderLogin()
     expect(screen.getByLabelText('Email for reset link')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /send reset link/i })).toBeInTheDocument()
