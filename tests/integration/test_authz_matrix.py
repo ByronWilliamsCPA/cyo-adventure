@@ -1151,7 +1151,26 @@ _CROSS_FAMILY_ROUTE_KEYS: list[tuple[str, str]] = [
     ("GET", "/api/v1/reading-history/{profile_id}"),
     ("PATCH", "/api/v1/storybooks/{storybook_id}/versions/{version}/nodes/{node_id}"),
     ("GET", "/api/v1/recommendations/{profile_id}"),
+    # personalization.py: the four guardian-gated CRUD routes. These reach a
+    # child's real name, sibling names, pet name, kinship label, and
+    # dedication, the most sensitive per-child data in the schema, and until
+    # now not one of them had a cross-family IDOR assertion anywhere in the
+    # suite: they were role-gated only, so a family-B guardian passed every
+    # check this file ran.
+    ("GET", "/api/v1/profiles/{profile_id}/personalization"),
+    ("PUT", "/api/v1/profiles/{profile_id}/personalization"),
+    ("POST", "/api/v1/profiles/{profile_id}/ring2-consent"),
+    ("DELETE", "/api/v1/profiles/{profile_id}/ring2-consent/{connection_id}"),
 ]
+
+# GET /storybooks/{id}/personalization-values is deliberately NOT in the list
+# above, and its absence is a decision rather than an oversight: it has no 403
+# or 404 branch at all by design (plan section 8.4 renders every predicate
+# failure as one identical empty payload, precisely so the route cannot be
+# used to probe another family), so the 403-or-404 assertion below cannot
+# express its contract. Its cross-family behavior is pinned instead by
+# test_personalization_api.py::
+# test_values_cross_family_private_book_returns_the_empty_payload.
 
 # Every key referenced above must actually be an authorized (guardian-eligible)
 # route in ROUTE_TABLE, so this section fails loudly instead of silently

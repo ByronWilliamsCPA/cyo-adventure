@@ -57,9 +57,18 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     # ADR-016 (register G17): "role" ("viewer"/"sharer") and "active" (both
     # sides now consented) are consent markers, not free text, added for the
     # new consent/revoke actions; "created"/"removed" (admin CRUD) never set
-    # them.
+    # them. ADR-023 P4 adds "tombstoned_disclosure_consents", a COUNT of the
+    # ring-2 consents the "removed" action revoked as a side effect: a bare
+    # integer, so it names how much evidence changed state without naming
+    # whose (no profile id, no slot value).
     EventType.FAMILY_CONNECTION_CHANGED: frozenset(
-        {"action", "connected_family_id", "role", "active"}
+        {
+            "action",
+            "connected_family_id",
+            "role",
+            "active",
+            "tombstoned_disclosure_consents",
+        }
     ),
     # G6: the node id only, never the edited prose (spec D3); see
     # api/node_edit.py::edit_node.

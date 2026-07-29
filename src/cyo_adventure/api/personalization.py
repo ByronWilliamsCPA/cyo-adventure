@@ -64,6 +64,7 @@ from cyo_adventure.db.models import (
     Storybook,
 )
 from cyo_adventure.events import Actor, EventType, record_event
+from cyo_adventure.publishing.state_machine import Visibility
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.personalization_values import (
     SIBLING_SLOT_TYPE,
@@ -973,10 +974,28 @@ async def _resolve_ring2_view(
     )
 
 
-@router.get(
-    "/storybooks/{storybook_id}/personalization-values",
-    responses=error_responses(404),
-)
+def _book_is_reachable(book: Storybook, caller_family_id: uuid.UUID) -> bool:
+    """Decide whether `caller_family_id` may address this book at all.
+
+    Mirrors the three-way branch in ``api/reading.py::_authorized_storybook``
+    minus its per-profile leg (this route takes no profile): an own-family
+    book is addressable, a cross-family CATALOG book is addressable (that is
+    the recommendation-sharing path ring 2 exists to serve), and a
+    cross-family family-visibility book is not.
+
+    Args:
+        book: The storybook being addressed.
+        caller_family_id: The caller's own family.
+
+    Returns:
+        bool: Whether the caller may address this book.
+    """
+    if book.family_id == caller_family_id:
+        return True
+    return book.visibility == Visibility.CATALOG.value
+
+
+@router.get("/storybooks/{storybook_id}/personalization-values")
 async def get_personalization_values(
     storybook_id: str, ctx: Context
 ) -> PersonalizationValuesView:
@@ -991,21 +1010,41 @@ async def get_personalization_values(
     family membership, so a child session in the viewer family may read a
     payload about a profile it could never otherwise act on.
 
+    Deliberately NOT guardian-gated, unlike the four configuration routes
+    above it: this is the reader-facing render path, so a child or device
+    session must be able to call it or a personalized book cannot render on
+    a kid's tablet at all. What that costs is made up for by the two checks
+    below, which the configuration routes get from ``_require_guardian``.
+
+    #CRITICAL: security: a missing book returns the SAME empty payload as
+    every other predicate failure, never a 404. Raising 404 here made the
+    route an existence oracle over the whole storybook table: any
+    authenticated caller could enumerate ids and learn which exist globally,
+    before any family check had run. Uniform disclosure is the only way this
+    route can honor its own "never reveal anything about another family"
+    contract, since it has no 403 branch to hide behind either.
+    #VERIFY: tests/integration/test_personalization_values_api.py asserts a
+    nonexistent id and a cross-family private book are byte-identical to the
+    empty payload.
+
     Args:
         storybook_id: The book (path).
         ctx: The request context (principal + unit-of-work session).
 
     Returns:
         PersonalizationValuesView: The resolved payload, or the universal
-        empty payload (never a 403) on any predicate failure.
-
-    Raises:
-        ResourceNotFoundError: If no storybook with this id exists.
+        empty payload (never a 403, never a 404) on any predicate failure.
     """
     book = await ctx.session.get(Storybook, storybook_id)
     if book is None:
-        msg = f"storybook '{storybook_id}' not found"
-        raise ResourceNotFoundError(msg)
+        return _empty_values_view()
+    # #CRITICAL: security: without this the route resolved values from ANY
+    # book id, including another family's private book, relying entirely on
+    # the ring-2 consent predicate downstream to keep the payload empty. That
+    # left the cross-family private case governed by a consent check rather
+    # than by the visibility rule every other read path enforces.
+    if not _book_is_reachable(book, ctx.principal.family_id):
+        return _empty_values_view()
     if book.personalization_subject_profile_id is None:
         return _empty_values_view()
     subject = await ctx.session.get(

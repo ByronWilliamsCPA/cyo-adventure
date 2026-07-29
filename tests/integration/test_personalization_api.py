@@ -85,13 +85,27 @@ def _connection(
 
 
 async def _storybook(
-    session: AsyncSession, family_id: uuid.UUID, subject_profile_id: uuid.UUID | None
+    session: AsyncSession,
+    family_id: uuid.UUID,
+    subject_profile_id: uuid.UUID | None,
+    *,
+    visibility: str = "family",
 ) -> Storybook:
-    """Create a minimal Storybook row with a personalization subject."""
+    """Create a minimal Storybook row with a personalization subject.
+
+    ``visibility`` defaults to the column default. Every CROSS-family case
+    must pass ``visibility="catalog"``: a cross-family book only ever reaches
+    another family's profile through the catalog + assignment path (see
+    ``api/recommendations.py::_visible_books`` and
+    ``api/reading.py::_authorized_storybook``), so a fixture that leaves a
+    ring-2 book at ``"family"`` is asserting against a book the viewer family
+    could never actually open.
+    """
     row = Storybook(
         id=f"book-{family_id}-{subject_profile_id}",
         family_id=family_id,
         personalization_subject_profile_id=subject_profile_id,
+        visibility=visibility,
     )
     session.add(row)
     await session.flush()
@@ -516,12 +530,73 @@ async def test_revoke_ring2_consent(
 # ---------------------------------------------------------------------------
 
 
-async def test_values_missing_storybook_404(client: AsyncClient, seed: Seed) -> None:
+async def test_values_missing_storybook_returns_the_empty_payload(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A nonexistent book is indistinguishable from every other predicate failure.
+
+    This route previously 404'd here, which made it an existence oracle over
+    the whole storybook table: any authenticated caller could enumerate ids
+    and learn which exist globally, before any family check had run. The
+    route has no 403 branch either, so uniform disclosure is the only way it
+    can honor its own "leak nothing about another family" contract.
+    """
     resp = await client.get(
         "/api/v1/storybooks/does-not-exist/personalization-values",
         headers=auth(seed.guardian_token),
     )
-    assert resp.status_code == 404
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["subject_profile_id"] is None
+    assert body["ring"] is None
+    assert body["values"] == {}
+
+
+async def test_values_cross_family_private_book_returns_the_empty_payload(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Another family's non-catalog book is not addressable, consent aside.
+
+    Without the reachability check the route resolved values from ANY book
+    id, leaving the cross-family private case governed only by the
+    downstream ring-2 consent predicate rather than by the visibility rule
+    every other read path enforces.
+    """
+    async with sessions() as session:
+        sharer = Family(name="Private Sharer")
+        viewer = Family(name="Unrelated Viewer")
+        session.add_all([sharer, viewer])
+        await session.flush()
+        subject = ChildProfile(
+            family_id=sharer.id,
+            display_name="Private Reader",
+            age_band="10-13",
+            real_name_ring1_enabled=True,
+        )
+        session.add(subject)
+        await session.flush()
+        session.add(
+            ChildProfilePersonalization(
+                child_profile_id=subject.id,
+                slot_type="pet_name",
+                value_text="Waffles",
+                ring1_enabled=True,
+            )
+        )
+        await _guardian(session, viewer.id, "unrelated-viewer-guardian")
+        await session.flush()
+        # Cross-family AND non-catalog: the one combination no read path in
+        # the app allows, whatever the consent state says.
+        book = await _storybook(session, sharer.id, subject.id, visibility="family")
+        await session.commit()
+        book_id = book.id
+
+    resp = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth("unrelated-viewer-guardian"),
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["values"] == {}
 
 
 async def test_values_no_subject_returns_empty(client: AsyncClient, seed: Seed) -> None:
@@ -594,7 +669,7 @@ async def test_values_unconnected_family_empty(
         session.add(subject)
         await session.flush()
         await _guardian(session, viewer.id, "unconnected-viewer-guardian")
-        book = await _storybook(session, sharer.id, subject.id)
+        book = await _storybook(session, sharer.id, subject.id, visibility="catalog")
         # Deliberately no FamilyConnection at all between viewer and sharer.
         await session.commit()
         book_id = book.id
@@ -674,7 +749,7 @@ async def _build_ring2_scenario(
                 revoked_at=datetime.now(UTC) if consent_revoked else None,
             )
         )
-    book = await _storybook(session, sharer.id, subject.id)
+    book = await _storybook(session, sharer.id, subject.id, visibility="catalog")
     await session.commit()
     return book.id, viewer_guardian.authn_subject
 
@@ -857,7 +932,7 @@ async def test_values_child_session_in_viewer_family_succeeds(
                 consent_ip="127.0.0.1",
             )
         )
-        book = await _storybook(session, sharer.id, subject.id)
+        book = await _storybook(session, sharer.id, subject.id, visibility="catalog")
         await session.commit()
         book_id = book.id
 
@@ -923,7 +998,7 @@ async def test_values_pronoun_and_dedication_never_disclosed_ring2(
                 consent_ip="127.0.0.1",
             )
         )
-        book = await _storybook(session, sharer.id, subject.id)
+        book = await _storybook(session, sharer.id, subject.id, visibility="catalog")
         await session.commit()
         book_id = book.id
 
@@ -995,7 +1070,7 @@ async def test_values_sibling_disclosed_under_own_consent(
                 consent_ip="127.0.0.1",
             )
         )
-        book = await _storybook(session, sharer.id, subject_a.id)
+        book = await _storybook(session, sharer.id, subject_a.id, visibility="catalog")
         await session.commit()
         book_id = book.id
 
@@ -1068,7 +1143,7 @@ async def test_values_sibling_omitted_when_sibling_lacks_own_consent(
                 consent_ip="127.0.0.1",
             )
         )
-        book = await _storybook(session, sharer.id, subject_a.id)
+        book = await _storybook(session, sharer.id, subject_a.id, visibility="catalog")
         await session.commit()
         book_id = book.id
 

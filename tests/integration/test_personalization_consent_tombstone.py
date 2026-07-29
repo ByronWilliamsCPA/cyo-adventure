@@ -14,8 +14,9 @@ export surface, is Task B3's).
 
 from __future__ import annotations
 
+import uuid
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import pytest
 
@@ -26,10 +27,15 @@ from cyo_adventure.db.models import (
     PersonalizationDisclosureConsent,
 )
 
+from .conftest import Seed, auth
+
 if TYPE_CHECKING:
+    from httpx import AsyncClient
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
+
+_CONNECTIONS = "/api/v1/admin/family-connections"
 
 
 async def test_connection_delete_tombstones_then_profile_delete_removes(
@@ -141,3 +147,70 @@ async def test_profile_delete_removes_live_untombstoned_consent(
     async with sessions() as session:
         row = await session.get(PersonalizationDisclosureConsent, consent_id)
         assert row is None
+
+
+async def test_deleting_the_connection_via_the_api_stamps_revoked_at(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """The DELETE route tombstones the consent AND marks it revoked.
+
+    The two tests above cover the database half: the row survives with a
+    NULL FK. That alone leaves ``revoked_at`` NULL, which the family export
+    (``api/me.py``) renders as a still-active authorization for a connection
+    that no longer exists. The revocation stamp is the API caller's job, so
+    it needs a test that goes through the route rather than the session.
+    """
+    target = await client.post(
+        "/api/v1/admin/families",
+        headers=auth(seed.admin_token),
+        json={"name": "Tombstone Viewer Family"},
+    )
+    assert target.status_code == 201, target.text
+    viewer_family_id = cast("str", target.json()["id"])
+
+    # The seed family is the SHARER (it owns the child profile); the new
+    # family is the viewer that opted in to seeing its recommendations.
+    created = await client.post(
+        _CONNECTIONS,
+        headers=auth(seed.admin_token),
+        json={
+            "family_id": viewer_family_id,
+            "connected_family_id": str(seed.family_id),
+        },
+    )
+    assert created.status_code == 201, created.text
+    connection_id = cast("str", created.json()["id"])
+
+    async with sessions() as session:
+        consent = PersonalizationDisclosureConsent(
+            child_profile_id=seed.child_profile_id,
+            family_connection_id=uuid.UUID(connection_id),
+            connected_family_label="Tombstone Viewer Family",
+            covered_slot_types=["protagonist_first_name"],
+            consent_accepted_at=datetime.now(UTC),
+            consent_policy_version="v1",
+            consent_signer_name="Seed Guardian",
+            consent_ip="127.0.0.1",
+        )
+        session.add(consent)
+        await session.commit()
+        consent_id = consent.id
+
+    deleted = await client.delete(
+        f"{_CONNECTIONS}/{connection_id}", headers=auth(seed.admin_token)
+    )
+    assert deleted.status_code == 204, deleted.text
+
+    async with sessions() as session:
+        row = await session.get(PersonalizationDisclosureConsent, consent_id)
+        assert row is not None, "the evidence must survive the connection deletion"
+        assert row.family_connection_id is None
+        assert row.revoked_at is not None, (
+            "a consent whose connection is gone must not export as still active"
+        )
+        # The evidence itself is untouched: only the state changed.
+        assert row.consent_accepted_at is not None
+        assert row.consent_signer_name == "Seed Guardian"
+        assert row.connected_family_label == "Tombstone Viewer Family"
