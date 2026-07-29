@@ -28,7 +28,7 @@ import dataclasses
 import hashlib
 import uuid
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Literal, cast
 
 from sqlalchemy import select
 
@@ -90,8 +90,14 @@ from cyo_adventure.story_requests.interpretation import (
     render_interpretation,
 )
 from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.storybook.reinsertion import (
+    TokenOutcome,
+    reinsert_storybook,
+    verify_manifest,
+)
 from cyo_adventure.utils.logging import get_logger
-from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity
+from cyo_adventure.validator.gate import run_gate
+from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity_at_rest
 from cyo_adventure.validator.slots import DENYLIST_VERSION
 
 if TYPE_CHECKING:
@@ -787,6 +793,69 @@ def _as_str_list(value: object) -> list[str]:
     return [item for item in cast("list[object]", value) if isinstance(item, str)]
 
 
+def _slot_ids_with_body_coverage(
+    token_outcomes: tuple[TokenOutcome, ...],
+) -> frozenset[str]:
+    """Return every slot id with at least one reinsertable body/ending-title occurrence.
+
+    Derived from `reinsert_storybook`'s own `token_outcomes`, so this reuses
+    the transform's already-computed per-(node, token) classification
+    instead of re-scanning the final document's text a second time.
+
+    Args:
+        token_outcomes: The `ReinsertionOutcome.token_outcomes` produced for
+            one fill.
+
+    Returns:
+        frozenset[str]: Every slot id that became reinsertable in at least
+            one node.
+    """
+    return frozenset(
+        outcome.slot_id
+        for outcome in token_outcomes
+        if outcome.status == "reinsertable"
+    )
+
+
+def _warn_on_zero_coverage_slots(
+    personalizable_slots: frozenset[str],
+    token_outcomes: tuple[TokenOutcome, ...],
+    *,
+    skeleton_slug: str,
+) -> None:
+    """Emit a WARNING (never a failure) for a declared slot reinserted nowhere.
+
+    A soft coverage floor, not a gate: a declared personalizable slot whose
+    token never became reinsertable anywhere in the document is a content
+    smell (the bind promised a personalization point the fill prose never
+    honored), not a corruption, so it never blocks the job. A validator
+    PL-code was the preferred home for this, but is not mechanical here: the
+    deterministic validator gate (`validator.run_gate`) runs over the parsed,
+    pre-reinsertion document, a pipeline stage earlier than where this
+    transform's manifest exists, so there is no gate hook this check could
+    attach to without restructuring the gate/reinsertion order (ADR-023
+    Stage R task brief, reported deviation). A structlog warning is the
+    fallback.
+
+    Args:
+        personalizable_slots: The contract's declared personalizable slot
+            ids for this fill; a no-op when empty.
+        token_outcomes: The `ReinsertionOutcome.token_outcomes` produced for
+            this fill.
+        skeleton_slug: The matched skeleton slug, for the log line.
+    """
+    if not personalizable_slots:
+        return
+    covered = _slot_ids_with_body_coverage(token_outcomes)
+    uncovered = sorted(personalizable_slots - covered)
+    if uncovered:
+        logger.warning(
+            "generation_job.personalizable_slot_zero_coverage",
+            skeleton_slug=skeleton_slug,
+            slot_ids=uncovered,
+        )
+
+
 async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     """Run the automated skeleton-fill pipeline (Stage B') for one job.
 
@@ -820,11 +889,19 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
             no sidecar contract), or its sidecar fails to bind/render -- both
             fail closed, propagating unchanged into the caller's pipeline-
             exception handling. No fill provider call is made in either case.
-            Also raised (ADR-023 plan section 3.2) when the filled blob fails
-            :func:`~cyo_adventure.validator.sentinel_integrity.check_sentinel_integrity`
-            against the pre-fill bound skeleton: a forged, mutated, migrated,
-            or dropped sentinel fails the job closed, with the violation list
-            logged structurally before the raise.
+            Also raised (ADR-023 Stage R) by either half of the
+            strip-all-then-reinsert step this function runs after a
+            successful fill: when
+            :func:`~cyo_adventure.storybook.reinsertion.verify_manifest`
+            rejects the transform's own output (a transform bug, not a
+            fill-content problem), or when the derived document fails
+            :func:`~cyo_adventure.validator.sentinel_integrity.check_sentinel_integrity_at_rest`
+            (a forged, malformed, or misplaced leftover). Both log the
+            violation list structurally before the raise. Note what is NOT
+            in that list any more: a model that paraphrased a sentinel away
+            no longer fails the job, because the transform re-derives every
+            reinsertable token rather than prescribing where the fill should
+            have put them.
     """
     authoring = ctx.authoring
     skeleton_slug = authoring.get(SKELETON_SLUG_KEY)
@@ -978,34 +1055,65 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     # #CRITICAL: security: a personalizable slot's sentinel-wrapped value
     # (rendered into `bound` above) is the ONLY marker standing between the
     # fill LLM's free-text output and a family's later personalization
-    # resolve; a forged, mutated, migrated, or dropped sentinel in the filled
-    # blob is an unreviewed substitution point that must never reach a
-    # guardian/admin's approval queue looking like ordinary prose (ADR-023
-    # plan section 3.2, "Fail closed"). This check runs on every skeleton
-    # fill, not only personalizable ones: `personalizable_slot_ids` is empty
-    # for every contract on disk today (Task 2 added the slot KIND; nothing
-    # declares it yet), so `check_sentinel_integrity` derives an empty
-    # expected set: the dropped/forged/migrated/unknown-slot checks all pass
-    # for existing content. The malformed-near-miss scan does run
-    # unconditionally (it is not gated on the expected set), but it fires only
-    # on genuinely sentinel-shaped tokens (`{~...~}` near-misses) that ordinary
-    # prose never contains, so this wiring stays byte-neutral for all real
-    # sentinel-free content until a personalizable contract exists. Fails
-    # closed on the FIRST trip: the section 3.4
+    # resolve. G1 measurement showed the fill LLM preserves a sentinel
+    # wrapper verbatim on only 3.3% of tokens (ADR-023 Stage R), so this step
+    # no longer trusts the model to have kept any sentinel intact: it derives
+    # the final document from `bound` (the pre-fill source of truth for slot
+    # placement) via a deterministic strip-all-then-reinsert transform
+    # (`reinsert_storybook`), then verifies the transform's own output
+    # against its own derived manifest and re-scans the result for anything
+    # sentinel-shaped left at rest ("derive, not prescribe"). This runs on
+    # every skeleton fill, not only personalizable ones:
+    # `personalizable_slot_ids` is empty for every contract on disk today
+    # (Task 2 added the slot KIND; nothing declares it yet), so `bound` has no
+    # expected tokens, the transform is a byte-identical no-op, and
+    # `check_sentinel_integrity_at_rest` derives an empty expected set for
+    # existing content. Fails closed on the FIRST trip: the section 3.4
     # one-retry policy is explicitly out of scope here (Task 4b). Skipped
     # when `outcome.storybook` is `None` (the gate blocked with no
     # salvageable doc, `_build_outcome`'s "failed, no doc" branch): there is
-    # no blob to check or persist in that case.
+    # no blob to transform or check in that case.
     # #VERIFY: test_run_skeleton_fill_sentinel_integrity_dormant_for_non_personalizable_fill,
     # test_run_skeleton_fill_sentinel_integrity_passes_verbatim_copy, and
-    # test_run_skeleton_fill_sentinel_integrity_mutated_sentinel_fails_closed
+    # test_run_skeleton_fill_sentinel_integrity_forged_value_not_reinserted
     # in tests/unit/test_worker.py.
+    final_storybook = outcome.storybook
+    sentinel_manifest: dict[str, object] | None = None
     if outcome.storybook is not None:
-        integrity_result = check_sentinel_integrity(bound, outcome.storybook)
-        if not integrity_result.ok:
+        reinsertion_outcome = reinsert_storybook(bound, outcome.storybook)
+        final_storybook = reinsertion_outcome.document
+        sentinel_manifest = reinsertion_outcome.manifest
+
+        if not verify_manifest(final_storybook, sentinel_manifest):
+            # `verify_manifest` rebuilds a reference document from the
+            # manifest it is passed and re-runs the prescriptive check
+            # against the document that manifest was derived from, so it
+            # passes by construction when both come from the same
+            # `reinsert_storybook` call. A failure here means
+            # `reinsert_storybook` produced a document its own manifest
+            # cannot account for: a transform bug, not a fill-content
+            # problem.
+            logger.error(
+                "generation_job.sentinel_manifest_verification_failed",
+                skeleton_slug=skeleton_slug,
+            )
+            msg = (
+                f"reinsertion transform for skeleton '{skeleton_slug}' "
+                "produced a document that fails its own manifest"
+            )
+            raise ValidationError(
+                msg,
+                field="sentinel_integrity",
+                details={"sentinel_integrity_violations": []},
+            )
+
+        at_rest_result = check_sentinel_integrity_at_rest(
+            final_storybook, personalizable_slots
+        )
+        if not at_rest_result.ok:
             violation_details = [
                 {"node_id": v.node_id, "kind": v.kind, "token": v.token}
-                for v in integrity_result.violations
+                for v in at_rest_result.violations
             ]
             logger.error(
                 "generation_job.sentinel_integrity_violation",
@@ -1021,6 +1129,23 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
                 field="sentinel_integrity",
                 details={"sentinel_integrity_violations": violation_details},
             )
+
+        _warn_on_zero_coverage_slots(
+            personalizable_slots,
+            reinsertion_outcome.token_outcomes,
+            skeleton_slug=skeleton_slug,
+        )
+
+    # The gate inside `fill_skeleton` scored `outcome.storybook`; everything
+    # above may have rewritten it. Re-score the document that will actually be
+    # persisted, so the stored validation_report describes the stored blob.
+    # A no-op transform short-circuits, so this costs nothing on the dormant
+    # path every contract on disk takes today.
+    gate_status, gate_report = (
+        _regate_after_transform(outcome, final_storybook, skeleton_slug=skeleton_slug)
+        if final_storybook is not None
+        else (outcome.status, outcome.report)
+    )
 
     # WS-2 design section 7: the audit block a reviewer needs to see exactly
     # what the theme changed. `bind_attempts` is deliberately omitted:
@@ -1058,16 +1183,108 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     # inference, not the concrete GenerationOutcome (S5886); constructing the
     # instance directly keeps the return type unambiguous everywhere.
     return GenerationOutcome(
-        status=outcome.status,
-        storybook=outcome.storybook,
+        status=gate_status,
+        storybook=final_storybook,
         report={
-            **outcome.report,
+            **gate_report,
             "theme_contract": theme_contract_report,
             "request_interpretation": interpretation.model_dump(mode="json"),
         },
         attempts=outcome.attempts,
         stage_log=outcome.stage_log,
+        sentinel_manifest=sentinel_manifest,
     )
+
+
+# Ordered worst-last, so max() over this ranking picks the more severe of two
+# statuses. "passed" is the only status that lets a document reach a reader
+# without a human looking at it, so it must be the easiest to lose.
+_STATUS_SEVERITY: dict[str, int] = {"passed": 0, "needs_review": 1, "failed": 2}
+
+
+def _regate_after_transform(
+    outcome: GenerationOutcome,
+    final_storybook: dict[str, object],
+    *,
+    skeleton_slug: str,
+) -> tuple[Literal["passed", "needs_review", "failed"], dict[str, object]]:
+    """Re-run the deterministic gate against the POST-transform document.
+
+    #CRITICAL: data-integrity: ``fill_skeleton`` runs ``run_gate`` internally
+    and returns the verdict for the document it gated. ``_run_skeleton_fill``
+    then rewrites that document (``reinsert_storybook`` normalizes the title,
+    every node body, every ending title, and every choice label, and can
+    delete malformed spans outright) and persists the REWRITTEN document
+    under the OLD verdict. Reading-level, word-count, band-profile, and safety
+    checks all read those exact strings, so the stored
+    ``validation_report`` described a document that was not the one stored.
+    The resume path in ``import_story.py`` already gets this right: it
+    reassigns ``blob`` BEFORE running the gate. This closes the ordering gap
+    on the worker path.
+
+    The reconciliation never upgrades. A document that was blocked before the
+    transform stays at least as severe afterward, because the transform is a
+    text normalization, not a repair, and "the rewrite happened to satisfy the
+    gate" is not evidence the original problem was fixed. Only a downgrade to
+    a worse status can result from this call.
+
+    #VERIFY: tests/unit/test_worker.py asserts a no-op transform leaves the
+    status and report untouched, and that a transform which breaks the gate
+    downgrades a "passed" outcome.
+
+    Args:
+        outcome: The pre-transform outcome from ``fill_skeleton``.
+        final_storybook: The post-transform document that will be persisted.
+        skeleton_slug: Slug for the log line, when the verdicts disagree.
+
+    Returns:
+        The reconciled ``(status, report)`` pair to return to the caller.
+    """
+    if final_storybook == outcome.storybook:
+        # Byte-identical transform, which is the case for every contract on
+        # disk today (none declares a personalizable slot). Re-gating would
+        # burn the full validator budget to reproduce a verdict we already
+        # hold, so skip it entirely.
+        return outcome.status, outcome.report
+
+    # Scale is always "standard" on this path: fill_skeleton documents that
+    # skeleton library files use genre-faithful authored node counts (ADR-011)
+    # rather than the "compact" live-model budget.
+    regated = run_gate(final_storybook, "standard")
+    if not regated.blocked:
+        post_status: Literal["passed", "needs_review", "failed"] = (
+            "needs_review" if regated.safety_flagged else "passed"
+        )
+    else:
+        post_status = "needs_review"
+
+    # Written as a comparison rather than max(key=...), which widens both
+    # Literal types to str and loses the return annotation's guarantee.
+    status = (
+        outcome.status
+        if _STATUS_SEVERITY[outcome.status] >= _STATUS_SEVERITY[post_status]
+        else post_status
+    )
+    if status != outcome.status or post_status != outcome.status:
+        logger.warning(
+            "generation_job.regate_after_reinsertion_disagreed",
+            skeleton_slug=skeleton_slug,
+            pre_transform_status=outcome.status,
+            post_transform_status=post_status,
+            resolved_status=status,
+        )
+
+    # The post-transform report is the truthful description of the document
+    # that will actually be persisted, so it wins. The pre-transform verdict
+    # is preserved alongside it rather than discarded: a reviewer looking at a
+    # needs_review job needs to be able to tell which of the two gate runs
+    # produced the downgrade.
+    report: dict[str, object] = dict(regated.report.to_dict())
+    report["pre_reinsertion_gate"] = {
+        "status": outcome.status,
+        "report": outcome.report,
+    }
+    return status, report
 
 
 def _should_persist_storybook(outcome: GenerationOutcome) -> bool:
@@ -1266,6 +1483,7 @@ async def _persist_and_moderate(
             provider=_provider_label(ctx.effective_provider),
             skeleton_slug=_skeleton_slug_of(ctx.authoring),
             validation_report=dict(outcome.report),
+            sentinel_manifest=outcome.sentinel_manifest,
             version=_FIRST_VERSION,
         ),
     )
@@ -1722,8 +1940,10 @@ async def _handle_pipeline_failure(
     # lands in the persisted report/error.
     violations: object | None = None
     # #CRITICAL: data-integrity: a Task 4a/4b fail-closed sentinel-integrity
-    # ValidationError (_run_skeleton_fill's LIVE check_sentinel_integrity
-    # call) already carries its own violation list in
+    # ValidationError (_run_skeleton_fill's LIVE
+    # check_sentinel_integrity_at_rest call; the prescriptive
+    # check_sentinel_integrity it used to run was replaced by the Stage R
+    # reinsertion transform) already carries its own violation list in
     # exc.details["sentinel_integrity_violations"], but before Task 6a that
     # detail reached only the structured log line above, never job.report:
     # an admin debugging a failed job saw a truncated error count, not

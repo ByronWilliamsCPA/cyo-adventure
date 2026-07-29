@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.41.0] - 2026-07-29
+
+### Features
+
+- Deterministic sentinel re-insertion and personalization ring-1 foundations (ADR-023 Stages R+B)
+  ([#466](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/466),
+  [`d55769e`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/d55769e2d01e2f3eff2331b8050053abbc7ed9b5))
+
+
 ## [0.40.2] - 2026-07-29
 
 ### Bug Fixes
@@ -2764,6 +2773,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.41.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.40.2...v0.41.0
 [0.40.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.40.1...v0.40.2
 [0.40.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.40.0...v0.40.1
 [0.40.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.39.2...v0.40.0

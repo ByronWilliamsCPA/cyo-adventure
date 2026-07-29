@@ -57,9 +57,18 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     # ADR-016 (register G17): "role" ("viewer"/"sharer") and "active" (both
     # sides now consented) are consent markers, not free text, added for the
     # new consent/revoke actions; "created"/"removed" (admin CRUD) never set
-    # them.
+    # them. ADR-023 P4 adds "tombstoned_disclosure_consents", a COUNT of the
+    # ring-2 consents the "removed" action revoked as a side effect: a bare
+    # integer, so it names how much evidence changed state without naming
+    # whose (no profile id, no slot value).
     EventType.FAMILY_CONNECTION_CHANGED: frozenset(
-        {"action", "connected_family_id", "role", "active"}
+        {
+            "action",
+            "connected_family_id",
+            "role",
+            "active",
+            "tombstoned_disclosure_consents",
+        }
     ),
     # G6: the node id only, never the edited prose (spec D3); see
     # api/node_edit.py::edit_node.
@@ -78,6 +87,22 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     # the log itself never becomes a second copy of the child data it is
     # auditing access to.
     EventType.PROFILE_VIEWED: frozenset({"family_id", "count"}),
+    # ADR-023 P3/P4: the closed-vocabulary slot_type, which ring (1 or 2) it
+    # was scoped to, and the action taken. Deliberately excludes any actual
+    # personalization value (a child's name, a pet's name, a pronoun set):
+    # this event audits that a slot was toggled, never what it now holds.
+    EventType.PERSONALIZATION_TOGGLED: frozenset({"slot_type", "ring", "action"}),
+    # ADR-023 P4: the connected family's id and a count of slot types
+    # shared. Never the slot values or any child-identifying detail: the
+    # count is enough to audit the grant without becoming a second copy of
+    # what was shared.
+    EventType.RING2_CONSENT_GRANTED: frozenset(
+        {"connected_family_id", "slot_type_count"}
+    ),
+    # ADR-023 P4: the ring-2 consent counterpart to RING2_CONSENT_GRANTED;
+    # only the connected family's id, since a revoke has no slot-count of
+    # its own to audit.
+    EventType.RING2_CONSENT_REVOKED: frozenset({"connected_family_id"}),
 }
 
 
