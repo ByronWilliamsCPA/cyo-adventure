@@ -471,7 +471,7 @@ Work this repository cannot complete on its own.
 
 | ID | Item | Owner | Status |
 |----|------|-------|--------|
-| UW-M01 | Rebuild and redeploy the `:staging` backend and worker from at least `b29aa6b`, then re-run `e2e-staging.yml`. Per [handoff-staging-stale-backend-image-2026-07-21.md](./handoff-staging-stale-backend-image-2026-07-21.md), which may already be satisfied. | homelab-infra | verify |
+| UW-M01 | Rebuild and redeploy the `:staging` backend and worker from at least `b29aa6b`, then re-run `e2e-staging.yml`. Per [handoff-staging-stale-backend-image-2026-07-21.md](./handoff-staging-stale-backend-image-2026-07-21.md). Verified 2026-07-28, not satisfied: `e2e-staging.yml` run [30364118803](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/30364118803) (same-day, scheduled) still shows the identical 4-passed/2-failed split as the 2026-07-21 handoff, same two specs (`guardian-admin-smoke.spec.ts:34`, `kid-library-smoke.spec.ts:75`), same guardian-console-not-rendering symptom. Every run since 2026-07-18 has failed the same way; the redeploy has not landed or did not resolve it. | homelab-infra | unscheduled |
 | UW-M02 | Naive-user session with real children. Gates UW-I01, UW-I02, and 15 unrun Track B scenarios. | project owner | blocked |
 | UW-M03 | Counsel engagement: ADR-018 D1-D4, ADR-016 ring-2 granularity, ADR-023 OD-1 and OD-5. Long lead time; the roadmap already flags that this should start now. | project owner | decision |
 | UW-M04 | OpenRouter DPA execution (privacy-model Blocker 1a) | project owner | decision |
