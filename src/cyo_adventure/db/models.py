@@ -136,7 +136,13 @@ _PIPELINE_ENTITY_TYPE_VALUES = (
     "'story_request', 'generation_job', 'storybook', 'storybook_version', "
     "'series', 'storybook_assignment', 'rating', 'moderation_threshold', "
     "'moderation_setting', 'kid_flag', 'user', 'family', 'family_connection', "
-    "'child_profile'"
+    "'child_profile', "
+    # ADR-023 P3/P4 (Task B6): added alongside
+    # supabase/migrations/20260729030000_add_personalization_entity_types.sql.
+    # 'personalization_consent' (not the longer
+    # 'personalization_disclosure_consent') so the value fits entity_type's
+    # String(32) column.
+    "'child_profile_personalization', 'personalization_consent'"
 )
 
 # The four admin-user lifecycle states (WS-J admin user management, plus the

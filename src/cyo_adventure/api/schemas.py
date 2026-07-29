@@ -2145,6 +2145,154 @@ class RecommendationsView(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Story personalization (ADR-023 P4/P5): per-profile slot values and ring
+# flags, ring-2 disclosure consent, and the resolved values payload a reader
+# fetches for one book. Shapes pinned by
+# docs/planning/story-personalization-implementation-plan.md section 6.1.
+# ---------------------------------------------------------------------------
+
+_PersonalizationSlotType = Literal[
+    "protagonist_first_name",
+    "pronoun_set",
+    "sibling_name",
+    "pet_species",
+    "pet_name",
+    "kinship_label",
+    "favorite",
+    "home_type",
+    "dedication",
+]
+
+
+class PersonalizationSlotBody(BaseModel):
+    """One slot's proposed value and ring flags, inside the PUT replace body.
+
+    Exactly one of ``value_text``, ``value_enum``, ``value_profile_id`` may be
+    set, mirroring ``ChildProfilePersonalization.ck_cpp_exactly_one_value``.
+    This is a shape check only: the closed-vocabulary, structural, denylist,
+    and sibling-in-family checks (plan section 5.2) run in the route handler
+    via ``storybook.personalization_values``, not here.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    slot_type: _PersonalizationSlotType
+    value_text: Annotated[str, StringConstraints(max_length=200)] | None = None
+    value_enum: Annotated[str, StringConstraints(max_length=64)] | None = None
+    value_profile_id: str | None = None
+    ring1_enabled: bool = False
+    ring2_enabled: bool = False
+
+    @model_validator(mode="after")
+    def _exactly_one_value(self) -> PersonalizationSlotBody:
+        """Reject a slot body with zero or more than one value field set."""
+        present = sum(
+            value is not None
+            for value in (self.value_text, self.value_enum, self.value_profile_id)
+        )
+        if present != 1:
+            msg = "exactly one of value_text, value_enum, value_profile_id must be set"
+            raise ValueError(msg)
+        return self
+
+
+class PersonalizationUpdateBody(BaseModel):
+    """The whole personalization state for one profile: replace, not patch.
+
+    A partial patch over a per-slot table invites ambiguity about whether an
+    absent slot_type means "unchanged" or "cleared" (plan section 6.1), so
+    this is always a full replace: any slot_type omitted from ``slots`` is
+    cleared. The two ``real_name_*`` booleans are written through this route
+    rather than ``ProfileUpdateBody``, so one guardian save is one transaction
+    (plan section 6.1).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    real_name_ring1_enabled: bool = False
+    real_name_ring2_enabled: bool = False
+    slots: list[PersonalizationSlotBody] = Field(default_factory=list)
+
+
+class PersonalizationSlotView(BaseModel):
+    """One slot's stored value and ring flags, plus the read-only ceiling."""
+
+    slot_type: str
+    value_text: str | None
+    value_enum: str | None
+    value_profile_id: str | None
+    ring1_enabled: bool
+    ring2_enabled: bool
+    # Derived from the taxonomy ceiling (every slot type except pronoun_set
+    # and dedication), so the UI can grey out what the DB CHECK would reject
+    # anyway rather than reimplementing the ceiling list in TypeScript.
+    ring2_eligible: bool
+
+
+class PersonalizationView(BaseModel):
+    """A profile's full personalization state: the GET and PUT response."""
+
+    real_name_ring1_enabled: bool
+    real_name_ring2_enabled: bool
+    slots: list[PersonalizationSlotView]
+
+
+class Ring2ConsentGrantBody(BaseModel):
+    """A sharer-side guardian's grant, or supersede, of a ring-2 disclosure.
+
+    ``consent_ip`` and ``consent_accepted_at`` are never accepted from the
+    client; the route stamps both server-side, mirroring how
+    ``POST /v1/onboarding`` handles the ADR-018 D1 consent (plan section 6.1).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    family_connection_id: str
+    covered_slot_types: Annotated[list[str], Field(min_length=1)]
+    policy_version: Annotated[str, StringConstraints(max_length=32)]
+    signer_name: Annotated[
+        str, StringConstraints(max_length=200, strip_whitespace=True, min_length=1)
+    ]
+    accepted: Literal[True]
+    # Required true when covered_slot_types includes the sibling slot
+    # (plan section 6.1); enforced in the route handler, not here, since the
+    # rule depends on the sibling slot_type constant from personalization_values.
+    sibling_authority_attested: bool | None = None
+
+
+class Ring2ConsentView(BaseModel):
+    """The result of a ring-2 consent grant or revoke."""
+
+    id: str
+    child_profile_id: str
+    family_connection_id: str | None
+    covered_slot_types: list[str]
+    sibling_authority_attested: bool
+    consent_accepted_at: datetime | None
+    consent_policy_version: str | None
+    consent_signer_name: str | None
+    revoked_at: datetime | None
+
+
+class PersonalizationValuesView(BaseModel):
+    """The resolved values payload for one storybook, at whichever ring applies.
+
+    An empty ``values`` dict is the universal failure mode (plan section 8.4):
+    there is no requested-slot-type filter, and every failure mode (missing
+    subject, receive-toggle off, unconnected family, revoked consent, a
+    deactivated or processing-restricted subject) renders identically as an
+    empty payload rather than a 403, so the route leaks nothing about whether
+    a subject or connection exists (plan sections 8.3-8.5).
+    """
+
+    subject_profile_id: str | None
+    ring: Literal[1, 2] | None
+    policy_version: str | None
+    resolved_at: datetime
+    values: dict[str, str]
+
+
+# ---------------------------------------------------------------------------
 # Error envelope (the wire contract of app.py's exception handlers)
 # ---------------------------------------------------------------------------
 
