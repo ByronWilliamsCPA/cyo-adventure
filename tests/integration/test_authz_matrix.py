@@ -819,10 +819,13 @@ _ROUTE_SPECS: list[RouteSpec] = [
         frozenset({Role.GUARDIAN, Role.ADMIN}),
         path_params=_storybook_path,
     ),
+    # register G6 edit half: admin (cross-family), or guardian for their own
+    # family's story (api/approval.py::_load_review_target, mirroring
+    # node_edit.py::_load_edit_target's role gate + authorize_family below).
     RouteSpec(
         "GET",
         "/api/v1/storybooks/{storybook_id}/review",
-        frozenset({Role.ADMIN}),
+        frozenset({Role.ADMIN, Role.GUARDIAN}),
         path_params=_storybook_path,
     ),
     RouteSpec(
@@ -1074,6 +1077,7 @@ _CROSS_FAMILY_ROUTE_KEYS: list[tuple[str, str]] = [
     ("DELETE", "/api/v1/storybooks/{storybook_id}/assignments/{profile_id}"),
     ("GET", "/api/v1/storybooks/{storybook_id}/content-summary"),
     ("GET", "/api/v1/reading-history/{profile_id}"),
+    ("GET", "/api/v1/storybooks/{storybook_id}/review"),
     ("PATCH", "/api/v1/storybooks/{storybook_id}/versions/{version}/nodes/{node_id}"),
     ("GET", "/api/v1/recommendations/{profile_id}"),
 ]

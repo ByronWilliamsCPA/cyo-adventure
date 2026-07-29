@@ -2,17 +2,17 @@
  * Adapter from the axios instance to the G6 passage-edit API
  * (`PATCH /v1/storybooks/{storybook_id}/versions/{version}/nodes/{node_id}`).
  *
- * Hand-typed like guardian/reviewApi.ts: the generated client in src/client/
- * is not committed and nothing imports it for this endpoint. The success
- * shape mirrors `ReviewSurface` (guardian/reviewApi.ts) exactly, since the
- * backend returns the same refreshed review surface a GET would; this
- * adapter re-exports that type rather than duplicating it so a caller can
- * drop the PATCH result straight into the same state slot as a surface load.
+ * Hand-typed like ./reviewApi.ts: the generated client in src/client/ is not
+ * committed and nothing imports it for this endpoint. The success shape
+ * mirrors `ReviewSurface` (./reviewApi.ts) exactly, since the backend returns
+ * the same refreshed review surface a GET would; this adapter re-exports that
+ * type rather than duplicating it so a caller can drop the PATCH result
+ * straight into the same state slot as a surface load.
  */
 
 import { type AxiosInstance, isAxiosError } from 'axios'
 
-import type { ReviewSurface } from '../guardian/reviewApi'
+import type { ReviewSurface } from './reviewApi'
 
 export type { ReviewSurface }
 

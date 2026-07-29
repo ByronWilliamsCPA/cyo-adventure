@@ -7,6 +7,7 @@ stack, no Docker.
 
 from __future__ import annotations
 
+import dataclasses
 import uuid
 from datetime import UTC, datetime
 from unittest.mock import AsyncMock, MagicMock
@@ -469,10 +470,107 @@ async def test_review_surface_blocks_child() -> None:
     """
     session = AsyncMock(spec=AsyncSession)
     ctx = _ctx("child", session)
-    with pytest.raises(AuthorizationError, match="admin role required"):
+    with pytest.raises(AuthorizationError, match="admin or guardian role required"):
         await approval.get_review_surface("s1", ctx, version=1)
     session.execute.assert_not_awaited()
     session.get.assert_not_awaited()
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_review_surface_blocks_device() -> None:
+    """get_review_surface blocks a device-token principal the same as a child."""
+    session = AsyncMock(spec=AsyncSession)
+    ctx = _ctx("device", session)
+    with pytest.raises(AuthorizationError, match="admin or guardian role required"):
+        await approval.get_review_surface("s1", ctx, version=1)
+    session.execute.assert_not_awaited()
+    session.get.assert_not_awaited()
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_review_surface_guardian_own_family_succeeds() -> None:
+    """A guardian may load the review surface for their own family's story,
+    and (unlike an admin) gets no noise-floor denoising: floor stays None.
+    """
+    family_id = uuid.uuid4()
+    session = AsyncMock(spec=AsyncSession)
+    book = _story("in_review", current=None)
+    book.family_id = family_id
+    version = StorybookVersion(
+        storybook_id=book.id,
+        version=1,
+        blob={"nodes": [{"id": "n1", "body": "Hi."}]},
+        moderation_report={
+            "findings": [],
+            "summary": {
+                "count": 0,
+                "hard_block": False,
+                "soft_flag": False,
+                "repaired": False,
+                "reviewer_independent": True,
+            },
+        },
+    )
+
+    async def _fake_get(model: object, _key: object) -> object | None:
+        return version if model is StorybookVersion else None
+
+    session.execute = AsyncMock(return_value=_execute_result(book))
+    session.get = AsyncMock(side_effect=_fake_get)
+    principal = dataclasses.replace(_principal("guardian"), family_id=family_id)
+    ctx = RequestContext(principal=principal, session=session)
+
+    view = await approval.get_review_surface(book.id, ctx, version=1)
+
+    assert view.version == 1
+    # load_admin_noise_floor must never be reached for a guardian caller: the
+    # ModerationSetting branch of _fake_get is only exercised by an admin.
+    session.get.assert_awaited_once()
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_review_surface_guardian_other_family_rejected() -> None:
+    """A guardian may not load the review surface for another family's story."""
+    session = AsyncMock(spec=AsyncSession)
+    guardian_family = uuid.UUID("11111111-1111-1111-1111-111111111111")
+    story_family = uuid.UUID("22222222-2222-2222-2222-222222222222")
+    guardian = dataclasses.replace(_principal("guardian"), family_id=guardian_family)
+    book = _story("in_review", current=None)
+    book.family_id = story_family  # deterministically distinct from guardian_family
+    session.execute = AsyncMock(return_value=_execute_result(book))
+    ctx = RequestContext(principal=guardian, session=session)
+
+    with pytest.raises(AuthorizationError, match="resource belongs to another family"):
+        await approval.get_review_surface(book.id, ctx, version=1)
+
+    session.get.assert_not_awaited()
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_load_review_target_does_not_lock_row() -> None:
+    """_load_review_target is read-only: unlike _load_admin_story, it must NOT
+    carry SELECT ... FOR UPDATE (no write follows this load).
+    """
+    book = _story("in_review")
+    session = AsyncMock(spec=AsyncSession)
+    session.execute = AsyncMock(return_value=_execute_result(book))
+    ctx = _ctx("admin", session)
+
+    result = await approval._load_review_target(ctx, "s1")
+
+    assert result is book
+    session.execute.assert_awaited_once()
+    stmt = session.execute.await_args.args[0]
+    # Render with the Postgres dialect (mirrors
+    # tests/unit/test_reading_api_unit.py's lock pin): the generic compiler
+    # omits FOR UPDATE clauses entirely, so asserting its absence there would
+    # pass even if the lock leaked in. Render explicitly to catch that.
+    rendered = str(stmt.compile(dialect=postgresql.dialect()))
+    assert "FOR UPDATE" not in rendered
 
 
 @pytest.mark.unit
