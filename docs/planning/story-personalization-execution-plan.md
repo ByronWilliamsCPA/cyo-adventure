@@ -829,10 +829,25 @@ in this stage (subject in caller's family) and an empty payload otherwise; ring 
 Response carries `sentinel_pattern` (the `SENTINEL_RE` pattern string) so the generated client
 never re-derives it (risk R9).
 
-- [ ] TDD steps; RouteSpec rows follow the dataclass at `test_authz_matrix.py:377-398` (copy
+- [x] TDD steps; RouteSpec rows follow the dataclass at `test_authz_matrix.py:377-398` (copy
   the `PATCH /admin/profiles/{id}` row shape at `:445-451`). Empty payload, never 403, on any
   gate miss. Commit, then **regenerate the OpenAPI client in the same commit** (standing
   constraint). (`feat(api): personalization settings, consent, and ring-1 values routes (ADR-023 P5)`).
+
+**DONE 2026-07-29 (commit e9ebe2c5).** 380 integration tests green (personalization API,
+authz matrix, schema parity, event vocab). Deviations recorded: (1) latent production bug
+found and fixed, `pipeline_event.entity_type` is String(32) so the consent entity logs as
+`personalization_consent` (35-char natural label would overflow); both new entity types
+added to the CHECK mirror with parity migration `20260729030000` (idempotent,
+schema-qualified). (2) Local client regeneration injected a `baseURL: localhost:8000` line
+into `client.gen.ts` that CI's static-dump generation never produces; hand-reverted before
+commit. (3) The frontend-eslint/frontend-prettier local hooks failed on ANY commit staging
+the generated client (eslint ignore-warning under --max-warnings=0; client is raw generator
+output by design so never prettier-clean); root-caused and fixed by excluding
+`frontend/src/client/` from both hooks (commit ec60c89b). (4) B5's open item closed:
+display_name on profile create/update now runs structural + bundle checks
+(`api/profiles.py:189-190`). `_RING1_POLICY_VERSION` is a sentinel constant, not a policy
+registry, per plan scope.
 
 ### Task B7: privacy-model classification entries
 
