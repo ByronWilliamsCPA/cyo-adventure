@@ -209,11 +209,11 @@ to the register wholesale. **The debt register remains the source of truth for i
 | UW-B02 | `GS1` Tier-2 generation yield weak at 3/7 | 2b | unscheduled |
 | UW-B03 | `GS3` Perspective sunsets 2026-12-31 with no date gate; 18 of 29 versions mock-moderated. Hard external deadline. | 5 | unscheduled |
 | UW-B04 | `U2`, `U3`, `U4`, `U6`, `U9b` guardian-console UX debt | 4b | unscheduled |
-| UW-B05 | `U5` no guardian reading tracker: likely superseded by G9's shipped `ReadingPage.tsx` | 4b | verify |
+| UW-B05 | `U5` no guardian reading tracker: superseded by G9's shipped `ReadingPage.tsx`. Verified 2026-07-29: `GET /families/me/reading-summary` (`api/reading_history.py`) and `frontend/src/guardian/ReadingPage.tsx` shipped 2026-07-17 in PR #270; capability G9 records it delivered. | 4b | done |
 | UW-B06 | `U7` threshold-change audit feed cannot show who changed it | 5 | unscheduled |
 | UW-B07 | `U9` push channel (delivery is poll-only). The S9/G10 gap is named in prose but has no phase. | 4c | unscheduled |
 | UW-B08 | `T1`, `T4`, `T5`, `T6` test-ladder hygiene | 5 | unscheduled |
-| UW-B09 | `T3` kid RequestStory error-clear only implicitly tested | 4b | unscheduled |
+| UW-B09 | `T3` kid RequestStory error-clear only implicitly tested. Verified 2026-07-29 done: explicit `T3` regression tests at `frontend/src/library/RequestStory.test.tsx:411` and `:433`; debt register's own `U1` row already notes it was pinned by a T3 regression test. | 4b | done |
 | UW-B10 | `T8` no Renovate rule pinning esbuild to Vite's range | CI hygiene | unscheduled |
 | UW-B11 | `T9` whole-repo markdownlint debt. Canonical with issue #248. | CI hygiene | unscheduled |
 | UW-B12 | `P1` app-wide rate-limit **policy** never decided (P9-05 covers the deliverable, not the ruling) | 9 | decision |
@@ -291,7 +291,7 @@ already on the Phase 5 checklist; the Medium and Low tiers are not, and they inc
 |----|------|-------|--------|
 | UW-E01 | `M1` reading and completion routes bypass the assignment gate | 5 | unscheduled |
 | UW-E02 | `M2` guardian blob-fetch skips the gate | 5 | unscheduled |
-| UW-E03 | `M3` repair skips the validator | 5 | unscheduled |
+| UW-E03 | `M3` repair skips the validator. Verified 2026-07-29 stale: `moderation/repair.py:7-12` documents that `moderation/pipeline.py` schema-validates and re-runs `validator.gate.run_gate` on repaired output before it may replace the pre-repair blob, matching capability S4's 2026-07-16 ruling. Distinct from `UW-C04` (`AL-039` fidelity-gate fence gap), which still stands. | 5 | done |
 | UW-E04 | `M4` review-model allowlist | 5 | unscheduled |
 | UW-E05 | `M5` real PII detector | 5 | unscheduled |
 | UW-E06 | `M7` family cost cap on the authoring-plan path | 5 | unscheduled |
@@ -415,7 +415,7 @@ not scheduled: that is its accurate state.
 | UW-J07 | Admin resubmit-for-review button; guardian profile-delete button | persona audit | 4b | unscheduled |
 | UW-J08 | Link request to storybook so "being written" flips; ship the `K19` reflect-back or downgrade its DELIVERED status | persona audit | 4b | unscheduled |
 | UW-J09 | Audit-stamp consistency so self-review is detectable | persona audit | 5 | unscheduled |
-| UW-J10 | Guardian per-child unassign: likely already merged as PR #428 | persona audit | 4b | verify |
+| UW-J10 | Guardian per-child unassign: merged as PR #428. Verified 2026-07-29: `DELETE /storybooks/{storybook_id}/assignments/{profile_id}` implemented at `api/assignments.py:348-351`; capability G8 (`capability-register.md`) records it delivered 2026-07-27 with the `AssignChildrenDialog.tsx` Remove control. | persona audit | 4b | done |
 | UW-J11 | Guardian-defined book groups by age or topic; catalog-trunk-branch admin notification (unresolved); prompt-adjustment suggestions in the dashboard | lifecycle redesign | 4c | unscheduled |
 | UW-J12 | ADR-015 consent-time budget semantics (quota debit, per-child pre-auth envelopes); the two-step approve-then-publish audit split; `family_connections` has no consumer widening child visibility | authorization matrix | 4c | unscheduled |
 | UW-J13 | Authorization matrix missing rows for families, provider-allowlist, moderation-thresholds, and cover-generate | traceability | doc | unscheduled |
