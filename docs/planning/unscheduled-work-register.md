@@ -192,8 +192,9 @@ Decisions that were accepted or proposed, whose consequent work was never schedu
 | UW-A37 | Consolidate cover storage into Supabase Storage if blobs externalize (conditional on UW-A38) | 017 | 9 | unscheduled |
 | UW-A38 | `blob_ref` object-storage externalization, and the MinIO leg. Named in PROJECT-PLAN prose only; absent from the roadmap Phase 5 checklist. | 001, 004 | 9 | unscheduled |
 | UW-A39 | ADR-018 Blocker 1 narrowed to the classifier leg, not closed | 018 | 7 | unscheduled |
-| UW-A40 | **Doc hygiene**: ADR-007 is still `proposed` though its purge shipped 2026-07-17; ADR-021 is still `proposed` though PR #323 merged. Flip both. | 007, 021 | now | done |
+| UW-A40 | **Doc hygiene**: ADR-007 is still `proposed` though its purge shipped 2026-07-17; ADR-021 is still `proposed` though its implementation shipped in PR #333 and PR #334 (PR #323 was docs-only and did not flip the status itself). Flip both. | 007, 021 | now | done |
 | UW-A41 | **Doc hygiene**: PROJECT-PLAN.md section 3's ADR table and the ADR status list omit ADR-020 through ADR-024. Corrected by the 2026-07-28 audit in commit `bcfc9ab`; keep them in sync going forward. | all | now | done |
+| UW-A42 | **Doc hygiene**: backfill a **Follow-on work** section into all 24 ADRs that predate the [`adr/README.md`](./adr/README.md#follow-on-work-is-part-of-the-adr-required-for-new-and-amended-adrs) rule requiring one, so the register can be reconciled against ADR-declared consequences rather than only against this cluster's own manual sourcing. | all | post-launch | unscheduled |
 
 ## Cluster B: debt-register phase linkage
 
@@ -471,7 +472,7 @@ Work this repository cannot complete on its own.
 
 | ID | Item | Owner | Status |
 |----|------|-------|--------|
-| UW-M01 | Rebuild and redeploy the `:staging` backend and worker from at least `b29aa6b`, then re-run `e2e-staging.yml`. Per [handoff-staging-stale-backend-image-2026-07-21.md](./handoff-staging-stale-backend-image-2026-07-21.md). Verified 2026-07-28, not satisfied: `e2e-staging.yml` run [30364118803](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/30364118803) (same-day, scheduled) still shows the identical 4-passed/2-failed split as the 2026-07-21 handoff, same two specs (`guardian-admin-smoke.spec.ts:34`, `kid-library-smoke.spec.ts:75`), same guardian-console-not-rendering symptom. Every run since 2026-07-18 has failed the same way; the redeploy has not landed or did not resolve it. | homelab-infra | unscheduled |
+| UW-M01 | Rebuild and redeploy the `:staging` backend and worker from at least `b29aa6b`, then re-run `e2e-staging.yml`. Per the now-deleted `handoff-staging-stale-backend-image-2026-07-21.md` (untracked local handoff, removed once its one ask was verified; see the "Deletion and archive candidates" table). Verified 2026-07-28, not satisfied: `e2e-staging.yml` run [30364118803](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/30364118803) (same-day, scheduled) still shows the identical 4-passed/2-failed split as the 2026-07-21 handoff, same two specs (`guardian-admin-smoke.spec.ts:34`, `kid-library-smoke.spec.ts:75`), same guardian-console-not-rendering symptom. Every run since 2026-07-18 has failed the same way; the redeploy has not landed or did not resolve it. | homelab-infra | unscheduled |
 | UW-M02 | Naive-user session with real children. Gates UW-I01, UW-I02, and 15 unrun Track B scenarios. | project owner | blocked |
 | UW-M03 | Counsel engagement: ADR-018 D1-D4, ADR-016 ring-2 granularity, ADR-023 OD-1 and OD-5. Long lead time; the roadmap already flags that this should start now. | project owner | decision |
 | UW-M04 | OpenRouter DPA execution (privacy-model Blocker 1a) | project owner | decision |
@@ -488,7 +489,6 @@ have to re-derive them.
 | Document | Disposition |
 |----------|-------------|
 | `handoff-homelab-infra-dev-environment-2026-07-16.md` | Delete. All three asks confirmed done by its own successor handoff. |
-| `handoff-staging-stale-backend-image-2026-07-21.md` | Delete once UW-M01 is verified. Currently untracked in git, so deleting costs nothing. |
 | `handoff-authoring-lessons-and-story-quality-2026-07-27.md` | Trim, do not delete. Sections 3 and 4 are obsolete after PR #416; 5, 7, and 9 are live. |
 | `handoff-s4-catalog-remaining-2026-07-26.md`, `handoff-s5-reader-ux-remaining-2026-07-26.md` | Keep until their contents land in a phase. They are the only written specs for that work. |
 | `story-diversity-remediation-plan.md`, `story-diversity-execution-plan.md` | Superseded by plan-v2, already banner-marked. Do not track from them; `D*` and `M*` IDs are dead. |

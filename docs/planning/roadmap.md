@@ -219,7 +219,8 @@ next section.
 
 A six-agent sweep of every ADR, handoff doc, workstream design doc, review report, register, code
 marker, and open GitHub issue looked for one thing: work that some document **directs** but no
-document **schedules**. It found roughly 250 such items. All of them now have a stable `UW-*` ID and
+document **schedules**. It found roughly 250 such items before consolidation; deduplicating
+overlapping findings from different agents brought the register to 217 rows. All of them now have a stable `UW-*` ID and
 a proposed phase in the [unscheduled work register](./unscheduled-work-register.md), which is the
 placeholder mechanism this section refers to throughout. Item-level detail lives there; this section
 records only what the sweep changes about the plan itself.
