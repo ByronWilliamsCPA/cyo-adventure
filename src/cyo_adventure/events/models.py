@@ -89,8 +89,10 @@ class EventType(StrEnum):
     CELL_SATURATED = "cell_saturated"
     # ADR-023 P3/P4 (story personalization): a guardian flips one
     # personalization slot on or off, or edits its value, for a child profile
-    # (api/personalization.py, not yet wired at the time this event type was
-    # added). The payload carries only the closed-vocabulary slot_type, the
+    # (emitted by api/personalization.py::put_personalization). The type was
+    # added ahead of its writer, so an earlier revision of this comment said
+    # "not yet wired"; the writer landed in the same change that introduced
+    # the endpoint. The payload carries only the closed-vocabulary slot_type, the
     # ring (1 or 2) it was scoped to, and the action taken; never the actual
     # value (a child's name, a pet's name, etc.), per spec D3. See
     # events/writer.py's allowlist for this type.

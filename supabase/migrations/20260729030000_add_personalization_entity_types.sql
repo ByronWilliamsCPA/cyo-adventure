@@ -32,17 +32,26 @@
 -- acting), mirroring 20260729020000_add_personalization_event_types.sql, so
 -- it is a no-op if applied a second time or if the constraint already
 -- includes its new values.
+-- Converge on the widened CHECK from any starting state. The guard is
+-- three-way on purpose:
+--   already widened -> do nothing (the re-run case this guard exists for);
+--   present but narrow -> drop and re-add;
+--   absent entirely -> add it.
+-- An earlier revision tested only "present but narrow", so a database that
+-- had lost the constraint silently stayed unconstrained: the migration
+-- reported success while leaving entity_type accepting anything at all.
+-- Skipping work you were asked to do is not idempotency.
 DO $$
 BEGIN
-    IF EXISTS (
+    IF NOT EXISTS (
         SELECT 1
         FROM pg_constraint
         WHERE conname = 'ck_pipeline_event_entity_type'
           AND conrelid = '"public"."pipeline_event"'::regclass
-          AND pg_get_constraintdef(oid) NOT LIKE '%''personalization_consent''%'
+          AND pg_get_constraintdef(oid) LIKE '%''personalization_consent''%'
     ) THEN
         ALTER TABLE "public"."pipeline_event"
-            DROP CONSTRAINT "ck_pipeline_event_entity_type";
+            DROP CONSTRAINT IF EXISTS "ck_pipeline_event_entity_type";
         ALTER TABLE "public"."pipeline_event"
             ADD CONSTRAINT "ck_pipeline_event_entity_type"
             CHECK ((("entity_type")::"text" = ANY ((ARRAY['story_request'::character varying, 'generation_job'::character varying, 'storybook'::character varying, 'storybook_version'::character varying, 'series'::character varying, 'storybook_assignment'::character varying, 'rating'::character varying, 'moderation_threshold'::character varying, 'moderation_setting'::character varying, 'kid_flag'::character varying, 'user'::character varying, 'family'::character varying, 'family_connection'::character varying, 'child_profile'::character varying, 'child_profile_personalization'::character varying, 'personalization_consent'::character varying])::"text"[])));

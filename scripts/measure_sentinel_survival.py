@@ -307,7 +307,11 @@ def _write_fill(
         fills_dir: The ``fills/`` directory under this run's output dir;
             created on demand (only when at least one fill is written).
         index: This trial's position in the overall trial sequence, used as
-            the filename's sortable prefix.
+            the filename's sortable prefix. Zero-padded to three digits so
+            lexicographic order matches trial order: the reader
+            (``prototype_sentinel_reinsertion._analyze_fills``) enumerates
+            fills with ``sorted(glob(...))``, and an unpadded prefix would
+            sort trial 10 ahead of trial 2.
         provider_name: The provider name this trial ran against.
         specimen: The specimen this trial filled.
         storybook: The exact filled document ``classify_fill`` scored.
@@ -320,7 +324,7 @@ def _write_fill(
         "bound_skeleton": specimen.bound_skeleton,
         "filled_storybook": storybook,
     }
-    filename = f"{index}-{provider_name}-{specimen.slug}.json"
+    filename = f"{index:03d}-{provider_name}-{specimen.slug}.json"
     (fills_dir / filename).write_text(
         json.dumps(payload, indent=2) + "\n", encoding="utf-8"
     )

@@ -654,6 +654,82 @@ async def test_values_ring1_happy_path(
     assert body["values"]["pet_name"] == "Waffles"
 
 
+@pytest.mark.parametrize(
+    ("deactivated", "restricted"),
+    [(True, False), (False, True)],
+    ids=["deactivated", "processing_restricted"],
+)
+async def test_ring1_sibling_name_is_dropped_when_the_sibling_is_not_live(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    deactivated: bool,
+    restricted: bool,
+) -> None:
+    """A deactivated or Article-18-restricted sibling's name must not render.
+
+    `_is_live` documents its contract as "in either ring", but ring 1 resolved
+    the sibling through `_family_profile_ids`, which constrains the referenced
+    profile to the same family and says nothing about liveness. Ring 2 already
+    gated on it, so the subject's own family was the weaker boundary: exactly
+    backwards. Both non-live states are exercised because they are separate
+    columns and a fix that reads only one of them looks correct.
+    """
+    async with sessions() as session:
+        fam = Family(name="Ring1 Sibling Liveness Family")
+        session.add(fam)
+        await session.flush()
+        subject = ChildProfile(
+            family_id=fam.id, display_name="Ring1 Subject", age_band="10-13"
+        )
+        sibling = ChildProfile(
+            family_id=fam.id,
+            display_name="Not Live Sibling",
+            age_band="10-13",
+            deactivated_at=datetime.now(UTC) if deactivated else None,
+            processing_restricted_at=datetime.now(UTC) if restricted else None,
+        )
+        session.add_all([subject, sibling])
+        await session.flush()
+        session.add_all(
+            [
+                ChildProfilePersonalization(
+                    child_profile_id=subject.id,
+                    slot_type="sibling_name",
+                    value_profile_id=sibling.id,
+                    ring1_enabled=True,
+                ),
+                # A second, unaffected slot. Without it the payload would be
+                # empty and `_resolve_ring1_view` would return the universal
+                # empty view (ring None), so the test would pass even if the
+                # whole request had collapsed. This pins that exactly one
+                # slot is dropped.
+                ChildProfilePersonalization(
+                    child_profile_id=subject.id,
+                    slot_type="pet_name",
+                    value_text="Waffles",
+                    ring1_enabled=True,
+                ),
+            ]
+        )
+        await _guardian(session, fam.id, "ring1-liveness-guardian")
+        await session.flush()
+        book = await _storybook(session, fam.id, subject.id)
+        await session.commit()
+        book_id = book.id
+
+    resp = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth("ring1-liveness-guardian"),
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["ring"] == 1
+    assert body["values"]["pet_name"] == "Waffles"
+    assert "sibling_name" not in body["values"], (
+        "a non-live sibling's real name reached a ring-1 payload"
+    )
+
+
 async def test_values_unconnected_family_empty(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:

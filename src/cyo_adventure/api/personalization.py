@@ -631,6 +631,12 @@ async def grant_ring2_consent(
         entity_id=str(row.id),
         event_type=EventType.RING2_CONSENT_GRANTED,
         payload={
+            # Deliberately `connection.family_id`, not
+            # `connection.connected_family_id`. This payload key means "the
+            # family being disclosed to", and on a FamilyConnection the
+            # viewer is `family_id` while the sharer is `connected_family_id`
+            # (see this module's header). The two names collide and mean
+            # opposite things; the audit record wants the counterparty.
             "connected_family_id": str(connection.family_id),
             "slot_type_count": len(body.covered_slot_types),
         },
@@ -913,7 +919,18 @@ async def _ring1_values(session: AsyncSession, subject: ChildProfile) -> dict[st
             continue
         if row.slot_type == SIBLING_SLOT_TYPE and isinstance(rendered, uuid.UUID):
             sibling = await session.get(ChildProfile, rendered)
-            if sibling is not None:
+            # #CRITICAL: security: `_is_live` covers deactivation and the
+            # Article-18 processing restriction, and its contract is "in
+            # either ring" (see its docstring). `_family_profile_ids` only
+            # constrains the sibling to the same family, not to a live
+            # profile, so without this check a deactivated or restricted
+            # child's real name keeps flowing into a sibling's stories,
+            # which is exactly what deactivation is asked to stop. The ring-2
+            # path (`_ring2_sibling_value`) already gates on it; ring 1 is
+            # not a weaker boundary for the subject's own siblings.
+            # #VERIFY: tests/integration/test_personalization_api.py::
+            # test_ring1_sibling_name_is_dropped_when_the_sibling_is_not_live
+            if sibling is not None and _is_live(sibling):
                 values[row.slot_type] = sibling.display_name
             continue
         if isinstance(rendered, uuid.UUID):
