@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.42.0] - 2026-07-29
+
+### Features
+
+- **admin**: Render the pending cover and an approve action on review (A16)
+  ([#471](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/471),
+  [`584a8a5`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/584a8a57815027f915af0f8c5ca14f786a08123c))
+
+
 ## [0.41.0] - 2026-07-29
 
 ### Features
@@ -2773,6 +2782,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.42.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.41.0...v0.42.0
 [0.41.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.40.2...v0.41.0
 [0.40.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.40.1...v0.40.2
 [0.40.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.40.0...v0.40.1
