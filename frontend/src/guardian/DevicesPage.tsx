@@ -21,6 +21,29 @@ type PageState =
 const LOAD_ERROR = 'We could not load your family’s devices. Please reload.'
 const REVOKE_ERROR = 'That did not go through. Please try again.'
 
+/**
+ * How long an already-open reading session can outlive its device grant's
+ * revocation, in hours.
+ *
+ * This is not a UI choice. Revoking clears the DEVICE token (the backend's
+ * `revoke_device_grant` sets `revoked_at`, and `api/deps.py::_child_principal`'s
+ * sibling `_device_principal` rejects a revoked grant on the next request), so
+ * the device cannot mint a NEW child reading session. But a child session token
+ * already minted is backend-signed and self-contained: `_child_principal` does
+ * no database round-trip and the token carries no reference to the grant that
+ * minted it, so it keeps authenticating until it expires on its own. That
+ * lifetime is `child_session_ttl_seconds` in `core/config.py`, which defaults to
+ * 43_200 seconds, i.e. 12 hours. See ADR-014 "Negative / risks" and UW-A43 in
+ * the unscheduled work register for the durable fix.
+ *
+ * #ASSUME: security: the guardian-facing copy below states the DEPLOYED
+ * CHILD_SESSION_TTL_SECONDS, which this constant mirrors by hand because the
+ * frontend never reads backend settings.
+ * #VERIFY: update this constant whenever CHILD_SESSION_TTL_SECONDS changes, or
+ * the copy will overstate or understate how long revocation takes to bite.
+ */
+const CHILD_SESSION_MAX_HOURS = 12
+
 async function loadDevices(
   deviceGrantApi: DeviceGrantApi,
   cancelled: () => boolean,
@@ -170,8 +193,9 @@ export function DevicesPage() {
       <h1>Devices</h1>
       <p className="devices__intro cyo-text-muted">
         Every device authorized for your family shows up here. Revoking a device stops it from
-        reading as your kids the next time it connects; a device that is currently offline keeps
-        working until it reconnects.
+        starting any new reading sessions right away. If one of your kids is already reading on that
+        device, that session is not cut off: it can keep going for up to {CHILD_SESSION_MAX_HOURS}{' '}
+        hours, until it runs out on its own.
       </p>
       {devices.length === 0 ? (
         <EmptyState
@@ -209,8 +233,9 @@ export function DevicesPage() {
           }
         >
           <p>
-            {confirming.label ?? 'This device'} will not be able to read as your kids the next time
-            it connects.
+            {confirming.label ?? 'This device'} will not be able to start a new reading session. A
+            reading session already open on it can keep going for up to {CHILD_SESSION_MAX_HOURS}{' '}
+            hours, until it runs out on its own.
           </p>
         </Dialog>
       ) : null}

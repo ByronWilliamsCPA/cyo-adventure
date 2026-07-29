@@ -49,6 +49,22 @@ describe('DevicesPage', () => {
     expect(await screen.findByText('No devices authorized yet')).toBeInTheDocument()
   })
 
+  it('tells the guardian revocation stops new sessions but not an open one', async () => {
+    // Pins the corrected copy against the actual backend behavior: revoking
+    // clears the DEVICE token immediately, but `api/deps.py::_child_principal`
+    // does no database round-trip, so a child session already minted on that
+    // device authenticates for the rest of its 12-hour TTL
+    // (`child_session_ttl_seconds`). Reconnecting is NOT the cut-off event.
+    // See ADR-014 "Negative / risks" and UW-A43.
+    mockGet.mockResolvedValue({ data: [] })
+    renderPage()
+
+    const intro = await screen.findByText(/Every device authorized for your family/)
+    expect(intro).toHaveTextContent(/stops it from starting any new reading sessions right away/)
+    expect(intro).toHaveTextContent(/keep going for up to 12 hours/)
+    expect(intro).not.toHaveTextContent(/next time it connects/)
+  })
+
   it('renders each granted device with its label and grant date', async () => {
     mockGet.mockResolvedValue({ data: [KITCHEN_TABLET] })
     renderPage()
@@ -105,7 +121,9 @@ describe('DevicesPage', () => {
     await user.click(screen.getByRole('button', { name: 'Revoke' }))
 
     const dialog = await screen.findByRole('dialog', { name: 'Revoke this device?' })
-    expect(within(dialog).getByText(/Kitchen tablet will not be able to read/)).toBeInTheDocument()
+    expect(
+      within(dialog).getByText(/Kitchen tablet will not be able to start a new reading session/)
+    ).toBeInTheDocument()
 
     await user.click(within(dialog).getByRole('button', { name: 'Revoke' }))
 
