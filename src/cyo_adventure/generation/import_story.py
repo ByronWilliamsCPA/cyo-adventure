@@ -84,6 +84,10 @@ class ImportRequest:
             skill-authored versions too (WS-C PR2 final review I1: the
             recency-weighted pick reads this column, so a NULL here silently
             exempts skill-authored families from that weighting).
+        sentinel_manifest: The manifest the pre-persist reinsertion transform
+            produced for ``blob``, threaded into ``StorybookParams`` so this
+            path records the same at-rest evidence the automated fill path
+            does (ADR-023 Task R3). None for a caller that ran no transform.
     """
 
     family_id: uuid.UUID
@@ -93,6 +97,7 @@ class ImportRequest:
     prompt_version: str = "skeleton-fill-v1"
     review_model_override: str | None = None
     skeleton_slug: str | None = None
+    sentinel_manifest: dict[str, object] | None = None
 
 
 async def import_filled_story(
@@ -160,6 +165,7 @@ async def import_filled_story(
         provider=_IMPORT_PROVIDER,
         validation_report=result.report.to_dict(),
         skeleton_slug=request.skeleton_slug,
+        sentinel_manifest=request.sentinel_manifest,
     )
     await persist_storybook(session, params)
 
@@ -558,7 +564,7 @@ class _ResumeSentinelReinsertionContext:
 
 async def _reinsert_and_verify_resume_sentinels(
     session: AsyncSession, ctx: _ResumeSentinelReinsertionContext
-) -> dict[str, object]:
+) -> tuple[dict[str, object], dict[str, object]]:
     """Derive the pre-persist blob via reinsertion and verify it fails closed.
 
     Extracted from :func:`resume_manual_fill` (ADR-023 Stage R / Task R3) to
@@ -576,8 +582,13 @@ async def _reinsert_and_verify_resume_sentinels(
             :class:`_ResumeSentinelReinsertionContext`).
 
     Returns:
-        dict[str, object]: The transform's derived document, to replace
-        ``blob`` in the caller.
+        tuple[dict[str, object], dict[str, object]]: The transform's derived
+        document, to replace ``blob`` in the caller, and the manifest it
+        produced, which the caller threads to ``persist_storybook`` so
+        ``storybook_version.sentinel_manifest`` records what this path
+        actually re-inserted (ADR-023 Task R3). The manifest is derived here
+        and nowhere else on this path, so dropping it would leave the column
+        NULL for every skill-authored version.
 
     Raises:
         ValidationError: If the transform fails its own manifest (a
@@ -652,7 +663,7 @@ async def _reinsert_and_verify_resume_sentinels(
                 details={"sentinel_integrity_violations": violation_details},
             )
 
-    return document
+    return document, reinsertion_outcome.manifest
 
 
 async def resume_manual_fill(
@@ -884,12 +895,17 @@ async def resume_manual_fill(
     # tests/unit/test_resume_manual_fill_sentinel_integrity.py.
     reference_skeleton: dict[str, object] | None = None
     reference_error: str | None = None
+    # Stays None when no transform ran (no skeleton_slug, an unreadable
+    # skeleton, or an uncomputable reference): the column then honestly
+    # records "nothing was re-inserted here" rather than an empty manifest
+    # that would read as "the transform ran and found nothing".
+    sentinel_manifest: dict[str, object] | None = None
     if skeleton_slug is not None and original_skeleton is not None:
         reference_skeleton, reference_error = _stage1_reference_skeleton(
             band, skeleton_slug, original_skeleton, job
         )
         if reference_skeleton is not None:
-            blob = await _reinsert_and_verify_resume_sentinels(
+            blob, sentinel_manifest = await _reinsert_and_verify_resume_sentinels(
                 session,
                 _ResumeSentinelReinsertionContext(
                     job=job,
@@ -908,6 +924,7 @@ async def resume_manual_fill(
         model=model,
         review_model_override=review_stage2_model,
         skeleton_slug=skeleton_slug,
+        sentinel_manifest=sentinel_manifest,
     )
     try:
         story_id = await import_filled_story(

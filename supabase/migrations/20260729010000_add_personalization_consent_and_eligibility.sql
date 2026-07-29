@@ -101,4 +101,4 @@ ALTER TABLE "public"."storybook_version"
     ADD COLUMN IF NOT EXISTS sentinel_manifest JSONB;
 
 COMMENT ON COLUMN "public"."storybook_version"."sentinel_manifest" IS
-    'Stage R re-scope: the per-node token multiset that deterministic re-insertion actually produced (storybook/reinsertion.py build_manifest), written at re-insertion time, NOT a contract-prescribed expectation. Keyed {"tokens": {<node_id>: [...], "<node_id>::ending_title": [...]}}. Rescreen and at-rest checks read this column rather than re-deriving expectations from the contract; node-edit/repair adoption update it in place.';
+    'Stage R re-scope: the per-node token multiset that deterministic re-insertion actually produced (storybook/reinsertion.py build_manifest), stamped at persist time by generation/persistence.py persist_storybook, NOT a contract-prescribed expectation. Keyed {"tokens": {<node_id>: [...], "<node_id>::ending_title": [...]}}. NULL means no transform ran for this version, not that the transform found nothing. No reader yet: rescreen and the at-rest checks still re-derive expectations from the contract; repointing them here is the remaining half of Task R3.';

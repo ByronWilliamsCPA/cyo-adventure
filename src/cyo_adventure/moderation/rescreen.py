@@ -233,9 +233,13 @@ def _newly_surfaced_reasons(surfaced: list[Finding]) -> list[str]:
 # was formerly a contract-free, hand-rolled subset of
 # `check_sentinel_integrity_at_rest` that could not check a well-formed
 # sentinel's slot id against the declared set (the `unknown_slot` check); now
-# that the manifest/contract this file's comment used to defer to has
-# landed (Task R3), this calls the full `check_sentinel_integrity_at_rest`
-# directly.
+# that the per-book CONTRACT this file's comment used to defer to is
+# recoverable (Task R3), this calls the full `check_sentinel_integrity_at_rest`
+# directly. Note what this does NOT read: the version's
+# `sentinel_manifest` column. That column is now written but has no reader
+# yet, so this path still derives its expectations from the contract;
+# repointing it is the remaining half of Task R3 (see the column's comment
+# in db/models.py).
 # #VERIFY: tests/unit/test_rescreen_unit.py::
 # test_malformed_sentinel_flags_rescreen,
 # ::test_sentinel_in_choice_label_flags_rescreen, and

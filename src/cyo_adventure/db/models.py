@@ -960,12 +960,22 @@ class StorybookVersion(CreatedAtMixin, Base):
     )
     # Stage R re-scope (Task R3): the per-node token multiset that
     # deterministic re-insertion actually produced
-    # (storybook/reinsertion.py::build_manifest), written at re-insertion
-    # time -- NOT a contract-prescribed expectation. Keyed
+    # (storybook/reinsertion.py::build_manifest), stamped at persist time
+    # from the transform that ran pre-persist. NOT a contract-prescribed
+    # expectation. Keyed
     # {"tokens": {<node_id>: [...], "<node_id>::ending_title": [...]}}.
-    # Rescreen and at-rest checks read this column so they never re-derive
-    # expectations from the contract; node-edit/repair adoption replace a
-    # node's entry in place when its body changes.
+    # NULL means no transform ran for this version (a sentinel-free import,
+    # or a resume whose reference skeleton could not be computed), not "the
+    # transform found nothing".
+    #
+    # WRITTEN by generation/persistence.py::persist_storybook, the single
+    # write path both fill routes share. NOT YET READ: rescreen
+    # (moderation/rescreen.py) and the other at-rest checks still re-derive
+    # their expectations from the contract, which is the prescriptive
+    # semantics Stage R set out to replace; repointing them at this column,
+    # and updating a node's entry in place on node-edit/repair adoption, is
+    # the remaining half of Task R3. Do not describe those reads as existing
+    # until they do.
     sentinel_manifest: Mapped[dict[str, object] | None] = mapped_column(
         JSONB, default=None
     )

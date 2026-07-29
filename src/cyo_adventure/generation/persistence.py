@@ -49,6 +49,11 @@ class StorybookParams:
         skeleton_slug: The production skeleton this version was filled from,
             or None for fresh_generation/import (WS-C PR2).
         validation_report: Optional gate report stored on the version.
+        sentinel_manifest: The token multiset the strip-all-then-reinsert
+            transform actually produced for this blob
+            (``storybook/reinsertion.py::build_manifest``), or None for any
+            path that ran no transform (a sentinel-free import, or a resume
+            whose reference skeleton could not be computed). ADR-023 Task R3.
         status: Storybook lifecycle status (default ``"draft"``).
         version: Version number (default 1).
     """
@@ -62,6 +67,7 @@ class StorybookParams:
     provider: str | None = None
     skeleton_slug: str | None = None
     validation_report: dict[str, object] | None = None
+    sentinel_manifest: dict[str, object] | None = None
     status: str = "draft"
     version: int = _FIRST_VERSION
 
@@ -100,6 +106,11 @@ async def persist_storybook(session: AsyncSession, params: StorybookParams) -> s
     _check_byte_budget(stamped, field="blob")
     if params.validation_report is not None:
         _check_byte_budget(params.validation_report, field="validation_report")
+    # The manifest only names tokens that occur in the blob, so it cannot
+    # exceed a blob that already passed; this is a backstop against a future
+    # caller passing an unrelated dict, not a limit expected to fire.
+    if params.sentinel_manifest is not None:
+        _check_byte_budget(params.sentinel_manifest, field="sentinel_manifest")
 
     storybook_row = Storybook(
         id=params.story_id,
@@ -119,6 +130,17 @@ async def persist_storybook(session: AsyncSession, params: StorybookParams) -> s
         prompt_version=params.prompt_version,
         provider=params.provider,
         skeleton_slug=params.skeleton_slug,
+        # #CRITICAL: data integrity: this is the ONLY write to
+        # storybook_version.sentinel_manifest. The transform that derives it
+        # runs pre-persist on both fill paths and its result exists in memory
+        # only; if it is not stamped here it is gone, and every at-rest
+        # integrity check downstream is left re-deriving expectations from the
+        # contract, which is exactly the prescriptive semantics Stage R
+        # replaced. A NULL here is legitimate (no transform ran); a NULL after
+        # a transform ran is silent evidence loss.
+        # #VERIFY: tests/unit/test_persistence.py::
+        # test_persist_records_the_sentinel_manifest.
+        sentinel_manifest=params.sentinel_manifest,
     )
     session.add(version_row)
     await session.flush()

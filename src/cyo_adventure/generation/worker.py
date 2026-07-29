@@ -1475,6 +1475,7 @@ async def _persist_and_moderate(
             provider=_provider_label(ctx.effective_provider),
             skeleton_slug=_skeleton_slug_of(ctx.authoring),
             validation_report=dict(outcome.report),
+            sentinel_manifest=outcome.sentinel_manifest,
             version=_FIRST_VERSION,
         ),
     )

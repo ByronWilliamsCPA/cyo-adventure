@@ -120,9 +120,12 @@ class GenerationOutcome:
             shape) for `storybook`, when the skeleton-fill path ran the
             ADR-023 Stage R reinsertion transform; ``None`` for every other
             caller (:func:`generate_story`, the legacy no-sidecar fill
-            path). Carried in memory only for now: the persisted DB column
-            is a later phase (Task B2), so this field is never written to
-            storage by this module.
+            path). This module never touches storage; the field is carried
+            so ``generation/worker.py`` can hand it to
+            ``persist_storybook``, which stamps it onto
+            ``storybook_version.sentinel_manifest``. A ``None`` here
+            therefore persists as a NULL column, meaning "no transform ran",
+            not "the transform found nothing".
     """
 
     status: Literal["passed", "needs_review", "failed"]
