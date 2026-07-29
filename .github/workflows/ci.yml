@@ -556,6 +556,48 @@ jobs:
       - name: In-cell clone audit (A8)
         run: uv run python scripts/check_incell_clones.py --check
 
+  # The ER diagram is documentation that gets read as if it were the schema, so
+  # a silent disagreement with the ORM is worse than having no diagram at all.
+  # Deliberately NOT folded into docs.yml: that workflow is path-filtered on
+  # `docs/**`, which would miss the exact case this gate exists for, a models.py
+  # change that leaves the diagram untouched and therefore stale. Runs
+  # unconditionally (including merge_group) because it is a couple of seconds of
+  # pure Python with no network and no database.
+  schema-docs:
+    name: ER Diagram Drift
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+
+      # The check reads `Base.metadata` only. The `api` extra supplies
+      # SQLAlchemy, which is all that `cyo_adventure.db.models` needs to
+      # import; no engine is created and no connection is opened.
+      - name: Install backend (api extra)
+        run: uv sync --extra api
+
+      - name: ER diagram matches the ORM (and both Mermaid copies agree)
+        run: uv run python scripts/check_er_diagram.py
+
   # Uploads the backend's per-test-type coverage + JUnit to Codecov, INLINE so
   # it runs on PRs (the old workflow_run codecov.yml only ran on main). The
   # reusable `ci` job publishes coverage-{unit,integration,security}.xml and
@@ -872,7 +914,7 @@ jobs:
     name: CI Gate
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [detect-release-pr, ci, frontend, frontend-e2e, design-system, contract]
+    needs: [detect-release-pr, ci, frontend, frontend-e2e, design-system, contract, schema-docs]
     if: always()
     permissions:
       contents: read
@@ -891,6 +933,7 @@ jobs:
           FRONTEND_E2E_RESULT: ${{ needs.frontend-e2e.result }}
           DESIGN_SYSTEM_RESULT: ${{ needs.design-system.result }}
           CONTRACT_RESULT: ${{ needs.contract.result }}
+          SCHEMA_DOCS_RESULT: ${{ needs.schema-docs.result }}
         run: |
           # A release-automation PR (see detect-release-pr) intentionally
           # skips ci/frontend/frontend-e2e/design-system/contract entirely --
@@ -909,6 +952,10 @@ jobs:
           [ "$FRONTEND_E2E_RESULT" != "success" ] && [ "$FRONTEND_E2E_RESULT" != "skipped" ] && FAILED=true
           [ "$DESIGN_SYSTEM_RESULT" != "success" ] && [ "$DESIGN_SYSTEM_RESULT" != "skipped" ] && FAILED=true
           [ "$CONTRACT_RESULT" != "success" ] && [ "$CONTRACT_RESULT" != "skipped" ] && FAILED=true
+          # schema-docs carries no job-level `if:`, so unlike the jobs above it
+          # never legitimately reports "skipped"; the "skipped" arm below is
+          # defensive symmetry only.
+          [ "$SCHEMA_DOCS_RESULT" != "success" ] && [ "$SCHEMA_DOCS_RESULT" != "skipped" ] && FAILED=true
           if [ "$FAILED" = "true" ]; then
             echo "CI Gate failed"
             exit 1

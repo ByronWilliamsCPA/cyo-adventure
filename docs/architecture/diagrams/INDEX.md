@@ -53,6 +53,7 @@ cataloged in [../story-skeletons.md](../story-skeletons.md).
 | Diagram | Files | Primary sources | Description |
 | ------- | ----- | --------------- | ----------- |
 | ER Diagram | [er-diagram.puml](er-diagram.puml) / [.svg](er-diagram.svg) | `db/models.py` | All 22 ORM tables and FK relationships |
+| ER Diagram (Mermaid) | [er-diagram.mmd](er-diagram.mmd), embedded in [../data-model.md](../data-model.md) | `db/models.py` | Same 22 tables/relationships as `er-diagram.puml`, in Mermaid for inline rendering on GitHub. Hand-maintained companion, not covered by `tools/generate_diagram_svgs.py`; update alongside `er-diagram.puml` when the schema changes. |
 
 ## Deployment and routing
 
