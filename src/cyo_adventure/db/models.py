@@ -49,6 +49,7 @@ _FK_CONCEPT = "concept.id"
 _FK_SERIES = "series.id"
 _FK_STORYBOOK_VERSION_STORYBOOK_ID = "storybook_version.storybook_id"
 _FK_STORYBOOK_VERSION_VERSION = "storybook_version.version"
+_FK_FAMILY_CONNECTION = "family_connection.id"
 
 # ON DELETE action, named once to avoid duplicated string literals.
 _ONDELETE_SET_NULL = "SET NULL"
@@ -236,6 +237,17 @@ class Family(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # reactivating a family does NOT auto-reactivate its members (deliberate
     # asymmetry: an admin reactivates people individually).
     deactivated_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    # ADR-023 P4 / design plan 8.6: the viewer-side receive switch. Defaults
+    # True because signing this family's own FamilyConnection consent already
+    # implies willingness to receive personalized content from that
+    # connection; this is a persistent per-family opt-OUT, not an opt-in, and
+    # is evaluated viewer-side before any sharer-side lookup (8.4 condition
+    # 0). Deliberately not an evidentiary consent record: no signature, no
+    # policy version, just a stored preference, matching 8.6's "a notice
+    # fixes surprise; a signature would not fix it any better".
+    personalization_receive_enabled: Mapped[bool] = mapped_column(
+        server_default=sa_text("true"), default=True
+    )
 
 
 class Series(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
@@ -692,6 +704,93 @@ class FamilyConnection(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     consented_by_sharer_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
 
 
+class PersonalizationDisclosureConsent(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
+    """A signed ring-2 disclosure consent: one profile, one connection, one scope.
+
+    ADR-023 P4 (design plan 5.3). Distinct from ``FamilyConnection``'s own
+    dual-guardian consent (which merely permits recommendations to flow, K17):
+    this is the sharer guardian's separate, per-slot-scoped consent that
+    permits ``ChildProfilePersonalization``/real-name values to flow across
+    that connection specifically. ``covered_slot_types`` is the scope of the
+    disclosure; re-consent supersedes this row in place with a new
+    ``consent_accepted_at``/``consent_policy_version``, and narrowing
+    ``covered_slot_types`` does not require re-signing (owner decision,
+    ADR-023 OD-5(c)).
+
+    #CRITICAL: data-integrity: ``family_connection_id`` is ``ondelete="SET
+    NULL"``, never CASCADE. This row is an evidentiary record (GDPR Article
+    7(1), COPPA 312.5): the connection it was granted on can be deleted
+    (``FamilyConnection`` rows are hard-deleted, never soft-deactivated)
+    while the proof that consent was once given must survive as a scrubbed
+    tombstone naming only that authorization happened and what it covered,
+    never a slot value. Deleting the ``child_profile_id`` instead removes the
+    row entirely: the data subject is gone, so there is nothing left to
+    evidence.
+    #VERIFY: tests/integration/test_personalization_consent_tombstone.py.
+
+    Uses a surrogate UUID PK plus a partial unique index on
+    ``(child_profile_id, family_connection_id) WHERE family_connection_id IS
+    NOT NULL``, not a composite PK: tombstoning nulls half of what would
+    otherwise be the natural key, so a composite PK (as
+    ``ChildProfilePersonalization`` uses) cannot express "at most one live
+    consent per (profile, connection), any number of tombstones after".
+    """
+
+    __tablename__ = "personalization_disclosure_consent"
+    __table_args__ = (
+        Index(
+            "uq_pdc_profile_connection",
+            "child_profile_id",
+            "family_connection_id",
+            unique=True,
+            postgresql_where=sa_text("family_connection_id IS NOT NULL"),
+        ),
+        # Mirrors ck_user_consent_pairing (User, :306-329) exactly: the four
+        # consent columns are set or cleared together, so this record is
+        # either fully signed or entirely unsigned, never a partial claim.
+        CheckConstraint(
+            "(consent_accepted_at IS NULL) = (consent_policy_version IS NULL) "
+            "AND (consent_accepted_at IS NULL) = (consent_signer_name IS NULL) "
+            "AND (consent_accepted_at IS NULL) = (consent_ip IS NULL)",
+            name="ck_pdc_consent_pairing",
+        ),
+    )
+
+    # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): the
+    # subject profile's own erasure removes every consent evidencing THEIR
+    # disclosure, live or tombstoned alike.
+    # #VERIFY: tests/integration/test_personalization_consent_tombstone.py,
+    # tests/integration/test_deletion_drill.py (Task B3).
+    child_profile_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_CHILD_PROFILE, ondelete="CASCADE")
+    )
+    # #CRITICAL: data-integrity: SET NULL, not CASCADE. See the class
+    # docstring: a deleted connection must not destroy the evidence that
+    # consent was once given on it.
+    # #VERIFY: tests/integration/test_personalization_consent_tombstone.py.
+    family_connection_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_FAMILY_CONNECTION, ondelete=_ONDELETE_SET_NULL), default=None
+    )
+    # Denormalized at signing time so the record stays legible after the
+    # connection row (and thus its connected_family_id) is gone.
+    connected_family_label: Mapped[str | None] = mapped_column(
+        String(200), default=None
+    )
+    covered_slot_types: Mapped[list[str] | None] = mapped_column(JSONB, default=None)
+    # Set only for a consent whose covered_slot_types includes the sibling
+    # slot; see design plan 10.1 for the attestation ceremony this backs.
+    sibling_authority_attested: Mapped[bool] = mapped_column(
+        server_default=sa_text("false"), default=False
+    )
+    consent_accepted_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    consent_policy_version: Mapped[str | None] = mapped_column(String(32), default=None)
+    consent_signer_name: Mapped[str | None] = mapped_column(String(200), default=None)
+    consent_ip: Mapped[str | None] = mapped_column(String(64), default=None)
+    # Explicit revocation, distinct from deletion/tombstoning: a guardian can
+    # revoke while the connection (and thus family_connection_id) still exists.
+    revoked_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+
+
 class Storybook(CreatedAtMixin, Base):
     """A story's lifecycle row; one per story id regardless of version."""
 
@@ -756,6 +855,17 @@ class Storybook(CreatedAtMixin, Base):
         ForeignKey(_FK_SERIES), default=None
     )
     book_index: Mapped[int | None] = mapped_column(default=None)
+    # ADR-023 P4 / design plan 8.2: whose profile this book's sentinel slots
+    # resolve against, set at generation time from the requesting profile.
+    # #CRITICAL: data-integrity: SET NULL, deliberately the one deviation
+    # from this table's own family_id CASCADE pattern above. Deleting the
+    # subject's profile must not delete a book another family has on their
+    # shelf; it must sever the link so the book reverts to generic
+    # everywhere (design plan 8.5, 8.7).
+    # #VERIFY: tests/integration/test_deletion_drill.py (Task B3).
+    personalization_subject_profile_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_CHILD_PROFILE, ondelete=_ONDELETE_SET_NULL), default=None
+    )
 
 
 class StorybookVersion(CreatedAtMixin, Base):
@@ -803,6 +913,31 @@ class StorybookVersion(CreatedAtMixin, Base):
     cover_image_url: Mapped[str | None] = mapped_column(String(512), default=None)
     cover_status: Mapped[str] = mapped_column(
         String(20), default="none", server_default="none"
+    )
+    # ADR-023 P4: does this version's blob carry any sentinel-bound slots at
+    # all (safe to publish; says nothing about whose values). Off by default;
+    # set by the fill/import path only when the skeleton contract declares
+    # personalizable slots.
+    personalization_eligible: Mapped[bool] = mapped_column(
+        server_default=sa_text("false"), default=False
+    )
+    # A separate, narrower flag (design plan section 2/5): whether this
+    # version's contract additionally parameterizes pronouns. Off by
+    # default, set only by an explicit per-skeleton audit; never implied by
+    # personalization_eligible alone.
+    pronoun_parameterized: Mapped[bool] = mapped_column(
+        server_default=sa_text("false"), default=False
+    )
+    # Stage R re-scope (Task R3): the per-node token multiset that
+    # deterministic re-insertion actually produced
+    # (storybook/reinsertion.py::build_manifest), written at re-insertion
+    # time -- NOT a contract-prescribed expectation. Keyed
+    # {"tokens": {<node_id>: [...], "<node_id>::ending_title": [...]}}.
+    # Rescreen and at-rest checks read this column so they never re-derive
+    # expectations from the contract; node-edit/repair adoption replace a
+    # node's entry in place when its body changes.
+    sentinel_manifest: Mapped[dict[str, object] | None] = mapped_column(
+        JSONB, default=None
     )
 
     __table_args__ = (
