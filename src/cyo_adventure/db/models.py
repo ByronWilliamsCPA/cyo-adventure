@@ -124,7 +124,7 @@ _PIPELINE_EVENT_TYPE_VALUES = (
     "'book_unassigned', 'rated', "
     "'kid_flagged', 'flag_resolved', "
     "'user_managed', 'family_managed', 'family_connection_changed', "
-    "'node_edited', 'profile_viewed', 'cell_saturated'"
+    "'node_edited', 'profile_viewed', 'cell_saturated', 'storybook_archived'"
 )
 _PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin', 'device'"
 _PIPELINE_ENTITY_TYPE_VALUES = (

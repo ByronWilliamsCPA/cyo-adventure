@@ -401,6 +401,52 @@ class TestListGuardianNotifications:
         assert "Book B" not in items[0].body
 
     @pytest.mark.asyncio
+    async def test_storybook_archived_projects_as_an_alert_notification(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A5 end-to-end: an archive event reaches the guardian as an alert.
+
+        Exercises the full ``list_guardian_notifications`` -> resolver ->
+        ``registry.compose`` pipeline (not just the composer in isolation, as
+        ``test_notifications_registry.py::TestComposeStorybookArchived``
+        does), confirming the new ``EventType`` is actually wired end to end
+        rather than merely registered.
+        """
+        family_id = uuid.uuid4()
+        event = _pipeline_event(
+            event_type=EventType.STORYBOOK_ARCHIVED,
+            entity_type="storybook",
+            entity_id="book-pulled",
+            occurred_at=_T1,
+            to_state="archived",
+        )
+        session = _SeqSession(scalars=[[event]])
+
+        async def fake_resolver(
+            _session: object, ids: list[str]
+        ) -> dict[str, EntityContext]:
+            return {
+                i: EntityContext(
+                    family_id=family_id,
+                    storybook_id="book-pulled",
+                    storybook_title="The Pulled Book",
+                )
+                for i in ids
+            }
+
+        monkeypatch.setattr(service, "_ENTITY_RESOLVERS", {"storybook": fake_resolver})
+
+        items = await service.list_guardian_notifications(
+            session, _principal(family_id), since=None, limit=30
+        )
+
+        assert len(items) == 1
+        assert items[0].severity == "alert"
+        assert items[0].kind == "story_archived"
+        assert items[0].storybook_id == "book-pulled"
+        assert "The Pulled Book" in items[0].title
+
+    @pytest.mark.asyncio
     async def test_unknown_entity_type_is_dropped_not_raised(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:

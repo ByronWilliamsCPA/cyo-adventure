@@ -163,6 +163,34 @@ def _compose_book_assigned(
     )
 
 
+def _compose_storybook_archived(
+    _event: PipelineEvent, ctx: EntityContext
+) -> RawNotification | None:
+    """Map STORYBOOK_ARCHIVED: A5's incident/pull-everywhere path, alert-severity.
+
+    ``archive()`` (publishing/service.py) is the sole published->archived hop
+    (state_machine.py) and the only server-side action that pulls a story
+    from every child's shelf; it fires for a genuine safety incident and for
+    a deliberate admin curation decision alike, and this composer has no way
+    to tell those two apart from the event alone. Alert is the safe default
+    for both: capability-register.md's A5 row requires a guardian be notified
+    whenever a book their child could read is pulled, so treating a benign
+    archive as merely informational risks a guardian missing a real safety
+    pull. NotificationBell.tsx renders alert-severity items identically
+    regardless of kind (a red "Alert" tag plus a toast), so this reuses the
+    existing G10/S9 delivery path with zero new frontend surface.
+    """
+    return RawNotification(
+        kind="story_archived",
+        title=f"{_story_label(ctx)} was removed from your library",
+        body=(
+            "This story was archived and is no longer available to read, "
+            "including offline copies already on a device."
+        ),
+        severity="alert",
+    )
+
+
 # Human-readable clauses for each closed-vocabulary KidFlag.reason value
 # (db/models.py::_KID_FLAG_REASON_VALUES). A reason outside this map (a
 # future addition to that vocabulary this registry has not been updated for
@@ -213,6 +241,7 @@ _COMPOSERS: dict[EventType, Composer] = {
     EventType.GENERATION_FINISHED: _compose_generation_finished,
     EventType.RELEASED: _compose_released,
     EventType.BOOK_ASSIGNED: _compose_book_assigned,
+    EventType.STORYBOOK_ARCHIVED: _compose_storybook_archived,
 }
 
 # #ASSUME: data-integrity: a sibling workstream is adding EventType.KID_FLAGGED

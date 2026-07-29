@@ -35,6 +35,10 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     EventType.REPAIR_APPLIED: frozenset({"stage"}),
     EventType.SENT_BACK: frozenset(),
     EventType.RELEASED: frozenset({"visibility"}),
+    # A5 incident/pull-everywhere path: no payload needed, the
+    # storybook entity_id is the only durable reference this transition
+    # requires (same empty-payload contract as SENT_BACK above).
+    EventType.STORYBOOK_ARCHIVED: frozenset(),
     EventType.THRESHOLD_CHANGED: frozenset(
         {"age_band", "category", "action", "min_verdict", "min_score"}
     ),
