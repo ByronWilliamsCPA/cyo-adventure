@@ -167,6 +167,21 @@ class ReinsertionOutcome:
             per-surface multiset of sentinel tokens actually present. Plain
             dicts, lists, and strings only (safe to pass to `json.dumps`
             unmodified), with deterministic key and entry ordering.
+
+            A manifest entry's VALUE is the text as it appears in the
+            document, which for a sentence-start match is the capitalized
+            variant of the declared value: a contract declaring
+            ``explorer`` yields ``{~HERO:Explorer~}``, and therefore a
+            manifest value of ``Explorer``, wherever the mention opens a
+            sentence (see `_sentence_start_pattern`). This is deliberate;
+            the wrapped fallback word has to read correctly in place. It
+            does mean a future manifest READER must not compare these
+            values against the theme contract's declared values for
+            equality: derive-not-prescribe applies to the value as much as
+            to the token multiset. Nothing reads the manifest yet (the
+            `storybook_version.sentinel_manifest` column is written only),
+            so this is a note for the reader that comes later, not a
+            description of an existing comparison.
         token_outcomes: One `TokenOutcome` per `(node, token)` pair the
             pre-fill bound skeleton expected, in a stable order (node id,
             then slot id, then value); sufficient on its own for a caller to
@@ -217,9 +232,10 @@ def _strip_trailing_closer(text: str) -> str:
     # on adversarial model output. The pattern had to be retried at every
     # start offset, and on text whose LAST character is neither a closer nor
     # whitespace ("~~~~...~x") each retry consumed the whole remaining tilde
-    # run before failing: measured 6.7 s on a 16k-tilde string, inside the
-    # generation worker's own fill path. Nothing upstream bounds how many
-    # tildes a model may emit, so the bound has to be here.
+    # run before failing: measured 1.8 s on a 16k-tilde string against 0.004 ms
+    # for this linear form, inside the generation worker's own fill path.
+    # Nothing upstream bounds how many tildes a model may emit, so the bound
+    # has to be here.
     # #VERIFY: tests/unit/test_storybook_reinsertion.py::
     # test_trailing_closer_strip_is_linear_on_a_long_tilde_run and
     # ::test_trailing_closer_strip_matches_the_regex_it_replaced.
