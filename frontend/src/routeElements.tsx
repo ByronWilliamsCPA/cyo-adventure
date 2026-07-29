@@ -150,6 +150,9 @@ export const PreviewAsChildPage = lazyWithReload('PreviewAsChildPage', () =>
 export const ConnectionsPage = lazyWithReload('ConnectionsPage', () =>
   import('./guardian/ConnectionsPage').then((m) => ({ default: m.ConnectionsPage }))
 )
+export const DevicesPage = lazyWithReload('DevicesPage', () =>
+  import('./guardian/DevicesPage').then((m) => ({ default: m.DevicesPage }))
+)
 export const PrivacyPage = lazyWithReload('PrivacyPage', () =>
   import('./guardian/PrivacyPage').then((m) => ({ default: m.PrivacyPage }))
 )

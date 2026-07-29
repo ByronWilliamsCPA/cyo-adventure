@@ -336,7 +336,7 @@ The old wording stands in historical sections above; this table governs.
 | M0-M3 | Foundations through enforced approval gate | done | ✅ Delivered |
 | M4 = **R1-alpha** | Core loop live internally, web only (Phases 0-3 + 4a; historic "R1") | done | ✅ Feature-complete 2026-07-03, live 2026-07-05 |
 | M4.1: R1-alpha sign-off | Funded provider keys; merged PRs + safety fixes redeployed; live E2E checklist executed once with a sign-off row; Now-queue items 1-4; **plus, added 2026-07-28: the ADR-021 production cutover (`UW-A03`), which the ADR itself names M4.1 as the review gate for** | ~1 wk | ⏸️ Next up. The cutover provisions `cyo_api`/`cyo_worker` role passwords in staging and prod and retires `postgres`-role traffic; until it lands, RLS is enabled but disarmed and ADR-022 (`UW-A01`) cannot start |
-| M4b: Editor + engagement | G6, K6, K7, G5, G2 usable by a real guardian, G3, K15, G15 view, K5/K8 test pins | 3-4 wks | ✅ Substantially delivered 2026-07-17 (PR #270); open: bookmarks (not built), G15 device/storage view, K5/K8 test pins |
+| M4b: Editor + engagement | G6, K6, K7, G5, G2 usable by a real guardian, G3, K15, G15 view, K5/K8 test pins | 3-4 wks | ✅ Substantially delivered 2026-07-17 (PR #270); open: bookmarks (not built), G15 storage/download view (device list/revoke UI shipped 2026-07-28), K5/K8 test pins |
 | M4c: Family loops | S9, G10, G9, K12 complete, G7 real budget consent + G13 balance | 2-3 wks | ✅ Substantially delivered 2026-07-17 (PR #270); open: push channel/server-scheduled digest (S9/G10 are poll-based only) |
 | M4d: Connections | G17 consent, K17 surfaces, A15 enforcement guard (ADR-016 ring 2) | 2-3 wks, overlaps 4c | ✅ Delivered 2026-07-17 (PR #270); privacy-model erasure coverage for connections not independently re-verified |
 | M5: Hardened family tier | Phase 5 expanded scope: purge, offline revocation, audit view, re-screen, restore drill, nightly/staging/prod test ladder green with alerting | 2-3 wks | 🟡 M4b-4d dependency satisfied as of 2026-07-17 (see the 2026-07-20 audit note above); remaining Phase 5 gaps are audit view, restore drill, remaining test ladder, plus the newly surfaced H1/H2 |
@@ -644,9 +644,14 @@ undo), bookmarks (a distinct save-slot feature) is not built at all.**
 - [x] Kid feedback flag: "I didn't like this / this scared me", routed into the admin
       queue and the Phase 4c alert surface (K15, feeds A1/G10). `KidFlag` model,
       `POST /flags`, admin list/resolve in `api/flags.py`.
-- [ ] Guardian device/storage view: which books are downloaded on which device (G15
-      remainder). ADR-014 device authorize/revoke exists; per-device storage/download
-      visibility does not.
+- [x] Guardian device list/revoke view: every currently-active device grant for the
+      family, with a revoke action per device (`GuardianShell` "Devices" nav item ->
+      `frontend/src/guardian/DevicesPage.tsx`, calling the existing family-scoped
+      `GET`/`DELETE /v1/device-grants` endpoints in `api/device_grants.py`) (G15, ADR-014's
+      own lost-device mitigation).
+- [ ] Guardian storage/download view: which books are downloaded on which device (G15
+      remainder). No backend `offline/` module exists to report per-device download state;
+      depends on K10's client-side offline architecture.
 - [ ] Test pins for the two shipped-but-unasserted surfaces: Go Back returns to the prior
       node with intact state (K5), cover render plus letter-tile fallback and the admin
       generate flow (K8/A16); test matrix action 7 (not independently re-verified in this
