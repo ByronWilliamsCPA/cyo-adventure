@@ -2925,6 +2925,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#finding-6-important-closed-the-weekly-safety-eval-workflow-reported-green-while-measuring-nothing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding 6 [Important, CLOSED]: the weekly safety-eval workflow reported green while measuring nothing
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3072,6 +3083,33 @@ either way, a mock run measures nothing about real classifier discrimination.
 <strong>No live-model adversarial run has been executed.</strong> The behavioral catch-rates below are targets for a future
 credentialed run, not results. Treating a mock run as evidence would manufacture
 exactly the false confidence this document exists to remove.</p>
+<h4 id="attempted-run-log">Attempted run log<a class="headerlink" href="#attempted-run-log" title="Permanent link">&para;</a></h4>
+<p>Attempts to execute the credentialed run are recorded here so that "not yet run"
+stays a dated, auditable fact rather than an indefinite state nobody revisits.
+An entry here is a record of an attempt, never a record of a result.</p>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Outcome</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-07-28</td>
+<td><strong>Blocked, no results produced</strong></td>
+<td>Baseline (Task 1), stage ablation (Task 2), and the benign-control false-positive measurement (Task 3) were all attempted. No <code>.env</code> exists in the environment; <code>OPENROUTER_API_KEY</code>, <code>OPENAI_API_KEY</code>, <code>PERSPECTIVE_API_KEY</code> are absent from both <code>.env</code> and the process environment, and no local Ollama is reachable on <code>:11434</code>. No live provider was available, so no run was performed and <strong>no results JSON was written</strong>. The mock harness was executed as a wiring check only and correctly refused to report itself as evidence (exit 3). That same attempt found and fixed the silently-green safety-eval workflow recorded as Finding 6 below.</td>
+</tr>
+</tbody>
+</table>
+<p>The wiring check is worth recording for one reason: it shows exactly how a mock
+run manufactures false confidence. Under the mock provider the corpus reports a
+class-A catch-rate of <strong>100%</strong> while the negative control <strong>simultaneously</strong>
+over-blocks. Both numbers come from the same fail-safe <code>FLAG</code> mapping of <code>"{}"</code>,
+not from any classifier judgement. A reader who looked only at the catch-rate
+column would record a pass. This is why the harness exits non-zero on a mock run
+regardless of how good the numbers look, and why that refusal must be preserved.</p>
 <h2 id="threat-model-and-scope">Threat model and scope<a class="headerlink" href="#threat-model-and-scope" title="Permanent link">&para;</a></h2>
 <p>The adversary is not an anonymous internet attacker; it is anyone who can submit a
 concept brief or an imported story into the pipeline (a guardian, an admin, or the
@@ -3289,6 +3327,55 @@ downstream bounds (Stage 1 + human approval).</p>
 including nested <code>protagonist</code> fields and list items, before Pydantic's own field
 validation runs. See <code>tests/unit/test_concept.py</code> (control-char stripping tests)
 for coverage.</p>
+<h3 id="finding-6-important-closed-the-weekly-safety-eval-workflow-reported-green-while-measuring-nothing">Finding 6 [Important, CLOSED]: the weekly safety-eval workflow reported green while measuring nothing<a class="headerlink" href="#finding-6-important-closed-the-weekly-safety-eval-workflow-reported-green-while-measuring-nothing" title="Permanent link">&para;</a></h3>
+<p>Found 2026-07-28 while attempting the credentialed run (see the attempted-run log
+above). <code>.github/workflows/safety-eval.yml</code> supplied the credentials to the
+<code>llm_eval</code> tier, but that tier carries a <code>pytest.mark.skipif</code> on
+<code>OPENROUTER_API_KEY</code> plus a Stage-0 key
+(<code>tests/llm_eval/test_adversarial_safety_eval.py</code>). The repository secrets have
+never been configured, so every scheduled run skipped the only test in the tier.
+<strong>pytest exits 0 for a skipped test</strong>, so the workflow completed green, weekly,
+without exercising the moderation gate even once. The pre-flight step emitted a
+<code>::warning::</code> and then exited 0, which is invisible on a green run that nobody
+opens.</p>
+<p>The failure mode is worse than having no workflow: the weekly green run is a
+standing, automated assertion that the safety gate is being adversarially
+evaluated, which is precisely the unbacked-safety-claim defect this document was
+created to correct (see "Why this document exists"). Finding 6 is that defect
+reintroduced at the CI layer.</p>
+<p>This is <strong>model-independent</strong>: it is a property of skip-exits-zero, confirmed by
+reading the workflow and the tier's <code>skipif</code>, and it needs no live model to
+demonstrate.</p>
+<p><strong>Closed</strong> by PR #435, which repaired this alongside six other scheduled-workflow
+gates. Two independent steps in <code>.github/workflows/safety-eval.yml</code> now make a
+green run mean the gate was actually measured:</p>
+<ol>
+<li><strong>Require credentials on a scheduled run</strong> <strong>fails</strong> instead of warning when
+   <code>OPENROUTER_API_KEY</code> or <code>OPENAI_API_KEY</code> is absent, so a run that cannot
+   measure goes red immediately with a specific reason. The step names
+   <code>PERSPECTIVE_API_KEY</code> only to say it does <em>not</em> substitute for the Stage-0
+   key, since Perspective sunsets 2026-12-31.</li>
+<li><strong>Assert the evaluation actually ran</strong> parses <code>junit.xml</code> and requires
+   <code>tests - skipped &gt;= 1</code>. This catches what a credential check cannot see: any
+   <em>future</em> skip condition that would silently restore the vacuous green, since
+   pytest exits 0 for an all-skipped selection either way.</li>
+</ol>
+<p>Two scoping notes for anyone reading this as a specification of the workflow,
+because both differ from what a reader might assume:</p>
+<ul>
+<li>The credential check carries <code>if: github.event_name == 'schedule'</code>, so it does
+  <strong>not</strong> gate <code>workflow_dispatch</code>. A manual run with no secrets still reaches
+  the pytest step; it is the junit assertion, not the credential check, that
+  fails it. That split is deliberate (a dispatch may legitimately want to
+  exercise wiring) but it means the two steps are not interchangeable.</li>
+<li>The post-run guard asserts on the <strong>junit report</strong>, not on the archived
+  results JSON, and therefore does not inspect an <code>is_evidence</code> field. It proves
+  a test <em>executed</em>; the harness's own non-zero exit on a mock provider is what
+  proves the execution was against a real classifier.</li>
+</ul>
+<p>Note the ordering consequence: until the secrets are configured, the weekly run
+goes <strong>red</strong>. That is the correct state. It is an accurate report that the gate
+is unmeasured, replacing an inaccurate report that it was healthy.</p>
 <h2 id="adversarial-corpus">Adversarial corpus<a class="headerlink" href="#adversarial-corpus" title="Permanent link">&para;</a></h2>
 <p><code>docs/planning/safety/adversarial-corpus.json</code> is the versioned corpus. It is
 <strong>passage-oriented</strong>: each item carries the node prose (or a small multi-node
@@ -3461,7 +3548,7 @@ code paths that can reach <code>submit</code>/<code>approve</code>, or the band 
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 22:14:45 UTC">July 10, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 02:30:19 UTC">July 29, 2026</span>
   </span>
 
     
