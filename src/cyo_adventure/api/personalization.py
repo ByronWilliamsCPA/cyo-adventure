@@ -316,7 +316,14 @@ def _validate_and_parse_slots(
         )
         if violations:
             msg = "; ".join(v.message for v in violations)
-            raise ValidationError(msg, field=slot.slot_type, value=msg)
+            # `value=` is deliberately omitted rather than set to `msg`:
+            # ValidationError.value is meant to carry the offending input, and
+            # passing the message back in was both meaningless and a second
+            # copy of anything a violation message might contain. Violation
+            # messages name the slot, never the candidate (see the
+            # SlotViolation.message contract in validator/slots.py), so the
+            # guardian still learns which slot failed and why.
+            raise ValidationError(msg, field=slot.slot_type)
         parsed_slots.append((slot, value_profile_uuid))
     return parsed_slots
 
@@ -763,6 +770,18 @@ async def _ring1_values(session: AsyncSession, subject: ChildProfile) -> dict[st
             if sibling is not None:
                 values[row.slot_type] = sibling.display_name
             continue
+        if isinstance(rendered, uuid.UUID):
+            # #CRITICAL: security: defense in depth. The shape rule in
+            # storybook/personalization_values.py already rejects a
+            # value_profile_id on any non-sibling slot, so this is
+            # unreachable through the validated path. It stays because this
+            # line is the actual injection point: str() on a UUID is what
+            # would put a raw cross-family profile id into child-facing
+            # prose, and an unreachable guard is cheaper than trusting that
+            # every future caller keeps the validation in front of it.
+            # #VERIFY: tests/unit/test_personalization_values.py pins the
+            # shape rule that makes this branch unreachable.
+            continue
         values[row.slot_type] = str(rendered)
     return values
 
@@ -861,7 +880,13 @@ async def _ring2_values(
             value_enum=row.value_enum,
             value_profile_id=row.value_profile_id,
         )
-        if rendered is not None:
+        if rendered is not None and not isinstance(rendered, uuid.UUID):
+            # Same defense-in-depth guard as the ring-1 path above, and it
+            # matters more here: this call site does not pass
+            # family_profile_ids at all (the sibling slot is handled by its
+            # own consent-scoped branch before this point), so the
+            # sibling-in-family check cannot fire even if a stray
+            # value_profile_id reached a non-sibling slot at rest.
             values[row.slot_type] = str(rendered)
     return values, policy_version
 

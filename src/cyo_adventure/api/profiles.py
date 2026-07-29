@@ -117,7 +117,7 @@ def _apply_simple_fields(row: ChildProfile, body: ProfileUpdateBody) -> None:
         # only new profiles.
         # #VERIFY: tests/integration/test_personalization_api.py::
         # test_update_profile_rejects_denylisted_display_name.
-        _validate_display_name(body.display_name, row.age_band)
+        validate_display_name(body.display_name, row.age_band)
         row.display_name = body.display_name
     if body.reading_level_cap is not None:
         row.reading_level_cap = body.reading_level_cap
@@ -166,14 +166,23 @@ def _apply_g2_content_controls(row: ChildProfile, body: ProfileUpdateBody) -> No
         row.monthly_request_envelope = body.monthly_request_envelope
 
 
-def _validate_display_name(display_name: str, age_band: str) -> None:
+def validate_display_name(display_name: str, age_band: str) -> None:
     """Reject a display name that fails the write-time validation gate.
 
     ADR-023 implementation plan section 5.2: ``display_name`` gets the same
     structural and band-mandatory-denylist checks a personalization slot
-    value gets, applied at both write points (profile create, and the
-    display_name write inside a PATCH), because names set before this
+    value gets, applied at every write point, because names set before this
     feature shipped were never checked.
+
+    Public rather than module-private because ``api/admin_profiles.py`` has
+    two more display_name write points (admin create, admin PATCH) and must
+    apply the identical gate. #CRITICAL: security: display_name is the one
+    personalization value that reaches prose without going through
+    ``storybook/personalization_values.py``, so an unguarded write point lets
+    a name like ``{~PET:cat~}`` inject a sentinel that manifest verification
+    never anticipated.
+    #VERIFY: every assignment to ``ChildProfile.display_name`` in ``api/``
+    is preceded by a call to this function.
 
     Args:
         display_name: The candidate name.
@@ -332,7 +341,7 @@ async def create_profile(body: ProfileCreateBody, ctx: Context) -> ProfileView:
     # story prose (ADR-023 plan 5.2); validated before the row is built.
     # #VERIFY: tests/integration/test_personalization_api.py::
     # test_create_profile_rejects_denylisted_display_name.
-    _validate_display_name(body.display_name, body.age_band.value)
+    validate_display_name(body.display_name, body.age_band.value)
     row = ChildProfile(
         family_id=ctx.principal.family_id,
         display_name=body.display_name,

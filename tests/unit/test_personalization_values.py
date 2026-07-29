@@ -123,3 +123,112 @@ def test_personalization_value_for_payload_valid_value_returned() -> None:
     )
 
     assert result == "Biscuit"
+
+
+def test_value_profile_id_on_non_sibling_slot_rejected() -> None:
+    """A profile reference on a non-sibling slot is a shape violation.
+
+    The hole this closes: `ck_cpp_exactly_one_value` counts NOT NULLs but
+    never binds which column a slot_type may use, and every other check in
+    the module reads only text/enum or is gated on the sibling slot type.
+    A row with only `value_profile_id` set on `pet_name` therefore ran zero
+    checks and validated clean, while the render path stringified the raw
+    UUID into child-facing prose. The FK only requires the id to name SOME
+    child_profile, including another family's.
+    """
+    violations = validate_personalization_value(
+        "pet_name",
+        AgeBand.BAND_8_11,
+        value_profile_id=uuid.uuid4(),
+    )
+
+    assert [v.rule for v in violations] == ["value_shape"]
+
+
+def test_value_profile_id_on_non_sibling_slot_rejected_even_with_family_ids() -> None:
+    """Passing the family roster does not rescue a mis-shaped non-sibling value.
+
+    The sibling-in-family check is gated on `slot_type == SIBLING_SLOT_TYPE`,
+    so supplying `family_profile_ids` never applied it to another slot. The
+    shape rule must reject regardless of whether the id happens to belong to
+    the family.
+    """
+    own_profile = uuid.uuid4()
+    violations = validate_personalization_value(
+        "kinship_label",
+        AgeBand.BAND_8_11,
+        value_profile_id=own_profile,
+        family_profile_ids=[own_profile],
+    )
+
+    assert [v.rule for v in violations] == ["value_shape"]
+
+
+def test_sibling_slot_with_free_text_rejected() -> None:
+    """The same cross-family hole entered from the other side.
+
+    A sibling slot carrying free text skips the sibling-in-family check
+    entirely, because that check only inspects `value_profile_id`.
+    """
+    violations = validate_personalization_value(
+        SIBLING_SLOT_TYPE,
+        AgeBand.BAND_8_11,
+        value_text="Mira",
+    )
+
+    assert any(v.rule == "value_shape" for v in violations)
+
+
+def test_closed_vocabulary_slot_with_free_text_rejected() -> None:
+    """Free text on a closed-vocabulary slot cannot bypass the vocabulary gate.
+
+    `CLOSED_VOCABULARIES` ships every entry empty on purpose (fail-closed),
+    but the membership check only ran when `value_enum` was set, so the
+    fail-closed vocabulary was one JSON field name away from unbounded free
+    text.
+    """
+    for slot_type in CLOSED_VOCABULARIES:
+        violations = validate_personalization_value(
+            slot_type,
+            AgeBand.BAND_8_11,
+            value_text="fire-breathing wyvern",
+        )
+
+        assert any(v.rule == "value_shape" for v in violations), slot_type
+
+
+def test_enum_membership_message_never_contains_the_candidate() -> None:
+    """The rejection message names the slot, never the guardian-typed value.
+
+    `SlotViolation.message`'s contract is that it never contains candidate
+    text. This message reaches `logger.warning("project_error", ...)` and the
+    422 body, and every vocabulary ships empty, so EVERY enum submission for
+    these slots takes this branch. `kinship_label` is designed to hold values
+    like "Grandma Rosita"; application logs have no erasure path.
+    """
+    candidate = "Grandma Rosita"
+    violations = validate_personalization_value(
+        "kinship_label",
+        AgeBand.BAND_8_11,
+        value_enum=candidate,
+    )
+
+    membership = [v for v in violations if v.rule == "enum_membership"]
+    assert membership, "expected the fail-closed vocabulary to reject"
+    assert all(candidate not in v.message for v in membership)
+    assert all("kinship_label" in v.message for v in membership)
+
+
+def test_pronoun_set_shape_is_deliberately_unconstrained() -> None:
+    """`pronoun_set` keeps accepting free text; no design doc states its shape.
+
+    Pinned so the omission reads as a decision rather than an oversight. The
+    existing fixtures (`measurement/fixtures.py`) use free text.
+    """
+    violations = validate_personalization_value(
+        "pronoun_set",
+        AgeBand.BAND_8_11,
+        value_text="they/them",
+    )
+
+    assert violations == []

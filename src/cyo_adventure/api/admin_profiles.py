@@ -16,6 +16,7 @@ from fastapi import APIRouter
 from sqlalchemy import ColumnElement, select
 
 from cyo_adventure.api.deps import Context, parse_uuid
+from cyo_adventure.api.profiles import validate_display_name
 from cyo_adventure.api.schemas import (
     AdminProfileCreateBody,
     AdminProfileListView,
@@ -159,6 +160,7 @@ async def create_admin_profile(
     if family is None:
         msg = f"family '{body.family_id}' not found"
         raise ResourceNotFoundError(msg)
+    validate_display_name(body.display_name, body.age_band.value)
     row = ChildProfile(
         family_id=family_uuid,
         display_name=body.display_name,
@@ -185,10 +187,24 @@ def _apply_non_pin_fields(row: ChildProfile, body: AdminProfileUpdateBody) -> No
     # #ASSUME: data-integrity: mirrors api/profiles.py::update_profile -- an
     # explicit null on the four non-avatar fields is a deliberate no-op, none
     # of them has a legitimate empty state.
-    if body.display_name is not None:
-        row.display_name = body.display_name
+    # Ordering mirrors api/profiles.py::_apply_scalar_fields: age_band is
+    # applied BEFORE display_name is validated, so a single PATCH that changes
+    # both is checked against the band the row ends up with rather than a
+    # now-stale prior one.
     if body.age_band is not None:
         row.age_band = body.age_band.value
+    if body.display_name is not None:
+        # #CRITICAL: security: this write point had no validation at all,
+        # while the guardian-facing twin in api/profiles.py did. display_name
+        # renders directly into a child's own story prose (ADR-023 plan 5.2)
+        # and is the one personalization value that never passes through
+        # storybook/personalization_values.py, so an admin-set name could
+        # carry a forged sentinel or band-denylisted term straight into a
+        # story.
+        # #VERIFY: tests/integration/test_admin_profiles.py asserts both
+        # admin write points reject a denylisted display_name.
+        validate_display_name(body.display_name, row.age_band)
+        row.display_name = body.display_name
     if body.reading_level_cap is not None:
         row.reading_level_cap = body.reading_level_cap
     if body.tts_enabled is not None:

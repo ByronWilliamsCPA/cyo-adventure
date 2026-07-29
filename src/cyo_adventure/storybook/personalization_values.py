@@ -106,6 +106,70 @@ CLOSED_VOCABULARIES: dict[str, frozenset[str]] = {
 }
 
 
+def _shape_violations(
+    slot_type: str,
+    value_text: str | None,
+    value_enum: str | None,
+    value_profile_id: uuid.UUID | None,
+) -> list[SlotViolation]:
+    """Reject values whose column does not match what the slot type permits.
+
+    #CRITICAL: security: without this, every other check in this module is
+    opt-in by column choice. `ck_cpp_exactly_one_value` counts NOT NULLs but
+    never binds WHICH column a given slot_type may use, so a caller picks
+    which validations run simply by choosing a JSON field name:
+
+    - `value_profile_id` on any non-sibling slot ran zero checks. The
+      structural and denylist checks read only text/enum, and the
+      sibling-in-family check is gated on `slot_type == SIBLING_SLOT_TYPE`.
+      The FK requires the UUID to name *some* child_profile, including
+      another family's, and the render path stringifies whatever it finds,
+      injecting a raw cross-family UUID into child-facing prose.
+    - `value_text` on a closed-vocabulary slot skipped the vocabulary check
+      entirely, so the deliberately fail-closed empty vocabularies were one
+      JSON field name away from unbounded free text.
+    - `value_text` or `value_enum` on the sibling slot skipped the
+      sibling-in-family check, which is the same cross-family hole entered
+      from the other side.
+
+    `pronoun_set` is deliberately unconstrained here: no design document
+    states its shape, and the existing fixtures use free text
+    (`measurement/fixtures.py`). Constraining it would be inventing product
+    policy rather than closing a hole.
+
+    #VERIFY: tests/unit/test_personalization_values.py asserts each of the
+    three rules rejects, and that a correctly-shaped value still passes.
+
+    Args:
+        slot_type: The slot the value is bound to.
+        value_text: The candidate free-text value, or None.
+        value_enum: The candidate closed-enum choice, or None.
+        value_profile_id: The candidate profile reference, or None.
+
+    Returns:
+        A list of `SlotViolation`s, empty when the shape is permitted.
+    """
+    violations: list[SlotViolation] = []
+    reasons: list[str] = []
+
+    if value_profile_id is not None and slot_type != SIBLING_SLOT_TYPE:
+        reasons.append(f"only '{SIBLING_SLOT_TYPE}' may carry a value_profile_id")
+
+    if slot_type == SIBLING_SLOT_TYPE and (
+        value_text is not None or value_enum is not None
+    ):
+        reasons.append("this slot must use value_profile_id, not text or enum")
+
+    if slot_type in CLOSED_VOCABULARIES and value_text is not None:
+        reasons.append("this slot has a closed vocabulary and must use value_enum")
+
+    violations.extend(
+        SlotViolation(slot_type, "value_shape", f"slot '{slot_type}': {reason}")
+        for reason in reasons
+    )
+    return violations
+
+
 def validate_personalization_value(  # noqa: PLR0913
     slot_type: str,
     age_band: AgeBand,
@@ -159,6 +223,10 @@ def validate_personalization_value(  # noqa: PLR0913
     violations: list[SlotViolation] = []
     candidate = value_text if value_text is not None else value_enum
 
+    violations.extend(
+        _shape_violations(slot_type, value_text, value_enum, value_profile_id)
+    )
+
     if candidate is not None:
         violations.extend(
             replace(violation, slot_id=slot_type)
@@ -177,7 +245,22 @@ def validate_personalization_value(  # noqa: PLR0913
     if value_enum is not None and slot_type in CLOSED_VOCABULARIES:
         vocabulary = CLOSED_VOCABULARIES[slot_type]
         if value_enum not in vocabulary:
-            enum_message = f"'{value_enum}' is not a member of the closed vocabulary for slot '{slot_type}'"
+            # #CRITICAL: security: name the SLOT, never the candidate.
+            # SlotViolation.message's contract (validator/slots.py:219-221)
+            # is that it never contains the candidate story text, and this
+            # message flows to logger.warning("project_error", ...) in
+            # app.py and into the 422 body (_client_safe_error strips
+            # `value` and `context`, not `message`). Every vocabulary here
+            # ships empty by design, so EVERY value_enum submission for these
+            # four slots takes this branch; kinship_label is designed to hold
+            # values like "Grandma Rosita". Application logs have no erasure
+            # path, so echoing the value here writes a child's kinship term
+            # for a real relative into log storage on the default path.
+            # #VERIFY: tests/unit/test_personalization_values.py asserts the
+            # message does not contain the candidate.
+            enum_message = (
+                f"value for slot '{slot_type}' is not a member of its closed vocabulary"
+            )
             violations.append(SlotViolation(slot_type, "enum_membership", enum_message))
 
     if slot_type == SIBLING_SLOT_TYPE and value_profile_id not in family_profile_ids:
