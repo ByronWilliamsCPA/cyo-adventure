@@ -124,7 +124,7 @@ done.**
 | Register items | Phase |
 |----------------|-------|
 | K5/K8 test pins, K6 tracker, K7 TTS, G6 editor, G5 skim aids, G2 controls UI, G3 permissions, K15 feedback flag, G15 storage view | 4b |
-| S9 delivery infra, G10 digest/alerts, G9 visibility, K12 kid generation status, G7 budget consent (G13 interim quota balance closed 2026-07-29: audit found budget enforcement and kid-facing status already shipped and tested, register flipped to ✅) | 4c |
+| S9 delivery infra, G10 digest/alerts, G9 visibility, K12 kid generation status, G7 budget consent (G13 interim quota balance closed 2026-07-29: audit found budget enforcement and kid-facing status already shipped and tested, register flipped to ✅; G14 multi-guardian households closed 2026-07-28: guardian self-service co-parent invite shipped, register flipped to ✅) | 4c |
 | G17 consent flow, K17 recommendation surfaces, A15 enforcement guard | 4d |
 | ADR-007 purge, G8/A5 offline revocation, A4 re-screen tooling (backend done, UI hook only), nightly e2e-real + S2 real conflict spec, staging golden journeys, adversarial live-model run | 5 |
 | ADR-018 D1-D4 execution, G11 trust surface, G12 export, A12 abuse workflow, A14 compliance reporting | 7 |
@@ -142,7 +142,6 @@ and need the owner's ratification before they count as commitments.
 | Register items | Proposed phase |
 |----------------|----------------|
 | K9 shelf presentation ("what's new" only; in-progress/finished states already shipped per 2026-07-29 audit) | 4b, alongside the other kid-surface UX already there |
-| G14 multi-guardian households (admin-mediated invite already shipped; gap is a guardian-initiated self-service path only, per 2026-07-29 audit) | 4c, which already owns G7 budget consent and K12 kid status |
 | A16 cover-art review UI: the H2 auto-publish security gap is closed (branch `fix/cover-moderation-gate`), but the 2026-07-29 audit found A16's own definition still unmet, no admin surface renders the cover image or exposes an approve action | 5, where H2 is already listed in the Phase 5 checklist under its own name |
 | A3 band definitions and theme taxonomy as admin levers (thresholds already shipped) | 9, with A8 runtime levers |
 | K20 kid-facing personalization, G18 guardian per-slot opt-in | Blocked on [ADR-023](./adr/adr-023-story-personalization-slots.md) moving from Proposed to Accepted. No phase until that ruling; tracked as a `decision`, not a scheduling gap |
