@@ -289,6 +289,203 @@ def test_no_expected_tokens_is_not_clean() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Widening 1: sentence-start capitalization matching
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_sentence_start_variant_after_period_is_reinsertable() -> None:
+    """A lowercase-value token appearing capitalized right after ". " is reinsertable."""
+    pre_fill = _skeleton(
+        [{"id": "n1", "body": "The dog ran. {~COMPANION:the pup~} barked."}]
+    )
+    filled = _skeleton([{"id": "n1", "body": "The dog ran. The pup barked."}])
+    result = reinsert_sentinels(pre_fill, filled)
+
+    outcome = result.token_outcomes[0]
+    assert outcome.value == "the pup"
+    assert outcome.occurrence_count == 1
+    assert outcome.status == "reinsertable"
+    assert result.sentence_start_hits == 1
+    assert (
+        _node_text(result.reinserted_document)
+        == "The dog ran. {~COMPANION:The pup~} barked."
+    )
+
+
+@pytest.mark.unit
+def test_sentence_start_variant_at_start_of_text_is_reinsertable() -> None:
+    """A lowercase-value token capitalized at the very start of the text is reinsertable."""
+    pre_fill = _skeleton([{"id": "n1", "body": "{~COMPANION:the pup~} dashed off."}])
+    filled = _skeleton([{"id": "n1", "body": "The pup dashed off."}])
+    result = reinsert_sentinels(pre_fill, filled)
+
+    outcome = result.token_outcomes[0]
+    assert outcome.status == "reinsertable"
+    assert result.sentence_start_hits == 1
+    assert _node_text(result.reinserted_document) == "{~COMPANION:The pup~} dashed off."
+
+
+@pytest.mark.unit
+def test_sentence_start_variant_after_newline_is_reinsertable() -> None:
+    """A lowercase-value token capitalized at the start of a new line is reinsertable."""
+    pre_fill = _skeleton(
+        [{"id": "n1", "body": "Quiet night.\n{~COMPANION:the pup~} slept."}]
+    )
+    filled = _skeleton([{"id": "n1", "body": "Quiet night.\nThe pup slept."}])
+    result = reinsert_sentinels(pre_fill, filled)
+
+    outcome = result.token_outcomes[0]
+    assert outcome.status == "reinsertable"
+    assert result.sentence_start_hits == 1
+    assert (
+        _node_text(result.reinserted_document)
+        == "Quiet night.\n{~COMPANION:The pup~} slept."
+    )
+
+
+@pytest.mark.unit
+def test_sentence_start_variant_after_closing_quote_is_reinsertable() -> None:
+    """A lowercase-value token capitalized right after a closing quote is reinsertable."""
+    pre_fill = _skeleton(
+        [{"id": "n1", "body": '"Stay close!" {~COMPANION:the pup~} yipped.'}]
+    )
+    filled = _skeleton([{"id": "n1", "body": '"Stay close!" The pup yipped.'}])
+    result = reinsert_sentinels(pre_fill, filled)
+
+    outcome = result.token_outcomes[0]
+    assert outcome.status == "reinsertable"
+    assert result.sentence_start_hits == 1
+    assert (
+        _node_text(result.reinserted_document)
+        == '"Stay close!" {~COMPANION:The pup~} yipped.'
+    )
+
+
+@pytest.mark.unit
+def test_mid_sentence_capitalized_variant_remains_a_miss() -> None:
+    """A capitalized mid-sentence mention (not after a sentence terminator) stays not_found."""
+    pre_fill = _skeleton([{"id": "n1", "body": "I love {~COMPANION:the pup~} dearly."}])
+    filled = _skeleton([{"id": "n1", "body": "I love The pup dearly."}])
+    result = reinsert_sentinels(pre_fill, filled)
+
+    outcome = result.token_outcomes[0]
+    assert outcome.occurrence_count == 0
+    assert outcome.status == "not_found"
+    assert result.sentence_start_hits == 0
+    assert "{~" not in _node_text(result.reinserted_document)
+
+
+@pytest.mark.unit
+def test_uppercase_initial_value_is_unaffected_by_sentence_start_widening() -> None:
+    """A value that already starts uppercase gets no widened matcher at all."""
+    pre_fill = _skeleton([{"id": "n1", "body": "{~HERO:Explorer~} sets off."}])
+    filled = _skeleton([{"id": "n1", "body": "explorer sets off."}])
+    result = reinsert_sentinels(pre_fill, filled)
+
+    outcome = result.token_outcomes[0]
+    assert outcome.occurrence_count == 0
+    assert outcome.status == "not_found"
+    assert result.sentence_start_hits == 0
+
+
+@pytest.mark.unit
+def test_mixed_node_wraps_both_cases_without_double_wrap() -> None:
+    """One node with both a mid-sentence and a sentence-start mention wraps both, once each."""
+    pre_fill = _skeleton(
+        [
+            {
+                "id": "n1",
+                "body": (
+                    "{~COMPANION:the pup~} barked once. Loyally, the pup barked again."
+                ),
+            }
+        ]
+    )
+    filled = _skeleton(
+        [{"id": "n1", "body": "The pup barked once. Loyally, the pup barked again."}]
+    )
+    result = reinsert_sentinels(pre_fill, filled)
+
+    outcome = result.token_outcomes[0]
+    assert outcome.occurrence_count == 2
+    assert outcome.status == "reinsertable"
+    assert result.sentence_start_hits == 1
+    body = _node_text(result.reinserted_document)
+    assert body.count("{~COMPANION:") == 2
+    assert "{~COMPANION:The pup~}" in body
+    assert "{~COMPANION:the pup~}" in body
+    assert "{~COMPANION:The pup~}~}" not in body
+    assert result.round_trip_ok is True
+
+
+@pytest.mark.unit
+def test_round_trip_ok_with_sentence_start_only_capitalized_token() -> None:
+    """Round-trip integrity passes with a verbatim capitalized token.
+
+    The wrapped token's case differs from the pre-fill skeleton's own
+    declared (lowercase) value; `round_trip_ok` still passes because it
+    compares against a derived reference that records the verbatim variant
+    actually inserted (see `reinsert_sentinels`'s docstring), not the raw,
+    unmodified `bound_skeleton`. An independent check against the raw
+    `bound_skeleton` legitimately still fails on the byte-exact casing
+    mismatch, which is why the two diverge here.
+    """
+    pre_fill = _skeleton([{"id": "n1", "body": "{~COMPANION:the pup~} dashed off."}])
+    filled = _skeleton([{"id": "n1", "body": "The pup dashed off."}])
+    result = reinsert_sentinels(pre_fill, filled)
+
+    assert result.reinsertion_clean is True
+    assert result.round_trip_ok is True
+    assert _node_text(result.reinserted_document) == "{~COMPANION:The pup~} dashed off."
+    independent_check = check_sentinel_integrity(pre_fill, result.reinserted_document)
+    assert independent_check.ok is False
+
+
+# ---------------------------------------------------------------------------
+# Widening 2: possessive matching (already-supported) and plural reporting
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_possessive_apostrophe_wraps_the_stem_and_round_trips() -> None:
+    """The apostrophe in a possessive is a non-word char, so `\\b` finds the stem.
+
+    The possessive suffix (`'s`) is left outside the wrap, and since the
+    wrapped value matches the pre-fill skeleton's own declared value exactly
+    (no case shift involved), the round-trip proof passes via the
+    pre-existing, unmodified mechanism.
+    """
+    pre_fill = _skeleton([{"id": "n1", "body": "{~HERO:Explorer~} grinned."}])
+    filled = _skeleton([{"id": "n1", "body": "Explorer's compass spun."}])
+    result = reinsert_sentinels(pre_fill, filled)
+
+    outcome = result.token_outcomes[0]
+    assert outcome.occurrence_count == 1
+    assert outcome.status == "reinsertable"
+    assert _node_text(result.reinserted_document) == "{~HERO:Explorer~}'s compass spun."
+    assert result.round_trip_ok is True
+
+
+@pytest.mark.unit
+def test_plural_form_is_counted_but_not_wrapped() -> None:
+    """A plural mention ("Explorers") is counted, not matched or wrapped."""
+    pre_fill = _skeleton([{"id": "n1", "body": "{~HERO:Explorer~} grinned."}])
+    filled = _skeleton(
+        [{"id": "n1", "body": "Explorers gathered. Explorer waved to them."}]
+    )
+    result = reinsert_sentinels(pre_fill, filled)
+
+    outcome = result.token_outcomes[0]
+    assert outcome.occurrence_count == 1
+    assert outcome.status == "reinsertable"
+    assert result.plural_occurrences == 1
+    body = _node_text(result.reinserted_document)
+    assert body == "Explorers gathered. {~HERO:Explorer~} waved to them."
+    assert "{~HERO:Explorers~}" not in body
+
+
+# ---------------------------------------------------------------------------
 # aggregate_reinsertion / render_json / render_markdown
 # ---------------------------------------------------------------------------
 
@@ -311,7 +508,12 @@ def _outcome(
 
 
 def _result(
-    outcomes: list[TokenOutcome], *, clean: bool, round_trip_ok: bool
+    outcomes: list[TokenOutcome],
+    *,
+    clean: bool,
+    round_trip_ok: bool,
+    sentence_start_hits: int = 0,
+    plural_occurrences: int = 0,
 ) -> ReinsertionResult:
     return ReinsertionResult(
         normalized_document={},
@@ -319,6 +521,8 @@ def _result(
         token_outcomes=tuple(outcomes),
         reinsertion_clean=clean,
         round_trip_ok=round_trip_ok,
+        sentence_start_hits=sentence_start_hits,
+        plural_occurrences=plural_occurrences,
     )
 
 
@@ -380,6 +584,39 @@ def test_aggregate_reinsertion_rates_and_histograms() -> None:
 
 
 @pytest.mark.unit
+def test_aggregate_reinsertion_sums_sentence_start_and_plural_fields() -> None:
+    """sentence_start_hits and plural_occurrences sum across every trial."""
+    trials = [
+        ReinsertionTrial(
+            specimen_slug="s0",
+            provider="mock",
+            result=_result(
+                [_outcome("reinsertable", 1)],
+                clean=True,
+                round_trip_ok=True,
+                sentence_start_hits=2,
+                plural_occurrences=1,
+            ),
+        ),
+        ReinsertionTrial(
+            specimen_slug="s1",
+            provider="mock",
+            result=_result(
+                [_outcome("reinsertable", 1)],
+                clean=True,
+                round_trip_ok=True,
+                sentence_start_hits=3,
+                plural_occurrences=4,
+            ),
+        ),
+    ]
+    data = aggregate_reinsertion(trials)
+
+    assert data.sentence_start_hits == 5
+    assert data.plural_occurrences == 5
+
+
+@pytest.mark.unit
 def test_render_json_shape() -> None:
     """render_json emits every field aggregate_reinsertion computed, JSON-serializable."""
     trials = [
@@ -387,7 +624,11 @@ def test_render_json_shape() -> None:
             specimen_slug="s0",
             provider="mock",
             result=_result(
-                [_outcome("reinsertable", 1)], clean=True, round_trip_ok=True
+                [_outcome("reinsertable", 1)],
+                clean=True,
+                round_trip_ok=True,
+                sentence_start_hits=1,
+                plural_occurrences=2,
             ),
         )
     ]
@@ -402,6 +643,8 @@ def test_render_json_shape() -> None:
     ]
     assert payload["outcome_histogram"] == {"reinsertable": 1}
     assert payload["multiplicity_histogram"] == {"1": 1}
+    assert payload["sentence_start_hits"] == 1
+    assert payload["plural_occurrences"] == 2
 
 
 @pytest.mark.unit
@@ -422,3 +665,28 @@ def test_render_markdown_contains_headline_numbers() -> None:
     assert "Strip-all-then-reinsert clean rate" in markdown
     assert "Round-trip integrity-check pass rate" in markdown
     assert "not_found" in markdown
+
+
+@pytest.mark.unit
+def test_render_markdown_contains_sentence_start_and_plural_numbers() -> None:
+    """render_markdown surfaces the sentence-start and plural counts in prose."""
+    trials = [
+        ReinsertionTrial(
+            specimen_slug="s0",
+            provider="mock",
+            result=_result(
+                [_outcome("not_found", 0)],
+                clean=False,
+                round_trip_ok=False,
+                sentence_start_hits=3,
+                plural_occurrences=7,
+            ),
+        )
+    ]
+    data = aggregate_reinsertion(trials)
+    markdown = render_markdown(data)
+
+    assert "3" in markdown
+    assert "7" in markdown
+    assert "sentence-start" in markdown.lower()
+    assert "plural" in markdown.lower()

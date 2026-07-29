@@ -72,6 +72,22 @@ _MULTIPLICITY_SINGLE = "1"
 _MULTIPLICITY_FEW = "2-3"
 _MULTIPLICITY_MANY = "4+"
 
+# A sentence-start position: the very start of the text, the start of a line
+# (immediately after a newline), or the whitespace run immediately following
+# a sentence-terminating punctuation mark and an optional single closing
+# quote character. Captured as a whole group by every caller that builds on
+# this fragment (never used as a lookbehind): the punctuation+quote+
+# whitespace branch is variable-width (`\s+` can consume more than one
+# character), and Python `re` requires a fixed-width lookbehind, so a
+# captured leading group whose text is re-emitted verbatim is the only way to
+# assert this context without consuming and discarding it. Uses the literal
+# Unicode right single/double quotation marks (rather than `\uXXXX` escapes)
+# so the character class is unambiguous at a glance; RUF001 flags exactly
+# these two characters as visually ambiguous with their ASCII look-alikes,
+# which is precisely why they are spelled out literally here instead of left
+# for a reader to guess at, so the rule is suppressed on this line only.
+_SENTENCE_START_PREFIX = r"(?:\A|\n|[.!?][\"'’”]?\s+)"  # noqa: RUF001
+
 
 @dataclass(frozen=True, slots=True)
 class TokenOutcome:
@@ -118,11 +134,32 @@ class ReinsertionResult:
             NOT clean: there is nothing to prove re-insertion viable on, so
             treating it as a vacuous pass would silently inflate the
             clean-rate with non-data-points.
-        round_trip_ok: Whether `check_sentinel_integrity(bound_skeleton,
-            reinserted_document).ok` is True: the same integrity gate the
-            fill pipeline already trusts, run against this module's own
-            output, to prove the transform restores the exact expected token
-            multiset whenever it claims success.
+        round_trip_ok: Whether `check_sentinel_integrity(derived_reference,
+            reinserted_document).ok` is True, where `derived_reference` is a
+            copy of `bound_skeleton` patched to also declare any verbatim-
+            cased sentence-start variant this trial actually wrapped (see
+            `_patch_reference_node`). A token whose value was reinserted
+            unchanged needs no patch, so this reduces to the original
+            `check_sentinel_integrity(bound_skeleton, reinserted_document)`
+            check whenever sentence-start widening never fired; a token that
+            stayed `not_found` is never patched either, so a genuine drop
+            still fails this check exactly as before. This is the same
+            integrity gate the fill pipeline already trusts, proving the
+            transform restores the exact expected-token multiset (allowing
+            only the grammar-driven casing this module deliberately applies)
+            whenever it claims success.
+        sentence_start_hits: How many occurrences across the whole document
+            were classified `"reinsertable"` only because a sentence-start
+            capitalized variant of a lowercase-starting expected value was
+            matched (the base, unwidened pattern found nothing at that
+            position). Zero when no expected value in this document starts
+            with a lowercase character, or when every occurrence was already
+            matched by the base pattern.
+        plural_occurrences: How many `<value>s` occurrences (case-sensitive,
+            whole-word) were found across the whole document for expected
+            values that are NOT themselves wrapped or counted toward
+            `TokenOutcome.occurrence_count`: a plural mention is data
+            collected to size a future plural policy, never re-inserted.
     """
 
     normalized_document: dict[str, object]
@@ -130,6 +167,8 @@ class ReinsertionResult:
     token_outcomes: tuple[TokenOutcome, ...]
     reinsertion_clean: bool
     round_trip_ok: bool
+    sentence_start_hits: int
+    plural_occurrences: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -190,6 +229,12 @@ class ReinsertionAggregate:
             `occurrence_count`, bucketed into ``"1"``, ``"2-3"``, ``"4+"``
             (a `not_found` token, count 0, is never bucketed here; it is
             already captured in `outcome_histogram`).
+        sentence_start_hits: Sum of `ReinsertionResult.sentence_start_hits`
+            across every trial: how many occurrence-level matches were only
+            found via the sentence-start capitalization widening.
+        plural_occurrences: Sum of `ReinsertionResult.plural_occurrences`
+            across every trial: how many `<value>s` occurrences were seen
+            but deliberately left unwrapped.
     """
 
     total_trials: int
@@ -200,6 +245,8 @@ class ReinsertionAggregate:
     per_provider: tuple[ReinsertionProviderStats, ...]
     outcome_histogram: dict[str, int]
     multiplicity_histogram: dict[str, int]
+    sentence_start_hits: int
+    plural_occurrences: int
 
 
 # ---------------------------------------------------------------------------
@@ -455,8 +502,89 @@ def _word_boundary_pattern(value: str) -> re.Pattern[str]:
     return re.compile(r"\b" + re.escape(value) + r"\b")
 
 
+def _node_surface_texts(node: dict[str, object]) -> list[str]:
+    """Return one node's body and (if present) ending-title strings, in that order.
+
+    Args:
+        node: The node dict to read (never mutated).
+
+    Returns:
+        list[str]: The node's scannable text surfaces (body, then ending
+            title); empty if neither is a string.
+    """
+    texts: list[str] = []
+    body = node.get("body")
+    if isinstance(body, str):
+        texts.append(body)
+    ending = _as_dict(node.get("ending"))
+    if ending is not None:
+        title = ending.get("title")
+        if isinstance(title, str):
+            texts.append(title)
+    return texts
+
+
+def _capitalize_first(value: str) -> str:
+    """Uppercase only `value`'s first character, leaving the rest untouched.
+
+    Args:
+        value: A non-empty string.
+
+    Returns:
+        str: `value` with its first character uppercased.
+    """
+    return value[0].upper() + value[1:]
+
+
+def _sentence_start_pattern(value: str) -> re.Pattern[str] | None:
+    """Build a sentence-start counting pattern for one expected value, or None.
+
+    Applies only to a `value` whose first character is lowercase (the
+    sentence-start widening only ever needs to recover a grammatically
+    correct capitalization of an otherwise-lowercase generic word; a value
+    that already starts uppercase is matched by `_word_boundary_pattern`
+    alone, at every position, so no separate variant is needed for it).
+
+    Args:
+        value: The expected token's inner generic value.
+
+    Returns:
+        re.Pattern[str] | None: A compiled pattern matching
+            `_SENTENCE_START_PREFIX` immediately followed by `value` with
+            only its first character uppercased, or `None` when `value`
+            does not start with a lowercase character.
+    """
+    if not value[:1].islower():
+        return None
+    return re.compile(
+        _SENTENCE_START_PREFIX + re.escape(_capitalize_first(value)) + r"\b"
+    )
+
+
+def _plural_pattern(value: str) -> re.Pattern[str]:
+    """Build a case-sensitive, whole-word regex for `value`'s simple plural.
+
+    Args:
+        value: The expected token's inner generic value.
+
+    Returns:
+        re.Pattern[str]: A compiled pattern matching `value` with a trailing
+            ``s``, at word boundaries (so ``Explorer`` matches ``Explorers``
+            here, the exact complement of `_word_boundary_pattern`, which
+            never matches inside it).
+    """
+    return re.compile(r"\b" + re.escape(value) + r"s\b")
+
+
 def _count_in_node_surfaces(node: dict[str, object], value: str) -> int:
     """Count whole-word occurrences of `value` across one node's body and ending title.
+
+    Includes both the base, case-sensitive whole-word match and, for a
+    `value` starting with a lowercase character, its sentence-start
+    capitalized variant (see `_sentence_start_pattern`): both are legitimate
+    re-insertable occurrences of the same expected token, so both count
+    toward `TokenOutcome.occurrence_count` and its ``"reinsertable"`` /
+    ``"not_found"`` classification.
 
     Args:
         node: The node dict to scan (already normalized; no model-emitted
@@ -468,53 +596,154 @@ def _count_in_node_surfaces(node: dict[str, object], value: str) -> int:
             present) ending title.
     """
     pattern = _word_boundary_pattern(value)
+    sentence_start = _sentence_start_pattern(value)
     total = 0
-    body = node.get("body")
-    if isinstance(body, str):
-        total += len(pattern.findall(body))
-    ending = _as_dict(node.get("ending"))
-    if ending is not None:
-        title = ending.get("title")
-        if isinstance(title, str):
-            total += len(pattern.findall(title))
+    for text in _node_surface_texts(node):
+        total += len(pattern.findall(text))
+        if sentence_start is not None:
+            total += len(sentence_start.findall(text))
     return total
 
 
-def _wrap_all_in_node(
-    node: dict[str, object], reinsertable_tokens: list[_Token]
-) -> None:
-    """Wrap every reinsertable token's occurrences in one node, in a single pass per surface.
+def _count_plural_occurrences(node: dict[str, object], value: str) -> int:
+    """Count whole-word occurrences of `value`'s simple plural in one node.
+
+    Data collection only (plan 3.4 Stage R widening 2): a plural mention is
+    never wrapped, only counted, to size a future plural policy.
+
+    Args:
+        node: The node dict to scan (already normalized).
+        value: The expected token's inner generic value.
+
+    Returns:
+        int: The total plural occurrence count across the node's body and
+            (if present) ending title.
+    """
+    pattern = _plural_pattern(value)
+    return sum(len(pattern.findall(text)) for text in _node_surface_texts(node))
+
+
+def _build_node_wrap_pattern(
+    reinsertable_tokens: list[_Token],
+) -> tuple[re.Pattern[str], dict[str, _Token], dict[str, str]]:
+    """Build one node's combined single-pass wrap alternation.
 
     All of a node's reinsertable tokens are combined into one alternation
     pattern (longest value first, so the regex engine prefers the more
     specific match whenever two expected values could both match at the same
-    position, e.g. ``"the pup"`` before ``"pup"``) and substituted in one
-    `re.sub` call per surface. This matters because `re.sub` never re-enters
-    text it has just inserted: a single combined pass guarantees a shorter
-    token's pattern can never accidentally match inside the sentinel wrapper
-    a longer token's own substitution just produced, which sequential
-    independent per-token passes over the same mutable text would risk.
+    position, e.g. ``"the pup"`` before ``"pup"``). Combining every token
+    into ONE pattern, substituted in a single `re.sub` call per surface, is
+    what `_wrap_all_in_node` relies on for its no-double-wrap guarantee:
+    `re.sub` never re-enters text it has just inserted, so a single combined
+    pass guarantees a shorter token's pattern can never accidentally match
+    inside the sentinel wrapper a longer token's own substitution just
+    produced, which sequential independent per-token passes over the same
+    mutable text would risk.
+
+    For a `value` starting with a lowercase character, the alternation also
+    carries a sentence-start branch: `_SENTENCE_START_PREFIX` in its own
+    named group (re-emitted verbatim, never consumed by the sentinel wrap),
+    immediately followed by `value` with only its first character
+    uppercased. Folding this into the SAME alternation (rather than a
+    second, separate pattern) is what keeps a mid-sentence and a
+    sentence-start match mutually exclusive at any one position, and what
+    guarantees a token can never be double-wrapped by both branches.
+
+    Args:
+        reinsertable_tokens: The `(slot_id, value)` pairs to wrap, already
+            filtered to one node's reinsertable (count >= 1) tokens.
+
+    Returns:
+        tuple[re.Pattern[str], dict[str, _Token], dict[str, str]]: The
+            compiled alternation pattern; a map from every content group
+            name (both the plain `v{i}` groups and the sentence-start `p{i}`
+            groups) to the token it belongs to; and a map from a
+            sentence-start content group's name to its own leading prefix
+            group's name (absent for a plain group).
+    """
+    ordered = sorted(reinsertable_tokens, key=lambda token: -len(token[1]))
+    seen_values: set[str] = set()
+    pattern_parts: list[str] = []
+    token_by_group: dict[str, _Token] = {}
+    prefix_group_by_content_group: dict[str, str] = {}
+    group_index = 0
+
+    for slot_id, value in ordered:
+        if value in seen_values:
+            continue
+        seen_values.add(value)
+
+        content_group = f"v{group_index}"
+        token_by_group[content_group] = (slot_id, value)
+        pattern_parts.append(rf"(?P<{content_group}>\b{re.escape(value)}\b)")
+        group_index += 1
+
+        if not value[:1].islower():
+            continue
+        cap_value = _capitalize_first(value)
+        prefix_group = f"pre{group_index}"
+        start_group = f"p{group_index}"
+        token_by_group[start_group] = (slot_id, value)
+        prefix_group_by_content_group[start_group] = prefix_group
+        prefix_part = rf"(?P<{prefix_group}>{_SENTENCE_START_PREFIX})"
+        value_part = rf"(?P<{start_group}>{re.escape(cap_value)}\b)"
+        pattern_parts.append(prefix_part + value_part)
+        group_index += 1
+
+    return (
+        re.compile("|".join(pattern_parts)),
+        token_by_group,
+        prefix_group_by_content_group,
+    )
+
+
+def _wrap_all_in_node(
+    node: dict[str, object], reinsertable_tokens: list[_Token]
+) -> tuple[dict[_Token, frozenset[str]], int]:
+    """Wrap every reinsertable token's occurrences in one node, in a single pass per surface.
+
+    See `_build_node_wrap_pattern` for how the single combined alternation
+    (plain plus, where applicable, sentence-start branches) is built.
 
     Args:
         node: The node dict to mutate in place (its `body` and, if present,
             `ending.title` strings).
         reinsertable_tokens: The `(slot_id, value)` pairs to wrap, already
             filtered to this node's reinsertable (count >= 1) tokens.
+
+    Returns:
+        tuple[dict[_Token, frozenset[str]], int]: The distinct verbatim
+            variant string(s) actually wrapped for each token that matched
+            at least once here (used by `_patch_reference_node` to build a
+            per-trial derived reference for the round-trip integrity check),
+            and the total count of matches that only fired via the
+            sentence-start branch.
     """
     if not reinsertable_tokens:
-        return
-    ordered = sorted(reinsertable_tokens, key=lambda token: -len(token[1]))
-    replacement_by_value: dict[str, str] = {}
-    pattern_parts: list[str] = []
-    for slot_id, value in ordered:
-        if value in replacement_by_value:
-            continue
-        replacement_by_value[value] = wrap(slot_id, value)
-        pattern_parts.append(re.escape(value))
-    pattern = re.compile(r"\b(" + "|".join(pattern_parts) + r")\b")
+        return {}, 0
+
+    pattern, token_by_group, prefix_group_by_content_group = _build_node_wrap_pattern(
+        reinsertable_tokens
+    )
+
+    variants_used: dict[_Token, set[str]] = {}
+    sentence_start_hits = 0
 
     def _replace(match: re.Match[str]) -> str:
-        return replacement_by_value[match.group(1)]
+        nonlocal sentence_start_hits
+        for group_name, token in token_by_group.items():
+            text = match.group(group_name)
+            if text is None:
+                continue
+            variants_used.setdefault(token, set()).add(text)
+            prefix_group = prefix_group_by_content_group.get(group_name)
+            if prefix_group is None:
+                return wrap(token[0], text)
+            sentence_start_hits += 1
+            return match.group(prefix_group) + wrap(token[0], text)
+        # Unreachable: `pattern` only ever matches one of the alternatives
+        # enumerated in `token_by_group`.
+        return match.group(0)
 
     body = node.get("body")
     if isinstance(body, str):
@@ -524,6 +753,57 @@ def _wrap_all_in_node(
         title = ending.get("title")
         if isinstance(title, str):
             ending["title"] = pattern.sub(_replace, title)
+
+    return (
+        {token: frozenset(variants) for token, variants in variants_used.items()},
+        sentence_start_hits,
+    )
+
+
+def _patch_reference_node(
+    node: dict[str, object], variants_by_token: dict[_Token, frozenset[str]]
+) -> None:
+    """Patch one derived-reference node to declare every variant actually wrapped.
+
+    `check_sentinel_integrity` (never modified by this module) expects a
+    node's reference text to declare the exact set of sentinel tokens the
+    corresponding reinserted node's text contains. The sentence-start
+    widening intentionally wraps a verbatim-cased variant of a token's
+    declared value (e.g. ``The pup`` where the bound skeleton declared ``the
+    pup``); rather than relax the integrity checker itself, this function
+    patches a private, per-trial deep copy of the bound skeleton (see
+    `reinsert_sentinels`'s `reference`, never the caller's own
+    `bound_skeleton`) so it additionally declares any such variant, leaving
+    every genuinely dropped or forged token's mismatch intact for the
+    checker to catch.
+
+    A token whose only wrapped variant equals its declared canonical value
+    (the ordinary, unwidened case) is left untouched: nothing to patch.
+
+    Args:
+        node: One node dict from the derived reference document (mutated in
+            place); the SAME node id as the corresponding reinserted node.
+        variants_by_token: Every distinct verbatim variant string actually
+            wrapped for each `(slot_id, value)` token in this node, as
+            returned by `_wrap_all_in_node`.
+
+    Returns:
+        None. `node` is mutated in place.
+    """
+    for (slot_id, canonical_value), variants in variants_by_token.items():
+        if variants == frozenset((canonical_value,)):
+            continue
+        canonical_token = wrap(slot_id, canonical_value)
+        replacement = "".join(wrap(slot_id, variant) for variant in sorted(variants))
+
+        body = node.get("body")
+        if isinstance(body, str) and canonical_token in body:
+            node["body"] = body.replace(canonical_token, replacement, 1)
+        ending = _as_dict(node.get("ending"))
+        if ending is not None:
+            title = ending.get("title")
+            if isinstance(title, str) and canonical_token in title:
+                ending["title"] = title.replace(canonical_token, replacement, 1)
 
 
 def _index_nodes(document: dict[str, object]) -> dict[str, dict[str, object]]:
@@ -582,12 +862,25 @@ def reinsert_sentinels(
     reinserted = copy.deepcopy(normalized)
     nodes_by_id = _index_nodes(reinserted)
 
+    # A private, per-trial deep copy of `bound_skeleton`, patched (see
+    # `_patch_reference_node`) to additionally declare any verbatim-cased
+    # sentence-start variant this trial actually wraps. `bound_skeleton`
+    # itself is never mutated or passed to `check_sentinel_integrity` below.
+    reference = cast("dict[str, object]", copy.deepcopy(bound_skeleton))
+    reference_nodes_by_id = _index_nodes(reference)
+
     outcomes: list[TokenOutcome] = []
+    sentence_start_hits = 0
+    plural_occurrences = 0
     for node_id in sorted(expected):
         node = nodes_by_id.get(node_id)
         reinsertable_tokens: list[_Token] = []
         for slot_id, value in sorted(expected[node_id]):
-            count = _count_in_node_surfaces(node, value) if node is not None else 0
+            if node is None:
+                count = 0
+            else:
+                count = _count_in_node_surfaces(node, value)
+                plural_occurrences += _count_plural_occurrences(node, value)
             status: _TokenStatus = "reinsertable" if count >= 1 else "not_found"
             outcomes.append(
                 TokenOutcome(
@@ -601,12 +894,18 @@ def reinsert_sentinels(
             if status == "reinsertable":
                 reinsertable_tokens.append((slot_id, value))
         if node is not None:
-            _wrap_all_in_node(node, reinsertable_tokens)
+            variants_by_token, node_sentence_start_hits = _wrap_all_in_node(
+                node, reinsertable_tokens
+            )
+            sentence_start_hits += node_sentence_start_hits
+            reference_node = reference_nodes_by_id.get(node_id)
+            if reference_node is not None:
+                _patch_reference_node(reference_node, variants_by_token)
 
     reinsertion_clean = bool(outcomes) and all(
         outcome.status == "reinsertable" for outcome in outcomes
     )
-    round_trip_ok = check_sentinel_integrity(bound_skeleton, reinserted).ok
+    round_trip_ok = check_sentinel_integrity(reference, reinserted).ok
 
     return ReinsertionResult(
         normalized_document=normalized,
@@ -614,6 +913,8 @@ def reinsert_sentinels(
         token_outcomes=tuple(outcomes),
         reinsertion_clean=reinsertion_clean,
         round_trip_ok=round_trip_ok,
+        sentence_start_hits=sentence_start_hits,
+        plural_occurrences=plural_occurrences,
     )
 
 
@@ -668,6 +969,8 @@ def aggregate_reinsertion(trials: Sequence[ReinsertionTrial]) -> ReinsertionAggr
     total_trials = len(trials)
     clean_trials = sum(1 for trial in trials if trial.result.reinsertion_clean)
     round_trip_ok_trials = sum(1 for trial in trials if trial.result.round_trip_ok)
+    sentence_start_hits = sum(trial.result.sentence_start_hits for trial in trials)
+    plural_occurrences = sum(trial.result.plural_occurrences for trial in trials)
 
     per_provider_totals: dict[str, int] = {}
     per_provider_clean: dict[str, int] = {}
@@ -711,6 +1014,8 @@ def aggregate_reinsertion(trials: Sequence[ReinsertionTrial]) -> ReinsertionAggr
         per_provider=per_provider,
         outcome_histogram=outcome_histogram,
         multiplicity_histogram=multiplicity_histogram,
+        sentence_start_hits=sentence_start_hits,
+        plural_occurrences=plural_occurrences,
     )
 
 
@@ -745,6 +1050,8 @@ def render_json(data: ReinsertionAggregate) -> dict[str, object]:
         ],
         "outcome_histogram": dict(data.outcome_histogram),
         "multiplicity_histogram": dict(data.multiplicity_histogram),
+        "sentence_start_hits": data.sentence_start_hits,
+        "plural_occurrences": data.plural_occurrences,
     }
 
 
@@ -777,6 +1084,24 @@ def render_markdown(data: ReinsertionAggregate) -> str:
                 "reinsertion restores the exact expected token multiset):",
                 f"**{data.round_trip_ok_rate:.1%}**",
                 f"({data.round_trip_ok_trials}/{data.total_trials})",
+            ]
+        )
+    )
+    lines.append("")
+    lines.append(
+        " ".join(
+            [
+                "Sentence-start capitalization widening matches:",
+                f"**{data.sentence_start_hits}**",
+            ]
+        )
+    )
+    lines.append("")
+    lines.append(
+        " ".join(
+            [
+                "Plural occurrences seen but left unwrapped:",
+                f"**{data.plural_occurrences}**",
             ]
         )
     )
