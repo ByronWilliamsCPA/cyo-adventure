@@ -521,15 +521,28 @@ async def _rescreen_one(
             )
             reasons.extend(_classifier_block_reasons(classifier_findings))
             reasons.extend(_newly_surfaced_reasons(surfaced))
-            # `_prefetch_personalizable_slots` builds an entry for every book
-            # this sweep screens, so the default is unreachable; it fails
-            # CLOSED (`None`) rather than guessing an empty declared set,
-            # matching `_sentinel_corruption_reasons`' own uncomputable branch.
-            reasons.extend(
-                _sentinel_corruption_reasons(
-                    version_row.blob, ctx.personalizable_slots.get(book.id)
-                )
+
+        # Deliberately OUTSIDE the try/else above. The at-rest scan reads the
+        # raw `version_row.blob` mapping, never the parsed `story`, so it has
+        # no reason to be gated on schema validation succeeding. Nested under
+        # `else:` it was skipped for exactly the blobs most likely to be
+        # corrupt: one that fails `model_validate` while the gate has already
+        # blocked it reaches this line with the parse branch skipped, and the
+        # verdict would have carried the gate's reasons but not a word about
+        # the sentinel damage sitting in the stored content. The outcome was
+        # "flagged" either way (gate reasons are already non-empty on that
+        # path), so this widens the RECORDED reason set rather than changing
+        # any book's verdict.
+        #
+        # `_prefetch_personalizable_slots` builds an entry for every book this
+        # sweep screens, so the `.get` default is unreachable; it fails CLOSED
+        # (`None`) rather than guessing an empty declared set, matching
+        # `_sentinel_corruption_reasons`' own uncomputable branch.
+        reasons.extend(
+            _sentinel_corruption_reasons(
+                version_row.blob, ctx.personalizable_slots.get(book.id)
             )
+        )
 
         outcome: Outcome = "flagged" if reasons else "passed"
         block_count = sum(1 for f in classifier_findings if f.verdict is Verdict.BLOCK)

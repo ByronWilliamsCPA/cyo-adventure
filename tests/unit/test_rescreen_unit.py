@@ -733,6 +733,48 @@ async def test_prefetched_job_drives_the_per_book_slot_contract(
     ]
 
 
+async def test_at_rest_scan_runs_even_when_the_blob_fails_to_parse(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A blob the gate blocks AND that fails schema validation is still scanned.
+
+    The at-rest sentinel scan reads the raw blob mapping, never the parsed
+    model, so it must not be gated on `model_validate` succeeding. Nested
+    under the parse-success branch it was skipped for precisely the blobs
+    most likely to be damaged: the verdict carried the gate's reasons and
+    said nothing about the sentinel state of the stored content.
+    """
+    _patch_threshold_policy(monkeypatch)
+    classifiers = AsyncMock(return_value=[])
+    monkeypatch.setattr(rescreen_mod, "run_classifiers", classifiers)
+    job = GenerationJob(storybook_id="s1", authoring_metadata={"skeleton_slug": "x"})
+    monkeypatch.setattr(
+        rescreen_mod,
+        "personalizable_slot_ids_for_job",
+        lambda _job: None,
+    )
+    _wire_session(
+        mock_async_session,
+        books=[_book()],
+        # `{}` fails StoryModel.model_validate and the gate blocks it first.
+        versions={("s1", 1): _version_row("s1", 1, {})},
+        jobs=[job],
+    )
+
+    summary = await rescreen_mod.rescreen_published_books(
+        mock_async_session, settings=_settings(), actor=_actor()
+    )
+
+    result = summary.results[0]
+    assert result.outcome == "flagged"
+    assert any(r.startswith("gate ") for r in result.reasons)
+    assert (
+        "personalizable-slot contract could not be recovered; failing closed"
+        in result.reasons
+    )
+    classifiers.assert_not_awaited()
+
+
 # ---------------------------------------------------------------------------
 # api.rescreen router
 # ---------------------------------------------------------------------------
