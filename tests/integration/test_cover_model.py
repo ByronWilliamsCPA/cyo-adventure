@@ -44,3 +44,37 @@ async def test_cover_status_rejects_unknown_value(
         params = {"sid": seed.storybook_id, "v": seed.version}
         with pytest.raises(IntegrityError):
             await session.execute(statement, params)
+
+
+@pytest.mark.asyncio
+async def test_cover_status_accepts_pending_review_value(
+    sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """H2: 'pending_review' is a legal cover_status.
+
+    It is the human-approval gate state between 'generating' and 'ready'.
+    """
+    async with sessions() as session:
+        statement = text(
+            "UPDATE storybook_version SET cover_status = 'pending_review' "
+            "WHERE storybook_id = :sid AND version = :v"
+        )
+        params = {"sid": seed.storybook_id, "v": seed.version}
+        await session.execute(statement, params)
+        await session.commit()
+    async with sessions() as session:
+        row = await session.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        assert row.cover_status == "pending_review"
+
+
+@pytest.mark.asyncio
+async def test_cover_approval_columns_default_to_none(
+    sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """H2: cover_approved_by/cover_approved_at start unset on every row."""
+    async with sessions() as session:
+        row = await session.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        assert row.cover_approved_by is None
+        assert row.cover_approved_at is None

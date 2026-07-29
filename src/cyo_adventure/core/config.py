@@ -782,12 +782,23 @@ class Settings(BaseSettings):
         default=None, validation_alias="R2_SECRET_ACCESS_KEY"
     )
     r2_bucket: str = Field(default="covers", validation_alias="R2_BUCKET")
-    # #CRITICAL: external resources: covers are served to browsers from this
-    # custom-domain base, not from the *.r2.cloudflarestorage.com S3 endpoint
-    # (which is not public). The owner must connect a custom domain to the R2
-    # bucket in the Cloudflare dashboard and set this to that domain's origin.
-    # #VERIFY: covers/storage.py returns f"{r2_public_base_url}/{key}"; a
-    # bucket with no connected public domain yields broken cover image URLs.
+    # #CRITICAL: security: this is NOT an instruction to make the bucket
+    # browser-reachable. Covers are served to clients exclusively as
+    # short-lived presigned GET URLs minted per request
+    # (covers/storage.py::generate_presigned_cover_url); the bucket must NOT
+    # have a public custom domain or r2.dev access bound to it, per the
+    # #CRITICAL: security invariant at the top of covers/storage.py. This
+    # setting only supplies the base that upload_cover concatenates with the
+    # object key to produce the value stored in the cover_image_url audit
+    # column and consumed by scripts/backfill_covers_r2.py's URL
+    # classification. Nothing in a read path dereferences it: api/covers.py's
+    # _cover_url deliberately ignores cover_image_url and mints a presigned
+    # URL instead. Treat it as a stable naming prefix for recorded provenance,
+    # not a live endpoint, and expect it to resolve to nothing.
+    # #VERIFY: covers/storage.py's upload_cover returns
+    # f"{r2_public_base_url}/{key}" and no read path fetches that URL; if a
+    # GET against it ever succeeds without credentials, the bucket is public
+    # and the storage.py invariant is violated.
     r2_public_base_url: str | None = Field(
         default=None, validation_alias="R2_PUBLIC_BASE_URL"
     )

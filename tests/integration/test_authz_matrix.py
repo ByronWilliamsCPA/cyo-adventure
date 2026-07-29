@@ -858,6 +858,20 @@ _ROUTE_SPECS: list[RouteSpec] = [
         frozenset({Role.ADMIN}),
         path_params=_storybook_version_path,
     ),
+    # covers.py::approve_cover calls _require_admin before any row is loaded,
+    # and covers/service.py::approve_cover re-checks `principal.is_admin` as
+    # defense in depth; a non-admin therefore never reaches the version
+    # lookup, so the exact-403 invariant this suite pins holds here too. An
+    # admin on the seed row falls through to the status check
+    # (BusinessLogicError, rule="cover_approve_not_pending") because the seed
+    # cover is not "pending_review": a business-rule outcome, not a privilege
+    # rejection, which is exactly what `allowed_roles` scopes.
+    RouteSpec(
+        "POST",
+        "/api/v1/storybooks/{storybook_id}/versions/{version}/cover/approve",
+        frozenset({Role.ADMIN}),
+        path_params=_storybook_version_path,
+    ),
     # -- generation.py: guardian-only -------------------------------------------
     RouteSpec(
         "POST",
