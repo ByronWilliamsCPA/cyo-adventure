@@ -36,7 +36,7 @@ independent ID namespaces:
 
 | Namespace | Lives in | Mapped into roadmap phases? |
 |-----------|----------|------------------------------|
-| `K*` / `G*` / `A*` / `S*` | [capability-register.md](./capability-register.md) | ✅ Yes, via roadmap.md's "Where every open register item lands" table |
+| `K*` / `G*` / `A*` / `S*` | [capability-register.md](./capability-register.md) | 🟡 Mostly, via roadmap.md's "Where every open register item lands" table. Written here as ✅ on 2026-07-28; the linkage check then proved 11 open capabilities (K1, K9, K10, K11, K20, G14, G18, A2, A3, A16, S8) appeared in no row of it. They are now mapped, as unratified proposals |
 | `C*` / `GS*` / `U*` / `T*` / `P*` / `SL*` | [r1-deferred-debt-register.md](./r1-deferred-debt-register.md) | ❌ No: zero debt IDs are cited in either master document |
 | `AL-*` | [authoring-lessons-log.md](./authoring-lessons-log.md) | ❌ No: zero `AL-` hits in either master document |
 | GitHub issues | the tracker | ❌ Partially: 19 of 33 open issues appear in no planning document |
@@ -62,6 +62,90 @@ open) | `decision` (waits on an owner ruling) | `verify` (may already be done; c
 
 ---
 
+## The linkage contract
+
+This section is the enforced contract, not advice. `scripts/check_work_linkage.py` reads it as the
+specification and fails the build on a violation. Changing the rules means changing that script and
+its tests, deliberately, in the same change.
+
+### The invariant
+
+Every row in every register must resolve to exactly one **disposition**:
+
+| Disposition | Means | Required evidence |
+|-------------|-------|-------------------|
+| scheduled | has a home in the plan | `Phase` holds a value from the vocabulary below |
+| `blocked` | cannot be scheduled yet | the row names the open prerequisite |
+| `decision` | waits on a human ruling | the row names the owner who must rule |
+| `verify` | may already be done | the row names what to check |
+| `done` | closed | the row cites a PR, commit, or issue |
+
+A row with a status but no evidence, or with a `Phase` value outside the vocabulary, is an
+**orphan**. Orphan count is the health metric for this whole system: it goes to zero and a check
+keeps it there. Everything else here is plumbing in service of that one number.
+
+This generalizes the rule `scripts/check_lessons_log.py` already enforces on the lessons log: a
+status asserts something happened, so it must cite what proves it.
+
+### Phase vocabulary (closed set)
+
+| Group | Allowed values | Source of truth |
+|-------|----------------|-----------------|
+| Product phases | `0` `1` `2` `2b` `3` `4a` `4b` `4c` `4d` `5` | `roadmap.md` `## Phase` headings |
+| Track 2 phases | `6` `7` `8` `9` | `PROJECT-PLAN.md` Track 2 |
+| Milestones | `M0`..`M7`, and dotted sub-milestones such as `M4.1` | `roadmap.md` Milestones |
+| Release rungs | `R1` `R2` `R3` | `roadmap.md` release ladder |
+| Named workstreams | `content` | `roadmap.md` Content workstream |
+| Queue | `now` | `roadmap.md` Now queue |
+
+### Non-phase dispositions (closed set)
+
+Not every piece of directed work belongs to a product phase. These sentinels are legitimate, and
+being a closed set is what stops them becoming a junk drawer:
+
+| Sentinel | For |
+|----------|-----|
+| `CI hygiene` | repo tooling and gates; no product phase |
+| `doc` | a documentation correction with no code change |
+| `recurring` | an ongoing practice, not a one-time deliverable |
+| `post-launch` | deliberately deferred past R3 |
+| `external:<repo>` | owned by another repository, for example `external:homelab-infra` |
+| `issue:<number>` | a live defect tracked in the issue tracker rather than the phase plan, for example `issue:460` |
+
+### Not allowed
+
+- A cross-reference in the `Phase` column (`see G`, `see H`). Point at a real phase, or set the
+  status to `blocked` and name the blocker. "See another cluster" is not a disposition.
+- An empty `Phase` on a row whose status is `unscheduled`.
+- The same ID in two namespaces.
+- More than one value in the `Phase` column. Work that spans phases takes the **earliest** phase,
+  where it starts, and says so in the Item text. A comma-list hides which phase owns the commitment,
+  which is the failure this register exists to prevent.
+- The `Phase` column repeating the `Status` value. `decision` and `blocked` are statuses; a row in
+  either state still needs the phase it will land in once resolved.
+
+### How the other three registers link in
+
+They keep their own schemas, because they track different things and flattening them would lose
+information. This register is the **join table** that gives their rows a phase:
+
+| Register | Linkage obligation |
+|----------|--------------------|
+| [capability-register.md](./capability-register.md) | a row not marked ✅ must appear in `roadmap.md`'s "Where every open register item lands" mapping |
+| [r1-deferred-debt-register.md](./r1-deferred-debt-register.md) | a row not marked `[Closed]` or `[Resolved]` must be cited by a `UW-B*` row here. That register uses both markers interchangeably (3 and 7 rows respectively as of 2026-07-28); the validator honours both, because treating `[Resolved]` rows as open would report closed work as a gap and train readers to ignore the check |
+| [authoring-lessons-log.md](./authoring-lessons-log.md) | a lesson whose status is not `applied`, `rejected`, or `superseded` must be cited by a `UW-C*` row here |
+
+That is why clusters B and C exist. They are not commentary; they are the linkage layer, and the
+validator treats a missing entry there as a build failure.
+
+### Validate
+
+```bash
+uv run python scripts/check_work_linkage.py
+```
+
+---
+
 ## Cluster A: ADR follow-ons
 
 Decisions that were accepted or proposed, whose consequent work was never scheduled. Sourced from
@@ -76,12 +160,12 @@ Decisions that were accepted or proposed, whose consequent work was never schedu
 | UW-A05 | `worker` service in docker-compose; uncomment the dev Redis leg | 021 | 5 | unscheduled |
 | UW-A06 | Stale-`GenerationJob` observability check | 021 | 5 | unscheduled |
 | UW-A07 | Per-role privilege tightening (19 tables deferred at migration time, `20260720170000_create_service_roles.sql:26`) | 021 | 5 | unscheduled |
-| UW-A08 | **Personalization feature in its entirety**: slot kind, sentinel preservation, post-fill integrity check, toggles, consent events, values payload, client resolver, kid indicator. The ADR states nothing in it exists in code today. | 023 | see H | blocked |
-| UW-A09 | `display_name` is under-validated for render use; re-check at set-time and render-time | 023 | see H | unscheduled |
-| UW-A10 | Per-skeleton pronoun audit across the catalog | 023 | see H | unscheduled |
+| UW-A08 | **Personalization feature in its entirety**: slot kind, sentinel preservation, post-fill integrity check, toggles, consent events, values payload, client resolver, kid indicator. The ADR states nothing in it exists in code today. | 023 | 4b | blocked |
+| UW-A09 | `display_name` is under-validated for render use; re-check at set-time and render-time | 023 | 4b | unscheduled |
+| UW-A10 | Per-skeleton pronoun audit across the catalog | 023 | 4b | unscheduled |
 | UW-A11 | **Bounded one-hop backtracking**: the accepted rules plus the `runtime-semantics.md` §6 rewrite to v1.2. Zero references in any planning document. | 024 | 4b | unscheduled |
 | UW-A12 | Forward-binding constraint: any future enable of continuation backtracking must land the replay origin as **server-validated** state | 024 | 4b | unscheduled |
-| UW-A13 | "Read again" on a continuation resets to `start_node` and discards carried variables. The ADR defers this "as its own defect". Canonical duplicate of debt `SL10` and diversity `B4`; tracked as UW-L01 / [#460](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/460). | 024 | #460 | unscheduled |
+| UW-A13 | "Read again" on a continuation resets to `start_node` and discards carried variables. The ADR defers this "as its own defect". Canonical duplicate of debt `SL10` and diversity `B4`; tracked as UW-L01 / [#460](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/460). | 024 | issue:460 | unscheduled |
 | UW-A14 | **#CRITICAL**: decide and enforce whether the direct-Anthropic leg is production-selectable. PROJECT-PLAN still describes the adapter as "deferred" while the ADR says it is built and admin-selectable. | 003 | 5 | decision |
 | UW-A15 | Processor rows for Modal / Bedrock / Azure / Vertex before enabling them. P7-12 gates App Store submission on a complete processor record; three counterparties are missing. | 003, 018 | 7 | unscheduled |
 | UW-A16 | BYOK versus live ZDR toggle test; confirm Anthropic commercial terms | 003 | 7 | unscheduled |
@@ -97,19 +181,19 @@ Decisions that were accepted or proposed, whose consequent work was never schedu
 | UW-A26 | Re-verify PWA behavior on each iOS Safari major release | 002 | recurring | unscheduled |
 | UW-A27 | Reconcile nginx versus Pangolin-direct ingress into one documented topology | 004 | 5 | unscheduled |
 | UW-A28 | AdultGate OAuth-bypass passes an adult with no re-auth challenge. Server-side approval freshness is deferred and "needs its own attestation design" (CHANGELOG). | 014 | 5 | unscheduled |
-| UW-A29 | Migrate the catalog to parameterized skeletons: 14 of 61 skeletons and 4,305 `<<FILL>>` nodes still contract-less. Canonical for handoff "A20" and the parameterize-at-promotion runbook. | 019 | see G | unscheduled |
+| UW-A29 | Migrate the catalog to parameterized skeletons: 14 of 61 skeletons and 4,305 `<<FILL>>` nodes still contract-less. Canonical for handoff "A20" and the parameterize-at-promotion runbook. | 019 | content | unscheduled |
 | UW-A30 | Standing obligation: contracts must be **maintained**, with per-wave human quality review | 019 | recurring | unscheduled |
 | UW-A31 | Slot-value "packs" deferred to a later increment | 019 | post-launch | unscheduled |
-| UW-A32 | WS-6 fresh-generation feed inherits the promotion bar (unbuilt) | 020 | see G | unscheduled |
+| UW-A32 | WS-6 fresh-generation feed inherits the promotion bar (unbuilt) | 020 | content | unscheduled |
 | UW-A33 | Cross-cell derivation as a future amendment, with evidence | 020 | post-launch | unscheduled |
 | UW-A34 | Judge-model tree-pair distinctness revisit (floor gaming) | 020 | post-launch | unscheduled |
-| UW-A35 | In-app admin promotion surface, deferred to WS-8 | 020 | see G | unscheduled |
-| UW-A36 | Catalog bloat flattens selection weights; contract-maintenance surface grows with the catalog | 020 | see G | unscheduled |
+| UW-A35 | In-app admin promotion surface, deferred to WS-8 | 020 | content | unscheduled |
+| UW-A36 | Catalog bloat flattens selection weights; contract-maintenance surface grows with the catalog | 020 | content | unscheduled |
 | UW-A37 | Consolidate cover storage into Supabase Storage if blobs externalize (conditional on UW-A38) | 017 | 9 | unscheduled |
 | UW-A38 | `blob_ref` object-storage externalization, and the MinIO leg. Named in PROJECT-PLAN prose only; absent from the roadmap Phase 5 checklist. | 001, 004 | 9 | unscheduled |
 | UW-A39 | ADR-018 Blocker 1 narrowed to the classifier leg, not closed | 018 | 7 | unscheduled |
 | UW-A40 | **Doc hygiene**: ADR-007 is still `proposed` though its purge shipped 2026-07-17; ADR-021 is still `proposed` though PR #323 merged. Flip both. | 007, 021 | now | unscheduled |
-| UW-A41 | **Doc hygiene**: PROJECT-PLAN.md section 3's ADR table and the ADR status list omit ADR-020 through ADR-024. Corrected in the 2026-07-28 audit; keep them in sync going forward. | all | now | done (this change) |
+| UW-A41 | **Doc hygiene**: PROJECT-PLAN.md section 3's ADR table and the ADR status list omit ADR-020 through ADR-024. Corrected by the 2026-07-28 audit in commit `bcfc9ab`; keep them in sync going forward. | all | now | done |
 
 ## Cluster B: debt-register phase linkage
 
@@ -120,7 +204,7 @@ to the register wholesale. **The debt register remains the source of truth for i
 | ID | Item | Phase | Status |
 |----|------|-------|--------|
 | UW-B01 | `C1`, `C3`, `C4`, `C5` (offline replay loss, retry cap bypass, untested approval lock, `choice_path` replay). `C5` is canonical for security-plan `L1` and lesson `AL-023`. | 5 | unscheduled |
-| UW-B02 | `GS1` Tier-2 generation yield weak at 3/7 | 2b follow-up | unscheduled |
+| UW-B02 | `GS1` Tier-2 generation yield weak at 3/7 | 2b | unscheduled |
 | UW-B03 | `GS3` Perspective sunsets 2026-12-31 with no date gate; 18 of 29 versions mock-moderated. Hard external deadline. | 5 | unscheduled |
 | UW-B04 | `U2`, `U3`, `U4`, `U6`, `U9b` guardian-console UX debt | 4b | unscheduled |
 | UW-B05 | `U5` no guardian reading tracker: likely superseded by G9's shipped `ReadingPage.tsx` | 4b | verify |
@@ -133,8 +217,10 @@ to the register wholesale. **The debt register remains the source of truth for i
 | UW-B12 | `P1` app-wide rate-limit **policy** never decided (P9-05 covers the deliverable, not the ruling) | 9 | decision |
 | UW-B13 | `P2` `get_generation_job` returns raw report to guardians, against ADR-007. Canonical with issues #72 and #88, and traceability §3.1. | 7 | decision |
 | UW-B14 | `P3` `useApi` does not redirect on 401 (decide alongside `P1`) | 4b | unscheduled |
-| UW-B15 | `P4` skeleton-scale deferrals. Canonical with issues #77, #78, #79. | 2b follow-up | unscheduled |
+| UW-B15 | `P4` skeleton-scale deferrals. Canonical with issues #77, #78, #79. | 2b | unscheduled |
 | UW-B16 | `SL1` through `SL10`, the ten story-lifecycle deferrals. The register calls them "R2-planning inputs"; R2/M6 has no line for any of them. `SL10` is canonical for the continuation carried-state defect (UW-L01, [#460](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/460)). | 6 | unscheduled |
+| UW-B17 | `GS2` the adversarial safety gate's "flag and route to human review" claim is unverified for the model-dependent classes: no live-model adversarial run has been executed. Blocked on credential availability in this environment, not on code. The roadmap already schedules an "adversarial live-model run" at Phase 5 but cites no register ID, which is why the debt row read as uncited. | 5 | blocked |
+| UW-B18 | `T7` the real smoke tier is local-only because the per-IP rate limiter trips above one worker. The debt row calls this "not a defect" and says to revisit "if a staging environment appears". One has: `.github/workflows/e2e-staging.yml`. Re-test the multi-worker assumption against staging and close or re-scope the row. | CI hygiene | verify |
 
 ## Cluster C: authoring-lessons phase linkage
 
@@ -154,19 +240,20 @@ substantially the same work under different headings. Do not triple-book.
 | UW-C03 | `AL-034` one import is ~2,986 provider round trips in a single Postgres transaction holding `FOR UPDATE`, 40 to 100 minutes. Bound concurrency; split import out of the long transaction. | 5 | unscheduled |
 | UW-C04 | `AL-039` repair and the Stage-1 fidelity gate are structurally impossible at scale and both fail open; fidelity lacks an `<untrusted_passage>` fence (`#CRITICAL: security`) | 5 | unscheduled |
 | UW-C05 | `AL-040` `/admin/rescreen` sweeps synchronously in one request; enqueue on RQ or require scoped IDs | 5 | unscheduled |
-| UW-C06 | `AL-044` in-cell duplication check on changed `skeletons/**` shells; book 2 fails `check_incell_clones` at 0.0139 against a 0.05 floor | decision | decision |
-| UW-C07 | `AL-046` fill orchestrator is one-shot against a 32k output cap and the matcher has no feasibility predicate; 13 books are unfillable today | see G | unscheduled |
+| UW-C06 | `AL-044` in-cell duplication check on changed `skeletons/**` shells; book 2 fails `check_incell_clones` at 0.0139 against a 0.05 floor | content | decision |
+| UW-C07 | `AL-046` fill orchestrator is one-shot against a 32k output cap and the matcher has no feasibility predicate; 13 books are unfillable today | content | unscheduled |
 | UW-C08 | `AL-013`, `AL-024`, `AL-027`, `AL-044` validator and tooling accuracy work | post-launch | unscheduled |
-| UW-C09 | `AL-028`, `AL-029`, `AL-030`, `AL-032` reader-surface defects (endings denominator inverts at large M, corpus-relative progress bar, 300ms+ BACK freeze, reconnect teleport) | 4b, 5 | unscheduled |
+| UW-C09 | `AL-028`, `AL-029`, `AL-030`, `AL-032` reader-surface defects (endings denominator inverts at large M, corpus-relative progress bar, 300ms+ BACK freeze, reconnect teleport) | 4b | unscheduled |
 | UW-C10 | `AL-019`, `AL-020` reader-path retention and de-identified engagement rollup. Four owner decisions precede any table. | post-launch | decision |
 | UW-C11 | `AL-022` add `estimated_minutes_whole_world`, surface both clocks | 4b | decision |
-| UW-C12 | `AL-037` `embed_series_block` silently rewrites authored series metadata | see G | unscheduled |
-| UW-C13 | `AL-049` flywheel parent-selection headroom skip plus an operator config budget | see G | unscheduled |
+| UW-C12 | `AL-037` `embed_series_block` silently rewrites authored series metadata | content | unscheduled |
+| UW-C13 | `AL-049` flywheel parent-selection headroom skip plus an operator config budget | content | unscheduled |
 | UW-C14 | `AL-050` migrate 3 legacy fills to schema v2 and delete `_LEGACY_PRE_V2`. Paired with the strict-xfail at `tests/unit/test_filled_story_corpus.py:63`, which carries the instruction in code. | content | unscheduled |
 | UW-C15 | `AL-052` triage 13 read-time drifts and 6 ending-mix outliers | content | unscheduled |
-| UW-C16 | `AL-056` `--preflight` mode for paid-provider instruments | tooling | unscheduled |
+| UW-C16 | `AL-056` `--preflight` mode for paid-provider instruments | CI hygiene | unscheduled |
 | UW-C17 | `AL-031` and `AL-038` are marked `applied` but each carries an explicitly open half (listing-path denormalization; read-time carry audit plus gating the continuation offer on a satisfying ending). Split into new IDs per the log's own status discipline. | now | unscheduled |
 | UW-C18 | `AL-011` document that L2-13 past 460 nodes is correct, so it is not "fixed" later | doc | unscheduled |
+| UW-C19 | `AL-023` the shipped client never sends `choice_path`, so the server-side engine replay that exists to reject a forged `current_node`/`var_state`/`path` is dormant (`api/reading.py` carries the `#ASSUME` admitting it). Any analytics derived from the client-supplied `path` inherits the same trust problem. | 5 | unscheduled |
 
 ## Cluster D: untracked GitHub issues
 
@@ -262,22 +349,22 @@ section of [roadmap.md](./roadmap.md), created 2026-07-28 to give this work its 
 
 | ID | Item | Source | Phase | Status |
 |----|------|--------|-------|--------|
-| UW-G01 | **`A20`**: 14 of 16 skeletons and 4,305 `<<FILL>>` nodes unslotted; needs a family-based plan generator first. Largest single item in the workstream. Canonical with UW-A29. | plan-v2, s4 handoff | G | unscheduled |
-| UW-G02 | `OQ-4`: 11 stateful Tier-2 skeletons unmigrated, plus the series-level binding design | ws2 | G | unscheduled |
-| UW-G03 | `A9` item 2: restructure `the-sunken-temple` (5 variables, 20 conditions, 75 effects, plus a 35-ending remix to 0.0710) | s4 handoff | G | unscheduled |
-| UW-G04 | Per-band ATG calibration: `_BAND_THRESHOLDS` is still `{}`, so the anti-template guard stays advisory | ws0, ws1 | G | unscheduled |
-| UW-G05 | WS-0 Phase 3 judge-model calibration run; sentence-shape correlation as a gating signal; persisted theme signatures on `StorybookVersion`; leaf-cluster ECS partition | ws0 | G | unscheduled |
-| UW-G06 | ECS and RAR dashboard surfacing; served-window ECS DB loader; young-band panel growth; same-theme cross-tree pairs; weekly non-required judge workflow | ws0 phase2 | G | unscheduled |
-| UW-G07 | Series and `carries_state` partner exclusion; ATG wiring into `api/node_edit.py` re-screen; threading briefs into ATG | ws1 | G | unscheduled |
-| UW-G08 | Grammar-based composer (§7, explicitly deferred); §5.5 deferred-within-M5 items (tier promotion, variable add/remove, stateful grafts, restart-on-fail rewiring); `OQ-8` PL-23 rule family | ws5 | G | unscheduled |
-| UW-G09 | WS-6 fresh-generated trees as the flywheel feed; lift the lineage-depth cap (`OQ-5`); in-app promotion-review surface; `flywheel-reports/` cycle reports | ws8 | G | unscheduled |
-| UW-G10 | Binding cache (`OQ-3`); `story-skeletons.md` contract column | ws2 | G | unscheduled |
-| UW-G11 | `A10` teen short-cell zero candidates returning 422; `A15` retire-for-quality; `A17` tombstone card | plan-v2 | G | unscheduled |
+| UW-G01 | **`A20`**: 14 of 16 skeletons and 4,305 `<<FILL>>` nodes unslotted; needs a family-based plan generator first. Largest single item in the workstream. Canonical with UW-A29. | plan-v2, s4 handoff | content | unscheduled |
+| UW-G02 | `OQ-4`: 11 stateful Tier-2 skeletons unmigrated, plus the series-level binding design | ws2 | content | unscheduled |
+| UW-G03 | `A9` item 2: restructure `the-sunken-temple` (5 variables, 20 conditions, 75 effects, plus a 35-ending remix to 0.0710) | s4 handoff | content | unscheduled |
+| UW-G04 | Per-band ATG calibration: `_BAND_THRESHOLDS` is still `{}`, so the anti-template guard stays advisory | ws0, ws1 | content | unscheduled |
+| UW-G05 | WS-0 Phase 3 judge-model calibration run; sentence-shape correlation as a gating signal; persisted theme signatures on `StorybookVersion`; leaf-cluster ECS partition | ws0 | content | unscheduled |
+| UW-G06 | ECS and RAR dashboard surfacing; served-window ECS DB loader; young-band panel growth; same-theme cross-tree pairs; weekly non-required judge workflow | ws0 phase2 | content | unscheduled |
+| UW-G07 | Series and `carries_state` partner exclusion; ATG wiring into `api/node_edit.py` re-screen; threading briefs into ATG | ws1 | content | unscheduled |
+| UW-G08 | Grammar-based composer (§7, explicitly deferred); §5.5 deferred-within-M5 items (tier promotion, variable add/remove, stateful grafts, restart-on-fail rewiring); `OQ-8` PL-23 rule family | ws5 | content | unscheduled |
+| UW-G09 | WS-6 fresh-generated trees as the flywheel feed; lift the lineage-depth cap (`OQ-5`); in-app promotion-review surface; `flywheel-reports/` cycle reports | ws8 | content | unscheduled |
+| UW-G10 | Binding cache (`OQ-3`); `story-skeletons.md` contract column | ws2 | content | unscheduled |
+| UW-G11 | `A10` teen short-cell zero candidates returning 422; `A15` retire-for-quality; `A17` tombstone card | plan-v2 | content | unscheduled |
 | UW-G12 | Eight items behind prerequisites: reading telemetry, PL-25 fail-depth floor, outcome-mix floor, challenge mode and permadeath, alternate beat phrasings, per-`profile_id` ATG scoping, guardian visibility ceiling, growing small cells | plan-v2 §5 | post-launch | blocked |
-| UW-G13 | **Wave 5**: 36 new skeletons, 2 per production cell; the dagger-cell 460-node ceiling experiment; the Tier-2 stateful pilot | story-inventory | G | unscheduled |
+| UW-G13 | **Wave 5**: 36 new skeletons, 2 per production cell; the dagger-cell 460-node ceiling experiment; the Tier-2 stateful pilot | story-inventory | content | unscheduled |
 | UW-G14 | 23 filled stories committed to `main` are never imported or published; 3 legacy-shaped fills need normalization at import | draft-stories-manifest | content | unscheduled |
-| UW-G15 | `F1` `--series-id` on import; `F2` auto-repair silently replaces imported content; `F3` carried variables invert acquisition branches. Restated in the ceiling-scale review; track via `AL-*`. | series-stress-test | G | unscheduled |
-| UW-G16 | Story-quality residuals A, B, C (skeleton promotion gate, RL-13 noise, rule-catalog drift); B and C are product decisions | story-quality-lessons | G | decision |
+| UW-G15 | `F1` `--series-id` on import; `F2` auto-repair silently replaces imported content; `F3` carried variables invert acquisition branches. Restated in the ceiling-scale review; track via `AL-*`. | series-stress-test | content | unscheduled |
+| UW-G16 | Story-quality residuals A, B, C (skeleton promotion gate, RL-13 noise, rule-catalog drift); B and C are product decisions | story-quality-lessons | content | decision |
 | UW-G17 | Five research reconciliation actions (exposure ratio, per-band fail-state, reconvergence targets, an independent FK/Lexile gate, edition-family anchoring) plus four open calibration conflicts. Needs an ADR-011 amendment. | research | post-launch | decision |
 | UW-G18 | `SR-8` is reserved and claimed by PR #416; `L2-8` emits no ID; `validator-rules.md` contradicts itself on whether SR-8 is implemented | validator-rules | doc | unscheduled |
 
@@ -328,7 +415,7 @@ not scheduled: that is its accurate state.
 | UW-J09 | Audit-stamp consistency so self-review is detectable | persona audit | 5 | unscheduled |
 | UW-J10 | Guardian per-child unassign: likely already merged as PR #428 | persona audit | 4b | verify |
 | UW-J11 | Guardian-defined book groups by age or topic; catalog-trunk-branch admin notification (unresolved); prompt-adjustment suggestions in the dashboard | lifecycle redesign | 4c | unscheduled |
-| UW-J12 | ADR-015 consent-time budget semantics (quota debit, per-child pre-auth envelopes); the two-step approve-then-publish audit split; `family_connections` has no consumer widening child visibility | authorization matrix | 4c, 4d | unscheduled |
+| UW-J12 | ADR-015 consent-time budget semantics (quota debit, per-child pre-auth envelopes); the two-step approve-then-publish audit split; `family_connections` has no consumer widening child visibility | authorization matrix | 4c | unscheduled |
 | UW-J13 | Authorization matrix missing rows for families, provider-allowlist, moderation-thresholds, and cover-generate | traceability | doc | unscheduled |
 | UW-J14 | `U-5` JIT onboarding admin-seeding footgun is unrecorded in ADR-009 | traceability | doc | unscheduled |
 | UW-J15 | **Plan overclaim**: roadmap Phase 4b marks `G2` controls delivered, but the intake UI hardcodes empty arrays and the profile form lacks a banned-theme field | traceability §3.4 | now | unscheduled |
@@ -337,8 +424,8 @@ not scheduled: that is its accurate state.
 | UW-J18 | `notifications/service.py:25`: backfill migration adding `pipeline_event.family_id` is named as future work | code | 4c | unscheduled |
 | UW-J19 | `covers/storage.py:173`: upload cancellation cannot reach a background thread; "tracked as a follow-up, not fixed here" | code | 5 | unscheduled |
 | UW-J20 | `story_requests/service.py:109`: a real ledger table is a `G13` follow-up once spend needs finer accounting | code | 8 | unscheduled |
-| UW-J21 | `merge_graft_contract` and `prune_contract` are implemented and unit-tested but not wired into the acceptance harness (`D7`) | code | G | unscheduled |
-| UW-J22 | `review_provider="modal"` ships in the config enum but hard-fails at build time; the default `"mock"` runs no real moderation review | code | 2b follow-up | unscheduled |
+| UW-J21 | `merge_graft_contract` and `prune_contract` are implemented and unit-tested but not wired into the acceptance harness (`D7`) | code | content | unscheduled |
+| UW-J22 | `review_provider="modal"` ships in the config enum but hard-fails at build time; the default `"mock"` runs no real moderation review | code | 2b | unscheduled |
 
 ## Cluster K: documentation accuracy and compliance
 
@@ -366,6 +453,7 @@ project's own inventory.
 | UW-K17 | `catalog-first-inventory-gap.md` is marked SUPERSEDED 2026-07-28, but Gap B (kid-initiated title requests of existing catalog titles) may not be covered elsewhere | doc | verify |
 | UW-K18 | 98 RAD markers carry no paired `#VERIFY`, 82 of them outside `tests/`. Highest-value: the `generation/worker.py` concurrency pair, the `db/models.py` cascade CRITICAL, the `classifiers.py` API-key placement CRITICAL, and four deploy-ordering CRITICALs in `supabase/migrations/`. | 5 | unscheduled |
 | UW-K19 | `tests/CLAUDE.md:22` requires a linked issue on every `pytest.mark.skip`; only 2 of the declarative marks reference tracked work | CI hygiene | unscheduled |
+| UW-K20 | `docs/planning/` is the only directory in `docs/` exempt from front-matter validation, excluded twice over: the hook's `files: ^docs/(?!planning/).*\.md$` regex and a hardcoded skip at `tools/validate_front_matter.py:311-322`. The cause is that the validator has no `schema_type` concept and so applies the user-facing-docs schema to everything. Measured 2026-07-28: of 72 planning docs, 2 pass and 241 issues are raised, dominated by three systematic mismatches (planning docs carry an H1 the schema forbids, use `status: active` against an allowed set of draft/in-review/published, and use tags it does not know). The fix is a `planning` schema in the validator, not conforming 70 documents to a schema written for a different audience. Until then, `scripts/check_work_linkage.py` is the only automated gate over `docs/planning/`. | CI hygiene | unscheduled |
 
 ## Cluster L: live defects
 

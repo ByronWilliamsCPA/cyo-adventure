@@ -1,0 +1,136 @@
+# ============================================================================
+# Planning document linkage
+# ============================================================================
+# Enforces the linkage contract in docs/planning/unscheduled-work-register.md:
+# every row in every register must resolve to exactly one disposition, either a
+# phase in the plan or a proof (a named blocker, a named decision owner, or a
+# reference showing it is done). A row with neither is an orphan, and orphans
+# are how directed work went missing before the 2026-07-28 sweep.
+#
+# Two triggers, two different jobs to do:
+#
+#   pull_request  - gate the change being made. Catches a new register row with
+#                   no phase, or an ADR follow-on that points nowhere.
+#   schedule      - catch drift no pull request touched. The cross-register
+#                   checks compare three documents against each other, so a
+#                   change to the debt register or the lessons log can orphan a
+#                   row without anyone editing the unscheduled register.
+#
+# The pre-commit hook (check-work-linkage) runs the same script locally. This
+# workflow exists because hooks are skippable and this repository runs
+# concurrent sessions in a single working tree.
+#
+# Injection posture: no untrusted event input (issue/PR titles or bodies, commit
+# messages, head_ref) is interpolated anywhere here. The github-script step uses
+# only `context.serverUrl`, `context.repo`, and `context.runId`, all of which are
+# runner-supplied, and it passes its body through the API rather than a shell.
+# ============================================================================
+name: Planning Linkage
+
+on:
+  pull_request:
+    paths:
+      - 'docs/planning/**'
+      - 'scripts/check_work_linkage.py'
+      - 'scripts/check_lessons_log.py'
+      - '.github/workflows/planning-linkage.yml'
+  schedule:
+    # 07:11 UTC every Monday: off-peak, and offset from both the hour and the
+    # dependency-provenance run at 06:23 so the two do not contend.
+    - cron: '11 7 * * 1'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linkage:
+    name: Work linkage
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      # Only the scheduled run files an issue; pull_request runs surface the
+      # failure on the pull request itself and need nothing beyond read.
+      issues: write
+
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.14'
+
+      - name: Check work linkage
+        run: python scripts/check_work_linkage.py
+
+      - name: Check the authoring lessons log
+        # Runs even when the linkage check failed, so one run reports both
+        # rather than making the author fix one, push, and discover the other.
+        if: always()
+        run: python scripts/check_lessons_log.py
+
+      - name: File a drift issue
+        # Scheduled runs only. A pull_request failure is already visible on the
+        # pull request; filing an issue for it would duplicate the signal.
+        if: failure() && github.event_name == 'schedule'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const title = 'Planning linkage has drifted';
+            const body = [
+              'The scheduled Planning Linkage check failed, which means at least',
+              'one register row no longer resolves to a phase or a proof.',
+              '',
+              `Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              '',
+              'This usually means one of three things:',
+              '',
+              '1. A row was added to the debt register or the lessons log without',
+              '   a corresponding UW-B*/UW-C* row in the unscheduled work register.',
+              '2. A phase was added to or renamed in roadmap.md without the',
+              '   vocabulary in the linkage contract being updated.',
+              '3. A row was edited into a state the contract does not allow.',
+              '',
+              'Reproduce locally with `uv run python scripts/check_work_linkage.py`.',
+              'The contract is the "linkage contract" section of',
+              'docs/planning/unscheduled-work-register.md.',
+              '',
+              'This issue is filed automatically because schedule-only workflows',
+              'never surface failures on a pull request. Close it once a scheduled',
+              'run succeeds again.',
+            ].join('\n');
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ci-failure',
+            });
+            const existing = issues.find((issue) => issue.title === title);
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['ci-failure'],
+              });
+            }

@@ -100,6 +100,27 @@ Proposed → Accepted → [Deprecated | Superseded]
 - **Deprecated**: No longer relevant
 - **Superseded**: Replaced by another ADR
 
+## Follow-on work is part of the ADR (required)
+
+Every ADR that is `Proposed` or `Accepted` must state what work it creates, and every such item must
+already have a home before the ADR merges. An ADR that decides something without scheduling its
+consequences is how work goes missing: the 2026-07-28 sweep found 41 unscheduled items in this
+directory alone, more than any other source.
+
+Each ADR therefore carries a **Follow-on work** section listing every consequent item, and each item
+must cite one of:
+
+- a phase in [roadmap.md](../roadmap.md) or [PROJECT-PLAN.md](../PROJECT-PLAN.md),
+- a `UW-*` row in the [unscheduled work register](../unscheduled-work-register.md), or
+- a GitHub issue.
+
+"Deferred", "future work", and "to be decided" are not homes. If the work genuinely cannot be
+scheduled yet, add a `UW-*` row with status `blocked` and name the blocker; that is a real state and
+the register is built to hold it. What is not acceptable is prose that directs work nowhere.
+
+The [linkage contract](../unscheduled-work-register.md#the-linkage-contract) defines the allowed
+dispositions, and `scripts/check_work_linkage.py` enforces them.
+
 ## Template Reference
 
 For the full ADR template, see the ADR template documentation in the Reference section, or refer to `.claude/skills/project-planning/templates/adr-template.md` in the project repository.
