@@ -268,7 +268,15 @@ export function ReviewDetailPage() {
   const readyVersion = state.kind === 'ready' ? state.surface.version : null
   const readySurface = state.kind === 'ready' ? state.surface : null
 
-  const { coverStatus, coverBusy, coverTimedOut, generateCover } = useCoverGeneration({
+  const {
+    coverStatus,
+    coverUrl,
+    coverBusy,
+    coverTimedOut,
+    coverApproveError,
+    generateCover,
+    approveCover,
+  } = useCoverGeneration({
     storybookId,
     readyVersion,
     coverApi,
@@ -614,6 +622,48 @@ export function ReviewDetailPage() {
           </section>
         ) : null}
       </div>
+
+      {/*
+        A16 (capability-register.md), H2 human-approval half
+        (security-hardening-plan-2026-07.md): a generated cover stops at
+        cover_status "pending_review" and carries no presigned URL until an
+        admin approves it here. Rendered whenever the backend hands back a
+        URL for either "pending_review" or "ready" (api/covers.py::_cover_url
+        widens the presign gate for this admin-only surface); a
+        pending_review cover with no URL yet (R2 unconfigured) shows the
+        status text below without an image rather than a broken <img>.
+        #VERIFY: ReviewDetailPage.test.tsx renders-pending-cover-with-approve,
+        approves-a-pending-cover, and surfaces-a-cover-approval-error tests.
+      */}
+      {coverStatus === 'pending_review' || coverStatus === 'ready' ? (
+        <div className="review-cover-preview">
+          {coverUrl ? (
+            <img
+              src={coverUrl}
+              alt={
+                coverStatus === 'pending_review'
+                  ? `Generated cover for ${title}, pending review`
+                  : `Approved cover for ${title}`
+              }
+              className="review-cover-preview__image"
+            />
+          ) : null}
+          {coverStatus === 'pending_review' ? (
+            <div className="review-cover-preview__actions">
+              <Button onClick={() => void approveCover()} disabled={coverBusy}>
+                Approve cover
+              </Button>
+              {coverApproveError ? (
+                <span className="review-cover-error" role="alert">
+                  Could not approve the cover; try again.
+                </span>
+              ) : null}
+            </div>
+          ) : (
+            <p className="review-cover-preview__status cyo-text-muted">Cover approved.</p>
+          )}
+        </div>
+      ) : null}
 
       {/*
         #ASSUME: UI state: the backend already re-checks status on approve/send-back

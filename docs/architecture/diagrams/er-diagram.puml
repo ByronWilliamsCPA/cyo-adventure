@@ -1,6 +1,6 @@
 @startuml er-diagram
 ' ============================================================
-' Entity-Relationship Diagram: all 22 ORM Tables
+' Entity-Relationship Diagram: all 24 ORM Tables
 ' CYO Adventure
 '
 ' Source file:
@@ -11,7 +11,7 @@
 ' backed by a CHECK constraint (plain Supabase CLI SQL migrations; the closed
 ' vocabulary is enforced at rest as well as at the application boundary).
 '
-' This diagram draws every table in models.py (22 total). See
+' This diagram draws every table in models.py (24 total). See
 ' docs/architecture/data-model.md for the full, authoritative column
 ' dictionary.
 ' ============================================================
@@ -27,6 +27,7 @@ entity "family" as family #E8F5E9 {
   monthly_story_quota : INT NULL [ADR-015 cost gate; NULL = platform default]
   created_at : TIMESTAMPTZ
   deactivated_at : TIMESTAMPTZ NULL [soft-deactivate; cascades to members]
+  personalization_receive_enabled : BOOLEAN [ADR-023 viewer-side ring-2\nopt-out; default true]
 }
 
 entity "series" as series #C8E6C9 {
@@ -71,6 +72,7 @@ entity "child_profile" as child_profile #FFF3E0 {
   allowed_content_flags : JSONB
   banned_themes : JSONB NULL [G2 guardian theme exclusions]
   tts_enabled : BOOLEAN
+  reduce_motion : BOOLEAN [default false; collapses band animation]
   avatar : VARCHAR(255) NULL
   pin_hash : TEXT NULL [write-only PIN; never serialized]
   request_auto_approve : BOOLEAN [ADR-015 G3; default false]
@@ -78,6 +80,8 @@ entity "child_profile" as child_profile #FFF3E0 {
   created_at : TIMESTAMPTZ
   deactivated_at : TIMESTAMPTZ NULL [soft-remove; history preserved]
   processing_restricted_at : TIMESTAMPTZ NULL [GDPR Art. 18/21; blocks\nNEW story requests only, distinct\nfrom deactivated_at]
+  real_name_ring1_enabled : BOOLEAN [ADR-023; default false;\nreal name in own-family stories]
+  real_name_ring2_enabled : BOOLEAN [ADR-023; default false;\nreal name across a connection]
 }
 
 entity "family_connection" as family_connection #E8F5E9 {
@@ -98,6 +102,52 @@ entity "family_connection" as family_connection #E8F5E9 {
   CHECK (sharer consent id/at both NULL or both set)
 }
 
+entity "child_profile_personalization" as child_profile_personalization #FFF3E0 {
+  * child_profile_id : UUID <<PK, FK child_profile.id>>
+  * slot_type : VARCHAR(32) <<PK>>
+  --
+  value_text : TEXT NULL
+  value_enum : VARCHAR(64) NULL
+  value_profile_id : UUID <<FK child_profile.id, NULL>>\n[sibling reference]
+  ring1_enabled : BOOLEAN [default false; own family]
+  ring2_enabled : BOOLEAN [default false; connected families]
+  created_at : TIMESTAMPTZ
+  updated_at : TIMESTAMPTZ
+  --
+  ON DELETE CASCADE on BOTH FKs (child-linked data)
+  CHECK ck_cpp_slot_type (closed 9-value vocabulary)
+  CHECK ck_cpp_exactly_one_value (text | enum | profile ref)
+  CHECK ck_cpp_ring2_ceiling (pronoun_set, dedication
+    structurally cannot be ring-2)
+  INDEX ix_cpp_value_profile_id (referencing side of the FK)
+}
+
+entity "personalization_disclosure_consent" as personalization_disclosure_consent #E8F5E9 {
+  * id : UUID <<PK>>
+  --
+  * child_profile_id : UUID <<FK child_profile.id>>
+  family_connection_id : UUID <<FK family_connection.id, NULL>>\n[NULL once tombstoned]
+  connected_family_label : VARCHAR(200) NULL [denormalized at signing]
+  covered_slot_types : JSONB NULL [scope of the disclosure]
+  sibling_authority_attested : BOOLEAN [default false]
+  consent_accepted_at : TIMESTAMPTZ NULL
+  consent_policy_version : VARCHAR(32) NULL
+  consent_signer_name : VARCHAR(200) NULL
+  consent_ip : VARCHAR(64) NULL [server-observed, evidentiary]
+  revoked_at : TIMESTAMPTZ NULL
+  created_at : TIMESTAMPTZ
+  --
+  child_profile_id ON DELETE CASCADE (subject erasure)
+  family_connection_id ON DELETE SET NULL (keeps the
+    consent tombstone; GDPR Art. 7(1), COPPA 312.5)
+  PARTIAL UNIQUE uq_pdc_profile_connection
+    (child_profile_id, family_connection_id)
+    WHERE family_connection_id IS NOT NULL
+  INDEX ix_pdc_family_connection_id (deletion-side scan)
+  CHECK ck_pdc_consent_pairing (all four consent
+    columns set together or none)
+}
+
 entity "storybook" as storybook #F3E5F5 {
   * id : VARCHAR(120) <<PK>>
   --
@@ -109,6 +159,7 @@ entity "storybook" as storybook #F3E5F5 {
   series_id : UUID <<FK series.id, NULL>>
   book_index : INT NULL [UNIQUE with series_id]
   created_at : TIMESTAMPTZ
+  personalization_subject_profile_id : UUID <<FK child_profile.id, NULL>>\n[ADR-023 subject; ON DELETE SET NULL]
 }
 
 entity "storybook_version" as storybook_version #F3E5F5 {
@@ -127,8 +178,29 @@ entity "storybook_version" as storybook_version #F3E5F5 {
   skeleton_slug : VARCHAR(120) NULL [WS-C PR2 provenance]
   created_at : TIMESTAMPTZ
   cover_image_url : VARCHAR(512) NULL
-  cover_status : VARCHAR(20) [none|generating|ready|failed]
+  cover_status : VARCHAR(20) [none|generating|pending_review|ready|failed]
+  cover_approved_by : UUID <<FK user.id, NULL>>
+  cover_approved_at : TIMESTAMPTZ NULL
+  personalization_eligible : BOOLEAN [ADR-023; default false;\ndeclared, not yet written by any path]
+  pronoun_parameterized : BOOLEAN [ADR-023; default false;\ndeclared, not yet written by any path]
+  sentinel_manifest : JSONB NULL [ADR-023; token manifest DERIVED\nfrom the blob after the fill]
+  --
+  CHECK (cover_status in none|generating|pending_review|ready|failed)
 }
+note right of storybook_version
+  H2 cover-approval gate
+  (security-hardening-plan-2026-07.md):
+  cover_approved_by/cover_approved_at are the
+  cover-art analogue of approved_by/published_at.
+  generate_cover stops at 'pending_review'; only
+  covers.service.approve_cover moves a cover to
+  'ready', stamping both columns in the same
+  operation. api/library.py serves a cover URL
+  only at 'ready', so no API read path reaches a
+  child's library card without a recorded human
+  approver. Object-storage reads are a separate
+  control (covers/storage.py).
+end note
 
 entity "reading_state" as reading_state #E0F7FA {
   * child_profile_id : UUID <<PK, FK child_profile.id>>
@@ -195,6 +267,7 @@ entity "story_request" as story_request #FFE0B2 {
   length : VARCHAR(16) NULL [short|medium|long]
   narrative_style : VARCHAR(16) [prose|gamebook, default prose]
   moderation_flags : JSONB NULL [redacted screening findings]
+  interpretation : JSONB NULL [WS-7 RequestInterpretation (K19);\nPhase-3 personal data; 30-day purge\nnulls premise-derived element text]
   reviewed_by : UUID <<FK user.id, NULL>>
   reviewed_at : TIMESTAMPTZ NULL
   approved_at : TIMESTAMPTZ NULL [ADR-015; set once on approve]
@@ -296,6 +369,7 @@ entity "device_grant" as device_grant #B3E5FC {
   jti : UUID <<UNIQUE>> [revocation lookup key]
   created_at : TIMESTAMPTZ
   revoked_at : TIMESTAMPTZ NULL [set, not deleted, on revoke]
+  expires_at : TIMESTAMPTZ [stamped at mint from the JWT TTL;\nlets the device list hide ghosts (#252)]
 }
 
 entity "generation_job" as generation_job #FFEBEE {
@@ -368,6 +442,11 @@ family ||--o{ kid_flag : "1 family\nhas many kid flags\n(K15)"
 child_profile ||--o{ kid_flag : "1 profile\nmany flags"
 storybook ||--o{ kid_flag : "storybook_id\n(flagged book)"
 storybook_version ||--o{ kid_flag : "(storybook_id, version)\ncomposite FK"
+child_profile ||--o{ child_profile_personalization : "child_profile_id\n1 profile\nmany slot values"
+child_profile ||--o{ child_profile_personalization : "value_profile_id\nnamed as a sibling\nin many rows"
+child_profile ||--o{ personalization_disclosure_consent : "1 profile\nmany per-connection consents"
+family_connection ||--o{ personalization_disclosure_consent : "family_connection_id\nscopes the disclosure\n(NULL = tombstone)"
+child_profile |o--o{ storybook : "personalization_subject_profile_id\n(NULL = not personalized)"
 
 note bottom of generation_job
   storybook_id is NOT a foreign key.
@@ -393,6 +472,7 @@ note bottom of user_t
   here (to keep the graph legible):
   series.created_by, storybook.created_by,
   storybook_version.approved_by,
+  storybook_version.cover_approved_by,
   storybook_assignment.assigned_by,
   concept.created_by, story_request.reviewed_by,
   moderation_threshold.updated_by,
@@ -447,7 +527,8 @@ note left of family
     kid_flag), EXCEPT story_request.anchor_storybook_id
     which is SET NULL
   - user.id attribution FKs (created_by, updated_by,
-    approved_by, reviewed_by, resolved_by, changed_by,
+    approved_by, cover_approved_by, reviewed_by,
+    resolved_by, changed_by,
     consented_by_*): SET NULL (soft attribution; the
     owning row survives a deleted user), except the
     two *_audit.changed_by columns which are NOT NULL

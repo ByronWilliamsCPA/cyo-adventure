@@ -1,17 +1,58 @@
-"""generate_cover orchestrates provider+optimize+upload and writes status."""
+"""generate_cover orchestrates provider+optimize+upload and writes status.
+
+H2 (security-hardening-plan-2026-07.md): a successful generation stops at
+``cover_status == "pending_review"``, never ``"ready"`` directly, and
+``approve_cover`` is the sole path from ``pending_review`` to ``ready``.
+"""
+
+from __future__ import annotations
+
+import uuid
+from typing import TYPE_CHECKING
 
 import pytest
 
+from cyo_adventure.api.deps import Principal
 from cyo_adventure.core.config import Settings
+from cyo_adventure.core.exceptions import (
+    AuthorizationError,
+    BusinessLogicError,
+    ResourceNotFoundError,
+)
 from cyo_adventure.covers.errors import CoverGenerationError
-from cyo_adventure.covers.service import generate_cover
+from cyo_adventure.covers.service import approve_cover, generate_cover
 from cyo_adventure.db.models import Concept, GenerationJob, StorybookVersion
+
+if TYPE_CHECKING:
+    from tests.integration.conftest import Seed
 
 pytestmark = pytest.mark.integration
 
 
+def _admin_principal(seed: Seed) -> Principal:
+    """Build an admin Principal stamped with the seeded admin's user_id."""
+    return Principal(
+        subject="admin-x",
+        user_id=seed.admin_user_id,
+        role="admin",
+        family_id=seed.family_id,
+        profile_ids=frozenset(),
+    )
+
+
+def _guardian_principal(seed: Seed) -> Principal:
+    """Build a non-admin (guardian) Principal for negative approval tests."""
+    return Principal(
+        subject="guardian-x",
+        user_id=uuid.uuid4(),
+        role="guardian",
+        family_id=seed.family_id,
+        profile_ids=frozenset(),
+    )
+
+
 @pytest.mark.asyncio
-async def test_ready_path_writes_url(sessions, seed):
+async def test_success_path_sets_pending_review_and_writes_url(sessions, seed):
     def fake_generate(prompt, settings):
         return b"PNGSOURCE"
 
@@ -30,9 +71,80 @@ async def test_ready_path_writes_url(sessions, seed):
         )
     async with sessions() as s:
         row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
-        assert row.cover_status == "ready"
+        # #CRITICAL: security: H2 -- a successful generation must land on
+        # "pending_review", never "ready" directly; "ready" is reachable only
+        # through approve_cover (see the tests below). Regressing this
+        # assertion back to "ready" reopens the unmoderated-cover gap.
+        # #VERIFY: test_approve_cover_sets_ready_and_stamps_approver exercises
+        # the only legitimate path to "ready".
+        assert row.cover_status == "pending_review"
         assert row.cover_image_url is not None
         assert ".webp?v=" in row.cover_image_url
+        assert row.cover_approved_by is None
+        assert row.cover_approved_at is None
+
+
+@pytest.mark.asyncio
+async def test_approve_cover_sets_ready_and_stamps_approver(sessions, seed):
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        row.cover_status = "pending_review"
+        await s.commit()
+
+    admin = _admin_principal(seed)
+    async with sessions() as s:
+        result = await approve_cover(s, admin, seed.storybook_id, seed.version)
+        assert result.cover_status == "ready"
+        assert result.cover_approved_by == admin.user_id
+        assert result.cover_approved_at is not None
+        await s.commit()
+
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        assert row.cover_status == "ready"
+        assert row.cover_approved_by == admin.user_id
+        assert row.cover_approved_at is not None
+
+
+@pytest.mark.asyncio
+async def test_approve_cover_rejects_non_admin(sessions, seed):
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        row.cover_status = "pending_review"
+        await s.commit()
+
+    guardian = _guardian_principal(seed)
+    async with sessions() as s:
+        with pytest.raises(AuthorizationError):
+            await approve_cover(s, guardian, seed.storybook_id, seed.version)
+
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        assert row.cover_status == "pending_review"
+        assert row.cover_approved_by is None
+
+
+@pytest.mark.asyncio
+async def test_approve_cover_rejects_when_not_pending_review(sessions, seed):
+    # The seeded row's cover_status defaults to "none"; approve must refuse
+    # rather than let a never-generated (or already-approved, or failed)
+    # cover reach "ready" through this path.
+    admin = _admin_principal(seed)
+    async with sessions() as s:
+        with pytest.raises(BusinessLogicError):
+            await approve_cover(s, admin, seed.storybook_id, seed.version)
+
+
+@pytest.mark.asyncio
+async def test_approve_cover_not_found_raises(sessions, seed):
+    admin = _admin_principal(seed)
+    async with sessions() as s:
+        with pytest.raises(ResourceNotFoundError):
+            await approve_cover(s, admin, "does-not-exist", 999)
 
 
 @pytest.mark.asyncio
@@ -204,7 +316,7 @@ async def test_backup_writes_full_res_copy_when_dir_configured(
 ):
     # covers_backup_dir set to a real writable directory: _maybe_backup should
     # write the source bytes to <dir>/<storybook_id>/<version>.png without
-    # affecting the ready-path status write.
+    # affecting the pending_review-path status write.
     async def fake_upload(image_bytes, key, settings):
         return f"https://p.supabase.co/storage/v1/object/public/covers/{key}"
 
@@ -222,7 +334,7 @@ async def test_backup_writes_full_res_copy_when_dir_configured(
     assert backup_file.read_bytes() == b"PNGSOURCE"
     async with sessions() as s:
         row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
-        assert row.cover_status == "ready"
+        assert row.cover_status == "pending_review"
 
 
 @pytest.mark.asyncio
@@ -323,7 +435,7 @@ async def test_generate_cover_blocks_on_email_shaped_content_in_prompt(sessions,
 
 
 @pytest.mark.asyncio
-async def test_backup_failure_is_swallowed_and_job_still_succeeds(
+async def test_backup_failure_is_swallowed_and_job_still_reaches_pending_review(
     sessions, seed, tmp_path
 ):
     # covers_backup_dir points through a path component that is a regular file,
@@ -347,4 +459,4 @@ async def test_backup_failure_is_swallowed_and_job_still_succeeds(
         )
     async with sessions() as s:
         row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
-        assert row.cover_status == "ready"
+        assert row.cover_status == "pending_review"

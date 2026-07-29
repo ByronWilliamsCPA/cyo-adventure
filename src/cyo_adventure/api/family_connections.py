@@ -40,7 +40,11 @@ from cyo_adventure.core.exceptions import (
     StateTransitionError,
     ValidationError,
 )
-from cyo_adventure.db.models import Family, FamilyConnection
+from cyo_adventure.db.models import (
+    Family,
+    FamilyConnection,
+    PersonalizationDisclosureConsent,
+)
 from cyo_adventure.events import ADMIN_ACTOR_ROLE, Actor, EventType, record_event
 
 if TYPE_CHECKING:
@@ -192,6 +196,49 @@ async def create_family_connection(
     )
 
 
+async def _tombstone_attached_consents(
+    session: AsyncSession, connection_id: uuid.UUID
+) -> int:
+    """Stamp ``revoked_at`` on every ring-2 consent granted on this connection.
+
+    #CRITICAL: data integrity: the ``ON DELETE SET NULL`` on
+    ``personalization_disclosure_consent.family_connection_id`` preserves the
+    evidence but says nothing about consent STATE. Without this stamp the
+    row survives with ``revoked_at`` still NULL, and
+    ``api/me.py::export_family`` (the GDPR Article 15 / COPPA 312.6 access
+    export) reports it to the guardian as a still-active authorization for a
+    connection that no longer exists. The migration that created the FK
+    already declares this the caller's job: see
+    ``20260729010000_add_personalization_consent_and_eligibility.sql``,
+    "revoked_at stamped by the caller". Nothing else can do it afterwards,
+    because once the FK is NULLed the rows are no longer reachable from the
+    connection id.
+    #VERIFY: tests/integration/test_personalization_consent_tombstone.py::
+    test_deleting_the_connection_via_the_api_stamps_revoked_at.
+
+    Args:
+        session: The request's session (the caller flushes and commits).
+        connection_id: The connection about to be deleted.
+
+    Returns:
+        How many consent rows were stamped, for the audit event payload.
+    """
+    rows = list(
+        await session.scalars(
+            select(PersonalizationDisclosureConsent).where(
+                PersonalizationDisclosureConsent.family_connection_id == connection_id,
+                PersonalizationDisclosureConsent.revoked_at.is_(None),
+            )
+        )
+    )
+    now = datetime.now(UTC)
+    for consent in rows:
+        consent.revoked_at = now
+    if rows:
+        await session.flush()
+    return len(rows)
+
+
 @router.delete(
     "/admin/family-connections/{connection_id}",
     status_code=204,
@@ -203,6 +250,11 @@ async def delete_family_connection(connection_id: str, ctx: Context) -> None:
     Unlike a guardian/admin/kid/family removal, this is a real delete: a
     connection is a permission edge, not identity data with history worth
     preserving (mirrors ``provider_allowlist``'s DELETE route).
+
+    Any ring-2 disclosure consent granted on this connection is NOT deleted
+    with it: it is evidence, and it tombstones instead (see
+    ``_tombstone_attached_consents`` for why the revocation stamp has to
+    happen here rather than in the database).
 
     Args:
         connection_id: The connection to delete (path).
@@ -219,6 +271,7 @@ async def delete_family_connection(connection_id: str, ctx: Context) -> None:
         msg = f"family connection '{connection_id}' not found"
         raise ResourceNotFoundError(msg)
     connected_family_id = str(row.connected_family_id)
+    tombstoned = await _tombstone_attached_consents(ctx.session, parsed)
     await ctx.session.delete(row)
     await ctx.session.flush()
     await record_event(
@@ -227,7 +280,11 @@ async def delete_family_connection(connection_id: str, ctx: Context) -> None:
         entity_type="family_connection",
         entity_id=connection_id,
         event_type=EventType.FAMILY_CONNECTION_CHANGED,
-        payload={"action": "removed", "connected_family_id": connected_family_id},
+        payload={
+            "action": "removed",
+            "connected_family_id": connected_family_id,
+            "tombstoned_disclosure_consents": tombstoned,
+        },
     )
 
 
