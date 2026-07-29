@@ -170,6 +170,12 @@ def _personalization_body(_seed: Seed) -> dict[str, Any]:
     }
 
 
+def _personalization_receive_body(_seed: Seed) -> dict[str, Any]:
+    # True is the column default, so an allowed role's write is a no-op and
+    # this matrix run leaves no seed family opted out for later tests.
+    return {"enabled": True}
+
+
 def _ring2_consent_body(_seed: Seed) -> dict[str, Any]:
     # family_connection_id is a fresh, never-persisted uuid: the role gate
     # (_require_guardian) and the ownership check (authorize_profile on
@@ -688,6 +694,21 @@ _ROUTE_SPECS: list[RouteSpec] = [
         # allowed GUARDIAN token legitimately resolves to a 404 for an
         # unknown connection (mirrors _random_uuid_path's own rationale).
         path_params=_ring2_consent_delete_path,
+    ),
+    # -- personalization.py: the viewer-side receive switch (ADR-023 8.6).
+    # Guardian-only and scoped to the caller's OWN family: there is no id in
+    # the path or body, so it needs no cross-family case (nothing to point
+    # at another household with) and no path_params.
+    RouteSpec(
+        "GET",
+        "/api/v1/families/me/personalization-receive",
+        frozenset({Role.GUARDIAN}),
+    ),
+    RouteSpec(
+        "PUT",
+        "/api/v1/families/me/personalization-receive",
+        frozenset({Role.GUARDIAN}),
+        json_body=_personalization_receive_body,
     ),
     # -- personalization.py: the single values-resolution route. A genuinely
     # new authorization shape (ADR-023 plan section 8.5): it does NOT

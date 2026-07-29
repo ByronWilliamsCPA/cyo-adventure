@@ -882,6 +882,98 @@ async def test_values_ring2_receive_toggle_off_empty(
     assert resp.json()["values"] == {}
 
 
+_RECEIVE = "/api/v1/families/me/personalization-receive"
+
+
+async def test_receive_toggle_off_empties_the_ring2_payload(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """The guardian-facing switch actually reaches the resolution path.
+
+    ``test_values_ring2_receive_toggle_off_empty`` above proves the COLUMN
+    gates the payload, but it sets the column directly in the fixture. This
+    proves a guardian can get there from the API: the column defaults TRUE
+    and had no write surface at all until this route existed, so the
+    documented opt-out was unreachable in practice.
+    """
+    async with sessions() as session:
+        book_id, viewer_token = await _build_ring2_scenario(session)
+
+    before = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth(viewer_token),
+    )
+    assert before.status_code == 200, before.text
+    assert before.json()["values"] == {"pet_name": "Ring2Pet"}
+
+    read = await client.get(_RECEIVE, headers=auth(viewer_token))
+    assert read.status_code == 200, read.text
+    assert read.json() == {"enabled": True}
+
+    off = await client.put(
+        _RECEIVE, headers=auth(viewer_token), json={"enabled": False}
+    )
+    assert off.status_code == 200, off.text
+    assert off.json() == {"enabled": False}
+
+    after = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth(viewer_token),
+    )
+    assert after.status_code == 200, after.text
+    assert after.json()["values"] == {}
+
+    # And it is reversible: an opt-out is a preference, not a burned bridge.
+    back_on = await client.put(
+        _RECEIVE, headers=auth(viewer_token), json={"enabled": True}
+    )
+    assert back_on.status_code == 200, back_on.text
+    restored = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth(viewer_token),
+    )
+    assert restored.json()["values"] == {"pet_name": "Ring2Pet"}
+
+
+async def test_receive_toggle_rejects_a_child_session(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Only a guardian may throw their family's switch, never a kid.
+
+    The kid reads the RESULT of this switch on every personalized book, so
+    a kid-writable toggle would let a child re-enable disclosures their
+    guardian had turned off.
+    """
+    async with sessions() as session:
+        family = Family(name="Receive-Toggle-Kid")
+        session.add(family)
+        await session.flush()
+        kid_profile = ChildProfile(
+            family_id=family.id, display_name="Toggle Kid", age_band="10-13"
+        )
+        session.add(kid_profile)
+        await session.flush()
+        session.add(
+            User(
+                family_id=family.id,
+                role="child",
+                authn_subject="receive-toggle-child-token",
+                child_profile_id=kid_profile.id,
+            )
+        )
+        await session.commit()
+
+    read = await client.get(_RECEIVE, headers=auth("receive-toggle-child-token"))
+    assert read.status_code == 403, read.text
+
+    write = await client.put(
+        _RECEIVE,
+        headers=auth("receive-toggle-child-token"),
+        json={"enabled": False},
+    )
+    assert write.status_code == 403, write.text
+
+
 async def test_values_child_session_in_viewer_family_succeeds(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:

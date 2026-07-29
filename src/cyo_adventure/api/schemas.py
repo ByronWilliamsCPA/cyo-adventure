@@ -2237,6 +2237,26 @@ class PersonalizationView(BaseModel):
     slots: list[PersonalizationSlotView]
 
 
+class PersonalizationReceiveView(BaseModel):
+    """The caller's own family's viewer-side receive switch (ADR-023 8.6)."""
+
+    enabled: bool
+
+
+class PersonalizationReceiveBody(BaseModel):
+    """Set the viewer-side receive switch for the caller's own family.
+
+    Deliberately not an evidentiary consent record: no signature, no policy
+    version, no IP. It is a stored preference (design plan 8.6, "a notice
+    fixes surprise; a signature would not fix it any better"), so the body
+    is the single boolean and nothing else.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    enabled: bool
+
+
 class Ring2ConsentGrantBody(BaseModel):
     """A sharer-side guardian's grant, or supersede, of a ring-2 disclosure.
 

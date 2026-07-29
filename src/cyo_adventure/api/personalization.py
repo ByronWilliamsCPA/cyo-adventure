@@ -1,7 +1,8 @@
 """Story personalization API: ring-1/ring-2 CRUD, consent, and values lookup.
 
-Ring-1 CRUD, ring-2 disclosure consent, and the resolved values payload a
-reader fetches for one book (ADR-023 P4/P5). Three route groups, per
+Ring-1 CRUD, ring-2 disclosure consent, the viewer-side receive switch, and
+the resolved values payload a reader fetches for one book (ADR-023 P4/P5).
+Four route groups, per
 ``docs/planning/story-personalization-implementation-plan.md`` section 6:
 
 1. ``GET``/``PUT /profiles/{profile_id}/personalization``: guardian-only,
@@ -14,7 +15,11 @@ reader fetches for one book (ADR-023 P4/P5). Three route groups, per
    ``FamilyConnection.family_id`` is the viewer, ``connected_family_id`` is
    the sharer (db/models.py), the opposite of the intuitive reading; get the
    direction right or consent is collected from the wrong household.
-3. ``GET /storybooks/{storybook_id}/personalization-values``: the single
+3. ``GET``/``PUT /families/me/personalization-receive``: the VIEWER-side
+   family's persistent opt-out (section 8.6). Scoped to the caller's own
+   family with no id in the path or body, and evaluated as condition 0 of
+   the ring-2 resolution below, ahead of any sharer-side lookup.
+4. ``GET /storybooks/{storybook_id}/personalization-values``: the single
    route that resolves EITHER ring's values payload, keyed only on the book
    (section 8.3). The client never names a connection or a subject profile;
    the server derives both from the caller's own principal and the book's
@@ -41,6 +46,8 @@ from cyo_adventure.api.deps import (
     parse_uuid,
 )
 from cyo_adventure.api.schemas import (
+    PersonalizationReceiveBody,
+    PersonalizationReceiveView,
     PersonalizationSlotBody,
     PersonalizationSlotView,
     PersonalizationUpdateBody,
@@ -672,6 +679,101 @@ async def revoke_ring2_consent(
         consent_signer_name=row.consent_signer_name,
         revoked_at=row.revoked_at,
     )
+
+
+async def _own_family(ctx: Context) -> Family:
+    """Load the caller's own family row for the receive-switch routes.
+
+    Args:
+        ctx: The request context (principal + session).
+
+    Returns:
+        Family: The caller's family.
+
+    Raises:
+        ResourceNotFoundError: If the principal's family row is missing
+            (404). A guardian principal always carries a family_id, so this
+            means the row was deleted mid-session rather than that the
+            caller named something they may not see; there is no path
+            parameter here, so no existence oracle to protect.
+    """
+    family = await ctx.session.get(Family, ctx.principal.family_id)
+    if family is None:
+        msg = "family not found"
+        raise ResourceNotFoundError(msg)
+    return family
+
+
+@router.get("/families/me/personalization-receive", responses=error_responses(404))
+async def get_personalization_receive(ctx: Context) -> PersonalizationReceiveView:
+    """Read the caller's own family's viewer-side receive switch.
+
+    Args:
+        ctx: The request context (principal + session).
+
+    Returns:
+        PersonalizationReceiveView: Whether this family accepts personalized
+        content across its connections.
+
+    Raises:
+        AuthorizationError: If the caller is not a guardian (403).
+        ResourceNotFoundError: If the caller's family row is missing (404).
+    """
+    _require_guardian(ctx.principal)
+    family = await _own_family(ctx)
+    return PersonalizationReceiveView(enabled=family.personalization_receive_enabled)
+
+
+@router.put("/families/me/personalization-receive", responses=error_responses(404))
+async def put_personalization_receive(
+    body: PersonalizationReceiveBody, ctx: Context
+) -> PersonalizationReceiveView:
+    """Set the caller's own family's viewer-side receive switch.
+
+    The write half of design plan 8.6's opt-OUT, and the only one: the
+    switch is a stored preference, not an evidentiary consent, so it takes
+    no signature, policy version, or IP.
+
+    Args:
+        body: The desired switch state.
+        ctx: The request context (principal + session).
+
+    Returns:
+        PersonalizationReceiveView: The state after the write.
+
+    Raises:
+        AuthorizationError: If the caller is not a guardian (403).
+        ResourceNotFoundError: If the caller's family row is missing (404).
+    """
+    # #CRITICAL: security: Family.personalization_receive_enabled defaults
+    # TRUE and is read as condition 0 of the ring-2 values resolution
+    # (_resolve_ring2_view). Without this route the privacy model documents
+    # a switch a guardian can never actually throw: every family would
+    # receive personalized content from every consented connection with no
+    # way to decline short of dissolving the connection. Scoped to
+    # ctx.principal.family_id with no path or body id, so one family can
+    # never toggle another's.
+    # #VERIFY: tests/integration/test_personalization_api.py::
+    # test_receive_toggle_off_empties_the_ring2_payload.
+    _require_guardian(ctx.principal)
+    family = await _own_family(ctx)
+    family.personalization_receive_enabled = body.enabled
+    await ctx.session.flush()
+    # Reuses FAMILY_MANAGED's existing {"action", "status"} payload allowlist
+    # rather than widening it: the switch state is the whole fact, and a
+    # preference carries no value data worth redacting.
+    await record_event(
+        ctx.session,
+        Actor.from_principal(ctx.principal),
+        entity_type="family",
+        entity_id=str(family.id),
+        event_type=EventType.FAMILY_MANAGED,
+        payload={
+            "action": "personalization_receive_changed",
+            "status": "enabled" if body.enabled else "disabled",
+        },
+    )
+    return PersonalizationReceiveView(enabled=family.personalization_receive_enabled)
 
 
 def _is_dual_consented(connection: FamilyConnection) -> bool:
