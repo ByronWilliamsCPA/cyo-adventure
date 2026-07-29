@@ -173,6 +173,25 @@ def test_check_row_id_rejects_malformed_id() -> None:
     assert "does not match UW-[A-M]NN" in problems[0]
 
 
+def test_check_row_id_rejects_id_filed_under_the_wrong_cluster() -> None:
+    """A well-formed id whose letter does not match the cluster table it was found in fails.
+
+    A row copy-pasted between clusters (or a typo'd id, e.g. 'UW-A01' inside the Cluster B
+    table) previously passed the id-format check silently, since it only validated the regex
+    shape and never compared the id's own letter against the cluster it was found in.
+    """
+    problems = _MODULE._check_row_id("B", 10, "UW-A01")
+    assert len(problems) == 1
+    assert "UW-A01" in problems[0]
+    assert "belongs to cluster 'A'" in problems[0]
+    assert "cluster 'B' table" in problems[0]
+
+
+def test_check_row_id_accepts_id_matching_its_cluster() -> None:
+    """A well-formed id whose letter matches the cluster table it was found in still passes."""
+    assert _MODULE._check_row_id("B", 10, "UW-B01") == []
+
+
 def test_check_linkage_reports_malformed_id_in_a_cluster_table(tmp_path: Path) -> None:
     """A malformed id inside a real cluster table is caught end to end."""
     register = _register(
@@ -533,12 +552,36 @@ def test_check_linkage_expands_a_through_range_citation(tmp_path: Path) -> None:
     assert problems == []
 
 
+def test_extract_citations_rejects_an_absurdly_wide_through_range() -> None:
+    """A "through" range spanning far more ids than any real citation would name (a likely
+    typo, e.g. a transposed digit) fails loud rather than silently manufacturing thousands of
+    ids nobody actually cited."""
+    with pytest.raises(ValueError, match="sanity bound"):
+        _MODULE._extract_citations("`SL1` through `SL9999`", _MODULE._DEBT_ID_RE)
+
+
 def test_debt_register_open_ids_excludes_lettered_sub_item_ids() -> None:
     """A decorated id like U9a is not one of the debt-id families the contract names."""
     lines = (
         _DEBT_TABLE_HEADER + "| U9a | A dark-mode polish item | src | Low | none |\n"
     ).splitlines()
     assert _MODULE._debt_register_open_ids(lines) == {}
+
+
+def test_debt_register_open_ids_ignores_closed_marker_outside_the_debt_cell() -> None:
+    """'[Closed]'/'[Resolved]' text in another row's Source or Suggested-action cell does not
+    close this row.
+
+    The marker match used to join every cell before searching, so a still-open row whose
+    'Suggested action' cell happened to read something like 'do this once C1 is [Closed]' was
+    wrongly counted as closed. The marker is only meaningful in the Debt cell (index 1).
+    """
+    lines = (
+        _DEBT_TABLE_HEADER
+        + "| C1 | Still genuinely open | see [Closed] PR discussion | Medium |"
+        " do this once related work is [Resolved] |\n"
+    ).splitlines()
+    assert _MODULE._debt_register_open_ids(lines) == {"C1": 3}
 
 
 # ---------------------------------------------------------------------------
@@ -624,6 +667,44 @@ def test_check_linkage_treats_closed_lesson_statuses_as_satisfied(
         _write_no_open_capability_register(tmp_path),
     )
     assert problems == []
+
+
+def test_check_linkage_reports_a_lessons_log_with_content_but_no_locatable_header(
+    tmp_path: Path,
+) -> None:
+    """A lessons log with table-like content but a header that no longer starts with 'ID' and
+    'Status' fails loud instead of silently reporting zero open lessons.
+
+    Before this check existed, ``_lessons_needing_citation`` returned an empty dict whenever the
+    header could not be located, so a renamed 'Status' column (or a header row dropped entirely)
+    made every open lesson invisible to the linkage check while ``check_linkage`` still reported
+    success on this document.
+    """
+    register_path = _write(tmp_path / "register.md", _register())
+    lessons_path = _write(
+        tmp_path / "lessons.md",
+        "| ID | Date | Source | Category | Lesson | Proposed change | State | Ref |\n"
+        "| --- | --- | --- | --- | --- | --- | --- | --- |\n"
+        "| AL-001 | 2026-01-01 | run | tooling | a lesson | a change | open | |\n",
+    )
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _VALID_ROADMAP),
+        _write(tmp_path / "debt.md", ""),
+        lessons_path,
+        _write_no_open_capability_register(tmp_path),
+    )
+    assert len(problems) == 1
+    assert "lessons.md" in problems[0]
+    assert "no table header with 'ID' and 'Status' columns found" in problems[0]
+
+
+def test_lessons_needing_citation_returns_no_rows_for_a_genuinely_empty_document() -> (
+    None
+):
+    """A document with no table-like content at all (not yet holding a table) is not the
+    malformed-header failure mode; it has nothing to report and does not raise."""
+    assert _MODULE._lessons_needing_citation([]) == {}
 
 
 # ---------------------------------------------------------------------------
@@ -773,6 +854,83 @@ def test_capability_register_open_ids_tracks_each_of_the_four_tables_independent
     assert set(open_ids) == {"K1"}
 
 
+def test_capability_register_open_ids_rejects_content_with_no_locatable_header() -> (
+    None
+):
+    """Table-like content with no row starting 'ID' and containing 'Docs' fails loud.
+
+    Before this check existed, a renamed 'Docs' column (or a header row dropped entirely)
+    silently returned an empty dict, so the capability-register linkage check reported every
+    row as satisfied purely because it never actually found any of them.
+    """
+    lines = (
+        "| ID | Capability | State | Notes |\n"
+        "| --- | --- | --- | --- |\n"
+        "| K1 | Kid thing | open | |\n"
+    ).splitlines()
+    with pytest.raises(
+        LookupError, match="no table header with 'ID' and 'Docs' columns"
+    ):
+        _MODULE._capability_register_open_ids(lines)
+
+
+def test_capability_register_open_ids_rejects_one_corrupted_table_among_valid_others() -> (
+    None
+):
+    """A single table's header corrupted while the other three stay valid still fails loud.
+
+    Caught live against a deliberately-malformed copy of the real capability-register.md: an
+    earlier version of this fix only raised when zero headers were found anywhere in the
+    document, so renaming just the K table's 'Docs' column (leaving G/A/S intact) still made
+    'tables_found' positive and every one of K's open rows silently vanished with the check
+    reporting success. A capability-shaped row (matches '[KGAS]NN') found with no header
+    located for its table is now itself the failure signal, independent of how many other
+    tables in the document are fine.
+    """
+    lines = (
+        "## K: kid experience\n\n"
+        "| ID | Capability | State | Notes |\n"
+        "| --- | --- | --- | --- |\n"
+        "| K1 | Kid thing | \U0001f7e1 | |\n"
+        "\n## G: guardian experience\n\n"
+        + _CAPABILITY_TABLE_HEADER
+        + "| G1 | Guardian thing | \U0001f7e1 | |\n"
+    ).splitlines()
+    with pytest.raises(LookupError, match=r"K1 \(line 5\)"):
+        _MODULE._capability_register_open_ids(lines)
+
+
+def test_capability_register_open_ids_returns_no_rows_for_a_genuinely_empty_document() -> (
+    None
+):
+    """A document with no table-like content at all is not the malformed-header failure mode;
+    it has nothing to report and does not raise."""
+    assert _MODULE._capability_register_open_ids([]) == {}
+
+
+def test_check_linkage_reports_a_capability_register_with_no_locatable_header(
+    tmp_path: Path,
+) -> None:
+    """The malformed-header failure surfaces end to end through check_linkage as a problem."""
+    register_path = _write(tmp_path / "register.md", _register())
+    capability_path = _write(
+        tmp_path / "capability.md",
+        "| ID | Capability | State | Notes |\n"
+        "| --- | --- | --- | --- |\n"
+        "| K1 | Kid thing | open | |\n",
+    )
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _ROADMAP_WITH_MAPPING),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        capability_path,
+    )
+    assert len(problems) == 1
+    assert "capability.md" in problems[0]
+    assert "no table header with 'ID' and 'Docs' columns found" in problems[0]
+
+
 def test_check_linkage_reports_a_register_with_no_cluster_tables(
     tmp_path: Path,
 ) -> None:
@@ -791,6 +949,37 @@ def test_check_linkage_reports_a_register_with_no_cluster_tables(
     assert "no '## Cluster <letter>:' tables found" in problems[0]
 
 
+def test_check_linkage_reports_a_cluster_heading_with_no_locatable_id_header(
+    tmp_path: Path,
+) -> None:
+    """A '## Cluster' heading whose table header row is missing or malformed fails loud.
+
+    Before this check existed, ``_find_clusters`` silently dropped a cluster it could not
+    locate a header for, so the entire cluster's rows (and any real problems in them) went
+    unvalidated while ``check_linkage`` still reported success. A heading with prose but no
+    ``| ID | ... |`` row underneath must surface as a problem, not disappear.
+    """
+    register_path = _write(
+        tmp_path / "register.md",
+        "# Unscheduled Work Register\n\n"
+        "## Cluster A: ADR follow-ons\n\n"
+        "This cluster's table header got renamed and no longer starts with 'ID'.\n\n"
+        "| Ident | Item | Phase | Status |\n"
+        "| --- | --- | --- | --- |\n"
+        "| UW-A01 | Something | 5 | unscheduled |\n",
+    )
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _VALID_ROADMAP),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        _write_no_open_capability_register(tmp_path),
+    )
+    assert len(problems) == 1
+    assert "cluster(s) A" in problems[0]
+    assert "no locatable 'ID' table header" in problems[0]
+
+
 # ---------------------------------------------------------------------------
 # Missing files
 # ---------------------------------------------------------------------------
@@ -800,6 +989,31 @@ def test_check_linkage_reports_unreadable_register_and_stops(tmp_path: Path) -> 
     """A missing register is a single problem; nothing downstream is attempted."""
     problems = _MODULE.check_linkage(
         tmp_path / "does-not-exist.md",
+        _write(tmp_path / "roadmap.md", _VALID_ROADMAP),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        _write_no_open_capability_register(tmp_path),
+    )
+    assert len(problems) == 1
+    assert "cannot read" in problems[0]
+
+
+def test_check_linkage_reports_a_register_with_invalid_utf8_bytes(
+    tmp_path: Path,
+) -> None:
+    """A register file that is not valid UTF-8 is reported as unreadable, not an unhandled
+    crash.
+
+    'UnicodeDecodeError' is a 'ValueError' subclass, not an 'OSError' subclass, so
+    '_read_lines' catching only 'OSError' let a bad-encoding file raise straight through
+    'check_linkage' instead of being reported like any other unreadable document.
+    """
+    register_path = tmp_path / "register.md"
+    register_path.write_bytes(
+        b"# Unscheduled Work Register\n\xff\xfe not valid utf-8\n"
+    )
+    problems = _MODULE.check_linkage(
+        register_path,
         _write(tmp_path / "roadmap.md", _VALID_ROADMAP),
         _write(tmp_path / "debt.md", ""),
         _write(tmp_path / "lessons.md", ""),

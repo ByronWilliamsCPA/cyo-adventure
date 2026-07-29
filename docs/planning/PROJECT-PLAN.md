@@ -221,8 +221,9 @@ table (Section 3), and the Technology Stack table (Section 4, Python version).
 
 **2026-07-28 unscheduled-work sweep**: a six-agent sweep asked one question of every ADR, handoff
 doc, workstream design doc, review report, register, code marker, and open GitHub issue: does some
-document *direct* this work without any document *scheduling* it? It found roughly 250 such items,
-all of which now carry a stable `UW-*` ID and a proposed phase in the new
+document *direct* this work without any document *scheduling* it? It found roughly 250 such items
+before consolidation; deduplicating overlapping findings from different agents brought the
+register to 217 rows, all of which now carry a stable `UW-*` ID and a proposed phase in the new
 [unscheduled work register](./unscheduled-work-register.md). The full audit narrative lives in
 [roadmap.md](./roadmap.md)'s "2026-07-28 Plan Audit" section; the headlines that bear on this
 document:
@@ -356,8 +357,12 @@ and ADR-022 through ADR-024 postdate it):
   ADR-007's body had said "Accepted (2026-07-16)" while its frontmatter said `proposed`, and
   its purge shipped 2026-07-17 (migration `20260718000000_add_report_retention_purge.sql`,
   enforced in `publishing/service.py` and covered by `tests/unit/test_report_retention.py`);
-  ADR-021's decision shipped in PR #323. Accepting ADR-021 records the decision, not the
-  completion of its follow-on work: the production cutover (`UW-A03`) is still open, so RLS
+  ADR-021's implementation shipped in PR #333 (worker/Redis/generation-queue health) and
+  PR #334 (service-account roles, RLS policies, and the API/worker engine split); PR #323
+  was docs-only (the ADR text itself) and left the frontmatter `status: proposed`, so it is
+  not the shipping evidence despite merging the same day. Accepting ADR-021 records the
+  decision, not the completion of its follow-on work: the production cutover (`UW-A03`) is
+  still open, so RLS
   remains enabled but disarmed until it lands. ADR-018 and ADR-023 are Proposed *by design*,
   because a compliance-bearing ADR held open pending counsel is itself the tracking signal.
 
