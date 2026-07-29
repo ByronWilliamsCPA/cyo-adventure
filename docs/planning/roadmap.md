@@ -124,9 +124,9 @@ done.**
 | Register items | Phase |
 |----------------|-------|
 | K5/K8 test pins, K6 tracker, K7 TTS, G6 editor, G5 skim aids, G2 controls UI, G3 permissions, K15 feedback flag, G15 storage view | 4b |
-| S9 delivery infra, G10 digest/alerts, G9 visibility, K12 kid generation status, G7 budget consent + G13 interim quota balance | 4c |
+| S9 delivery infra (push transport closed 2026-07-28: authenticated SSE stream shipped; the server-scheduled digest job remains open), G9 visibility, K12 kid generation status, G7 budget consent. Closed since this table was written: G10 digest/alerts 2026-07-28 (SSE push transport shipped, register flipped to ✅), G13 interim quota balance 2026-07-29 (audit found budget enforcement and kid-facing status already shipped and tested, register flipped to ✅), and G14 multi-guardian households 2026-07-28 (guardian self-service co-parent invite shipped, register flipped to ✅) | 4c |
 | G17 consent flow, K17 recommendation surfaces, A15 enforcement guard | 4d |
-| ADR-007 purge, G8/A5 offline revocation, A13 audit view, A4 re-screen tooling, nightly e2e-real + S2 real conflict spec, staging golden journeys, adversarial live-model run | 5 |
+| ADR-007 purge, G8/A5 offline revocation, nightly e2e-real + S2 real conflict spec, staging golden journeys, adversarial live-model run | 5 |
 | ADR-018 D1-D4 execution, G11 trust surface, G12 export, A12 abuse workflow, A14 compliance reporting | 7 |
 | G13 full credits/IAP | 8 |
 | A9 curation surface, A7 ops dashboards, A8 runtime levers, A4 full catalog re-screen | 9 |
@@ -141,13 +141,20 @@ and need the owner's ratification before they count as commitments.
 
 | Register items | Proposed phase |
 |----------------|----------------|
-| K1 per-band presentation, K10 kid-facing connectivity UX | 4b, alongside the other kid-surface UX already there |
-| G14 multi-guardian households, S8 request-flow remainder (budget accounting at consent, kid-facing status) | 4c, which already owns G7 budget consent and K12 kid status, the two gaps S8 names |
-| A16 cover-art moderation gate (gap H2) | 5, where H2 is already listed in the Phase 5 checklist under its own name |
 | A3 band definitions and theme taxonomy as admin levers (thresholds already shipped) | 9, with A8 runtime levers |
-| K11 kid-terms request initiation | `now`: the register's own note says this shipped end to end, so the 🟡 is likely stale. Verify and correct the symbol rather than schedule work |
 | K20 kid-facing personalization, G18 guardian per-slot opt-in | Blocked on [ADR-023](./adr/adr-023-story-personalization-slots.md) moving from Proposed to Accepted. No phase until that ruling; tracked as a `decision`, not a scheduling gap |
 | A2 sample audits of auto-published stories | Post-launch backlog, conditional: A6 gates every publish through a human today, so this is moot unless an auto-publish tier is ever introduced. It stays registered so the conditional survives |
+
+**Amended 2026-07-29, union of the in-flight branch corrections.** Both tables above now carry the
+same closures, so the in-flight UI branches record one consistent view instead of each dropping the
+others' edits. Removed as closed rather than scheduled: K1, K9 and K10 (kid-surface presentation and
+connectivity UX), K11 (kid-terms request initiation, which the audit confirmed shipped end to end),
+G13 interim quota balance, G14 multi-guardian households, S8 request-flow remainder, A13 audit view,
+A16 cover-art review, and A4's Phase 5 re-screen UI hook (A4's full-catalog re-screen stays in Phase
+9). Each closure is evidenced in [capability-register.md](./capability-register.md). Where a row in
+that register still reads 🟡 here, the flip travels with the branch that closed it and lands
+when that branch merges; this note is the shared phase home in the meantime, so no closed-or-closing
+capability is left unscheduled.
 
 ## 2026-07-20 Plan Audit: verification and previously untracked work
 
@@ -333,7 +340,7 @@ The old wording stands in historical sections above; this table governs.
 | M4c: Family loops | S9, G10, G9, K12 complete, G7 real budget consent + G13 balance | 2-3 wks | ✅ Substantially delivered 2026-07-17 (PR #270); open: push channel/server-scheduled digest (S9/G10 are poll-based only) |
 | M4d: Connections | G17 consent, K17 surfaces, A15 enforcement guard (ADR-016 ring 2) | 2-3 wks, overlaps 4c | ✅ Delivered 2026-07-17 (PR #270); privacy-model erasure coverage for connections not independently re-verified |
 | M5: Hardened family tier | Phase 5 expanded scope: purge, offline revocation, audit view, re-screen, restore drill, nightly/staging/prod test ladder green with alerting | 2-3 wks | 🟡 M4b-4d dependency satisfied as of 2026-07-17 (see the 2026-07-20 audit note above); remaining Phase 5 gaps are audit view, restore drill, remaining test ladder, plus the newly surfaced H1/H2 |
-| **M5 = R1 (full): "the web app functions properly"** | Every family-tier register row at delivered status; the five golden journeys green on the full test ladder | **~9-13 wks cumulative from start** | 🟡 Closer than scheduled: the register's K/G/A/S rows are now mostly ✅/🟡 with few ❌ remaining (see capability-register.md v1.7); the live E2E sign-off (`r1-live-e2e-checklist.md`) is still an empty, unexecuted table |
+| **M5.1 = R1 (full): "the web app functions properly"** | Every family-tier register row at delivered status; the five golden journeys green on the full test ladder | **~9-13 wks cumulative from start** | 🟡 Closer than scheduled: the register's K/G/A/S rows are now mostly ✅/🟡 with few ❌ remaining (see capability-register.md v1.7); the live E2E sign-off (`r1-live-e2e-checklist.md`) is still an empty, unexecuted table |
 | M6 = R2: TestFlight iOS | Phase 6 (public auth/multi-tenancy) + Phase 8 (Capacitor shell, IAP); R2-gate debt items closed (G1 child-session scoping is already substantially closed by ADR-014; verify and mark) | 6-9 wks | 🟡 Phase 6's guardian-side substance (JIT onboarding, child-session tokens, profile picker + PIN, parental gate) is already built and tested per the 2026-07-20 audit (see PROJECT-PLAN.md Phase 6); the native iOS/Capacitor path (P6-05 remainder) and all of Phase 8 remain fully unstarted |
 | M7 = R3: Public launch | Phase 7 (ADR-018 D1-D4 executed and Accepted, G11/G12/A12/A14) + Phase 9 (catalog ops, hosted infra, A7/A8 ops levers, submission) | 5-8 wks, partial overlap with M6 | ⏸️ Counsel engagement should start now (long lead) |
 | Completion | Register fully delivered except the post-launch backlog (S12 ring-3, A11 corpus tooling) and parked no-design-element items | - | - |
