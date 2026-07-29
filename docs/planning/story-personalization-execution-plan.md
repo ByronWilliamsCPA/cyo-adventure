@@ -706,9 +706,16 @@ Contents, per design-plan 5.3/8.2/8.6 (all shapes are settled there; this is tra
   expectations from the contract, and node-edit/repair adoption update it in place.
   Verify the exact version-table model name in `db/models.py` before writing the DDL.
 
-- [ ] Steps: same TDD rhythm as B1 (parity test + tombstone-behaviour unit test first, then
+- [x] Steps: same TDD rhythm as B1 (parity test + tombstone-behaviour unit test first, then
   migration + ORM, then PASS, then commit
   `feat(db): ring-2 consent evidence, viewer switch, subject link (ADR-023 P4)`).
+
+**DONE 2026-07-29 (commit 45da866).** Design-plan sections 5.3/8.2/8.6 matched this text
+exactly; the only drift was the StorybookVersion line anchor (moved to :761 after B1's
+insertion). Tombstone behaviour proven by integration test (connection delete leaves the
+consent row with a NULL connection FK; profile delete removes it); schema parity green;
+no vocab-drift extension needed because `covered_slot_types` is an open JSONB array, not
+a closed CHECK vocabulary. B1's schema-qualification and server_default lessons applied.
 
 ### Task B3: deletion drill and export
 
