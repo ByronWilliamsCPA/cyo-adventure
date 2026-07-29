@@ -800,10 +800,49 @@ runs on Supabase-managed infrastructure instead of the homelab; see
       neither previously tracked here nor closed**: H1, `assign_storybook` performs no
       band-ceiling comparison against the target profile, so a guardian can assign an
       off-band book across children (K13's assignment-time enforcement gap).
-- [ ] **Newly surfaced by the 2026-07-20 audit**: H2, `generate_cover` flips
+- [x] **Newly surfaced by the 2026-07-20 audit**: H2, `generate_cover` flips
       `cover_status` straight `generating -> ready` with no moderation/approval gate, so
       an AI cover image can reach a child's shelf without the human review A16 promises
-      (the story-text safety guarantee, A6, is unaffected).
+      (the story-text safety guarantee, A6, is unaffected). Closed 2026-07-28 on
+      `feat/cover-review-ui`: the backend gate (`generate_cover` stops at
+      `pending_review`, `covers.service.approve_cover` is the sole admin-only path to
+      `ready`) merged from `fix/cover-moderation-gate` (commit b56b11f), and the admin
+      review UI (`ReviewDetailPage.tsx` renders the pending cover image plus an "Approve
+      cover" action) closes the remaining A16 gap the 2026-07-29 audit had found; A16
+      flipped to done in `capability-register.md`.
+
+**Newly surfaced by the 2026-07-28 unscheduled-work sweep.** The security plan's Medium and Low
+tiers, and the authoring log's blocking lessons, had no phase home. Full detail by ID in the
+[unscheduled work register](./unscheduled-work-register.md); the safety-bearing items are carried
+here because a gate bypass should be visible on the checklist, not only in a register.
+
+- [ ] **Three gate bypasses** (`UW-E01`, `UW-E02`, `UW-E03`): reading and completion routes bypass
+      the assignment gate; guardian blob-fetch skips the gate; repair skips the validator.
+- [ ] **`AL-036` undercuts ADR-005** (`UW-C02`): the review surface has no pagination,
+      virtualization, or per-node review state, so at 746 nodes it cannot deliver the human
+      approval the ADR requires. The approval currently attests less than it claims.
+- [ ] `AL-039` (`UW-C04`): repair and the Stage-1 fidelity gate both fail open and are
+      structurally impossible at scale; fidelity lacks an `<untrusted_passage>` fence.
+- [ ] `AL-034` (`UW-C03`): one import is ~2,986 provider round trips inside a single Postgres
+      transaction holding `FOR UPDATE`, running 40 to 100 minutes.
+- [ ] `AL-040` (`UW-C05`): `/admin/rescreen` sweeps synchronously in one request.
+- [ ] Remaining security-plan tiers (`UW-E04` to `UW-E08`): review-model allowlist, a real PII
+      detector, family cost cap on the authoring-plan path, production Postgres host-port and
+      password-default exposure, inert `allowed_content_flags`, unenforced `reading_level_cap`,
+      health-endpoint version disclosure.
+- [ ] `UW-E16`: the `_extract_subject()` dev/test auth stub is still live in `api/deps.py`, guarded
+      only by unset OIDC environment variables.
+- [ ] **ADR-022 tiered RLS scoping** (`UW-A01`, `UW-A02`) and the rest of the ADR-021 worker and
+      observability work (`UW-A04` to `UW-A07`). Gated on the M4.1 cutover below.
+- [ ] Named test-ladder actions replacing the generic line above (`UW-F*`): behavioral safety suite,
+      FK `ON DELETE` parity, generated-client drift test, mutmut kill-floor, pre-Phase-9 performance
+      testing, E2E driving the RQ worker, schema parity over policies and triggers, CORS and
+      rate-limit negative tests, and the seven traceability-matrix actions.
+- [ ] `UW-K01` **release blocker**: two `docs/known-vulnerabilities.md` entries are 68 days old with
+      reassessment 8 days overdue, past the 60-day OpenSSF release gate.
+- [ ] `UW-K18`: 98 RAD markers carry no paired `#VERIFY`, including the `generation/worker.py`
+      concurrency pair, the `db/models.py` cascade CRITICAL, the `classifiers.py` API-key placement
+      CRITICAL, and four deploy-ordering CRITICALs in `supabase/migrations/`.
 
 **Newly surfaced by the 2026-07-28 unscheduled-work sweep.** The security plan's Medium and Low
 tiers, and the authoring log's blocking lessons, had no phase home. Full detail by ID in the

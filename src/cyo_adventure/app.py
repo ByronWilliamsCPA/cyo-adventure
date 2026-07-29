@@ -37,6 +37,7 @@ from cyo_adventure.api import (
     node_edit,
     notifications,
     onboarding,
+    personalization,
     profiles,
     provider_allowlist,
     ratings,
@@ -251,6 +252,14 @@ _OPENAPI_TAGS: list[dict[str, str]] = [
     {
         "name": "profiles",
         "description": "Guardian-managed child profiles within the caller's own family.",
+    },
+    {
+        "name": "personalization",
+        "description": (
+            "Ring-1/ring-2 story personalization slot management, ring-2 "
+            "disclosure consent, and the resolved values payload for a "
+            "reading book (ADR-023)."
+        ),
     },
     {
         "name": "child-sessions",
@@ -511,6 +520,7 @@ def create_app() -> FastAPI:
     app.include_router(admin_profiles.router)
     app.include_router(family_connections.router)
     app.include_router(recommendations.router)
+    app.include_router(personalization.router)
     return app
 
 

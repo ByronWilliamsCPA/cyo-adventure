@@ -8,6 +8,7 @@ import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { makePassageEditApi } from './passageEditApi'
 import { makeCoverApi } from '../guardian/coverApi'
+import { makeRescreenApi, type BookVerdictView } from './rescreenApi'
 import { FlagBadge, verdictTone } from '../guardian/FlagBadge'
 import {
   makeReviewApi,
@@ -38,7 +39,21 @@ type LoadState =
   | { kind: 'error'; message: string }
   | { kind: 'ready'; surface: ReviewSurface }
 
-type ActionDialog = null | 'approve' | 'sendback' | 'archive'
+type ActionDialog = null | 'approve' | 'sendback' | 'archive' | 'rescreen'
+
+/**
+ * Single-story re-screen trigger state (register A4's UI-only gap: the
+ * backend `POST /api/v1/admin/rescreen` was fully complete and tested with
+ * zero admin callers). Deliberately separate from `submitting`/`actionError`
+ * (the approve/send-back/archive trio): a re-screen is not a status
+ * transition and, unlike those three, its result (the verdict) is worth
+ * surfacing in place rather than navigating away.
+ */
+type RescreenState =
+  | { kind: 'idle' }
+  | { kind: 'submitting' }
+  | { kind: 'success'; verdict: BookVerdictView | null }
+  | { kind: 'error' }
 
 function Finding({ finding }: { finding: FindingView }) {
   return (
@@ -150,6 +165,7 @@ export function ReviewDetailPage() {
   const reviewApi = useMemo(() => makeReviewApi(api), [api])
   const coverApi = useMemo(() => makeCoverApi(api), [api])
   const passageEditApi = useMemo(() => makePassageEditApi(api), [api])
+  const rescreenApi = useMemo(() => makeRescreenApi(api), [api])
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -170,6 +186,7 @@ export function ReviewDetailPage() {
   const [reason, setReason] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [actionError, setActionError] = useState(false)
+  const [rescreenState, setRescreenState] = useState<RescreenState>({ kind: 'idle' })
 
   // #ASSUME: timing dependencies: the cover-generation poll loop sleeps 2s up
   // to 30 times (~60s); a reviewer can navigate away mid-poll.
@@ -251,7 +268,15 @@ export function ReviewDetailPage() {
   const readyVersion = state.kind === 'ready' ? state.surface.version : null
   const readySurface = state.kind === 'ready' ? state.surface : null
 
-  const { coverStatus, coverBusy, coverTimedOut, generateCover } = useCoverGeneration({
+  const {
+    coverStatus,
+    coverUrl,
+    coverBusy,
+    coverTimedOut,
+    coverApproveError,
+    generateCover,
+    approveCover,
+  } = useCoverGeneration({
     storybookId,
     readyVersion,
     coverApi,
@@ -316,13 +341,43 @@ export function ReviewDetailPage() {
     // a prior "catalog" choice on one story never silently carries over and
     // gets applied to the next approval.
     if (kind === 'approve') setVisibility('family')
+    // Same reasoning as actionError above: a prior re-screen's result or
+    // error must never bleed into the next time this dialog opens.
+    if (kind === 'rescreen') setRescreenState({ kind: 'idle' })
     setDialog(kind)
   }
 
   function closeDialog() {
     setActionError(false)
     setReason('')
+    setRescreenState({ kind: 'idle' })
     setDialog(null)
+  }
+
+  // Re-screens ONLY this story (register A4's single-story trigger; a
+  // full-catalog sweep is Phase 9 and explicitly out of scope). Deliberately
+  // does not use `runAction`: a re-screen never changes the story's status,
+  // so there is nothing to navigate away to, and the point is to surface the
+  // verdict in place, not to advance a queue.
+  //
+  // #ASSUME: data integrity: the backend silently skips a scoped id that is
+  // not currently published, so `results` can come back empty even on a 200.
+  // The dialog treats a missing verdict as its own explicit state (see the
+  // `results[0] ?? null` handling below) rather than crashing or claiming a
+  // pass.
+  // #VERIFY: ReviewDetailPage.test.tsx "re-screen" success/error/empty-results cases.
+  async function runRescreen() {
+    setRescreenState({ kind: 'submitting' })
+    try {
+      const summary = await rescreenApi.triggerForStorybook(storybookId)
+      setRescreenState({ kind: 'success', verdict: summary.results[0] ?? null })
+    } catch (err) {
+      // Log the message, not the axios error object (its config carries the
+      // caller's Authorization bearer token), mirroring every other catch on
+      // this page.
+      console.error('rescreen failed:', err instanceof Error ? err.message : err)
+      setRescreenState({ kind: 'error' })
+    }
   }
 
   if (state.kind === 'loading') {
@@ -569,6 +624,48 @@ export function ReviewDetailPage() {
       </div>
 
       {/*
+        A16 (capability-register.md), H2 human-approval half
+        (security-hardening-plan-2026-07.md): a generated cover stops at
+        cover_status "pending_review" and carries no presigned URL until an
+        admin approves it here. Rendered whenever the backend hands back a
+        URL for either "pending_review" or "ready" (api/covers.py::_cover_url
+        widens the presign gate for this admin-only surface); a
+        pending_review cover with no URL yet (R2 unconfigured) shows the
+        status text below without an image rather than a broken <img>.
+        #VERIFY: ReviewDetailPage.test.tsx renders-pending-cover-with-approve,
+        approves-a-pending-cover, and surfaces-a-cover-approval-error tests.
+      */}
+      {coverStatus === 'pending_review' || coverStatus === 'ready' ? (
+        <div className="review-cover-preview">
+          {coverUrl ? (
+            <img
+              src={coverUrl}
+              alt={
+                coverStatus === 'pending_review'
+                  ? `Generated cover for ${title}, pending review`
+                  : `Approved cover for ${title}`
+              }
+              className="review-cover-preview__image"
+            />
+          ) : null}
+          {coverStatus === 'pending_review' ? (
+            <div className="review-cover-preview__actions">
+              <Button onClick={() => void approveCover()} disabled={coverBusy}>
+                Approve cover
+              </Button>
+              {coverApproveError ? (
+                <span className="review-cover-error" role="alert">
+                  Could not approve the cover; try again.
+                </span>
+              ) : null}
+            </div>
+          ) : (
+            <p className="review-cover-preview__status cyo-text-muted">Cover approved.</p>
+          )}
+        </div>
+      ) : null}
+
+      {/*
         #ASSUME: UI state: the backend already re-checks status on approve/send-back
         and rejects a story that is not in_review; this guard is UX only, so a
         guardian never clicks into a confusing rejection for a story someone else
@@ -630,6 +727,21 @@ export function ReviewDetailPage() {
         >
           Archive
         </Button>
+        {/*
+          Re-screen (register A4) shares Archive's published-only gate: the
+          backend sweep only ever acts on already-published storybooks
+          (moderation/rescreen.py), silently skipping any other status.
+        */}
+        <Button
+          variant="ghost"
+          onClick={() => openDialog('rescreen')}
+          disabled={surface.status !== 'published'}
+          aria-describedby={
+            surface.status !== 'published' ? 'review-rescreen-disabled-hint' : undefined
+          }
+        >
+          Re-screen
+        </Button>
       </div>
       {/*
         Keep each button's accessible name its visible label ("Approve" / "Send
@@ -646,6 +758,11 @@ export function ReviewDetailPage() {
       {surface.status !== 'published' ? (
         <p id="review-archive-disabled-hint" className="review-actionbar__hint cyo-text-muted">
           Only published stories can be archived.
+        </p>
+      ) : null}
+      {surface.status !== 'published' ? (
+        <p id="review-rescreen-disabled-hint" className="review-actionbar__hint cyo-text-muted">
+          Only published stories can be re-screened.
         </p>
       ) : null}
 
@@ -789,6 +906,86 @@ export function ReviewDetailPage() {
           <p>
             Archiving removes this story from the library. Assigned children will no longer see it.
           </p>
+        </Dialog>
+      ) : null}
+
+      {dialog === 'rescreen' ? (
+        <Dialog
+          title="Re-screen this story?"
+          onClose={closeDialog}
+          actions={
+            rescreenState.kind === 'success' ? (
+              <Button onClick={closeDialog}>Close</Button>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  onClick={closeDialog}
+                  disabled={rescreenState.kind === 'submitting'}
+                >
+                  Cancel
+                </Button>
+                {/*
+                  #CRITICAL: security: confirming re-screen re-runs the
+                  safety/policy gate over already-published content; a
+                  misclick must not silently skip this behind an unconfirmed
+                  click. Unlike Approve/Send Back/Archive, this action never
+                  changes the story's status (ADR-005: a flagged result is
+                  never auto-archived), so the confirm gate protects against
+                  redundant re-screens, not an unsafe state transition.
+                  #VERIFY: ReviewDetailPage.test.tsx "re-screen" cases.
+                */}
+                <Button
+                  disabled={rescreenState.kind === 'submitting'}
+                  onClick={() => void runRescreen()}
+                >
+                  {rescreenState.kind === 'submitting' ? 'Re-screening…' : 'Confirm re-screen'}
+                </Button>
+              </>
+            )
+          }
+        >
+          {rescreenState.kind === 'idle' || rescreenState.kind === 'submitting' ? (
+            <p>
+              Re-screening re-runs the current safety policy and thresholds against this story. A
+              flagged result is never auto-archived; you review the result and archive by hand if
+              warranted.
+            </p>
+          ) : null}
+          {rescreenState.kind === 'error' ? (
+            <p role="alert" className="review-detail__action-error cyo-text-error">
+              We could not re-screen this story. Please try again.
+            </p>
+          ) : null}
+          {rescreenState.kind === 'success' ? (
+            rescreenState.verdict ? (
+              <div role="status" className="review-rescreen-result">
+                <p>
+                  Outcome: <strong>{rescreenState.verdict.outcome}</strong>
+                </p>
+                {rescreenState.verdict.reasons.length > 0 ? (
+                  <ul>
+                    {rescreenState.verdict.reasons.map((reason, index) => (
+                      // Reasons are static per render; index key is stable here.
+                      <li key={index}>{reason}</li>
+                    ))}
+                  </ul>
+                ) : null}
+                {rescreenState.verdict.error ? (
+                  <p role="alert" className="cyo-text-error">
+                    {rescreenState.verdict.error}
+                  </p>
+                ) : null}
+              </div>
+            ) : (
+              // #ASSUME: data integrity: the backend silently skips an id that
+              // is not currently published (see runRescreen's #ASSUME above);
+              // this is the UI's explicit rendering of that empty-results case.
+              <p role="status">
+                This story was not included in the sweep. It may no longer be published.
+              </p>
+            )
+          ) : null}
         </Dialog>
       ) : null}
 
