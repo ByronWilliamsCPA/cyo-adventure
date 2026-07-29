@@ -141,9 +141,10 @@ and need the owner's ratification before they count as commitments.
 
 | Register items | Proposed phase |
 |----------------|----------------|
-| K9 shelf presentation ("what's new" only; in-progress/finished states already shipped per 2026-07-29 audit) | 4b, alongside the other kid-surface UX already there |
-| G14 multi-guardian households (admin-mediated invite already shipped; gap is a guardian-initiated self-service path only, per 2026-07-29 audit) | 4c, which already owns G7 budget consent and K12 kid status |
+| K1 per-band presentation, K9 shelf presentation, K10 kid-facing connectivity UX | 4b, alongside the other kid-surface UX already there |
+| G14 multi-guardian households, S8 request-flow remainder (budget accounting at consent, kid-facing status) | 4c, which already owns G7 budget consent and K12 kid status, the two gaps S8 names |
 | A3 band definitions and theme taxonomy as admin levers (thresholds already shipped) | 9, with A8 runtime levers |
+| K11 kid-terms request initiation | `now`: the register's own note says this shipped end to end, so the 🟡 is likely stale. Verify and correct the symbol rather than schedule work |
 | K20 kid-facing personalization, G18 guardian per-slot opt-in | Blocked on [ADR-023](./adr/adr-023-story-personalization-slots.md) moving from Proposed to Accepted. No phase until that ruling; tracked as a `decision`, not a scheduling gap |
 | A2 sample audits of auto-published stories | Post-launch backlog, conditional: A6 gates every publish through a human today, so this is moot unless an auto-publish tier is ever introduced. It stays registered so the conditional survives |
 
@@ -796,6 +797,39 @@ runs on Supabase-managed infrastructure instead of the homelab; see
       review UI (`ReviewDetailPage.tsx` renders the pending cover image plus an "Approve
       cover" action) closes the remaining A16 gap the 2026-07-29 audit had found; A16
       flipped to done in `capability-register.md`.
+
+**Newly surfaced by the 2026-07-28 unscheduled-work sweep.** The security plan's Medium and Low
+tiers, and the authoring log's blocking lessons, had no phase home. Full detail by ID in the
+[unscheduled work register](./unscheduled-work-register.md); the safety-bearing items are carried
+here because a gate bypass should be visible on the checklist, not only in a register.
+
+- [ ] **Three gate bypasses** (`UW-E01`, `UW-E02`, `UW-E03`): reading and completion routes bypass
+      the assignment gate; guardian blob-fetch skips the gate; repair skips the validator.
+- [ ] **`AL-036` undercuts ADR-005** (`UW-C02`): the review surface has no pagination,
+      virtualization, or per-node review state, so at 746 nodes it cannot deliver the human
+      approval the ADR requires. The approval currently attests less than it claims.
+- [ ] `AL-039` (`UW-C04`): repair and the Stage-1 fidelity gate both fail open and are
+      structurally impossible at scale; fidelity lacks an `<untrusted_passage>` fence.
+- [ ] `AL-034` (`UW-C03`): one import is ~2,986 provider round trips inside a single Postgres
+      transaction holding `FOR UPDATE`, running 40 to 100 minutes.
+- [ ] `AL-040` (`UW-C05`): `/admin/rescreen` sweeps synchronously in one request.
+- [ ] Remaining security-plan tiers (`UW-E04` to `UW-E08`): review-model allowlist, a real PII
+      detector, family cost cap on the authoring-plan path, production Postgres host-port and
+      password-default exposure, inert `allowed_content_flags`, unenforced `reading_level_cap`,
+      health-endpoint version disclosure.
+- [ ] `UW-E16`: the `_extract_subject()` dev/test auth stub is still live in `api/deps.py`, guarded
+      only by unset OIDC environment variables.
+- [ ] **ADR-022 tiered RLS scoping** (`UW-A01`, `UW-A02`) and the rest of the ADR-021 worker and
+      observability work (`UW-A04` to `UW-A07`). Gated on the M4.1 cutover below.
+- [ ] Named test-ladder actions replacing the generic line above (`UW-F*`): behavioral safety suite,
+      FK `ON DELETE` parity, generated-client drift test, mutmut kill-floor, pre-Phase-9 performance
+      testing, E2E driving the RQ worker, schema parity over policies and triggers, CORS and
+      rate-limit negative tests, and the seven traceability-matrix actions.
+- [ ] `UW-K01` **release blocker**: two `docs/known-vulnerabilities.md` entries are 68 days old with
+      reassessment 8 days overdue, past the 60-day OpenSSF release gate.
+- [ ] `UW-K18`: 98 RAD markers carry no paired `#VERIFY`, including the `generation/worker.py`
+      concurrency pair, the `db/models.py` cascade CRITICAL, the `classifiers.py` API-key placement
+      CRITICAL, and four deploy-ordering CRITICALs in `supabase/migrations/`.
 
 **Newly surfaced by the 2026-07-28 unscheduled-work sweep.** The security plan's Medium and Low
 tiers, and the authoring log's blocking lessons, had no phase home. Full detail by ID in the
