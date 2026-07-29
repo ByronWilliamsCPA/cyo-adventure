@@ -195,6 +195,70 @@ async def test_cover_status_not_found_returns_404(
     assert resp.status_code == 404
 
 
+async def test_cover_status_returns_presigned_url_when_pending_review(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # An admin reviewer must be able to see a pending cover before deciding
+    # whether to approve it; _cover_url deliberately widens the presign gate
+    # to "pending_review" (not just "ready") for this admin-only endpoint.
+    async def _fake_presign(storybook_id: str, version: int, _settings: object) -> str:
+        return f"https://signed.example.com/{storybook_id}/{version}"
+
+    monkeypatch.setattr(
+        "cyo_adventure.api.covers.generate_presigned_cover_url", _fake_presign
+    )
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        row.cover_status = "pending_review"
+        await s.commit()
+
+    resp = await client.get(
+        f"/api/v1/storybooks/{seed.storybook_id}/versions/{seed.version}/cover",
+        headers=auth(seed.admin_token),
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["cover_status"] == "pending_review"
+    assert body["cover_url"] == (
+        f"https://signed.example.com/{seed.storybook_id}/{seed.version}"
+    )
+
+
+async def test_cover_status_omits_url_when_generating(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # A cover mid-generation (or failed, or never requested) must not expose
+    # a presigned URL: no object has necessarily been uploaded yet at that key.
+    async def _fail_if_called(*_args: object, **_kwargs: object) -> str:
+        msg = "must not be called for a non-viewable cover_status"
+        raise AssertionError(msg)
+
+    monkeypatch.setattr(
+        "cyo_adventure.api.covers.generate_presigned_cover_url", _fail_if_called
+    )
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        row.cover_status = "generating"
+        await s.commit()
+
+    resp = await client.get(
+        f"/api/v1/storybooks/{seed.storybook_id}/versions/{seed.version}/cover",
+        headers=auth(seed.admin_token),
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["cover_status"] == "generating"
+    assert body["cover_url"] is None
+
+
 # ---------------------------------------------------------------------------
 # H2 (security-hardening-plan-2026-07.md): admin cover-approval endpoint.
 # A cover cannot reach "ready" (and therefore a child library card, see
