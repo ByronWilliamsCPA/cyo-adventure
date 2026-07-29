@@ -175,7 +175,7 @@ def _require_guardian(principal: Principal) -> None:
     # story prose and (ring 2) another household's; only the guardian role
     # may write them. Mirrors profiles.py::_require_guardian exactly.
     # #VERIFY: tests/integration/test_personalization_api.py::
-    # test_child_cannot_write_personalization.
+    # test_child_cannot_read_or_write_personalization.
     if not principal.is_guardian:
         msg = "guardian role required"
         raise AuthorizationError(msg)
@@ -605,7 +605,7 @@ async def grant_ring2_consent(
     # server-side and never accepted from the client, mirroring
     # POST /v1/onboarding's ADR-018 D1 consent (plan section 6.1).
     # #VERIFY: tests/integration/test_personalization_api.py::
-    # test_ring2_consent_ignores_client_supplied_ip_and_timestamp.
+    # test_grant_ring2_consent_ignores_client_supplied_server_stamped_fields.
     client_ip = request.client.host if request.client is not None else None
     now = datetime.now(UTC)
     row = existing
@@ -1193,9 +1193,9 @@ async def get_personalization_values(
     before any family check had run. Uniform disclosure is the only way this
     route can honor its own "never reveal anything about another family"
     contract, since it has no 403 branch to hide behind either.
-    #VERIFY: tests/integration/test_personalization_values_api.py asserts a
-    nonexistent id and a cross-family private book are byte-identical to the
-    empty payload.
+    #VERIFY: tests/integration/test_personalization_api.py::
+    test_values_missing_storybook_returns_the_empty_payload and
+    ::test_values_cross_family_private_book_returns_the_empty_payload.
 
     Args:
         storybook_id: The book (path).

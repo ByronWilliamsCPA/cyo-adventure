@@ -300,7 +300,7 @@ def _strip_malformed_sentinels(text: str) -> str:
     # ``{~HE{~A:R{~Q:O~}~}:Explorer~}``, which stripped to a literal
     # ``RO:Explorer~}`` in the body.
     # #VERIFY: tests/unit/test_storybook_reinsertion.py::
-    # test_nested_near_miss_leaves_no_sentinel_debris.
+    # test_nested_sentinel_leaves_no_closer_debris.
 
     Args:
         text: Text that may contain zero or more malformed near-misses. Must

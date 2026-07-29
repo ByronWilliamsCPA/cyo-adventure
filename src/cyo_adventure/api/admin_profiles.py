@@ -201,7 +201,8 @@ def _apply_non_pin_fields(row: ChildProfile, body: AdminProfileUpdateBody) -> No
         # storybook/personalization_values.py, so an admin-set name could
         # carry a forged sentinel or band-denylisted term straight into a
         # story.
-        # #VERIFY: tests/integration/test_admin_profiles.py asserts both
+        # #VERIFY: tests/integration/test_admin_profiles_api.py::
+        # test_admin_write_points_reject_a_denylisted_display_name asserts both
         # admin write points reject a denylisted display_name.
         validate_display_name(body.display_name, row.age_band)
         row.display_name = body.display_name
