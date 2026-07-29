@@ -55,11 +55,14 @@ document deliberately does not restate their reasoning, only their build steps.
 | Measurement instrument (offline, standalone, no DB) | `src/cyo_adventure/measurement/`, `scripts/measure_sentinel_survival.py` |
 
 **Update 2026-07-29:** Stage A is done and merged (PR #449): the P3 title/prompt strips, the
-leak-guard tests, and the G1 measurement (verdict STOP) are on main. The re-insertion
-prototype (`measurement/reinsertion.py`, `--save-fills`, analyzer script) lives on branch
-`feat/personalization-reinsertion-prototype` pending merge. Still not started: Stage R's
-pipeline integration, all persistence, all API routes, all frontend work, all UI, the Route A
-copy wiring, the catalog migration, and the compliance artifacts. No `.contract.json` on disk
+leak-guard tests, and the G1 measurement (verdict STOP) are on main. Branch
+`feat/personalization-reinsertion-prototype` (PR #466) carries the re-insertion prototype
+(`measurement/reinsertion.py`, `--save-fills`, analyzer script) **and, since the Stage R
+re-plan, Stages R and B**: the worker's strip-all-then-reinsert step, both persistence tables
+(`child_profile_personalization`, `personalization_disclosure_consent`, RLS enabled with
+service-role-only policies), and the personalization API routes. Still not started: all
+frontend work, all UI, the Route A copy wiring, the catalog migration, and the compliance
+artifacts. No `.contract.json` on disk
 declares a personalizable slot, so every merged check is currently a structural no-op: the
 first contract that declares one is the feature's power switch and is deliberately sequenced
 late (Task D4).
@@ -74,7 +77,7 @@ validator or authoring behaviour appends its lessons to
 | Gate | What it blocks | Condition to pass |
 |---|---|---|
 | **G1: survival GO/NO-GO** | Stage B onward (everything after leak guards) | Task A1's measured clean-pass rate at or above ~95% is GO; 80-95% means iterate the prompt/delimiter and re-measure before proceeding, with the retry cost line made explicit; below ~80% is STOP: prototype deterministic post-fill re-insertion instead and re-plan Stage B+. **FIRED 2026-07-28: measured 3.3% (1/30) on the primary provider; verdict STOP. Stage B+ as written is void pending a re-plan around deterministic post-fill re-insertion (design plan 3.4, MEASURED block). RESOLVED by the Stage R re-plan of 2026-07-29: gate G1-R (Stage R exit) now blocks Stage B onward** |
-| **G1-R: re-insertion round-trip** | Stage B onward (replaces the fired G1) | Task R4: round-trip integrity 100% through the production fill path; per-slot coverage profile recorded; owner acknowledges the coverage posture (third-party slots high-90s, HERO partial-by-voice, dedication guaranteed). **SATISFIED 2026-07-29: verify_manifest 30/30 (100%) on fresh fills (Task R4 CONFIRMED block); owner acknowledged the coverage posture and approved Stage B the same day. Stage B is unblocked. The vocative nudge experiment was approved and runs separately; its outcome adjusts the coverage profile only, not this gate.** |
+| **G1-R: re-insertion round-trip** | Stage B onward (replaces the fired G1) | Task R4: round-trip integrity 100% through the production fill path; per-slot coverage profile recorded; owner acknowledges the coverage posture (third-party slots high-90s, HERO partial-by-voice, dedication guaranteed). **SATISFIED 2026-07-29: verify_manifest 30/30 (100%) on fresh fills (Task R4 CONFIRMED block); owner acknowledged the coverage posture and approved Stage B the same day. Stage B is unblocked. The vocative nudge experiment ran and was REJECTED the same day (HERO coverage fell to 4.9%, AL-062); it adjusted the coverage profile only, never this gate, and the template edit was reverted before commit.** |
 | **G2: counsel on OD-1/OD-5** | **Shipping** P7 (ring-2) and P9 (consent UI); building them is not blocked | Counsel confirms the ring-2 separate disclosure consent design and the sibling/pet-name raise |
 | **G3: Route A copy precedes the flag** | Enabling `VITE_FEATURE_PERSONALIZATION` anywhere a real family can reach | Task D1 (toggle-aware Route A copy) merged |
 
@@ -523,7 +526,12 @@ outcomes vs the plan text:
   at-rest re-check, import path)
 - Test: the existing wiring tests per site, plus new derived-manifest cases.
 
-Order in the pipeline: fill -> **strip-all-then-reinsert** -> validator gate -> moderation.
+Order in the pipeline **as built**: fill -> deterministic validator gate -> **strip-all-then-reinsert**
+-> moderation. This line originally read `fill -> reinsert -> validator gate -> moderation`; the
+accepted deviation above (see "the zero-coverage soft floor is a structlog WARNING") moved the gate
+ahead of re-insertion, and the two statements sat in contradiction until this correction. Placing the
+gate first is semantically equivalent, not a weakening: every gate consumer strips sentinels before
+scoring, and re-insertion only wraps already-scored words in place.
 Semantics change at each site from "blob matches the skeleton-prescribed multiset" (fails
 on ~100% of real fills) to "blob matches the version's derived `sentinel_manifest`":
 
@@ -612,7 +620,8 @@ except the three re-scoped points marked **[Stage R re-scope]** below.
 **EXIT MET 2026-07-29.** All three clauses closed: integrity 100% (Task R4 CONFIRMED
 block), coverage profile recorded as cross-run ranges (AL-061), and the owner acknowledged
 the posture and approved Stage B on 2026-07-29. The owner also approved the optional
-vocative nudge experiment; it proceeds in parallel and is not a Stage B precondition.
+vocative nudge experiment, which was never a Stage B precondition; it ran the same day and
+was rejected on its measured result (Task R4 checklist, AL-062).
 
 ---
 
