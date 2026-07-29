@@ -141,7 +141,6 @@ and need the owner's ratification before they count as commitments.
 
 | Register items | Proposed phase |
 |----------------|----------------|
-| K9 shelf presentation ("what's new" only; in-progress/finished states already shipped per 2026-07-29 audit) | 4b, alongside the other kid-surface UX already there |
 | G14 multi-guardian households (admin-mediated invite already shipped; gap is a guardian-initiated self-service path only, per 2026-07-29 audit) | 4c, which already owns G7 budget consent and K12 kid status |
 | A16 cover-art review UI: the H2 auto-publish security gap is closed (branch `fix/cover-moderation-gate`), but the 2026-07-29 audit found A16's own definition still unmet, no admin surface renders the cover image or exposes an approve action | 5, where H2 is already listed in the Phase 5 checklist under its own name |
 | A3 band definitions and theme taxonomy as admin levers (thresholds already shipped) | 9, with A8 runtime levers |

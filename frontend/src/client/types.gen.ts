@@ -2007,6 +2007,10 @@ export type LibraryItem = {
      * Cover Url
      */
     cover_url?: string | null;
+    /**
+     * Published At
+     */
+    published_at?: string | null;
 };
 
 /**

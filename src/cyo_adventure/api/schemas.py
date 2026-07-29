@@ -163,6 +163,12 @@ class LibraryItem(BaseModel):
     series_id: str | None = None
     book_index: int | None = None
     cover_url: str | None = None
+    # K9 shelf presentation, "what's new" leg: reuses the publishing state
+    # machine's existing StorybookVersion.published_at (publishing/service.py
+    # stamps it in the same transaction as approved_by), rather than adding a
+    # new column. None only for a pre-migration row that predates the column;
+    # such a row degrades to "not new" on the shelf, never an error.
+    published_at: datetime | None = None
 
 
 class LibraryView(BaseModel):
