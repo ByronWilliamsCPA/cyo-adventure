@@ -28,7 +28,7 @@ import dataclasses
 import hashlib
 import uuid
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Literal, cast
 
 from sqlalchemy import select
 
@@ -96,6 +96,7 @@ from cyo_adventure.storybook.reinsertion import (
     verify_manifest,
 )
 from cyo_adventure.utils.logging import get_logger
+from cyo_adventure.validator.gate import run_gate
 from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity_at_rest
 from cyo_adventure.validator.slots import DENYLIST_VERSION
 
@@ -1127,6 +1128,17 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
             skeleton_slug=skeleton_slug,
         )
 
+    # The gate inside `fill_skeleton` scored `outcome.storybook`; everything
+    # above may have rewritten it. Re-score the document that will actually be
+    # persisted, so the stored validation_report describes the stored blob.
+    # A no-op transform short-circuits, so this costs nothing on the dormant
+    # path every contract on disk takes today.
+    gate_status, gate_report = (
+        _regate_after_transform(outcome, final_storybook, skeleton_slug=skeleton_slug)
+        if final_storybook is not None
+        else (outcome.status, outcome.report)
+    )
+
     # WS-2 design section 7: the audit block a reviewer needs to see exactly
     # what the theme changed. `bind_attempts` is deliberately omitted:
     # interpret_and_bind does not report how many of its (at most max_attempts)
@@ -1163,10 +1175,10 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     # inference, not the concrete GenerationOutcome (S5886); constructing the
     # instance directly keeps the return type unambiguous everywhere.
     return GenerationOutcome(
-        status=outcome.status,
+        status=gate_status,
         storybook=final_storybook,
         report={
-            **outcome.report,
+            **gate_report,
             "theme_contract": theme_contract_report,
             "request_interpretation": interpretation.model_dump(mode="json"),
         },
@@ -1174,6 +1186,97 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         stage_log=outcome.stage_log,
         sentinel_manifest=sentinel_manifest,
     )
+
+
+# Ordered worst-last, so max() over this ranking picks the more severe of two
+# statuses. "passed" is the only status that lets a document reach a reader
+# without a human looking at it, so it must be the easiest to lose.
+_STATUS_SEVERITY: dict[str, int] = {"passed": 0, "needs_review": 1, "failed": 2}
+
+
+def _regate_after_transform(
+    outcome: GenerationOutcome,
+    final_storybook: dict[str, object],
+    *,
+    skeleton_slug: str,
+) -> tuple[Literal["passed", "needs_review", "failed"], dict[str, object]]:
+    """Re-run the deterministic gate against the POST-transform document.
+
+    #CRITICAL: data-integrity: ``fill_skeleton`` runs ``run_gate`` internally
+    and returns the verdict for the document it gated. ``_run_skeleton_fill``
+    then rewrites that document (``reinsert_storybook`` normalizes the title,
+    every node body, every ending title, and every choice label, and can
+    delete malformed spans outright) and persists the REWRITTEN document
+    under the OLD verdict. Reading-level, word-count, band-profile, and safety
+    checks all read those exact strings, so the stored
+    ``validation_report`` described a document that was not the one stored.
+    The resume path in ``import_story.py`` already gets this right: it
+    reassigns ``blob`` BEFORE running the gate. This closes the ordering gap
+    on the worker path.
+
+    The reconciliation never upgrades. A document that was blocked before the
+    transform stays at least as severe afterward, because the transform is a
+    text normalization, not a repair, and "the rewrite happened to satisfy the
+    gate" is not evidence the original problem was fixed. Only a downgrade to
+    a worse status can result from this call.
+
+    #VERIFY: tests/unit/test_worker.py asserts a no-op transform leaves the
+    status and report untouched, and that a transform which breaks the gate
+    downgrades a "passed" outcome.
+
+    Args:
+        outcome: The pre-transform outcome from ``fill_skeleton``.
+        final_storybook: The post-transform document that will be persisted.
+        skeleton_slug: Slug for the log line, when the verdicts disagree.
+
+    Returns:
+        The reconciled ``(status, report)`` pair to return to the caller.
+    """
+    if final_storybook == outcome.storybook:
+        # Byte-identical transform, which is the case for every contract on
+        # disk today (none declares a personalizable slot). Re-gating would
+        # burn the full validator budget to reproduce a verdict we already
+        # hold, so skip it entirely.
+        return outcome.status, outcome.report
+
+    # Scale is always "standard" on this path: fill_skeleton documents that
+    # skeleton library files use genre-faithful authored node counts (ADR-011)
+    # rather than the "compact" live-model budget.
+    regated = run_gate(final_storybook, "standard")
+    if not regated.blocked:
+        post_status: Literal["passed", "needs_review", "failed"] = (
+            "needs_review" if regated.safety_flagged else "passed"
+        )
+    else:
+        post_status = "needs_review"
+
+    # Written as a comparison rather than max(key=...), which widens both
+    # Literal types to str and loses the return annotation's guarantee.
+    status = (
+        outcome.status
+        if _STATUS_SEVERITY[outcome.status] >= _STATUS_SEVERITY[post_status]
+        else post_status
+    )
+    if status != outcome.status or post_status != outcome.status:
+        logger.warning(
+            "generation_job.regate_after_reinsertion_disagreed",
+            skeleton_slug=skeleton_slug,
+            pre_transform_status=outcome.status,
+            post_transform_status=post_status,
+            resolved_status=status,
+        )
+
+    # The post-transform report is the truthful description of the document
+    # that will actually be persisted, so it wins. The pre-transform verdict
+    # is preserved alongside it rather than discarded: a reviewer looking at a
+    # needs_review job needs to be able to tell which of the two gate runs
+    # produced the downgrade.
+    report: dict[str, object] = dict(regated.report.to_dict())
+    report["pre_reinsertion_gate"] = {
+        "status": outcome.status,
+        "report": outcome.report,
+    }
+    return status, report
 
 
 def _should_persist_storybook(outcome: GenerationOutcome) -> bool:

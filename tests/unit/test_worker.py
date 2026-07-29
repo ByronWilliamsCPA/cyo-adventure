@@ -1791,13 +1791,76 @@ async def test_run_skeleton_fill_sentinel_integrity_forged_value_not_reinserted(
     )
     outcome = await _run_skeleton_fill(fill_context)
 
-    assert outcome.status == "passed"
+    # Not "passed": `_run_skeleton_fill` now re-runs the deterministic gate
+    # against the POST-transform document, because the transform rewrote it
+    # and the pre-transform verdict no longer describes what gets persisted.
+    # This fixture's storybook is a hand-built stub that the real gate blocks
+    # (verified directly: run_gate(...).blocked is True on it BEFORE any
+    # transform runs), so the old "passed" assertion was recording what
+    # `_stub_returning` fabricated, not a gate result. The sentinel behavior
+    # this test actually exists to pin is unchanged and asserted below.
+    assert outcome.status == "needs_review"
     assert outcome.storybook is not None
     nodes = cast("list[dict[str, object]]", outcome.storybook["nodes"])
     start_body = cast("str", nodes[0]["body"])
     assert "Champion" in start_body
     assert wrap("PROTAGONIST", "Champion") not in start_body
     assert wrap("PROTAGONIST", "Ada") not in start_body
+
+
+def test_regate_after_transform_skips_when_document_unchanged() -> None:
+    """A byte-identical transform returns the original verdict untouched.
+
+    This is the dormant path every theme contract on disk takes today: none
+    declares a personalizable slot, so `reinsert_storybook` is a no-op and
+    re-running the full validator would only burn budget reproducing a
+    verdict already held.
+    """
+    doc: dict[str, object] = {"title": "T", "nodes": []}
+    outcome = GenerationOutcome(
+        status="passed",
+        storybook=doc,
+        report={"marker": "pre-transform"},
+        attempts=0,
+        stage_log=[],
+    )
+
+    status, report = worker_module._regate_after_transform(
+        outcome, dict(doc), skeleton_slug="themed-slug"
+    )
+
+    assert status == "passed"
+    assert report == {"marker": "pre-transform"}
+    assert "pre_reinsertion_gate" not in report
+
+
+def test_regate_after_transform_never_upgrades_a_blocked_outcome() -> None:
+    """A pre-transform failure survives a post-transform document that gates clean.
+
+    The transform is a text normalization, not a repair. "The rewrite happened
+    to satisfy the gate" is not evidence the original problem was fixed, so
+    reconciliation only ever moves toward the more severe status.
+    """
+    outcome = GenerationOutcome(
+        status="needs_review",
+        storybook={"title": "before", "nodes": []},
+        report={"marker": "pre-transform"},
+        attempts=0,
+        stage_log=[],
+    )
+
+    status, report = worker_module._regate_after_transform(
+        outcome, {"title": "after", "nodes": []}, skeleton_slug="themed-slug"
+    )
+
+    assert status == "needs_review"
+    # The post-transform report describes the document that will be persisted,
+    # and the superseded verdict rides alongside it so a reviewer can tell
+    # which of the two gate runs produced the downgrade.
+    assert report["pre_reinsertion_gate"] == {
+        "status": "needs_review",
+        "report": {"marker": "pre-transform"},
+    }
 
 
 @pytest.mark.asyncio
