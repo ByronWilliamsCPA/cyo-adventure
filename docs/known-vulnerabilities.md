@@ -11,111 +11,41 @@ tags:
 ---
 
 This document tracks CVEs and security advisories that have been identified but cannot
-be immediately remediated. Entries must be reviewed within 60 days of the Discovered
-date. Any entry older than 60 days without reassessment blocks releases per the OpenSSF
-release gate policy.
+be immediately remediated.
+
+## Release Gate Policy
+
+Two independent gates govern a release. Either one, on its own, is enough to hold it.
+
+1. **Severity gate, recorded per entry in `Blocking Release`.** This field records one
+   thing and one thing only: whether the vulnerability's own severity and reachability
+   are judged severe enough to hold a release. `No` means "assessed as not
+   release-blocking on the evidence gathered on the Discovered date, or on the date of
+   the most recent reassessment." It is a dated verdict with an expiry, not a standing
+   exemption.
+2. **Process gate, derived per entry from `Reassessment Due`.** Every entry must be
+   reassessed within 60 days. Once an entry passes its `Reassessment Due` date it blocks
+   releases per the OpenSSF release gate policy, whatever its `Blocking Release` value
+   says, because that value has expired and no longer rests on verified evidence.
+
+**Ruling (2026-07-29).** Where the two gates appear to conflict, the process gate
+governs. An overdue entry closes the release gate even when it reads
+`Blocking Release | No`. The opposite reading, that `Blocking Release | No` exempts an
+entry from the deadline, is rejected: it would let any entry opt out of reassessment
+permanently and would drain the 60-day rule of any force. This resolves the
+contradiction between the former preamble and the two entries that sat overdue and
+non-blocking from 2026-07-20 to 2026-07-29.
+
+**Reopening the gate.** Reassess the entry: re-verify fix status, reachability, and
+severity against current sources; record what was checked, on what date, and what
+evidence would change the verdict; then set a new `Reassessment Due` date within 60 days
+of that check. Bumping the date without new evidence is not a reassessment and does not
+reopen the gate.
 
 To add new entries, see the [known-vulnerabilities template](https://github.com/ByronWilliamsCPA/cyo-adventure/blob/main/.github/known-vulnerabilities-template.md)
 in the `.github/` directory.
 
 ## Active Entries
-
-## PYSEC-2022-42969 | py | Medium
-
-| Field | Value |
-|-------|-------|
-| **CVE ID** | PYSEC-2022-42969 |
-| **Package** | py |
-| **Affected Version** | 1.11.0 |
-| **Fixed Version** | No fix available |
-| **Severity** | Medium |
-| **CVSS Score** | 7.5 |
-| **Discovered** | 2026-05-21 |
-| **Reassessment Due** | 2026-07-20 |
-| **Blocking Release** | No |
-
-### Description
-
-ReDoS (Regular Expression Denial of Service) vulnerability in the `py` package's
-`path.LocalPath` function via crafted input to the `svnwc.status` method.
-
-### Impact on This Project
-
-The `py` package is a transitive dependency of `interrogate` (a docstring coverage
-tool) used only in the development environment. It is never present in production
-runtime dependencies. The vulnerable `svnwc.status` code path is exercised only
-when parsing Subversion repository info, which this project does not do.
-
-### Remediation Plan
-
-- [ ] Monitor upstream `py` package for a fix release (package is largely unmaintained)
-- [ ] Evaluate replacing `interrogate` with an alternative docstring coverage tool
-  if no fix arrives by 2026-07-20 (reassessment due)
-
-### Why Not Fixed Yet
-
-The `py` package has no released fix version. The package is largely unmaintained.
-`interrogate` has not released a version that drops the `py` dependency.
-
-### References
-
-- [PYSEC-2022-42969](https://osv.dev/vulnerability/PYSEC-2022-42969)
-- [GitHub Advisory GHSA-w596-4wvx-j9j6](https://github.com/advisories/GHSA-w596-4wvx-j9j6)
-
----
-
-## PYSEC-2026-89 | markdown | High
-
-| Field | Value |
-|-------|-------|
-| **CVE ID** | PYSEC-2026-89 |
-| **Package** | markdown |
-| **Affected Version** | 3.10.2 |
-| **Fixed Version** | Fixed only in 3.8.1-3.8.2; no fixed release available for >=3.9 as of 2026-05-21 |
-| **Severity** | High |
-| **CVSS Score** | 7.5 |
-| **Discovered** | 2026-05-21 |
-| **Reassessment Due** | 2026-07-20 |
-| **Blocking Release** | No |
-
-### Description
-
-DoS via malformed HTML-like sequences that cause `html.parser.HTMLParser` to raise
-an unhandled `AssertionError` during Markdown parsing. Python-Markdown does not
-catch this exception, so any application parsing attacker-controlled Markdown may
-crash. Enables remote unauthenticated Denial of Service in web applications,
-documentation systems, CI/CD pipelines, and any service rendering untrusted Markdown.
-Also known as CVE-2025-69534 and GHSA-5wmx-573v-2qwq.
-
-### Impact on This Project
-
-The `markdown` package is a transitive dependency of `mkdocs`, `mkdocs-material`,
-and related documentation tools. It is present only in the development environment
-(docs tooling). This project does not parse attacker-controlled Markdown input at
-runtime. The vulnerability is not exploitable in production. Dev-only impact.
-
-### Remediation Plan
-
-- [ ] Monitor the `markdown` package for a release that fixes PYSEC-2026-89 in
-  the 3.9+ series
-- [ ] Evaluate pinning `markdown` to `3.8.2` if compatible with `mkdocs` and
-  `mkdocs-material` dependencies
-- [ ] Reassess by 2026-07-20 whether a fixed version is available or whether
-  mkdocs has migrated to a safe markdown version
-
-### Why Not Fixed Yet
-
-The fix landed in `markdown` 3.8.1, but the package subsequently released 3.9 and
-3.10.x without incorporating the fix (or re-introduced the vulnerable code path).
-As of 2026-05-21, no version in the 3.9+ series resolves this CVE. Downgrading to
-3.8.2 may conflict with `mkdocs-material` and other tooling that requires 3.9+.
-
-### References
-
-- [PYSEC-2026-89](https://osv.dev/vulnerability/PYSEC-2026-89)
-- [GitHub Advisory GHSA-5wmx-573v-2qwq](https://github.com/advisories/GHSA-5wmx-573v-2qwq)
-
----
 
 ## CVE-2026-53615 | libuuid1 (util-linux) | High
 
@@ -440,8 +370,109 @@ which this project consumes rather than controls.
 
 ## Resolved Entries
 
-| CVE | Package | Resolved Date | Resolution |
-|-----|---------|---------------|------------|
+| CVE              | Package  | Resolved Date | Resolution                                             |
+|------------------|----------|---------------|--------------------------------------------------------|
+| PYSEC-2022-42969 | py       | 2026-07-29    | Withdrawn upstream as disputed. See detail below.      |
+| PYSEC-2026-89    | markdown | 2026-07-29    | Not affected; 3.10.2 carries the 3.8.1 fix. See below. |
+
+Aliases: PYSEC-2022-42969 is CVE-2022-42969 and GHSA-w596-4wvx-j9j6 (duplicate OSV record
+PYSEC-2022-43183); PYSEC-2026-89 is CVE-2025-69534 and GHSA-5wmx-573v-2qwq.
+
+### Resolution detail: PYSEC-2022-42969 (`py`)
+
+Reassessed 2026-07-29 (overdue from 2026-07-20). The advisory was retracted by both
+sources that carried it:
+
+- **GHSA-w596-4wvx-j9j6 was withdrawn 2025-08-01**, with the stated ground that
+  "evidence does not suggest that CVE-2022-42969 is a valid, reproducible
+  vulnerability."
+- **PYSEC-2022-42969 was withdrawn 2026-06-09**, as was its duplicate record
+  PYSEC-2022-43183. Both post-date the 2026-05-21 assessment, which is why the entry
+  was opened in good faith at the time.
+
+Confirmed live-finding status rather than relying on the advisory metadata alone:
+
+- An OSV version query for `py` 1.11.0 returns no live advisory.
+- `uv run pip-audit` reports "No known vulnerabilities found."
+- `osv-scanner scan source -L uv.lock` reports "No issues found." This is not a
+  suppression artifact: `osv-scanner.toml` has no active `[[IgnoredVulns]]` entries, and
+  neither this advisory nor any alias appears in `.trivyignore`.
+
+Both scans are clean with `py` still pinned at 1.11.0, so the clean result reflects the
+retraction, not a version change. The dependency itself is unchanged and still reachable
+in the dev tree only: `py` 1.11.0 arrives via `interrogate` 1.7.0, which is still the
+latest release (2024-04-07) and still declares `py` in its `requires_dist`. No newer
+`interrogate` drops it, so no upgrade path exists, and with the advisory withdrawn none
+is needed. Replacing `interrogate` was evaluated and rejected as unjustified: it is
+wired into pre-commit at two scopes (`scripts/` at 85 percent, `src/` at 80 percent) and
+swapping it would trade a working, pinned quality gate for churn against a
+non-vulnerability.
+
+**What would reopen this:** a re-publication of the advisory as non-disputed, or a new
+advisory against `py` 1.11.0. The residual concern is maintenance, not security:
+`interrogate` has had no release since April 2024 and pins an unmaintained transitive
+dependency. That belongs in the debt register, not here.
+
+### Resolution detail: PYSEC-2026-89 (`markdown`)
+
+Reassessed 2026-07-29 (overdue from 2026-07-20). The prior entry recorded that the fix
+landed in 3.8.1 but was not carried into the 3.9+ series. That is incorrect as of this
+check, and the correction was verified at source rather than taken from advisory
+metadata.
+
+Advisory state, from two independent records:
+
+- **GHSA-5wmx-573v-2qwq** (not withdrawn; modified 2026-06-06) gives the affected range
+  as `introduced 0` to `fixed 3.8.1`, with no later re-introduction event.
+- **PYSEC-2026-89** (not withdrawn; modified 2026-06-10) gives the range as
+  `introduced 0` to `last_affected 3.8`, and enumerates 54 affected versions, none of
+  them in the 3.9, 3.10, 3.11, or 3.12 series.
+
+Both records were modified after the 2026-05-21 assessment, so an amended affected range
+is the likely origin of the earlier reading.
+
+Source-level verification, which is the decisive evidence here: the two guards
+introduced in 3.8.1 are present verbatim in the installed 3.10.2
+(`markdown/htmlparser.py`):
+
+1. `parse_html_declaration` routes a `<![` prefix that is not `<![CDATA[` to
+   `parse_bogus_comment`, with the upstream comment referencing issue 1534 and CPython
+   `gh-77057` intact.
+2. `parse_starttag` treats `</>` as literal data, paired with the
+   `htmlparser.starttagopen` monkeypatch that lets `</>` reach it.
+
+Confirmed by scanners as well: an OSV version query for `markdown` 3.10.2 returns no
+advisory; `pip-audit` and `osv-scanner` are both clean with 3.10.2 still pinned. A
+dynamic reproduction attempt was run against 3.8 and 3.10.2 on CPython 3.11.15 and did
+not discriminate (both parsed the malformed inputs cleanly), which is consistent with the
+crash depending on the CPython point release; it is recorded here as inconclusive and
+carries no weight in this verdict. The source diff does.
+
+Because 3.10.2 is not affected, the pin-to-3.8.2 option in the prior remediation plan is
+moot and was not pursued; downgrading would move the tree onto an affected version.
+
+**What would reopen this:** a new advisory naming a 3.9+ version, or removal of either
+guard in a future release.
+
+### Reachability findings common to both (verified 2026-07-29)
+
+Recorded because both entries rested on a dev-only reachability claim, and that claim was
+re-verified rather than carried forward:
+
+- **Neither package reaches production.** `uv export --no-dev` resolves neither `py` nor
+  `markdown`; both are reachable only through the `dev` extra (`py` via `interrogate`,
+  `markdown` via `mkdocs`, `mkdocs-material`, `mkdocstrings`, `pymdown-extensions`, and
+  `properdocs`).
+- **Neither ships in the container image.** The Dockerfile's runtime stages install with
+  `uv sync --frozen --no-dev --extra api`, which excludes the dev extra.
+- **No runtime code parses Markdown.** There is no import of the `markdown` package
+  anywhere in `src/`. The matches for the string "markdown" are docstrings, prompt text,
+  and `measurement/report.py::render_markdown`, which emits Markdown by string
+  templating and parses none.
+- **No CI workflow renders untrusted Markdown.** No workflow reads
+  `github.event.pull_request.body`, `github.event.issue.body`, or
+  `github.event.comment.body`. The only Markdown-rendering workflow is `docs.yml`, which
+  builds MkDocs over repository-controlled files under `docs/`.
 
 ## Review History
 
@@ -453,3 +484,4 @@ which this project consumes rather than controls.
 | 2026-07-19  | Byron Williams | Added libexpat1/libexpat1-dev CVE-2025-59375/2026-25210/45186/56131/56407/56408 (runtime base image; no upstream fix; same mirror regression independently found via PR #296). |
 | 2026-07-19  | Byron Williams | Added linux-libc-dev CVE-2026-43185 (Critical) plus 33 further kernel CVEs (runtime base image; kernel UAPI headers only, no running kernel code; no upstream fix). |
 | 2026-07-24  | Byron Williams | Added 8 further linux-libc-dev kernel-header CVEs from PR #394 Trivy: 6 no-fix (53089/53109/53118/53330/63970/64017) plus 2 tracked-with-fix in 6.12.96-1 not yet in the dhi-python base (53399/64600). |
+| 2026-07-29  | Byron Williams | Reassessed 2 overdue entries; resolved both; added gate ruling.       |
