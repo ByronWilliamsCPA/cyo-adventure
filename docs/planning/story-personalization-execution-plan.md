@@ -587,10 +587,13 @@ the remaining G1-R clause is the owner's acknowledgment of this coverage posture
   not by this run.
 - [ ] Record both in the design plan's section-3.4 block with date; append lessons rows;
   `uv run python scripts/check_lessons_log.py`.
-- [ ] Optional, cheap, separately committed: a one-line vocative nudge in `fill_bound.md`
+- [x] Optional, cheap, separately committed: a one-line vocative nudge in `fill_bound.md`
   (address the hero by name in dialogue at least once); re-run the analyzer offline on the
   new fills and record the HERO coverage delta. Adopt only if the delta is material; the
-  feature does not depend on it.
+  feature does not depend on it. **MEASURED AND REJECTED 2026-07-29: HERO coverage fell to
+  4.9% (72/1458) versus the 26.8-42.4% baseline range because the nudge's rationale clause
+  was executed as an instruction (design plan section 3.4 block; AL-062). Template edit
+  reverted, never committed; the run is `results/sentinel-survival/20260729T054004Z`.**
 
 **Stage R exit (gate G1-R, replaces the fired G1 for Stage B onward):** round-trip
 integrity 100% on the production path; per-slot coverage profile recorded; owner

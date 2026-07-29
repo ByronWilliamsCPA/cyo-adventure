@@ -440,6 +440,17 @@ zero provider spend; strict baseline preserved as `reinsertion-report-strict.*`)
   the two runs; LISTENER/OPERATOR stable near 100%), confirming coverage is a per-fill
   property to report as cross-run ranges, never a stable point estimate (AL-061); the
   transform-correctness gate is the invariant.
+- **VOCATIVE NUDGE MEASURED AND REJECTED 2026-07-29** (owner-approved experiment; run
+  `results/sentinel-survival/20260729T054004Z`, 30 stories, template edit reverted): adding
+  "let another character address the hero by name in dialogue at least once in that node
+  ... second-person narration alone never surfaces the name" to `fill_bound.md` cut HERO
+  coverage to **4.9%** (72/1458) versus the 26.8-42.4% baseline range; 10/30 stories ended
+  with zero hero mentions in prose. Root cause: the trailing rationale clause was executed
+  as an instruction, so the model suppressed narration mentions and confined the name to
+  dialogue it then rarely wrote. The hard gate was unaffected (verify_manifest 30/30). Any
+  future nudge attempt must be imperative-only, additive ("in addition to other natural
+  uses"), and A/B-measured before adoption (AL-062). The coverage posture stands on the
+  baseline ranges plus the mandatory dedication overlay.
 
 ## 4. P3: leak-surface guard points
 
