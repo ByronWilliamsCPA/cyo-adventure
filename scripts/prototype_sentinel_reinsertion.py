@@ -33,6 +33,23 @@ from cyo_adventure.measurement.reinsertion import (
 )
 
 
+class MalformedFillError(Exception):
+    """A saved fill file's JSON parsed but does not have the expected shape.
+
+    Distinct from `json.JSONDecodeError` (the bytes are not JSON at all) and
+    from `OSError` (the file could not be read). All three are recoverable
+    per-run input errors that `main` turns into a diagnostic plus exit 1;
+    they are separated so the message can say which one happened.
+
+    This replaces the `TypeError` these checks used to raise. A fill file with
+    a string where an object belongs is bad DATA, not a bad call, and
+    `TypeError` is what Python itself raises when the surrounding code has a
+    genuine bug. Conflating the two meant `main`'s ``except TypeError`` would
+    also have swallowed a real programming error in `reinsert_sentinels` and
+    reported it as a malformed input file.
+    """
+
+
 def _build_parser() -> argparse.ArgumentParser:
     """Build the CLI argument parser."""
     parser = argparse.ArgumentParser(description=__doc__)
@@ -62,13 +79,15 @@ def _load_fill(path: Path) -> tuple[str, str, dict[str, object], dict[str, objec
             expectations from ``bound_skeleton`` alone).
 
     Raises:
-        TypeError: If the file's JSON root is not an object, or any required
-            field is missing or the wrong type.
+        MalformedFillError: If the file's JSON root is not an object, or any
+            required field is missing or the wrong type.
+        json.JSONDecodeError: If the file is not valid JSON at all.
+        OSError: If the file cannot be read or is not valid UTF-8.
     """
     raw: object = json.loads(path.read_text(encoding="utf-8"))  # pyright: ignore[reportAny]
     if not isinstance(raw, dict):
         msg = f"expected a JSON object in {path}"
-        raise TypeError(msg)
+        raise MalformedFillError(msg)
     payload = cast("dict[str, object]", raw)
 
     specimen_slug = payload.get("specimen_slug")
@@ -77,16 +96,16 @@ def _load_fill(path: Path) -> tuple[str, str, dict[str, object], dict[str, objec
     filled_storybook = payload.get("filled_storybook")
     if not isinstance(specimen_slug, str):
         msg = f"{path}: 'specimen_slug' missing or not a string"
-        raise TypeError(msg)
+        raise MalformedFillError(msg)
     if not isinstance(provider, str):
         msg = f"{path}: 'provider' missing or not a string"
-        raise TypeError(msg)
+        raise MalformedFillError(msg)
     if not isinstance(bound_skeleton, dict):
         msg = f"{path}: 'bound_skeleton' missing or not an object"
-        raise TypeError(msg)
+        raise MalformedFillError(msg)
     if not isinstance(filled_storybook, dict):
         msg = f"{path}: 'filled_storybook' missing or not an object"
-        raise TypeError(msg)
+        raise MalformedFillError(msg)
     return (
         specimen_slug,
         provider,
@@ -105,11 +124,28 @@ def _analyze_fills(fills_dir: Path) -> list[ReinsertionTrial]:
         list[ReinsertionTrial]: One trial per fill file.
 
     Raises:
-        TypeError: Propagated from ``_load_fill`` on a malformed fill file.
+        MalformedFillError: On any fill file that cannot be read, is not valid
+            JSON, or whose JSON has the wrong shape. The offending path is
+            always part of the message.
     """
     trials: list[ReinsertionTrial] = []
     for path in sorted(fills_dir.glob("*.json")):
-        specimen_slug, provider, bound_skeleton, filled_storybook = _load_fill(path)
+        # #CRITICAL: external-resources: `--save-fills` writes one file per
+        # trial across a long provider run, so a run killed mid-write leaves a
+        # TRUNCATED file (`JSONDecodeError`) and a directory that was moved or
+        # made read-only leaves an unreadable one (`OSError`). Both used to
+        # escape `main`'s `except TypeError` and exit with a traceback. They
+        # are converted here rather than caught in `main` because
+        # `JSONDecodeError`'s own message names only a line and column, never
+        # the file: re-raising with `path` is the only way the operator learns
+        # WHICH of a few hundred fill files is the bad one.
+        # #VERIFY: `raise ... from exc` keeps the original as `__cause__`, so
+        # the specific parse or I/O failure survives in the traceback.
+        try:
+            specimen_slug, provider, bound_skeleton, filled_storybook = _load_fill(path)
+        except (json.JSONDecodeError, OSError) as exc:
+            msg = f"{path}: unreadable or not valid JSON: {exc}"
+            raise MalformedFillError(msg) from exc
         result = reinsert_sentinels(bound_skeleton, filled_storybook)
         trials.append(
             ReinsertionTrial(
@@ -133,15 +169,19 @@ def main(argv: list[str] | None = None) -> int:
     fills_dir = run_dir / "fills"
 
     if not fills_dir.is_dir():
-        sys.stderr.write(
-            f"error: no fills/ directory under {run_dir}; re-run "
-            "measure_sentinel_survival.py with --save-fills first\n"
-        )
+        hint = "re-run measure_sentinel_survival.py with --save-fills first"
+        sys.stderr.write(f"error: no fills/ directory under {run_dir}; {hint}\n")
         return 1
 
+    # `_analyze_fills` normalizes every per-file failure (bad shape, bad JSON,
+    # unreadable) into `MalformedFillError` with the path attached, so this is
+    # the single recoverable-input catch. It is deliberately NOT `ValueError`,
+    # which `json.JSONDecodeError` subclasses: a `ValueError` raised by the
+    # re-insertion algorithm itself is a bug, and must not be reported to the
+    # operator as a bad input file.
     try:
         trials = _analyze_fills(fills_dir)
-    except TypeError as exc:
+    except MalformedFillError as exc:
         sys.stderr.write(f"error: {exc}\n")
         return 1
 
