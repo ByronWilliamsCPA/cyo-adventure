@@ -14,6 +14,7 @@ import {
 import { clearDeviceGrant, getValidDeviceGrant, isDeviceGrantAuthRoute } from '../auth/deviceGrant'
 import { TOKEN_STORAGE_KEY } from '../auth/tokenStorageKey'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
+import { apiBaseUrl } from './apiBaseUrl'
 import { logApiError } from './logApiError'
 
 // The two endpoints a device grant is allowed to authorize (ADR-014 Phase 3):
@@ -203,7 +204,7 @@ export function useApi(config?: AxiosRequestConfig): AxiosInstance {
     const instance = axios.create({
       // In development, Vite proxies /api to the backend
       // In production, use the full API URL
-      baseURL: import.meta.env.PROD ? import.meta.env.VITE_API_URL || '/api' : '/api',
+      baseURL: apiBaseUrl(),
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json',
