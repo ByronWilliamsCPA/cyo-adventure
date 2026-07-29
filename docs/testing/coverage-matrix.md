@@ -353,6 +353,16 @@ guardian acts on what it says.
 - Component: `frontend/src/guardian/PrivacyPage.test.tsx` (pins the load-bearing claims: the "not the legal privacy notice" disclaimer, "stops with an error rather than carrying on" for the PII guard's hard fail, the outside-classifier disclosure, AI authorship plus the human approval gate, no-training, and "stays with your family by default" rather than an absolute never-shared claim), `frontend/src/guardian/GuardianShell.test.tsx` (footer link present for guardian and admin, and deliberately NOT inside the main nav)
 - **Gap**: no E2E coverage at any tier. The page is static and its claims are pinned at the component tier; an E2E would only re-assert that a link navigates.
 
+## Guardian: invite a co-parent (self-serve)
+
+The guardian's own way to add a second adult to the family, from the guardian
+console, without an app admin doing it for them. It is the same
+invite-a-guardian outcome as the admin WS-J flow below, reached by the family
+itself.
+
+- Component: `frontend/src/guardian/InviteCoParentSection.test.tsx` (the email field and submit control render; the happy path posts exactly `{ email }` to `/v1/me/family/invite-guardian` and confirms with a `role="status"` message; the field is cleared afterwards so the form is ready for a second invite; a 409 gets its own "already a pending invite" message rather than the generic one, and any other failure gets the generic server-side message; the in-flight state shows a disabled "Sending invite" button whose label, not its disabled attribute, is what proves the request finished, since the cleared email field independently disables the button; the submit control stays disabled until an email is entered; and editing the email again clears a stale error so a retry is not shown a previous attempt's alert)
+- **Gap**: no E2E coverage at any tier yet. The admin-initiated equivalent is covered end to end by `frontend/e2e/admin-user-management.spec.ts` under WS-J below.
+
 ## Admin: review queue (single story review)
 
 - E2E-mocked: `frontend/e2e/guardian-review.spec.ts`, `frontend/e2e/review-edit.spec.ts` (passage-edit save: PATCHes a reachable node's body + choice_labels and an unreachable/orphan node's body-only from the review detail, asserting the exact `PATCH /v1/storybooks/{id}/versions/{v}/nodes/{node}` contract at the network layer), `frontend/e2e/guardian-console.spec.ts` (navigation), `frontend/e2e/naive-user/naive-admin-misuse.spec.ts`, `frontend/e2e/naive-user/naive-misuse-shared.spec.ts`
