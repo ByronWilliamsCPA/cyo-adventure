@@ -298,12 +298,28 @@ def _patch_node_reference(
         slot_id: The token's slot id.
         canonical_value: The token's declared canonical value.
         variants: Every distinct verbatim variant string actually wrapped
-            for this token (see `_reinsertable_variants`).
+            for this token (see `_reinsertable_variants`). An EMPTY set means
+            the document carries no sentinel for this slot at all, which
+            contradicts the ``"reinsertable"`` status that got us here; see
+            the guard below.
 
     Returns:
         None. `node` is mutated in place.
     """
-    if variants == frozenset((canonical_value,)):
+    # #CRITICAL: data integrity: an empty variant set must leave the reference
+    # declaration ALONE. Patching it in would join zero wrapped variants into
+    # the empty string and DELETE the canonical token from the reference, so
+    # `check_sentinel_integrity` would find nothing expected for this slot and
+    # report `round_trip_ok` True for a document that in fact carries no
+    # sentinel for it: the measurement would score a dropped slot as a clean
+    # round trip. Leaving the canonical declaration standing makes the same
+    # case score as "dropped", which is what it is. This should be
+    # unreachable (``"reinsertable"`` means the value was found and wrapped),
+    # so the guard exists to make the impossible case fail loud in the metric
+    # rather than quiet.
+    # #VERIFY: tests/unit/test_measurement_reinsertion.py::
+    # test_empty_variant_set_leaves_the_reference_declaration_standing.
+    if not variants or variants == frozenset((canonical_value,)):
         return
     canonical_token = wrap(slot_id, canonical_value)
     replacement = "".join(wrap(slot_id, variant) for variant in sorted(variants))

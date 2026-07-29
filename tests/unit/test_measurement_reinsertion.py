@@ -23,6 +23,7 @@ from cyo_adventure.measurement.reinsertion import (
     ReinsertionResult,
     ReinsertionTrial,
     TokenOutcome,
+    _patch_node_reference,
     aggregate_reinsertion,
     reinsert_sentinels,
     render_json,
@@ -562,3 +563,27 @@ def test_render_markdown_contains_sentence_start_and_plural_numbers() -> None:
     assert "7" in markdown
     assert "sentence-start" in markdown.lower()
     assert "plural" in markdown.lower()
+
+
+@pytest.mark.unit
+def test_empty_variant_set_leaves_the_reference_declaration_standing() -> None:
+    """An empty variant set must not erase the token from the fidelity reference.
+
+    `_patch_node_reference` replaces a node's canonical declaration with the
+    join of the variants actually wrapped. Joining zero variants yields the
+    empty string, which would DELETE the declaration: `check_sentinel_
+    integrity` would then expect nothing for that slot and score a document
+    carrying no sentinel for it as a clean round trip. The declaration has to
+    survive so the same case scores as dropped.
+    """
+    node: dict[str, object] = {
+        "id": "n1",
+        "body": "The {~HERO:Explorer~} sets off.",
+        "ending": {"title": "{~HERO:Explorer~} rests."},
+    }
+
+    _patch_node_reference(node, "HERO", "Explorer", frozenset())
+
+    assert node["body"] == "The {~HERO:Explorer~} sets off."
+    ending = cast("dict[str, object]", node["ending"])
+    assert ending["title"] == "{~HERO:Explorer~} rests."
