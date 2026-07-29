@@ -955,8 +955,33 @@ async def _ring2_sibling_value(
     """
     sibling = await session.get(ChildProfile, sibling_id)
     if sibling is None:
+        # #ASSUME: data-integrity: unreachable while the schema matches the
+        # model. `ChildProfilePersonalization.value_profile_id` is a FK with
+        # ON DELETE CASCADE, so deleting the sibling deletes the row that
+        # names them and this lookup never runs. Reaching here means the FK is
+        # absent from the deployed schema.
+        _logger.warning(
+            "personalization.sibling_profile_missing",
+            sibling_profile_id=str(sibling_id),
+            connection_id=str(connection.id),
+        )
         return None
     if sibling.family_id != connection.connected_family_id:
+        # #ASSUME: data-integrity: this one IS reachable. The write path
+        # rejects a cross-family sibling reference (`validator/slots.py`'s
+        # `sibling_outside_family` rule), so a stored row that fails it here
+        # was either written before that rule existed or names a profile that
+        # has since moved households. Dropping the slot is correct either way,
+        # but the row will keep failing on every render with nothing to
+        # surface it, which is what makes it worth a line.
+        # #VERIFY: ids only. A sibling's display_name is a real child's name
+        # and application logs have no erasure path, matching the rule-ids-only
+        # discipline in `_log_dropped_slot`.
+        _logger.warning(
+            "personalization.sibling_outside_sharer_family",
+            sibling_profile_id=str(sibling_id),
+            connection_id=str(connection.id),
+        )
         return None
     if not _is_live(sibling):
         return None
@@ -1069,6 +1094,39 @@ async def _resolve_ring1_view(
     )
 
 
+async def _viewer_receives(session: AsyncSession, caller_family_id: uuid.UUID) -> bool:
+    """Return whether the caller's own family accepts ring-2 values at all.
+
+    Args:
+        session: The request session.
+        caller_family_id: The caller's own family id (the viewer side).
+
+    Returns:
+        bool: ``True`` only when the family row exists and has
+        ``personalization_receive_enabled`` set. Both false cases produce the
+        same empty payload, which is why they are one function rather than two
+        guards in the caller.
+    """
+    viewer_family = await session.get(Family, caller_family_id)
+    if viewer_family is None:
+        # #ASSUME: data-integrity: distinguished from the toggle below in the
+        # LOG, never in the response, because the two mean opposite things. A
+        # guardian who switched receiving off is the feature working; a
+        # principal whose OWN family row does not exist is broken data.
+        # `User.family_id` is a FK with ON DELETE CASCADE, so deleting a family
+        # deletes the logins inside it and this caller could not have
+        # authenticated at all. Reaching here means that FK is missing from the
+        # deployed schema.
+        # #VERIFY: logged, not raised. The empty payload is still the right
+        # answer for the caller; the signal belongs in the operator's channel.
+        _logger.warning(
+            "personalization.viewer_family_missing",
+            family_id=str(caller_family_id),
+        )
+        return False
+    return viewer_family.personalization_receive_enabled
+
+
 async def _resolve_ring2_view(
     session: AsyncSession, subject: ChildProfile, caller_family_id: uuid.UUID
 ) -> PersonalizationValuesView:
@@ -1101,8 +1159,7 @@ async def _resolve_ring2_view(
         return _empty_values_view()
     # Condition 0: the viewer-side receive toggle, evaluated before any
     # sharer-side lookup.
-    viewer_family = await session.get(Family, caller_family_id)
-    if viewer_family is None or not viewer_family.personalization_receive_enabled:
+    if not await _viewer_receives(session, caller_family_id):
         return _empty_values_view()
     if not _is_dual_consented(connection):
         return _empty_values_view()
@@ -1221,6 +1278,22 @@ async def get_personalization_values(
         ChildProfile, book.personalization_subject_profile_id
     )
     if subject is None:
+        # #ASSUME: data-integrity: unreachable while the schema matches the
+        # model. `Storybook.personalization_subject_profile_id` is a FK with
+        # ON DELETE SET NULL, so deleting the profile clears the column rather
+        # than leaving it pointing at nothing; the guard above would then have
+        # returned already. Reaching HERE means the column holds an id with no
+        # row, which can only happen if the FK is absent from the deployed
+        # schema. That is a migration defect, not a story without a subject,
+        # and the two are indistinguishable in the response by design.
+        # #VERIFY: logged rather than raised. The empty payload is still the
+        # correct answer for the caller (this route never discloses why), so
+        # the signal belongs in the operator's channel, not the reader's.
+        _logger.warning(
+            "personalization.subject_profile_missing",
+            storybook_id=storybook_id,
+            subject_profile_id=str(book.personalization_subject_profile_id),
+        )
         return _empty_values_view()
 
     caller_family_id = ctx.principal.family_id

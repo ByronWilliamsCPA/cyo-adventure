@@ -1228,6 +1228,78 @@ async def test_values_sibling_disclosed_under_own_consent(
     assert body["values"]["sibling_name"] == "Sibling B"
 
 
+async def test_values_sibling_outside_the_sharer_family_is_omitted(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A stored sibling reference pointing out of the sharer family is dropped.
+
+    Everything the happy path needs is present here except one thing: the
+    referenced sibling lives in a third family. ``validator/slots.py``'s
+    ``sibling_outside_family`` rule rejects that combination at write time, so
+    a row like this at rest predates the rule or names a profile that has since
+    moved households. The render path drops only the sibling slot, and now also
+    says so in the log rather than failing the same row silently on every read.
+    """
+    async with sessions() as session:
+        sharer = Family(name="Sharer-Outsider")
+        viewer = Family(name="Viewer-Outsider")
+        third = Family(name="Third-Outsider")
+        session.add_all([sharer, viewer, third])
+        await session.flush()
+        subject_a = ChildProfile(
+            family_id=sharer.id, display_name="Subject A", age_band="10-13"
+        )
+        outsider = ChildProfile(
+            family_id=third.id,
+            display_name="Outsider B",
+            age_band="10-13",
+            real_name_ring2_enabled=True,
+        )
+        session.add_all([subject_a, outsider])
+        await session.flush()
+        session.add(
+            ChildProfilePersonalization(
+                child_profile_id=subject_a.id,
+                slot_type="sibling_name",
+                value_profile_id=outsider.id,
+                ring2_enabled=True,
+            )
+        )
+        sharer_guardian = await _guardian(session, sharer.id, "sharer-guardian-outside")
+        viewer_guardian = await _guardian(session, viewer.id, "viewer-guardian-outside")
+        connection = _connection(
+            viewer.id, sharer.id, viewer_guardian.id, sharer_guardian.id
+        )
+        session.add(connection)
+        await session.flush()
+        for profile_id, covers in (
+            (subject_a.id, ["sibling_name"]),
+            (outsider.id, ["protagonist_first_name"]),
+        ):
+            session.add(
+                PersonalizationDisclosureConsent(
+                    child_profile_id=profile_id,
+                    family_connection_id=connection.id,
+                    covered_slot_types=covers,
+                    sibling_authority_attested=True,
+                    consent_accepted_at=datetime.now(UTC),
+                    consent_policy_version="v1",
+                    consent_signer_name="Sharer Guardian",
+                    consent_ip="127.0.0.1",
+                )
+            )
+        book = await _storybook(session, sharer.id, subject_a.id, visibility="catalog")
+        await session.commit()
+        book_id = book.id
+
+    resp = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth("viewer-guardian-outside"),
+    )
+    assert resp.status_code == 200, resp.text
+    assert "sibling_name" not in resp.json()["values"]
+
+
 async def test_values_sibling_omitted_when_sibling_lacks_own_consent(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
