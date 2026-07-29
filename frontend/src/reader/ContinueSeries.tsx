@@ -18,10 +18,7 @@ import type { VarState } from '../player/types'
 export interface ContinueSeriesProps {
   profileId: string
   storybookId: string
-  fetchSeriesNext: (
-    profileId: string,
-    storybookId: string
-  ) => Promise<SeriesNextBookInfo | null>
+  fetchSeriesNext: (profileId: string, storybookId: string) => Promise<SeriesNextBookInfo | null>
   finalVarState: VarState
   carriesState: boolean
 }

@@ -224,7 +224,9 @@ export function AuditPage() {
             aria-label="Filter events until this date"
           />
         </label>
-        <Button type="submit" variant="primary">Apply filters</Button>
+        <Button type="submit" variant="primary">
+          Apply filters
+        </Button>
         <Button
           variant="ghost"
           onClick={() => {
@@ -239,7 +241,9 @@ export function AuditPage() {
 
       {state.kind === 'loading' ? <LoadingStatus /> : null}
 
-      {state.kind === 'error' ? <ErrorBanner className="console__error">{state.message}</ErrorBanner> : null}
+      {state.kind === 'error' ? (
+        <ErrorBanner className="console__error">{state.message}</ErrorBanner>
+      ) : null}
 
       {refreshError ? (
         <p role="alert" className="console__notice cyo-text-muted">

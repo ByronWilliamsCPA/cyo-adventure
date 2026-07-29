@@ -21,9 +21,7 @@ function stubMatchMedia(prefersDark: boolean): StubMediaQuery {
     listeners: new Set(),
     setMatches(next) {
       stub.matches = next
-      stub.listeners.forEach((listener) =>
-        listener({ matches: next } as MediaQueryListEvent)
-      )
+      stub.listeners.forEach((listener) => listener({ matches: next } as MediaQueryListEvent))
     },
   }
   vi.stubGlobal(
@@ -149,19 +147,13 @@ describe('ThemeProvider', () => {
     )
     const button = screen.getByRole('button')
 
-    expect(button).toHaveAttribute(
-      'aria-label',
-      'Theme: Match device. Switch to Light.'
-    )
+    expect(button).toHaveAttribute('aria-label', 'Theme: Match device. Switch to Light.')
 
     act(() => button.click())
     expect(button).toHaveAttribute('aria-label', 'Theme: Light. Switch to Dark.')
 
     act(() => button.click())
-    expect(button).toHaveAttribute(
-      'aria-label',
-      'Theme: Dark. Switch to Match device.'
-    )
+    expect(button).toHaveAttribute('aria-label', 'Theme: Dark. Switch to Match device.')
   })
 
   it('picks up a theme change made in another tab via the storage event', () => {

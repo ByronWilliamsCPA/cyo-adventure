@@ -19,9 +19,7 @@ import './guardian.css'
 const MIN_PASSWORD_LENGTH = 8
 
 type SetNewPasswordFormError =
-  | { kind: 'mismatch' }
-  | { kind: 'too-short' }
-  | { kind: 'server'; message: string }
+  { kind: 'mismatch' } | { kind: 'too-short' } | { kind: 'server'; message: string }
 
 /**
  * The set-new-password step of the guardian password-recovery flow. Rendered by

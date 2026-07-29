@@ -270,8 +270,7 @@ export function ConsolePage() {
                     Remove from this device
                   </Button>
                   <p id="device-remove-hint" className="console-device__hint cyo-text-muted">
-                    Kids can no longer read on this device until you authorize
-                    it again.
+                    Kids can no longer read on this device until you authorize it again.
                   </p>
                 </div>
               </div>

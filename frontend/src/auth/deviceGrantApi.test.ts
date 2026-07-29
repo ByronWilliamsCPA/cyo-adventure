@@ -56,7 +56,14 @@ describe('makeDeviceGrantApi', () => {
 
   it('lists device grants (never the token)', async () => {
     const get = vi.fn().mockResolvedValue({
-      data: [{ id: 'grant-1', label: 'Kitchen tablet', created_at: '2026-07-11T00:00:00Z', revoked_at: null }],
+      data: [
+        {
+          id: 'grant-1',
+          label: 'Kitchen tablet',
+          created_at: '2026-07-11T00:00:00Z',
+          revoked_at: null,
+        },
+      ],
     })
     const api = makeDeviceGrantApi(fakeAxios({ get }))
 
@@ -64,7 +71,12 @@ describe('makeDeviceGrantApi', () => {
 
     expect(get).toHaveBeenCalledWith('/v1/device-grants')
     expect(result).toEqual([
-      { id: 'grant-1', label: 'Kitchen tablet', created_at: '2026-07-11T00:00:00Z', revoked_at: null },
+      {
+        id: 'grant-1',
+        label: 'Kitchen tablet',
+        created_at: '2026-07-11T00:00:00Z',
+        revoked_at: null,
+      },
     ])
   })
 

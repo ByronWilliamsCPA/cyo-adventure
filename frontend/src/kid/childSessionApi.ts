@@ -23,9 +23,7 @@ export function makeChildSessionApi(api: AxiosInstance): ChildSessionApi {
   return {
     async mint(profileId: string, pin?: string): Promise<ChildSessionView> {
       const body: ChildSessionCreateBody =
-        pin === undefined
-          ? { profile_id: profileId }
-          : { profile_id: profileId, pin }
+        pin === undefined ? { profile_id: profileId } : { profile_id: profileId, pin }
       const res = await api.post<ChildSessionView>('/v1/child-sessions', body)
       return res.data
     },

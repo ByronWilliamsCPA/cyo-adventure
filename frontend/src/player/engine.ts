@@ -263,7 +263,10 @@ function searchPathReplay(
     // must match too, so an unfaithful reconstruction (a different same-target
     // sibling than the one actually taken) is rejected, not rewritten into
     // the child's history.
-    return sameVarState(current.var_state, live.var_state) && sameIdSet(current.visit_set, live.visit_set)
+    return (
+      sameVarState(current.var_state, live.var_state) &&
+      sameIdSet(current.visit_set, live.visit_set)
+    )
   }
   const targetId = live.path[depth + 1]
   for (const candidate of visibleChoices(story, current)) {

@@ -185,6 +185,16 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # The `format:check` script has existed in package.json since the frontend
+      # was created but no workflow ever ran it, so nothing gated formatting
+      # across the whole tree. The pre-commit hook only checks STAGED files, and
+      # it can reject but never repair, so a file that was never passed through
+      # `prettier --write` stayed drifted indefinitely and forced unrelated
+      # reformat churn into the next diff that happened to touch it. 72 files
+      # had accumulated. This step closes that hole.
+      - name: Format check
+        run: npm run format:check
+
       - name: Type check
         run: npm run typecheck
 

@@ -69,9 +69,7 @@ export interface ReaderContext {
 }
 
 export type ReaderEvent =
-  | { type: 'CHOOSE'; choiceId: string }
-  | { type: 'BACK' }
-  | { type: 'RESTART' }
+  { type: 'CHOOSE'; choiceId: string } | { type: 'BACK' } | { type: 'RESTART' }
 
 export interface ReaderInput {
   story: Storybook

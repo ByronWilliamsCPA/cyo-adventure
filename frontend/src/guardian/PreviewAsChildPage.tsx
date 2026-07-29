@@ -8,9 +8,7 @@ import { GUARDIAN_CONSOLE_PATH } from '../routes'
 import './guardian.css'
 
 type LoadState =
-  | { status: 'loading' }
-  | { status: 'error' }
-  | { status: 'ready'; profile: ProfileView | null }
+  { status: 'loading' } | { status: 'error' } | { status: 'ready'; profile: ProfileView | null }
 
 /**
  * Guardian preview-as-child (read-only): renders the real kid LibraryPage for
@@ -80,9 +78,7 @@ export function PreviewAsChildPage() {
     >
       <div className="preview-as-child__banner" role="status">
         <span>
-          {profile
-            ? `Previewing as ${profile.display_name} (read-only)`
-            : 'Previewing (read-only)'}
+          {profile ? `Previewing as ${profile.display_name} (read-only)` : 'Previewing (read-only)'}
         </span>
         <Link className="preview-as-child__exit" to={`${GUARDIAN_CONSOLE_PATH}/profiles`}>
           Exit preview

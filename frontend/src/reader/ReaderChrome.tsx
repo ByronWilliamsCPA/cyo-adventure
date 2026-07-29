@@ -80,7 +80,9 @@ export function ReaderChrome({
         <button
           type="button"
           className={
-            readAloud.speaking ? 'reader-tts-toggle reader-tts-toggle--speaking' : 'reader-tts-toggle'
+            readAloud.speaking
+              ? 'reader-tts-toggle reader-tts-toggle--speaking'
+              : 'reader-tts-toggle'
           }
           aria-pressed={readAloud.speaking}
           aria-label={readAloud.speaking ? 'Stop reading aloud' : 'Read this page aloud'}

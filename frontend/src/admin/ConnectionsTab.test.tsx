@@ -57,7 +57,7 @@ describe('ConnectionsTab', () => {
         families={[FAMILY_A, FAMILY_B]}
         connections={[]}
         onChanged={vi.fn()}
-      />,
+      />
     )
     expect(screen.getByText(/no family connections yet/i)).toBeInTheDocument()
   })
@@ -70,7 +70,7 @@ describe('ConnectionsTab', () => {
         families={[FAMILY_A, FAMILY_B]}
         connections={[]}
         onChanged={vi.fn()}
-      />,
+      />
     )
     await user.selectOptions(screen.getByLabelText('Family'), 'fam-a')
     await user.selectOptions(screen.getByLabelText('Sees recommendations from'), 'fam-a')
@@ -88,7 +88,7 @@ describe('ConnectionsTab', () => {
         families={[FAMILY_A, FAMILY_B]}
         connections={[CONNECTION_A]}
         onChanged={vi.fn()}
-      />,
+      />
     )
     await user.click(screen.getByRole('button', { name: 'Remove' }))
     expect(await screen.findByRole('alert')).toHaveTextContent(/could not remove/i)

@@ -44,9 +44,7 @@ export interface RecommendationsApi {
 export function makeRecommendationsApi(api: AxiosInstance): RecommendationsApi {
   return {
     async list(profileId) {
-      const res = await api.get<{ items: RecommendationItem[] }>(
-        `/v1/recommendations/${profileId}`
-      )
+      const res = await api.get<{ items: RecommendationItem[] }>(`/v1/recommendations/${profileId}`)
       // #ASSUME: data integrity: a well-formed response always has `items`
       // as an array. Defend against a malformed or unexpectedly-shaped body
       // anyway, so a bad payload degrades to "no chips" rather than throwing

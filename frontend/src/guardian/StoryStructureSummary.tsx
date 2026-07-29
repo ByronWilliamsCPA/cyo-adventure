@@ -187,10 +187,12 @@ function readContentFlags(metadata: Record<string, unknown>): StoryStructureCont
  * arriving here has already passed the backend's own validation (or, for the
  * guardian path, is mid-fetch and briefly `{}`).
  */
-export function readStoryStructure(blob: Record<string, unknown>): StoryStructureData {
+function readStoryStructure(blob: Record<string, unknown>): StoryStructureData {
   const nodes = readStructureNodes(blob)
   const endings = nodes
-    .filter((node): node is StructureNode & { ending: StoryStructureEnding } => node.ending !== null)
+    .filter(
+      (node): node is StructureNode & { ending: StoryStructureEnding } => node.ending !== null
+    )
     .map((node) => node.ending)
   const metadata = asRecord(blob.metadata) ?? {}
   const themes = Array.isArray(metadata.themes)
@@ -207,7 +209,8 @@ export function readStoryStructure(blob: Record<string, unknown>): StoryStructur
       estimateIsDerived = true
     }
   }
-  const startNodeId = typeof blob.start_node === 'string' && blob.start_node ? blob.start_node : null
+  const startNodeId =
+    typeof blob.start_node === 'string' && blob.start_node ? blob.start_node : null
   const path = startNodeId ? shortestPathToEnding(nodes, startNodeId) : null
   return {
     nodeCount: nodes.length,

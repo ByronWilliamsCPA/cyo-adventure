@@ -280,7 +280,14 @@ describe('resolveConflict', () => {
     const api = fakeApi(() => ({ status: 200, row: rowAt('x', 9) }))
     vi.spyOn(db, 'putReadingState').mockRejectedValueOnce(new Error('quota exceeded'))
     await expect(
-      resolveConflict(api, 'p1', 's1', makeState('local', 0), rowAt('server', 7), 'use_newer_progress')
+      resolveConflict(
+        api,
+        'p1',
+        's1',
+        makeState('local', 0),
+        rowAt('server', 7),
+        'use_newer_progress'
+      )
     ).rejects.toBeInstanceOf(LocalWriteError)
   })
 

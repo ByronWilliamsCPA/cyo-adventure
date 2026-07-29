@@ -139,10 +139,7 @@ export function getDb(): Promise<IDBPDatabase<ReaderDB>> {
 }
 
 /** Cache the last-good library list for a profile (UX-K1 offline shelf). */
-export async function cacheLibraryList(
-  profileId: string,
-  items: LibraryItemView[]
-): Promise<void> {
+export async function cacheLibraryList(profileId: string, items: LibraryItemView[]): Promise<void> {
   const db = await getDb()
   await db.put('library_lists', items, profileId)
 }
@@ -278,11 +275,7 @@ export async function listCachedStorybookIds(): Promise<string[]> {
  */
 export async function putProfileShelf(profileId: string, storybookIds: string[]): Promise<void> {
   const db = await getDb()
-  await db.put(
-    'profile_shelf',
-    { profile_id: profileId, storybook_ids: storybookIds },
-    profileId
-  )
+  await db.put('profile_shelf', { profile_id: profileId, storybook_ids: storybookIds }, profileId)
 }
 
 /** Every profile shelf snapshot known on this device. */

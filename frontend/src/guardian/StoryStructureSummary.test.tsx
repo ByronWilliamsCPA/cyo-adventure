@@ -51,9 +51,7 @@ const FINDINGS = [
 
 describe('StoryStructureSummary (full, admin variant)', () => {
   it('renders node count, ending count, read time, themes, and branch shape from the blob', () => {
-    render(
-      <StoryStructureSummary blob={BLOB} screened={true} flaggedCount={0} />
-    )
+    render(<StoryStructureSummary blob={BLOB} screened={true} flaggedCount={0} />)
     expect(screen.getByText('4')).toBeInTheDocument() // passages
     expect(screen.getByText('2')).toBeInTheDocument() // endings
     expect(screen.getByText('12 minutes')).toBeInTheDocument()
@@ -81,7 +79,9 @@ describe('StoryStructureSummary (full, admin variant)', () => {
   })
 
   it('shows a flagged-count badge with a block/flag/advisory severity split', () => {
-    render(<StoryStructureSummary blob={BLOB} screened={true} flaggedCount={4} findings={FINDINGS} />)
+    render(
+      <StoryStructureSummary blob={BLOB} screened={true} flaggedCount={4} findings={FINDINGS} />
+    )
     expect(screen.getByText('4 flagged')).toBeInTheDocument()
     expect(screen.getByText(/1 block/)).toBeInTheDocument()
     expect(screen.getByText(/2 flags/)).toBeInTheDocument()
