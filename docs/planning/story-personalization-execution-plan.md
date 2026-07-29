@@ -421,6 +421,11 @@ branch merges. First step: re-verify every anchor below against then-current mai
 
 ### Task R1: matcher hardening, measured offline (no provider spend)
 
+**DONE 2026-07-29** (commit 8916c2d): sentence-start widening recovered 76 of 1,027 misses
+(120 occurrences wrapped verbatim); the plural counter measured **0 bare plurals corpus-wide**,
+so the "72 inflected" bucket was a heuristic artifact (possessives, already handled by the
+word-boundary matcher) and plural matching is dropped from the lift menu (AL-060).
+
 **Files:**
 - Modify: `src/cyo_adventure/measurement/reinsertion.py` (`_word_boundary_pattern`,
   `_count_in_node_surfaces`, `_wrap_all_in_node`)
@@ -457,6 +462,13 @@ default path and each widening is separately attributable in the report:
 
 `depends-on: TaskR1 [output]`.
 
+**DONE 2026-07-29** (commit 3fbf080): `storybook/reinsertion.py` public API is
+`reinsert_storybook(bound_skeleton, filled_document) -> ReinsertionOutcome`
+(document, manifest, token_outcomes) plus `build_manifest` and `verify_manifest` (delegates
+to `check_sentinel_integrity`). Manifest keying: node id for the body surface,
+`<node_id>::ending_title` for the ending title, sorted keys, JSON-serializable. Analyzer
+output on the saved fills was byte-identical before and after the move.
+
 **Files:**
 - Create: `src/cyo_adventure/storybook/reinsertion.py` (beside `sentinels.py`; the pure
   transform and its result types move here, measurement keeps only aggregation/reporting
@@ -477,6 +489,29 @@ expectation), and `check_sentinel_integrity(document, manifest)` passes by const
 ### Task R3: wire re-insertion into the fill path and re-point all six integrity sites
 
 `depends-on: TaskR2 [output]`.
+
+**DONE 2026-07-29** (commit a63c06e; full unit suite 5,225 passed, 0 failed). Site audit
+outcomes vs the plan text:
+
+- Worker fill path and the import/resume path (the two Variant A prescription sites) now run
+  `reinsert_storybook`, carry the transform's document forward, and fail closed on
+  `verify_manifest` (transform bug) plus `check_sentinel_integrity_at_rest` (forged/malformed
+  leftovers). `GenerationOutcome.sentinel_manifest` carries the manifest in memory only; the
+  DB column remains Task B2.
+- Moderation entry, repair adoption, and node-edit needed NO change: the at-rest variant was
+  already deliberately corruption-only (unknown slot, malformed, choice label, title) and
+  never prescribed per-node placement, so it is derive-compatible as built.
+- Rescreen's documented placeholder was wired to `check_sentinel_integrity_at_rest`, closing
+  the "when the manifest lands" TODO.
+- Deviation, accepted: the zero-coverage soft floor is a structlog WARNING in the worker, not
+  a validator PL code, because the deterministic gate runs over the pre-reinsertion document
+  (one stage earlier than the manifest exists). Gate-order note: validating pre-reinsertion is
+  semantically equivalent because every gate consumer strips sentinels before scoring and
+  re-insertion only wraps words in place; the plan's "fill -> reinsert -> validate" ordering
+  is therefore not required and was not imposed.
+- The mutated-sentinel worker test changed meaning by design: a forged token no longer fails
+  the job; it is stripped and the document repaired
+  (`test_run_skeleton_fill_sentinel_integrity_forged_value_not_reinserted`).
 
 **Files:**
 - Modify: `src/cyo_adventure/generation/worker.py` (fill path; Variant A call at `:1004`,
@@ -517,6 +552,18 @@ story remains publishable; the warning exists so a human sees the posture.
 ### Task R4: end-to-end re-measurement and the Stage R exit record (one provider run)
 
 `depends-on: TaskR3 [output]`.
+
+**PARTIAL 2026-07-29** (commit a12c1a3 added the two gate metrics as permanent report
+fields). Preliminary G1-R evidence over the existing 30 real fills, via the same promoted
+transform the worker calls: **verify_manifest_ok 30/30 (100%)**. Per-slot coverage is now a
+permanent report table: the widening lifted COMPANION from 84% to 98.4%; named third-party
+slots sit at 94.6-99.1%; HERO holds at 42.4% (structural, second-person voice); the
+remaining soft spot is small-sample lowercase relational slots (KIN 58.3%, CHAPERONE 63.9%,
+THRESHOLD 70.0%, COMPANION_KIND 75.0%, ENTRANCE 80.0%). **The confirmatory fresh-fills run
+is BLOCKED: OpenRouter returned HTTP 402 on both models on 2026-07-29 (account out of
+credits; zero spend occurred; the Ollama fallback leg 404s on an unpulled model). Rerun
+after a top-up.** The optional vocative nudge was not exercised; it is an owner spend
+decision and the feature does not depend on it.
 
 - [ ] Run the survival instrument once more (30 stories, `--providers openrouter --count 30
   --slots-per-story 4 --save-fills`; env recipe in Task A1). The instrument stays offline

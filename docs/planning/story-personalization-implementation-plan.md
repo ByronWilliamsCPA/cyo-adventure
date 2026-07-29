@@ -428,6 +428,12 @@ zero provider spend; strict baseline preserved as `reinsertion-report-strict.*`)
   word-boundary matcher already handles (`Explorer's` wraps as `{~HERO:Explorer~}'s`, now
   covered by an explicit test). Plural matching is therefore NOT needed; the lift menu
   reduces to sentence-start casing (done) plus the optional vocative fill-prompt nudge.
+- Per-slot coverage and the G1-R round-trip metric are now permanent report fields (Stage R
+  Task R4, commit a12c1a3): **verify_manifest_ok 30/30 (100%)** on the saved fills; the
+  widening lifted COMPANION 84% to 98.4%; third-party named slots 94.6-99.1%; HERO 42.4%
+  (structural); lowercase relational slots (KIN, CHAPERONE, THRESHOLD, COMPANION_KIND,
+  ENTRANCE) span 58-80% on small samples and are the residual soft spot the dedication
+  overlay does not need to cover (they are not the child's name).
 
 ## 4. P3: leak-surface guard points
 
