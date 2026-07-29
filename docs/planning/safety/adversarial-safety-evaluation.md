@@ -54,6 +54,24 @@ either way, a mock run measures nothing about real classifier discrimination.
 credentialed run, not results. Treating a mock run as evidence would manufacture
 exactly the false confidence this document exists to remove.
 
+#### Attempted run log
+
+Attempts to execute the credentialed run are recorded here so that "not yet run"
+stays a dated, auditable fact rather than an indefinite state nobody revisits.
+An entry here is a record of an attempt, never a record of a result.
+
+| Date | Outcome | Detail |
+|------|---------|--------|
+| 2026-07-28 | **Blocked, no results produced** | Baseline (Task 1), stage ablation (Task 2), and the benign-control false-positive measurement (Task 3) were all attempted. No `.env` exists in the environment; `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `PERSPECTIVE_API_KEY` are absent from both `.env` and the process environment, and no local Ollama is reachable on `:11434`. No live provider was available, so no run was performed and **no results JSON was written**. The mock harness was executed as a wiring check only and correctly refused to report itself as evidence (exit 3). That same attempt found and fixed the silently-green safety-eval workflow recorded as Finding 6 below. |
+
+The wiring check is worth recording for one reason: it shows exactly how a mock
+run manufactures false confidence. Under the mock provider the corpus reports a
+class-A catch-rate of **100%** while the negative control **simultaneously**
+over-blocks. Both numbers come from the same fail-safe `FLAG` mapping of `"{}"`,
+not from any classifier judgement. A reader who looked only at the catch-rate
+column would record a pass. This is why the harness exits non-zero on a mock run
+regardless of how good the numbers look, and why that refusal must be preserved.
+
 ## Threat model and scope
 
 The adversary is not an anonymous internet attacker; it is anyone who can submit a
@@ -303,6 +321,60 @@ downstream bounds (Stage 1 + human approval).
 including nested `protagonist` fields and list items, before Pydantic's own field
 validation runs. See `tests/unit/test_concept.py` (control-char stripping tests)
 for coverage.
+
+### Finding 6 [Important, CLOSED]: the weekly safety-eval workflow reported green while measuring nothing
+
+Found 2026-07-28 while attempting the credentialed run (see the attempted-run log
+above). `.github/workflows/safety-eval.yml` supplied the credentials to the
+`llm_eval` tier, but that tier carries a `pytest.mark.skipif` on
+`OPENROUTER_API_KEY` plus a Stage-0 key
+(`tests/llm_eval/test_adversarial_safety_eval.py`). The repository secrets have
+never been configured, so every scheduled run skipped the only test in the tier.
+**pytest exits 0 for a skipped test**, so the workflow completed green, weekly,
+without exercising the moderation gate even once. The pre-flight step emitted a
+`::warning::` and then exited 0, which is invisible on a green run that nobody
+opens.
+
+The failure mode is worse than having no workflow: the weekly green run is a
+standing, automated assertion that the safety gate is being adversarially
+evaluated, which is precisely the unbacked-safety-claim defect this document was
+created to correct (see "Why this document exists"). Finding 6 is that defect
+reintroduced at the CI layer.
+
+This is **model-independent**: it is a property of skip-exits-zero, confirmed by
+reading the workflow and the tier's `skipif`, and it needs no live model to
+demonstrate.
+
+**Closed** by PR #435, which repaired this alongside six other scheduled-workflow
+gates. Two independent steps in `.github/workflows/safety-eval.yml` now make a
+green run mean the gate was actually measured:
+
+1. **Require credentials on a scheduled run** **fails** instead of warning when
+   `OPENROUTER_API_KEY` or `OPENAI_API_KEY` is absent, so a run that cannot
+   measure goes red immediately with a specific reason. The step names
+   `PERSPECTIVE_API_KEY` only to say it does *not* substitute for the Stage-0
+   key, since Perspective sunsets 2026-12-31.
+2. **Assert the evaluation actually ran** parses `junit.xml` and requires
+   `tests - skipped >= 1`. This catches what a credential check cannot see: any
+   *future* skip condition that would silently restore the vacuous green, since
+   pytest exits 0 for an all-skipped selection either way.
+
+Two scoping notes for anyone reading this as a specification of the workflow,
+because both differ from what a reader might assume:
+
+- The credential check carries `if: github.event_name == 'schedule'`, so it does
+  **not** gate `workflow_dispatch`. A manual run with no secrets still reaches
+  the pytest step; it is the junit assertion, not the credential check, that
+  fails it. That split is deliberate (a dispatch may legitimately want to
+  exercise wiring) but it means the two steps are not interchangeable.
+- The post-run guard asserts on the **junit report**, not on the archived
+  results JSON, and therefore does not inspect an `is_evidence` field. It proves
+  a test *executed*; the harness's own non-zero exit on a mock provider is what
+  proves the execution was against a real classifier.
+
+Note the ordering consequence: until the secrets are configured, the weekly run
+goes **red**. That is the correct state. It is an accurate report that the gate
+is unmeasured, replacing an inaccurate report that it was healthy.
 
 ## Adversarial corpus
 

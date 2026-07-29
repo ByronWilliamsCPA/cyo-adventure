@@ -7,11 +7,7 @@ import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { formatRelativeTime } from './intakeApi'
-import {
-  makeReadingApi,
-  type ChildEngagementItem,
-  type ReadingHistoryItem,
-} from './readingApi'
+import { makeReadingApi, type ChildEngagementItem, type ReadingHistoryItem } from './readingApi'
 import './guardian.css'
 
 type PageState =
@@ -128,10 +124,7 @@ export function ReadingPage() {
         const books = await readingApi.history(profileId)
         setHistory((prev) => ({ ...prev, [profileId]: { kind: 'ready', books } }))
       } catch (err) {
-        console.error(
-          'reading history load failed:',
-          err instanceof Error ? err.message : err
-        )
+        console.error('reading history load failed:', err instanceof Error ? err.message : err)
         setHistory((prev) => ({
           ...prev,
           [profileId]: {
@@ -162,15 +155,11 @@ export function ReadingPage() {
   }
 
   if (state.kind === 'loading') {
-    return (
-      <LoadingStatus>Loading reading activity…</LoadingStatus>
-    )
+    return <LoadingStatus>Loading reading activity…</LoadingStatus>
   }
 
   if (state.kind === 'error') {
-    return (
-      <ErrorBanner className="reading__error">{state.message}</ErrorBanner>
-    )
+    return <ErrorBanner className="reading__error">{state.message}</ErrorBanner>
   }
 
   const { children, syncedAt } = state
@@ -179,9 +168,8 @@ export function ReadingPage() {
     <section className="reading">
       <h1>Reading</h1>
       <p className="reading__intro cyo-text-muted">
-        How the reading is going: what each child has picked up, finished,
-        and when they last opened a book. This is not a log of what was
-        read, only how things are going.
+        How the reading is going: what each child has picked up, finished, and when they last opened
+        a book. This is not a log of what was read, only how things are going.
       </p>
       {children.length === 0 ? (
         <EmptyState

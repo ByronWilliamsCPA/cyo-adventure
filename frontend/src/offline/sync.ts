@@ -17,8 +17,7 @@ export interface SaveBody extends ReadingState {
 }
 
 export type PutResponse =
-  | { status: 200; row: ReadingState }
-  | { status: 409; currentRow: ReadingState }
+  { status: 200; row: ReadingState } | { status: 409; currentRow: ReadingState }
 
 /**
  * Raised by a SyncApi implementation when the save could not reach the server

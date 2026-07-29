@@ -201,21 +201,26 @@ describe('BookCard', () => {
           />
         </MemoryRouter>
       )
-      expect(screen.queryByRole('button', { name: /ask for the next book/i })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: /ask for the next book/i })
+      ).not.toBeInTheDocument()
     })
   })
 
   describe('K17 recommendations feed (ADR-016 rings 1-2)', () => {
-    function renderCardWithRecommendation(
-      recommendation?: {
-        firstName: string
-        firstRing: 'family' | 'connection'
-        moreCount: number
-      }
-    ) {
+    function renderCardWithRecommendation(recommendation?: {
+      firstName: string
+      firstRing: 'family' | 'connection'
+      moreCount: number
+    }) {
       return render(
         <MemoryRouter>
-          <BookCard item={BASE_ITEM} profileId="p1" onRate={() => {}} recommendation={recommendation} />
+          <BookCard
+            item={BASE_ITEM}
+            profileId="p1"
+            onRate={() => {}}
+            recommendation={recommendation}
+          />
         </MemoryRouter>
       )
     }

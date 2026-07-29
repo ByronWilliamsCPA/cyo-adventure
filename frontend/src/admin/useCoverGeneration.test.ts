@@ -31,7 +31,9 @@ describe('useCoverGeneration', () => {
   })
 
   it('seeds the cover status from the server once a version is ready', async () => {
-    const status = vi.fn().mockResolvedValue({ cover_status: 'ready', cover_url: 'https://x/c.png' })
+    const status = vi
+      .fn()
+      .mockResolvedValue({ cover_status: 'ready', cover_url: 'https://x/c.png' })
     const coverApi = makeCoverApi({ status })
     const isMountedRef = { current: true }
     const { result } = renderHook(() =>
@@ -63,7 +65,9 @@ describe('useCoverGeneration', () => {
   it('polls until the job leaves generating, updating status along the way', async () => {
     vi.useFakeTimers()
     const generate = vi.fn().mockResolvedValue({ cover_status: 'generating', cover_url: null })
-    const status = vi.fn().mockResolvedValue({ cover_status: 'ready', cover_url: 'https://x/c.png' })
+    const status = vi
+      .fn()
+      .mockResolvedValue({ cover_status: 'ready', cover_url: 'https://x/c.png' })
     const coverApi = makeCoverApi({ generate, status })
     const isMountedRef = { current: true }
     const { result } = renderHook(() =>

@@ -3,11 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { makeConnectionsApi, type FamilyConnectionMineItem } from './connectionsApi'
 
-function fakeAxios(overrides: {
-  get?: unknown
-  post?: unknown
-  delete?: unknown
-}) {
+function fakeAxios(overrides: { get?: unknown; post?: unknown; delete?: unknown }) {
   const get = vi.fn().mockResolvedValue({ data: overrides.get })
   const post = vi.fn().mockResolvedValue({ data: overrides.post })
   const del = vi.fn().mockResolvedValue({ data: overrides.delete })

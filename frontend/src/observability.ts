@@ -3,12 +3,7 @@ import * as Sentry from '@sentry/react'
 // Breadcrumb data keys that could carry a request/response body; stripped
 // defensively in scrubEvent below even though Sentry's own fetch/XHR
 // breadcrumbs normally carry only body SIZES, never raw bodies.
-const BODY_SHAPED_BREADCRUMB_KEYS = new Set([
-  'body',
-  'request_body',
-  'response_body',
-  'headers',
-])
+const BODY_SHAPED_BREADCRUMB_KEYS = new Set(['body', 'request_body', 'response_body', 'headers'])
 
 /**
  * Sentry error tracking for the browser app.
@@ -100,9 +95,7 @@ export function scrubEvent(event: Sentry.ErrorEvent): Sentry.ErrorEvent {
       // case a future integration or manual breadcrumb adds one.
       const data = crumb.data as Record<string, unknown>
       const safeData = Object.fromEntries(
-        Object.entries(data).filter(
-          ([key]) => !BODY_SHAPED_BREADCRUMB_KEYS.has(key)
-        )
+        Object.entries(data).filter(([key]) => !BODY_SHAPED_BREADCRUMB_KEYS.has(key))
       )
       return { ...crumb, data: safeData }
     })

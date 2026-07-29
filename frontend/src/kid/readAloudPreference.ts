@@ -27,9 +27,7 @@ interface StoredPreference {
 function isStoredPreference(value: unknown): value is StoredPreference {
   if (typeof value !== 'object' || value === null) return false
   const candidate = value as Record<string, unknown>
-  return (
-    typeof candidate.profileId === 'string' && typeof candidate.ttsEnabled === 'boolean'
-  )
+  return typeof candidate.profileId === 'string' && typeof candidate.ttsEnabled === 'boolean'
 }
 
 /**

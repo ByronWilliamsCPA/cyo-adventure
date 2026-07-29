@@ -122,9 +122,7 @@ describe('ProfileFormDialog', () => {
     await user.click(saveButton)
 
     await waitFor(() =>
-      expect(onSubmit).toHaveBeenCalledWith(
-        expect.objectContaining({ reading_level_cap: 99 }),
-      )
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ reading_level_cap: 99 }))
     )
   })
 

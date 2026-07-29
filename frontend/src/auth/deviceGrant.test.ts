@@ -119,9 +119,9 @@ describe('isDeviceGrantExpired', () => {
   })
 
   it('is true after the expiry instant', () => {
-    expect(
-      isDeviceGrantExpired('2026-07-11T12:00:00Z', new Date('2026-07-11T12:00:00.001Z'))
-    ).toBe(true)
+    expect(isDeviceGrantExpired('2026-07-11T12:00:00Z', new Date('2026-07-11T12:00:00.001Z'))).toBe(
+      true
+    )
   })
 
   it('treats an unparseable timestamp as expired (fail closed)', () => {

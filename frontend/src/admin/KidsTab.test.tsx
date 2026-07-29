@@ -54,12 +54,7 @@ describe('KidsTab', () => {
 
   it('renders a profile row', () => {
     render(
-      <KidsTab
-        api={fakeApi()}
-        families={[FAMILY_A]}
-        profiles={[PROFILE_A]}
-        onChanged={vi.fn()}
-      />,
+      <KidsTab api={fakeApi()} families={[FAMILY_A]} profiles={[PROFILE_A]} onChanged={vi.fn()} />
     )
     const row = screen.getByText('Reader One').closest('tr')
     expect(row).not.toBeNull()
@@ -77,7 +72,7 @@ describe('KidsTab', () => {
         families={[FAMILY_A]}
         profiles={[]}
         onChanged={onChanged}
-      />,
+      />
     )
     await user.selectOptions(screen.getByLabelText('Family'), 'fam-a')
     await user.type(screen.getByLabelText('Name'), 'New Kid')
@@ -104,7 +99,7 @@ describe('KidsTab', () => {
         families={[FAMILY_A]}
         profiles={[]}
         onChanged={vi.fn()}
-      />,
+      />
     )
     await user.selectOptions(screen.getByLabelText('Family'), 'fam-a')
     await user.type(screen.getByLabelText('Name'), 'New Kid')
@@ -122,7 +117,7 @@ describe('KidsTab', () => {
         families={[FAMILY_A]}
         profiles={[PROFILE_A]}
         onChanged={onChanged}
-      />,
+      />
     )
     await user.click(screen.getByRole('button', { name: 'Edit' }))
     const nameInput = screen.getByLabelText('Name for Reader One')
@@ -152,7 +147,7 @@ describe('KidsTab', () => {
         families={[FAMILY_A]}
         profiles={[PROFILE_A]}
         onChanged={vi.fn()}
-      />,
+      />
     )
     await user.click(screen.getByRole('button', { name: 'Edit' }))
     await user.click(screen.getByRole('button', { name: 'Cancel' }))
@@ -163,12 +158,7 @@ describe('KidsTab', () => {
   it('disables Save when the typed PIN does not match the 4-8 digit shape', async () => {
     const user = userEvent.setup()
     render(
-      <KidsTab
-        api={fakeApi()}
-        families={[FAMILY_A]}
-        profiles={[PROFILE_A]}
-        onChanged={vi.fn()}
-      />,
+      <KidsTab api={fakeApi()} families={[FAMILY_A]} profiles={[PROFILE_A]} onChanged={vi.fn()} />
     )
     await user.click(screen.getByRole('button', { name: 'Edit' }))
     await user.type(screen.getByLabelText('New PIN for Reader One'), '12')
@@ -184,7 +174,7 @@ describe('KidsTab', () => {
         families={[FAMILY_A]}
         profiles={[PROFILE_A]}
         onChanged={vi.fn()}
-      />,
+      />
     )
     await user.click(screen.getByRole('button', { name: 'Edit' }))
     await user.click(screen.getByRole('button', { name: 'Save' }))
@@ -201,7 +191,7 @@ describe('KidsTab', () => {
         families={[FAMILY_A]}
         profiles={[{ ...PROFILE_A, has_pin: true }]}
         onChanged={onChanged}
-      />,
+      />
     )
     await user.click(screen.getByRole('button', { name: 'Remove PIN' }))
     expect(updateProfile).toHaveBeenCalledWith('profile-1', { pin: null })
@@ -217,7 +207,7 @@ describe('KidsTab', () => {
         families={[FAMILY_A]}
         profiles={[{ ...PROFILE_A, has_pin: true }]}
         onChanged={vi.fn()}
-      />,
+      />
     )
     await user.click(screen.getByRole('button', { name: 'Remove PIN' }))
     expect(await screen.findByRole('alert')).toHaveTextContent(/could not remove that pin/i)
@@ -233,7 +223,7 @@ describe('KidsTab', () => {
         families={[FAMILY_A]}
         profiles={[PROFILE_A]}
         onChanged={onChanged}
-      />,
+      />
     )
     await user.click(screen.getByRole('button', { name: 'Deactivate' }))
     expect(updateProfile).toHaveBeenCalledWith('profile-1', { status: 'deactivated' })
@@ -249,7 +239,7 @@ describe('KidsTab', () => {
         families={[FAMILY_A]}
         profiles={[PROFILE_A]}
         onChanged={vi.fn()}
-      />,
+      />
     )
     await user.click(screen.getByRole('button', { name: 'Deactivate' }))
     expect(await screen.findByRole('alert')).toHaveTextContent(/could not change/i)

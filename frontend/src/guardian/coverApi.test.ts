@@ -3,7 +3,9 @@ import { makeCoverApi } from './coverApi'
 
 describe('coverApi', () => {
   it('POSTs to the versioned cover endpoint', async () => {
-    const post = vi.fn().mockResolvedValue({ data: { cover_status: 'generating', cover_url: null } })
+    const post = vi
+      .fn()
+      .mockResolvedValue({ data: { cover_status: 'generating', cover_url: null } })
     const get = vi.fn()
     const api = makeCoverApi({ post, get } as never)
     const res = await api.generate('s1', 2)

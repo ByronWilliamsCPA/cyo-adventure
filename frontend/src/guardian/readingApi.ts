@@ -31,15 +31,11 @@ export interface ReadingApi {
 export function makeReadingApi(api: AxiosInstance): ReadingApi {
   return {
     async familySummary(): Promise<ChildEngagementItem[]> {
-      const res = await api.get<FamilyReadingSummaryView>(
-        '/v1/families/me/reading-summary'
-      )
+      const res = await api.get<FamilyReadingSummaryView>('/v1/families/me/reading-summary')
       return res.data.children
     },
     async history(profileId: string): Promise<ReadingHistoryItem[]> {
-      const res = await api.get<ReadingHistoryView>(
-        `/v1/reading-history/${profileId}`
-      )
+      const res = await api.get<ReadingHistoryView>(`/v1/reading-history/${profileId}`)
       return res.data.books
     },
   }

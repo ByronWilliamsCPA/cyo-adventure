@@ -69,7 +69,7 @@ export interface PassageEditApi {
     storybookId: string,
     version: number,
     nodeId: string,
-    body: NodeEditBody,
+    body: NodeEditBody
   ): Promise<ReviewSurface>
 }
 
@@ -79,11 +79,11 @@ export function makePassageEditApi(api: AxiosInstance): PassageEditApi {
       storybookId: string,
       version: number,
       nodeId: string,
-      body: NodeEditBody,
+      body: NodeEditBody
     ): Promise<ReviewSurface> {
       const res = await api.patch<ReviewSurface>(
         `/v1/storybooks/${storybookId}/versions/${version}/nodes/${encodeURIComponent(nodeId)}`,
-        body,
+        body
       )
       return res.data
     },

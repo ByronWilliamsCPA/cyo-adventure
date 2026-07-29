@@ -32,7 +32,7 @@ describe('coverGradient', () => {
       'A',
       '',
       'x'.repeat(500),
-      "The Bramblewood Mystery: A Very Long Subtitle That Keeps On Going",
+      'The Bramblewood Mystery: A Very Long Subtitle That Keeps On Going',
     ]
     for (const title of titles) {
       expect(COVER_TOKENS).toContain(coverGradient(title))

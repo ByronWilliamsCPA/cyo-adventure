@@ -30,21 +30,21 @@ describe('makeBudgetApi', () => {
 
 describe('formatBudgetBanner', () => {
   it('formats the plural case', () => {
-    expect(
-      formatBudgetBanner({ quota: 5, spent_this_month: 2, remaining: 3, children: [] })
-    ).toBe('3 of 5 stories left this month')
+    expect(formatBudgetBanner({ quota: 5, spent_this_month: 2, remaining: 3, children: [] })).toBe(
+      '3 of 5 stories left this month'
+    )
   })
 
   it('formats the singular-quota case', () => {
-    expect(
-      formatBudgetBanner({ quota: 1, spent_this_month: 0, remaining: 1, children: [] })
-    ).toBe('1 of 1 story left this month')
+    expect(formatBudgetBanner({ quota: 1, spent_this_month: 0, remaining: 1, children: [] })).toBe(
+      '1 of 1 story left this month'
+    )
   })
 
   it('formats the zero-remaining case', () => {
-    expect(
-      formatBudgetBanner({ quota: 5, spent_this_month: 5, remaining: 0, children: [] })
-    ).toBe('0 of 5 stories left this month')
+    expect(formatBudgetBanner({ quota: 5, spent_this_month: 5, remaining: 0, children: [] })).toBe(
+      '0 of 5 stories left this month'
+    )
   })
 })
 

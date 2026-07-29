@@ -265,8 +265,8 @@ export function AuthoringPlanDialog({
             </label>
             {provider.length > 0 && modelsForProvider.length === 0 ? (
               <p className="authoring-plan-form__hint">
-                No enabled allowlist entries for {provider}. Add one on the provider allowlist
-                page first.
+                No enabled allowlist entries for {provider}. Add one on the provider allowlist page
+                first.
               </p>
             ) : null}
           </>

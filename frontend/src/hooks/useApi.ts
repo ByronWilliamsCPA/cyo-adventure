@@ -98,7 +98,7 @@ async function refreshWithDeadline(
   refresh: () => Promise<{
     data: { session: { access_token: string } | null }
     error: unknown
-  }>,
+  }>
 ): Promise<string | null> {
   let timer: ReturnType<typeof setTimeout> | undefined
   const deadline = new Promise<'timeout'>((resolve) => {
@@ -157,7 +157,7 @@ function refreshGuardianToken(): Promise<string | null> {
         refreshCooldownUntil = Date.now() + REFRESH_DEADLINE_MS
         console.warn(
           'guardian token refresh could not be persisted (storage unavailable); ' +
-            'suppressing further refreshes briefly',
+            'suppressing further refreshes briefly'
         )
       }
       return token

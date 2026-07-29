@@ -182,9 +182,7 @@ export function ModerationDashboardPage() {
   }
 
   if (state.kind === 'loading') {
-    return (
-      <LoadingStatus />
-    )
+    return <LoadingStatus />
   }
   if (state.kind === 'error') {
     return <ErrorBanner className="console__error">{state.message}</ErrorBanner>

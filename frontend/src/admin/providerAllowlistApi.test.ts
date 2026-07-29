@@ -20,7 +20,13 @@ function fakeAxios(data: unknown) {
 describe('makeProviderAllowlistApi', () => {
   it('list fetches the allowlist rows', async () => {
     const rows = [
-      { id: 'a1', provider: 'anthropic', model_id: 'claude-sonnet-4-6', enabled: true, display_name: null },
+      {
+        id: 'a1',
+        provider: 'anthropic',
+        model_id: 'claude-sonnet-4-6',
+        enabled: true,
+        display_name: null,
+      },
     ]
     const { api, get } = fakeAxios({ rows })
     const result = await makeProviderAllowlistApi(api).list()
