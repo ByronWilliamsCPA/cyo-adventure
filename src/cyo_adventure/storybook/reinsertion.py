@@ -1131,8 +1131,13 @@ def reinsert_storybook(
             diagnostics (`sentence_start_hits`, `plural_occurrences`).
     """
     expected = _expected_tokens_by_node(bound_skeleton)
-    normalized = _normalize_document(filled_document)
-    reinserted = copy.deepcopy(normalized)
+    # `_normalize_document` already deep-copies its input and returns an
+    # object nobody else holds a reference to, so copying it again here
+    # bought nothing but a second full traversal of the blob. Do not
+    # reintroduce the copy to "protect" `filled_document`: that protection
+    # lives one call up, inside `_normalize_document`, which is where the
+    # never-mutate-the-caller's-document contract is actually enforced.
+    reinserted = _normalize_document(filled_document)
     nodes_by_id = _index_nodes(reinserted)
 
     outcomes: list[TokenOutcome] = []

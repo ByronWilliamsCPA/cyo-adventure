@@ -889,11 +889,19 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
             no sidecar contract), or its sidecar fails to bind/render -- both
             fail closed, propagating unchanged into the caller's pipeline-
             exception handling. No fill provider call is made in either case.
-            Also raised (ADR-023 plan section 3.2) when the filled blob fails
-            :func:`~cyo_adventure.validator.sentinel_integrity.check_sentinel_integrity`
-            against the pre-fill bound skeleton: a forged, mutated, migrated,
-            or dropped sentinel fails the job closed, with the violation list
-            logged structurally before the raise.
+            Also raised (ADR-023 Stage R) by either half of the
+            strip-all-then-reinsert step this function runs after a
+            successful fill: when
+            :func:`~cyo_adventure.storybook.reinsertion.verify_manifest`
+            rejects the transform's own output (a transform bug, not a
+            fill-content problem), or when the derived document fails
+            :func:`~cyo_adventure.validator.sentinel_integrity.check_sentinel_integrity_at_rest`
+            (a forged, malformed, or misplaced leftover). Both log the
+            violation list structurally before the raise. Note what is NOT
+            in that list any more: a model that paraphrased a sentinel away
+            no longer fails the job, because the transform re-derives every
+            reinsertable token rather than prescribing where the fill should
+            have put them.
     """
     authoring = ctx.authoring
     skeleton_slug = authoring.get(SKELETON_SLUG_KEY)
@@ -1932,8 +1940,10 @@ async def _handle_pipeline_failure(
     # lands in the persisted report/error.
     violations: object | None = None
     # #CRITICAL: data-integrity: a Task 4a/4b fail-closed sentinel-integrity
-    # ValidationError (_run_skeleton_fill's LIVE check_sentinel_integrity
-    # call) already carries its own violation list in
+    # ValidationError (_run_skeleton_fill's LIVE
+    # check_sentinel_integrity_at_rest call; the prescriptive
+    # check_sentinel_integrity it used to run was replaced by the Stage R
+    # reinsertion transform) already carries its own violation list in
     # exc.details["sentinel_integrity_violations"], but before Task 6a that
     # detail reached only the structured log line above, never job.report:
     # an admin debugging a failed job saw a truncated error count, not

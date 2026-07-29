@@ -678,11 +678,16 @@ async def resume_manual_fill(
     Loads the job's concept for its family_id, then, when the job carries a
     ``skeleton_slug`` and its matched skeleton loaded successfully, computes
     the Stage 1 fidelity reference (:func:`_stage1_reference_skeleton`) and
-    runs the full pre-fill-vs-filled sentinel-integrity check
-    (:func:`~cyo_adventure.validator.sentinel_integrity.check_sentinel_integrity`,
-    Task 6b) against it BEFORE persisting anything: a violation (a dropped,
-    forged, migrated, or malformed sentinel) marks the job "failed" and
-    raises, so the blob is never persisted. Only then does this function
+    runs the ADR-023 Stage R strip-all-then-reinsert step against it BEFORE
+    persisting anything (:func:`_reinsert_and_verify_resume_sentinels`,
+    replacing Task 6b's prescriptive
+    :func:`~cyo_adventure.validator.sentinel_integrity.check_sentinel_integrity`
+    call): the transform's own manifest must account for its output, and the
+    derived document must pass
+    :func:`~cyo_adventure.validator.sentinel_integrity.check_sentinel_integrity_at_rest`.
+    Either failure marks the job "failed" and raises, so the blob is never
+    persisted. A sentinel the fill merely paraphrased away is no longer a
+    violation: it is re-derived. Only then does this function
     delegate to :func:`import_filled_story` for the same gate + persist +
     moderation pipeline every other import uses, threading the job's own
     ``authoring_metadata.get("review_stage2_model")`` override through as

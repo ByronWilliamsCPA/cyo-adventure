@@ -63,11 +63,11 @@ from anyio.to_thread import run_sync
 from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy import select
 
-from cyo_adventure.db.models import Storybook, StorybookVersion
+from cyo_adventure.db.models import GenerationJob, Storybook, StorybookVersion
 from cyo_adventure.events import EventType, record_event
 from cyo_adventure.moderation.classifiers import run_classifiers
 from cyo_adventure.moderation.personalizable_slots import (
-    personalizable_slot_ids_for_story,
+    personalizable_slot_ids_for_job,
 )
 from cyo_adventure.moderation.report import Finding, Verdict
 from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_policy
@@ -229,7 +229,9 @@ def _newly_surfaced_reasons(surfaced: list[Finding]) -> list[str]:
 # blob with no skeleton/contract reference on this code path, but the
 # personalizable-slot contract itself IS recoverable per book, the same way
 # `moderation/pipeline.py`'s own moderation-entry backstop resolves it: via
-# the story's `GenerationJob` row (`personalizable_slot_ids_for_story`). This
+# the story's `GenerationJob` row (`_prefetch_personalizable_slots`, which
+# resolves the same tri-state answer `personalizable_slot_ids_for_story`
+# would, for every book in the sweep, in ONE query). This
 # was formerly a contract-free, hand-rolled subset of
 # `check_sentinel_integrity_at_rest` that could not check a well-formed
 # sentinel's slot id against the declared set (the `unknown_slot` check); now
@@ -279,7 +281,7 @@ def _sentinel_corruption_reasons(
             parsed model): `check_sentinel_integrity_at_rest` re-derives its
             own surfaces from the mapping, with no pre-fill reference needed.
         personalizable_slot_ids: This story's declared personalizable slot
-            ids (`personalizable_slot_ids_for_story`'s tri-state result).
+            ids (`personalizable_slot_ids_for_job`'s tri-state result).
             `None` means the contract itself is unrecoverable for this book;
             failing closed with a single explicit reason here, mirroring
             `moderation/pipeline.py`'s own moderation-entry backstop (M1),
@@ -297,21 +299,91 @@ def _sentinel_corruption_reasons(
     return [_violation_reason(v) for v in result.violations]
 
 
-async def _resolve_sentinel_corruption_reasons(
-    session: AsyncSession, story_id: str, blob: Mapping[str, object]
-) -> list[str]:
-    """Resolve `story_id`'s personalizable-slot contract, then scan `blob` at rest.
+def _resolve_slot_contracts(
+    story_ids: Sequence[str], jobs_by_story: Mapping[str, GenerationJob]
+) -> dict[str, frozenset[str] | None]:
+    """Resolve every story's slot contract from already-fetched job rows.
+
+    Synchronous on purpose: `personalizable_slot_ids_for_job` touches only the
+    filesystem (skeleton and theme-contract sidecars), never the database, so
+    the whole batch runs in ONE `run_sync` hop off the event loop instead of
+    one hop per book.
+
+    Args:
+        story_ids: Every published story id in this sweep. Ids with no job row
+            resolve to an EMPTY frozenset, matching
+            `personalizable_slot_ids_for_story`'s own `job is None` branch:
+            no job means no skeleton means no slot could legitimately exist.
+        jobs_by_story: The oldest `GenerationJob` per story id.
+
+    Returns:
+        dict[str, frozenset[str] | None]: One tri-state entry per story id;
+        every id in `story_ids` is present.
+    """
+    return {
+        story_id: (
+            personalizable_slot_ids_for_job(job)
+            if (job := jobs_by_story.get(story_id)) is not None
+            else frozenset()
+        )
+        for story_id in story_ids
+    }
+
+
+async def _prefetch_personalizable_slots(
+    session: AsyncSession, books: Sequence[Storybook]
+) -> dict[str, frozenset[str] | None]:
+    """Resolve the whole sweep's personalizable-slot contracts in one query.
+
+    # #CRITICAL: external-resources: this deliberately runs OUTSIDE
+    # `_rescreen_one`'s per-book `except Exception`. Resolving the contract
+    # per book (the previous shape, one `personalizable_slot_ids_for_story`
+    # call inside the guarded body) meant a DB blip mid-sweep was swallowed
+    # into N per-book `outcome="error"` verdicts at WARNING while the sweep
+    # still returned a completed-looking summary. Hoisted here, a DB failure
+    # raises out of `rescreen_published_books` before any book is screened,
+    # exactly as the existing `_load_published_books` and
+    # `load_threshold_policy` calls beside it already do: the sweep either
+    # has the contracts for every book or it does not run at all.
+    # #VERIFY: tests/unit/test_rescreen_unit.py::
+    # test_slot_contracts_are_prefetched_in_one_query,
+    # ::test_prefetch_db_failure_aborts_the_sweep, and
+    # ::test_prefetched_job_drives_the_per_book_slot_contract.
 
     Args:
         session: The sweep's own open async session.
-        story_id: The published storybook id under re-screen.
-        blob: The raw published blob mapping to scan.
+        books: Every published storybook this sweep will screen.
 
     Returns:
-        list[str]: See `_sentinel_corruption_reasons`.
+        dict[str, frozenset[str] | None]: One tri-state entry per book id.
     """
-    personalizable_slot_ids = await personalizable_slot_ids_for_story(session, story_id)
-    return _sentinel_corruption_reasons(blob, personalizable_slot_ids)
+    story_ids = [book.id for book in books]
+    if not story_ids:
+        return {}
+    # Ordered by (storybook_id, created_at) so the first row seen per story is
+    # the OLDEST job, which is the row `personalizable_slot_ids_for_story`
+    # picks with its own `order_by(created_at).limit(1)`. Selecting every job
+    # and narrowing in Python (rather than a Postgres `DISTINCT ON`) keeps
+    # this runnable against any backend the test suite uses; a story has a
+    # handful of jobs at most.
+    rows = (
+        await session.scalars(
+            select(GenerationJob)
+            .where(GenerationJob.storybook_id.in_(story_ids))
+            .order_by(GenerationJob.storybook_id, GenerationJob.created_at)
+        )
+    ).all()
+    jobs_by_story: dict[str, GenerationJob] = {}
+    for job in rows:
+        if job.storybook_id is not None and job.storybook_id not in jobs_by_story:
+            jobs_by_story[job.storybook_id] = job
+    # #CRITICAL: timing: contract resolution reads skeleton and sidecar files
+    # from disk. The sweep already hoists `run_gate` off the loop for exactly
+    # this reason (AL-035); doing the same here keeps a multi-book sweep from
+    # reintroducing the stall that fix removed.
+    # #VERIFY: covered by the rescreen sweep tests; the resolver is pure
+    # file I/O and session-free.
+    return await run_sync(_resolve_slot_contracts, story_ids, jobs_by_story)
 
 
 @dataclass(frozen=True, slots=True)
@@ -327,6 +399,7 @@ class _SweepContext:
     actor: Actor
     threshold_policy: ThresholdPolicy
     client: httpx.AsyncClient
+    personalizable_slots: Mapping[str, frozenset[str] | None]
 
 
 async def _rescreen_one(
@@ -448,9 +521,13 @@ async def _rescreen_one(
             )
             reasons.extend(_classifier_block_reasons(classifier_findings))
             reasons.extend(_newly_surfaced_reasons(surfaced))
+            # `_prefetch_personalizable_slots` builds an entry for every book
+            # this sweep screens, so the default is unreachable; it fails
+            # CLOSED (`None`) rather than guessing an empty declared set,
+            # matching `_sentinel_corruption_reasons`' own uncomputable branch.
             reasons.extend(
-                await _resolve_sentinel_corruption_reasons(
-                    session, book.id, version_row.blob
+                _sentinel_corruption_reasons(
+                    version_row.blob, ctx.personalizable_slots.get(book.id)
                 )
             )
 
@@ -573,6 +650,7 @@ async def rescreen_published_books(
     """
     books = await _load_published_books(session, storybook_ids)
     threshold_policy = await load_threshold_policy(session)
+    personalizable_slots = await _prefetch_personalizable_slots(session, books)
 
     async with httpx.AsyncClient(timeout=_CLASSIFIER_CLIENT_TIMEOUT) as client:
         sweep_ctx = _SweepContext(
@@ -580,6 +658,7 @@ async def rescreen_published_books(
             actor=actor,
             threshold_policy=threshold_policy,
             client=client,
+            personalizable_slots=personalizable_slots,
         )
         results = [await _rescreen_one(session, book, sweep_ctx) for book in books]
 
