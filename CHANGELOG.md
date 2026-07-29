@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.43.0] - 2026-07-29
+
+### Features
+
+- **admin**: Add single-story re-screen trigger to review detail page
+  ([#472](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/472),
+  [`36aa8fc`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/36aa8fc4338298757d251a4478524168b309169d))
+
+
 ## [0.42.0] - 2026-07-29
 
 ### Features
@@ -2782,6 +2791,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.43.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.42.0...v0.43.0
 [0.42.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.41.0...v0.42.0
 [0.41.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.40.2...v0.41.0
 [0.40.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.40.1...v0.40.2
