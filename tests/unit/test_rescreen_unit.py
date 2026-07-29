@@ -43,6 +43,7 @@ from cyo_adventure.moderation import rescreen as rescreen_mod
 from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.moderation.thresholds import Threshold, ThresholdPolicy
 from cyo_adventure.storybook.sentinels import wrap
+from cyo_adventure.validator.sentinel_integrity import IntegrityViolation
 
 pytestmark = [pytest.mark.unit, pytest.mark.asyncio]
 
@@ -819,3 +820,65 @@ async def test_admin_triggers_rescreen_and_gets_summary(
     event = mock_async_session.add.call_args.args[0]
     assert event.actor_role == "admin"
     assert event.actor_id == _ADMIN.user_id
+
+
+async def test_violation_reason_malformed_in_node_body_names_the_body_location() -> (
+    None
+):
+    """A malformed violation outside title/choice-label reads as body/ending title.
+
+    `_violation_reason` fans out over two location placeholders (`<title>`,
+    `<choice-label>`) before falling through to a real node id, and each of the
+    three branches splits again on `kind == "malformed"`. The
+    body-plus-malformed corner was the one combination no existing test
+    reached, so the vocabulary it emits ("sentinel malformed in body/ending
+    title") was unasserted: a rename there would have shipped silently even
+    though `RescreenResult.reasons` is operator-facing text.
+    """
+    body = rescreen_mod._violation_reason(
+        IntegrityViolation(node_id="n_3", kind="malformed", token="{~HERO:Ada~")
+    )
+
+    assert body == "sentinel malformed in body/ending title: '{~HERO:Ada~'"
+    # Pinned against its two siblings, because the point of the branch is that
+    # the three locations stay distinguishable in the operator-facing string.
+    assert (
+        rescreen_mod._violation_reason(
+            IntegrityViolation(node_id="<title>", kind="malformed", token="{~HERO:Ada~")
+        )
+        == "sentinel malformed in title: '{~HERO:Ada~'"
+    )
+    assert (
+        rescreen_mod._violation_reason(
+            IntegrityViolation(
+                node_id="<choice-label>", kind="malformed", token="{~HERO:Ada~"
+            )
+        )
+        == "sentinel malformed in choice label: '{~HERO:Ada~'"
+    )
+
+
+async def test_prefetch_personalizable_slots_never_queries_for_an_empty_sweep() -> None:
+    """No books means no query at all, not a query with an empty `IN ()`.
+
+    The guard exists because `GenerationJob.storybook_id.in_([])` is a
+    degenerate predicate, and because the sweep calls this helper
+    unconditionally. Asserting the empty mapping alone would pass even if the
+    guard were deleted, so this asserts the stronger property the guard is
+    actually for: the session is never touched.
+
+    The session is wired with a WORKING `scalars` double rather than a bare
+    `AsyncMock` on purpose. With a bare mock, deleting the guard makes the
+    helper die on `TypeError: 'coroutine' object is not iterable` before it
+    ever reaches the assertion below, so the test would fail for a reason that
+    says nothing about the guard. Wired this way, the no-guard version runs to
+    completion and fails on `assert_not_awaited`, which names the actual defect.
+    """
+    session = AsyncMock()
+    session.scalars = AsyncMock(return_value=_scalars_result([]))
+
+    result = await rescreen_mod._prefetch_personalizable_slots(session, [])
+
+    assert result == {}
+    session.scalars.assert_not_awaited()
+    session.execute.assert_not_awaited()
