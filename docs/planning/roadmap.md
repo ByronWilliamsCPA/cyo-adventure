@@ -196,7 +196,95 @@ in PROJECT-PLAN.md section 1's audit note):
 
 Not re-litigated in this pass: the ~25 open GitHub issues already itemized in
 `docs/planning/r1-deferred-debt-register.md` and elsewhere remain accurately tracked there;
-this audit did not find them newly stale.
+this audit did not find them newly stale. **Superseded 2026-07-28**: that claim is false, see the
+next section.
+
+## 2026-07-28 Plan Audit: the unscheduled-work sweep
+
+A six-agent sweep of every ADR, handoff doc, workstream design doc, review report, register, code
+marker, and open GitHub issue looked for one thing: work that some document **directs** but no
+document **schedules**. It found roughly 250 such items. All of them now have a stable `UW-*` ID and
+a proposed phase in the [unscheduled work register](./unscheduled-work-register.md), which is the
+placeholder mechanism this section refers to throughout. Item-level detail lives there; this section
+records only what the sweep changes about the plan itself.
+
+**The finding is structural, not clerical.** This project runs four ID namespaces, and only one of
+them is wired into a phase:
+
+| Namespace | Source | Mapped into phases? |
+|-----------|--------|---------------------|
+| `K`/`G`/`A`/`S` | [capability-register.md](./capability-register.md) | ✅ via "Where every open register item lands" above |
+| `C`/`GS`/`U`/`T`/`P`/`SL` | [r1-deferred-debt-register.md](./r1-deferred-debt-register.md) | ❌ zero debt IDs cited in either master document |
+| `AL-*` | [authoring-lessons-log.md](./authoring-lessons-log.md) | ❌ zero `AL-` hits in either master document |
+| GitHub issues | the tracker | ❌ 19 of 33 open issues named in no planning document |
+
+Work therefore did not get lost through carelessness. It got lost because three of four intake
+channels had no exit into a phase. `UW-B*` and `UW-C*` close that by assigning phases to the debt
+register and the lessons log wholesale, without restating their contents.
+
+**Corrections to claims made above in this document:**
+
+1. The 2026-07-20 note that open issues "remain accurately tracked" in the debt register is wrong.
+   The register cites 9 issue numbers, 6 still open, against 33 open issues (`UW-D*`).
+2. Phase 4b marks `G2` controls delivered. The intake UI hardcodes empty arrays and the profile form
+   has no banned-theme field, so `G2` is partial (`UW-J15`).
+3. The 2026-07-20 note lists `admin-guardian-dual-roles-plan.md` as unstarted, unscheduled work. The
+   work shipped; only three open decisions remain (`UW-K16`).
+4. The follow-up pass that the 2026-07-20 audit deferred (reconciling PRs #311, #321, #323) is still
+   not done, and roughly 20 further releases have merged since (v0.20.0 through v0.40.1), including
+   ADR-022, ADR-023, and ADR-024.
+
+**Decisions with no plan presence at all.** Three ADRs return zero hits in this document and in
+PROJECT-PLAN.md:
+
+- **[ADR-022](./adr/adr-022-tiered-rls-scoping.md)** (tiered RLS scoping) returns zero hits in all
+  four planning documents. It is the only database-enforced backstop for children's PII, and it is
+  downstream of an ADR-021 production cutover that is itself untracked (`UW-A01`, `UW-A03`). Until
+  that cutover provisions the `cyo_api` and `cyo_worker` role passwords and retires `postgres`-role
+  traffic, **RLS is enabled but disarmed**.
+- **[ADR-023](./adr/adr-023-story-personalization-slots.md)** (personalization) exists only in the
+  capability register. Its Stage A shipped and its **G1 gate fired STOP at 3.3% sentinel survival**,
+  voiding Stages B through D pending a re-plan. Recorded as blocked, which is its real state
+  (`UW-H*`).
+- **[ADR-024](./adr/adr-024-bounded-backtracking-path-replay.md)** (bounded backtracking) returns
+  zero hits anywhere, including the reader-UX work that implements it (`UW-A11`, `UW-I02`).
+
+**Two blocking items were sitting in the post-launch backlog.** Both arrive there because the
+authoring lessons log's only plan linkage is one sentence inside capability row `A11`, which this
+document files under post-launch:
+
+- `AL-014` (`UW-C01`): no hand-authored skeleton can pass `check_promotion_bundle`, because the
+  lineage sidecar is unconditional. The lessons log itself calls this blocking.
+- `AL-036` (`UW-C02`): the review surface cannot deliver the human approval ADR-005 requires at 746
+  nodes. This undercuts the `A6` safety gate, so the approval attests less than the ADR claims.
+
+**One release blocker.** `docs/known-vulnerabilities.md` carries PYSEC-2022-42969 (`py`, reached via
+`interrogate` 1.7.0) and PYSEC-2026-89 (`markdown`, CVSS 7.5) at 68 days old, with reassessment due
+2026-07-20 and now 8 days overdue. The OpenSSF release gate blocks releases for any vulnerability
+older than 60 days regardless of reassessment status (`UW-K01`).
+
+**Two live defects** were found and filed as issues rather than tracked as plan rows: RESTART on a
+continuation read discarding carried series state and the continuation entry node
+([#460](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/460), `UW-L01`), and a
+commit-after-response race in the request session dependency
+([#461](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/461), `UW-L02`).
+
+**Phase impact.** The register assigns work to phases as follows; the phase checklists below carry
+the safety-relevant and blocking items inline, and everything else is held by ID in the register.
+
+| Cluster | Phase | Weight |
+|---------|-------|--------|
+| `UW-E*` security hardening (Medium and Low tiers, including three gate bypasses), `UW-F*` test hardening, `UW-C02`/`C03`/`C04`/`C05` authoring safety | 5 | largest single addition |
+| `UW-G*` content diversity and catalog | new: see the Content workstream note | first phase home this workstream has had |
+| `UW-I*`, `UW-J*` reader UX and console gaps | 4b | moderate |
+| `UW-H*` personalization | 4b, blocked | recorded blocked, not scheduled |
+| `UW-A15`, `UW-A16`, `UW-A19`, `UW-B13`, `UW-E14` processor records and counsel gates | 7 | gates App Store submission |
+| `UW-A03` ADR-021 cutover | M4.1 | prerequisite for ADR-022 |
+| `UW-K01` overdue CVEs, `UW-A40` ADR status flips, doc accuracy | now | small, unblocking |
+
+**Deliberately not done in this pass**: nothing was rescheduled, no phase estimate was revised, and
+no item was closed. The sweep establishes where work lives, not when it happens. Sequencing the
+register against the existing phase estimates is the natural next pass.
 
 ## Timeline Overview
 
@@ -223,7 +311,7 @@ The old wording stands in historical sections above; this table governs.
 |-----------|--------------------------------------|-----|------------------------|
 | M0-M3 | Foundations through enforced approval gate | done | ✅ Delivered |
 | M4 = **R1-alpha** | Core loop live internally, web only (Phases 0-3 + 4a; historic "R1") | done | ✅ Feature-complete 2026-07-03, live 2026-07-05 |
-| M4.1: R1-alpha sign-off | Funded provider keys; merged PRs + safety fixes redeployed; live E2E checklist executed once with a sign-off row; Now-queue items 1-4 | ~1 wk | ⏸️ Next up |
+| M4.1: R1-alpha sign-off | Funded provider keys; merged PRs + safety fixes redeployed; live E2E checklist executed once with a sign-off row; Now-queue items 1-4; **plus, added 2026-07-28: the ADR-021 production cutover (`UW-A03`), which the ADR itself names M4.1 as the review gate for** | ~1 wk | ⏸️ Next up. The cutover provisions `cyo_api`/`cyo_worker` role passwords in staging and prod and retires `postgres`-role traffic; until it lands, RLS is enabled but disarmed and ADR-022 (`UW-A01`) cannot start |
 | M4b: Editor + engagement | G6, K6, K7, G5, G2 usable by a real guardian, G3, K15, G15 view, K5/K8 test pins | 3-4 wks | ✅ Substantially delivered 2026-07-17 (PR #270); open: bookmarks (not built), G15 device/storage view, K5/K8 test pins |
 | M4c: Family loops | S9, G10, G9, K12 complete, G7 real budget consent + G13 balance | 2-3 wks | ✅ Substantially delivered 2026-07-17 (PR #270); open: push channel/server-scheduled digest (S9/G10 are poll-based only) |
 | M4d: Connections | G17 consent, K17 surfaces, A15 enforcement guard (ADR-016 ring 2) | 2-3 wks, overlaps 4c | ✅ Delivered 2026-07-17 (PR #270); privacy-model erasure coverage for connections not independently re-verified |
@@ -688,6 +776,39 @@ runs on Supabase-managed infrastructure instead of the homelab; see
       an AI cover image can reach a child's shelf without the human review A16 promises
       (the story-text safety guarantee, A6, is unaffected).
 
+**Newly surfaced by the 2026-07-28 unscheduled-work sweep.** The security plan's Medium and Low
+tiers, and the authoring log's blocking lessons, had no phase home. Full detail by ID in the
+[unscheduled work register](./unscheduled-work-register.md); the safety-bearing items are carried
+here because a gate bypass should be visible on the checklist, not only in a register.
+
+- [ ] **Three gate bypasses** (`UW-E01`, `UW-E02`, `UW-E03`): reading and completion routes bypass
+      the assignment gate; guardian blob-fetch skips the gate; repair skips the validator.
+- [ ] **`AL-036` undercuts ADR-005** (`UW-C02`): the review surface has no pagination,
+      virtualization, or per-node review state, so at 746 nodes it cannot deliver the human
+      approval the ADR requires. The approval currently attests less than it claims.
+- [ ] `AL-039` (`UW-C04`): repair and the Stage-1 fidelity gate both fail open and are
+      structurally impossible at scale; fidelity lacks an `<untrusted_passage>` fence.
+- [ ] `AL-034` (`UW-C03`): one import is ~2,986 provider round trips inside a single Postgres
+      transaction holding `FOR UPDATE`, running 40 to 100 minutes.
+- [ ] `AL-040` (`UW-C05`): `/admin/rescreen` sweeps synchronously in one request.
+- [ ] Remaining security-plan tiers (`UW-E04` to `UW-E08`): review-model allowlist, a real PII
+      detector, family cost cap on the authoring-plan path, production Postgres host-port and
+      password-default exposure, inert `allowed_content_flags`, unenforced `reading_level_cap`,
+      health-endpoint version disclosure.
+- [ ] `UW-E16`: the `_extract_subject()` dev/test auth stub is still live in `api/deps.py`, guarded
+      only by unset OIDC environment variables.
+- [ ] **ADR-022 tiered RLS scoping** (`UW-A01`, `UW-A02`) and the rest of the ADR-021 worker and
+      observability work (`UW-A04` to `UW-A07`). Gated on the M4.1 cutover below.
+- [ ] Named test-ladder actions replacing the generic line above (`UW-F*`): behavioral safety suite,
+      FK `ON DELETE` parity, generated-client drift test, mutmut kill-floor, pre-Phase-9 performance
+      testing, E2E driving the RQ worker, schema parity over policies and triggers, CORS and
+      rate-limit negative tests, and the seven traceability-matrix actions.
+- [ ] `UW-K01` **release blocker**: two `docs/known-vulnerabilities.md` entries are 68 days old with
+      reassessment 8 days overdue, past the 60-day OpenSSF release gate.
+- [ ] `UW-K18`: 98 RAD markers carry no paired `#VERIFY`, including the `generation/worker.py`
+      concurrency pair, the `db/models.py` cascade CRITICAL, the `classifiers.py` API-key placement
+      CRITICAL, and four deploy-ordering CRITICALs in `supabase/migrations/`.
+
 ### Success Criteria
 
 - ✅ Deployed behind Pangolin with Supabase guardian login (ADR-009); a restore from backup
@@ -697,6 +818,63 @@ runs on Supabase-managed infrastructure instead of the homelab; see
 ### Dependencies
 
 - Requires: Phases 1-4.
+
+---
+
+## Content workstream: diversity and catalog growth (NEW 2026-07-28)
+
+### Objective
+
+Give the story-flexibility and content-diversity workstream its first phase home. Both master
+documents previously **stated outright** that this workstream had no line item anywhere, despite
+substantial merged code (PRs #300, #303, #314, #321, #415) and three governing ADRs (019, 020, 023).
+This section is that line item. It runs alongside the phases rather than inside them, because its
+cadence is catalog-time and offline, not release-gated.
+
+### Governing documents
+
+Live specs only: [story-diversity-plan-v2.md](./story-diversity-plan-v2.md) (the spec),
+[story-diversity-implementation-plan.md](./story-diversity-implementation-plan.md) (the sequencer),
+and [story-diversity-review-errata.md](./story-diversity-review-errata.md) (corrections). The
+remediation plan, the execution plan, and the original analysis are **superseded**; their `D*` and
+`M*` IDs are dead nomenclature. Do not open work from them.
+
+### Deliverables
+
+Full detail by ID in the [unscheduled work register](./unscheduled-work-register.md), cluster
+`UW-G*`. The load-bearing items:
+
+- [ ] **`A20` / `UW-G01`, the largest single item**: 14 of 16 skeletons and 4,305 `<<FILL>>` nodes
+      are still unslotted, and closing it needs a family-based plan generator first. This is the
+      ADR-019 catalog migration (`UW-A29`) and the parameterize-at-promotion runbook, as one item.
+- [ ] `OQ-4` (`UW-G02`): 11 stateful Tier-2 skeletons unmigrated, plus the series-level binding design.
+- [ ] **`AL-014` blocking** (`UW-C01`): no hand-authored skeleton can pass `check_promotion_bundle`,
+      because the lineage sidecar is unconditional. This blocks hand-authored catalog growth today
+      and was previously filed only under the post-launch backlog.
+- [ ] Per-band ATG calibration (`UW-G04`): `_BAND_THRESHOLDS` is still `{}`, so the anti-template
+      guard remains advisory rather than enforcing.
+- [ ] `AL-046` (`UW-C07`): the fill orchestrator is one-shot against a 32k output cap and the matcher
+      has no feasibility predicate, so **13 books are unfillable today**.
+- [ ] `A9` item 2 (`UW-G03`): restructure `the-sunken-temple` (5 variables, 20 conditions, 75
+      effects, plus a 35-ending remix to 0.0710).
+- [ ] Wave 5 (`UW-G13`): 36 new skeletons, 2 per production cell; the dagger-cell 460-node ceiling
+      experiment; the Tier-2 stateful pilot.
+- [ ] Import and publish the 23 filled stories committed to `main` (`UW-G14`); 3 legacy-shaped fills
+      need normalization at import, paired with `AL-050`'s schema-v2 migration.
+- [ ] WS-0 Phase 3 calibration, WS-1 ATG wiring, WS-5 grammar composer, WS-6 fresh-generation feed,
+      and WS-8 flywheel follow-ons (`UW-G05` to `UW-G10`, `UW-A32` to `UW-A36`).
+
+### Success Criteria
+
+- Every production-eligible skeleton carries a `.contract.json`, and the contract set is maintained
+  with per-wave human quality review (`UW-A30`).
+- The anti-template guard enforces per-band thresholds rather than advising.
+- No production cell is unfillable.
+
+### Dependencies
+
+- Requires: nothing new. This work is offline and catalog-time; it does not block a release rung,
+  which is precisely why it went unscheduled for so long.
 
 ---
 
@@ -746,3 +924,7 @@ and Tier-2 corpora.
 - [Project Vision](./project-vision.md)
 - [Technical Spec](./tech-spec.md)
 - [Architecture Decisions](./adr/README.md)
+- [Capability Register](./capability-register.md) - persona capability contract (`K`/`G`/`A`/`S`)
+- [R1 Deferred-Debt Register](./r1-deferred-debt-register.md) - R1 deferrals (`C`/`GS`/`U`/`T`/`P`/`SL`)
+- [Unscheduled Work Register](./unscheduled-work-register.md) - directed-but-unscheduled work (`UW-*`)
+- [Authoring Lessons Log](./authoring-lessons-log.md) - authoring and validator lessons (`AL-*`)

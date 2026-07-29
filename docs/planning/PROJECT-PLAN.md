@@ -219,6 +219,43 @@ evidence in the phase sections below and in [capability-register.md](./capabilit
 Full item-by-item corrections are inline in the Phase 4b/4c/4d/6/7 sections below, the ADR
 table (Section 3), and the Technology Stack table (Section 4, Python version).
 
+**2026-07-28 unscheduled-work sweep**: a six-agent sweep asked one question of every ADR, handoff
+doc, workstream design doc, review report, register, code marker, and open GitHub issue: does some
+document *direct* this work without any document *scheduling* it? It found roughly 250 such items,
+all of which now carry a stable `UW-*` ID and a proposed phase in the new
+[unscheduled work register](./unscheduled-work-register.md). The full audit narrative lives in
+[roadmap.md](./roadmap.md)'s "2026-07-28 Plan Audit" section; the headlines that bear on this
+document:
+
+1. **The root cause is structural.** This project runs four ID namespaces and wires only one into a
+   phase. The capability register's `K`/`G`/`A`/`S` IDs have a mapping table in roadmap.md; the
+   deferred-debt register's `C`/`GS`/`U`/`T`/`P`/`SL` IDs, the authoring lessons log's `AL-*` IDs,
+   and 19 of 33 open GitHub issues have no exit into a phase at all. Work was lost to a missing
+   pipe, not to carelessness.
+2. **Three ADRs have zero presence in this document or roadmap.md.** ADR-022 (tiered RLS scoping)
+   returns zero hits across all four planning documents despite being the only database-enforced
+   backstop for children's PII; ADR-023 (personalization) exists only in the capability register;
+   ADR-024 (bounded backtracking) is absent everywhere including the reader-UX work implementing it.
+   Section 3's ADR table and status list are corrected below to cover ADR-020 through ADR-024.
+3. **RLS is enabled but disarmed.** The ADR-021 production cutover, which provisions the `cyo_api`
+   and `cyo_worker` role passwords and retires `postgres`-role traffic, was never scheduled. ADR-022
+   is downstream of it. The ADR names M4.1 as its review gate; M4.1 carries no ADR-021 content
+   (`UW-A03`, `UW-A01`).
+4. **Two blocking items were parked in the post-launch backlog**, because the authoring lessons log's
+   only plan linkage is a sentence inside capability row `A11`: `AL-014` (no hand-authored skeleton
+   can pass `check_promotion_bundle`) and `AL-036` (the review surface cannot deliver the human
+   approval ADR-005 requires at 746 nodes, so the approval attests less than the ADR claims).
+5. **A release blocker is live**: two `docs/known-vulnerabilities.md` entries are 68 days old with
+   reassessment 8 days overdue, past the 60-day OpenSSF release gate (`UW-K01`).
+6. **Three corrections to claims made above**: the 2026-07-20 assertion that open issues remain
+   accurately tracked in the debt register is false; Phase 4b's `G2`-delivered claim is partial (the
+   intake UI hardcodes empty arrays); and `admin-guardian-dual-roles-plan.md`, listed as unstarted,
+   in fact shipped. The #311/#321/#323 reconciliation that the 2026-07-20 audit deferred is still
+   outstanding, now behind a further ~20 releases (v0.20.0 through v0.40.1).
+
+This sweep deliberately rescheduled nothing and closed nothing. It establishes where work lives, not
+when it happens; sequencing the register against the phase estimates is the next pass.
+
 ---
 
 ## 2. Scope
@@ -303,13 +340,22 @@ Key architectural decisions, each recorded in an ADR:
 | [ADR-017](./adr/adr-017-ai-cover-art.md) | AI-generated cover art per storybook version | Ratified 2026-07-16; Gemini generation, R2 storage, kid-visible with a letter-tile fallback; reviewed on the approval surface (see the H2 gap noted in Phase 5/roadmap.md) |
 | [ADR-018](./adr/adr-018-childrens-privacy-compliance.md) | Children's-privacy compliance (COPPA/GDPR-K): verifiable parental consent mechanism, audience classification, launch geography | Still Proposed; D1-D3 await counsel engagement (Now-queue item 5, not started as of 2026-07-20) |
 | [ADR-019](./adr/adr-019-parameterized-skeletons-theme-contracts.md) | Parameterized skeletons with theme contracts (WS-2 content-diversity workstream) | Generalizes fixed skeletons into parameterized templates with theme contracts, widening generation diversity without a per-cell authoring multiplier |
+| [ADR-020](./adr/adr-020-mutation-derived-skeletons-and-catalog-growth.md) | Mutation-derived skeletons and catalog growth (WS-5/WS-8) | Grows the skeleton catalog offline by mutating existing shells under a promotion bar, instead of authoring every cell by hand; the mutation core is catalog-time only and never on the request path |
+| [ADR-021](./adr/adr-021-service-account-rls-and-worker-deployment.md) | Service-account roles (`cyo_api`, `cyo_worker`) and worker deployment | Stops the application connecting as the `postgres` superuser, which is what makes row-level security enforceable at all; **the production cutover has not happened, so RLS is enabled but disarmed** (`UW-A03`) |
+| [ADR-022](./adr/adr-022-tiered-rls-scoping.md) | Tiered RLS scoping (Tier-1 family-scoped policies, per-request `set_config`) | The database-enforced backstop for children's PII, downstream of the ADR-021 cutover; **no implementation work is scheduled anywhere** (`UW-A01`) |
+| [ADR-023](./adr/adr-023-story-personalization-slots.md) | Guardian opt-in personalization via render-time slot substitution | A child detail can appear in a book without ever reaching a provider or being persisted in story content; owner decisions closed 2026-07-25, **counsel sign-off on OD-1/OD-5 keeps it Proposed**; Stage A's G1 gate fired STOP at 3.3% sentinel survival, so later stages are void pending a re-plan (`UW-H*`) |
+| [ADR-024](./adr/adr-024-bounded-backtracking-path-replay.md) | Bounded one-hop backtracking and path replay | Accepted 2026-07-26 on owner direction; continuation backtracking stays disabled until the replay origin is server-validated state (`UW-A11`, `UW-A12`) |
 
-**ADR status** (updated 2026-07-20; previously stated "as of 2026-07-03" and missed
-ADR-012 through ADR-019 entirely):
+**ADR status** (updated 2026-07-28; the 2026-07-20 revision missed ADR-020 and ADR-021,
+and ADR-022 through ADR-024 postdate it):
 
 - **Accepted**: ADR-001, ADR-002, ADR-003, ADR-004, ADR-005, ADR-006, ADR-009,
-  ADR-011, ADR-012, ADR-013, ADR-014, ADR-015, ADR-016, ADR-017, ADR-019.
-- **Proposed**: ADR-007, ADR-008, ADR-010, ADR-018.
+  ADR-011, ADR-012, ADR-013, ADR-014, ADR-015, ADR-016, ADR-017, ADR-019, ADR-020, ADR-024.
+- **Proposed**: ADR-008, ADR-010, ADR-018, ADR-021, ADR-022, ADR-023.
+- **Contradictory, needs a status flip** (`UW-A40`): ADR-007's frontmatter says `proposed`
+  while its body says "Accepted (2026-07-16)" and its purge shipped 2026-07-17; ADR-021 is
+  still `proposed` although PR #323 merged. ADR-018 and ADR-023 are Proposed *by design*,
+  because a compliance-bearing ADR held open pending counsel is itself the tracking signal.
 
 ADR-010 and ADR-011 predate the table above; ADR-011 is the story-scale framework
 (band x length x style) and ADR-010 is the Modal review and gated-generation leg. All are
@@ -1440,6 +1486,7 @@ Source: [Roadmap: Milestones](./roadmap.md#milestones);
 | COPPA compliance audit | Engineering audit against 16 CFR Part 312; findings mapped to Phase 7 items P7-02..P7-13 | [docs/compliance/coppa-compliance-audit.md](../compliance/coppa-compliance-audit.md) |
 | Capability Register | Top-down K/G/A/S capability map with delivery status; the scope checkoff sheet (v1.7 as of 2026-07-20) | [docs/planning/capability-register.md](./capability-register.md) |
 | R1 Deferred-Debt Register | Consolidated register of consciously accepted debt and open GitHub issues | [docs/planning/r1-deferred-debt-register.md](./r1-deferred-debt-register.md) |
+| Unscheduled Work Register | Every directed-but-unscheduled item found by the 2026-07-28 sweep (UW-* IDs), each with a proposed phase; the placeholder mechanism for work that has no phase home yet | [docs/planning/unscheduled-work-register.md](./unscheduled-work-register.md) |
 | Story-flexibility plan (WS-0/1/2/4/7) | Content-diversity workstream: metrics/harness, leaf diversity, parameterized catalog (ADR-019), selection, request interpretation (K19) | [docs/planning/story-flexibility-plan.md](./story-flexibility-plan.md) |
 | Catalog-first inventory gap | Open design gap: family-scoped import blocks an admin-authored base catalog; unscheduled | [docs/planning/catalog-first-inventory-gap.md](./catalog-first-inventory-gap.md) |
 | Admin/guardian dual-roles plan | Open design proposal for one adult holding both roles; identifies a real scoping-fork security risk; unscheduled | [docs/planning/admin-guardian-dual-roles-plan.md](./admin-guardian-dual-roles-plan.md) |
