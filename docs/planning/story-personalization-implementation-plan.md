@@ -415,6 +415,20 @@ prompt-preserved survival replicated the STOP result at 0/30):
   coverage matters: a case/inflection-aware matcher (closes ~154 of 1,026 misses), and a
   fill-prompt nudge to address the hero by name in dialogue occasionally.
 
+**MATCHER HARDENING RE-MEASURED 2026-07-29** (Stage R Task R1, same saved fills, offline,
+zero provider spend; strict baseline preserved as `reinsertion-report-strict.*`):
+
+- Sentence-start case widening (lowercase-initial values also match their first-letter
+  capitalization at sentence starts, wrapped verbatim so fallback prose keeps its casing):
+  120 widened occurrences wrapped; not_found dropped 1,027 to 951 (76 misses recovered);
+  strict story-clean 3/30 to 4/30. Round-trip verification now checks against the derived
+  reference including verbatim-cased variants, and still passes on every clean story.
+- Plural decomposition: **0 bare-plural occurrences on the whole corpus.** The earlier "72
+  inflected misses" bucket was a crude prefix heuristic counting possessives, which the
+  word-boundary matcher already handles (`Explorer's` wraps as `{~HERO:Explorer~}'s`, now
+  covered by an explicit test). Plural matching is therefore NOT needed; the lift menu
+  reduces to sentence-start casing (done) plus the optional vocative fill-prompt nudge.
+
 ## 4. P3: leak-surface guard points
 
 Each of these is a concrete place where a sentinel token or a real value could escape. The
