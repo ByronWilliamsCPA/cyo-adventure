@@ -54,11 +54,15 @@ document deliberately does not restate their reasoning, only their build steps.
 | Tri-state personalizable-slot resolver | `src/cyo_adventure/moderation/personalizable_slots.py` |
 | Measurement instrument (offline, standalone, no DB) | `src/cyo_adventure/measurement/`, `scripts/measure_sentinel_survival.py` |
 
-**Not started (this plan):** every P3 title/prompt strip, all persistence, all API routes, all
-frontend work, all UI, the Route A copy wiring, the catalog migration, and the compliance
-artifacts. No `.contract.json` on disk declares a personalizable slot, so every merged check is
-currently a structural no-op: the first contract that declares one is the feature's power
-switch and is deliberately sequenced late (Task D4).
+**Update 2026-07-29:** Stage A is done and merged (PR #449): the P3 title/prompt strips, the
+leak-guard tests, and the G1 measurement (verdict STOP) are on main. The re-insertion
+prototype (`measurement/reinsertion.py`, `--save-fills`, analyzer script) lives on branch
+`feat/personalization-reinsertion-prototype` pending merge. Still not started: Stage R's
+pipeline integration, all persistence, all API routes, all frontend work, all UI, the Route A
+copy wiring, the catalog migration, and the compliance artifacts. No `.contract.json` on disk
+declares a personalizable slot, so every merged check is currently a structural no-op: the
+first contract that declares one is the feature's power switch and is deliberately sequenced
+late (Task D4).
 
 **PR #416 has merged**, so the authoring-lessons directive is live: any task below that touches
 validator or authoring behaviour appends its lessons to
@@ -69,7 +73,8 @@ validator or authoring behaviour appends its lessons to
 
 | Gate | What it blocks | Condition to pass |
 |---|---|---|
-| **G1: survival GO/NO-GO** | Stage B onward (everything after leak guards) | Task A1's measured clean-pass rate at or above ~95% is GO; 80-95% means iterate the prompt/delimiter and re-measure before proceeding, with the retry cost line made explicit; below ~80% is STOP: prototype deterministic post-fill re-insertion instead and re-plan Stage B+. **FIRED 2026-07-28: measured 3.3% (1/30) on the primary provider; verdict STOP. Stage B+ as written is void pending a re-plan around deterministic post-fill re-insertion (design plan 3.4, MEASURED block)** |
+| **G1: survival GO/NO-GO** | Stage B onward (everything after leak guards) | Task A1's measured clean-pass rate at or above ~95% is GO; 80-95% means iterate the prompt/delimiter and re-measure before proceeding, with the retry cost line made explicit; below ~80% is STOP: prototype deterministic post-fill re-insertion instead and re-plan Stage B+. **FIRED 2026-07-28: measured 3.3% (1/30) on the primary provider; verdict STOP. Stage B+ as written is void pending a re-plan around deterministic post-fill re-insertion (design plan 3.4, MEASURED block). RESOLVED by the Stage R re-plan of 2026-07-29: gate G1-R (Stage R exit) now blocks Stage B onward** |
+| **G1-R: re-insertion round-trip** | Stage B onward (replaces the fired G1) | Task R4: round-trip integrity 100% through the production fill path; per-slot coverage profile recorded; owner acknowledges the coverage posture (third-party slots high-90s, HERO partial-by-voice, dedication guaranteed) |
 | **G2: counsel on OD-1/OD-5** | **Shipping** P7 (ring-2) and P9 (consent UI); building them is not blocked | Counsel confirms the ring-2 separate disclosure consent design and the sibling/pet-name raise |
 | **G3: Route A copy precedes the flag** | Enabling `VITE_FEATURE_PERSONALIZATION` anywhere a real family can reach | Task D1 (toggle-aware Route A copy) merged |
 
@@ -389,13 +394,156 @@ DECIDED: dict[tuple[str, str], str] = {
 
 **Stage A exit:** full gate green (`uv run ruff check .`, `uv run basedpyright src/`,
 `ENVIRONMENT=local uv run pytest`), PR opened against main, G1 verdict recorded. Stage B does
-not start on a NO-GO.
+not start on a NO-GO. **Exit reached 2026-07-28: PR #449 merged; G1 verdict STOP; Stage R
+below is the resulting re-plan and now owns the path to Stage B.**
 
 ---
 
-## Stage B: data model and API (blocked on G1 GO)
+## Stage R: deterministic re-insertion pipeline (re-plan of 2026-07-29; replaces prompt-preserved survival as the token supply)
 
-Branch: `feat/personalization-p4-p5-data-api` off origin/main, after the Stage A PR merges.
+**Why this stage exists.** G1 fired STOP twice (3.3%, then 0/30 prompt-preserved survival),
+and the re-insertion prototype run (`results/sentinel-survival/20260729T010024Z`, fills
+persisted) showed the strict per-node expectation was itself wrong: the corpus is
+second-person, so the HERO name structurally cannot appear in most node bodies (42% node
+coverage, absent entirely from 11/30 stories) while named third-party slots re-insert at
+94-99%. The design that survives the data is **derive-not-prescribe**: after the fill, strip
+every model-emitted token, deterministically re-insert wherever the generic inner word
+occurs, record the multiset that re-insertion actually produced as the version's
+`sentinel_manifest`, and verify blob-matches-manifest everywhere integrity is checked today.
+Coverage becomes a soft quality floor; the dedication overlay (Task C5, promoted to
+mandatory below) plus the stripped title rules guarantee at least one personalized surface
+per story regardless of prose. Prototype code (pure transform, round-trip-verified against
+`check_sentinel_integrity`) is on branch `feat/personalization-reinsertion-prototype`
+(`src/cyo_adventure/measurement/reinsertion.py`).
+
+Branch: `feat/personalization-reinsertion-pipeline` off origin/main after the prototype
+branch merges. First step: re-verify every anchor below against then-current main.
+
+### Task R1: matcher hardening, measured offline (no provider spend)
+
+**Files:**
+- Modify: `src/cyo_adventure/measurement/reinsertion.py` (`_word_boundary_pattern`,
+  `_count_in_node_surfaces`, `_wrap_all_in_node`)
+- Test: `tests/unit/test_measurement_reinsertion.py`
+
+Two targeted widenings, each behind its own predicate so the strict matcher remains the
+default path and each widening is separately attributable in the report:
+
+1. **Sentence-start case**: a lowercase multi-word value (`the pup`, `the grown-up`) also
+   matches its sentence-initial capitalization (`The pup`). Only the first character folds;
+   `THE PUP` and mid-sentence `The pup` still miss. 82 of 1,026 measured misses.
+2. **Possessive**: `Explorer's` already matches via `\b`; add coverage proving it, and
+   decide plural policy from data rather than assumption: report (do not yet match)
+   occurrences of `<value>s` so the next run quantifies whether plurals are the character
+   or a common noun. 72 "inflected" misses were measured with a crude prefix heuristic and
+   need this decomposition before any matcher change.
+
+- [ ] **Step 1:** failing tests for both widenings (sentence-start hit; mid-sentence `The
+  pup` still a miss; `Explorer's` hit; `Explorers` counted in the new plural-report field
+  but NOT wrapped).
+- [ ] **Step 2:** implement; run `ENVIRONMENT=local uv run pytest
+  tests/unit/test_measurement_reinsertion.py -q`. Expected: PASS (coverage-gate failure on
+  a filtered run is expected noise).
+- [ ] **Step 3:** re-run the analyzer offline on the saved fills, zero provider spend:
+  `ENVIRONMENT=local uv run python scripts/prototype_sentinel_reinsertion.py
+  results/sentinel-survival/20260729T010024Z`. Record the new per-slot rates next to the
+  2026-07-29 numbers in the design plan's section-3.4 block (expected direction: lowercase
+  descriptive slots approach the third-party 94-99% band; HERO moves little, its misses are
+  structural).
+- [ ] **Step 4: commit** (`feat(measurement): sentence-start and possessive-aware
+  re-insertion matching (ADR-023 Stage R)`).
+
+### Task R2: promote the transform into the domain package
+
+`depends-on: TaskR1 [output]`.
+
+**Files:**
+- Create: `src/cyo_adventure/storybook/reinsertion.py` (beside `sentinels.py`; the pure
+  transform and its result types move here, measurement keeps only aggregation/reporting
+  and imports the domain module)
+- Modify: `src/cyo_adventure/measurement/reinsertion.py` (re-export or thin wrapper; no
+  behaviour change, proven by the untouched test suite)
+- Test: `tests/unit/test_storybook_reinsertion.py` (moved tests keep their names)
+
+The transform's contract, stated once here because Stage R and Stage B both depend on it:
+`reinsert(bound_skeleton, filled_document) -> (document, manifest, outcomes)` where
+`manifest` is the per-node token multiset the transform actually inserted (the DERIVED
+expectation), and `check_sentinel_integrity(document, manifest)` passes by construction
+(round-trip property, already tested in the prototype).
+
+- [ ] TDD steps as above; `uv run basedpyright src/cyo_adventure/storybook/` 0 errors.
+  Commit (`refactor(storybook): promote sentinel re-insertion into the domain package`).
+
+### Task R3: wire re-insertion into the fill path and re-point all six integrity sites
+
+`depends-on: TaskR2 [output]`.
+
+**Files:**
+- Modify: `src/cyo_adventure/generation/worker.py` (fill path; Variant A call at `:1004`,
+  re-verify anchor)
+- Audit and re-point: the six fail-closed wiring sites listed in Current state (worker fill
+  path, moderation entry, repair adoption, rescreen strip-before-classify, node-edit
+  at-rest re-check, import path)
+- Test: the existing wiring tests per site, plus new derived-manifest cases.
+
+Order in the pipeline: fill -> **strip-all-then-reinsert** -> validator gate -> moderation.
+Semantics change at each site from "blob matches the skeleton-prescribed multiset" (fails
+on ~100% of real fills) to "blob matches the version's derived `sentinel_manifest`":
+
+- Worker fill path: run the transform immediately after a successful fill; persist the
+  manifest with the version (Task B2's `sentinel_manifest` column, whose description is
+  re-scoped below); Variant A verifies the round-trip property and fails closed only on
+  transform bugs, not on model paraphrase.
+- Repair adoption and node-edit: re-run the transform on the edited/repaired body and
+  REPLACE that node's manifest entry (an edit can legitimately add or remove a generic-word
+  occurrence); at-rest checks then compare against the updated manifest.
+- Rescreen and moderation entry: unchanged strip-before-classify behaviour; they now read
+  the manifest instead of recomputing expectations from the contract.
+- Import path: imports run the transform like a fill does.
+
+Soft floor (report, never gate): when a personalizable contract is active and the HERO
+token appears in zero nodes of a version, emit a validator WARNING naming the dedication
+as the guaranteed surface, mirroring how PL-level warnings report today. A zero-coverage
+story remains publishable; the warning exists so a human sees the posture.
+
+- [ ] **Step 1:** per-site failing tests first (fill produces a manifest; a mutated blob
+  fails at-rest against the manifest; node edit updates the manifest; zero-HERO fill emits
+  the warning and still passes).
+- [ ] **Step 2:** implement; full gate (`uv run ruff check .`, `uv run basedpyright src/`,
+  `ENVIRONMENT=local uv run pytest tests/unit -q`). Expected: PASS.
+- [ ] **Step 3: commit** (`feat(generation): derive-not-prescribe sentinel re-insertion in
+  the fill path (ADR-023 Stage R)`).
+
+### Task R4: end-to-end re-measurement and the Stage R exit record (one provider run)
+
+`depends-on: TaskR3 [output]`.
+
+- [ ] Run the survival instrument once more (30 stories, `--providers openrouter --count 30
+  --slots-per-story 4 --save-fills`; env recipe in Task A1). The instrument stays offline
+  and standalone, but after Task R2 it exercises the SAME promoted domain transform the
+  worker calls, so its numbers are representative of the production path. The number that
+  gates Stage B is no longer model survival; it is **round-trip integrity: required 100%**
+  (any failure is a transform or wiring bug, deterministic and fixable), plus the recorded
+  coverage profile per slot. The worker-side wiring itself is covered by Task R3's tests,
+  not by this run.
+- [ ] Record both in the design plan's section-3.4 block with date; append lessons rows;
+  `uv run python scripts/check_lessons_log.py`.
+- [ ] Optional, cheap, separately committed: a one-line vocative nudge in `fill_bound.md`
+  (address the hero by name in dialogue at least once); re-run the analyzer offline on the
+  new fills and record the HERO coverage delta. Adopt only if the delta is material; the
+  feature does not depend on it.
+
+**Stage R exit (gate G1-R, replaces the fired G1 for Stage B onward):** round-trip
+integrity 100% on the production path; per-slot coverage profile recorded; owner
+acknowledges the coverage posture (third-party slots high-90s, HERO prose coverage
+partial-by-voice, dedication as the guaranteed surface). Then Stage B proceeds unchanged
+except the three re-scoped points marked **[Stage R re-scope]** below.
+
+---
+
+## Stage B: data model and API (blocked on Stage R exit / gate G1-R)
+
+Branch: `feat/personalization-p4-p5-data-api` off origin/main, after the Stage R PR merges.
 First step of the stage: re-verify every file/line anchor below against the then-current main.
 
 ### Task B1: migration 1, the slot-value store and profile toggles
@@ -471,8 +619,11 @@ Contents, per design-plan 5.3/8.2/8.6 (all shapes are settled there; this is tra
   switch; default on because connection consent already implies receive-willingness).
 - `storybook.personalization_subject_profile_id UUID` FK to `child_profile` **SET NULL**.
 - On the storybook-version row: `personalization_eligible BOOLEAN NOT NULL DEFAULT FALSE`,
-  `pronoun_parameterized BOOLEAN NOT NULL DEFAULT FALSE`, `sentinel_manifest JSONB` (per-node
-  expected token sets, written at fill time so rescreen never re-reads the contract from disk).
+  `pronoun_parameterized BOOLEAN NOT NULL DEFAULT FALSE`, `sentinel_manifest JSONB`
+  **[Stage R re-scope]**: the per-node token multiset that deterministic re-insertion
+  actually produced (Task R3), written at re-insertion time, NOT the contract-prescribed
+  expectation; rescreen and at-rest checks read this column so they never re-derive
+  expectations from the contract, and node-edit/repair adoption update it in place.
   Verify the exact version-table model name in `db/models.py` before writing the DDL.
 
 - [ ] Steps: same TDD rhythm as B1 (parity test + tombstone-behaviour unit test first, then
@@ -662,7 +813,13 @@ slot alone is omitted on failure.
   unconnected-family indistinguishability property. ROUTE_TABLE row added. Commit.
   **Do not enable shipping surfaces until G2 passes.**
 
-### Task C5: dedication overlay (last; first thing dropped if the stage runs long)
+### Task C5: dedication overlay (**[Stage R re-scope]** mandatory, no longer droppable)
+
+Originally "last; first thing dropped if the stage runs long". The re-insertion measurement
+reversed that: 11/30 corpus stories never name the hero in prose (second-person narration),
+so the dedication is the ONE surface guaranteed to carry the child's name in every
+personalized story. It is now a required Stage C deliverable and the surface gate G1-R's
+"dedication guaranteed" clause points at.
 
 **Files:** one component in `frontend/src/reader/` beside `ReaderChrome.tsx`, template
 `For {NAME}, love {KINSHIP}`, composed client-side from values the payload already carries;
@@ -713,7 +870,10 @@ settings screen says so in as many words. TDD, commit.
 
 - [ ] Declare `kind: "personalizable"` slots (with `role_safety` on real-person fields) in one
   pilot contract; run the full gate; generate a pilot story; confirm Variant A/B checks fire on
-  a deliberately mutated fixture.
+  a deliberately mutated fixture. **[Stage R re-scope]**: "fire" means the mutated blob no
+  longer matches the version's DERIVED `sentinel_manifest` (Task R3 semantics), not the
+  contract-prescribed multiset; also confirm the zero-HERO soft-floor WARNING appears when the
+  pilot story's prose never names the hero, and that the story still publishes.
 - [ ] Replace-by-default migration of any test story worth keeping eligible; everything not
   migrated stays `personalization_eligible = false` with no deadline.
 - [ ] Pronoun audit (per-skeleton, directives not prose; `pronoun_parameterized` flips only
@@ -748,6 +908,13 @@ settings screen says so in as many words. TDD, commit.
   `ENVIRONMENT=local`; the measurement command names its key prerequisites.
 - Known drift risk: all `file:line` anchors are 2026-07-28 origin/main; each stage re-verifies
   before editing.
+- Stage R revision (2026-07-29) pairwise sweep: the four places that assumed a PRESCRIBED
+  token multiset were each resolved in place and tagged **[Stage R re-scope]** (B2's
+  `sentinel_manifest` semantics, C5's droppable-to-mandatory promotion, D4's Variant A/B
+  firing definition, and the G1 gate row's succession to G1-R). Stages B through D otherwise
+  survive unchanged because they operate on "the blob carries well-formed tokens" and never
+  depended on how tokens entered it. Task R4 deliberately claims representativeness (shared
+  transform), not production-path execution, for the offline instrument.
 
 ## Related
 
