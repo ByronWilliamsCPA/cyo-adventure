@@ -151,7 +151,9 @@ erDiagram
         varchar(120) skeleton_slug "NULL; WS-C PR2 provenance"
         timestamptz created_at
         varchar(512) cover_image_url "NULL"
-        varchar(20) cover_status "none, generating, ready, failed"
+        varchar(20) cover_status "none, generating, pending_review, ready, failed"
+        uuid cover_approved_by FK "NULL; H2 cover-approval gate"
+        timestamptz cover_approved_at "NULL"
     }
 
     reading_state {
@@ -488,7 +490,9 @@ An immutable snapshot of a story. Composite primary key `(storybook_id, version)
 | skeleton_slug | VARCHAR(120) NULL | Production skeleton (`skeletons/<band>/<slug>.json`) this version was filled from, or NULL for fresh generation, an imported book, or a row predating this column (WS-C PR2) |
 | created_at | TIMESTAMPTZ | |
 | cover_image_url | VARCHAR(512) NULL | AI-generated cover art URL |
-| cover_status | VARCHAR(20) | `none` (default), `generating`, `ready`, or `failed` |
+| cover_status | VARCHAR(20) | `none` (default), `generating`, `pending_review`, `ready`, or `failed`. Only `ready` is served to a child's library card, and only `covers.service.approve_cover` can reach it (H2) |
+| cover_approved_by | UUID FK NULL | Admin who approved the generated cover for child delivery; the cover-art analogue of `approved_by` (H2) |
+| cover_approved_at | TIMESTAMPTZ NULL | When the cover approval in `cover_approved_by` was recorded |
 
 At launch the Storybook JSON is stored inline in `blob` (JSONB). The `blob_ref`
 column is deferred: it holds the MinIO object key once object storage is wired
