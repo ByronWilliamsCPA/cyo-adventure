@@ -1,0 +1,5049 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Every piece of directed work found in ADRs, handoff docs, design specs, review reports, registers, code comments, and GitHub issues that had no phase home in PROJECT-PLAN.md or roadmap.md as of the 2026-07-28 sweep, each given a stable UW-* ID and a proposed phase.">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/unscheduled-work-register/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Unscheduled Work Register - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#unscheduled-work-register" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Unscheduled Work Register
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-this-register-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why this register exists
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to use it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-linkage-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The linkage contract
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The linkage contract">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-invariant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The invariant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-vocabulary-closed-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase vocabulary (closed set)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#non-phase-dispositions-closed-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-phase dispositions (closed set)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#not-allowed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Not allowed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-the-other-three-registers-link-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the other three registers link in
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster-a-adr-follow-ons" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cluster A: ADR follow-ons
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster-b-debt-register-phase-linkage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cluster B: debt-register phase linkage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster-c-authoring-lessons-phase-linkage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cluster C: authoring-lessons phase linkage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster-d-untracked-github-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cluster D: untracked GitHub issues
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster-e-security-and-safety-hardening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cluster E: security and safety hardening
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster-f-test-and-quality-hardening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cluster F: test and quality hardening
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster-g-content-diversity-and-catalog-workstream" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cluster G: content diversity and catalog workstream
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster-h-story-personalization-adr-023" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cluster H: story personalization (ADR-023)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster-i-reader-ux-and-player" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cluster I: reader UX and player
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster-j-remediation-plan-and-console-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cluster J: remediation-plan and console gaps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster-k-documentation-accuracy-and-compliance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cluster K: documentation accuracy and compliance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster-l-live-defects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cluster L: live defects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster-m-external-and-owner-gated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cluster M: external and owner-gated
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deletion-and-archive-candidates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deletion and archive candidates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related documents
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="unscheduled-work-register">Unscheduled Work Register<a class="headerlink" href="#unscheduled-work-register" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Status</strong>: Active | <strong>Version</strong>: 1.0 | <strong>Created</strong>: 2026-07-28</p>
+<p>Companion to the <a href="../capability-register/">capability register</a> (what the product must do) and the
+<a href="../r1-deferred-debt-register/">R1 deferred-debt register</a> (what R1 knowingly deferred). This
+register holds the third category: work that was <strong>directed in some document but never scheduled
+anywhere</strong>.</p>
+</blockquote>
+<h2 id="why-this-register-exists">Why this register exists<a class="headerlink" href="#why-this-register-exists" title="Permanent link">&para;</a></h2>
+<p>The 2026-07-28 sweep found a structural gap rather than an oversight. This project maintains four
+independent ID namespaces:</p>
+<table>
+<thead>
+<tr>
+<th>Namespace</th>
+<th>Lives in</th>
+<th>Mapped into roadmap phases?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>K*</code> / <code>G*</code> / <code>A*</code> / <code>S*</code></td>
+<td><a href="../capability-register/">capability-register.md</a></td>
+<td>🟡 Mostly, via roadmap.md's "Where every open register item lands" table. Written here as ✅ on 2026-07-28; the linkage check then proved 11 open capabilities (K1, K9, K10, K11, K20, G14, G18, A2, A3, A16, S8) appeared in no row of it. They are now mapped, as unratified proposals</td>
+</tr>
+<tr>
+<td><code>C*</code> / <code>GS*</code> / <code>U*</code> / <code>T*</code> / <code>P*</code> / <code>SL*</code></td>
+<td><a href="../r1-deferred-debt-register/">r1-deferred-debt-register.md</a></td>
+<td>❌ No: zero debt IDs are cited in either master document</td>
+</tr>
+<tr>
+<td><code>AL-*</code></td>
+<td><a href="../authoring-lessons-log/">authoring-lessons-log.md</a></td>
+<td>❌ No: zero <code>AL-</code> hits in either master document</td>
+</tr>
+<tr>
+<td>GitHub issues</td>
+<td>the tracker</td>
+<td>❌ Partially: 19 of 33 open issues appear in no planning document</td>
+</tr>
+</tbody>
+</table>
+<p>Only the first namespace has phase linkage. This register closes that gap by assigning a phase to
+every unmapped item, and by giving items that had no ID at all (ADR follow-ons, design-doc open
+questions, code-level deferrals) their first stable identifier.</p>
+<h2 id="how-to-use-it">How to use it<a class="headerlink" href="#how-to-use-it" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Adding work</strong>: if you defer something, add a <code>UW-*</code> row here in the same change, or cite an
+  existing register ID. A deferral with no ID and no row is how items got lost before.</li>
+<li><strong>Doing work</strong>: move the row's Status to <code>done</code> and cite the PR. Do not delete rows; the audit
+  trail is the point.</li>
+<li><strong>Dedup discipline</strong>: several docs describe the same findings under different ID schemes. Where a
+  row says "canonical", that is the ID to use; the alternatives are cross-referenced, not duplicated.</li>
+<li><strong>Phase column</strong>: proposed home, not a commitment. <code>blocked</code> and <code>decision</code> are real states, not
+  a scheduling failure; recording that something cannot be scheduled yet is the point.</li>
+</ul>
+<p><strong>Status values</strong>: <code>unscheduled</code> (needs a phase commitment) | <code>blocked</code> (a named prerequisite is
+open) | <code>decision</code> (waits on an owner ruling) | <code>verify</code> (may already be done; confirm then close) |
+<code>done</code> (closed, with a PR reference).</p>
+<hr />
+<h2 id="the-linkage-contract">The linkage contract<a class="headerlink" href="#the-linkage-contract" title="Permanent link">&para;</a></h2>
+<p>This section is the enforced contract, not advice. <code>scripts/check_work_linkage.py</code> reads it as the
+specification and fails the build on a violation. Changing the rules means changing that script and
+its tests, deliberately, in the same change.</p>
+<h3 id="the-invariant">The invariant<a class="headerlink" href="#the-invariant" title="Permanent link">&para;</a></h3>
+<p>Every row in every register must resolve to exactly one <strong>disposition</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Disposition</th>
+<th>Means</th>
+<th>Required evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>scheduled</td>
+<td>has a home in the plan</td>
+<td><code>Phase</code> holds a value from the vocabulary below</td>
+</tr>
+<tr>
+<td><code>blocked</code></td>
+<td>cannot be scheduled yet</td>
+<td>the row names the open prerequisite</td>
+</tr>
+<tr>
+<td><code>decision</code></td>
+<td>waits on a human ruling</td>
+<td>the row names the owner who must rule</td>
+</tr>
+<tr>
+<td><code>verify</code></td>
+<td>may already be done</td>
+<td>the row names what to check</td>
+</tr>
+<tr>
+<td><code>done</code></td>
+<td>closed</td>
+<td>the row cites a PR, commit, or issue</td>
+</tr>
+</tbody>
+</table>
+<p>A row with a status but no evidence, or with a <code>Phase</code> value outside the vocabulary, is an
+<strong>orphan</strong>. Orphan count is the health metric for this whole system: it goes to zero and a check
+keeps it there. Everything else here is plumbing in service of that one number.</p>
+<p>This generalizes the rule <code>scripts/check_lessons_log.py</code> already enforces on the lessons log: a
+status asserts something happened, so it must cite what proves it.</p>
+<h3 id="phase-vocabulary-closed-set">Phase vocabulary (closed set)<a class="headerlink" href="#phase-vocabulary-closed-set" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Allowed values</th>
+<th>Source of truth</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Product phases</td>
+<td><code>0</code> <code>1</code> <code>2</code> <code>2b</code> <code>3</code> <code>4a</code> <code>4b</code> <code>4c</code> <code>4d</code> <code>5</code></td>
+<td><code>roadmap.md</code> <code>## Phase</code> headings</td>
+</tr>
+<tr>
+<td>Track 2 phases</td>
+<td><code>6</code> <code>7</code> <code>8</code> <code>9</code></td>
+<td><code>PROJECT-PLAN.md</code> Track 2</td>
+</tr>
+<tr>
+<td>Milestones</td>
+<td><code>M0</code>..<code>M7</code>, and dotted sub-milestones such as <code>M4.1</code></td>
+<td><code>roadmap.md</code> Milestones</td>
+</tr>
+<tr>
+<td>Release rungs</td>
+<td><code>R1</code> <code>R2</code> <code>R3</code></td>
+<td><code>roadmap.md</code> release ladder</td>
+</tr>
+<tr>
+<td>Named workstreams</td>
+<td><code>content</code></td>
+<td><code>roadmap.md</code> Content workstream</td>
+</tr>
+<tr>
+<td>Queue</td>
+<td><code>now</code></td>
+<td><code>roadmap.md</code> Now queue</td>
+</tr>
+</tbody>
+</table>
+<h3 id="non-phase-dispositions-closed-set">Non-phase dispositions (closed set)<a class="headerlink" href="#non-phase-dispositions-closed-set" title="Permanent link">&para;</a></h3>
+<p>Not every piece of directed work belongs to a product phase. These sentinels are legitimate, and
+being a closed set is what stops them becoming a junk drawer:</p>
+<table>
+<thead>
+<tr>
+<th>Sentinel</th>
+<th>For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CI hygiene</code></td>
+<td>repo tooling and gates; no product phase</td>
+</tr>
+<tr>
+<td><code>doc</code></td>
+<td>a documentation correction with no code change</td>
+</tr>
+<tr>
+<td><code>recurring</code></td>
+<td>an ongoing practice, not a one-time deliverable</td>
+</tr>
+<tr>
+<td><code>post-launch</code></td>
+<td>deliberately deferred past R3</td>
+</tr>
+<tr>
+<td><code>external:&lt;repo&gt;</code></td>
+<td>owned by another repository, for example <code>external:homelab-infra</code></td>
+</tr>
+<tr>
+<td><code>issue:&lt;number&gt;</code></td>
+<td>a live defect tracked in the issue tracker rather than the phase plan, for example <code>issue:460</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="not-allowed">Not allowed<a class="headerlink" href="#not-allowed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>A cross-reference in the <code>Phase</code> column (<code>see G</code>, <code>see H</code>). Point at a real phase, or set the
+  status to <code>blocked</code> and name the blocker. "See another cluster" is not a disposition.</li>
+<li>An empty <code>Phase</code> on a row whose status is <code>unscheduled</code>.</li>
+<li>The same ID in two namespaces.</li>
+<li>More than one value in the <code>Phase</code> column. Work that spans phases takes the <strong>earliest</strong> phase,
+  where it starts, and says so in the Item text. A comma-list hides which phase owns the commitment,
+  which is the failure this register exists to prevent.</li>
+<li>The <code>Phase</code> column repeating the <code>Status</code> value. <code>decision</code> and <code>blocked</code> are statuses; a row in
+  either state still needs the phase it will land in once resolved.</li>
+</ul>
+<h3 id="how-the-other-three-registers-link-in">How the other three registers link in<a class="headerlink" href="#how-the-other-three-registers-link-in" title="Permanent link">&para;</a></h3>
+<p>They keep their own schemas, because they track different things and flattening them would lose
+information. This register is the <strong>join table</strong> that gives their rows a phase:</p>
+<table>
+<thead>
+<tr>
+<th>Register</th>
+<th>Linkage obligation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../capability-register/">capability-register.md</a></td>
+<td>a row not marked ✅ must appear in <code>roadmap.md</code>'s "Where every open register item lands" mapping</td>
+</tr>
+<tr>
+<td><a href="../r1-deferred-debt-register/">r1-deferred-debt-register.md</a></td>
+<td>a row not marked <code>[Closed]</code> or <code>[Resolved]</code> must be cited by a <code>UW-B*</code> row here. That register uses both markers interchangeably (3 and 7 rows respectively as of 2026-07-28); the validator honours both, because treating <code>[Resolved]</code> rows as open would report closed work as a gap and train readers to ignore the check</td>
+</tr>
+<tr>
+<td><a href="../authoring-lessons-log/">authoring-lessons-log.md</a></td>
+<td>a lesson whose status is not <code>applied</code>, <code>rejected</code>, or <code>superseded</code> must be cited by a <code>UW-C*</code> row here</td>
+</tr>
+</tbody>
+</table>
+<p>That is why clusters B and C exist. They are not commentary; they are the linkage layer, and the
+validator treats a missing entry there as a build failure.</p>
+<h3 id="validate">Validate<a class="headerlink" href="#validate" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/check_work_linkage.py
+</span></code></pre></div>
+<hr />
+<h2 id="cluster-a-adr-follow-ons">Cluster A: ADR follow-ons<a class="headerlink" href="#cluster-a-adr-follow-ons" title="Permanent link">&para;</a></h2>
+<p>Decisions that were accepted or proposed, whose consequent work was never scheduled. Sourced from
+<code>docs/planning/adr/</code>.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Item</th>
+<th>ADR</th>
+<th>Phase</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UW-A01</td>
+<td><strong>Tiered RLS scoping in its entirety</strong>: Tier-1 scoped policies, <code>set_config</code> per request, the spike, and the integration suite run as <code>cyo_api</code>. Zero references in any planning document.</td>
+<td>022</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A02</td>
+<td>Demote any Tier-1 table lacking a flat <code>family_id</code>; author the denormalization migration</td>
+<td>022</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A03</td>
+<td><strong>Production cutover</strong>: provision <code>cyo_api</code> / <code>cyo_worker</code> role passwords in staging and prod, retire <code>postgres</code>-role traffic. Until this lands, RLS is enabled but disarmed. The ADR names M4.1 as its review gate; M4.1 carries no ADR-021 content.</td>
+<td>021</td>
+<td>M4.1</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A04</td>
+<td><code>worker_database_url</code> + <code>get_worker_session()</code> + the three worker entrypoints</td>
+<td>021</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A05</td>
+<td><code>worker</code> service in docker-compose; uncomment the dev Redis leg</td>
+<td>021</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A06</td>
+<td>Stale-<code>GenerationJob</code> observability check</td>
+<td>021</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A07</td>
+<td>Per-role privilege tightening (19 tables deferred at migration time, <code>20260720170000_create_service_roles.sql:26</code>)</td>
+<td>021</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A08</td>
+<td><strong>Personalization feature in its entirety</strong>: slot kind, sentinel preservation, post-fill integrity check, toggles, consent events, values payload, client resolver, kid indicator. The ADR states nothing in it exists in code today.</td>
+<td>023</td>
+<td>4b</td>
+<td>blocked</td>
+</tr>
+<tr>
+<td>UW-A09</td>
+<td><code>display_name</code> is under-validated for render use; re-check at set-time and render-time</td>
+<td>023</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A10</td>
+<td>Per-skeleton pronoun audit across the catalog</td>
+<td>023</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A11</td>
+<td><strong>Bounded one-hop backtracking</strong>: the accepted rules plus the <code>runtime-semantics.md</code> §6 rewrite to v1.2. Zero references in any planning document.</td>
+<td>024</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A12</td>
+<td>Forward-binding constraint: any future enable of continuation backtracking must land the replay origin as <strong>server-validated</strong> state</td>
+<td>024</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A13</td>
+<td>"Read again" on a continuation resets to <code>start_node</code> and discards carried variables. The ADR defers this "as its own defect". Canonical duplicate of debt <code>SL10</code> and diversity <code>B4</code>; tracked as UW-L01 / <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/460">#460</a>.</td>
+<td>024</td>
+<td>issue:460</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A14</td>
+<td><strong>#CRITICAL</strong>: decide and enforce whether the direct-Anthropic leg is production-selectable. PROJECT-PLAN still describes the adapter as "deferred" while the ADR says it is built and admin-selectable.</td>
+<td>003</td>
+<td>5</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-A15</td>
+<td>Processor rows for Modal / Bedrock / Azure / Vertex before enabling them. P7-12 gates App Store submission on a complete processor record; three counterparties are missing.</td>
+<td>003, 018</td>
+<td>7</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A16</td>
+<td>BYOK versus live ZDR toggle test; confirm Anthropic commercial terms</td>
+<td>003</td>
+<td>7</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A17</td>
+<td>Trial OpenRouter prompt-injection detection (currently off)</td>
+<td>003</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A18</td>
+<td>Review rule: adding <code>plugins</code> or <code>tools</code> to <code>openrouter.py</code> voids the ZDR carve-out. No review checklist exists to hold this.</td>
+<td>003</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A19</td>
+<td>Ring-2 granularity divergence from B6 awaits counsel (2026-07-26 amendment)</td>
+<td>016</td>
+<td>7</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-A20</td>
+<td>Verify connection and recommendation payloads are in the erasure set</td>
+<td>016</td>
+<td>4d</td>
+<td>verify</td>
+</tr>
+<tr>
+<td>UW-A21</td>
+<td>Enable and verify <code>X25519MLKEM768</code> on Pangolin / nginx</td>
+<td>013</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A22</td>
+<td>Header-size capacity test for ML-DSA tokens (gates the signature migration)</td>
+<td>013</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A23</td>
+<td><strong>Quarterly gate review</strong> of the deferred signature migration. The ADR says tracking is "operator discipline, not automation"; no recurring-ops list exists to hold it.</td>
+<td>013</td>
+<td>recurring</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A24</td>
+<td>Maintain <code>docs/security/crypto-inventory.md</code></td>
+<td>013</td>
+<td>recurring</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A25</td>
+<td>Read-time upcaster chain plus a golden fixture per schema version. Conditional: trigger is the second live schema version.</td>
+<td>001</td>
+<td>post-launch</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A26</td>
+<td>Re-verify PWA behavior on each iOS Safari major release</td>
+<td>002</td>
+<td>recurring</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A27</td>
+<td>Reconcile nginx versus Pangolin-direct ingress into one documented topology</td>
+<td>004</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A28</td>
+<td>AdultGate OAuth-bypass passes an adult with no re-auth challenge. Server-side approval freshness is deferred and "needs its own attestation design" (CHANGELOG).</td>
+<td>014</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A29</td>
+<td>Migrate the catalog to parameterized skeletons: 14 of 61 skeletons and 4,305 <code>&lt;&lt;FILL&gt;&gt;</code> nodes still contract-less. Canonical for handoff "A20" and the parameterize-at-promotion runbook.</td>
+<td>019</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A30</td>
+<td>Standing obligation: contracts must be <strong>maintained</strong>, with per-wave human quality review</td>
+<td>019</td>
+<td>recurring</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A31</td>
+<td>Slot-value "packs" deferred to a later increment</td>
+<td>019</td>
+<td>post-launch</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A32</td>
+<td>WS-6 fresh-generation feed inherits the promotion bar (unbuilt)</td>
+<td>020</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A33</td>
+<td>Cross-cell derivation as a future amendment, with evidence</td>
+<td>020</td>
+<td>post-launch</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A34</td>
+<td>Judge-model tree-pair distinctness revisit (floor gaming)</td>
+<td>020</td>
+<td>post-launch</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A35</td>
+<td>In-app admin promotion surface, deferred to WS-8</td>
+<td>020</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A36</td>
+<td>Catalog bloat flattens selection weights; contract-maintenance surface grows with the catalog</td>
+<td>020</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A37</td>
+<td>Consolidate cover storage into Supabase Storage if blobs externalize (conditional on UW-A38)</td>
+<td>017</td>
+<td>9</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A38</td>
+<td><code>blob_ref</code> object-storage externalization, and the MinIO leg. Named in PROJECT-PLAN prose only; absent from the roadmap Phase 5 checklist.</td>
+<td>001, 004</td>
+<td>9</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A39</td>
+<td>ADR-018 Blocker 1 narrowed to the classifier leg, not closed</td>
+<td>018</td>
+<td>7</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A40</td>
+<td><strong>Doc hygiene</strong>: ADR-007 is still <code>proposed</code> though its purge shipped 2026-07-17; ADR-021 is still <code>proposed</code> though its implementation shipped in PR #333 and PR #334 (PR #323 was docs-only and did not flip the status itself). Flip both.</td>
+<td>007, 021</td>
+<td>now</td>
+<td>done</td>
+</tr>
+<tr>
+<td>UW-A41</td>
+<td><strong>Doc hygiene</strong>: PROJECT-PLAN.md section 3's ADR table and the ADR status list omit ADR-020 through ADR-024. Corrected by the 2026-07-28 audit in commit <code>bcfc9ab</code>; keep them in sync going forward.</td>
+<td>all</td>
+<td>now</td>
+<td>done</td>
+</tr>
+<tr>
+<td>UW-A42</td>
+<td><strong>Doc hygiene</strong>: backfill a <strong>Follow-on work</strong> section into all 24 ADRs that predate the <a href="../adr/#follow-on-work-is-part-of-the-adr-required-for-new-and-amended-adrs"><code>adr/README.md</code></a> rule requiring one, so the register can be reconciled against ADR-declared consequences rather than only against this cluster's own manual sourcing.</td>
+<td>all</td>
+<td>post-launch</td>
+<td>unscheduled</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cluster-b-debt-register-phase-linkage">Cluster B: debt-register phase linkage<a class="headerlink" href="#cluster-b-debt-register-phase-linkage" title="Permanent link">&para;</a></h2>
+<p>The <a href="../r1-deferred-debt-register/">R1 deferred-debt register</a> is accurate but orphaned: not one of
+its IDs is cited in either master document. Rather than restate 35 rows, this cluster assigns phases
+to the register wholesale. <strong>The debt register remains the source of truth for item detail.</strong></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Item</th>
+<th>Phase</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UW-B01</td>
+<td><code>C1</code>, <code>C3</code>, <code>C4</code>, <code>C5</code> (offline replay loss, retry cap bypass, untested approval lock, <code>choice_path</code> replay). <code>C5</code> is canonical for security-plan <code>L1</code> and lesson <code>AL-023</code>.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-B02</td>
+<td><code>GS1</code> Tier-2 generation yield weak at 3/7</td>
+<td>2b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-B03</td>
+<td><code>GS3</code> Perspective sunsets 2026-12-31 with no date gate; 18 of 29 versions mock-moderated. Hard external deadline.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-B04</td>
+<td><code>U2</code>, <code>U3</code>, <code>U4</code>, <code>U6</code>, <code>U9b</code> guardian-console UX debt</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-B05</td>
+<td><code>U5</code> no guardian reading tracker: likely superseded by G9's shipped <code>ReadingPage.tsx</code></td>
+<td>4b</td>
+<td>verify</td>
+</tr>
+<tr>
+<td>UW-B06</td>
+<td><code>U7</code> threshold-change audit feed cannot show who changed it</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-B07</td>
+<td><code>U9</code> push channel (delivery is poll-only). The S9/G10 gap is named in prose but has no phase.</td>
+<td>4c</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-B08</td>
+<td><code>T1</code>, <code>T4</code>, <code>T5</code>, <code>T6</code> test-ladder hygiene</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-B09</td>
+<td><code>T3</code> kid RequestStory error-clear only implicitly tested</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-B10</td>
+<td><code>T8</code> no Renovate rule pinning esbuild to Vite's range</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-B11</td>
+<td><code>T9</code> whole-repo markdownlint debt. Canonical with issue #248.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-B12</td>
+<td><code>P1</code> app-wide rate-limit <strong>policy</strong> never decided (P9-05 covers the deliverable, not the ruling)</td>
+<td>9</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-B13</td>
+<td><code>P2</code> <code>get_generation_job</code> returns raw report to guardians, against ADR-007. Canonical with issues #72 and #88, and traceability §3.1.</td>
+<td>7</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-B14</td>
+<td><code>P3</code> <code>useApi</code> does not redirect on 401 (decide alongside <code>P1</code>)</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-B15</td>
+<td><code>P4</code> skeleton-scale deferrals. Canonical with issues #77, #78, #79.</td>
+<td>2b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-B16</td>
+<td><code>SL1</code> through <code>SL10</code>, the ten story-lifecycle deferrals. The register calls them "R2-planning inputs"; R2/M6 has no line for any of them. <code>SL10</code> is canonical for the continuation carried-state defect (UW-L01, <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/460">#460</a>).</td>
+<td>6</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-B17</td>
+<td><code>GS2</code> the adversarial safety gate's "flag and route to human review" claim is unverified for the model-dependent classes: no live-model adversarial run has been executed. Blocked on credential availability in this environment, not on code. The roadmap already schedules an "adversarial live-model run" at Phase 5 but cites no register ID, which is why the debt row read as uncited.</td>
+<td>5</td>
+<td>blocked</td>
+</tr>
+<tr>
+<td>UW-B18</td>
+<td><code>T7</code> the real smoke tier is local-only because the per-IP rate limiter trips above one worker. The debt row calls this "not a defect" and says to revisit "if a staging environment appears". One has: <code>.github/workflows/e2e-staging.yml</code>. Re-test the multi-worker assumption against staging and close or re-scope the row.</td>
+<td>CI hygiene</td>
+<td>verify</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cluster-c-authoring-lessons-phase-linkage">Cluster C: authoring-lessons phase linkage<a class="headerlink" href="#cluster-c-authoring-lessons-phase-linkage" title="Permanent link">&para;</a></h2>
+<p>The <a href="../authoring-lessons-log/">authoring lessons log</a> is mandated by CLAUDE.md and has 24 open
+lessons, none referenced by either master document. Its only plan linkage is one sentence inside
+capability-register row <code>A11</code>, which the roadmap files under "Post-launch backlog". That is the wrong
+home for at least two blocking items.</p>
+<p><strong><code>AL-*</code> is the canonical namespace</strong> for the authoring, ceiling-scale-review, and series-stress-test
+findings; <code>reviews/ceiling-scale-review-2026-07-25.md</code> and <code>series-stress-test-findings.md</code> describe
+substantially the same work under different headings. Do not triple-book.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Item</th>
+<th>Phase</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UW-C01</td>
+<td><strong><code>AL-014</code> blocking</strong>: no hand-authored skeleton can pass <code>check_promotion_bundle</code>, because the lineage sidecar is unconditional. Called blocking inside <code>A11</code> while sitting in the post-launch backlog.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C02</td>
+<td><strong><code>AL-036</code> blocking</strong>: the review surface cannot deliver the human approval ADR-005 requires at 746 nodes (no pagination, virtualization, or per-node state). This undercuts the <code>A6</code> safety gate, so ADR-005 attests less than it claims.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C03</td>
+<td><code>AL-034</code> one import is ~2,986 provider round trips in a single Postgres transaction holding <code>FOR UPDATE</code>, 40 to 100 minutes. Bound concurrency; split import out of the long transaction.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C04</td>
+<td><code>AL-039</code> repair and the Stage-1 fidelity gate are structurally impossible at scale and both fail open; fidelity lacks an <code>&lt;untrusted_passage&gt;</code> fence (<code>#CRITICAL: security</code>)</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C05</td>
+<td><code>AL-040</code> <code>/admin/rescreen</code> sweeps synchronously in one request; enqueue on RQ or require scoped IDs</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C06</td>
+<td><code>AL-044</code> in-cell duplication check on changed <code>skeletons/**</code> shells; book 2 fails <code>check_incell_clones</code> at 0.0139 against a 0.05 floor</td>
+<td>content</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-C07</td>
+<td><code>AL-046</code> fill orchestrator is one-shot against a 32k output cap and the matcher has no feasibility predicate; 13 books are unfillable today</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C08</td>
+<td><code>AL-013</code>, <code>AL-024</code>, <code>AL-027</code>, <code>AL-044</code> validator and tooling accuracy work</td>
+<td>post-launch</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C09</td>
+<td><code>AL-028</code>, <code>AL-029</code>, <code>AL-030</code>, <code>AL-032</code> reader-surface defects (endings denominator inverts at large M, corpus-relative progress bar, 300ms+ BACK freeze, reconnect teleport)</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C10</td>
+<td><code>AL-019</code>, <code>AL-020</code> reader-path retention and de-identified engagement rollup. Four owner decisions precede any table.</td>
+<td>post-launch</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-C11</td>
+<td><code>AL-022</code> add <code>estimated_minutes_whole_world</code>, surface both clocks</td>
+<td>4b</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-C12</td>
+<td><code>AL-037</code> <code>embed_series_block</code> silently rewrites authored series metadata</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C13</td>
+<td><code>AL-049</code> flywheel parent-selection headroom skip plus an operator config budget</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C14</td>
+<td><code>AL-050</code> migrate 3 legacy fills to schema v2 and delete <code>_LEGACY_PRE_V2</code>. Paired with the strict-xfail at <code>tests/unit/test_filled_story_corpus.py:63</code>, which carries the instruction in code.</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C15</td>
+<td><code>AL-052</code> triage 13 read-time drifts and 6 ending-mix outliers</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C16</td>
+<td><code>AL-056</code> <code>--preflight</code> mode for paid-provider instruments</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C17</td>
+<td><code>AL-031</code> and <code>AL-038</code> are marked <code>applied</code> but each carries an explicitly open half (listing-path denormalization; read-time carry audit plus gating the continuation offer on a satisfying ending). Split into new IDs per the log's own status discipline.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C18</td>
+<td><code>AL-011</code> document that L2-13 past 460 nodes is correct, so it is not "fixed" later</td>
+<td>doc</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C19</td>
+<td><code>AL-023</code> the shipped client never sends <code>choice_path</code>, so the server-side engine replay that exists to reject a forged <code>current_node</code>/<code>var_state</code>/<code>path</code> is dormant (<code>api/reading.py</code> carries the <code>#ASSUME</code> admitting it). Any analytics derived from the client-supplied <code>path</code> inherits the same trust problem.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cluster-d-untracked-github-issues">Cluster D: untracked GitHub issues<a class="headerlink" href="#cluster-d-untracked-github-issues" title="Permanent link">&para;</a></h2>
+<p>roadmap.md lines 197-199 assert that open issues "remain accurately tracked" in the debt register.
+That claim is false: the register cites 9 issue numbers, 6 still open, against 33 open issues. The
+19 below appear in no planning document by number or description.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Issues</th>
+<th>Theme</th>
+<th>Phase</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UW-D01</td>
+<td>#249, #250, #251, #253, #254</td>
+<td>Device-auth and principal hardening (existence oracle, type invariants, token audiences, double-revoke, shared secret helper)</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D02</td>
+<td>#252</td>
+<td><code>expires_at</code> on <code>device_grant</code> so active-devices excludes ghosts</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D03</td>
+<td>#255</td>
+<td>Device-auth doc-diagram refresh and test hygiene</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D04</td>
+<td>#137</td>
+<td>All error conditions render one generic retryable error (naive-UX F1)</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D05</td>
+<td>#144</td>
+<td>Stage-0 classifiers handle NaN and Infinity asymmetrically</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D06</td>
+<td>#347</td>
+<td>Catalog import: pre-upload quality gating and <code>verdict_parse_failed</code> under mock</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D07</td>
+<td>#63</td>
+<td><code>storybook_version</code> lacks a provider column, so provenance is unrecoverable</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D08</td>
+<td>#138</td>
+<td>Pin the homelab backend-net subnet, narrow <code>FORWARDED_ALLOW_IPS</code></td>
+<td>9</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D09</td>
+<td>#302, #383, #382, #364, #248</td>
+<td>CI and release hygiene (mutation run failing, Codecov carryforward race, <code>cast()</code> narrowing, release re-verification, markdownlint debt)</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D10</td>
+<td>#67</td>
+<td>coverage.py zero hits for async handlers under CPython 3.12; probably obsolete after the 3.14 move</td>
+<td>CI hygiene</td>
+<td>verify</td>
+</tr>
+<tr>
+<td>UW-D11</td>
+<td>#290</td>
+<td>The scheduled real-backend nightly E2E is failing. Phase 5 tracks the <em>capability</em>; the failing run is uncited.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D12</td>
+<td>#295</td>
+<td>Python 3.14 residual: <code>target-version = "py311"</code>, plus rollout steps 1, 2, 5, 6, 7 from the upgrade evaluation (Renovate lockstep, 3.14 in <code>python-compatibility.yml</code>, flip <code>ci.yml</code> to required, staged homelab deploy, post-flip cleanup)</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D13</td>
+<td>#221</td>
+<td>A wrong or defaulted R2 bucket passes the covers-configured guard</td>
+<td>7</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D14</td>
+<td>#187, #172</td>
+<td>Promote api-tests to a required gate; Codecov Bundle Analysis blocked on Vite 8. Named in the capability register only.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D15</td>
+<td>#453</td>
+<td>Family-scoped <code>ADMIN_ACTOR_ROLE</code> hardcodes audit dual-role owners as cross-family admins</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D16</td>
+<td>#74</td>
+<td>Guardian console "Still processing" is inert for admins. Canonical with debt <code>U2</code>.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cluster-e-security-and-safety-hardening">Cluster E: security and safety hardening<a class="headerlink" href="#cluster-e-security-and-safety-hardening" title="Permanent link">&para;</a></h2>
+<p>From <a href="../security-hardening-plan-2026-07/">security-hardening-plan-2026-07.md</a>. <code>H1</code> and <code>H2</code> are
+already on the Phase 5 checklist; the Medium and Low tiers are not, and they include gate bypasses.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Item</th>
+<th>Phase</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UW-E01</td>
+<td><code>M1</code> reading and completion routes bypass the assignment gate</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-E02</td>
+<td><code>M2</code> guardian blob-fetch skips the gate</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-E03</td>
+<td><code>M3</code> repair skips the validator</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-E04</td>
+<td><code>M4</code> review-model allowlist</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-E05</td>
+<td><code>M5</code> real PII detector</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-E06</td>
+<td><code>M7</code> family cost cap on the authoring-plan path</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-E07</td>
+<td><code>M8</code> production Postgres host port exposure and password default</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-E08</td>
+<td><code>L3</code> <code>allowed_content_flags</code> is inert; <code>L4</code> <code>reading_level_cap</code> is unenforced; <code>L5</code> health-endpoint version disclosure</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-E09</td>
+<td><code>H4</code> mock-reviewer fail-fast. Canonical with debt <code>GS3</code>.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-E10</td>
+<td><code>R-1</code> homoglyph folding and <code>R-2</code> OIDC clock skew, both open decisions</td>
+<td>5</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-E11</td>
+<td><code>G11</code> moderation fail-open. Covered by the roadmap's umbrella "moderation review-model redesign" line, but a fail-open safety path deserves its own row.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-E12</td>
+<td>Class-C aggregate-harm: no whole-story or per-path safety pass exists</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-E13</td>
+<td>Confine production generation to the guarded route; the direct-Anthropic leg bypasses it. Related to UW-A14.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-E14</td>
+<td>Privacy-model <strong>Blocker 1b</strong> remains open: Stage-0 classifier and LLM-review retention terms unconfirmed</td>
+<td>7</td>
+<td>blocked</td>
+</tr>
+<tr>
+<td>UW-E15</td>
+<td><strong>Doc hygiene</strong>: the security plan still marks <code>H3</code> (ADR-007 purge) "needs re-triage" while the roadmap marks it delivered</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-E16</td>
+<td><code>_extract_subject()</code> dev/test auth stub is still live in <code>api/deps.py:234</code>, guarded only by unset OIDC env vars</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cluster-f-test-and-quality-hardening">Cluster F: test and quality hardening<a class="headerlink" href="#cluster-f-test-and-quality-hardening" title="Permanent link">&para;</a></h2>
+<p>From <a href="../testing-review-2026-07-22/">testing-review-2026-07-22.md</a>,
+<a href="../test-coverage-audit-2026-07-09/">test-coverage-audit-2026-07-09.md</a>, and
+<a href="../test-traceability-matrix/">test-traceability-matrix.md</a>. Phase 5's generic "test ladder" line
+needs to become these named actions.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Item</th>
+<th>Phase</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UW-F01</td>
+<td><code>C1</code> no behavioral safety evaluation: mocks only, a 13-item corpus, zero <code>llm_eval</code> tests in CI. Debt <code>GS2</code> tracks the live adversarial <em>run</em>, not the <em>suite</em>.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F02</td>
+<td><code>H1</code> foreign-key <code>ON DELETE</code> parity gap; the migration header falsely claims coverage</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F03</td>
+<td><code>H2</code> frontend hand-mirrored adapters bypass the generated client, with no OpenAPI-pinned test</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F04</td>
+<td><code>H3</code> mutmut enforces no kill-floor on PRs</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F05</td>
+<td><code>H4</code> zero performance and load testing before Phase 9; perf markers are dead. Phase 5's "performance pass" needs teeth.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F06</td>
+<td><code>M1</code> full-stack E2E never drives the RQ worker</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F07</td>
+<td><code>M2</code> schema parity omits policies, triggers, and functions</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F08</td>
+<td><code>M3</code> player-parity corpus is 3 traces</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F09</td>
+<td><code>M4</code> interrogate and pydoclint never run in CI</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F10</td>
+<td><code>M5</code> coverage-combine verified on a subset only</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F11</td>
+<td><code>M6</code> no rate-limit or CORS negative tests</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F12</td>
+<td><code>L1</code> through <code>L6</code> (node_edit integration, a dead <code>or True</code> assertion, SimpleNamespace casts, index-predicate parity, 70 versus 80% thresholds, no <code>@example</code> seeds)</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F13</td>
+<td>Coverage-audit batches A, B, C (backend floors, standards conformance, frontend Vitest). A branch <code>test/coverage-gap-closure</code> exists with no plan row.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F14</td>
+<td>Deferred coverage work: Tier-3 LLM eval suite (needs a budget decision), MSW adoption, fakeredis plus a genai seam</td>
+<td>5</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-F15</td>
+<td>Traceability matrix: extend staging past smoke to GJ2/GJ3/GJ5 (named "the single highest-value gap"), promote GJ1/GJ4 in prod to full journeys, alert on every scheduled run, close the K5 and K8/A16 shipped-but-untested rows, and normalize the 2026-07-17 addendum rows</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F16</td>
+<td><code>A16</code> cover generation is ❌ across all four test tiers</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F17</td>
+<td>Execute <a href="../r1-live-e2e-checklist/">r1-live-e2e-checklist.md</a>: all 39 manual steps are unchecked</td>
+<td>M4.1</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F18</td>
+<td>15 of 17 naive-user Track B scenarios never run; only K1 and K2 are logged, both blocked by #196. Track B to A promotion never exercised.</td>
+<td>5</td>
+<td>blocked</td>
+</tr>
+<tr>
+<td>UW-F19</td>
+<td>Weak skips that pass on a construction failure: <code>tests/unit/test_gate.py:469,496</code> and <code>test_notifications_registry.py:262</code>. Corpus-availability skips silently pass when the catalog is thin.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F20</td>
+<td>0 of 21 skeletons proven end-to-end per <a href="../skeleton-corpus-story-generation-test-plan/">skeleton-corpus-story-generation-test-plan.md</a>, plus 3 open decisions (coverage depth, triage owner, tracking location)</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F21</td>
+<td>Three <code>continue-on-error: true</code> steps in <code>ci.yml</code> (lines 268, 421, 649); <code>supabase-ci.yml</code> and <code>ci.yml:731</code> both defer promotion to <code>ci-gate</code></td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cluster-g-content-diversity-and-catalog-workstream">Cluster G: content diversity and catalog workstream<a class="headerlink" href="#cluster-g-content-diversity-and-catalog-workstream" title="Permanent link">&para;</a></h2>
+<p>roadmap.md and PROJECT-PLAN.md both <strong>state outright</strong> that this workstream has no line item
+anywhere. This cluster is that line item. Live specs are
+<a href="../story-diversity-plan-v2/">story-diversity-plan-v2.md</a>,
+<a href="../story-diversity-implementation-plan/">story-diversity-implementation-plan.md</a>, and
+<a href="../story-diversity-review-errata/">story-diversity-review-errata.md</a>; the remediation plan,
+execution plan, and original analysis are superseded and must not be tracked from.</p>
+<p><strong>Phase label <code>G</code></strong> in this register means the "Content workstream: diversity and catalog growth"
+section of <a href="../roadmap/">roadmap.md</a>, created 2026-07-28 to give this work its first phase home.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Item</th>
+<th>Source</th>
+<th>Phase</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UW-G01</td>
+<td><strong><code>A20</code></strong>: 14 of 16 skeletons and 4,305 <code>&lt;&lt;FILL&gt;&gt;</code> nodes unslotted; needs a family-based plan generator first. Largest single item in the workstream. Canonical with UW-A29.</td>
+<td>plan-v2, s4 handoff</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G02</td>
+<td><code>OQ-4</code>: 11 stateful Tier-2 skeletons unmigrated, plus the series-level binding design</td>
+<td>ws2</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G03</td>
+<td><code>A9</code> item 2: restructure <code>the-sunken-temple</code> (5 variables, 20 conditions, 75 effects, plus a 35-ending remix to 0.0710)</td>
+<td>s4 handoff</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G04</td>
+<td>Per-band ATG calibration: <code>_BAND_THRESHOLDS</code> is still <code>{}</code>, so the anti-template guard stays advisory</td>
+<td>ws0, ws1</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G05</td>
+<td>WS-0 Phase 3 judge-model calibration run; sentence-shape correlation as a gating signal; persisted theme signatures on <code>StorybookVersion</code>; leaf-cluster ECS partition</td>
+<td>ws0</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G06</td>
+<td>ECS and RAR dashboard surfacing; served-window ECS DB loader; young-band panel growth; same-theme cross-tree pairs; weekly non-required judge workflow</td>
+<td>ws0 phase2</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G07</td>
+<td>Series and <code>carries_state</code> partner exclusion; ATG wiring into <code>api/node_edit.py</code> re-screen; threading briefs into ATG</td>
+<td>ws1</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G08</td>
+<td>Grammar-based composer (§7, explicitly deferred); §5.5 deferred-within-M5 items (tier promotion, variable add/remove, stateful grafts, restart-on-fail rewiring); <code>OQ-8</code> PL-23 rule family</td>
+<td>ws5</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G09</td>
+<td>WS-6 fresh-generated trees as the flywheel feed; lift the lineage-depth cap (<code>OQ-5</code>); in-app promotion-review surface; <code>flywheel-reports/</code> cycle reports</td>
+<td>ws8</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G10</td>
+<td>Binding cache (<code>OQ-3</code>); <code>story-skeletons.md</code> contract column</td>
+<td>ws2</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G11</td>
+<td><code>A10</code> teen short-cell zero candidates returning 422; <code>A15</code> retire-for-quality; <code>A17</code> tombstone card</td>
+<td>plan-v2</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G12</td>
+<td>Eight items behind prerequisites: reading telemetry, PL-25 fail-depth floor, outcome-mix floor, challenge mode and permadeath, alternate beat phrasings, per-<code>profile_id</code> ATG scoping, guardian visibility ceiling, growing small cells</td>
+<td>plan-v2 §5</td>
+<td>post-launch</td>
+<td>blocked</td>
+</tr>
+<tr>
+<td>UW-G13</td>
+<td><strong>Wave 5</strong>: 36 new skeletons, 2 per production cell; the dagger-cell 460-node ceiling experiment; the Tier-2 stateful pilot</td>
+<td>story-inventory</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G14</td>
+<td>23 filled stories committed to <code>main</code> are never imported or published; 3 legacy-shaped fills need normalization at import</td>
+<td>draft-stories-manifest</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G15</td>
+<td><code>F1</code> <code>--series-id</code> on import; <code>F2</code> auto-repair silently replaces imported content; <code>F3</code> carried variables invert acquisition branches. Restated in the ceiling-scale review; track via <code>AL-*</code>.</td>
+<td>series-stress-test</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-G16</td>
+<td>Story-quality residuals A, B, C (skeleton promotion gate, RL-13 noise, rule-catalog drift); B and C are product decisions</td>
+<td>story-quality-lessons</td>
+<td>content</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-G17</td>
+<td>Five research reconciliation actions (exposure ratio, per-band fail-state, reconvergence targets, an independent FK/Lexile gate, edition-family anchoring) plus four open calibration conflicts. Needs an ADR-011 amendment.</td>
+<td>research</td>
+<td>post-launch</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-G18</td>
+<td><code>SR-8</code> is reserved and claimed by PR #416; <code>L2-8</code> emits no ID; <code>validator-rules.md</code> contradicts itself on whether SR-8 is implemented</td>
+<td>validator-rules</td>
+<td>doc</td>
+<td>unscheduled</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cluster-h-story-personalization-adr-023">Cluster H: story personalization (ADR-023)<a class="headerlink" href="#cluster-h-story-personalization-adr-023" title="Permanent link">&para;</a></h2>
+<p>The feature has an ADR, two large planning documents, and a merged Stage A. Neither master document
+references any of it. <strong>Stage A's G1 gate fired STOP at 3.3% sentinel survival, so Stages B, C, and D
+are void pending a re-plan on post-fill re-insertion.</strong> This cluster is therefore recorded as blocked,
+not scheduled: that is its accurate state.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Item</th>
+<th>Phase</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UW-H01</td>
+<td>Re-plan Stage B onward on post-fill re-insertion, after the G1 STOP verdict</td>
+<td>4b</td>
+<td>blocked</td>
+</tr>
+<tr>
+<td>UW-H02</td>
+<td><code>P3</code> through <code>P11</code> of the implementation plan, entirely</td>
+<td>4b</td>
+<td>blocked</td>
+</tr>
+<tr>
+<td>UW-H03</td>
+<td><code>G2</code> counsel gate on <code>OD-1</code> and <code>OD-5</code>. This is what keeps ADR-023 at <code>proposed</code>.</td>
+<td>7</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-H04</td>
+<td><code>K19</code> Route A copy rewrite is a hard <strong>precondition</strong> on the G18 flag, paired with PR #415's A11. Register-only today.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-H05</td>
+<td><code>R8</code> they/them handling deferred; ring-3 aggregate rendering; free-text dedications out of scope</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-H06</td>
+<td>Capability rows <code>G18</code> and <code>K20</code> have no phase home, which is why <code>S10</code> and <code>S11</code>'s ADR-023 extensions have none either</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-H07</td>
+<td>Ring-3 exclusion must land as a test in the S12 work</td>
+<td>post-launch</td>
+<td>unscheduled</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cluster-i-reader-ux-and-player">Cluster I: reader UX and player<a class="headerlink" href="#cluster-i-reader-ux-and-player" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Item</th>
+<th>Source</th>
+<th>Phase</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UW-I01</td>
+<td><code>A11</code> request-page reshape, gated on a naive-user session with real children that only the owner can run. Note the ID collision with capability-register <code>A11</code>.</td>
+<td>s5 handoff</td>
+<td>4b</td>
+<td>blocked</td>
+</tr>
+<tr>
+<td>UW-I02</td>
+<td><code>A13b</code> "Try a different way" three-hop ending-screen rewind; <code>A18</code> differentiate the two back-chevrons. Both implement ADR-024.</td>
+<td>s5 handoff</td>
+<td>4b</td>
+<td>blocked</td>
+</tr>
+<tr>
+<td>UW-I03</td>
+<td><code>A12</code> deferred pending an owner decision citing ADR-024 Decision 6 (needs durable replay-origin state)</td>
+<td>s5 handoff</td>
+<td>4b</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-I04</td>
+<td>Slice <code>S5</code> (reader UX) of the diversity implementation plan is undelivered</td>
+<td>diversity impl</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-I05</td>
+<td>Half-built two-device conflict-resolution UI awaiting a product decision</td>
+<td>frontend review</td>
+<td>4b</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-I06</td>
+<td>Non-resting accessibility states unscanned; a focused a11y hardening pass is recommended. <code>P14</code> jsx-a11y plugin deferred on the eslint 10 peer range.</td>
+<td>frontend review, remediation</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-I07</td>
+<td>Kid-shell and guardian-console rendering of interpretation fields; feeding interpretation into prompts; LLM-authored kid prose (<code>OQ-5</code>)</td>
+<td>ws7</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-I08</td>
+<td><code>Mascot.tsx</code> ships placeholder vector glyphs pending the curated illustrated set</td>
+<td>code</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-I09</td>
+<td>Sibling-visibility wireframe 4.1 deferred: a child principal cannot read sibling profiles</td>
+<td>code</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-I10</td>
+<td><code>apiContractParity.ts:125</code>: backend <code>status</code> gained <code>awaiting_manual_fill</code>, absent from the frontend <code>JobStatus</code> union, "left for a maintainer decision"</td>
+<td>code</td>
+<td>4b</td>
+<td>decision</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cluster-j-remediation-plan-and-console-gaps">Cluster J: remediation-plan and console gaps<a class="headerlink" href="#cluster-j-remediation-plan-and-console-gaps" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Item</th>
+<th>Source</th>
+<th>Phase</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UW-J01</td>
+<td><code>P7</code> auto-assign-on-publish, blocked on a <code>requested_by_profile_id</code> migration. Raised independently by the persona audit.</td>
+<td>remediation, persona audit</td>
+<td>4b</td>
+<td>blocked</td>
+</tr>
+<tr>
+<td>UW-J02</td>
+<td><code>P9</code> PKCE recovery flow deferred (needs live Supabase)</td>
+<td>remediation</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J03</td>
+<td><code>P10</code> cover-staleness escape, blocked on <code>StorybookVersion</code> timestamps</td>
+<td>remediation</td>
+<td>4b</td>
+<td>blocked</td>
+</tr>
+<tr>
+<td>UW-J04</td>
+<td><code>P12</code> <code>schema_version</code> reader gate not started</td>
+<td>remediation</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J05</td>
+<td><code>P13</code> durable conflicts store: 409-conflicted writes are currently deleted</td>
+<td>remediation</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J06</td>
+<td>Admin archive and un-publish button: the endpoint exists with no UI</td>
+<td>persona audit</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J07</td>
+<td>Admin resubmit-for-review button; guardian profile-delete button</td>
+<td>persona audit</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J08</td>
+<td>Link request to storybook so "being written" flips; ship the <code>K19</code> reflect-back or downgrade its DELIVERED status</td>
+<td>persona audit</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J09</td>
+<td>Audit-stamp consistency so self-review is detectable</td>
+<td>persona audit</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J10</td>
+<td>Guardian per-child unassign: likely already merged as PR #428</td>
+<td>persona audit</td>
+<td>4b</td>
+<td>verify</td>
+</tr>
+<tr>
+<td>UW-J11</td>
+<td>Guardian-defined book groups by age or topic; catalog-trunk-branch admin notification (unresolved); prompt-adjustment suggestions in the dashboard</td>
+<td>lifecycle redesign</td>
+<td>4c</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J12</td>
+<td>ADR-015 consent-time budget semantics (quota debit, per-child pre-auth envelopes); the two-step approve-then-publish audit split; <code>family_connections</code> has no consumer widening child visibility</td>
+<td>authorization matrix</td>
+<td>4c</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J13</td>
+<td>Authorization matrix missing rows for families, provider-allowlist, moderation-thresholds, and cover-generate</td>
+<td>traceability</td>
+<td>doc</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J14</td>
+<td><code>U-5</code> JIT onboarding admin-seeding footgun is unrecorded in ADR-009</td>
+<td>traceability</td>
+<td>doc</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J15</td>
+<td><strong>Plan overclaim</strong>: roadmap Phase 4b marks <code>G2</code> controls delivered, but the intake UI hardcodes empty arrays and the profile form lacks a banned-theme field</td>
+<td>traceability §3.4</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J16</td>
+<td>Track 2 items with no home: web direct billing and the education channel (Android and i18n are already parked)</td>
+<td>traceability</td>
+<td>post-launch</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J17</td>
+<td>External health check <code>check_external_service</code> is a shipped placeholder that always returns <code>status=True</code> and is not wired into readiness</td>
+<td>code</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J18</td>
+<td><code>notifications/service.py:25</code>: backfill migration adding <code>pipeline_event.family_id</code> is named as future work</td>
+<td>code</td>
+<td>4c</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J19</td>
+<td><code>covers/storage.py:173</code>: upload cancellation cannot reach a background thread; "tracked as a follow-up, not fixed here"</td>
+<td>code</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J20</td>
+<td><code>story_requests/service.py:109</code>: a real ledger table is a <code>G13</code> follow-up once spend needs finer accounting</td>
+<td>code</td>
+<td>8</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J21</td>
+<td><code>merge_graft_contract</code> and <code>prune_contract</code> are implemented and unit-tested but not wired into the acceptance harness (<code>D7</code>)</td>
+<td>code</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J22</td>
+<td><code>review_provider="modal"</code> ships in the config enum but hard-fails at build time; the default <code>"mock"</code> runs no real moderation review</td>
+<td>code</td>
+<td>2b</td>
+<td>unscheduled</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cluster-k-documentation-accuracy-and-compliance">Cluster K: documentation accuracy and compliance<a class="headerlink" href="#cluster-k-documentation-accuracy-and-compliance" title="Permanent link">&para;</a></h2>
+<p>Stale documentation is directed work: each item below either misleads a reader or misstates the
+project's own inventory.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Item</th>
+<th>Phase</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UW-K01</td>
+<td><strong>Release blocker</strong>: <code>docs/known-vulnerabilities.md</code> entries PYSEC-2022-42969 (<code>py</code>, via <code>interrogate</code> 1.7.0) and PYSEC-2026-89 (<code>markdown</code>, CVSS 7.5) are 68 days old with reassessment due 2026-07-20, now 8 days overdue. The OpenSSF release gate blocks releases for any vulnerability older than 60 days regardless of reassessment status. Closed by PR #464 (<code>757ff8e</code>): PYSEC-2022-42969 was withdrawn upstream and PYSEC-2026-89 does not affect the pinned <code>markdown</code> 3.10.2, so neither needed a dependency change. That PR also resolved the release-gate contradiction the entries carried.</td>
+<td>now</td>
+<td>done</td>
+</tr>
+<tr>
+<td>UW-K02</td>
+<td><code>docs/known-vulnerabilities.md</code>: libuuid1 and gawk entries name base image <code>dhi-python:3.12-debian13</code>; the project runs <code>3.14-debian13</code>. The Review History row is a <code>2026-MM-DD</code> placeholder and the Resolved Entries table is header-only.</td>
+<td>doc</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-K03</td>
+<td>2 fixable linux-libc-dev CVEs due 2026-08-24, blocked on a Renovate digest bump to a base carrying <code>linux-libc-dev</code> 6.12.96-1</td>
+<td>5</td>
+<td>blocked</td>
+</tr>
+<tr>
+<td>UW-K04</td>
+<td><code>docs/index.md</code> publishes <code>pip install cyo-adventure</code> on the docs home page. This is a deployed app; <code>publish-pypi.yml</code> was deleted. It also claims "Python 3.12+" against <code>&gt;=3.11</code> and a 3.14 target.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-K05</td>
+<td><code>TECHNICAL_BASELINE.md</code> "Planned additions" sections list 10 packages as not-yet-added; all 10 shipped long ago. The document reads as a live backlog.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-K06</td>
+<td><code>TECHNICAL_BASELINE.md</code>: the nginx image is tagged <code>alpine</code> with a note to pin a digest before release. Real supply-chain gap.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-K07</td>
+<td><code>docs/snyk-implementation-findings.md</code> recommendations A through F, including a <code>docs/security/snyk.md</code> that was never written and a decision on Snyk's role against osv-scanner, pip-audit, trivy, bandit, and semgrep. Zero <code>Snyk</code> hits in either master document.</td>
+<td>5</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-K08</td>
+<td><code>docs/snyk-implementation-findings.md</code> claims the <code>py</code> transitive dependency "is gone"; <code>uv.lock</code> still carries it via <code>interrogate</code>. Contradicts UW-K01.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-K09</td>
+<td><code>docs/development/architecture.md</code> lists <strong>Authentik</strong> as the auth component; auth is Supabase per ADR-009</td>
+<td>doc</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-K10</td>
+<td><code>docs/architecture/README.md</code> claims "all 21 ADRs"; there are 24. <code>CLAUDE.md</code> says 18. Both understate the decision inventory.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-K11</td>
+<td><code>docs/api/README.md</code>: the rating upsert update path is not re-exercised in the Postman suite</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-K12</td>
+<td><code>data-model.md:380</code> <code>pipeline_event</code> "will subsume" the current minimal table; <code>data-model.md:446</code> <code>display_name</code> reserved for a future admin UI</td>
+<td>doc</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-K13</td>
+<td><code>CHANGELOG.md:2727</code> carries a <code>## [0.1.0] - TBD</code> placeholder in shipped history</td>
+<td>doc</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-K14</td>
+<td><code>CLAUDE.md</code>'s warning about a stale <code>ending.type</code> in <code>cyo-author/reference/skeleton-format.md</code> is itself now stale: the skill doc was corrected</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-K15</td>
+<td>Stale frontmatter on delivered work: <code>ws5</code>, <code>ws7</code>, <code>ws8-floor-recalibration</code>, <code>ws-g-pr3</code> (25 unchecked boxes despite PR #194), <code>admin-guardian-dual-roles-plan</code>, <code>spec-principal-unresolved-interstitial</code> (shipped as PR #455). <code>condition-evaluator-spec.md</code> is still "Draft" though fully implemented.</td>
+<td>doc</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-K16</td>
+<td>The 2026-07-20 roadmap audit calls <code>admin-guardian-dual-roles-plan.md</code> unstarted; the work shipped. Only 3 open decisions remain (admin-only <code>family_id</code>, dual-role guardian widening, <code>role='admin'</code> to <code>'adult'</code> rename).</td>
+<td>now</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-K17</td>
+<td><code>catalog-first-inventory-gap.md</code> is marked SUPERSEDED 2026-07-28, but Gap B (kid-initiated title requests of existing catalog titles) may not be covered elsewhere</td>
+<td>doc</td>
+<td>verify</td>
+</tr>
+<tr>
+<td>UW-K18</td>
+<td>98 RAD markers carry no paired <code>#VERIFY</code>, 82 of them outside <code>tests/</code>. Highest-value: the <code>generation/worker.py</code> concurrency pair, the <code>db/models.py</code> cascade CRITICAL, the <code>classifiers.py</code> API-key placement CRITICAL, and four deploy-ordering CRITICALs in <code>supabase/migrations/</code>.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-K19</td>
+<td><code>tests/CLAUDE.md:22</code> requires a linked issue on every <code>pytest.mark.skip</code>; only 2 of the declarative marks reference tracked work</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-K20</td>
+<td><code>docs/planning/</code> is the only directory in <code>docs/</code> exempt from front-matter validation, excluded twice over: the hook's <code>files: ^docs/(?!planning/).*\.md$</code> regex and a hardcoded skip at <code>tools/validate_front_matter.py:311-322</code>. The cause is that the validator has no <code>schema_type</code> concept and so applies the user-facing-docs schema to everything. Measured 2026-07-28: of 72 planning docs, 2 pass and 241 issues are raised, dominated by three systematic mismatches (planning docs carry an H1 the schema forbids, use <code>status: active</code> against an allowed set of draft/in-review/published, and use tags it does not know). The fix is a <code>planning</code> schema in the validator, not conforming 70 documents to a schema written for a different audience. Until then, <code>scripts/check_work_linkage.py</code> is the only automated gate over <code>docs/planning/</code>.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cluster-l-live-defects">Cluster L: live defects<a class="headerlink" href="#cluster-l-live-defects" title="Permanent link">&para;</a></h2>
+<p>These are not plan gaps. They are bugs found during the sweep, recorded here only so the register is
+complete; each is filed as a GitHub issue.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Item</th>
+<th>Issue</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UW-L01</td>
+<td><code>machine.ts:108</code> wires <code>RESTART</code> to <code>start(story)</code>, the new-reader entry point, so a restart on a continuation read reseeds <code>var_state</code> from the book's declared initials and returns to <code>story.start_node</code>, discarding both carried series state and the continuation entry node. Root cause: the machine context keeps only <code>{story, reading, error}</code>, dropping the <code>entryNode</code>/<code>varState</code> pair that <code>ReaderPage.tsx:246</code> passed to <code>startContinuation</code>, so <code>reset</code> cannot reproduce a continuation even in principle. Canonical across ADR-024's deferred defect, debt <code>SL10</code>, diversity <code>B4</code>, and s5-handoff <code>B4</code>.</td>
+<td><a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/460">#460</a></td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-L02</td>
+<td><code>api/deps.py:208-228</code> commits in the teardown half of a yield-dependency, which FastAPI runs after the response is sent. Documented at <code>docs/api/README.md:88-95</code> as follow-up work; mitigated only by an 1100 ms newman delay that also serves as rate-limit spacing, so it cannot be tuned for the race alone.</td>
+<td><a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/461">#461</a></td>
+<td>unscheduled</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cluster-m-external-and-owner-gated">Cluster M: external and owner-gated<a class="headerlink" href="#cluster-m-external-and-owner-gated" title="Permanent link">&para;</a></h2>
+<p>Work this repository cannot complete on its own.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Item</th>
+<th>Owner</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UW-M01</td>
+<td>Rebuild and redeploy the <code>:staging</code> backend and worker from at least <code>b29aa6b</code>, then re-run <code>e2e-staging.yml</code>. Per the now-deleted <code>handoff-staging-stale-backend-image-2026-07-21.md</code> (untracked local handoff, removed once its one ask was verified; see the "Deletion and archive candidates" table). Verified 2026-07-28, not satisfied: <code>e2e-staging.yml</code> run <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/30364118803">30364118803</a> (same-day, scheduled) still shows the identical 4-passed/2-failed split as the 2026-07-21 handoff, same two specs (<code>guardian-admin-smoke.spec.ts:34</code>, <code>kid-library-smoke.spec.ts:75</code>), same guardian-console-not-rendering symptom. Every run since 2026-07-18 has failed the same way; the redeploy has not landed or did not resolve it.</td>
+<td>homelab-infra</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-M02</td>
+<td>Naive-user session with real children. Gates UW-I01, UW-I02, and 15 unrun Track B scenarios.</td>
+<td>project owner</td>
+<td>blocked</td>
+</tr>
+<tr>
+<td>UW-M03</td>
+<td>Counsel engagement: ADR-018 D1-D4, ADR-016 ring-2 granularity, ADR-023 OD-1 and OD-5. Long lead time; the roadmap already flags that this should start now.</td>
+<td>project owner</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-M04</td>
+<td>OpenRouter DPA execution (privacy-model Blocker 1a)</td>
+<td>project owner</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-M05</td>
+<td><strong>Wyrmreach provenance conflict</strong>: the series design and report live only on unmerged branch <code>claude/dnd-story-game-series-mqr9zy</code> with unsigned commits, and no <code>data/series/wyrmreach/</code> exists on <code>main</code>, yet the series is recorded as live in production. Resolve how published content reached production without a main merge before doing more Wyrmreach work.</td>
+<td>project owner</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-M06</td>
+<td>Owner decisions from the authoring handoff: book 2 shape, Wyrmreach doc placement, the reader-path four, and whether PL-17's floor applies to gamebooks. Standing alternative: retire the <code>brass-lantern</code> series.</td>
+<td>project owner</td>
+<td>decision</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="deletion-and-archive-candidates">Deletion and archive candidates<a class="headerlink" href="#deletion-and-archive-candidates" title="Permanent link">&para;</a></h2>
+<p>Documents whose directed work is complete or fully absorbed. Listed so a later cleanup pass does not
+have to re-derive them.</p>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Disposition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>handoff-homelab-infra-dev-environment-2026-07-16.md</code></td>
+<td>Delete. All three asks confirmed done by its own successor handoff.</td>
+</tr>
+<tr>
+<td><code>handoff-authoring-lessons-and-story-quality-2026-07-27.md</code></td>
+<td>Trim, do not delete. Sections 3 and 4 are obsolete after PR #416; 5, 7, and 9 are live.</td>
+</tr>
+<tr>
+<td><code>handoff-s4-catalog-remaining-2026-07-26.md</code>, <code>handoff-s5-reader-ux-remaining-2026-07-26.md</code></td>
+<td>Keep until their contents land in a phase. They are the only written specs for that work.</td>
+</tr>
+<tr>
+<td><code>story-diversity-remediation-plan.md</code>, <code>story-diversity-execution-plan.md</code></td>
+<td>Superseded by plan-v2, already banner-marked. Do not track from them; <code>D*</code> and <code>M*</code> IDs are dead.</td>
+</tr>
+<tr>
+<td><code>story-diversity-analysis.md</code></td>
+<td>Corrected, not superseded, by the errata. Measurements hold; recommendations do not.</td>
+</tr>
+<tr>
+<td><code>ws0-label-fingerprint-finding.md</code></td>
+<td>Superseded by the evaluation; option 2 shipped.</td>
+</tr>
+<tr>
+<td><code>ws8-floor-recalibration-proposal.md</code></td>
+<td>Absorbed into ADR-020 Amendment 1; its "awaiting sign-off" banner is stale.</td>
+</tr>
+<tr>
+<td><code>ws-g-pr3-implementation-plan.md</code></td>
+<td>Closed by PR #194; only a trivial v2 declared-export block remains.</td>
+</tr>
+<tr>
+<td><code>admin-guardian-dual-roles-plan.md</code></td>
+<td>Retire after UW-K16's three decisions are made.</td>
+</tr>
+<tr>
+<td><code>reviews/ceiling-scale-review-2026-07-25.md</code></td>
+<td>Keep as evidence, track via <code>AL-*</code> only.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="related-documents">Related documents<a class="headerlink" href="#related-documents" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../PROJECT-PLAN/">PROJECT-PLAN.md</a> - phases and gates; section 1 carries the 2026-07-28 audit note</li>
+<li><a href="../roadmap/">roadmap.md</a> - phase detail; carries the 2026-07-28 audit section</li>
+<li><a href="../capability-register/">capability-register.md</a> - persona capability contract (<code>K</code>/<code>G</code>/<code>A</code>/<code>S</code>)</li>
+<li><a href="../r1-deferred-debt-register/">r1-deferred-debt-register.md</a> - R1 deferrals (<code>C</code>/<code>GS</code>/<code>U</code>/<code>T</code>/<code>P</code>/<code>SL</code>)</li>
+<li><a href="../authoring-lessons-log/">authoring-lessons-log.md</a> - authoring and validator lessons (<code>AL-*</code>)</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 05:56:35 UTC">July 29, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 05:56:35 UTC">July 29, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

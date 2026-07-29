@@ -2253,7 +2253,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2832,6 +2832,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#follow-on-work-is-part-of-the-adr-required-for-new-and-amended-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Follow-on work is part of the ADR (required for new and amended ADRs)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#template-reference" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2934,7 +2945,7 @@
 <tr>
 <td><a href="adr-007-raw-output-retention/">ADR-007</a></td>
 <td>Raw LLM output retention policy for GenerationJob.report</td>
-<td>Proposed</td>
+<td>Accepted</td>
 <td>2026-06-29</td>
 </tr>
 <tr>
@@ -3018,7 +3029,7 @@
 <tr>
 <td><a href="adr-021-service-account-rls-and-worker-deployment/">ADR-021</a></td>
 <td>Dedicated least-privilege service accounts, enforced RLS, and in-repo worker deployment</td>
-<td>Proposed</td>
+<td>Accepted</td>
 <td>2026-07-20</td>
 </tr>
 <tr>
@@ -3077,6 +3088,29 @@
 <li><strong>Deprecated</strong>: No longer relevant</li>
 <li><strong>Superseded</strong>: Replaced by another ADR</li>
 </ul>
+<h2 id="follow-on-work-is-part-of-the-adr-required-for-new-and-amended-adrs">Follow-on work is part of the ADR (required for new and amended ADRs)<a class="headerlink" href="#follow-on-work-is-part-of-the-adr-required-for-new-and-amended-adrs" title="Permanent link">&para;</a></h2>
+<p>Every ADR that is <code>Proposed</code> or <code>Accepted</code> must state what work it creates, and every such item must
+already have a home before the ADR merges. An ADR that decides something without scheduling its
+consequences is how work goes missing: the 2026-07-28 sweep found 41 unscheduled items in this
+directory alone, more than any other source.</p>
+<p>Each ADR therefore carries a <strong>Follow-on work</strong> section listing every consequent item, and each item
+must cite one of:</p>
+<ul>
+<li>a phase in <a href="../roadmap/">roadmap.md</a> or <a href="../PROJECT-PLAN/">PROJECT-PLAN.md</a>,</li>
+<li>a <code>UW-*</code> row in the <a href="../unscheduled-work-register/">unscheduled work register</a>, or</li>
+<li>a GitHub issue.</li>
+</ul>
+<p>"Deferred", "future work", and "to be decided" are not homes. If the work genuinely cannot be
+scheduled yet, add a <code>UW-*</code> row with status <code>blocked</code> and name the blocker; that is a real state and
+the register is built to hold it. What is not acceptable is prose that directs work nowhere.</p>
+<p>This rule is enforced going forward, on any ADR merged or materially amended from 2026-07-28
+onward: PR review is the enforcement point, not automation. <code>scripts/check_work_linkage.py</code> does
+not read <code>docs/planning/adr/</code>, so it cannot and does not check for a <strong>Follow-on work</strong> section;
+what it does enforce is that a follow-on item, once it exists as a <code>UW-*</code> row, resolves to a real
+disposition (see the <a href="../unscheduled-work-register/#the-linkage-contract">linkage contract</a>).
+None of the 24 ADRs that predate this rule (including the two the 2026-07-28 sweep itself touched,
+ADR-007 and ADR-021) carry a <strong>Follow-on work</strong> section yet; backfilling them is tracked as
+<code>UW-A42</code> rather than implied by this paragraph.</p>
 <h2 id="template-reference">Template Reference<a class="headerlink" href="#template-reference" title="Permanent link">&para;</a></h2>
 <p>For the full ADR template, see the ADR template documentation in the Reference section, or refer to <code>.claude/skills/project-planning/templates/adr-template.md</code> in the project repository.</p>
 <h2 id="more-information">More Information<a class="headerlink" href="#more-information" title="Permanent link">&para;</a></h2>
@@ -3106,7 +3140,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 27, 2026 04:06:26 UTC">July 27, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 05:56:35 UTC">July 29, 2026</span>
   </span>
 
     
