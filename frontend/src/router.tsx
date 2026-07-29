@@ -14,6 +14,7 @@ import {
   BooksPage,
   ConnectionsPage,
   ConsolePage,
+  DevicesPage,
   GuardianAuthLayout,
   GuardianAwaitingApprovalPage,
   GuardianBackendUnavailablePage,
@@ -197,6 +198,7 @@ export const routes = [
                   { path: 'books', element: suspended(<BooksPage />) },
                   { path: 'profiles', element: suspended(<ProfilesPage />) },
                   { path: 'connections', element: suspended(<ConnectionsPage />) },
+                  { path: 'devices', element: suspended(<DevicesPage />) },
                   // G11 trust surface. Sits inside the adult gate with every
                   // other guardian page rather than being public: it describes
                   // how THIS family's data is handled, and the generic

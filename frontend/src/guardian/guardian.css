@@ -1882,6 +1882,71 @@
 }
 
 /* ============================================================================
+   Devices (DevicesPage.tsx, register G15 / ADR-014): the guardian's
+   authorize/revoke console for family device grants. Layout mirrors
+   Connections above (card list, per-row action, per-row error banner); only
+   the "this device" chip tone is new here. */
+
+.devices__intro {
+  max-width: 40rem;
+  margin: 0 0 var(--space-4, 1rem);
+}
+
+.devices__list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 0.75rem);
+}
+
+.devices-card {
+  padding: var(--space-4, 1rem);
+}
+
+.devices-card__main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2, 0.5rem);
+}
+
+.devices-card__name {
+  font-weight: var(--weight-bold, 700);
+  font-size: var(--text-lg, 1.25rem);
+}
+
+.devices-card__meta {
+  margin: var(--space-2, 0.5rem) 0 0;
+  font-size: 0.9375rem;
+}
+
+.devices-card__actions {
+  margin-top: var(--space-3, 0.75rem);
+}
+
+.devices-card__error {
+  margin: var(--space-2, 0.5rem) 0 0;
+  font-size: 0.875rem;
+}
+
+.devices-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full, 999px);
+  font-size: 0.75rem;
+  font-weight: var(--weight-semibold, 600);
+  white-space: nowrap;
+}
+
+.devices-chip--this {
+  background: var(--color-success-subtle, #e3f3e6);
+  color: var(--color-success-deep, #1f7a3d);
+}
+
+/* ============================================================================
    Mobile breakpoint (~640px): guardian surfaces are managed from a phone as
    often as a desktop. Desktop layouts above are left untouched; this block
    adjusts layouts for narrow screens: relaxing row/action/table layouts that
