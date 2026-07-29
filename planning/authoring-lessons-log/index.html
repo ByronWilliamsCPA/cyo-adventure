@@ -3430,6 +3430,36 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>applied</td>
 <td><code>tests/unit/test_ws8_promotion.py</code> <code>_catalog_seed_shells</code> raises on empty; <code>.github/workflows/safety-eval.yml</code> "Assert the evaluation actually ran" step</td>
 </tr>
+<tr>
+<td>AL-056</td>
+<td>2026-07-28</td>
+<td>ADR-023 Stage A sentinel-survival measurement</td>
+<td>tooling</td>
+<td>Running <code>scripts/measure_sentinel_survival.py</code> from a fresh worktree failed through three sequential environment layers before producing data: (1) <code>Settings</code> in <code>core/config.py</code> declares no <code>env_file</code>, so credentials in <code>.env</code> are invisible unless the process environment carries them (VS Code injects them in the main tree; a worktree shell does not); (2) <code>OLLAMA_CA_BUNDLE=certs/homelab-ca.pem</code> is cwd-relative, so the same env fails in any directory without a <code>certs/</code> symlink; (3) the Anthropic leg then died on an account-billing 400 that only a one-trial probe surfaced cheaply. Each layer cost a full script start to discover because nothing validates the environment before the paid loop begins.</td>
+<td>Give the measurement script (and any future paid-provider instrument) a <code>--preflight</code> mode that checks, in order: required keys present in the process env, every file-path env var resolves from the current cwd, and one minimal real call per requested provider, then exits before any paid volume. Document the worktree recipe (source <code>.env</code> with <code>set -a</code>, symlink <code>certs/</code>) in the script docstring. General rule: an instrument that spends money must verify its environment with one cheap probe per dependency layer before entering the paid loop; per-layer failure discovery multiplies startup cost by the number of layers.</td>
+<td>open</td>
+<td>Execution plan Task A1 notes updated (this branch); script change not yet made</td>
+</tr>
+<tr>
+<td>AL-057</td>
+<td>2026-07-28</td>
+<td>ADR-023 Stage A sentinel-survival measurement</td>
+<td>tooling</td>
+<td>Measured first-attempt sentinel survival through the production fill route (<code>openrouter:anthropic/claude-haiku-4.5</code>, 30 stories, 4 slots each, <code>fill_bound.md</code> "Verbatim tokens" instruction present): <strong>1/30 clean (3.3%)</strong>. Taxonomy: dropped 1,738, forged 207, relocated 111, in-choice-label 3, malformed 7. Dropped dominates by 8x: the model writes prose without the token despite an explicit copy-verbatim instruction, so this is not a delimiter or wording defect to iterate; the model treats an inline token as guidance, not payload. A one-retry policy at this rate adds ~97% to fill spend.</td>
+<td>Do not build features that depend on an LLM preserving inline markers through a creative rewrite; the design plan's G1 gate correctly fired STOP, and the deterministic post-fill re-insertion fallback (match the generic default word in filled prose, re-wrap it server-side) becomes the primary design for ADR-023 Stage B+. General rule: any invariant that must hold byte-exactly through an LLM call needs a deterministic re-establishment step after the call, not a prompt instruction before it.</td>
+<td>applied</td>
+<td>Design plan section 3.4 "MEASURED 2026-07-28" block (<code>docs/planning/story-personalization-implementation-plan.md</code>), which restates the clean-pass rate and full failure taxonomy inline</td>
+</tr>
+<tr>
+<td>AL-058</td>
+<td>2026-07-28</td>
+<td>PR #449 review</td>
+<td>tooling</td>
+<td><code>SENTINEL_RE</code> matches only well-formed <code>{~SLOT:Word~}</code> tokens, so it fails OPEN on a bisected one: truncating before stripping leaves <code>{~HERO:Expl</code>, which no later strip can ever match. The invariant is therefore strip-BEFORE-truncate ordering, not strip-presence, and ordering is invisible to any test whose fixture is shorter than the cut. PR #449 fixed this ordering in <code>covers/prompt.py</code> but left the identical shape unfixed in three sibling call sites (<code>story_requests/anchoring.py</code>, <code>moderation/fidelity_review.py</code>, <code>flywheel/reguide_draft.py</code>), two of which feed LLM prompts, so a fragment would have taught the next book's model that <code>{~HERO:Expl</code> is ordinary story text.</td>
+<td>Two changes. (1) When fixing an ordering bug, grep the repo for every other <code>[:N]</code> slice applied to blob-derived text rather than fixing the reported site alone. (2) Every regression test for this class must place the sentinel so the cut bisects it, AND assert that the pre-fix ordering leaked on the same input (<code>assert "{~" in strip_sentinels(body[:N])</code>), so the test fails loudly if a constant change later moves the cut and stops exercising the bug.</td>
+<td>applied</td>
+<td><code>tests/unit/test_anchoring.py::test_sentinel_straddling_the_title_cut_is_stripped_before_truncation</code>, <code>tests/unit/test_flywheel_reguide_draft.py::test_story_context_sentinel_is_stripped_before_the_600_char_cut</code>, <code>tests/unit/test_fidelity_review.py::test_sentinel_bearing_beats_and_body_never_reach_the_review_prompt</code></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -3469,7 +3499,7 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 18:40:53 UTC">July 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 00:29:40 UTC">July 29, 2026</span>
   </span>
 
     
