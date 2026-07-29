@@ -100,7 +100,7 @@ Proposed → Accepted → [Deprecated | Superseded]
 - **Deprecated**: No longer relevant
 - **Superseded**: Replaced by another ADR
 
-## Follow-on work is part of the ADR (required)
+## Follow-on work is part of the ADR (required for new and amended ADRs)
 
 Every ADR that is `Proposed` or `Accepted` must state what work it creates, and every such item must
 already have a home before the ADR merges. An ADR that decides something without scheduling its
@@ -118,8 +118,14 @@ must cite one of:
 scheduled yet, add a `UW-*` row with status `blocked` and name the blocker; that is a real state and
 the register is built to hold it. What is not acceptable is prose that directs work nowhere.
 
-The [linkage contract](../unscheduled-work-register.md#the-linkage-contract) defines the allowed
-dispositions, and `scripts/check_work_linkage.py` enforces them.
+This rule is enforced going forward, on any ADR merged or materially amended from 2026-07-28
+onward: PR review is the enforcement point, not automation. `scripts/check_work_linkage.py` does
+not read `docs/planning/adr/`, so it cannot and does not check for a **Follow-on work** section;
+what it does enforce is that a follow-on item, once it exists as a `UW-*` row, resolves to a real
+disposition (see the [linkage contract](../unscheduled-work-register.md#the-linkage-contract)).
+None of the 24 ADRs that predate this rule (including the two the 2026-07-28 sweep itself touched,
+ADR-007 and ADR-021) carry a **Follow-on work** section yet; backfilling them is tracked as
+`UW-A42` rather than implied by this paragraph.
 
 ## Template Reference
 
