@@ -3237,7 +3237,7 @@ work, not trusted from this table.</p>
 <td>High</td>
 <td>AI cover images reach children unmoderated</td>
 <td>B</td>
-<td>[ ] needs re-triage</td>
+<td>[x] done 2026-07-28: human-approval gate (<code>cover_status</code> stops at <code>pending_review</code>; <code>covers.service.approve_cover</code> is the sole path to <code>ready</code>); automated image-safety check deliberately deferred, see acceptance criteria below</td>
 </tr>
 <tr>
 <td>H3</td>
@@ -3434,10 +3434,43 @@ moderation), B3 (repair re-gate) if the diff is large.</p>
 <li><strong>Fix approach.</strong> Run an image-safety check before flipping to <code>ready</code>; require explicit human
   approval before <code>cover_image_url</code> is exposed to any child card (mirror the text <code>approved_by</code>
   gate); audit the decision. Until then, do not surface machine-generated covers to children.</li>
+<li><strong>Status (2026-07-28).</strong> Implemented the human-approval half: a new <code>pending_review</code> cover status
+  sits between <code>generating</code> and <code>ready</code> (<code>db/models.py</code>, migration
+  <code>supabase/migrations/20260728000000_add_cover_approval_gate.sql</code>); <code>generate_cover</code>
+  (<code>covers/service.py</code>) now stops at <code>pending_review</code> instead of writing <code>ready</code> directly; a new
+  admin-only <code>covers.service.approve_cover</code> is the sole path that may move a cover to <code>ready</code>, and it
+  stamps <code>cover_approved_by</code>/<code>cover_approved_at</code> (mirroring the text <code>approved_by</code>/<code>published_at</code>
+  gate); exposed via <code>POST /storybooks/{id}/versions/{version}/cover/approve</code>
+  (<code>api/covers.py</code>). No ORM change was needed on the read side: <code>api/library.py</code>'s existing
+  <code>cover_status == "ready"</code> filter already excludes <code>pending_review</code>, as do the equivalent filters in
+  <code>api/recommendations.py</code> and <code>api/covers.py</code>. The migration also demotes pre-existing <code>ready</code> rows
+  with a NULL <code>cover_approved_by</code> back to <code>pending_review</code>, so covers generated before the gate
+  existed are re-queued for review rather than grandfathered as approved (one production row as of
+  2026-07-28).
+  <strong>Scope of the guarantee:</strong> the gate is enforced on every API read path, so no API response hands a
+  child a URL for an unapproved cover. It does not make the image bytes unreachable. The R2 object
+  key is deterministic (<code>covers/storage.py::cover_object_key</code>, <code>{storybook_id}/{version}.webp</code>), so
+  anyone who can guess it retrieves the image directly whenever the bucket is publicly served.
+  Verified live on 2026-07-28: <code>GET https://cyo-bucket.williamshome.family/sk_ashfall_expedition/1.webp</code>
+  returns 200 <code>image/webp</code> (86,732 bytes) with no credentials, contradicting the bucket-privacy
+  invariant asserted in <code>covers/storage.py</code>. Unbinding the public domain is a Cloudflare dashboard
+  action outside this repository, tracked as <code>UW-M07</code> in
+  <a href="../unscheduled-work-register/">unscheduled-work-register.md</a>.
+  <strong>Deferred:</strong> an automated image-safety classifier (the image analogue of the text <code>moderation/</code>
+  gate) does not exist anywhere in this codebase and was out of scope for this change; building one
+  is a separately-scoped, materially larger piece of work (provider integration, thresholds, review
+  queue). Human approval is currently the sole gate, not a second independent layer the way text has
+  validator + moderation + approval. See the <code>#CRITICAL: security</code> / <code>#VERIFY</code> marker in
+  <code>covers/service.py::generate_cover</code> for the reinstatement trigger.</li>
 <li><strong>Acceptance criteria.</strong></li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A cover cannot reach <code>ready</code>/child card without passing image moderation AND human approval.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> The approval is recorded with an approver id and timestamp.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Test covering the unmoderated/unapproved cover is not returned on the child library card.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> A cover cannot reach <code>ready</code>, and so cannot be served by any API read path to a child card,
+        without passing human approval. Two carve-outs keep this partial: automated image moderation
+        is NOT implemented (deferred, see Status above), and the gate gives no protection against a
+        direct read of the deterministic R2 object key while the bucket is publicly served (<code>UW-M07</code>).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> The approval is recorded with an approver id and timestamp
+        (<code>cover_approved_by</code>/<code>cover_approved_at</code>).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Test covering the unmoderated/unapproved cover is not returned on the child library card:
+        <code>tests/integration/test_library_cover.py::test_cover_url_null_when_pending_review_and_not_yet_approved</code>.</li>
 </ul>
 <h3 id="m1-add-the-assignment-read-gate-to-reading-state-and-completion-routes">M1. Add the assignment read-gate to reading-state and completion routes<a class="headerlink" href="#m1-add-the-assignment-read-gate-to-reading-state-and-completion-routes" title="Permanent link">&para;</a></h3>
 <ul class="task-list">
@@ -3778,7 +3811,7 @@ open decisions are not lost.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 17, 2026 23:35:28 UTC">July 17, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 18:53:44 UTC">July 29, 2026</span>
   </span>
 
     

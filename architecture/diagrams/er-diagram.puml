@@ -127,8 +127,26 @@ entity "storybook_version" as storybook_version #F3E5F5 {
   skeleton_slug : VARCHAR(120) NULL [WS-C PR2 provenance]
   created_at : TIMESTAMPTZ
   cover_image_url : VARCHAR(512) NULL
-  cover_status : VARCHAR(20) [none|generating|ready|failed]
+  cover_status : VARCHAR(20) [none|generating|pending_review|ready|failed]
+  cover_approved_by : UUID <<FK user.id, NULL>>
+  cover_approved_at : TIMESTAMPTZ NULL
+  --
+  CHECK (cover_status in none|generating|pending_review|ready|failed)
 }
+note right of storybook_version
+  H2 cover-approval gate
+  (security-hardening-plan-2026-07.md):
+  cover_approved_by/cover_approved_at are the
+  cover-art analogue of approved_by/published_at.
+  generate_cover stops at 'pending_review'; only
+  covers.service.approve_cover moves a cover to
+  'ready', stamping both columns in the same
+  operation. api/library.py serves a cover URL
+  only at 'ready', so no API read path reaches a
+  child's library card without a recorded human
+  approver. Object-storage reads are a separate
+  control (covers/storage.py).
+end note
 
 entity "reading_state" as reading_state #E0F7FA {
   * child_profile_id : UUID <<PK, FK child_profile.id>>
@@ -393,6 +411,7 @@ note bottom of user_t
   here (to keep the graph legible):
   series.created_by, storybook.created_by,
   storybook_version.approved_by,
+  storybook_version.cover_approved_by,
   storybook_assignment.assigned_by,
   concept.created_by, story_request.reviewed_by,
   moderation_threshold.updated_by,
@@ -447,7 +466,8 @@ note left of family
     kid_flag), EXCEPT story_request.anchor_storybook_id
     which is SET NULL
   - user.id attribution FKs (created_by, updated_by,
-    approved_by, reviewed_by, resolved_by, changed_by,
+    approved_by, cover_approved_by, reviewed_by,
+    resolved_by, changed_by,
     consented_by_*): SET NULL (soft attribution; the
     owning row survives a deleted user), except the
     two *_audit.changed_by columns which are NOT NULL

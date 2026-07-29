@@ -4866,6 +4866,12 @@ complete; each is filed as a GitHub issue.</p>
 <td>project owner</td>
 <td>decision</td>
 </tr>
+<tr>
+<td>UW-M07</td>
+<td><strong>R2 cover bucket is publicly served, contradicting the code's own invariant.</strong> <code>covers/storage.py</code> asserts as <code>#CRITICAL: security</code> that the bucket must have no public custom domain or r2.dev access bound to it, because covers are served only as short-lived presigned GET URLs. It does. Verified 2026-07-28: <code>GET https://cyo-bucket.williamshome.family/sk_ashfall_expedition/1.webp</code> returns 200 <code>image/webp</code>, 86,732 bytes, with no credentials. Because <code>cover_object_key</code> is deterministic (<code>{storybook_id}/{version}.webp</code>), anyone who can guess a storybook id reads any cover, including one still at <code>pending_review</code> under the H2 approval gate shipped in PR #469, so that gate binds the API read paths only. Fix is unbinding the public domain in the Cloudflare dashboard, outside this repository. Until then, treat the H2 cover gate as an API-surface control, not an image-reachability control.</td>
+<td>project owner</td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -4952,7 +4958,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 18:20:09 UTC">July 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 18:53:44 UTC">July 29, 2026</span>
   </span>
 
     
