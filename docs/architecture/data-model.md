@@ -3,13 +3,13 @@ title: "Data Model"
 schema_type: common
 status: published
 owner: core-maintainer
-purpose: "ER diagram and description of the 22 ORM tables backing CYO Adventure."
+purpose: "ER diagram and description of the 24 ORM tables backing CYO Adventure."
 tags:
   - architecture
   - reference
 ---
 
-CYO Adventure has twenty-two PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
+CYO Adventure has twenty-four PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
 schema migrations applied as plain SQL via the Supabase CLI (`supabase/migrations/`,
 ADR-012; Alembic retired). All timestamps are `TIMESTAMP WITH TIME ZONE`. Enum-like
 columns (`role`, `status`, `age_band`) are stored as strings and validated at the
@@ -22,7 +22,7 @@ application boundary, which keeps schema migrations simple and avoids enum-type 
 The PlantUML source above (`diagrams/er-diagram.puml`) is authoritative: it carries the
 full CHECK constraint list, ON DELETE semantics, and a note on pure-attribution foreign
 keys to `user.id` that are deliberately not drawn as edges. The Mermaid version below is a
-hand-maintained companion (`diagrams/er-diagram.mmd`) covering the same 22 tables and
+hand-maintained companion (`diagrams/er-diagram.mmd`) covering the same 24 tables and
 relationships, kept for inline rendering directly on GitHub without opening the SVG.
 
 ```mermaid
@@ -58,6 +58,11 @@ erDiagram
     child_profile ||--o{ kid_flag : "flags"
     storybook ||--o{ kid_flag : "flagged in"
     storybook_version ||--o{ kid_flag : "pins version"
+    child_profile ||--o{ child_profile_personalization : "personalized by"
+    child_profile ||--o{ child_profile_personalization : "named as a sibling value"
+    child_profile ||--o{ personalization_disclosure_consent : "disclosed under"
+    family_connection ||--o{ personalization_disclosure_consent : "scopes disclosure"
+    child_profile |o--o{ storybook : "personalization subject of"
 
     family {
         uuid id PK
@@ -65,6 +70,7 @@ erDiagram
         int monthly_story_quota "NULL = platform default, ADR-015"
         timestamptz created_at
         timestamptz deactivated_at "NULL = active; cascades to members"
+        boolean personalization_receive_enabled "default true; ADR-023 viewer-side ring-2 opt-out"
     }
 
     user {
@@ -100,6 +106,8 @@ erDiagram
         timestamptz created_at
         timestamptz deactivated_at "NULL; soft-remove"
         timestamptz processing_restricted_at "NULL; GDPR Art 18/21"
+        boolean real_name_ring1_enabled "default false; ADR-023 own-family real name"
+        boolean real_name_ring2_enabled "default false; ADR-023 connected-family real name"
     }
 
     family_connection {
@@ -112,6 +120,33 @@ erDiagram
         timestamptz consented_by_viewer_at "NULL"
         uuid consented_by_sharer_user_id FK "NULL"
         timestamptz consented_by_sharer_at "NULL"
+    }
+
+    child_profile_personalization {
+        uuid child_profile_id PK, FK "ON DELETE CASCADE"
+        varchar(32) slot_type PK "9 slot types; ck_cpp_slot_type"
+        text value_text "NULL; exactly one value column is set"
+        varchar(64) value_enum "NULL"
+        uuid value_profile_id FK "NULL; sibling reference, ON DELETE CASCADE"
+        boolean ring1_enabled "default false; own family only"
+        boolean ring2_enabled "default false; ck_cpp_ring2_ceiling caps which slots"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    personalization_disclosure_consent {
+        uuid id PK
+        uuid child_profile_id FK "ON DELETE CASCADE"
+        uuid family_connection_id FK "NULL once tombstoned; ON DELETE SET NULL; partial UNIQUE with child_profile_id"
+        varchar(200) connected_family_label "NULL; name snapshot at consent time"
+        jsonb covered_slot_types "NULL; the slot types this consent covers"
+        boolean sibling_authority_attested "default false"
+        timestamptz consent_accepted_at "NULL; ck_pdc_consent_pairing"
+        varchar(32) consent_policy_version "NULL"
+        varchar(200) consent_signer_name "NULL"
+        varchar(64) consent_ip "NULL"
+        timestamptz revoked_at "NULL"
+        timestamptz created_at
     }
 
     series {
@@ -134,6 +169,7 @@ erDiagram
         uuid series_id FK "NULL for a standalone book"
         int book_index "NULL iff series_id is NULL; UNIQUE with series_id"
         timestamptz created_at
+        uuid personalization_subject_profile_id FK "NULL; ADR-023 subject, ON DELETE SET NULL"
     }
 
     storybook_version {
@@ -152,6 +188,9 @@ erDiagram
         timestamptz created_at
         varchar(512) cover_image_url "NULL"
         varchar(20) cover_status "none, generating, ready, failed"
+        boolean personalization_eligible "default false; ADR-023"
+        boolean pronoun_parameterized "default false; ADR-023"
+        jsonb sentinel_manifest "NULL; ADR-023 derived token manifest"
     }
 
     reading_state {
@@ -347,6 +386,7 @@ data.
 | monthly_story_quota | INT NULL | ADR-015 cost gate: per-family monthly spend ceiling; NULL uses the platform default (`settings.default_monthly_story_quota`), never unlimited. CHECK `ck_family_monthly_story_quota_non_negative` |
 | created_at | TIMESTAMPTZ | Server default |
 | deactivated_at | TIMESTAMPTZ NULL | Soft-deactivate; cascades to member users/profiles in the same transaction (reactivation is manual, not cascaded) |
+| personalization_receive_enabled | BOOLEAN | ADR-023: the viewer-side switch. Default `true`; when a guardian turns it off, this family sees no ring-2 personalization from any connected family, whatever the sharer consented to. Evaluated before any sharer-side lookup in `api/personalization.py` |
 
 ### `user`
 
@@ -385,6 +425,7 @@ Per-child reading profile. Age band and content caps filter which stories are vi
 | allowed_content_flags | JSONB | Per-flag content permissions |
 | banned_themes | JSONB NULL | G2 guardian-set theme exclusions; NULL means none (not `[]`) |
 | tts_enabled | BOOLEAN | TTS feature flag |
+| reduce_motion | BOOLEAN | Default false; collapses the band's reader animations for a child who needs them off |
 | avatar | VARCHAR(255) NULL | |
 | pin_hash | TEXT NULL | Write-only PIN credential (`pbkdf2_sha256`); never serialized (views expose a `has_pin` bool) |
 | request_auto_approve | BOOLEAN | ADR-015 G3 per-child pre-authorization; default false |
@@ -392,6 +433,8 @@ Per-child reading profile. Age band and content caps filter which stories are vi
 | created_at | TIMESTAMPTZ | |
 | deactivated_at | TIMESTAMPTZ NULL | Soft-remove (WS-J); excluded from pickers/listings and session mint, history preserved |
 | processing_restricted_at | TIMESTAMPTZ NULL | GDPR Article 18/21 restriction-of-processing marker; distinct from `deactivated_at` (the profile still reads its library and logs in normally, but `api/story_requests.py` refuses a NEW request for it). Set/cleared via `api/profiles.py::update_profile` (guardian-only) |
+| real_name_ring1_enabled | BOOLEAN | ADR-023: default false. Permits the child's real `display_name` inside their OWN family's stories. Off by default because a real first name in prose is the one personalization value that is irreversibly identifying |
+| real_name_ring2_enabled | BOOLEAN | ADR-023: default false, and strictly narrower than ring 1. Permits the real name in stories read by a CONNECTED family, which additionally requires dual guardian consent, a `personalization_disclosure_consent` row, and the viewer family's `personalization_receive_enabled` |
 
 ### `family_connection`
 
@@ -420,6 +463,81 @@ id/at pairs are set; either guardian may revoke by clearing their own pair. Two 
 (`ck_family_connection_viewer_consent_pairing`, `ck_family_connection_sharer_consent_pairing`)
 enforce the null-pairing, and a partial index `ix_family_connection_active_viewer` backs
 the active-viewer lookup.
+
+### `child_profile_personalization`
+
+One guardian-set personalization value per `(child_profile_id, slot_type)` pair
+(ADR-023 P4). The `slot_type` vocabulary is closed and mirrored from
+`storybook/theme_contract.py::PERSONALIZATION_FIELDS`.
+
+| Column | Type | Notes |
+| -------- | ------ | ------- |
+| child_profile_id | UUID PK FK | child_profile.id; `ON DELETE CASCADE` |
+| slot_type | VARCHAR(32) PK | One of the nine closed slot types; CHECK `ck_cpp_slot_type` |
+| value_text | TEXT NULL | Free-text value |
+| value_enum | VARCHAR(64) NULL | Closed-vocabulary value |
+| value_profile_id | UUID FK NULL | child_profile.id when the value IS another profile (a sibling); `ON DELETE CASCADE`, indexed by `ix_cpp_value_profile_id` |
+| ring1_enabled | BOOLEAN | Default false. Permits the value into this family's own stories |
+| ring2_enabled | BOOLEAN | Default false. Additionally permits it into stories shared with a connected family |
+| created_at | TIMESTAMPTZ | |
+| updated_at | TIMESTAMPTZ | |
+
+Three CHECK constraints carry the rules the API must not be the only thing
+enforcing. `ck_cpp_exactly_one_value` requires exactly one of the three value
+columns to be set, so a row can never be ambiguous about what it holds.
+`ck_cpp_ring2_ceiling` makes `pronoun_set` and `dedication` rows structurally
+incapable of carrying `ring2_enabled = true`, which means a future API that
+skipped application-layer validation still could not widen those two slots past
+the owning family. `ck_cpp_slot_type` pins the vocabulary itself;
+`tests/unit/test_personalization_vocab_drift.py` pins both CHECK lists against
+`PERSONALIZATION_FIELDS` so the two cannot drift apart silently.
+
+Both foreign keys CASCADE: a personalization value is child-linked data and is
+purged with the owning profile or, for a sibling reference, with the referenced
+profile.
+
+### `personalization_disclosure_consent`
+
+The sharer guardian's per-connection, per-slot-scoped consent to disclose ring-2
+personalization values across one `family_connection` (ADR-023 P4). This is a
+different thing from the connection's own dual-guardian consent: that one permits
+recommendations to flow (K17), this one permits child-identifying VALUES to flow
+over that same edge.
+
+| Column | Type | Notes |
+| -------- | ------ | ------- |
+| id | UUID PK | Surrogate key |
+| child_profile_id | UUID FK | child_profile.id; `ON DELETE CASCADE` |
+| family_connection_id | UUID FK NULL | family_connection.id; `ON DELETE SET NULL`, which is what turns a row into a tombstone |
+| connected_family_label | VARCHAR(200) NULL | The counterpart family's name, denormalized at signing time so the record stays legible after the connection row is gone |
+| covered_slot_types | JSONB NULL | The scope of the disclosure: which slot types this consent covers |
+| sibling_authority_attested | BOOLEAN | Default false; set only when the covered scope includes the sibling slot |
+| consent_accepted_at | TIMESTAMPTZ NULL | |
+| consent_policy_version | VARCHAR(32) NULL | |
+| consent_signer_name | VARCHAR(200) NULL | |
+| consent_ip | VARCHAR(64) NULL | Server-observed at signing; never client-supplied |
+| revoked_at | TIMESTAMPTZ NULL | Explicit revocation while the connection still exists, distinct from tombstoning |
+| created_at | TIMESTAMPTZ | |
+
+`family_connection_id` is `SET NULL` rather than CASCADE on purpose. Connections
+are hard-deleted, never soft-deactivated, but this row is evidence that consent
+was once given (GDPR Article 7(1), COPPA 312.5), so deleting the connection must
+leave behind a scrubbed tombstone recording that an authorization happened and
+what it covered, never a slot value. Deleting the `child_profile_id` does remove
+the row outright: once the data subject is gone there is nothing left to
+evidence.
+
+That tombstoning is also why the table uses a surrogate PK plus the PARTIAL
+unique index `uq_pdc_profile_connection ... WHERE family_connection_id IS NOT
+NULL` instead of a composite primary key. Tombstoning nulls half of what would
+otherwise be the natural key, and a composite PK cannot express "at most one
+live consent per (profile, connection), any number of tombstones after".
+`ix_pdc_family_connection_id` backs the deletion-side scan, which the partial
+unique index cannot serve: it is keyed on `child_profile_id` first and excludes
+exactly the NULL rows the deletion is about to create.
+
+`ck_pdc_consent_pairing` keeps the four consent columns set or cleared together,
+so a row is either fully signed or entirely unsigned and never a partial claim.
 
 ### `series`
 
@@ -457,6 +575,7 @@ children.
 | series_id | UUID FK NULL | series.id; NULL for a standalone book |
 | book_index | INT NULL | 1-based position within the series; NULL iff series_id is NULL |
 | created_at | TIMESTAMPTZ | |
+| personalization_subject_profile_id | UUID FK NULL | ADR-023: child_profile.id, the one child this story is personalized FOR. `ON DELETE SET NULL`, so deleting the subject leaves the story readable and unpersonalized rather than orphaning the row |
 
 **Status values:** `draft`, `in_review`, `needs_revision`, `published`, `archived`
 (see `publishing/state_machine.py`). There is no `generating`, `auto_check`, or
@@ -489,6 +608,9 @@ An immutable snapshot of a story. Composite primary key `(storybook_id, version)
 | created_at | TIMESTAMPTZ | |
 | cover_image_url | VARCHAR(512) NULL | AI-generated cover art URL |
 | cover_status | VARCHAR(20) | `none` (default), `generating`, `ready`, or `failed` |
+| personalization_eligible | BOOLEAN | ADR-023: default false. **Declared but not yet written by any code path**; the column exists so the flag has a home when the eligibility decision moves into the pipeline. Read it as "no version is eligible yet", not as a live per-version signal |
+| pronoun_parameterized | BOOLEAN | ADR-023: default false. Same status as the row above: declared, never written. Intended to mark a version whose prose was authored so pronouns can be substituted safely |
+| sentinel_manifest | JSONB NULL | ADR-023: the manifest of personalization tokens DERIVED from this version's blob after the fill, not prescribed before it. NULL for every version that predates Stage R or was never re-inserted. This is the artifact the G1-R gate's verify-manifest check validates against |
 
 At launch the Storybook JSON is stored inline in `blob` (JSONB). The `blob_ref`
 column is deferred: it holds the MinIO object key once object storage is wired
@@ -581,6 +703,7 @@ and mint metadata are, here.
 | jti | UUID UNIQUE | Matches the token's `jti` claim; the revocation lookup key |
 | created_at | TIMESTAMPTZ | |
 | revoked_at | TIMESTAMPTZ NULL | `NULL` while active; set (not deleted) on revoke so the guardian-facing device list can show when a device was revoked |
+| expires_at | TIMESTAMPTZ | Stamped at mint from the same TTL the JWT is signed with. The token carries its own expiry, but persisting it lets the active-device list exclude an unrevoked-but-expired grant, so "present in the list" means "actually usable" (#252) |
 
 Revocation is enforced online only: the token's `jti` is checked against this
 table's `revoked_at` on every use. An already-offline device cannot see a
@@ -624,6 +747,7 @@ family-scope authz check stay single-table.
 | length | VARCHAR(16) NULL | `short`, `medium`, or `long`; NULL before a guardian confirms it |
 | narrative_style | VARCHAR(16) | `prose` (default) or `gamebook` |
 | moderation_flags | JSONB NULL | Redacted screening findings; never raw classifier score/source |
+| interpretation | JSONB NULL | Serialized WS-7 `RequestInterpretation` (K19): what the system built in versus set aside, and why. NULL before the general layer runs. Phase-3 personal data: deletion rides this row, export must include it, and the declined/blocked 30-day purge nulls each element's premise-derived `element` phrase while keeping dispositions, reasons, and template text. Blocked rows never carry premise-derived element text (CR-1) |
 | reviewed_by | UUID FK NULL | user.id of guardian/admin who decided |
 | reviewed_at | TIMESTAMPTZ NULL | |
 | approved_at | TIMESTAMPTZ NULL | When the request entered `approved` specifically (ADR-015 spend derivation); distinct from `reviewed_at`; NULL unless approved |

@@ -8,18 +8,29 @@ without opening the SVG. Two hand-maintained copies of the same content is a
 drift hazard, and a diagram that silently disagrees with the schema is worse
 than no diagram: it is read as documentation and trusted.
 
-This script enforces the two properties that can be checked mechanically:
+This script enforces the three properties that can be checked mechanically:
 
 1. The embedded copy in ``data-model.md`` is byte-identical to ``.mmd``.
 2. Every table, column, primary key and foreign-key marker in the Mermaid
    source matches SQLAlchemy's own metadata.
+3. Every table and column in the PlantUML source matches it too.
+
+Property 3 is newer than the other two, and it was added because calling the
+.puml "authoritative" while checking only the .mmd is a contradiction the file
+paid for: it silently accumulated three missing columns (``child_profile
+.reduce_motion``, ``device_grant.expires_at``, ``story_request.interpretation``)
+that the .mmd gate could not see. The .puml check is column NAMES only, not
+types or PK/FK markers: its annotations are deliberately prose
+(``<<FK family.id>>``, ``NULL``, bracketed commentary, embedded ``\\n`` line
+breaks), and pinning that shape would make every readability edit a gate
+failure. Names are the part that can silently disagree with the schema.
 
 Deliberately NOT checked: relationship edges. The pure-attribution foreign keys
 to ``user.id`` (``created_by``, ``updated_by``, ``approved_by``, ``changed_by``,
 ``assigned_by``, ``resolved_by``, ``consented_by_*``) are intentionally omitted
 as edges to keep the graph readable; that omission is documented in the .puml
-and in the .mmd header. Column-level FK markers ARE checked, and those are
-present for the attribution columns.
+and in the .mmd header. Column-level FK markers ARE checked in the Mermaid
+source, and those are present for the attribution columns.
 
 Run: ``uv run python scripts/check_er_diagram.py``
 """
@@ -32,10 +43,19 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 MMD = REPO_ROOT / "docs/architecture/diagrams/er-diagram.mmd"
+PUML = REPO_ROOT / "docs/architecture/diagrams/er-diagram.puml"
 DATA_MODEL = REPO_ROOT / "docs/architecture/data-model.md"
 
 _ENTITY_OPEN = re.compile(r"^([a-z_]+)\s*\{$")
 _MERMAID_BLOCK = re.compile(r"```mermaid\n(erDiagram\n.*?)\n```", re.DOTALL)
+_PUML_ENTITY = re.compile(
+    r'^entity "([a-z_]+)" as \w+[^{]*\{(.*?)^\}', re.DOTALL | re.MULTILINE
+)
+# A column line, after stripping the leading `*` NOT-NULL marker: an identifier
+# followed by a colon. Constraint lines inside the same block start with an
+# uppercase keyword (CHECK, UNIQUE, INDEX, ON DELETE) or a bare parenthesis, and
+# continuation lines carry no colon, so none of them match.
+_PUML_COLUMN = re.compile(r"^\s*\*?\s*([a-z][a-z0-9_]*)\s*:")
 
 
 def parse_mermaid(source: str) -> dict[str, dict[str, str]]:
@@ -67,6 +87,56 @@ def parse_mermaid(source: str) -> dict[str, dict[str, str]]:
         if len(parts) >= 2:
             current[parts[1]] = " ".join(parts[2:])
     return entities
+
+
+def parse_puml(source: str) -> dict[str, set[str]]:
+    """Map each PlantUML entity to its set of column names.
+
+    Args:
+        source: The full ``er-diagram.puml`` text.
+
+    Returns:
+        Entity name -> the column names declared inside that entity block.
+        Constraint and index lines in the same block are excluded; see
+        ``_PUML_COLUMN``.
+    """
+    return {
+        name: {
+            m.group(1)
+            for line in body.splitlines()
+            if (m := _PUML_COLUMN.match(line)) is not None
+        }
+        for name, body in _PUML_ENTITY.findall(source)
+    }
+
+
+def puml_problems(schema: dict[str, dict[str, tuple[bool, bool]]]) -> list[str]:
+    """Compare the PlantUML entity/column names against the live schema.
+
+    Args:
+        schema: The mapping returned by :func:`schema_tables`.
+
+    Returns:
+        One message per disagreement; empty when the .puml is in sync.
+    """
+    drawn = parse_puml(PUML.read_text(encoding="utf-8"))
+    problems: list[str] = []
+    for table in sorted(set(schema) | set(drawn)):
+        actual = schema.get(table)
+        columns = drawn.get(table)
+        if actual is None:
+            problems.append(f"{table}: in er-diagram.puml but not in the ORM.")
+            continue
+        if columns is None:
+            problems.append(f"{table}: an ORM table with no entity in er-diagram.puml.")
+            continue
+        if missing := sorted(set(actual) - columns):
+            problems.append(f"{table}: columns missing from er-diagram.puml: {missing}")
+        if phantom := sorted(columns - set(actual)):
+            problems.append(
+                f"{table}: columns in er-diagram.puml that the ORM lacks: {phantom}"
+            )
+    return problems
 
 
 def schema_tables() -> dict[str, dict[str, tuple[bool, bool]]]:
@@ -140,6 +210,8 @@ def main() -> int:
                     f" (ORM foreign_keys={is_fk}, diagram={'FK' in markers})."
                 )
 
+    problems.extend(puml_problems(schema))
+
     if problems:
         print("ER diagram drift detected:")
         for problem in problems:
@@ -147,12 +219,14 @@ def main() -> int:
         print(
             "\nUpdate docs/architecture/diagrams/er-diagram.mmd, mirror the change into"
             " the fenced block in docs/architecture/data-model.md, and keep"
-            " er-diagram.puml (the authoritative source) in step."
+            " er-diagram.puml (the authoritative source) in step. Re-render the SVG"
+            " after a .puml edit: uv run python tools/generate_diagram_svgs.py."
         )
         return 1
 
     print(
-        f"ER diagram OK: {len(schema)} tables match the ORM, and both Mermaid copies agree."
+        f"ER diagram OK: {len(schema)} tables match the ORM across the PlantUML source,"
+        " and both Mermaid copies agree."
     )
     return 0
 
