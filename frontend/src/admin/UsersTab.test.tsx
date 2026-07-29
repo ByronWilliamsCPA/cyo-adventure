@@ -57,9 +57,7 @@ describe('UsersTab', () => {
   })
 
   it('renders a user row with the resolved family name', () => {
-    render(
-      <UsersTab api={fakeApi()} families={[FAMILY_A]} users={[USER_A]} onChanged={vi.fn()} />,
-    )
+    render(<UsersTab api={fakeApi()} families={[FAMILY_A]} users={[USER_A]} onChanged={vi.fn()} />)
     const row = screen.getByText('guardian@example.com').closest('tr')
     expect(row).not.toBeNull()
     expect(within(row as HTMLElement).getByText('Family A')).toBeInTheDocument()
@@ -76,7 +74,7 @@ describe('UsersTab', () => {
         families={[FAMILY_A]}
         users={[]}
         onChanged={onChanged}
-      />,
+      />
     )
     await user.type(screen.getByLabelText('Email'), 'new@example.com')
     await user.selectOptions(screen.getByLabelText('Family'), 'fam-a')
@@ -103,7 +101,7 @@ describe('UsersTab', () => {
         families={[FAMILY_A]}
         users={[]}
         onChanged={vi.fn()}
-      />,
+      />
     )
     await user.type(screen.getByLabelText('Email'), 'new@example.com')
     await user.selectOptions(screen.getByLabelText('Family'), 'fam-a')
@@ -130,7 +128,7 @@ describe('UsersTab', () => {
         families={[FAMILY_A, FAMILY_B]}
         users={[USER_A]}
         onChanged={onChanged}
-      />,
+      />
     )
     await user.click(screen.getByRole('button', { name: 'Edit' }))
     await user.selectOptions(screen.getByLabelText('Family for guardian@example.com'), 'fam-b')
@@ -153,7 +151,7 @@ describe('UsersTab', () => {
         families={[FAMILY_A]}
         users={[USER_A]}
         onChanged={vi.fn()}
-      />,
+      />
     )
     await user.click(screen.getByRole('button', { name: 'Edit' }))
     await user.selectOptions(screen.getByLabelText('Role for guardian@example.com'), 'admin')
@@ -177,7 +175,7 @@ describe('UsersTab', () => {
         families={[FAMILY_A]}
         users={[USER_A]}
         onChanged={vi.fn()}
-      />,
+      />
     )
     await user.click(screen.getByRole('button', { name: 'Edit' }))
     await user.click(screen.getByRole('button', { name: 'Cancel' }))
@@ -196,7 +194,7 @@ describe('UsersTab', () => {
         families={[FAMILY_A]}
         users={[USER_A]}
         onChanged={vi.fn()}
-      />,
+      />
     )
     await user.click(screen.getByRole('button', { name: 'Edit' }))
     await user.click(screen.getByRole('button', { name: 'Save' }))
@@ -213,7 +211,7 @@ describe('UsersTab', () => {
         families={[FAMILY_A]}
         users={[USER_A]}
         onChanged={onChanged}
-      />,
+      />
     )
     await user.click(screen.getByRole('button', { name: 'Deactivate' }))
     expect(updateUser).toHaveBeenCalledWith('user-1', { status: 'deactivated' })
@@ -227,7 +225,7 @@ describe('UsersTab', () => {
         families={[FAMILY_A]}
         users={[{ ...USER_A, status: 'pending' }]}
         onChanged={vi.fn()}
-      />,
+      />
     )
     expect(screen.queryByRole('button', { name: 'Deactivate' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Reactivate' })).not.toBeInTheDocument()
@@ -242,7 +240,7 @@ describe('UsersTab', () => {
         families={[FAMILY_A]}
         users={[USER_A]}
         onChanged={vi.fn()}
-      />,
+      />
     )
     await user.click(screen.getByRole('button', { name: 'Deactivate' }))
     expect(await screen.findByRole('alert')).toHaveTextContent(/could not change/i)

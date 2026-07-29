@@ -11,7 +11,7 @@ import type { AllowlistListView } from '../client/types.gen'
 
 // Mirrors generation.allowlist.ALLOWLIST_PROVIDERS / ProviderName in
 // api/schemas.py ('mock' is a CI-only double, never allowlistable).
-export const PROVIDERS = ['anthropic', 'openrouter', 'modal', 'ollama'] as const
+const PROVIDERS = ['anthropic', 'openrouter', 'modal', 'ollama'] as const
 export type ProviderValue = (typeof PROVIDERS)[number]
 
 type LoadState =
@@ -81,9 +81,7 @@ export function ProviderAllowlistPage() {
   }
 
   if (state.kind === 'loading') {
-    return (
-      <LoadingStatus />
-    )
+    return <LoadingStatus />
   }
   if (state.kind === 'error') {
     return <ErrorBanner className="console__error">{state.message}</ErrorBanner>
@@ -118,7 +116,11 @@ export function ProviderAllowlistPage() {
     }
   }
 
-  async function toggleEnabled(id: string, currentlyEnabled: boolean, currentDisplayName: string | null) {
+  async function toggleEnabled(
+    id: string,
+    currentlyEnabled: boolean,
+    currentDisplayName: string | null
+  ) {
     setSubmitting(true)
     setActionError(null)
     try {
@@ -163,11 +165,10 @@ export function ProviderAllowlistPage() {
     <main>
       <h1>Provider allowlist</h1>
       <p>
-        Controls which (provider, model) pairs the generation pipeline is permitted to call.
-        This is a global, cost-control setting, not tied to any one story; an admin picks the
-        specific model for a story on the{' '}
-        <Link to="/admin/authoring-queue">authoring queue</Link>, constrained to whatever is
-        enabled here.
+        Controls which (provider, model) pairs the generation pipeline is permitted to call. This is
+        a global, cost-control setting, not tied to any one story; an admin picks the specific model
+        for a story on the <Link to="/admin/authoring-queue">authoring queue</Link>, constrained to
+        whatever is enabled here.
       </p>
       {actionError ? <ErrorBanner className="console__error">{actionError}</ErrorBanner> : null}
       {data.rows.length === 0 ? (
@@ -198,7 +199,11 @@ export function ProviderAllowlistPage() {
                   >
                     {row.enabled ? `Disable ${row.model_id}` : `Enable ${row.model_id}`}
                   </Button>
-                  <Button variant="danger" disabled={submitting} onClick={() => void remove(row.id)}>
+                  <Button
+                    variant="danger"
+                    disabled={submitting}
+                    onClick={() => void remove(row.id)}
+                  >
                     Remove {row.model_id}
                   </Button>
                 </td>

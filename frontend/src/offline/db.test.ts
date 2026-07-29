@@ -17,7 +17,6 @@ import {
   enqueueWrite,
   getAllProfileShelves,
   getCachedLibraryList,
-
   getCachedStorybook,
   getDeviceGrantMirror,
   getReadingState,

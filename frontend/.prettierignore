@@ -1,0 +1,15 @@
+# Generated code is formatted by its generator, not by us.
+#
+# src/client/ is emitted by @hey-api/openapi-ts (`npm run generate-client`) and
+# committed to git; the `contract` CI job regenerates it and fails on any diff.
+# Formatting it here would be undone by the very next regeneration, putting the
+# format:check gate and the contract gate in permanent conflict. ESLint already
+# exempts this directory for the same reason (see eslint.config.js `ignores`).
+src/client/
+
+# Build and tooling output. Not matched by the src/** globs in package.json,
+# listed so that an ad-hoc `npx prettier .` in this directory behaves too.
+dist/
+coverage/
+playwright-report/
+test-results/

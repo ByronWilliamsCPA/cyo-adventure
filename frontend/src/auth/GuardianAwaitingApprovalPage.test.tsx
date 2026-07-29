@@ -24,6 +24,7 @@ function renderWithRouter() {
       <Routes>
         <Route path="/guardian/login" element={<div>Login page</div>} />
         <Route path="/guardian/consent" element={<div>Consent page</div>} />
+        <Route path="/guardian/unavailable" element={<div>Backend unavailable</div>} />
         <Route path="/guardian" element={<div>Guardian console</div>} />
         <Route path="/admin" element={<div>Admin console</div>} />
         <Route path="/guardian/awaiting-approval" element={<GuardianAwaitingApprovalPage />} />
@@ -117,6 +118,15 @@ describe('GuardianAwaitingApprovalPage', () => {
     mockAuth = { status: 'needs-consent', principal: null }
     renderWithRouter()
     expect(screen.getByText('Consent page')).toBeInTheDocument()
+  })
+
+  // #452: this page's own poll can now surface a transient backend outage.
+  // Without the redirect it would fall through to the render-nothing branch
+  // and leave the guardian staring at a blank page.
+  it('redirects to the backend-unavailable interstitial when the backend drops', () => {
+    mockAuth = { status: 'backend-unreachable', principal: null }
+    renderWithRouter()
+    expect(screen.getByText('Backend unavailable')).toBeInTheDocument()
   })
 
   it('redirects an already-approved guardian to their console', () => {

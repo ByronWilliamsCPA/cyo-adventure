@@ -78,9 +78,7 @@ describe('ConnectionsPage', () => {
       within(card as HTMLElement).getByText(/The Jones Family kids can see books your kids loved/)
     ).toBeInTheDocument()
     expect(within(card as HTMLElement).getByText('Active')).toBeInTheDocument()
-    expect(
-      within(card as HTMLElement).getByRole('button', { name: 'Revoke' })
-    ).toBeInTheDocument()
+    expect(within(card as HTMLElement).getByRole('button', { name: 'Revoke' })).toBeInTheDocument()
   })
 
   it('shows a load error when the family connection list fails to fetch', async () => {
@@ -158,7 +156,9 @@ describe('ConnectionsPage', () => {
     const dialog = await screen.findByRole('dialog')
     await user.click(within(dialog).getByRole('button', { name: 'Allow' }))
 
-    expect(await screen.findByText('That did not go through. Please try again.')).toBeInTheDocument()
+    expect(
+      await screen.findByText('That did not go through. Please try again.')
+    ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Allow' })).not.toBeDisabled()
   })
 })

@@ -312,6 +312,33 @@ repos:
           - pydantic>=2.0
           - ruamel.yaml>=0.18
 
+  # ============================================================================
+  # Planning Document Linkage
+  # ============================================================================
+  # docs/planning/ is exempt from front-matter validation above (UW-K20), so
+  # these two hooks are the only automated gate over the planning tree. They
+  # enforce that directed work cannot be recorded without a disposition: a
+  # phase, a named blocker, a named decision owner, or a reference proving it
+  # is done. The contract they implement is the "linkage contract" section of
+  # docs/planning/unscheduled-work-register.md.
+  - repo: local
+    hooks:
+      - id: check-work-linkage
+        name: Work linkage (registers resolve to a phase or a proof)
+        entry: python scripts/check_work_linkage.py
+        language: system
+        files: ^(docs/planning/.*\.md|scripts/check_work_linkage\.py)$
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: check-lessons-log
+        name: Authoring lessons log well-formed
+        entry: python scripts/check_lessons_log.py
+        language: system
+        files: ^docs/planning/authoring-lessons-log\.md$
+        pass_filenames: false
+        stages: [pre-commit]
+
 
   # ============================================================================
   # Python Docstring Coverage

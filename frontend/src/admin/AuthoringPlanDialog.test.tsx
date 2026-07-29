@@ -22,9 +22,27 @@ const REQUEST: StoryRequestView = {
 }
 
 const ALLOWLIST_ROWS = [
-  { id: 'a1', provider: 'anthropic' as const, model_id: 'claude-sonnet-4-6', enabled: true, display_name: 'Sonnet' },
-  { id: 'a2', provider: 'anthropic' as const, model_id: 'claude-haiku-4-5', enabled: false, display_name: 'Haiku (disabled)' },
-  { id: 'a3', provider: 'ollama' as const, model_id: 'qwen2.5:14b', enabled: true, display_name: null },
+  {
+    id: 'a1',
+    provider: 'anthropic' as const,
+    model_id: 'claude-sonnet-4-6',
+    enabled: true,
+    display_name: 'Sonnet',
+  },
+  {
+    id: 'a2',
+    provider: 'anthropic' as const,
+    model_id: 'claude-haiku-4-5',
+    enabled: false,
+    display_name: 'Haiku (disabled)',
+  },
+  {
+    id: 'a3',
+    provider: 'ollama' as const,
+    model_id: 'qwen2.5:14b',
+    enabled: true,
+    display_name: null,
+  },
 ]
 
 describe('AuthoringPlanDialog', () => {

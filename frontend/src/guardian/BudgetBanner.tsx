@@ -5,9 +5,7 @@ import { formatBudgetBanner, makeBudgetApi, type FamilyBudgetView } from './budg
 import { STORY_REQUESTS_CHANGED_EVENT } from './storyRequestQueueApi'
 
 type BannerState =
-  | { kind: 'loading' }
-  | { kind: 'ready'; budget: FamilyBudgetView }
-  | { kind: 'absent' }
+  { kind: 'loading' } | { kind: 'ready'; budget: FamilyBudgetView } | { kind: 'absent' }
 
 /**
  * G13 (interim) balance banner: "N of M stories left this month", sourced

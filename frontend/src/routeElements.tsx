@@ -109,6 +109,11 @@ export const GuardianAwaitingApprovalPage = lazyWithReload('GuardianAwaitingAppr
 export const GuardianConsentPage = lazyWithReload('GuardianConsentPage', () =>
   import('./auth/GuardianConsentPage').then((m) => ({ default: m.GuardianConsentPage }))
 )
+export const GuardianBackendUnavailablePage = lazyWithReload('GuardianBackendUnavailablePage', () =>
+  import('./auth/GuardianBackendUnavailablePage').then((m) => ({
+    default: m.GuardianBackendUnavailablePage,
+  }))
+)
 export const ConsolePage = lazyWithReload('ConsolePage', () =>
   import('./guardian/ConsolePage').then((m) => ({ default: m.ConsolePage }))
 )

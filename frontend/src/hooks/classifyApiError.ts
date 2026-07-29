@@ -16,12 +16,7 @@ import { isAxiosError } from 'axios'
  * is a different claim than "please try again" for a client-side failure.
  */
 export type ApiErrorKind =
-  | 'unauthenticated'
-  | 'forbidden'
-  | 'offline'
-  | 'rateLimited'
-  | 'server'
-  | 'transient'
+  'unauthenticated' | 'forbidden' | 'offline' | 'rateLimited' | 'server' | 'transient'
 
 export interface ClassifiedApiError {
   kind: ApiErrorKind
@@ -39,7 +34,7 @@ const DEFAULT_MESSAGES: Record<ApiErrorKind, string> = {
   forbidden: 'You do not have permission to do that.',
   offline: "You're offline. Check your connection and try again.",
   rateLimited: "You're doing that a bit fast. Please wait a moment and try again.",
-  server: "Something went wrong on our end. Please try again in a moment.",
+  server: 'Something went wrong on our end. Please try again in a moment.',
   transient: 'Something went wrong. Please try again.',
 }
 
@@ -60,7 +55,7 @@ const DEFAULT_MESSAGES: Record<ApiErrorKind, string> = {
  */
 export function classifyApiError(
   error: unknown,
-  overrides?: Partial<Record<ApiErrorKind, string>>,
+  overrides?: Partial<Record<ApiErrorKind, string>>
 ): ClassifiedApiError {
   const kind = classifyKind(error)
   return { kind, message: overrides?.[kind] ?? DEFAULT_MESSAGES[kind] }

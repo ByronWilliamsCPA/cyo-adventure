@@ -147,17 +147,26 @@ describe('ConsolePage device authorization (ADR-014 Phase 3)', () => {
       await screen.findByRole('button', { name: /set up this device for your kids/i })
     ).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /re-authorize/i })).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /remove from this device/i })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /remove from this device/i })
+    ).not.toBeInTheDocument()
   })
 
   it('mints a device grant and shows the confirmation state', async () => {
     const user = userEvent.setup()
     mockPost.mockResolvedValue({
-      data: { id: 'grant-1', token: 'tok-1', expires_at: '2099-01-01T00:00:00Z', family_id: 'fam-1' },
+      data: {
+        id: 'grant-1',
+        token: 'tok-1',
+        expires_at: '2099-01-01T00:00:00Z',
+        family_id: 'fam-1',
+      },
     })
     renderPage()
 
-    const setupButton = await screen.findByRole('button', { name: /set up this device for your kids/i })
+    const setupButton = await screen.findByRole('button', {
+      name: /set up this device for your kids/i,
+    })
     await user.click(setupButton)
 
     expect(await screen.findByText(/kids can now read here/i)).toBeInTheDocument()
@@ -177,12 +186,16 @@ describe('ConsolePage device authorization (ADR-014 Phase 3)', () => {
     mockPost.mockRejectedValue(new Error('mint failed'))
     renderPage()
 
-    const setupButton = await screen.findByRole('button', { name: /set up this device for your kids/i })
+    const setupButton = await screen.findByRole('button', {
+      name: /set up this device for your kids/i,
+    })
     await user.click(setupButton)
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/didn't work/i)
     expect(getDeviceGrant()).toBeNull()
-    expect(screen.getByRole('button', { name: /set up this device for your kids/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /set up this device for your kids/i })
+    ).toBeInTheDocument()
   })
 
   it('shows the re-authorize/remove actions when a grant already exists', async () => {
@@ -197,7 +210,9 @@ describe('ConsolePage device authorization (ADR-014 Phase 3)', () => {
     expect(await screen.findByText(/kids can now read here/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /re-authorize this device/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /remove from this device/i })).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /^set up this device for your kids$/i })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /^set up this device for your kids$/i })
+    ).not.toBeInTheDocument()
   })
 
   it('removes the grant from this device after a successful revoke', async () => {
@@ -215,7 +230,9 @@ describe('ConsolePage device authorization (ADR-014 Phase 3)', () => {
     await user.click(await screen.findByRole('button', { name: /^remove device$/i }))
 
     await waitFor(() => expect(mockDelete).toHaveBeenCalledWith('/v1/device-grants/grant-1'))
-    expect(await screen.findByRole('button', { name: /set up this device for your kids/i })).toBeInTheDocument()
+    expect(
+      await screen.findByRole('button', { name: /set up this device for your kids/i })
+    ).toBeInTheDocument()
     expect(getDeviceGrant()).toBeNull()
   })
 
@@ -323,7 +340,12 @@ describe('ConsolePage device authorization (ADR-014 Phase 3)', () => {
       id: 'grant-1',
     })
     mockPost.mockResolvedValue({
-      data: { id: 'grant-2', token: 'tok-2', expires_at: '2099-01-01T00:00:00Z', family_id: 'fam-1' },
+      data: {
+        id: 'grant-2',
+        token: 'tok-2',
+        expires_at: '2099-01-01T00:00:00Z',
+        family_id: 'fam-1',
+      },
     })
     mockDelete.mockResolvedValue({ data: undefined })
     renderPage()
@@ -351,7 +373,12 @@ describe('ConsolePage device authorization (ADR-014 Phase 3)', () => {
       id: 'grant-1',
     })
     mockPost.mockResolvedValue({
-      data: { id: 'grant-2', token: 'tok-2', expires_at: '2099-01-01T00:00:00Z', family_id: 'fam-1' },
+      data: {
+        id: 'grant-2',
+        token: 'tok-2',
+        expires_at: '2099-01-01T00:00:00Z',
+        family_id: 'fam-1',
+      },
     })
     mockDelete.mockRejectedValue(new Error('revoke failed'))
     renderPage()

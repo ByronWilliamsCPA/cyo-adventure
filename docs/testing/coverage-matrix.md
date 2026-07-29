@@ -211,8 +211,25 @@ relate to the Supabase project constraints.
 - E2E-real: `frontend/e2e-real/approval-flow.spec.ts` (access-control checks)
 - E2E-staging: `frontend/e2e-staging/guardian-admin-smoke.spec.ts` (real Supabase sign-in as both seeded guardian and admin accounts)
 - E2E-prod: `frontend/e2e-prod/landing-login.spec.ts`, `frontend/e2e-prod/guardian-admin-smoke.spec.ts`
-- Component: `frontend/src/guardian/LoginPage.test.tsx`, `frontend/src/guardian/SetNewPasswordForm.test.tsx`, `frontend/src/auth/AuthContext.test.tsx`, `frontend/src/auth/AdultGate.test.tsx`, `frontend/src/auth/ProtectedRoute.test.tsx`, `frontend/src/auth/guardianToken.test.ts`, `frontend/src/auth/supabaseClient.test.ts`, `frontend/src/guardian/GuardianShell.test.tsx`, `frontend/src/guardian/ConsolePage.test.tsx`
+- Component: `frontend/src/guardian/LoginPage.test.tsx`, `frontend/src/guardian/SetNewPasswordForm.test.tsx`, `frontend/src/auth/AuthContext.test.tsx`, `frontend/src/auth/AdultGate.test.tsx`, `frontend/src/auth/ProtectedRoute.test.tsx`, `frontend/src/auth/GuardianBackendUnavailablePage.test.tsx`, `frontend/src/auth/guardianToken.test.ts`, `frontend/src/auth/supabaseClient.test.ts`, `frontend/src/guardian/GuardianShell.test.tsx`, `frontend/src/guardian/ConsolePage.test.tsx`
 - Integration: `frontend/src/test/App.test.tsx`
+- **Backend-unreachable branch (issue #452):** when the Supabase session is
+  valid but principal resolution fails transiently (no response, or a 5xx from
+  our API or an intermediary), the session is KEPT and the guardian lands on
+  the `/guardian/unavailable` retry interstitial instead of being looped
+  through login. Covered at the component tier from both ends:
+  `frontend/src/auth/AuthContext.test.tsx` pins the classification matrix
+  (500/502/503/504 and a network error are transient and retain the token;
+  400/401/403/404/422 and a non-axios throw stay terminal and clear it), and
+  `frontend/src/auth/GuardianBackendUnavailablePage.test.tsx` covers the
+  interstitial itself, manual retry, the 15-attempt auto-retry cap, and the
+  redirect out on every recovered status. The three sibling status consumers
+  (`LoginPage`, `GuardianConsentPage`, `GuardianAwaitingApprovalPage`) each
+  carry a redirect test in their own file.
+- **Gap**: no E2E tier exercises the backend-unreachable branch. Reproducing it
+  needs the API to fail while Supabase keeps succeeding, which the mocked tier
+  can express (fulfil `/api/v1/**` with a 503 after sign-in) but no spec does
+  yet. Component coverage is the whole of it today.
 - **Google OAuth sign-in (decision 2.6, manual-only flow + automated option
   presence):** the full Google OAuth *round trip* is not automated at any tier
   and is not automatable without a live Google session (faking the provider

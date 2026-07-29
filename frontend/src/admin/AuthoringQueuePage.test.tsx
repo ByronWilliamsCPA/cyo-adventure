@@ -29,7 +29,13 @@ const APPROVED_REQUEST = {
 
 const ALLOWLIST = {
   rows: [
-    { id: 'a1', provider: 'anthropic', model_id: 'claude-sonnet-4-6', enabled: true, display_name: 'Sonnet' },
+    {
+      id: 'a1',
+      provider: 'anthropic',
+      model_id: 'claude-sonnet-4-6',
+      enabled: true,
+      display_name: 'Sonnet',
+    },
   ],
 }
 

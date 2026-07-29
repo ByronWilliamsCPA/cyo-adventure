@@ -350,9 +350,7 @@ describe('router: guardian surface', () => {
     })
     renderAt('/admin/requests')
     expect(await screen.findByRole('heading', { name: 'Grown-ups only' })).toBeInTheDocument()
-    expect(
-      screen.queryByLabelText(/what should the story be about/i)
-    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText(/what should the story be about/i)).not.toBeInTheDocument()
   })
 
   it('renders the review detail page at /admin/review/:storybookId with a warm adult gate', async () => {
@@ -493,9 +491,7 @@ describe('router: guardian surface', () => {
     })
     renderAt('/guardian/intake')
     expect(await screen.findByRole('heading', { name: 'Grown-ups only' })).toBeInTheDocument()
-    expect(
-      screen.queryByRole('heading', { name: /request a story/i })
-    ).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /request a story/i })).not.toBeInTheDocument()
   })
 
   it('does not re-challenge navigating guardian -> admin -> guardian once warm (core requirement)', async () => {

@@ -192,6 +192,7 @@ path = [
     "frontend/.env.e2e-staging.example",  # Staging smoke e2e credential template
     "frontend/.gitignore",  # Frontend git exclusions
     "frontend/.prettierrc",  # Frontend Prettier config
+    "frontend/.prettierignore",  # Frontend Prettier exclusions (generated client, build output)
     "frontend/Dockerfile",  # Frontend container build
     "frontend/nginx.conf",  # Nginx serving config
     "frontend/index.html",  # Vite entry HTML

@@ -8,7 +8,10 @@ describe('BackToLibrary', () => {
     render(
       <MemoryRouter initialEntries={['/read/p1/s/1']}>
         <Routes>
-          <Route path="/read/:profileId/:storybookId/:version" element={<BackToLibrary profileId="p1" />} />
+          <Route
+            path="/read/:profileId/:storybookId/:version"
+            element={<BackToLibrary profileId="p1" />}
+          />
           <Route path="/library/:profileId" element={<div>Library Page</div>} />
         </Routes>
       </MemoryRouter>

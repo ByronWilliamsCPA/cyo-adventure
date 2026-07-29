@@ -177,9 +177,7 @@ describe('scrubEvent', () => {
 
     const scrubbed = scrubEvent(event)
 
-    expect(scrubbed.breadcrumbs).toEqual([
-      { category: 'ui.click', message: 'clicked start' },
-    ])
+    expect(scrubbed.breadcrumbs).toEqual([{ category: 'ui.click', message: 'clicked start' }])
   })
 
   it('is a no-op on an event with no request, user, or breadcrumbs', () => {

@@ -108,11 +108,8 @@ describe('useReplayOnReconnect', () => {
     // navigator.locks with ifAvailable invokes the callback with null when the
     // lock is held elsewhere; the hook must skip replay entirely that round.
     const request = vi.fn(
-      (
-        _name: string,
-        _opts: { ifAvailable?: boolean },
-        cb: (lock: unknown) => Promise<unknown>
-      ) => cb(null)
+      (_name: string, _opts: { ifAvailable?: boolean }, cb: (lock: unknown) => Promise<unknown>) =>
+        cb(null)
     )
     vi.stubGlobal('navigator', { ...navigator, locks: { request } })
     mockReplayQueue.mockResolvedValue({ replayed: 1, conflicts: [], failed: [] })
@@ -126,11 +123,8 @@ describe('useReplayOnReconnect', () => {
 
   it('runs replay when it acquires the cross-tab lock', async () => {
     const request = vi.fn(
-      (
-        _name: string,
-        _opts: { ifAvailable?: boolean },
-        cb: (lock: unknown) => Promise<unknown>
-      ) => cb({})
+      (_name: string, _opts: { ifAvailable?: boolean }, cb: (lock: unknown) => Promise<unknown>) =>
+        cb({})
     )
     vi.stubGlobal('navigator', { ...navigator, locks: { request } })
     mockReplayQueue.mockResolvedValue({ replayed: 2, conflicts: [], failed: [] })
@@ -140,5 +134,4 @@ describe('useReplayOnReconnect', () => {
     await waitFor(() => expect(onOutcome).toHaveBeenCalledTimes(1))
     expect(mockReplayQueue).toHaveBeenCalledTimes(1)
   })
-
 })

@@ -1,7 +1,7 @@
 ---
 title: "ADR-007: Raw LLM output retention policy for GenerationJob.report"
 schema_type: planning
-status: proposed
+status: accepted
 owner: core-maintainer
 purpose: "Record the retention policy for raw LLM outputs stored in GenerationJob.report."
 tags:

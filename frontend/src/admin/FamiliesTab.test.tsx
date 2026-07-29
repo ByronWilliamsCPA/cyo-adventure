@@ -66,9 +66,7 @@ describe('FamiliesTab', () => {
       isAxiosError: true,
       response: { status: 403 },
     })
-    render(
-      <FamiliesTab api={fakeApi({ createFamily })} families={[]} onChanged={vi.fn()} />,
-    )
+    render(<FamiliesTab api={fakeApi({ createFamily })} families={[]} onChanged={vi.fn()} />)
     await user.type(screen.getByLabelText('Name'), 'New')
     await user.click(screen.getByRole('button', { name: 'Create family' }))
     expect(await screen.findByRole('alert')).toHaveTextContent(/only an admin can create/i)
@@ -79,11 +77,7 @@ describe('FamiliesTab', () => {
     const onChanged = vi.fn().mockResolvedValue(undefined)
     const updateFamily = vi.fn().mockResolvedValue({ ...FAMILY_A, name: 'Renamed' })
     render(
-      <FamiliesTab
-        api={fakeApi({ updateFamily })}
-        families={[FAMILY_A]}
-        onChanged={onChanged}
-      />,
+      <FamiliesTab api={fakeApi({ updateFamily })} families={[FAMILY_A]} onChanged={onChanged} />
     )
 
     await user.click(screen.getByRole('button', { name: 'Rename' }))
@@ -100,7 +94,7 @@ describe('FamiliesTab', () => {
     const user = userEvent.setup()
     const updateFamily = vi.fn()
     render(
-      <FamiliesTab api={fakeApi({ updateFamily })} families={[FAMILY_A]} onChanged={vi.fn()} />,
+      <FamiliesTab api={fakeApi({ updateFamily })} families={[FAMILY_A]} onChanged={vi.fn()} />
     )
     await user.click(screen.getByRole('button', { name: 'Rename' }))
     await user.click(screen.getByRole('button', { name: 'Cancel' }))
@@ -112,7 +106,7 @@ describe('FamiliesTab', () => {
     const user = userEvent.setup()
     const updateFamily = vi.fn().mockRejectedValue(new Error('network down'))
     render(
-      <FamiliesTab api={fakeApi({ updateFamily })} families={[FAMILY_A]} onChanged={vi.fn()} />,
+      <FamiliesTab api={fakeApi({ updateFamily })} families={[FAMILY_A]} onChanged={vi.fn()} />
     )
     await user.click(screen.getByRole('button', { name: 'Rename' }))
     await user.click(screen.getByRole('button', { name: 'Save' }))
@@ -124,11 +118,7 @@ describe('FamiliesTab', () => {
     const onChanged = vi.fn().mockResolvedValue(undefined)
     const updateFamily = vi.fn().mockResolvedValue({ ...FAMILY_A, status: 'deactivated' })
     render(
-      <FamiliesTab
-        api={fakeApi({ updateFamily })}
-        families={[FAMILY_A]}
-        onChanged={onChanged}
-      />,
+      <FamiliesTab api={fakeApi({ updateFamily })} families={[FAMILY_A]} onChanged={onChanged} />
     )
     await user.click(screen.getByRole('button', { name: 'Deactivate' }))
     expect(updateFamily).toHaveBeenCalledWith('fam-a', { status: 'deactivated' })
@@ -143,7 +133,7 @@ describe('FamiliesTab', () => {
         api={fakeApi({ updateFamily })}
         families={[{ ...FAMILY_A, status: 'deactivated' }]}
         onChanged={vi.fn()}
-      />,
+      />
     )
     await user.click(screen.getByRole('button', { name: 'Reactivate' }))
     expect(updateFamily).toHaveBeenCalledWith('fam-a', { status: 'active' })
@@ -153,7 +143,7 @@ describe('FamiliesTab', () => {
     const user = userEvent.setup()
     const updateFamily = vi.fn().mockRejectedValue(new Error('boom'))
     render(
-      <FamiliesTab api={fakeApi({ updateFamily })} families={[FAMILY_A]} onChanged={vi.fn()} />,
+      <FamiliesTab api={fakeApi({ updateFamily })} families={[FAMILY_A]} onChanged={vi.fn()} />
     )
     await user.click(screen.getByRole('button', { name: 'Deactivate' }))
     expect(await screen.findByRole('alert')).toHaveTextContent(/could not change/i)

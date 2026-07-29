@@ -100,10 +100,7 @@ export function NotificationBell() {
       // Progressive enhancement, same tolerance as GuardianShell's
       // pending-count badge: a failed unread check must never surface as a
       // page-level error, it just leaves the badge stale until the next tick.
-      console.error(
-        'notification unread check failed:',
-        err instanceof Error ? err.message : err
-      )
+      console.error('notification unread check failed:', err instanceof Error ? err.message : err)
     }
   }, [subject, notificationsApi, showToast])
 
