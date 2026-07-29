@@ -5357,10 +5357,49 @@ runs on Supabase-managed infrastructure instead of the homelab; see
       neither previously tracked here nor closed</strong>: H1, <code>assign_storybook</code> performs no
       band-ceiling comparison against the target profile, so a guardian can assign an
       off-band book across children (K13's assignment-time enforcement gap).</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <strong>Newly surfaced by the 2026-07-20 audit</strong>: H2, <code>generate_cover</code> flips
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Newly surfaced by the 2026-07-20 audit</strong>: H2, <code>generate_cover</code> flips
       <code>cover_status</code> straight <code>generating -&gt; ready</code> with no moderation/approval gate, so
       an AI cover image can reach a child's shelf without the human review A16 promises
-      (the story-text safety guarantee, A6, is unaffected).</li>
+      (the story-text safety guarantee, A6, is unaffected). Closed 2026-07-28 on
+      <code>feat/cover-review-ui</code>: the backend gate (<code>generate_cover</code> stops at
+      <code>pending_review</code>, <code>covers.service.approve_cover</code> is the sole admin-only path to
+      <code>ready</code>) merged from <code>fix/cover-moderation-gate</code> (commit b56b11f), and the admin
+      review UI (<code>ReviewDetailPage.tsx</code> renders the pending cover image plus an "Approve
+      cover" action) closes the remaining A16 gap the 2026-07-29 audit had found; A16
+      flipped to done in <code>capability-register.md</code>.</li>
+</ul>
+<p><strong>Newly surfaced by the 2026-07-28 unscheduled-work sweep.</strong> The security plan's Medium and Low
+tiers, and the authoring log's blocking lessons, had no phase home. Full detail by ID in the
+<a href="../unscheduled-work-register/">unscheduled work register</a>; the safety-bearing items are carried
+here because a gate bypass should be visible on the checklist, not only in a register.</p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <strong>Three gate bypasses</strong> (<code>UW-E01</code>, <code>UW-E02</code>, <code>UW-E03</code>): reading and completion routes bypass
+      the assignment gate; guardian blob-fetch skips the gate; repair skips the validator.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <strong><code>AL-036</code> undercuts ADR-005</strong> (<code>UW-C02</code>): the review surface has no pagination,
+      virtualization, or per-node review state, so at 746 nodes it cannot deliver the human
+      approval the ADR requires. The approval currently attests less than it claims.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>AL-039</code> (<code>UW-C04</code>): repair and the Stage-1 fidelity gate both fail open and are
+      structurally impossible at scale; fidelity lacks an <code>&lt;untrusted_passage&gt;</code> fence.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>AL-034</code> (<code>UW-C03</code>): one import is ~2,986 provider round trips inside a single Postgres
+      transaction holding <code>FOR UPDATE</code>, running 40 to 100 minutes.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>AL-040</code> (<code>UW-C05</code>): <code>/admin/rescreen</code> sweeps synchronously in one request.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Remaining security-plan tiers (<code>UW-E04</code> to <code>UW-E08</code>): review-model allowlist, a real PII
+      detector, family cost cap on the authoring-plan path, production Postgres host-port and
+      password-default exposure, inert <code>allowed_content_flags</code>, unenforced <code>reading_level_cap</code>,
+      health-endpoint version disclosure.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>UW-E16</code>: the <code>_extract_subject()</code> dev/test auth stub is still live in <code>api/deps.py</code>, guarded
+      only by unset OIDC environment variables.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <strong>ADR-022 tiered RLS scoping</strong> (<code>UW-A01</code>, <code>UW-A02</code>) and the rest of the ADR-021 worker and
+      observability work (<code>UW-A04</code> to <code>UW-A07</code>). Gated on the M4.1 cutover below.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Named test-ladder actions replacing the generic line above (<code>UW-F*</code>): behavioral safety suite,
+      FK <code>ON DELETE</code> parity, generated-client drift test, mutmut kill-floor, pre-Phase-9 performance
+      testing, E2E driving the RQ worker, schema parity over policies and triggers, CORS and
+      rate-limit negative tests, and the seven traceability-matrix actions.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>UW-K01</code> <strong>release blocker</strong>: two <code>docs/known-vulnerabilities.md</code> entries are 68 days old with
+      reassessment 8 days overdue, past the 60-day OpenSSF release gate.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>UW-K18</code>: 98 RAD markers carry no paired <code>#VERIFY</code>, including the <code>generation/worker.py</code>
+      concurrency pair, the <code>db/models.py</code> cascade CRITICAL, the <code>classifiers.py</code> API-key placement
+      CRITICAL, and four deploy-ordering CRITICALs in <code>supabase/migrations/</code>.</li>
 </ul>
 <p><strong>Newly surfaced by the 2026-07-28 unscheduled-work sweep.</strong> The security plan's Medium and Low
 tiers, and the authoring log's blocking lessons, had no phase home. Full detail by ID in the
@@ -5583,7 +5622,7 @@ and Tier-2 corpora.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 19:36:26 UTC">July 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 21:27:13 UTC">July 29, 2026</span>
   </span>
 
     
