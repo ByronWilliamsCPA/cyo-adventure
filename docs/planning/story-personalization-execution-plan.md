@@ -734,7 +734,16 @@ a closed CHECK vocabulary. B1's schema-qualification and server_default lessons 
 - [ ] **Step 2:** export gains, per profile: every personalization row (sibling slot as id AND
   display name), the two `real_name_*` booleans, and every consent row **including tombstoned
   ones**. Test: export of a family with one of each contains all three groups.
-- [ ] **Step 3:** commit (`feat(api): export and deletion coverage for personalization data (ADR-023 P4)`).
+- [x] **Step 3:** commit (`feat(api): export and deletion coverage for personalization data (ADR-023 P4)`).
+
+**DONE 2026-07-29 (commit 87ac0e3).** Drill extensions passed first-run because both new
+FKs were already CASCADE (coverage confirmation, not a gap); the connection-tombstone case
+is proven in test_personalization_consent_tombstone.py and referenced, not duplicated.
+Export gap proven failing-first (KeyError on real_name_ring1_enabled), then closed:
+personalization rows (sibling slot as id plus display name), both real_name booleans, and
+consent rows including tombstones. FamilyExportView is an untyped dict blob by design, so
+no OpenAPI contract change and no client regeneration; only its docstring was updated
+(api/schemas.py, docstring-only extra file).
 
 ### Task B4: pipeline event types
 
