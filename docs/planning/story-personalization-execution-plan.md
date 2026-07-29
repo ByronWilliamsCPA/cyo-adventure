@@ -565,6 +565,18 @@ credits; zero spend occurred; the Ollama fallback leg 404s on an unpulled model)
 after a top-up.** The optional vocative nudge was not exercised; it is an owner spend
 decision and the feature does not depend on it.
 
+**CONFIRMED 2026-07-29** (fresh run `results/sentinel-survival/20260729T042510Z`, 30 unseen
+fills through the production route after the credit top-up): **verify_manifest_ok 30/30
+(100%)**, the G1-R gate requirement, met on data the matcher was never tuned against.
+Second finding, load-bearing for how the record must be read: per-slot coverage varies
+materially run to run (HERO 26.8% here vs 42.4% on the dev fills; FOUNDER 78.6% vs 94.6%;
+CHAPERONE 30.6% vs 63.9%; LISTENER/OPERATOR stable near 100%). Coverage is a property of
+each fill, not of the transform, which is why it is a soft floor and the integrity check is
+the hard gate (AL-061). Exit-record coverage posture, stated as cross-run ranges: named
+third-party slots roughly 79-100%, HERO roughly 27-42% (structural, second-person voice),
+lowercase relational slots roughly 30-90% small-sample. **Stage R technical exit is met;
+the remaining G1-R clause is the owner's acknowledgment of this coverage posture.**
+
 - [ ] Run the survival instrument once more (30 stories, `--providers openrouter --count 30
   --slots-per-story 4 --save-fills`; env recipe in Task A1). The instrument stays offline
   and standalone, but after Task R2 it exercises the SAME promoted domain transform the

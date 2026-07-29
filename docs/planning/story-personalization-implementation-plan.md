@@ -434,6 +434,12 @@ zero provider spend; strict baseline preserved as `reinsertion-report-strict.*`)
   (structural); lowercase relational slots (KIN, CHAPERONE, THRESHOLD, COMPANION_KIND,
   ENTRANCE) span 58-80% on small samples and are the residual soft spot the dedication
   overlay does not need to cover (they are not the child's name).
+- **G1-R CONFIRMED 2026-07-29** on 30 fresh, unseen fills
+  (`results/sentinel-survival/20260729T042510Z`): verify_manifest_ok **30/30 (100%)**.
+  Per-slot coverage proved run-variable (HERO 26.8% vs 42.4%, FOUNDER 78.6% vs 94.6% across
+  the two runs; LISTENER/OPERATOR stable near 100%), confirming coverage is a per-fill
+  property to report as cross-run ranges, never a stable point estimate (AL-061); the
+  transform-correctness gate is the invariant.
 
 ## 4. P3: leak-surface guard points
 
