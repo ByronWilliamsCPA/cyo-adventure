@@ -37,7 +37,6 @@ from cyo_adventure.generation.provider import _CANNED_STORY
 from cyo_adventure.moderation import rescreen as rescreen_mod
 from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.moderation.thresholds import Threshold, ThresholdPolicy
-from cyo_adventure.storybook.models import Storybook as StoryModel
 from cyo_adventure.storybook.sentinels import wrap
 
 pytestmark = [pytest.mark.unit, pytest.mark.asyncio]
@@ -581,9 +580,8 @@ async def test_malformed_sentinel_in_title_flagged_by_scan() -> None:
     """
     blob = _blob()
     blob["title"] = f"{blob['title']} {{~HERO:Explorer}}"
-    story = StoryModel.model_validate(blob)
 
-    reasons = rescreen_mod._sentinel_corruption_reasons(story)
+    reasons = rescreen_mod._sentinel_corruption_reasons(blob, frozenset())
 
     assert any("malformed" in r and "title" in r for r in reasons)
 
@@ -595,11 +593,25 @@ async def test_clean_blob_is_not_flagged_by_sentinel_scan() -> None:
     title, or a choice label), `_sentinel_corruption_reasons` finds nothing
     to report, so it never contributes a reason toward a "flagged" outcome.
     """
-    story = StoryModel.model_validate(_blob())
-
-    reasons = rescreen_mod._sentinel_corruption_reasons(story)
+    reasons = rescreen_mod._sentinel_corruption_reasons(_blob(), frozenset())
 
     assert reasons == []
+
+
+async def test_sentinel_corruption_scan_fails_closed_when_contract_unrecoverable() -> (
+    None
+):
+    """(ADR-023 Stage R, M1) An unrecoverable personalizable-slot contract
+    fails the scan closed with one explicit reason, mirroring
+    `moderation/pipeline.py`'s own moderation-entry backstop, instead of
+    guessing an empty declared set that could let a real corruption through
+    unflagged.
+    """
+    reasons = rescreen_mod._sentinel_corruption_reasons(_blob(), None)
+
+    assert reasons == [
+        "personalizable-slot contract could not be recovered; failing closed"
+    ]
 
 
 # ---------------------------------------------------------------------------

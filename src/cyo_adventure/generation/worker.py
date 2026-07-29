@@ -90,8 +90,13 @@ from cyo_adventure.story_requests.interpretation import (
     render_interpretation,
 )
 from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.storybook.reinsertion import (
+    TokenOutcome,
+    reinsert_storybook,
+    verify_manifest,
+)
 from cyo_adventure.utils.logging import get_logger
-from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity
+from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity_at_rest
 from cyo_adventure.validator.slots import DENYLIST_VERSION
 
 if TYPE_CHECKING:
@@ -787,6 +792,69 @@ def _as_str_list(value: object) -> list[str]:
     return [item for item in cast("list[object]", value) if isinstance(item, str)]
 
 
+def _slot_ids_with_body_coverage(
+    token_outcomes: tuple[TokenOutcome, ...],
+) -> frozenset[str]:
+    """Return every slot id with at least one reinsertable body/ending-title occurrence.
+
+    Derived from `reinsert_storybook`'s own `token_outcomes`, so this reuses
+    the transform's already-computed per-(node, token) classification
+    instead of re-scanning the final document's text a second time.
+
+    Args:
+        token_outcomes: The `ReinsertionOutcome.token_outcomes` produced for
+            one fill.
+
+    Returns:
+        frozenset[str]: Every slot id that became reinsertable in at least
+            one node.
+    """
+    return frozenset(
+        outcome.slot_id
+        for outcome in token_outcomes
+        if outcome.status == "reinsertable"
+    )
+
+
+def _warn_on_zero_coverage_slots(
+    personalizable_slots: frozenset[str],
+    token_outcomes: tuple[TokenOutcome, ...],
+    *,
+    skeleton_slug: str,
+) -> None:
+    """Emit a WARNING (never a failure) for a declared slot reinserted nowhere.
+
+    A soft coverage floor, not a gate: a declared personalizable slot whose
+    token never became reinsertable anywhere in the document is a content
+    smell (the bind promised a personalization point the fill prose never
+    honored), not a corruption, so it never blocks the job. A validator
+    PL-code was the preferred home for this, but is not mechanical here: the
+    deterministic validator gate (`validator.run_gate`) runs over the parsed,
+    pre-reinsertion document, a pipeline stage earlier than where this
+    transform's manifest exists, so there is no gate hook this check could
+    attach to without restructuring the gate/reinsertion order (ADR-023
+    Stage R task brief, reported deviation). A structlog warning is the
+    fallback.
+
+    Args:
+        personalizable_slots: The contract's declared personalizable slot
+            ids for this fill; a no-op when empty.
+        token_outcomes: The `ReinsertionOutcome.token_outcomes` produced for
+            this fill.
+        skeleton_slug: The matched skeleton slug, for the log line.
+    """
+    if not personalizable_slots:
+        return
+    covered = _slot_ids_with_body_coverage(token_outcomes)
+    uncovered = sorted(personalizable_slots - covered)
+    if uncovered:
+        logger.warning(
+            "generation_job.personalizable_slot_zero_coverage",
+            skeleton_slug=skeleton_slug,
+            slot_ids=uncovered,
+        )
+
+
 async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     """Run the automated skeleton-fill pipeline (Stage B') for one job.
 
@@ -978,34 +1046,65 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     # #CRITICAL: security: a personalizable slot's sentinel-wrapped value
     # (rendered into `bound` above) is the ONLY marker standing between the
     # fill LLM's free-text output and a family's later personalization
-    # resolve; a forged, mutated, migrated, or dropped sentinel in the filled
-    # blob is an unreviewed substitution point that must never reach a
-    # guardian/admin's approval queue looking like ordinary prose (ADR-023
-    # plan section 3.2, "Fail closed"). This check runs on every skeleton
-    # fill, not only personalizable ones: `personalizable_slot_ids` is empty
-    # for every contract on disk today (Task 2 added the slot KIND; nothing
-    # declares it yet), so `check_sentinel_integrity` derives an empty
-    # expected set: the dropped/forged/migrated/unknown-slot checks all pass
-    # for existing content. The malformed-near-miss scan does run
-    # unconditionally (it is not gated on the expected set), but it fires only
-    # on genuinely sentinel-shaped tokens (`{~...~}` near-misses) that ordinary
-    # prose never contains, so this wiring stays byte-neutral for all real
-    # sentinel-free content until a personalizable contract exists. Fails
-    # closed on the FIRST trip: the section 3.4
+    # resolve. G1 measurement showed the fill LLM preserves a sentinel
+    # wrapper verbatim on only 3.3% of tokens (ADR-023 Stage R), so this step
+    # no longer trusts the model to have kept any sentinel intact: it derives
+    # the final document from `bound` (the pre-fill source of truth for slot
+    # placement) via a deterministic strip-all-then-reinsert transform
+    # (`reinsert_storybook`), then verifies the transform's own output
+    # against its own derived manifest and re-scans the result for anything
+    # sentinel-shaped left at rest ("derive, not prescribe"). This runs on
+    # every skeleton fill, not only personalizable ones:
+    # `personalizable_slot_ids` is empty for every contract on disk today
+    # (Task 2 added the slot KIND; nothing declares it yet), so `bound` has no
+    # expected tokens, the transform is a byte-identical no-op, and
+    # `check_sentinel_integrity_at_rest` derives an empty expected set for
+    # existing content. Fails closed on the FIRST trip: the section 3.4
     # one-retry policy is explicitly out of scope here (Task 4b). Skipped
     # when `outcome.storybook` is `None` (the gate blocked with no
     # salvageable doc, `_build_outcome`'s "failed, no doc" branch): there is
-    # no blob to check or persist in that case.
+    # no blob to transform or check in that case.
     # #VERIFY: test_run_skeleton_fill_sentinel_integrity_dormant_for_non_personalizable_fill,
     # test_run_skeleton_fill_sentinel_integrity_passes_verbatim_copy, and
-    # test_run_skeleton_fill_sentinel_integrity_mutated_sentinel_fails_closed
+    # test_run_skeleton_fill_sentinel_integrity_forged_value_not_reinserted
     # in tests/unit/test_worker.py.
+    final_storybook = outcome.storybook
+    sentinel_manifest: dict[str, object] | None = None
     if outcome.storybook is not None:
-        integrity_result = check_sentinel_integrity(bound, outcome.storybook)
-        if not integrity_result.ok:
+        reinsertion_outcome = reinsert_storybook(bound, outcome.storybook)
+        final_storybook = reinsertion_outcome.document
+        sentinel_manifest = reinsertion_outcome.manifest
+
+        if not verify_manifest(final_storybook, sentinel_manifest):
+            # `verify_manifest` rebuilds a reference document from the
+            # manifest it is passed and re-runs the prescriptive check
+            # against the document that manifest was derived from, so it
+            # passes by construction when both come from the same
+            # `reinsert_storybook` call. A failure here means
+            # `reinsert_storybook` produced a document its own manifest
+            # cannot account for: a transform bug, not a fill-content
+            # problem.
+            logger.error(
+                "generation_job.sentinel_manifest_verification_failed",
+                skeleton_slug=skeleton_slug,
+            )
+            msg = (
+                f"reinsertion transform for skeleton '{skeleton_slug}' "
+                "produced a document that fails its own manifest"
+            )
+            raise ValidationError(
+                msg,
+                field="sentinel_integrity",
+                details={"sentinel_integrity_violations": []},
+            )
+
+        at_rest_result = check_sentinel_integrity_at_rest(
+            final_storybook, personalizable_slots
+        )
+        if not at_rest_result.ok:
             violation_details = [
                 {"node_id": v.node_id, "kind": v.kind, "token": v.token}
-                for v in integrity_result.violations
+                for v in at_rest_result.violations
             ]
             logger.error(
                 "generation_job.sentinel_integrity_violation",
@@ -1021,6 +1120,12 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
                 field="sentinel_integrity",
                 details={"sentinel_integrity_violations": violation_details},
             )
+
+        _warn_on_zero_coverage_slots(
+            personalizable_slots,
+            reinsertion_outcome.token_outcomes,
+            skeleton_slug=skeleton_slug,
+        )
 
     # WS-2 design section 7: the audit block a reviewer needs to see exactly
     # what the theme changed. `bind_attempts` is deliberately omitted:
@@ -1059,7 +1164,7 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     # instance directly keeps the return type unambiguous everywhere.
     return GenerationOutcome(
         status=outcome.status,
-        storybook=outcome.storybook,
+        storybook=final_storybook,
         report={
             **outcome.report,
             "theme_contract": theme_contract_report,
@@ -1067,6 +1172,7 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         },
         attempts=outcome.attempts,
         stage_log=outcome.stage_log,
+        sentinel_manifest=sentinel_manifest,
     )
 
 

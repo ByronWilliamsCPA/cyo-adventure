@@ -66,21 +66,23 @@ from sqlalchemy import select
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.events import EventType, record_event
 from cyo_adventure.moderation.classifiers import run_classifiers
+from cyo_adventure.moderation.personalizable_slots import (
+    personalizable_slot_ids_for_story,
+)
 from cyo_adventure.moderation.report import Finding, Verdict
 from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_policy
 from cyo_adventure.publishing.state_machine import Status
-from cyo_adventure.storybook.models import Node
 from cyo_adventure.storybook.models import Storybook as StoryModel
-from cyo_adventure.storybook.sentinels import (
-    find_malformed_sentinels,
-    find_sentinels,
-    strip_sentinels,
-)
+from cyo_adventure.storybook.sentinels import strip_sentinels
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import GateResult, run_gate
+from cyo_adventure.validator.sentinel_integrity import (
+    IntegrityViolation,
+    check_sentinel_integrity_at_rest,
+)
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Mapping, Sequence
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -223,114 +225,89 @@ def _newly_surfaced_reasons(surfaced: list[Finding]) -> list[str]:
     return [f"classifier {f.source.value}/{f.category}: {reason}" for f in surfaced]
 
 
-# #CRITICAL: security: this is a CONTRACT-FREE subset of
-# `check_sentinel_integrity_at_rest` (ADR-023 plan 3.3, sub-task 3b). It
-# detects a malformed near-miss sentinel and a well-formed sentinel misplaced
-# in a choice label, but deliberately does NOT check that a well-formed
-# sentinel's slot id is a declared personalizable slot of this story (the
-# `unknown_slot` check that Variant B's full form performs): rescreen re-reads
-# an already-PUBLISHED blob with no skeleton/contract reference on this path,
-# and the authoritative personalizable-slot declaration for a published book
-# is deferred to the future sentinel manifest (plan line ~434, a later
-# phase), which this task explicitly does not build. When that manifest
-# lands, this function should be replaced by a call to the full
-# `check_sentinel_integrity_at_rest`.
+# #CRITICAL: security: ADR-023 Stage R. Rescreen re-reads an already-PUBLISHED
+# blob with no skeleton/contract reference on this code path, but the
+# personalizable-slot contract itself IS recoverable per book, the same way
+# `moderation/pipeline.py`'s own moderation-entry backstop resolves it: via
+# the story's `GenerationJob` row (`personalizable_slot_ids_for_story`). This
+# was formerly a contract-free, hand-rolled subset of
+# `check_sentinel_integrity_at_rest` that could not check a well-formed
+# sentinel's slot id against the declared set (the `unknown_slot` check); now
+# that the manifest/contract this file's comment used to defer to has
+# landed (Task R3), this calls the full `check_sentinel_integrity_at_rest`
+# directly.
 # #VERIFY: tests/unit/test_rescreen_unit.py::
 # test_malformed_sentinel_flags_rescreen,
 # ::test_sentinel_in_choice_label_flags_rescreen, and
 # ::test_clean_blob_is_not_flagged_by_sentinel_scan.
-def _malformed_sentinel_reasons(text: str, location: str) -> list[str]:
-    """Return one reason string per malformed sentinel-shaped near-miss in ``text``."""
-    return [
-        f"sentinel malformed in {location}: {near_miss!r}"
-        for near_miss in find_malformed_sentinels(text)
-    ]
-
-
-def _choice_label_sentinel_reasons(
-    label: str, *, node_id: str, choice_id: str
-) -> list[str]:
-    """Return reasons for a choice label carrying malformed or well-formed sentinels.
-
-    A choice label must never carry a sentinel, well-formed or not (Task 2),
-    so both a near-miss and a genuine token are reported.
-    """
-    location = f"node {node_id} choice {choice_id} label"
-    reasons = _malformed_sentinel_reasons(label, location)
-    reasons.extend(
-        f"sentinel in choice label: node {node_id} choice {choice_id} (slot {slot_id})"
-        for slot_id, _value in find_sentinels(label)
-    )
-    return reasons
-
-
-def _title_sentinel_reasons(title: str) -> list[str]:
-    """Return reasons for a top-level title carrying malformed or well-formed sentinels.
-
-    The top-level story title must never carry a sentinel, well-formed or
-    not (Task 6a): it is kid-facing (library listings) and never a
-    personalizable location, so both a near-miss and a genuine token are
-    reported, mirroring `_choice_label_sentinel_reasons`.
-    """
-    location = "title"
-    reasons = _malformed_sentinel_reasons(title, location)
-    reasons.extend(
-        f"sentinel in title (slot {slot_id})"
-        for slot_id, _value in find_sentinels(title)
-    )
-    return reasons
-
-
-def _node_sentinel_corruption_reasons(node: Node) -> list[str]:
-    """Return every sentinel-corruption reason found within one node.
+def _violation_reason(violation: IntegrityViolation) -> str:
+    """Render one at-rest `IntegrityViolation` as a human-readable rescreen reason.
 
     Args:
-        node: A parsed node from the published story.
+        violation: One violation from `check_sentinel_integrity_at_rest`.
 
     Returns:
-        list[str]: Reasons from the node's body, ending title (if any), and
-        every choice label; empty if the node carries no sentinel corruption.
+        str: A reason string using the same vocabulary
+            ("malformed", "choice label", "title") the module's own
+            `RescreenResult.reasons` has always used, regardless of which
+            layer detected the corruption.
     """
-    reasons = _malformed_sentinel_reasons(node.body, f"node {node.id} body")
-    if node.ending is not None:
-        reasons.extend(
-            _malformed_sentinel_reasons(
-                node.ending.title, f"node {node.id} ending title"
-            )
-        )
-    for choice in node.choices:
-        reasons.extend(
-            _choice_label_sentinel_reasons(
-                choice.label, node_id=node.id, choice_id=choice.id
-            )
-        )
-    return reasons
+    if violation.node_id == "<title>":
+        if violation.kind == "malformed":
+            return f"sentinel malformed in title: {violation.token!r}"
+        return f"sentinel in title (token {violation.token})"
+    if violation.node_id == "<choice-label>":
+        if violation.kind == "malformed":
+            return f"sentinel malformed in choice label: {violation.token!r}"
+        return f"sentinel in choice label (token {violation.token})"
+    if violation.kind == "malformed":
+        return f"sentinel malformed in body/ending title: {violation.token!r}"
+    return f"sentinel {violation.kind} at rest (token {violation.token})"
 
 
-def _sentinel_corruption_reasons(story: StoryModel) -> list[str]:
+def _sentinel_corruption_reasons(
+    blob: Mapping[str, object], personalizable_slot_ids: frozenset[str] | None
+) -> list[str]:
     """Return reason strings for sentinel corruption-at-rest in a published blob.
 
-    Scans every node body, ending title, and choice label for a malformed
-    sentinel-shaped near-miss, and every choice label for a well-formed
-    sentinel (which must never appear there). See the membership-check
-    deferral note above this function. Also scans the top-level story title
-    for both a malformed near-miss and a well-formed sentinel (Task 6a): the
-    title is kid-facing (library listings) and never a personalizable
-    location, so it must never carry sentinel content at all.
-
     Args:
-        story: The parsed published story.
+        blob: The raw published blob mapping. Scanned directly (never a
+            parsed model): `check_sentinel_integrity_at_rest` re-derives its
+            own surfaces from the mapping, with no pre-fill reference needed.
+        personalizable_slot_ids: This story's declared personalizable slot
+            ids (`personalizable_slot_ids_for_story`'s tri-state result).
+            `None` means the contract itself is unrecoverable for this book;
+            failing closed with a single explicit reason here, mirroring
+            `moderation/pipeline.py`'s own moderation-entry backstop (M1),
+            rather than guessing an empty declared set that could let a real
+            corruption through unflagged.
 
     Returns:
-        list[str]: One reason string per malformed near-miss, in-choice-label
-        sentinel, or in-title sentinel found; empty if the blob carries no
-        sentinel corruption (including, trivially, a blob with no
-        sentinels at all).
+        list[str]: One reason string per violation found (or the single
+        fail-closed reason when `personalizable_slot_ids` is `None`); empty
+        if the blob carries no sentinel corruption.
     """
-    reasons: list[str] = [*_title_sentinel_reasons(story.title)]
-    for node in story.nodes:
-        reasons.extend(_node_sentinel_corruption_reasons(node))
-    return reasons
+    if personalizable_slot_ids is None:
+        return ["personalizable-slot contract could not be recovered; failing closed"]
+    result = check_sentinel_integrity_at_rest(blob, personalizable_slot_ids)
+    return [_violation_reason(v) for v in result.violations]
+
+
+async def _resolve_sentinel_corruption_reasons(
+    session: AsyncSession, story_id: str, blob: Mapping[str, object]
+) -> list[str]:
+    """Resolve `story_id`'s personalizable-slot contract, then scan `blob` at rest.
+
+    Args:
+        session: The sweep's own open async session.
+        story_id: The published storybook id under re-screen.
+        blob: The raw published blob mapping to scan.
+
+    Returns:
+        list[str]: See `_sentinel_corruption_reasons`.
+    """
+    personalizable_slot_ids = await personalizable_slot_ids_for_story(session, story_id)
+    return _sentinel_corruption_reasons(blob, personalizable_slot_ids)
 
 
 @dataclass(frozen=True, slots=True)
@@ -467,7 +444,11 @@ async def _rescreen_one(
             )
             reasons.extend(_classifier_block_reasons(classifier_findings))
             reasons.extend(_newly_surfaced_reasons(surfaced))
-            reasons.extend(_sentinel_corruption_reasons(story))
+            reasons.extend(
+                await _resolve_sentinel_corruption_reasons(
+                    session, book.id, version_row.blob
+                )
+            )
 
         outcome: Outcome = "flagged" if reasons else "passed"
         block_count = sum(1 for f in classifier_findings if f.verdict is Verdict.BLOCK)
