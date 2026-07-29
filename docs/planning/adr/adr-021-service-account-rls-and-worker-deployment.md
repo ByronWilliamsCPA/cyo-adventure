@@ -1,7 +1,7 @@
 ---
 title: "ADR-021: Dedicated least-privilege service accounts, enforced RLS, and in-repo worker deployment"
 schema_type: planning
-status: proposed
+status: accepted
 owner: core-maintainer
 purpose: "Record the decision to replace the shared postgres owner-role database
   connection with dedicated least-privilege service accounts for the API and the
@@ -17,7 +17,7 @@ tags:
 
 # ADR-021: Dedicated least-privilege service accounts, enforced RLS, and in-repo worker deployment
 
-> **Status**: Proposed
+> **Status**: Accepted (2026-07-28)
 > **Date**: 2026-07-20
 > **Amends**: [ADR-009](./adr-009-supabase-platform.md) (Decision point 6, "Compute: FastAPI
 > + worker on one container host," and Decision point 7, "the service connects with the

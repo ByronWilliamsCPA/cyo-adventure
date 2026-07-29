@@ -72,7 +72,13 @@ lessons learned to [docs/planning/authoring-lessons-log.md](docs/planning/author
 - Every lesson carries a **proposed change**, so the log drives work rather than collecting anecdotes.
 - `applied`, `rejected`, and `superseded` are claims about something having happened and require a
   `Ref` that proves it.
-- Validate before committing: `uv run python scripts/check_lessons_log.py`.
+- Validate before committing: `uv run python scripts/check_lessons_log.py`. This is now enforced by
+  the `check-lessons-log` pre-commit hook rather than left to memory, and by the Planning Linkage
+  workflow in CI.
+- A lesson that is not yet `applied`, `rejected`, or `superseded` must also be cited by a `UW-C*` row
+  in the [unscheduled work register](docs/planning/unscheduled-work-register.md), so an open lesson
+  has a phase home rather than sitting in a log nothing schedules from. `scripts/check_work_linkage.py`
+  enforces that cross-reference; see the register's linkage contract for the full rule set.
 - A run that produced no lesson appends nothing; an empty run is a real outcome.
 
 Note the split from the section above: **template** issues go to `docs/template_feedback.md`;

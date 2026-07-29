@@ -31,6 +31,7 @@ limited (iOS via TestFlight), and R3 public launch (App Store).
 | [adr/README.md](adr/README.md) | Architecture Decision Records index |
 | [PROJECT-PLAN.md](PROJECT-PLAN.md) | Synthesized project plan: phase tasks, branch map, quality gates |
 | [r1-deferred-debt-register.md](r1-deferred-debt-register.md) | Consciously-deferred debt inventory, including the R2 gate blockers |
+| [unscheduled-work-register.md](unscheduled-work-register.md) | Directed-but-unscheduled work (UW-* IDs) found by the 2026-07-28 sweep, each with a proposed phase |
 | [naive-user-ux-testing-design.md](naive-user-ux-testing-design.md) | Naive-user UX test methodology (Playwright misuse regressions + Claude-for-Chrome comprehension prompts) |
 
 See the [Project Setup Guide](../PROJECT_SETUP.md#project-planning-with-claude-code)
