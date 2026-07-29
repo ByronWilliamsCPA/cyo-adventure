@@ -570,6 +570,98 @@ describe('ReviewDetailPage', () => {
     expect(screen.queryByText('CONSOLE HOME')).not.toBeInTheDocument()
   })
 
+  describe('re-screen (register A4)', () => {
+    it.each(['in_review', 'draft', 'needs_revision'] as const)(
+      'disables Re-screen for a %s story while keeping its label',
+      async (status) => {
+        mockGet.mockResolvedValue({ data: { ...SURFACE, status } })
+        renderAt('s1')
+        const rescreen = await screen.findByRole('button', { name: /^Re-screen$/i })
+        expect(rescreen).toBeDisabled()
+        const hint = screen.getByText(/only published stories can be re-screened/i)
+        expect(rescreen).toHaveAttribute('aria-describedby', hint.id)
+      }
+    )
+
+    it('keeps Re-screen enabled for a published story', async () => {
+      mockGet.mockResolvedValue({ data: { ...SURFACE, status: 'published' } })
+      renderAt('s1')
+      expect(await screen.findByRole('button', { name: /^Re-screen$/i })).toBeEnabled()
+    })
+
+    it('re-screens a published story and shows the outcome (happy path)', async () => {
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({ data: { ...SURFACE, status: 'published' } })
+      mockPost.mockResolvedValue({
+        data: {
+          checked: 1,
+          passed: 0,
+          flagged: 1,
+          errored: 0,
+          results: [
+            {
+              storybook_id: 's1',
+              version: 1,
+              outcome: 'flagged',
+              reasons: ['band_profile: reading level exceeds threshold'],
+              error: null,
+            },
+          ],
+        },
+      })
+      renderAt('s1')
+      await user.click(await screen.findByRole('button', { name: /^Re-screen$/i }))
+      await user.click(await screen.findByRole('button', { name: /Confirm re-screen/i }))
+      expect(mockPost).toHaveBeenCalledWith('/v1/admin/rescreen', { storybook_ids: ['s1'] })
+      // Scoped to the dialog: the page's "Story overview" panel already
+      // renders an unrelated "1 flagged" badge for this fixture's finding,
+      // so an unscoped query would match both.
+      const dialog = await screen.findByRole('status')
+      expect(within(dialog).getByText('flagged')).toBeInTheDocument()
+      expect(within(dialog).getByText(/reading level exceeds threshold/i)).toBeInTheDocument()
+      // The story stays put; a re-screen never navigates away or changes status.
+      expect(screen.queryByText('CONSOLE HOME')).not.toBeInTheDocument()
+      await user.click(screen.getByRole('button', { name: /^Close$/i }))
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+
+    it('surfaces a backend rejection when re-screen fails', async () => {
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({ data: { ...SURFACE, status: 'published' } })
+      mockPost.mockRejectedValue({ isAxiosError: true, response: { status: 500 } })
+      renderAt('s1')
+      await user.click(await screen.findByRole('button', { name: /^Re-screen$/i }))
+      await user.click(await screen.findByRole('button', { name: /Confirm re-screen/i }))
+      expect(await screen.findByRole('alert')).toHaveTextContent(/could not re-screen/i)
+      expect(screen.queryByText('CONSOLE HOME')).not.toBeInTheDocument()
+    })
+
+    it('reports an empty sweep when the story was skipped (no longer published)', async () => {
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({ data: { ...SURFACE, status: 'published' } })
+      mockPost.mockResolvedValue({
+        data: { checked: 0, passed: 0, flagged: 0, errored: 0, results: [] },
+      })
+      renderAt('s1')
+      await user.click(await screen.findByRole('button', { name: /^Re-screen$/i }))
+      await user.click(await screen.findByRole('button', { name: /Confirm re-screen/i }))
+      expect(await screen.findByText(/not included in the sweep/i)).toBeInTheDocument()
+    })
+
+    it('resets a prior error when the dialog is reopened', async () => {
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({ data: { ...SURFACE, status: 'published' } })
+      mockPost.mockRejectedValue({ isAxiosError: true, response: { status: 500 } })
+      renderAt('s1')
+      await user.click(await screen.findByRole('button', { name: /^Re-screen$/i }))
+      await user.click(await screen.findByRole('button', { name: /Confirm re-screen/i }))
+      expect(await screen.findByRole('alert')).toHaveTextContent(/could not re-screen/i)
+      await user.click(screen.getByRole('button', { name: /^Cancel$/i }))
+      await user.click(await screen.findByRole('button', { name: /^Re-screen$/i }))
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    })
+  })
+
   it('shows an error state when the review surface fails to load', async () => {
     mockGet.mockRejectedValue({ isAxiosError: true, response: { status: 500 } })
     renderAt('s1')
