@@ -15,11 +15,13 @@ own ORM-construction style.
 
 from __future__ import annotations
 
+import uuid
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 import pytest
 
+from cyo_adventure.api import personalization as personalization_api
 from cyo_adventure.db.models import (
     ChildProfile,
     ChildProfilePersonalization,
@@ -33,7 +35,7 @@ from tests.integration._event_assertions import assert_single_event
 from tests.integration.conftest import Seed, auth
 
 if TYPE_CHECKING:
-    import uuid
+    from collections.abc import Sequence
 
     from httpx import AsyncClient
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -688,7 +690,7 @@ async def _build_ring2_scenario(
     session: AsyncSession,
     *,
     dual_consented: bool = True,
-    consent_covers: list[str] | None = ("pet_name",),
+    consent_covers: Sequence[str] | None = ("pet_name",),
     consent_revoked: bool = False,
     subject_deactivated: bool = False,
     subject_restricted: bool = False,
@@ -696,9 +698,17 @@ async def _build_ring2_scenario(
     ring2_enabled_on_slot: bool = True,
 ) -> tuple[str, str]:
     """Build a full ring-2 scenario; returns (storybook_id, viewer_guardian_token)."""
-    sharer = Family(name=f"Sharer-{id(session)}")
+    # Names and authn_subjects only need to be unique, not meaningful, but they
+    # DO need to be unique per call rather than per session object. `id(session)`
+    # was the memory address of the session, which CPython reuses once a closed
+    # session is collected: two sequential `async with sessions()` blocks in one
+    # test (the ordering test below does exactly that) can land on the same
+    # address and collide on `authn_subject`, and separate xdist workers never
+    # had any reason to differ at all.
+    tag = uuid.uuid4().hex[:12]
+    sharer = Family(name=f"Sharer-{tag}")
     viewer = Family(
-        name=f"Viewer-{id(session)}",
+        name=f"Viewer-{tag}",
         personalization_receive_enabled=viewer_receive_enabled,
     )
     session.add_all([sharer, viewer])
@@ -721,12 +731,8 @@ async def _build_ring2_scenario(
                 ring2_enabled=True,
             )
         )
-    sharer_guardian = await _guardian(
-        session, sharer.id, f"sharer-guardian-{id(session)}"
-    )
-    viewer_guardian = await _guardian(
-        session, viewer.id, f"viewer-guardian-{id(session)}"
-    )
+    sharer_guardian = await _guardian(session, sharer.id, f"sharer-guardian-{tag}")
+    viewer_guardian = await _guardian(session, viewer.id, f"viewer-guardian-{tag}")
     connection = _connection(
         viewer.id,
         sharer.id,
@@ -864,6 +870,53 @@ async def test_values_ring2_processing_restricted_subject_empty(
     )
     assert resp.status_code == 200, resp.text
     assert resp.json()["values"] == {}
+
+
+async def test_values_ring2_restricted_subject_is_refused_before_any_value_read(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A restricted subject's values are never read, not merely never returned.
+
+    The two cases above already pin the OUTCOME (an empty payload). This pins
+    the ORDER, which is the part a refactor can quietly break: the liveness
+    guard runs before ``_ring2_values``, so an Article-18 processing-restricted
+    child's personalization rows are not touched at all. Reading them in order
+    to discard them would be the exact processing that restriction exists to
+    stop, and it is the shape a "make the empty paths take constant time"
+    change would naturally take.
+
+    The stub raises rather than records, so a hoist fails loudly. The second
+    half proves the patch target is live: on the happy path the same stub
+    fires, so a green first half can never be green because the monkeypatch
+    missed.
+    """
+
+    def _must_not_run(*_args: object, **_kwargs: object) -> None:
+        msg = "_ring2_values was reached for a processing-restricted subject"
+        raise AssertionError(msg)
+
+    monkeypatch.setattr(personalization_api, "_ring2_values", _must_not_run)
+
+    async with sessions() as session:
+        book_id, viewer_token = await _build_ring2_scenario(
+            session, subject_restricted=True
+        )
+    resp = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth(viewer_token),
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["values"] == {}
+
+    async with sessions() as session:
+        live_book_id, live_token = await _build_ring2_scenario(session)
+    with pytest.raises(AssertionError, match="processing-restricted subject"):
+        await client.get(
+            f"/api/v1/storybooks/{live_book_id}/personalization-values",
+            headers=auth(live_token),
+        )
 
 
 async def test_values_ring2_receive_toggle_off_empty(

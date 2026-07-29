@@ -1106,6 +1106,30 @@ async def _resolve_ring2_view(
         return _empty_values_view()
     if not _is_dual_consented(connection):
         return _empty_values_view()
+    # #ASSUME: security: the four guards above and this one all return the
+    # same empty payload but take observably different amounts of work, so a
+    # caller timing the route can tell them apart. That is deliberate, and it
+    # is a leak only for this last one.
+    #
+    # The first three test facts the caller is ALREADY entitled to read
+    # directly: `GET /v1/family-connections/mine` returns, for every
+    # connection touching their family, the counterpart family id and name,
+    # their own consent state, and `active` (both sides consented). The
+    # receive toggle is on the caller's OWN family row. Timing cannot leak
+    # what a documented route hands over on request.
+    #
+    # `_is_live` is different: `deactivated_at` and `processing_restricted_at`
+    # are sharer-side facts, and short-circuiting here makes "subject is not
+    # live" distinguishable from every other empty outcome by the two queries
+    # `_ring2_values` would otherwise run. Equalizing that would mean reading
+    # a processing-restricted child's personalization rows for the sole
+    # purpose of discarding them, which is exactly the processing Article 18
+    # restriction exists to stop. Failing fast is worth more than a flat
+    # timing curve, so the ordering below is load-bearing, not incidental.
+    # #VERIFY: tests/integration/test_personalization_api.py::
+    # test_values_ring2_restricted_subject_is_refused_before_any_value_read
+    # pins it by making `_ring2_values` raise; a refactor that hoists the
+    # value read above this guard fails there rather than silently shipping.
     if not _is_live(subject):
         return _empty_values_view()
     values, policy_version = await _ring2_values(session, subject, connection)
