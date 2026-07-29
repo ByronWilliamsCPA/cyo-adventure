@@ -22,10 +22,13 @@ from sqlalchemy import select
 
 from cyo_adventure.db.models import (
     ChildProfile,
+    ChildProfilePersonalization,
     Completion,
     Concept,
     DeviceGrant,
+    FamilyConnection,
     KidFlag,
+    PersonalizationDisclosureConsent,
     Rating,
     ReadingState,
     Storybook,
@@ -46,11 +49,21 @@ pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
 async def _populate_child_linked_rows(
     sessions: async_sessionmaker[AsyncSession], seed: Seed
 ) -> None:
-    """Add a reading state, completion, rating, and (already-seeded) assignment.
+    """Add a reading state, completion, rating, personalization row, consent
+    row, and (already-seeded) assignment.
 
     ``seed`` already assigns ``seed.storybook_id``/``version`` to
-    ``seed.child_profile_id``; this adds the three tables the fixture does
-    not populate.
+    ``seed.child_profile_id``; this adds the tables the fixture does not
+    populate. The personalization and consent rows are ADR-023 P4 (Task
+    B3): both FKs CASCADE from ``child_profile_id`` (see
+    ``ChildProfilePersonalization``/``PersonalizationDisclosureConsent``'s
+    docstrings in ``db/models.py``), so this drill proves that cascade
+    actually fires. The consent row's ``family_connection_id`` is left
+    ``NULL`` (the seed fixture has no ``FamilyConnection`` row); the
+    connection-delete-then-tombstone mechanics (a live connection's FK
+    actually going ``NULL`` on that connection's own deletion) are already
+    proven by ``test_personalization_consent_tombstone.py`` and are not
+    re-covered here.
     """
     async with sessions() as s:
         s.add(
@@ -74,6 +87,22 @@ async def _populate_child_linked_rows(
                 child_profile_id=seed.child_profile_id,
                 storybook_id=seed.storybook_id,
                 value=5,
+            )
+        )
+        s.add(
+            ChildProfilePersonalization(
+                child_profile_id=seed.child_profile_id,
+                slot_type="pet_name",
+                value_text="Whiskers",
+                ring1_enabled=True,
+            )
+        )
+        s.add(
+            PersonalizationDisclosureConsent(
+                child_profile_id=seed.child_profile_id,
+                family_connection_id=None,
+                connected_family_label="Cousins Family",
+                covered_slot_types=["pet_name"],
             )
         )
         await s.commit()
@@ -168,6 +197,24 @@ async def test_delete_profile_removes_child_linked_rows(
                 )
             )
         ) is None
+        # ADR-023 P4 (Task B3): the personalization row and disclosure
+        # consent row CASCADE with the profile too.
+        assert (
+            await s.scalar(
+                select(ChildProfilePersonalization).where(
+                    ChildProfilePersonalization.child_profile_id
+                    == seed.child_profile_id
+                )
+            )
+        ) is None
+        assert (
+            await s.scalar(
+                select(PersonalizationDisclosureConsent).where(
+                    PersonalizationDisclosureConsent.child_profile_id
+                    == seed.child_profile_id
+                )
+            )
+        ) is None
         # The child's own login row (child-a) is gone too.
         assert (
             await s.scalar(
@@ -249,6 +296,24 @@ async def test_delete_my_family_removes_everything(
         assert (
             await s.scalar(
                 select(Rating).where(Rating.child_profile_id == seed.child_profile_id)
+            )
+        ) is None
+        # ADR-023 P4 (Task B3): both cascade transitively through the
+        # deleted profile, which itself cascades from the deleted family.
+        assert (
+            await s.scalar(
+                select(ChildProfilePersonalization).where(
+                    ChildProfilePersonalization.child_profile_id
+                    == seed.child_profile_id
+                )
+            )
+        ) is None
+        assert (
+            await s.scalar(
+                select(PersonalizationDisclosureConsent).where(
+                    PersonalizationDisclosureConsent.child_profile_id
+                    == seed.child_profile_id
+                )
             )
         ) is None
         assert (
@@ -368,6 +433,93 @@ async def test_export_my_family_returns_full_data(
     assert any(
         req["request_text"] == "a story about dragons" for req in body["story_requests"]
     )
+
+
+async def test_export_includes_personalization_and_disclosure_consent_data(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """The export surfaces every personalization row (the sibling slot with
+    both its ``value_profile_id`` and the referenced profile's display
+    name), the two real-name consent booleans, and every disclosure consent
+    row, including a tombstoned one (Task B3, ADR-023 P4).
+
+    The connection-delete-then-tombstone MECHANICS (a live connection's FK
+    actually going ``NULL`` on that connection's own deletion) are proven by
+    ``test_personalization_consent_tombstone.py``; this test only proves the
+    export surface itself picks up a tombstoned row's fields (constructed
+    directly with ``family_connection_id=None``) alongside a live one.
+    """
+    async with sessions() as s:
+        sibling = ChildProfile(
+            family_id=seed.family_id, display_name="Sibling Sam", age_band="10-13"
+        )
+        s.add(sibling)
+        await s.flush()
+        sibling_id = sibling.id
+
+        other_profile = await s.get(ChildProfile, seed.other_child_profile_id)
+        assert other_profile is not None
+        connection = FamilyConnection(
+            family_id=seed.family_id, connected_family_id=other_profile.family_id
+        )
+        s.add(connection)
+        await s.flush()
+        connection_id = connection.id
+
+        s.add(
+            ChildProfilePersonalization(
+                child_profile_id=seed.child_profile_id,
+                slot_type="sibling_name",
+                value_profile_id=sibling_id,
+                ring1_enabled=True,
+            )
+        )
+        s.add(
+            PersonalizationDisclosureConsent(
+                child_profile_id=seed.child_profile_id,
+                family_connection_id=connection_id,
+                connected_family_label="Family B",
+                covered_slot_types=["sibling_name"],
+                consent_accepted_at=datetime.now(UTC),
+                consent_policy_version="v1",
+                consent_signer_name="Guardian A",
+                consent_ip="127.0.0.1",
+            )
+        )
+        s.add(
+            PersonalizationDisclosureConsent(
+                child_profile_id=seed.child_profile_id,
+                family_connection_id=None,
+                connected_family_label="Former Family C",
+                covered_slot_types=["pet_name"],
+            )
+        )
+        await s.commit()
+
+    resp = await client.get("/api/v1/me/export", headers=auth(seed.guardian_token))
+    assert resp.status_code == 200, resp.text
+    profile = next(
+        p for p in resp.json()["profiles"] if p["id"] == str(seed.child_profile_id)
+    )
+    assert profile["real_name_ring1_enabled"] is False
+    assert profile["real_name_ring2_enabled"] is False
+
+    personalization = next(
+        row for row in profile["personalization"] if row["slot_type"] == "sibling_name"
+    )
+    assert personalization["value_profile_id"] == str(sibling_id)
+    assert personalization["value_profile_display_name"] == "Sibling Sam"
+
+    consents = profile["disclosure_consents"]
+    live = next(c for c in consents if c["family_connection_id"] is not None)
+    assert live["family_connection_id"] == str(connection_id)
+    assert live["connected_family_label"] == "Family B"
+    assert live["consent_signer_name"] == "Guardian A"
+
+    tombstoned = next(c for c in consents if c["family_connection_id"] is None)
+    assert tombstoned["connected_family_label"] == "Former Family C"
 
 
 async def test_export_my_family_rejects_non_guardian(

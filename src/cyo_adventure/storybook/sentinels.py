@@ -252,7 +252,31 @@ def find_malformed_sentinels(text: str) -> list[str]:
         list[str]: Every malformed near-miss substring found, in the order
             they appear in `text`. Empty if none are found.
     """
-    hits: list[str] = []
+    return [text[start:end] for start, end in find_malformed_sentinel_spans(text)]
+
+
+def find_malformed_sentinel_spans(text: str) -> list[tuple[int, int]]:
+    """Find every malformed near-miss in `text` as a `(start, end)` offset pair.
+
+    The offset-returning form of `find_malformed_sentinels`, which is defined
+    in terms of this function. A caller that REWRITES the near-misses it finds
+    (rather than just reporting them) must use this form: re-locating a
+    returned substring with `str.index` finds the leftmost textual occurrence,
+    which is not necessarily the occurrence the scan actually resolved, so a
+    document containing the same near-miss text twice, or containing it as a
+    sub-slice of an earlier differently-parsed span, gets the wrong one
+    rewritten.
+
+    Args:
+        text: Text that may contain zero or more sentinel-shaped substrings.
+
+    Returns:
+        list[tuple[int, int]]: Half-open `(start, end)` slice bounds, one per
+            near-miss, in the order they appear in `text` and guaranteed
+            non-overlapping and strictly increasing (the scan never revisits
+            text before the end of the previous hit). Empty if none are found.
+    """
+    hits: list[tuple[int, int]] = []
     index = 0
     floor = 0
     length = len(text)
@@ -261,7 +285,7 @@ def find_malformed_sentinels(text: str) -> list[str]:
             scan = _closer_end(text, index + 2)
             span = text[index : scan.end]
             if not scan.terminated or not SENTINEL_RE.fullmatch(span):
-                hits.append(span)
+                hits.append((index, scan.end))
             index = scan.end
             floor = index
         elif text.startswith("~}", index):
@@ -278,7 +302,7 @@ def find_malformed_sentinels(text: str) -> list[str]:
             if open_index == -1 or "}" in text[open_index + 1 : index]:
                 index += 1
                 continue
-            hits.append(text[open_index : index + 2])
+            hits.append((open_index, index + 2))
             index += 2
             floor = index
         else:

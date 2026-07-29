@@ -183,3 +183,65 @@ async def test_persist_skeleton_slug_defaults_to_none() -> None:
 
     versions = _added(session, StorybookVersion)
     assert versions[0].skeleton_slug is None
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_persist_records_the_sentinel_manifest() -> None:
+    """The manifest reaches the column; this is its only write path."""
+    session = _FakeSession()
+    manifest = {
+        "tokens": {"n1": [{"slot_id": "hero", "value": "Explorer", "count": 2}]}
+    }
+    params = StorybookParams(
+        story_id="s_manifest",
+        blob={"id": "ignored", "title": "T", "nodes": []},
+        family_id=uuid.uuid4(),
+        provider="mock",
+        sentinel_manifest=manifest,
+    )
+    await persist_storybook(session, params)
+
+    versions = _added(session, StorybookVersion)
+    assert versions[0].sentinel_manifest == manifest
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_persist_sentinel_manifest_defaults_to_none() -> None:
+    """A path that ran no transform stores NULL, not an empty manifest.
+
+    The distinction is load-bearing: NULL means "no transform ran here",
+    while ``{"tokens": {}}`` would claim the transform ran and re-inserted
+    nothing, which is a different fact about the document.
+    """
+    session = _FakeSession()
+    params = StorybookParams(
+        story_id="s_no_manifest",
+        blob={"id": "ignored", "title": "T", "nodes": []},
+        family_id=uuid.uuid4(),
+        provider="mock",
+    )
+    await persist_storybook(session, params)
+
+    versions = _added(session, StorybookVersion)
+    assert versions[0].sentinel_manifest is None
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_persist_rejects_oversized_sentinel_manifest() -> None:
+    """The manifest is byte-budgeted like the other two JSONB payloads."""
+    session = _FakeSession()
+    oversized = {"tokens": {"n1": "x" * (_MAX_BLOB_BYTES + 1)}}
+    params = StorybookParams(
+        story_id="s_big_manifest",
+        blob={"id": "ignored", "title": "T", "nodes": []},
+        family_id=uuid.uuid4(),
+        provider="mock",
+        sentinel_manifest=oversized,
+    )
+    with pytest.raises(ValidationError, match="sentinel_manifest"):
+        await persist_storybook(session, params)
+
+    assert session.added == []
