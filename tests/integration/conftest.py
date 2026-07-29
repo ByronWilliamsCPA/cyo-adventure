@@ -26,7 +26,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 from testcontainers.community.postgres import PostgresContainer
 
-from cyo_adventure.api.deps import get_db_session
+from cyo_adventure.api.deps import get_db_session, get_session_factory
 from cyo_adventure.app import app
 from cyo_adventure.core.database import Base
 from cyo_adventure.db.models import (
@@ -325,6 +325,14 @@ async def client(
             await session.close()
 
     app.dependency_overrides[get_db_session] = _override
+    # A route whose database work outlives the handler call cannot use the
+    # request-scoped unit of work above and takes a session FACTORY instead
+    # (api/notifications.py's SSE stream: see deps.get_session_factory). That
+    # factory is a dependency precisely so it can be bound to the container
+    # engine here; without this override such a route would silently fall
+    # back to the module-level factory and talk to the real engine mid-test.
+    app.dependency_overrides[get_session_factory] = lambda: sessions
+
     _reset_rate_limiter()
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:

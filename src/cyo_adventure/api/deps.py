@@ -46,7 +46,7 @@ from cyo_adventure.core.exceptions import (
 from cyo_adventure.db.models import ChildProfile, DeviceGrant, User
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncIterator
+    from collections.abc import AsyncIterator, Callable
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -229,6 +229,42 @@ async def get_db_session() -> AsyncIterator[AsyncSession]:
 
 
 DbSession = Annotated["AsyncSession", Depends(get_db_session)]
+
+
+def get_session_factory() -> Callable[[], AsyncSession]:
+    """Return the factory a handler uses to open its own short-lived sessions.
+
+    The request-scoped ``get_db_session`` unit of work above is the default,
+    and remains correct for every ordinary handler. It is *not* usable by a
+    handler whose database work outlives the handler call itself: a FastAPI
+    ``yield`` dependency is torn down only after the entire response body has
+    been sent, so for a ``StreamingResponse`` its session (and the pooled
+    connection that session holds) would stay checked out for the whole
+    connection's lifetime. Today that is ``api/notifications.py``'s SSE
+    stream, whose generator keeps polling long after
+    ``stream_notifications`` has returned.
+
+    Such a handler takes this factory and opens/closes a fresh, short-lived
+    session per unit of work instead. Injecting the factory rather than
+    importing ``get_session`` directly is what keeps those handlers on the
+    dependency seam, so ``app.dependency_overrides`` reaches them exactly as
+    it reaches every other route (``tests/integration/conftest.py`` binds
+    both this and ``get_db_session`` to the test container's engine).
+
+    Returns:
+        Callable[[], AsyncSession]: The module-level session factory.
+    """
+    # #CRITICAL: external resources: a caller of this factory owns the
+    # lifecycle of every session it opens; nothing here closes them. Each call
+    # site must close its session in a `finally`, or it leaks a pooled
+    # connection per call for as long as the handler runs.
+    # #VERIFY: tests/unit/test_notifications_api_unit.py::
+    # TestNotificationEventSource::test_closes_the_session_after_each_poll_tick
+    # asserts every session the only current caller opens is closed.
+    return get_session
+
+
+SessionFactory = Annotated["Callable[[], AsyncSession]", Depends(get_session_factory)]
 
 
 def _extract_subject(authorization: str | None) -> str:

@@ -36,11 +36,16 @@ from typing import TYPE_CHECKING, Annotated
 from fastapi import APIRouter, Header, Request
 from fastapi.responses import StreamingResponse
 
-from cyo_adventure.api.deps import Context, Principal, require_principal
+from cyo_adventure.api.deps import (
+    Context,
+    Principal,
+    SessionFactory,
+    require_principal,
+)
 from cyo_adventure.api.schemas import NotificationListView, NotificationView
 from cyo_adventure.api.sentinel_log import strip_and_log
 from cyo_adventure.core.config import settings
-from cyo_adventure.core.database import apply_family_rls_context, get_session
+from cyo_adventure.core.database import apply_family_rls_context
 from cyo_adventure.core.exceptions import AuthorizationError, ValidationError
 from cyo_adventure.notifications.models import NotificationItem
 from cyo_adventure.notifications.service import list_guardian_notifications
@@ -48,6 +53,8 @@ from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Awaitable, Callable
+
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 _logger = get_logger(__name__)
 
@@ -243,6 +250,7 @@ async def _notification_event_source(
     *,
     since: datetime | None,
     config: _StreamConfig,
+    session_factory: Callable[[], AsyncSession],
 ) -> AsyncIterator[str]:
     """Poll the guardian projection and yield new items as SSE frames.
 
@@ -268,6 +276,10 @@ async def _notification_event_source(
             ``request.is_disconnected`` in production, a test double in unit
             tests (see the #CRITICAL note below on why this is passed as a
             callable rather than a closed-over ``Request``).
+        session_factory: Opens one fresh database session per poll tick. The
+            caller injects it via ``deps.get_session_factory``, so this
+            generator never reaches for the module-level factory and stays
+            reachable by ``app.dependency_overrides`` like every other route.
 
     Yields:
         str: One SSE frame per new notification (newest last, so a client
@@ -282,8 +294,12 @@ async def _notification_event_source(
     # would compete with request-path connections for the same
     # database_pool_size/database_max_overflow ceiling (core/database.py) far
     # more aggressively than the brief per-tick checkout this does instead.
+    # The sessions come from the INJECTED factory (deps.get_session_factory),
+    # never from the module-level one: a direct core/database.py::get_session
+    # call is bound to the real engine at import and silently bypasses
+    # app.dependency_overrides, so tests would talk to the wrong database.
     # #VERIFY: tests/unit/test_notifications_api_unit.py::
-    # TestStreamNotifications::test_stream_closes_the_session_after_each_poll.
+    # TestNotificationEventSource::test_closes_the_session_after_each_poll_tick.
     #
     # #CRITICAL: security: apply_family_rls_context is re-applied on EVERY
     # fresh session (not just the caller's initial auth session), from the
@@ -301,7 +317,7 @@ async def _notification_event_source(
                 break
             if time.monotonic() - loop_start >= config.max_seconds:
                 break
-            session = get_session()
+            session = session_factory()
             try:
                 await apply_family_rls_context(
                     session, family_id=principal.family_id, is_admin=principal.is_admin
@@ -335,6 +351,7 @@ async def _notification_event_source(
 @router.get("/notifications/stream")
 async def stream_notifications(
     request: Request,
+    session_factory: SessionFactory,
     authorization: Annotated[str | None, Header()] = None,
     since: str | None = None,
 ) -> StreamingResponse:
@@ -349,11 +366,17 @@ async def stream_notifications(
     ``StreamingResponse`` means the whole connection's lifetime; resolving
     auth on a session that closes immediately, then having the generator
     open its own short-lived sessions per poll tick, is what keeps this
-    endpoint from holding one connection per open guardian tab.
+    endpoint from holding one connection per open guardian tab. Both of
+    those session sets come from the INJECTED ``SessionFactory``, so
+    declining ``DbSession`` costs this route no test seam: an override
+    installed on ``get_session_factory`` reaches the auth check and every
+    poll tick alike.
 
     Args:
         request: The ASGI request; only ``is_disconnected()`` is used, to
             let the streaming generator notice a client-side close.
+        session_factory: Injected opener for the short-lived sessions this
+            route and its generator use (see ``deps.get_session_factory``).
         authorization: The ``Authorization`` header (same bearer contract as
             every other authenticated route; see ``api/deps.py``).
         since: Optional ISO-8601 lower bound (exclusive) on ``occurred_at``,
@@ -381,7 +404,7 @@ async def stream_notifications(
     # #VERIFY: tests/unit/test_notifications_api_unit.py::
     # TestStreamNotifications::test_stream_requires_authentication;
     # test_stream_rejects_non_guardian_roles.
-    session = get_session()
+    session = session_factory()
     try:
         principal = await require_principal(session, authorization)
     finally:
@@ -399,6 +422,7 @@ async def stream_notifications(
         _notification_event_source(
             principal,
             since=since_dt,
+            session_factory=session_factory,
             config=_StreamConfig(
                 is_disconnected=request.is_disconnected,
                 poll_interval=settings.notification_stream_poll_seconds,

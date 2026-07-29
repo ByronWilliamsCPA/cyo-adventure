@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 import pytest
 from fastapi.responses import StreamingResponse
@@ -25,6 +25,11 @@ from cyo_adventure.core.exceptions import (
 )
 from cyo_adventure.notifications.models import NotificationItem
 from cyo_adventure.storybook.sentinels import wrap
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 
 def _principal(role: str) -> Principal:
@@ -305,6 +310,27 @@ class _FakeSession:
         self.closed += 1
 
 
+def _as_factory(
+    make_session: Callable[[], _FakeSession],
+) -> Callable[[], AsyncSession]:
+    """Adapt a ``_FakeSession`` maker to the injected ``SessionFactory`` shape.
+
+    The stream route and its generator take their session opener as an
+    injected dependency (``deps.get_session_factory``) rather than calling
+    the module-level ``core.database.get_session``, so these tests hand in a
+    fake factory directly instead of monkeypatching a module attribute; the
+    cast is only to satisfy BasedPyright, since ``_FakeSession`` implements
+    just the one method (``close``) the code under test calls.
+
+    Args:
+        make_session: Returns one fake session per call.
+
+    Returns:
+        Callable[[], AsyncSession]: The same callable, typed as the seam.
+    """
+    return cast("Callable[[], AsyncSession]", make_session)
+
+
 class _ScriptedDisconnect:
     """A test double for ``is_disconnected``: replays a fixed answer sequence.
 
@@ -326,9 +352,11 @@ class _ScriptedDisconnect:
 class TestNotificationEventSource:
     """Tests for ``_notification_event_source``, the SSE push generator.
 
-    Patches ``notifications.get_session``, ``apply_family_rls_context``, and
-    ``list_guardian_notifications`` the same way TestListNotificationsRoleGate
-    patches the poll path, so no real database or ASGI stack is needed.
+    Injects a fake session factory (the generator takes its session opener
+    as a parameter, never reaching for the module-level one) and patches
+    ``apply_family_rls_context`` and ``list_guardian_notifications`` the
+    same way TestListNotificationsRoleGate patches the poll path, so no
+    real database or ASGI stack is needed.
     """
 
     @pytest.mark.unit
@@ -355,7 +383,6 @@ class TestNotificationEventSource:
         ) -> list[NotificationItem]:
             return [item]
 
-        monkeypatch.setattr(notifications, "get_session", fake_get_session)
         monkeypatch.setattr(
             notifications, "apply_family_rls_context", fake_apply_family_rls_context
         )
@@ -365,6 +392,7 @@ class TestNotificationEventSource:
             fake_list_guardian_notifications,
         )
 
+        factory = _as_factory(fake_get_session)
         principal = _principal("guardian")
         config = notifications._StreamConfig(
             is_disconnected=_ScriptedDisconnect([False, True]),
@@ -375,7 +403,10 @@ class TestNotificationEventSource:
         frames = [
             frame
             async for frame in notifications._notification_event_source(
-                principal, since=None, config=config
+                principal,
+                since=None,
+                config=config,
+                session_factory=factory,
             )
         ]
 
@@ -398,7 +429,6 @@ class TestNotificationEventSource:
         ) -> list[NotificationItem]:
             return []
 
-        monkeypatch.setattr(notifications, "get_session", _FakeSession)
         monkeypatch.setattr(
             notifications, "apply_family_rls_context", fake_apply_family_rls_context
         )
@@ -408,6 +438,7 @@ class TestNotificationEventSource:
             fake_list_guardian_notifications,
         )
 
+        factory = _as_factory(_FakeSession)
         principal = _principal("guardian")
         config = notifications._StreamConfig(
             is_disconnected=_ScriptedDisconnect([False, True]),
@@ -418,7 +449,10 @@ class TestNotificationEventSource:
         frames = [
             frame
             async for frame in notifications._notification_event_source(
-                principal, since=None, config=config
+                principal,
+                since=None,
+                config=config,
+                session_factory=factory,
             )
         ]
 
@@ -446,7 +480,6 @@ class TestNotificationEventSource:
         ) -> list[NotificationItem]:
             return []
 
-        monkeypatch.setattr(notifications, "get_session", fake_get_session)
         monkeypatch.setattr(
             notifications, "apply_family_rls_context", fake_apply_family_rls_context
         )
@@ -456,6 +489,7 @@ class TestNotificationEventSource:
             fake_list_guardian_notifications,
         )
 
+        factory = _as_factory(fake_get_session)
         principal = _principal("guardian")
         # Two ticks (False, False) then stop (True) on the third check.
         config = notifications._StreamConfig(
@@ -467,7 +501,10 @@ class TestNotificationEventSource:
         _ = [
             frame
             async for frame in notifications._notification_event_source(
-                principal, since=None, config=config
+                principal,
+                since=None,
+                config=config,
+                session_factory=factory,
             )
         ]
 
@@ -491,12 +528,12 @@ class TestNotificationEventSource:
         async def fail_if_called(*_args: object, **_kwargs: object) -> object:
             raise AssertionError("no query should run once the client is disconnected")
 
-        monkeypatch.setattr(notifications, "get_session", fake_get_session)
         monkeypatch.setattr(notifications, "apply_family_rls_context", fail_if_called)
         monkeypatch.setattr(
             notifications, "list_guardian_notifications", fail_if_called
         )
 
+        factory = _as_factory(fake_get_session)
         principal = _principal("guardian")
         config = notifications._StreamConfig(
             is_disconnected=_ScriptedDisconnect([True]),
@@ -507,7 +544,10 @@ class TestNotificationEventSource:
         frames = [
             frame
             async for frame in notifications._notification_event_source(
-                principal, since=None, config=config
+                principal,
+                since=None,
+                config=config,
+                session_factory=factory,
             )
         ]
 
@@ -529,7 +569,6 @@ class TestNotificationEventSource:
         async def fail_if_called(*_args: object, **_kwargs: object) -> object:
             raise AssertionError("no query should run once max_seconds has elapsed")
 
-        monkeypatch.setattr(notifications, "get_session", fake_get_session)
         monkeypatch.setattr(notifications, "apply_family_rls_context", fail_if_called)
         monkeypatch.setattr(
             notifications, "list_guardian_notifications", fail_if_called
@@ -549,6 +588,7 @@ class TestNotificationEventSource:
         # touching a module every other test and pytest itself depend on.
         # #VERIFY: get_session_calls == 0 below proves the branch that
         # matters (no query runs once the bound is hit) actually fired.
+        factory = _as_factory(fake_get_session)
         principal = _principal("guardian")
         config = notifications._StreamConfig(
             is_disconnected=_ScriptedDisconnect([False]),
@@ -559,7 +599,10 @@ class TestNotificationEventSource:
         frames = [
             frame
             async for frame in notifications._notification_event_source(
-                principal, since=None, config=config
+                principal,
+                since=None,
+                config=config,
+                session_factory=factory,
             )
         ]
 
@@ -607,8 +650,6 @@ class TestStreamNotifications:
     async def test_stream_requires_authentication(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        monkeypatch.setattr(notifications, "get_session", _FakeSession)
-
         async def fake_require_principal(
             *_args: object, **_kwargs: object
         ) -> Principal:
@@ -618,7 +659,9 @@ class TestStreamNotifications:
 
         with pytest.raises(AuthenticationError):
             await notifications.stream_notifications(
-                cast("object", object()), authorization=None
+                cast("object", object()),
+                _as_factory(_FakeSession),
+                authorization=None,
             )
 
     @pytest.mark.unit
@@ -626,8 +669,6 @@ class TestStreamNotifications:
     async def test_stream_rejects_non_guardian_roles(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        monkeypatch.setattr(notifications, "get_session", _FakeSession)
-
         async def fake_require_principal(
             *_args: object, **_kwargs: object
         ) -> Principal:
@@ -637,7 +678,9 @@ class TestStreamNotifications:
 
         with pytest.raises(AuthorizationError):
             await notifications.stream_notifications(
-                cast("object", object()), authorization="Bearer token"
+                cast("object", object()),
+                _as_factory(_FakeSession),
+                authorization="Bearer token",
             )
 
     @pytest.mark.unit
@@ -657,11 +700,12 @@ class TestStreamNotifications:
         ) -> Principal:
             return _principal("guardian")
 
-        monkeypatch.setattr(notifications, "get_session", fake_get_session)
         monkeypatch.setattr(notifications, "require_principal", fake_require_principal)
 
         response = await notifications.stream_notifications(
-            cast("object", _FakeRequest()), authorization="Bearer token"
+            cast("object", _FakeRequest()),
+            _as_factory(fake_get_session),
+            authorization="Bearer token",
         )
 
         assert isinstance(response, StreamingResponse)

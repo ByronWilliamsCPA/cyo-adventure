@@ -2100,11 +2100,17 @@ export const listNotificationsApiV1NotificationsGet = <ThrowOnError extends bool
  * ``StreamingResponse`` means the whole connection's lifetime; resolving
  * auth on a session that closes immediately, then having the generator
  * open its own short-lived sessions per poll tick, is what keeps this
- * endpoint from holding one connection per open guardian tab.
+ * endpoint from holding one connection per open guardian tab. Both of
+ * those session sets come from the INJECTED ``SessionFactory``, so
+ * declining ``DbSession`` costs this route no test seam: an override
+ * installed on ``get_session_factory`` reaches the auth check and every
+ * poll tick alike.
  *
  * Args:
  * request: The ASGI request; only ``is_disconnected()`` is used, to
  * let the streaming generator notice a client-side close.
+ * session_factory: Injected opener for the short-lived sessions this
+ * route and its generator use (see ``deps.get_session_factory``).
  * authorization: The ``Authorization`` header (same bearer contract as
  * every other authenticated route; see ``api/deps.py``).
  * since: Optional ISO-8601 lower bound (exclusive) on ``occurred_at``,
