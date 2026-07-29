@@ -107,10 +107,11 @@ _STORY_REQUEST_STYLE_VALUES = "'prose', 'gamebook'"
 # The cover-generation lifecycle states, named once for the CHECK constraint.
 # 'pending_review' (H2, security-hardening-plan-2026-07.md) sits between
 # 'generating' and 'ready': a generated image never reaches 'ready' (and
-# therefore never a child library card, see api/library.py's
-# cover_status == "ready" gate) without an explicit admin approval
-# (StorybookVersion.cover_approved_by/cover_approved_at, stamped by
-# covers.service.approve_cover).
+# therefore is never carried by an API response to a child library card, see
+# api/library.py's cover_status == "ready" gate) without an explicit admin
+# approval (StorybookVersion.cover_approved_by/cover_approved_at, stamped by
+# covers.service.approve_cover). The status gates API reads only; direct
+# object-storage reads are governed separately (covers/storage.py).
 _COVER_STATUS_VALUES = "'none', 'generating', 'pending_review', 'ready', 'failed'"
 
 # The append-only pipeline_event vocabularies, named once for their CHECK
@@ -723,8 +724,13 @@ class StorybookVersion(CreatedAtMixin, Base):
     # #CRITICAL: security: H2 (security-hardening-plan-2026-07.md) closure --
     # these two columns are the cover-art analogue of approved_by/published_at
     # above: the sole record that a human (not the image provider, not the
-    # generation worker) reviewed a generated cover before it could reach a
-    # child. covers.service.approve_cover is the only writer of both, and it
+    # generation worker) reviewed a generated cover before any API read path
+    # could serve it to a child (direct object-storage access is a separate
+    # control, see covers/storage.py). NULL on a 'ready' row means the cover
+    # predates the gate, which the backfill in
+    # supabase/migrations/20260728000000_add_cover_approval_gate.sql demotes
+    # back to 'pending_review' rather than grandfathering as approved.
+    # covers.service.approve_cover is the only writer of both, and it
     # requires cover_status == "pending_review" beforehand (see that
     # function's docstring for the full transition contract).
     # #VERIFY: tests/integration/test_cover_service.py::

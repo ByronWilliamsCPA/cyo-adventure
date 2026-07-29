@@ -164,7 +164,20 @@ moderation), B3 (repair re-gate) if the diff is large.
   stamps `cover_approved_by`/`cover_approved_at` (mirroring the text `approved_by`/`published_at`
   gate); exposed via `POST /storybooks/{id}/versions/{version}/cover/approve`
   (`api/covers.py`). No ORM change was needed on the read side: `api/library.py`'s existing
-  `cover_status == "ready"` filter already excludes `pending_review`.
+  `cover_status == "ready"` filter already excludes `pending_review`, as do the equivalent filters in
+  `api/recommendations.py` and `api/covers.py`. The migration also demotes pre-existing `ready` rows
+  with a NULL `cover_approved_by` back to `pending_review`, so covers generated before the gate
+  existed are re-queued for review rather than grandfathered as approved (one production row as of
+  2026-07-28).
+  **Scope of the guarantee:** the gate is enforced on every API read path, so no API response hands a
+  child a URL for an unapproved cover. It does not make the image bytes unreachable. The R2 object
+  key is deterministic (`covers/storage.py::cover_object_key`, `{storybook_id}/{version}.webp`), so
+  anyone who can guess it retrieves the image directly whenever the bucket is publicly served.
+  Verified live on 2026-07-28: `GET https://cyo-bucket.williamshome.family/sk_ashfall_expedition/1.webp`
+  returns 200 `image/webp` (86,732 bytes) with no credentials, contradicting the bucket-privacy
+  invariant asserted in `covers/storage.py`. Unbinding the public domain is a Cloudflare dashboard
+  action outside this repository, tracked as `UW-M07` in
+  [unscheduled-work-register.md](./unscheduled-work-register.md).
   **Deferred:** an automated image-safety classifier (the image analogue of the text `moderation/`
   gate) does not exist anywhere in this codebase and was out of scope for this change; building one
   is a separately-scoped, materially larger piece of work (provider integration, thresholds, review
@@ -172,9 +185,10 @@ moderation), B3 (repair re-gate) if the diff is large.
   validator + moderation + approval. See the `#CRITICAL: security` / `#VERIFY` marker in
   `covers/service.py::generate_cover` for the reinstatement trigger.
 - **Acceptance criteria.**
-  - [x] A cover cannot reach `ready`/child card without passing human approval; automated image
-        moderation is NOT implemented (deferred, see Status above) so this criterion is only
-        partially met.
+  - [x] A cover cannot reach `ready`, and so cannot be served by any API read path to a child card,
+        without passing human approval. Two carve-outs keep this partial: automated image moderation
+        is NOT implemented (deferred, see Status above), and the gate gives no protection against a
+        direct read of the deterministic R2 object key while the bucket is publicly served (`UW-M07`).
   - [x] The approval is recorded with an approver id and timestamp
         (`cover_approved_by`/`cover_approved_at`).
   - [x] Test covering the unmoderated/unapproved cover is not returned on the child library card:

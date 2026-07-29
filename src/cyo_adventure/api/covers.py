@@ -192,10 +192,13 @@ async def approve_cover(
 
     H2 fix (security-hardening-plan-2026-07.md): the human-approval gate that
     ``generate_cover`` stops short of. A cover generated successfully sits at
-    ``cover_status == "pending_review"`` and carries no presigned URL (see
-    ``_cover_url``) and is excluded from every child library card (see
-    ``api/library.py``'s ``cover_status == "ready"`` filter) until an admin
-    calls this endpoint.
+    ``cover_status == "pending_review"``. ``_cover_url`` presigns it for this
+    admin review surface only, and it stays withheld from every child library
+    card (see ``api/library.py``'s ``cover_status == "ready"`` filter) until an
+    admin calls this endpoint. That holds for every API read path; it says
+    nothing about direct access to the stored object, whose key is
+    deterministic and whose exposure is governed by the bucket-privacy
+    invariant in ``covers/storage.py``.
     """
     # #CRITICAL: security: admin-only; covers.service.approve_cover re-checks
     # is_admin as defense in depth, mirroring approval.py::approve_storybook's

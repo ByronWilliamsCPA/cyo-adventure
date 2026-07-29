@@ -9,13 +9,27 @@
 --      now stops at 'pending_review' on a successful generation instead of
 --      writing 'ready' directly; api/library.py's cover_status == "ready"
 --      read gate already excludes any other status, so a pending_review
---      cover is structurally invisible to a child's library card with no
---      change needed on the read side.
+--      cover is withheld from a child's library card by every API read
+--      path with no change needed on the read side. Note the scope: this
+--      gates the API responses that carry a cover URL, not the bytes in
+--      object storage, whose exposure is a separate control (see the
+--      module note in covers/storage.py).
 --
 --   2. Add cover_approved_by / cover_approved_at, the cover-art analogue of
 --      approved_by / published_at above: stamped only by the new
 --      covers.service.approve_cover, the sole path that may move a cover
 --      from 'pending_review' to 'ready'.
+--
+--   3. Backfill: demote pre-existing 'ready' rows that carry no approver
+--      back to 'pending_review'. Without this, every cover generated
+--      before the gate existed stays 'ready' with a NULL
+--      cover_approved_by, which is precisely the population the gate was
+--      written to catch: images that reached child library cards with no
+--      human ever having looked at them. Verified against production on
+--      2026-07-28: exactly one row matches (sk_ashfall_expedition v1), so
+--      the blast radius is one cover reverting to the admin approval
+--      queue, not a library-wide blackout. Stating the number here rather
+--      than leaving the demotion silent is deliberate.
 --
 -- Written to be idempotent (checks the current constraint definition before
 -- acting, "add column if not exists"), mirroring
@@ -65,3 +79,31 @@ COMMENT ON COLUMN "public"."storybook_version"."cover_approved_by" IS
     'Admin who approved this version''s generated cover for child delivery (H2). NULL until approve_cover runs; set only by covers.service.approve_cover.';
 COMMENT ON COLUMN "public"."storybook_version"."cover_approved_at" IS
     'Timestamp of the cover approval recorded in cover_approved_by (H2).';
+
+-- #CRITICAL: data integrity: a row at cover_status = 'ready' with
+-- cover_approved_by IS NULL is not an approved cover; it is a cover that
+-- predates the approval gate, generated when 'ready' was written directly by
+-- covers/service.py::generate_cover. Leaving those rows alone would
+-- grandfather them as approved-by-nobody, so the very covers that never had a
+-- human review would be the only ones exempt from requiring one. Demote them
+-- to 'pending_review' so an admin has to approve them through
+-- covers.service.approve_cover like any newly generated cover.
+--
+-- Naturally idempotent and safe to re-run: after this statement no row
+-- satisfies the predicate, and every row that reaches 'ready' from here on
+-- does so only via approve_cover, which stamps cover_approved_by in the same
+-- operation, so a re-application matches zero rows. It cannot demote a
+-- legitimately approved cover, because 'ready' plus a NULL approver is a state
+-- approve_cover can never produce.
+--
+-- #VERIFY: after applying, expect zero rows from
+--   SELECT count(*) FROM public.storybook_version
+--    WHERE cover_status = 'ready' AND cover_approved_by IS NULL;
+-- and confirm the demoted covers appear in the admin approval surface. On
+-- production as of 2026-07-28 this affects exactly one row
+-- (sk_ashfall_expedition v1), whose cover reverts to pending_review until an
+-- admin approves it.
+UPDATE "public"."storybook_version"
+   SET "cover_status" = 'pending_review'
+ WHERE "cover_status" = 'ready'
+   AND "cover_approved_by" IS NULL;
