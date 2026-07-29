@@ -32,6 +32,7 @@ import copy
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
+from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.storybook.reinsertion import (
     TokenOutcome,
     reinsert_storybook,
@@ -152,7 +153,8 @@ class SlotCoverageStats:
         reinsertable: Count of `(node, token)` expectations for this slot
             whose `TokenOutcome.status` was ``"reinsertable"``.
         total: Total `(node, token)` expectations for this slot, across
-            every trial (``"reinsertable"`` plus ``"not_found"``).
+            every trial, whatever their status (``"reinsertable"``,
+            ``"not_found"``, or ``"ambiguous"``).
         coverage_rate: ``reinsertable / total``.
     """
 
@@ -186,8 +188,9 @@ class ReinsertionAggregate:
             coverage profile a permanent, reproducible report artifact
             rather than an ad hoc computation.
         outcome_histogram: Counts of every `(node, token)` pair's `status`
-            across every trial, keyed by ``"reinsertable"`` /
-            ``"not_found"``. Deliberately NOT keyed by the literal node id or
+            across every trial, keyed by the status itself
+            (``"reinsertable"`` / ``"not_found"`` / ``"ambiguous"``).
+            Deliberately NOT keyed by the literal node id or
             token value: those are only unique within one specimen's own
             skeleton (two different stories both have a node called "n1"),
             so grouping by literal identity across trials would conflate
@@ -246,18 +249,21 @@ def _reinsertable_variants(
     nodes = document.get("nodes")
     if not isinstance(nodes, list):
         return frozenset()
-    for raw_node in nodes:
-        if not isinstance(raw_node, dict) or raw_node.get("id") != node_id:
+    for raw_node in cast("list[object]", nodes):
+        if not isinstance(raw_node, dict):
+            continue
+        node = cast("dict[str, object]", raw_node)
+        if node.get("id") != node_id:
             continue
         values: set[str] = set()
-        body = raw_node.get("body")
+        body = node.get("body")
         if isinstance(body, str):
             values.update(
                 value for sid, value in find_sentinels(body) if sid == slot_id
             )
-        ending = raw_node.get("ending")
+        ending = node.get("ending")
         if isinstance(ending, dict):
-            title = ending.get("title")
+            title = cast("dict[str, object]", ending).get("title")
             if isinstance(title, str):
                 values.update(
                     value for sid, value in find_sentinels(title) if sid == slot_id
@@ -307,9 +313,10 @@ def _patch_node_reference(
         node["body"] = body.replace(canonical_token, replacement, 1)
     ending = node.get("ending")
     if isinstance(ending, dict):
-        title = ending.get("title")
+        ending_map = cast("dict[str, object]", ending)
+        title = ending_map.get("title")
         if isinstance(title, str) and canonical_token in title:
-            ending["title"] = title.replace(canonical_token, replacement, 1)
+            ending_map["title"] = title.replace(canonical_token, replacement, 1)
 
 
 def _fidelity_reference(
@@ -338,11 +345,12 @@ def _fidelity_reference(
     nodes_by_id: dict[str, dict[str, object]] = {}
     nodes = reference.get("nodes")
     if isinstance(nodes, list):
-        for raw_node in nodes:
+        for raw_node in cast("list[object]", nodes):
             if isinstance(raw_node, dict):
-                node_id = raw_node.get("id")
+                node = cast("dict[str, object]", raw_node)
+                node_id = node.get("id")
                 if isinstance(node_id, str):
-                    nodes_by_id[node_id] = cast("dict[str, object]", raw_node)
+                    nodes_by_id[node_id] = node
 
     for outcome in token_outcomes:
         if outcome.status != "reinsertable":
@@ -418,13 +426,13 @@ def _multiplicity_bucket(count: int) -> str:
             or 3, `_MULTIPLICITY_MANY` for 4 or more.
 
     Raises:
-        ValueError: If `count` is not positive; a non-positive count has no
-            defined bucket (it belongs in `outcome_histogram` as
+        ValidationError: If `count` is not positive; a non-positive count has
+            no defined bucket (it belongs in `outcome_histogram` as
             ``"not_found"`` instead).
     """
     if count < 1:
         msg = f"multiplicity bucket undefined for non-positive count: {count}"
-        raise ValueError(msg)
+        raise ValidationError(msg, field="occurrence_count", value=count)
     if count == 1:
         return _MULTIPLICITY_SINGLE
     if count <= 3:
@@ -443,11 +451,11 @@ def aggregate_reinsertion(trials: Sequence[ReinsertionTrial]) -> ReinsertionAggr
             outcome histogram, and occurrence-multiplicity distribution.
 
     Raises:
-        ValueError: If `trials` is empty; there is nothing to report on.
+        ValidationError: If `trials` is empty; there is nothing to report on.
     """
     if not trials:
         msg = "cannot aggregate an empty reinsertion trial sequence"
-        raise ValueError(msg)
+        raise ValidationError(msg, field="trials", value=0)
 
     total_trials = len(trials)
     clean_trials = sum(1 for trial in trials if trial.result.reinsertion_clean)

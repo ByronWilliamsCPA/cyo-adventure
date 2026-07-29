@@ -649,3 +649,251 @@ def test_reinsertion_outcome_is_a_frozen_dataclass() -> None:
         "sentence_start_hits",
         "plural_occurrences",
     }
+
+
+# ---------------------------------------------------------------------------
+# Nested sentinels: `re.sub` never rescans its own replacement text
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_nested_sentinel_is_fully_stripped() -> None:
+    """A nested forgery must not survive as an intact sentinel.
+
+    `re.sub` never rescans its own replacement text, so removing the INNER
+    token splices the surrounding remains into a new, well-formed OUTER
+    token that a single pass has already walked past. A single pass turned
+    ``{~HE{~A:RO~}:Explorer~}`` into the intact sentinel
+    ``{~HERO:Explorer~}``, which `reinsert_storybook` would then have
+    counted as a correctly re-inserted token when building the manifest.
+    """
+    assert strip_model_sentinels("{~HE{~A:RO~}:Explorer~}") == "Explorer"
+    assert strip_model_sentinels("a {~HERO:{~X:Y~}~} b") == "a Y b"
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "text",
+    [
+        "{~HE{~A:RO~}:Explorer~}",
+        "{~HERO:{~X:Y~}~}",
+        "{~HE{~A:R{~Q:O~}~}:Explorer~}",
+        "The {~HERO:Explorer~} met {~SIB:Buddy~}.",
+        "{~HERO:Explorer",
+        "{~HERO",
+        "plain prose with no tokens at all",
+    ],
+)
+def test_strip_model_sentinels_is_idempotent(text: str) -> None:
+    """Stripping is a fixed point: no input strips differently on a second pass."""
+    once = strip_model_sentinels(text)
+    assert strip_model_sentinels(once) == once
+    assert "{~" not in once
+
+
+@pytest.mark.unit
+def test_nested_forgery_is_not_counted_as_a_reinserted_token() -> None:
+    """A nested forgery must not reach the manifest as a genuine token."""
+    pre_fill = _skeleton([{"id": "n1", "body": "{~HERO:Explorer~} sets off."}])
+    filled = _skeleton([{"id": "n1", "body": "{~HE{~A:RO~}:Explorer~} sets off."}])
+    outcome = reinsert_storybook(pre_fill, filled)
+
+    # Exactly one HERO sentinel, the one this transform inserted itself.
+    tokens = cast("dict[str, object]", outcome.manifest["tokens"])
+    assert tokens == {"n1": [{"slot_id": "HERO", "value": "Explorer", "count": 1}]}
+    assert _node_text(outcome.document) == "{~HERO:Explorer~} sets off."
+
+
+# ---------------------------------------------------------------------------
+# Value collisions: two slots bound to the same generic value
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_two_slots_sharing_one_value_report_ambiguous() -> None:
+    """The slot that loses a value collision reports "ambiguous", not "reinsertable".
+
+    One text occurrence cannot be attributed to two slots. The wrap pass has
+    always resolved this by wrapping the value once for the first slot; the
+    defect was reporting the LOSER as "reinsertable" while it contributed
+    zero sentinels to the document and zero entries to the manifest.
+    """
+    pre_fill = _skeleton(
+        [{"id": "n1", "body": "{~HERO:Explorer~} and {~SIDEKICK:Explorer~} set off."}]
+    )
+    filled = _skeleton([{"id": "n1", "body": "Explorer sets off."}])
+    outcome = reinsert_storybook(pre_fill, filled)
+
+    by_slot = {token.slot_id: token for token in outcome.token_outcomes}
+    assert by_slot["HERO"].status == "reinsertable"
+    assert by_slot["SIDEKICK"].status == "ambiguous"
+
+    # The manifest is the ground truth: only HERO is actually present.
+    tokens = cast("dict[str, object]", outcome.manifest["tokens"])
+    assert tokens == {"n1": [{"slot_id": "HERO", "value": "Explorer", "count": 1}]}
+
+
+@pytest.mark.unit
+def test_value_collision_with_the_word_absent_is_still_not_found() -> None:
+    """A collision on a word the model dropped stays "not_found" for both slots."""
+    pre_fill = _skeleton(
+        [{"id": "n1", "body": "{~HERO:Explorer~} and {~SIDEKICK:Explorer~} set off."}]
+    )
+    filled = _skeleton([{"id": "n1", "body": "They set off together."}])
+    outcome = reinsert_storybook(pre_fill, filled)
+
+    assert {token.status for token in outcome.token_outcomes} == {"not_found"}
+
+
+@pytest.mark.unit
+def test_distinct_values_never_collide() -> None:
+    """Two slots with different values both stay reinsertable."""
+    pre_fill = _skeleton(
+        [{"id": "n1", "body": "{~HERO:Explorer~} and {~SIDEKICK:Buddy~} set off."}]
+    )
+    filled = _skeleton([{"id": "n1", "body": "Explorer and Buddy set off."}])
+    outcome = reinsert_storybook(pre_fill, filled)
+
+    assert {token.status for token in outcome.token_outcomes} == {"reinsertable"}
+
+
+# ---------------------------------------------------------------------------
+# verify_manifest: exact per-surface, per-count comparison
+# ---------------------------------------------------------------------------
+
+
+def _manifest_with_hero_thrice() -> tuple[dict[str, object], dict[str, object]]:
+    """Build a document carrying three HERO occurrences plus its manifest."""
+    pre_fill = _skeleton([{"id": "n1", "body": "{~HERO:Explorer~} sets off."}])
+    filled = _skeleton(
+        [{"id": "n1", "body": "Explorer packed. Explorer waved. Explorer left."}]
+    )
+    outcome = reinsert_storybook(pre_fill, filled)
+    assert verify_manifest(outcome.document, outcome.manifest) is True
+    return outcome.document, outcome.manifest
+
+
+@pytest.mark.unit
+def test_verify_manifest_rejects_a_count_only_edit() -> None:
+    """Editing only a manifest `count` must fail verification.
+
+    `check_sentinel_integrity` compares the DISTINCT token set per node, so
+    delegating to it alone accepted a count edited from 3 to 99.
+    """
+    document, manifest = _manifest_with_hero_thrice()
+    tokens = cast("dict[str, list[dict[str, object]]]", manifest["tokens"])
+    assert tokens["n1"][0]["count"] == 3
+    tokens["n1"][0]["count"] = 99
+
+    assert verify_manifest(document, manifest) is False
+
+
+@pytest.mark.unit
+def test_verify_manifest_rejects_a_partial_occurrence_strip() -> None:
+    """Stripping two of three at-rest occurrences must fail verification."""
+    document, manifest = _manifest_with_hero_thrice()
+    nodes = cast("list[dict[str, object]]", document["nodes"])
+    nodes[0]["body"] = "Explorer packed. Explorer waved. {~HERO:Explorer~} left."
+
+    assert verify_manifest(document, manifest) is False
+
+
+@pytest.mark.unit
+def test_verify_manifest_rejects_a_surface_migration() -> None:
+    """Moving a sentinel from the ending title into the body must fail verification.
+
+    Both surfaces belong to the same node, so a per-node distinct-token-set
+    comparison sees no change at all; the manifest's two-key scheme is the
+    only thing that records WHERE the token lived.
+    """
+    pre_fill = _skeleton(
+        [
+            {
+                "id": "n1",
+                "body": "{~HERO:Explorer~} sets off.",
+                "ending": {"title": "{~HERO:Explorer~} comes home"},
+            }
+        ]
+    )
+    filled = _skeleton(
+        [
+            {
+                "id": "n1",
+                "body": "Explorer sets off.",
+                "ending": {"title": "Explorer comes home"},
+            }
+        ]
+    )
+    outcome = reinsert_storybook(pre_fill, filled)
+    manifest = outcome.manifest
+    tokens = cast("dict[str, object]", manifest["tokens"])
+    assert set(tokens) == {"n1", f"n1{MANIFEST_ENDING_TITLE_SUFFIX}"}
+
+    nodes = cast("list[dict[str, object]]", outcome.document["nodes"])
+    ending = cast("dict[str, object]", nodes[0]["ending"])
+    nodes[0]["body"] = "{~HERO:Explorer~} sets off. {~HERO:Explorer~} comes home"
+    ending["title"] = "The journey ends"
+
+    assert verify_manifest(outcome.document, manifest) is False
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "manifest",
+    [
+        {},
+        {"tokens": []},
+        {"tokens": {"n1": {}}},
+        {"tokens": {"n1": [{"slot_id": "HERO", "value": "Explorer"}]}},
+        {"tokens": {"n1": [{"slot_id": "HERO", "value": "Explorer", "count": 0}]}},
+        {"tokens": {"n1": [{"slot_id": "HERO", "value": "Explorer", "count": True}]}},
+        {"tokens": {"n1": [{"slot_id": 7, "value": "Explorer", "count": 1}]}},
+        {"tokens": {"n1": []}},
+    ],
+)
+def test_verify_manifest_rejects_a_malformed_manifest(
+    manifest: dict[str, object],
+) -> None:
+    """A manifest that does not match `build_manifest`'s schema fails, never crashes.
+
+    ``count: True`` is in this list on purpose: `bool` subclasses `int`, so a
+    JSON ``true`` would otherwise be silently accepted as a count of 1.
+    """
+    document, _ = _manifest_with_hero_thrice()
+    assert verify_manifest(document, manifest) is False
+
+
+# ---------------------------------------------------------------------------
+# Observability: a dropped slot is otherwise a completely silent outcome
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_unreinserted_tokens_are_logged(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A token that could not be re-inserted emits a structured warning."""
+    pre_fill = _skeleton([{"id": "n1", "body": "{~HERO:Explorer~} sets off."}])
+    filled = _skeleton([{"id": "n1", "body": "They set off together."}])
+
+    with caplog.at_level("WARNING"):
+        reinsert_storybook(pre_fill, filled)
+
+    assert "reinsertion.tokens_not_reinserted" in caplog.text
+    assert "HERO" in caplog.text
+    # The child's personalization VALUE must never reach a log line.
+    assert "Explorer" not in caplog.text
+
+
+@pytest.mark.unit
+def test_clean_reinsertion_logs_nothing(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A run where every expected token was re-inserted stays quiet."""
+    pre_fill = _skeleton([{"id": "n1", "body": "{~HERO:Explorer~} sets off."}])
+    filled = _skeleton([{"id": "n1", "body": "Explorer sets off."}])
+
+    with caplog.at_level("WARNING"):
+        reinsert_storybook(pre_fill, filled)
+
+    assert "reinsertion.tokens_not_reinserted" not in caplog.text

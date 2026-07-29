@@ -18,6 +18,7 @@ from typing import Literal, cast
 
 import pytest
 
+from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.measurement.reinsertion import (
     ReinsertionResult,
     ReinsertionTrial,
@@ -250,8 +251,13 @@ def _result(
 
 @pytest.mark.unit
 def test_aggregate_reinsertion_empty_trials_raises() -> None:
-    """Aggregating an empty trial sequence is a caller error, not a silent zero."""
-    with pytest.raises(ValueError, match="empty reinsertion trial sequence"):
+    """Aggregating an empty trial sequence is a caller error, not a silent zero.
+
+    Asserts the project's own exception hierarchy, not the built-in: this
+    module raised bare `ValueError`, which `core/exceptions.py` exists to
+    replace so a caller can catch one family rather than guessing.
+    """
+    with pytest.raises(ValidationError, match="empty reinsertion trial sequence"):
         aggregate_reinsertion([])
 
 

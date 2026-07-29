@@ -24,9 +24,11 @@ expected sentinel after the fact by
    `cyo_adventure.validator.sentinel_integrity.check_sentinel_integrity`
    scores against), counting case-sensitive, whole-word occurrences of that
    token's inner generic value in the now-stripped node prose.
-3. Classifying each `(node, token)` pair as ``"reinsertable"`` (count >= 1)
-   or ``"not_found"`` (the model paraphrased the word away entirely; no
-   deterministic re-insertion is possible for that node).
+3. Classifying each `(node, token)` pair as ``"not_found"`` (count 0: the
+   model paraphrased the word away entirely), ``"ambiguous"`` (the word is
+   present, but another slot in the same node is bound to the same generic
+   value, so no occurrence can be attributed to this slot), or
+   ``"reinsertable"`` (count >= 1 and unambiguously this slot's).
 4. Wrapping every matched occurrence with the canonical sentinel (a name
    slot personalizes every mention, not just the first).
 
@@ -44,7 +46,9 @@ passes by construction; see `MANIFEST_ENDING_TITLE_SUFFIX` for the manifest's
 keying scheme.
 
 Pure: every function here is a plain data transform over already-loaded
-mappings, with no I/O and no network or provider calls.
+mappings, with no network, provider, or filesystem calls. The one exception
+is `_log_unreinserted`, a single structured warning on the way out, because a
+dropped personalization slot is otherwise a completely silent outcome.
 `cyo_adventure.measurement.reinsertion` (the offline measurement CLI's
 library) and, from Task R3, `generation/worker.py` are the only I/O-adjacent
 callers of this module.
@@ -63,14 +67,18 @@ from cyo_adventure.storybook.sentinels import (
     find_sentinels,
     wrap,
 )
+from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-# The two possible per-(node, token) outcomes of the strip-all-then-reinsert
-# algorithm.
-_TokenStatus = Literal["reinsertable", "not_found"]
+logger = get_logger(__name__)
+
+# The three possible per-(node, token) outcomes of the strip-all-then-reinsert
+# algorithm. ``"ambiguous"`` exists because the other two cannot describe a
+# value collision honestly: see `_value_owner`.
+_TokenStatus = Literal["reinsertable", "not_found", "ambiguous"]
 
 # A single-node expected token, as (slot_id, value); mirrors the private
 # `_Token` alias in `cyo_adventure.validator.sentinel_integrity`.
@@ -126,8 +134,12 @@ class TokenOutcome:
             `value` were found in the node's normalized (model-sentinel-
             stripped) body and ending-title text combined. Zero exactly when
             `status` is ``"not_found"``.
-        status: ``"reinsertable"`` when `occurrence_count` is at least 1,
-            ``"not_found"`` otherwise (the model paraphrased the word away).
+        status: ``"not_found"`` when `occurrence_count` is zero (the model
+            paraphrased the word away); ``"ambiguous"`` when the word IS
+            present but another slot in the same node is bound to the same
+            generic value and won the tie (see `_value_owner`), so this slot
+            contributed no sentinel to `document`; ``"reinsertable"``
+            otherwise, and only then is this slot's value actually wrapped.
     """
 
     node_id: str
@@ -153,7 +165,8 @@ class ReinsertionOutcome:
             word, and every deterministically reinsertable token's
             occurrences wrapped back into the canonical sentinel form. A
             `TokenOutcome` with `status` ``"not_found"`` contributes nothing
-            here: there is nothing to wrap.
+            here (there is nothing to wrap), and neither does one with
+            `status` ``"ambiguous"`` (another slot owns the only occurrence).
         manifest: The at-rest sentinel manifest, derived by re-scanning
             `document` itself (see `build_manifest`): the exact per-node,
             per-surface multiset of sentinel tokens actually present. Plain
@@ -260,29 +273,41 @@ def strip_model_sentinels(text: str) -> str:
     A well-formed sentinel (`SENTINEL_RE`) is replaced by its own captured
     inner value; a sentinel-shaped-but-malformed near-miss
     (`find_malformed_sentinels`) is replaced by its best-effort extracted
-    inner word (see `_extract_malformed_inner_word`). Every replacement value
-    is text the MODEL produced, never re-parsed as a sentinel itself: a
-    well-formed token's inner value cannot contain ``{ } < > ' ~``
-    (`cyo_adventure.storybook.sentinels.wrap`'s own forbidden-character
-    guard), so this pass can never manufacture a new sentinel-shaped
-    substring for the malformed pass to (mis)detect.
+    inner word (see `_extract_malformed_inner_word`).
 
     #CRITICAL: data integrity: a model-emitted sentinel must never survive
     this pass; a surviving forged wrapper would let it masquerade as a
     correctly re-inserted one when `reinsert_storybook` later builds
-    `manifest` from `document`.
-    #VERIFY: tests/unit/test_storybook_reinsertion.py::test_forged_sentinel_is_stripped_before_matching
+    `manifest` from `document`. A SINGLE pass does not achieve that, which is
+    why this runs to a fixed point: `re.sub` never rescans its own
+    replacement text, so removing an inner token can splice the surrounding
+    remains into a NEW well-formed wrapper that the same pass has already
+    walked past. Measured: one pass turns
+    ``{~HE{~A:RO~}:Explorer~}`` into the intact sentinel
+    ``{~HERO:Explorer~}``, and `_strip_malformed_sentinels` then declines to
+    touch it precisely because it is well-formed. The loop terminates because
+    every replacement (well-formed or malformed) is strictly shorter than the
+    span it replaces, so `len(result)` strictly decreases on every iteration
+    that changes anything.
+    #VERIFY: tests/unit/test_storybook_reinsertion.py::test_nested_sentinel_is_fully_stripped
 
     Args:
         text: Text that may contain zero or more sentinel tokens, well-formed
-            or malformed.
+            or malformed, at any nesting depth.
 
     Returns:
         str: `text` with every sentinel-shaped substring replaced by its
-            inner word.
+            inner word, and with no sentinel-shaped substring remaining at
+            any depth (this function is idempotent on its own output).
     """
-    stripped = SENTINEL_RE.sub(lambda match: match.group(2), text)
-    return _strip_malformed_sentinels(stripped)
+    result = text
+    while True:
+        stripped = _strip_malformed_sentinels(
+            SENTINEL_RE.sub(lambda match: match.group(2), result)
+        )
+        if stripped == result:
+            return result
+        result = stripped
 
 
 def _as_dict(value: object) -> dict[str, object] | None:
@@ -584,7 +609,10 @@ def _build_node_wrap_pattern(
 
     Args:
         reinsertable_tokens: The `(slot_id, value)` pairs to wrap, already
-            filtered to one node's reinsertable (count >= 1) tokens.
+            filtered to one node's reinsertable tokens. Values are distinct:
+            `reinsert_storybook` resolves same-value collisions via
+            `_value_owner` before calling this, so at most one slot per
+            distinct value ever reaches here.
 
     Returns:
         tuple[re.Pattern[str], dict[str, _Token], dict[str, str]]: The
@@ -595,6 +623,12 @@ def _build_node_wrap_pattern(
             group's name (absent for a plain group).
     """
     ordered = sorted(reinsertable_tokens, key=lambda token: -len(token[1]))
+    # Defense in depth behind `_value_owner`'s upstream de-duplication: a
+    # duplicate value would add a second, permanently unreachable alternation
+    # branch (the earlier branch always matches first), which is how the
+    # losing slot used to end up reporting "reinsertable" with zero sentinels
+    # inserted. Dropping it here is now a no-op on well-formed input; the
+    # STATUS decision it used to make silently lives in `_value_owner`.
     seen_values: set[str] = set()
     pattern_parts: list[str] = []
     token_by_group: dict[str, _Token] = {}
@@ -682,6 +716,55 @@ def _wrap_all_in_node(
             ending["title"] = pattern.sub(_replace, title)
 
     return sentence_start_hits
+
+
+def _value_owner(tokens: list[_Token]) -> dict[str, str]:
+    """Pick the one slot id allowed to wrap each distinct expected value in a node.
+
+    Two slots in the SAME node bound to the same generic value (e.g. both
+    ``HERO`` and ``SIDEKICK`` bound to ``"Explorer"``) is a binding defect,
+    not a fill defect: one text occurrence of ``Explorer`` cannot be
+    attributed to one slot rather than the other, so no deterministic
+    re-insertion is possible for the loser. The wrap pass has always resolved
+    this by wrapping each distinct value once, for whichever slot sorted
+    first; what it did not do was say so, leaving the losing slot reporting
+    ``"reinsertable"`` while contributing zero sentinels to the document and
+    zero entries to the manifest.
+
+    #ASSUME: data integrity: the winner is the alphabetically-first slot id,
+    chosen for determinism only. There is no domain reason to prefer either
+    slot; the point is that the OTHER slot is then classified
+    ``"ambiguous"`` rather than mislabeled ``"reinsertable"``, so a caller
+    computing coverage sees the collision instead of a false 100%.
+    #VERIFY: tests/unit/test_storybook_reinsertion.py::test_two_slots_sharing_one_value_report_ambiguous
+
+    Args:
+        tokens: One node's full `(slot_id, value)` expectation list.
+
+    Returns:
+        dict[str, str]: Each distinct value mapped to its owning slot id.
+    """
+    owner: dict[str, str] = {}
+    for slot_id, value in sorted(tokens):
+        owner.setdefault(value, slot_id)
+    return owner
+
+
+def _classify_token(count: int, *, owns_value: bool) -> _TokenStatus:
+    """Classify one `(node, token)` pair from its occurrence count and value ownership.
+
+    Args:
+        count: Whole-word occurrences of the token's value in the node.
+        owns_value: Whether this slot won its value per `_value_owner`.
+
+    Returns:
+        _TokenStatus: The outcome status; see `TokenOutcome.status`.
+    """
+    if count < 1:
+        return "not_found"
+    if not owns_value:
+        return "ambiguous"
+    return "reinsertable"
 
 
 def _index_nodes(document: dict[str, object]) -> dict[str, dict[str, object]]:
@@ -831,17 +914,18 @@ def _reference_document_from_manifest(
     body_by_node: dict[str, str] = {}
     title_by_node: dict[str, str] = {}
     if isinstance(tokens_obj, dict):
-        for key, entries in tokens_obj.items():
+        for key, entries in cast("dict[object, object]", tokens_obj).items():
             if not isinstance(key, str) or not isinstance(entries, list):
                 continue
             is_ending = key.endswith(MANIFEST_ENDING_TITLE_SUFFIX)
             node_id = key[: -len(MANIFEST_ENDING_TITLE_SUFFIX)] if is_ending else key
             parts: list[str] = []
-            for entry in entries:
+            for entry in cast("list[object]", entries):
                 if not isinstance(entry, dict):
                     continue
-                slot_id = entry.get("slot_id")
-                value = entry.get("value")
+                record = cast("dict[object, object]", entry)
+                slot_id = record.get("slot_id")
+                value = record.get("value")
                 if isinstance(slot_id, str) and isinstance(value, str):
                     parts.append(wrap(slot_id, value))
             text = "".join(parts)
@@ -860,41 +944,135 @@ def _reference_document_from_manifest(
     return {"nodes": nodes}
 
 
+def _manifest_entry_token(entry: object) -> tuple[_Token, int] | None:
+    """Validate one manifest entry and return its `(token, count)`, or None if malformed.
+
+    Args:
+        entry: One element of a manifest surface's entry list.
+
+    Returns:
+        tuple[_Token, int] | None: The `(slot_id, value)` token and its
+            count, or None when `entry` does not match `build_manifest`'s
+            entry schema exactly.
+    """
+    if not isinstance(entry, dict):
+        return None
+    record = cast("dict[object, object]", entry)
+    slot_id = record.get("slot_id")
+    value = record.get("value")
+    count = record.get("count")
+    # `isinstance(count, bool)` is not redundant: `bool` subclasses `int`, so
+    # a JSON `true` would otherwise sail through as a count of 1.
+    if (
+        not isinstance(slot_id, str)
+        or not isinstance(value, str)
+        or not isinstance(count, int)
+        or isinstance(count, bool)
+        or count < 1
+    ):
+        return None
+    return (slot_id, value), count
+
+
+def _surface_tally(entries: list[object]) -> dict[_Token, int] | None:
+    """Normalize one manifest surface's entry list into a token-to-count map.
+
+    Args:
+        entries: The surface's raw entry list.
+
+    Returns:
+        dict[_Token, int] | None: The token-to-count map, or None when any
+            entry is malformed, a token is repeated (which `build_manifest`
+            never emits, since it tallies before rendering), or the list is
+            empty (`build_manifest` omits an empty surface's key entirely).
+    """
+    surface: dict[_Token, int] = {}
+    for entry in entries:
+        parsed = _manifest_entry_token(entry)
+        if parsed is None:
+            return None
+        token, count = parsed
+        if token in surface:
+            return None
+        surface[token] = count
+    return surface or None
+
+
+def _manifest_tally(
+    manifest: Mapping[str, object],
+) -> dict[str, dict[_Token, int]] | None:
+    """Normalize a manifest into per-surface token multisets for exact comparison.
+
+    Rejects (rather than skips) anything that does not match
+    `build_manifest`'s schema exactly, so a corrupted manifest can never
+    compare equal to a well-formed one by having its bad entries quietly
+    dropped from both sides.
+
+    Args:
+        manifest: A `build_manifest`-shaped mapping.
+
+    Returns:
+        dict[str, dict[_Token, int]] | None: Manifest key to that surface's
+            token-to-count map, or None when `manifest` is malformed.
+    """
+    tokens_obj = manifest.get("tokens")
+    if not isinstance(tokens_obj, dict):
+        return None
+    tally: dict[str, dict[_Token, int]] = {}
+    for key, entries in cast("dict[object, object]", tokens_obj).items():
+        if not isinstance(key, str) or not isinstance(entries, list):
+            return None
+        surface = _surface_tally(cast("list[object]", entries))
+        if surface is None:
+            return None
+        tally[key] = surface
+    return tally
+
+
 def verify_manifest(
     document: Mapping[str, object], manifest: Mapping[str, object]
 ) -> bool:
     """Verify that `document`'s actual sentinel content still matches `manifest`.
 
-    Rebuilds a minimal reference document from `manifest` (see
-    `_reference_document_from_manifest`) and delegates the actual comparison
-    to `check_sentinel_integrity`, the same validator gate the fill pipeline
-    already trusts: a mismatch is reported as ``"dropped"`` (in the manifest,
-    missing from `document`), ``"forged"`` (in `document`, not in the
-    manifest), or ``"migrated"``, plus any malformed-near-miss, choice-label,
-    or title violation `check_sentinel_integrity` independently detects in
-    `document`. Delegating buys this check the validator's full surface
-    coverage "for free": a manifest recording only body/ending-title tokens
-    still catches a stray sentinel introduced later in a choice label or the
-    title, which a plain multiset-equality check would miss.
+    Two independent checks, both of which must pass.
 
-    #ASSUME: data integrity: `manifest` was produced by `build_manifest` (or
-    is otherwise trusted JSON shaped the same way); a manifest with entries
-    that do not match `build_manifest`'s schema are silently skipped by
-    `_reference_document_from_manifest` rather than raising, so a corrupted
-    manifest surfaces as a verification failure here, not a crash there.
-    #VERIFY: tests/unit/test_storybook_reinsertion.py::test_verify_manifest_rejects_a_mutated_document
+    1. **Exact manifest equality.** `build_manifest` is re-run against
+       `document` and its result compared to `manifest` surface by surface,
+       token by token, count included. This is the check that gives the
+       manifest its at-rest meaning.
+    2. **Whole-document surface sweep.** A minimal reference document is
+       rebuilt from `manifest` (`_reference_document_from_manifest`) and
+       passed to `check_sentinel_integrity`, the same validator the fill
+       pipeline already trusts. This adds coverage the manifest itself does
+       not record: a stray sentinel introduced later in a choice label or
+       the story title, and any malformed near-miss anywhere.
+
+    #CRITICAL: data integrity: check 1 is not redundant with check 2, and
+    delegating alone was measurably insufficient. `check_sentinel_integrity`
+    compares the DISTINCT token set per node and merges a node's body and
+    ending-title surfaces into one set, so on its own it accepts three
+    corruptions this function must reject: a `count` edited from 3 to 99, two
+    of three at-rest occurrences stripped, and a sentinel relocated from
+    `ending.title` into the body. All three leave the per-node distinct token
+    set untouched and all three change what the reader sees.
+    #VERIFY: tests/unit/test_storybook_reinsertion.py::test_verify_manifest_rejects_a_count_only_edit
 
     Args:
         document: The document to check (e.g. a published blob re-read from
             storage).
         manifest: The manifest to check it against (e.g. the same blob's
-            stored manifest column).
+            stored manifest column). A manifest that does not match
+            `build_manifest`'s schema is a verification failure, not a crash.
 
     Returns:
         bool: True only when `document`'s sentinel content matches
-            `manifest` exactly, with no malformed near-miss, choice-label,
-            or title violation anywhere in `document`.
+            `manifest` exactly, per-surface and per-count, with no malformed
+            near-miss, choice-label, or title violation anywhere in
+            `document`.
     """
+    declared = _manifest_tally(manifest)
+    if declared is None or declared != _manifest_tally(build_manifest(document)):
+        return False
     reference = _reference_document_from_manifest(manifest)
     return check_sentinel_integrity(reference, document).ok
 
@@ -902,6 +1080,38 @@ def verify_manifest(
 # ---------------------------------------------------------------------------
 # Public entry point
 # ---------------------------------------------------------------------------
+
+
+def _log_unreinserted(outcomes: list[TokenOutcome]) -> None:
+    """Emit one structured warning when any expected token was not re-inserted.
+
+    #CRITICAL: data integrity: a dropped personalization slot is a SILENT
+    outcome of this transform by design (a `"not_found"` token simply
+    contributes nothing to the document), and the caller is free to persist
+    the result anyway. Without this line there is no record anywhere that a
+    slot the skeleton declared never made it into the published prose, so a
+    systematic fill regression would show up only as readers noticing their
+    names had stopped appearing.
+    #VERIFY: tests/unit/test_storybook_reinsertion.py::test_unreinserted_tokens_are_logged
+
+    Args:
+        outcomes: Every `(node, token)` outcome from one transform run.
+    """
+    unreinserted = [outcome for outcome in outcomes if outcome.status != "reinsertable"]
+    if not unreinserted:
+        return
+    # Slot ids and node ids only. The VALUE is the child's own personalization
+    # data (a real name, a sibling's name, a pet's name); it must never reach
+    # a log line, which is why this reports counts and ids rather than the
+    # text that failed to match.
+    logger.warning(
+        "reinsertion.tokens_not_reinserted",
+        total_expected=len(outcomes),
+        not_found=sum(1 for o in unreinserted if o.status == "not_found"),
+        ambiguous=sum(1 for o in unreinserted if o.status == "ambiguous"),
+        slot_ids=sorted({o.slot_id for o in unreinserted}),
+        node_ids=sorted({o.node_id for o in unreinserted}),
+    )
 
 
 def reinsert_storybook(
@@ -930,14 +1140,16 @@ def reinsert_storybook(
     plural_occurrences = 0
     for node_id in sorted(expected):
         node = nodes_by_id.get(node_id)
+        node_tokens = sorted(expected[node_id])
+        owner_by_value = _value_owner(node_tokens)
         reinsertable_tokens: list[_Token] = []
-        for slot_id, value in sorted(expected[node_id]):
+        for slot_id, value in node_tokens:
             if node is None:
                 count = 0
             else:
                 count = _count_in_node_surfaces(node, value)
                 plural_occurrences += _count_plural_occurrences(node, value)
-            status: _TokenStatus = "reinsertable" if count >= 1 else "not_found"
+            status = _classify_token(count, owns_value=owner_by_value[value] == slot_id)
             outcomes.append(
                 TokenOutcome(
                     node_id=node_id,
@@ -953,6 +1165,7 @@ def reinsert_storybook(
             sentence_start_hits += _wrap_all_in_node(node, reinsertable_tokens)
 
     manifest = build_manifest(reinserted)
+    _log_unreinserted(outcomes)
 
     return ReinsertionOutcome(
         document=reinserted,
