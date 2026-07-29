@@ -9,8 +9,9 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from datetime import datetime
-from typing import Annotated, Literal
+from typing import Annotated, Literal, get_args
 
 from pydantic import (
     AfterValidator,
@@ -2163,6 +2164,71 @@ _PersonalizationSlotType = Literal[
     "dedication",
 ]
 
+_PERSONALIZATION_SLOT_TYPE_COUNT = len(get_args(_PersonalizationSlotType))
+
+# The structural gate (`validator/slots.py::_charset_violations`) rejects any
+# candidate longer than this, and it is the authority: it runs on every
+# personalization value at both write time and payload-build time. The schema
+# bound is aligned to it so an over-long value is a shape error at the edge
+# rather than a slot violation two layers in. It was 200, which meant values
+# of 121 to 200 characters were accepted here only to be rejected downstream.
+_PERSONALIZATION_VALUE_MAX_LENGTH = 120
+
+
+def _nfc(value: str) -> str:
+    """NFC-normalize a guardian-supplied personalization value.
+
+    Args:
+        value: The raw submitted string.
+
+    Returns:
+        str: The NFC-normalized string.
+    """
+    # #ASSUME: data-integrity: the denylist and distinctness matching in
+    # `validator/slots.py::_normalize` already NFC-normalizes before it
+    # compares, so this is NOT what stops a decomposed spelling from evading
+    # the denylist; that hole does not exist. What this fixes is that the
+    # value is STORED in whatever form the client sent. Two consequences,
+    # both real and both small: the 120-character structural limit is
+    # measured on the raw form, so a decomposed spelling can be rejected at a
+    # length its precomposed twin passes; and the replace route's change
+    # detection compares stored text to submitted text with `!=`, so
+    # re-saving a visually identical name from a client that normalizes
+    # differently reads as an edit and rewrites the row. Normalizing at the
+    # edge makes the stored form canonical and both problems go away. NFC is
+    # idempotent, so an already-normalized value (nearly all of them) is
+    # unchanged.
+    # #VERIFY: tests/unit/test_api_schemas_personalization.py::
+    # test_decomposed_and_precomposed_text_values_normalize_identically.
+    return unicodedata.normalize("NFC", value)
+
+
+def _dedupe_slot_types(values: list[str]) -> list[str]:
+    """Drop repeated slot types, keeping first-seen order.
+
+    Args:
+        values: The submitted ``covered_slot_types`` list.
+
+    Returns:
+        list[str]: The same values with later duplicates removed.
+    """
+    # #ASSUME: data-integrity: order is preserved rather than sorted because
+    # the list is echoed back to the client verbatim by `GET /v1/me`, and a
+    # guardian re-reading their own consent should see the scope they chose
+    # in the order they chose it. `dict.fromkeys` is the order-preserving
+    # de-duplication idiom; a `set` here would make the response order vary
+    # between processes.
+    # #VERIFY: tests/unit/test_api_schemas_personalization.py::
+    # test_covered_slot_types_are_deduplicated_in_first_seen_order.
+    return list(dict.fromkeys(values))
+
+
+_PersonalizationValueText = Annotated[
+    str,
+    StringConstraints(max_length=_PERSONALIZATION_VALUE_MAX_LENGTH),
+    AfterValidator(_nfc),
+]
+
 
 class PersonalizationSlotBody(BaseModel):
     """One slot's proposed value and ring flags, inside the PUT replace body.
@@ -2177,8 +2243,12 @@ class PersonalizationSlotBody(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     slot_type: _PersonalizationSlotType
-    value_text: Annotated[str, StringConstraints(max_length=200)] | None = None
-    value_enum: Annotated[str, StringConstraints(max_length=64)] | None = None
+    value_text: _PersonalizationValueText | None = None
+    # Deliberately tighter than `value_text`'s bound and left where it was: an
+    # enum value is a closed-vocabulary member, not free text.
+    value_enum: (
+        Annotated[str, StringConstraints(max_length=64), AfterValidator(_nfc)] | None
+    ) = None
     value_profile_id: str | None = None
     ring1_enabled: bool = False
     ring2_enabled: bool = False
@@ -2268,7 +2338,19 @@ class Ring2ConsentGrantBody(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     family_connection_id: str
-    covered_slot_types: Annotated[list[str], Field(min_length=1)]
+    # Bounded and de-duplicated at the edge. The route rejects any element
+    # that is not an eligible slot type, so a bogus VALUE was never storable,
+    # but nothing bounded the list's LENGTH: `["dedication"] * 100_000` is
+    # every-element-eligible and would have been written verbatim into the
+    # consent row's JSONB column and echoed back by `GET /v1/me`. The bound is
+    # the number of slot types that exist, since covering one twice conveys
+    # nothing, and `_dedupe_slot_types` makes that bound reachable only by a
+    # genuinely distinct list.
+    covered_slot_types: Annotated[
+        list[str],
+        Field(min_length=1, max_length=_PERSONALIZATION_SLOT_TYPE_COUNT),
+        AfterValidator(_dedupe_slot_types),
+    ]
     policy_version: Annotated[str, StringConstraints(max_length=32)]
     signer_name: Annotated[
         str, StringConstraints(max_length=200, strip_whitespace=True, min_length=1)
