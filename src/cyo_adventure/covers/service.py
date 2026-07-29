@@ -169,9 +169,19 @@ async def generate_cover(
     the provider returned it, with the only safety net being the provider's
     own refusal behavior and the prose guardrails in
     ``covers/prompt.py``. ``covers.service.approve_cover`` is now the sole
-    path from ``pending_review`` to ``ready``, and api/library.py's
-    ``cover_status == "ready"`` read gate means a pending_review cover is
-    structurally invisible to a child until that approval happens.
+    path from ``pending_review`` to ``ready``, and every API read path that
+    can hand a client a cover URL gates on ``cover_status == "ready"``
+    (``api/library.py``, ``api/recommendations.py``, ``api/covers.py``), so
+    no API response carries a pending_review cover's URL until that
+    approval happens.
+
+    Scope of that guarantee: it covers the API surface, not the stored
+    bytes. The R2 object key is deterministic
+    (``covers/storage.py::cover_object_key``), so anyone who can guess
+    ``{storybook_id}/{version}.webp`` reaches the image directly if the
+    bucket is publicly served. Keeping the bucket private is a separate,
+    infrastructure-side control; see the ``#CRITICAL: security`` invariant
+    at the top of ``covers/storage.py``.
     """
     # #CRITICAL: concurrency: this runs in the worker's own AsyncSession, not the
     # request unit-of-work; it commits explicitly at each state transition.
@@ -274,10 +284,12 @@ async def approve_cover(
     """
     # #CRITICAL: security: this is the SOLE path that may set
     # cover_status="ready", and it stamps cover_approved_by/cover_approved_at
-    # in the same operation, so no cover reaches a child's library card
-    # without a recorded human approver (the H2 fix's core invariant,
-    # mirroring the approved_by invariant publishing.service.approve holds
-    # for story text).
+    # in the same operation, so no API read path serves a cover URL to a
+    # child's library card without a recorded human approver (the H2 fix's
+    # core invariant, mirroring the approved_by invariant
+    # publishing.service.approve holds for story text). Direct object-storage
+    # access to the deterministic R2 key is out of this invariant's reach and
+    # is controlled by keeping the bucket private (covers/storage.py).
     # #VERIFY: tests/integration/test_cover_service.py::
     # test_approve_cover_sets_ready_and_stamps_approver; a non-admin/wrong-status
     # rejection is covered by test_approve_cover_rejects_non_admin and
