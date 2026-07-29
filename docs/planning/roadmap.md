@@ -124,9 +124,9 @@ done.**
 | Register items | Phase |
 |----------------|-------|
 | K5/K8 test pins, K6 tracker, K7 TTS, G6 editor, G5 skim aids, G2 controls UI, G3 permissions, K15 feedback flag, G15 storage view | 4b |
-| S9 delivery infra, G10 digest/alerts, G9 visibility, K12 kid generation status, G7 budget consent (G13 interim quota balance closed 2026-07-29: audit found budget enforcement and kid-facing status already shipped and tested, register flipped to ✅) | 4c |
+| S9 delivery infra (push transport closed 2026-07-28: authenticated SSE stream shipped; the server-scheduled digest job remains open), G9 visibility, K12 kid generation status, G7 budget consent. Closed since this table was written: G10 digest/alerts 2026-07-28 (SSE push transport shipped, register flipped to ✅), G13 interim quota balance 2026-07-29 (audit found budget enforcement and kid-facing status already shipped and tested, register flipped to ✅), and G14 multi-guardian households 2026-07-28 (guardian self-service co-parent invite shipped, register flipped to ✅) | 4c |
 | G17 consent flow, K17 recommendation surfaces, A15 enforcement guard | 4d |
-| ADR-007 purge, G8/A5 offline revocation, A4 re-screen tooling (backend done, UI hook only), nightly e2e-real + S2 real conflict spec, staging golden journeys, adversarial live-model run | 5 |
+| ADR-007 purge, G8/A5 offline revocation, nightly e2e-real + S2 real conflict spec, staging golden journeys, adversarial live-model run | 5 |
 | ADR-018 D1-D4 execution, G11 trust surface, G12 export, A12 abuse workflow, A14 compliance reporting | 7 |
 | G13 full credits/IAP | 8 |
 | A9 curation surface, A7 ops dashboards, A8 runtime levers, A4 full catalog re-screen | 9 |
@@ -141,12 +141,20 @@ and need the owner's ratification before they count as commitments.
 
 | Register items | Proposed phase |
 |----------------|----------------|
-| K9 shelf presentation ("what's new" only; in-progress/finished states already shipped per 2026-07-29 audit) | 4b, alongside the other kid-surface UX already there |
-| G14 multi-guardian households (admin-mediated invite already shipped; gap is a guardian-initiated self-service path only, per 2026-07-29 audit) | 4c, which already owns G7 budget consent and K12 kid status |
-| A16 cover-art review UI: the H2 auto-publish security gap is closed (branch `fix/cover-moderation-gate`), but the 2026-07-29 audit found A16's own definition still unmet, no admin surface renders the cover image or exposes an approve action | 5, where H2 is already listed in the Phase 5 checklist under its own name |
 | A3 band definitions and theme taxonomy as admin levers (thresholds already shipped) | 9, with A8 runtime levers |
 | K20 kid-facing personalization, G18 guardian per-slot opt-in | Blocked on [ADR-023](./adr/adr-023-story-personalization-slots.md) moving from Proposed to Accepted. No phase until that ruling; tracked as a `decision`, not a scheduling gap |
 | A2 sample audits of auto-published stories | Post-launch backlog, conditional: A6 gates every publish through a human today, so this is moot unless an auto-publish tier is ever introduced. It stays registered so the conditional survives |
+
+**Amended 2026-07-29, union of the in-flight branch corrections.** Both tables above now carry the
+same closures, so the in-flight UI branches record one consistent view instead of each dropping the
+others' edits. Removed as closed rather than scheduled: K1, K9 and K10 (kid-surface presentation and
+connectivity UX), K11 (kid-terms request initiation, which the audit confirmed shipped end to end),
+G13 interim quota balance, G14 multi-guardian households, S8 request-flow remainder, A13 audit view,
+A16 cover-art review, and A4's Phase 5 re-screen UI hook (A4's full-catalog re-screen stays in Phase
+9). Each closure is evidenced in [capability-register.md](./capability-register.md). Where a row in
+that register still reads 🟡 here, the flip travels with the branch that closed it and lands
+when that branch merges; this note is the shared phase home in the meantime, so no closed-or-closing
+capability is left unscheduled.
 
 ## 2026-07-20 Plan Audit: verification and previously untracked work
 
