@@ -63,7 +63,7 @@ from typing import TYPE_CHECKING, Literal, cast
 
 from cyo_adventure.storybook.sentinels import (
     SENTINEL_RE,
-    find_malformed_sentinels,
+    find_malformed_sentinel_spans,
     find_sentinels,
     wrap,
 )
@@ -83,11 +83,6 @@ _TokenStatus = Literal["reinsertable", "not_found", "ambiguous"]
 # A single-node expected token, as (slot_id, value); mirrors the private
 # `_Token` alias in `cyo_adventure.validator.sentinel_integrity`.
 _Token = tuple[str, str]
-
-# A malformed near-miss span's closer, stripped from its extracted inner word
-# (see `_extract_malformed_inner_word`): a trailing `~}`, a bare `}`, a
-# dangling `~`, or any run of those, plus surrounding whitespace.
-_MALFORMED_TRAILER_RE = re.compile(r"[~}]+\s*$")
 
 # A sentence-start position: the very start of the text, the start of a line
 # (immediately after a newline), or the whitespace run immediately following
@@ -202,6 +197,45 @@ class ReinsertionOutcome:
 # ---------------------------------------------------------------------------
 
 
+def _strip_trailing_closer(text: str) -> str:
+    """Remove a trailing sentinel closer run (and the whitespace after it).
+
+    Equivalent to substituting a trailing ``[~}]+`` run plus any whitespace
+    after it with the empty string, computed in linear time.
+
+    Args:
+        text: The candidate inner text of a malformed near-miss span.
+
+    Returns:
+        str: `text` with a trailing closer run, plus any whitespace following
+            that run, removed. Returned unchanged when the text does not end
+            in a closer run followed only by whitespace: the pattern is
+            end-anchored, so a closer sitting in the middle of the text
+            (``"Explorer~} x"``) is not a trailer and is left alone.
+    """
+    # #CRITICAL: external-resources: the regex form backtracked quadratically
+    # on adversarial model output. The pattern had to be retried at every
+    # start offset, and on text whose LAST character is neither a closer nor
+    # whitespace ("~~~~...~x") each retry consumed the whole remaining tilde
+    # run before failing: measured 6.7 s on a 16k-tilde string, inside the
+    # generation worker's own fill path. Nothing upstream bounds how many
+    # tildes a model may emit, so the bound has to be here.
+    # #VERIFY: tests/unit/test_storybook_reinsertion.py::
+    # test_trailing_closer_strip_is_linear_on_a_long_tilde_run and
+    # ::test_trailing_closer_strip_matches_the_regex_it_replaced.
+    #
+    # The pattern must reach the end of the string, so the only candidate is a
+    # closer run ending where trailing whitespace begins. `str.rstrip()` and
+    # `\s` agree on what whitespace is (both are Unicode-aware).
+    end = len(text.rstrip())
+    if end == 0 or text[end - 1] not in "~}":
+        return text
+    start = end
+    while start > 0 and text[start - 1] in "~}":
+        start -= 1
+    return text[:start]
+
+
 def _extract_malformed_inner_word(span: str) -> str:
     """Best-effort inner-word extraction from one malformed sentinel span.
 
@@ -229,18 +263,28 @@ def _extract_malformed_inner_word(span: str) -> str:
     colon_index = span.find(":")
     if colon_index == -1:
         return ""
-    inner = span[colon_index + 1 :]
-    inner = _MALFORMED_TRAILER_RE.sub("", inner)
-    return inner.strip()
+    return _strip_trailing_closer(span[colon_index + 1 :]).strip()
 
 
 def _strip_malformed_sentinels(text: str) -> str:
     """Replace every malformed sentinel-shaped near-miss in `text` with its inner word.
 
-    Iterates `find_malformed_sentinels` to convergence: each replacement is
-    strictly shorter than the span it replaces (the wrapper syntax is always
-    at least the two-character ``{~`` opener), so the remaining text strictly
-    shrinks on every iteration and the loop is guaranteed to terminate.
+    One left-to-right pass over the offsets `find_malformed_sentinel_spans`
+    reports, which are non-overlapping and strictly increasing. A replacement
+    can splice the surrounding remains into a NEW near-miss; converging on
+    that is `strip_model_sentinels`' job, since only its loop also re-runs
+    the well-formed pass that the same splice can produce.
+
+    # #CRITICAL: data integrity: this rewrites by OFFSET, never by re-locating
+    # the returned substring with `str.index`. The scan resolves a span at a
+    # specific position; the same characters can occur earlier in the text as
+    # a slice of a different span the scan parsed as a whole, and rewriting
+    # that earlier occurrence instead leaves sentinel-shaped debris in
+    # reader-facing prose. Measured on the nested case
+    # ``{~HE{~A:R{~Q:O~}~}:Explorer~}``, which stripped to a literal
+    # ``RO:Explorer~}`` in the body.
+    # #VERIFY: tests/unit/test_storybook_reinsertion.py::
+    # test_nested_near_miss_leaves_no_sentinel_debris.
 
     Args:
         text: Text that may contain zero or more malformed near-misses. Must
@@ -253,18 +297,17 @@ def _strip_malformed_sentinels(text: str) -> str:
             best-effort extracted inner word (or removed, when none could be
             extracted).
     """
-    result = text
+    spans = find_malformed_sentinel_spans(text)
+    if not spans:
+        return text
+    pieces: list[str] = []
     cursor = 0
-    while True:
-        spans = find_malformed_sentinels(result[cursor:])
-        if not spans:
-            break
-        span = spans[0]
-        index = result.index(span, cursor)
-        inner = _extract_malformed_inner_word(span)
-        result = result[:index] + inner + result[index + len(span) :]
-        cursor = index + len(inner)
-    return result
+    for start, end in spans:
+        pieces.append(text[cursor:start])
+        pieces.append(_extract_malformed_inner_word(text[start:end]))
+        cursor = end
+    pieces.append(text[cursor:])
+    return "".join(pieces)
 
 
 def strip_model_sentinels(text: str) -> str:
@@ -272,7 +315,7 @@ def strip_model_sentinels(text: str) -> str:
 
     A well-formed sentinel (`SENTINEL_RE`) is replaced by its own captured
     inner value; a sentinel-shaped-but-malformed near-miss
-    (`find_malformed_sentinels`) is replaced by its best-effort extracted
+    (`find_malformed_sentinel_spans`) is replaced by its best-effort extracted
     inner word (see `_extract_malformed_inner_word`).
 
     #CRITICAL: data integrity: a model-emitted sentinel must never survive
@@ -306,8 +349,39 @@ def strip_model_sentinels(text: str) -> str:
             SENTINEL_RE.sub(lambda match: match.group(2), result)
         )
         if stripped == result:
-            return result
+            return _drop_orphan_closers(result)
         result = stripped
+
+
+def _drop_orphan_closers(text: str) -> str:
+    """Remove any bare ``~}`` left with no opener to belong to.
+
+    # #CRITICAL: data integrity: the fixed-point loop above guarantees no
+    # WHOLE sentinel-shaped span survives, but not that no sentinel SYNTAX
+    # does, and the docstring's postcondition claims the stronger thing.
+    # Stripping an unterminated opener orphans whatever followed it: the
+    # nested case `{~HE{~A:R{~Q:O~}~}:Explorer~}` resolves `{~HE` as an
+    # unterminated near-miss, drops it, and leaves the outer token's own tail
+    # `:Explorer~}` sitting in reader-facing prose. `find_malformed_sentinels`
+    # deliberately does NOT report such an orphan (an unpaired `~}` is
+    # ordinary prose there, a rule that protects the at-rest dormancy
+    # invariant against brace-bearing story text), so the cleanup has to
+    # happen here, on fill output, rather than by widening that detector.
+    # Removing `~}` from prose is safe in a way removing `}` would not be: the
+    # closer is a two-character sequence with no legitimate use in a
+    # children's story, and by this point the text provably contains no
+    # well-formed sentinel whose closer this could be.
+    # #VERIFY: tests/unit/test_storybook_reinsertion.py::
+    # test_nested_sentinel_leaves_no_closer_debris.
+
+    Args:
+        text: Already-converged output of the strip loop above, which
+            therefore contains no well-formed sentinel and no near-miss.
+
+    Returns:
+        str: `text` with every remaining ``~}`` removed.
+    """
+    return text.replace("~}", "")
 
 
 def _as_dict(value: object) -> dict[str, object] | None:

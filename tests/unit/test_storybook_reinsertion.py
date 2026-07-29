@@ -16,6 +16,8 @@ transform.
 from __future__ import annotations
 
 import json
+import re
+import time
 from typing import cast
 
 import pytest
@@ -23,6 +25,7 @@ import pytest
 from cyo_adventure.storybook.reinsertion import (
     MANIFEST_ENDING_TITLE_SUFFIX,
     ReinsertionOutcome,
+    _strip_trailing_closer,
     build_manifest,
     reinsert_storybook,
     strip_model_sentinels,
@@ -669,6 +672,68 @@ def test_nested_sentinel_is_fully_stripped() -> None:
     """
     assert strip_model_sentinels("{~HE{~A:RO~}:Explorer~}") == "Explorer"
     assert strip_model_sentinels("a {~HERO:{~X:Y~}~} b") == "a Y b"
+
+
+@pytest.mark.unit
+def test_nested_sentinel_leaves_no_closer_debris() -> None:
+    """No bare ``~}`` survives the strip, even when its opener was dropped.
+
+    The fixed-point loop guarantees no whole sentinel-shaped SPAN survives,
+    which is not the same as no sentinel SYNTAX surviving. Stripping an
+    unterminated opener orphans whatever followed it: this input resolves
+    ``{~HE`` as an unterminated near-miss, drops it, and used to leave the
+    outer token's own tail ``~}`` sitting in reader-facing prose.
+    """
+    stripped = strip_model_sentinels("{~HE{~A:R{~Q:O~}~}:Explorer~}")
+
+    assert "~}" not in stripped
+    assert "{~" not in stripped
+
+
+@pytest.mark.unit
+def test_trailing_closer_strip_matches_the_regex_it_replaced() -> None:
+    """The linear trailer strip is behaviour-identical to its regex form.
+
+    The regex was ``[~}]+`` followed by ``\\s*$``. Note the cases that must
+    NOT strip: a closer that is not at the end (``"Explorer~} x"``) is not a
+    trailer, and a later lone ``~`` claims the match ahead of an earlier
+    ``~}`` run that whitespace separates from the end.
+    """
+    old = re.compile(r"[~}]+\s*$")
+    cases = [
+        "",
+        "Explorer",
+        "Explorer~}",
+        "Explorer~} ",
+        "Explorer~}~",
+        "Explorer~} x",
+        "Explorer~}  ~",
+        "  ~}  ",
+        "~",
+        "}}}",
+    ]
+
+    for case in cases:
+        assert _strip_trailing_closer(case) == old.sub("", case), case
+
+
+@pytest.mark.unit
+def test_trailing_closer_strip_is_linear_on_a_long_tilde_run() -> None:
+    """A long closer run ending in a non-closer must not backtrack.
+
+    The regex form retried at every start offset and consumed the whole
+    remaining run before failing each time: quadratic, and measured at
+    seconds for a 16k-tilde string inside the generation worker's fill path.
+    Nothing upstream bounds how many tildes a model may emit.
+    """
+    hostile = "~" * 16_000 + "x"
+
+    start = time.perf_counter()
+    result = _strip_trailing_closer(hostile)
+    elapsed = time.perf_counter() - start
+
+    assert result == hostile
+    assert elapsed < 0.1
 
 
 @pytest.mark.unit
