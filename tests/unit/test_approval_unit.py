@@ -24,6 +24,7 @@ from cyo_adventure.api.schemas import (
     SendBackRequest,
     StorybookLibraryView,
 )
+from cyo_adventure.app import _status_for
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     ResourceNotFoundError,
@@ -571,6 +572,39 @@ async def test_load_review_target_does_not_lock_row() -> None:
     # pass even if the lock leaked in. Render explicitly to catch that.
     rendered = str(stmt.compile(dialect=postgresql.dialect()))
     assert "FOR UPDATE" not in rendered
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_review_surface_unknown_story_raises_404() -> None:
+    """An unknown story id is a 404 from _load_review_target's not-found branch,
+    before the family check and before any version lookup.
+
+    Deletion-sensitive on two axes: drop `if book is None: raise` and an admin
+    caller falls through with `book` bound to None, so the failure arrives
+    later from the version lookup with a different message ("version 1 of
+    storybook ... not found") and `session.get` has been awaited. Both the
+    message match and the `assert_not_awaited` below fail in that case.
+    """
+    session = AsyncMock(spec=AsyncSession)
+    session.execute = AsyncMock(return_value=_execute_result(None))
+    session.get = AsyncMock(return_value=None)
+    ctx = _ctx("admin", session)
+
+    with pytest.raises(ResourceNotFoundError) as excinfo:
+        await approval.get_review_surface("missing-story", ctx, version=1)
+
+    # Observable behaviour at the HTTP boundary: app.py maps this exception to
+    # 404 and serializes to_dict() as the standard error envelope.
+    assert _status_for(excinfo.value) == 404
+    assert excinfo.value.to_dict() == {
+        "error": "ResourceNotFoundError",
+        "message": "storybook 'missing-story' not found",
+        "code": "NOT_FOUND",
+    }
+    # The story load short-circuits: the version row is never fetched.
+    session.execute.assert_awaited_once()
+    session.get.assert_not_awaited()
 
 
 @pytest.mark.unit
