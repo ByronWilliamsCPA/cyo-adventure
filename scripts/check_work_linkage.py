@@ -112,6 +112,10 @@ _ROADMAP_MAPPING_HEADING = "### Where every open register item lands"
 # check: the alternative is flagging SL2..SL9 as false-positive orphans despite being plainly in
 # scope.
 _THROUGH_RANGE_RE = re.compile(r"`?\b([A-Z]{1,2})(\d+)`?\s+through\s+`?\1(\d+)`?\b")
+# A same-prefix range wider than this is almost certainly a typo (transposed digits, wrong
+# id) rather than a real citation span; expanding it anyway would silently manufacture
+# thousands of ids that were never actually cited, masking the typo as ordinary bulk linkage.
+_THROUGH_RANGE_MAX_SPAN = 100
 
 # "## Phase <N>" headings in roadmap.md, for example "## Phase 4c: Family loops...".
 _ROADMAP_PHASE_HEADING_RE = re.compile(r"^## Phase (\d+[a-zA-Z]?)\b")
@@ -174,7 +178,7 @@ def _read_lines(path: Path, problems: list[str]) -> list[str] | None:
     """
     try:
         return path.read_text(encoding="utf-8").splitlines()
-    except OSError as exc:
+    except (OSError, UnicodeDecodeError) as exc:
         problems.append(f"cannot read {path}: {exc}")
         return None
 
@@ -266,8 +270,12 @@ def _find_clusters(
 
     Returns:
         dict[str, tuple[list[str], list[tuple[int, list[str]]]]]: Cluster letter mapped to its
-            header cells and its (line number, cells) data rows. A cluster whose header row
-            cannot be found is omitted; the caller is responsible for noticing a short result.
+            header cells and its (line number, cells) data rows.
+
+    Raises:
+        LookupError: If one or more ``## Cluster <letter>:`` sections have no locatable
+            ``ID`` table header. A cluster silently omitted here would silently validate
+            zero rows, defeating the whole point of the check.
     """
     headings = [
         (index, match.group(1))
@@ -275,33 +283,49 @@ def _find_clusters(
         if (match := _CLUSTER_HEADING_RE.match(line)) is not None
     ]
     clusters: dict[str, tuple[list[str], list[tuple[int, list[str]]]]] = {}
+    unlocatable: list[str] = []
     for position, (start, letter) in enumerate(headings):
         end = headings[position + 1][0] if position + 1 < len(headings) else len(lines)
         try:
             header_line, header_cells = _find_id_header(lines, start, end)
         except LookupError:
+            unlocatable.append(letter)
             continue
         rows = _collect_rows(lines, header_line, end)
         clusters[letter] = (header_cells, rows)
+    if unlocatable:
+        joined = ", ".join(unlocatable)
+        msg = f"cluster(s) {joined} have a '## Cluster <letter>:' heading but no locatable 'ID' table header"
+        raise LookupError(msg)
     return clusters
 
 
 def _check_row_id(cluster: str, number: int, entry_id: str) -> list[str]:
-    """Return a problem if a register row's id does not match ``UW-[A-M]NN``.
+    """Return problems if a register row's id is malformed or filed under the wrong cluster.
 
     Args:
-        cluster: The cluster letter the row belongs to, for the message.
+        cluster: The cluster letter the row belongs to (the table it was found in), for the
+            message and the cluster-match check.
         number: The row's 1-based line number.
         entry_id: The row's ``ID`` cell value.
 
     Returns:
-        list[str]: One problem, or an empty list when the id is well formed.
+        list[str]: Problems found; empty when the id is well formed and its letter matches the
+            cluster it was found in.
     """
-    if _UW_ID_RE.match(entry_id):
-        return []
-    return [
-        f"cluster {cluster} line {number}: id '{entry_id}' does not match UW-[A-M]NN"
-    ]
+    if not _UW_ID_RE.match(entry_id):
+        return [
+            f"cluster {cluster} line {number}: id '{entry_id}' does not match UW-[A-M]NN"
+        ]
+    id_letter = entry_id[3]
+    if id_letter != cluster:
+        return [
+            (
+                f"cluster {cluster} line {number}: id '{entry_id}' belongs to cluster "
+                f"'{id_letter}', not the cluster '{cluster}' table it was found in"
+            )
+        ]
+    return []
 
 
 def _check_row_status(
@@ -428,10 +452,21 @@ def _extract_citations(text: str, id_re: re.Pattern[str]) -> set[str]:
     Returns:
         set[str]: Every id cited directly, plus every id implied by a same-prefix "through" range
             such as "SL1 through SL10".
+
+    Raises:
+        ValueError: If a "through" range spans more than ``_THROUGH_RANGE_MAX_SPAN`` ids; such a
+            span is far more likely to be a typo than a real citation range, and expanding it
+            would silently manufacture ids nobody actually cited.
     """
     cited = set(id_re.findall(text))
     for match in _THROUGH_RANGE_RE.finditer(text):
         prefix, start, end = match.group(1), int(match.group(2)), int(match.group(3))
+        if end - start > _THROUGH_RANGE_MAX_SPAN:
+            msg = (
+                f"'{match.group(0)}' spans {end - start + 1} ids, more than the "
+                f"{_THROUGH_RANGE_MAX_SPAN}-id sanity bound; check for a typo in the range"
+            )
+            raise ValueError(msg)
         cited.update(f"{prefix}{number}" for number in range(start, end + 1))
     return cited
 
@@ -444,7 +479,11 @@ def _debt_register_open_ids(lines: list[str]) -> dict[str, int]:
     not match and are correctly excluded rather than silently mis-tracked. The register uses
     ``[Closed]`` and ``[Resolved]`` interchangeably as closure markers (per the linkage contract's
     "How the other three registers link in" table); both are honoured here, because treating
-    ``[Resolved]`` rows as open would report already-closed work as a gap.
+    ``[Resolved]`` rows as open would report already-closed work as a gap. The marker is only
+    checked in the ``Debt`` cell (index 1, present in both of the register's table shapes): every
+    other column is free-text prose (``Source``, ``Severity``, ``Suggested action``) that can
+    legitimately mention another row's closure without describing this row's own state, so
+    joining every cell before matching would both mis-close open rows and mis-open closed ones.
 
     Args:
         lines: The debt register's lines.
@@ -453,6 +492,7 @@ def _debt_register_open_ids(lines: list[str]) -> dict[str, int]:
         dict[str, int]: Open (neither ``[Closed]`` nor ``[Resolved]``) debt ids mapped to the line
             they were found on.
     """
+    debt_cell_idx = 1
     open_ids: dict[str, int] = {}
     for number, line in enumerate(lines, start=1):
         if "|" not in line:
@@ -460,22 +500,25 @@ def _debt_register_open_ids(lines: list[str]) -> dict[str, int]:
         cells = _split_row(line)
         if not cells or not _DEBT_ROW_ID_RE.match(cells[0]):
             continue
-        joined = " ".join(cells)
-        if "[Closed]" in joined or "[Resolved]" in joined:
+        debt_cell = cells[debt_cell_idx] if len(cells) > debt_cell_idx else ""
+        if "[Closed]" in debt_cell or "[Resolved]" in debt_cell:
             continue
         open_ids[cells[0]] = number
     return open_ids
 
 
-def _find_lessons_status_column(lines: list[str]) -> int | None:
-    """Return the authoring lessons log table header's ``Status`` column index, if present.
+def _find_lessons_status_column(lines: list[str]) -> int:
+    """Return the authoring lessons log table header's ``Status`` column index.
 
     Args:
         lines: The authoring lessons log's lines.
 
     Returns:
-        int | None: The 0-based ``Status`` column index, or None if no row starting with the
-            cell ``ID`` and containing a ``Status`` column is found.
+        int: The 0-based ``Status`` column index.
+
+    Raises:
+        LookupError: If no row starting with the cell ``ID`` and containing a ``Status``
+            column is found.
     """
     for line in lines:
         if "|" not in line:
@@ -483,7 +526,8 @@ def _find_lessons_status_column(lines: list[str]) -> int | None:
         cells = _split_row(line)
         if cells and cells[0] == "ID" and "Status" in cells:
             return cells.index("Status")
-    return None
+    msg = "no table header with 'ID' and 'Status' columns found"
+    raise LookupError(msg)
 
 
 def _is_open_lesson_row(cells: list[str], status_idx: int) -> bool:
@@ -508,19 +552,26 @@ def _lessons_needing_citation(lines: list[str]) -> dict[str, int]:
     """Return lessons whose status is not applied/rejected/superseded, with line numbers.
 
     The log's own structure (header shape, id sequence, required fields) is validated
-    separately by ``scripts/check_lessons_log.py``; this function only reads what it needs and
-    returns no rows, rather than raising, when the table header is absent.
+    separately by ``scripts/check_lessons_log.py``; this function still refuses to report zero
+    open lessons when the document has table-like content but the header itself cannot be
+    found, since that condition means the linkage check ran without reading anything rather
+    than confirming there is nothing to link. A document with no pipe-containing line at all
+    (freshly scaffolded, not yet holding a table) is not that failure mode: it genuinely has
+    no lessons to cite yet, so it returns no rows rather than raising.
 
     Args:
         lines: The authoring lessons log's lines.
 
     Returns:
-        dict[str, int]: Lesson ids still needing linkage, mapped to the line they were found on;
-            empty when no log table header is present.
+        dict[str, int]: Lesson ids still needing linkage, mapped to the line they were found on.
+
+    Raises:
+        LookupError: If the document has table-like content but no locatable header with
+            ``ID`` and ``Status`` columns.
     """
-    status_idx = _find_lessons_status_column(lines)
-    if status_idx is None:
+    if not any("|" in line for line in lines):
         return {}
+    status_idx = _find_lessons_status_column(lines)
 
     open_lessons: dict[str, int] = {}
     for number, line in enumerate(lines, start=1):
@@ -547,42 +598,45 @@ def _capability_header_docs_index(cells: list[str]) -> int | None:
     return None
 
 
-def _is_open_capability_row(cells: list[str], docs_idx: int | None) -> bool:
-    """Report whether a split row is a not-done capability row under an already-seen header.
-
-    Args:
-        cells: A row's split cell values.
-        docs_idx: The most recently seen header's ``Docs`` column index, or None before any
-            header has been seen.
-
-    Returns:
-        bool: True when a header is known, the row is a real capability row (not a separator)
-            whose id matches the capability id shape, and its ``Docs`` cell is not the done mark.
-    """
-    if docs_idx is None or _is_separator(cells) or not _CAP_ROW_ID_RE.match(cells[0]):
-        return False
-    return len(cells) > docs_idx and cells[docs_idx] != _CAP_DONE_MARK
-
-
 def _capability_register_open_ids(lines: list[str]) -> dict[str, int]:
     """Return capability ids not marked done, mapped to their 1-based line number.
 
     The register holds four separate tables (K, G, A, S), each headed by its own
     ``| ID | Capability | Docs | Notes |`` row; this walks the whole file once and tracks
     whichever header was most recently seen, so a row only counts once a header naming a ``Docs``
-    column has been observed. The ``Docs`` cell holds exactly one status glyph (verified against
-    the current document: no row mixes a glyph with other text), so an equality check against the
-    done mark is reliable rather than a loose substring test.
+    column has been observed. Each ``## `` section heading resets the tracked header, so a
+    same-shaped table appearing later in the document (outside the four capability sections)
+    cannot be mistaken for an open capability row under a stale header. The ``Docs`` cell holds
+    exactly one status glyph (verified against the current document: no row mixes a glyph with
+    other text), so an equality check against the done mark is reliable rather than a loose
+    substring test.
 
     Args:
         lines: The capability register's lines.
 
     Returns:
         dict[str, int]: Open (not done) capability ids mapped to the line they were found on.
+
+    Raises:
+        LookupError: If any row shaped like a capability row (its first cell matches the
+            ``[KGAS]NN`` id pattern) is found with no header located for its table, whether
+            because the whole document has no locatable header or because one table's header
+            specifically was renamed or dropped while the others stayed intact. Catching only
+            the all-tables-missing case would leave a single corrupted header (e.g. just the K
+            table's) silently invisible: that table's rows would fall under ``docs_idx=None``
+            and every one of them would be dropped rather than flagged. A document with no
+            pipe-containing line at all is not this failure mode and returns no rows instead.
     """
+    if not any("|" in line for line in lines):
+        return {}
     docs_idx: int | None = None
+    tables_found = 0
     open_ids: dict[str, int] = {}
+    unlocated: list[tuple[str, int]] = []
     for number, line in enumerate(lines, start=1):
+        if line.startswith("## "):
+            docs_idx = None
+            continue
         if "|" not in line:
             continue
         cells = _split_row(line)
@@ -591,9 +645,26 @@ def _capability_register_open_ids(lines: list[str]) -> dict[str, int]:
         header_docs_idx = _capability_header_docs_index(cells)
         if header_docs_idx is not None:
             docs_idx = header_docs_idx
+            tables_found += 1
             continue
-        if _is_open_capability_row(cells, docs_idx):
+        if _is_separator(cells) or not _CAP_ROW_ID_RE.match(cells[0]):
+            continue
+        if docs_idx is None:
+            unlocated.append((cells[0], number))
+        elif len(cells) > docs_idx and cells[docs_idx] != _CAP_DONE_MARK:
             open_ids[cells[0]] = number
+    if tables_found == 0:
+        msg = "no table header with 'ID' and 'Docs' columns found"
+        raise LookupError(msg)
+    if unlocated:
+        ids_listed = ", ".join(
+            f"{cap_id} (line {number})" for cap_id, number in unlocated
+        )
+        msg = (
+            f"found capability row(s) with no locatable 'ID'/'Docs' header for their table: "
+            f"{ids_listed}"
+        )
+        raise LookupError(msg)
     return open_ids
 
 
@@ -912,7 +983,11 @@ def check_linkage(
     if register_lines is None:
         return problems
 
-    clusters = _find_clusters(register_lines)
+    try:
+        clusters = _find_clusters(register_lines)
+    except LookupError as exc:
+        problems.append(f"{register_path.name}: {exc}")
+        return problems
     if not clusters:
         problems.append(f"no '## Cluster <letter>:' tables found in {register_path}")
         return problems
@@ -926,33 +1001,45 @@ def check_linkage(
 
     debt_lines = _read_lines(debt_register_path, problems)
     if debt_lines is not None:
-        problems.extend(
-            _check_debt_linkage(
-                debt_lines,
-                debt_register_path,
-                register_path,
-                cluster_item_text.get("B", ""),
+        try:
+            problems.extend(
+                _check_debt_linkage(
+                    debt_lines,
+                    debt_register_path,
+                    register_path,
+                    cluster_item_text.get("B", ""),
+                )
             )
-        )
+        except ValueError as exc:
+            problems.append(f"{debt_register_path.name}: {exc}")
 
     lessons_lines = _read_lines(lessons_log_path, problems)
     if lessons_lines is not None:
-        problems.extend(
-            _check_lessons_linkage(
-                lessons_lines,
-                lessons_log_path,
-                register_path,
-                cluster_item_text.get("C", ""),
+        try:
+            problems.extend(
+                _check_lessons_linkage(
+                    lessons_lines,
+                    lessons_log_path,
+                    register_path,
+                    cluster_item_text.get("C", ""),
+                )
             )
-        )
+        except (LookupError, ValueError) as exc:
+            problems.append(f"{lessons_log_path.name}: {exc}")
 
     capability_lines = _read_lines(capability_register_path, problems)
     if capability_lines is not None and roadmap_lines is not None:
-        problems.extend(
-            _check_capability_linkage(
-                capability_lines, capability_register_path, roadmap_lines, roadmap_path
+        try:
+            problems.extend(
+                _check_capability_linkage(
+                    capability_lines,
+                    capability_register_path,
+                    roadmap_lines,
+                    roadmap_path,
+                )
             )
-        )
+        except (LookupError, ValueError) as exc:
+            problems.append(f"{capability_register_path.name}: {exc}")
 
     return problems
 
