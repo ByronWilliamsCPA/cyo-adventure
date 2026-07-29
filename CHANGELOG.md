@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.40.0] - 2026-07-29
+
+### Features
+
+- **api**: ADR-023 Stage A sentinel leak guards + survival measurement (G1: STOP)
+  ([#449](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/449),
+  [`dc81bbe`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/dc81bbecaa408fdc136d253004229c0b428a2687))
+
+
 ## [0.39.2] - 2026-07-28
 
 ### Bug Fixes
@@ -2737,6 +2746,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.40.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.39.2...v0.40.0
 [0.39.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.39.1...v0.39.2
 [0.39.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.39.0...v0.39.1
 [0.39.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.38.1...v0.39.0
