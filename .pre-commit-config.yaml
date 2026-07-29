@@ -190,6 +190,14 @@ repos:
           bash -c 'cd frontend && files=(); for f in "$@"; do files+=("${f#frontend/}"); done; npx eslint --max-warnings=0 "${files[@]}"' --
         language: system
         files: ^frontend/(src|e2e|e2e-real|e2e-staging|e2e-prod)/.*\.tsx?$
+        # frontend/eslint.config.js deliberately ignores src/client (the
+        # generated, committed OpenAPI client, @hey-api/openapi-ts output);
+        # linting a file ESLint itself refuses to lint just makes it emit its
+        # own "file ignored" warning, which --max-warnings=0 then treats as a
+        # failure. Without this exclude, any commit that regenerates the
+        # client (mandatory on every backend contract change, see CLAUDE.md)
+        # fails pre-commit on a false positive.
+        exclude: ^frontend/src/client/
         stages: [pre-commit]
 
       - id: frontend-prettier
