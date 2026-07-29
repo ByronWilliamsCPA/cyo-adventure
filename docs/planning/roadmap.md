@@ -143,7 +143,6 @@ and need the owner's ratification before they count as commitments.
 |----------------|----------------|
 | K9 shelf presentation ("what's new" only; in-progress/finished states already shipped per 2026-07-29 audit) | 4b, alongside the other kid-surface UX already there |
 | G14 multi-guardian households (admin-mediated invite already shipped; gap is a guardian-initiated self-service path only, per 2026-07-29 audit) | 4c, which already owns G7 budget consent and K12 kid status |
-| A16 cover-art review UI: the H2 auto-publish security gap is closed (branch `fix/cover-moderation-gate`), but the 2026-07-29 audit found A16's own definition still unmet, no admin surface renders the cover image or exposes an approve action | 5, where H2 is already listed in the Phase 5 checklist under its own name |
 | A3 band definitions and theme taxonomy as admin levers (thresholds already shipped) | 9, with A8 runtime levers |
 | K20 kid-facing personalization, G18 guardian per-slot opt-in | Blocked on [ADR-023](./adr/adr-023-story-personalization-slots.md) moving from Proposed to Accepted. No phase until that ruling; tracked as a `decision`, not a scheduling gap |
 | A2 sample audits of auto-published stories | Post-launch backlog, conditional: A6 gates every publish through a human today, so this is moot unless an auto-publish tier is ever introduced. It stays registered so the conditional survives |
@@ -787,10 +786,16 @@ runs on Supabase-managed infrastructure instead of the homelab; see
       neither previously tracked here nor closed**: H1, `assign_storybook` performs no
       band-ceiling comparison against the target profile, so a guardian can assign an
       off-band book across children (K13's assignment-time enforcement gap).
-- [ ] **Newly surfaced by the 2026-07-20 audit**: H2, `generate_cover` flips
+- [x] **Newly surfaced by the 2026-07-20 audit**: H2, `generate_cover` flips
       `cover_status` straight `generating -> ready` with no moderation/approval gate, so
       an AI cover image can reach a child's shelf without the human review A16 promises
-      (the story-text safety guarantee, A6, is unaffected).
+      (the story-text safety guarantee, A6, is unaffected). Closed 2026-07-28 on
+      `feat/cover-review-ui`: the backend gate (`generate_cover` stops at
+      `pending_review`, `covers.service.approve_cover` is the sole admin-only path to
+      `ready`) merged from `fix/cover-moderation-gate` (commit b56b11f), and the admin
+      review UI (`ReviewDetailPage.tsx` renders the pending cover image plus an "Approve
+      cover" action) closes the remaining A16 gap the 2026-07-29 audit had found; A16
+      flipped to done in `capability-register.md`.
 
 **Newly surfaced by the 2026-07-28 unscheduled-work sweep.** The security plan's Medium and Low
 tiers, and the authoring log's blocking lessons, had no phase home. Full detail by ID in the
