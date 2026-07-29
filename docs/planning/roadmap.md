@@ -124,9 +124,9 @@ done.**
 | Register items | Phase |
 |----------------|-------|
 | K5/K8 test pins, K6 tracker, K7 TTS, G6 editor, G5 skim aids, G2 controls UI, G3 permissions, K15 feedback flag, G15 storage view | 4b |
-| S9 delivery infra, G10 digest/alerts, G9 visibility, K12 kid generation status, G7 budget consent + G13 interim quota balance | 4c |
+| S9 delivery infra, G10 digest/alerts, G9 visibility, K12 kid generation status, G7 budget consent (G13 interim quota balance closed 2026-07-29: audit found budget enforcement and kid-facing status already shipped and tested, register flipped to ✅) | 4c |
 | G17 consent flow, K17 recommendation surfaces, A15 enforcement guard | 4d |
-| ADR-007 purge, G8/A5 offline revocation, A13 audit view, A4 re-screen tooling, nightly e2e-real + S2 real conflict spec, staging golden journeys, adversarial live-model run | 5 |
+| ADR-007 purge, G8/A5 offline revocation, A4 re-screen tooling (backend done, UI hook only), nightly e2e-real + S2 real conflict spec, staging golden journeys, adversarial live-model run | 5 |
 | ADR-018 D1-D4 execution, G11 trust surface, G12 export, A12 abuse workflow, A14 compliance reporting | 7 |
 | G13 full credits/IAP | 8 |
 | A9 curation surface, A7 ops dashboards, A8 runtime levers, A4 full catalog re-screen | 9 |
@@ -141,11 +141,10 @@ and need the owner's ratification before they count as commitments.
 
 | Register items | Proposed phase |
 |----------------|----------------|
-| K1 per-band presentation, K9 shelf presentation, K10 kid-facing connectivity UX | 4b, alongside the other kid-surface UX already there |
-| G14 multi-guardian households, S8 request-flow remainder (budget accounting at consent, kid-facing status) | 4c, which already owns G7 budget consent and K12 kid status, the two gaps S8 names |
-| A16 cover-art moderation gate (gap H2) | 5, where H2 is already listed in the Phase 5 checklist under its own name |
+| K9 shelf presentation ("what's new" only; in-progress/finished states already shipped per 2026-07-29 audit) | 4b, alongside the other kid-surface UX already there |
+| G14 multi-guardian households (admin-mediated invite already shipped; gap is a guardian-initiated self-service path only, per 2026-07-29 audit) | 4c, which already owns G7 budget consent and K12 kid status |
+| A16 cover-art review UI: the H2 auto-publish security gap is closed (branch `fix/cover-moderation-gate`), but the 2026-07-29 audit found A16's own definition still unmet, no admin surface renders the cover image or exposes an approve action | 5, where H2 is already listed in the Phase 5 checklist under its own name |
 | A3 band definitions and theme taxonomy as admin levers (thresholds already shipped) | 9, with A8 runtime levers |
-| K11 kid-terms request initiation | `now`: the register's own note says this shipped end to end, so the 🟡 is likely stale. Verify and correct the symbol rather than schedule work |
 | K20 kid-facing personalization, G18 guardian per-slot opt-in | Blocked on [ADR-023](./adr/adr-023-story-personalization-slots.md) moving from Proposed to Accepted. No phase until that ruling; tracked as a `decision`, not a scheduling gap |
 | A2 sample audits of auto-published stories | Post-launch backlog, conditional: A6 gates every publish through a human today, so this is moot unless an auto-publish tier is ever introduced. It stays registered so the conditional survives |
 
