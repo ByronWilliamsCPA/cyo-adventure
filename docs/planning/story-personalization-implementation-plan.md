@@ -360,7 +360,8 @@ is live.
 `20260728T205008Z`, 30 stories x 4 slots, first attempt only, the `fill_bound.md` "Verbatim
 tokens" preservation instruction present in every prompt. The raw run artifact under
 `results/sentinel-survival/20260728T205008Z/` is local-only and gitignored, so every number a
-reader needs is restated here rather than left to that path):
+reader needs is restated here, and the aggregate itself is committed at
+[evidence/sentinel-reinsertion/20260728T205008Z-g1-stop-survival.md](evidence/sentinel-reinsertion/20260728T205008Z-g1-stop-survival.md)):
 
 - **Clean-pass rate: 3.3% (1/30) on `openrouter:anthropic/claude-haiku-4.5`**, which is
   production's primary fill route (`openrouter_model` in `core/config.py`). This is a
@@ -386,6 +387,77 @@ reader needs is restated here rather than left to that path):
   worst configured route, and the worst (and primary) route has now been measured at 3.3%; a
   fallback-model run would inform the re-plan (for example, pinning fills to a stronger
   model), not reverse the STOP.
+
+**RE-INSERTION PROTOTYPE MEASURED 2026-07-29** (`scripts/prototype_sentinel_reinsertion.py`
+over run `20260729T010024Z`, 30 fills persisted via `--save-fills`; prompt-preserved survival
+replicated the STOP result at 0/30; aggregate committed at
+[evidence/sentinel-reinsertion/20260729T010024Z-reinsertion-dev.md](evidence/sentinel-reinsertion/20260729T010024Z-reinsertion-dev.md)
+because the run directory under `results/` is gitignored):
+
+- Strip-all-then-reinsert (never trust a model token; strip everything, match the generic
+  inner word case-sensitively at word boundaries, wrap every match, verify with
+  `check_sentinel_integrity`): **story-level clean 3/30 (10%)** against the strict
+  every-expected-node multiset, but the per-slot decomposition shows the strict metric is
+  measuring the wrong thing:
+
+  | Slot | Node coverage | Note |
+  |---|---|---|
+  | OPERATOR / LISTENER / HUB / FOUNDER | 94-99% | named third-party characters re-insert almost perfectly |
+  | COMPANION | 84% | |
+  | HERO | **42%** (618/1457 nodes; name absent from ALL nodes in 11/30 stories) | structural, not a fill defect: the corpus is second-person ("You tug on your boots"), so the protagonist is the addressee and the name appears only in vocative dialogue |
+  | lowercase descriptive slots (the pup, the grown-up) | 82 misses are sentence-initial capitalization; 72 more are inflected forms | recoverable with a case/inflection-aware matcher |
+
+- **Conclusion for the re-plan**: the failed assumption was never "models can carry tokens";
+  it was that the skeleton can PRESCRIBE where a name appears. Second-person voice makes a
+  per-node prescription unsatisfiable for HERO regardless of model quality. The viable
+  design is **derive, not prescribe**: re-insert deterministically wherever the generic word
+  occurs, store that derived multiset as the at-rest expectation (integrity = blob matches
+  what re-insertion inserted, round-trip-verified), and treat name coverage as a soft
+  quality floor. At least one personalized surface is guaranteed independently of prose by
+  the title strip rules and the P8 dedication overlay. Two cheap lifts if HERO prose
+  coverage matters: a case/inflection-aware matcher (closes ~154 of 1,026 misses), and a
+  fill-prompt nudge to address the hero by name in dialogue occasionally.
+
+**MATCHER HARDENING RE-MEASURED 2026-07-29** (Stage R Task R1, same saved fills, offline,
+zero provider spend; strict baseline preserved as `reinsertion-report-strict.*`):
+
+- Sentence-start case widening (lowercase-initial values also match their first-letter
+  capitalization at sentence starts, wrapped verbatim so fallback prose keeps its casing):
+  120 widened occurrences wrapped; not_found dropped 1,027 to 951 (76 misses recovered);
+  strict story-clean 3/30 to 4/30. Round-trip verification now checks against the derived
+  reference including verbatim-cased variants, and still passes on every clean story.
+- Plural decomposition: **0 bare-plural occurrences on the whole corpus.** The earlier "72
+  inflected misses" bucket was a crude prefix heuristic counting possessives, which the
+  word-boundary matcher already handles (`Explorer's` wraps as `{~HERO:Explorer~}'s`, now
+  covered by an explicit test). Plural matching is therefore NOT needed; the lift menu
+  reduces to sentence-start casing (done) plus the optional vocative fill-prompt nudge.
+- Per-slot coverage and the G1-R round-trip metric are now permanent report fields (Stage R
+  Task R4, commit a12c1a3): **verify_manifest_ok 30/30 (100%)** on the saved fills; the
+  widening lifted COMPANION 84% to 98.4%; third-party named slots 94.6-99.1%; HERO 42.4%
+  (structural); lowercase relational slots (KIN, CHAPERONE, THRESHOLD, COMPANION_KIND,
+  ENTRANCE) span 58-80% on small samples and are the residual soft spot the dedication
+  overlay does not need to cover (they are not the child's name).
+- **G1-R CONFIRMED 2026-07-29** on 30 fresh, unseen fills
+  (run `20260729T042510Z`, aggregate at
+  [evidence/sentinel-reinsertion/20260729T042510Z-g1r-confirmatory.md](evidence/sentinel-reinsertion/20260729T042510Z-g1r-confirmatory.md)):
+  verify_manifest_ok **30/30 (100%)**.
+  Per-slot coverage proved run-variable (HERO 26.8% vs 42.4%, FOUNDER 78.6% vs 94.6% across
+  the two runs; LISTENER/OPERATOR stable near 100%), confirming coverage is a per-fill
+  property to report as cross-run ranges, never a stable point estimate (AL-061); the
+  transform-correctness gate is the invariant.
+- **VOCATIVE NUDGE MEASURED AND REJECTED 2026-07-29** (owner-approved experiment; run
+  `20260729T054004Z`, aggregate at
+  [evidence/sentinel-reinsertion/20260729T054004Z-vocative-nudge-rejected.md](evidence/sentinel-reinsertion/20260729T054004Z-vocative-nudge-rejected.md),
+  30 stories, template edit reverted): adding
+  "let another character address the hero by name in dialogue at least once in that node
+  ... second-person narration alone never surfaces the name" to `fill_bound.md` cut HERO
+  coverage to **4.9%** (72/1458) versus the 26.8-42.4% baseline range; 10/30 stories ended
+  with zero hero mentions in prose. Root cause: the trailing rationale clause was executed
+  as an instruction, so the model suppressed narration mentions and confined the name to
+  dialogue it then rarely wrote. The hard gate was unaffected (verify_manifest 30/30). Any
+  future nudge attempt must be imperative-only, additive ("in addition to other natural
+  uses"), and A/B-measured before adoption (AL-062). The coverage posture stands on the
+  baseline ranges plus the mandatory dedication overlay.
 
 ## 4. P3: leak-surface guard points
 

@@ -49,6 +49,7 @@ _FK_CONCEPT = "concept.id"
 _FK_SERIES = "series.id"
 _FK_STORYBOOK_VERSION_STORYBOOK_ID = "storybook_version.storybook_id"
 _FK_STORYBOOK_VERSION_VERSION = "storybook_version.version"
+_FK_FAMILY_CONNECTION = "family_connection.id"
 
 # ON DELETE action, named once to avoid duplicated string literals.
 _ONDELETE_SET_NULL = "SET NULL"
@@ -104,8 +105,15 @@ _STORY_REQUEST_INITIATOR_VALUES = "'child', 'guardian', 'admin'"
 _STORY_REQUEST_LENGTH_VALUES = "'short', 'medium', 'long'"
 _STORY_REQUEST_STYLE_VALUES = "'prose', 'gamebook'"
 
-# The four cover-generation lifecycle states, named once for the CHECK constraint.
-_COVER_STATUS_VALUES = "'none', 'generating', 'ready', 'failed'"
+# The cover-generation lifecycle states, named once for the CHECK constraint.
+# 'pending_review' (H2, security-hardening-plan-2026-07.md) sits between
+# 'generating' and 'ready': a generated image never reaches 'ready' (and
+# therefore is never carried by an API response to a child library card, see
+# api/library.py's cover_status == "ready" gate) without an explicit admin
+# approval (StorybookVersion.cover_approved_by/cover_approved_at, stamped by
+# covers.service.approve_cover). The status gates API reads only; direct
+# object-storage reads are governed separately (covers/storage.py).
+_COVER_STATUS_VALUES = "'none', 'generating', 'pending_review', 'ready', 'failed'"
 
 # The append-only pipeline_event vocabularies, named once for their CHECK
 # constraints. event_type would ideally be derived from the EventType enum
@@ -124,14 +132,24 @@ _PIPELINE_EVENT_TYPE_VALUES = (
     "'book_unassigned', 'rated', "
     "'kid_flagged', 'flag_resolved', "
     "'user_managed', 'family_managed', 'family_connection_changed', "
-    "'node_edited', 'profile_viewed', 'cell_saturated'"
+    "'node_edited', 'profile_viewed', 'cell_saturated', "
+    # ADR-023 P3/P4 (Task B4): added alongside
+    # supabase/migrations/20260729020000_add_personalization_event_types.sql.
+    "'personalization_toggled', 'ring2_consent_granted', "
+    "'ring2_consent_revoked'"
 )
 _PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin', 'device'"
 _PIPELINE_ENTITY_TYPE_VALUES = (
     "'story_request', 'generation_job', 'storybook', 'storybook_version', "
     "'series', 'storybook_assignment', 'rating', 'moderation_threshold', "
     "'moderation_setting', 'kid_flag', 'user', 'family', 'family_connection', "
-    "'child_profile'"
+    "'child_profile', "
+    # ADR-023 P3/P4 (Task B6): added alongside
+    # supabase/migrations/20260729030000_add_personalization_entity_types.sql.
+    # 'personalization_consent' (not the longer
+    # 'personalization_disclosure_consent') so the value fits entity_type's
+    # String(32) column.
+    "'child_profile_personalization', 'personalization_consent'"
 )
 
 # The four admin-user lifecycle states (WS-J admin user management, plus the
@@ -150,6 +168,24 @@ _PIPELINE_ENTITY_TYPE_VALUES = (
 # PATCH /admin/users/{id} status transition. 'deactivated' blocks
 # authentication (api/deps.py::require_principal) without deleting the row.
 _USER_STATUS_VALUES = "'pending', 'active', 'deactivated', 'awaiting_approval'"
+
+# ADR-023 P4: the closed personalization slot_type vocabulary for
+# ChildProfilePersonalization, plus the narrower ring-2 subset (the "shared
+# with connected families" ceiling: pronoun_set and dedication are
+# ring-1-only, since a pronoun set is a grammatical choice rather than an
+# identity shared outward, and a dedication names the book's giver, not its
+# reader). Hand-maintained here in parallel with
+# storybook.theme_contract.PERSONALIZATION_FIELDS (the application-layer
+# source of truth) rather than imported, to keep this module's import surface
+# unchanged; kept in sync by tests/unit/test_personalization_vocab_drift.py.
+_PERSONALIZATION_SLOT_TYPE_VALUES = (
+    "'protagonist_first_name', 'pronoun_set', 'sibling_name', 'pet_species', "
+    "'pet_name', 'kinship_label', 'favorite', 'home_type', 'dedication'"
+)
+_PERSONALIZATION_RING2_SLOT_TYPE_VALUES = (
+    "'protagonist_first_name', 'sibling_name', 'pet_species', 'pet_name', "
+    "'kinship_label', 'favorite', 'home_type'"
+)
 
 
 class UUIDPrimaryKeyMixin:
@@ -218,6 +254,17 @@ class Family(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # reactivating a family does NOT auto-reactivate its members (deliberate
     # asymmetry: an admin reactivates people individually).
     deactivated_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    # ADR-023 P4 / design plan 8.6: the viewer-side receive switch. Defaults
+    # True because signing this family's own FamilyConnection consent already
+    # implies willingness to receive personalized content from that
+    # connection; this is a persistent per-family opt-OUT, not an opt-in, and
+    # is evaluated viewer-side before any sharer-side lookup (8.4 condition
+    # 0). Deliberately not an evidentiary consent record: no signature, no
+    # policy version, just a stored preference, matching 8.6's "a notice
+    # fixes surprise; a signature would not fix it any better".
+    personalization_receive_enabled: Mapped[bool] = mapped_column(
+        server_default=sa_text("true"), default=True
+    )
 
 
 class Series(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
@@ -448,6 +495,19 @@ class ChildProfile(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # frontend collapses age-band animation to the same reduced-motion state
     # as the OS-level prefers-reduced-motion media query (see band-tokens.css).
     reduce_motion: Mapped[bool] = mapped_column(default=False)
+    # ADR-023 P4: guardian consent ring toggles for this child's OWN real name
+    # (as opposed to the per-slot ring flags on ChildProfilePersonalization,
+    # which cover every other personalization slot plus a sibling's name).
+    # ring1_enabled permits the name into this family's own stories;
+    # ring2_enabled additionally permits it into stories shared with
+    # connected families (FamilyConnection). Both default False: a real
+    # name is never personalized in without an explicit guardian opt-in.
+    real_name_ring1_enabled: Mapped[bool] = mapped_column(
+        server_default=sa_text("false"), default=False
+    )
+    real_name_ring2_enabled: Mapped[bool] = mapped_column(
+        server_default=sa_text("false"), default=False
+    )
     avatar: Mapped[str | None] = mapped_column(String(255), default=None)
     # #CRITICAL: security: write-only PIN credential material (P6-07), encoded
     # as pbkdf2_sha256$iters$salt$hash by core/pin.py. No API response may ever
@@ -497,6 +557,70 @@ class ChildProfile(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # #VERIFY: tests/integration/test_profiles.py::
     # test_restrict_processing_blocks_new_story_requests.
     processing_restricted_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+
+
+class ChildProfilePersonalization(CreatedAtMixin, UpdatedAtMixin, Base):
+    """A guardian-set personalization value for one (profile, slot) pair.
+
+    ADR-023 P4: each row binds one of the closed ``slot_type`` vocabulary's
+    values (mirrored from ``storybook.theme_contract.PERSONALIZATION_FIELDS``)
+    to exactly one of three value shapes (free text, a closed enum choice, or
+    a reference to another profile, e.g. a sibling), never more than one at a
+    time. ``ring1_enabled``/``ring2_enabled`` are per-slot consent flags: ring
+    1 permits the value into this family's own stories, ring 2 additionally
+    permits it into stories shared with connected families
+    (``FamilyConnection``).
+
+    #CRITICAL: security: ``ck_cpp_ring2_ceiling`` is a DB CHECK, not just API
+    validation, so ``pronoun_set`` and ``dedication`` rows are structurally
+    incapable of carrying ``ring2_enabled = true`` even if a future API
+    bypasses application-layer validation.
+    #VERIFY: tests/unit/test_personalization_vocab_drift.py pins both CHECK
+    lists against ``PERSONALIZATION_FIELDS``.
+    """
+
+    __tablename__ = "child_profile_personalization"
+    __table_args__ = (
+        CheckConstraint(
+            f"slot_type IN ({_PERSONALIZATION_SLOT_TYPE_VALUES})",
+            name="ck_cpp_slot_type",
+        ),
+        CheckConstraint(
+            "(value_text IS NOT NULL)::int + (value_enum IS NOT NULL)::int "
+            "+ (value_profile_id IS NOT NULL)::int = 1",
+            name="ck_cpp_exactly_one_value",
+        ),
+        CheckConstraint(
+            f"NOT ring2_enabled OR slot_type IN "
+            f"({_PERSONALIZATION_RING2_SLOT_TYPE_VALUES})",
+            name="ck_cpp_ring2_ceiling",
+        ),
+        # Postgres indexes the referenced side of an FK automatically but never
+        # the referencing side, so a sibling-profile deletion would sequentially
+        # scan this table without it. The (child_profile_id, slot_type) primary
+        # key already covers the other FK.
+        Index("ix_cpp_value_profile_id", "value_profile_id"),
+    )
+
+    # #CRITICAL: data-integrity: CASCADE both FKs: a personalization value is
+    # child-linked data, purged with either the owning profile or (for a
+    # value_profile_id reference, e.g. a sibling) the referenced profile.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
+    child_profile_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_CHILD_PROFILE, ondelete="CASCADE"), primary_key=True
+    )
+    slot_type: Mapped[str] = mapped_column(String(32), primary_key=True)
+    value_text: Mapped[str | None] = mapped_column(Text, default=None)
+    value_enum: Mapped[str | None] = mapped_column(String(64), default=None)
+    value_profile_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_CHILD_PROFILE, ondelete="CASCADE"), default=None
+    )
+    ring1_enabled: Mapped[bool] = mapped_column(
+        server_default=sa_text("false"), default=False
+    )
+    ring2_enabled: Mapped[bool] = mapped_column(
+        server_default=sa_text("false"), default=False
+    )
 
 
 class FamilyConnection(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
@@ -602,6 +726,99 @@ class FamilyConnection(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     consented_by_sharer_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
 
 
+class PersonalizationDisclosureConsent(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
+    """A signed ring-2 disclosure consent: one profile, one connection, one scope.
+
+    ADR-023 P4 (design plan 5.3). Distinct from ``FamilyConnection``'s own
+    dual-guardian consent (which merely permits recommendations to flow, K17):
+    this is the sharer guardian's separate, per-slot-scoped consent that
+    permits ``ChildProfilePersonalization``/real-name values to flow across
+    that connection specifically. ``covered_slot_types`` is the scope of the
+    disclosure; re-consent supersedes this row in place with a new
+    ``consent_accepted_at``/``consent_policy_version``, and narrowing
+    ``covered_slot_types`` does not require re-signing (owner decision,
+    ADR-023 OD-5(c)).
+
+    #CRITICAL: data-integrity: ``family_connection_id`` is ``ondelete="SET
+    NULL"``, never CASCADE. This row is an evidentiary record (GDPR Article
+    7(1), COPPA 312.5): the connection it was granted on can be deleted
+    (``FamilyConnection`` rows are hard-deleted, never soft-deactivated)
+    while the proof that consent was once given must survive as a scrubbed
+    tombstone naming only that authorization happened and what it covered,
+    never a slot value. Deleting the ``child_profile_id`` instead removes the
+    row entirely: the data subject is gone, so there is nothing left to
+    evidence.
+    #VERIFY: tests/integration/test_personalization_consent_tombstone.py.
+
+    Uses a surrogate UUID PK plus a partial unique index on
+    ``(child_profile_id, family_connection_id) WHERE family_connection_id IS
+    NOT NULL``, not a composite PK: tombstoning nulls half of what would
+    otherwise be the natural key, so a composite PK (as
+    ``ChildProfilePersonalization`` uses) cannot express "at most one live
+    consent per (profile, connection), any number of tombstones after".
+    """
+
+    __tablename__ = "personalization_disclosure_consent"
+    __table_args__ = (
+        Index(
+            "uq_pdc_profile_connection",
+            "child_profile_id",
+            "family_connection_id",
+            unique=True,
+            postgresql_where=sa_text("family_connection_id IS NOT NULL"),
+        ),
+        # Referencing-side FK index: family_connection_id is ON DELETE SET
+        # NULL, so every family_connection deletion scans this table without
+        # it. The partial unique index above does not serve that lookup,
+        # because it is keyed on child_profile_id first and excludes the NULL
+        # rows the deletion is about to create.
+        Index("ix_pdc_family_connection_id", "family_connection_id"),
+        # Mirrors ck_user_consent_pairing (User, :306-329) exactly: the four
+        # consent columns are set or cleared together, so this record is
+        # either fully signed or entirely unsigned, never a partial claim.
+        CheckConstraint(
+            "(consent_accepted_at IS NULL) = (consent_policy_version IS NULL) "
+            "AND (consent_accepted_at IS NULL) = (consent_signer_name IS NULL) "
+            "AND (consent_accepted_at IS NULL) = (consent_ip IS NULL)",
+            name="ck_pdc_consent_pairing",
+        ),
+    )
+
+    # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): the
+    # subject profile's own erasure removes every consent evidencing THEIR
+    # disclosure, live or tombstoned alike.
+    # #VERIFY: tests/integration/test_personalization_consent_tombstone.py,
+    # tests/integration/test_deletion_drill.py (Task B3).
+    child_profile_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_CHILD_PROFILE, ondelete="CASCADE")
+    )
+    # #CRITICAL: data-integrity: SET NULL, not CASCADE. See the class
+    # docstring: a deleted connection must not destroy the evidence that
+    # consent was once given on it.
+    # #VERIFY: tests/integration/test_personalization_consent_tombstone.py.
+    family_connection_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_FAMILY_CONNECTION, ondelete=_ONDELETE_SET_NULL), default=None
+    )
+    # Denormalized at signing time so the record stays legible after the
+    # connection row (and thus its connected_family_id) is gone.
+    connected_family_label: Mapped[str | None] = mapped_column(
+        String(200), default=None
+    )
+    covered_slot_types: Mapped[list[str] | None] = mapped_column(JSONB, default=None)
+    # Set only for a consent whose covered_slot_types includes the sibling
+    # slot; see design plan 10.1 for the attestation ceremony this backs.
+    sibling_authority_attested: Mapped[bool] = mapped_column(
+        server_default=sa_text("false"), default=False
+    )
+    consent_accepted_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    consent_policy_version: Mapped[str | None] = mapped_column(String(32), default=None)
+    consent_signer_name: Mapped[str | None] = mapped_column(String(200), default=None)
+    consent_ip: Mapped[str | None] = mapped_column(String(64), default=None)
+    # Explicit revocation, distinct from deletion/tombstoning: a guardian can
+    # revoke while the connection (and thus family_connection_id) still exists.
+    revoked_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+
+
 class Storybook(CreatedAtMixin, Base):
     """A story's lifecycle row; one per story id regardless of version."""
 
@@ -631,6 +848,15 @@ class Storybook(CreatedAtMixin, Base):
         CheckConstraint(
             "(series_id IS NULL) = (book_index IS NULL)",
             name="ck_storybook_series_index_pairing",
+        ),
+        # Referencing-side FK index. This is the highest-value of the three
+        # personalization FK indexes: storybook is the largest table in the
+        # schema, and the ADR-023 8.5 erasure path fires this ON DELETE SET
+        # NULL once per profile deletion, sequentially scanning the whole
+        # table without it.
+        Index(
+            "ix_storybook_personalization_subject_profile_id",
+            "personalization_subject_profile_id",
         ),
     )
 
@@ -666,6 +892,17 @@ class Storybook(CreatedAtMixin, Base):
         ForeignKey(_FK_SERIES), default=None
     )
     book_index: Mapped[int | None] = mapped_column(default=None)
+    # ADR-023 P4 / design plan 8.2: whose profile this book's sentinel slots
+    # resolve against, set at generation time from the requesting profile.
+    # #CRITICAL: data-integrity: SET NULL, deliberately the one deviation
+    # from this table's own family_id CASCADE pattern above. Deleting the
+    # subject's profile must not delete a book another family has on their
+    # shelf; it must sever the link so the book reverts to generic
+    # everywhere (design plan 8.5, 8.7).
+    # #VERIFY: tests/integration/test_deletion_drill.py (Task B3).
+    personalization_subject_profile_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_CHILD_PROFILE, ondelete=_ONDELETE_SET_NULL), default=None
+    )
 
 
 class StorybookVersion(CreatedAtMixin, Base):
@@ -713,6 +950,59 @@ class StorybookVersion(CreatedAtMixin, Base):
     cover_image_url: Mapped[str | None] = mapped_column(String(512), default=None)
     cover_status: Mapped[str] = mapped_column(
         String(20), default="none", server_default="none"
+    )
+    # #CRITICAL: security: H2 (security-hardening-plan-2026-07.md) closure --
+    # these two columns are the cover-art analogue of approved_by/published_at
+    # above: the sole record that a human (not the image provider, not the
+    # generation worker) reviewed a generated cover before any API read path
+    # could serve it to a child (direct object-storage access is a separate
+    # control, see covers/storage.py). NULL on a 'ready' row means the cover
+    # predates the gate, which the backfill in
+    # supabase/migrations/20260728000000_add_cover_approval_gate.sql demotes
+    # back to 'pending_review' rather than grandfathering as approved.
+    # covers.service.approve_cover is the only writer of both, and it
+    # requires cover_status == "pending_review" beforehand (see that
+    # function's docstring for the full transition contract).
+    # #VERIFY: tests/integration/test_cover_service.py::
+    # test_approve_cover_stamps_approver_and_timestamp.
+    cover_approved_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER, ondelete=_ONDELETE_SET_NULL), default=None
+    )
+    cover_approved_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    # ADR-023 P4: does this version's blob carry any sentinel-bound slots at
+    # all (safe to publish; says nothing about whose values). Off by default;
+    # set by the fill/import path only when the skeleton contract declares
+    # personalizable slots.
+    personalization_eligible: Mapped[bool] = mapped_column(
+        server_default=sa_text("false"), default=False
+    )
+    # A separate, narrower flag (design plan section 2/5): whether this
+    # version's contract additionally parameterizes pronouns. Off by
+    # default, set only by an explicit per-skeleton audit; never implied by
+    # personalization_eligible alone.
+    pronoun_parameterized: Mapped[bool] = mapped_column(
+        server_default=sa_text("false"), default=False
+    )
+    # Stage R re-scope (Task R3): the per-node token multiset that
+    # deterministic re-insertion actually produced
+    # (storybook/reinsertion.py::build_manifest), stamped at persist time
+    # from the transform that ran pre-persist. NOT a contract-prescribed
+    # expectation. Keyed
+    # {"tokens": {<node_id>: [...], "<node_id>::ending_title": [...]}}.
+    # NULL means no transform ran for this version (a sentinel-free import,
+    # or a resume whose reference skeleton could not be computed), not "the
+    # transform found nothing".
+    #
+    # WRITTEN by generation/persistence.py::persist_storybook, the single
+    # write path both fill routes share. NOT YET READ: rescreen
+    # (moderation/rescreen.py) and the other at-rest checks still re-derive
+    # their expectations from the contract, which is the prescriptive
+    # semantics Stage R set out to replace; repointing them at this column,
+    # and updating a node's entry in place on node-edit/repair adoption, is
+    # the remaining half of Task R3. Do not describe those reads as existing
+    # until they do.
+    sentinel_manifest: Mapped[dict[str, object] | None] = mapped_column(
+        JSONB, default=None
     )
 
     __table_args__ = (

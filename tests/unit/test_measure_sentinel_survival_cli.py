@@ -14,8 +14,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from cyo_adventure.measurement.fixtures import Specimen
 from scripts.measure_sentinel_survival import (
     _select_fixture_pairs,  # pyright: ignore[reportPrivateUsage]
+    _write_fill,  # pyright: ignore[reportPrivateUsage]
     main,
 )
 
@@ -59,6 +61,109 @@ def test_mock_dry_run_writes_a_labeled_report(
 
     captured = capsys.readouterr()
     assert "sentinel-survival:" in captured.out
+
+
+@pytest.mark.unit
+def test_save_fills_writes_recoverable_trial_data(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """--save-fills persists every trial under <run-dir>/fills/, recoverably.
+
+    Each fill file must carry everything
+    ``scripts/prototype_sentinel_reinsertion.py`` needs to recompute
+    expectations offline without re-running specimen construction:
+    specimen_slug, provider, slot_bindings, bound_skeleton, and
+    filled_storybook (exactly what ``classify_fill`` was given).
+    """
+    out_dir = tmp_path / "results"
+    exit_code = main(
+        [
+            "--providers",
+            "mock",
+            "--out-dir",
+            str(out_dir),
+            "--skeletons",
+            "3-5:puddle-jumping-day",
+            "--count",
+            "2",
+            "--save-fills",
+        ]
+    )
+    assert exit_code == 0
+
+    run_dir = next(out_dir.iterdir())
+    fills_dir = run_dir / "fills"
+    assert fills_dir.is_dir()
+
+    fill_files = sorted(fills_dir.glob("*.json"))
+    assert len(fill_files) == 2
+    for index, path in enumerate(fill_files):
+        assert path.name.startswith(f"{index:03d}-mock-")
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        assert payload["specimen_slug"]
+        assert payload["provider"] == "mock"
+        assert "slot_bindings" in payload
+        assert isinstance(payload["bound_skeleton"], dict)
+        assert isinstance(payload["filled_storybook"], dict)
+
+    captured = capsys.readouterr()
+    assert "sentinel-survival:" in captured.out
+
+
+@pytest.mark.unit
+def test_save_fills_prefix_sorts_lexicographically_past_nine(tmp_path: Path) -> None:
+    """The fill-file prefix must sort in trial order once there are 10+ trials.
+
+    The reader (`prototype_sentinel_reinsertion._analyze_fills`) enumerates
+    fills with `sorted(glob(...))` and documents that it returns trials "in
+    sorted order". An unpadded integer prefix silently breaks that promise at
+    the tenth trial, where "10-" sorts ahead of "2-". Two trials is not enough
+    to catch it, which is why the run above cannot: this asserts on the
+    boundary itself.
+    """
+    fills_dir = tmp_path / "fills"
+    specimen = Specimen(
+        slug="puddle-jumping-day",
+        band="3-5",
+        bound_skeleton={},
+        theme_brief={},
+        slot_bindings={},
+        personalizable_slots=frozenset(),
+        expected_sentinels=frozenset(),
+    )
+
+    for index in (2, 10):
+        _write_fill(fills_dir, index, "mock", specimen, {"nodes": []})
+
+    names = [path.name for path in sorted(fills_dir.glob("*.json"))]
+    assert names == [
+        "002-mock-puddle-jumping-day.json",
+        "010-mock-puddle-jumping-day.json",
+    ]
+
+
+@pytest.mark.unit
+def test_without_save_fills_no_fills_directory_is_created(
+    tmp_path: Path,
+) -> None:
+    """Omitting --save-fills matches prior behavior exactly: no fills/ ever appears."""
+    out_dir = tmp_path / "results"
+    exit_code = main(
+        [
+            "--providers",
+            "mock",
+            "--out-dir",
+            str(out_dir),
+            "--skeletons",
+            "3-5:puddle-jumping-day",
+            "--count",
+            "2",
+        ]
+    )
+    assert exit_code == 0
+
+    run_dir = next(out_dir.iterdir())
+    assert not (run_dir / "fills").exists()
 
 
 @pytest.mark.unit

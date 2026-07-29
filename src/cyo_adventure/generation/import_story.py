@@ -40,9 +40,10 @@ from cyo_adventure.moderation.personalizable_slots import (
     PersonalizableSlotsArg,
     personalizable_slot_ids_for_job,
 )
+from cyo_adventure.storybook.reinsertion import reinsert_storybook, verify_manifest
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import run_gate
-from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity
+from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity_at_rest
 
 if TYPE_CHECKING:
     import uuid
@@ -83,6 +84,10 @@ class ImportRequest:
             skill-authored versions too (WS-C PR2 final review I1: the
             recency-weighted pick reads this column, so a NULL here silently
             exempts skill-authored families from that weighting).
+        sentinel_manifest: The manifest the pre-persist reinsertion transform
+            produced for ``blob``, threaded into ``StorybookParams`` so this
+            path records the same at-rest evidence the automated fill path
+            does (ADR-023 Task R3). None for a caller that ran no transform.
     """
 
     family_id: uuid.UUID
@@ -92,6 +97,7 @@ class ImportRequest:
     prompt_version: str = "skeleton-fill-v1"
     review_model_override: str | None = None
     skeleton_slug: str | None = None
+    sentinel_manifest: dict[str, object] | None = None
 
 
 async def import_filled_story(
@@ -159,6 +165,7 @@ async def import_filled_story(
         provider=_IMPORT_PROVIDER,
         validation_report=result.report.to_dict(),
         skeleton_slug=request.skeleton_slug,
+        sentinel_manifest=request.sentinel_manifest,
     )
     await persist_storybook(session, params)
 
@@ -524,6 +531,141 @@ async def _finalize_resume(session: AsyncSession, ctx: _ResumeStage1Context) -> 
     return "passed"
 
 
+@dataclass(frozen=True, slots=True)
+class _ResumeSentinelReinsertionContext:
+    """Grouped parameters for :func:`_reinsert_and_verify_resume_sentinels`.
+
+    Bundled into one object (mirroring :class:`_ResumeStage1Context` above)
+    so the function stays under the project's argument-count limit while
+    keeping each field explicit.
+
+    Attributes:
+        job: The in-memory GenerationJob row being resumed.
+        job_id: The job id, for log/error context.
+        skeleton_slug: The matched skeleton slug, for log context.
+        reference_skeleton: The Stage 1 fidelity reference
+            (:func:`_stage1_reference_skeleton`'s output), the source of
+            truth `reinsert_storybook` derives every reinsertable token from.
+        blob: The filled Storybook JSON to transform.
+        personalizable_slots: The story's declared personalizable-slot set,
+            or ``None`` when the contract itself is unrecoverable. The
+            at-rest corruption re-scan only runs when this is a real
+            ``frozenset`` (Task 6c, M1); a ``None`` here is left for the
+            moderation-entry backstop to fail closed on instead.
+    """
+
+    job: GenerationJob
+    job_id: uuid.UUID
+    skeleton_slug: str
+    reference_skeleton: dict[str, object]
+    blob: dict[str, object]
+    personalizable_slots: frozenset[str] | None
+
+
+async def _reinsert_and_verify_resume_sentinels(
+    session: AsyncSession, ctx: _ResumeSentinelReinsertionContext
+) -> tuple[dict[str, object], dict[str, object]]:
+    """Derive the pre-persist blob via reinsertion and verify it fails closed.
+
+    Extracted from :func:`resume_manual_fill` (ADR-023 Stage R / Task R3) to
+    keep that function's cyclomatic complexity under the project's Ruff C901
+    gate; the two checks below are the same derive-not-prescribe sequence
+    generation/worker.py::_run_skeleton_fill runs, applied to this path's
+    reference skeleton and filled blob before ``import_filled_story`` (and
+    thus its ``persist_storybook`` call) ever sees them.
+
+    Args:
+        session: Open async session; used only to commit the job row's
+            failure state before a raise, matching resume_manual_fill's own
+            failure-commit-then-reraise contract.
+        ctx: The grouped reinsertion context (see
+            :class:`_ResumeSentinelReinsertionContext`).
+
+    Returns:
+        tuple[dict[str, object], dict[str, object]]: The transform's derived
+        document, to replace ``blob`` in the caller, and the manifest it
+        produced, which the caller threads to ``persist_storybook`` so
+        ``storybook_version.sentinel_manifest`` records what this path
+        actually re-inserted (ADR-023 Task R3). The manifest is derived here
+        and nowhere else on this path, so dropping it would leave the column
+        NULL for every skill-authored version.
+
+    Raises:
+        ValidationError: If the transform fails its own manifest (a
+            transform bug, not a fill-content problem) or the derived
+            document fails the at-rest sentinel-integrity re-scan. Either
+            case marks the job "failed" and commits before raising, per
+            resume_manual_fill's failure-commit-then-reraise pattern.
+    """
+    job = ctx.job
+    job_id = ctx.job_id
+    skeleton_slug = ctx.skeleton_slug
+    personalizable_slots = ctx.personalizable_slots
+
+    reinsertion_outcome = reinsert_storybook(ctx.reference_skeleton, ctx.blob)
+    document = reinsertion_outcome.document
+
+    if not verify_manifest(document, reinsertion_outcome.manifest):
+        # verify_manifest rebuilds a reference document from the manifest it
+        # is passed and re-runs the prescriptive check against the document
+        # that manifest was derived from, so it passes by construction when
+        # both come from the same reinsert_storybook call. A failure here
+        # means reinsert_storybook itself produced a document its own
+        # manifest cannot account for: a transform bug, not a fill-content
+        # problem.
+        logger.error(
+            "resume_manual_fill.sentinel_manifest_verification_failed",
+            job_id=str(job_id),
+            skeleton_slug=skeleton_slug,
+        )
+        msg = (
+            f"reinsertion transform for job {job_id} produced a "
+            "document that fails its own manifest"
+        )
+        job.status = "failed"
+        job.error = msg[:512]
+        await session.commit()
+        raise ValidationError(
+            msg,
+            field="sentinel_integrity",
+            details={"sentinel_integrity_violations": []},
+        )
+
+    if personalizable_slots is not None:
+        at_rest_result = check_sentinel_integrity_at_rest(
+            document, personalizable_slots
+        )
+        if not at_rest_result.ok:
+            # Redact the raw sentinel token from the log payload as
+            # defense-in-depth; node_id + kind fully classify+locate each
+            # violation, and the token holds only a generic default
+            # server-side, never resolved child data.
+            violation_details = [
+                {"node_id": v.node_id, "kind": v.kind}
+                for v in at_rest_result.violations
+            ]
+            logger.error(
+                "resume_manual_fill.sentinel_integrity_violation",
+                job_id=str(job_id),
+                skeleton_slug=skeleton_slug,
+                violations=violation_details,
+            )
+            msg = (
+                f"filled story for job {job_id} failed sentinel integrity: "
+                f"{len(violation_details)} violation(s)"
+            )
+            job.status = "failed"
+            job.error = msg[:512]
+            await session.commit()
+            raise ValidationError(
+                msg,
+                field="sentinel_integrity",
+                details={"sentinel_integrity_violations": violation_details},
+            )
+
+    return document, reinsertion_outcome.manifest
+
+
 async def resume_manual_fill(
     session: AsyncSession,
     job_id: uuid.UUID,
@@ -536,11 +678,16 @@ async def resume_manual_fill(
     Loads the job's concept for its family_id, then, when the job carries a
     ``skeleton_slug`` and its matched skeleton loaded successfully, computes
     the Stage 1 fidelity reference (:func:`_stage1_reference_skeleton`) and
-    runs the full pre-fill-vs-filled sentinel-integrity check
-    (:func:`~cyo_adventure.validator.sentinel_integrity.check_sentinel_integrity`,
-    Task 6b) against it BEFORE persisting anything: a violation (a dropped,
-    forged, migrated, or malformed sentinel) marks the job "failed" and
-    raises, so the blob is never persisted. Only then does this function
+    runs the ADR-023 Stage R strip-all-then-reinsert step against it BEFORE
+    persisting anything (:func:`_reinsert_and_verify_resume_sentinels`,
+    replacing Task 6b's prescriptive
+    :func:`~cyo_adventure.validator.sentinel_integrity.check_sentinel_integrity`
+    call): the transform's own manifest must account for its output, and the
+    derived document must pass
+    :func:`~cyo_adventure.validator.sentinel_integrity.check_sentinel_integrity_at_rest`.
+    Either failure marks the job "failed" and raises, so the blob is never
+    persisted. A sentinel the fill merely paraphrased away is no longer a
+    violation: it is re-derived. Only then does this function
     delegate to :func:`import_filled_story` for the same gate + persist +
     moderation pipeline every other import uses, threading the job's own
     ``authoring_metadata.get("review_stage2_model")`` override through as
@@ -706,79 +853,74 @@ async def resume_manual_fill(
     # and a family's later personalization resolve; a dropped or forged
     # sentinel in a skill-authored/imported fill must not reach the
     # guardian/admin approval queue looking like ordinary prose (ADR-023 plan
-    # section 3.2, "Fail closed"). Task 6a's moderation-entry Variant B
-    # backstop (run_moderation_pipeline) is blob-only and CANNOT catch a
-    # DROPPED sentinel: a filled node simply missing a token it should carry
-    # looks like ordinary prose with no per-node expected map to compare
-    # against. Only Variant A (this call), which compares the SAME pre-fill
-    # bound reference `_finalize_resume`'s own Stage 1 gate uses, catches a
-    # drop. Computed and checked HERE, before `import_filled_story` (and thus
-    # before its `persist_storybook` call) runs, so a violating blob is NEVER
-    # persisted -- unlike generation/worker.py's own check (Task 4a), which
-    # runs on a fill still in memory pre-persist by construction, the
-    # resume/import path's pre-fill reference and the filled blob previously
-    # only coexisted in `_finalize_resume`, which runs AFTER persist; this is
-    # the reorder that closes that gap. Reuses the EXISTING reference-
-    # skeleton production (`_stage1_reference_skeleton`, the same artifact
-    # `_finalize_resume`'s Stage 1 fidelity gate consumes below) rather than
-    # a second binding/contract-load path. This pre-persist check itself is
-    # skipped (not run) when `reference_skeleton` cannot be computed
-    # (skeleton unreadable, or a contract/render failure): that
-    # already-existing degrade-to-needs_review case is left exactly as it
-    # was pre-Task-6b (see `_finalize_resume`), which still runs and can
-    # still downgrade the job's status. As of Task 6c (M1), a skeleton- or
-    # contract-load failure specifically (not a render/binding failure -- see
-    # `personalizable_slots`'s own resolution above, which fails closed only
-    # when the CONTRACT itself is unrecoverable) is no longer silently
-    # persisted clean either: `personalizable_slots` resolves `None` in that
-    # same failure mode, and the moderation-entry backstop this function
-    # threads it into (below) fails closed on it instead. Also dormant, like
-    # the worker's own check, whenever
-    # `personalizable_slot_ids` resolves empty (every contract on disk
-    # today): `check_sentinel_integrity` then derives zero expected
-    # sentinels, so its dropped/forged/migrated/unknown-slot checks all pass.
-    # Its malformed-near-miss scan still runs unconditionally, but fires only
-    # on genuinely sentinel-shaped tokens ordinary prose never contains, so
-    # this stays byte-neutral for all real sentinel-free content.
-    # #VERIFY: test_resume_dropped_sentinel_rejected_pre_persist,
-    # test_resume_forged_sentinel_rejected_pre_persist, and
+    # section 3.2, "Fail closed"). G1 measurement showed the fill LLM
+    # preserves a sentinel wrapper verbatim on only 3.3% of tokens (ADR-023
+    # Stage R), so as of Task R3 this no longer prescribes the fill against a
+    # reference and rejects a mismatch; it DERIVES the final blob from
+    # `reference_skeleton` (the same pre-fill bound reference
+    # `_finalize_resume`'s own Stage 1 gate uses) via the deterministic
+    # strip-all-then-reinsert transform (`reinsert_storybook`), then verifies
+    # the transform's own output against its own manifest before persisting
+    # anything. Task 6a's moderation-entry Variant B backstop
+    # (run_moderation_pipeline) remains blob-only and still cannot itself
+    # catch a DROPPED sentinel by inspection alone; that gap is now closed by
+    # construction instead, since the reinsertion transform re-derives every
+    # reinsertable token from `reference_skeleton` rather than trusting
+    # whatever the fill happened to contain. Run HERE, before
+    # `import_filled_story` (and thus before its `persist_storybook` call)
+    # runs, so a transform-bug blob is NEVER persisted, mirroring
+    # generation/worker.py's own check (Task R3/4a): `blob` is reassigned to
+    # the transform's derived document before any downstream use. Reuses the
+    # EXISTING reference-skeleton production (`_stage1_reference_skeleton`,
+    # the same artifact `_finalize_resume`'s Stage 1 fidelity gate consumes
+    # below) rather than a second binding/contract-load path. This
+    # pre-persist step itself is skipped (not run) when `reference_skeleton`
+    # cannot be computed (skeleton unreadable, or a contract/render failure):
+    # that already-existing degrade-to-needs_review case is left exactly as
+    # it was pre-Task-6b (see `_finalize_resume`), which still runs and can
+    # still downgrade the job's status, and `blob` is left byte-unchanged in
+    # that case. The at-rest corruption re-scan
+    # (`check_sentinel_integrity_at_rest`) only runs when `personalizable_slots`
+    # is a real `frozenset` (Task 6c, M1): when it resolves `None` (the
+    # contract itself is unrecoverable), this step is skipped and the
+    # moderation-entry backstop this function threads `personalizable_slots`
+    # into (below) fails closed on the same `None` instead, so this is a
+    # deferred check, not a new gap. Also dormant, like the worker's own
+    # check, whenever `personalizable_slot_ids` resolves empty (every
+    # contract on disk today): the transform has no expected tokens to
+    # reinsert, so it is a byte-identical no-op, and
+    # `check_sentinel_integrity_at_rest` derives zero expected sentinels for
+    # existing content. Its malformed-near-miss scan still runs
+    # unconditionally, but fires only on genuinely sentinel-shaped tokens
+    # ordinary prose never contains, so this stays byte-neutral for all real
+    # sentinel-free content.
+    # #VERIFY: test_resume_forged_sentinel_stripped_and_not_reinserted_pre_persist,
+    # test_resume_manifest_verification_failure_marks_job_failed, and
     # test_resume_clean_sentinel_free_import_persists_unchanged in
     # tests/unit/test_resume_manual_fill_sentinel_integrity.py.
     reference_skeleton: dict[str, object] | None = None
     reference_error: str | None = None
+    # Stays None when no transform ran (no skeleton_slug, an unreadable
+    # skeleton, or an uncomputable reference): the column then honestly
+    # records "nothing was re-inserted here" rather than an empty manifest
+    # that would read as "the transform ran and found nothing".
+    sentinel_manifest: dict[str, object] | None = None
     if skeleton_slug is not None and original_skeleton is not None:
         reference_skeleton, reference_error = _stage1_reference_skeleton(
             band, skeleton_slug, original_skeleton, job
         )
         if reference_skeleton is not None:
-            integrity_result = check_sentinel_integrity(reference_skeleton, blob)
-            if not integrity_result.ok:
-                # Redact the raw sentinel token from the log payload as
-                # defense-in-depth; node_id + kind fully classify+locate each
-                # violation, and the token holds only a generic default
-                # server-side, never resolved child data.
-                violation_details = [
-                    {"node_id": v.node_id, "kind": v.kind}
-                    for v in integrity_result.violations
-                ]
-                logger.error(
-                    "resume_manual_fill.sentinel_integrity_violation",
-                    job_id=str(job_id),
+            blob, sentinel_manifest = await _reinsert_and_verify_resume_sentinels(
+                session,
+                _ResumeSentinelReinsertionContext(
+                    job=job,
+                    job_id=job_id,
                     skeleton_slug=skeleton_slug,
-                    violations=violation_details,
-                )
-                msg = (
-                    f"filled story for job {job_id} failed sentinel integrity: "
-                    f"{len(violation_details)} violation(s)"
-                )
-                job.status = "failed"
-                job.error = msg[:512]
-                await session.commit()
-                raise ValidationError(
-                    msg,
-                    field="sentinel_integrity",
-                    details={"sentinel_integrity_violations": violation_details},
-                )
+                    reference_skeleton=reference_skeleton,
+                    blob=blob,
+                    personalizable_slots=personalizable_slots,
+                ),
+            )
 
     review_stage2_model = _str_meta(job.authoring_metadata, "review_stage2_model")
     request = ImportRequest(
@@ -787,6 +929,7 @@ async def resume_manual_fill(
         model=model,
         review_model_override=review_stage2_model,
         skeleton_slug=skeleton_slug,
+        sentinel_manifest=sentinel_manifest,
     )
     try:
         story_id = await import_filled_story(

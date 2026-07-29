@@ -110,6 +110,27 @@ describe('GuardianReviewDetailPage', () => {
     expect(screen.queryByText(/A dark cave yawned ahead/)).not.toBeInTheDocument()
   })
 
+  it('jumps from a flagged card to its passage, highlights it, and restarts the fade on a re-click', async () => {
+    // This page carries its own copy of jumpToPassage (the admin page's
+    // equivalent is covered in admin/ReviewDetailPage.test.tsx), so the
+    // affordance needs its own test here rather than inheriting that one.
+    // The second click is the point: it exercises the clearTimeout guard that
+    // stops two jumps from racing to clear the same highlight, which a single
+    // click leaves untested.
+    const user = userEvent.setup()
+    renderAt('s1')
+    const jump = await screen.findByRole('button', { name: 'Show in story' })
+
+    await user.click(jump)
+    const passage = document.getElementById('passage-n1')
+    expect(passage).not.toBeNull()
+    expect(document.activeElement).toBe(passage)
+    expect(passage).toHaveClass('review-node--highlight')
+
+    await user.click(jump)
+    expect(passage).toHaveClass('review-node--highlight')
+  })
+
   describe('passage edit (G6)', () => {
     it('opens the edit dialog prefilled with the passage body and choice labels', async () => {
       const user = userEvent.setup()

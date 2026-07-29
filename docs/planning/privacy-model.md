@@ -13,7 +13,7 @@ source: "docs/planning/tech-spec.md sections Privacy controls, Data Protection, 
 
 # Privacy and Provider Data-Handling Model
 
-> **Status**: Active | **Version**: 0.2 | **Updated**: 2026-07-10
+> **Status**: Active | **Version**: 0.3 | **Updated**: 2026-07-29
 
 ## Overview
 
@@ -50,6 +50,27 @@ child. The following are classified as child-linked:
   qualifies via that capability); guardians receive job status, stage log, and error
   information without `report`. The list endpoint and every child-facing endpoint
   exclude it entirely.
+- `child_profile_personalization` rows: guardian-supplied personalization slot values
+  (`value_text`, `value_enum`, `value_profile_id`) and the profile-level
+  `real_name_ring1_enabled`/`real_name_ring2_enabled` flags, keyed by `child_profile_id`
+  (ADR-023). Same tier as the `child_profile` fields above: guardian-supplied, never
+  sent to a provider, never persisted into story content, delivered to family devices
+  only as a values payload resolved at read time. Retention: life of the profile,
+  purged by the existing profile-deactivation grace window in the retention table
+  (`docs/compliance/coppa-gdpr-remediation-plan.md:712`).
+- `personalization_disclosure_consent` rows: the ring-2 disclosure consent record
+  (`consent_accepted_at`, `consent_policy_version`, `consent_signer_name`,
+  `consent_ip`, `covered_slot_types`, `sibling_authority_attested`), keyed by
+  `child_profile_id` (ADR-023 P4). Same tier as `User`'s own consent columns
+  (`db/models.py:416-426`): consent evidence, not reading data. Retention should
+  follow the consent-evidence rationale rather than the reading-data rationale;
+  flagged for the same counsel pass as ADR-018 D1.
+- The client-held personalization values payload: child-linked data at rest on a
+  device, in the same category as the offline `reading_states` store already covered
+  by the SEC-F5 sign-out purge (`frontend/src/offline/db.ts:192-201`). **Shared-device
+  isolation (risk R20), RESOLVED 2026-07-28 (owner): accepted for v1.** A shared
+  family device is a shared trust boundary; no per-profile encryption and no
+  in-memory-only mode ship in v1.
 
 The following are not child-linked on their own (they link to a family or a story, not
 to an individual child):
@@ -366,6 +387,31 @@ datastore, so Pangolin ingress and a self-hosted IdP do not apply there.
 
 ## If Shared Beyond Family
 
+### Ring-2 disclosure (existing, guardian-authorized)
+
+Personalization values also flow beyond the immediate family through the ring-2
+disclosure design (ADR-016, ADR-023 section 3). This is a designed, guardian-gated flow,
+not a future Phase 7 deliverable, and it carries its own controls distinct from the
+public-tier checklist below:
+
+- **Which slot types can cross**: protagonist first name, sibling/family-child name, pet
+  species, pet name, trusted-adult kinship label, favorites (color, food, hobby), and
+  home type. Pronouns and the dedication line never cross ring 2 (ADR-023 taxonomy, ring
+  ceiling column).
+- **Under which consent**: the mutual, directional `family_connection` consent (active
+  guardian approval on both sides) plus a separate, per-profile, per-connection
+  disclosure consent (`personalization_disclosure_consent`, scoped by
+  `covered_slot_types`). The sibling slot additionally requires
+  `sibling_authority_attested` and the referenced sibling's own ring-2 enablement and
+  consent on that same connection.
+- **Revocation is prospective, not retroactive**: revoking a connection or a disclosure
+  consent stops future reads and future device syncs immediately, but does not
+  retroactively claw back a values payload already synced to a connected family's
+  device. Guardian-facing copy for revocation must say so rather than implying
+  retroactive erasure.
+
+### Public tier (future, ADR-008 / ADR-009)
+
 The controls above are calibrated for private family use and the homelab / family tier.
 The public tier (ADR-008 / ADR-009) takes this beyond private family use, so COPPA and
 Kids Category compliance become launch blockers. That compliance work is a future Phase 7
@@ -393,3 +439,6 @@ This note is a design reference, not legal advice.
 - [ADR-007: Raw output retention](./adr/adr-007-raw-output-retention.md)
 - [ADR-008: Public app store launch](./adr/adr-008-public-app-store-launch.md)
 - [ADR-009: Supabase platform (managed Postgres, OIDC)](./adr/adr-009-supabase-platform.md)
+- [ADR-016: Recommendation sharing and the three-ring social
+  boundary](./adr/adr-016-recommendation-sharing-social-boundary.md)
+- [ADR-023: Story personalization slots](./adr/adr-023-story-personalization-slots.md)

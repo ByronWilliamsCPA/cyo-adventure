@@ -87,6 +87,26 @@ class EventType(StrEnum):
     # payload carries ONLY closed-vocabulary enum values (age band, length,
     # style, differentiation level); see events/writer.py's allowlist.
     CELL_SATURATED = "cell_saturated"
+    # ADR-023 P3/P4 (story personalization): a guardian flips one
+    # personalization slot on or off, or edits its value, for a child profile
+    # (emitted by api/personalization.py::put_personalization). The type was
+    # added ahead of its writer, so an earlier revision of this comment said
+    # "not yet wired"; the writer landed in the same change that introduced
+    # the endpoint. The payload carries only the closed-vocabulary slot_type, the
+    # ring (1 or 2) it was scoped to, and the action taken; never the actual
+    # value (a child's name, a pet's name, etc.), per spec D3. See
+    # events/writer.py's allowlist for this type.
+    PERSONALIZATION_TOGGLED = "personalization_toggled"
+    # ADR-023 P4: a guardian in a connected family grants ring-2 sharing
+    # (the narrower "shared with connected families" slot subset) for a
+    # child profile to a specific connected family. The payload carries the
+    # connected family's id and a count of slot types shared, never the
+    # slot values themselves or any child-identifying detail.
+    RING2_CONSENT_GRANTED = "ring2_consent_granted"
+    # ADR-023 P4: the ring-2 consent counterpart to RING2_CONSENT_GRANTED; a
+    # guardian revokes previously granted ring-2 sharing with one connected
+    # family. The payload carries only the connected family's id.
+    RING2_CONSENT_REVOKED = "ring2_consent_revoked"
 
 
 SYSTEM_ACTOR_ROLE = "system"
