@@ -158,6 +158,30 @@ async def run_moderation_pipeline(
                 message="reviewer is the same backend+model as the generator",
             )
         )
+    # #CRITICAL: security: a report produced by the mock reviewer (the
+    # CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1 escape hatch, config._require_real_
+    # reviewer_outside_local) ran no real safety review at all. Overriding
+    # `reviewer_independent` here (build_review_provider always reports the
+    # mock backend as independent) plus a structural advisory finding is what
+    # makes such a report self-identifying forever (gap G1, design doc
+    # section 2.4), even after it is persisted and the escape hatch is later
+    # unset.
+    # #CRITICAL: security: the stamp must survive the REPAIR path too. An
+    # adopted repair replaces `report` wholesale with the fresh report built
+    # in `_attempt_and_adopt_repair`, so stamping only this pre-repair report
+    # would persist an unstamped report on every mock-moderated story that
+    # repaired. `mock_reviewer_outside_local` is therefore threaded into that
+    # function, which re-applies the identical stamp via `_stamp_mock_reviewer`.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_mock_review_escape_hatch_stamps_report_as_not_independent (no
+    # repair) and ::test_mock_review_stamp_survives_adopted_repair (adopted
+    # repair; asserts the PERSISTED report keeps both halves of the stamp).
+    mock_reviewer_outside_local = (
+        review_settings.review_provider == "mock"
+        and review_settings.environment != "local"
+    )
+    if mock_reviewer_outside_local:
+        _stamp_mock_reviewer(report)
 
     # #CRITICAL: security: universal at-rest sentinel-integrity backstop
     # (Task 6a). Before this check, Variant B ran ONLY inside
@@ -313,6 +337,7 @@ async def run_moderation_pipeline(
             guarded_review=guarded_review,
             pii=pii,
             independent=independent,
+            mock_reviewer_outside_local=mock_reviewer_outside_local,
             personalizable_slots=personalizable_slots,
         )
 
@@ -351,6 +376,38 @@ async def run_moderation_pipeline(
     )
 
 
+def _stamp_mock_reviewer(report: ModerationReport) -> None:
+    """Mark ``report`` as produced by the mock reviewer outside local.
+
+    The single definition of the gap-G1 stamp (design doc section 2.4), so
+    every report the pipeline can persist carries an identical mark whether it
+    came from the first moderation pass or from an adopted repair's fresh
+    report. Both halves matter: ``reviewer_independent = False`` is what the
+    dashboard and threshold flywheel read, and the structural ADVISORY finding
+    is what a human reading the stored report sees. ADVISORY never gates, so
+    stamping is verdict-neutral and safe to apply before the stages run.
+
+    Args:
+        report: The report to stamp, mutated in place.
+    """
+    report.reviewer_independent = False
+    report.add(
+        Finding(
+            stage=0,
+            source=Source.PIPELINE,
+            category="pipeline",
+            verdict=Verdict.ADVISORY,
+            message=(
+                "moderated with the mock reviewer outside a local "
+                "environment via the CYO_ADVENTURE_ALLOW_MOCK_REVIEW "
+                "escape hatch; no real safety review ran"
+            ),
+            structural=True,
+            concern="mock_reviewer_active",
+        )
+    )
+
+
 async def _attempt_and_adopt_repair(
     *,
     session: AsyncSession,
@@ -363,6 +420,7 @@ async def _attempt_and_adopt_repair(
     guarded_review: ReviewProvider,
     pii: PiiContext,
     independent: bool,
+    mock_reviewer_outside_local: bool,
     personalizable_slots: frozenset[str],
 ) -> ModerationReport:
     """Attempt one bounded auto-repair and adopt it if it re-passes moderation.
@@ -382,6 +440,12 @@ async def _attempt_and_adopt_repair(
         guarded_review: The PII-guarded review provider for re-moderation.
         pii: PII context for the egress guard on repair and review prompts.
         independent: Whether the review backend is independent of the generator.
+        mock_reviewer_outside_local: Whether the resolved review settings put
+            the mock reviewer outside ``environment="local"``. When True the
+            repaired report is stamped with the same gap-G1 mark the caller
+            applied to the pre-repair report, so an ADOPTED repair (which
+            replaces the caller's report wholesale) cannot launder a
+            mock-moderated story into a report that reads as reviewed.
         personalizable_slots: The story's declared personalizable slot ids,
             already resolved ONCE by the caller (:func:`run_moderation_pipeline`,
             Task 6a) via :func:`personalizable_slot_ids_for_story` for the
@@ -413,6 +477,8 @@ async def _attempt_and_adopt_repair(
     # validation gate. A malformed or gate-failing repair is discarded so the
     # original soft-flagged report drives routing.
     repaired_report = ModerationReport(reviewer_independent=independent)
+    if mock_reviewer_outside_local:
+        _stamp_mock_reviewer(repaired_report)
     try:
         await _run_all_stages(
             report=repaired_report,
@@ -642,25 +708,42 @@ def _overall_verdict(report: ModerationReport) -> str:
 
 
 # #CRITICAL: security: _verdict_counts is the only aggregate that reaches the
-# durable event log payload; it MUST stay a verdict-name -> int mapping (a
-# small closed vocabulary: block/flag/advisory/pass) and never include a
-# finding's ``category``, ``message``, or ``node_id``, any of which could
-# carry story-derived text.
-# #VERIFY: values are plain ints from a fixed StrEnum key set below; no string
-# field from Finding other than the enum's own ``.value`` is read here.
+# durable event log payload; it MUST stay a str -> int mapping over a small
+# CLOSED vocabulary and never include a finding's ``category``, ``message``,
+# or ``node_id``, any of which could carry story-derived text. The vocabulary
+# is the Verdict StrEnum's own values (block/flag/advisory/pass) plus the
+# single literal key ``"structural"`` written below, which tallies a boolean
+# field rather than naming a verdict. Any future key must likewise be a
+# literal defined in this module, never a value read off a Finding.
+# #VERIFY: values are plain ints; the only keys are ``Verdict(...).value`` and
+# the literal ``"structural"``; no string field from Finding other than the
+# enum's own ``.value`` is read here.
 def _verdict_counts(report: ModerationReport) -> dict[str, int]:
-    """Return a PII-free count of findings per verdict.
+    """Return a PII-free count of findings per verdict, plus a structural tally.
 
     Args:
         report: The report whose findings are tallied.
 
     Returns:
-        A mapping of verdict value (for example ``"flag"``) to occurrence count.
+        A mapping of verdict value (for example ``"flag"``) to occurrence
+        count, plus a ``"structural"`` key counting findings with
+        ``Finding.structural is True`` (design doc section 2.5): a
+        pipeline-condition fail-safe (reviewer unavailable, classifier
+        outage, mock reviewer) rather than a genuine content judgment. The
+        ``"structural"`` key is present only when its count is nonzero, the
+        same convention every verdict key already follows, so a clean
+        report's payload stays ``{}`` and existing exact-equality event
+        assertions are unaffected.
     """
     counts: dict[str, int] = {}
+    structural_count = 0
     for finding in report.findings:
         key = finding.verdict.value
         counts[key] = counts.get(key, 0) + 1
+        if finding.structural:
+            structural_count += 1
+    if structural_count:
+        counts["structural"] = structural_count
     return counts
 
 
