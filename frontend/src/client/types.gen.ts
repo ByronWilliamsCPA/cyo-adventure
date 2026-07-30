@@ -2383,7 +2383,7 @@ export type PersonalizationSlotBody = {
     /**
      * Slot Type
      */
-    slot_type: 'protagonist_first_name' | 'pronoun_set' | 'sibling_name' | 'pet_species' | 'pet_name' | 'kinship_label' | 'favorite' | 'home_type' | 'dedication';
+    slot_type: 'protagonist_first_name' | 'pronoun_set' | 'sibling_name' | 'pet_species' | 'pet_name' | 'kinship_label' | 'favorite_color' | 'favorite_food' | 'favorite_hobby' | 'home_type' | 'dedication';
     /**
      * Value Text
      */
