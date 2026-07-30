@@ -124,35 +124,33 @@ export async function reconcileOfflineCache(
       await deleteStorybooksById(id)
     }
   }
-}
 
-/**
- * Forget every cached values payload naming one subject profile (ADR-023 P6).
- *
- * Deliberately NOT part of `reconcileOfflineCache`. That function's #CRITICAL
- * contract is that it runs only after a successful authoritative library fetch,
- * because it cannot distinguish "zero books" from "the fetch failed". A values
- * purge has looser preconditions (a sign-out, a guardian toggling a ring off, a
- * consent revocation), and folding it in would either weaken that contract or
- * make the purge unreachable from the paths that need it.
- *
- * #ASSUME: security: purging is best-effort and PROSPECTIVE. A device that is
- * offline when a guardian revokes keeps its payload until it next opens the app
- * and completes a fetch, exactly like the mid-read book-revocation gap this
- * module already documents at the top of the file. Guardian-facing copy must
- * therefore say "new readings" and must never imply retroactive erasure.
- * #VERIFY: revocation.test.ts covers the online purge; the offline residue
- * window is documented, not closed, and the R20 acceptance in
- * docs/planning/privacy-model.md is where it is formally accepted.
- */
-export async function purgePersonalizationValues(subjectProfileId: string): Promise<void> {
-  const entries = await listPersonalizationValues()
-  for (const entry of entries) {
-    if (entry.payload.subject_profile_id === subjectProfileId) {
+  // Personalization values ride the same device-wide still-needed set (ADR-023
+  // P6): the store is keyed by book, not profile, exactly like `storybooks`.
+  // Once no known profile lists a book, its cached values payload (a child's
+  // real first name at rest) has no remaining reader, and no other purge path
+  // will ever reach it: the per-book reconcile in ReaderRoute only fires when
+  // THAT book is opened again, which a revoked book never is. Deleting here is
+  // what keeps a revocation from stranding an unreachable values entry forever.
+  const valuesEntries = await listPersonalizationValues()
+  for (const entry of valuesEntries) {
+    if (!stillNeeded.has(entry.storybook_id)) {
       await deletePersonalizationValues(entry.storybook_id)
     }
   }
 }
+
+// There is deliberately no subject-scoped values purge here. Every one of the
+// spec's purge triggers (Task C2c) already routes through a mechanism that
+// exists: sign-out clears the whole store at once (db.ts
+// clearPersonalizationValues, called from AuthContext's
+// purgeAuthenticatedDataAtRest); a consent or ring change surfaces as an empty
+// payload on the next open of each book, which the per-book
+// reconcilePersonalizationValues below turns into a delete; and revocation of
+// the book itself is covered by reconcileOfflineCache's values deletion above.
+// A subject-keyed purgePersonalizationValues existed briefly but had zero
+// production call sites and was removed rather than left as an untriggered
+// privacy affordance.
 
 /**
  * Reconcile one book's cached values payload against a fresh, authoritative one.
@@ -174,14 +172,18 @@ export async function reconcilePersonalizationValues(
   storybookId: string,
   fresh: ValuesPayload | null
 ): Promise<void> {
-  // #CRITICAL: security: null means "no authoritative answer", and this function
-  // treats it as revocation (delete) rather than as "keep what we have". That is
-  // the opposite of reconcileOfflineCache's fail-safe direction, and deliberately
-  // so: keeping a stale personalization payload risks rendering a child's name
-  // after consent was withdrawn, while deleting it costs only a fall back to the
-  // generic story on the next render. The asymmetry is the point.
+  // #CRITICAL: security: the null branch deletes, but know who actually uses
+  // it. It exists for a caller that treats null as an authoritative "no
+  // payload" and wants the fail-safe delete. The only production caller today
+  // (ReaderRoute.tsx's fetcher) deliberately never passes null: the api
+  // adapter (api/personalizationApi.ts) collapses EVERY failure (401, 403,
+  // 500, transport) to null, so treating null as revocation there would purge
+  // the cache on any server blip. The operative consequence: on a server
+  // error a cached payload persists until a successful fetch answers, and
+  // only that answer (an empty or changed payload) revokes it.
   // #VERIFY: revocation.test.ts "deletes rather than caches when the fetch
-  // produced null".
+  // produced null" covers this branch; ReaderRoute.tsx's fetcher returns the
+  // cache untouched on a null fetch instead of calling this with null.
   if (fresh === null || Object.keys(fresh.values).length === 0) {
     await deletePersonalizationValues(storybookId)
     return

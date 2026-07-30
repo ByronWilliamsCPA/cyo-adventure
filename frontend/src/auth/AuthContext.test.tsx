@@ -902,6 +902,36 @@ describe('AuthProvider', () => {
     expect(mockClearPersonalizationValues).toHaveBeenCalled()
   })
 
+  it('still purges personalization values when the reading-state purge fails, and warns', async () => {
+    // The two sign-out purges are independent (different IndexedDB stores), so
+    // a transient failure clearing reading states must neither skip the
+    // personalization purge (the child's name at rest is the higher-stakes
+    // data) nor pass silently: the rejected settlement is surfaced via
+    // console.warn.
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    mockSignOut.mockResolvedValue({ error: null })
+    mockClearReadingStates.mockRejectedValueOnce(new Error('transient IDB failure'))
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    try {
+      render(
+        <AuthProvider>
+          <ActionsProbe />
+        </AuthProvider>
+      )
+      await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
+      fireEvent.click(screen.getByText('sign out'))
+      await waitFor(() => expect(mockClearPersonalizationValues).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(warnSpy).toHaveBeenCalledWith(
+          expect.stringContaining('reading states'),
+          expect.any(Error)
+        )
+      )
+    } finally {
+      warnSpy.mockRestore()
+    }
+  })
+
   it('sign-out drops warm adult-gate state', async () => {
     // ADR-014 Phase 5: an explicit sign-out hands the device over, so a warm
     // adult gate must not survive it and greet the next sign-in already

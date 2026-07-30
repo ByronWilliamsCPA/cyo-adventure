@@ -100,12 +100,11 @@ export async function requestPersistentStorage(): Promise<boolean> {
 
 /** Open (or reuse) the reader IndexedDB database. */
 export function getDb(): Promise<IDBPDatabase<ReaderDB>> {
-  if (_db === null) {
-    // Best-effort: ask for durable storage the first time we touch IndexedDB.
-    // Fire-and-forget; a rejection or unsupported browser must not block opening.
-    void requestPersistentStorage()
-  }
-  _db ??= openDB<ReaderDB>(DB_NAME, DB_VERSION, {
+  if (_db !== null) return _db
+  // Best-effort: ask for durable storage the first time we touch IndexedDB.
+  // Fire-and-forget; a rejection or unsupported browser must not block opening.
+  void requestPersistentStorage()
+  const opening = openDB<ReaderDB>(DB_NAME, DB_VERSION, {
     // #ASSUME: data-integrity: idb's upgrade callback receives the OLD
     // version (0 for a brand-new database), and each `if` runs the schema
     // change for every version the open needed to pass through, so a
@@ -157,7 +156,20 @@ export function getDb(): Promise<IDBPDatabase<ReaderDB>> {
       _db = null
     },
   })
-  return _db
+  _db = opening
+  // #CRITICAL: external-resources: never memoize a REJECTED open. Caching the
+  // rejection would turn one transient failure (a blocked upgrade, a quota
+  // error, a private-mode restriction) into a session-long outage of offline
+  // reading, the write queue, AND every personalization purge, until a full
+  // reload. Clear the memo on rejection so the next getDb() retries; the
+  // identity guard keeps this handler from clobbering a newer open that
+  // blocking()/terminated() may have allowed to start in the meantime.
+  // #VERIFY: db.test.ts "retries the open after a rejected first attempt
+  // instead of memoizing the failure".
+  void opening.catch(() => {
+    if (_db === opening) _db = null
+  })
+  return opening
 }
 
 /** Cache the last-good library list for a profile (UX-K1 offline shelf). */

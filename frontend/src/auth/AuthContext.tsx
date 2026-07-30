@@ -94,15 +94,30 @@ async function purgeAuthenticatedDataAtRest(): Promise<void> {
   }
   try {
     const { clearReadingStates, clearPersonalizationValues } = await import('../offline/db')
-    await clearReadingStates()
     // ADR-023 P6: the values payload holds a child's real first name, a sibling's
     // name, and a pet name. On a returned or hand-me-down device that is exactly
     // the data a sign-out is asked to remove, and unlike reading state it says
     // nothing about which book it belongs to, so there is no narrower purge to
-    // prefer. Wrapped with the read above: a failure must never block sign-out.
-    await clearPersonalizationValues()
-  } catch {
-    // IndexedDB unavailable or blocked: best-effort only.
+    // prefer.
+    //
+    // The two purges touch different stores, so they run independently via
+    // allSettled rather than chained: awaiting them in sequence meant a
+    // transient IndexedDB error in the first silently skipped the second, and
+    // sign-out reported success with the child's name still at rest. A rejected
+    // settlement is warned (the store name and the error only, never the
+    // values) so the failure is observable instead of silent; neither failure
+    // ever blocks the sign-out itself.
+    const results = await Promise.allSettled([clearReadingStates(), clearPersonalizationValues()])
+    results.forEach((result, index) => {
+      if (result.status === 'rejected') {
+        const store = index === 0 ? 'reading states' : 'personalization values'
+        console.warn(`sign-out purge failed for ${store}:`, result.reason)
+      }
+    })
+  } catch (err) {
+    // The offline-store module itself failed to load (or IndexedDB is wholly
+    // unavailable): best-effort only, but still observable.
+    console.warn('sign-out purge could not load the offline store:', err)
   }
 }
 

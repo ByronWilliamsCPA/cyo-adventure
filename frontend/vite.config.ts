@@ -71,6 +71,21 @@ export default defineConfig({
             },
           },
           {
+            // ADR-023 P6: personalization values (a child's real first name at
+            // rest) must never be served from a service-worker cache. IndexedDB
+            // (src/offline/db.ts `personalization_values`) is the sanctioned
+            // offline store for this data, with an explicit reconcile/purge
+            // lifecycle; an SW cache layer can only resurrect revoked values:
+            // past the api-cache rule's 5s NetworkFirst timeout it would serve
+            // a stale cached body, ReaderRoute would treat it as a fresh
+            // authoritative answer, and the revoked values would be re-written
+            // into IndexedDB. NetworkOnly, registered AHEAD of the catch-all
+            // /v1 rule below so it wins Workbox's first-match routing.
+            urlPattern:
+              /^https?:\/\/[^/]+\/(?:api\/)?v1\/storybooks\/[^/]+\/personalization-values(?:\?.*)?$/,
+            handler: 'NetworkOnly',
+          },
+          {
             urlPattern: /^https?:\/\/[^/]+\/(?:api\/)?v1\/.*/,
             handler: 'NetworkFirst',
             options: {

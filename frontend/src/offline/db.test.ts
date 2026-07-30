@@ -1,7 +1,27 @@
 import 'fake-indexeddb/auto'
 
 import { openDB } from 'idb'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+// Failure-injection seam for the rejected-open memoization test below: when
+// `next` holds an error, the very next openDB call rejects with it (and the
+// flag self-clears so every other call passes straight through to real idb).
+const openFailure = vi.hoisted(() => ({ next: null as Error | null }))
+
+vi.mock('idb', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('idb')>()
+  return {
+    ...actual,
+    openDB: (...args: Parameters<typeof actual.openDB>) => {
+      if (openFailure.next !== null) {
+        const err = openFailure.next
+        openFailure.next = null
+        return Promise.reject(err)
+      }
+      return actual.openDB(...args)
+    },
+  }
+})
 
 import type { DeviceGrant } from '../auth/deviceGrant'
 import type { ValuesPayload } from '../player/personalization'
@@ -23,6 +43,7 @@ import {
   getCachedLibraryList,
   getCachedPersonalizationValues,
   getCachedStorybook,
+  getDb,
   getDeviceGrantMirror,
   getReadingState,
   listCachedStorybookIds,
@@ -122,6 +143,19 @@ describe('offline IndexedDB cache', () => {
     await dequeue('e1')
     const after = await listQueue()
     expect(after.map((q) => q.event_id)).toEqual(['e2'])
+  })
+
+  it('retries the open after a rejected first attempt instead of memoizing the failure', async () => {
+    // #VERIFY partner for db.ts's rejected-open handling: one transient open
+    // failure (blocked upgrade, quota, private mode) must not memoize a
+    // rejected promise and disable offline reading, the write queue, and every
+    // personalization purge for the whole session.
+    openFailure.next = new Error('injected transient open failure')
+    await expect(getDb()).rejects.toThrow('injected transient open failure')
+
+    // The rejection was not cached: the next call opens cleanly and works.
+    await cacheStorybook(story)
+    expect((await getCachedStorybook('s_demo', 1))?.id).toBe('s_demo')
   })
 
   it('round-trips the device-grant mirror on a fresh (v2) database', async () => {
@@ -337,10 +371,33 @@ describe('personalization values store', () => {
   })
 
   it('keeps the pre-existing stores reachable across the v4 upgrade', async () => {
-    await cacheStorybook(story)
-    await putReadingState('p_1', story.id, state)
-    await cachePersonalizationValues(story.id, valuesPayload)
+    // Open a real v3 database and write into its stores FIRST, so the
+    // assertions below exercise a genuine v3-to-v4 upgrade over existing data
+    // rather than a fresh v4 install (which the fresh-database tests already
+    // cover). This is the test that would catch a future destructive upgrade
+    // handler (a deleteObjectStore, a re-create) throwing away a device's
+    // downloaded books and reading progress.
+    _resetDbHandle()
+    const legacy = await openDB(DB_NAME, 3, {
+      upgrade(db) {
+        db.createObjectStore('storybooks')
+        db.createObjectStore('reading_states')
+        db.createObjectStore('offline_queue', { keyPath: 'event_id' })
+        db.createObjectStore('device_grant')
+        db.createObjectStore('library_lists')
+        db.createObjectStore('profile_shelf')
+      },
+    })
+    await legacy.put('storybooks', story, `${story.id}@${story.version}`)
+    await legacy.put('reading_states', state, `p_1:${story.id}`)
+    legacy.close()
+    _resetDbHandle()
+
+    // db.ts now upgrades 3 -> 4; the v3 data must survive the upgrade.
     expect(await getCachedStorybook(story.id, story.version)).toEqual(story)
     expect(await getReadingState('p_1', story.id)).toEqual(state)
+    // And the store the upgrade added works on the same database.
+    await cachePersonalizationValues(story.id, valuesPayload)
+    expect(await getCachedPersonalizationValues(story.id)).toEqual(valuesPayload)
   })
 })

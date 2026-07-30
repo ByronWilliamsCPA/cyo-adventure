@@ -16,11 +16,7 @@ import {
   putReadingState,
   type QueuedWrite,
 } from './db'
-import {
-  purgePersonalizationValues,
-  reconcileOfflineCache,
-  reconcilePersonalizationValues,
-} from './revocation'
+import { reconcileOfflineCache, reconcilePersonalizationValues } from './revocation'
 
 function payloadFor(subjectId: string): ValuesPayload {
   return {
@@ -188,6 +184,37 @@ describe('reconcileOfflineCache', () => {
     expect(await listQueue()).toHaveLength(1)
   })
 
+  it('deletes the personalization values entry for a revoked book (no orphan at rest)', async () => {
+    // The per-book reconcile in ReaderRoute only fires when the book is opened
+    // again, which a revoked book never is; this pass is the only path that
+    // can ever reach the entry once the book leaves every known shelf.
+    await cacheStorybook(makeStory('s_revoked'))
+    await cachePersonalizationValues('s_revoked', payloadFor('p_subject'))
+
+    await reconcileOfflineCache('p1', [])
+
+    expect(await getCachedPersonalizationValues('s_revoked')).toBeUndefined()
+  })
+
+  it('keeps the personalization values entry for a still-assigned book', async () => {
+    await cachePersonalizationValues('s_kept', payloadFor('p_subject'))
+
+    await reconcileOfflineCache('p1', ['s_kept'])
+
+    expect(await getCachedPersonalizationValues('s_kept')).toBeDefined()
+  })
+
+  it("keeps the values entry while a sibling profile's shelf still lists the book", async () => {
+    await cachePersonalizationValues('s_shared', payloadFor('p_subject'))
+    // p2 reconciled earlier and still has s_shared on its shelf.
+    await reconcileOfflineCache('p2', ['s_shared'])
+
+    // p1 no longer has s_shared assigned; the device-wide entry survives.
+    await reconcileOfflineCache('p1', [])
+
+    expect(await getCachedPersonalizationValues('s_shared')).toBeDefined()
+  })
+
   it('a first-ever reconcile call establishes the shelf snapshot without needing a prior baseline', async () => {
     await cacheStorybook(makeStory('s_new'))
     await reconcileOfflineCache('p1', ['s_new'])
@@ -222,24 +249,6 @@ describe('reconcileOfflineCache', () => {
     await reconcileOfflineCache('p1', [])
     expect(await getCachedStorybook('s_revoked', 1)).toBeUndefined()
     expect(await getReadingState('p1', 's_revoked')).toBeUndefined()
-  })
-})
-
-describe('purgePersonalizationValues', () => {
-  it('deletes every entry naming the subject and keeps the others', async () => {
-    await cachePersonalizationValues('s_a', payloadFor('p_target'))
-    await cachePersonalizationValues('s_b', payloadFor('p_other'))
-
-    await purgePersonalizationValues('p_target')
-
-    expect(await getCachedPersonalizationValues('s_a')).toBeUndefined()
-    expect(await getCachedPersonalizationValues('s_b')).toBeDefined()
-  })
-
-  it('is a no-op when nothing names the subject', async () => {
-    await cachePersonalizationValues('s_b', payloadFor('p_other'))
-    await purgePersonalizationValues('p_target')
-    expect(await getCachedPersonalizationValues('s_b')).toBeDefined()
   })
 })
 

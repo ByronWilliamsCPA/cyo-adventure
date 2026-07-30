@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
 
 import { EmptyState } from '@ds/components/EmptyState'
@@ -19,7 +19,7 @@ import { useApi } from '../hooks/useApi'
 import { useReplayOnReconnect } from '../hooks/useReplayOnReconnect'
 import { getReadAloudPreference } from '../kid/readAloudPreference'
 import { useToast } from '../notifications/useToast'
-import { getCachedPersonalizationValues } from '../offline/db'
+import { clearPersonalizationValues, getCachedPersonalizationValues } from '../offline/db'
 import { type ReplayOutcome } from '../offline/sync'
 import { reconcilePersonalizationValues } from '../offline/revocation'
 import { parseContinuation } from '../player/series'
@@ -68,12 +68,30 @@ export function ReaderRoute() {
     if (!isPersonalizationEnabled()) return undefined
     const fetchValues = makeFetchPersonalizationValues(api)
     return async (storybookId: string) => {
-      // Cache-first for offline reading, then reconcile against the
-      // authoritative answer. The cached read is what lets a downloaded book
-      // still render a child's name with no network; the reconcile is what makes
-      // a revocation land on the next connection (offline/revocation.ts).
-      const cached = await getCachedPersonalizationValues(storybookId)
-      const fresh = await fetchValues(storybookId)
+      // Fetch-authoritative with a cached fallback, NOT cache-first: both reads
+      // start together (they are independent), but the network answer decides
+      // the outcome whenever the server responds, and the cache is consulted
+      // only when the fetch fails. That priority is deliberate: revocation must
+      // win over freshness, so a cached name is never rendered past an
+      // authoritative answer that withdrew it. The accepted cost is that with a
+      // dead backend the story reads generic until the fetch fails (up to the
+      // request timeout) before the cached name appears. The cache is what
+      // still lets a downloaded book render a child's name with no network at
+      // all; the reconcile is what makes a revocation land on the next
+      // connection (offline/revocation.ts).
+      //
+      // The cache read degrades to undefined on its own failure: a broken
+      // IndexedDB must not reject the whole fetcher and silently disable
+      // personalization for an online reader whose network fetch would have
+      // answered. (fetchValues never rejects; the adapter maps every failure
+      // to null.)
+      const [cached, fresh] = await Promise.all([
+        getCachedPersonalizationValues(storybookId).catch((err: unknown) => {
+          console.warn('personalization: cached values read failed; continuing without cache:', err)
+          return undefined
+        }),
+        fetchValues(storybookId),
+      ])
       if (fresh === null) {
         // No authoritative answer: keep rendering from cache for THIS read, and
         // leave the cache alone. reconcilePersonalizationValues treats null as
@@ -81,10 +99,31 @@ export function ReaderRoute() {
         // never did, so it is deliberately not called here.
         return cached ?? null
       }
-      await reconcilePersonalizationValues(storybookId, fresh)
+      try {
+        await reconcilePersonalizationValues(storybookId, fresh)
+      } catch (err) {
+        // A failed revocation delete must be observable (the revoked payload is
+        // still at rest), but must not change what the child sees: the fresh
+        // answer still decides this render.
+        console.warn('personalization: cache reconcile failed:', err)
+      }
       return Object.keys(fresh.values).length === 0 ? null : fresh
     }
   }, [api])
+  // Flag-off residue purge (ADR-023 rollout): a build with
+  // VITE_FEATURE_PERSONALIZATION off must not leave previously cached values
+  // payloads at rest until sign-out. With the flag off the fetcher above never
+  // runs, so nothing else would ever touch the store; clear it on reader mount
+  // instead. Fire-and-forget and idempotent (clearing an already-empty store is
+  // a no-op), so running per mount rather than once per session is cheap and
+  // cannot be starved by ordering. Warn on failure so a purge that cannot run
+  // is observable; never log the values themselves.
+  useEffect(() => {
+    if (isPersonalizationEnabled()) return
+    void clearPersonalizationValues().catch((err: unknown) => {
+      console.warn('personalization: flag-off residue purge failed:', err)
+    })
+  }, [])
   const navigate = useNavigate()
   const location = useLocation()
   const continuation = useMemo(() => parseContinuation(location.state), [location.state])
