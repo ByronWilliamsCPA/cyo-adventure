@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.45.0] - 2026-07-30
+
+### Features
+
+- **api**: Let a guardian read their own family's review surface
+  ([#474](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/474),
+  [`62a60f5`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/62a60f5d5368f7e305e012d027d4fe80b6c271f0))
+
+
+## [0.44.0] - 2026-07-29
+
+### Features
+
+- **guardian**: Add device list and revoke UI (G15)
+  ([#473](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/473),
+  [`8fc4b34`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/8fc4b342d03baffba3f7f143806c419b09653a78))
+
+
+## [0.43.0] - 2026-07-29
+
+### Features
+
+- **admin**: Add single-story re-screen trigger to review detail page
+  ([#472](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/472),
+  [`36aa8fc`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/36aa8fc4338298757d251a4478524168b309169d))
+
+
+## [0.42.0] - 2026-07-29
+
+### Features
+
+- **admin**: Render the pending cover and an approve action on review (A16)
+  ([#471](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/471),
+  [`584a8a5`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/584a8a57815027f915af0f8c5ca14f786a08123c))
+
+
+## [0.41.0] - 2026-07-29
+
+### Features
+
+- Deterministic sentinel re-insertion and personalization ring-1 foundations (ADR-023 Stages R+B)
+  ([#466](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/466),
+  [`d55769e`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/d55769e2d01e2f3eff2331b8050053abbc7ed9b5))
+
+
+## [0.40.2] - 2026-07-29
+
+### Bug Fixes
+
+- **covers**: Gate AI cover images behind human approval before children see them
+  ([#469](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/469),
+  [`30a988b`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/30a988b5584fad82ee39ca3142ea4619df46a066))
+
+
 ## [0.40.1] - 2026-07-29
 
 ### Bug Fixes
@@ -2755,6 +2809,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.45.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.44.0...v0.45.0
+[0.44.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.43.0...v0.44.0
+[0.43.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.42.0...v0.43.0
+[0.42.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.41.0...v0.42.0
+[0.41.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.40.2...v0.41.0
+[0.40.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.40.1...v0.40.2
 [0.40.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.40.0...v0.40.1
 [0.40.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.39.2...v0.40.0
 [0.39.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.39.1...v0.39.2

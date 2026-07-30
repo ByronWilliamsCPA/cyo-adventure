@@ -31,14 +31,19 @@ from cyo_adventure.api import rescreen as rescreen_api
 from cyo_adventure.api.deps import Principal, RequestContext, Role
 from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import AuthorizationError
-from cyo_adventure.db.models import PipelineEvent, Storybook, StorybookVersion
+from cyo_adventure.db.models import (
+    GenerationJob,
+    PipelineEvent,
+    Storybook,
+    StorybookVersion,
+)
 from cyo_adventure.events import Actor
 from cyo_adventure.generation.provider import _CANNED_STORY
 from cyo_adventure.moderation import rescreen as rescreen_mod
 from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.moderation.thresholds import Threshold, ThresholdPolicy
-from cyo_adventure.storybook.models import Storybook as StoryModel
 from cyo_adventure.storybook.sentinels import wrap
+from cyo_adventure.validator.sentinel_integrity import IntegrityViolation
 
 pytestmark = [pytest.mark.unit, pytest.mark.asyncio]
 
@@ -109,14 +114,29 @@ def _patch_threshold_policy(
     )
 
 
+def _scalars_result(rows: list[GenerationJob]) -> MagicMock:
+    """Fake a `ScalarResult` whose `.all()` returns ``rows`` (session.scalars)."""
+    result = MagicMock()
+    result.all.return_value = rows
+    return result
+
+
 def _wire_session(
     session: AsyncMock,
     *,
     books: list[Storybook],
     versions: dict[tuple[str, int], StorybookVersion],
+    jobs: list[GenerationJob] | None = None,
 ) -> None:
-    """Wire a mock session for the sweep's load-then-per-book-get sequence."""
+    """Wire a mock session for the sweep's load, prefetch, per-book-get sequence.
+
+    `session.scalars` serves the ONE personalizable-slot prefetch the sweep
+    issues before screening anything; `session.execute` serves the published-
+    book load. They are deliberately different session methods so a test can
+    assert on either statement without disambiguating a shared call list.
+    """
     session.execute = AsyncMock(return_value=_execute_books(books))
+    session.scalars = AsyncMock(return_value=_scalars_result(jobs or []))
 
     async def _get(
         _model: type[object], key: tuple[str, int]
@@ -581,9 +601,8 @@ async def test_malformed_sentinel_in_title_flagged_by_scan() -> None:
     """
     blob = _blob()
     blob["title"] = f"{blob['title']} {{~HERO:Explorer}}"
-    story = StoryModel.model_validate(blob)
 
-    reasons = rescreen_mod._sentinel_corruption_reasons(story)
+    reasons = rescreen_mod._sentinel_corruption_reasons(blob, frozenset())
 
     assert any("malformed" in r and "title" in r for r in reasons)
 
@@ -595,11 +614,166 @@ async def test_clean_blob_is_not_flagged_by_sentinel_scan() -> None:
     title, or a choice label), `_sentinel_corruption_reasons` finds nothing
     to report, so it never contributes a reason toward a "flagged" outcome.
     """
-    story = StoryModel.model_validate(_blob())
-
-    reasons = rescreen_mod._sentinel_corruption_reasons(story)
+    reasons = rescreen_mod._sentinel_corruption_reasons(_blob(), frozenset())
 
     assert reasons == []
+
+
+async def test_sentinel_corruption_scan_fails_closed_when_contract_unrecoverable() -> (
+    None
+):
+    """(ADR-023 Stage R, M1) An unrecoverable personalizable-slot contract
+    fails the scan closed with one explicit reason, mirroring
+    `moderation/pipeline.py`'s own moderation-entry backstop, instead of
+    guessing an empty declared set that could let a real corruption through
+    unflagged.
+    """
+    reasons = rescreen_mod._sentinel_corruption_reasons(_blob(), None)
+
+    assert reasons == [
+        "personalizable-slot contract could not be recovered; failing closed"
+    ]
+
+
+async def test_slot_contracts_are_prefetched_in_one_query(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The whole sweep's slot contracts come from ONE GenerationJob query.
+
+    Resolving the contract per book was an N+1: three books meant three
+    `GenerationJob` SELECTs inside the per-book try/except. One prefetch,
+    scoped by an IN clause over every book id, replaces them.
+    """
+    _patch_threshold_policy(monkeypatch)
+    monkeypatch.setattr(rescreen_mod, "run_classifiers", AsyncMock(return_value=[]))
+    books = [_book("s1"), _book("s2"), _book("s3")]
+    _wire_session(
+        mock_async_session,
+        books=books,
+        versions={(b.id, 1): _version_row(b.id, 1, _blob()) for b in books},
+    )
+
+    summary = await rescreen_mod.rescreen_published_books(
+        mock_async_session, settings=_settings(), actor=_actor()
+    )
+
+    assert summary.checked == 3
+    mock_async_session.scalars.assert_awaited_once()
+    stmt = mock_async_session.scalars.await_args.args[0]
+    sql = str(stmt.compile(compile_kwargs={"literal_binds": True}))
+    assert "generation_job.storybook_id IN" in sql
+    assert "'s1'" in sql
+    assert "'s2'" in sql
+    assert "'s3'" in sql
+
+
+async def test_prefetch_db_failure_aborts_the_sweep(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A DB failure resolving the contracts aborts the sweep, loudly.
+
+    The prefetch sits OUTSIDE `_rescreen_one`'s per-book `except Exception`
+    on purpose. When the same query ran per book inside that guard, a DB
+    outage became N `outcome="error"` verdicts logged at WARNING while the
+    sweep still returned a completed-looking summary. Now the caller gets the
+    exception and no book is screened at all.
+    """
+    _patch_threshold_policy(monkeypatch)
+    book = _book()
+    _wire_session(
+        mock_async_session,
+        books=[book],
+        versions={("s1", 1): _version_row("s1", 1, _blob())},
+    )
+    mock_async_session.scalars = AsyncMock(side_effect=RuntimeError("db down"))
+
+    with pytest.raises(RuntimeError, match="db down"):
+        await rescreen_mod.rescreen_published_books(
+            mock_async_session, settings=_settings(), actor=_actor()
+        )
+
+    mock_async_session.get.assert_not_awaited()
+    mock_async_session.add.assert_not_called()
+
+
+async def test_prefetched_job_drives_the_per_book_slot_contract(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The prefetched job row, not a second lookup, resolves each book's contract.
+
+    The resolver is handed the job the prefetch found and its tri-state answer
+    threads through to the per-book scan: an unrecoverable contract (`None`)
+    still fails that book closed, exactly as the per-book resolution did.
+    """
+    _patch_threshold_policy(monkeypatch)
+    monkeypatch.setattr(rescreen_mod, "run_classifiers", AsyncMock(return_value=[]))
+    job = GenerationJob(storybook_id="s1", authoring_metadata={"skeleton_slug": "x"})
+    seen: list[GenerationJob] = []
+
+    def _unrecoverable(passed_job: GenerationJob) -> frozenset[str] | None:
+        seen.append(passed_job)
+        return None
+
+    monkeypatch.setattr(rescreen_mod, "personalizable_slot_ids_for_job", _unrecoverable)
+    book = _book()
+    _wire_session(
+        mock_async_session,
+        books=[book],
+        versions={("s1", 1): _version_row("s1", 1, _blob())},
+        jobs=[job],
+    )
+
+    summary = await rescreen_mod.rescreen_published_books(
+        mock_async_session, settings=_settings(), actor=_actor()
+    )
+
+    assert seen == [job]
+    assert summary.flagged == 1
+    assert summary.results[0].reasons == [
+        "personalizable-slot contract could not be recovered; failing closed"
+    ]
+
+
+async def test_at_rest_scan_runs_even_when_the_blob_fails_to_parse(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A blob the gate blocks AND that fails schema validation is still scanned.
+
+    The at-rest sentinel scan reads the raw blob mapping, never the parsed
+    model, so it must not be gated on `model_validate` succeeding. Nested
+    under the parse-success branch it was skipped for precisely the blobs
+    most likely to be damaged: the verdict carried the gate's reasons and
+    said nothing about the sentinel state of the stored content.
+    """
+    _patch_threshold_policy(monkeypatch)
+    classifiers = AsyncMock(return_value=[])
+    monkeypatch.setattr(rescreen_mod, "run_classifiers", classifiers)
+    job = GenerationJob(storybook_id="s1", authoring_metadata={"skeleton_slug": "x"})
+    monkeypatch.setattr(
+        rescreen_mod,
+        "personalizable_slot_ids_for_job",
+        lambda _job: None,
+    )
+    _wire_session(
+        mock_async_session,
+        books=[_book()],
+        # `{}` fails StoryModel.model_validate and the gate blocks it first.
+        versions={("s1", 1): _version_row("s1", 1, {})},
+        jobs=[job],
+    )
+
+    summary = await rescreen_mod.rescreen_published_books(
+        mock_async_session, settings=_settings(), actor=_actor()
+    )
+
+    result = summary.results[0]
+    assert result.outcome == "flagged"
+    assert any(r.startswith("gate ") for r in result.reasons)
+    assert (
+        "personalizable-slot contract could not be recovered; failing closed"
+        in result.reasons
+    )
+    classifiers.assert_not_awaited()
 
 
 # ---------------------------------------------------------------------------
@@ -646,3 +820,65 @@ async def test_admin_triggers_rescreen_and_gets_summary(
     event = mock_async_session.add.call_args.args[0]
     assert event.actor_role == "admin"
     assert event.actor_id == _ADMIN.user_id
+
+
+async def test_violation_reason_malformed_in_node_body_names_the_body_location() -> (
+    None
+):
+    """A malformed violation outside title/choice-label reads as body/ending title.
+
+    `_violation_reason` fans out over two location placeholders (`<title>`,
+    `<choice-label>`) before falling through to a real node id, and each of the
+    three branches splits again on `kind == "malformed"`. The
+    body-plus-malformed corner was the one combination no existing test
+    reached, so the vocabulary it emits ("sentinel malformed in body/ending
+    title") was unasserted: a rename there would have shipped silently even
+    though `RescreenResult.reasons` is operator-facing text.
+    """
+    body = rescreen_mod._violation_reason(
+        IntegrityViolation(node_id="n_3", kind="malformed", token="{~HERO:Ada~")
+    )
+
+    assert body == "sentinel malformed in body/ending title: '{~HERO:Ada~'"
+    # Pinned against its two siblings, because the point of the branch is that
+    # the three locations stay distinguishable in the operator-facing string.
+    assert (
+        rescreen_mod._violation_reason(
+            IntegrityViolation(node_id="<title>", kind="malformed", token="{~HERO:Ada~")
+        )
+        == "sentinel malformed in title: '{~HERO:Ada~'"
+    )
+    assert (
+        rescreen_mod._violation_reason(
+            IntegrityViolation(
+                node_id="<choice-label>", kind="malformed", token="{~HERO:Ada~"
+            )
+        )
+        == "sentinel malformed in choice label: '{~HERO:Ada~'"
+    )
+
+
+async def test_prefetch_personalizable_slots_never_queries_for_an_empty_sweep() -> None:
+    """No books means no query at all, not a query with an empty `IN ()`.
+
+    The guard exists because `GenerationJob.storybook_id.in_([])` is a
+    degenerate predicate, and because the sweep calls this helper
+    unconditionally. Asserting the empty mapping alone would pass even if the
+    guard were deleted, so this asserts the stronger property the guard is
+    actually for: the session is never touched.
+
+    The session is wired with a WORKING `scalars` double rather than a bare
+    `AsyncMock` on purpose. With a bare mock, deleting the guard makes the
+    helper die on `TypeError: 'coroutine' object is not iterable` before it
+    ever reaches the assertion below, so the test would fail for a reason that
+    says nothing about the guard. Wired this way, the no-guard version runs to
+    completion and fails on `assert_not_awaited`, which names the actual defect.
+    """
+    session = AsyncMock()
+    session.scalars = AsyncMock(return_value=_scalars_result([]))
+
+    result = await rescreen_mod._prefetch_personalizable_slots(session, [])
+
+    assert result == {}
+    session.scalars.assert_not_awaited()
+    session.execute.assert_not_awaited()

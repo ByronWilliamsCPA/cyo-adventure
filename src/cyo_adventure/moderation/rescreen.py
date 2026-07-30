@@ -63,24 +63,26 @@ from anyio.to_thread import run_sync
 from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy import select
 
-from cyo_adventure.db.models import Storybook, StorybookVersion
+from cyo_adventure.db.models import GenerationJob, Storybook, StorybookVersion
 from cyo_adventure.events import EventType, record_event
 from cyo_adventure.moderation.classifiers import run_classifiers
+from cyo_adventure.moderation.personalizable_slots import (
+    personalizable_slot_ids_for_job,
+)
 from cyo_adventure.moderation.report import Finding, Verdict
 from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_policy
 from cyo_adventure.publishing.state_machine import Status
-from cyo_adventure.storybook.models import Node
 from cyo_adventure.storybook.models import Storybook as StoryModel
-from cyo_adventure.storybook.sentinels import (
-    find_malformed_sentinels,
-    find_sentinels,
-    strip_sentinels,
-)
+from cyo_adventure.storybook.sentinels import strip_sentinels
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import GateResult, run_gate
+from cyo_adventure.validator.sentinel_integrity import (
+    IntegrityViolation,
+    check_sentinel_integrity_at_rest,
+)
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Mapping, Sequence
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -223,114 +225,165 @@ def _newly_surfaced_reasons(surfaced: list[Finding]) -> list[str]:
     return [f"classifier {f.source.value}/{f.category}: {reason}" for f in surfaced]
 
 
-# #CRITICAL: security: this is a CONTRACT-FREE subset of
-# `check_sentinel_integrity_at_rest` (ADR-023 plan 3.3, sub-task 3b). It
-# detects a malformed near-miss sentinel and a well-formed sentinel misplaced
-# in a choice label, but deliberately does NOT check that a well-formed
-# sentinel's slot id is a declared personalizable slot of this story (the
-# `unknown_slot` check that Variant B's full form performs): rescreen re-reads
-# an already-PUBLISHED blob with no skeleton/contract reference on this path,
-# and the authoritative personalizable-slot declaration for a published book
-# is deferred to the future sentinel manifest (plan line ~434, a later
-# phase), which this task explicitly does not build. When that manifest
-# lands, this function should be replaced by a call to the full
-# `check_sentinel_integrity_at_rest`.
+# #CRITICAL: security: ADR-023 Stage R. Rescreen re-reads an already-PUBLISHED
+# blob with no skeleton/contract reference on this code path, but the
+# personalizable-slot contract itself IS recoverable per book, the same way
+# `moderation/pipeline.py`'s own moderation-entry backstop resolves it: via
+# the story's `GenerationJob` row (`_prefetch_personalizable_slots`, which
+# resolves the same tri-state answer `personalizable_slot_ids_for_story`
+# would, for every book in the sweep, in ONE query). This
+# was formerly a contract-free, hand-rolled subset of
+# `check_sentinel_integrity_at_rest` that could not check a well-formed
+# sentinel's slot id against the declared set (the `unknown_slot` check); now
+# that the per-book CONTRACT this file's comment used to defer to is
+# recoverable (Task R3), this calls the full `check_sentinel_integrity_at_rest`
+# directly. Note what this does NOT read: the version's
+# `sentinel_manifest` column. That column is now written but has no reader
+# yet, so this path still derives its expectations from the contract;
+# repointing it is the remaining half of Task R3 (see the column's comment
+# in db/models.py).
 # #VERIFY: tests/unit/test_rescreen_unit.py::
 # test_malformed_sentinel_flags_rescreen,
 # ::test_sentinel_in_choice_label_flags_rescreen, and
 # ::test_clean_blob_is_not_flagged_by_sentinel_scan.
-def _malformed_sentinel_reasons(text: str, location: str) -> list[str]:
-    """Return one reason string per malformed sentinel-shaped near-miss in ``text``."""
-    return [
-        f"sentinel malformed in {location}: {near_miss!r}"
-        for near_miss in find_malformed_sentinels(text)
-    ]
-
-
-def _choice_label_sentinel_reasons(
-    label: str, *, node_id: str, choice_id: str
-) -> list[str]:
-    """Return reasons for a choice label carrying malformed or well-formed sentinels.
-
-    A choice label must never carry a sentinel, well-formed or not (Task 2),
-    so both a near-miss and a genuine token are reported.
-    """
-    location = f"node {node_id} choice {choice_id} label"
-    reasons = _malformed_sentinel_reasons(label, location)
-    reasons.extend(
-        f"sentinel in choice label: node {node_id} choice {choice_id} (slot {slot_id})"
-        for slot_id, _value in find_sentinels(label)
-    )
-    return reasons
-
-
-def _title_sentinel_reasons(title: str) -> list[str]:
-    """Return reasons for a top-level title carrying malformed or well-formed sentinels.
-
-    The top-level story title must never carry a sentinel, well-formed or
-    not (Task 6a): it is kid-facing (library listings) and never a
-    personalizable location, so both a near-miss and a genuine token are
-    reported, mirroring `_choice_label_sentinel_reasons`.
-    """
-    location = "title"
-    reasons = _malformed_sentinel_reasons(title, location)
-    reasons.extend(
-        f"sentinel in title (slot {slot_id})"
-        for slot_id, _value in find_sentinels(title)
-    )
-    return reasons
-
-
-def _node_sentinel_corruption_reasons(node: Node) -> list[str]:
-    """Return every sentinel-corruption reason found within one node.
+def _violation_reason(violation: IntegrityViolation) -> str:
+    """Render one at-rest `IntegrityViolation` as a human-readable rescreen reason.
 
     Args:
-        node: A parsed node from the published story.
+        violation: One violation from `check_sentinel_integrity_at_rest`.
 
     Returns:
-        list[str]: Reasons from the node's body, ending title (if any), and
-        every choice label; empty if the node carries no sentinel corruption.
+        str: A reason string using the same vocabulary
+            ("malformed", "choice label", "title") the module's own
+            `RescreenResult.reasons` has always used, regardless of which
+            layer detected the corruption.
     """
-    reasons = _malformed_sentinel_reasons(node.body, f"node {node.id} body")
-    if node.ending is not None:
-        reasons.extend(
-            _malformed_sentinel_reasons(
-                node.ending.title, f"node {node.id} ending title"
-            )
-        )
-    for choice in node.choices:
-        reasons.extend(
-            _choice_label_sentinel_reasons(
-                choice.label, node_id=node.id, choice_id=choice.id
-            )
-        )
-    return reasons
+    if violation.node_id == "<title>":
+        if violation.kind == "malformed":
+            return f"sentinel malformed in title: {violation.token!r}"
+        return f"sentinel in title (token {violation.token})"
+    if violation.node_id == "<choice-label>":
+        if violation.kind == "malformed":
+            return f"sentinel malformed in choice label: {violation.token!r}"
+        return f"sentinel in choice label (token {violation.token})"
+    if violation.kind == "malformed":
+        return f"sentinel malformed in body/ending title: {violation.token!r}"
+    return f"sentinel {violation.kind} at rest (token {violation.token})"
 
 
-def _sentinel_corruption_reasons(story: StoryModel) -> list[str]:
+def _sentinel_corruption_reasons(
+    blob: Mapping[str, object], personalizable_slot_ids: frozenset[str] | None
+) -> list[str]:
     """Return reason strings for sentinel corruption-at-rest in a published blob.
 
-    Scans every node body, ending title, and choice label for a malformed
-    sentinel-shaped near-miss, and every choice label for a well-formed
-    sentinel (which must never appear there). See the membership-check
-    deferral note above this function. Also scans the top-level story title
-    for both a malformed near-miss and a well-formed sentinel (Task 6a): the
-    title is kid-facing (library listings) and never a personalizable
-    location, so it must never carry sentinel content at all.
-
     Args:
-        story: The parsed published story.
+        blob: The raw published blob mapping. Scanned directly (never a
+            parsed model): `check_sentinel_integrity_at_rest` re-derives its
+            own surfaces from the mapping, with no pre-fill reference needed.
+        personalizable_slot_ids: This story's declared personalizable slot
+            ids (`personalizable_slot_ids_for_job`'s tri-state result).
+            `None` means the contract itself is unrecoverable for this book;
+            failing closed with a single explicit reason here, mirroring
+            `moderation/pipeline.py`'s own moderation-entry backstop (M1),
+            rather than guessing an empty declared set that could let a real
+            corruption through unflagged.
 
     Returns:
-        list[str]: One reason string per malformed near-miss, in-choice-label
-        sentinel, or in-title sentinel found; empty if the blob carries no
-        sentinel corruption (including, trivially, a blob with no
-        sentinels at all).
+        list[str]: One reason string per violation found (or the single
+        fail-closed reason when `personalizable_slot_ids` is `None`); empty
+        if the blob carries no sentinel corruption.
     """
-    reasons: list[str] = [*_title_sentinel_reasons(story.title)]
-    for node in story.nodes:
-        reasons.extend(_node_sentinel_corruption_reasons(node))
-    return reasons
+    if personalizable_slot_ids is None:
+        return ["personalizable-slot contract could not be recovered; failing closed"]
+    result = check_sentinel_integrity_at_rest(blob, personalizable_slot_ids)
+    return [_violation_reason(v) for v in result.violations]
+
+
+def _resolve_slot_contracts(
+    story_ids: Sequence[str], jobs_by_story: Mapping[str, GenerationJob]
+) -> dict[str, frozenset[str] | None]:
+    """Resolve every story's slot contract from already-fetched job rows.
+
+    Synchronous on purpose: `personalizable_slot_ids_for_job` touches only the
+    filesystem (skeleton and theme-contract sidecars), never the database, so
+    the whole batch runs in ONE `run_sync` hop off the event loop instead of
+    one hop per book.
+
+    Args:
+        story_ids: Every published story id in this sweep. Ids with no job row
+            resolve to an EMPTY frozenset, matching
+            `personalizable_slot_ids_for_story`'s own `job is None` branch:
+            no job means no skeleton means no slot could legitimately exist.
+        jobs_by_story: The oldest `GenerationJob` per story id.
+
+    Returns:
+        dict[str, frozenset[str] | None]: One tri-state entry per story id;
+        every id in `story_ids` is present.
+    """
+    return {
+        story_id: (
+            personalizable_slot_ids_for_job(job)
+            if (job := jobs_by_story.get(story_id)) is not None
+            else frozenset()
+        )
+        for story_id in story_ids
+    }
+
+
+async def _prefetch_personalizable_slots(
+    session: AsyncSession, books: Sequence[Storybook]
+) -> dict[str, frozenset[str] | None]:
+    """Resolve the whole sweep's personalizable-slot contracts in one query.
+
+    # #CRITICAL: external-resources: this deliberately runs OUTSIDE
+    # `_rescreen_one`'s per-book `except Exception`. Resolving the contract
+    # per book (the previous shape, one `personalizable_slot_ids_for_story`
+    # call inside the guarded body) meant a DB blip mid-sweep was swallowed
+    # into N per-book `outcome="error"` verdicts at WARNING while the sweep
+    # still returned a completed-looking summary. Hoisted here, a DB failure
+    # raises out of `rescreen_published_books` before any book is screened,
+    # exactly as the existing `_load_published_books` and
+    # `load_threshold_policy` calls beside it already do: the sweep either
+    # has the contracts for every book or it does not run at all.
+    # #VERIFY: tests/unit/test_rescreen_unit.py::
+    # test_slot_contracts_are_prefetched_in_one_query,
+    # ::test_prefetch_db_failure_aborts_the_sweep, and
+    # ::test_prefetched_job_drives_the_per_book_slot_contract.
+
+    Args:
+        session: The sweep's own open async session.
+        books: Every published storybook this sweep will screen.
+
+    Returns:
+        dict[str, frozenset[str] | None]: One tri-state entry per book id.
+    """
+    story_ids = [book.id for book in books]
+    if not story_ids:
+        return {}
+    # Ordered by (storybook_id, created_at) so the first row seen per story is
+    # the OLDEST job, which is the row `personalizable_slot_ids_for_story`
+    # picks with its own `order_by(created_at).limit(1)`. Selecting every job
+    # and narrowing in Python (rather than a Postgres `DISTINCT ON`) keeps
+    # this runnable against any backend the test suite uses; a story has a
+    # handful of jobs at most.
+    rows = (
+        await session.scalars(
+            select(GenerationJob)
+            .where(GenerationJob.storybook_id.in_(story_ids))
+            .order_by(GenerationJob.storybook_id, GenerationJob.created_at)
+        )
+    ).all()
+    jobs_by_story: dict[str, GenerationJob] = {}
+    for job in rows:
+        if job.storybook_id is not None and job.storybook_id not in jobs_by_story:
+            jobs_by_story[job.storybook_id] = job
+    # #CRITICAL: timing: contract resolution reads skeleton and sidecar files
+    # from disk. The sweep already hoists `run_gate` off the loop for exactly
+    # this reason (AL-035); doing the same here keeps a multi-book sweep from
+    # reintroducing the stall that fix removed.
+    # #VERIFY: covered by the rescreen sweep tests; the resolver is pure
+    # file I/O and session-free.
+    return await run_sync(_resolve_slot_contracts, story_ids, jobs_by_story)
 
 
 @dataclass(frozen=True, slots=True)
@@ -346,6 +399,7 @@ class _SweepContext:
     actor: Actor
     threshold_policy: ThresholdPolicy
     client: httpx.AsyncClient
+    personalizable_slots: Mapping[str, frozenset[str] | None]
 
 
 async def _rescreen_one(
@@ -467,7 +521,28 @@ async def _rescreen_one(
             )
             reasons.extend(_classifier_block_reasons(classifier_findings))
             reasons.extend(_newly_surfaced_reasons(surfaced))
-            reasons.extend(_sentinel_corruption_reasons(story))
+
+        # Deliberately OUTSIDE the try/else above. The at-rest scan reads the
+        # raw `version_row.blob` mapping, never the parsed `story`, so it has
+        # no reason to be gated on schema validation succeeding. Nested under
+        # `else:` it was skipped for exactly the blobs most likely to be
+        # corrupt: one that fails `model_validate` while the gate has already
+        # blocked it reaches this line with the parse branch skipped, and the
+        # verdict would have carried the gate's reasons but not a word about
+        # the sentinel damage sitting in the stored content. The outcome was
+        # "flagged" either way (gate reasons are already non-empty on that
+        # path), so this widens the RECORDED reason set rather than changing
+        # any book's verdict.
+        #
+        # `_prefetch_personalizable_slots` builds an entry for every book this
+        # sweep screens, so the `.get` default is unreachable; it fails CLOSED
+        # (`None`) rather than guessing an empty declared set, matching
+        # `_sentinel_corruption_reasons`' own uncomputable branch.
+        reasons.extend(
+            _sentinel_corruption_reasons(
+                version_row.blob, ctx.personalizable_slots.get(book.id)
+            )
+        )
 
         outcome: Outcome = "flagged" if reasons else "passed"
         block_count = sum(1 for f in classifier_findings if f.verdict is Verdict.BLOCK)
@@ -588,6 +663,7 @@ async def rescreen_published_books(
     """
     books = await _load_published_books(session, storybook_ids)
     threshold_policy = await load_threshold_policy(session)
+    personalizable_slots = await _prefetch_personalizable_slots(session, books)
 
     async with httpx.AsyncClient(timeout=_CLASSIFIER_CLIENT_TIMEOUT) as client:
         sweep_ctx = _SweepContext(
@@ -595,6 +671,7 @@ async def rescreen_published_books(
             actor=actor,
             threshold_policy=threshold_policy,
             client=client,
+            personalizable_slots=personalizable_slots,
         )
         results = [await _rescreen_one(session, book, sweep_ctx) for book in books]
 

@@ -73,24 +73,24 @@ planning. Ask for the full table if a future session needs the row-level mapping
 
 ## 4. Dependency ordering (six waves)
 
-1. **Free wins / truth restoration** — the verify-and-close sweep (§5) and doc-hygiene sweep.
+1. **Free wins / truth restoration**: the verify-and-close sweep (§5) and doc-hygiene sweep.
    Days, not weeks; shrinks the register and stops it asserting things that are false.
-2. **Safety gates and auth boundary** — assignment-gate bypass (`UW-E01`/`E02`), the
+2. **Safety gates and auth boundary**: assignment-gate bypass (`UW-E01`/`E02`), the
    `_extract_subject()` dev/test auth stub, moderation and repair fail-open closures, the
    direct-Anthropic-leg decision, mock-moderation retirement, review-model allowlist, real PII
    detector, device-auth/AdultGate hardening. These are the items that make the ADR-005 approval
    attestation actually true.
-3. **Schema/migration-first items** — `StorybookVersion` timestamps, replay-origin durable state,
+3. **Schema/migration-first items**: `StorybookVersion` timestamps, replay-origin durable state,
    FK `ON DELETE` parity, push-channel + `pipeline_event.family_id` backfill, `schema_version`
    reader gate. Sequenced first because later UI work reads these schemas.
-4. **Infrastructure gate** — `UW-A03` (ADR-021 production cutover) is a hard prerequisite for
+4. **Infrastructure gate**: `UW-A03` (ADR-021 production cutover) is a hard prerequisite for
    ADR-022 tiered RLS scoping and for schema-parity testing (a parity test over policies that do
    not yet exist is vacuous). This is an owner/homelab-infra dependency, not code in this repo.
-5. **Guardian/kid surface completion** — the 4b/4c capability bar: G2 controls, guardian-console
+5. **Guardian/kid surface completion**, the 4b/4c capability bar: G2 controls, guardian-console
    UX debt, admin/guardian missing-button pairs, K19 interpretation surfaces, error-state
    handling, reader-surface defects, two-device conflict UI, book groups, consent-time budget
    semantics.
-6. **The test ladder itself** (the M5.1 exit criterion) — test-ladder hygiene, full-stack E2E
+6. **The test ladder itself** (the M5.1 exit criterion): test-ladder hygiene, full-stack E2E
    through the RQ worker, schema parity, player-parity corpus, rate-limit/CORS negative tests,
    coverage-gap batches, the behavioral safety-eval suite, nightly/staging/prod golden journeys,
    skeleton-corpus proof, performance/load, accessibility. Staging-dependent items in this wave

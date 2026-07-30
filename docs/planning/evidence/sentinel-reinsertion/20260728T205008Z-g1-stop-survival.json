@@ -1,0 +1,30 @@
+{
+  "total_runs": 30,
+  "clean_runs": 1,
+  "clean_pass_rate": 0.03333333333333333,
+  "per_provider": [
+    {
+      "provider": "openrouter",
+      "total": 30,
+      "clean": 1,
+      "clean_pass_rate": 0.03333333333333333
+    }
+  ],
+  "raw_kind_histogram": {
+    "dropped": 1738,
+    "forged": 207,
+    "migrated": 111,
+    "malformed": 7,
+    "in_choice_label": 3
+  },
+  "bucket_histogram": {
+    "dropped": 1738,
+    "mutated_wrapper_or_inner": 207,
+    "relocated": 111,
+    "mutated_wrapper": 7,
+    "relocated_into_label": 3
+  },
+  "extra_fill_spend_fraction": 0.9666666666666667,
+  "threshold_band": "reconsider",
+  "dry_run": false
+}
