@@ -2,18 +2,49 @@ import 'fake-indexeddb/auto'
 
 import { beforeEach, describe, expect, it } from 'vitest'
 
+import type { ValuesPayload } from '../player/personalization'
 import type { ReadingState, Storybook } from '../player/types'
 import {
   _resetDbHandle,
+  cachePersonalizationValues,
   cacheStorybook,
   enqueueWrite,
+  getCachedPersonalizationValues,
   getCachedStorybook,
   getReadingState,
   listQueue,
   putReadingState,
   type QueuedWrite,
 } from './db'
-import { reconcileOfflineCache } from './revocation'
+import {
+  purgePersonalizationValues,
+  reconcileOfflineCache,
+  reconcilePersonalizationValues,
+} from './revocation'
+
+function payloadFor(subjectId: string): ValuesPayload {
+  return {
+    subject_profile_id: subjectId,
+    ring: 1,
+    policy_version: 'ring1-no-consent-required',
+    resolved_at: '2026-07-29T00:00:00Z',
+    values: { protagonist_first_name: 'Maya' },
+    sentinel_pattern: "\\{~([A-Z][A-Z0-9_]*):([^{}<>'~]+)~\\}",
+    slot_bindings: { HERO: 'protagonist_first_name' },
+  }
+}
+
+function emptyPayload(): ValuesPayload {
+  return {
+    subject_profile_id: null,
+    ring: null,
+    policy_version: null,
+    resolved_at: '2026-07-29T00:00:00Z',
+    values: {},
+    sentinel_pattern: "\\{~([A-Z][A-Z0-9_]*):([^{}<>'~]+)~\\}",
+    slot_bindings: {},
+  }
+}
 
 function makeStory(id: string, version = 1): Storybook {
   return {
@@ -191,5 +222,50 @@ describe('reconcileOfflineCache', () => {
     await reconcileOfflineCache('p1', [])
     expect(await getCachedStorybook('s_revoked', 1)).toBeUndefined()
     expect(await getReadingState('p1', 's_revoked')).toBeUndefined()
+  })
+})
+
+describe('purgePersonalizationValues', () => {
+  it('deletes every entry naming the subject and keeps the others', async () => {
+    await cachePersonalizationValues('s_a', payloadFor('p_target'))
+    await cachePersonalizationValues('s_b', payloadFor('p_other'))
+
+    await purgePersonalizationValues('p_target')
+
+    expect(await getCachedPersonalizationValues('s_a')).toBeUndefined()
+    expect(await getCachedPersonalizationValues('s_b')).toBeDefined()
+  })
+
+  it('is a no-op when nothing names the subject', async () => {
+    await cachePersonalizationValues('s_b', payloadFor('p_other'))
+    await purgePersonalizationValues('p_target')
+    expect(await getCachedPersonalizationValues('s_b')).toBeDefined()
+  })
+})
+
+describe('reconcilePersonalizationValues', () => {
+  it('deletes the cached payload when the fresh one is empty (revoked)', async () => {
+    await cachePersonalizationValues('s_a', payloadFor('p_target'))
+
+    await reconcilePersonalizationValues('s_a', emptyPayload())
+
+    expect(await getCachedPersonalizationValues('s_a')).toBeUndefined()
+  })
+
+  it('replaces the cached payload when the policy version changed', async () => {
+    await cachePersonalizationValues('s_a', payloadFor('p_target'))
+    const rotated = { ...payloadFor('p_target'), policy_version: 'v2' }
+
+    await reconcilePersonalizationValues('s_a', rotated)
+
+    expect(await getCachedPersonalizationValues('s_a')).toEqual(rotated)
+  })
+
+  it('deletes rather than caches when the fetch produced null', async () => {
+    await cachePersonalizationValues('s_a', payloadFor('p_target'))
+
+    await reconcilePersonalizationValues('s_a', null)
+
+    expect(await getCachedPersonalizationValues('s_a')).toBeUndefined()
   })
 })
