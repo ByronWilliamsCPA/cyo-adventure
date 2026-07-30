@@ -343,6 +343,67 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
   })
 })
 
+describe('ReaderRoute personalization wiring (C3c)', () => {
+  beforeEach(() => {
+    globalThis.indexedDB = new IDBFactory()
+    _resetDbHandle()
+    mockGet.mockReset()
+    mockPut.mockReset()
+    mockPost.mockReset()
+    mockGet.mockImplementation((url: string) => {
+      if (url.startsWith('/v1/storybooks/') && url.includes('personalization-values')) {
+        return Promise.resolve({
+          data: {
+            subject_profile_id: null,
+            ring: null,
+            policy_version: null,
+            resolved_at: '2026-07-29T00:00:00Z',
+            values: {},
+            sentinel_pattern: "\\{~([A-Z][A-Z0-9_]*):([^{}<>'~]+)~\\}",
+            slot_bindings: {},
+          },
+        })
+      }
+      if (url.startsWith('/v1/storybooks/')) {
+        return Promise.resolve({ data: lantern })
+      }
+      if (url.startsWith('/v1/reading-state/')) {
+        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+      }
+      return Promise.reject(new Error(`unexpected GET ${url}`))
+    })
+  })
+
+  afterEach(() => {
+    cleanup()
+  })
+
+  it('does not fetch personalization values when the flag is off', async () => {
+    // The flag is unset in src/test/setup.ts, so this is the default path.
+    renderAt(`/read/p_flagoff/${lantern.id}/${lantern.version}`)
+    await screen.findByTestId('reader')
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(
+      mockGet.mock.calls.filter(([url]) => String(url).includes('personalization-values'))
+    ).toEqual([])
+  })
+
+  it('fetches personalization values when the flag is on', async () => {
+    vi.stubEnv('VITE_FEATURE_PERSONALIZATION', 'true')
+    try {
+      expect(import.meta.env.VITE_FEATURE_PERSONALIZATION).toBe('true')
+      renderAt(`/read/p_flagon/${lantern.id}/${lantern.version}`)
+      await waitFor(() => {
+        expect(
+          mockGet.mock.calls.some(([url]) => String(url).includes('personalization-values'))
+        ).toBe(true)
+      })
+    } finally {
+      vi.unstubAllEnvs()
+    }
+  })
+})
+
 describe('ReaderRoute replay success toast', () => {
   beforeEach(() => {
     globalThis.indexedDB = new IDBFactory()
