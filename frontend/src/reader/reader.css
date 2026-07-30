@@ -527,3 +527,15 @@
 [data-reduce-motion='true'] .reader-ending__mascot--celebrate {
   animation: none;
 }
+
+/* ADR-023 C5: the dedication line on the reader's opening screen. A sibling of
+   the passage, styled as a quiet inscription rather than as story prose, so a
+   child reads it as a note from a grown-up and not as page one. Scales with the
+   reader font control like the passage does. */
+.reader-dedication {
+  margin: 0 0 1.25rem;
+  font-size: calc(0.95rem * var(--reader-font-scale, 1));
+  font-style: italic;
+  text-align: center;
+  opacity: 0.75;
+}
