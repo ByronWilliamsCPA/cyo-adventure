@@ -136,7 +136,12 @@ _PIPELINE_EVENT_TYPE_VALUES = (
     # ADR-023 P3/P4 (Task B4): added alongside
     # supabase/migrations/20260729020000_add_personalization_event_types.sql.
     "'personalization_toggled', 'ring2_consent_granted', "
-    "'ring2_consent_revoked'"
+    "'ring2_consent_revoked', "
+    # Added alongside
+    # supabase/migrations/20260729050000_add_storybook_archived_to_pipeline_event.sql,
+    # which is the newest migration to replace this CHECK and therefore carries
+    # the full cumulative value list.
+    "'storybook_archived'"
 )
 _PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin', 'device'"
 _PIPELINE_ENTITY_TYPE_VALUES = (

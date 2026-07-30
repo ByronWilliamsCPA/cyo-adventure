@@ -443,4 +443,33 @@ async def archive(
     _logger.info(
         "storybook_archived", storybook_id=storybook.id, actor=str(principal.user_id)
     )
-    await session.flush()
+    # #CRITICAL: security/data-integrity: this is the WS-D event-log record of
+    # A5's incident/pull-everywhere path (docs/planning/capability-register.md):
+    # archive() is the sole published->archived hop (state_machine.py), so this
+    # is the one place a "content actually got pulled" fact can be recorded.
+    # notifications/registry.py's composer turns it into an alert-severity
+    # guardian notification (G10 delivery infra); the frontend needs no new
+    # change, offline/revocation.ts already reconciles against the shelf
+    # response on the next fetch. record_event's internal flush replaces the
+    # standalone flush this function used to end with, same as
+    # approve()/send_back() above.
+    # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
+    # test_archive_writes_storybook_archived_event.
+    # #CRITICAL: security: same own-family-aware persona stamping as
+    # approve()/send_back(): an owner archiving their own family's story is
+    # stamped guardian (ADR-005 owner-as-admin exception), a genuine
+    # cross-family archive is stamped admin.
+    # #VERIFY: test_dual_role_{same,foreign}_family_archive_stamps_* pattern,
+    # mirroring the existing approve/send_back coverage in
+    # tests/integration/test_pipeline_event_instrumentation.py.
+    await record_event(
+        session,
+        Actor.from_principal(
+            principal, acting_role=principal.acting_role(storybook.family_id).value
+        ),
+        entity_type="storybook",
+        entity_id=storybook.id,
+        event_type=EventType.STORYBOOK_ARCHIVED,
+        from_state="published",
+        to_state="archived",
+    )

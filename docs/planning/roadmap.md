@@ -780,7 +780,12 @@ runs on Supabase-managed infrastructure instead of the homelab; see
       post-completion or on publish (raw output currently persists indefinitely; S10).
 - [x] Offline-copy revocation: archived/pulled books are removed from device caches at
       next connection, completing the kill switch and the incident pull-everywhere path
-      (G8, A5).
+      (G8, A5). Guardian notification on an incident archive shipped on unmerged branch
+      `feat/incident-revocation-notification` (commit 3916e99): `EventType.STORYBOOK_ARCHIVED`
+      plus a G10/S9 alert-severity composer. A5 stays partial: recipients resolve from the
+      storybook's OWNING family, so archiving a `visibility='catalog'` book (owned by the
+      `CATALOG_FAMILY_ID` sentinel, assignable across families) notifies nobody. Following
+      assignments rather than ownership is the remaining A5 gap.
 - [ ] Admin audit view over the pipeline event log: who did what to child-linked data,
       filterable (A13 view half).
 - [x] Policy re-screen tooling: re-run moderation/policy over published family-tier books

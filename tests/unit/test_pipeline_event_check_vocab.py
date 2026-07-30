@@ -28,26 +28,47 @@ from cyo_adventure.db.models import (
 from cyo_adventure.events.models import SYSTEM_ACTOR_ROLE, EventType
 from cyo_adventure.events.writer import _validate_payload
 
-# ADR-023 P3/P4 (Task B4): the CHECK-vocab migration that adds
-# personalization_toggled/ring2_consent_granted/ring2_consent_revoked to
-# pipeline_event.event_type, following the wholesale-replace pattern (see
-# 20260727000000_add_book_unassigned_to_pipeline_event.sql's header). Parsed
-# directly from the migration text rather than via
-# cyo_adventure.db.models._PIPELINE_EVENT_TYPE_VALUES (a separate
-# hand-maintained mirror asserted against above), so this test proves the
-# migration itself, not just the ORM's parallel constant, carries the new
-# vocabulary.
-_PERSONALIZATION_EVENT_MIGRATION = (
-    Path(__file__).resolve().parents[2]
-    / "supabase"
-    / "migrations"
-    / "20260729020000_add_personalization_event_types.sql"
-)
+_MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "supabase" / "migrations"
+_EVENT_TYPE_CHECK_CONSTRAINT = "ck_pipeline_event_event_type"
 
 
 def _parse_sql_string_list(fragment: str) -> set[str]:
     """Parse a `'a', 'b', 'c'` SQL literal fragment into a set of strings."""
     return set(re.findall(r"'([^']*)'", fragment))
+
+
+def _newest_event_type_check_migration() -> Path:
+    """Locate the last-sorting migration that replaces the event_type CHECK.
+
+    Every migration touching ``ck_pipeline_event_event_type`` replaces it
+    wholesale with an absolute value list (see
+    20260717120000_add_kid_flag.sql's header for why), so only the
+    newest one describes the vocabulary the database actually ends up with.
+    Migration filenames are timestamp-prefixed, so lexicographic order is
+    chronological order. Resolved dynamically rather than hardcoded: a
+    hardcoded filename silently starts guarding a superseded migration the
+    moment a newer one lands, which is exactly the failure this test exists to
+    catch.
+
+    Returns:
+        Path to the newest migration defining the event_type CHECK constraint.
+
+    Raises:
+        AssertionError: If no migration defines the constraint at all, which
+            would mean the constraint this module guards no longer exists.
+    """
+    candidates = sorted(
+        path
+        for path in _MIGRATIONS_DIR.glob("*.sql")
+        if _EVENT_TYPE_CHECK_CONSTRAINT in path.read_text(encoding="utf-8")
+    )
+    if not candidates:
+        message = (
+            f"no migration under {_MIGRATIONS_DIR} defines "
+            f"{_EVENT_TYPE_CHECK_CONSTRAINT}"
+        )
+        raise AssertionError(message)
+    return candidates[-1]
 
 
 def test_pipeline_event_type_check_matches_event_type_enum() -> None:
@@ -81,15 +102,18 @@ def test_pipeline_actor_role_check_matches_role_sources() -> None:
 # would guard, so this gap is accepted rather than worked around.
 
 
-def test_personalization_event_types_migration_carries_full_vocab() -> None:
-    """The Task B4 migration's event_type CHECK carries every current EventType value.
+def test_newest_event_type_check_migration_carries_full_vocab() -> None:
+    """The newest event_type CHECK migration carries every current EventType value.
 
-    Reads the migration file directly (see the module comment on
-    ``_PERSONALIZATION_EVENT_MIGRATION``): before the migration exists this
-    fails on the missing file, and once it lands with the wholesale-replace
-    pattern, the parsed CHECK vocabulary is a superset of (in practice,
-    given the wholesale-replace pattern, exactly) every EventType value,
-    including the three ADR-023 additions.
+    Parsed from the migration text rather than from
+    ``cyo_adventure.db.models._PIPELINE_EVENT_TYPE_VALUES`` (the separate
+    hand-maintained mirror asserted against above), so this proves the
+    migrations themselves, not just the ORM's parallel constant, carry the
+    vocabulary the application layer considers valid. Because each migration
+    replaces the CHECK wholesale, a new enum value whose migration sorts
+    EARLIER than an existing one is a live data-integrity bug: the later
+    migration drops the new value straight back out. That is what this test
+    catches, and hardcoding a filename here would not.
 
     # #EDGE: data-integrity: this project's SQL migration header comments are
     # prose and routinely contain apostrophes (e.g. "file's"); ``--``-comment
@@ -98,7 +122,7 @@ def test_personalization_event_types_migration_carries_full_vocab() -> None:
     # #VERIFY: this test would fail loudly (extra/missing entries) if a
     # comment apostrophe ever leaked into the parsed vocabulary.
     """
-    sql = _PERSONALIZATION_EVENT_MIGRATION.read_text(encoding="utf-8")
+    sql = _newest_event_type_check_migration().read_text(encoding="utf-8")
     ddl = "\n".join(
         line for line in sql.splitlines() if not line.strip().startswith("--")
     )
