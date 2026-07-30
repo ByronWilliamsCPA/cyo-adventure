@@ -3056,6 +3056,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#kid-personalized-story-rendering-adr-023-p6p7-flag-gated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kid: personalized story rendering (ADR-023 P6/P7, flag-gated)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#kid-read-aloud-k7" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3647,6 +3658,11 @@ detail when a storybook has more than one version).</p>
 <li>Component: <code>frontend/src/reader/Reader.test.tsx</code>, <code>frontend/src/reader/ReaderPage.test.tsx</code> (largest suite), <code>frontend/src/reader/ReaderRoute.test.tsx</code>, <code>frontend/src/reader/ReaderChrome.test.tsx</code>, <code>frontend/src/reader/ReaderLeave.test.tsx</code>, <code>frontend/src/reader/BackToLibrary.test.tsx</code>, <code>frontend/src/reader/dialogs.test.tsx</code>, <code>frontend/src/reader/readerProgress.test.ts</code>, <code>frontend/src/player/engine.test.ts</code>, <code>frontend/src/player/evaluator.test.ts</code>, <code>frontend/src/player/machine.test.ts</code>, <code>frontend/src/api/readerApi.test.ts</code></li>
 <li>Integration: <code>frontend/src/test/App.test.tsx</code></li>
 </ul>
+<h2 id="kid-personalized-story-rendering-adr-023-p6p7-flag-gated">Kid: personalized story rendering (ADR-023 P6/P7, flag-gated)<a class="headerlink" href="#kid-personalized-story-rendering-adr-023-p6p7-flag-gated" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Component: <code>frontend/src/player/personalization.test.ts</code> (the pure sentinel resolver, <code>resolvePersonalization</code>: value substitution for bound slots including every-occurrence replacement, generic-word fallback for a missing value/binding/empty string, the unconditional strip that runs with no payload at all (the flag-off path), idempotence on resolved text, malformed-marker stripping so a near-miss never reaches a child, the value-free once-per-call strip warning, and rejection of a payload whose <code>sentinel_pattern</code> differs from the pinned constant), <code>frontend/src/api/personalizationApi.test.ts</code> (the values fetch adapter for <code>GET /v1/storybooks/{id}/personalization-values</code>: payload pass-through, and null on any HTTP or transport failure so the reader still renders generic), <code>frontend/src/reader/DedicationOverlay.test.tsx</code> (opening-screen dedication overlay: full template with both halves, name-only fallback, and the render-nothing branches for no name, no payload, and a ring-2 payload)</li>
+<li><strong>Gap</strong>: no E2E tier at any level yet; <code>VITE_FEATURE_PERSONALIZATION</code> is off everywhere (gate G3, Task D1), so E2E coverage lands with the flag's first enablement.</li>
+</ul>
 <h2 id="kid-read-aloud-k7">Kid: read-aloud (K7)<a class="headerlink" href="#kid-read-aloud-k7" title="Permanent link">&para;</a></h2>
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/kid-read-aloud.spec.ts</code> (the speaker toggle appears only for a profile with <code>tts_enabled: true</code>, picked through the real picker flow rather than a deep link, since the flag rides the picker's profiles fetch; tapping it toggles a "speaking" state, and both a re-tap and a choice navigation cancel speech; a fake <code>speechSynthesis</code> stands in for headless Chromium's real one, which has no installed voices)</li>
@@ -3876,7 +3892,7 @@ closure. A companion action-level verdict for this audit lives at
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 03:21:18 UTC">July 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 15:52:00 UTC">July 30, 2026</span>
   </span>
 
     

@@ -3050,10 +3050,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#owner-decisions-all-closed-2026-07-25-counsel-gate-still-open" class="md-nav__link">
+  <a href="#owner-decisions-all-closed-2026-07-25-counsel-gate-closed-by-owner-review-2026-07-29" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Owner decisions (all closed 2026-07-25; counsel gate still open)
+        Owner decisions (all closed 2026-07-25; counsel gate closed by owner review 2026-07-29)
       
     </span>
   </a>
@@ -3170,14 +3170,16 @@
 
 <h1 id="adr-023-guardian-opt-in-story-personalization-render-time-slot-substitution">ADR-023: Guardian opt-in story personalization (render-time slot substitution)<a class="headerlink" href="#adr-023-guardian-opt-in-story-personalization-render-time-slot-substitution" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Proposed (2026-07-25). <strong>Every owner-level open decision is now closed</strong> (the 3-5
-band question and OD-1 through OD-5, all confirmed by owner choice on 2026-07-25 and recorded
-in the Validation section below). The status stays Proposed because counsel sign-off is a
-separate gate that remains open, most sharply on OD-1 (ring-2 separate disclosure consent, which
-diverges from PR #415's B6 precedent) and OD-5 (the sibling and pet-name raise to ring 2). This
-is deliberately the ADR-018 pattern: an owner choice recorded and dated is not the same event as
-counsel confirming it, and a compliance-bearing ADR staying Proposed is itself the tracking
-signal.
+<p><strong>Status</strong>: Accepted (2026-07-29). <strong>Every owner-level open decision is closed</strong> (the 3-5
+band question and OD-1 through OD-5, confirmed by owner choice on 2026-07-25 and recorded
+in the Validation section below). The counsel gate that kept this ADR at Proposed was closed
+by owner review on 2026-07-29: the project has no external counsel, so the owner's review is
+the operative sign-off at this deployment scale. OD-1 closed conservatively (separate
+disclosure consent confirmed); OD-5 closed conditionally (self-verification accepted for R1,
+immediate-family deployment only, with mandatory reassessment at every deployment-phase
+boundary and a hard revisit before iOS/TestFlight or any commercial availability; see the
+OD-5 closure record and the regulatory classification note in the Validation section).
+Acceptance at R1 scope is not acceptance at commercial scope.
 <strong>Date</strong>: 2026-07-25
 <strong>Relates to</strong>: <a href="../adr-016-recommendation-sharing-social-boundary/">ADR-016</a> (the three
 rings this feature's ceilings are cut from), <a href="../adr-018-childrens-privacy-compliance/">ADR-018</a>
@@ -3890,11 +3892,12 @@ outcome is still what an untouched family gets.</p>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Route A's block still fires unchanged: <code>tests/unit/test_interpretation.py</code>'s
       <code>IDENTITY_PROTECTION</code> cases pass without modification.</li>
 </ul>
-<h3 id="owner-decisions-all-closed-2026-07-25-counsel-gate-still-open">Owner decisions (all closed 2026-07-25; counsel gate still open)<a class="headerlink" href="#owner-decisions-all-closed-2026-07-25-counsel-gate-still-open" title="Permanent link">&para;</a></h3>
+<h3 id="owner-decisions-all-closed-2026-07-25-counsel-gate-closed-by-owner-review-2026-07-29">Owner decisions (all closed 2026-07-25; counsel gate closed by owner review 2026-07-29)<a class="headerlink" href="#owner-decisions-all-closed-2026-07-25-counsel-gate-closed-by-owner-review-2026-07-29" title="Permanent link">&para;</a></h3>
 <p>Every decision below was confirmed by the account owner on 2026-07-25. Following ADR-018's
-convention, "owner choice recorded" and "counsel confirmed" are tracked as separate events: the
-boxes are checked because the owner has decided, and the ADR nonetheless stays Proposed until the
-counsel items called out under OD-1 and OD-5 are answered.</p>
+convention, "owner choice recorded" and "counsel confirmed" are tracked as separate events. The
+counsel items under OD-1 and OD-5 were closed by owner review on 2026-07-29 (the project has no
+external counsel; the owner's review is the operative sign-off at R1 scale), which is what moved
+this ADR from Proposed to Accepted. OD-5's closure is conditional; see its block.</p>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>OD-1: Ring 2 separate disclosure consent.</strong> <strong>Decision confirmed 2026-07-25 (owner choice;
       pending counsel confirmation).</strong> Confirmed as designed: ring-2 real-name substitution
@@ -3905,8 +3908,12 @@ counsel items called out under OD-1 and OD-5 are answered.</p>
       coordination section below (repetition, audience, and compounding, not novelty of the datum);
       the owner confirmed the conclusion without asking for the reasoning to be revised.
       <strong>Flagged for counsel</strong>: whether the divergence from B6 is defensible as drawn, and whether a
-      layered disclosure consent on top of a connection consent is the right instrument. This is
-      one of the two items that keeps this ADR at Proposed.</li>
+      layered disclosure consent on top of a connection consent is the right instrument. This was
+      one of the two items that kept this ADR at Proposed.
+      <strong>CLOSED 2026-07-29 (owner review; no external counsel exists at this deployment scale).</strong>
+      Separate consent confirmed, chosen explicitly for conservatism: the incremental work is
+      minimal and it reduces risk. The layered instrument stands as designed; the divergence from
+      B6 stands as drawn.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>OD-2: Pronoun set at ring 1.</strong> <strong>Decision confirmed 2026-07-25 (owner choice).</strong> Confirmed
       as designed: pronouns are a legitimate v1 personalization field; the value is <strong>stored</strong> as
       an explicit guardian-set field, never inferred from any other profile attribute; v1 is scoped
@@ -3928,7 +3935,8 @@ counsel items called out under OD-1 and OD-5 are answered.</p>
       is on the values fetch rather than on the book (section 3a), so the same catalog book renders
       fully generic for every unconnected family. Connection-scoped visibility remains available as
       a later product feature on its own merits.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>OD-5: The sibling and pet-name raise to ring 2.</strong> <strong>Decision confirmed 2026-07-25 (owner
+<li class="task-list-item">
+<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>OD-5: The sibling and pet-name raise to ring 2.</strong> <strong>Decision confirmed 2026-07-25 (owner
       choice; pending counsel confirmation).</strong> All three sub-questions confirmed as designed:
       <strong>(a) Parental-responsibility assumption: accepted with attestation.</strong> An explicit
       attestation in the ring-2 consent ceremony ("I am the parent or legal guardian of [sibling]")
@@ -3945,8 +3953,37 @@ counsel items called out under OD-1 and OD-5 are answered.</p>
       the implementation plan (section 14, closed question 4) is closed the same way: narrowing <code>covered_slot_types</code>
       updates the signed record in place and does not require re-signing.
       <strong>Flagged for counsel</strong>: this is the most legally aggressive choice in the ADR, and the
-      attestation in (a) is a self-declaration rather than a verification. It is the second of the
-      two items keeping this ADR at Proposed.</li>
+      attestation in (a) is a self-declaration rather than a verification. It was the second of
+      the two items keeping this ADR at Proposed.
+      <strong>CLOSED CONDITIONALLY 2026-07-29 (owner review; no external counsel exists at this
+      deployment scale).</strong> Self-verification (the attestation) is accepted <strong>for R1 only</strong>, where
+      deployment is immediate-family: the attesting guardian and the named sibling live in the
+      same household, so the attestation is verifiable by direct knowledge. Conditions attached
+      by the owner:</p>
+<ol>
+<li><strong>Reassess at every deployment-phase boundary.</strong> This closure does not carry forward
+     automatically; each phase gate (R2/TestFlight, R3/App Store, any commercial
+     availability) must re-open OD-5 and re-decide with the then-current audience in view.</li>
+<li><strong>Hard revisit before iOS or commercial use.</strong> At that point self-attestation is
+     unlikely to suffice on its own (see the regulatory classification below) and real
+     counsel review is expected.</li>
+</ol>
+<p><strong>Regulatory classification (owner-requested clarification, 2026-07-29; planning-grade
+  analysis, not legal advice):</strong> the OD-5 risk is primarily a <strong>COPPA
+  verifiable-parental-consent risk, deferred, not a present one</strong>. COPPA (15 U.S.C.
+  6501-6506, 16 CFR 312) binds operators of <strong>commercial</strong> websites/online services directed
+  to children; the R1 deployment (private, non-commercial, immediate family) does not meet
+  the operator definition, so no COPPA obligation attaches today. At commercial launch
+  (ADR-008 track), collecting a sibling child's name and disclosing it to a connected family
+  is collection-plus-disclosure of a child's personal information, requiring verifiable
+  parental consent from THAT child's parent; a checkbox self-attestation by the requesting
+  guardian is unlikely to satisfy 312.5 on its own. <strong>GDPR/GDPR-K (Art. 8) is contingent, not
+  inherent</strong>: it attaches only if the service is offered to EU data subjects, with
+  member-state parental-consent ages of 13-16; no EU availability is planned at R1 or R2, so
+  it becomes live only if commercial scope includes the EU. ADR-018's compliance framework
+  carries the tracking obligation; the D5 closeout task folds this classification into
+  ADR-018 P7-08.</p>
+</li>
 </ul>
 <p>Separately, and not an OD: the <strong>3-5 band</strong> question raised in section 9 is also closed.
 <strong>Decision confirmed 2026-07-25 (owner choice):</strong> personalization is offered to the 3-5 band as
@@ -3958,6 +3995,11 @@ designed, guardian-controlled, with no child-facing control rendered at that ban
 <li>Compliance: fold into ADR-018's P7-08 checklist as a new processing purpose; this feature
   changes what the privacy notice and the data classification must say, even though it adds no
   new provider counterparty.</li>
+<li><strong>OD-5 standing reassessment (owner condition, 2026-07-29): re-open OD-5 at every
+  deployment-phase boundary</strong> (R2/TestFlight, R3/App Store, any commercial availability). The
+  R1 acceptance of self-attestation is scoped to immediate-family deployment and does not carry
+  forward; before iOS or commercial use, expect real counsel review against the COPPA
+  verifiable-parental-consent analysis in the OD-5 closure block.</li>
 </ul>
 <h2 id="coordination-with-parallel-workstreams-pr-415-pr-416">Coordination with parallel workstreams (PR #415, PR #416)<a class="headerlink" href="#coordination-with-parallel-workstreams-pr-415-pr-416" title="Permanent link">&para;</a></h2>
 <p>Both PRs are open and unmerged as of 2026-07-25. Neither of their planning documents exists on
@@ -4227,7 +4269,7 @@ out of.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 25, 2026 21:12:16 UTC">July 25, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 15:52:00 UTC">July 30, 2026</span>
   </span>
 
     

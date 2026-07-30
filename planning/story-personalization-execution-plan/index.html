@@ -3042,6 +3042,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#stage-c-status-completed-2026-07-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stage C status (completed 2026-07-29)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#task-c1-the-resolver" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3162,6 +3173,39 @@
     <span class="md-ellipsis">
       
         Task D5: compliance artifacts and closeout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-d6-closed-vocabulary-implementation-split-favorite-seed-the-accepted-lists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task D6: closed-vocabulary implementation (split favorite, seed the accepted lists)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-d7-vocabulary-expansion-request-feature-owner-requested-2026-07-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task D7: vocabulary-expansion request feature (owner-requested 2026-07-29)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-d8-expose-personalization_eligible-to-the-reader-owner-scheduled-2026-07-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task D8: expose personalization_eligible to the reader (owner-scheduled 2026-07-29)
       
     </span>
   </a>
@@ -3311,12 +3355,12 @@ validator or authoring behaviour appends its lessons to
 <tr>
 <td><strong>G2: counsel on OD-1/OD-5</strong></td>
 <td><strong>Shipping</strong> P7 (ring-2) and P9 (consent UI); building them is not blocked</td>
-<td>Counsel confirms the ring-2 separate disclosure consent design and the sibling/pet-name raise</td>
+<td>Counsel confirms the ring-2 separate disclosure consent design and the sibling/pet-name raise. <strong>SATISFIED 2026-07-29 by owner review (no external counsel exists at this scale): OD-1 closed as separate consent, chosen for conservatism; OD-5 closed conditionally for R1 (immediate family) with mandatory reassessment at every deployment-phase boundary and a hard revisit before iOS/commercial use. ADR-023 flipped Proposed to Accepted the same day; the regulatory classification (COPPA-deferred, GDPR-K contingent) is recorded in its OD-5 closure block. Shipping P7/P9 is unblocked at R1 scope only.</strong></td>
 </tr>
 <tr>
 <td><strong>G3: Route A copy precedes the flag</strong></td>
 <td>Enabling <code>VITE_FEATURE_PERSONALIZATION</code> anywhere a real family can reach</td>
-<td>Task D1 (toggle-aware Route A copy) merged</td>
+<td>Task D1 (toggle-aware Route A copy) merged. <strong>Task D1 AUTHORIZED by owner 2026-07-29; the gate passes when it merges.</strong></td>
 </tr>
 </tbody>
 </table>
@@ -3329,6 +3373,25 @@ the design plan):</p>
   family device is a shared trust boundary; no per-profile encryption, no in-memory-only mode.
   The acceptance must be recorded in the DPIA/privacy-model entry (Tasks A6, B7), not silently
   inherited.</li>
+</ul>
+<p>Owner decisions recorded 2026-07-29 (post-Stage-C review of draft PR #489):</p>
+<ul>
+<li><strong>OD-1: separate disclosure consent confirmed</strong>, chosen for conservatism (minimal work,
+  reduced risk). <strong>OD-5: self-verification accepted for R1 only</strong>, reassessed at every
+  deployment-phase boundary, hard revisit before iOS/commercial; regulatory classification
+  (COPPA-deferred, GDPR-K contingent) recorded in ADR-023's OD-5 closure block. Together these
+  satisfy G2 at R1 scope, and ADR-023 flipped Proposed to Accepted.</li>
+<li><strong>Task D1 authorized</strong> (G3 passes when it merges).</li>
+<li><strong><code>personalization_eligible</code> exposure scheduled</strong> as Task D8 (was Stage C open question 2).</li>
+<li><strong>Vocabulary decisions</strong> (proposal doc <code>personalization-closed-vocabularies-proposal.md</code>):
+  <code>favorite</code> ships <strong>split</strong> (Option B: <code>favorite_color</code>/<code>favorite_food</code>/<code>favorite_hobby</code>, the
+  schema migration accepted knowingly), NOT flat; <code>pet_species</code>, <code>kinship_label</code> (+<code>dedication</code>
+  sharing its list), and <code>home_type</code> accepted as proposed; <strong>no case normalization</strong> anywhere
+  (stored and matched exactly as listed); <strong>no "none" sentinel</strong> (story-flow impacts are hard
+  to overcome; absence stays "slot unset"). Implementation is Task D6.</li>
+<li><strong>New feature: vocabulary-expansion requests.</strong> A guardian can request a new entry for a
+  closed vocabulary; an admin validates appropriateness and expands the list. Scheduled as
+  Task D7; cite the capability register IDs it serves when it is speced.</li>
 </ul>
 <h2 id="standing-constraints-apply-to-every-task">Standing constraints (apply to every task)<a class="headerlink" href="#standing-constraints-apply-to-every-task" title="Permanent link">&para;</a></h2>
 <ul>
@@ -4073,6 +4136,97 @@ guardian-authorized)" subsection; privacy-model version 0.2 to 0.3.</p>
 <hr />
 <h2 id="stage-c-client-resolution-and-ring-2-blocked-on-stage-b-shipping-blocked-on-g2g3">Stage C: client resolution and ring 2 (blocked on Stage B; shipping blocked on G2/G3)<a class="headerlink" href="#stage-c-client-resolution-and-ring-2-blocked-on-stage-b-shipping-blocked-on-g2g3" title="Permanent link">&para;</a></h2>
 <p>Branch: <code>feat/personalization-p6-p7-client</code>.</p>
+<h3 id="stage-c-status-completed-2026-07-29">Stage C status (completed 2026-07-29)<a class="headerlink" href="#stage-c-status-completed-2026-07-29" title="Permanent link">&para;</a></h3>
+<p>C1 through C5 are done on <code>feat/personalization-p6-p7-client</code>, executed from the detailed
+Stage C implementation plan (committed beside this document as
+<code>story-personalization-stage-c-implementation-plan.md</code>). Commits, by task:</p>
+<ul>
+<li><strong>C0 (prerequisites, added by the implementation plan; see deviation 1):</strong> <code>4f3ad847</code>
+  (slot-id to field map in <code>generation/binding.py</code>), <code>556ebc5d</code> (story-scoped
+  <code>moderation/personalizable_slots.py</code> resolver), <code>ca50cbc5</code> (<code>sentinel_pattern</code> and
+  <code>slot_bindings</code> shipped on the values payload), <code>f03c7fdc</code> (<code>dedication</code> joins
+  <code>CLOSED_VOCABULARIES</code>, fail-closed).</li>
+<li><strong>C1 (resolver):</strong> <code>82d52f93</code> (<code>frontend/src/player/personalization.ts</code>), <code>3d8cb6e1</code>
+  (cross-language fallback-pattern pin, risk R9), <code>e1440b71</code> (<code>isPersonalizationEnabled()</code>
+  flag helper, default off).</li>
+<li><strong>C2 (offline store):</strong> <code>377de008</code> (<code>personalization_values</code> store at <code>DB_VERSION</code> 4),
+  <code>6e7bc145</code> (purge and reconcile triggers in <code>offline/revocation.ts</code>), <code>55c04e00</code>
+  (sign-out purge in <code>AuthContext</code>).</li>
+<li><strong>C3 (render sites, behind the flag):</strong> <code>31a27834</code> (values fetch adapter), <code>7d7ffdc7</code>
+  (passage, ending title, and read-aloud resolution; includes the C3f flag-off strip pin),
+  <code>cd794071</code> (ReaderPage threading), <code>8df1f9ce</code> (ReaderRoute flag-gated cache-first port),
+  <code>20f69463</code> (admin review-surface marker-visibility pin).</li>
+<li><strong>C4 (ring 2):</strong> <code>97c2fead</code> (the review's five coverage gaps closed in
+  <code>tests/integration/test_personalization_api.py</code>; every test passed first try), <code>37deeb67</code>
+  (client ring-agnosticism pin).</li>
+<li><strong>C5 (dedication overlay):</strong> <code>0ca97333</code> (<code>DedicationOverlay</code> component), <code>b0043c15</code>
+  (opening-screen-only render).</li>
+<li><strong>C6 (stage exit):</strong> <code>3cce7859</code> (authoring lessons AL-066..AL-068 plus UW-C20).</li>
+</ul>
+<p>The flag (<code>VITE_FEATURE_PERSONALIZATION</code>) remains <strong>off</strong>; gate G3 is still open (it passes
+when Task D1 merges), G2 was closed by owner review on 2026-07-29 (see the gates table:
+satisfied at R1 scope, ADR-023 flipped to Accepted), and Stage C never enables any shipping
+surface.</p>
+<p><strong>Deviations from this section as written, each with its reason:</strong></p>
+<ol>
+<li><strong>C0 added</strong> as a prerequisite task group. The values payload lacked <code>sentinel_pattern</code>
+   (named in two plan documents, never implemented) and any slot-id to slot-type join
+   (<code>slot_bindings</code>), and <code>dedication</code> was absent from <code>CLOSED_VOCABULARIES</code>. All three were
+   unimplementable-client or fail-open defects that had to land before C1. Lessons AL-066,
+   AL-067, AL-068.</li>
+<li><strong>C4's server half was already merged</strong> in PR #466. <code>authorize_via_connection</code> was not
+   added (the connection resolves inline in <code>_resolve_ring2_view</code>, per the house convention
+   this section itself cites) and <code>test_personalization_ring2.py</code> was not created (the tests
+   live beside the ring-1 ones in <code>test_personalization_api.py</code>). C4 became test-list closure
+   plus a client ring-agnosticism pin.</li>
+<li><strong>The offline store is keyed by <code>storybook_id</code>, not <code>subject_profile_id</code></strong> as <code>:917</code>
+   specifies: the subject id is unknowable offline (it appears in no offline artifact), and a
+   subject-scoped purge scans the bounded per-book key set instead
+   (<code>purgePersonalizationValues</code>).</li>
+<li><strong>The fetch is not gated on <code>personalization_eligible</code>:</strong> that boolean is in no API
+   response, and exposing it would mean either mutating the immutable version blob or adding
+   a response wrapper. The design plan frames the gate as an optimization, so one cheap extra
+   GET per book open was accepted instead (open question 2 below).</li>
+<li><strong>Choice labels are not resolved:</strong> <code>generation/binding.py</code> renders choice labels with the
+   bare value always, and a sentinel in a choice label is treated as corruption by the
+   at-rest check, so there is nothing there to resolve.</li>
+<li><strong>The marker strip is unconditional; only the fetch is flag-gated.</strong> ADR-023 section 10
+   forbids a marker on any kid-facing surface without exception, and the strip is a pure
+   synchronous pass, so <code>resolvePersonalization(text, null)</code> runs even with the flag off.
+   This is a deliberate flag-OFF behavior delta the post-Stage-C review re-surfaced: a
+   sentinel-bearing blob that previously showed raw markers now shows each marker's generic
+   word even with <code>VITE_FEATURE_PERSONALIZATION</code> off (deliberate strengthening; the Task C3f
+   flag-off strip pin in <code>frontend/src/player/personalization.test.ts</code> asserts it).</li>
+<li><strong>The dedication renders <code>For {NAME}</code> when no kinship value is available</strong>, which is
+   today's only possible path given the empty vocabulary (C0e fails closed). The Stage R
+   "dedication guaranteed" clause is satisfied by the name half alone.</li>
+<li><strong>An ending with an empty-string title now renders "The End" instead of nothing</strong>
+   (<code>Reader.tsx</code>, the ending heading's <code>endingTitle === '' ? 'The End' : endingTitle</code>
+   fallback). A second deliberate flag-OFF behavior delta the post-Stage-C review surfaced
+   as undocumented: the fallback also fires when the resolver strips an ending title that
+   was nothing but a marker, so a child never sees a blank ending heading, flag on or off.</li>
+</ol>
+<p><strong>Open questions carried out of Stage C</strong> (recorded, not guessed at; none blocked the stage):</p>
+<ol>
+<li><strong>Where should the slot-id to slot-type map be computed?</strong> Stage C computes it per request
+   from the book's theme contract on disk (two JSON reads inside the book-open call). The
+   alternative is persisting it on <code>storybook_version</code> beside <code>sentinel_manifest</code> at
+   re-insertion time: one migration plus one generation-path edit, no request-path disk read,
+   and the map survives alongside the blob it describes. Reversible either way; owner input
+   wanted, not required.</li>
+<li><strong>Should <code>personalization_eligible</code> be exposed so the reader can skip a pointless fetch?</strong>
+   Design plan 8.3 assumes it is on the library and version responses; it is on neither, and
+   the version route returns the raw immutable blob. The cheapest correct shape is a new
+   <code>LibraryItemView</code> field threaded from <code>LibraryPage</code> into the reader's route state, which
+   is Stage D-sized. Stage C skips the optimization (deviation 4). <strong>ANSWERED 2026-07-29:
+   scheduled as Task D8.</strong></li>
+<li><strong>The dedication kinship vocabulary is still empty</strong>, so the "love {KINSHIP}" half of the
+   template is unreachable until the owner supplies the list, which belongs in a design-plan
+   update or ADR-023 amendment, not hand-added to the Python dict (its own <code>#VERIFY</code> marker
+   says so). <strong>Owner input required</strong> before the overlay can render its full template.
+   <strong>ANSWERED 2026-07-29: lists accepted (with <code>favorite</code> split) in
+   <code>personalization-closed-vocabularies-proposal.md</code>; implementation is Task D6.</strong></li>
+</ol>
 <h3 id="task-c1-the-resolver">Task C1: the resolver<a class="headerlink" href="#task-c1-the-resolver" title="Permanent link">&para;</a></h3>
 <p><strong>Files:</strong> create <code>frontend/src/player/personalization.ts</code> + <code>personalization.test.ts</code> (the
 directory's existing test discipline applies).</p>
@@ -4207,8 +4361,39 @@ settings screen says so in as many words. TDD, commit.</p>
   personalization granularity (the parked addendum block marks the spot); coordinate so it is
   written once.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Capability register: flip <strong>G18</strong> and <strong>K20</strong> from ❌ with spec links and covering tests.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> ADR-023 status: flip Proposed to Accepted when counsel closes OD-1/OD-5; until then G2
-  keeps P7/P9 unshipped.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> ADR-023 status: flipped Proposed to Accepted. The original condition read "when counsel
+  closes OD-1/OD-5"; no external counsel exists at this scale, so owner review closed both
+  instead (the gates table's G2 entry is the record). <strong>DONE 2026-07-29: owner review closed
+  both (OD-5 conditionally, R1 scope), satisfying G2 at R1 scope; status flipped the same day
+  on the Stage C branch (PR #489).</strong></li>
+</ul>
+<h3 id="task-d6-closed-vocabulary-implementation-split-favorite-seed-the-accepted-lists">Task D6: closed-vocabulary implementation (split <code>favorite</code>, seed the accepted lists)<a class="headerlink" href="#task-d6-closed-vocabulary-implementation-split-favorite-seed-the-accepted-lists" title="Permanent link">&para;</a></h3>
+<p>Implements the 2026-07-29 vocabulary decisions from
+<code>personalization-closed-vocabularies-proposal.md</code> (accepted lists recorded there):</p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Split <code>favorite</code> into <code>favorite_color</code> / <code>favorite_food</code> / <code>favorite_hobby</code> (Option B):
+  new slot_type values in the DB CHECK constraint (Supabase migration), <code>PERSONALIZATION_FIELDS</code>
+  (<code>theme_contract.py</code>), <code>_PersonalizationSlotType</code> (<code>api/schemas.py</code>), and any theme-contract
+  slot declaration bound to <code>favorite</code> today; regenerate the frontend client (contract change).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Seed <code>CLOSED_VOCABULARIES</code> with the accepted lists: pet_species (16), kinship_label (21),
+  dedication (same 21), home_type (12), and the three split favorite lists (12 each), citing
+  the proposal doc per the dict's <code>#VERIFY</code> marker.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> No case normalization anywhere (owner decision): values are stored and matched exactly
+  as listed. No "none" sentinel members. Drift-guard test per AL-068/UW-C20 rides along.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> TDD throughout; one membership test per vocabulary; commit.</li>
+</ul>
+<h3 id="task-d7-vocabulary-expansion-request-feature-owner-requested-2026-07-29">Task D7: vocabulary-expansion request feature (owner-requested 2026-07-29)<a class="headerlink" href="#task-d7-vocabulary-expansion-request-feature-owner-requested-2026-07-29" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Spec first, citing the capability register IDs served (guardian requests an entry for a
+  closed vocabulary; admin validates appropriateness and expands the list; the expansion is an
+  audited event). Follows the existing request/review shape (story_requests, flags) rather
+  than inventing a new one. Build after D6 lands the split schema.</li>
+</ul>
+<h3 id="task-d8-expose-personalization_eligible-to-the-reader-owner-scheduled-2026-07-29">Task D8: expose <code>personalization_eligible</code> to the reader (owner-scheduled 2026-07-29)<a class="headerlink" href="#task-d8-expose-personalization_eligible-to-the-reader-owner-scheduled-2026-07-29" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add <code>personalization_eligible</code> to the library response (<code>LibraryItemView</code>), thread it
+  from <code>LibraryPage</code> into the reader route state, and skip the values fetch when false.
+  Closes Stage C open question 2; pure optimization, the fetch already fails safe.</li>
 </ul>
 <hr />
 <h2 id="self-review-notes-recorded-not-aspirational">Self-review notes (recorded, not aspirational)<a class="headerlink" href="#self-review-notes-recorded-not-aspirational" title="Permanent link">&para;</a></h2>
@@ -4262,7 +4447,7 @@ settings screen says so in as many words. TDD, commit.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 19:49:11 UTC">July 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 15:52:00 UTC">July 30, 2026</span>
   </span>
 
     
