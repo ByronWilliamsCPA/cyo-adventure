@@ -814,13 +814,15 @@ runs on Supabase-managed infrastructure instead of the homelab; see
 - [x] **Newly surfaced by the 2026-07-20 audit**: H2, `generate_cover` flips
       `cover_status` straight `generating -> ready` with no moderation/approval gate, so
       an AI cover image can reach a child's shelf without the human review A16 promises
-      (the story-text safety guarantee, A6, is unaffected). Closed 2026-07-28 on
-      `feat/cover-review-ui`: the backend gate (`generate_cover` stops at
-      `pending_review`, `covers.service.approve_cover` is the sole admin-only path to
-      `ready`) merged from `fix/cover-moderation-gate` (commit b56b11f), and the admin
-      review UI (`ReviewDetailPage.tsx` renders the pending cover image plus an "Approve
-      cover" action) closes the remaining A16 gap the 2026-07-29 audit had found; A16
-      flipped to done in `capability-register.md`.
+      (the story-text safety guarantee, A6, is unaffected). Closed 2026-07-28: the
+      backend gate (`generate_cover` stops at `pending_review`,
+      `covers.service.approve_cover` is the sole admin-only path to `ready`) merged in
+      PR #469 (`30a988b5`), and the admin review UI (`ReviewDetailPage.tsx` renders the
+      pending cover image plus an "Approve cover" action) merged in PR #471
+      (`584a8a57`). H2 itself is fully closed; **A16 is not**, per `UW-M07`: the R2
+      bucket serving cover images is publicly reachable at a deterministic object key,
+      so an unapproved cover's bytes remain fetchable without going through this gate.
+      See `capability-register.md`'s A16 row for the live status.
 
 **Newly surfaced by the 2026-07-28 unscheduled-work sweep.** The security plan's Medium and Low
 tiers, and the authoring log's blocking lessons, had no phase home. Full detail by ID in the
