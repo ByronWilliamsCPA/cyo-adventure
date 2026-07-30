@@ -34,7 +34,7 @@ def test_validate_personalization_value_structural_violation_rejected() -> None:
 def test_validate_personalization_value_denylisted_bundle_rejected() -> None:
     """A value matching a band-mandatory denylist bundle is rejected."""
     violations = validate_personalization_value(
-        "favorite",
+        "favorite_hobby",
         AgeBand.BAND_5_8,
         value_enum="a sharpened steel sword",
     )
@@ -45,13 +45,26 @@ def test_validate_personalization_value_denylisted_bundle_rejected() -> None:
 def test_validate_personalization_value_enum_non_membership_rejected() -> None:
     """A candidate not in the slot's closed vocabulary is rejected.
 
-    ADR-023 rows 4a/5/6/7 describe these enum slots conceptually but do not
-    enumerate a shippable closed vocabulary for any of them (see the module
-    docstring's STOP note), so every ``CLOSED_VOCABULARIES`` entry is
-    currently empty and every candidate value is, by construction, rejected
-    as "not a member" until product supplies the real lists.
+    Task D6 seeded the real, owner-accepted lists (ADR-023 rows 4a/5/6/7/8,
+    `personalization-closed-vocabularies-proposal.md`), so `CLOSED_VOCABULARIES`
+    entries are finite closed lists rather than the empty, fail-closed
+    placeholders they shipped as before acceptance; a candidate that is not
+    itself a member is still rejected as "not a member".
     """
-    assert CLOSED_VOCABULARIES["pet_species"] == frozenset()
+    assert "dragon" not in CLOSED_VOCABULARIES["pet_species"]
+
+    violations = validate_personalization_value(
+        "pet_species",
+        AgeBand.BAND_8_11,
+        value_enum="dragon",
+    )
+
+    assert any(v.rule == "enum_membership" for v in violations)
+
+
+def test_validate_personalization_value_enum_membership_accepted() -> None:
+    """A candidate that IS a member of the seeded vocabulary raises no violation."""
+    assert "dog" in CLOSED_VOCABULARIES["pet_species"]
 
     violations = validate_personalization_value(
         "pet_species",
@@ -59,7 +72,7 @@ def test_validate_personalization_value_enum_non_membership_rejected() -> None:
         value_enum="dog",
     )
 
-    assert any(v.rule == "enum_membership" for v in violations)
+    assert violations == []
 
 
 def test_validate_personalization_value_sibling_outside_family_rejected() -> None:
@@ -182,10 +195,11 @@ def test_sibling_slot_with_free_text_rejected() -> None:
 def test_closed_vocabulary_slot_with_free_text_rejected() -> None:
     """Free text on a closed-vocabulary slot cannot bypass the vocabulary gate.
 
-    `CLOSED_VOCABULARIES` ships every entry empty on purpose (fail-closed),
-    but the membership check only ran when `value_enum` was set, so the
-    fail-closed vocabulary was one JSON field name away from unbounded free
-    text.
+    A closed-vocabulary slot must use `value_enum`, never `value_text`,
+    regardless of whether the slot's vocabulary is seeded or (as every entry
+    shipped before Task D6) still empty: the membership check only runs when
+    `value_enum` is set, so without this shape rule a closed vocabulary would
+    be one JSON field name away from unbounded free text.
     """
     for slot_type in CLOSED_VOCABULARIES:
         violations = validate_personalization_value(
@@ -202,11 +216,13 @@ def test_enum_membership_message_never_contains_the_candidate() -> None:
 
     `SlotViolation.message`'s contract is that it never contains candidate
     text. This message reaches `logger.warning("project_error", ...)` and the
-    422 body, and every vocabulary ships empty, so EVERY enum submission for
-    these slots takes this branch. `kinship_label` is designed to hold values
-    like "Grandma Rosita"; application logs have no erasure path.
+    422 body. `kinship_label`'s seeded vocabulary holds the bare address term
+    ("Grandma") but not a name-qualified variant ("Grandma Rosita"), so this
+    candidate is rejected as a non-member; application logs have no erasure
+    path, so the message must never echo it.
     """
     candidate = "Grandma Rosita"
+    assert candidate not in CLOSED_VOCABULARIES["kinship_label"]
     violations = validate_personalization_value(
         "kinship_label",
         AgeBand.BAND_8_11,
@@ -214,7 +230,7 @@ def test_enum_membership_message_never_contains_the_candidate() -> None:
     )
 
     membership = [v for v in violations if v.rule == "enum_membership"]
-    assert membership, "expected the fail-closed vocabulary to reject"
+    assert membership, "expected the seeded vocabulary to reject a non-member"
     assert all(candidate not in v.message for v in membership)
     assert all("kinship_label" in v.message for v in membership)
 
@@ -288,12 +304,35 @@ def test_dedication_rejects_free_text() -> None:
     assert [v.rule for v in violations] == ["value_shape"]
 
 
-def test_dedication_enum_is_rejected_until_a_vocabulary_ships() -> None:
-    """Fail-closed, exactly like the other four enum slots."""
+def test_dedication_enum_accepts_a_member_of_its_seeded_vocabulary() -> None:
+    """A dedication enum value that IS in the (kinship_label-shared) list passes.
+
+    Task D6 seeded `dedication` with the same 21-value kinship list as
+    `kinship_label` (ADR-023 row 8: the "from" kinship on a dedication can
+    legitimately differ from the in-story trusted-adult kinship, so it is a
+    separate key sharing the same closed vocabulary).
+    """
+    assert "Grandma" in CLOSED_VOCABULARIES["dedication"]
     violations = validate_personalization_value(
         "dedication",
         AgeBand.BAND_8_11,
         value_enum="Grandma",
     )
 
-    assert violations != []
+    assert violations == []
+
+
+def test_dedication_enum_non_member_is_rejected() -> None:
+    """A dedication enum value NOT in the seeded vocabulary is rejected.
+
+    Before Task D6 seeded the list, this slot rejected every candidate
+    fail-closed (the vocabulary was empty); it now rejects only non-members.
+    """
+    assert "Grandma Rosita" not in CLOSED_VOCABULARIES["dedication"]
+    violations = validate_personalization_value(
+        "dedication",
+        AgeBand.BAND_8_11,
+        value_enum="Grandma Rosita",
+    )
+
+    assert any(v.rule == "enum_membership" for v in violations)
