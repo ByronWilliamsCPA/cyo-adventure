@@ -367,7 +367,7 @@ exist in production. Design:
 | **B: the review model** | Finding schema (2.1), structured verdicts + chunking (2.2), merge stage, surfaces (2.6), RL-13/PL-19 visibility, Stage-2 disposition per owner choice (2.7) | The main PR series | A |
 | **C: Stage-0 successor** | Baseline capture run, Modal guard-model eval, calibration report, Perspective emission retirement (unset `PERSPECTIVE_API_KEY` / remove the leg, all call sites per 3.2 item 5) | Experiment + small PRs | capture ASAP; Perspective retirement due by 2026-12-31 sunset; rest independent of A/B |
 | **D: catalog remediation** | Re-moderate entry point + the 18-book sweep | Small PR + ops run | A, B |
-| **QA corpus (staging)** *(conditional: design awaits decision 6, section 7)* | Labeled storybook fixtures (section 5), staging seed script + containment guards, scorecard diff | Repo fixtures + small PR | authored anytime; seeded before B's UI QA; feeds C's eval |
+| **QA corpus (staging)** *(design confirmed 2026-07-29, decision 6)* | Labeled storybook fixtures (section 5), staging seed script + containment guards, scorecard diff | Repo fixtures + small PR | authored anytime; seeded before B's UI QA; feeds C's eval |
 
 Stage A is deliberately shippable alone: it prevents every future flood and
 makes the failure class visible, even if B's surface redesign takes longer.
