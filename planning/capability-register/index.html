@@ -3125,7 +3125,7 @@ vision doc (v1.2):</p>
 <td>G6</td>
 <td>Edit or reject a generated story (prose tweaks, veto) with re-review on edit</td>
 <td>🟡</td>
-<td>Edit half: <code>PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}</code> (<code>api/node_edit.py</code>) already authorizes guardians and re-runs the gate/moderation on edit; only the frontend route (<code>ReviewDetailPage.tsx</code>) is admin-only, a small UI-wiring gap. Reject/veto half is a bigger gap than previously stated: <code>approval.py</code>'s <code>_load_admin_story</code> hard-requires <code>is_admin</code> in every check (submit/approve/send-back/archive), guardians have <strong>no API path at all</strong> to reject or veto a generated story, not merely a missing UI. Whether guardians should get a veto, or admin is deliberately the sole safety gate per ADR-005, is an open product/ADR decision, not yet an engineering ticket</td>
+<td>Edit half CLOSED: <code>PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}</code> (<code>api/node_edit.py</code>) already authorized guardians and re-runs the gate/moderation on edit; the guardian now also has a UI path to it, <code>GuardianReviewDetailPage.tsx</code> at <code>/guardian/review/:storybookId</code>, backed by a new read-only <code>_load_review_target</code> helper in <code>api/approval.py</code> that admits a guardian for the GET review surface of their own family's story only (family-scoped via <code>authorize_family</code>), leaving every mutating admin handler (submit/approve/send-back/archive) untouched and admin-only. Reject/veto half remains open: <code>approval.py</code>'s <code>_load_admin_story</code> still hard-requires <code>is_admin</code> in every mutating check, so guardians have <strong>no API path at all</strong> to reject or veto a generated story. Whether guardians should get a veto, or admin is deliberately the sole safety gate per ADR-005, is an open product/ADR decision, not yet an engineering ticket</td>
 </tr>
 <tr>
 <td>G7</td>
@@ -3511,7 +3511,7 @@ Added 2026-07-25 by the ADR-023 authorship pass:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 22:54:46 UTC">July 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 01:29:22 UTC">July 30, 2026</span>
   </span>
 
     

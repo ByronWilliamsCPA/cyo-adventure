@@ -2913,6 +2913,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#guardian-review-and-edit-own-familys-story-g6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guardian: review and edit own family's story (G6)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#admin-review-queue-single-story-review" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3504,11 +3515,24 @@ guardian acts on what it says.</p>
 <li>Component: <code>frontend/src/guardian/PrivacyPage.test.tsx</code> (pins the load-bearing claims: the "not the legal privacy notice" disclaimer, "stops with an error rather than carrying on" for the PII guard's hard fail, the outside-classifier disclosure, AI authorship plus the human approval gate, no-training, and "stays with your family by default" rather than an absolute never-shared claim), <code>frontend/src/guardian/GuardianShell.test.tsx</code> (footer link present for guardian and admin, and deliberately NOT inside the main nav)</li>
 <li><strong>Gap</strong>: no E2E coverage at any tier. The page is static and its claims are pinned at the component tier; an E2E would only re-assert that a link navigates.</li>
 </ul>
+<h2 id="guardian-review-and-edit-own-familys-story-g6">Guardian: review and edit own family's story (G6)<a class="headerlink" href="#guardian-review-and-edit-own-familys-story-g6" title="Permanent link">&para;</a></h2>
+<p>The guardian-facing half of review, at <code>/guardian/review/:storybookId</code>. It is
+deliberately narrower than the admin review page below: the guardian reads
+their own family's story through the review-surface GET and may edit passages,
+but holds none of the approve/publish authority. The passage-edit modules
+(<code>passageEditApi.ts</code>, <code>usePassageEdit.ts</code>, <code>ReviewPassage.tsx</code>) live under
+<code>guardian/</code> and are shared with the admin review page.</p>
+<ul>
+<li>E2E-mocked: <code>frontend/e2e/review-edit.spec.ts</code> (the passage-edit <code>PATCH</code> contract, asserted at the network layer from the review detail; see the admin section below)</li>
+<li>Component: <code>frontend/src/guardian/GuardianReviewDetailPage.test.tsx</code> (the route's authority boundary and edit surface: it loads the requesting family's own story via the review-surface GET, renders no Approve, Send Back, Archive, cover-generation, or version-compare control, links back to My Requests, and refuses another family's story with a clear message plus a way back. Its passage-edit block covers opening the dialog prefilled with the passage body and choice labels, saving and refreshing the surface from the response, rendering inline rule messages on a 422 gate failure while leaving the blob unchanged, editing disabled once the story is published, and a <code>needs_revision</code> status hint with editing still enabled)</li>
+<li>Component (shared passage-edit modules): <code>frontend/src/guardian/passageEditApi.test.ts</code> (the <code>PATCH /v1/storybooks/:id/versions/:v/nodes/:nodeId</code> request shape, <code>choice_labels</code> sent alongside <code>body</code> when both are supplied, URL-encoding of a node id that needs it, and <code>asGateFailure</code> extracting findings from a 422 gate-failure body while returning null for a non-422, a 422 with no <code>details.findings</code> such as FastAPI's own request-body validation, and a non-axios error) and <code>frontend/src/guardian/usePassageEdit.test.ts</code> (the hook's state machine: <code>editingDisabled</code> before the surface loads and for a published surface versus enabled for <code>in_review</code>/<code>needs_revision</code>; opening is a no-op before load or for a node id absent from the blob; the dialog prefills body and choices and updates only the matching choice label; saving is a no-op with no dialog open or if the surface became unavailable after it opened; a successful save feeds the refreshed surface up and closes the dialog; a 422 surfaces gate findings without closing; a non-gate failure surfaces a generic error; and close resets error and gate-finding state)</li>
+<li><strong>Gap</strong>: no <code>e2e-real</code>, <code>e2e-staging</code>, or <code>e2e-prod</code> coverage yet; the route needs a real storybook id, the same constraint that keeps <code>/admin/review/:id</code> out of the staging and prod smokes.</li>
+</ul>
 <h2 id="admin-review-queue-single-story-review">Admin: review queue (single story review)<a class="headerlink" href="#admin-review-queue-single-story-review" title="Permanent link">&para;</a></h2>
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/guardian-review.spec.ts</code>, <code>frontend/e2e/review-edit.spec.ts</code> (passage-edit save: PATCHes a reachable node's body + choice_labels and an unreachable/orphan node's body-only from the review detail, asserting the exact <code>PATCH /v1/storybooks/{id}/versions/{v}/nodes/{node}</code> contract at the network layer), <code>frontend/e2e/guardian-console.spec.ts</code> (navigation), <code>frontend/e2e/naive-user/naive-admin-misuse.spec.ts</code>, <code>frontend/e2e/naive-user/naive-misuse-shared.spec.ts</code></li>
 <li>E2E-real: <code>frontend/e2e-real/approval-flow.spec.ts</code></li>
-<li>Component: <code>frontend/src/admin/ReviewDetailPage.test.tsx</code>, <code>frontend/src/admin/AdminConsolePage.test.tsx</code> (links into it), <code>frontend/src/admin/passageEditApi.test.ts</code>, <code>frontend/src/admin/usePassageEdit.test.ts</code> (passage-edit save contract + choice_labels gating), <code>frontend/src/guardian/reviewApi.test.ts</code>, <code>frontend/src/guardian/coverApi.test.ts</code> (cover generation on review page), <code>frontend/src/admin/rescreenApi.test.ts</code> (the re-screen trigger's request contract: <code>triggerForStorybook</code> scopes the sweep to a single id by posting <code>{ storybook_ids: [id] }</code> to <code>/v1/admin/rescreen</code> and returns the summary unchanged, and a backend rejection such as a 403 propagates to the caller rather than being swallowed into a fake success)</li>
+<li>Component: <code>frontend/src/admin/ReviewDetailPage.test.tsx</code>, <code>frontend/src/admin/AdminConsolePage.test.tsx</code> (links into it), <code>frontend/src/guardian/reviewApi.test.ts</code>, <code>frontend/src/guardian/coverApi.test.ts</code> (cover generation on review page), <code>frontend/src/admin/rescreenApi.test.ts</code> (the re-screen trigger's request contract: <code>triggerForStorybook</code> scopes the sweep to a single id by posting <code>{ storybook_ids: [id] }</code> to <code>/v1/admin/rescreen</code> and returns the summary unchanged, and a backend rejection such as a 403 propagates to the caller rather than being swallowed into a fake success). The passage-edit modules this page uses now live under <code>guardian/</code> and are shared with the guardian review route; their tests are listed in the guardian section below.</li>
 <li><strong>Gap</strong>: no E2E-staging coverage, <code>/admin/review/:id</code> needs a real storybook id and is excluded from the render-only staging smoke for the same reason <code>e2e-prod</code> excludes it. The passage-edit E2E is mocked-only for now; promote alongside <code>approval-flow.spec.ts</code> when the real tier grows a review-edit journey.</li>
 </ul>
 <h2 id="admin-cover-generation-a16">Admin: cover generation (A16)<a class="headerlink" href="#admin-cover-generation-a16" title="Permanent link">&para;</a></h2>
@@ -3832,7 +3856,7 @@ closure. A companion action-level verdict for this audit lives at
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 22:54:46 UTC">July 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 01:29:22 UTC">July 30, 2026</span>
   </span>
 
     

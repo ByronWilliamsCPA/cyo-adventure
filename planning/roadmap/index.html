@@ -5203,9 +5203,12 @@ register capabilities that a prior draft of this list conflated; K5 is delivered
 undo), bookmarks (a distinct save-slot feature) is not built at all.</strong></p>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Lightweight node editor: read as playthrough and node list, edit a passage, re-run
-      validation, re-review on edit (G6). <code>PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}</code>
-      (<code>api/node_edit.py</code>) re-runs the gate and moderation on edit. Branch re-roll and a
-      dedicated guardian-facing (as opposed to admin) review surface still remain open.</li>
+      validation, re-review on edit (G6, edit half). <code>PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}</code>
+      (<code>api/node_edit.py</code>) re-runs the gate and moderation on edit. A dedicated
+      guardian-facing review/edit surface (<code>GuardianReviewDetailPage.tsx</code>,
+      <code>/guardian/review/:storybookId</code>) now exists alongside the admin one, scoped to the
+      requesting family's own story. Branch re-roll and the reject/veto half of G6 (an open
+      ADR-005 product decision, not an engineering gap) remain out of scope.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Ending tracker "3 of 7 endings found" (K6, UI over the shipped completion rows) and
       read-aloud/TTS for the youngest bands (K7). <code>EndingsProgress.tsx</code> and <code>useReadAloud.ts</code>
       wired into <code>Reader.tsx</code>, <code>tts_enabled</code> toggle in <code>ProfileFormDialog.tsx</code>.</li>
@@ -5627,7 +5630,7 @@ and Tier-2 corpora.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 22:54:46 UTC">July 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 01:29:22 UTC">July 30, 2026</span>
   </span>
 
     
