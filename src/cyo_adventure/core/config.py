@@ -1261,8 +1261,10 @@ class Settings(BaseSettings):
         # #CRITICAL: security: no unreviewed children's content persisted as
         # a real moderation report outside local dev, without an explicit,
         # self-documenting opt-in.
-        # #VERIFY: test_mock_review_outside_local_without_hatch_raises,
-        # test_mock_review_outside_local_with_hatch_boots.
+        # #VERIFY: tests/unit/test_config.py::
+        # TestValidatorRequireRealReviewerOutsideLocal::
+        # test_non_local_environment_with_mock_review_without_hatch_raises and
+        # ::test_non_local_environment_with_mock_review_and_hatch_boots.
         if (
             self.review_provider == "mock"
             and self.environment != "local"

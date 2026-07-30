@@ -208,9 +208,12 @@ async def test_safety_stage_mock_reviewer_produces_exactly_one_finding() -> None
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_safety_stage_fenced_json_verdict_parses_normally() -> None:
-    """Regression test for gap G8: a markdown-fenced JSON verdict (a common
-    LLM formatting habit) must parse as a genuine verdict, not fail-safe."""
+async def test_safety_stage_fenced_json_verdict_fails_safe_to_flag() -> None:
+    """Pins gap G8: a markdown-fenced JSON verdict (a common LLM formatting
+    habit) is NOT parsed as a genuine verdict; ``_parse_verdict`` calls
+    ``json.loads`` on the raw body with no fence stripping, so the fenced
+    body fails to parse and the stage falls back to its structural FLAG
+    fail-safe rather than crashing or silently passing."""
     provider = MockProvider(
         responses=['```json\n{"verdict": "flag", "reason": "too scary"}\n```']
     )

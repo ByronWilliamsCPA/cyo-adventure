@@ -7,6 +7,7 @@ whose authn_subject is each Auth user's UUID, a "Test Reader" child profile
 profile. Run with:
 
     SEED_GUARDIAN_PASSWORD=... SEED_ADMIN_PASSWORD=... \\
+        CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1 \\
         uv run --env-file .env.staging python scripts/seed_staging.py
 
 Never run against production: the script refuses to run unless
@@ -25,8 +26,11 @@ are hand-authored, already-validated fixture blobs), but Settings still
 boots with review_provider defaulting to "mock", and core/config.py now
 refuses to boot the mock reviewer outside environment="local" unless
 ``CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1`` is set (design doc section 2.4 / gap
-G1). ``.env.staging.example`` sets this alongside ``ENVIRONMENT=staging``;
-copy it into ``.env.staging`` rather than re-deriving it.
+G1). Set it per-command, on this invocation only, as shown above.
+``.env.staging.example`` deliberately ships it commented out: that file is the
+general staging environment for any command, including a serving uvicorn or RQ
+worker, and enabling the hatch there would put mock moderation on a real
+serving process against the staging database.
 """
 
 from __future__ import annotations
