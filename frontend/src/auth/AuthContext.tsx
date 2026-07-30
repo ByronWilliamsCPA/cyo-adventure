@@ -93,8 +93,14 @@ async function purgeAuthenticatedDataAtRest(): Promise<void> {
     // Cache Storage unavailable or blocked: best-effort only.
   }
   try {
-    const { clearReadingStates } = await import('../offline/db')
+    const { clearReadingStates, clearPersonalizationValues } = await import('../offline/db')
     await clearReadingStates()
+    // ADR-023 P6: the values payload holds a child's real first name, a sibling's
+    // name, and a pet name. On a returned or hand-me-down device that is exactly
+    // the data a sign-out is asked to remove, and unlike reading state it says
+    // nothing about which book it belongs to, so there is no narrower purge to
+    // prefer. Wrapped with the read above: a failure must never block sign-out.
+    await clearPersonalizationValues()
   } catch {
     // IndexedDB unavailable or blocked: best-effort only.
   }
@@ -401,7 +407,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // returned or handed-over device does not retain children's names,
         // story content, or reading progress after sign-out. Best-effort and
         // fire-and-forget: it must never block or fail the sign-out itself.
-        // #VERIFY: AuthContext.test.tsx "sign-out purges cached data".
+        // #VERIFY: AuthContext.test.tsx "sign-out purges cached data" and
+        // "sign-out purges cached personalization values (ADR-023 P6)".
         void purgeAuthenticatedDataAtRest()
         const { error } = await supabase.auth.signOut()
         if (error) throw error

@@ -85,6 +85,18 @@ vi.mock('./supabaseClient', () => ({
   },
 }))
 
+// Mocked so the sign-out purge tests can assert both offline stores were
+// cleared without depending on a real IndexedDB implementation in jsdom
+// (purgeAuthenticatedDataAtRest's real dynamic import silently no-ops here
+// otherwise, since jsdom has no IndexedDB).
+const mockClearReadingStates = vi.fn()
+const mockClearPersonalizationValues = vi.fn()
+vi.mock('../offline/db', () => ({
+  clearReadingStates: (...args: unknown[]): unknown => mockClearReadingStates(...args),
+  clearPersonalizationValues: (...args: unknown[]): unknown =>
+    mockClearPersonalizationValues(...args),
+}))
+
 function Probe() {
   const { status, principal, authError, recovery, recoveryError } = useAuth()
   return (
@@ -232,6 +244,8 @@ beforeEach(() => {
   mockSignOut.mockReset()
   mockResetPasswordForEmail.mockReset()
   mockUpdateUser.mockReset()
+  mockClearReadingStates.mockReset()
+  mockClearPersonalizationValues.mockReset()
   mockIsPasswordRecovery = false
   mockRecoveryErrorFromUrl = null
 })
@@ -871,6 +885,21 @@ describe('AuthProvider', () => {
         value: originalCaches,
       })
     }
+  })
+
+  it('sign-out purges cached personalization values (ADR-023 P6)', async () => {
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    mockSignOut.mockResolvedValue({ error: null })
+    render(
+      <AuthProvider>
+        <ActionsProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
+    fireEvent.click(screen.getByText('sign out'))
+    await waitFor(() => expect(mockSignOut).toHaveBeenCalled())
+    await waitFor(() => expect(mockClearReadingStates).toHaveBeenCalled())
+    expect(mockClearPersonalizationValues).toHaveBeenCalled()
   })
 
   it('sign-out drops warm adult-gate state', async () => {
