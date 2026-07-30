@@ -54,17 +54,21 @@ Pure module: stdlib + `cyo_adventure.storybook.models` (`AgeBand`) +
 randomness, or I/O of any kind, mirroring `validator/slots.py`'s own
 pure-module contract.
 
-**On `CLOSED_VOCABULARIES`'s empty vocabularies (ADR-023 rows 4a/5/6/7).**
-ADR-023's taxonomy table describes these four enum slots conceptually and
+**On `CLOSED_VOCABULARIES`'s empty vocabularies (ADR-023 rows 4a/5/6/7/8).**
+ADR-023's taxonomy table describes these five enum slots conceptually and
 gives a handful of illustrative examples, but never enumerates a shippable,
 exhaustive closed vocabulary for any of them: row 7 (home type) explicitly
 trails off with "house, apartment, farm, ..."; row 6 (favorite) names
 categories (color, food, hobby), not values; row 4a (pet species) names no
 example at all; row 5 (kinship label) gives four quoted examples ("Grandma",
-"Abuela", "Auntie", "Grandpa") without stating they are the complete list.
-Seeding a vocabulary here would mean inventing values no design document
-actually ratified. Each entry is therefore left empty (fail-closed: every
-enum candidate for that slot is rejected as "not a member") until
+"Abuela", "Auntie", "Grandpa") without stating they are the complete list;
+row 8 (dedication) stores a kinship label in the same shape as row 5, added
+by ADR-023 Stage C Task C0e (it was missing from this dict until then, which
+made the dedication a free-text channel onto a kid-facing screen; see
+`CLOSED_VOCABULARIES`'s inline comment). Seeding a vocabulary here would mean
+inventing values no design document actually ratified. Each entry is
+therefore left empty (fail-closed: every enum candidate for that slot is
+rejected as "not a member") until
 `docs/planning/story-personalization-implementation-plan.md` or a future
 ADR-023 amendment supplies the real, shippable lists.
 """
@@ -103,6 +107,15 @@ CLOSED_VOCABULARIES: dict[str, frozenset[str]] = {
     "kinship_label": frozenset(),
     "favorite": frozenset(),
     "home_type": frozenset(),
+    # ADR-023 row 8 / design plan section 9: the dedication stores a KINSHIP
+    # LABEL, the same closed shape as `kinship_label` above, because the "from"
+    # kinship can legitimately differ from the in-story trusted-adult kinship.
+    # It was missing from this dict until ADR-023 Stage C Task C0e, which meant
+    # `_shape_violations` permitted `value_text` on it and the membership check
+    # below never fired, making the dedication a free-text channel onto a
+    # kid-facing screen. Empty, like its four neighbours, until product supplies
+    # the real list.
+    "dedication": frozenset(),
 }
 
 
