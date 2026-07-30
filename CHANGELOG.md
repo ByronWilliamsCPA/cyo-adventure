@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.46.0] - 2026-07-30
+
+### Features
+
+- **guardian**: Add co-parent invite form to the family console (G14)
+  ([#475](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/475),
+  [`d3d873c`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/d3d873c37ced4288624cd118cf655022aa97baa9))
+
+
 ## [0.45.0] - 2026-07-30
 
 ### Features
@@ -2809,6 +2818,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.46.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.45.0...v0.46.0
 [0.45.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.44.0...v0.45.0
 [0.44.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.43.0...v0.44.0
 [0.43.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.42.0...v0.43.0
