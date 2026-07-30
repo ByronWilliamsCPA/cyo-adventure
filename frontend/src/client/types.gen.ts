@@ -2047,6 +2047,10 @@ export type LibraryItem = {
      * Published At
      */
     published_at?: string | null;
+    /**
+     * Personalization Eligible
+     */
+    personalization_eligible?: boolean;
 };
 
 /**

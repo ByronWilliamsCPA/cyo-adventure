@@ -170,6 +170,17 @@ class LibraryItem(BaseModel):
     # new column. None only for a pre-migration row that predates the column;
     # such a row degrades to "not new" on the shelf, never an error.
     published_at: datetime | None = None
+    # ADR-023 Stage D Task D8 (closes Stage C open question 2): mirrors
+    # StorybookVersion.personalization_eligible (Stage B), read verbatim, not
+    # recomputed. Off by default for a book whose contract carries no
+    # personalizable slots at all; the frontend uses this to skip the
+    # per-profile personalization-values fetch entirely rather than firing a
+    # request that would just come back empty. Pure client-side optimization:
+    # the values fetch already fails safe (renders the generic title/body) on
+    # any error, timeout, or empty response, so a stale/absent value here
+    # never breaks personalization, it only means one extra network round
+    # trip for a non-personalizable book.
+    personalization_eligible: bool = False
 
 
 class LibraryView(BaseModel):

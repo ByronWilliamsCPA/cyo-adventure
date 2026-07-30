@@ -410,6 +410,96 @@ describe('ReaderRoute personalization wiring (C3c)', () => {
   })
 })
 
+describe('ReaderRoute personalization eligibility route state (D8)', () => {
+  beforeEach(() => {
+    globalThis.indexedDB = new IDBFactory()
+    _resetDbHandle()
+    mockGet.mockReset()
+    mockPut.mockReset()
+    mockPost.mockReset()
+    vi.stubEnv('VITE_FEATURE_PERSONALIZATION', 'true')
+    mockGet.mockImplementation((url: string) => {
+      if (url.startsWith('/v1/storybooks/') && url.includes('personalization-values')) {
+        return Promise.resolve({
+          data: {
+            subject_profile_id: null,
+            ring: null,
+            policy_version: null,
+            resolved_at: '2026-07-29T00:00:00Z',
+            values: {},
+            sentinel_pattern: "\\{~([A-Z][A-Z0-9_]*):([^{}<>'~]+)~\\}",
+            slot_bindings: {},
+          },
+        })
+      }
+      if (url.startsWith('/v1/storybooks/')) {
+        return Promise.resolve({ data: lantern })
+      }
+      if (url.startsWith('/v1/reading-state/')) {
+        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+      }
+      return Promise.reject(new Error(`unexpected GET ${url}`))
+    })
+  })
+
+  afterEach(() => {
+    vi.unstubAllEnvs()
+    cleanup()
+  })
+
+  function renderAtWithState(path: string, state: unknown) {
+    return render(
+      <ToastProvider>
+        <MemoryRouter initialEntries={[{ pathname: path, state }]}>
+          <Routes>
+            <Route path="/read/:profileId/:storybookId/:version" element={<ReaderRoute />} />
+          </Routes>
+        </MemoryRouter>
+      </ToastProvider>
+    )
+  }
+
+  function personalizationCalls(): unknown[] {
+    return mockGet.mock.calls.filter(([url]) => String(url).includes('personalization-values'))
+  }
+
+  it('skips the values fetch when route state explicitly says the book is not eligible', async () => {
+    renderAtWithState(`/read/p_ineligible/${lantern.id}/${lantern.version}`, {
+      personalizationEligible: false,
+    })
+    await screen.findByTestId('reader')
+    // Give the fetcher a chance to fire before asserting its absence.
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(personalizationCalls()).toEqual([])
+  })
+
+  it('still attempts the values fetch when route state says the book is eligible', async () => {
+    renderAtWithState(`/read/p_eligible/${lantern.id}/${lantern.version}`, {
+      personalizationEligible: true,
+    })
+    await screen.findByTestId('reader')
+    await waitFor(() => expect(personalizationCalls().length).toBeGreaterThan(0))
+  })
+
+  it('still attempts the values fetch when route state omits the flag (deep link / offline entry)', async () => {
+    // No `state` at all, the same shape a bookmarked or shared deep link
+    // produces: absence must read as "unknown", not as ineligible.
+    renderAt(`/read/p_deeplink/${lantern.id}/${lantern.version}`)
+    await screen.findByTestId('reader')
+    await waitFor(() => expect(personalizationCalls().length).toBeGreaterThan(0))
+  })
+
+  it('still attempts the values fetch when route state carries only a continuation (ContinueSeries)', async () => {
+    // ContinueSeries.tsx never sets personalizationEligible; only its own
+    // `continuation` key is present. That must not be misread as `false`.
+    renderAtWithState(`/read/p_continued/${lantern.id}/${lantern.version}`, {
+      continuation: { entryNode: null },
+    })
+    await screen.findByTestId('reader')
+    await waitFor(() => expect(personalizationCalls().length).toBeGreaterThan(0))
+  })
+})
+
 // A minimal story whose opening passage carries a canonical sentinel, so the
 // fetcher's outcome is observable in the rendered prose: 'Maya' means the
 // values payload was applied, 'Explorer' means the generic fallback rendered.
