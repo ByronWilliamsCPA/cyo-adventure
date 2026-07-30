@@ -256,6 +256,7 @@ substantially the same work under different headings. Do not triple-book.
 | UW-C17 | `AL-031` and `AL-038` are marked `applied` but each carries an explicitly open half (listing-path denormalization; read-time carry audit plus gating the continuation offer on a satisfying ending). Split into new IDs per the log's own status discipline. | now | unscheduled |
 | UW-C18 | `AL-011` document that L2-13 past 460 nodes is correct, so it is not "fixed" later | doc | unscheduled |
 | UW-C19 | `AL-023` the shipped client never sends `choice_path`, so the server-side engine replay that exists to reject a forged `current_node`/`var_state`/`path` is dormant (`api/reading.py` carries the `#ASSUME` admitting it). Any analytics derived from the client-supplied `path` inherits the same trust problem. | 5 | unscheduled |
+| UW-C20 | `AL-068` `CLOSED_VOCABULARIES` drift guard: a test that fails when a slot type exists in the personalization taxonomy with neither a vocabulary entry nor an explicit free-text exemption, mirroring how the DB CHECK lists are pinned to `PERSONALIZATION_FIELDS`. The immediate instance (`dedication` accepting free text) was fixed fail-closed in Stage C commit `f03c7fdc`; this row is the guard that stops the next slot type from repeating it. | 5 | unscheduled |
 
 ## Cluster D: untracked GitHub issues
 
