@@ -413,8 +413,17 @@ async def test_perspective_malformed_attribute_degrades_gracefully() -> None:
 
 
 @pytest.mark.unit
-async def test_openai_non_dict_top_level_response_returns_no_findings() -> None:
-    """A top-level JSON body that is not a dict (for example a bare list) degrades."""
+@pytest.mark.usefixtures("_no_backoff")
+async def test_openai_non_dict_top_level_response_raises_classifier_unavailable() -> (
+    None
+):
+    """A top-level JSON body that is not a dict (for example a bare list).
+
+    Gap G11 regression: this shape change used to log a warning and silently
+    return ``[]``, indistinguishable from a genuinely clean node. It must now
+    surface as a structural degraded-classifier finding via the same
+    retry/circuit-breaker path as an HTTP failure, never vanish.
+    """
 
     def handler(_request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json=["unexpected", "shape"])
@@ -425,12 +434,20 @@ async def test_openai_non_dict_top_level_response_returns_no_findings() -> None:
         perspective_key=None,
         client=_client(handler),
     )
-    assert findings == []
+    degraded = [f for f in findings if f.category == "classifier_degraded"]
+    assert len(degraded) == 1
+    assert degraded[0].source is Source.OPENAI
+    assert degraded[0].structural is True
 
 
 @pytest.mark.unit
-async def test_openai_empty_results_list_returns_no_findings() -> None:
-    """An empty ``results`` list (present but empty) must not raise or emit findings."""
+@pytest.mark.usefixtures("_no_backoff")
+async def test_openai_empty_results_list_raises_classifier_unavailable() -> None:
+    """An empty ``results`` list (present but empty) is malformed, not clean.
+
+    Gap G11 regression: see test_openai_non_dict_top_level_response_raises_
+    classifier_unavailable above.
+    """
 
     def handler(_request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json={"results": []})
@@ -441,12 +458,20 @@ async def test_openai_empty_results_list_returns_no_findings() -> None:
         perspective_key=None,
         client=_client(handler),
     )
-    assert findings == []
+    degraded = [f for f in findings if f.category == "classifier_degraded"]
+    assert len(degraded) == 1
+    assert degraded[0].source is Source.OPENAI
+    assert degraded[0].structural is True
 
 
 @pytest.mark.unit
-async def test_openai_result_zero_not_a_dict_returns_no_findings() -> None:
-    """``results[0]`` that is not a dict (for example a bare number) degrades."""
+@pytest.mark.usefixtures("_no_backoff")
+async def test_openai_result_zero_not_a_dict_raises_classifier_unavailable() -> None:
+    """``results[0]`` that is not a dict (for example a bare number).
+
+    Gap G11 regression: see test_openai_non_dict_top_level_response_raises_
+    classifier_unavailable above.
+    """
 
     def handler(_request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json={"results": [123]})
@@ -457,12 +482,20 @@ async def test_openai_result_zero_not_a_dict_returns_no_findings() -> None:
         perspective_key=None,
         client=_client(handler),
     )
-    assert findings == []
+    degraded = [f for f in findings if f.category == "classifier_degraded"]
+    assert len(degraded) == 1
+    assert degraded[0].source is Source.OPENAI
+    assert degraded[0].structural is True
 
 
 @pytest.mark.unit
-async def test_openai_non_dict_categories_and_scores_return_no_findings() -> None:
-    """Non-dict ``categories``/``category_scores`` fields narrow to empty maps."""
+@pytest.mark.usefixtures("_no_backoff")
+async def test_openai_non_dict_categories_raises_classifier_unavailable() -> None:
+    """Non-dict ``categories`` narrows to an empty map, treated as malformed.
+
+    Gap G11 regression: see test_openai_non_dict_top_level_response_raises_
+    classifier_unavailable above.
+    """
 
     def handler(_request: httpx.Request) -> httpx.Response:
         return httpx.Response(
@@ -484,7 +517,10 @@ async def test_openai_non_dict_categories_and_scores_return_no_findings() -> Non
         perspective_key=None,
         client=_client(handler),
     )
-    assert findings == []
+    degraded = [f for f in findings if f.category == "classifier_degraded"]
+    assert len(degraded) == 1
+    assert degraded[0].source is Source.OPENAI
+    assert degraded[0].structural is True
 
 
 @pytest.mark.unit
@@ -544,8 +580,17 @@ async def test_require_classifiers_flags_unset_keys() -> None:
 
 
 @pytest.mark.unit
-async def test_perspective_non_dict_top_level_response_returns_no_findings() -> None:
-    """A top-level JSON body that is not a dict (for example a bare list) degrades."""
+@pytest.mark.usefixtures("_no_backoff")
+async def test_perspective_non_dict_top_level_response_raises_classifier_unavailable() -> (
+    None
+):
+    """A top-level JSON body that is not a dict (for example a bare list).
+
+    Gap G11 regression: this shape change used to log a warning and silently
+    return ``[]``, indistinguishable from a genuinely clean node. It must now
+    surface as a structural degraded-classifier finding via the same
+    retry/circuit-breaker path as an HTTP failure, never vanish.
+    """
 
     def handler(_request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json=["unexpected", "shape"])
@@ -556,12 +601,23 @@ async def test_perspective_non_dict_top_level_response_returns_no_findings() -> 
         perspective_key="pkey",
         client=_client(handler),
     )
-    assert findings == []
+    degraded = [f for f in findings if f.category == "classifier_degraded"]
+    assert len(degraded) == 1
+    assert degraded[0].source is Source.PERSPECTIVE
+    assert degraded[0].structural is True
 
 
 @pytest.mark.unit
-async def test_perspective_missing_attribute_scores_returns_no_findings() -> None:
-    """A response body missing ``attributeScores`` entirely degrades gracefully."""
+@pytest.mark.usefixtures("_no_backoff")
+async def test_perspective_missing_attribute_scores_raises_classifier_unavailable() -> (
+    None
+):
+    """A response body missing ``attributeScores`` entirely is malformed.
+
+    Gap G11 regression: see
+    test_perspective_non_dict_top_level_response_raises_classifier_unavailable
+    above.
+    """
 
     def handler(_request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json={"unrelated": "field"})
@@ -572,7 +628,10 @@ async def test_perspective_missing_attribute_scores_returns_no_findings() -> Non
         perspective_key="pkey",
         client=_client(handler),
     )
-    assert findings == []
+    degraded = [f for f in findings if f.category == "classifier_degraded"]
+    assert len(degraded) == 1
+    assert degraded[0].source is Source.PERSPECTIVE
+    assert degraded[0].structural is True
 
 
 @pytest.mark.unit
@@ -748,10 +807,21 @@ async def test_transient_failure_is_retried_and_does_not_lose_coverage() -> None
         calls["n"] += 1
         if calls["n"] == 1:
             return httpx.Response(500)
+        # A non-empty categories map: an empty dict is itself a malformed
+        # shape after the gap-G11 fix (OpenAI Moderation always returns every
+        # category with a boolean value; an empty map now raises
+        # ClassifierUnavailable rather than passing as a quiet "nothing
+        # flagged" response), so this stub must look like a real success.
         return httpx.Response(
             200,
             json={
-                "results": [{"flagged": False, "categories": {}, "category_scores": {}}]
+                "results": [
+                    {
+                        "flagged": False,
+                        "categories": {"violence": False},
+                        "category_scores": {"violence": 0.01},
+                    }
+                ]
             },
         )
 
@@ -789,6 +859,11 @@ async def test_persistent_failure_flags_incomplete_coverage_as_a_soft_gate() -> 
     )
     assert coverage[0].source is Source.OPENAI
     assert coverage[0].node_id is None, "coverage is a whole-story finding"
+    # #VERIFY: gap G2a (design doc section 2.5): a pipeline fail-safe like an
+    # incomplete-coverage finding must be excluded from the threshold
+    # flywheel's override-rate evidence, which insights.py does by keying
+    # off this flag.
+    assert coverage[0].structural is True
 
 
 @pytest.mark.unit

@@ -680,18 +680,31 @@ def _overall_verdict(report: ModerationReport) -> str:
 # #VERIFY: values are plain ints from a fixed StrEnum key set below; no string
 # field from Finding other than the enum's own ``.value`` is read here.
 def _verdict_counts(report: ModerationReport) -> dict[str, int]:
-    """Return a PII-free count of findings per verdict.
+    """Return a PII-free count of findings per verdict, plus a structural tally.
 
     Args:
         report: The report whose findings are tallied.
 
     Returns:
-        A mapping of verdict value (for example ``"flag"``) to occurrence count.
+        A mapping of verdict value (for example ``"flag"``) to occurrence
+        count, plus a ``"structural"`` key counting findings with
+        ``Finding.structural is True`` (design doc section 2.5): a
+        pipeline-condition fail-safe (reviewer unavailable, classifier
+        outage, mock reviewer) rather than a genuine content judgment. The
+        ``"structural"`` key is present only when its count is nonzero, the
+        same convention every verdict key already follows, so a clean
+        report's payload stays ``{}`` and existing exact-equality event
+        assertions are unaffected.
     """
     counts: dict[str, int] = {}
+    structural_count = 0
     for finding in report.findings:
         key = finding.verdict.value
         counts[key] = counts.get(key, 0) + 1
+        if finding.structural:
+            structural_count += 1
+    if structural_count:
+        counts["structural"] = structural_count
     return counts
 
 
