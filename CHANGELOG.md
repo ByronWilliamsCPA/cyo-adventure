@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.50.1] - 2026-07-30
+
+### Bug Fixes
+
+- **moderation**: Collapse fail-safe verdict floods and gate the mock reviewer (Stage A)
+  ([#496](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/496),
+  [`8ca8d1b`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/8ca8d1b3edd09a289f6dc8b50e303936eff03d1a))
+
+
 ## [0.50.0] - 2026-07-30
 
 ### Chores
@@ -2854,6 +2863,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.50.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.50.0...v0.50.1
 [0.50.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.49.0...v0.50.0
 [0.49.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.48.0...v0.49.0
 [0.48.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.47.0...v0.48.0
