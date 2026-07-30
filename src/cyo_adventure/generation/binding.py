@@ -56,6 +56,7 @@ __all__ = [
     "contract_path_for",
     "interpret_and_bind",
     "load_contract_for",
+    "personalizable_slot_fields",
     "personalizable_slot_ids",
     "render_bound_skeleton",
 ]
@@ -664,6 +665,38 @@ def personalizable_slot_ids(contract: ThemeContract) -> frozenset[str]:
     return frozenset(
         slot.id for slot in contract.slots if slot.kind == "personalizable"
     )
+
+
+def personalizable_slot_fields(contract: ThemeContract) -> dict[str, str]:
+    """Map each personalizable slot id to the personalization field it fills.
+
+    The client-side resolver needs this map and cannot derive it: a sentinel in
+    prose carries the SLOT ID (``{~HERO:Explorer~}``, see
+    :func:`cyo_adventure.storybook.sentinels.wrap`), while the values payload is
+    keyed by SLOT TYPE (``protagonist_first_name``), and only
+    :attr:`~cyo_adventure.storybook.theme_contract.SlotSpec.personalization_field`
+    joins the two. That attribute lives in a theme-contract sidecar on disk, which
+    no client can read, so the join has to be computed server-side and shipped
+    (ADR-023 Stage C, Task C0).
+
+    A ``personalizable`` slot always declares a ``personalization_field``
+    (enforced by ``ThemeContract._check_personalizable_slots``), so no entry can
+    have a ``None`` value; the ``is not None`` guard below is what proves that to
+    the type checker rather than a runtime possibility being handled.
+
+    Args:
+        contract: The skeleton's theme contract.
+
+    Returns:
+        dict[str, str]: slot id -> personalization field, one entry per
+        ``kind == "personalizable"`` slot. Empty when the contract declares none,
+        which is the common case for today's catalog.
+    """
+    return {
+        slot.id: slot.personalization_field
+        for slot in contract.slots
+        if slot.kind == "personalizable" and slot.personalization_field is not None
+    }
 
 
 def _request_contract(
