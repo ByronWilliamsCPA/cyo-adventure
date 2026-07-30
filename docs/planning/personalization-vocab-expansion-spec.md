@@ -21,10 +21,10 @@ source: "Owner decision 2026-07-29; src/cyo_adventure/storybook/personalization_
 
 # Personalization vocabulary-expansion request: feature specification
 
-> **Status**: Draft (2026-07-29). Spec only, no implementation. Blocked on Task D6 (seeding the
-> shipped `CLOSED_VOCABULARIES` lists and splitting `favorite` into `favorite_color`,
-> `favorite_food`, `favorite_hobby`), which itself lands after draft PR #489 merges to main. See
-> "Dependency" at the end of this document.
+> **Status**: Draft (2026-07-29, dependency re-verified 2026-07-30). Spec only, no implementation.
+> Blocked on Task D6 (seeding the shipped `CLOSED_VOCABULARIES` lists and splitting `favorite` into
+> `favorite_color`, `favorite_food`, `favorite_hobby`), which is still outstanding on `origin/main`.
+> See "Dependency" at the end of this document.
 > **Serves**: [G18](./capability-register.md) (extends it; see "Capability register linkage").
 > **Proposes**: a new admin row, **A17** (see "Capability register linkage").
 > **Constrained by**: [S10](./capability-register.md) (privacy architecture), the ADR-023 "never
@@ -422,14 +422,26 @@ precedent in `src/cyo_adventure/events/models.py` and its payload-allowlist disc
 
 ## 8. Dependency
 
-Blocked on **Task D6** (seed the accepted vocabularies from ADR-023 rows 4a/5/6/7, including
-splitting `favorite` into `favorite_color`/`favorite_food`/`favorite_hobby`), which is not yet
-on `origin/main` as of this spec's writing. D6, and the five-key `CLOSED_VOCABULARIES` dict that
-includes a `dedication` entry alongside it, currently exist only on draft PR #489
-(`docs/planning/personalization-closed-vocabularies-proposal.md`, unmerged). This feature (D7)
-cannot land its data model or routes against a vocabulary that is still all-empty frozensets;
-implementation work on this spec should not start until draft PR #489 merges and D6 is verified
-present on `origin/main`.
+Blocked on **Task D6**: seed the accepted vocabularies from ADR-023 rows 4a/5/6/7, including
+splitting `favorite` into `favorite_color`/`favorite_food`/`favorite_hobby`.
+
+PR #489 has since merged (`274e49a5`), so the part of this dependency that waited on it is
+satisfied: `CLOSED_VOCABULARIES` now exists on `origin/main` at
+`src/cyo_adventure/storybook/personalization_values.py` with the `dedication` entry alongside
+`pet_species`, `kinship_label`, `favorite`, and `home_type`. That closed the free-text hole on the
+dedication slot, which is what #489 was for.
+
+**D6 itself did not land with it, and remains the live blocker.** Re-verified on `origin/main`
+2026-07-30: all five vocabularies are still empty frozensets, and `favorite` is still one key
+rather than the three ADR-023 row 6 calls for. The module's own `#EDGE` marker says as much,
+"every enum candidate for these five slots is rejected until product/ADR-023 supplies the real,
+shippable lists."
+
+This feature (D7) cannot land its data model or routes against all-empty frozensets, because there
+is no vocabulary for a guardian to request an addition to. Implementation work on this spec should
+not start until D6 is verified present on `origin/main`: check that
+`CLOSED_VOCABULARIES` holds non-empty sets and carries the three split `favorite_*` keys. Do not
+treat "#489 merged" as the signal; it is necessary but not sufficient.
 
 ## Related
 
