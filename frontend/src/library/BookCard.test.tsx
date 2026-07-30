@@ -19,6 +19,7 @@ const BASE_ITEM: LibraryItemView = {
   series_id: null,
   book_index: null,
   cover_url: null,
+  published_at: null,
 }
 
 function renderCard(item: LibraryItemView, onContinue?: (item: LibraryItemView) => void) {
@@ -126,6 +127,34 @@ describe('BookCard', () => {
     fireEvent.error(img)
     expect(screen.getByText('Z')).toBeInTheDocument()
     expect(screen.queryByRole('presentation', { hidden: true })).not.toBeInTheDocument()
+  })
+
+  describe('K9 shelf presentation: "New" badge', () => {
+    // BookCard uses isRecentlyPublished's default `now` (the real clock), so
+    // these fixtures are relative to Date.now() rather than a fixed date.
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+    const longAgo = '2020-01-01T00:00:00Z'
+
+    it('shows the badge for a book published within the last 7 days', () => {
+      renderCard({ ...BASE_ITEM, published_at: oneDayAgo })
+      expect(screen.getByText('New')).toBeInTheDocument()
+    })
+
+    it('does not show the badge for a book published long ago', () => {
+      renderCard({ ...BASE_ITEM, published_at: longAgo })
+      expect(screen.queryByText('New')).not.toBeInTheDocument()
+    })
+
+    it('does not show the badge when published_at is null', () => {
+      renderCard({ ...BASE_ITEM, published_at: null })
+      expect(screen.queryByText('New')).not.toBeInTheDocument()
+    })
+
+    it('shows the badge alongside "Not started" (orthogonal signals)', () => {
+      renderCard({ ...BASE_ITEM, published_at: oneDayAgo })
+      expect(screen.getByText('New')).toBeInTheDocument()
+      expect(screen.getByText('Not started')).toBeInTheDocument()
+    })
   })
 
   describe('K6 endings tracker', () => {

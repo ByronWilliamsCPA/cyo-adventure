@@ -6,7 +6,7 @@ import { EndingsBadge } from './EndingsBadge'
 import { RecommendationChip } from './RecommendationChip'
 import type { LibraryItemView } from './libraryApi'
 import { StarRating } from './StarRating'
-import { percentComplete } from './bookCardUtils'
+import { isRecentlyPublished, percentComplete } from './bookCardUtils'
 import { coverGradient } from './coverPalette'
 import type { RecommendationSummary } from './recommendationsUtils'
 
@@ -70,6 +70,9 @@ export function BookCard({
   // rendering a broken-image icon.
   const [coverError, setCoverError] = useState(false)
   const showImage = Boolean(item.cover_url) && !coverError
+  // K9 shelf presentation, "what's new" leg: independent of progress state,
+  // so it can appear alongside "Not started" or a fresh hero alike.
+  const isNew = isRecentlyPublished(item)
   const inner = (
     <>
       <div
@@ -91,6 +94,7 @@ export function BookCard({
         )}
       </div>
       <h3 className="book-card__title">{item.title}</h3>
+      {isNew ? <p className="book-card__new-badge">New</p> : null}
       {hero ? (
         <ProgressBar
           // A finished book fills the bar and reads "Finished!" instead of a

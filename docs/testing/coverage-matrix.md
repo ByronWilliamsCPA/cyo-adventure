@@ -469,7 +469,7 @@ detail when a storybook has more than one version).
 - E2E-real: `frontend/e2e-real/kid-reads.spec.ts`, `frontend/e2e-real/naive-kid-misuse-real.spec.ts` (cross-family 403)
 - E2E-staging: `frontend/e2e-staging/kid-library-smoke.spec.ts` (populated-library render, via mint/revoke device grant)
 - E2E-prod: `frontend/e2e-prod/kid-device-grant.spec.ts` (empty-state render)
-- Component: `frontend/src/library/LibraryPage.test.tsx`, `frontend/src/library/BookCard.test.tsx`, `frontend/src/library/pickHero.test.ts`, `frontend/src/library/libraryApi.test.ts`, `frontend/src/library/RequestStory.test.tsx`, `frontend/src/library/storyRequestApi.test.ts`
+- Component: `frontend/src/library/LibraryPage.test.tsx`, `frontend/src/library/BookCard.test.tsx`, `frontend/src/library/pickHero.test.ts`, `frontend/src/library/libraryApi.test.ts`, `frontend/src/library/RequestStory.test.tsx`, `frontend/src/library/storyRequestApi.test.ts`, `frontend/src/library/bookCardUtils.test.ts` (the "New" badge's pure predicate, `isRecentlyPublished`: inside and exactly at the `NEW_BADGE_WINDOW_MS` edge is new, one second past it is not, and every not-new fallback is pinned explicitly rather than left to chance, a null `published_at`, the field absent entirely on an offline-cached item that predates it, a malformed timestamp, and a future timestamp as clock-skew defense)
 - Integration: `frontend/src/test/App.test.tsx`
 
 ## Kid: read a story (reader page, choices, endings)
