@@ -97,7 +97,7 @@ SIBLING_SLOT_TYPE = "sibling_name"
 
 # #EDGE: data-integrity: every entry is empty (see the module docstring's
 # "On CLOSED_VOCABULARIES's empty vocabularies" note); this fails closed, so
-# every enum candidate for these four slots is rejected until product/ADR-023
+# every enum candidate for these five slots is rejected until product/ADR-023
 # supplies the real, shippable lists.
 # #VERIFY: docs/planning/story-personalization-implementation-plan.md is
 # where the concrete lists belong; do not hand-add values here without a
@@ -275,7 +275,7 @@ def validate_personalization_value(  # noqa: PLR0913
             # app.py and into the 422 body (_client_safe_error strips
             # `value` and `context`, not `message`). Every vocabulary here
             # ships empty by design, so EVERY value_enum submission for these
-            # four slots takes this branch; kinship_label is designed to hold
+            # five slots takes this branch; kinship_label is designed to hold
             # values like "Grandma Rosita". Application logs have no erasure
             # path, so echoing the value here writes a child's kinship term
             # for a real relative into log storage on the default path.

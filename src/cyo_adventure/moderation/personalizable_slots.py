@@ -152,15 +152,44 @@ async def personalizable_slot_ids_for_story(
     return personalizable_slot_ids_for_job(job)
 
 
-class _NoResolvableBandError(ValueError):
+class _ContractForJobError(Exception):
+    """Base for :func:`_contract_for_job` failures, carrying provenance.
+
+    A structured error rather than a bare ``str(exc)`` payload: every caller
+    logs a degrade-path warning, and the log line is only actionable when it
+    names WHICH skeleton could not be resolved and at WHICH band, so both
+    travel as attributes instead of being smuggled through the message.
+
+    Attributes:
+        slug: The job's ``skeleton_slug``.
+        band: The resolved band the failure occurred at, or ``None`` when no
+            band was resolvable at all (`_NoResolvableBandError`).
+    """
+
+    def __init__(self, slug: str, band: str | None, detail: str) -> None:
+        super().__init__(detail)
+        self.slug = slug
+        self.band = band
+
+
+class _NoResolvableBandError(_ContractForJobError):
     """Raised by :func:`_contract_for_job` when no skeleton band is available.
 
-    A ``ValueError`` subclass so a caller that only wants "no contract, no
-    matter why" (:func:`personalizable_slot_fields_for_story`) can fold this
-    case into its single broad ``except (CoreValidationError, OSError,
-    ValueError)`` clause, while :func:`personalizable_slot_ids_for_job`
-    catches it FIRST (before that same broad tuple) to preserve its own,
-    more specific ``moderation.repair_contract_band_missing`` log event.
+    ``band`` is always ``None`` on this subclass. Kept distinct from
+    `_ContractLoadError` so :func:`personalizable_slot_ids_for_job` preserves
+    its own, more specific ``moderation.repair_contract_band_missing`` log
+    event, while :func:`personalizable_slot_fields_for_story`, which only
+    wants "no contract, no matter why", folds both subclasses into a single
+    catch of the shared `_ContractForJobError` base.
+    """
+
+
+class _ContractLoadError(_ContractForJobError):
+    """Raised by :func:`_contract_for_job` when the skeleton/contract load fails.
+
+    Wraps the raw ``load_skeleton``/``load_contract_for`` exception (chained
+    as ``__cause__``) so the slug and resolved band survive to the caller's
+    log line instead of being lost in the loader's own message.
     """
 
 
@@ -188,12 +217,13 @@ def _contract_for_job(
         returns ``None`` (a legacy skeleton with no contract sidecar).
 
     Raises:
-        _NoResolvableBandError: No band is available from either ``band`` or the
-            job's ``authoring_metadata``.
-        FileNotFoundError | OSError | ValueError | CoreValidationError:
-            Propagated verbatim from ``load_skeleton``/``load_contract_for``
-            when the skeleton path a stale ``authoring_metadata`` points at
-            has moved, been corrupted, or fails contract validation.
+        _NoResolvableBandError: No band is available from either ``band`` or
+            the job's ``authoring_metadata`` (its ``band`` attribute is
+            ``None``).
+        _ContractLoadError: The skeleton path a stale ``authoring_metadata``
+            points at has moved, been corrupted, or fails contract
+            validation; carries the slug and resolved band, with the raw
+            loader exception chained as ``__cause__``.
     """
     authoring = (
         job.authoring_metadata if isinstance(job.authoring_metadata, dict) else {}
@@ -203,10 +233,27 @@ def _contract_for_job(
         return None
     resolved_band = band if band is not None else authoring.get(SKELETON_BAND_KEY)
     if not isinstance(resolved_band, str):
-        raise _NoResolvableBandError(slug)
-    skeleton_path = resolve_skeleton_path(resolved_band, slug)
-    skeleton = load_skeleton(skeleton_path)
-    return load_contract_for(skeleton_path, skeleton)
+        no_band_msg = f"no resolvable skeleton band for slug '{slug}'"
+        raise _NoResolvableBandError(slug, None, no_band_msg)
+    # #CRITICAL: external-resources: load_skeleton (generation/skeleton.py)
+    # does json.loads(path.read_text(...)), which raises a raw
+    # FileNotFoundError/OSError/JSONDecodeError (a ValueError subclass), NOT
+    # a CoreValidationError, when the skeleton file a stale
+    # GenerationJob.authoring_metadata points at has since moved or been
+    # corrupted. Wrapped here (mirroring generation/import_story.py::
+    # _load_resume_skeleton's handling of this same resolve_skeleton_path ->
+    # load_skeleton chain) so every caller fails closed with the slug and
+    # band on its log line instead of crashing its whole pass.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_repair_contract_file_missing_is_discarded_and_routes_to_human_review
+    # and tests/unit/test_personalizable_slots.py::
+    # test_slot_fields_for_story_degrades_to_empty_when_the_skeleton_is_missing.
+    try:
+        skeleton_path = resolve_skeleton_path(resolved_band, slug)
+        skeleton = load_skeleton(skeleton_path)
+        return load_contract_for(skeleton_path, skeleton)
+    except (FileNotFoundError, OSError, ValueError, CoreValidationError) as exc:
+        raise _ContractLoadError(slug, resolved_band, str(exc)) from exc
 
 
 def personalizable_slot_ids_for_job(
@@ -264,25 +311,20 @@ def personalizable_slot_ids_for_job(
             "moderation.repair_contract_band_missing",
             job_id=str(job.id),
             story_id=job.storybook_id,
-            slug=str(exc),
+            slug=exc.slug,
         )
         return None
-    # #CRITICAL: external-resources: load_skeleton (generation/skeleton.py)
-    # does json.loads(path.read_text(...)), which raises a raw
-    # FileNotFoundError/OSError/JSONDecodeError (a ValueError subclass), NOT
-    # a CoreValidationError, when the skeleton file a stale
-    # GenerationJob.authoring_metadata points at has since moved or been
-    # corrupted. Broadened here to mirror
-    # generation/import_story.py::_load_resume_skeleton's handling of this
-    # same resolve_skeleton_path -> load_skeleton chain, so a missing/corrupt
-    # sidecar fails this function closed (None) instead of crashing the
-    # entire moderation pass.
-    # #VERIFY: test_repair_contract_file_missing_is_discarded_and_routes_to_human_review.
-    except (FileNotFoundError, OSError, ValueError, CoreValidationError) as exc:
+    except _ContractLoadError as exc:
+        # The load failure itself is caught and wrapped inside
+        # `_contract_for_job` (see its #CRITICAL note); this arm only turns
+        # the structured error into the fail-closed None plus a log line
+        # that names the slug and band, not just the loader's message.
         _logger.warning(
             "moderation.repair_contract_load_failed",
             job_id=str(job.id),
             story_id=job.storybook_id,
+            slug=exc.slug,
+            band=exc.band,
             error=str(exc)[:500],
         )
         return None
@@ -306,17 +348,6 @@ async def personalizable_slot_fields_for_story(
     ``GenerationJob`` row, then that job's matched skeleton, then that
     skeleton's contract (:func:`_contract_for_job`, shared with
     :func:`personalizable_slot_ids_for_job`).
-
-    #EDGE: external-resources: this reads two JSON files from disk
-    (``resolve_skeleton_path`` then ``load_contract_for``) inside a request
-    path, synchronously, on the reader's book-open call. That matches the
-    existing precedent in :func:`personalizable_slot_ids_for_job`, which the
-    moderation pipeline calls the same way from async code, and the cost is one
-    call per book open rather than per node render. If profiling ever shows it
-    matters, the fix is to persist this map on ``storybook_version`` beside
-    ``sentinel_manifest`` at re-insertion time, not to cache it here.
-    #VERIFY: no behavioural test asserts the timing; this note exists so the
-    next reader knows the trade was made deliberately and knows its exit.
 
     Args:
         session: The request session.
@@ -342,12 +373,31 @@ async def personalizable_slot_fields_for_story(
     ).scalar_one_or_none()
     if job is None:
         return {}
+    # #EDGE: performance: `_contract_for_job` reads two JSON files from disk
+    # (``resolve_skeleton_path`` then ``load_contract_for``) synchronously,
+    # inside a request path, on the reader's book-open call. The cost is
+    # bounded: one call per book OPEN (never per node render), and the values
+    # route calls this only on its fully-authorized happy path, after every
+    # reachability/subject/values predicate has passed (api/personalization.py,
+    # `_resolve_ring1_view`/`_resolve_ring2_view`). It also matches the
+    # existing precedent in `personalizable_slot_ids_for_job`, which the
+    # moderation pipeline calls the same way from async code.
+    # #VERIFY: no behavioural test asserts the timing; if profiling ever shows
+    # it matters, the exit is persisting this map on ``storybook_version``
+    # beside ``sentinel_manifest`` at re-insertion time, not caching it here.
+    # #ASSUME: external-resources: every `_contract_for_job` failure, band or
+    # load, degrades to {} here (fail-safe, not fail-closed; see Returns), and
+    # the warning below carries the slug and band so the degrade is traceable.
+    # #VERIFY: tests/unit/test_personalizable_slots.py::
+    # test_slot_fields_for_story_degrades_to_empty_when_the_skeleton_is_missing.
     try:
         contract = _contract_for_job(job)
-    except (_NoResolvableBandError, CoreValidationError, OSError, ValueError) as exc:
+    except _ContractForJobError as exc:
         _logger.warning(
             "personalization.slot_fields_contract_unresolved",
             storybook_id=story_id,
+            slug=exc.slug,
+            band=exc.band,
             error=str(exc)[:500],
         )
         return {}

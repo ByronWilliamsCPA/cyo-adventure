@@ -181,3 +181,53 @@ async def test_slot_fields_for_story_is_empty_without_a_job(
     result = await personalizable_slot_fields_for_story(mock_async_session, story_id)
 
     assert result == {}
+
+
+async def test_slot_fields_for_story_degrades_to_empty_when_the_skeleton_is_missing(
+    mock_async_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A slug pointing at a vanished skeleton yields {} with a traceable warning.
+
+    The documented contract (this function's Returns section) is that an
+    unrecoverable contract is a DEGRADE case, not a fail-closed one: the map
+    only feeds sentinel-value lookups, so empty is already the fail-safe
+    outcome. What must not degrade silently is the log line: it has to carry
+    the slug and band (structured attributes on `_ContractForJobError`, not a
+    substring of the loader's message) or the operator cannot tell WHICH
+    skeleton went missing. `load_skeleton` is left real here so the raw
+    ``FileNotFoundError`` genuinely fires and is wrapped by
+    `_contract_for_job` (mirrors test_moderation_pipeline.py::
+    test_repair_contract_file_missing_is_discarded_and_routes_to_human_review).
+    """
+    missing_path = tmp_path / f"{_PERSONALIZABLE_SLUG}.json"
+    monkeypatch.setattr(
+        pslots_mod, "resolve_skeleton_path", lambda _band, _slug: missing_path
+    )
+    story_id = "s_missing_skeleton"
+    job = GenerationJob(
+        concept_id=uuid.uuid4(),
+        storybook_id=story_id,
+        authoring_metadata={
+            "skeleton_slug": _PERSONALIZABLE_SLUG,
+            "skeleton_band": "8-11",
+        },
+    )
+    _wire_job_lookup(mock_async_session, job)
+
+    with caplog.at_level("WARNING"):
+        result = await personalizable_slot_fields_for_story(
+            mock_async_session, story_id
+        )
+
+    assert result == {}
+    # structlog renders through stdlib logging here (same capture route as
+    # test_cover_optimize.py), so the structured kv pairs land in the rendered
+    # record text; ANSI color codes sit between key and value, so each token
+    # is asserted on its own rather than as a "key=value" substring.
+    assert "personalization.slot_fields_contract_unresolved" in caplog.text
+    assert _PERSONALIZABLE_SLUG in caplog.text
+    assert "8-11" in caplog.text
+    assert story_id in caplog.text

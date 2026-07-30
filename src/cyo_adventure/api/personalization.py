@@ -151,19 +151,18 @@ _PROTAGONIST_NAME_SLOT = "protagonist_first_name"
 _RING1_POLICY_VERSION = "ring1-no-consent-required"
 
 
-def _empty_values_view(
-    slot_bindings: dict[str, str] | None = None,
-) -> PersonalizationValuesView:
+def _empty_values_view() -> PersonalizationValuesView:
     """Build the universal empty payload (plan section 8.4).
 
-    Every predicate failure renders this exact shape, so nothing about whether
-    a subject, a connection, or a consent exists is observable in the response.
-
-    Args:
-        slot_bindings: The book's slot-id to slot-type map when the book was
-            resolvable, else None. Defaulting to None (rendered as an empty map)
-            keeps the pre-book failure modes, a missing or unreachable book,
-            from having to invent one.
+    Every predicate failure renders this exact shape, INCLUDING an empty
+    ``slot_bindings`` map, so nothing about whether a book, a subject, a
+    connection, or a consent exists is observable in the response. Bindings
+    are a property of the book's contract; populating them on any empty
+    payload would let a caller distinguish "this book is not addressable by
+    you" (bindings empty) from "addressable, but no values for you" (bindings
+    populated), which is exactly the oracle the route forbids. The client
+    only needs bindings when values are present: with an empty ``values``
+    map, every slot resolves to its generic word regardless of bindings.
 
     Returns:
         PersonalizationValuesView: The empty payload.
@@ -175,7 +174,7 @@ def _empty_values_view(
         resolved_at=datetime.now(UTC),
         values={},
         sentinel_pattern=SENTINEL_RE.pattern,
-        slot_bindings=slot_bindings or {},
+        slot_bindings={},
     )
 
 
@@ -1100,7 +1099,7 @@ async def _ring2_values(
 async def _resolve_ring1_view(
     session: AsyncSession,
     subject: ChildProfile,
-    slot_bindings: dict[str, str],
+    storybook_id: str,
 ) -> PersonalizationValuesView:
     """Resolve the ring-1 (own-family) values view for a live subject.
 
@@ -1111,18 +1110,29 @@ async def _resolve_ring1_view(
         session: The request session.
         subject: The book's personalization subject (already known to be in
             the caller's own family).
-        slot_bindings: The book's slot-id to slot-type map, resolved once by
-            the caller.
+        storybook_id: The book, used to resolve its slot bindings, and only
+            after values are known to exist (see the route's #CRITICAL note:
+            an empty payload always carries empty bindings).
 
     Returns:
         PersonalizationValuesView: The ring-1 payload, or the universal
         empty payload if the subject is not live or has no eligible values.
     """
     if not _is_live(subject):
-        return _empty_values_view(slot_bindings)
+        return _empty_values_view()
     values = await _ring1_values(session, subject)
     if not values:
-        return _empty_values_view(slot_bindings)
+        return _empty_values_view()
+    # #EDGE: performance: this is a synchronous two-JSON-file disk read
+    # (personalizable_slots.py::_contract_for_job) inside a request path. It
+    # is bounded to one read per book open, and, since the uniformity fix,
+    # runs ONLY on this fully-authorized happy path, after every reachability,
+    # subject, and values predicate has already passed; no unauthorized or
+    # empty-payload caller can make the server touch the contract on disk.
+    # #VERIFY: the exit, if profiling ever shows this matters, is persisting
+    # the map on storybook_version beside sentinel_manifest at re-insertion
+    # time (see personalizable_slot_fields_for_story's own performance note).
+    slot_bindings = await personalizable_slot_fields_for_story(session, storybook_id)
     return PersonalizationValuesView(
         subject_profile_id=str(subject.id),
         ring=1,
@@ -1171,7 +1181,7 @@ async def _resolve_ring2_view(
     session: AsyncSession,
     subject: ChildProfile,
     caller_family_id: uuid.UUID,
-    slot_bindings: dict[str, str],
+    storybook_id: str,
 ) -> PersonalizationValuesView:
     """Resolve the ring-2 (cross-family) values view for a subject.
 
@@ -1186,8 +1196,9 @@ async def _resolve_ring2_view(
         subject: The book's personalization subject (already known to be in
             a different family than the caller).
         caller_family_id: The caller's own family id (the viewer side).
-        slot_bindings: The book's slot-id to slot-type map, resolved once by
-            the caller.
+        storybook_id: The book, used to resolve its slot bindings, and only
+            after values are known to exist (see the route's #CRITICAL note:
+            an empty payload always carries empty bindings).
 
     Returns:
         PersonalizationValuesView: The ring-2 payload, or the universal
@@ -1201,13 +1212,13 @@ async def _resolve_ring2_view(
         )
     )
     if connection is None:
-        return _empty_values_view(slot_bindings)
+        return _empty_values_view()
     # Condition 0: the viewer-side receive toggle, evaluated before any
     # sharer-side lookup.
     if not await _viewer_receives(session, caller_family_id):
-        return _empty_values_view(slot_bindings)
+        return _empty_values_view()
     if not _is_dual_consented(connection):
-        return _empty_values_view(slot_bindings)
+        return _empty_values_view()
     # #ASSUME: security: the four guards above and this one all return the
     # same empty payload but take observably different amounts of work, so a
     # caller timing the route can tell them apart. That is deliberate, and it
@@ -1233,10 +1244,13 @@ async def _resolve_ring2_view(
     # pins it by making `_ring2_values` raise; a refactor that hoists the
     # value read above this guard fails there rather than silently shipping.
     if not _is_live(subject):
-        return _empty_values_view(slot_bindings)
+        return _empty_values_view()
     values, policy_version = await _ring2_values(session, subject, connection)
     if not values:
-        return _empty_values_view(slot_bindings)
+        return _empty_values_view()
+    # #EDGE: performance: same bounded happy-path-only disk read as the ring-1
+    # resolver; see the comment in `_resolve_ring1_view`.
+    slot_bindings = await personalizable_slot_fields_for_story(session, storybook_id)
     return PersonalizationValuesView(
         subject_profile_id=str(subject.id),
         ring=2,
@@ -1290,16 +1304,27 @@ async def get_personalization_values(
     a kid's tablet at all. What that costs is made up for by the two checks
     below, which the configuration routes get from ``_require_guardian``.
 
-    #CRITICAL: security: a missing book returns the SAME empty payload as
-    every other predicate failure, never a 404. Raising 404 here made the
-    route an existence oracle over the whole storybook table: any
-    authenticated caller could enumerate ids and learn which exist globally,
-    before any family check had run. Uniform disclosure is the only way this
-    route can honor its own "never reveal anything about another family"
-    contract, since it has no 403 branch to hide behind either.
+    #CRITICAL: security: EVERY empty-payload branch returns the identical
+    shape, never a 404, and always with ``slot_bindings={}``. Raising 404
+    here made the route an existence oracle over the whole storybook table:
+    any authenticated caller could enumerate ids and learn which exist
+    globally, before any family check had run. The bindings half is the same
+    oracle in a subtler coat: bindings are a property of the book's contract,
+    so an empty payload that carried populated bindings for a book with
+    personalizable slots would distinguish "not addressable by you" (empty)
+    from "addressable but no values for you" (populated). Bindings are
+    therefore computed ONLY on the happy path that returns actual values
+    (`_resolve_ring1_view`/`_resolve_ring2_view`); every predicate failure
+    renders `_empty_values_view()`, which hard-codes the empty map. Uniform
+    disclosure is the only way this route can honor its own "never reveal
+    anything about another family" contract, since it has no 403 branch to
+    hide behind either. A side benefit: the contract's synchronous disk read
+    no longer runs for unauthorized or empty-outcome callers at all.
     #VERIFY: tests/integration/test_personalization_api.py::
-    test_values_missing_storybook_returns_the_empty_payload and
-    ::test_values_cross_family_private_book_returns_the_empty_payload.
+    test_values_missing_storybook_returns_the_empty_payload,
+    ::test_values_cross_family_private_book_returns_the_empty_payload, and
+    ::test_empty_values_payload_carries_no_slot_bindings; the empty view's
+    fixed shape is pinned by tests/unit/test_personalization_empty_view.py.
 
     Args:
         storybook_id: The book (path).
@@ -1319,14 +1344,8 @@ async def get_personalization_values(
     # than by the visibility rule every other read path enforces.
     if not _book_is_reachable(book, ctx.principal.family_id):
         return _empty_values_view()
-    # Resolved once per call, after reachability and before any subject
-    # lookup: a caller who may not address this book must not be able to
-    # make the server read its skeleton and contract off disk.
-    slot_bindings = await personalizable_slot_fields_for_story(
-        ctx.session, storybook_id
-    )
     if book.personalization_subject_profile_id is None:
-        return _empty_values_view(slot_bindings)
+        return _empty_values_view()
     subject = await ctx.session.get(
         ChildProfile, book.personalization_subject_profile_id
     )
@@ -1347,11 +1366,11 @@ async def get_personalization_values(
             storybook_id=storybook_id,
             subject_profile_id=str(book.personalization_subject_profile_id),
         )
-        return _empty_values_view(slot_bindings)
+        return _empty_values_view()
 
     caller_family_id = ctx.principal.family_id
     if subject.family_id == caller_family_id:
-        return await _resolve_ring1_view(ctx.session, subject, slot_bindings)
+        return await _resolve_ring1_view(ctx.session, subject, storybook_id)
     return await _resolve_ring2_view(
-        ctx.session, subject, caller_family_id, slot_bindings
+        ctx.session, subject, caller_family_id, storybook_id
     )
