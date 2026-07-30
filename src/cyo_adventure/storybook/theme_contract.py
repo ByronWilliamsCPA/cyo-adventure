@@ -64,6 +64,13 @@ SLOT_ID_PATTERN = r"^[A-Z][A-Z0-9_]*$"
 # personalization P1, plan section 2.1): the only fields a `personalizable`
 # slot may declare. A slot whose field is not a member of this set is
 # rejected by `ThemeContract._check_personalizable_slots` below.
+#
+# `favorite` (a single flat slot) was split into `favorite_color`,
+# `favorite_food`, and `favorite_hobby` by ADR-023 Task D6, per the owner's
+# 2026-07-29 Option B decision recorded in
+# `docs/planning/personalization-closed-vocabularies-proposal.md`: the schema
+# is flat, so a single `favorite` vocabulary could not encode which
+# sub-category (color/food/hobby) a candidate value belonged to.
 PERSONALIZATION_FIELDS: frozenset[str] = frozenset(
     {
         "protagonist_first_name",
@@ -72,7 +79,9 @@ PERSONALIZATION_FIELDS: frozenset[str] = frozenset(
         "pet_species",
         "pet_name",
         "kinship_label",
-        "favorite",
+        "favorite_color",
+        "favorite_food",
+        "favorite_hobby",
         "home_type",
         "dedication",
     }
