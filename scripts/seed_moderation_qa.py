@@ -19,9 +19,13 @@ useful for re-seeding or inspecting the raw draft rows)::
     ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
         uv run python scripts/seed_moderation_qa.py --skip-moderation
 
-Idempotent by design: a book id already present in the database is left
-untouched (never re-inserted, never re-moderated) on a re-run, so repeated
-runs are safe and only new manifest entries get processed.
+Idempotent by design: a book id already present in the database is never
+re-inserted. Moderation is driven off persisted state rather than off "what
+this run inserted", so it is genuinely retryable: every manifest book whose
+version-1 row still has a NULL ``moderation_report`` is moderated, whether it
+was inserted moments ago, seeded earlier with ``--skip-moderation``, or left
+unmoderated because a previous run's provider call failed. A book that
+already carries a report is left alone.
 
 Containment (moderation-review-redesign-2026-07-28.md section 5, point 3):
 
@@ -49,10 +53,12 @@ import uuid
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from cyo_adventure.core.config import settings as _default_settings
 from cyo_adventure.core.database import Base, get_engine
+from cyo_adventure.core.exceptions import ConfigurationError
 from cyo_adventure.db.models import Family, Storybook, StorybookVersion
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import build_provider
@@ -105,13 +111,45 @@ def _require_staging_or_exit() -> str:
     return environment
 
 
+def _read_json_or_fail(path: Path, what: str) -> Any:
+    """Read and parse a JSON file, naming the offending path on any failure.
+
+    Args:
+        path: The file to read.
+        what: Short description of the file, used in the error message.
+
+    Returns:
+        The parsed JSON document.
+
+    Raises:
+        ConfigurationError: If the file is missing/unreadable or is not valid
+            JSON. The message names ``path`` so an operator can fix it without
+            reading a traceback.
+    """
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except OSError as exc:
+        msg = f"{what} is unreadable: {path}"
+        raise ConfigurationError(msg, details={"path": str(path)}) from exc
+    except json.JSONDecodeError as exc:
+        msg = f"{what} is not valid JSON: {path}"
+        raise ConfigurationError(msg, details={"path": str(path)}) from exc
+
+
 def load_manifest() -> list[dict[str, Any]]:
     """Load the moderation QA corpus manifest's book entries.
 
     Returns:
         The manifest's ``books`` array (id, file path, expected labels).
+
+    Raises:
+        ConfigurationError: If the manifest is missing, is not valid JSON, or
+            has no ``books`` array.
     """
-    manifest = json.loads(_MANIFEST_PATH.read_text(encoding="utf-8"))
+    manifest = _read_json_or_fail(_MANIFEST_PATH, "moderation QA corpus manifest")
+    if not isinstance(manifest, dict) or "books" not in manifest:
+        msg = f"moderation QA corpus manifest has no 'books' array: {_MANIFEST_PATH}"
+        raise ConfigurationError(msg, details={"path": str(_MANIFEST_PATH)})
     books: list[dict[str, Any]] = manifest["books"]
     return books
 
@@ -124,10 +162,17 @@ def _load_blob(entry: dict[str, Any]) -> dict[str, Any]:
 
     Returns:
         The parsed storybook blob.
+
+    Raises:
+        ConfigurationError: If the entry has no ``file`` key, or the file is
+            missing or is not valid JSON.
     """
-    blob: dict[str, Any] = json.loads(
-        (_REPO_ROOT / entry["file"]).read_text(encoding="utf-8")
-    )
+    if "file" not in entry:
+        book_id = entry.get("id", "<no id>")
+        msg = f"moderation QA manifest entry {book_id!r} has no 'file' key"
+        raise ConfigurationError(msg, details={"manifest": str(_MANIFEST_PATH)})
+    path = _REPO_ROOT / str(entry["file"])
+    blob: dict[str, Any] = _read_json_or_fail(path, "moderation QA fixture storybook")
     return blob
 
 
@@ -139,7 +184,9 @@ async def _ensure_qa_family(session: AsyncSession) -> Family:
     code path in this script, so no ``StorybookAssignment`` can ever be
     inserted for a real (or fixture) child against it -- the read gate's
     assignment half is unsatisfiable by construction, not just by omission.
-    #VERIFY: test_ensure_qa_family_never_creates_a_child_profile.
+    #VERIFY: test_ensure_qa_family_never_creates_a_child_profile and
+    test_seed_never_creates_a_child_profile_anywhere in
+    tests/unit/test_seed_moderation_qa.py.
 
     Args:
         session: The active seed session.
@@ -210,7 +257,55 @@ async def _seed_fixture_rows(
     return inserted
 
 
-async def _moderate_new_books(session: AsyncSession, book_ids: list[str]) -> None:
+async def _books_awaiting_moderation(
+    session: AsyncSession, book_ids: list[str]
+) -> list[str]:
+    """Return the manifest books whose version-1 row has no report yet.
+
+    This is what makes the seed genuinely retryable rather than a one-way
+    door. Moderation is driven off persisted state (``moderation_report IS
+    NULL``), not off "what this run inserted", so a book seeded earlier with
+    ``--skip-moderation``, or one whose moderation raised and was rolled back
+    by :func:`_moderate_new_books`, is picked up by the next run instead of
+    being skipped forever by the already-present check in
+    :func:`_seed_fixture_rows`.
+
+    #ASSUME: data-integrity: a NULL ``moderation_report`` is the authoritative
+    "not yet moderated" signal, because ``run_moderation_pipeline`` writes the
+    report and drives submit/auto_reject inside the caller's transaction, and
+    :func:`_moderate_new_books` rolls that whole unit back on failure.
+    #VERIFY: test_books_awaiting_moderation_selects_only_unreported and
+    test_seed_retries_a_previously_unmoderated_book in
+    tests/unit/test_seed_moderation_qa.py.
+
+    Args:
+        session: The active seed session.
+        book_ids: The manifest's book ids, in manifest order.
+
+    Returns:
+        The subset of ``book_ids`` still awaiting moderation, in manifest
+        order.
+    """
+    if not book_ids:
+        return []
+    rows = (
+        (
+            await session.execute(
+                select(StorybookVersion.storybook_id).where(
+                    StorybookVersion.storybook_id.in_(book_ids),
+                    StorybookVersion.version == _FIRST_VERSION,
+                    StorybookVersion.moderation_report.is_(None),
+                )
+            )
+        )
+        .scalars()
+        .all()
+    )
+    pending = set(rows)
+    return [book_id for book_id in book_ids if book_id in pending]
+
+
+async def _moderate_new_books(session: AsyncSession, book_ids: list[str]) -> list[str]:
     """Run the real moderation pipeline over freshly seeded books.
 
     #CRITICAL: security: containment layer 4 of 4. This calls
@@ -226,31 +321,54 @@ async def _moderate_new_books(session: AsyncSession, book_ids: list[str]) -> Non
 
     Args:
         session: The active seed session.
-        book_ids: Ids of the books to moderate (normally the freshly inserted
-            set from :func:`_seed_fixture_rows`).
+        book_ids: Ids of the books to moderate (the set still awaiting
+            moderation, per :func:`_books_awaiting_moderation`).
+
+    Returns:
+        The ids whose moderation run raised and was rolled back, in the order
+        they were attempted. Empty when every book succeeded.
     """
     provider = build_provider(_default_settings)
     pii = PiiContext(child_names=frozenset())
+    failures: list[str] = []
     for book_id in book_ids:
         try:
-            await run_moderation_pipeline(
-                session=session,
-                story_id=book_id,
-                version=_FIRST_VERSION,
-                settings=_default_settings,
-                generation_provider=provider,
-                pii=pii,
-            )
+            # #CRITICAL: data-integrity: each book gets its own SAVEPOINT.
+            # run_moderation_pipeline owns no transaction (it documents
+            # "caller owns the transaction") and mutates session state before
+            # it can raise: it overwrites version_row.blob on an adopted
+            # repair and writes a repair_applied event, both BEFORE
+            # moderation_report is persisted. Without this savepoint, a stage
+            # that raises after an adopted repair would leave the seeded blob
+            # silently different from the repo fixture that defines the
+            # ground truth, with moderation_report still NULL, because seed()
+            # commits unconditionally at the end. Rolling back to the
+            # savepoint discards the partial run so the row still matches the
+            # fixture and stays retryable.
+            # #VERIFY: test_moderate_new_books_rolls_back_the_failed_book in
+            # tests/unit/test_seed_moderation_qa.py.
+            async with session.begin_nested():
+                await run_moderation_pipeline(
+                    session=session,
+                    story_id=book_id,
+                    version=_FIRST_VERSION,
+                    settings=_default_settings,
+                    generation_provider=provider,
+                    pii=pii,
+                )
         except Exception:
             # #ASSUME: external-resources: a single book's moderation run can
             # fail on a transient provider error without aborting the whole
-            # batch; the book stays "draft" and is retried on the next run
-            # (it is not yet in the database from this session's point of
-            # view... it IS persisted already by _seed_fixture_rows's flush,
-            # so a retry only needs --skip-moderation seeding to be re-run
-            # with moderation enabled).
-            # #VERIFY: test_moderate_new_books_continues_after_one_failure.
+            # batch. Its savepoint has been rolled back, so the row is
+            # unchanged and still carries a NULL moderation_report; the next
+            # run picks it up via _books_awaiting_moderation. The id is
+            # returned so the caller can report it and exit nonzero.
+            # #VERIFY: tests/unit/test_seed_moderation_qa.py has both
+            # test_moderate_new_books_continues_after_one_failure and
+            # test_moderate_new_books_returns_the_failed_ids.
             _logger.exception("seed_moderation_qa.moderate_failed", story_id=book_id)
+            failures.append(book_id)
+    return failures
 
 
 async def seed(
@@ -258,13 +376,15 @@ async def seed(
     engine: AsyncEngine | None = None,
     session_factory: Callable[[], AsyncSession] | None = None,
     moderate: bool = True,
-) -> None:
+) -> list[str]:
     """Idempotently seed the staging Moderation QA corpus.
 
     Refuses to run unless ``ENVIRONMENT=staging``. Resolves the dedicated
     Moderation QA family, inserts any manifest book not already present as a
     draft ``Storybook``/``StorybookVersion`` pair, and (unless ``moderate`` is
-    False) runs the real moderation pipeline over each newly inserted book.
+    False) runs the real moderation pipeline over every manifest book that
+    still has a NULL ``moderation_report``, which is what makes a failed or
+    ``--skip-moderation`` run retryable.
 
     Args:
         engine: Async engine to create the schema on. Defaults to the app's
@@ -273,9 +393,13 @@ async def seed(
             to a sessionmaker bound to ``engine``; tests inject a mocked
             session factory here so no real database connection is required.
         moderate: When True (default), run the real moderation pipeline over
-            every newly inserted book before committing. When False, only the
-            draft rows are inserted (no LLM calls), for cheap re-seeding or
-            inspection.
+            every book still awaiting moderation before committing. When
+            False, only the draft rows are inserted (no LLM calls), for cheap
+            re-seeding or inspection.
+
+    Returns:
+        The ids whose moderation run failed (and was rolled back). Empty when
+        nothing failed.
     """
     _require_staging_or_exit()
 
@@ -290,18 +414,29 @@ async def seed(
     )
 
     books = load_manifest()
+    book_ids = [str(entry["id"]) for entry in books]
+    failures: list[str] = []
+    pending: list[str] = []
     async with new_session() as session:
         family = await _ensure_qa_family(session)
         inserted = await _seed_fixture_rows(session, family, books)
-        if inserted and moderate:
-            await _moderate_new_books(session, inserted)
+        if moderate:
+            pending = await _books_awaiting_moderation(session, book_ids)
+            failures = await _moderate_new_books(session, pending)
         await session.commit()
 
     print(
         f"Moderation QA corpus: {len(inserted)} book(s) newly seeded "
         f"({len(books)} in the manifest), family {family.id}, "
-        f"moderation {'ran' if moderate else 'skipped'}."
+        f"moderation {'ran' if moderate else 'skipped'}"
+        f" over {len(pending)} book(s), {len(failures)} failed."
     )
+    if failures:
+        print(
+            "Moderation failed (rolled back, retry by re-running): "
+            + ", ".join(failures)
+        )
+    return failures
 
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -323,9 +458,24 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def main() -> None:
-    """Entry point for the moderation QA corpus seed script."""
+    """Entry point for the moderation QA corpus seed script.
+
+    Exits nonzero when any book's moderation run failed, so an operator does
+    not read "N book(s) newly seeded" as success after six consecutive
+    provider failures. A corpus that cannot be loaded at all exits with the
+    ``ConfigurationError`` message (which names the offending path) rather
+    than a raw traceback.
+    """
     args = _parse_args()
-    asyncio.run(seed(moderate=not args.skip_moderation))
+    try:
+        failures = asyncio.run(seed(moderate=not args.skip_moderation))
+    except ConfigurationError as exc:
+        sys.exit(f"seed_moderation_qa: {exc}")
+    if failures:
+        sys.exit(
+            f"seed_moderation_qa: {len(failures)} book(s) failed moderation; "
+            "their rows were rolled back and remain unmoderated."
+        )
 
 
 if __name__ == "__main__":

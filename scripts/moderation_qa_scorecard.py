@@ -10,9 +10,17 @@ regression in the classifiers/reviewer/repair pipeline is a red CI/manual
 check rather than a silent drift.
 
 The comparison logic (:func:`compare_book`, :func:`story_verdict_from_report`,
-:func:`node_verdict_from_report`, :func:`meets_floor`) is pure and takes
-in-memory report dicts, so it is unit-testable without a database; only
-:func:`_load_reports` and :func:`main` touch the database.
+:func:`node_verdict_from_report`, :func:`meets_floor`,
+:func:`unknown_verdicts`) is pure and takes in-memory report dicts, so it is
+unit-testable without a database; only :func:`_load_reports` and
+:func:`main` touch the database.
+
+Negative controls are scored as a CEILING ("no finding at or above flag"),
+matching the manifest's own node_label_convention, not as an exactly-clean
+report: ADVISORY findings never gate, and every deployed tier emits at least
+one of them (the degraded-classifier advisory when a classifier key is unset,
+plus subjective stage nits), so an exact-equality rule would fail every
+negative control for reasons that have nothing to do with safety.
 
 Run against staging (read-only; requires the corpus to have already been
 seeded and moderated)::
@@ -34,6 +42,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from cyo_adventure.core.database import get_engine
+from cyo_adventure.core.exceptions import ConfigurationError
 from cyo_adventure.db.models import StorybookVersion
 
 if TYPE_CHECKING:
@@ -51,8 +60,21 @@ _MODERATED_VERSION = 1
 # caught at fixture-integrity time, not silently here.
 _VERDICT_RANK: dict[str, int] = {"pass": 0, "advisory": 1, "flag": 2, "block": 3}
 
-# S105 (hardcoded-password heuristic) is a false positive here: these are
-# scorecard row labels, not credentials.
+# Rank returned for a verdict string this scorecard does not recognize (a
+# future Verdict member, or a hand-edited report). Deliberately below "pass"
+# so every meets_floor comparison against it is False, i.e. an unrecognized
+# verdict can never satisfy a floor.
+_UNKNOWN_VERDICT_RANK = -1
+
+# The gating threshold a negative control must stay BELOW. Mirrors the
+# manifest's node_label_convention ("no finding at or above flag"): ADVISORY
+# findings never gate (moderation/report.py::Verdict), and the deployed tiers
+# emit at least one of them on every book (classifiers.py's degraded advisory
+# when a classifier key is unset, stages.py's subjective nits), so requiring
+# an exactly-clean report would fail every negative control for reasons that
+# have nothing to do with safety.
+_GATING_VERDICT = "flag"
+
 _STATUS_MISSING = "MISSING"
 _STATUS_OK = "PASS"
 _STATUS_FAIL = "FAIL"
@@ -63,8 +85,22 @@ def load_manifest() -> list[dict[str, Any]]:
 
     Returns:
         The manifest's ``books`` array (id, expected labels).
+
+    Raises:
+        ConfigurationError: If the manifest is missing, is not valid JSON, or
+            has no ``books`` array.
     """
-    manifest = json.loads(_MANIFEST_PATH.read_text(encoding="utf-8"))
+    try:
+        manifest = json.loads(_MANIFEST_PATH.read_text(encoding="utf-8"))
+    except OSError as exc:
+        msg = f"moderation QA corpus manifest is unreadable: {_MANIFEST_PATH}"
+        raise ConfigurationError(msg, details={"path": str(_MANIFEST_PATH)}) from exc
+    except json.JSONDecodeError as exc:
+        msg = f"moderation QA corpus manifest is not valid JSON: {_MANIFEST_PATH}"
+        raise ConfigurationError(msg, details={"path": str(_MANIFEST_PATH)}) from exc
+    if not isinstance(manifest, dict) or "books" not in manifest:
+        msg = f"moderation QA corpus manifest has no 'books' array: {_MANIFEST_PATH}"
+        raise ConfigurationError(msg, details={"path": str(_MANIFEST_PATH)})
     books: list[dict[str, Any]] = manifest["books"]
     return books
 
@@ -72,16 +108,42 @@ def load_manifest() -> list[dict[str, Any]]:
 def verdict_rank(verdict: str) -> int:
     """Map a verdict string to its severity rank (pass=0 .. block=3).
 
+    #EDGE: data-integrity: an unrecognized verdict (a future
+    ``moderation/report.py::Verdict`` member, or a hand-edited report) must
+    not crash the scorecard with a traceback; it degrades to
+    :data:`_UNKNOWN_VERDICT_RANK`, which satisfies no floor, and
+    :func:`unknown_verdicts` names it on its own FAIL row.
+    #VERIFY: test_verdict_rank_degrades_on_unknown_verdict and
+    test_compare_book_emits_a_fail_row_naming_an_unknown_verdict in
+    tests/unit/test_moderation_qa_scorecard.py.
+
     Args:
         verdict: One of "pass", "advisory", "flag", "block".
 
     Returns:
-        The verdict's severity rank.
-
-    Raises:
-        KeyError: If ``verdict`` is not a recognized verdict string.
+        The verdict's severity rank, or :data:`_UNKNOWN_VERDICT_RANK` for an
+        unrecognized verdict string.
     """
-    return _VERDICT_RANK[verdict]
+    return _VERDICT_RANK.get(verdict, _UNKNOWN_VERDICT_RANK)
+
+
+def unknown_verdicts(report: dict[str, Any]) -> list[str]:
+    """Return every unrecognized verdict string present in a report.
+
+    Args:
+        report: A persisted ``moderation_report`` dict.
+
+    Returns:
+        The sorted, de-duplicated verdict strings this scorecard cannot rank.
+    """
+    findings: list[dict[str, Any]] = report.get("findings", [])
+    return sorted(
+        {
+            str(finding.get("verdict", "pass"))
+            for finding in findings
+            if str(finding.get("verdict", "pass")) not in _VERDICT_RANK
+        }
+    )
 
 
 def meets_floor(actual: str, floor: str) -> bool:
@@ -168,7 +230,7 @@ def compare_book(
 
     Returns:
         One :class:`ScorecardRow` for the story level, plus one per manifest
-        node label.
+        node label, plus one "verdict" row per unrecognized verdict string.
     """
     book_id = str(entry["id"])
     if report is None:
@@ -183,12 +245,28 @@ def compare_book(
             )
         ]
 
-    rows: list[ScorecardRow] = []
+    rows: list[ScorecardRow] = [
+        ScorecardRow(
+            book_id=book_id,
+            level="verdict",
+            expected="/".join(_VERDICT_RANK),
+            actual=unknown,
+            negative_control=False,
+            status=_STATUS_FAIL,
+        )
+        for unknown in unknown_verdicts(report)
+    ]
+
     expected_story = str(entry["expected_min_verdict"])
     negative_control = bool(entry.get("negative_control", False))
     actual_story = story_verdict_from_report(report)
+    # A negative control is a CEILING, not a floor: the manifest's
+    # node_label_convention defines it as "no finding at or above flag", so a
+    # non-gating ADVISORY (a degraded classifier, a subjective nit) is not a
+    # failure. Requiring an exactly-clean report instead would fail every
+    # negative control in any deployed tier for reasons unrelated to safety.
     story_ok = (
-        actual_story == "pass"
+        verdict_rank(actual_story) < verdict_rank(_GATING_VERDICT)
         if negative_control
         else meets_floor(actual_story, expected_story)
     )
@@ -300,8 +378,15 @@ async def score(*, engine: AsyncEngine | None = None) -> list[ScorecardRow]:
 
 
 def main() -> None:
-    """Entry point: print the scorecard table and exit nonzero on any failure."""
-    rows = asyncio.run(score())
+    """Entry point: print the scorecard table and exit nonzero on any failure.
+
+    A corpus that cannot be loaded at all exits with the ``ConfigurationError``
+    message (which names the offending path) rather than a raw traceback.
+    """
+    try:
+        rows = asyncio.run(score())
+    except ConfigurationError as exc:
+        sys.exit(f"moderation_qa_scorecard: {exc}")
     print(render_table(rows))
     if any(row.status != _STATUS_OK for row in rows):
         sys.exit(1)

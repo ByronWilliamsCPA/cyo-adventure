@@ -15,8 +15,11 @@ from __future__ import annotations
 import importlib.util
 import sys
 from pathlib import Path
+from unittest.mock import AsyncMock, patch
 
 import pytest
+
+from cyo_adventure.core.exceptions import ConfigurationError
 
 _SPEC = importlib.util.spec_from_file_location(
     "moderation_qa_scorecard",
@@ -61,6 +64,28 @@ def _finding(verdict: str, node_id: str | None = None) -> dict[str, object]:
 def test_verdict_rank_orders_pass_below_block() -> None:
     assert scorecard.verdict_rank("pass") < scorecard.verdict_rank("block")
     assert scorecard.verdict_rank("advisory") < scorecard.verdict_rank("flag")
+
+
+def test_verdict_rank_degrades_on_unknown_verdict() -> None:
+    """A future Verdict member must not crash the scorecard with a KeyError."""
+    assert scorecard.verdict_rank("quarantine") == scorecard._UNKNOWN_VERDICT_RANK
+    assert scorecard.verdict_rank("quarantine") < scorecard.verdict_rank("pass")
+    assert scorecard.meets_floor("quarantine", "pass") is False
+
+
+def test_unknown_verdicts_names_every_unrecognized_value() -> None:
+    report = _report(
+        _finding("pass"),
+        _finding("quarantine"),
+        _finding("escalate"),
+        _finding("quarantine"),
+    )
+    assert scorecard.unknown_verdicts(report) == ["escalate", "quarantine"]
+
+
+def test_unknown_verdicts_is_empty_for_a_well_formed_report() -> None:
+    report = _report(_finding("pass"), _finding("advisory"), _finding("block"))
+    assert scorecard.unknown_verdicts(report) == []
 
 
 def test_meets_floor_true_when_actual_at_least_as_severe() -> None:
@@ -116,13 +141,17 @@ def test_compare_book_reports_missing_when_report_is_none() -> None:
     assert rows[0].book_id == "mqa_a"
 
 
-def test_compare_book_negative_control_passes_only_on_exact_pass() -> None:
-    entry = {
+def _negative_control_entry() -> dict[str, object]:
+    return {
         "id": "mqa_clean",
         "expected_min_verdict": "pass",
         "negative_control": True,
         "node_labels": [],
     }
+
+
+def test_compare_book_negative_control_fails_at_or_above_flag() -> None:
+    entry = _negative_control_entry()
     clean_report = _report()
     rows = scorecard.compare_book(entry, clean_report)
     assert rows[0].status == scorecard._STATUS_OK
@@ -130,6 +159,59 @@ def test_compare_book_negative_control_passes_only_on_exact_pass() -> None:
     over_flagged_report = _report(_finding("flag"))
     rows = scorecard.compare_book(entry, over_flagged_report)
     assert rows[0].status == scorecard._STATUS_FAIL
+
+    blocked_report = _report(_finding("block"))
+    rows = scorecard.compare_book(entry, blocked_report)
+    assert rows[0].status == scorecard._STATUS_FAIL
+
+
+def test_compare_book_negative_control_tolerates_a_non_gating_advisory() -> None:
+    """A negative control is a ceiling ("below flag"), not exact equality.
+
+    Reproduces the realistic staging report: run_classifiers appends a
+    whole-story classifier_degraded ADVISORY on every book when a classifier
+    key is unset in a non-local environment, and stages.py emits an ADVISORY
+    on any subjective nit, alongside genuinely clean PASS safety findings.
+    Scoring negative controls by exact equality would call all four of them
+    FAIL and exit 1 without having measured anything about safety.
+    """
+    entry = _negative_control_entry()
+    realistic_report = _report(
+        {
+            "stage": 0,
+            "source": "openai",
+            "category": "classifier_degraded",
+            "node_id": None,
+            "verdict": "advisory",
+            "score": None,
+            "message": "openai classifier unavailable: no api key configured",
+        },
+        {
+            "stage": 0,
+            "source": "perspective",
+            "category": "classifier_degraded",
+            "node_id": None,
+            "verdict": "advisory",
+            "score": None,
+            "message": "perspective classifier unavailable: no api key configured",
+        },
+        _finding("pass", node_id="n_start"),
+        _finding("pass", node_id="n_market"),
+        {
+            "stage": 2,
+            "source": "llm_engagement",
+            "category": "engagement",
+            "node_id": "n_market",
+            "verdict": "advisory",
+            "score": 0.4,
+            "message": "the middle beat drags a little",
+        },
+    )
+
+    rows = scorecard.compare_book(entry, realistic_report)
+
+    assert rows[0].actual == "advisory"
+    assert rows[0].status == scorecard._STATUS_OK
 
 
 def test_compare_book_floor_passes_when_actual_exceeds_expected() -> None:
@@ -254,3 +336,109 @@ def test_compare_book_against_the_real_manifest_bright_line_case() -> None:
     entry = next(book for book in books if book["id"] == "mqa_block_selfharm_reference")
     rows = scorecard.compare_book(entry, _report())
     assert any(row.status == scorecard._STATUS_FAIL for row in rows)
+
+
+def test_every_real_negative_control_survives_a_degraded_classifier_run() -> None:
+    """No manifest negative control may fail purely on degraded-classifier noise.
+
+    This is the whole point of the corpus: in staging, with classifier keys
+    unset, every book carries a classifier_degraded ADVISORY. If that alone
+    failed the negative controls, the scorecard would report "the reviewer is
+    over-blocking benign content" without having measured safety at all.
+    """
+    degraded = _report(
+        {
+            "stage": 0,
+            "source": "openai",
+            "category": "classifier_degraded",
+            "node_id": None,
+            "verdict": "advisory",
+            "score": None,
+            "message": "openai classifier unavailable: no api key configured",
+        }
+    )
+    controls = [
+        book for book in scorecard.load_manifest() if book.get("negative_control")
+    ]
+    assert controls, "the manifest lost all its negative controls"
+    for entry in controls:
+        rows = scorecard.compare_book(entry, degraded)
+        assert all(row.status == scorecard._STATUS_OK for row in rows), entry["id"]
+
+
+# ---------------------------------------------------------------------------
+# Unknown verdicts degrade to a FAIL row instead of a traceback
+# ---------------------------------------------------------------------------
+
+
+def test_compare_book_emits_a_fail_row_naming_an_unknown_verdict() -> None:
+    entry = _negative_control_entry()
+    rows = scorecard.compare_book(entry, _report(_finding("quarantine")))
+
+    verdict_rows = [row for row in rows if row.level == "verdict"]
+    assert len(verdict_rows) == 1
+    assert verdict_rows[0].actual == "quarantine"
+    assert verdict_rows[0].status == scorecard._STATUS_FAIL
+
+
+def test_compare_book_does_not_raise_on_an_unknown_node_verdict() -> None:
+    entry = {
+        "id": "mqa_block",
+        "expected_min_verdict": "block",
+        "negative_control": False,
+        "node_labels": [{"node_id": "n_home", "expected_min_verdict": "block"}],
+    }
+    rows = scorecard.compare_book(
+        entry, _report(_finding("escalate", node_id="n_home"))
+    )
+
+    assert any(row.level == "verdict" and row.actual == "escalate" for row in rows)
+    node_row = next(row for row in rows if row.level == "n_home")
+    assert node_row.status == scorecard._STATUS_FAIL
+
+
+# ---------------------------------------------------------------------------
+# load_manifest error handling
+# ---------------------------------------------------------------------------
+
+
+def test_load_manifest_raises_configuration_error_naming_a_missing_path(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    missing = tmp_path / "nope" / "moderation-qa-corpus.json"
+    monkeypatch.setattr(scorecard, "_MANIFEST_PATH", missing)
+    with pytest.raises(ConfigurationError) as exc:
+        scorecard.load_manifest()
+    assert str(missing) in str(exc.value)
+
+
+def test_load_manifest_raises_configuration_error_on_malformed_json(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    broken = tmp_path / "moderation-qa-corpus.json"
+    broken.write_text("{not json", encoding="utf-8")
+    monkeypatch.setattr(scorecard, "_MANIFEST_PATH", broken)
+    with pytest.raises(ConfigurationError) as exc:
+        scorecard.load_manifest()
+    assert "valid JSON" in str(exc.value)
+
+
+def test_load_manifest_raises_configuration_error_when_books_key_is_absent(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    no_books = tmp_path / "moderation-qa-corpus.json"
+    no_books.write_text('{"version": "1.0"}', encoding="utf-8")
+    monkeypatch.setattr(scorecard, "_MANIFEST_PATH", no_books)
+    with pytest.raises(ConfigurationError) as exc:
+        scorecard.load_manifest()
+    assert "books" in str(exc.value)
+
+
+def test_main_exits_with_the_offending_path_when_the_corpus_cannot_load() -> None:
+    broken = ConfigurationError("moderation QA corpus manifest is unreadable: /x.json")
+    with (
+        patch.object(scorecard, "score", AsyncMock(side_effect=broken)),
+        pytest.raises(SystemExit) as exc,
+    ):
+        scorecard.main()
+    assert "/x.json" in str(exc.value)
