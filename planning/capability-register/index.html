@@ -3009,8 +3009,8 @@ vision doc (v1.2):</p>
 <tr>
 <td>K9</td>
 <td>Visual library shelf with covers: what's new, in progress, finished</td>
-<td>🟡</td>
-<td><code>LibraryPage.tsx</code> ships a real "Continue Reading" hero plus a "More to Explore" grid, and <code>BookCard.tsx</code> shows "Finished!"/progress-bar/"Not started" states, all tested; the in-progress/finished halves are done, only "what's new" is unbuilt (no <code>published_at</code> surfaced on <code>LibraryItem</code>, no "New" badge/sort anywhere)</td>
+<td>✅</td>
+<td><code>LibraryPage.tsx</code> ships a real "Continue Reading" hero plus a "More to Explore" grid, and <code>BookCard.tsx</code> shows "Finished!"/progress-bar/"Not started" states, all tested; the "what's new" leg closed 2026-07-28: <code>LibraryItem.published_at</code> reuses the existing <code>StorybookVersion.published_at</code> stamped by the publishing state machine (<code>api/schemas.py:171</code>, wired through <code>api/library.py</code>'s <code>_library_item</code>/<code>list_library</code>), and <code>BookCard.tsx:75-97</code> renders a "New" badge (<code>bookCardUtils.ts:23</code> <code>isRecentlyPublished</code>, a 7-day window) independent of progress state; tested in <code>test_library_api_unit.py</code> and <code>BookCard.test.tsx</code>/<code>bookCardUtils.test.ts</code></td>
 </tr>
 <tr>
 <td>K10</td>
@@ -3511,7 +3511,7 @@ Added 2026-07-25 by the ADR-023 authorship pass:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 02:31:57 UTC">July 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 02:40:09 UTC">July 30, 2026</span>
   </span>
 
     
