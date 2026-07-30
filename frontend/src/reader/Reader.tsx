@@ -20,10 +20,16 @@ import type { KidFlagCreatedView, ReadingHistoryItem } from '../client/types.gen
 import { canGoBack, currentEndingId, visibleChoices } from '../player/engine'
 import { Mascot } from '../kid/Mascot'
 import { readerMachine } from '../player/machine'
+import {
+  resolvePersonalization,
+  stripSentinels,
+  type ValuesPayload,
+} from '../player/personalization'
 import { SATISFYING_ENDING_KINDS, seriesMeta } from '../player/series'
 import type { ReadingState, Storybook } from '../player/types'
 import { BackToLibrary } from './BackToLibrary'
 import { ContinueSeries } from './ContinueSeries'
+import { DedicationOverlay } from './DedicationOverlay'
 import { EndingsProgress } from './EndingsProgress'
 import { FlagButton } from './FlagButton'
 import { ReaderChrome } from './ReaderChrome'
@@ -70,6 +76,16 @@ export interface ReaderProps {
    * prop (e.g. a caller with no wiring for it) is not the only way the
    * affordance can be absent. */
   submitFlag?: (params: SubmitFlagParams) => Promise<KidFlagCreatedView>
+  /**
+   * The resolved ADR-023 values payload, or null/absent for the generic story.
+   * Resolved into the passage, the ending title, and the read-aloud text, and
+   * nowhere else: admin review surfaces show markers on purpose (ADR-023
+   * section 10). Choice labels never legally carry sentinels
+   * (generation/binding.py) so they are never RESOLVED, but they do get a
+   * defensive strip to generic words at render, because a defensive strip is
+   * cheaper than trusting every future write path.
+   */
+  personalization?: ValuesPayload | null
 }
 
 export function Reader({
@@ -83,6 +99,7 @@ export function Reader({
   ttsEnabled = false,
   fetchReadingHistory,
   submitFlag,
+  personalization = null,
 }: ReaderProps) {
   const navigate = useNavigate()
   const fontScale = useReaderFontScale(profileId)
@@ -92,10 +109,53 @@ export function Reader({
   const { reading, error: choiceError } = snapshot.context
   const node = story.nodes.find((n) => n.id === reading.current_node)
 
+  // #CRITICAL: security: resolved here rather than at each JSX site so no future
+  // render branch can add a fourth path that shows a raw marker to a child.
+  // ADR-023 section 10: a sentinel on a kid-facing surface is a straightforward
+  // visual defect and must never appear, and that is true whether or not the
+  // family opted in, because `resolvePersonalization(text, null)` strips markers
+  // to their generic words rather than passing them through.
+  // Memoized on the input text and the payload: read-aloud word highlighting
+  // re-renders this component per spoken word, and the resolve (two regex
+  // passes over the passage) should not re-run on each of those renders.
+  // #VERIFY: Reader.test.tsx "renders the generic word when there is no payload".
+  const bodyText = useMemo(
+    () => resolvePersonalization(node?.body ?? '', personalization),
+    [node, personalization]
+  )
+  const endingTitle = useMemo(
+    () => resolvePersonalization(node?.ending?.title ?? '', personalization),
+    [node, personalization]
+  )
+  // The generic-resolved body, for the read-aloud egress guard: a non-local
+  // TTS voice must never receive the personalized text (see useReadAloud).
+  const genericBodyText = useMemo(() => resolvePersonalization(node?.body ?? '', null), [node])
+
+  // The dedication belongs on the opening screen: it is a note from a grown-up
+  // on page one, and one repeated mid-story stops being a dedication.
+  // `path.length <= 1` plus the start-node check covers every page-one state:
+  // a fresh read, RESTART (a fresh single-entry path), and a post-back return
+  // to the start node, which is BY DESIGN indistinguishable from a short read,
+  // because the engine's back() truncates the recorded path; backing up to
+  // page one therefore legitimately re-shows the dedication.
+  const atOpening = reading.path.length <= 1 && reading.current_node === story.start_node
+
   // Read-aloud (K7): the toggle itself renders in ReaderChrome, but the
   // speech content (passage body, then choice labels) is only known here.
   const readAloud = useReadAloud(ttsEnabled)
-  const choices = useMemo(() => visibleChoices(story, reading), [story, reading])
+  // Choice labels never legally carry sentinels (generation/binding.py), but
+  // the module's own rationale applies here too: a defensive strip to generic
+  // words is cheaper than trusting every future write path, and a label is a
+  // kid-facing surface like any other. Strip only, never resolve: a personal
+  // value in a label would be a new egress surface, not a feature.
+  const choices = useMemo(
+    () =>
+      visibleChoices(story, reading).map((choice) => ({
+        ...choice,
+        label: stripSentinels(choice.label),
+      })),
+    [story, reading]
+  )
 
   // Report progress whenever the reading state changes (drives WP7 persistence).
   useEffect(() => {
@@ -147,9 +207,12 @@ export function Reader({
     if (readAloud.speaking) {
       readAloud.stop()
     } else {
+      // The third argument is the TTS egress guard's generic fallback: a
+      // non-local voice speaks the generic text, never the child's name.
       readAloud.speak(
-        node?.body ?? '',
-        choices.map((choice) => choice.label)
+        bodyText,
+        choices.map((choice) => choice.label),
+        genericBodyText
       )
     }
   }
@@ -354,7 +417,7 @@ export function Reader({
                 : 'reader-ending__mascot'
             }
           />
-          <h2 className="reader-ending__title">{ending?.title ?? 'The End'}</h2>
+          <h2 className="reader-ending__title">{endingTitle === '' ? 'The End' : endingTitle}</h2>
           <div
             ref={passageRef}
             tabIndex={-1}
@@ -362,7 +425,7 @@ export function Reader({
             className="reader-ending__body"
             aria-live="polite"
           >
-            <PassageText text={node?.body ?? ''} highlightRange={readAloud.spokenWordRange} />
+            <PassageText text={bodyText} highlightRange={readAloud.spokenWordRange} />
           </div>
           <p data-testid="ending-id" hidden>
             {currentEndingId(story, reading) ?? ''}
@@ -409,6 +472,7 @@ export function Reader({
     <div className="reader-shell" style={shellStyle}>
       {chrome}
       <section data-testid="reader" className="reader">
+        {atOpening ? <DedicationOverlay personalization={personalization} /> : null}
         <div
           ref={passageRef}
           tabIndex={-1}
@@ -416,7 +480,7 @@ export function Reader({
           className="reader-passage"
           aria-live="polite"
         >
-          <PassageText text={node?.body ?? ''} highlightRange={readAloud.spokenWordRange} />
+          <PassageText text={bodyText} highlightRange={readAloud.spokenWordRange} />
         </div>
         <ul className="reader-choices">
           {choices.map((choice) => (

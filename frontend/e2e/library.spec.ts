@@ -369,15 +369,25 @@ test('shelf still renders from the cached list when the network fetch fails (F-6
       page.evaluate(
         () =>
           new Promise<number>((resolve) => {
-            const req = indexedDB.open('cyo-reader', 3)
+            // Versionless open: pinning a version here breaks silently on every
+            // DB_VERSION bump (opening an existing v4 database at 3 rejects
+            // with VersionError, and onerror's -1 just fails the poll), while a
+            // versionless open attaches at whatever version the app created.
+            const req = indexedDB.open('cyo-reader')
             req.onerror = () => resolve(-1)
             req.onsuccess = () => {
-              const getReq = req.result
-                .transaction('library_lists', 'readonly')
-                .objectStore('library_lists')
-                .get('p1')
-              getReq.onsuccess = () => resolve(getReq.result ? 1 : 0)
-              getReq.onerror = () => resolve(-1)
+              try {
+                const getReq = req.result
+                  .transaction('library_lists', 'readonly')
+                  .objectStore('library_lists')
+                  .get('p1')
+                getReq.onsuccess = () => resolve(getReq.result ? 1 : 0)
+                getReq.onerror = () => resolve(-1)
+              } catch {
+                // Store missing (the app has not created it yet): report a
+                // non-match so the poll retries instead of hanging.
+                resolve(-1)
+              }
             }
           })
       )

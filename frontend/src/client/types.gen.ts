@@ -2504,6 +2504,16 @@ export type PersonalizationValuesView = {
     values: {
         [key: string]: string;
     };
+    /**
+     * Sentinel Pattern
+     */
+    sentinel_pattern: string;
+    /**
+     * Slot Bindings
+     */
+    slot_bindings: {
+        [key: string]: string;
+    };
 };
 
 /**

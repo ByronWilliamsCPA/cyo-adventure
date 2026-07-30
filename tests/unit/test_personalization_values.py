@@ -268,3 +268,32 @@ def test_on_reject_is_not_called_for_a_valid_value() -> None:
 
     assert result == "Rosa"
     assert calls == []
+
+
+def test_dedication_rejects_free_text() -> None:
+    """A dedication is a closed kinship enum, never guardian-authored prose.
+
+    Design plan section 9: "a free-text dedication would be a new unmoderated-prose
+    surface on a kid-facing screen, which is the one thing this whole architecture
+    exists to avoid". Before this test, `dedication` was absent from
+    CLOSED_VOCABULARIES, so `_shape_violations` permitted value_text and the
+    membership check never ran.
+    """
+    violations = validate_personalization_value(
+        "dedication",
+        AgeBand.BAND_8_11,
+        value_text="anything at all",
+    )
+
+    assert [v.rule for v in violations] == ["value_shape"]
+
+
+def test_dedication_enum_is_rejected_until_a_vocabulary_ships() -> None:
+    """Fail-closed, exactly like the other four enum slots."""
+    violations = validate_personalization_value(
+        "dedication",
+        AgeBand.BAND_8_11,
+        value_enum="Grandma",
+    )
+
+    assert violations != []

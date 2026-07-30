@@ -2792,16 +2792,27 @@ export const putPersonalizationReceiveApiV1FamiliesMePersonalizationReceivePut =
  * a kid's tablet at all. What that costs is made up for by the two checks
  * below, which the configuration routes get from ``_require_guardian``.
  *
- * #CRITICAL: security: a missing book returns the SAME empty payload as
- * every other predicate failure, never a 404. Raising 404 here made the
- * route an existence oracle over the whole storybook table: any
- * authenticated caller could enumerate ids and learn which exist globally,
- * before any family check had run. Uniform disclosure is the only way this
- * route can honor its own "never reveal anything about another family"
- * contract, since it has no 403 branch to hide behind either.
+ * #CRITICAL: security: EVERY empty-payload branch returns the identical
+ * shape, never a 404, and always with ``slot_bindings={}``. Raising 404
+ * here made the route an existence oracle over the whole storybook table:
+ * any authenticated caller could enumerate ids and learn which exist
+ * globally, before any family check had run. The bindings half is the same
+ * oracle in a subtler coat: bindings are a property of the book's contract,
+ * so an empty payload that carried populated bindings for a book with
+ * personalizable slots would distinguish "not addressable by you" (empty)
+ * from "addressable but no values for you" (populated). Bindings are
+ * therefore computed ONLY on the happy path that returns actual values
+ * (`_resolve_ring1_view`/`_resolve_ring2_view`); every predicate failure
+ * renders `_empty_values_view()`, which hard-codes the empty map. Uniform
+ * disclosure is the only way this route can honor its own "never reveal
+ * anything about another family" contract, since it has no 403 branch to
+ * hide behind either. A side benefit: the contract's synchronous disk read
+ * no longer runs for unauthorized or empty-outcome callers at all.
  * #VERIFY: tests/integration/test_personalization_api.py::
- * test_values_missing_storybook_returns_the_empty_payload and
- * ::test_values_cross_family_private_book_returns_the_empty_payload.
+ * test_values_missing_storybook_returns_the_empty_payload,
+ * ::test_values_cross_family_private_book_returns_the_empty_payload, and
+ * ::test_empty_values_payload_carries_no_slot_bindings; the empty view's
+ * fixed shape is pinned by tests/unit/test_personalization_empty_view.py.
  *
  * Args:
  * storybook_id: The book (path).
