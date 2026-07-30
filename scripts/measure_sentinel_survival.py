@@ -23,6 +23,15 @@ measurement. It:
    projection (``cyo_adventure.measurement.report``), writing both a JSON and
    a markdown report under ``--out-dir/<run-slug>/``.
 
+With ``--save-fills``, every trial that produces a document is additionally
+persisted under ``--out-dir/<run-slug>/fills/<index>-<provider>-<slug>.json``
+(specimen slug, provider, slot bindings, bound skeleton, and the filled
+storybook exactly as ``classify_fill`` received it), so a later, separate
+analysis (``scripts/prototype_sentinel_reinsertion.py``) can recompute
+expectations against the saved fills without re-running generation. Without
+the flag, this script's output is unchanged: no ``fills/`` directory is ever
+created.
+
 **First-attempt-only measurement.** ``fill_skeleton`` has an internal repair
 loop (``max_repairs``, default 3 on the function itself) that re-prompts on
 soft-gate findings and could perturb sentinel state before this script
@@ -158,6 +167,15 @@ def _build_parser() -> argparse.ArgumentParser:
         default=0,
         help="Repair attempts before observing the fill (default: 0, first-attempt-only per plan 3.4).",
     )
+    parser.add_argument(
+        "--save-fills",
+        action="store_true",
+        help=(
+            "Persist every trial's specimen slug, provider, slot bindings, "
+            "bound skeleton, and filled storybook under <run-dir>/fills/ "
+            "(default: off, matching prior behavior of discarding fills)."
+        ),
+    )
     return parser
 
 
@@ -225,8 +243,8 @@ def _build_specimens(
 
 async def _run_trial(
     specimen: Specimen, provider: GenerationProvider, *, max_repairs: int
-) -> RunRecord | None:
-    """Run one specimen through one provider and classify the result.
+) -> tuple[RunRecord, dict[str, object]] | None:
+    """Run one specimen through one provider, classify the result, and return the fill.
 
     Args:
         specimen: The sentinel-bearing specimen to fill.
@@ -235,9 +253,12 @@ async def _run_trial(
             first-attempt-only measurement; see the module docstring).
 
     Returns:
-        RunRecord | None: The classified outcome, or ``None`` when the fill
-            produced no document at all (a total generation failure, distinct
-            from a sentinel-integrity violation; see the #EDGE note below).
+        tuple[RunRecord, dict[str, object]] | None: The classified outcome
+            paired with the exact filled document ``classify_fill`` scored
+            (so ``--save-fills`` can persist precisely what was classified),
+            or ``None`` when the fill produced no document at all (a total
+            generation failure, distinct from a sentinel-integrity
+            violation; see the #EDGE note below).
     """
     # #CRITICAL: security: this harness must never carry real child identity;
     # every specimen's sentinel inner value is a generic default word chosen
@@ -263,11 +284,58 @@ async def _run_trial(
     # watch stderr for this warning.
     if outcome.storybook is None:
         return None
-    return classify_fill(specimen.bound_skeleton, outcome.storybook)
+    record = classify_fill(specimen.bound_skeleton, outcome.storybook)
+    return record, outcome.storybook
+
+
+def _write_fill(
+    fills_dir: Path,
+    index: int,
+    provider_name: str,
+    specimen: Specimen,
+    storybook: dict[str, object],
+) -> None:
+    """Persist one trial's specimen/provider/bindings/skeleton/fill to disk.
+
+    #ASSUME: data integrity: ``bound_skeleton`` and ``slot_bindings`` are
+    exactly the values ``fill_skeleton`` was called with (see
+    ``_run_trial``), so a later analysis can recompute expectations without
+    re-running specimen construction.
+    #VERIFY: tests/unit/test_measure_sentinel_survival_cli.py::test_save_fills_writes_recoverable_trial_data
+
+    Args:
+        fills_dir: The ``fills/`` directory under this run's output dir;
+            created on demand (only when at least one fill is written).
+        index: This trial's position in the overall trial sequence, used as
+            the filename's sortable prefix. Zero-padded to three digits so
+            lexicographic order matches trial order: the reader
+            (``prototype_sentinel_reinsertion._analyze_fills``) enumerates
+            fills with ``sorted(glob(...))``, and an unpadded prefix would
+            sort trial 10 ahead of trial 2.
+        provider_name: The provider name this trial ran against.
+        specimen: The specimen this trial filled.
+        storybook: The exact filled document ``classify_fill`` scored.
+    """
+    fills_dir.mkdir(parents=True, exist_ok=True)
+    payload: dict[str, object] = {
+        "specimen_slug": specimen.slug,
+        "provider": provider_name,
+        "slot_bindings": specimen.slot_bindings,
+        "bound_skeleton": specimen.bound_skeleton,
+        "filled_storybook": storybook,
+    }
+    filename = f"{index:03d}-{provider_name}-{specimen.slug}.json"
+    (fills_dir / filename).write_text(
+        json.dumps(payload, indent=2) + "\n", encoding="utf-8"
+    )
 
 
 async def _run_all(
-    specimens: list[Specimen], providers: list[str], *, max_repairs: int
+    specimens: list[Specimen],
+    providers: list[str],
+    *,
+    max_repairs: int,
+    fills_dir: Path | None = None,
 ) -> list[TrialRecord]:
     """Run every specimen through every requested provider.
 
@@ -275,6 +343,10 @@ async def _run_all(
         specimens: The specimens to run.
         providers: Provider names to build (via ``build_provider``) and run.
         max_repairs: Repair attempts before observing each fill.
+        fills_dir: When not ``None``, every trial that produces a document is
+            additionally persisted here via ``_write_fill`` (``--save-fills``);
+            ``None`` (the default) preserves the prior discard-the-fill
+            behavior exactly.
 
     Returns:
         list[TrialRecord]: One record per specimen/provider pair that
@@ -285,7 +357,7 @@ async def _run_all(
         provider = build_provider(_default_settings, provider_override=provider_name)
         for specimen in specimens:
             try:
-                record = await _run_trial(specimen, provider, max_repairs=max_repairs)
+                outcome = await _run_trial(specimen, provider, max_repairs=max_repairs)
             # #EDGE: external-resources: a live provider can raise ProviderError
             # (network/API failure, rate limit) mid-run. Catch it per trial so
             # one flaky call skips just this specimen instead of aborting the
@@ -304,7 +376,7 @@ async def _run_all(
                     + "\n"
                 )
                 continue
-            if record is None:
+            if outcome is None:
                 sys.stderr.write(
                     " ".join(
                         [
@@ -315,11 +387,16 @@ async def _run_all(
                     + "\n"
                 )
                 continue
+            record, storybook = outcome
             trials.append(
                 TrialRecord(
                     specimen_slug=specimen.slug, provider=provider_name, record=record
                 )
             )
+            if fills_dir is not None:
+                _write_fill(
+                    fills_dir, len(trials) - 1, provider_name, specimen, storybook
+                )
     return trials
 
 
@@ -364,9 +441,17 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     providers = cast("list[str]", args.providers)
+    save_fills = cast("bool", args.save_fills)
+    run_dir = out_dir / _run_slug()
+    fills_dir = (run_dir / "fills") if save_fills else None
     try:
         trials = asyncio.run(
-            _run_all(specimens, providers, max_repairs=cast("int", args.max_repairs))
+            _run_all(
+                specimens,
+                providers,
+                max_repairs=cast("int", args.max_repairs),
+                fills_dir=fills_dir,
+            )
         )
     except (ConfigurationError, ValidationError) as exc:
         sys.stderr.write(f"error: {exc}\n")
@@ -376,7 +461,6 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     data = aggregate(trials)
-    run_dir = out_dir / _run_slug()
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "report.json").write_text(
         json.dumps(render_json(data, providers=providers), indent=2) + "\n",

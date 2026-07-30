@@ -9,8 +9,9 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from datetime import datetime
-from typing import Annotated, Literal
+from typing import Annotated, Literal, get_args
 
 from pydantic import (
     AfterValidator,
@@ -1569,8 +1570,12 @@ class FamilyExportView(BaseModel):
             (id, role, is_admin, email, created_at); no ``pin_hash`` or
             ``authn_subject`` (credential material, never exported).
         profiles: Every child profile, each with its own nested
-            ``reading_state``, ``completions``, ``ratings``, and
-            ``assignments`` lists.
+            ``reading_state``, ``completions``, ``ratings``, ``assignments``,
+            ``personalization`` (ADR-023 P4 ``ChildProfilePersonalization``
+            rows, plus the two ``real_name_ring1_enabled``/
+            ``real_name_ring2_enabled`` booleans on the profile itself), and
+            ``disclosure_consents`` (``PersonalizationDisclosureConsent``
+            rows, including tombstoned ones) lists.
         story_requests: Every story request tied to the family.
     """
 
@@ -2144,6 +2149,255 @@ class RecommendationsView(BaseModel):
     """A profile's recommendation feed (ring 1 family + ring 2 connections)."""
 
     items: list[RecommendationItem]
+
+
+# ---------------------------------------------------------------------------
+# Story personalization (ADR-023 P4/P5): per-profile slot values and ring
+# flags, ring-2 disclosure consent, and the resolved values payload a reader
+# fetches for one book. Shapes pinned by
+# docs/planning/story-personalization-implementation-plan.md section 6.1.
+# ---------------------------------------------------------------------------
+
+_PersonalizationSlotType = Literal[
+    "protagonist_first_name",
+    "pronoun_set",
+    "sibling_name",
+    "pet_species",
+    "pet_name",
+    "kinship_label",
+    "favorite",
+    "home_type",
+    "dedication",
+]
+
+_PERSONALIZATION_SLOT_TYPE_COUNT = len(get_args(_PersonalizationSlotType))
+
+# The structural gate (`validator/slots.py::_charset_violations`) rejects any
+# candidate longer than this, and it is the authority: it runs on every
+# personalization value at both write time and payload-build time. The schema
+# bound is aligned to it so an over-long value is a shape error at the edge
+# rather than a slot violation two layers in. It was 200, which meant values
+# of 121 to 200 characters were accepted here only to be rejected downstream.
+_PERSONALIZATION_VALUE_MAX_LENGTH = 120
+
+
+def _nfc(value: str) -> str:
+    """NFC-normalize a guardian-supplied personalization value.
+
+    Args:
+        value: The raw submitted string.
+
+    Returns:
+        str: The NFC-normalized string.
+    """
+    # #ASSUME: data-integrity: the denylist and distinctness matching in
+    # `validator/slots.py::_normalize` already NFC-normalizes before it
+    # compares, so this is NOT what stops a decomposed spelling from evading
+    # the denylist; that hole does not exist. What this fixes is that the
+    # value is STORED in whatever form the client sent. Two consequences,
+    # both real and both small: the 120-character structural limit is
+    # measured on the raw form, so a decomposed spelling can be rejected at a
+    # length its precomposed twin passes; and the replace route's change
+    # detection compares stored text to submitted text with `!=`, so
+    # re-saving a visually identical name from a client that normalizes
+    # differently reads as an edit and rewrites the row. Normalizing at the
+    # edge makes the stored form canonical and both problems go away. NFC is
+    # idempotent, so an already-normalized value (nearly all of them) is
+    # unchanged.
+    # #VERIFY: tests/unit/test_api_schemas_personalization.py::
+    # test_decomposed_and_precomposed_text_values_normalize_identically.
+    return unicodedata.normalize("NFC", value)
+
+
+def _dedupe_slot_types(values: list[str]) -> list[str]:
+    """Drop repeated slot types, keeping first-seen order.
+
+    Args:
+        values: The submitted ``covered_slot_types`` list.
+
+    Returns:
+        list[str]: The same values with later duplicates removed.
+    """
+    # #ASSUME: data-integrity: order is preserved rather than sorted because
+    # the list is echoed back to the client verbatim by `GET /v1/me`, and a
+    # guardian re-reading their own consent should see the scope they chose
+    # in the order they chose it. `dict.fromkeys` is the order-preserving
+    # de-duplication idiom; a `set` here would make the response order vary
+    # between processes.
+    # #VERIFY: tests/unit/test_api_schemas_personalization.py::
+    # test_covered_slot_types_are_deduplicated_in_first_seen_order.
+    return list(dict.fromkeys(values))
+
+
+_PersonalizationValueText = Annotated[
+    str,
+    StringConstraints(max_length=_PERSONALIZATION_VALUE_MAX_LENGTH),
+    AfterValidator(_nfc),
+]
+
+
+class PersonalizationSlotBody(BaseModel):
+    """One slot's proposed value and ring flags, inside the PUT replace body.
+
+    Exactly one of ``value_text``, ``value_enum``, ``value_profile_id`` may be
+    set, mirroring ``ChildProfilePersonalization.ck_cpp_exactly_one_value``.
+    This is a shape check only: the closed-vocabulary, structural, denylist,
+    and sibling-in-family checks (plan section 5.2) run in the route handler
+    via ``storybook.personalization_values``, not here.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    slot_type: _PersonalizationSlotType
+    value_text: _PersonalizationValueText | None = None
+    # Deliberately tighter than `value_text`'s bound and left where it was: an
+    # enum value is a closed-vocabulary member, not free text.
+    value_enum: (
+        Annotated[str, StringConstraints(max_length=64), AfterValidator(_nfc)] | None
+    ) = None
+    value_profile_id: str | None = None
+    ring1_enabled: bool = False
+    ring2_enabled: bool = False
+
+    @model_validator(mode="after")
+    def _exactly_one_value(self) -> PersonalizationSlotBody:
+        """Reject a slot body with zero or more than one value field set."""
+        present = sum(
+            value is not None
+            for value in (self.value_text, self.value_enum, self.value_profile_id)
+        )
+        if present != 1:
+            msg = "exactly one of value_text, value_enum, value_profile_id must be set"
+            raise ValueError(msg)
+        return self
+
+
+class PersonalizationUpdateBody(BaseModel):
+    """The whole personalization state for one profile: replace, not patch.
+
+    A partial patch over a per-slot table invites ambiguity about whether an
+    absent slot_type means "unchanged" or "cleared" (plan section 6.1), so
+    this is always a full replace: any slot_type omitted from ``slots`` is
+    cleared. The two ``real_name_*`` booleans are written through this route
+    rather than ``ProfileUpdateBody``, so one guardian save is one transaction
+    (plan section 6.1).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    real_name_ring1_enabled: bool = False
+    real_name_ring2_enabled: bool = False
+    slots: list[PersonalizationSlotBody] = Field(default_factory=list)
+
+
+class PersonalizationSlotView(BaseModel):
+    """One slot's stored value and ring flags, plus the read-only ceiling."""
+
+    slot_type: str
+    value_text: str | None
+    value_enum: str | None
+    value_profile_id: str | None
+    ring1_enabled: bool
+    ring2_enabled: bool
+    # Derived from the taxonomy ceiling (every slot type except pronoun_set
+    # and dedication), so the UI can grey out what the DB CHECK would reject
+    # anyway rather than reimplementing the ceiling list in TypeScript.
+    ring2_eligible: bool
+
+
+class PersonalizationView(BaseModel):
+    """A profile's full personalization state: the GET and PUT response."""
+
+    real_name_ring1_enabled: bool
+    real_name_ring2_enabled: bool
+    slots: list[PersonalizationSlotView]
+
+
+class PersonalizationReceiveView(BaseModel):
+    """The caller's own family's viewer-side receive switch (ADR-023 8.6)."""
+
+    enabled: bool
+
+
+class PersonalizationReceiveBody(BaseModel):
+    """Set the viewer-side receive switch for the caller's own family.
+
+    Deliberately not an evidentiary consent record: no signature, no policy
+    version, no IP. It is a stored preference (design plan 8.6, "a notice
+    fixes surprise; a signature would not fix it any better"), so the body
+    is the single boolean and nothing else.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    enabled: bool
+
+
+class Ring2ConsentGrantBody(BaseModel):
+    """A sharer-side guardian's grant, or supersede, of a ring-2 disclosure.
+
+    ``consent_ip`` and ``consent_accepted_at`` are never accepted from the
+    client; the route stamps both server-side, mirroring how
+    ``POST /v1/onboarding`` handles the ADR-018 D1 consent (plan section 6.1).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    family_connection_id: str
+    # Bounded and de-duplicated at the edge. The route rejects any element
+    # that is not an eligible slot type, so a bogus VALUE was never storable,
+    # but nothing bounded the list's LENGTH: `["dedication"] * 100_000` is
+    # every-element-eligible and would have been written verbatim into the
+    # consent row's JSONB column and echoed back by `GET /v1/me`. The bound is
+    # the number of slot types that exist, since covering one twice conveys
+    # nothing, and `_dedupe_slot_types` makes that bound reachable only by a
+    # genuinely distinct list.
+    covered_slot_types: Annotated[
+        list[str],
+        Field(min_length=1, max_length=_PERSONALIZATION_SLOT_TYPE_COUNT),
+        AfterValidator(_dedupe_slot_types),
+    ]
+    policy_version: Annotated[str, StringConstraints(max_length=32)]
+    signer_name: Annotated[
+        str, StringConstraints(max_length=200, strip_whitespace=True, min_length=1)
+    ]
+    accepted: Literal[True]
+    # Required true when covered_slot_types includes the sibling slot
+    # (plan section 6.1); enforced in the route handler, not here, since the
+    # rule depends on the sibling slot_type constant from personalization_values.
+    sibling_authority_attested: bool | None = None
+
+
+class Ring2ConsentView(BaseModel):
+    """The result of a ring-2 consent grant or revoke."""
+
+    id: str
+    child_profile_id: str
+    family_connection_id: str | None
+    covered_slot_types: list[str]
+    sibling_authority_attested: bool
+    consent_accepted_at: datetime | None
+    consent_policy_version: str | None
+    consent_signer_name: str | None
+    revoked_at: datetime | None
+
+
+class PersonalizationValuesView(BaseModel):
+    """The resolved values payload for one storybook, at whichever ring applies.
+
+    An empty ``values`` dict is the universal failure mode (plan section 8.4):
+    there is no requested-slot-type filter, and every failure mode (missing
+    subject, receive-toggle off, unconnected family, revoked consent, a
+    deactivated or processing-restricted subject) renders identically as an
+    empty payload rather than a 403, so the route leaks nothing about whether
+    a subject or connection exists (plan sections 8.3-8.5).
+    """
+
+    subject_profile_id: str | None
+    ring: Literal[1, 2] | None
+    policy_version: str | None
+    resolved_at: datetime
+    values: dict[str, str]
 
 
 # ---------------------------------------------------------------------------

@@ -154,6 +154,23 @@ enters the `AdultGate`.
 - Offline revocation is impossible; a lost device retains family profile-list and child-mint
   capability until the grant expires or the device reconnects and the revocation is seen.
   Bounded by the 90-day TTL and mitigated by the guardian-visible device list.
+- **Revocation does not reach an already-minted child session, even online.** Revoking sets
+  `device_grant.revoked_at`, and `api/deps.py::_device_principal` rejects the DEVICE token on its
+  next request, so the device can mint no further sessions. But the child session token it already
+  minted is backend-signed and self-contained: `_child_principal` performs no database round-trip
+  and the token carries no reference to the grant that minted it, so nothing on the read path can
+  learn the grant is gone. A child already reading on a revoked device therefore keeps
+  authenticating on `/library/*` and `/read/*` for the remainder of `child_session_ttl_seconds`
+  (default 43,200 seconds, i.e. 12 hours), online, whether or not the device reconnects. Session
+  expiry, not revocation and not reconnection, is the actual cut-off. `#CRITICAL security:` the
+  guardian-facing device list must not promise that revoking ends reading now; `#VERIFY:`
+  `tests/integration/test_child_sessions.py::test_known_limitation_revoked_device_grant_does_not_invalidate_minted_child_session`
+  pins the current behavior, and `frontend/src/guardian/DevicesPage.tsx` states the 12-hour window
+  to the guardian. The durable fix (carry the grant `jti` in the child-session claims and check it
+  on the read path, accepting a database read there) is filed as `UW-A43` in the
+  [unscheduled work register](../unscheduled-work-register.md); it is deliberately **not** taken
+  here, because the no-round-trip child principal is the property that makes offline-first kid
+  reading work at all, which is this ADR's core decision.
 - `#ASSUME security:` `sessionStorage` warm-state for the adult step-up is acceptable because it
   clears on tab close, sign-out, and kid-mode entry; `#VERIFY:` those three clears are covered
   by tests.

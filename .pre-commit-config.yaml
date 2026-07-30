@@ -208,6 +208,10 @@ repos:
           bash -c 'cd frontend && files=(); for f in "$@"; do files+=("${f#frontend/}"); done; npx prettier --check "${files[@]}"' --
         language: system
         files: ^frontend/src/.*\.(ts|tsx|css|json)$
+        # frontend/src/client is generated (hey-api) build output committed raw
+        # by design: the CI contract job diffs it against the generator's exact
+        # output, so prettier-formatting it would create permanent drift.
+        exclude: ^frontend/src/client/
         stages: [pre-commit]
 
   # ============================================================================

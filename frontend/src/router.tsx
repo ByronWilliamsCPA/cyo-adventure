@@ -14,10 +14,12 @@ import {
   BooksPage,
   ConnectionsPage,
   ConsolePage,
+  DevicesPage,
   GuardianAuthLayout,
   GuardianAwaitingApprovalPage,
   GuardianBackendUnavailablePage,
   GuardianConsentPage,
+  GuardianReviewDetailPage,
   GuardianShell,
   IntakePage,
   KidShell,
@@ -193,10 +195,21 @@ export const routes = [
                   { index: true, element: suspended(<ConsolePage />) },
                   { path: 'intake', element: suspended(<IntakePage />) },
                   { path: 'requests', element: suspended(<RequestsPage />) },
+                  {
+                    // G6 (edit half): a guardian's own path into the same
+                    // passage-edit capability node_edit.py already authorizes
+                    // at the API layer, deliberately separate from the admin
+                    // /admin/review/:storybookId route (see
+                    // GuardianReviewDetailPage.tsx's docstring for why this is
+                    // not a widened guard on that route instead).
+                    path: 'review/:storybookId',
+                    element: suspended(<GuardianReviewDetailPage />),
+                  },
                   { path: 'reading', element: suspended(<ReadingPage />) },
                   { path: 'books', element: suspended(<BooksPage />) },
                   { path: 'profiles', element: suspended(<ProfilesPage />) },
                   { path: 'connections', element: suspended(<ConnectionsPage />) },
+                  { path: 'devices', element: suspended(<DevicesPage />) },
                   // G11 trust surface. Sits inside the adult gate with every
                   // other guardian page rather than being public: it describes
                   // how THIS family's data is handled, and the generic

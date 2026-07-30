@@ -10,9 +10,9 @@
 import { useState } from 'react'
 
 import { classifyApiError } from '../hooks/classifyApiError'
-import type { ReviewSurface } from '../guardian/reviewApi'
+import type { ReviewSurface } from './reviewApi'
 import { asGateFailure, type GateFindingView, type PassageEditApi } from './passageEditApi'
-import { findEditableNode, type EditableChoice } from './reviewDiff'
+import { findEditableNode, type EditableChoice } from './storyReadThrough'
 
 export interface UsePassageEditParams {
   storybookId: string
