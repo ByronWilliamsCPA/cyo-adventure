@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.50.0] - 2026-07-30
+
+### Chores
+
+- **deps**: Update dependency jsdom to v30
+  ([#490](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/490),
+  [`7077b88`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/7077b887f915877a8cd50e54d3366605b59bb9b5))
+
+
 ## [0.49.0] - 2026-07-30
 
 ### Features
@@ -2845,6 +2854,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.50.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.49.0...v0.50.0
 [0.49.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.48.0...v0.49.0
 [0.48.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.47.0...v0.48.0
 [0.47.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.46.0...v0.47.0
