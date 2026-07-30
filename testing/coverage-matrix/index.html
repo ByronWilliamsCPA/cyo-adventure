@@ -3493,7 +3493,7 @@ Supabase endpoints rather than <code>/api/v1</code>.</p>
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/guardian-notifications.spec.ts</code> (a guardian sees the unread-count badge from the notifications poll, opens the bell panel, sees a safety alert rendered with a visually distinct <code>--alert</code> class from an informational item, and the badge clears once the panel is opened)</li>
 <li>E2E-real: <code>frontend/e2e-real/notifications-real.spec.ts</code> (a real admin approval fires a real <code>RELEASED</code> pipeline event, which <code>notifications/registry.py</code> composes into a "story_ready" item; the guardian's real <code>GET /v1/notifications</code> feed carries it, the bell reflects it, and it survives a reload. The backend keeps no server-side read/unread state for this slice, so "marking read" is the client-side <code>markSeen()</code>/localStorage model asserted directly, confirmed here to hold against the real backend's <code>since</code>-filtered poll rather than a mocked response)</li>
-<li>Component: <code>frontend/src/guardian/NotificationBell.test.tsx</code>, <code>frontend/src/guardian/notificationsApi.test.ts</code>, <code>frontend/src/guardian/notificationSeenStore.test.ts</code></li>
+<li>Component: <code>frontend/src/guardian/NotificationBell.test.tsx</code>, <code>frontend/src/guardian/notificationsApi.test.ts</code>, <code>frontend/src/guardian/notificationSeenStore.test.ts</code>, <code>frontend/src/guardian/notificationsStream.test.ts</code> (the realtime SSE transport layer only, not the generated <code>createSseClient</code> it wraps: no guardian token means <code>onError</code> and no connection opened at all, a stored token becomes an <code>Authorization: Bearer</code> header on a <code>/notifications/stream</code> URL that carries <code>since</code> only when a prior <code>lastSeenAt</code> is known, retries are capped at 5 so a permanently-broken stream cannot loop forever, a <code>notification</code> frame is delivered parsed while a keep-alive frame with no event name and no data is ignored, connection errors are forwarded to <code>onError</code>, and <code>close()</code> aborts the underlying signal)</li>
 <li><strong>Gap</strong>: no <code>e2e-staging</code> or <code>e2e-prod</code> coverage yet.</li>
 </ul>
 <h2 id="guardian-reading-history-engagement-g9">Guardian: reading history / engagement (G9)<a class="headerlink" href="#guardian-reading-history-engagement-g9" title="Permanent link">&para;</a></h2>
@@ -3876,7 +3876,7 @@ closure. A companion action-level verdict for this audit lives at
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 02:40:09 UTC">July 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 03:21:18 UTC">July 30, 2026</span>
   </span>
 
     
