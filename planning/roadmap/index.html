@@ -5376,13 +5376,19 @@ runs on Supabase-managed infrastructure instead of the homelab; see
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <strong>Newly surfaced by the 2026-07-20 audit</strong>: H2, <code>generate_cover</code> flips
       <code>cover_status</code> straight <code>generating -&gt; ready</code> with no moderation/approval gate, so
       an AI cover image can reach a child's shelf without the human review A16 promises
-      (the story-text safety guarantee, A6, is unaffected). Closed 2026-07-28 on
-      <code>feat/cover-review-ui</code>: the backend gate (<code>generate_cover</code> stops at
-      <code>pending_review</code>, <code>covers.service.approve_cover</code> is the sole admin-only path to
-      <code>ready</code>) merged from <code>fix/cover-moderation-gate</code> (commit b56b11f), and the admin
-      review UI (<code>ReviewDetailPage.tsx</code> renders the pending cover image plus an "Approve
-      cover" action) closes the remaining A16 gap the 2026-07-29 audit had found; A16
-      flipped to done in <code>capability-register.md</code>.</li>
+      (the story-text safety guarantee, A6, is unaffected). Closed 2026-07-28: the
+      backend gate (<code>generate_cover</code> stops at <code>pending_review</code>,
+      <code>covers.service.approve_cover</code> is the sole admin-only path to <code>ready</code>) merged in
+      PR #469 (<code>30a988b5</code>), and the admin review UI (<code>ReviewDetailPage.tsx</code> renders the
+      pending cover image plus an "Approve cover" action) merged in PR #471
+      (<code>584a8a57</code>). <code>UW-M07</code> had held A16 open past H2: the R2 bucket served cover
+      images at a deterministic object key over a public custom domain, so an
+      unapproved cover's bytes stayed fetchable without passing this gate. The project
+      owner disconnected that domain in Cloudflare on 2026-07-30 (outside this
+      repository), re-verified by <code>dig cyo-bucket.williamshome.family</code> failing to
+      resolve against a working general-egress check, so the gate now governs actual
+      reachability and both H2 and A16 are closed. See <code>capability-register.md</code>'s A16
+      row for the live status.</li>
 </ul>
 <p><strong>Newly surfaced by the 2026-07-28 unscheduled-work sweep.</strong> The security plan's Medium and Low
 tiers, and the authoring log's blocking lessons, had no phase home. Full detail by ID in the
@@ -5638,7 +5644,7 @@ and Tier-2 corpora.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 03:21:18 UTC">July 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 20:46:04 UTC">July 30, 2026</span>
   </span>
 
     
