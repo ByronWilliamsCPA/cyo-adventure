@@ -3240,7 +3240,7 @@ vision doc (v1.2):</p>
 <td>A5</td>
 <td>Incident path: trace how content reached a child (prompt, model, gate version), pull it everywhere including offline, notify affected guardians</td>
 <td>🟡</td>
-<td>Provenance supports trace ✅; pull-everywhere (offline copies) delivered 2026-07-17, same client-side revocation reconcile as G8 (<code>frontend/src/offline/revocation.ts</code>); guardian notification still ❌: no incident/revocation <code>EventType</code> exists in <code>events/models.py</code> and no composer is registered in <code>notifications/registry.py</code>. Small gap: reuses G10/S9's existing delivery infrastructure, needs zero new frontend work, just a new event type plus one composer entry</td>
+<td>Provenance trace and pull-everywhere (offline copies, <code>frontend/src/offline/revocation.ts</code>) delivered 2026-07-17. Guardian notification for the OWNING family only, delivered 2026-07-29 (commit 3916e99): <code>EventType.STORYBOOK_ARCHIVED</code> (<code>events/models.py</code>) fires from the sole published-&gt;archived hop (<code>publishing/service.py::archive</code>), and <code>notifications/registry.py::_compose_storybook_archived</code> composes it as a G10/S9 alert-severity notice; no frontend change needed, <code>NotificationBell.tsx</code> already renders any alert-severity item generically. <strong>Cross-family recipients remain open</strong>, so the row stays partial: <code>notifications/service.py::_resolve_storybook</code> resolves the recipient family from <code>Storybook.family_id</code> and <code>list_guardian_notifications</code> drops any item whose <code>ctx.family_id</code> is not the caller's, while <code>api/assignments.py</code> lets a guardian assign another family's <code>visibility='catalog'</code> book (the cross-family allow at its visibility gate) and catalog books are owned by the <code>CATALOG_FAMILY_ID</code> sentinel (<code>db/models.py</code>). Archiving a catalog book sitting on many families' shelves therefore notifies nobody, which A5's own text ("notify affected guardians") promises. Closing this needs recipient resolution to follow assignments rather than ownership</td>
 </tr>
 <tr>
 <td>A6</td>
@@ -3511,7 +3511,7 @@ Added 2026-07-25 by the ADR-023 authorship pass:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 02:23:30 UTC">July 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 02:31:57 UTC">July 30, 2026</span>
   </span>
 
     
