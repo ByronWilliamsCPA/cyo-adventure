@@ -886,6 +886,85 @@ guardian-authorized)" subsection; privacy-model version 0.2 to 0.3.
 
 Branch: `feat/personalization-p6-p7-client`.
 
+### Stage C status (completed 2026-07-29)
+
+C1 through C5 are done on `feat/personalization-p6-p7-client`, executed from the detailed
+Stage C implementation plan (committed beside this document as
+`story-personalization-stage-c-implementation-plan.md`). Commits, by task:
+
+- **C0 (prerequisites, added by the implementation plan; see deviation 1):** `4f3ad847`
+  (slot-id to field map in `generation/binding.py`), `556ebc5d` (story-scoped
+  `moderation/personalizable_slots.py` resolver), `ca50cbc5` (`sentinel_pattern` and
+  `slot_bindings` shipped on the values payload), `f03c7fdc` (`dedication` joins
+  `CLOSED_VOCABULARIES`, fail-closed).
+- **C1 (resolver):** `82d52f93` (`frontend/src/player/personalization.ts`), `3d8cb6e1`
+  (cross-language fallback-pattern pin, risk R9), `e1440b71` (`isPersonalizationEnabled()`
+  flag helper, default off).
+- **C2 (offline store):** `377de008` (`personalization_values` store at `DB_VERSION` 4),
+  `6e7bc145` (purge and reconcile triggers in `offline/revocation.ts`), `55c04e00`
+  (sign-out purge in `AuthContext`).
+- **C3 (render sites, behind the flag):** `31a27834` (values fetch adapter), `7d7ffdc7`
+  (passage, ending title, and read-aloud resolution; includes the C3f flag-off strip pin),
+  `cd794071` (ReaderPage threading), `8df1f9ce` (ReaderRoute flag-gated cache-first port),
+  `20f69463` (admin review-surface marker-visibility pin).
+- **C4 (ring 2):** `97c2fead` (the review's five coverage gaps closed in
+  `tests/integration/test_personalization_api.py`; every test passed first try), `37deeb67`
+  (client ring-agnosticism pin).
+- **C5 (dedication overlay):** `0ca97333` (`DedicationOverlay` component), `b0043c15`
+  (opening-screen-only render).
+- **C6 (stage exit):** `3cce7859` (authoring lessons AL-066..AL-068 plus UW-C20).
+
+The flag (`VITE_FEATURE_PERSONALIZATION`) remains **off**; gates G2 and G3 are still open and
+Stage C never enables any shipping surface.
+
+**Deviations from this section as written, each with its reason:**
+
+1. **C0 added** as a prerequisite task group. The values payload lacked `sentinel_pattern`
+   (named in two plan documents, never implemented) and any slot-id to slot-type join
+   (`slot_bindings`), and `dedication` was absent from `CLOSED_VOCABULARIES`. All three were
+   unimplementable-client or fail-open defects that had to land before C1. Lessons AL-066,
+   AL-067, AL-068.
+2. **C4's server half was already merged** in PR #466. `authorize_via_connection` was not
+   added (the connection resolves inline in `_resolve_ring2_view`, per the house convention
+   this section itself cites) and `test_personalization_ring2.py` was not created (the tests
+   live beside the ring-1 ones in `test_personalization_api.py`). C4 became test-list closure
+   plus a client ring-agnosticism pin.
+3. **The offline store is keyed by `storybook_id`, not `subject_profile_id`** as `:917`
+   specifies: the subject id is unknowable offline (it appears in no offline artifact), and a
+   subject-scoped purge scans the bounded per-book key set instead
+   (`purgePersonalizationValues`).
+4. **The fetch is not gated on `personalization_eligible`:** that boolean is in no API
+   response, and exposing it would mean either mutating the immutable version blob or adding
+   a response wrapper. The design plan frames the gate as an optimization, so one cheap extra
+   GET per book open was accepted instead (open question 2 below).
+5. **Choice labels are not resolved:** `generation/binding.py` renders choice labels with the
+   bare value always, and a sentinel in a choice label is treated as corruption by the
+   at-rest check, so there is nothing there to resolve.
+6. **The marker strip is unconditional; only the fetch is flag-gated.** ADR-023 section 10
+   forbids a marker on any kid-facing surface without exception, and the strip is a pure
+   synchronous pass, so `resolvePersonalization(text, null)` runs even with the flag off.
+7. **The dedication renders `For {NAME}` when no kinship value is available**, which is
+   today's only possible path given the empty vocabulary (C0e fails closed). The Stage R
+   "dedication guaranteed" clause is satisfied by the name half alone.
+
+**Open questions carried out of Stage C** (recorded, not guessed at; none blocked the stage):
+
+1. **Where should the slot-id to slot-type map be computed?** Stage C computes it per request
+   from the book's theme contract on disk (two JSON reads inside the book-open call). The
+   alternative is persisting it on `storybook_version` beside `sentinel_manifest` at
+   re-insertion time: one migration plus one generation-path edit, no request-path disk read,
+   and the map survives alongside the blob it describes. Reversible either way; owner input
+   wanted, not required.
+2. **Should `personalization_eligible` be exposed so the reader can skip a pointless fetch?**
+   Design plan 8.3 assumes it is on the library and version responses; it is on neither, and
+   the version route returns the raw immutable blob. The cheapest correct shape is a new
+   `LibraryItemView` field threaded from `LibraryPage` into the reader's route state, which
+   is Stage D-sized. Stage C skips the optimization (deviation 4).
+3. **The dedication kinship vocabulary is still empty**, so the "love {KINSHIP}" half of the
+   template is unreachable until the owner supplies the list, which belongs in a design-plan
+   update or ADR-023 amendment, not hand-added to the Python dict (its own `#VERIFY` marker
+   says so). **Owner input required** before the overlay can render its full template.
+
 ### Task C1: the resolver
 
 **Files:** create `frontend/src/player/personalization.ts` + `personalization.test.ts` (the
