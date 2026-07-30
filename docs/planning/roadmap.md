@@ -819,10 +819,14 @@ runs on Supabase-managed infrastructure instead of the homelab; see
       `covers.service.approve_cover` is the sole admin-only path to `ready`) merged in
       PR #469 (`30a988b5`), and the admin review UI (`ReviewDetailPage.tsx` renders the
       pending cover image plus an "Approve cover" action) merged in PR #471
-      (`584a8a57`). H2 itself is fully closed; **A16 is not**, per `UW-M07`: the R2
-      bucket serving cover images is publicly reachable at a deterministic object key,
-      so an unapproved cover's bytes remain fetchable without going through this gate.
-      See `capability-register.md`'s A16 row for the live status.
+      (`584a8a57`). `UW-M07` had held A16 open past H2: the R2 bucket served cover
+      images at a deterministic object key over a public custom domain, so an
+      unapproved cover's bytes stayed fetchable without passing this gate. The project
+      owner disconnected that domain in Cloudflare on 2026-07-30 (outside this
+      repository), re-verified by `dig cyo-bucket.williamshome.family` failing to
+      resolve against a working general-egress check, so the gate now governs actual
+      reachability and both H2 and A16 are closed. See `capability-register.md`'s A16
+      row for the live status.
 
 **Newly surfaced by the 2026-07-28 unscheduled-work sweep.** The security plan's Medium and Low
 tiers, and the authoring log's blocking lessons, had no phase home. Full detail by ID in the
