@@ -627,9 +627,12 @@ register capabilities that a prior draft of this list conflated; K5 is delivered
 undo), bookmarks (a distinct save-slot feature) is not built at all.**
 
 - [x] Lightweight node editor: read as playthrough and node list, edit a passage, re-run
-      validation, re-review on edit (G6). `PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}`
-      (`api/node_edit.py`) re-runs the gate and moderation on edit. Branch re-roll and a
-      dedicated guardian-facing (as opposed to admin) review surface still remain open.
+      validation, re-review on edit (G6, edit half). `PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}`
+      (`api/node_edit.py`) re-runs the gate and moderation on edit. A dedicated
+      guardian-facing review/edit surface (`GuardianReviewDetailPage.tsx`,
+      `/guardian/review/:storybookId`) now exists alongside the admin one, scoped to the
+      requesting family's own story. Branch re-roll and the reject/veto half of G6 (an open
+      ADR-005 product decision, not an engineering gap) remain out of scope.
 - [x] Ending tracker "3 of 7 endings found" (K6, UI over the shipped completion rows) and
       read-aloud/TTS for the youngest bands (K7). `EndingsProgress.tsx` and `useReadAloud.ts`
       wired into `Reader.tsx`, `tts_enabled` toggle in `ProfileFormDialog.tsx`.

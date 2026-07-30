@@ -10,6 +10,7 @@ import {
   AuditPage,
   AuthoringQueuePage,
   DevicesPage,
+  GuardianReviewDetailPage,
   NotFoundPage,
   PrivacyPage,
   ProviderAllowlistPage,
@@ -39,6 +40,9 @@ vi.mock('./admin/UserManagementPage', () => ({
 }))
 vi.mock('./guardian/DevicesPage', () => ({
   DevicesPage: () => <div>DevicesPage loaded</div>,
+}))
+vi.mock('./guardian/GuardianReviewDetailPage', () => ({
+  GuardianReviewDetailPage: () => <div>GuardianReviewDetailPage loaded</div>,
 }))
 vi.mock('./guardian/PrivacyPage', () => ({
   PrivacyPage: () => <div>PrivacyPage loaded</div>,
@@ -187,6 +191,12 @@ describe('lazy page loaders', () => {
     // two uncovered functions dropped this file to 68.11% function coverage
     // against the 70% per-file gate, which is how CI caught it on PR #473.
     ['DevicesPage', DevicesPage],
+    // Guardian G6 edit-and-review route, the third instance of the same
+    // pattern: it is reached only from a per-book link on BooksPage, so the
+    // router-navigation tests never resolve its chunk deterministically. Its
+    // two uncovered functions held this file at 69.01% against the 70%
+    // per-file gate once #473's DevicesPage entry grew the denominator.
+    ['GuardianReviewDetailPage', GuardianReviewDetailPage],
   ] as const
 
   it.each(cases)('resolves the %s loader to the named export', async (name, LazyPage) => {

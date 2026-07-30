@@ -70,3 +70,13 @@ export const AUTHORIZE_DEVICE_INTENT_VALUE = 'authorize-device'
 export function previewAsChildPath(profileId: string): string {
   return `${GUARDIAN_CONSOLE_PATH}/preview/${profileId}`
 }
+
+/**
+ * Guardian review/edit page (register G6, the edit half): a family's own
+ * guardian reaches their own story request here to view the full read-through
+ * and fix a flagged passage's prose or choice labels, mirroring the admin
+ * review route's `/admin/review/:storybookId` shape one level down.
+ */
+export function guardianReviewPath(storybookId: string): string {
+  return `${GUARDIAN_CONSOLE_PATH}/review/${storybookId}`
+}

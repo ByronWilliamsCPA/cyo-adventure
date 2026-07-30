@@ -921,7 +921,9 @@ export const archiveStorybookApiV1StorybooksStorybookIdArchivePost = <ThrowOnErr
 /**
  * Get Review Surface
  *
- * Return the guardian review surface for a story version (admin only).
+ * Return the review surface for a story version.
+ *
+ * Admin (any family), or guardian for their own family's story.
  *
  * Args:
  * storybook_id: The story to review.
@@ -933,7 +935,8 @@ export const archiveStorybookApiV1StorybooksStorybookIdArchivePost = <ThrowOnErr
  * story-level findings.
  *
  * Raises:
- * AuthorizationError: If the caller is not an admin (403).
+ * AuthorizationError: If the caller is neither admin nor guardian
+ * (403), or a guardian requests another family's story (403).
  * ValidationError: If a supplied version is not a positive integer, or the
  * stored moderation report is corrupt at rest.
  * ResourceNotFoundError: If the story or the requested version does not exist.

@@ -6,33 +6,18 @@ import { Dialog } from '@ds/components/Dialog'
 import { PassageText } from '@ds/components/PassageText'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
-import { makePassageEditApi } from './passageEditApi'
 import { makeCoverApi } from '../guardian/coverApi'
 import { makeRescreenApi, type BookVerdictView } from './rescreenApi'
-import { FlagBadge, verdictTone } from '../guardian/FlagBadge'
-import {
-  makeReviewApi,
-  type FindingView,
-  type ReviewSurface,
-  type Visibility,
-} from '../guardian/reviewApi'
+import { FlagBadge } from '../guardian/FlagBadge'
+import { makePassageEditApi } from '../guardian/passageEditApi'
+import { Finding, passageDomId, Passage } from '../guardian/ReviewPassage'
+import { makeReviewApi, type ReviewSurface, type Visibility } from '../guardian/reviewApi'
 import { StoryStructureSummary } from '../guardian/StoryStructureSummary'
-import { buildReadThrough, pluralize, type StoryNodeView } from './reviewDiff'
+import { usePassageEdit } from '../guardian/usePassageEdit'
+import { buildReadThrough, pluralize } from './reviewDiff'
 import { VersionDiffView } from './ReviewCompare'
 import { useCoverGeneration } from './useCoverGeneration'
 import { useVersionCompare } from './useVersionCompare'
-import { usePassageEdit } from './usePassageEdit'
-
-/**
- * DOM id for a passage container. encodeURIComponent keeps the id free of
- * whitespace (node ids are arbitrary strings on this defensive surface) while
- * staying deterministic from both a blob node id and a finding's node_id.
- * Duplicate node ids share a DOM id; a jump lands on the first (reachable)
- * copy, and the duplicate still renders in the unreachable section.
- */
-function passageDomId(nodeId: string): string {
-  return `passage-${encodeURIComponent(nodeId)}`
-}
 
 type LoadState =
   | { kind: 'loading' }
@@ -54,103 +39,6 @@ type RescreenState =
   | { kind: 'submitting' }
   | { kind: 'success'; verdict: BookVerdictView | null }
   | { kind: 'error' }
-
-function Finding({ finding }: { finding: FindingView }) {
-  return (
-    <li className="review-finding">
-      <FlagBadge tone={verdictTone(finding.verdict)} />
-      <span className="review-finding__category">{finding.category}</span>
-      <span className="review-finding__message">{finding.message}</span>
-    </li>
-  )
-}
-
-interface PassageProps {
-  node: StoryNodeView
-  isStart: boolean
-  flagged: boolean
-  highlighted: boolean
-  knownIds: Set<string>
-  onJump: (nodeId: string) => void
-  onEdit: (nodeId: string) => void
-  editDisabled: boolean
-}
-
-/**
- * One passage of the read-through: structure badges (Start / Ending with
- * kind and valence), the prose, then the kid-facing choice labels with a jump
- * button per resolvable target. tabIndex={-1} lets a jump move real focus
- * here; badges carry text, never color alone.
- *
- * `onEdit` opens the G6 passage-edit dialog (prose only: body text and
- * choice labels); `editDisabled` mirrors the Approve/Send Back actionbar's
- * own status guard so an edit is never offered on a published/archived/draft
- * version the backend would reject anyway.
- */
-function Passage({
-  node,
-  isStart,
-  flagged,
-  highlighted,
-  knownIds,
-  onJump,
-  onEdit,
-  editDisabled,
-}: PassageProps) {
-  const classes = ['review-node']
-  if (flagged) classes.push('review-node--flagged')
-  if (highlighted) classes.push('review-node--highlight')
-  const endingDetail = node.ending
-    ? [node.ending.kind, node.ending.valence]
-        .filter((part): part is string => part !== null)
-        .join(', ')
-    : ''
-  return (
-    <div id={passageDomId(node.id)} tabIndex={-1} className={classes.join(' ')}>
-      {isStart || node.isEnding ? (
-        <p className="review-node__badges">
-          {isStart ? (
-            <span className="review-node__badge review-node__badge--start">Start</span>
-          ) : null}
-          {node.isEnding ? (
-            <span className="review-node__badge review-node__badge--ending">
-              {endingDetail ? `Ending: ${endingDetail}` : 'Ending'}
-            </span>
-          ) : null}
-        </p>
-      ) : null}
-      <PassageText text={node.body} />
-      <Button
-        variant="ghost"
-        size="sm"
-        className="review-node__edit"
-        onClick={() => onEdit(node.id)}
-        disabled={editDisabled}
-      >
-        Edit passage
-      </Button>
-      {node.choices.length > 0 ? (
-        <ul className="review-choices">
-          {node.choices.map((choice, index) => (
-            // Choices are static per render; index key is stable here.
-            <li key={index} className="review-choice">
-              <span className="review-choice__label">{choice.label || '(missing label)'}</span>
-              {knownIds.has(choice.target) ? (
-                <button type="button" className="review-jump" onClick={() => onJump(choice.target)}>
-                  Go to {choice.target}
-                </button>
-              ) : (
-                // A dead link would 404 the reviewer's attention; name the
-                // defect instead so it can be sent back with a reason.
-                <span className="review-choice__missing cyo-text-error">missing target</span>
-              )}
-            </li>
-          ))}
-        </ul>
-      ) : null}
-    </div>
-  )
-}
 
 /**
  * Flags-first review detail (C4a-4, wireframe 4.4). Flagged passages surface
