@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.49.0] - 2026-07-30
+
+### Features
+
+- **personalization**: ADR-023 Stage C client resolution, ring 2 closeout, and dedication overlay
+  ([#489](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/489),
+  [`274e49a`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/274e49a506689925db75840134cd4b36d00c1b2f))
+
+
 ## [0.48.0] - 2026-07-30
 
 ### Features
@@ -2836,6 +2845,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.49.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.48.0...v0.49.0
 [0.48.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.47.0...v0.48.0
 [0.47.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.46.0...v0.47.0
 [0.46.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.45.0...v0.46.0
