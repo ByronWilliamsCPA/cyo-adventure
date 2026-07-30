@@ -103,4 +103,14 @@ describe('resolvePersonalization', () => {
     )
     expect(resolved).toBe('Then Maya ran.')
   })
+
+  it('resolves a ring-2 payload identically to a ring-1 one', () => {
+    // Design plan 8.3: one route serves both rings and the client never branches
+    // on which. A resolver that read `payload.ring` would be a latent
+    // divergence; this asserts it does not.
+    const ring1 = payload({ ring: 1 })
+    const ring2 = payload({ ring: 2, policy_version: 'ring2-2026-07' })
+    const text = 'Then {~HERO:Explorer~} ran.'
+    expect(resolvePersonalization(text, ring2)).toBe(resolvePersonalization(text, ring1))
+  })
 })
