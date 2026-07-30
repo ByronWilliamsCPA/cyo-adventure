@@ -46,12 +46,22 @@ export function DedicationOverlay({ personalization }: DedicationOverlayProps) {
   if (personalization === null) return null
   if (personalization.ring === 2) return null
 
-  const name = personalization.values.protagonist_first_name
-  if (name === undefined || name === '') return null
+  // #ASSUME: data-integrity: the payload arrives from an unvalidated axios cast
+  // and from IndexedDB; `values` may not be the plain object the type claims.
+  // Render nothing on a malformed shape rather than throw inside render into
+  // the app error boundary (same guard as resolvePersonalization's).
+  // #VERIFY: DedicationOverlay.test.tsx "renders nothing when the payload
+  // values shape is malformed".
+  const values: unknown = personalization.values
+  if (typeof values !== 'object' || values === null || Array.isArray(values)) return null
+  const record = values as Record<string, unknown>
 
-  const kinship = personalization.values.dedication
+  const name = record.protagonist_first_name
+  if (typeof name !== 'string' || name === '') return null
+
+  const kinship = record.dedication
   const line =
-    kinship === undefined || kinship === '' ? `For ${name}` : `For ${name}, love ${kinship}`
+    typeof kinship !== 'string' || kinship === '' ? `For ${name}` : `For ${name}, love ${kinship}`
 
   return (
     <p className="reader-dedication" data-testid="dedication">

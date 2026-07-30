@@ -233,6 +233,68 @@ describe('useReadAloud', () => {
     expect(result.current.spokenWordRange).toBeNull()
   })
 
+  describe('TTS egress (ADR-023 / COPPA): personalized text only through a local voice', () => {
+    function voice(overrides: Partial<SpeechSynthesisVoice>): SpeechSynthesisVoice {
+      return { default: true, localService: true, ...overrides } as SpeechSynthesisVoice
+    }
+
+    function installWithVoices(voices: SpeechSynthesisVoice[]) {
+      vi.stubGlobal('speechSynthesis', {
+        speak: speakMock,
+        cancel: cancelMock,
+        getVoices: () => voices,
+      })
+      vi.stubGlobal('SpeechSynthesisUtterance', MockUtterance)
+    }
+
+    it('speaks the personalized text when the default voice is local', () => {
+      installWithVoices([voice({ localService: true })])
+      const { result } = renderHook(() => useReadAloud(true))
+      act(() => {
+        result.current.speak('Then Maya ran.', [], 'Then Explorer ran.')
+      })
+      const bodyUtterance = speakMock.mock.calls[0][0] as MockUtterance
+      expect(bodyUtterance.text).toBe('Then Maya ran.')
+    })
+
+    it('speaks the generic text when the default voice is not local', () => {
+      installWithVoices([voice({ localService: false })])
+      const { result } = renderHook(() => useReadAloud(true))
+      act(() => {
+        result.current.speak('Then Maya ran.', [], 'Then Explorer ran.')
+      })
+      const bodyUtterance = speakMock.mock.calls[0][0] as MockUtterance
+      expect(bodyUtterance.text).toBe('Then Explorer ran.')
+      expect(bodyUtterance.text).not.toContain('Maya')
+      // The rendered passage is the personalized text, so highlighting against
+      // the substituted generic string would mark the wrong words; the hook
+      // skips it entirely.
+      expect(bodyUtterance.onboundary).toBeNull()
+    })
+
+    it('speaks the generic text when the voice list is unavailable', () => {
+      // installSpeechSynthesis provides no getVoices at all.
+      installSpeechSynthesis()
+      const { result } = renderHook(() => useReadAloud(true))
+      act(() => {
+        result.current.speak('Then Maya ran.', [], 'Then Explorer ran.')
+      })
+      const bodyUtterance = speakMock.mock.calls[0][0] as MockUtterance
+      expect(bodyUtterance.text).toBe('Then Explorer ran.')
+    })
+
+    it('leaves behavior unchanged when the texts are equal (no personalization applied)', () => {
+      installSpeechSynthesis()
+      const { result } = renderHook(() => useReadAloud(true))
+      act(() => {
+        result.current.speak('Then Explorer ran.', [], 'Then Explorer ran.')
+      })
+      const bodyUtterance = speakMock.mock.calls[0][0] as MockUtterance
+      expect(bodyUtterance.text).toBe('Then Explorer ran.')
+      expect(bodyUtterance.onboundary).not.toBeNull()
+    })
+  })
+
   it('kid-safe failure: the broken latch persists so a later speak() call does not retry', () => {
     // `broken` is never reset anywhere in the hook, so once it latches the
     // toggle must stay hidden for the rest of this hook instance's life, not

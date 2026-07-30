@@ -46,6 +46,32 @@ describe('DedicationOverlay', () => {
     expect(screen.queryByTestId('dedication')).not.toBeInTheDocument()
   })
 
+  it('renders nothing when the payload values shape is malformed', () => {
+    // The payload arrives from an unvalidated axios cast and from IndexedDB;
+    // junk `values` must render nothing, not throw inside render into the app
+    // error boundary.
+    render(
+      <DedicationOverlay
+        personalization={{ ...payload({}), values: 'junk' } as unknown as ValuesPayload}
+      />
+    )
+    expect(screen.queryByTestId('dedication')).not.toBeInTheDocument()
+  })
+
+  it('renders nothing when the name value is not a string', () => {
+    render(
+      <DedicationOverlay
+        personalization={
+          {
+            ...payload({}),
+            values: { protagonist_first_name: 7 },
+          } as unknown as ValuesPayload
+        }
+      />
+    )
+    expect(screen.queryByTestId('dedication')).not.toBeInTheDocument()
+  })
+
   it('renders nothing for a ring-2 payload', () => {
     // Ring 1 only: a dedication is addressed to its own household and means
     // nothing in another one (design plan section 9). The DB CHECK and predicate

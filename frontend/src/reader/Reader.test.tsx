@@ -50,7 +50,10 @@ const sentinelStory: Storybook = {
       id: 'n_start',
       body: 'Then {~HERO:Explorer~} ran.',
       is_ending: false,
-      choices: [{ id: 'c', label: 'Continue', target: 'n_end' }],
+      // The label carries a sentinel deliberately: labels never legally do
+      // (generation/binding.py), but the Reader applies a defensive strip and
+      // the tests below assert it.
+      choices: [{ id: 'c', label: 'Follow {~HERO:Explorer~}', target: 'n_end' }],
     },
     {
       id: 'n_end',
@@ -266,6 +269,33 @@ describe('Reader personalization (ADR-023 C3e)', () => {
     fireEvent.click(screen.getByTestId('choice-c'))
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent("Maya's last stand")
   })
+
+  it('strips the ending title to its generic word on the generic path', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c'))
+    const heading = screen.getByRole('heading', { level: 2 })
+    expect(heading).toHaveTextContent("Explorer's last stand")
+    expect(heading.textContent).not.toContain('{~')
+  })
+
+  it('defensively strips a sentinel in a choice label to its generic word, never the marker', () => {
+    // Labels are stripped, not resolved: a personal value in a label would be
+    // a new egress surface, so even with a payload present the label shows the
+    // generic word.
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" personalization={valuesPayload()} />
+      </MemoryRouter>
+    )
+    const label = screen.getByTestId('choice-c').textContent ?? ''
+    expect(label).toContain('Follow Explorer')
+    expect(label).not.toContain('{~')
+    expect(label).not.toContain('Maya')
+  })
 })
 
 describe('Reader dedication overlay (ADR-023 C5b)', () => {
@@ -309,6 +339,34 @@ describe('Reader dedication overlay (ADR-023 C5b)', () => {
       </MemoryRouter>
     )
     expect(screen.queryByTestId('dedication')).not.toBeInTheDocument()
+  })
+
+  it('re-shows the dedication after going back to the opening page (by design)', () => {
+    // The engine's back() truncates the recorded path, so a post-back return
+    // to the start node is indistinguishable from a short read and
+    // legitimately re-shows the dedication.
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" personalization={valuesPayload()} />
+      </MemoryRouter>
+    )
+    expect(screen.getByTestId('dedication')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('choice-c'))
+    expect(screen.queryByTestId('dedication')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('go-back'))
+    expect(screen.getByTestId('dedication')).toBeInTheDocument()
+  })
+
+  it('re-shows the dedication after Read again (RESTART)', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" personalization={valuesPayload()} />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c'))
+    expect(screen.queryByTestId('dedication')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('restart'))
+    expect(screen.getByTestId('dedication')).toBeInTheDocument()
   })
 })
 
@@ -719,8 +777,17 @@ describe('Reader read-aloud (K7)', () => {
   const speakMock = vi.fn()
   const cancelMock = vi.fn()
 
-  function installSpeechSynthesis() {
-    vi.stubGlobal('speechSynthesis', { speak: speakMock, cancel: cancelMock })
+  // Defaults to a local default voice so the TTS egress guard (personalized
+  // text only through voice.localService === true) permits personalized
+  // speech; the non-local case overrides the voice list explicitly.
+  function installSpeechSynthesis(
+    voices: SpeechSynthesisVoice[] = [{ default: true, localService: true } as SpeechSynthesisVoice]
+  ) {
+    vi.stubGlobal('speechSynthesis', {
+      speak: speakMock,
+      cancel: cancelMock,
+      getVoices: () => voices,
+    })
     vi.stubGlobal('SpeechSynthesisUtterance', MockUtterance)
   }
 
@@ -882,7 +949,7 @@ describe('Reader read-aloud (K7)', () => {
   // bodyText) happens in Reader.tsx's speak() call site, not inside the hook
   // itself; useReadAloud.test.ts already covers the hook's own queueing
   // mechanics in isolation and has no notion of personalization.
-  it('speaks the resolved passage, not the marker', () => {
+  it('speaks the resolved passage, not the marker (local voice)', () => {
     installSpeechSynthesis()
     render(
       <MemoryRouter>
@@ -893,6 +960,23 @@ describe('Reader read-aloud (K7)', () => {
     expect(speakMock).toHaveBeenCalledTimes(1)
     const bodyUtterance = speakMock.mock.calls[0][0] as MockUtterance
     expect(bodyUtterance.text).toContain('Maya')
+    expect(bodyUtterance.text).not.toContain('{~HERO')
+  })
+
+  it('speaks the generic passage through a non-local voice (TTS egress guard)', () => {
+    // A non-local voice synthesizes server-side; the child's real name must
+    // never ride that egress, so the generic-resolved text is spoken instead.
+    installSpeechSynthesis([{ default: true, localService: false } as SpeechSynthesisVoice])
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" personalization={valuesPayload()} ttsEnabled />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByLabelText('Read this page aloud'))
+    expect(speakMock).toHaveBeenCalledTimes(1)
+    const bodyUtterance = speakMock.mock.calls[0][0] as MockUtterance
+    expect(bodyUtterance.text).toContain('Explorer')
+    expect(bodyUtterance.text).not.toContain('Maya')
     expect(bodyUtterance.text).not.toContain('{~HERO')
   })
 })

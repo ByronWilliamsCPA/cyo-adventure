@@ -20,7 +20,11 @@ import type { KidFlagCreatedView, ReadingHistoryItem } from '../client/types.gen
 import { canGoBack, currentEndingId, visibleChoices } from '../player/engine'
 import { Mascot } from '../kid/Mascot'
 import { readerMachine } from '../player/machine'
-import { resolvePersonalization, type ValuesPayload } from '../player/personalization'
+import {
+  resolvePersonalization,
+  stripSentinels,
+  type ValuesPayload,
+} from '../player/personalization'
 import { SATISFYING_ENDING_KINDS, seriesMeta } from '../player/series'
 import type { ReadingState, Storybook } from '../player/types'
 import { BackToLibrary } from './BackToLibrary'
@@ -75,8 +79,11 @@ export interface ReaderProps {
   /**
    * The resolved ADR-023 values payload, or null/absent for the generic story.
    * Resolved into the passage, the ending title, and the read-aloud text, and
-   * nowhere else: choice labels never carry sentinels (generation/binding.py) and
-   * admin review surfaces show markers on purpose (ADR-023 section 10).
+   * nowhere else: admin review surfaces show markers on purpose (ADR-023
+   * section 10). Choice labels never legally carry sentinels
+   * (generation/binding.py) so they are never RESOLVED, but they do get a
+   * defensive strip to generic words at render, because a defensive strip is
+   * cheaper than trusting every future write path.
    */
   personalization?: ValuesPayload | null
 }
@@ -108,22 +115,47 @@ export function Reader({
   // visual defect and must never appear, and that is true whether or not the
   // family opted in, because `resolvePersonalization(text, null)` strips markers
   // to their generic words rather than passing them through.
+  // Memoized on the input text and the payload: read-aloud word highlighting
+  // re-renders this component per spoken word, and the resolve (two regex
+  // passes over the passage) should not re-run on each of those renders.
   // #VERIFY: Reader.test.tsx "renders the generic word when there is no payload".
-  const bodyText = resolvePersonalization(node?.body ?? '', personalization)
-  const endingTitle = resolvePersonalization(node?.ending?.title ?? '', personalization)
+  const bodyText = useMemo(
+    () => resolvePersonalization(node?.body ?? '', personalization),
+    [node, personalization]
+  )
+  const endingTitle = useMemo(
+    () => resolvePersonalization(node?.ending?.title ?? '', personalization),
+    [node, personalization]
+  )
+  // The generic-resolved body, for the read-aloud egress guard: a non-local
+  // TTS voice must never receive the personalized text (see useReadAloud).
+  const genericBodyText = useMemo(() => resolvePersonalization(node?.body ?? '', null), [node])
 
-  // The dedication belongs on the opening screen and nowhere else: it is a note
-  // from a grown-up on page one, and one repeated mid-story stops being a
-  // dedication. `path.length <= 1` rather than `current_node === start_node`
-  // because RESTART returns to the start node with a fresh single-entry path
-  // (a re-read legitimately shows it again) while a resumed read that happens to
-  // sit on the start node after going back has a longer path and must not.
+  // The dedication belongs on the opening screen: it is a note from a grown-up
+  // on page one, and one repeated mid-story stops being a dedication.
+  // `path.length <= 1` plus the start-node check covers every page-one state:
+  // a fresh read, RESTART (a fresh single-entry path), and a post-back return
+  // to the start node, which is BY DESIGN indistinguishable from a short read,
+  // because the engine's back() truncates the recorded path; backing up to
+  // page one therefore legitimately re-shows the dedication.
   const atOpening = reading.path.length <= 1 && reading.current_node === story.start_node
 
   // Read-aloud (K7): the toggle itself renders in ReaderChrome, but the
   // speech content (passage body, then choice labels) is only known here.
   const readAloud = useReadAloud(ttsEnabled)
-  const choices = useMemo(() => visibleChoices(story, reading), [story, reading])
+  // Choice labels never legally carry sentinels (generation/binding.py), but
+  // the module's own rationale applies here too: a defensive strip to generic
+  // words is cheaper than trusting every future write path, and a label is a
+  // kid-facing surface like any other. Strip only, never resolve: a personal
+  // value in a label would be a new egress surface, not a feature.
+  const choices = useMemo(
+    () =>
+      visibleChoices(story, reading).map((choice) => ({
+        ...choice,
+        label: stripSentinels(choice.label),
+      })),
+    [story, reading]
+  )
 
   // Report progress whenever the reading state changes (drives WP7 persistence).
   useEffect(() => {
@@ -175,9 +207,12 @@ export function Reader({
     if (readAloud.speaking) {
       readAloud.stop()
     } else {
+      // The third argument is the TTS egress guard's generic fallback: a
+      // non-local voice speaks the generic text, never the child's name.
       readAloud.speak(
         bodyText,
-        choices.map((choice) => choice.label)
+        choices.map((choice) => choice.label),
+        genericBodyText
       )
     }
   }

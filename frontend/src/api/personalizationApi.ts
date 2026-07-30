@@ -13,7 +13,7 @@
  * to null, which the resolver treats as "render generic".
  */
 
-import type { AxiosInstance } from 'axios'
+import { isAxiosError, type AxiosInstance } from 'axios'
 
 import type { ValuesPayload } from '../player/personalization'
 
@@ -33,7 +33,7 @@ export function makeFetchPersonalizationValues(
         `/v1/storybooks/${storybookId}/personalization-values`
       )
       return res.data
-    } catch {
+    } catch (error) {
       // #ASSUME: data-integrity: EVERY failure resolves to null, including a 500
       // and an auth error, and none of them is re-thrown or surfaced. This
       // deliberately differs from readerApi.ts, which maps 404/403/401 onto
@@ -45,6 +45,17 @@ export function makeFetchPersonalizationValues(
       // guardian never enabled.
       // #VERIFY: personalizationApi.test.ts covers the thrown-Error and the
       // transport-failure shapes; Reader.test.tsx covers the render outcome.
+      //
+      // Child-facing silence preserved, console.warn only: without this, a
+      // persistent 500 is indistinguishable from a family that never opted in.
+      // Value-free by design: the failure kind (an HTTP status or a transport
+      // label) and the book id only, never slot values, resolved text, or any
+      // payload contents.
+      const kind = isAxiosError(error) ? (error.response?.status ?? 'network') : 'non-http'
+      console.warn('[personalization] values fetch failed; rendering generic', {
+        storybookId,
+        kind,
+      })
       return null
     }
   }
