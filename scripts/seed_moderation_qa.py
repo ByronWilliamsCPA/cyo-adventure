@@ -1,0 +1,332 @@
+"""Seed the staging Moderation QA corpus as real, unpublishable storybook rows.
+
+Implements moderation-review-redesign-2026-07-28.md section 5: a set of
+labeled test storybooks (``docs/planning/safety/moderation-qa-corpus.json`` +
+``tests/fixtures/moderation_qa/books/*.json``) seeded into staging as real
+``storybook``/``storybook_version`` rows, so the real worker code path
+(classifiers, reviewer, repair, routing) processes a known-bad book end to
+end. Inappropriate content never needs to exist in production: this script
+hard-refuses to run outside staging.
+
+Run against staging::
+
+    ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
+        uv run python scripts/seed_moderation_qa.py
+
+Insert the fixture rows without running moderation (cheap, no LLM calls;
+useful for re-seeding or inspecting the raw draft rows)::
+
+    ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
+        uv run python scripts/seed_moderation_qa.py --skip-moderation
+
+Idempotent by design: a book id already present in the database is left
+untouched (never re-inserted, never re-moderated) on a re-run, so repeated
+runs are safe and only new manifest entries get processed.
+
+Containment (moderation-review-redesign-2026-07-28.md section 5, point 3):
+
+- the environment guard below hard-refuses anything but ``ENVIRONMENT=staging``,
+  the same posture as ``scripts/seed_staging.py``;
+- every row uses the ``mqa_`` id namespace and belongs to a dedicated
+  "Moderation QA" family that never gets a ``ChildProfile``, so there is no
+  profile in this family for a ``StorybookAssignment`` to ever target;
+- this script never assigns a book to any profile and never calls
+  ``publishing/service.py::approve`` -- the existing read gate (approved AND
+  assigned) already makes an unassigned, unapproved book invisible to every
+  kid surface, and the moderation pipeline itself only ever calls
+  ``submit``/``auto_reject`` (see ``moderation/pipeline.py``'s own
+  "guardian is the FINAL gate" invariant), never ``approve``.
+"""
+
+from __future__ import annotations
+
+import argparse
+import asyncio
+import json
+import os
+import sys
+import uuid
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
+
+from sqlalchemy.ext.asyncio import async_sessionmaker
+
+from cyo_adventure.core.config import settings as _default_settings
+from cyo_adventure.core.database import Base, get_engine
+from cyo_adventure.db.models import Family, Storybook, StorybookVersion
+from cyo_adventure.generation.pii import PiiContext
+from cyo_adventure.generation.provider import build_provider
+from cyo_adventure.moderation.pipeline import run_moderation_pipeline
+from cyo_adventure.utils.logging import get_logger
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
+
+_logger = get_logger(__name__)
+
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+_MANIFEST_PATH = (
+    _REPO_ROOT / "docs" / "planning" / "safety" / "moderation-qa-corpus.json"
+)
+
+# Fixed id (mirrors the _UNRELATED_PROFILE_ID / _SERIES_BOOKS fixed-id pattern
+# in scripts/seed_dev_data.py) so re-running this script always resolves the
+# same family row instead of minting a new one via the UUIDPrimaryKeyMixin
+# default every time.
+_QA_FAMILY_ID = uuid.UUID("00000000-0000-0000-0000-000000000001")
+_QA_FAMILY_NAME = "Moderation QA"
+
+_FIRST_VERSION = 1
+
+
+def _require_staging_or_exit() -> str:
+    """Refuse to run unless ``ENVIRONMENT=staging``.
+
+    #CRITICAL: security: this is containment layer 1 of 4 (design section 5,
+    point 3). QA fixtures deliberately include a bright-line-block book and
+    several band-borderline books; running this script against production
+    (or any non-staging target) would put that content into a real database.
+    #VERIFY: test_require_staging_or_exit_refuses_non_staging in
+    tests/unit/test_seed_moderation_qa.py.
+
+    Returns:
+        The validated ``"staging"`` environment string.
+    """
+    environment = os.environ.get("ENVIRONMENT", "")
+    if environment != "staging":
+        sys.exit(
+            "seed_moderation_qa: refusing to run because ENVIRONMENT="
+            f"{environment!r}, not 'staging'. This script seeds deliberately "
+            "off-band and bright-line-block test content; it must never run "
+            "against production or any other environment."
+        )
+    return environment
+
+
+def load_manifest() -> list[dict[str, Any]]:
+    """Load the moderation QA corpus manifest's book entries.
+
+    Returns:
+        The manifest's ``books`` array (id, file path, expected labels).
+    """
+    manifest = json.loads(_MANIFEST_PATH.read_text(encoding="utf-8"))
+    books: list[dict[str, Any]] = manifest["books"]
+    return books
+
+
+def _load_blob(entry: dict[str, Any]) -> dict[str, Any]:
+    """Load a manifest entry's storybook JSON blob.
+
+    Args:
+        entry: One manifest book entry (carries a repo-relative ``file`` path).
+
+    Returns:
+        The parsed storybook blob.
+    """
+    blob: dict[str, Any] = json.loads(
+        (_REPO_ROOT / entry["file"]).read_text(encoding="utf-8")
+    )
+    return blob
+
+
+async def _ensure_qa_family(session: AsyncSession) -> Family:
+    """Idempotently resolve the dedicated Moderation QA family.
+
+    #CRITICAL: security: containment layer 2 of 4. Every QA book belongs to
+    this family, and this family is never given a ``ChildProfile`` by any
+    code path in this script, so no ``StorybookAssignment`` can ever be
+    inserted for a real (or fixture) child against it -- the read gate's
+    assignment half is unsatisfiable by construction, not just by omission.
+    #VERIFY: test_ensure_qa_family_never_creates_a_child_profile.
+
+    Args:
+        session: The active seed session.
+
+    Returns:
+        The Moderation QA family row (existing or freshly inserted).
+    """
+    existing = await session.get(Family, _QA_FAMILY_ID)
+    if existing is not None:
+        return existing
+    family = Family(id=_QA_FAMILY_ID, name=_QA_FAMILY_NAME)
+    session.add(family)
+    await session.flush()
+    return family
+
+
+async def _seed_fixture_rows(
+    session: AsyncSession, family: Family, books: list[dict[str, Any]]
+) -> list[str]:
+    """Idempotently insert draft Storybook/StorybookVersion rows for new books.
+
+    #CRITICAL: security: containment layer 3 of 4. Every inserted
+    ``Storybook.id`` carries the ``mqa_`` prefix (enforced by the manifest
+    integrity tests in tests/unit/test_moderation_qa_corpus.py, not
+    re-validated here) and is inserted at ``status="draft"`` with
+    ``current_published_version=None``: this script never sets a status
+    other than "draft" and never touches ``current_published_version``, so a
+    freshly seeded book cannot be mistaken for a published one even before
+    moderation runs.
+    #VERIFY: test_seed_fixture_rows_skips_already_present_books;
+    test_seed_fixture_rows_inserts_as_draft_with_no_published_version.
+
+    Args:
+        session: The active seed session.
+        family: The Moderation QA family every row is scoped to.
+        books: The manifest's book entries.
+
+    Returns:
+        The ids of books newly inserted this run (already-present ids are
+        skipped and excluded).
+    """
+    inserted: list[str] = []
+    for entry in books:
+        book_id = str(entry["id"])
+        existing = await session.get(Storybook, book_id)
+        if existing is not None:
+            continue
+        blob = _load_blob(entry)
+        session.add(
+            Storybook(
+                id=book_id,
+                family_id=family.id,
+                current_published_version=None,
+                status="draft",
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id=book_id,
+                version=_FIRST_VERSION,
+                blob=blob,
+                moderation_report=None,
+            )
+        )
+        inserted.append(book_id)
+    if inserted:
+        await session.flush()
+    return inserted
+
+
+async def _moderate_new_books(session: AsyncSession, book_ids: list[str]) -> None:
+    """Run the real moderation pipeline over freshly seeded books.
+
+    #CRITICAL: security: containment layer 4 of 4. This calls
+    ``run_moderation_pipeline`` only, which per its own module contract may
+    only drive ``submit`` (in_review) or ``auto_reject`` (needs_revision) --
+    it never calls ``approve``/``publish``. This function calls nothing else
+    that could publish a book.
+    #VERIFY: test_moderate_new_books_never_calls_approve_or_publish.
+
+    No real child is involved (the Moderation QA family has no
+    ``ChildProfile``), so the PII guard runs with an empty forbidden-name set;
+    it still screens the reviewer/repair prompts, just against nothing.
+
+    Args:
+        session: The active seed session.
+        book_ids: Ids of the books to moderate (normally the freshly inserted
+            set from :func:`_seed_fixture_rows`).
+    """
+    provider = build_provider(_default_settings)
+    pii = PiiContext(child_names=frozenset())
+    for book_id in book_ids:
+        try:
+            await run_moderation_pipeline(
+                session=session,
+                story_id=book_id,
+                version=_FIRST_VERSION,
+                settings=_default_settings,
+                generation_provider=provider,
+                pii=pii,
+            )
+        except Exception:
+            # #ASSUME: external-resources: a single book's moderation run can
+            # fail on a transient provider error without aborting the whole
+            # batch; the book stays "draft" and is retried on the next run
+            # (it is not yet in the database from this session's point of
+            # view... it IS persisted already by _seed_fixture_rows's flush,
+            # so a retry only needs --skip-moderation seeding to be re-run
+            # with moderation enabled).
+            # #VERIFY: test_moderate_new_books_continues_after_one_failure.
+            _logger.exception("seed_moderation_qa.moderate_failed", story_id=book_id)
+
+
+async def seed(
+    *,
+    engine: AsyncEngine | None = None,
+    session_factory: Callable[[], AsyncSession] | None = None,
+    moderate: bool = True,
+) -> None:
+    """Idempotently seed the staging Moderation QA corpus.
+
+    Refuses to run unless ``ENVIRONMENT=staging``. Resolves the dedicated
+    Moderation QA family, inserts any manifest book not already present as a
+    draft ``Storybook``/``StorybookVersion`` pair, and (unless ``moderate`` is
+    False) runs the real moderation pipeline over each newly inserted book.
+
+    Args:
+        engine: Async engine to create the schema on. Defaults to the app's
+            shared engine (``get_engine()``); tests inject a mock engine here.
+        session_factory: Callable returning a new ``AsyncSession``. Defaults
+            to a sessionmaker bound to ``engine``; tests inject a mocked
+            session factory here so no real database connection is required.
+        moderate: When True (default), run the real moderation pipeline over
+            every newly inserted book before committing. When False, only the
+            draft rows are inserted (no LLM calls), for cheap re-seeding or
+            inspection.
+    """
+    _require_staging_or_exit()
+
+    active_engine = engine if engine is not None else get_engine()
+    async with active_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+    new_session = (
+        session_factory
+        if session_factory is not None
+        else async_sessionmaker(active_engine, expire_on_commit=False)
+    )
+
+    books = load_manifest()
+    async with new_session() as session:
+        family = await _ensure_qa_family(session)
+        inserted = await _seed_fixture_rows(session, family, books)
+        if inserted and moderate:
+            await _moderate_new_books(session, inserted)
+        await session.commit()
+
+    print(
+        f"Moderation QA corpus: {len(inserted)} book(s) newly seeded "
+        f"({len(books)} in the manifest), family {family.id}, "
+        f"moderation {'ran' if moderate else 'skipped'}."
+    )
+
+
+def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    """Parse CLI arguments for the seed script.
+
+    Args:
+        argv: Argument list, or None to use ``sys.argv``.
+
+    Returns:
+        The parsed namespace (``skip_moderation`` bool).
+    """
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--skip-moderation",
+        action="store_true",
+        help="Insert draft rows only; do not run the real moderation pipeline.",
+    )
+    return parser.parse_args(argv)
+
+
+def main() -> None:
+    """Entry point for the moderation QA corpus seed script."""
+    args = _parse_args()
+    asyncio.run(seed(moderate=not args.skip_moderation))
+
+
+if __name__ == "__main__":
+    main()
