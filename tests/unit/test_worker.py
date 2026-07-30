@@ -2570,6 +2570,70 @@ async def test_update_request_interpretation_no_block_skips_query() -> None:
 
 
 # ---------------------------------------------------------------------------
+# ADR-023 Task D1 (gate G3): _resolve_name_personalization_enabled.
+#
+# Reuses the _UpdateResult/_UpdateSession doubles above: both helpers resolve
+# a single scalar via session.execute(...).scalar_one_or_none(), so the same
+# fake shape covers this query too.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_resolve_name_personalization_enabled_true_when_profile_opted_in() -> (
+    None
+):
+    """A resolved profile with real_name_ring1_enabled=True returns True."""
+    import uuid
+
+    session = _UpdateSession(row=True)
+    job = cast("GenerationJob", SimpleNamespace(concept_id=uuid.uuid4()))
+
+    result = await worker_module._resolve_name_personalization_enabled(  # pyright: ignore[reportPrivateUsage]
+        cast("AsyncSession", session), job
+    )
+
+    assert result is True
+    assert len(session.executed) == 1
+
+
+@pytest.mark.asyncio
+async def test_resolve_name_personalization_enabled_false_when_profile_opted_out() -> (
+    None
+):
+    """A resolved profile with real_name_ring1_enabled=False returns False."""
+    import uuid
+
+    session = _UpdateSession(row=False)
+    job = cast("GenerationJob", SimpleNamespace(concept_id=uuid.uuid4()))
+
+    result = await worker_module._resolve_name_personalization_enabled(  # pyright: ignore[reportPrivateUsage]
+        cast("AsyncSession", session), job
+    )
+
+    assert result is False
+
+
+@pytest.mark.asyncio
+async def test_resolve_name_personalization_enabled_false_when_no_request_row() -> None:
+    """No originating StoryRequest row (guardian-authored concept) fails closed.
+
+    scalar_one_or_none() returning None means either no request row joined at
+    all, or the join found a row whose profile_id is NULL: both cases must
+    fail closed to False, never raise.
+    """
+    import uuid
+
+    session = _UpdateSession(None)
+    job = cast("GenerationJob", SimpleNamespace(concept_id=uuid.uuid4()))
+
+    result = await worker_module._resolve_name_personalization_enabled(  # pyright: ignore[reportPrivateUsage]
+        cast("AsyncSession", session), job
+    )
+
+    assert result is False
+
+
+# ---------------------------------------------------------------------------
 # WS-7 D7: the bounded alternate-skeleton re-route (design section 6.2) and the
 # CANNOT_CARRY failure surface (design sections 6.1, 6.3, CR-4).
 # ---------------------------------------------------------------------------

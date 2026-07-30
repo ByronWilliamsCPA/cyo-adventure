@@ -325,6 +325,13 @@ class _SkeletonFillContext:
             time, before the post-run label overwrite), threaded into the
             Stage 1 gate as its review-model fallback whenever the job's
             ``review_stage1_model`` override is unset (closes #134).
+        name_personalization_enabled: ADR-023 Task D1 (gate G3): the
+            requesting profile's ``real_name_ring1_enabled`` flag, resolved
+            once per job (:func:`_resolve_name_personalization_enabled`) and
+            forwarded to every :func:`~cyo_adventure.story_requests.
+            interpretation.render_interpretation` call this context reaches.
+            Defaults ``False`` (fail-closed: the toggle-off Route A copy) for
+            any construction site that has not been updated to resolve it.
     """
 
     authoring: dict[str, object]
@@ -332,6 +339,7 @@ class _SkeletonFillContext:
     effective_provider: GenerationProvider
     pii: PiiContext
     prep_model: str | None = None
+    name_personalization_enabled: bool = False
 
 
 def _refined_interpretation_from_bind(
@@ -398,6 +406,7 @@ def _refined_interpretation_from_bind(
         skeleton_slug=contract.skeleton_slug,
         contract_version=contract.contract_version,
         created_at=created_at,
+        name_personalization_enabled=ctx.name_personalization_enabled,
     )
 
 
@@ -451,6 +460,7 @@ def _degraded_interpretation(
         skeleton_slug=skeleton_slug,
         contract_version=None,
         created_at=created_at,
+        name_personalization_enabled=ctx.name_personalization_enabled,
     )
 
 
@@ -511,6 +521,7 @@ def _cannot_carry_interpretation(
     child_names: frozenset[str],
     reason: ReasonCode,
     created_at: datetime,
+    name_personalization_enabled: bool = False,
 ) -> RequestInterpretation:
     """Build the D7 CANNOT_CARRY failure interpretation (design 6.1, 6.3).
 
@@ -532,6 +543,11 @@ def _cannot_carry_interpretation(
         reason: The terminal CANNOT_CARRY reason, chosen by the caller from
             ``exc.field`` provenance only.
         created_at: The worker's creation timestamp for the object.
+        name_personalization_enabled: ADR-023 Task D1 (gate G3): the
+            requesting profile's ``real_name_ring1_enabled`` flag, resolved by
+            :func:`_resolve_name_personalization_enabled` and threaded down
+            through :func:`_handle_pipeline_failure` and
+            :func:`_record_cannot_carry_if_bound_path`. Defaults ``False``.
 
     Returns:
         The refined CANNOT_CARRY :class:`RequestInterpretation`.
@@ -544,7 +560,11 @@ def _cannot_carry_interpretation(
     )
     decisions.append(ElementDecision(None, ElementDisposition.CANNOT_CARRY, reason))
     return render_interpretation(
-        decisions, band=band, layer="refined", created_at=created_at
+        decisions,
+        band=band,
+        layer="refined",
+        created_at=created_at,
+        name_personalization_enabled=name_personalization_enabled,
     )
 
 
@@ -1708,6 +1728,46 @@ async def _load_concept_and_pii(
     return concept_row, brief, pii
 
 
+# #CRITICAL: security: this flag governs whether the Route A disposition
+# copy tells a child their own name may appear at read time. Fail-closed
+# (False) is deliberate: the worse failure mode here is silently staying
+# "made-up name only" for an opted-in family, never falsely promising
+# personalization to a family that never enabled it.
+# #VERIFY: test_resolve_name_personalization_enabled_* in test_worker.py.
+async def _resolve_name_personalization_enabled(
+    session: AsyncSession, job_row: GenerationJob
+) -> bool:
+    """Resolve ADR-023 ring-1 name personalization for the job's requester.
+
+    Resolves ``StoryRequest WHERE concept_id == job_row.concept_id`` to the
+    requesting child's ``profile_id``, then reads that profile's
+    ``real_name_ring1_enabled`` flag (Task D1, gate G3) in the same query (an
+    inner join, not two round trips). Fails closed (``False``) for a
+    guardian-authored concept with no originating request row, a
+    profile-less request (``profile_id IS NULL``), or a request whose
+    profile no longer exists: the toggle-off Route A copy is always the safe
+    default, matching :func:`~cyo_adventure.story_requests.interpretation.
+    render_interpretation`'s own ``name_personalization_enabled=False``
+    default.
+
+    Args:
+        session: The worker's owned session.
+        job_row: The job whose ``concept_id`` resolves the request row.
+
+    Returns:
+        ``True`` only when a request row exists, has a non-null
+        ``profile_id``, and that profile's ``real_name_ring1_enabled`` is
+        ``True``.
+    """
+    result = await session.execute(
+        select(ChildProfile.real_name_ring1_enabled)
+        .join(StoryRequest, StoryRequest.profile_id == ChildProfile.id)
+        .where(StoryRequest.concept_id == job_row.concept_id)
+    )
+    enabled = result.scalar_one_or_none()
+    return bool(enabled)
+
+
 async def _persist_passed_outcome(
     session: AsyncSession, ctx: _PersistContext, outcome: GenerationOutcome
 ) -> None:
@@ -1834,6 +1894,7 @@ async def _record_cannot_carry_if_bound_path(
     brief: ConceptBrief,
     pii: PiiContext,
     report: dict[str, object] | None,
+    name_personalization_enabled: bool = False,
 ) -> dict[str, object] | None:
     """Attach a CANNOT_CARRY interpretation for a failed bound-path fill (D7).
 
@@ -1866,6 +1927,10 @@ async def _record_cannot_carry_if_bound_path(
         brief: The concept brief (supplies band fallback + ``content_nogo``).
         pii: The PII context (supplies family child names for the echo floor).
         report: The report dict built so far (violations), or ``None``.
+        name_personalization_enabled: ADR-023 Task D1 (gate G3): the
+            requesting profile's ``real_name_ring1_enabled`` flag, resolved
+            once per job by :func:`_resolve_name_personalization_enabled` and
+            forwarded by the caller. Defaults ``False``.
 
     Returns:
         ``report`` unchanged, or augmented with the serialized CANNOT_CARRY
@@ -1893,6 +1958,7 @@ async def _record_cannot_carry_if_bound_path(
         child_names=pii.child_names,
         reason=reason,
         created_at=datetime.now(UTC),
+        name_personalization_enabled=name_personalization_enabled,
     )
     serialized = interpretation.model_dump(mode="json")
     await _stamp_request_interpretation(session, job_row, serialized)
@@ -1909,6 +1975,7 @@ async def _handle_pipeline_failure(
     brief: ConceptBrief,
     pii: PiiContext,
     effective_provider: GenerationProvider | None,
+    name_personalization_enabled: bool = False,
 ) -> None:
     """Record a failed pipeline run's violations, CANNOT_CARRY, and log entry.
 
@@ -1927,6 +1994,11 @@ async def _handle_pipeline_failure(
         brief: The concept brief (supplies band fallback + ``content_nogo``).
         pii: The PII context (supplies family child names for the echo floor).
         effective_provider: The resolved provider (recorded on the failure).
+        name_personalization_enabled: ADR-023 Task D1 (gate G3): the
+            requesting profile's ``real_name_ring1_enabled`` flag, resolved
+            once per job by :func:`_resolve_name_personalization_enabled`
+            and forwarded to :func:`_record_cannot_carry_if_bound_path`.
+            Defaults ``False``.
     """
     # #CRITICAL: data-integrity: a WS-2 fail-closed slot-binding
     # ValidationError (from generation.binding.bind_theme_to_contract or
@@ -1983,6 +2055,7 @@ async def _handle_pipeline_failure(
         brief=brief,
         pii=pii,
         report=report,
+        name_personalization_enabled=name_personalization_enabled,
     )
     # Record failure; the caller re-raises so RQ marks the job failed.
     await _record_failure(
@@ -2152,6 +2225,13 @@ async def run_generation_job(
             concept_row, brief, pii = await _load_concept_and_pii(
                 session, job_row, effective_provider=effective_provider
             )
+            # ADR-023 Task D1 (gate G3): resolved once per job, fail-closed
+            # False, and threaded to every WS-7 interpretation call this run
+            # reaches (both the happy-path skeleton fill and the D7
+            # CANNOT_CARRY failure surface below).
+            name_personalization_enabled = await _resolve_name_personalization_enabled(
+                session, job_row
+            )
 
             # ------------------------------------------------------------------
             # Run the generation pipeline. Wrap to persist failures.
@@ -2178,6 +2258,7 @@ async def run_generation_job(
                             effective_provider=effective_provider,
                             pii=pii,
                             prep_model=job_row.model,
+                            name_personalization_enabled=name_personalization_enabled,
                         )
                     )
                 else:
@@ -2195,6 +2276,7 @@ async def run_generation_job(
                     brief=brief,
                     pii=pii,
                     effective_provider=effective_provider,
+                    name_personalization_enabled=name_personalization_enabled,
                 )
                 raise
 

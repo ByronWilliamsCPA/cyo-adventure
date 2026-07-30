@@ -171,8 +171,8 @@ ENDING_FATE_LEXICON: frozenset[str] = frozenset(
 )
 
 # Self-naming: a request for the child to appear as themselves. Route A
-# (coppa-gdpr-remediation-plan.md Section 5 Decision 4) disallows self-naming by
-# design, so a matching phrase is set aside as IDENTITY_PROTECTION with
+# (coppa-gdpr-remediation-plan.md Section 5 "Self-naming") disallows self-naming
+# by design, so a matching phrase is set aside as IDENTITY_PROTECTION with
 # element=None (derivation rule 2), making the policy legible instead of
 # silently substituting a fictional name. Detection is this lexicon OR the
 # requesting child's own registered name (passed as ``self_names``).
@@ -700,10 +700,21 @@ def _forms(
     return _TemplatePair(kid_with, kid_without, guardian_with, guardian_without)
 
 
-# The catalog: one _TemplatePair per (disposition, reason, band_group). Copy is
-# seeded from the design section 3.3 table, simplified for the young group. No
-# em dash (U+2014) appears in any string.
-_CATALOG: dict[tuple[ElementDisposition, ReasonCode, BandGroup], _TemplatePair] = {}
+# The catalog: one _TemplatePair per (disposition, reason, band_group,
+# personalized). Copy is seeded from the design section 3.3 table, simplified
+# for the young group. No em dash (U+2014) appears in any string.
+#
+# ADR-023 Task D1 (gate G3): the ``personalized`` axis lets a single
+# (disposition, reason, band_group) key carry a distinct toggle-on variant.
+# ``_register`` defaults every ``personalized=True`` entry to the SAME pair as
+# ``personalized=False`` unless a ``*_personalized`` override is supplied, so
+# only the ``IDENTITY_PROTECTION`` registration (the one Route A copy this
+# gate covers) needs to change; every other registration's toggle-on and
+# toggle-off entries stay byte-identical, which is what keeps Route A's
+# existing (toggle-off) behavior unchanged (the G3 gate property).
+_CATALOG: dict[
+    tuple[ElementDisposition, ReasonCode, BandGroup, bool], _TemplatePair
+] = {}
 
 
 def _register(  # noqa: PLR0913
@@ -713,11 +724,31 @@ def _register(  # noqa: PLR0913
     young: _TemplatePair,
     middle: _TemplatePair,
     teen: _TemplatePair,
+    young_personalized: _TemplatePair | None = None,
+    middle_personalized: _TemplatePair | None = None,
+    teen_personalized: _TemplatePair | None = None,
 ) -> None:
-    """Register the three band-group template pairs for one (disposition, reason)."""
-    _CATALOG[disposition, reason, BandGroup.YOUNG] = young
-    _CATALOG[disposition, reason, BandGroup.MIDDLE] = middle
-    _CATALOG[disposition, reason, BandGroup.TEEN] = teen
+    """Register the band-group x personalization template pairs for one key.
+
+    Registers six catalog entries: ``(disposition, reason, band_group,
+    personalized)`` for each of the three band groups crossed with
+    ``personalized in (False, True)``. The three ``*_personalized`` pairs are
+    optional and each defaults to its non-personalized sibling, so a caller
+    that never passes them (every registration except ``IDENTITY_PROTECTION``,
+    ADR-023 Task D1) registers the exact same pair for both toggle states.
+    """
+    _CATALOG[disposition, reason, BandGroup.YOUNG, False] = young
+    _CATALOG[disposition, reason, BandGroup.MIDDLE, False] = middle
+    _CATALOG[disposition, reason, BandGroup.TEEN, False] = teen
+    _CATALOG[disposition, reason, BandGroup.YOUNG, True] = (
+        young_personalized if young_personalized is not None else young
+    )
+    _CATALOG[disposition, reason, BandGroup.MIDDLE, True] = (
+        middle_personalized if middle_personalized is not None else middle
+    )
+    _CATALOG[disposition, reason, BandGroup.TEEN, True] = (
+        teen_personalized if teen_personalized is not None else teen
+    )
 
 
 # Template strings reused across band groups (and, for several reasons, across
@@ -779,6 +810,34 @@ _GUARDIAN_IDENTITY_PROTECTION = (
     "The request asked to use the child's real name/self as the protagonist; "
     "self-naming is disallowed by design (Route A). A fictional protagonist "
     "was used."
+)
+# ADR-023 Task D1 (gate G3), toggle-on guardian copy, drafted verbatim in the
+# ADR-023 coordination doc's Ask 1b (docs/planning/adr/adr-023-story-
+# personalization-slots.md). Both halves (the decline AND the later
+# client-side substitution) must be explicit, or a guardian who reads
+# "declined" and then sees their child's own name in the book could
+# reasonably conclude the decline did not work.
+_GUARDIAN_IDENTITY_PROTECTION_PERSONALIZED = (
+    "The request asked to use the child's real name or self as the "
+    "protagonist; self-naming is disallowed by design (Route A, "
+    'coppa-gdpr-remediation-plan.md Section 5 "Self-naming"), so a '
+    "fictional protagonist was used and no real name reached the generator. "
+    "Name personalization is enabled for this profile, so the child's own "
+    "name may still be substituted at read time on your devices (ADR-023)."
+)
+# ADR-023 Task D1 (gate G3), toggle-on kid copy for the middle and teen band
+# groups, drafted verbatim in the ADR-023 coordination doc's Ask 1b. Named as
+# module constants (matching the guardian constant above) rather than inlined
+# in the _register() call below, so the two-line strings stay single
+# literals for basedpyright's reportImplicitStringConcatenation instead of
+# reading as an implicit concatenation inside a function-call argument.
+_KID_IDENTITY_PROTECTION_PERSONALIZED_MIDDLE = (
+    "Every hero starts with a made-up name. Your grown-up turned your real "
+    "name on, so watch for it when you read!"
+)
+_KID_IDENTITY_PROTECTION_PERSONALIZED_TEEN = (
+    "Every hero starts with a made-up name. Your grown-up turned on name "
+    "personalization, so your own name may appear when you read."
 )
 _KID_NO_CONFORMING_BINDING = (
     "We could not build this wish into any of our adventures yet. Try "
@@ -1033,6 +1092,29 @@ _register(
         _GUARDIAN_IDENTITY_PROTECTION,
         _GUARDIAN_IDENTITY_PROTECTION,
     ),
+    # ADR-023 Task D1 (gate G3): toggle-on variants, drafted verbatim in the
+    # ADR-023 coordination doc's Ask 1b. element is always None for this
+    # protected reason (CR-3), so only the without-element form is ever
+    # selected in practice; the with-element form mirrors it, matching the
+    # existing toggle-off convention above.
+    young_personalized=_forms(
+        "Every hero starts with a made-up name. Your name might show up when you read!",
+        "Every hero starts with a made-up name. Your name might show up when you read!",
+        _GUARDIAN_IDENTITY_PROTECTION_PERSONALIZED,
+        _GUARDIAN_IDENTITY_PROTECTION_PERSONALIZED,
+    ),
+    middle_personalized=_forms(
+        _KID_IDENTITY_PROTECTION_PERSONALIZED_MIDDLE,
+        _KID_IDENTITY_PROTECTION_PERSONALIZED_MIDDLE,
+        _GUARDIAN_IDENTITY_PROTECTION_PERSONALIZED,
+        _GUARDIAN_IDENTITY_PROTECTION_PERSONALIZED,
+    ),
+    teen_personalized=_forms(
+        _KID_IDENTITY_PROTECTION_PERSONALIZED_TEEN,
+        _KID_IDENTITY_PROTECTION_PERSONALIZED_TEEN,
+        _GUARDIAN_IDENTITY_PROTECTION_PERSONALIZED,
+        _GUARDIAN_IDENTITY_PROTECTION_PERSONALIZED,
+    ),
 )
 
 _register(
@@ -1121,13 +1203,15 @@ def _render_pair(  # noqa: PLR0913
     rule: str | None,
     band: AgeBand,
     skeleton_slug: str | None,
+    personalized: bool = False,
 ) -> tuple[str, str]:
     """Render the (kid_text, guardian_text) for one decided element.
 
-    Selects the catalog entry for ``(disposition, reason, group)``, falling
-    back to :data:`_GENERIC_PAIR` (logged, never raised) on a missing key, then
-    picks the with-``{element}`` variant when ``element`` is present or the
-    without variant when it is ``None``, and formats the shared field set.
+    Selects the catalog entry for ``(disposition, reason, group,
+    personalized)``, falling back to :data:`_GENERIC_PAIR` (logged, never
+    raised) on a missing key, then picks the with-``{element}`` variant when
+    ``element`` is present or the without variant when it is ``None``, and
+    formats the shared field set.
 
     Args:
         disposition: The element's disposition.
@@ -1138,17 +1222,23 @@ def _render_pair(  # noqa: PLR0913
         rule: The deciding ``forbid:<bundle>`` rule, or ``None``.
         band: The reading age band (for the ``{band}`` field).
         skeleton_slug: The skeleton slug (for the ``{skeleton_slug}`` field).
+        personalized: ADR-023 Task D1 (gate G3): whether the requesting
+            profile has ring-1 name personalization enabled. Every
+            registration except ``IDENTITY_PROTECTION`` maps both toggle
+            states to the same pair, so this only changes rendered text for
+            that one reason.
 
     Returns:
         The rendered ``(kid_text, guardian_text)`` pair.
     """
-    pair = _CATALOG.get((disposition, reason, group))
+    pair = _CATALOG.get((disposition, reason, group, personalized))
     if pair is None:
         _logger.warning(
             "interpretation_template_missing",
             disposition=disposition.value,
             reason=reason.value,
             band_group=group.value,
+            personalized=personalized,
         )
         pair = _GENERIC_PAIR
 
@@ -1254,6 +1344,7 @@ def render_interpretation(  # noqa: PLR0913
     created_at: datetime,
     skeleton_slug: str | None = None,
     contract_version: int | None = None,
+    name_personalization_enabled: bool = False,
 ) -> RequestInterpretation:
     """Render a :class:`RequestInterpretation` from decided elements.
 
@@ -1272,6 +1363,14 @@ def render_interpretation(  # noqa: PLR0913
             ``datetime.now()`` here; the module stays pure).
         skeleton_slug: The skeleton slug (refined/degraded layer only).
         contract_version: The theme-contract version (refined layer only).
+        name_personalization_enabled: ADR-023 Task D1 (gate G3): whether the
+            requesting profile has ring-1 real-name personalization enabled
+            (``ChildProfile.real_name_ring1_enabled``). A **bool only**, never
+            the profile object: the module's purity discipline (stdlib and
+            pydantic only, no ORM, no I/O) is load-bearing, and handing it a
+            ``ChildProfile`` would break that for no gain. Defaults to
+            ``False`` so every existing caller and every pre-D1 test call site
+            keeps rendering the unchanged toggle-off Route A copy.
 
     Returns:
         The assembled, echo-safe :class:`RequestInterpretation`.
@@ -1288,6 +1387,7 @@ def render_interpretation(  # noqa: PLR0913
             rule=decision.rule,
             band=band,
             skeleton_slug=skeleton_slug,
+            personalized=name_personalization_enabled,
         )
         rendered.append(
             InterpretedElement(
@@ -1396,6 +1496,7 @@ def build_general_interpretation(  # noqa: PLR0913
     banned_themes: Sequence[str],
     premise: str,
     created_at: datetime,
+    name_personalization_enabled: bool = False,
 ) -> RequestInterpretation:
     """Build the submission-time general interpretation (design section 4, D3).
 
@@ -1426,6 +1527,13 @@ def build_general_interpretation(  # noqa: PLR0913
             ``banned_themes`` on the NON-blocked path only; never read when
             ``screening.blocked`` is true (CR-1).
         created_at: The caller-supplied creation timestamp (endpoint clock).
+        name_personalization_enabled: ADR-023 Task D1 (gate G3): forwarded to
+            :func:`render_interpretation`, a bool never a profile object (see
+            its docstring). The general layer never derives an
+            IDENTITY_PROTECTION element today (self-naming detection runs in
+            the refined layer's :func:`derive_dispositions`), so this has no
+            observable effect yet; threaded through now so a future general-
+            layer self-naming path does not need a second wiring pass.
 
     Returns:
         The echo-safe general-layer :class:`RequestInterpretation`.
@@ -1439,7 +1547,11 @@ def build_general_interpretation(  # noqa: PLR0913
             ReasonCode.SAFETY_POLICY,
         )
         return render_interpretation(
-            [blocked_decision], band=band, layer="general", created_at=created_at
+            [blocked_decision],
+            band=band,
+            layer="general",
+            created_at=created_at,
+            name_personalization_enabled=name_personalization_enabled,
         )
 
     decisions: list[ElementDecision] = []
@@ -1485,6 +1597,10 @@ def build_general_interpretation(  # noqa: PLR0913
     advisory_categories.append(None)
 
     interpretation = render_interpretation(
-        decisions, band=band, layer="general", created_at=created_at
+        decisions,
+        band=band,
+        layer="general",
+        created_at=created_at,
+        name_personalization_enabled=name_personalization_enabled,
     )
     return _inject_advisory_categories(interpretation, advisory_categories)
