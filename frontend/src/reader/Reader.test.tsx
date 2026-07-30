@@ -7,6 +7,7 @@ import { MemoryRouter } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { choose } from '../player/engine'
+import type { ValuesPayload } from '../player/personalization'
 import type { Storybook } from '../player/types'
 import { clearChildSession, setChildSession } from '../auth/childSession'
 import type { SubmitFlagParams } from '../api/readerApi'
@@ -31,6 +32,52 @@ const lantern = (
     traces: { story: Storybook }[]
   }
 ).traces[0].story
+
+// A minimal fixture (same shape as endedStory/endedSeriesStory below) whose
+// body and ending title carry an ADR-023 sentinel, for the personalization
+// resolution tests (C3e). "Continue" (choice id "c") is the only path, so a
+// test can reach the ending without caring about lantern-specific branching.
+const sentinelStory: Storybook = {
+  schema_version: '2.0',
+  id: 's_sentinel',
+  version: 1,
+  title: 'Sentinel',
+  metadata: {},
+  variables: [],
+  start_node: 'n_start',
+  nodes: [
+    {
+      id: 'n_start',
+      body: 'Then {~HERO:Explorer~} ran.',
+      is_ending: false,
+      choices: [{ id: 'c', label: 'Continue', target: 'n_end' }],
+    },
+    {
+      id: 'n_end',
+      body: 'Then {~HERO:Explorer~} ran.',
+      is_ending: true,
+      choices: [],
+      ending: {
+        id: 'e_end',
+        kind: 'success',
+        valence: 'positive',
+        title: "{~HERO:Explorer~}'s last stand",
+      },
+    },
+  ],
+}
+
+function valuesPayload(): ValuesPayload {
+  return {
+    subject_profile_id: 'p_1',
+    ring: 1,
+    policy_version: 'ring1-no-consent-required',
+    resolved_at: '2026-07-29T00:00:00Z',
+    values: { protagonist_first_name: 'Maya' },
+    sentinel_pattern: "\\{~([A-Z][A-Z0-9_]*):([^{}<>'~]+)~\\}",
+    slot_bindings: { HERO: 'protagonist_first_name' },
+  }
+}
 
 // jsdom's window.scrollTo exists but only logs "Not implemented"; the reader
 // scrolls on every passage change, so stub it once per test to keep output
@@ -154,6 +201,54 @@ describe('Reader', () => {
     fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
     fireEvent.click(screen.getByTestId('choice-c_dark_passage'))
     expect(completed).toEqual(['e_treasure_found', 'e_safe_exit'])
+  })
+})
+
+describe('Reader personalization (ADR-023 C3e)', () => {
+  it('renders the personalized name in the passage when a payload is present', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" personalization={valuesPayload()} />
+      </MemoryRouter>
+    )
+    expect(screen.getByTestId('passage-body')).toHaveTextContent('Then Maya ran')
+    expect(screen.getByTestId('passage-body')).not.toHaveTextContent('{~HERO')
+  })
+
+  it('renders the generic word when there is no payload', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" />
+      </MemoryRouter>
+    )
+    expect(screen.getByTestId('passage-body')).toHaveTextContent('Then Explorer ran')
+    expect(screen.getByTestId('passage-body')).not.toHaveTextContent('{~HERO')
+  })
+
+  it('strips markers to generic words even with the flag off', () => {
+    // Deliberate strengthening of the Stage C spec (see Task C3f). The flag gates
+    // the FETCH; the strip is unconditional, because ADR-023 section 10 forbids a
+    // marker on any kid-facing surface regardless of opt-in state.
+    expect(import.meta.env.VITE_FEATURE_PERSONALIZATION).toBeUndefined()
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" />
+      </MemoryRouter>
+    )
+    const passage = screen.getByTestId('passage-body')
+    expect(passage).toHaveTextContent('Then Explorer ran')
+    expect(passage.textContent).not.toContain('{~')
+    expect(passage.textContent).not.toContain('~}')
+  })
+
+  it('resolves the ending title', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" personalization={valuesPayload()} />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c'))
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent("Maya's last stand")
   })
 })
 
@@ -720,5 +815,24 @@ describe('Reader read-aloud (K7)', () => {
     } finally {
       logSpy.mockRestore()
     }
+  })
+
+  // ADR-023 C3e placement note: this lives here, not in useReadAloud.test.ts,
+  // because the substitution under test (raw node.body vs. the resolved
+  // bodyText) happens in Reader.tsx's speak() call site, not inside the hook
+  // itself; useReadAloud.test.ts already covers the hook's own queueing
+  // mechanics in isolation and has no notion of personalization.
+  it('speaks the resolved passage, not the marker', () => {
+    installSpeechSynthesis()
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" personalization={valuesPayload()} ttsEnabled />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByLabelText('Read this page aloud'))
+    expect(speakMock).toHaveBeenCalledTimes(1)
+    const bodyUtterance = speakMock.mock.calls[0][0] as MockUtterance
+    expect(bodyUtterance.text).toContain('Maya')
+    expect(bodyUtterance.text).not.toContain('{~HERO')
   })
 })
