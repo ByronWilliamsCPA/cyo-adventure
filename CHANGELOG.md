@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.51.1] - 2026-07-30
+
+### Bug Fixes
+
+- **covers**: Randomize R2 object keys as UW-M07 defense in depth
+  ([#494](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/494),
+  [`1a60e3d`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/1a60e3deea7d6c1b1d5e00e61d98ea01ee75b86d))
+
+
 ## [0.51.0] - 2026-07-30
 
 ### Features
@@ -2872,6 +2881,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.51.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.51.0...v0.51.1
 [0.51.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.50.1...v0.51.0
 [0.50.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.50.0...v0.50.1
 [0.50.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.49.0...v0.50.0
