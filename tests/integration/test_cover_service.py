@@ -82,6 +82,42 @@ async def test_success_path_sets_pending_review_and_writes_url(sessions, seed):
         assert ".webp?v=" in row.cover_image_url
         assert row.cover_approved_by is None
         assert row.cover_approved_at is None
+        # UW-M07 defense in depth: the object key must not be derivable from
+        # storybook_id/version alone, so a successful generation must record
+        # a salt.
+        assert row.cover_object_salt
+
+
+@pytest.mark.asyncio
+async def test_generate_cover_stores_a_random_object_salt(sessions, seed):
+    """Two generations must not reuse the same salt (it is meant to be
+    unguessable, not merely present)."""
+
+    def fake_generate(prompt, settings):
+        return b"PNGSOURCE"
+
+    async def fake_upload(image_bytes, key, settings):
+        return f"https://p.supabase.co/storage/v1/object/public/covers/{key}"
+
+    salts: list[str] = []
+    for _ in range(2):
+        async with sessions() as s:
+            await generate_cover(
+                seed.storybook_id,
+                seed.version,
+                session=s,
+                settings=Settings(),
+                generate=fake_generate,
+                optimize=lambda b, **kw: b"WEBP",
+                upload=fake_upload,
+            )
+        async with sessions() as s:
+            row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+            assert row is not None
+            assert row.cover_object_salt is not None
+            salts.append(row.cover_object_salt)
+
+    assert salts[0] != salts[1]
 
 
 @pytest.mark.asyncio

@@ -108,8 +108,20 @@ async def test_upload_cover_client_construction_failure_propagates() -> None:
 
 
 def test_cover_object_key_format() -> None:
-    """The canonical key is the single source of truth every caller shares."""
+    """With no salt, the legacy key is the single source of truth every
+    pre-migration caller shares."""
     assert cover_object_key("s1", 2) == "s1/2.webp"
+
+
+def test_cover_object_key_falls_back_without_salt() -> None:
+    """An explicit None salt behaves the same as omitting the argument."""
+    assert cover_object_key("s1", 2, None) == "s1/2.webp"
+
+
+def test_cover_object_key_includes_salt_when_present() -> None:
+    """UW-M07 defense in depth: a salt makes the key unguessable from
+    (storybook_id, version) alone."""
+    assert cover_object_key("s1", 2, "abc123") == "s1/2-abc123.webp"
 
 
 @pytest.mark.asyncio
@@ -167,6 +179,21 @@ async def test_generate_presigned_cover_url_returns_none_when_unconfigured(
 
 
 @pytest.mark.asyncio
+async def test_generate_presigned_cover_url_signs_the_salted_key_when_present() -> None:
+    """UW-M07: a non-None salt reaches the actual R2 key, not just the key builder."""
+    mock_client = MagicMock()
+    mock_client.generate_presigned_url.return_value = "https://r2.example/signed"
+    with patch("cyo_adventure.covers.storage.boto3.client", return_value=mock_client):
+        await generate_presigned_cover_url("s1", 2, _settings(), salt="abc123")
+
+    mock_client.generate_presigned_url.assert_called_once_with(
+        "get_object",
+        Params={"Bucket": "covers", "Key": "s1/2-abc123.webp"},
+        ExpiresIn=3600,
+    )
+
+
+@pytest.mark.asyncio
 async def test_generate_presigned_cover_url_returns_none_on_client_error() -> None:
     mock_client = MagicMock()
     mock_client.generate_presigned_url.side_effect = ClientError(
@@ -191,7 +218,7 @@ async def test_generate_presigned_cover_urls_batch_signs_every_pair_with_one_cli
         "cyo_adventure.covers.storage.boto3.client", return_value=mock_client
     ) as mock_boto:
         result = await generate_presigned_cover_urls(
-            [("s1", 1), ("s2", 3)], _settings()
+            [("s1", 1, None), ("s2", 3, "saltvalue")], _settings()
         )
 
     assert result == {
@@ -200,6 +227,16 @@ async def test_generate_presigned_cover_urls_batch_signs_every_pair_with_one_cli
     }
     mock_boto.assert_called_once()
     assert mock_client.generate_presigned_url.call_count == 2
+    mock_client.generate_presigned_url.assert_any_call(
+        "get_object",
+        Params={"Bucket": "covers", "Key": "s1/1.webp"},
+        ExpiresIn=3600,
+    )
+    mock_client.generate_presigned_url.assert_any_call(
+        "get_object",
+        Params={"Bucket": "covers", "Key": "s2/3-saltvalue.webp"},
+        ExpiresIn=3600,
+    )
 
 
 @pytest.mark.asyncio
@@ -220,7 +257,7 @@ async def test_generate_presigned_cover_urls_returns_empty_dict_when_unconfigure
     """A misconfigured R2 degrades to no covers shown, not a raised error."""
     unconfigured = _settings(r2_account_id=None)
     with patch("cyo_adventure.covers.storage.boto3.client") as mock_boto:
-        result = await generate_presigned_cover_urls([("s1", 1)], unconfigured)
+        result = await generate_presigned_cover_urls([("s1", 1, None)], unconfigured)
 
     assert result == {}
     mock_boto.assert_not_called()
@@ -235,6 +272,6 @@ async def test_generate_presigned_cover_urls_returns_empty_dict_on_client_error(
         {"Error": {"Code": "500", "Message": "boom"}}, "GeneratePresignedUrl"
     )
     with patch("cyo_adventure.covers.storage.boto3.client", return_value=mock_client):
-        result = await generate_presigned_cover_urls([("s1", 1)], _settings())
+        result = await generate_presigned_cover_urls([("s1", 1, None)], _settings())
 
     assert result == {}

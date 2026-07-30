@@ -117,8 +117,8 @@ async def upload_cover(image_bytes: bytes, key: str, settings: Settings) -> str:
     The returned URL is stored on ``cover_image_url`` for audit/history and for
     ``scripts/backfill_covers_r2.py``'s URL-classification logic; it is NOT the
     URL served to readers, which is always a fresh presigned URL (see
-    ``generate_presigned_cover_url``) generated from the same deterministic
-    key, independent of this stored value.
+    ``generate_presigned_cover_url``) generated from the same ``key``,
+    independent of this stored value.
 
     Args:
         image_bytes: The optimized WebP bytes.
@@ -182,20 +182,37 @@ async def upload_cover(image_bytes: bytes, key: str, settings: Settings) -> str:
     return f"{public_base_url.rstrip('/')}/{key}"
 
 
-def cover_object_key(storybook_id: str, version: int) -> str:
+def cover_object_key(storybook_id: str, version: int, salt: str | None = None) -> str:
     """Return the canonical R2 object key for a story version's cover.
 
     The single source of truth for this format; ``covers/service.py`` (on
     upload) and every read path (via ``generate_presigned_cover_url``) must
-    derive the same key from the same two identifiers.
+    derive the same key from the same identifiers.
+
+    # #CRITICAL: security: UW-M07 defense-in-depth (StorybookVersion.
+    # cover_object_salt). With no salt the key is fully determined by
+    # storybook_id and version, both of which a client can already see or
+    # guess, so the object is only as private as the bucket's own access
+    # control. Folding in a per-cover random salt means the bucket binding
+    # (kept private per the module docstring above) is no longer the only
+    # thing standing between a guessed storybook id and the image bytes.
+    # #VERIFY: test_cover_object_key_includes_salt_when_present,
+    # test_cover_object_key_falls_back_without_salt.
 
     Args:
         storybook_id: The storybook id.
         version: The version number.
+        salt: The per-cover token from ``cover_object_salt``, or None for a
+            row created before that column existed, which keeps resolving at
+            the legacy unsalted key rather than a key nothing was ever
+            uploaded to.
 
     Returns:
-        str: The canonical object key, e.g. ``"s1/2.webp"``.
+        str: The object key, e.g. ``"s1/2-<salt>.webp"``, or the legacy
+        ``"s1/2.webp"`` when ``salt`` is None.
     """
+    if salt:
+        return f"{storybook_id}/{version}-{salt}.webp"
     return f"{storybook_id}/{version}.webp"
 
 
@@ -204,6 +221,7 @@ async def generate_presigned_cover_url(
     version: int,
     settings: Settings,
     *,
+    salt: str | None = None,
     expires_in: int = _PRESIGNED_URL_TTL_SECONDS,
 ) -> str | None:
     """Return a short-lived signed GET URL for a story version's cover.
@@ -226,6 +244,8 @@ async def generate_presigned_cover_url(
         storybook_id: The storybook id.
         version: The version number.
         settings: App settings (R2 account id, access key pair, and bucket).
+        salt: The row's ``cover_object_salt`` (None for a pre-migration row);
+            forwarded to ``cover_object_key`` unchanged.
         expires_in: URL validity window in seconds.
 
     Returns:
@@ -241,7 +261,7 @@ async def generate_presigned_cover_url(
         )
         return None
     bucket = settings.r2_bucket
-    key = cover_object_key(storybook_id, version)
+    key = cover_object_key(storybook_id, version, salt)
 
     def _presign() -> str:
         client = _build_client(settings)
@@ -264,7 +284,7 @@ async def generate_presigned_cover_url(
 
 
 async def generate_presigned_cover_urls(
-    pairs: list[tuple[str, int]],
+    triples: list[tuple[str, int, str | None]],
     settings: Settings,
     *,
     expires_in: int = _PRESIGNED_URL_TTL_SECONDS,
@@ -286,38 +306,45 @@ async def generate_presigned_cover_urls(
     # ::test_generate_presigned_cover_urls_returns_empty_dict_on_client_error.
 
     Args:
-        pairs: The ``(storybook_id, version)`` pairs to sign.
+        triples: The ``(storybook_id, version, salt)`` rows to sign; ``salt``
+            is each row's ``cover_object_salt`` (None for a pre-migration
+            row), forwarded to ``cover_object_key`` unchanged.
         settings: App settings (R2 account id, access key pair, and bucket).
         expires_in: URL validity window in seconds.
 
     Returns:
-        dict[tuple[str, int], str]: Every requested pair mapped to its signed
-        URL. Empty input, an unconfigured R2, or a failed sign call all
-        return an empty dict (logged, not raised) rather than a partial or
-        raised result.
+        dict[tuple[str, int], str]: Every requested ``(storybook_id,
+        version)`` mapped to its signed URL (the salt is not part of the
+        returned key, since callers look results up by book identity, not by
+        the internal object key). Empty input, an unconfigured R2, or a
+        failed sign call all return an empty dict (logged, not raised)
+        rather than a partial or raised result.
     """
-    if not pairs:
+    if not triples:
         return {}
     try:
         _require_r2_configured(settings, require_public_base_url=False)
     except CoverGenerationError:
-        _logger.warning("cover_presign_batch_unconfigured", count=len(pairs))
+        _logger.warning("cover_presign_batch_unconfigured", count=len(triples))
         return {}
     bucket = settings.r2_bucket
 
     def _presign_all() -> dict[tuple[str, int], str]:
         client = _build_client(settings)
         return {
-            pair: client.generate_presigned_url(
+            (storybook_id, version): client.generate_presigned_url(
                 "get_object",
-                Params={"Bucket": bucket, "Key": cover_object_key(*pair)},
+                Params={
+                    "Bucket": bucket,
+                    "Key": cover_object_key(storybook_id, version, salt),
+                },
                 ExpiresIn=expires_in,
             )
-            for pair in pairs
+            for storybook_id, version, salt in triples
         }
 
     try:
         return await asyncio.to_thread(_presign_all)
     except (BotoCoreError, ClientError):
-        _logger.warning("cover_presign_batch_failed", count=len(pairs), exc_info=True)
+        _logger.warning("cover_presign_batch_failed", count=len(triples), exc_info=True)
         return {}

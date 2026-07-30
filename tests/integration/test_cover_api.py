@@ -204,7 +204,9 @@ async def test_cover_status_returns_presigned_url_when_pending_review(
     # An admin reviewer must be able to see a pending cover before deciding
     # whether to approve it; _cover_url deliberately widens the presign gate
     # to "pending_review" (not just "ready") for this admin-only endpoint.
-    async def _fake_presign(storybook_id: str, version: int, _settings: object) -> str:
+    async def _fake_presign(
+        storybook_id: str, version: int, _settings: object, **_kwargs: object
+    ) -> str:
         return f"https://signed.example.com/{storybook_id}/{version}"
 
     monkeypatch.setattr(

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import secrets
 import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -176,12 +177,17 @@ async def generate_cover(
     approval happens.
 
     Scope of that guarantee: it covers the API surface, not the stored
-    bytes. The R2 object key is deterministic
-    (``covers/storage.py::cover_object_key``), so anyone who can guess
-    ``{storybook_id}/{version}.webp`` reaches the image directly if the
-    bucket is publicly served. Keeping the bucket private is a separate,
-    infrastructure-side control; see the ``#CRITICAL: security`` invariant
-    at the top of ``covers/storage.py``.
+    bytes. Keeping the R2 bucket private (no public custom domain or r2.dev
+    binding) is the primary control on the stored image, and is
+    infrastructure-side, not code (see the ``#CRITICAL: security`` invariant
+    at the top of ``covers/storage.py``; UW-M07 records the 2026-07-28
+    incident where that binding was live and the 2026-07-30 fix). This
+    function additionally mints a random ``cover_object_salt`` per cover
+    (defense in depth, not a substitute for the bucket being private): the
+    R2 key folds it in via ``covers/storage.py::cover_object_key``, so
+    knowing ``storybook_id`` and ``version`` alone is no longer sufficient
+    to reach the object even if the public binding is ever mistakenly
+    restored.
     """
     # #CRITICAL: concurrency: this runs in the worker's own AsyncSession, not the
     # request unit-of-work; it commits explicitly at each state transition.
@@ -229,8 +235,17 @@ async def generate_cover(
             quality=settings.cover_quality,
             max_bytes=settings.cover_max_bytes,
         )
-        key = cover_object_key(storybook_id, version)
+        # #CRITICAL: security: UW-M07 defense-in-depth stopgap -- a fresh
+        # 128-bit token per cover, so the R2 key (below) is not derivable
+        # from (storybook_id, version) alone. See this function's docstring
+        # and covers/storage.py::cover_object_key for the full rationale;
+        # this does not replace the bucket needing to stay private.
+        # #VERIFY: tests/integration/test_cover_service.py::
+        # test_generate_cover_stores_a_random_object_salt.
+        salt = secrets.token_hex(16)
+        key = cover_object_key(storybook_id, version, salt)
         public_url = await upload(optimized, key, settings)
+        row.cover_object_salt = salt
         row.cover_image_url = f"{public_url}?v={int(time.time())}"
         row.cover_status = "pending_review"
         await session.commit()

@@ -434,6 +434,14 @@ known-first-party = ["cyo_adventure"]
 # A config object would obscure which stage a caller is overriding.
 "**/covers/service.py" = ["PLR0913"]
 
+# generate_presigned_cover_url carries storybook_id, version, settings, and
+# two keyword-only options (salt, expires_in); salt is the UW-M07
+# defense-in-depth token (StorybookVersion.cover_object_salt, None for a
+# pre-migration row) and expires_in is the presign TTL, each an independent,
+# optional axis with its own default. A config object would obscure that
+# both are optional overrides, not a single cohesive value.
+"**/covers/storage.py" = ["PLR0913"]
+
 # record_event carries session, actor, entity_type, entity_id, event_type,
 # from_state, to_state, and payload; all but the last two are mandatory and
 # keyword-only, each a distinct concern (unit-of-work, who, what entity, what
