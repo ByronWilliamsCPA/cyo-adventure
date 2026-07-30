@@ -9,6 +9,7 @@ from botocore.exceptions import BotoCoreError, ClientError
 from cyo_adventure.covers.errors import CoverGenerationError
 from cyo_adventure.covers.storage import (
     cover_object_key,
+    delete_cover,
     generate_presigned_cover_url,
     generate_presigned_cover_urls,
     upload_cover,
@@ -105,6 +106,74 @@ async def test_upload_cover_client_construction_failure_propagates() -> None:
         pytest.raises(BotoCoreError),
     ):
         await upload_cover(b"WEBP", "s1/2.webp", settings)
+
+
+@pytest.mark.asyncio
+async def test_delete_cover_removes_the_object_and_reports_success() -> None:
+    """The happy path issues one DeleteObject against the configured bucket."""
+    mock_client = MagicMock()
+    with patch("cyo_adventure.covers.storage.boto3.client", return_value=mock_client):
+        deleted = await delete_cover("s1/2-abc123.webp", _settings())
+
+    assert deleted is True
+    mock_client.delete_object.assert_called_once_with(
+        Bucket="covers", Key="s1/2-abc123.webp"
+    )
+
+
+@pytest.mark.asyncio
+async def test_delete_cover_does_not_require_public_base_url() -> None:
+    """Reclaiming an object builds no URL, so R2_PUBLIC_BASE_URL is optional."""
+    mock_client = MagicMock()
+    settings = _settings(r2_public_base_url=None)
+    with patch("cyo_adventure.covers.storage.boto3.client", return_value=mock_client):
+        deleted = await delete_cover("s1/2-abc123.webp", settings)
+
+    assert deleted is True
+    mock_client.delete_object.assert_called_once()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "missing_field",
+    ["r2_account_id", "r2_access_key_id", "r2_secret_access_key", "r2_bucket"],
+)
+async def test_delete_cover_returns_false_when_unconfigured(
+    missing_field: str,
+) -> None:
+    """An unconfigured R2 reports the delete did not happen rather than raising:
+    the caller has already committed a replacement cover it must not fail."""
+    unconfigured = _settings(**{missing_field: None})
+    with patch("cyo_adventure.covers.storage.boto3.client") as mock_boto:
+        deleted = await delete_cover("s1/2-abc123.webp", unconfigured)
+
+    assert deleted is False
+    mock_boto.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_delete_cover_returns_false_on_client_error() -> None:
+    """A failed DeleteObject is logged and reported, never raised: the orphan
+    is a bounded exposure, but failing here would strand a live cover."""
+    mock_client = MagicMock()
+    mock_client.delete_object.side_effect = ClientError(
+        {"Error": {"Code": "500", "Message": "boom"}}, "DeleteObject"
+    )
+    with patch("cyo_adventure.covers.storage.boto3.client", return_value=mock_client):
+        deleted = await delete_cover("s1/2-abc123.webp", _settings())
+
+    assert deleted is False
+
+
+@pytest.mark.asyncio
+async def test_delete_cover_returns_false_on_client_construction_failure() -> None:
+    """A boto3 construction failure degrades the same way a call failure does."""
+    with patch(
+        "cyo_adventure.covers.storage.boto3.client", side_effect=BotoCoreError()
+    ):
+        deleted = await delete_cover("s1/2-abc123.webp", _settings())
+
+    assert deleted is False
 
 
 def test_cover_object_key_format() -> None:

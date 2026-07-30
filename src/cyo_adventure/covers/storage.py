@@ -136,11 +136,15 @@ async def upload_cover(image_bytes: bytes, key: str, settings: Settings) -> str:
     _require_r2_configured(settings, require_public_base_url=True)
     # #CRITICAL: external resources: Cloudflare R2's free tier caps storage at
     # 10GB; callers MUST pass an already-optimized small WebP. S3 PutObject is
-    # inherently an upsert (no separate overwrite flag), so a re-roll replaces
-    # the prior object at the same key instead of leaking orphans against that
-    # budget.
-    # #VERIFY: covers/service.py optimizes before calling upload_cover; a
-    # PutObject at an existing key silently overwrites it.
+    # an upsert (no separate overwrite flag), but since cover_object_key folds
+    # in a per-cover random salt a re-roll lands on a DIFFERENT key, so it no
+    # longer reclaims the prior object implicitly: the caller must delete the
+    # previous key itself (covers/service.py::generate_cover, via
+    # delete_cover) or every regeneration orphans an object against that
+    # budget and leaves it reachable by an outstanding presigned URL.
+    # #VERIFY: covers/service.py optimizes before calling upload_cover, and
+    # tests/integration/test_cover_service.py::
+    # test_regeneration_deletes_the_previous_object pins the delete.
     bucket = settings.r2_bucket
 
     def _build_client_and_put() -> None:
@@ -180,6 +184,68 @@ async def upload_cover(image_bytes: bytes, key: str, settings: Settings) -> str:
     # this is non-empty.
     public_base_url = settings.r2_public_base_url or ""
     return f"{public_base_url.rstrip('/')}/{key}"
+
+
+async def delete_cover(key: str, settings: Settings) -> bool:
+    """Best-effort delete of one cover object from the R2 covers bucket.
+
+    Used when a cover is regenerated: because the object key now folds in a
+    per-cover random salt (see ``cover_object_key``), a re-roll writes to a
+    NEW key instead of overwriting the previous object in place, so the prior
+    object has to be removed explicitly or it is orphaned in the bucket.
+
+    # #CRITICAL: security: an orphaned object stays fetchable by anyone
+    # holding a previously-issued presigned URL for it (up to that URL's
+    # 1-hour TTL) and, if the bucket's public binding is ever mistakenly
+    # restored, indefinitely at a key that is no longer referenced by any
+    # row. A failed delete is therefore a real (if bounded) exposure, not
+    # just wasted storage against R2's 10GB free-tier cap, so it is logged
+    # loudly rather than silently swallowed. It is still non-fatal: the
+    # replacement cover is already uploaded and committed by the time this
+    # runs, and failing the whole regeneration would leave the caller worse
+    # off (a "failed" status over a cover that actually exists).
+    # #VERIFY: tests/unit/test_cover_storage.py::
+    # test_delete_cover_returns_false_on_client_error,
+    # ::test_delete_cover_returns_false_when_unconfigured; the caller's
+    # non-fatal contract is pinned by tests/integration/test_cover_service.py
+    # ::test_regeneration_survives_a_failed_delete_of_the_previous_object.
+
+    Args:
+        key: The object key to remove, as produced by ``cover_object_key``.
+        settings: App settings (R2 account id, access key pair, and bucket).
+            The public base URL is not required: nothing here builds a URL.
+
+    Returns:
+        bool: True when the DeleteObject call completed, False when R2 is
+        unconfigured or the call failed (both logged, never raised). S3
+        DeleteObject is idempotent, so True does not imply the object
+        existed beforehand.
+    """
+    try:
+        _require_r2_configured(settings, require_public_base_url=False)
+    except CoverGenerationError:
+        _logger.warning("cover_delete_unconfigured", key=key)
+        return False
+    bucket = settings.r2_bucket
+
+    def _build_client_and_delete() -> None:
+        client = _build_client(settings)
+        # Sonar python:S7608 false positive: see the identical note in
+        # upload_cover; R2 does not implement x-amz-expected-bucket-owner and
+        # the endpoint is already scoped to one Cloudflare account id.
+        client.delete_object(Bucket=bucket, Key=key)
+
+    # #CRITICAL: timing dependencies: same rationale as upload_cover -- boto3
+    # client construction does blocking disk I/O and delete_object is a
+    # blocking network call, so both run off the event loop.
+    # #VERIFY: asyncio.to_thread wraps client construction and delete_object
+    # together.
+    try:
+        await asyncio.to_thread(_build_client_and_delete)
+    except (BotoCoreError, ClientError):
+        _logger.warning("cover_delete_failed", key=key, exc_info=True)
+        return False
+    return True
 
 
 def cover_object_key(storybook_id: str, version: int, salt: str | None = None) -> str:

@@ -21,7 +21,11 @@ from cyo_adventure.core.exceptions import (
 from cyo_adventure.covers.optimize import optimize_cover as _optimize_cover
 from cyo_adventure.covers.prompt import build_cover_prompt
 from cyo_adventure.covers.provider import generate_cover_image
-from cyo_adventure.covers.storage import cover_object_key, upload_cover
+from cyo_adventure.covers.storage import (
+    cover_object_key,
+    delete_cover,
+    upload_cover,
+)
 from cyo_adventure.db.models import (
     ChildProfile,
     Concept,
@@ -157,6 +161,7 @@ async def generate_cover(
     generate: Callable[[str, Settings], bytes] = generate_cover_image,
     optimize: _OptimizeFn = _optimize_cover,
     upload: Callable[[bytes, str, Settings], Awaitable[str]] = upload_cover,
+    delete: Callable[[str, Settings], Awaitable[bool]] = delete_cover,
 ) -> None:
     """Generate, optimize, upload, and record a cover for one story version.
 
@@ -188,6 +193,11 @@ async def generate_cover(
     knowing ``storybook_id`` and ``version`` alone is no longer sufficient
     to reach the object even if the public binding is ever mistakenly
     restored.
+
+    A consequence of that salt is that regenerating a cover no longer
+    overwrites the previous object in place (the new key differs), so this
+    function deletes the prior key after the replacement is committed. See
+    the ``#CRITICAL: security`` marker on that step below.
     """
     # #CRITICAL: concurrency: this runs in the worker's own AsyncSession, not the
     # request unit-of-work; it commits explicitly at each state transition.
@@ -211,6 +221,22 @@ async def generate_cover(
             "cover_target_missing", storybook_id=storybook_id, version=version
         )
         return
+    # #CRITICAL: data integrity: read the OUTGOING salt before anything
+    # overwrites it; once row.cover_object_salt is reassigned below the only
+    # pointer to the previous R2 object is gone and it can never be reclaimed.
+    # A None salt here is a row whose cover predates the salt column (or a
+    # backfilled one), whose object sits at the legacy unsalted key; a None
+    # cover_image_url is a row that never had a cover uploaded at all, so
+    # there is nothing to delete.
+    # #VERIFY: tests/integration/test_cover_service.py::
+    # test_regeneration_deletes_the_previous_object,
+    # ::test_regeneration_deletes_the_legacy_unsalted_object_when_salt_is_null,
+    # ::test_first_generation_deletes_nothing.
+    previous_key = (
+        cover_object_key(storybook_id, version, row.cover_object_salt)
+        if row.cover_image_url
+        else None
+    )
     row.cover_status = "generating"
     await session.commit()
     try:
@@ -258,6 +284,24 @@ async def generate_cover(
         _logger.exception(
             "cover_generation_failed", storybook_id=storybook_id, version=version
         )
+    else:
+        # #CRITICAL: security: reclaim the object the previous cover lived at.
+        # Before the salt existed the key was deterministic, so PutObject
+        # above overwrote the old image in place; now every re-roll lands on a
+        # new key and the superseded object would otherwise stay in the bucket
+        # forever, still fetchable by anyone holding a presigned URL minted
+        # for it and still billed against R2's 10GB free tier. Deliberately
+        # placed after the commit and outside the try above: the replacement
+        # cover is already durable, so a delete failure must NOT roll the row
+        # back to "failed". delete_cover swallows and logs its own errors, so
+        # the guard here is only against re-deleting the key we just wrote
+        # (possible when the previous cover was unsalted and this one somehow
+        # resolved to the same key).
+        # #VERIFY: tests/integration/test_cover_service.py::
+        # test_regeneration_deletes_the_previous_object,
+        # ::test_regeneration_survives_a_failed_delete_of_the_previous_object.
+        if previous_key is not None and previous_key != key:
+            await delete(previous_key, settings)
 
 
 async def approve_cover(
