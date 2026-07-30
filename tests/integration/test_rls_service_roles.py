@@ -76,7 +76,14 @@ _UNPRIVILEGED_ROLES = ("anon", "authenticated")
 # queries pg_tables directly rather than trusting this list, so a future
 # migration that enables RLS on a new table without a matching service_rw
 # policy still fails the sweep even if this constant is never updated).
-_MIN_EXPECTED_RLS_TABLE_COUNT = 22
+_MIN_EXPECTED_RLS_TABLE_COUNT = 24
+
+# Tables deliberately exempt from the "every public table has RLS" invariant.
+# Empty on purpose: there is currently no such table, and this constant exists
+# so that adding one is a reviewed, named decision in a diff rather than a
+# silent omission. Anything added here needs a comment saying why the table
+# holds no tenant-scoped or personally identifying data.
+_RLS_EXEMPT_TABLES: frozenset[str] = frozenset()
 
 
 async def _create_role_if_absent(conn: AsyncConnection, role: str) -> None:
@@ -148,6 +155,18 @@ async def _rowsecurity_tables(conn: AsyncConnection) -> list[str]:
         text(
             "SELECT tablename FROM pg_tables "
             "WHERE schemaname = 'public' AND rowsecurity = true "
+            "ORDER BY tablename"
+        )
+    )
+    return [row[0] for row in result.fetchall()]
+
+
+async def _tables_without_rowsecurity(conn: AsyncConnection) -> list[str]:
+    """List every public-schema table with row-level security still disabled."""
+    result = await conn.execute(
+        text(
+            "SELECT tablename FROM pg_tables "
+            "WHERE schemaname = 'public' AND rowsecurity = false "
             "ORDER BY tablename"
         )
     )
@@ -490,5 +509,53 @@ async def test_every_rls_table_grants_both_service_roles(pg_url: str) -> None:
                             "(GRANT-layer regression, independent of the "
                             "policy check above)"
                         )
+    finally:
+        await admin_engine.dispose()
+
+
+async def test_no_public_table_ships_without_row_level_security(pg_url: str) -> None:
+    """Drift guard: no table in ``public`` may have row-level security disabled.
+
+    This is the inverse of ``test_every_rls_table_grants_both_service_roles``
+    and closes the exact hole that test cannot see. That one enumerates
+    ``rowsecurity = true`` and checks each result, so a brand new table that
+    never enabled RLS is not in its list at all and passes silently. RLS is a
+    database-catalog property, not a code path, so no application-level test
+    observes it either: the table works perfectly through SQLAlchemy (the app
+    connects as ``postgres``, the owner, which Postgres exempts from RLS) while
+    being world-readable through PostgREST with the public anon key.
+
+    That is not hypothetical. ``20260711200745_enable_rls_all_tables.sql``
+    established "every public table has RLS" as an invariant, and the two
+    ADR-023 personalization tables (``child_profile_personalization``,
+    ``personalization_disclosure_consent``) were written without it, holding
+    children's real first names, sibling names, kinship labels, and adults'
+    legal signer names plus IPs. Nothing in the suite failed.
+
+    Args:
+        pg_url: Public alias for the session-scoped testcontainers Postgres
+            URL fixture.
+    """
+    mig_url = await create_migrated_database(pg_url, "rls_coverage_drift")
+
+    admin_engine = create_async_engine(mig_url, poolclass=NullPool)
+    try:
+        async with admin_engine.connect() as conn:
+            unprotected = [
+                table
+                for table in await _tables_without_rowsecurity(conn)
+                if table not in _RLS_EXEMPT_TABLES
+            ]
+            assert not unprotected, (
+                "these public tables ship without row-level security, so the "
+                "public anon key can read and write them through PostgREST: "
+                f"{unprotected}. Add "
+                "'ALTER TABLE public.<name> ENABLE ROW LEVEL SECURITY;' to the "
+                "migration that creates each one, plus a service_rw policy and "
+                "GRANT for cyo_api/cyo_worker (see "
+                "20260729040000_add_personalization_service_role_access.sql). "
+                "If a table genuinely holds no tenant-scoped or identifying "
+                "data, add it to _RLS_EXEMPT_TABLES with a reason."
+            )
     finally:
         await admin_engine.dispose()

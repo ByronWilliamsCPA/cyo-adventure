@@ -14,15 +14,24 @@ from typing import TYPE_CHECKING
 from fastapi import APIRouter
 from sqlalchemy import select, update
 
+from cyo_adventure.api.admin_users import create_pending_invite, user_view
 from cyo_adventure.api.deps import Context, Role
-from cyo_adventure.api.schemas import FamilyExportView, MeResponse, error_responses
+from cyo_adventure.api.schemas import (
+    FamilyExportView,
+    GuardianInviteBody,
+    MeResponse,
+    UserView,
+    error_responses,
+)
 from cyo_adventure.core.exceptions import AuthorizationError, BusinessLogicError
 from cyo_adventure.db.models import (
     CATALOG_FAMILY_ID,
     ChildProfile,
+    ChildProfilePersonalization,
     Completion,
     Family,
     KidFlag,
+    PersonalizationDisclosureConsent,
     Rating,
     ReadingState,
     StorybookAssignment,
@@ -82,6 +91,10 @@ def _profile_dict(
         "tts_enabled": row.tts_enabled,
         "content_flag_caps": row.allowed_content_flags,
         "banned_themes": row.banned_themes,
+        # ADR-023 P4 (Task B3): this child's OWN real-name consent rings,
+        # distinct from the per-slot rings inside "personalization" below.
+        "real_name_ring1_enabled": row.real_name_ring1_enabled,
+        "real_name_ring2_enabled": row.real_name_ring2_enabled,
         "created_at": row.created_at.isoformat(),
         "deactivated_at": row.deactivated_at.isoformat()
         if row.deactivated_at is not None
@@ -118,10 +131,22 @@ async def _assemble_family_export(
         )
     ).all()
     profile_ids = [row.id for row in profile_rows]
+    # #ASSUME: data-integrity: a sibling-slot ``value_profile_id`` is
+    # validated at write time to name a profile in the SAME family (design
+    # plan Task B5, step 4), so every referenced profile is already among
+    # ``profile_rows`` and this map never has to fall back to a cross-family
+    # lookup or a ``None`` display name for a live reference.
+    # #VERIFY: tests/unit/test_personalization_values.py (Task B5) pins the
+    # same-family invariant at write time.
+    display_name_by_profile_id = {row.id: row.display_name for row in profile_rows}
     state_by_profile: dict[uuid.UUID, list[dict[str, object]]] = defaultdict(list)
     completions_by_profile: dict[uuid.UUID, list[dict[str, object]]] = defaultdict(list)
     ratings_by_profile: dict[uuid.UUID, list[dict[str, object]]] = defaultdict(list)
     assignments_by_profile: dict[uuid.UUID, list[dict[str, object]]] = defaultdict(list)
+    personalization_by_profile: dict[uuid.UUID, list[dict[str, object]]] = defaultdict(
+        list
+    )
+    consents_by_profile: dict[uuid.UUID, list[dict[str, object]]] = defaultdict(list)
     if profile_ids:
         state_rows = await ctx.session.scalars(
             select(ReadingState).where(ReadingState.child_profile_id.in_(profile_ids))
@@ -172,6 +197,64 @@ async def _assemble_family_export(
                     "created_at": assignment.created_at.isoformat(),
                 }
             )
+        personalization_rows = await ctx.session.scalars(
+            select(ChildProfilePersonalization).where(
+                ChildProfilePersonalization.child_profile_id.in_(profile_ids)
+            )
+        )
+        for personalization in personalization_rows:
+            personalization_by_profile[personalization.child_profile_id].append(
+                {
+                    "slot_type": personalization.slot_type,
+                    "value_text": personalization.value_text,
+                    "value_enum": personalization.value_enum,
+                    "value_profile_id": str(personalization.value_profile_id)
+                    if personalization.value_profile_id is not None
+                    else None,
+                    "value_profile_display_name": display_name_by_profile_id.get(
+                        personalization.value_profile_id
+                    )
+                    if personalization.value_profile_id is not None
+                    else None,
+                    "ring1_enabled": personalization.ring1_enabled,
+                    "ring2_enabled": personalization.ring2_enabled,
+                    "created_at": personalization.created_at.isoformat(),
+                    "updated_at": personalization.updated_at.isoformat(),
+                }
+            )
+        # #CRITICAL: security: this includes TOMBSTONED rows
+        # (family_connection_id IS NULL) on purpose -- a guardian's own
+        # export must be complete even after the connection they consented
+        # on was deleted; the query below applies no filter on that column.
+        # #VERIFY: tests/integration/test_deletion_drill.py::
+        # test_export_includes_personalization_and_disclosure_consent_data.
+        consent_rows = await ctx.session.scalars(
+            select(PersonalizationDisclosureConsent).where(
+                PersonalizationDisclosureConsent.child_profile_id.in_(profile_ids)
+            )
+        )
+        for consent in consent_rows:
+            consents_by_profile[consent.child_profile_id].append(
+                {
+                    "id": str(consent.id),
+                    "family_connection_id": str(consent.family_connection_id)
+                    if consent.family_connection_id is not None
+                    else None,
+                    "connected_family_label": consent.connected_family_label,
+                    "covered_slot_types": consent.covered_slot_types,
+                    "sibling_authority_attested": consent.sibling_authority_attested,
+                    "consent_accepted_at": consent.consent_accepted_at.isoformat()
+                    if consent.consent_accepted_at is not None
+                    else None,
+                    "consent_policy_version": consent.consent_policy_version,
+                    "consent_signer_name": consent.consent_signer_name,
+                    "consent_ip": consent.consent_ip,
+                    "revoked_at": consent.revoked_at.isoformat()
+                    if consent.revoked_at is not None
+                    else None,
+                    "created_at": consent.created_at.isoformat(),
+                }
+            )
     request_rows = await ctx.session.scalars(
         select(StoryRequest)
         .where(StoryRequest.family_id == family_id)
@@ -202,6 +285,8 @@ async def _assemble_family_export(
                     "completions": completions_by_profile[row.id],
                     "ratings": ratings_by_profile[row.id],
                     "assignments": assignments_by_profile[row.id],
+                    "personalization": personalization_by_profile[row.id],
+                    "disclosure_consents": consents_by_profile[row.id],
                 },
             )
             for row in profile_rows
@@ -241,6 +326,15 @@ async def export_my_family(ctx: Context) -> FamilyExportView:
     multi-stage LLM output): that field is admin-only everywhere else in this
     API (``api/generation.py::get_generation_job``), and a plain guardian's
     export must not become a side channel around that restriction.
+
+    Each profile also carries its ADR-023 P4 personalization data (Task B3):
+    every ``ChildProfilePersonalization`` row (a sibling-slot row includes
+    both the referenced profile's id and its display name), the two
+    real-name consent-ring booleans, and every
+    ``PersonalizationDisclosureConsent`` row, including a tombstoned one
+    whose ``family_connection_id`` has gone ``NULL`` because the underlying
+    connection was deleted -- the tombstone is evidence the guardian's own
+    export must keep, not something to hide.
 
     Args:
         ctx: The request context (principal + unit-of-work session).
@@ -335,3 +429,86 @@ async def delete_my_family(ctx: Context) -> None:
     if row is not None:
         await ctx.session.delete(row)
         await ctx.session.flush()
+
+
+@router.post(
+    "/me/family/invite-guardian",
+    status_code=201,
+    responses=error_responses(403, 409),
+)
+async def invite_guardian(body: GuardianInviteBody, ctx: Context) -> UserView:
+    """Invite a co-parent into the caller's OWN family (guardian self-service; G14).
+
+    Complements the admin-mediated ``POST /admin/users`` (WS-J), which can
+    invite a second guardian into ANY family: this endpoint is the
+    guardian-initiated counterpart the register flagged as the real gap, and
+    it is deliberately narrower. It reuses
+    ``api/admin_users.py::create_pending_invite``, the exact same pending-row
+    creation and duplicate-email guard the admin path uses, so the two paths
+    can never drift into inconsistent invite semantics.
+
+    Args:
+        body: The invitee's email; nothing else is caller-supplied.
+        ctx: The request context (principal + unit-of-work session).
+
+    The invited address is NOT thereby pulled into the caller's family. The
+    row is created with ``status="pending_guardian_invite"``, which
+    ``api/onboarding.py::_bind_pending_invite`` binds to
+    ``"awaiting_approval"`` rather than ``"active"``: an admin must still
+    approve before the invitee can authenticate at all. Only the
+    admin-mediated ``POST /admin/users`` produces an invite that binds
+    straight to ``"active"``.
+
+    Returns:
+        UserView: The created ``status="pending_guardian_invite"`` row,
+        scoped to the caller's own family.
+
+    Raises:
+        AuthorizationError: If the caller is not a guardian (403).
+        StateTransitionError: If a pending invite of either kind already
+            exists for this email (409).
+    """
+    # #CRITICAL: security: the target family is ALWAYS ctx.principal.family_id,
+    # never taken from the request body (GuardianInviteBody has no family_id
+    # field at all); this is the one thing that makes this endpoint safe to
+    # expose to a non-admin caller. A guardian must never be able to invite
+    # into a family other than their own.
+    # #VERIFY: tests/integration/test_me_invite_guardian_api.py::
+    # test_invite_guardian_is_hard_scoped_to_callers_own_family.
+    if ctx.principal.role is not Role.GUARDIAN:
+        msg = "guardian role required"
+        raise AuthorizationError(msg)
+    # #ASSUME: security: the invited role is always "guardian", never "admin";
+    # a guardian cannot use this path to grant the global admin capability to
+    # anyone, including themselves. Only POST /admin/users (admin-only) can
+    # create an admin row.
+    # #VERIFY: tests/integration/test_me_invite_guardian_api.py::
+    # test_invite_guardian_created_row_is_never_admin.
+    # #CRITICAL: security: invited_by_admin=False is what stops this endpoint
+    # from being a family-capture primitive. It selects
+    # status='pending_guardian_invite', which onboarding binds to
+    # 'awaiting_approval'; passing True here (or reusing the admin path's
+    # 'pending') would let any guardian pre-claim an arbitrary email address
+    # and have its real owner bound into this family as an ACTIVE guardian on
+    # their first sign-in, exposing this family's child profiles to the
+    # inviter. There is no invite expiry and no revoke surface, so this flag
+    # is the only gate.
+    # #VERIFY: tests/integration/test_me_invite_guardian_api.py::
+    # test_guardian_invited_user_binds_to_awaiting_approval_not_active.
+    user = await create_pending_invite(
+        ctx.session,
+        family_id=ctx.principal.family_id,
+        role="guardian",
+        is_admin=False,
+        email=body.email,
+        invited_by_admin=False,
+    )
+    await record_event(
+        ctx.session,
+        Actor.from_principal(ctx.principal),
+        entity_type="user",
+        entity_id=str(user.id),
+        event_type=EventType.USER_MANAGED,
+        payload={"action": "invited", "role": "guardian", "status": user.status},
+    )
+    return user_view(user)

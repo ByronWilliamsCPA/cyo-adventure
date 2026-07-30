@@ -52,6 +52,7 @@ from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+    from datetime import datetime
 
 _logger = get_logger(__name__)
 
@@ -227,6 +228,7 @@ def _library_item(
     series_id: str | None = None,
     book_index: int | None = None,
     cover_url: str | None = None,
+    published_at: datetime | None = None,
 ) -> LibraryItem:
     """Build a library item from a stored Storybook blob.
 
@@ -247,6 +249,9 @@ def _library_item(
         cover_url: A freshly presigned cover image URL, or None if no cover
             is ready yet. Generated from ``StorybookVersion.cover_status``
             (never read from the stored ``cover_image_url`` audit column).
+        published_at: When this version was published (K9 "what's new" leg),
+            sourced from ``StorybookVersion.published_at``, or None for a
+            pre-migration row that predates the column.
 
     Returns:
         LibraryItem: The listing item with safe, finite, correctly typed
@@ -323,6 +328,7 @@ def _library_item(
         series_id=series_id,
         book_index=book_index,
         cover_url=cover_url,
+        published_at=published_at,
     )
 
 
@@ -409,9 +415,11 @@ async def list_library(
         )
     )
     blobs: dict[tuple[str, int], dict[str, object]] = {}
+    published_ats: dict[tuple[str, int], datetime | None] = {}
     ready_covers: list[tuple[str, int]] = []
     for row in version_rows:
         blobs[(row.storybook_id, row.version)] = row.blob
+        published_ats[(row.storybook_id, row.version)] = row.published_at
         if row.cover_status == "ready":
             ready_covers.append((row.storybook_id, row.version))
     # #CRITICAL: security: H1 defense in depth (continued from the comment
@@ -466,6 +474,7 @@ async def list_library(
             series_id=str(series_id) if series_id is not None else None,
             book_index=book_index,
             cover_url=covers.get((storybook_id, version)),
+            published_at=published_ats.get((storybook_id, version)),
         )
         for storybook_id, version, series_id, book_index in books
         if (storybook_id, version) in blobs

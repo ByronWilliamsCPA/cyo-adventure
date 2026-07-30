@@ -109,7 +109,11 @@ async def personalizable_slot_ids_for_story(
         story_id: The persisted storybook id under moderation.
 
     Returns:
-        frozenset[str] | None: see :func:`personalizable_slot_ids_for_job`.
+        frozenset[str] | None: see :func:`personalizable_slot_ids_for_job` for
+            the two cases that function decides. This function adds a third
+            that the delegated contract does not cover: NO matching
+            ``GenerationJob`` row at all, which returns an EMPTY frozenset.
+            See the comment on that branch for why empty and not ``None``.
     """
     job = (
         await session.execute(
@@ -120,6 +124,24 @@ async def personalizable_slot_ids_for_story(
         )
     ).scalar_one_or_none()
     if job is None:
+        # #ASSUME: data-integrity: no job row means no reachable skeleton and
+        # therefore no theme contract, so no personalizable slot can
+        # legitimately exist: an empty frozenset, not the fail-closed `None`.
+        # `None` would be the more paranoid answer, but it is the WRONG one
+        # here. Stories reach the catalog without a `GenerationJob` (seeded
+        # and directly-imported ones do), and failing closed for them would
+        # make the at-rest scan newly treat every brace-bearing legacy story
+        # as sentinel-corrupt, which is a behaviour change well outside this
+        # slot contract's remit.
+        # #VERIFY: the anomaly is still worth a signal, because the moderation
+        # pipeline reaches this function FROM a job: a missing row on that
+        # path means the row was deleted mid-pipeline, not that the story is
+        # legacy. Logged rather than swallowed so that case is visible; the
+        # empty set is returned either way.
+        _logger.warning(
+            "moderation.personalizable_slots_no_job_row",
+            story_id=story_id,
+        )
         return frozenset()
     return personalizable_slot_ids_for_job(job)
 

@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
-import type { ReviewSurface } from '../guardian/reviewApi'
+import type { ReviewSurface } from './reviewApi'
 import type { PassageEditApi } from './passageEditApi'
 import { usePassageEdit } from './usePassageEdit'
 

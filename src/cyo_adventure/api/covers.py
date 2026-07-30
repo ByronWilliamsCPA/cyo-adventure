@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import datetime
+
 from fastapi import APIRouter
 from pydantic import BaseModel
 
@@ -14,6 +16,7 @@ from cyo_adventure.core.exceptions import (
     ExternalServiceError,
     ResourceNotFoundError,
 )
+from cyo_adventure.covers.service import approve_cover as _approve_cover
 from cyo_adventure.covers.storage import generate_presigned_cover_url
 from cyo_adventure.covers.worker import enqueue_cover
 from cyo_adventure.db.models import StorybookVersion
@@ -25,10 +28,18 @@ router = APIRouter(
 
 
 class CoverStatusView(BaseModel):
-    """Cover generation status for one story version."""
+    """Cover generation status for one story version.
+
+    ``cover_approved_by``/``cover_approved_at`` are None until an admin
+    approves a ``pending_review`` cover (H2, ``approve_cover`` endpoint
+    below); they mirror ``ApprovedView.approved_by``/``published_at`` for
+    story text.
+    """
 
     cover_status: str
     cover_url: str | None = None
+    cover_approved_by: str | None = None
+    cover_approved_at: datetime | None = None
 
 
 def _require_admin(principal: CurrentPrincipal) -> None:
@@ -45,18 +56,40 @@ async def _cover_url(row: StorybookVersion) -> str | None:
 
     Returns:
         str | None: A short-lived signed GET URL when ``cover_status`` is
-        ``"ready"``; otherwise None. Never reads ``row.cover_image_url``
-        directly (that column is an upload-time audit value, not a URL to
-        serve to readers -- see ``covers/storage.py``'s module note).
+        ``"ready"`` or ``"pending_review"``; otherwise None. Never reads
+        ``row.cover_image_url`` directly (that column is an upload-time
+        audit value, not a URL to serve to readers -- see
+        ``covers/storage.py``'s module note).
     """
     # #CRITICAL: security: covers are private-by-default in R2 (Phase 1d); the
     # only way a client legitimately learns a cover's URL is a freshly
     # generated, short-lived signed GET URL, computed here rather than read
     # from the stored (permanent, audit-only) cover_image_url column.
-    # #VERIFY: test_covers_api.py::test_cover_status_returns_presigned_url_when_ready.
-    if row.cover_status != "ready":
+    # A pending_review cover is deliberately included here even though
+    # api/library.py's child-facing read gate excludes it (cover_status ==
+    # "ready" only): this function backs the three admin-only endpoints in
+    # this module (request_cover, cover_status, approve_cover), all gated by
+    # _require_admin before they ever call it, and the reviewer cannot judge
+    # a cover it cannot see. library.py and recommendations.py compute their
+    # own presigned URLs independently (via generate_presigned_cover_urls)
+    # and are unaffected by this widening.
+    # #VERIFY: test_covers_api.py::test_cover_status_returns_presigned_url_when_ready,
+    # ::test_cover_status_returns_presigned_url_when_pending_review.
+    if row.cover_status not in ("ready", "pending_review"):
         return None
     return await generate_presigned_cover_url(row.storybook_id, row.version, settings)
+
+
+async def _status_view(row: StorybookVersion) -> CoverStatusView:
+    """Build the wire view for a cover status row, including approval provenance."""
+    return CoverStatusView(
+        cover_status=row.cover_status,
+        cover_url=await _cover_url(row),
+        cover_approved_by=(
+            str(row.cover_approved_by) if row.cover_approved_by is not None else None
+        ),
+        cover_approved_at=row.cover_approved_at,
+    )
 
 
 @router.post(
@@ -142,6 +175,35 @@ async def cover_status(
     if row is None:
         msg = "storybook version not found"
         raise ResourceNotFoundError(msg)
-    return CoverStatusView(
-        cover_status=row.cover_status, cover_url=await _cover_url(row)
-    )
+    return await _status_view(row)
+
+
+@router.post(
+    "/storybooks/{storybook_id}/versions/{version}/cover/approve",
+    responses=error_responses(400, 404),
+)
+async def approve_cover(
+    storybook_id: str,
+    version: int,
+    principal: CurrentPrincipal,
+    session: DbSession,
+) -> CoverStatusView:
+    """Approve a pending-review cover so it becomes visible to children (admin only).
+
+    H2 fix (security-hardening-plan-2026-07.md): the human-approval gate that
+    ``generate_cover`` stops short of. A cover generated successfully sits at
+    ``cover_status == "pending_review"``. ``_cover_url`` presigns it for this
+    admin review surface only, and it stays withheld from every child library
+    card (see ``api/library.py``'s ``cover_status == "ready"`` filter) until an
+    admin calls this endpoint. That holds for every API read path; it says
+    nothing about direct access to the stored object, whose key is
+    deterministic and whose exposure is governed by the bucket-privacy
+    invariant in ``covers/storage.py``.
+    """
+    # #CRITICAL: security: admin-only; covers.service.approve_cover re-checks
+    # is_admin as defense in depth, mirroring approval.py::approve_storybook's
+    # relationship with publishing.service.approve.
+    # #VERIFY: test_cover_api.py::test_approve_cover_non_admin_forbidden.
+    _require_admin(principal)
+    row = await _approve_cover(session, principal, storybook_id, version)
+    return await _status_view(row)

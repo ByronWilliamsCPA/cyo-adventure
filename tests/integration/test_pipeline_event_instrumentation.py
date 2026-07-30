@@ -204,6 +204,63 @@ async def _seed_in_review_storybook_for_family(
         await session.commit()
 
 
+async def _seed_published_storybook(
+    sessions: async_sessionmaker[AsyncSession], story_id: str
+) -> None:
+    """Seed Family + admin user + a published single-version story.
+
+    Mirrors ``_seed_in_review_storybook`` above (own-family, own-admin); used
+    by the ``archive()``/``STORYBOOK_ARCHIVED`` (A5) tests, which need a
+    story already in ``published`` rather than ``in_review``.
+    """
+    async with sessions() as session:
+        fam = Family(name="Archive Event Test Family")
+        session.add(fam)
+        await session.flush()
+        session.add(
+            User(family_id=fam.id, role="admin", authn_subject="admin-a", is_admin=True)
+        )
+        session.add(
+            Storybook(
+                id=story_id,
+                family_id=fam.id,
+                status="published",
+                current_published_version=1,
+            )
+        )
+        session.add(
+            StorybookVersion(storybook_id=story_id, version=1, blob={"id": story_id})
+        )
+        await session.commit()
+
+
+async def _seed_published_storybook_for_family(
+    sessions: async_sessionmaker[AsyncSession],
+    story_id: str,
+    family_id: uuid.UUID,
+) -> None:
+    """Seed a published Storybook owned by a caller-supplied family.
+
+    Mirrors ``_seed_in_review_storybook_for_family`` above; used by the
+    dual-role archive tests so a dual-role adult's own-family versus
+    foreign-family archive can be exercised against the same fixture
+    identities that mint the tokens.
+    """
+    async with sessions() as session:
+        session.add(
+            Storybook(
+                id=story_id,
+                family_id=family_id,
+                status="published",
+                current_published_version=1,
+            )
+        )
+        session.add(
+            StorybookVersion(storybook_id=story_id, version=1, blob={"id": story_id})
+        )
+        await session.commit()
+
+
 async def test_approve_writes_released_event(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
@@ -594,6 +651,80 @@ async def test_dual_role_foreign_family_send_back_stamps_admin(
         event_type="sent_back",
         entity_type="storybook",
         to_state="needs_revision",
+        actor_role="admin",
+    )
+
+
+async def test_archive_writes_storybook_archived_event(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Admin archive on a published story writes exactly one storybook_archived event.
+
+    A5's incident/pull-everywhere path (docs/planning/capability-register.md):
+    this is the event notifications/registry.py's composer turns into an
+    alert-severity guardian notification.
+    """
+    story_id = "s_archive_event"
+    await _seed_published_storybook(sessions, story_id)
+
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/archive", headers=auth("admin-a")
+    )
+    assert resp.status_code == 200, resp.text
+
+    event = await assert_single_event(
+        sessions,
+        event_type="storybook_archived",
+        entity_type="storybook",
+        to_state="archived",
+        actor_role="admin",
+    )
+    assert event.payload == {}
+
+
+async def test_dual_role_same_family_archive_stamps_guardian(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """A dual-role adult archiving their own family's story acts as guardian."""
+    story_id = "s_archive_dual_same_family"
+    await _seed_published_storybook_for_family(sessions, story_id, seed.family_id)
+
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/archive", headers=auth(seed.dual_token)
+    )
+    assert resp.status_code == 200, resp.text
+
+    await assert_single_event(
+        sessions,
+        event_type="storybook_archived",
+        entity_type="storybook",
+        to_state="archived",
+        actor_role="guardian",
+    )
+
+
+async def test_dual_role_foreign_family_archive_stamps_admin(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    stranger: Stranger,
+) -> None:
+    """A dual-role adult archiving a foreign family's story acts as admin."""
+    story_id = "s_archive_dual_foreign_family"
+    await _seed_published_storybook_for_family(sessions, story_id, stranger.family_id)
+
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/archive", headers=auth(seed.dual_token)
+    )
+    assert resp.status_code == 200, resp.text
+
+    await assert_single_event(
+        sessions,
+        event_type="storybook_archived",
+        entity_type="storybook",
+        to_state="archived",
         actor_role="admin",
     )
 

@@ -46,7 +46,7 @@ from cyo_adventure.core.exceptions import (
 from cyo_adventure.db.models import ChildProfile, DeviceGrant, User
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncIterator
+    from collections.abc import AsyncIterator, Callable
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -229,6 +229,42 @@ async def get_db_session() -> AsyncIterator[AsyncSession]:
 
 
 DbSession = Annotated["AsyncSession", Depends(get_db_session)]
+
+
+def get_session_factory() -> Callable[[], AsyncSession]:
+    """Return the factory a handler uses to open its own short-lived sessions.
+
+    The request-scoped ``get_db_session`` unit of work above is the default,
+    and remains correct for every ordinary handler. It is *not* usable by a
+    handler whose database work outlives the handler call itself: a FastAPI
+    ``yield`` dependency is torn down only after the entire response body has
+    been sent, so for a ``StreamingResponse`` its session (and the pooled
+    connection that session holds) would stay checked out for the whole
+    connection's lifetime. Today that is ``api/notifications.py``'s SSE
+    stream, whose generator keeps polling long after
+    ``stream_notifications`` has returned.
+
+    Such a handler takes this factory and opens/closes a fresh, short-lived
+    session per unit of work instead. Injecting the factory rather than
+    importing ``get_session`` directly is what keeps those handlers on the
+    dependency seam, so ``app.dependency_overrides`` reaches them exactly as
+    it reaches every other route (``tests/integration/conftest.py`` binds
+    both this and ``get_db_session`` to the test container's engine).
+
+    Returns:
+        Callable[[], AsyncSession]: The module-level session factory.
+    """
+    # #CRITICAL: external resources: a caller of this factory owns the
+    # lifecycle of every session it opens; nothing here closes them. Each call
+    # site must close its session in a `finally`, or it leaks a pooled
+    # connection per call for as long as the handler runs.
+    # #VERIFY: tests/unit/test_notifications_api_unit.py::
+    # TestNotificationEventSource::test_closes_the_session_after_each_poll_tick
+    # asserts every session the only current caller opens is closed.
+    return get_session
+
+
+SessionFactory = Annotated["Callable[[], AsyncSession]", Depends(get_session_factory)]
 
 
 def _extract_subject(authorization: str | None) -> str:
@@ -487,14 +523,22 @@ async def require_principal(
         if user is None:
             msg = "unknown subject"
             raise AuthenticationError(msg)
-        # #CRITICAL: security: a 'pending' row's authn_subject is a synthetic
-        # placeholder (api/admin_users.py) that no real verified subject can ever
-        # match, so this branch exists purely as defense in depth; 'deactivated'
-        # is the reachable case (WS-J admin user management), and it MUST be
-        # rejected with the same message as an unknown subject so status is never
-        # a distinguishable oracle for a caller probing authn_subject validity.
+        # #CRITICAL: security: deny-by-default on status. The check is
+        # `!= "active"`, never a denylist of known-bad values, so every state
+        # added to db/models.py::_USER_STATUS_VALUES is rejected here until
+        # somebody deliberately promotes the row to 'active'. Both invite
+        # states ('pending', 'pending_guardian_invite') carry a synthetic
+        # placeholder authn_subject (api/admin_users.py) that no real verified
+        # subject can ever match, so they are defense in depth; 'deactivated'
+        # (WS-J admin user management) and 'awaiting_approval' (self-signup,
+        # and a bound guardian-created invite) are the reachable cases, and
+        # they MUST be rejected with the same message as an unknown subject so
+        # status is never a distinguishable oracle for a caller probing
+        # authn_subject validity.
         # #VERIFY: tests/integration/test_admin_users_api.py::
-        # test_deactivated_guardian_cannot_authenticate.
+        # test_deactivated_guardian_cannot_authenticate; tests/integration/
+        # test_me_invite_guardian_api.py::
+        # test_guardian_invited_user_binds_to_awaiting_approval_not_active.
         if user.status != "active":
             msg = "unknown subject"
             raise AuthenticationError(msg)

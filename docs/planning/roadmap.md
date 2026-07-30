@@ -60,7 +60,7 @@ full v1 (Phase 4b and Phase 5) and the later release rungs (R2/R3).
 | 3 Safety + Review | ✅ Delivered (backend) | moderation pipeline (#36), publish state machine + approval/send-back + core invariant (#34), review-surface API + save-state integrity (#45); guardian console UI is Phase 4a |
 | 4a Library + Profiles | ✅ Delivered (R1 feature-complete) | app shell/auth #56, profiles #60, library #68, guardian console #76, intake #69, assign #75 (all merged 2026-07-03) |
 | 4b Editor + Engagement | ✅ Substantially delivered (2026-07-20 audit) | Shipped 2026-07-17 in PR #270: node editor (`PATCH .../nodes/{id}`), endings tracker UI, read-aloud/TTS, guardian content-controls UI (banned themes), per-child permission envelopes, kid feedback flag. Real gaps remaining: bookmarks (not built at all), guardian device/storage view (revoke exists, download visibility doesn't) |
-| 4c Family Loops (NEW 2026-07-16) | ✅ Substantially delivered (2026-07-20 audit) | Shipped 2026-07-17 in PR #270: notification feed (`GET /notifications` + `NotificationBell.tsx`), guardian engagement visibility (`GET /families/me/reading-summary` + `ReadingPage.tsx`), kid-facing generation status, budget consent (envelopes + `GET /families/me/budget`). Gap: delivery is poll-based only, no push channel or server-scheduled digest job (S9/G10 "digest by default" is not yet a real distinct tier) |
+| 4c Family Loops (NEW 2026-07-16) | ✅ Substantially delivered (2026-07-28 audit) | Shipped 2026-07-17 in PR #270: notification feed (`GET /notifications` + `NotificationBell.tsx`), guardian engagement visibility (`GET /families/me/reading-summary` + `ReadingPage.tsx`), kid-facing generation status, budget consent (envelopes + `GET /families/me/budget`). Push channel closed 2026-07-28: authenticated SSE (`GET /v1/notifications/stream`), `notificationsStream.ts` consumer wired into `NotificationBell.tsx` as a fallback-preserving addition to the poll (G10 flipped to ✅). Remaining gap: no server-scheduled digest job (S9 stays 🟡, narrowed to this one piece) |
 | 4d Connections (NEW 2026-07-16) | ✅ Substantially delivered (2026-07-20 audit) | Shipped 2026-07-17 in PR #270: dual-guardian consent flow with an enforced guard at the recommendations read path (`api/recommendations.py::_is_dual_consented()`), kid-facing recommendation chips. Privacy-model erasure coverage for connections not independently re-verified in this audit pass |
 | 5 Hardening | 🟡 Partially delivered | Redis-backed rate limiter, ADR-007 purge job, offline-copy revocation, operator runbook, and a re-screen first cut are merged (see checklist below); performance pass, Sentry backups/restore drill, admin audit view, and the nightly/staging test ladder remain open |
 
@@ -124,9 +124,9 @@ done.**
 | Register items | Phase |
 |----------------|-------|
 | K5/K8 test pins, K6 tracker, K7 TTS, G6 editor, G5 skim aids, G2 controls UI, G3 permissions, K15 feedback flag, G15 storage view | 4b |
-| S9 delivery infra, G10 digest/alerts, G9 visibility, K12 kid generation status, G7 budget consent + G13 interim quota balance | 4c |
+| S9 delivery infra (push transport closed 2026-07-28: authenticated SSE stream shipped; the server-scheduled digest job remains open), G9 visibility, K12 kid generation status, G7 budget consent. Closed since this table was written: G10 digest/alerts 2026-07-28 (SSE push transport shipped, register flipped to ✅), G13 interim quota balance 2026-07-29 (audit found budget enforcement and kid-facing status already shipped and tested, register flipped to ✅), and G14 multi-guardian households 2026-07-28 (guardian self-service co-parent invite shipped, register flipped to ✅) | 4c |
 | G17 consent flow, K17 recommendation surfaces, A15 enforcement guard | 4d |
-| ADR-007 purge, G8/A5 offline revocation, A13 audit view, A4 re-screen tooling, nightly e2e-real + S2 real conflict spec, staging golden journeys, adversarial live-model run | 5 |
+| ADR-007 purge, G8/A5 offline revocation, nightly e2e-real + S2 real conflict spec, staging golden journeys, adversarial live-model run | 5 |
 | ADR-018 D1-D4 execution, G11 trust surface, G12 export, A12 abuse workflow, A14 compliance reporting | 7 |
 | G13 full credits/IAP | 8 |
 | A9 curation surface, A7 ops dashboards, A8 runtime levers, A4 full catalog re-screen | 9 |
@@ -141,13 +141,20 @@ and need the owner's ratification before they count as commitments.
 
 | Register items | Proposed phase |
 |----------------|----------------|
-| K1 per-band presentation, K9 shelf presentation, K10 kid-facing connectivity UX | 4b, alongside the other kid-surface UX already there |
-| G14 multi-guardian households, S8 request-flow remainder (budget accounting at consent, kid-facing status) | 4c, which already owns G7 budget consent and K12 kid status, the two gaps S8 names |
-| A16 cover-art moderation gate (gap H2) | 5, where H2 is already listed in the Phase 5 checklist under its own name |
 | A3 band definitions and theme taxonomy as admin levers (thresholds already shipped) | 9, with A8 runtime levers |
-| K11 kid-terms request initiation | `now`: the register's own note says this shipped end to end, so the 🟡 is likely stale. Verify and correct the symbol rather than schedule work |
 | K20 kid-facing personalization, G18 guardian per-slot opt-in | Blocked on [ADR-023](./adr/adr-023-story-personalization-slots.md) moving from Proposed to Accepted. No phase until that ruling; tracked as a `decision`, not a scheduling gap |
 | A2 sample audits of auto-published stories | Post-launch backlog, conditional: A6 gates every publish through a human today, so this is moot unless an auto-publish tier is ever introduced. It stays registered so the conditional survives |
+
+**Amended 2026-07-29, union of the in-flight branch corrections.** Both tables above now carry the
+same closures, so the in-flight UI branches record one consistent view instead of each dropping the
+others' edits. Removed as closed rather than scheduled: K1, K9 and K10 (kid-surface presentation and
+connectivity UX), K11 (kid-terms request initiation, which the audit confirmed shipped end to end),
+G13 interim quota balance, G14 multi-guardian households, S8 request-flow remainder, A13 audit view,
+A16 cover-art review, and A4's Phase 5 re-screen UI hook (A4's full-catalog re-screen stays in Phase
+9). Each closure is evidenced in [capability-register.md](./capability-register.md). Where a row in
+that register still reads 🟡 here, the flip travels with the branch that closed it and lands
+when that branch merges; this note is the shared phase home in the meantime, so no closed-or-closing
+capability is left unscheduled.
 
 ## 2026-07-20 Plan Audit: verification and previously untracked work
 
@@ -329,11 +336,11 @@ The old wording stands in historical sections above; this table governs.
 | M0-M3 | Foundations through enforced approval gate | done | ✅ Delivered |
 | M4 = **R1-alpha** | Core loop live internally, web only (Phases 0-3 + 4a; historic "R1") | done | ✅ Feature-complete 2026-07-03, live 2026-07-05 |
 | M4.1: R1-alpha sign-off | Funded provider keys; merged PRs + safety fixes redeployed; live E2E checklist executed once with a sign-off row; Now-queue items 1-4; **plus, added 2026-07-28: the ADR-021 production cutover (`UW-A03`), which the ADR itself names M4.1 as the review gate for** | ~1 wk | ⏸️ Next up. The cutover provisions `cyo_api`/`cyo_worker` role passwords in staging and prod and retires `postgres`-role traffic; until it lands, RLS is enabled but disarmed and ADR-022 (`UW-A01`) cannot start |
-| M4b: Editor + engagement | G6, K6, K7, G5, G2 usable by a real guardian, G3, K15, G15 view, K5/K8 test pins | 3-4 wks | ✅ Substantially delivered 2026-07-17 (PR #270); open: bookmarks (not built), G15 device/storage view, K5/K8 test pins |
-| M4c: Family loops | S9, G10, G9, K12 complete, G7 real budget consent + G13 balance | 2-3 wks | ✅ Substantially delivered 2026-07-17 (PR #270); open: push channel/server-scheduled digest (S9/G10 are poll-based only) |
+| M4b: Editor + engagement | G6, K6, K7, G5, G2 usable by a real guardian, G3, K15, G15 view, K5/K8 test pins | 3-4 wks | ✅ Substantially delivered 2026-07-17 (PR #270); open: bookmarks (not built), G15 storage/download view (device list/revoke UI shipped 2026-07-28), K5/K8 test pins |
+| M4c: Family loops | S9, G10, G9, K12 complete, G7 real budget consent + G13 balance | 2-3 wks | ✅ Substantially delivered 2026-07-17 (PR #270); push channel closed 2026-07-28 (SSE stream, G10 now ✅); open: S9's server-scheduled digest job |
 | M4d: Connections | G17 consent, K17 surfaces, A15 enforcement guard (ADR-016 ring 2) | 2-3 wks, overlaps 4c | ✅ Delivered 2026-07-17 (PR #270); privacy-model erasure coverage for connections not independently re-verified |
 | M5: Hardened family tier | Phase 5 expanded scope: purge, offline revocation, audit view, re-screen, restore drill, nightly/staging/prod test ladder green with alerting | 2-3 wks | 🟡 M4b-4d dependency satisfied as of 2026-07-17 (see the 2026-07-20 audit note above); remaining Phase 5 gaps are audit view, restore drill, remaining test ladder, plus the newly surfaced H1/H2 |
-| **M5 = R1 (full): "the web app functions properly"** | Every family-tier register row at delivered status; the five golden journeys green on the full test ladder | **~9-13 wks cumulative from start** | 🟡 Closer than scheduled: the register's K/G/A/S rows are now mostly ✅/🟡 with few ❌ remaining (see capability-register.md v1.7); the live E2E sign-off (`r1-live-e2e-checklist.md`) is still an empty, unexecuted table |
+| **M5.1 = R1 (full): "the web app functions properly"** | Every family-tier register row at delivered status; the five golden journeys green on the full test ladder | **~9-13 wks cumulative from start** | 🟡 Closer than scheduled: the register's K/G/A/S rows are now mostly ✅/🟡 with few ❌ remaining (see capability-register.md v1.7); the live E2E sign-off (`r1-live-e2e-checklist.md`) is still an empty, unexecuted table |
 | M6 = R2: TestFlight iOS | Phase 6 (public auth/multi-tenancy) + Phase 8 (Capacitor shell, IAP); R2-gate debt items closed (G1 child-session scoping is already substantially closed by ADR-014; verify and mark) | 6-9 wks | 🟡 Phase 6's guardian-side substance (JIT onboarding, child-session tokens, profile picker + PIN, parental gate) is already built and tested per the 2026-07-20 audit (see PROJECT-PLAN.md Phase 6); the native iOS/Capacitor path (P6-05 remainder) and all of Phase 8 remain fully unstarted |
 | M7 = R3: Public launch | Phase 7 (ADR-018 D1-D4 executed and Accepted, G11/G12/A12/A14) + Phase 9 (catalog ops, hosted infra, A7/A8 ops levers, submission) | 5-8 wks, partial overlap with M6 | ⏸️ Counsel engagement should start now (long lead) |
 | Completion | Register fully delivered except the post-launch backlog (S12 ring-3, A11 corpus tooling) and parked no-design-element items | - | - |
@@ -620,9 +627,12 @@ register capabilities that a prior draft of this list conflated; K5 is delivered
 undo), bookmarks (a distinct save-slot feature) is not built at all.**
 
 - [x] Lightweight node editor: read as playthrough and node list, edit a passage, re-run
-      validation, re-review on edit (G6). `PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}`
-      (`api/node_edit.py`) re-runs the gate and moderation on edit. Branch re-roll and a
-      dedicated guardian-facing (as opposed to admin) review surface still remain open.
+      validation, re-review on edit (G6, edit half). `PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}`
+      (`api/node_edit.py`) re-runs the gate and moderation on edit. A dedicated
+      guardian-facing review/edit surface (`GuardianReviewDetailPage.tsx`,
+      `/guardian/review/:storybookId`) now exists alongside the admin one, scoped to the
+      requesting family's own story. Branch re-roll and the reject/veto half of G6 (an open
+      ADR-005 product decision, not an engineering gap) remain out of scope.
 - [x] Ending tracker "3 of 7 endings found" (K6, UI over the shipped completion rows) and
       read-aloud/TTS for the youngest bands (K7). `EndingsProgress.tsx` and `useReadAloud.ts`
       wired into `Reader.tsx`, `tts_enabled` toggle in `ProfileFormDialog.tsx`.
@@ -637,9 +647,14 @@ undo), bookmarks (a distinct save-slot feature) is not built at all.**
 - [x] Kid feedback flag: "I didn't like this / this scared me", routed into the admin
       queue and the Phase 4c alert surface (K15, feeds A1/G10). `KidFlag` model,
       `POST /flags`, admin list/resolve in `api/flags.py`.
-- [ ] Guardian device/storage view: which books are downloaded on which device (G15
-      remainder). ADR-014 device authorize/revoke exists; per-device storage/download
-      visibility does not.
+- [x] Guardian device list/revoke view: every currently-active device grant for the
+      family, with a revoke action per device (`GuardianShell` "Devices" nav item ->
+      `frontend/src/guardian/DevicesPage.tsx`, calling the existing family-scoped
+      `GET`/`DELETE /v1/device-grants` endpoints in `api/device_grants.py`) (G15, ADR-014's
+      own lost-device mitigation).
+- [ ] Guardian storage/download view: which books are downloaded on which device (G15
+      remainder). No backend `offline/` module exists to report per-device download state;
+      depends on K10's client-side offline architecture.
 - [ ] Test pins for the two shipped-but-unasserted surfaces: Go Back returns to the prior
       node with intact state (K5), cover render plus letter-tile fallback and the admin
       generate flow (K8/A16); test matrix action 7 (not independently re-verified in this
@@ -669,14 +684,17 @@ This is the highest-leverage gap the capability review found after initiation it
 
 ### Deliverables
 
-**Status (2026-07-20 audit): all shipped 2026-07-17 in PR #270. The one genuine remaining
-gap is transport: delivery is poll-based (client re-polls with `since`), with no push
-channel or server-scheduled digest job, so "digest by default, alert on safety" is not yet
-a real distinct delivery tier.**
+**Status (2026-07-28 update): all shipped 2026-07-17 in PR #270, plus the push transport
+closed 2026-07-28. Delivery is now poll-based (client re-polls with `since`) AND
+push-based (authenticated SSE, `GET /v1/notifications/stream`, with the poll kept as a
+fallback for a connection that cannot use SSE); "alert on safety" was already a real,
+code-enforced distinct tier via `severity`. The one genuine remaining gap is a
+server-scheduled digest job, which no code in this repo implements.**
 
 - [x] Notification delivery infrastructure over the existing `pipeline_event` log: an
-      in-app, poll-based surface (`notifications/service.py`); the transport that
-      K12/G10/A-alerts consume (S9). Server-scheduled digest and a push channel remain open.
+      in-app, poll-based surface (`notifications/service.py`) plus an authenticated SSE
+      push surface (`api/notifications.py::stream_notifications`); the transport that
+      K12/G10/A-alerts consume (S9). A server-scheduled digest job remains open.
 - [x] Guardian notifications: story awaiting consent, story ready, kid flagged content
       (G10). `GET /notifications` (`api/notifications.py`), `NotificationBell.tsx`.
 - [x] Guardian engagement visibility: per-child reading time, books finished, endings
@@ -765,7 +783,12 @@ runs on Supabase-managed infrastructure instead of the homelab; see
       post-completion or on publish (raw output currently persists indefinitely; S10).
 - [x] Offline-copy revocation: archived/pulled books are removed from device caches at
       next connection, completing the kill switch and the incident pull-everywhere path
-      (G8, A5).
+      (G8, A5). Guardian notification on an incident archive shipped on unmerged branch
+      `feat/incident-revocation-notification` (commit 3916e99): `EventType.STORYBOOK_ARCHIVED`
+      plus a G10/S9 alert-severity composer. A5 stays partial: recipients resolve from the
+      storybook's OWNING family, so archiving a `visibility='catalog'` book (owned by the
+      `CATALOG_FAMILY_ID` sentinel, assignable across families) notifies nobody. Following
+      assignments rather than ownership is the remaining A5 gap.
 - [ ] Admin audit view over the pipeline event log: who did what to child-linked data,
       filterable (A13 view half).
 - [x] Policy re-screen tooling: re-run moderation/policy over published family-tier books
@@ -788,10 +811,49 @@ runs on Supabase-managed infrastructure instead of the homelab; see
       neither previously tracked here nor closed**: H1, `assign_storybook` performs no
       band-ceiling comparison against the target profile, so a guardian can assign an
       off-band book across children (K13's assignment-time enforcement gap).
-- [ ] **Newly surfaced by the 2026-07-20 audit**: H2, `generate_cover` flips
+- [x] **Newly surfaced by the 2026-07-20 audit**: H2, `generate_cover` flips
       `cover_status` straight `generating -> ready` with no moderation/approval gate, so
       an AI cover image can reach a child's shelf without the human review A16 promises
-      (the story-text safety guarantee, A6, is unaffected).
+      (the story-text safety guarantee, A6, is unaffected). Closed 2026-07-28 on
+      `feat/cover-review-ui`: the backend gate (`generate_cover` stops at
+      `pending_review`, `covers.service.approve_cover` is the sole admin-only path to
+      `ready`) merged from `fix/cover-moderation-gate` (commit b56b11f), and the admin
+      review UI (`ReviewDetailPage.tsx` renders the pending cover image plus an "Approve
+      cover" action) closes the remaining A16 gap the 2026-07-29 audit had found; A16
+      flipped to done in `capability-register.md`.
+
+**Newly surfaced by the 2026-07-28 unscheduled-work sweep.** The security plan's Medium and Low
+tiers, and the authoring log's blocking lessons, had no phase home. Full detail by ID in the
+[unscheduled work register](./unscheduled-work-register.md); the safety-bearing items are carried
+here because a gate bypass should be visible on the checklist, not only in a register.
+
+- [ ] **Three gate bypasses** (`UW-E01`, `UW-E02`, `UW-E03`): reading and completion routes bypass
+      the assignment gate; guardian blob-fetch skips the gate; repair skips the validator.
+- [ ] **`AL-036` undercuts ADR-005** (`UW-C02`): the review surface has no pagination,
+      virtualization, or per-node review state, so at 746 nodes it cannot deliver the human
+      approval the ADR requires. The approval currently attests less than it claims.
+- [ ] `AL-039` (`UW-C04`): repair and the Stage-1 fidelity gate both fail open and are
+      structurally impossible at scale; fidelity lacks an `<untrusted_passage>` fence.
+- [ ] `AL-034` (`UW-C03`): one import is ~2,986 provider round trips inside a single Postgres
+      transaction holding `FOR UPDATE`, running 40 to 100 minutes.
+- [ ] `AL-040` (`UW-C05`): `/admin/rescreen` sweeps synchronously in one request.
+- [ ] Remaining security-plan tiers (`UW-E04` to `UW-E08`): review-model allowlist, a real PII
+      detector, family cost cap on the authoring-plan path, production Postgres host-port and
+      password-default exposure, inert `allowed_content_flags`, unenforced `reading_level_cap`,
+      health-endpoint version disclosure.
+- [ ] `UW-E16`: the `_extract_subject()` dev/test auth stub is still live in `api/deps.py`, guarded
+      only by unset OIDC environment variables.
+- [ ] **ADR-022 tiered RLS scoping** (`UW-A01`, `UW-A02`) and the rest of the ADR-021 worker and
+      observability work (`UW-A04` to `UW-A07`). Gated on the M4.1 cutover below.
+- [ ] Named test-ladder actions replacing the generic line above (`UW-F*`): behavioral safety suite,
+      FK `ON DELETE` parity, generated-client drift test, mutmut kill-floor, pre-Phase-9 performance
+      testing, E2E driving the RQ worker, schema parity over policies and triggers, CORS and
+      rate-limit negative tests, and the seven traceability-matrix actions.
+- [ ] `UW-K01` **release blocker**: two `docs/known-vulnerabilities.md` entries are 68 days old with
+      reassessment 8 days overdue, past the 60-day OpenSSF release gate.
+- [ ] `UW-K18`: 98 RAD markers carry no paired `#VERIFY`, including the `generation/worker.py`
+      concurrency pair, the `db/models.py` cascade CRITICAL, the `classifiers.py` API-key placement
+      CRITICAL, and four deploy-ordering CRITICALs in `supabase/migrations/`.
 
 **Newly surfaced by the 2026-07-28 unscheduled-work sweep.** The security plan's Medium and Low
 tiers, and the authoring log's blocking lessons, had no phase home. Full detail by ID in the

@@ -115,6 +115,17 @@ class GenerationOutcome:
             passed without needing any repair).
         stage_log: Human-readable execution trail ordered by stage, e.g.
             ``["stage_a:gate_ok", "stage_b:blocked", "repair:1", ...]``.
+        sentinel_manifest: The derived at-rest sentinel manifest
+            (:func:`~cyo_adventure.storybook.reinsertion.build_manifest`'s
+            shape) for `storybook`, when the skeleton-fill path ran the
+            ADR-023 Stage R reinsertion transform; ``None`` for every other
+            caller (:func:`generate_story`, the legacy no-sidecar fill
+            path). This module never touches storage; the field is carried
+            so ``generation/worker.py`` can hand it to
+            ``persist_storybook``, which stamps it onto
+            ``storybook_version.sentinel_manifest``. A ``None`` here
+            therefore persists as a NULL column, meaning "no transform ran",
+            not "the transform found nothing".
     """
 
     status: Literal["passed", "needs_review", "failed"]
@@ -122,6 +133,7 @@ class GenerationOutcome:
     report: dict[str, object]
     attempts: int
     stage_log: list[str]
+    sentinel_manifest: dict[str, object] | None = None
 
 
 @dataclass(frozen=True, slots=True)

@@ -8,6 +8,7 @@ function makeCoverApi(overrides: Partial<CoverApi> = {}): CoverApi {
   return {
     generate: vi.fn(),
     status: vi.fn(),
+    approve: vi.fn(),
     ...overrides,
   }
 }
@@ -146,6 +147,87 @@ describe('useCoverGeneration', () => {
 
     // The generate POST still fires, but every setState after it is skipped:
     // status stays at its initial 'none', not the 'generating' the poll saw.
+    expect(result.current.coverStatus).toBe('none')
+  })
+
+  it('tracks the presigned cover_url alongside status while seeding and polling', async () => {
+    const status = vi
+      .fn()
+      .mockResolvedValue({ cover_status: 'pending_review', cover_url: 'https://x/pending.webp' })
+    const coverApi = makeCoverApi({ status })
+    const isMountedRef = { current: true }
+    const { result } = renderHook(() =>
+      useCoverGeneration({ storybookId: 's1', readyVersion: 1, coverApi, isMountedRef })
+    )
+    await act(async () => {
+      await Promise.resolve()
+      await Promise.resolve()
+    })
+    expect(result.current.coverStatus).toBe('pending_review')
+    expect(result.current.coverUrl).toBe('https://x/pending.webp')
+  })
+
+  it('approves a pending cover: transitions status/url and clears busy', async () => {
+    const approve = vi
+      .fn()
+      .mockResolvedValue({ cover_status: 'ready', cover_url: 'https://x/ready.webp' })
+    const coverApi = makeCoverApi({ approve })
+    const isMountedRef = { current: true }
+    const { result } = renderHook(() =>
+      useCoverGeneration({ storybookId: 's1', readyVersion: 3, coverApi, isMountedRef })
+    )
+    await act(async () => {
+      await result.current.approveCover()
+    })
+    expect(approve).toHaveBeenCalledWith('s1', 3)
+    expect(result.current.coverStatus).toBe('ready')
+    expect(result.current.coverUrl).toBe('https://x/ready.webp')
+    expect(result.current.coverBusy).toBe(false)
+    expect(result.current.coverApproveError).toBe(false)
+  })
+
+  it('does nothing when approveCover is called before readyVersion loads', async () => {
+    const approve = vi.fn()
+    const coverApi = makeCoverApi({ approve })
+    const isMountedRef = { current: true }
+    const { result } = renderHook(() =>
+      useCoverGeneration({ storybookId: 's1', readyVersion: null, coverApi, isMountedRef })
+    )
+    await act(async () => {
+      await result.current.approveCover()
+    })
+    expect(approve).not.toHaveBeenCalled()
+  })
+
+  it('surfaces coverApproveError and clears busy when approval is rejected (e.g. non-admin 403)', async () => {
+    const approve = vi.fn().mockRejectedValue({ isAxiosError: true, response: { status: 403 } })
+    const coverApi = makeCoverApi({ approve })
+    const isMountedRef = { current: true }
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const { result } = renderHook(() =>
+      useCoverGeneration({ storybookId: 's1', readyVersion: 3, coverApi, isMountedRef })
+    )
+    await act(async () => {
+      await result.current.approveCover()
+    })
+    expect(result.current.coverApproveError).toBe(true)
+    expect(result.current.coverBusy).toBe(false)
+    errorSpy.mockRestore()
+  })
+
+  it('never writes approval state once isMountedRef is flipped false (unmount guard)', async () => {
+    const approve = vi
+      .fn()
+      .mockResolvedValue({ cover_status: 'ready', cover_url: 'https://x/ready.webp' })
+    const coverApi = makeCoverApi({ approve })
+    const isMountedRef = { current: true }
+    const { result } = renderHook(() =>
+      useCoverGeneration({ storybookId: 's1', readyVersion: 3, coverApi, isMountedRef })
+    )
+    isMountedRef.current = false
+    await act(async () => {
+      await result.current.approveCover()
+    })
     expect(result.current.coverStatus).toBe('none')
   })
 })

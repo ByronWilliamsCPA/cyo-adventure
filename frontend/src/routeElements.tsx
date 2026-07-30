@@ -129,6 +129,11 @@ export const ReadingPage = lazyWithReload('ReadingPage', () =>
 export const RequestsPage = lazyWithReload('RequestsPage', () =>
   import('./guardian/RequestsPage').then((m) => ({ default: m.RequestsPage }))
 )
+export const GuardianReviewDetailPage = lazyWithReload('GuardianReviewDetailPage', () =>
+  import('./guardian/GuardianReviewDetailPage').then((m) => ({
+    default: m.GuardianReviewDetailPage,
+  }))
+)
 export const KidShell = lazyWithReload('KidShell', () =>
   import('./kid/KidShell').then((m) => ({ default: m.KidShell }))
 )
@@ -149,6 +154,9 @@ export const PreviewAsChildPage = lazyWithReload('PreviewAsChildPage', () =>
 )
 export const ConnectionsPage = lazyWithReload('ConnectionsPage', () =>
   import('./guardian/ConnectionsPage').then((m) => ({ default: m.ConnectionsPage }))
+)
+export const DevicesPage = lazyWithReload('DevicesPage', () =>
+  import('./guardian/DevicesPage').then((m) => ({ default: m.DevicesPage }))
 )
 export const PrivacyPage = lazyWithReload('PrivacyPage', () =>
   import('./guardian/PrivacyPage').then((m) => ({ default: m.PrivacyPage }))

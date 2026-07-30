@@ -41,6 +41,14 @@ export interface LibraryItemView {
   series_id: string | null
   book_index: number | null
   cover_url: string | null
+  /**
+   * K9 shelf presentation, "what's new" leg: ISO timestamp when this version
+   * was published (backend: StorybookVersion.published_at, reused from the
+   * publishing state machine, not a new column). Optional and nullable: an
+   * offline-cached item saved before this field existed, or a pre-migration
+   * row on the backend, both degrade to "not new" rather than throwing.
+   */
+  published_at?: string | null
 }
 
 export interface RatingView {

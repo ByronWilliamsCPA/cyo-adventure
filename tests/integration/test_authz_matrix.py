@@ -162,6 +162,42 @@ def _child_profile_path(seed: Seed) -> dict[str, str]:
     return {"profile_id": str(seed.child_profile_id)}
 
 
+def _personalization_body(_seed: Seed) -> dict[str, Any]:
+    return {
+        "real_name_ring1_enabled": False,
+        "real_name_ring2_enabled": False,
+        "slots": [],
+    }
+
+
+def _personalization_receive_body(_seed: Seed) -> dict[str, Any]:
+    # True is the column default, so an allowed role's write is a no-op and
+    # this matrix run leaves no seed family opted out for later tests.
+    return {"enabled": True}
+
+
+def _ring2_consent_body(_seed: Seed) -> dict[str, Any]:
+    # family_connection_id is a fresh, never-persisted uuid: the role gate
+    # (_require_guardian) and the ownership check (authorize_profile on
+    # profile_id) both run before the connection is ever looked up, so an
+    # allowed GUARDIAN token legitimately resolves to a 404 here (mirrors
+    # _random_uuid_path's own rationale).
+    return {
+        "family_connection_id": str(uuid.uuid4()),
+        "covered_slot_types": ["pet_name"],
+        "policy_version": "v1",
+        "signer_name": "Authz Matrix Guardian",
+        "accepted": True,
+    }
+
+
+def _ring2_consent_delete_path(seed: Seed) -> dict[str, str]:
+    return {
+        "profile_id": str(seed.child_profile_id),
+        "connection_id": str(uuid.uuid4()),
+    }
+
+
 def _reading_state_path(seed: Seed) -> dict[str, str]:
     return {
         "profile_id": str(seed.child_profile_id),
@@ -300,6 +336,15 @@ def _admin_user_create_body(seed: Seed) -> dict[str, Any]:
         "family_id": str(seed.family_id),
         "role": "guardian",
     }
+
+
+def _guardian_invite_body(_seed: Seed) -> dict[str, Any]:
+    # Same fresh-suffix reasoning as _admin_user_create_body: this endpoint
+    # shares create_pending_invite's duplicate-invite-email guard (409), which
+    # now spans BOTH invite kinds, so a fixed address would collide across
+    # resolutions. No family_id field exists on GuardianInviteBody at all: the
+    # target family is always the caller's own (api/me.py::invite_guardian).
+    return {"email": f"authz-matrix-invite-{uuid.uuid4()}@example.com"}
 
 
 def _admin_user_update_body(_seed: Seed) -> dict[str, Any]:
@@ -600,6 +645,18 @@ _ROUTE_SPECS: list[RouteSpec] = [
     # -- me.py: Phase 3c/3b, guardian-only (role checked before any DB read) -
     RouteSpec("GET", "/api/v1/me/export", frozenset({Role.GUARDIAN})),
     RouteSpec("DELETE", "/api/v1/me/family", frozenset({Role.GUARDIAN})),
+    # G14 guardian self-service co-parent invite. GUARDIAN only: an admin
+    # invites through POST /admin/users instead (this endpoint has no
+    # family_id, so an admin calling it could only invite into their own
+    # family, which is not what the admin console means). Deliberately NOT in
+    # _CROSS_FAMILY_ROUTE_KEYS: there is no cross-family id to resolve, the
+    # target family is always ctx.principal.family_id.
+    RouteSpec(
+        "POST",
+        "/api/v1/me/family/invite-guardian",
+        frozenset({Role.GUARDIAN}),
+        json_body=_guardian_invite_body,
+    ),
     # -- profiles.py ---------------------------------------------------------
     RouteSpec("GET", "/api/v1/profiles", ALL_ROLES),
     RouteSpec(
@@ -626,6 +683,66 @@ _ROUTE_SPECS: list[RouteSpec] = [
         "/api/v1/profiles/{profile_id}",
         frozenset({Role.GUARDIAN}),
         path_params=_child_profile_path,
+    ),
+    # -- personalization.py: ring-1/ring-2 CRUD, guardian-only
+    # (_require_guardian rejects admin-only too, same shape as profiles.py) --
+    RouteSpec(
+        "GET",
+        "/api/v1/profiles/{profile_id}/personalization",
+        frozenset({Role.GUARDIAN}),
+        path_params=_child_profile_path,
+    ),
+    RouteSpec(
+        "PUT",
+        "/api/v1/profiles/{profile_id}/personalization",
+        frozenset({Role.GUARDIAN}),
+        path_params=_child_profile_path,
+        json_body=_personalization_body,
+    ),
+    RouteSpec(
+        "POST",
+        "/api/v1/profiles/{profile_id}/ring2-consent",
+        frozenset({Role.GUARDIAN}),
+        path_params=_child_profile_path,
+        json_body=_ring2_consent_body,
+    ),
+    RouteSpec(
+        "DELETE",
+        "/api/v1/profiles/{profile_id}/ring2-consent/{connection_id}",
+        frozenset({Role.GUARDIAN}),
+        # A fresh, never-persisted connection_id: _require_sharer_side runs
+        # after the role gate and after the (real) profile lookup, so an
+        # allowed GUARDIAN token legitimately resolves to a 404 for an
+        # unknown connection (mirrors _random_uuid_path's own rationale).
+        path_params=_ring2_consent_delete_path,
+    ),
+    # -- personalization.py: the viewer-side receive switch (ADR-023 8.6).
+    # Guardian-only and scoped to the caller's OWN family: there is no id in
+    # the path or body, so it needs no cross-family case (nothing to point
+    # at another household with) and no path_params.
+    RouteSpec(
+        "GET",
+        "/api/v1/families/me/personalization-receive",
+        frozenset({Role.GUARDIAN}),
+    ),
+    RouteSpec(
+        "PUT",
+        "/api/v1/families/me/personalization-receive",
+        frozenset({Role.GUARDIAN}),
+        json_body=_personalization_receive_body,
+    ),
+    # -- personalization.py: the single values-resolution route. A genuinely
+    # new authorization shape (ADR-023 plan section 8.5): it does NOT
+    # authorize on the subject profile at all, only on the caller's own
+    # family membership plus whatever FamilyConnection the server resolves.
+    # There is no role gate, so every role (including a device grant, though
+    # DEVICE has no seed fixture here) passes through to the predicate, which
+    # renders the universal empty payload rather than a 403 on any mismatch.
+    RouteSpec(
+        "GET",
+        "/api/v1/storybooks/{storybook_id}/personalization-values",
+        ALL_ROLES,
+        path_params=_storybook_path,
     ),
     # -- ratings.py: ownership-scoped ----------------------------------------
     RouteSpec(
@@ -659,6 +776,14 @@ _ROUTE_SPECS: list[RouteSpec] = [
     # generation-jobs above: no path params, family-scoped via
     # ctx.principal.family_id, admin rejected too (not a family-scoped role).
     RouteSpec("GET", "/api/v1/notifications", frozenset({Role.GUARDIAN})),
+    # -- notifications.py: SSE push transport, same guardian-only gate as the
+    # poll endpoint above (stream_notifications resolves and role-checks the
+    # principal directly rather than via Context, but the bearer contract and
+    # the guardian-only rejection are identical). An allowed-role request
+    # here does not return until Settings.notification_stream_max_seconds
+    # elapses (no seeded event ends the stream sooner): see that setting's
+    # docstring in core/config.py for why the default is kept modest.
+    RouteSpec("GET", "/api/v1/notifications/stream", frozenset({Role.GUARDIAN})),
     # -- reading.py: reading-state (ownership-scoped) ------------------------
     RouteSpec(
         "GET",
@@ -819,10 +944,13 @@ _ROUTE_SPECS: list[RouteSpec] = [
         frozenset({Role.GUARDIAN, Role.ADMIN}),
         path_params=_storybook_path,
     ),
+    # register G6 edit half: admin (cross-family), or guardian for their own
+    # family's story (api/approval.py::_load_review_target, mirroring
+    # node_edit.py::_load_edit_target's role gate + authorize_family below).
     RouteSpec(
         "GET",
         "/api/v1/storybooks/{storybook_id}/review",
-        frozenset({Role.ADMIN}),
+        frozenset({Role.ADMIN, Role.GUARDIAN}),
         path_params=_storybook_path,
     ),
     RouteSpec(
@@ -855,6 +983,20 @@ _ROUTE_SPECS: list[RouteSpec] = [
     RouteSpec(
         "GET",
         "/api/v1/storybooks/{storybook_id}/versions/{version}/cover",
+        frozenset({Role.ADMIN}),
+        path_params=_storybook_version_path,
+    ),
+    # covers.py::approve_cover calls _require_admin before any row is loaded,
+    # and covers/service.py::approve_cover re-checks `principal.is_admin` as
+    # defense in depth; a non-admin therefore never reaches the version
+    # lookup, so the exact-403 invariant this suite pins holds here too. An
+    # admin on the seed row falls through to the status check
+    # (BusinessLogicError, rule="cover_approve_not_pending") because the seed
+    # cover is not "pending_review": a business-rule outcome, not a privilege
+    # rejection, which is exactly what `allowed_roles` scopes.
+    RouteSpec(
+        "POST",
+        "/api/v1/storybooks/{storybook_id}/versions/{version}/cover/approve",
         frozenset({Role.ADMIN}),
         path_params=_storybook_version_path,
     ),
@@ -1074,9 +1216,29 @@ _CROSS_FAMILY_ROUTE_KEYS: list[tuple[str, str]] = [
     ("DELETE", "/api/v1/storybooks/{storybook_id}/assignments/{profile_id}"),
     ("GET", "/api/v1/storybooks/{storybook_id}/content-summary"),
     ("GET", "/api/v1/reading-history/{profile_id}"),
+    ("GET", "/api/v1/storybooks/{storybook_id}/review"),
     ("PATCH", "/api/v1/storybooks/{storybook_id}/versions/{version}/nodes/{node_id}"),
     ("GET", "/api/v1/recommendations/{profile_id}"),
+    # personalization.py: the four guardian-gated CRUD routes. These reach a
+    # child's real name, sibling names, pet name, kinship label, and
+    # dedication, the most sensitive per-child data in the schema, and until
+    # now not one of them had a cross-family IDOR assertion anywhere in the
+    # suite: they were role-gated only, so a family-B guardian passed every
+    # check this file ran.
+    ("GET", "/api/v1/profiles/{profile_id}/personalization"),
+    ("PUT", "/api/v1/profiles/{profile_id}/personalization"),
+    ("POST", "/api/v1/profiles/{profile_id}/ring2-consent"),
+    ("DELETE", "/api/v1/profiles/{profile_id}/ring2-consent/{connection_id}"),
 ]
+
+# GET /storybooks/{id}/personalization-values is deliberately NOT in the list
+# above, and its absence is a decision rather than an oversight: it has no 403
+# or 404 branch at all by design (plan section 8.4 renders every predicate
+# failure as one identical empty payload, precisely so the route cannot be
+# used to probe another family), so the 403-or-404 assertion below cannot
+# express its contract. Its cross-family behavior is pinned instead by
+# test_personalization_api.py::
+# test_values_cross_family_private_book_returns_the_empty_payload.
 
 # Every key referenced above must actually be an authorized (guardian-eligible)
 # route in ROUTE_TABLE, so this section fails loudly instead of silently
