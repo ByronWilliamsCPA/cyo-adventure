@@ -47,19 +47,24 @@ export type ValuesPayload = PersonalizationValuesView
  */
 export const SENTINEL_PATTERN_FALLBACK = "\\{~([A-Z][A-Z0-9_]*):([^{}<>'~]+)~\\}"
 
-// Wire-pattern trust (design decision): `payload.sentinel_pattern` is honored
-// only when it is exactly `=== SENTINEL_PATTERN_FALLBACK`, and ignored in favor
-// of the constant otherwise. The backend's SENTINEL_RE.pattern is pinned
-// character-identical to the constant by
-// tests/unit/test_sentinel_pattern_frontend_pin.py, so in production the
-// equality always holds; compiling an arbitrary wire regex bought nothing and
-// exposed three failure modes: an empty pattern matching everywhere and
-// garbling output, a capture-group arity shift putting a number or the whole
-// subject string into prose, and a catastrophic-backtracking (ReDoS) hang.
-// Since the accepted pattern is therefore always the constant, it is compiled
-// exactly once here at module level. Sharing one /g regex across calls is safe
-// because String.replace with a global regex always starts from index 0 and
-// resets lastIndex; no stateful exec/test is ever run on it.
+// Wire-pattern trust (design decision): `payload.sentinel_pattern` is never read
+// by any production path. It is not compiled, and it is not even compared
+// against the constant; the constant is simply the only pattern this module
+// uses. The field stays on the wire for schema compatibility.
+//
+// Compiling the wire value bought nothing, because
+// tests/unit/test_sentinel_pattern_frontend_pin.py pins the backend's
+// SENTINEL_RE.pattern character-identical to the constant, so a well-behaved
+// server can only ever send the constant back. It also exposed three failure
+// modes: an empty pattern matching everywhere and garbling output, a
+// capture-group arity shift putting a number or the whole subject string into
+// prose, and a catastrophic-backtracking (ReDoS) hang. Ignoring the field
+// outright is strictly stronger than validating it.
+//
+// The constant is therefore compiled exactly once here at module level. Sharing
+// one /g regex across calls is safe because String.replace with a global regex
+// always starts from index 0 and resets lastIndex; no stateful exec/test is ever
+// run on it.
 const SENTINEL_RE = new RegExp(SENTINEL_PATTERN_FALLBACK, 'g')
 
 /**
@@ -76,9 +81,18 @@ const SENTINEL_RE = new RegExp(SENTINEL_PATTERN_FALLBACK, 'g')
  * span counts only when it carries a sentinel-distinctive `{~` opener or `~}`
  * closer):
  *
- * - `{~...}` with any brace-free interior: a missing-closing-tilde near miss
+ * - `{~...}` with a brace-free interior: a missing-closing-tilde near miss
  *   (`{~HERO:Explorer}`) and any leftover `{~...~}` the canonical pattern
  *   rejected (bad slot id, forbidden value chars).
+ * - `{~...}` whose interior embeds ONE balanced brace pair: the
+ *   brace-embedded forgery (`{~HERO:El{evated}~}`). The backend captures this
+ *   as a single span via `sentinels.py::_closer_end`'s depth counter, which
+ *   tolerates an embedded `{`...`}` rather than ending the span at the inner
+ *   brace. Without the `\{[^{}]*\}` alternative below, such a span fell
+ *   through to the unterminated branch, which stops at the inner `{` and so
+ *   left the trailing `~}` closer intact on a kid-facing surface. Nesting
+ *   deeper than one level is not matched here (a regex cannot count); the
+ *   at-rest integrity gate is what rejects those before publication.
  * - `{~...` unterminated: matched through the token's whitespace-free run,
  *   ending at the next whitespace, brace, or end of text (`{~HERO:Explorer~`
  *   mid-sentence or at end of text). This is narrower than the backend, which
@@ -98,7 +112,7 @@ const SENTINEL_RE = new RegExp(SENTINEL_PATTERN_FALLBACK, 'g')
  * guaranteeing no marker fragment reaches a child; the at-rest gate is what
  * keeps real prose from ever containing these shapes.
  */
-const MALFORMED_SENTINEL_RE = /\{~([^{}]*)\}|\{~[^{}\s]*(?=[\s{]|$)|\{[^{}]*~\}/g
+const MALFORMED_SENTINEL_RE = /\{~(?:[^{}]|\{[^{}]*\})*\}|\{~[^{}\s]*(?=[\s{]|$)|\{[^{}]*~\}/g
 
 function isPlainRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)

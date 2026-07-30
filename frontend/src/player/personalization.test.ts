@@ -112,6 +112,22 @@ describe('resolvePersonalization', () => {
     )
   })
 
+  it('strips a brace-embedded forgery without leaving the closer behind', () => {
+    // The backend treats this as one whole malformed span (sentinels.py::
+    // _closer_end tolerates an embedded balanced brace pair). Before the
+    // residue pattern matched it, the span fell through to the unterminated
+    // branch, which stops at the inner `{`, so a raw `~}` reached the child.
+    const resolved = resolvePersonalization('Then {~HERO:El{evated}~} ran.', payload())
+    expect(resolved).not.toMatch(/\{~|~\}/)
+    expect(resolved).toBe('Then El{evated} ran.')
+  })
+
+  it('strips a brace-embedded forgery that also drops its closing tilde', () => {
+    const resolved = resolvePersonalization('Then {~HERO:El{evated}} ran.', payload())
+    expect(resolved).not.toMatch(/\{~|~\}/)
+    expect(resolved).toBe('Then El{evated} ran.')
+  })
+
   it('leaves an ordinary prose brace span without tildes untouched', () => {
     expect(resolvePersonalization('Pack {not a marker} of gear.', payload())).toBe(
       'Pack {not a marker} of gear.'
