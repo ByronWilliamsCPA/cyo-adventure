@@ -230,6 +230,27 @@ describe('ReviewDetailPage', () => {
     expect(screen.getByText(/The path forked/)).toBeInTheDocument()
   })
 
+  it('renders sentinels visibly for the reviewer', async () => {
+    // ADR-023 section 10: markers are shown DELIBERATELY in review and never in
+    // the reader. This asserts the negative, that the admin surface does not
+    // resolve, so a future refactor cannot quietly route review prose through the
+    // reader's resolver.
+    mockGet.mockResolvedValue({
+      data: {
+        ...SURFACE,
+        blob: {
+          ...SURFACE.blob,
+          nodes: [
+            { ...SURFACE.blob.nodes[0], body: 'Then {~HERO:Explorer~} ran.' },
+            SURFACE.blob.nodes[1],
+          ],
+        },
+      },
+    })
+    renderAt('s1')
+    expect(await screen.findByText(/\{~HERO:Explorer~\}/)).toBeInTheDocument()
+  })
+
   it('orders the read-through depth-first from start_node, unreachable passages last', async () => {
     mockGet.mockResolvedValue({ data: TRAVERSAL_SURFACE })
     renderAt('s1')

@@ -20,14 +20,16 @@ tags:
 
 # ADR-023: Guardian opt-in story personalization (render-time slot substitution)
 
-> **Status**: Proposed (2026-07-25). **Every owner-level open decision is now closed** (the 3-5
-> band question and OD-1 through OD-5, all confirmed by owner choice on 2026-07-25 and recorded
-> in the Validation section below). The status stays Proposed because counsel sign-off is a
-> separate gate that remains open, most sharply on OD-1 (ring-2 separate disclosure consent, which
-> diverges from PR #415's B6 precedent) and OD-5 (the sibling and pet-name raise to ring 2). This
-> is deliberately the ADR-018 pattern: an owner choice recorded and dated is not the same event as
-> counsel confirming it, and a compliance-bearing ADR staying Proposed is itself the tracking
-> signal.
+> **Status**: Accepted (2026-07-29). **Every owner-level open decision is closed** (the 3-5
+> band question and OD-1 through OD-5, confirmed by owner choice on 2026-07-25 and recorded
+> in the Validation section below). The counsel gate that kept this ADR at Proposed was closed
+> by owner review on 2026-07-29: the project has no external counsel, so the owner's review is
+> the operative sign-off at this deployment scale. OD-1 closed conservatively (separate
+> disclosure consent confirmed); OD-5 closed conditionally (self-verification accepted for R1,
+> immediate-family deployment only, with mandatory reassessment at every deployment-phase
+> boundary and a hard revisit before iOS/TestFlight or any commercial availability; see the
+> OD-5 closure record and the regulatory classification note in the Validation section).
+> Acceptance at R1 scope is not acceptance at commercial scope.
 > **Date**: 2026-07-25
 > **Relates to**: [ADR-016](./adr-016-recommendation-sharing-social-boundary.md) (the three
 > rings this feature's ceilings are cut from), [ADR-018](./adr-018-childrens-privacy-compliance.md)
@@ -676,12 +678,13 @@ outcome is still what an untouched family gets.
 - [ ] Route A's block still fires unchanged: `tests/unit/test_interpretation.py`'s
       `IDENTITY_PROTECTION` cases pass without modification.
 
-### Owner decisions (all closed 2026-07-25; counsel gate still open)
+### Owner decisions (all closed 2026-07-25; counsel gate closed by owner review 2026-07-29)
 
 Every decision below was confirmed by the account owner on 2026-07-25. Following ADR-018's
-convention, "owner choice recorded" and "counsel confirmed" are tracked as separate events: the
-boxes are checked because the owner has decided, and the ADR nonetheless stays Proposed until the
-counsel items called out under OD-1 and OD-5 are answered.
+convention, "owner choice recorded" and "counsel confirmed" are tracked as separate events. The
+counsel items under OD-1 and OD-5 were closed by owner review on 2026-07-29 (the project has no
+external counsel; the owner's review is the operative sign-off at R1 scale), which is what moved
+this ADR from Proposed to Accepted. OD-5's closure is conditional; see its block.
 
 - [x] **OD-1: Ring 2 separate disclosure consent.** **Decision confirmed 2026-07-25 (owner choice;
       pending counsel confirmation).** Confirmed as designed: ring-2 real-name substitution
@@ -692,8 +695,12 @@ counsel items called out under OD-1 and OD-5 are answered.
       coordination section below (repetition, audience, and compounding, not novelty of the datum);
       the owner confirmed the conclusion without asking for the reasoning to be revised.
       **Flagged for counsel**: whether the divergence from B6 is defensible as drawn, and whether a
-      layered disclosure consent on top of a connection consent is the right instrument. This is
-      one of the two items that keeps this ADR at Proposed.
+      layered disclosure consent on top of a connection consent is the right instrument. This was
+      one of the two items that kept this ADR at Proposed.
+      **CLOSED 2026-07-29 (owner review; no external counsel exists at this deployment scale).**
+      Separate consent confirmed, chosen explicitly for conservatism: the incremental work is
+      minimal and it reduces risk. The layered instrument stands as designed; the divergence from
+      B6 stands as drawn.
 - [x] **OD-2: Pronoun set at ring 1.** **Decision confirmed 2026-07-25 (owner choice).** Confirmed
       as designed: pronouns are a legitimate v1 personalization field; the value is **stored** as
       an explicit guardian-set field, never inferred from any other profile attribute; v1 is scoped
@@ -732,8 +739,35 @@ counsel items called out under OD-1 and OD-5 are answered.
       the implementation plan (section 14, closed question 4) is closed the same way: narrowing `covered_slot_types`
       updates the signed record in place and does not require re-signing.
       **Flagged for counsel**: this is the most legally aggressive choice in the ADR, and the
-      attestation in (a) is a self-declaration rather than a verification. It is the second of the
-      two items keeping this ADR at Proposed.
+      attestation in (a) is a self-declaration rather than a verification. It was the second of
+      the two items keeping this ADR at Proposed.
+      **CLOSED CONDITIONALLY 2026-07-29 (owner review; no external counsel exists at this
+      deployment scale).** Self-verification (the attestation) is accepted **for R1 only**, where
+      deployment is immediate-family: the attesting guardian and the named sibling live in the
+      same household, so the attestation is verifiable by direct knowledge. Conditions attached
+      by the owner:
+      1. **Reassess at every deployment-phase boundary.** This closure does not carry forward
+         automatically; each phase gate (R2/TestFlight, R3/App Store, any commercial
+         availability) must re-open OD-5 and re-decide with the then-current audience in view.
+      2. **Hard revisit before iOS or commercial use.** At that point self-attestation is
+         unlikely to suffice on its own (see the regulatory classification below) and real
+         counsel review is expected.
+
+      **Regulatory classification (owner-requested clarification, 2026-07-29; planning-grade
+      analysis, not legal advice):** the OD-5 risk is primarily a **COPPA
+      verifiable-parental-consent risk, deferred, not a present one**. COPPA (15 U.S.C.
+      6501-6506, 16 CFR 312) binds operators of **commercial** websites/online services directed
+      to children; the R1 deployment (private, non-commercial, immediate family) does not meet
+      the operator definition, so no COPPA obligation attaches today. At commercial launch
+      (ADR-008 track), collecting a sibling child's name and disclosing it to a connected family
+      is collection-plus-disclosure of a child's personal information, requiring verifiable
+      parental consent from THAT child's parent; a checkbox self-attestation by the requesting
+      guardian is unlikely to satisfy 312.5 on its own. **GDPR/GDPR-K (Art. 8) is contingent, not
+      inherent**: it attaches only if the service is offered to EU data subjects, with
+      member-state parental-consent ages of 13-16; no EU availability is planned at R1 or R2, so
+      it becomes live only if commercial scope includes the EU. ADR-018's compliance framework
+      carries the tracking obligation; the D5 closeout task folds this classification into
+      ADR-018 P7-08.
 
 Separately, and not an OD: the **3-5 band** question raised in section 9 is also closed.
 **Decision confirmed 2026-07-25 (owner choice):** personalization is offered to the 3-5 band as
@@ -746,6 +780,11 @@ designed, guardian-controlled, with no child-facing control rendered at that ban
 - Compliance: fold into ADR-018's P7-08 checklist as a new processing purpose; this feature
   changes what the privacy notice and the data classification must say, even though it adds no
   new provider counterparty.
+- **OD-5 standing reassessment (owner condition, 2026-07-29): re-open OD-5 at every
+  deployment-phase boundary** (R2/TestFlight, R3/App Store, any commercial availability). The
+  R1 acceptance of self-attestation is scoped to immediate-family deployment and does not carry
+  forward; before iOS or commercial use, expect real counsel review against the COPPA
+  verifiable-parental-consent analysis in the OD-5 closure block.
 
 ## Coordination with parallel workstreams (PR #415, PR #416)
 
