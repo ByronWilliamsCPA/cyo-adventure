@@ -1044,6 +1044,11 @@ export type ContentSummaryView = {
  * CoverStatusView
  *
  * Cover generation status for one story version.
+ *
+ * ``cover_approved_by``/``cover_approved_at`` are None until an admin
+ * approves a ``pending_review`` cover (H2, ``approve_cover`` endpoint
+ * below); they mirror ``ApprovedView.approved_by``/``published_at`` for
+ * story text.
  */
 export type CoverStatusView = {
     /**
@@ -1054,6 +1059,14 @@ export type CoverStatusView = {
      * Cover Url
      */
     cover_url?: string | null;
+    /**
+     * Cover Approved By
+     */
+    cover_approved_by?: string | null;
+    /**
+     * Cover Approved At
+     */
+    cover_approved_at?: string | null;
 };
 
 /**
@@ -1342,8 +1355,12 @@ export type FamilyCreateBody = {
  * (id, role, is_admin, email, created_at); no ``pin_hash`` or
  * ``authn_subject`` (credential material, never exported).
  * profiles: Every child profile, each with its own nested
- * ``reading_state``, ``completions``, ``ratings``, and
- * ``assignments`` lists.
+ * ``reading_state``, ``completions``, ``ratings``, ``assignments``,
+ * ``personalization`` (ADR-023 P4 ``ChildProfilePersonalization``
+ * rows, plus the two ``real_name_ring1_enabled``/
+ * ``real_name_ring2_enabled`` booleans on the profile itself), and
+ * ``disclosure_consents`` (``PersonalizationDisclosureConsent``
+ * rows, including tombstoned ones) lists.
  * story_requests: Every story request tied to the family.
  */
 export type FamilyExportView = {
@@ -2300,6 +2317,193 @@ export type OnboardingView = {
 };
 
 /**
+ * PersonalizationReceiveBody
+ *
+ * Set the viewer-side receive switch for the caller's own family.
+ *
+ * Deliberately not an evidentiary consent record: no signature, no policy
+ * version, no IP. It is a stored preference (design plan 8.6, "a notice
+ * fixes surprise; a signature would not fix it any better"), so the body
+ * is the single boolean and nothing else.
+ */
+export type PersonalizationReceiveBody = {
+    /**
+     * Enabled
+     */
+    enabled: boolean;
+};
+
+/**
+ * PersonalizationReceiveView
+ *
+ * The caller's own family's viewer-side receive switch (ADR-023 8.6).
+ */
+export type PersonalizationReceiveView = {
+    /**
+     * Enabled
+     */
+    enabled: boolean;
+};
+
+/**
+ * PersonalizationSlotBody
+ *
+ * One slot's proposed value and ring flags, inside the PUT replace body.
+ *
+ * Exactly one of ``value_text``, ``value_enum``, ``value_profile_id`` may be
+ * set, mirroring ``ChildProfilePersonalization.ck_cpp_exactly_one_value``.
+ * This is a shape check only: the closed-vocabulary, structural, denylist,
+ * and sibling-in-family checks (plan section 5.2) run in the route handler
+ * via ``storybook.personalization_values``, not here.
+ */
+export type PersonalizationSlotBody = {
+    /**
+     * Slot Type
+     */
+    slot_type: 'protagonist_first_name' | 'pronoun_set' | 'sibling_name' | 'pet_species' | 'pet_name' | 'kinship_label' | 'favorite' | 'home_type' | 'dedication';
+    /**
+     * Value Text
+     */
+    value_text?: string | null;
+    /**
+     * Value Enum
+     */
+    value_enum?: string | null;
+    /**
+     * Value Profile Id
+     */
+    value_profile_id?: string | null;
+    /**
+     * Ring1 Enabled
+     */
+    ring1_enabled?: boolean;
+    /**
+     * Ring2 Enabled
+     */
+    ring2_enabled?: boolean;
+};
+
+/**
+ * PersonalizationSlotView
+ *
+ * One slot's stored value and ring flags, plus the read-only ceiling.
+ */
+export type PersonalizationSlotView = {
+    /**
+     * Slot Type
+     */
+    slot_type: string;
+    /**
+     * Value Text
+     */
+    value_text: string | null;
+    /**
+     * Value Enum
+     */
+    value_enum: string | null;
+    /**
+     * Value Profile Id
+     */
+    value_profile_id: string | null;
+    /**
+     * Ring1 Enabled
+     */
+    ring1_enabled: boolean;
+    /**
+     * Ring2 Enabled
+     */
+    ring2_enabled: boolean;
+    /**
+     * Ring2 Eligible
+     */
+    ring2_eligible: boolean;
+};
+
+/**
+ * PersonalizationUpdateBody
+ *
+ * The whole personalization state for one profile: replace, not patch.
+ *
+ * A partial patch over a per-slot table invites ambiguity about whether an
+ * absent slot_type means "unchanged" or "cleared" (plan section 6.1), so
+ * this is always a full replace: any slot_type omitted from ``slots`` is
+ * cleared. The two ``real_name_*`` booleans are written through this route
+ * rather than ``ProfileUpdateBody``, so one guardian save is one transaction
+ * (plan section 6.1).
+ */
+export type PersonalizationUpdateBody = {
+    /**
+     * Real Name Ring1 Enabled
+     */
+    real_name_ring1_enabled?: boolean;
+    /**
+     * Real Name Ring2 Enabled
+     */
+    real_name_ring2_enabled?: boolean;
+    /**
+     * Slots
+     */
+    slots?: Array<PersonalizationSlotBody>;
+};
+
+/**
+ * PersonalizationValuesView
+ *
+ * The resolved values payload for one storybook, at whichever ring applies.
+ *
+ * An empty ``values`` dict is the universal failure mode (plan section 8.4):
+ * there is no requested-slot-type filter, and every failure mode (missing
+ * subject, receive-toggle off, unconnected family, revoked consent, a
+ * deactivated or processing-restricted subject) renders identically as an
+ * empty payload rather than a 403, so the route leaks nothing about whether
+ * a subject or connection exists (plan sections 8.3-8.5).
+ */
+export type PersonalizationValuesView = {
+    /**
+     * Subject Profile Id
+     */
+    subject_profile_id: string | null;
+    /**
+     * Ring
+     */
+    ring: 1 | 2 | null;
+    /**
+     * Policy Version
+     */
+    policy_version: string | null;
+    /**
+     * Resolved At
+     */
+    resolved_at: string;
+    /**
+     * Values
+     */
+    values: {
+        [key: string]: string;
+    };
+};
+
+/**
+ * PersonalizationView
+ *
+ * A profile's full personalization state: the GET and PUT response.
+ */
+export type PersonalizationView = {
+    /**
+     * Real Name Ring1 Enabled
+     */
+    real_name_ring1_enabled: boolean;
+    /**
+     * Real Name Ring2 Enabled
+     */
+    real_name_ring2_enabled: boolean;
+    /**
+     * Slots
+     */
+    slots: Array<PersonalizationSlotView>;
+};
+
+/**
  * ProfileCreateBody
  *
  * A guardian's request to create a child profile.
@@ -3086,6 +3290,86 @@ export type ReviewSurfaceView = {
      * Story Level Findings
      */
     story_level_findings: Array<FindingView>;
+};
+
+/**
+ * Ring2ConsentGrantBody
+ *
+ * A sharer-side guardian's grant, or supersede, of a ring-2 disclosure.
+ *
+ * ``consent_ip`` and ``consent_accepted_at`` are never accepted from the
+ * client; the route stamps both server-side, mirroring how
+ * ``POST /v1/onboarding`` handles the ADR-018 D1 consent (plan section 6.1).
+ */
+export type Ring2ConsentGrantBody = {
+    /**
+     * Family Connection Id
+     */
+    family_connection_id: string;
+    /**
+     * Covered Slot Types
+     */
+    covered_slot_types: Array<string>;
+    /**
+     * Policy Version
+     */
+    policy_version: string;
+    /**
+     * Signer Name
+     */
+    signer_name: string;
+    /**
+     * Accepted
+     */
+    accepted: true;
+    /**
+     * Sibling Authority Attested
+     */
+    sibling_authority_attested?: boolean | null;
+};
+
+/**
+ * Ring2ConsentView
+ *
+ * The result of a ring-2 consent grant or revoke.
+ */
+export type Ring2ConsentView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Child Profile Id
+     */
+    child_profile_id: string;
+    /**
+     * Family Connection Id
+     */
+    family_connection_id: string | null;
+    /**
+     * Covered Slot Types
+     */
+    covered_slot_types: Array<string>;
+    /**
+     * Sibling Authority Attested
+     */
+    sibling_authority_attested: boolean;
+    /**
+     * Consent Accepted At
+     */
+    consent_accepted_at: string | null;
+    /**
+     * Consent Policy Version
+     */
+    consent_policy_version: string | null;
+    /**
+     * Consent Signer Name
+     */
+    consent_signer_name: string | null;
+    /**
+     * Revoked At
+     */
+    revoked_at: string | null;
 };
 
 /**
@@ -5501,6 +5785,56 @@ export type RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostRespon
 
 export type RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostResponse = RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostResponses[keyof RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostResponses];
 
+export type ApproveCoverApiV1StorybooksStorybookIdVersionsVersionCoverApprovePostData = {
+    body?: never;
+    path: {
+        /**
+         * Storybook Id
+         */
+        storybook_id: string;
+        /**
+         * Version
+         */
+        version: number;
+    };
+    query?: never;
+    url: '/api/v1/storybooks/{storybook_id}/versions/{version}/cover/approve';
+};
+
+export type ApproveCoverApiV1StorybooksStorybookIdVersionsVersionCoverApprovePostErrors = {
+    /**
+     * Domain rule violation (for example, an exhausted quota).
+     */
+    400: ErrorResponse;
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ApproveCoverApiV1StorybooksStorybookIdVersionsVersionCoverApprovePostError = ApproveCoverApiV1StorybooksStorybookIdVersionsVersionCoverApprovePostErrors[keyof ApproveCoverApiV1StorybooksStorybookIdVersionsVersionCoverApprovePostErrors];
+
+export type ApproveCoverApiV1StorybooksStorybookIdVersionsVersionCoverApprovePostResponses = {
+    /**
+     * Successful Response
+     */
+    200: CoverStatusView;
+};
+
+export type ApproveCoverApiV1StorybooksStorybookIdVersionsVersionCoverApprovePostResponse = ApproveCoverApiV1StorybooksStorybookIdVersionsVersionCoverApprovePostResponses[keyof ApproveCoverApiV1StorybooksStorybookIdVersionsVersionCoverApprovePostResponses];
+
 export type ListThresholdsApiV1AdminModerationThresholdsGetData = {
     body?: never;
     path?: never;
@@ -7269,3 +7603,287 @@ export type GetRecommendationsApiV1RecommendationsProfileIdGetResponses = {
 };
 
 export type GetRecommendationsApiV1RecommendationsProfileIdGetResponse = GetRecommendationsApiV1RecommendationsProfileIdGetResponses[keyof GetRecommendationsApiV1RecommendationsProfileIdGetResponses];
+
+export type GetPersonalizationApiV1ProfilesProfileIdPersonalizationGetData = {
+    body?: never;
+    path: {
+        /**
+         * Profile Id
+         */
+        profile_id: string;
+    };
+    query?: never;
+    url: '/api/v1/profiles/{profile_id}/personalization';
+};
+
+export type GetPersonalizationApiV1ProfilesProfileIdPersonalizationGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetPersonalizationApiV1ProfilesProfileIdPersonalizationGetError = GetPersonalizationApiV1ProfilesProfileIdPersonalizationGetErrors[keyof GetPersonalizationApiV1ProfilesProfileIdPersonalizationGetErrors];
+
+export type GetPersonalizationApiV1ProfilesProfileIdPersonalizationGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: PersonalizationView;
+};
+
+export type GetPersonalizationApiV1ProfilesProfileIdPersonalizationGetResponse = GetPersonalizationApiV1ProfilesProfileIdPersonalizationGetResponses[keyof GetPersonalizationApiV1ProfilesProfileIdPersonalizationGetResponses];
+
+export type PutPersonalizationApiV1ProfilesProfileIdPersonalizationPutData = {
+    body: PersonalizationUpdateBody;
+    path: {
+        /**
+         * Profile Id
+         */
+        profile_id: string;
+    };
+    query?: never;
+    url: '/api/v1/profiles/{profile_id}/personalization';
+};
+
+export type PutPersonalizationApiV1ProfilesProfileIdPersonalizationPutErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PutPersonalizationApiV1ProfilesProfileIdPersonalizationPutError = PutPersonalizationApiV1ProfilesProfileIdPersonalizationPutErrors[keyof PutPersonalizationApiV1ProfilesProfileIdPersonalizationPutErrors];
+
+export type PutPersonalizationApiV1ProfilesProfileIdPersonalizationPutResponses = {
+    /**
+     * Successful Response
+     */
+    200: PersonalizationView;
+};
+
+export type PutPersonalizationApiV1ProfilesProfileIdPersonalizationPutResponse = PutPersonalizationApiV1ProfilesProfileIdPersonalizationPutResponses[keyof PutPersonalizationApiV1ProfilesProfileIdPersonalizationPutResponses];
+
+export type GrantRing2ConsentApiV1ProfilesProfileIdRing2ConsentPostData = {
+    body: Ring2ConsentGrantBody;
+    path: {
+        /**
+         * Profile Id
+         */
+        profile_id: string;
+    };
+    query?: never;
+    url: '/api/v1/profiles/{profile_id}/ring2-consent';
+};
+
+export type GrantRing2ConsentApiV1ProfilesProfileIdRing2ConsentPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GrantRing2ConsentApiV1ProfilesProfileIdRing2ConsentPostError = GrantRing2ConsentApiV1ProfilesProfileIdRing2ConsentPostErrors[keyof GrantRing2ConsentApiV1ProfilesProfileIdRing2ConsentPostErrors];
+
+export type GrantRing2ConsentApiV1ProfilesProfileIdRing2ConsentPostResponses = {
+    /**
+     * Successful Response
+     */
+    201: Ring2ConsentView;
+};
+
+export type GrantRing2ConsentApiV1ProfilesProfileIdRing2ConsentPostResponse = GrantRing2ConsentApiV1ProfilesProfileIdRing2ConsentPostResponses[keyof GrantRing2ConsentApiV1ProfilesProfileIdRing2ConsentPostResponses];
+
+export type RevokeRing2ConsentApiV1ProfilesProfileIdRing2ConsentConnectionIdDeleteData = {
+    body?: never;
+    path: {
+        /**
+         * Profile Id
+         */
+        profile_id: string;
+        /**
+         * Connection Id
+         */
+        connection_id: string;
+    };
+    query?: never;
+    url: '/api/v1/profiles/{profile_id}/ring2-consent/{connection_id}';
+};
+
+export type RevokeRing2ConsentApiV1ProfilesProfileIdRing2ConsentConnectionIdDeleteErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RevokeRing2ConsentApiV1ProfilesProfileIdRing2ConsentConnectionIdDeleteError = RevokeRing2ConsentApiV1ProfilesProfileIdRing2ConsentConnectionIdDeleteErrors[keyof RevokeRing2ConsentApiV1ProfilesProfileIdRing2ConsentConnectionIdDeleteErrors];
+
+export type RevokeRing2ConsentApiV1ProfilesProfileIdRing2ConsentConnectionIdDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    200: Ring2ConsentView;
+};
+
+export type RevokeRing2ConsentApiV1ProfilesProfileIdRing2ConsentConnectionIdDeleteResponse = RevokeRing2ConsentApiV1ProfilesProfileIdRing2ConsentConnectionIdDeleteResponses[keyof RevokeRing2ConsentApiV1ProfilesProfileIdRing2ConsentConnectionIdDeleteResponses];
+
+export type GetPersonalizationReceiveApiV1FamiliesMePersonalizationReceiveGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/families/me/personalization-receive';
+};
+
+export type GetPersonalizationReceiveApiV1FamiliesMePersonalizationReceiveGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetPersonalizationReceiveApiV1FamiliesMePersonalizationReceiveGetError = GetPersonalizationReceiveApiV1FamiliesMePersonalizationReceiveGetErrors[keyof GetPersonalizationReceiveApiV1FamiliesMePersonalizationReceiveGetErrors];
+
+export type GetPersonalizationReceiveApiV1FamiliesMePersonalizationReceiveGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: PersonalizationReceiveView;
+};
+
+export type GetPersonalizationReceiveApiV1FamiliesMePersonalizationReceiveGetResponse = GetPersonalizationReceiveApiV1FamiliesMePersonalizationReceiveGetResponses[keyof GetPersonalizationReceiveApiV1FamiliesMePersonalizationReceiveGetResponses];
+
+export type PutPersonalizationReceiveApiV1FamiliesMePersonalizationReceivePutData = {
+    body: PersonalizationReceiveBody;
+    path?: never;
+    query?: never;
+    url: '/api/v1/families/me/personalization-receive';
+};
+
+export type PutPersonalizationReceiveApiV1FamiliesMePersonalizationReceivePutErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PutPersonalizationReceiveApiV1FamiliesMePersonalizationReceivePutError = PutPersonalizationReceiveApiV1FamiliesMePersonalizationReceivePutErrors[keyof PutPersonalizationReceiveApiV1FamiliesMePersonalizationReceivePutErrors];
+
+export type PutPersonalizationReceiveApiV1FamiliesMePersonalizationReceivePutResponses = {
+    /**
+     * Successful Response
+     */
+    200: PersonalizationReceiveView;
+};
+
+export type PutPersonalizationReceiveApiV1FamiliesMePersonalizationReceivePutResponse = PutPersonalizationReceiveApiV1FamiliesMePersonalizationReceivePutResponses[keyof PutPersonalizationReceiveApiV1FamiliesMePersonalizationReceivePutResponses];
+
+export type GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetData = {
+    body?: never;
+    path: {
+        /**
+         * Storybook Id
+         */
+        storybook_id: string;
+    };
+    query?: never;
+    url: '/api/v1/storybooks/{storybook_id}/personalization-values';
+};
+
+export type GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetError = GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetErrors[keyof GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetErrors];
+
+export type GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: PersonalizationValuesView;
+};
+
+export type GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetResponse = GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetResponses[keyof GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetResponses];

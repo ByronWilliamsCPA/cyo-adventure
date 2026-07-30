@@ -36,10 +36,16 @@ from cyo_adventure.core.exceptions import (
     AuthorizationError,
     BusinessLogicError,
     ResourceNotFoundError,
+    ValidationError,
 )
 from cyo_adventure.core.pin import hash_pin
 from cyo_adventure.db.models import ChildProfile, User
 from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.validator.slots import (
+    band_mandatory_bundles,
+    denylisted_bundles,
+    structural_value_violations,
+)
 
 router = APIRouter(
     prefix="/api/v1", tags=["profiles"], responses=error_responses(401, 403)
@@ -99,10 +105,20 @@ def _apply_simple_fields(row: ChildProfile, body: ProfileUpdateBody) -> None:
     # scalar fields is a deliberate no-op, not a clear; only a present, non-null
     # value is written to the ORM row.
     # #VERIFY: test_profiles.py::test_update_ignores_explicit_null_on_non_avatar_fields
-    if body.display_name is not None:
-        row.display_name = body.display_name
+    # age_band is applied BEFORE display_name is validated: a single PATCH
+    # may change both together, and the denylist check must run against the
+    # row's resulting age_band, not a now-stale prior one.
     if body.age_band is not None:
         row.age_band = body.age_band.value
+    if body.display_name is not None:
+        # #CRITICAL: security: display_name renders directly into a child's
+        # own story prose (ADR-023 plan 5.2); names set before this feature
+        # shipped were never checked, so this validates on every write, not
+        # only new profiles.
+        # #VERIFY: tests/integration/test_personalization_api.py::
+        # test_update_profile_rejects_denylisted_display_name.
+        validate_display_name(body.display_name, row.age_band)
+        row.display_name = body.display_name
     if body.reading_level_cap is not None:
         row.reading_level_cap = body.reading_level_cap
     if body.tts_enabled is not None:
@@ -148,6 +164,46 @@ def _apply_g2_content_controls(row: ChildProfile, body: ProfileUpdateBody) -> No
         row.request_auto_approve = body.request_auto_approve
     if "monthly_request_envelope" in fields:
         row.monthly_request_envelope = body.monthly_request_envelope
+
+
+def validate_display_name(display_name: str, age_band: str) -> None:
+    """Reject a display name that fails the write-time validation gate.
+
+    ADR-023 implementation plan section 5.2: ``display_name`` gets the same
+    structural and band-mandatory-denylist checks a personalization slot
+    value gets, applied at every write point, because names set before this
+    feature shipped were never checked.
+
+    Public rather than module-private because ``api/admin_profiles.py`` has
+    two more display_name write points (admin create, admin PATCH) and must
+    apply the identical gate. #CRITICAL: security: display_name is the one
+    personalization value that reaches prose without going through
+    ``storybook/personalization_values.py``, so an unguarded write point lets
+    a name like ``{~PET:cat~}`` inject a sentinel that manifest verification
+    never anticipated.
+    #VERIFY: every assignment to ``ChildProfile.display_name`` in ``api/``
+    is preceded by a call to this function.
+
+    Args:
+        display_name: The candidate name.
+        age_band: The profile's age band, as the ORM's stored string value
+            (the row's current value, which may differ from a stale request
+            body value if age_band and display_name change together).
+
+    Raises:
+        ValidationError: If the name fails the structural guard or matches a
+            band-mandatory denylisted term (422).
+    """
+    band = AgeBand(age_band)
+    violations = [v.message for v in structural_value_violations(display_name)]
+    hit_bundles = denylisted_bundles(display_name, band_mandatory_bundles(band))
+    violations.extend(
+        f"display_name matches a denylisted term in bundle '{bundle_id}'"
+        for bundle_id in sorted(hit_bundles)
+    )
+    if violations:
+        msg = "; ".join(violations)
+        raise ValidationError(msg, field="display_name", value=msg)
 
 
 def _require_guardian(principal: Principal) -> None:
@@ -281,6 +337,11 @@ async def create_profile(body: ProfileCreateBody, ctx: Context) -> ProfileView:
     # "inherit some other default"; there is nothing else to inherit from at
     # creation time.
     # #VERIFY: test_profiles.py::test_create_defaults_g2_fields_to_empty.
+    # #CRITICAL: security: display_name renders directly into a child's own
+    # story prose (ADR-023 plan 5.2); validated before the row is built.
+    # #VERIFY: tests/integration/test_personalization_api.py::
+    # test_create_profile_rejects_denylisted_display_name.
+    validate_display_name(body.display_name, body.age_band.value)
     row = ChildProfile(
         family_id=ctx.principal.family_id,
         display_name=body.display_name,

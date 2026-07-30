@@ -47,6 +47,7 @@ from cyo_adventure.generation.worker import (
     _SkeletonFillContext,
 )
 from cyo_adventure.storybook.models import AgeBand, Storybook
+from cyo_adventure.storybook.reinsertion import verify_manifest
 from cyo_adventure.storybook.sentinels import wrap
 from cyo_adventure.storybook.theme_contract import (
     SlotConstraints,
@@ -1739,17 +1740,23 @@ async def test_run_skeleton_fill_sentinel_integrity_passes_verbatim_copy(
 
 
 @pytest.mark.asyncio
-async def test_run_skeleton_fill_sentinel_integrity_mutated_sentinel_fails_closed(
+async def test_run_skeleton_fill_sentinel_integrity_forged_value_not_reinserted(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    """A mutated personalizable sentinel is rejected fail-closed (3.2, 3.4).
+    """A model-forged sentinel is stripped and never reinserted; the job still passes (ADR-023 Stage R).
 
-    A dropped-plus-forged (mutated inner value) sentinel must fail the job
-    closed with NO retry (the section 3.4 one-retry policy is Task 4b's job,
-    out of scope here): the LIVE `check_sentinel_integrity` call raises
-    ``ValidationError``, which propagates unchanged out of
-    ``_run_skeleton_fill`` so the caller's pipeline-exception handling records
-    the job failed and no storybook is ever persisted for this outcome.
+    Under "derive, not prescribe" (Task R3), the fill LLM is never trusted to
+    preserve a sentinel wrapper. A forged/mutated sentinel
+    (``{~PROTAGONIST:Champion~}``, the wrong inner value) is stripped down to
+    its bare inner word by `reinsert_storybook`'s normalization pass, then
+    the node is re-scanned for the EXPECTED value ("Ada", from the bound
+    skeleton's ``default_binding``). Since "Ada" never appears in the
+    stripped prose, the token is classified ``"not_found"`` and nothing is
+    re-wrapped there. The result is plain text with no sentinel of any kind,
+    which both `verify_manifest` and `check_sentinel_integrity_at_rest`
+    accept: the old design's fail-closed ValidationError on a mutated
+    sentinel no longer applies, because a forged wrapper never survives to be
+    checked at all.
     """
     band_dir = tmp_path / "8-11"
     band_dir.mkdir()
@@ -1782,16 +1789,209 @@ async def test_run_skeleton_fill_sentinel_integrity_mutated_sentinel_fails_close
         effective_provider=provider,
         pii=_dispatch_pii(),
     )
-    with pytest.raises(ValidationError) as exc_info:
-        await _run_skeleton_fill(fill_context)
+    outcome = await _run_skeleton_fill(fill_context)
 
-    exc = exc_info.value
-    assert exc.details.get("field") == "sentinel_integrity"
-    violations = cast(
-        "list[dict[str, object]]", exc.details["sentinel_integrity_violations"]
+    # Not "passed": `_run_skeleton_fill` now re-runs the deterministic gate
+    # against the POST-transform document, because the transform rewrote it
+    # and the pre-transform verdict no longer describes what gets persisted.
+    # This fixture's storybook is a hand-built stub that the real gate blocks
+    # (verified directly: run_gate(...).blocked is True on it BEFORE any
+    # transform runs), so the old "passed" assertion was recording what
+    # `_stub_returning` fabricated, not a gate result. The sentinel behavior
+    # this test actually exists to pin is unchanged and asserted below.
+    assert outcome.status == "needs_review"
+    assert outcome.storybook is not None
+    nodes = cast("list[dict[str, object]]", outcome.storybook["nodes"])
+    start_body = cast("str", nodes[0]["body"])
+    assert "Champion" in start_body
+    assert wrap("PROTAGONIST", "Champion") not in start_body
+    assert wrap("PROTAGONIST", "Ada") not in start_body
+
+
+def test_regate_after_transform_skips_when_document_unchanged() -> None:
+    """A byte-identical transform returns the original verdict untouched.
+
+    This is the dormant path every theme contract on disk takes today: none
+    declares a personalizable slot, so `reinsert_storybook` is a no-op and
+    re-running the full validator would only burn budget reproducing a
+    verdict already held.
+    """
+    doc: dict[str, object] = {"title": "T", "nodes": []}
+    outcome = GenerationOutcome(
+        status="passed",
+        storybook=doc,
+        report={"marker": "pre-transform"},
+        attempts=0,
+        stage_log=[],
     )
-    kinds = {v["kind"] for v in violations}
-    assert kinds == {"dropped", "forged"}
+
+    status, report = worker_module._regate_after_transform(
+        outcome, dict(doc), skeleton_slug="themed-slug"
+    )
+
+    assert status == "passed"
+    assert report == {"marker": "pre-transform"}
+    assert "pre_reinsertion_gate" not in report
+
+
+def test_regate_after_transform_never_upgrades_a_blocked_outcome() -> None:
+    """A pre-transform failure survives a post-transform document that gates clean.
+
+    The transform is a text normalization, not a repair. "The rewrite happened
+    to satisfy the gate" is not evidence the original problem was fixed, so
+    reconciliation only ever moves toward the more severe status.
+    """
+    outcome = GenerationOutcome(
+        status="needs_review",
+        storybook={"title": "before", "nodes": []},
+        report={"marker": "pre-transform"},
+        attempts=0,
+        stage_log=[],
+    )
+
+    status, report = worker_module._regate_after_transform(
+        outcome, {"title": "after", "nodes": []}, skeleton_slug="themed-slug"
+    )
+
+    assert status == "needs_review"
+    # The post-transform report describes the document that will be persisted,
+    # and the superseded verdict rides alongside it so a reviewer can tell
+    # which of the two gate runs produced the downgrade.
+    assert report["pre_reinsertion_gate"] == {
+        "status": "needs_review",
+        "report": {"marker": "pre-transform"},
+    }
+
+
+@pytest.mark.asyncio
+async def test_run_skeleton_fill_sentinel_manifest_round_trips_with_final_storybook(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """`GenerationOutcome.sentinel_manifest` is populated and verifies against the returned storybook.
+
+    ADR-023 Stage R carries the reinsertion transform's derived manifest
+    forward in memory (Task B2's persisted DB column is a later phase); this
+    pins that `_run_skeleton_fill` actually populates it, and that it
+    round-trips against `outcome.storybook` via `verify_manifest` the same
+    way a later at-rest re-check would.
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract = _personalizable_dispatch_contract()
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract_path.write_bytes(contract.model_dump_json().encode("utf-8"))
+
+    monkeypatch.setattr(
+        worker_module, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    original_skeleton = _personalizable_dispatch_skeleton()
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: original_skeleton)
+
+    provider = MockProvider(
+        responses=[_interpret_bind_response(_BOUND_DISPATCH_BINDINGS)]
+    )
+    filled_storybook = _personalizable_filled_storybook(wrap("PROTAGONIST", "Ada"))
+    monkeypatch.setattr(
+        worker_module, "fill_skeleton", _stub_returning(filled_storybook)
+    )
+
+    outcome = await _run_skeleton_fill(
+        _SkeletonFillContext(
+            authoring={
+                "skeleton_slug": "themed-slug",
+                "theme_brief": {"premise": "a fox"},
+            },
+            brief=_dispatch_brief(),
+            effective_provider=provider,
+            pii=_dispatch_pii(),
+        )
+    )
+
+    assert outcome.sentinel_manifest is not None
+    assert outcome.storybook is not None
+    tokens = cast("dict[str, object]", outcome.sentinel_manifest["tokens"])
+    assert "n_start" in tokens
+    assert verify_manifest(outcome.storybook, outcome.sentinel_manifest)
+
+
+class _WarningCapturingLogger:
+    """Wraps `worker_module.logger`, recording every `.warning(...)` call.
+
+    Every other attribute (`.error`, `.info`, ...) delegates to the real
+    logger unchanged, so this double only needs to know about the one method
+    the test actually asserts on.
+    """
+
+    def __init__(self, wrapped: object) -> None:
+        self._wrapped = wrapped
+        self.warning_calls: list[tuple[str, dict[str, object]]] = []
+
+    def warning(self, event: str, **kwargs: object) -> None:
+        self.warning_calls.append((event, kwargs))
+
+    def __getattr__(self, name: str) -> object:
+        return getattr(self._wrapped, name)
+
+
+@pytest.mark.asyncio
+async def test_run_skeleton_fill_warns_on_zero_coverage_personalizable_slot(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A declared personalizable slot the fill prose never mentions logs a WARNING, never a failure.
+
+    ADR-023 Stage R's soft coverage floor: a slot the theme contract declared
+    personalizable but whose expected value never occurs anywhere in the
+    finished prose (the model paraphrased it away entirely) is a content
+    smell worth flagging to an operator, not a corruption worth blocking the
+    job over. Uses a fill whose PROTAGONIST surface text ("the newcomer")
+    genuinely does not contain the expected value ("Ada") anywhere, to drive
+    the ``"not_found"`` branch deterministically.
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract = _personalizable_dispatch_contract()
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract_path.write_bytes(contract.model_dump_json().encode("utf-8"))
+
+    monkeypatch.setattr(
+        worker_module, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    original_skeleton = _personalizable_dispatch_skeleton()
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: original_skeleton)
+
+    provider = MockProvider(
+        responses=[_interpret_bind_response(_BOUND_DISPATCH_BINDINGS)]
+    )
+    filled_storybook = _personalizable_filled_storybook("the newcomer")
+    monkeypatch.setattr(
+        worker_module, "fill_skeleton", _stub_returning(filled_storybook)
+    )
+
+    capturing_logger = _WarningCapturingLogger(worker_module.logger)
+    monkeypatch.setattr(worker_module, "logger", capturing_logger)
+
+    outcome = await _run_skeleton_fill(
+        _SkeletonFillContext(
+            authoring={
+                "skeleton_slug": "themed-slug",
+                "theme_brief": {"premise": "a fox"},
+            },
+            brief=_dispatch_brief(),
+            effective_provider=provider,
+            pii=_dispatch_pii(),
+        )
+    )
+
+    assert outcome.status == "passed"
+    matching = [
+        kwargs
+        for event, kwargs in capturing_logger.warning_calls
+        if event == "generation_job.personalizable_slot_zero_coverage"
+    ]
+    assert len(matching) == 1
+    assert matching[0]["slot_ids"] == ["PROTAGONIST"]
 
 
 @pytest.mark.asyncio
@@ -1978,20 +2178,25 @@ async def test_run_generation_job_bind_failure_records_violations_on_job_report(
 
 
 @pytest.mark.asyncio
-async def test_run_generation_job_sentinel_integrity_failure_records_violations_on_job_report(
+async def test_run_generation_job_sentinel_manifest_verification_failure_records_on_job_report(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    """(Task 6a) A fail-closed sentinel-integrity violation surfaces through
-    run_generation_job's own pipeline-exception handling under its OWN
-    ``sentinel_integrity_violations`` key: an admin debugging a failed job
-    sees node_id/kind/token detail, not just a truncated ``job.error``
-    string, and this key is never collapsed into (or confused with) the
-    sibling ``slot_binding_violations`` key a WS-2 bind failure uses.
+    """(ADR-023 Stage R) A transform-bug `verify_manifest` failure surfaces
+    through run_generation_job's own pipeline-exception handling under the
+    SAME ``sentinel_integrity_violations`` key the old prescriptive check
+    used: an admin debugging a failed job still finds the failure under one
+    stable key, even though this check can never itself point at a
+    node/kind/token (a manifest-verification failure means the transform's
+    OWN output failed its OWN derived manifest, a transform bug, not that any
+    particular token was found bad).
 
     This pins the worker.py change to `_handle_pipeline_failure`, not just
-    `_run_skeleton_fill` in isolation
-    (test_run_skeleton_fill_sentinel_integrity_mutated_sentinel_fails_closed
-    already covers the raise itself).
+    `_run_skeleton_fill` in isolation. The fixture uses a clean,
+    verbatim-copy fill (nothing wrong with the CONTENT) and forces
+    `verify_manifest` to report failure, isolating the plumbing this test
+    targets from the reinsertion algorithm's own content-classification
+    behavior (covered separately by
+    test_run_skeleton_fill_sentinel_integrity_forged_value_not_reinserted).
     """
     import uuid as uuid_mod
 
@@ -2010,11 +2215,11 @@ async def test_run_generation_job_sentinel_integrity_failure_records_violations_
     original_skeleton = _personalizable_dispatch_skeleton()
     monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: original_skeleton)
 
-    mutated_sentinel = wrap("PROTAGONIST", "Champion")
-    filled_storybook = _personalizable_filled_storybook(mutated_sentinel)
+    filled_storybook = _personalizable_filled_storybook(wrap("PROTAGONIST", "Ada"))
     monkeypatch.setattr(
         worker_module, "fill_skeleton", _stub_returning(filled_storybook)
     )
+    monkeypatch.setattr(worker_module, "verify_manifest", lambda _doc, _manifest: False)
 
     provider = MockProvider(
         responses=[_interpret_bind_response(_BOUND_DISPATCH_BINDINGS)]
@@ -2051,11 +2256,7 @@ async def test_run_generation_job_sentinel_integrity_failure_records_violations_
 
     assert job.status == "failed"
     assert job.report is not None
-    violations = cast(
-        "list[dict[str, object]]", job.report["sentinel_integrity_violations"]
-    )
-    kinds = {v["kind"] for v in violations}
-    assert kinds == {"dropped", "forged"}
+    assert job.report["sentinel_integrity_violations"] == []
     # No cross-contamination: this is a sentinel-integrity failure, not a
     # slot-binding one, so the sibling key must be absent.
     assert "slot_binding_violations" not in job.report

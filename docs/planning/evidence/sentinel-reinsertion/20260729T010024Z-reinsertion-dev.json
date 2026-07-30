@@ -1,0 +1,108 @@
+{
+  "total_trials": 30,
+  "clean_trials": 4,
+  "reinsertion_clean_rate": 0.13333333333333333,
+  "round_trip_ok_trials": 4,
+  "round_trip_ok_rate": 0.13333333333333333,
+  "verify_manifest_ok_trials": 30,
+  "verify_manifest_ok_rate": 1.0,
+  "per_provider": [
+    {
+      "provider": "openrouter",
+      "total": 30,
+      "clean": 4,
+      "clean_rate": 0.13333333333333333
+    }
+  ],
+  "per_slot_coverage": [
+    {
+      "slot_id": "CHAPERONE",
+      "reinsertable": 23,
+      "total": 36,
+      "coverage_rate": 0.6388888888888888
+    },
+    {
+      "slot_id": "COMPANION",
+      "reinsertable": 502,
+      "total": 510,
+      "coverage_rate": 0.984313725490196
+    },
+    {
+      "slot_id": "COMPANION_KIND",
+      "reinsertable": 27,
+      "total": 36,
+      "coverage_rate": 0.75
+    },
+    {
+      "slot_id": "ENTRANCE",
+      "reinsertable": 48,
+      "total": 60,
+      "coverage_rate": 0.8
+    },
+    {
+      "slot_id": "FOUNDER",
+      "reinsertable": 159,
+      "total": 168,
+      "coverage_rate": 0.9464285714285714
+    },
+    {
+      "slot_id": "HERO",
+      "reinsertable": 618,
+      "total": 1458,
+      "coverage_rate": 0.42386831275720166
+    },
+    {
+      "slot_id": "HUB",
+      "reinsertable": 58,
+      "total": 60,
+      "coverage_rate": 0.9666666666666667
+    },
+    {
+      "slot_id": "KIN",
+      "reinsertable": 49,
+      "total": 84,
+      "coverage_rate": 0.5833333333333334
+    },
+    {
+      "slot_id": "LISTENER",
+      "reinsertable": 208,
+      "total": 210,
+      "coverage_rate": 0.9904761904761905
+    },
+    {
+      "slot_id": "OCCASION",
+      "reinsertable": 12,
+      "total": 12,
+      "coverage_rate": 1.0
+    },
+    {
+      "slot_id": "OPENING_MOMENT",
+      "reinsertable": 5,
+      "total": 6,
+      "coverage_rate": 0.8333333333333334
+    },
+    {
+      "slot_id": "OPERATOR",
+      "reinsertable": 232,
+      "total": 234,
+      "coverage_rate": 0.9914529914529915
+    },
+    {
+      "slot_id": "THRESHOLD",
+      "reinsertable": 42,
+      "total": 60,
+      "coverage_rate": 0.7
+    }
+  ],
+  "outcome_histogram": {
+    "reinsertable": 1983,
+    "not_found": 951
+  },
+  "multiplicity_histogram": {
+    "1": 1652,
+    "2-3": 321,
+    "4+": 10
+  },
+  "sentence_start_hits": 120,
+  "plural_occurrences": 0
+}
