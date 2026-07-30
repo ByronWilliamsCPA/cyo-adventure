@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
+from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import pytest
@@ -195,6 +196,62 @@ async def test_approve_rejects_a_non_admin_principal() -> None:
     assert story.status == "in_review"
     session.get.assert_not_awaited()
     session.flush.assert_not_awaited()
+
+
+@pytest.mark.unit
+async def test_approve_rejects_mqa_fixture_outside_staging(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """approve() refuses an mqa_-prefixed storybook when not in staging.
+
+    Defense in depth for the staging Moderation QA corpus
+    (moderation-review-redesign-2026-07-28.md section 5, point 3): the seed
+    script's own environment guard already keeps these fixtures out of any
+    non-staging database, but this is the independent second layer at the
+    sole publish path, in case an admin somehow acquires an mqa_-prefixed
+    row outside staging (a misclick, a copied id, a future automation).
+    """
+    monkeypatch.setattr(service, "settings", SimpleNamespace(environment="production"))
+    story = _story("in_review")
+    story.id = "mqa_block_selfharm_reference"
+    session = AsyncMock(spec=AsyncSession)
+    principal = _principal("admin")
+
+    with pytest.raises(BusinessLogicError, match="mqa_block_selfharm_reference"):
+        await service.approve(session, principal, story, 1)
+
+    assert story.status == "in_review"
+    session.get.assert_not_awaited()
+    session.flush.assert_not_awaited()
+
+
+@pytest.mark.unit
+async def test_approve_allows_mqa_fixture_in_staging(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """approve() does not block an mqa_-prefixed storybook while in staging.
+
+    The QA corpus must actually be approvable in staging for a human to
+    exercise the review surface end to end; this pins that the mqa_ guard is
+    scoped to non-staging environments only, not a blanket ban on the prefix.
+    """
+    monkeypatch.setattr(service, "settings", SimpleNamespace(environment="staging"))
+    story = _story("in_review")
+    story.id = "mqa_clean_meadow_market"
+    version_row = StorybookVersion(
+        storybook_id="mqa_clean_meadow_market",
+        version=1,
+        blob={},
+        moderation_report=make_clean_moderation_report(),
+    )
+    session = AsyncMock(spec=AsyncSession)
+    session.get = AsyncMock(return_value=version_row)
+    principal = _principal("admin")
+
+    result = await service.approve(session, principal, story, 1)
+
+    assert result is version_row
+    assert story.status == "published"
 
 
 @pytest.mark.unit
