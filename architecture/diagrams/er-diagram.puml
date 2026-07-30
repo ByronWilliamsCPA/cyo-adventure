@@ -179,6 +179,7 @@ entity "storybook_version" as storybook_version #F3E5F5 {
   created_at : TIMESTAMPTZ
   cover_image_url : VARCHAR(512) NULL
   cover_status : VARCHAR(20) [none|generating|pending_review|ready|failed]
+  cover_object_salt : VARCHAR(32) NULL [UW-M07; folded into the R2 object\nkey; NULL rows use the legacy unsalted key]
   cover_approved_by : UUID <<FK user.id, NULL>>
   cover_approved_at : TIMESTAMPTZ NULL
   personalization_eligible : BOOLEAN [ADR-023; default false;\ndeclared, not yet written by any path]
