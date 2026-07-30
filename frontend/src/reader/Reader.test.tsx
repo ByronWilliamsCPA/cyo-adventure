@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { choose } from '../player/engine'
 import type { ValuesPayload } from '../player/personalization'
-import type { Storybook } from '../player/types'
+import type { ReadingState, Storybook } from '../player/types'
 import { clearChildSession, setChildSession } from '../auth/childSession'
 import type { SubmitFlagParams } from '../api/readerApi'
 import type { KidFlagCreatedView, ReadingHistoryItem } from '../client/types.gen'
@@ -76,6 +76,22 @@ function valuesPayload(): ValuesPayload {
     values: { protagonist_first_name: 'Maya' },
     sentinel_pattern: "\\{~([A-Z][A-Z0-9_]*):([^{}<>'~]+)~\\}",
     slot_bindings: { HERO: 'protagonist_first_name' },
+  }
+}
+
+// A resumed-read reading state sitting on `nodeId`, with more than one entry
+// in `path` (ADR-023 C5b: `atOpening` gates on path length, not just node id,
+// so this is what distinguishes "the start node after going back" from "the
+// start node on a fresh read").
+function readingAt(nodeId: string): ReadingState {
+  return {
+    current_node: nodeId,
+    var_state: {},
+    path: ['n_start', nodeId],
+    visit_set: ['n_start', nodeId],
+    version: sentinelStory.version,
+    state_revision: 0,
+    save_slots: {},
   }
 }
 
@@ -249,6 +265,50 @@ describe('Reader personalization (ADR-023 C3e)', () => {
     )
     fireEvent.click(screen.getByTestId('choice-c'))
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent("Maya's last stand")
+  })
+})
+
+describe('Reader dedication overlay (ADR-023 C5b)', () => {
+  it('shows the dedication on the opening passage', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" personalization={valuesPayload()} />
+      </MemoryRouter>
+    )
+    expect(screen.getByTestId('dedication')).toBeInTheDocument()
+  })
+
+  it('hides the dedication once the child has moved on', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" personalization={valuesPayload()} />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c'))
+    expect(screen.queryByTestId('dedication')).not.toBeInTheDocument()
+  })
+
+  it('shows no dedication on a resumed read that is past the start node', () => {
+    render(
+      <MemoryRouter>
+        <Reader
+          story={sentinelStory}
+          profileId="p1"
+          personalization={valuesPayload()}
+          initialReading={readingAt('n_end')}
+        />
+      </MemoryRouter>
+    )
+    expect(screen.queryByTestId('dedication')).not.toBeInTheDocument()
+  })
+
+  it('shows no dedication without a payload', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" />
+      </MemoryRouter>
+    )
+    expect(screen.queryByTestId('dedication')).not.toBeInTheDocument()
   })
 })
 

@@ -25,6 +25,7 @@ import { SATISFYING_ENDING_KINDS, seriesMeta } from '../player/series'
 import type { ReadingState, Storybook } from '../player/types'
 import { BackToLibrary } from './BackToLibrary'
 import { ContinueSeries } from './ContinueSeries'
+import { DedicationOverlay } from './DedicationOverlay'
 import { EndingsProgress } from './EndingsProgress'
 import { FlagButton } from './FlagButton'
 import { ReaderChrome } from './ReaderChrome'
@@ -110,6 +111,14 @@ export function Reader({
   // #VERIFY: Reader.test.tsx "renders the generic word when there is no payload".
   const bodyText = resolvePersonalization(node?.body ?? '', personalization)
   const endingTitle = resolvePersonalization(node?.ending?.title ?? '', personalization)
+
+  // The dedication belongs on the opening screen and nowhere else: it is a note
+  // from a grown-up on page one, and one repeated mid-story stops being a
+  // dedication. `path.length <= 1` rather than `current_node === start_node`
+  // because RESTART returns to the start node with a fresh single-entry path
+  // (a re-read legitimately shows it again) while a resumed read that happens to
+  // sit on the start node after going back has a longer path and must not.
+  const atOpening = reading.path.length <= 1 && reading.current_node === story.start_node
 
   // Read-aloud (K7): the toggle itself renders in ReaderChrome, but the
   // speech content (passage body, then choice labels) is only known here.
@@ -428,6 +437,7 @@ export function Reader({
     <div className="reader-shell" style={shellStyle}>
       {chrome}
       <section data-testid="reader" className="reader">
+        {atOpening ? <DedicationOverlay personalization={personalization} /> : null}
         <div
           ref={passageRef}
           tabIndex={-1}
