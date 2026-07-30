@@ -60,7 +60,7 @@ full v1 (Phase 4b and Phase 5) and the later release rungs (R2/R3).
 | 3 Safety + Review | ✅ Delivered (backend) | moderation pipeline (#36), publish state machine + approval/send-back + core invariant (#34), review-surface API + save-state integrity (#45); guardian console UI is Phase 4a |
 | 4a Library + Profiles | ✅ Delivered (R1 feature-complete) | app shell/auth #56, profiles #60, library #68, guardian console #76, intake #69, assign #75 (all merged 2026-07-03) |
 | 4b Editor + Engagement | ✅ Substantially delivered (2026-07-20 audit) | Shipped 2026-07-17 in PR #270: node editor (`PATCH .../nodes/{id}`), endings tracker UI, read-aloud/TTS, guardian content-controls UI (banned themes), per-child permission envelopes, kid feedback flag. Real gaps remaining: bookmarks (not built at all), guardian device/storage view (revoke exists, download visibility doesn't) |
-| 4c Family Loops (NEW 2026-07-16) | ✅ Substantially delivered (2026-07-20 audit) | Shipped 2026-07-17 in PR #270: notification feed (`GET /notifications` + `NotificationBell.tsx`), guardian engagement visibility (`GET /families/me/reading-summary` + `ReadingPage.tsx`), kid-facing generation status, budget consent (envelopes + `GET /families/me/budget`). Gap: delivery is poll-based only, no push channel or server-scheduled digest job (S9/G10 "digest by default" is not yet a real distinct tier) |
+| 4c Family Loops (NEW 2026-07-16) | ✅ Substantially delivered (2026-07-28 audit) | Shipped 2026-07-17 in PR #270: notification feed (`GET /notifications` + `NotificationBell.tsx`), guardian engagement visibility (`GET /families/me/reading-summary` + `ReadingPage.tsx`), kid-facing generation status, budget consent (envelopes + `GET /families/me/budget`). Push channel closed 2026-07-28: authenticated SSE (`GET /v1/notifications/stream`), `notificationsStream.ts` consumer wired into `NotificationBell.tsx` as a fallback-preserving addition to the poll (G10 flipped to ✅). Remaining gap: no server-scheduled digest job (S9 stays 🟡, narrowed to this one piece) |
 | 4d Connections (NEW 2026-07-16) | ✅ Substantially delivered (2026-07-20 audit) | Shipped 2026-07-17 in PR #270: dual-guardian consent flow with an enforced guard at the recommendations read path (`api/recommendations.py::_is_dual_consented()`), kid-facing recommendation chips. Privacy-model erasure coverage for connections not independently re-verified in this audit pass |
 | 5 Hardening | 🟡 Partially delivered | Redis-backed rate limiter, ADR-007 purge job, offline-copy revocation, operator runbook, and a re-screen first cut are merged (see checklist below); performance pass, Sentry backups/restore drill, admin audit view, and the nightly/staging test ladder remain open |
 
@@ -337,7 +337,7 @@ The old wording stands in historical sections above; this table governs.
 | M4 = **R1-alpha** | Core loop live internally, web only (Phases 0-3 + 4a; historic "R1") | done | ✅ Feature-complete 2026-07-03, live 2026-07-05 |
 | M4.1: R1-alpha sign-off | Funded provider keys; merged PRs + safety fixes redeployed; live E2E checklist executed once with a sign-off row; Now-queue items 1-4; **plus, added 2026-07-28: the ADR-021 production cutover (`UW-A03`), which the ADR itself names M4.1 as the review gate for** | ~1 wk | ⏸️ Next up. The cutover provisions `cyo_api`/`cyo_worker` role passwords in staging and prod and retires `postgres`-role traffic; until it lands, RLS is enabled but disarmed and ADR-022 (`UW-A01`) cannot start |
 | M4b: Editor + engagement | G6, K6, K7, G5, G2 usable by a real guardian, G3, K15, G15 view, K5/K8 test pins | 3-4 wks | ✅ Substantially delivered 2026-07-17 (PR #270); open: bookmarks (not built), G15 storage/download view (device list/revoke UI shipped 2026-07-28), K5/K8 test pins |
-| M4c: Family loops | S9, G10, G9, K12 complete, G7 real budget consent + G13 balance | 2-3 wks | ✅ Substantially delivered 2026-07-17 (PR #270); open: push channel/server-scheduled digest (S9/G10 are poll-based only) |
+| M4c: Family loops | S9, G10, G9, K12 complete, G7 real budget consent + G13 balance | 2-3 wks | ✅ Substantially delivered 2026-07-17 (PR #270); push channel closed 2026-07-28 (SSE stream, G10 now ✅); open: S9's server-scheduled digest job |
 | M4d: Connections | G17 consent, K17 surfaces, A15 enforcement guard (ADR-016 ring 2) | 2-3 wks, overlaps 4c | ✅ Delivered 2026-07-17 (PR #270); privacy-model erasure coverage for connections not independently re-verified |
 | M5: Hardened family tier | Phase 5 expanded scope: purge, offline revocation, audit view, re-screen, restore drill, nightly/staging/prod test ladder green with alerting | 2-3 wks | 🟡 M4b-4d dependency satisfied as of 2026-07-17 (see the 2026-07-20 audit note above); remaining Phase 5 gaps are audit view, restore drill, remaining test ladder, plus the newly surfaced H1/H2 |
 | **M5.1 = R1 (full): "the web app functions properly"** | Every family-tier register row at delivered status; the five golden journeys green on the full test ladder | **~9-13 wks cumulative from start** | 🟡 Closer than scheduled: the register's K/G/A/S rows are now mostly ✅/🟡 with few ❌ remaining (see capability-register.md v1.7); the live E2E sign-off (`r1-live-e2e-checklist.md`) is still an empty, unexecuted table |
@@ -684,14 +684,17 @@ This is the highest-leverage gap the capability review found after initiation it
 
 ### Deliverables
 
-**Status (2026-07-20 audit): all shipped 2026-07-17 in PR #270. The one genuine remaining
-gap is transport: delivery is poll-based (client re-polls with `since`), with no push
-channel or server-scheduled digest job, so "digest by default, alert on safety" is not yet
-a real distinct delivery tier.**
+**Status (2026-07-28 update): all shipped 2026-07-17 in PR #270, plus the push transport
+closed 2026-07-28. Delivery is now poll-based (client re-polls with `since`) AND
+push-based (authenticated SSE, `GET /v1/notifications/stream`, with the poll kept as a
+fallback for a connection that cannot use SSE); "alert on safety" was already a real,
+code-enforced distinct tier via `severity`. The one genuine remaining gap is a
+server-scheduled digest job, which no code in this repo implements.**
 
 - [x] Notification delivery infrastructure over the existing `pipeline_event` log: an
-      in-app, poll-based surface (`notifications/service.py`); the transport that
-      K12/G10/A-alerts consume (S9). Server-scheduled digest and a push channel remain open.
+      in-app, poll-based surface (`notifications/service.py`) plus an authenticated SSE
+      push surface (`api/notifications.py::stream_notifications`); the transport that
+      K12/G10/A-alerts consume (S9). A server-scheduled digest job remains open.
 - [x] Guardian notifications: story awaiting consent, story ready, kid flagged content
       (G10). `GET /notifications` (`api/notifications.py`), `NotificationBell.tsx`.
 - [x] Guardian engagement visibility: per-child reading time, books finished, endings

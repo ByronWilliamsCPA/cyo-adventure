@@ -7135,6 +7135,34 @@ export type ListNotificationsApiV1NotificationsGetResponses = {
 
 export type ListNotificationsApiV1NotificationsGetResponse = ListNotificationsApiV1NotificationsGetResponses[keyof ListNotificationsApiV1NotificationsGetResponses];
 
+export type StreamNotificationsApiV1NotificationsStreamGetData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Since
+         */
+        since?: string | null;
+    };
+    url: '/api/v1/notifications/stream';
+};
+
+export type StreamNotificationsApiV1NotificationsStreamGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type StreamNotificationsApiV1NotificationsStreamGetError = StreamNotificationsApiV1NotificationsStreamGetErrors[keyof StreamNotificationsApiV1NotificationsStreamGetErrors];
+
+export type StreamNotificationsApiV1NotificationsStreamGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
 export type ListUsersApiV1AdminUsersGetData = {
     body?: never;
     path?: never;

@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ToastProvider } from '../notifications/ToastProvider'
 import { NotificationBell } from './NotificationBell'
+import type { NotificationStreamHandle, NotificationStreamHandlers } from './notificationsStream'
 
 const mockUseAuth = vi.fn()
 vi.mock('../auth/useAuth', () => ({
@@ -14,6 +15,24 @@ const mockGet = vi.fn()
 const fakeApi = { get: mockGet }
 vi.mock('../hooks/useApi', () => ({
   useApi: () => fakeApi,
+}))
+
+// The SSE push transport (S9) is exercised on its own terms in
+// notificationsStream.test.ts (connection setup, token handling, keep-alive
+// filtering, retry cap); here it is mocked so every existing poll-only test
+// above keeps testing exactly what it tested before this transport existed,
+// and so the "SSE push transport" describe block below can drive
+// NotificationBell's onNotification/onError handlers directly without a real
+// fetch/EventSource in jsdom.
+const mockOpenNotificationStream =
+  vi.fn<
+    (since: string | undefined, handlers: NotificationStreamHandlers) => NotificationStreamHandle
+  >()
+vi.mock('./notificationsStream', () => ({
+  openNotificationStream: (
+    since: string | undefined,
+    handlers: NotificationStreamHandlers
+  ): NotificationStreamHandle => mockOpenNotificationStream(since, handlers),
 }))
 
 function principal(subject = 'guardian-1') {
@@ -56,6 +75,8 @@ beforeEach(() => {
   mockGet.mockReset()
   mockUseAuth.mockReturnValue({ principal: principal() })
   localStorage.clear()
+  mockOpenNotificationStream.mockReset()
+  mockOpenNotificationStream.mockReturnValue({ close: vi.fn() })
 })
 
 afterEach(() => {
@@ -198,5 +219,69 @@ describe('NotificationBell', () => {
     renderBell()
     await waitFor(() => expect(mockGet).toHaveBeenCalled())
     expect(screen.queryByTestId('toast')).not.toBeInTheDocument()
+  })
+})
+
+describe('NotificationBell SSE push transport (S9)', () => {
+  it('opens exactly one stream per subject, since-filtered the same as the poll', async () => {
+    mockGet.mockResolvedValue({ data: { notifications: [] } })
+    renderBell()
+    await waitFor(() => expect(mockOpenNotificationStream).toHaveBeenCalledTimes(1))
+    const [since] = mockOpenNotificationStream.mock.calls[0]
+    expect(since).toBeUndefined() // no prior lastSeenAt recorded for this subject yet
+  })
+
+  it('SSE happy path: a pushed notification refreshes the badge without waiting for the poll', async () => {
+    mockGet.mockResolvedValueOnce({ data: { notifications: [] } })
+    renderBell()
+    expect(await screen.findByRole('button', { name: 'Notifications' })).toBeInTheDocument()
+
+    await waitFor(() => expect(mockOpenNotificationStream).toHaveBeenCalledTimes(1))
+    const [, handlers] = mockOpenNotificationStream.mock.calls[0]
+
+    // Simulate the backend pushing a fresh alert over the stream. The bell
+    // never reads the pushed payload directly (see NotificationBell.tsx's
+    // module docstring): it re-runs the same since-filtered fetch
+    // refreshUnread() already owns, so the mocked GET is what actually
+    // supplies the new unread count here.
+    mockGet.mockResolvedValueOnce({ data: { notifications: [ALERT_ITEM] } })
+    handlers.onNotification(ALERT_ITEM)
+
+    expect(
+      await screen.findByRole('button', { name: 'Notifications, 1 unread' })
+    ).toBeInTheDocument()
+  })
+
+  it('falls back to the existing 30s poll when the stream reports a connection error', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    mockOpenNotificationStream.mockImplementationOnce((_since, handlers) => {
+      // A stream that fails before this component ever attaches a working
+      // connection (no token, backend unreachable, a proxy that blocks SSE)
+      // reports through onError synchronously here; NotificationBell must
+      // not treat that as fatal, the poll effect covers the badge on its own
+      // schedule regardless of whether the stream ever connects.
+      handlers.onError(new Error('no guardian token available'))
+      return { close: vi.fn() }
+    })
+    mockGet.mockResolvedValue({ data: { notifications: [INFO_ITEM] } })
+    renderBell()
+    expect(
+      await screen.findByRole('button', { name: 'Notifications, 1 unread' })
+    ).toBeInTheDocument()
+    expect(errorSpy).toHaveBeenCalledWith(
+      'notification stream error:',
+      'no guardian token available'
+    )
+    errorSpy.mockRestore()
+  })
+
+  it('closes the stream handle on unmount', async () => {
+    const close = vi.fn()
+    mockOpenNotificationStream.mockReturnValue({ close })
+    mockGet.mockResolvedValue({ data: { notifications: [] } })
+    const { unmount } = renderBell()
+    await waitFor(() => expect(mockOpenNotificationStream).toHaveBeenCalledTimes(1))
+    unmount()
+    expect(close).toHaveBeenCalledTimes(1)
   })
 })

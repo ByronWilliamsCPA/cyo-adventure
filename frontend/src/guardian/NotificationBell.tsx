@@ -8,6 +8,7 @@ import { useToast } from '../notifications/useToast'
 import { formatRelativeTime } from './intakeApi'
 import { makeNotificationsApi, type NotificationView } from './notificationsApi'
 import { hasToasted, markSeen, readSeenRecord, recordToasted } from './notificationSeenStore'
+import { openNotificationStream } from './notificationsStream'
 import { STORY_REQUESTS_CHANGED_EVENT } from './storyRequestQueueApi'
 import './guardian.css'
 
@@ -61,6 +62,17 @@ function BellIcon() {
  *   read state (a guardian should be able to scroll back through recent
  *   activity, not just "what's new"), and opening it marks everything up to
  *   the newest item as seen.
+ *
+ * S9's push transport (notificationsStream.ts, GET /v1/notifications/stream)
+ * is layered on top of the poll below, never replacing it: it triggers the
+ * SAME refreshUnread() a poll tick would, just sooner, so a guardian with a
+ * tab open sees a safety-relevant alert in near-real-time instead of waiting
+ * up to POLL_MS. This is deliberately NOT a separate state/rendering path --
+ * refreshUnread already owns badge state, toast dedup, and error tolerance,
+ * and duplicating any of that for the push path would let the two drift.
+ * When the stream cannot connect at all (network, proxy, or auth failure),
+ * this component notices nothing: the poll below keeps running exactly as
+ * it did before this transport existed.
  */
 export function NotificationBell() {
   const { principal } = useAuth()
@@ -122,6 +134,27 @@ export function NotificationBell() {
       clearTimeout(initial)
       clearInterval(id)
     }
+  }, [subject, refreshUnread])
+
+  // #ASSUME: external-resources: openNotificationStream's own createSseClient
+  // reconnect loop (exponential backoff, capped attempts) owns retrying a
+  // dropped connection; this effect only opens ONE stream per subject and
+  // closes it on unmount/subject change, it never re-opens on its own. A
+  // guardian who never gets a working connection this session (backend
+  // unreachable, a proxy that blocks SSE) is invisible to this effect: it
+  // just never calls refreshUnread early, and the poll effect above keeps
+  // covering the badge and toast on its own schedule regardless.
+  // #VERIFY: NotificationBell.test.tsx "SSE push" cases.
+  useEffect(() => {
+    if (subject === null) return undefined
+    const since = readSeenRecord(subject).lastSeenAt ?? undefined
+    const handle = openNotificationStream(since, {
+      onNotification: () => void refreshUnread(),
+      onError: (err) => {
+        console.error('notification stream error:', err instanceof Error ? err.message : err)
+      },
+    })
+    return () => handle.close()
   }, [subject, refreshUnread])
 
   useEffect(() => {
