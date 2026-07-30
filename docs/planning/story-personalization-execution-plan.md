@@ -933,8 +933,10 @@ Stage C implementation plan (committed beside this document as
   (opening-screen-only render).
 - **C6 (stage exit):** `3cce7859` (authoring lessons AL-066..AL-068 plus UW-C20).
 
-The flag (`VITE_FEATURE_PERSONALIZATION`) remains **off**; gates G2 and G3 are still open and
-Stage C never enables any shipping surface.
+The flag (`VITE_FEATURE_PERSONALIZATION`) remains **off**; gate G3 is still open (it passes
+when Task D1 merges), G2 was closed by owner review on 2026-07-29 (see the gates table:
+satisfied at R1 scope, ADR-023 flipped to Accepted), and Stage C never enables any shipping
+surface.
 
 **Deviations from this section as written, each with its reason:**
 
@@ -962,9 +964,18 @@ Stage C never enables any shipping surface.
 6. **The marker strip is unconditional; only the fetch is flag-gated.** ADR-023 section 10
    forbids a marker on any kid-facing surface without exception, and the strip is a pure
    synchronous pass, so `resolvePersonalization(text, null)` runs even with the flag off.
+   This is a deliberate flag-OFF behavior delta the post-Stage-C review re-surfaced: a
+   sentinel-bearing blob that previously showed raw markers now shows each marker's generic
+   word even with `VITE_FEATURE_PERSONALIZATION` off (deliberate strengthening; the Task C3f
+   flag-off strip pin in `frontend/src/player/personalization.test.ts` asserts it).
 7. **The dedication renders `For {NAME}` when no kinship value is available**, which is
    today's only possible path given the empty vocabulary (C0e fails closed). The Stage R
    "dedication guaranteed" clause is satisfied by the name half alone.
+8. **An ending with an empty-string title now renders "The End" instead of nothing**
+   (`Reader.tsx`, the ending heading's `endingTitle === '' ? 'The End' : endingTitle`
+   fallback). A second deliberate flag-OFF behavior delta the post-Stage-C review surfaced
+   as undocumented: the fallback also fires when the resolver strips an ending title that
+   was nothing but a marker, so a child never sees a blank ending heading, flag on or off.
 
 **Open questions carried out of Stage C** (recorded, not guessed at; none blocked the stage):
 
@@ -1140,9 +1151,11 @@ settings screen says so in as many words. TDD, commit.
   personalization granularity (the parked addendum block marks the spot); coordinate so it is
   written once.
 - [ ] Capability register: flip **G18** and **K20** from ❌ with spec links and covering tests.
-- [x] ADR-023 status: flip Proposed to Accepted when counsel closes OD-1/OD-5; until then G2
-  keeps P7/P9 unshipped. **DONE 2026-07-29: owner review closed both (OD-5 conditionally, R1
-  scope); status flipped the same day on the Stage C branch (PR #489).**
+- [x] ADR-023 status: flipped Proposed to Accepted. The original condition read "when counsel
+  closes OD-1/OD-5"; no external counsel exists at this scale, so owner review closed both
+  instead (the gates table's G2 entry is the record). **DONE 2026-07-29: owner review closed
+  both (OD-5 conditionally, R1 scope), satisfying G2 at R1 scope; status flipped the same day
+  on the Stage C branch (PR #489).**
 
 ### Task D6: closed-vocabulary implementation (split `favorite`, seed the accepted lists)
 
