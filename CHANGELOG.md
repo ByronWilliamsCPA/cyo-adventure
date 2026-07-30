@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.51.0] - 2026-07-30
+
+### Features
+
+- **moderation**: Staging Moderation QA ground-truth corpus and seed tooling
+  ([#497](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/497),
+  [`efdb978`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/efdb978b245c9b1f9ef2f5cf19330a5596469945))
+
+
 ## [0.50.1] - 2026-07-30
 
 ### Bug Fixes
@@ -2863,6 +2872,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.51.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.50.1...v0.51.0
 [0.50.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.50.0...v0.50.1
 [0.50.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.49.0...v0.50.0
 [0.49.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.48.0...v0.49.0
