@@ -151,6 +151,14 @@ nothing (18, not the 22-book any-safety-FLAG count; see the gap report's
   measure the current per-band `decided_versions` and `override_rate` for
   `(band, "safety")`: the gates (5 decided, 0.8 override rate) may or may not
   be met today, and no suggestion should be applied until that is known.
+  **Measured 2026-07-29** (live Supabase, SQL mirror of `attribute_outcome`
+  semantics; per-band safety flag counts sum to 5,056, matching the known
+  llm_safety FLAG total, which validates the query): 10-13 = 1 decided /
+  1 released; 13-16 = 1/1; 16+ = 4/4; 3-5, 5-8, 8-11 = 0/0. No band meets
+  the gates today, but **16+ is one released decision away** (4 of 5
+  decided, override rate 1.0, on 2,575 flag findings that are almost
+  entirely mock fail-safe rows), so the flywheel exclusion must land
+  before the next 16+ book is released, not merely "before Stage A ships".
 
 ### 2.6 Surfaces
 
