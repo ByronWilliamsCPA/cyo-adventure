@@ -2915,7 +2915,9 @@
 
 <h1 id="moderation-review-redesign-decisions-not-flags">Moderation Review Redesign: Decisions, Not Flags<a class="headerlink" href="#moderation-review-redesign-decisions-not-flags" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Draft design for owner approval. No implementation has started.
+<p><strong>Status</strong>: APPROVED by the owner 2026-07-29; all open decisions in
+section 7 are now recorded. Implementation has not started; section 6's
+staged delivery (Stages A-D) is the execution plan.
 Companion gap report:
 <a href="../moderation-review-current-state-2026-07-28/">moderation-review-current-state-2026-07-28.md</a>.
 Acceptance bar (owner, verbatim intent): a reviewer approving a book reads
@@ -3062,7 +3064,15 @@ nothing (18, not the 22-book any-safety-FLAG count; see the gap report's
   genuine safety FLAGs from guardian and kid surfaces. Before Stage A ships,
   measure the current per-band <code>decided_versions</code> and <code>override_rate</code> for
   <code>(band, "safety")</code>: the gates (5 decided, 0.8 override rate) may or may not
-  be met today, and no suggestion should be applied until that is known.</li>
+  be met today, and no suggestion should be applied until that is known.
+  <strong>Measured 2026-07-29</strong> (live Supabase, SQL mirror of <code>attribute_outcome</code>
+  semantics; per-band safety flag counts sum to 5,056, matching the known
+  llm_safety FLAG total, which validates the query): 10-13 = 1 decided /
+  1 released; 13-16 = 1/1; 16+ = 4/4; 3-5, 5-8, 8-11 = 0/0. No band meets
+  the gates today, but <strong>16+ is one released decision away</strong> (4 of 5
+  decided, override rate 1.0, on 2,575 flag findings that are almost
+  entirely mock fail-safe rows), so the flywheel exclusion must land
+  before the next 16+ book is released, not merely "before Stage A ships".</li>
 </ul>
 <h3 id="26-surfaces">2.6 Surfaces<a class="headerlink" href="#26-surfaces" title="Permanent link">&para;</a></h3>
 <p><strong>Admin</strong> (<code>review_surface.py</code> + <code>ReviewDetailPage.tsx</code>): renders merged
@@ -3152,7 +3162,15 @@ are the only durable record of their claims.</p>
    <code>PYTHONPATH=. uv run python scripts/capture_stage0_baseline.py
    --env-file .env --out docs/planning/safety/stage0-baseline-2026-07-28.json</code>.
    This preserves the calibration oracle whether or not a successor is
-   adopted.</li>
+   adopted.
+   <strong>Deferred (owner, 2026-07-30):</strong> the capture run is postponed; the rest
+   of the staged delivery proceeds without it. It stays a hard prerequisite
+   for two things only: the Modal guard-model eval (item 3 scores against
+   this baseline) and Perspective retirement (the sunset makes the scores
+   unobtainable afterward). Owner-run step: confirm
+   <code>CYO_ADVENTURE_PERSPECTIVE_API_KEY</code> is set in <code>.env</code>, then run the
+   command above. Deadline unchanged: before the 2026-12-31 sunset, and
+   before starting the Modal eval.</li>
 <li><strong>Evaluate guard models on Modal as a candidate second axis</strong>, scoped as
    an experiment, not a commitment: Qwen3Guard (0.6B/4B, Apache-2.0-family),
    ShieldGemma, Llama Guard 4, and Granite Guardian HAP-125M (CPU-viable,
@@ -3289,7 +3307,7 @@ exist in production. Design:</p>
 <td><strong>C: Stage-0 successor</strong></td>
 <td>Baseline capture run, Modal guard-model eval, calibration report, Perspective emission retirement (unset <code>PERSPECTIVE_API_KEY</code> / remove the leg, all call sites per 3.2 item 5)</td>
 <td>Experiment + small PRs</td>
-<td>capture ASAP; Perspective retirement due by 2026-12-31 sunset; rest independent of A/B</td>
+<td>capture deferred by owner 2026-07-30 (see 3.2 item 2), still due before the Modal eval and the 2026-12-31 sunset; rest independent of A/B</td>
 </tr>
 <tr>
 <td><strong>D: catalog remediation</strong></td>
@@ -3298,7 +3316,7 @@ exist in production. Design:</p>
 <td>A, B</td>
 </tr>
 <tr>
-<td><strong>QA corpus (staging)</strong> <em>(conditional: design awaits decision 6, section 7)</em></td>
+<td><strong>QA corpus (staging)</strong> <em>(design confirmed 2026-07-29, decision 6)</em></td>
 <td>Labeled storybook fixtures (section 5), staging seed script + containment guards, scorecard diff</td>
 <td>Repo fixtures + small PR</td>
 <td>authored anytime; seeded before B's UI QA; feeds C's eval</td>
@@ -3309,22 +3327,29 @@ exist in production. Design:</p>
 makes the failure class visible, even if B's surface redesign takes longer.</p>
 <h2 id="7-decisions-requested-from-the-owner">7. Decisions requested from the owner<a class="headerlink" href="#7-decisions-requested-from-the-owner" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>Stage-2 disposition</strong>: option (a) retire + surface RL-13 (recommended),
-   (b) whole-story LLM readability, or &copy; keep per-node.</li>
+<li><strong>Stage-2 disposition</strong>: <strong>DECIDED 2026-07-29: option (a).</strong> Retire the
+   per-node LLM readability stage and surface the validator's deterministic
+   RL-13/PL-19 readability findings instead. Note for the record: the
+   section 4 remediation call-count math (~50-80 calls per large book)
+   assumed option (a); this decision is what keeps decision 5's immediate
+   sweep cheap.</li>
 <li><strong>Severity scale</strong>: DECIDED by design in section 2.1: three-level enum
-   (<code>high | medium | low</code>). Listed here only if the owner wants to reopen it.</li>
+   (<code>high | medium | low</code>). <strong>Confirmed by the owner 2026-07-29;</strong> stands
+   as designed.</li>
 <li><strong>Guardian summary contract</strong>: DECIDED by design in section 2.6:
    story-level summary with a merged concern list, repaired flag, and
-   reviewer-independence; no per-node rows. Listed here only if the owner
-   wants to reopen it.</li>
+   reviewer-independence; no per-node rows. <strong>Confirmed by the owner
+   2026-07-29;</strong> stands as designed.</li>
 <li><strong>Modal guard-model experiment</strong>: <strong>DECIDED 2026-07-28: approved.</strong>
    Owner basis: $30/mo in Modal free credits; current per-second GPU pricing
    keeps an eval sweep nowhere near that cap (see 3.2 item 3).</li>
-<li><strong>Remediation timing</strong>: sweep the 18 books right after B, or batch with
-   the first real catalog refresh.</li>
-<li><strong>Moderation QA corpus</strong> (section 5): owner-proposed 2026-07-28; the
-   design above (repo ground truth, staging-only seeding, containment
-   layers) awaits confirmation alongside decisions 1-3.</li>
+<li><strong>Remediation timing</strong>: <strong>DECIDED 2026-07-29: re-moderate the 18
+   mock-moderated books right after Stage B lands</strong> (not batched with the
+   first catalog refresh). Cost basis per section 4: ~50-80 real review
+   calls per large book under the retired-Stage-2 pipeline from decision 1.</li>
+<li><strong>Moderation QA corpus</strong> (section 5): owner-proposed 2026-07-28;
+   <strong>design CONFIRMED by the owner 2026-07-29</strong> as written: repo ground
+   truth, staging-only <code>mqa_</code> seeding, four containment layers.</li>
 <li><strong>Perspective-axis retirement</strong> (section 3.2 item 1): RATIFIED by the
    evidence in this document, not a separate owner decision: Perspective
    contributes zero findings to live data (gap report section 3) and its
@@ -3382,7 +3407,7 @@ makes the failure class visible, even if B's surface redesign takes longer.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 21:05:58 UTC">July 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 20:44:36 UTC">July 30, 2026</span>
   </span>
 
     
