@@ -33,6 +33,7 @@ import {
 } from '../offline/sync'
 import { Mascot } from '../kid/Mascot'
 import { startContinuation } from '../player/engine'
+import type { ValuesPayload } from '../player/personalization'
 import type { ContinuationSeed } from '../player/series'
 import type { ReadingState, Storybook } from '../player/types'
 import { BackToLibrary } from './BackToLibrary'
@@ -62,6 +63,12 @@ export interface ReaderPageProps {
   fetchReadingHistory?: (profileId: string) => Promise<ReadingHistoryItem[]>
   /** Forwarded straight to the Reader's chrome (K15 flag button). */
   submitFlag?: (params: SubmitFlagParams) => Promise<KidFlagCreatedView>
+  /**
+   * Resolves the ADR-023 values payload for this book. Omitted entirely when
+   * `VITE_FEATURE_PERSONALIZATION` is off (see ReaderRoute), which is what makes
+   * "no fetch, no resolver input" the structural default rather than a branch.
+   */
+  fetchPersonalizationValues?: (storybookId: string) => Promise<ValuesPayload | null>
 }
 
 type FetchServerState = (profileId: string, storybookId: string) => Promise<ReadingState | null>
@@ -125,8 +132,35 @@ export function ReaderPage({
   ttsEnabled,
   fetchReadingHistory,
   submitFlag,
+  fetchPersonalizationValues,
 }: ReaderPageProps) {
   const [pageState, setPageState] = useState<PageState>({ phase: 'loading' })
+  // ADR-023 P6: resolved independently of the story load, so a slow or failing
+  // values fetch can never delay or fail the story itself. Starts null (generic)
+  // and upgrades once resolved, which is safe because the resolver is total and
+  // a re-render with a payload simply replaces generic words with personalized
+  // ones.
+  const [personalization, setPersonalization] = useState<ValuesPayload | null>(null)
+  useEffect(() => {
+    if (fetchPersonalizationValues === undefined) return
+    let cancelled = false
+    void fetchPersonalizationValues(storybookId)
+      .then((payload) => {
+        if (!cancelled) setPersonalization(payload)
+      })
+      .catch(() => {
+        // #ASSUME: data-integrity: swallowed on purpose. The adapter already
+        // resolves null on every failure it knows about; this catch covers a
+        // caller (a test, a future adapter) that rejects instead. Either way the
+        // correct outcome is the generic story, never an error screen.
+        // #VERIFY: ReaderPage.test.tsx "still renders the story when the values
+        // fetch rejects".
+        if (!cancelled) setPersonalization(null)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [fetchPersonalizationValues, storybookId])
   // A single-instance-lifetime warning, not tied to the load phase: a dropped
   // save doesn't stop the reader from playing, so it renders as a banner
   // alongside the reading UI rather than as its own page state.
@@ -546,6 +580,7 @@ export function ReaderPage({
         ttsEnabled={ttsEnabled}
         fetchReadingHistory={fetchReadingHistory}
         submitFlag={submitFlag}
+        personalization={personalization}
       />
     </>
   )
