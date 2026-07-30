@@ -1,7 +1,7 @@
 /**
  * IndexedDB cache for offline reading (idb wrapper).
  *
- * The server is canonical; this is a cache only. Five stores back the reader:
+ * The server is canonical; this is a cache only. Seven stores back the reader:
  * - `storybooks`: downloaded immutable story blobs, keyed by `id@version`.
  * - `reading_states`: the latest known reading state per profile+story.
  * - `offline_queue`: reading-state writes made while offline, replayed in order
@@ -19,12 +19,21 @@
  *   one sibling profile on the same device; this store is what lets
  *   revocation tell "nobody on this device may read this book anymore" apart
  *   from "this profile lost it, but a sibling still has it".
+ * - `library_lists`: the last-good library list per profile (UX-K1 offline
+ *   shelf).
+ * - `personalization_values`: the resolved ADR-023 values payload for one book,
+ *   keyed by `storybook_id`. Keyed by book rather than by subject profile because
+ *   the reader only ever holds a book id: the subject profile id lives inside the
+ *   payload and is unknowable offline. A subject-scoped purge therefore scans this
+ *   store's bounded key set (see offline/revocation.ts). Never merged into
+ *   `storybooks`, which is deliberately device-wide and profile-independent.
  */
 
 import { type DBSchema, type IDBPDatabase, openDB } from 'idb'
 
 import type { DeviceGrant } from '../auth/deviceGrant'
 import type { LibraryItemView } from '../library/libraryApi'
+import type { ValuesPayload } from '../player/personalization'
 import type { ReadingState, Storybook } from '../player/types'
 
 export interface QueuedWrite {
@@ -43,6 +52,12 @@ export interface ProfileShelfSnapshot {
   storybook_ids: string[]
 }
 
+/** One cached values payload, paired with the book it was resolved for. */
+export interface PersonalizationValuesEntry {
+  storybook_id: string
+  payload: ValuesPayload
+}
+
 interface ReaderDB extends DBSchema {
   storybooks: { key: string; value: Storybook }
   reading_states: { key: string; value: ReadingState }
@@ -53,10 +68,11 @@ interface ReaderDB extends DBSchema {
   // succeed. Keyed by profileId.
   library_lists: { key: string; value: LibraryItemView[] }
   profile_shelf: { key: string; value: ProfileShelfSnapshot }
+  personalization_values: { key: string; value: ValuesPayload }
 }
 
 const DB_NAME = 'cyo-reader'
-const DB_VERSION = 3
+const DB_VERSION = 4
 /** Singleton key: one device grant per device. */
 const DEVICE_GRANT_KEY = 'current'
 
@@ -95,10 +111,13 @@ export function getDb(): Promise<IDBPDatabase<ReaderDB>> {
     // change for every version the open needed to pass through, so a
     // brand-new database (oldVersion 0) creates all stores in one pass, an
     // existing v1 database (oldVersion 1) gains `device_grant`, `library_lists`,
-    // and `profile_shelf`, and an existing v2 database (oldVersion 2) gains
-    // `library_lists` and `profile_shelf`.
+    // and `profile_shelf`, an existing v2 database (oldVersion 2) gains
+    // `library_lists` and `profile_shelf`, and an existing v3 database
+    // (oldVersion 3) gains `personalization_values`.
     // #VERIFY: db.test.ts "creates the device_grant store on a fresh
-    // database", the v1-to-v3 and v2-to-v3 migration tests, and offline/db.test.ts's
+    // database", the v1-to-v3 and v2-to-v3 migration tests, "creates the
+    // store when upgrading a v3 database to v4", "keeps the pre-existing
+    // stores reachable across the v4 upgrade", and offline/db.test.ts's
     // existing stores stay reachable across every migration path.
     upgrade(db, oldVersion) {
       if (oldVersion < 1) {
@@ -112,6 +131,9 @@ export function getDb(): Promise<IDBPDatabase<ReaderDB>> {
       if (oldVersion < 3) {
         db.createObjectStore('library_lists')
         db.createObjectStore('profile_shelf')
+      }
+      if (oldVersion < 4) {
+        db.createObjectStore('personalization_values')
       }
     },
     // #CRITICAL: timing (ARCH-M5): without these callbacks a DB_VERSION bump
@@ -150,6 +172,59 @@ export async function getCachedLibraryList(
 ): Promise<LibraryItemView[] | undefined> {
   const db = await getDb()
   return db.get('library_lists', profileId)
+}
+
+/** Cache the resolved values payload for one book (ADR-023 P6). */
+export async function cachePersonalizationValues(
+  storybookId: string,
+  payload: ValuesPayload
+): Promise<void> {
+  const db = await getDb()
+  await db.put('personalization_values', payload, storybookId)
+}
+
+/** Read the cached values payload for one book, or undefined if none. */
+export async function getCachedPersonalizationValues(
+  storybookId: string
+): Promise<ValuesPayload | undefined> {
+  const db = await getDb()
+  return db.get('personalization_values', storybookId)
+}
+
+/** Drop one book's cached values payload. */
+export async function deletePersonalizationValues(storybookId: string): Promise<void> {
+  const db = await getDb()
+  await db.delete('personalization_values', storybookId)
+}
+
+/**
+ * List every cached values payload with its book id.
+ *
+ * The bounded read a subject-scoped purge needs: the store's key is the book, so
+ * "forget everything about this child" has to look inside each payload. Bounded
+ * by the number of books downloaded on one device, the same assumption
+ * `listCachedStorybookIds` already makes.
+ */
+export async function listPersonalizationValues(): Promise<PersonalizationValuesEntry[]> {
+  const db = await getDb()
+  const keys = await db.getAllKeys('personalization_values')
+  const entries: PersonalizationValuesEntry[] = []
+  for (const key of keys) {
+    const payload = await db.get('personalization_values', key)
+    if (payload !== undefined) entries.push({ storybook_id: key, payload })
+  }
+  return entries
+}
+
+/**
+ * Clear every cached values payload.
+ *
+ * Called on guardian sign-out / device handover, beside `clearReadingStates`, so
+ * a returned device retains no child's personalization values at rest.
+ */
+export async function clearPersonalizationValues(): Promise<void> {
+  const db = await getDb()
+  await db.clear('personalization_values')
 }
 
 /** Cache a downloaded story blob for offline play. */

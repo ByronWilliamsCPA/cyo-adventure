@@ -4,28 +4,35 @@ import { openDB } from 'idb'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import type { DeviceGrant } from '../auth/deviceGrant'
+import type { ValuesPayload } from '../player/personalization'
 import type { ReadingState, Storybook } from '../player/types'
 import type { LibraryItemView } from '../library/libraryApi'
 import {
   _resetDbHandle,
   cacheLibraryList,
+  cachePersonalizationValues,
   cacheStorybook,
   clearDeviceGrantMirror,
+  clearPersonalizationValues,
+  deletePersonalizationValues,
   deleteReadingState,
   deleteStorybooksById,
   dequeue,
   enqueueWrite,
   getAllProfileShelves,
   getCachedLibraryList,
+  getCachedPersonalizationValues,
   getCachedStorybook,
   getDeviceGrantMirror,
   getReadingState,
   listCachedStorybookIds,
+  listPersonalizationValues,
   listQueue,
   listReadingStateStorybookIds,
   putDeviceGrantMirror,
   putProfileShelf,
   putReadingState,
+  type PersonalizationValuesEntry,
   type QueuedWrite,
 } from './db'
 
@@ -66,6 +73,16 @@ const state: ReadingState = {
   version: 1,
   state_revision: 1,
   save_slots: {},
+}
+
+const valuesPayload: ValuesPayload = {
+  subject_profile_id: 'p_subject',
+  ring: 1,
+  policy_version: 'ring1-no-consent-required',
+  resolved_at: '2026-07-29T00:00:00Z',
+  values: { protagonist_first_name: 'Maya' },
+  sentinel_pattern: "\\{~([A-Z][A-Z0-9_]*):([^{}<>'~]+)~\\}",
+  slot_bindings: { HERO: 'protagonist_first_name' },
 }
 
 beforeEach(() => {
@@ -257,5 +274,73 @@ describe('library list cache (UX-K1)', () => {
   it('isolates cached lists between profiles', async () => {
     await cacheLibraryList('p1', [libItem])
     expect(await getCachedLibraryList('p2')).toBeUndefined()
+  })
+})
+
+describe('personalization values store', () => {
+  beforeEach(() => {
+    _resetDbHandle()
+  })
+
+  it('round-trips a payload keyed by storybook id', async () => {
+    await cachePersonalizationValues('s_demo', valuesPayload)
+    expect(await getCachedPersonalizationValues('s_demo')).toEqual(valuesPayload)
+  })
+
+  it('returns undefined for a book with no cached payload', async () => {
+    expect(await getCachedPersonalizationValues('s_never_cached')).toBeUndefined()
+  })
+
+  it('deletes one book payload without touching another', async () => {
+    await cachePersonalizationValues('s_a', valuesPayload)
+    await cachePersonalizationValues('s_b', valuesPayload)
+    await deletePersonalizationValues('s_a')
+    expect(await getCachedPersonalizationValues('s_a')).toBeUndefined()
+    expect(await getCachedPersonalizationValues('s_b')).toEqual(valuesPayload)
+  })
+
+  it('lists every cached entry with its key, for subject-scoped purges', async () => {
+    await cachePersonalizationValues('s_a', valuesPayload)
+    await cachePersonalizationValues('s_b', {
+      ...valuesPayload,
+      subject_profile_id: 'p_other',
+    })
+    const entries: PersonalizationValuesEntry[] = await listPersonalizationValues()
+    expect(entries.map((e) => e.storybook_id).sort()).toEqual(['s_a', 's_b'])
+  })
+
+  it('clears every payload at once', async () => {
+    await cachePersonalizationValues('s_a', valuesPayload)
+    await clearPersonalizationValues()
+    expect(await listPersonalizationValues()).toEqual([])
+  })
+
+  it('creates the store when upgrading a v3 database to v4', async () => {
+    // Mirrors the existing v1-to-v3 and v2-to-v3 migration tests: open the
+    // previous version explicitly, close it, then let db.ts upgrade.
+    _resetDbHandle()
+    const legacy = await openDB(DB_NAME, 3, {
+      upgrade(db) {
+        db.createObjectStore('storybooks')
+        db.createObjectStore('reading_states')
+        db.createObjectStore('offline_queue', { keyPath: 'event_id' })
+        db.createObjectStore('device_grant')
+        db.createObjectStore('library_lists')
+        db.createObjectStore('profile_shelf')
+      },
+    })
+    legacy.close()
+    _resetDbHandle()
+
+    await cachePersonalizationValues('s_after_upgrade', valuesPayload)
+    expect(await getCachedPersonalizationValues('s_after_upgrade')).toEqual(valuesPayload)
+  })
+
+  it('keeps the pre-existing stores reachable across the v4 upgrade', async () => {
+    await cacheStorybook(story)
+    await putReadingState('p_1', story.id, state)
+    await cachePersonalizationValues(story.id, valuesPayload)
+    expect(await getCachedStorybook(story.id, story.version)).toEqual(story)
+    expect(await getReadingState('p_1', story.id)).toEqual(state)
   })
 })
