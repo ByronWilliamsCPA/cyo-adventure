@@ -1748,6 +1748,25 @@ export type GuardianFinding = {
 };
 
 /**
+ * GuardianInviteBody
+ *
+ * A guardian's self-service request to invite a co-parent (G14).
+ *
+ * Unlike ``UserCreateBody``, there is no ``family_id`` or ``role`` field: the
+ * target family is always the calling guardian's own (``ctx.principal.
+ * family_id``, resolved server-side in ``api/me.py::invite_guardian``, never
+ * client-supplied), and the invited role is always ``"guardian"``, never
+ * ``"admin"``, so a guardian can never self-grant the admin capability
+ * through this path.
+ */
+export type GuardianInviteBody = {
+    /**
+     * Email
+     */
+    email: string;
+};
+
+/**
  * HTTPValidationError
  */
 export type HttpValidationError = {
@@ -2024,6 +2043,10 @@ export type LibraryItem = {
      * Cover Url
      */
     cover_url?: string | null;
+    /**
+     * Published At
+     */
+    published_at?: string | null;
 };
 
 /**
@@ -4031,7 +4054,7 @@ export type UserUpdateBody = {
     /**
      * Status
      */
-    status?: 'pending' | 'active' | 'deactivated' | 'awaiting_approval' | null;
+    status?: 'pending' | 'active' | 'deactivated' | 'awaiting_approval' | 'pending_guardian_invite' | null;
 };
 
 /**
@@ -4067,7 +4090,7 @@ export type UserView = {
     /**
      * Status
      */
-    status: 'pending' | 'active' | 'deactivated' | 'awaiting_approval';
+    status: 'pending' | 'active' | 'deactivated' | 'awaiting_approval' | 'pending_guardian_invite';
     /**
      * Created At
      */
@@ -6426,6 +6449,43 @@ export type DeleteMyFamilyApiV1MeFamilyDeleteResponses = {
 
 export type DeleteMyFamilyApiV1MeFamilyDeleteResponse = DeleteMyFamilyApiV1MeFamilyDeleteResponses[keyof DeleteMyFamilyApiV1MeFamilyDeleteResponses];
 
+export type InviteGuardianApiV1MeFamilyInviteGuardianPostData = {
+    body: GuardianInviteBody;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/family/invite-guardian';
+};
+
+export type InviteGuardianApiV1MeFamilyInviteGuardianPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type InviteGuardianApiV1MeFamilyInviteGuardianPostError = InviteGuardianApiV1MeFamilyInviteGuardianPostErrors[keyof InviteGuardianApiV1MeFamilyInviteGuardianPostErrors];
+
+export type InviteGuardianApiV1MeFamilyInviteGuardianPostResponses = {
+    /**
+     * Successful Response
+     */
+    201: UserView;
+};
+
+export type InviteGuardianApiV1MeFamilyInviteGuardianPostResponse = InviteGuardianApiV1MeFamilyInviteGuardianPostResponses[keyof InviteGuardianApiV1MeFamilyInviteGuardianPostResponses];
+
 export type ListStoryRequestsApiV1StoryRequestsGetData = {
     body?: never;
     path?: never;
@@ -7118,7 +7178,7 @@ export type ListUsersApiV1AdminUsersGetData = {
         /**
          * Status
          */
-        status?: 'pending' | 'active' | 'deactivated' | 'awaiting_approval' | null;
+        status?: 'pending' | 'active' | 'deactivated' | 'awaiting_approval' | 'pending_guardian_invite' | null;
     };
     url: '/api/v1/admin/users';
 };

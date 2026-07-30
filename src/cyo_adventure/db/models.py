@@ -136,7 +136,12 @@ _PIPELINE_EVENT_TYPE_VALUES = (
     # ADR-023 P3/P4 (Task B4): added alongside
     # supabase/migrations/20260729020000_add_personalization_event_types.sql.
     "'personalization_toggled', 'ring2_consent_granted', "
-    "'ring2_consent_revoked'"
+    "'ring2_consent_revoked', "
+    # Added alongside
+    # supabase/migrations/20260729050000_add_storybook_archived_to_pipeline_event.sql,
+    # which is the newest migration to replace this CHECK and therefore carries
+    # the full cumulative value list.
+    "'storybook_archived'"
 )
 _PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin', 'device'"
 _PIPELINE_ENTITY_TYPE_VALUES = (
@@ -152,22 +157,47 @@ _PIPELINE_ENTITY_TYPE_VALUES = (
     "'child_profile_personalization', 'personalization_consent'"
 )
 
-# The four admin-user lifecycle states (WS-J admin user management, plus the
-# self-signup approval track added alongside Phase 2): a guardian/admin
-# created via the seed script is always 'active'; a row admin-created ahead
-# of first sign-in starts 'pending' (see api/onboarding.py's email-match
-# bind) and is trusted immediately once bound, since an admin already vetted
-# it by creating the invite; an UNINVITED guardian's own first-login JIT
-# provisioning (api/onboarding.py::_provision_guardian) starts
-# 'awaiting_approval' instead of 'active' -- a deliberately parallel track
-# from the invite flow, never sharing its 'pending' status value, so the two
-# have no shared state to collide on (in particular, api/admin_users.py's
-# duplicate-pending-invite-by-email check has nothing to do with this state).
-# An admin approves ('awaiting_approval' -> 'active') or denies
-# ('awaiting_approval' -> 'deactivated') via the existing
+# The five admin-user lifecycle states (WS-J admin user management, plus the
+# self-signup approval track added alongside Phase 2, plus the guardian
+# self-service invite track added by G14). A guardian/admin created via the
+# seed script is always 'active'. There are two DISTINCT invite kinds, and
+# the distinction is load-bearing for authorization:
+#
+#   'pending' is an ADMIN-created invite, made through the admin-users
+#   endpoint. It binds to 'active' on first sign-in, because an admin
+#   already vetted the invitee by creating it.
+#
+#   'pending_guardian_invite' is a GUARDIAN-created invite, made through the
+#   guardian self-service co-parent invite endpoint (G14). NO admin vetted
+#   it, so it binds to 'awaiting_approval' rather than 'active': the invited
+#   person joins the inviting family only after an admin approves. Without
+#   this split, any guardian could pre-claim a stranger's email address and
+#   capture its owner into their family on that person's first sign-in.
+#
+# An UNINVITED guardian's own first-login JIT provisioning
+# (api/onboarding.py::_provision_guardian) also starts 'awaiting_approval'
+# instead of 'active'. An admin approves ('awaiting_approval' -> 'active')
+# or denies ('awaiting_approval' -> 'deactivated') via the existing
 # PATCH /admin/users/{id} status transition. 'deactivated' blocks
 # authentication (api/deps.py::require_principal) without deleting the row.
-_USER_STATUS_VALUES = "'pending', 'active', 'deactivated', 'awaiting_approval'"
+#
+# Only 'active' authenticates; api/deps.py::require_principal is written as a
+# deny-by-default `!= "active"` check, so every state added here is rejected
+# until explicitly promoted.
+USER_STATUS_ADMIN_INVITE = "pending"
+USER_STATUS_GUARDIAN_INVITE = "pending_guardian_invite"
+# #CRITICAL: security: every query that looks up "an unbound invite for this
+# email" MUST cover BOTH kinds. Matching only 'pending' would let a
+# guardian-created invite escape the duplicate-invite guard
+# (api/admin_users.py::create_pending_invite), which in turn would let two
+# unbound rows share one email and make onboarding's scalar() bind
+# ambiguous.
+# #VERIFY: tests/integration/test_me_invite_guardian_api.py::
+# test_guardian_invite_then_admin_invite_same_email_is_409.
+USER_PENDING_INVITE_STATUSES = (USER_STATUS_ADMIN_INVITE, USER_STATUS_GUARDIAN_INVITE)
+_USER_STATUS_VALUES = (
+    "'pending', 'active', 'deactivated', 'awaiting_approval', 'pending_guardian_invite'"
+)
 
 # ADR-023 P4: the closed personalization slot_type vocabulary for
 # ChildProfilePersonalization, plus the narrower ring-2 subset (the "shared
@@ -403,21 +433,39 @@ class User(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     child_profile_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_CHILD_PROFILE, ondelete="CASCADE"), default=None
     )
-    # #CRITICAL: security: 'pending' is an admin-created invite row (WS-J):
-    # its authn_subject is a synthetic placeholder (api/admin_users.py's
+    # #CRITICAL: security: 'pending' and 'pending_guardian_invite' are the two
+    # invite-row states (see _USER_STATUS_VALUES above). Both carry a
+    # synthetic placeholder authn_subject (api/admin_users.py's
     # _PENDING_SUBJECT_PREFIX) that no real JWT can ever carry, but
     # require_principal ALSO rejects any non-'active' status explicitly as
     # defense in depth (same "unknown subject" message as an unrecognized
-    # subject, so status is never a distinguishable oracle). 'deactivated' is
-    # the soft-remove state for an admin/guardian; the row and its history
-    # (stories, ratings, events) are preserved.
+    # subject, so status is never a distinguishable oracle). The two differ
+    # only in where onboarding's bind lands them: 'pending' (admin-vetted)
+    # -> 'active'; 'pending_guardian_invite' (NOT admin-vetted, created by a
+    # guardian via POST /me/family/invite-guardian) -> 'awaiting_approval',
+    # so a guardian cannot silently pull an arbitrary email address into
+    # their own family. 'deactivated' is the soft-remove state for an
+    # admin/guardian; the row and its history (stories, ratings, events) are
+    # preserved.
     # #VERIFY: tests/integration/test_admin_users_api.py::
     # test_deactivated_guardian_cannot_authenticate,
-    # test_pending_invite_cannot_authenticate.
-    # String(20): 'awaiting_approval' (17 chars) is the longest value in
-    # _USER_STATUS_VALUES; String(16) truncated it (StringDataRightTruncationError).
+    # test_pending_invite_cannot_authenticate; tests/integration/
+    # test_me_invite_guardian_api.py::
+    # test_guardian_invited_user_binds_to_awaiting_approval_not_active.
+    # #CRITICAL: timing dependencies: migration
+    # supabase/migrations/20260729060000_add_user_guardian_invite_status.sql
+    # widens BOTH this column (to varchar(32)) and the ck_user_status CHECK,
+    # and must be applied BEFORE an image carrying
+    # 'pending_guardian_invite' deploys; otherwise the invite INSERT fails
+    # with StringDataRightTruncationError / a CHECK violation at runtime.
+    # #VERIFY: apply the migration in each environment ahead of the image
+    # rollout (migrate-before-deploy), per the header comment in the
+    # migration file.
+    # String(32): 'pending_guardian_invite' (23 chars) is the longest value in
+    # _USER_STATUS_VALUES; String(16) truncated 'awaiting_approval' before
+    # (StringDataRightTruncationError), and String(20) would truncate this one.
     status: Mapped[str] = mapped_column(
-        String(20), default="active", server_default=sa_text("'active'")
+        String(32), default="active", server_default=sa_text("'active'")
     )
     # #CRITICAL: security: Phase 2 / ADR-018 D1 verifiable-parental-consent
     # record. A guardian's typed full-legal-name attestation counts as the

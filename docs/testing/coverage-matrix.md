@@ -353,6 +353,16 @@ guardian acts on what it says.
 - Component: `frontend/src/guardian/PrivacyPage.test.tsx` (pins the load-bearing claims: the "not the legal privacy notice" disclaimer, "stops with an error rather than carrying on" for the PII guard's hard fail, the outside-classifier disclosure, AI authorship plus the human approval gate, no-training, and "stays with your family by default" rather than an absolute never-shared claim), `frontend/src/guardian/GuardianShell.test.tsx` (footer link present for guardian and admin, and deliberately NOT inside the main nav)
 - **Gap**: no E2E coverage at any tier. The page is static and its claims are pinned at the component tier; an E2E would only re-assert that a link navigates.
 
+## Guardian: invite a co-parent (self-serve)
+
+The guardian's own way to add a second adult to the family, from the guardian
+console, without an app admin doing it for them. It is the same
+invite-a-guardian outcome as the admin WS-J flow below, reached by the family
+itself.
+
+- Component: `frontend/src/guardian/InviteCoParentSection.test.tsx` (the email field and submit control render; the happy path posts exactly `{ email }` to `/v1/me/family/invite-guardian` and confirms with a `role="status"` message; the field is cleared afterwards so the form is ready for a second invite; a 409 gets its own "already a pending invite" message rather than the generic one, and any other failure gets the generic server-side message; the in-flight state shows a disabled "Sending invite" button whose label, not its disabled attribute, is what proves the request finished, since the cleared email field independently disables the button; the submit control stays disabled until an email is entered; and editing the email again clears a stale error so a retry is not shown a previous attempt's alert)
+- **Gap**: no E2E coverage at any tier yet. The admin-initiated equivalent is covered end to end by `frontend/e2e/admin-user-management.spec.ts` under WS-J below.
+
 ## Guardian: review and edit own family's story (G6)
 
 The guardian-facing half of review, at `/guardian/review/:storybookId`. It is
@@ -459,7 +469,7 @@ detail when a storybook has more than one version).
 - E2E-real: `frontend/e2e-real/kid-reads.spec.ts`, `frontend/e2e-real/naive-kid-misuse-real.spec.ts` (cross-family 403)
 - E2E-staging: `frontend/e2e-staging/kid-library-smoke.spec.ts` (populated-library render, via mint/revoke device grant)
 - E2E-prod: `frontend/e2e-prod/kid-device-grant.spec.ts` (empty-state render)
-- Component: `frontend/src/library/LibraryPage.test.tsx`, `frontend/src/library/BookCard.test.tsx`, `frontend/src/library/pickHero.test.ts`, `frontend/src/library/libraryApi.test.ts`, `frontend/src/library/RequestStory.test.tsx`, `frontend/src/library/storyRequestApi.test.ts`
+- Component: `frontend/src/library/LibraryPage.test.tsx`, `frontend/src/library/BookCard.test.tsx`, `frontend/src/library/pickHero.test.ts`, `frontend/src/library/libraryApi.test.ts`, `frontend/src/library/RequestStory.test.tsx`, `frontend/src/library/storyRequestApi.test.ts`, `frontend/src/library/bookCardUtils.test.ts` (the "New" badge's pure predicate, `isRecentlyPublished`: inside and exactly at the `NEW_BADGE_WINDOW_MS` edge is new, one second past it is not, and every not-new fallback is pinned explicitly rather than left to chance, a null `published_at`, the field absent entirely on an offline-cached item that predates it, a malformed timestamp, and a future timestamp as clock-skew defense)
 - Integration: `frontend/src/test/App.test.tsx`
 
 ## Kid: read a story (reader page, choices, endings)

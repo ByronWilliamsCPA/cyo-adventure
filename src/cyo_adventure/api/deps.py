@@ -523,14 +523,22 @@ async def require_principal(
         if user is None:
             msg = "unknown subject"
             raise AuthenticationError(msg)
-        # #CRITICAL: security: a 'pending' row's authn_subject is a synthetic
-        # placeholder (api/admin_users.py) that no real verified subject can ever
-        # match, so this branch exists purely as defense in depth; 'deactivated'
-        # is the reachable case (WS-J admin user management), and it MUST be
-        # rejected with the same message as an unknown subject so status is never
-        # a distinguishable oracle for a caller probing authn_subject validity.
+        # #CRITICAL: security: deny-by-default on status. The check is
+        # `!= "active"`, never a denylist of known-bad values, so every state
+        # added to db/models.py::_USER_STATUS_VALUES is rejected here until
+        # somebody deliberately promotes the row to 'active'. Both invite
+        # states ('pending', 'pending_guardian_invite') carry a synthetic
+        # placeholder authn_subject (api/admin_users.py) that no real verified
+        # subject can ever match, so they are defense in depth; 'deactivated'
+        # (WS-J admin user management) and 'awaiting_approval' (self-signup,
+        # and a bound guardian-created invite) are the reachable cases, and
+        # they MUST be rejected with the same message as an unknown subject so
+        # status is never a distinguishable oracle for a caller probing
+        # authn_subject validity.
         # #VERIFY: tests/integration/test_admin_users_api.py::
-        # test_deactivated_guardian_cannot_authenticate.
+        # test_deactivated_guardian_cannot_authenticate; tests/integration/
+        # test_me_invite_guardian_api.py::
+        # test_guardian_invited_user_binds_to_awaiting_approval_not_active.
         if user.status != "active":
             msg = "unknown subject"
             raise AuthenticationError(msg)

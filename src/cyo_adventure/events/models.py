@@ -51,6 +51,14 @@ class EventType(StrEnum):
     REPAIR_APPLIED = "repair_applied"
     SENT_BACK = "sent_back"
     RELEASED = "released"
+    # A5 incident/pull-everywhere path: an admin archives a published story
+    # (publishing/service.py::archive, the sole published->archived hop per
+    # state_machine.py), removing it from every child's shelf. Drives the G10
+    # guardian-notification composer (notifications/registry.py) and, on the
+    # client side, the next reconcileOfflineCache() call that evicts the book
+    # from any device that already downloaded it
+    # (frontend/src/offline/revocation.ts).
+    STORYBOOK_ARCHIVED = "storybook_archived"
     THRESHOLD_CHANGED = "threshold_changed"
     NOISE_FLOOR_CHANGED = "noise_floor_changed"
     BOOK_ASSIGNED = "book_assigned"

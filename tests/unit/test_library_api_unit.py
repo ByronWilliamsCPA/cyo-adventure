@@ -168,6 +168,7 @@ def _version_row(
     storybook_id: str,
     version: int,
     blob: dict[str, object] | None = None,
+    published_at: datetime | None = None,
 ) -> StorybookVersion:
     """Return a StorybookVersion with a minimal content blob."""
     if blob is None:
@@ -179,7 +180,12 @@ def _version_row(
                 "reading_level": {"target": 4.5},
             },
         }
-    return StorybookVersion(storybook_id=storybook_id, version=version, blob=blob)
+    return StorybookVersion(
+        storybook_id=storybook_id,
+        version=version,
+        blob=blob,
+        published_at=published_at,
+    )
 
 
 def _state_row(
@@ -414,6 +420,21 @@ class TestLibraryItem:
         }
         item = _library_item("s", blob, 1)
         assert item.reading_level_target == pytest.approx(0.0)
+
+    @pytest.mark.unit
+    def test_published_at_passed_through(self) -> None:
+        """K9 'what's new' leg: published_at is carried onto the item verbatim."""
+        blob: dict[str, object] = {"title": "Space Race"}
+        stamp = datetime(2026, 7, 25, tzinfo=UTC)
+        item = _library_item("story-1", blob, 1, published_at=stamp)
+        assert item.published_at == stamp
+
+    @pytest.mark.unit
+    def test_published_at_defaults_to_none(self) -> None:
+        """A pre-migration row with no published_at degrades to None, not an error."""
+        blob: dict[str, object] = {"title": "Space Race"}
+        item = _library_item("story-1", blob, 1)
+        assert item.published_at is None
 
     @pytest.mark.unit
     def test_malformed_metadata_emits_structured_warning(
@@ -1020,6 +1041,38 @@ class TestListLibraryEnrichment:
         assert item.node_count == 1
         assert item.rating is None
         assert item.progress is None
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_published_at_attached_from_version_row(self) -> None:
+        """K9 'what's new' leg: list_library carries each version's published_at
+        through to its LibraryItem, keyed correctly per (storybook_id, version)."""
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        stamp = datetime(2026, 7, 20, tzinfo=UTC)
+        session = _FakeSession(
+            storybooks=[_published_book("s1", family_id, version=1)],
+            versions=[_version_row("s1", 1, published_at=stamp)],
+        )
+        view = await list_library(
+            str(profile_id), _child_principal(family_id, profile_id), session
+        )
+        assert view.stories[0].published_at == stamp
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_published_at_none_when_version_row_predates_column(self) -> None:
+        """A version row with no published_at yields None, not a KeyError/500."""
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        session = _FakeSession(
+            storybooks=[_published_book("s1", family_id, version=1)],
+            versions=[_version_row("s1", 1)],
+        )
+        view = await list_library(
+            str(profile_id), _child_principal(family_id, profile_id), session
+        )
+        assert view.stories[0].published_at is None
 
     @pytest.mark.unit
     @pytest.mark.asyncio

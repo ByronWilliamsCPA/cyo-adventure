@@ -187,6 +187,29 @@ class TestComposeStoryReady:
 
 
 @pytest.mark.unit
+class TestComposeStorybookArchived:
+    """A5 incident/pull-everywhere path: archive() -> alert-severity notice."""
+
+    def test_names_the_story_and_is_an_alert(self) -> None:
+        event = _event(
+            EventType.STORYBOOK_ARCHIVED, from_state="published", to_state="archived"
+        )
+        raw = registry.compose(event, _ctx())
+        assert raw is not None
+        assert raw.kind == "story_archived"
+        assert raw.severity == "alert"
+        assert raw.title == "The Lighthouse Mystery was removed from your library"
+        assert "no longer available" in raw.body
+        assert "offline" in raw.body
+
+    def test_falls_back_to_generic_label_without_a_title(self) -> None:
+        event = _event(EventType.STORYBOOK_ARCHIVED, to_state="archived")
+        raw = registry.compose(event, _ctx(storybook_title=None))
+        assert raw is not None
+        assert raw.title == "A story was removed from your library"
+
+
+@pytest.mark.unit
 class TestComposeKidFlagged:
     """Pins the KID_FLAGGED mapping directly (composer, not the registry dict).
 

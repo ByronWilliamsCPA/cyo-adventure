@@ -14,8 +14,15 @@ from typing import TYPE_CHECKING
 from fastapi import APIRouter
 from sqlalchemy import select, update
 
+from cyo_adventure.api.admin_users import create_pending_invite, user_view
 from cyo_adventure.api.deps import Context, Role
-from cyo_adventure.api.schemas import FamilyExportView, MeResponse, error_responses
+from cyo_adventure.api.schemas import (
+    FamilyExportView,
+    GuardianInviteBody,
+    MeResponse,
+    UserView,
+    error_responses,
+)
 from cyo_adventure.core.exceptions import AuthorizationError, BusinessLogicError
 from cyo_adventure.db.models import (
     CATALOG_FAMILY_ID,
@@ -422,3 +429,86 @@ async def delete_my_family(ctx: Context) -> None:
     if row is not None:
         await ctx.session.delete(row)
         await ctx.session.flush()
+
+
+@router.post(
+    "/me/family/invite-guardian",
+    status_code=201,
+    responses=error_responses(403, 409),
+)
+async def invite_guardian(body: GuardianInviteBody, ctx: Context) -> UserView:
+    """Invite a co-parent into the caller's OWN family (guardian self-service; G14).
+
+    Complements the admin-mediated ``POST /admin/users`` (WS-J), which can
+    invite a second guardian into ANY family: this endpoint is the
+    guardian-initiated counterpart the register flagged as the real gap, and
+    it is deliberately narrower. It reuses
+    ``api/admin_users.py::create_pending_invite``, the exact same pending-row
+    creation and duplicate-email guard the admin path uses, so the two paths
+    can never drift into inconsistent invite semantics.
+
+    Args:
+        body: The invitee's email; nothing else is caller-supplied.
+        ctx: The request context (principal + unit-of-work session).
+
+    The invited address is NOT thereby pulled into the caller's family. The
+    row is created with ``status="pending_guardian_invite"``, which
+    ``api/onboarding.py::_bind_pending_invite`` binds to
+    ``"awaiting_approval"`` rather than ``"active"``: an admin must still
+    approve before the invitee can authenticate at all. Only the
+    admin-mediated ``POST /admin/users`` produces an invite that binds
+    straight to ``"active"``.
+
+    Returns:
+        UserView: The created ``status="pending_guardian_invite"`` row,
+        scoped to the caller's own family.
+
+    Raises:
+        AuthorizationError: If the caller is not a guardian (403).
+        StateTransitionError: If a pending invite of either kind already
+            exists for this email (409).
+    """
+    # #CRITICAL: security: the target family is ALWAYS ctx.principal.family_id,
+    # never taken from the request body (GuardianInviteBody has no family_id
+    # field at all); this is the one thing that makes this endpoint safe to
+    # expose to a non-admin caller. A guardian must never be able to invite
+    # into a family other than their own.
+    # #VERIFY: tests/integration/test_me_invite_guardian_api.py::
+    # test_invite_guardian_is_hard_scoped_to_callers_own_family.
+    if ctx.principal.role is not Role.GUARDIAN:
+        msg = "guardian role required"
+        raise AuthorizationError(msg)
+    # #ASSUME: security: the invited role is always "guardian", never "admin";
+    # a guardian cannot use this path to grant the global admin capability to
+    # anyone, including themselves. Only POST /admin/users (admin-only) can
+    # create an admin row.
+    # #VERIFY: tests/integration/test_me_invite_guardian_api.py::
+    # test_invite_guardian_created_row_is_never_admin.
+    # #CRITICAL: security: invited_by_admin=False is what stops this endpoint
+    # from being a family-capture primitive. It selects
+    # status='pending_guardian_invite', which onboarding binds to
+    # 'awaiting_approval'; passing True here (or reusing the admin path's
+    # 'pending') would let any guardian pre-claim an arbitrary email address
+    # and have its real owner bound into this family as an ACTIVE guardian on
+    # their first sign-in, exposing this family's child profiles to the
+    # inviter. There is no invite expiry and no revoke surface, so this flag
+    # is the only gate.
+    # #VERIFY: tests/integration/test_me_invite_guardian_api.py::
+    # test_guardian_invited_user_binds_to_awaiting_approval_not_active.
+    user = await create_pending_invite(
+        ctx.session,
+        family_id=ctx.principal.family_id,
+        role="guardian",
+        is_admin=False,
+        email=body.email,
+        invited_by_admin=False,
+    )
+    await record_event(
+        ctx.session,
+        Actor.from_principal(ctx.principal),
+        entity_type="user",
+        entity_id=str(user.id),
+        event_type=EventType.USER_MANAGED,
+        payload={"action": "invited", "role": "guardian", "status": user.status},
+    )
+    return user_view(user)

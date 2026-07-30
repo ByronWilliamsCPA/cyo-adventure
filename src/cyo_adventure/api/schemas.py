@@ -164,6 +164,12 @@ class LibraryItem(BaseModel):
     series_id: str | None = None
     book_index: int | None = None
     cover_url: str | None = None
+    # K9 shelf presentation, "what's new" leg: reuses the publishing state
+    # machine's existing StorybookVersion.published_at (publishing/service.py
+    # stamps it in the same transaction as approved_by), rather than adding a
+    # new column. None only for a pre-migration row that predates the column;
+    # such a row degrades to "not new" on the shelf, never an error.
+    published_at: datetime | None = None
 
 
 class LibraryView(BaseModel):
@@ -1729,12 +1735,12 @@ class OnboardingView(BaseModel):
     role: str
     created: bool
     # Lets the frontend show a "your account is awaiting admin approval"
-    # state for a self-signed-up guardian (status="awaiting_approval")
-    # instead of proceeding to GET /v1/me, which api/deps.py::require_principal
-    # rejects for any non-"active" status. An admin-invited guardian is
-    # always "active" by the time onboarding resolves them (the invite bind
-    # sets it); this field only ever surfaces "awaiting_approval" for the
-    # self-signup track.
+    # state (status="awaiting_approval") instead of proceeding to
+    # GET /v1/me, which api/deps.py::require_principal rejects for any
+    # non-"active" status. Two tracks surface "awaiting_approval": an
+    # uninvited guardian's own self-signup, and a GUARDIAN-created invite
+    # (POST /me/family/invite-guardian) once bound. Only an ADMIN-created
+    # invite resolves straight to "active" (the invite bind sets it).
     status: str
     # Phase 2 / ADR-018 D1: lets the frontend decide whether to show the
     # consent-capture step without a separate lookup. Derived from
@@ -1932,7 +1938,19 @@ AdminEmail = Annotated[
 # ever the synthetic row api/child_sessions.py provisions for a ChildProfile,
 # never something an admin creates directly.
 AdminManagedRole = Literal["guardian", "admin"]
-UserStatus = Literal["pending", "active", "deactivated", "awaiting_approval"]
+# Mirrors db/models.py::_USER_STATUS_VALUES (the at-rest CHECK constraint).
+# 'pending' is an ADMIN-created invite; 'pending_guardian_invite' is a
+# GUARDIAN-created one (G14) that binds to 'awaiting_approval' rather than
+# 'active'. Both appear here only so the admin console can read and filter
+# them; neither is settable through PATCH /admin/users/{id}
+# (api/admin_users.py::_apply_status_transition rejects both directions).
+UserStatus = Literal[
+    "pending",
+    "active",
+    "deactivated",
+    "awaiting_approval",
+    "pending_guardian_invite",
+]
 
 
 class UserView(BaseModel):
@@ -1991,6 +2009,22 @@ class UserUpdateBody(BaseModel):
     role: AdminManagedRole | None = None
     is_admin: bool | None = None
     status: UserStatus | None = None
+
+
+class GuardianInviteBody(BaseModel):
+    """A guardian's self-service request to invite a co-parent (G14).
+
+    Unlike ``UserCreateBody``, there is no ``family_id`` or ``role`` field: the
+    target family is always the calling guardian's own (``ctx.principal.
+    family_id``, resolved server-side in ``api/me.py::invite_guardian``, never
+    client-supplied), and the invited role is always ``"guardian"``, never
+    ``"admin"``, so a guardian can never self-grant the admin capability
+    through this path.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    email: AdminEmail
 
 
 # ---------------------------------------------------------------------------
