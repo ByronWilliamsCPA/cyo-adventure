@@ -28,13 +28,19 @@ from cyo_adventure.generation.authoring_metadata import (
     SKELETON_BAND_KEY,
     SKELETON_SLUG_KEY,
 )
-from cyo_adventure.generation.binding import load_contract_for, personalizable_slot_ids
+from cyo_adventure.generation.binding import (
+    load_contract_for,
+    personalizable_slot_fields,
+    personalizable_slot_ids,
+)
 from cyo_adventure.generation.skeleton import load_skeleton
 from cyo_adventure.generation.skeleton_match import resolve_skeleton_path
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
+
+    from cyo_adventure.storybook.theme_contract import ThemeContract
 
 _logger = get_logger(__name__)
 
@@ -146,6 +152,63 @@ async def personalizable_slot_ids_for_story(
     return personalizable_slot_ids_for_job(job)
 
 
+class _NoResolvableBandError(ValueError):
+    """Raised by :func:`_contract_for_job` when no skeleton band is available.
+
+    A ``ValueError`` subclass so a caller that only wants "no contract, no
+    matter why" (:func:`personalizable_slot_fields_for_story`) can fold this
+    case into its single broad ``except (CoreValidationError, OSError,
+    ValueError)`` clause, while :func:`personalizable_slot_ids_for_job`
+    catches it FIRST (before that same broad tuple) to preserve its own,
+    more specific ``moderation.repair_contract_band_missing`` log event.
+    """
+
+
+def _contract_for_job(
+    job: GenerationJob, *, band: str | None = None
+) -> ThemeContract | None:
+    """Resolve a ``GenerationJob``'s theme contract from disk.
+
+    Extracted from :func:`personalizable_slot_ids_for_job` (ADR-023 Stage C,
+    Task C0c) so :func:`personalizable_slot_fields_for_story` shares the
+    IDENTICAL slug/band derivation and ``resolve_skeleton_path`` plus
+    ``load_skeleton`` plus ``load_contract_for`` sequence, rather than
+    re-deriving it, so both functions provably resolve the same contract for
+    the same job.
+
+    Args:
+        job: The already-resolved ``GenerationJob``.
+        band: Explicit band override; see
+            :func:`personalizable_slot_ids_for_job` for the full contract.
+
+    Returns:
+        ThemeContract | None: ``None`` when the job carries no
+        ``skeleton_slug`` (no contract could legitimately exist), or when
+        :func:`~cyo_adventure.generation.binding.load_contract_for` itself
+        returns ``None`` (a legacy skeleton with no contract sidecar).
+
+    Raises:
+        _NoResolvableBandError: No band is available from either ``band`` or the
+            job's ``authoring_metadata``.
+        FileNotFoundError | OSError | ValueError | CoreValidationError:
+            Propagated verbatim from ``load_skeleton``/``load_contract_for``
+            when the skeleton path a stale ``authoring_metadata`` points at
+            has moved, been corrupted, or fails contract validation.
+    """
+    authoring = (
+        job.authoring_metadata if isinstance(job.authoring_metadata, dict) else {}
+    )
+    slug = authoring.get(SKELETON_SLUG_KEY)
+    if not isinstance(slug, str):
+        return None
+    resolved_band = band if band is not None else authoring.get(SKELETON_BAND_KEY)
+    if not isinstance(resolved_band, str):
+        raise _NoResolvableBandError(slug)
+    skeleton_path = resolve_skeleton_path(resolved_band, slug)
+    skeleton = load_skeleton(skeleton_path)
+    return load_contract_for(skeleton_path, skeleton)
+
+
 def personalizable_slot_ids_for_job(
     job: GenerationJob, *, band: str | None = None
 ) -> frozenset[str] | None:
@@ -194,25 +257,16 @@ def personalizable_slot_ids_for_job(
             than risk treating a real sentinel as forged with a guessed
             empty set.
     """
-    authoring = (
-        job.authoring_metadata if isinstance(job.authoring_metadata, dict) else {}
-    )
-    slug = authoring.get(SKELETON_SLUG_KEY)
-    if not isinstance(slug, str):
-        return frozenset()
-    resolved_band = band if band is not None else authoring.get(SKELETON_BAND_KEY)
-    if not isinstance(resolved_band, str):
+    try:
+        contract = _contract_for_job(job, band=band)
+    except _NoResolvableBandError as exc:
         _logger.warning(
             "moderation.repair_contract_band_missing",
             job_id=str(job.id),
             story_id=job.storybook_id,
-            slug=slug,
+            slug=str(exc),
         )
         return None
-    try:
-        skeleton_path = resolve_skeleton_path(resolved_band, slug)
-        skeleton = load_skeleton(skeleton_path)
-        contract = load_contract_for(skeleton_path, skeleton)
     # #CRITICAL: external-resources: load_skeleton (generation/skeleton.py)
     # does json.loads(path.read_text(...)), which raises a raw
     # FileNotFoundError/OSError/JSONDecodeError (a ValueError subclass), NOT
@@ -229,11 +283,74 @@ def personalizable_slot_ids_for_job(
             "moderation.repair_contract_load_failed",
             job_id=str(job.id),
             story_id=job.storybook_id,
-            slug=slug,
-            band=resolved_band,
             error=str(exc)[:500],
         )
         return None
     if contract is None:
         return frozenset()
     return personalizable_slot_ids(contract)
+
+
+async def personalizable_slot_fields_for_story(
+    session: AsyncSession, story_id: str
+) -> dict[str, str]:
+    """Resolve a story's slot-id to personalization-field map for the values payload.
+
+    The ring-1 and ring-2 values payloads are keyed by slot TYPE while prose
+    sentinels are keyed by slot ID, and only the theme contract joins them
+    (see :func:`cyo_adventure.generation.binding.personalizable_slot_fields`).
+    The reader cannot read a contract sidecar, so the values route ships the map.
+
+    Reuses the identical provenance chain as
+    :func:`personalizable_slot_ids_for_story`: the story's oldest
+    ``GenerationJob`` row, then that job's matched skeleton, then that
+    skeleton's contract (:func:`_contract_for_job`, shared with
+    :func:`personalizable_slot_ids_for_job`).
+
+    #EDGE: external-resources: this reads two JSON files from disk
+    (``resolve_skeleton_path`` then ``load_contract_for``) inside a request
+    path, synchronously, on the reader's book-open call. That matches the
+    existing precedent in :func:`personalizable_slot_ids_for_job`, which the
+    moderation pipeline calls the same way from async code, and the cost is one
+    call per book open rather than per node render. If profiling ever shows it
+    matters, the fix is to persist this map on ``storybook_version`` beside
+    ``sentinel_manifest`` at re-insertion time, not to cache it here.
+    #VERIFY: no behavioural test asserts the timing; this note exists so the
+    next reader knows the trade was made deliberately and knows its exit.
+
+    Args:
+        session: The request session.
+        story_id: The storybook id whose contract map is wanted.
+
+    Returns:
+        dict[str, str]: slot id -> personalization field. EMPTY in all three
+        degrade cases, unlike the tri-state ``_ids_`` functions: no job row, an
+        unrecoverable contract, and a contract with no personalizable slots all
+        return ``{}``. Empty is correct for every one of them here, because this
+        map is only ever used to LOOK UP a value for a sentinel the blob already
+        contains; a missing entry makes the resolver fall back to the sentinel's
+        own generic word, which is exactly the fail-safe outcome. There is no
+        decision this function could fail closed on.
+    """
+    job = (
+        await session.execute(
+            select(GenerationJob)
+            .where(GenerationJob.storybook_id == story_id)
+            .order_by(GenerationJob.created_at)
+            .limit(1)
+        )
+    ).scalar_one_or_none()
+    if job is None:
+        return {}
+    try:
+        contract = _contract_for_job(job)
+    except (_NoResolvableBandError, CoreValidationError, OSError, ValueError) as exc:
+        _logger.warning(
+            "personalization.slot_fields_contract_unresolved",
+            storybook_id=story_id,
+            error=str(exc)[:500],
+        )
+        return {}
+    if contract is None:
+        return {}
+    return personalizable_slot_fields(contract)
