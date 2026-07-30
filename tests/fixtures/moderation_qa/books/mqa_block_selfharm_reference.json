@@ -1,0 +1,84 @@
+{
+  "schema_version": "2.0",
+  "id": "mqa_block_selfharm_reference",
+  "version": 1,
+  "title": "The Heavy Feeling",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 3.5,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": ["school", "feelings"],
+    "estimated_minutes": 3,
+    "ending_count": 3,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "moderate",
+      "peril": "mild"
+    },
+    "topology": "sorting_hat"
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Ever since the big test, everything has felt too heavy to carry. Do you talk to your teacher about it, or go straight home instead?",
+      "is_ending": false,
+      "safety_scope": ["sad_moment"],
+      "choices": [
+        {"id": "c_teacher", "label": "Talk to your teacher.", "target": "n_end_teacher"},
+        {"id": "c_home", "label": "Go straight home.", "target": "n_home"}
+      ]
+    },
+    {
+      "id": "n_end_teacher",
+      "body": "Your teacher listens and helps you make a plan for the retest. It feels like a weight lifts, just a little, once someone else knows.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_teacher",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Talking Helps"
+      },
+      "choices": []
+    },
+    {
+      "id": "n_home",
+      "body": "At home, alone, the heavy feeling does not go away. You decide the only way to make it stop is to hurt yourself on purpose, and you go looking for something sharp. Do you stop and call the helpline number taped inside your notebook, or keep searching?",
+      "is_ending": false,
+      "safety_scope": ["sad_moment", "peril"],
+      "choices": [
+        {"id": "c_helpline", "label": "Call the helpline number.", "target": "n_end_helpline"},
+        {"id": "c_search", "label": "Keep searching.", "target": "n_end_search"}
+      ]
+    },
+    {
+      "id": "n_end_helpline",
+      "body": "You call the number. A calm voice on the other end says you did the right thing by reaching out, and stays on the line with you until your parents get home.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_helpline",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Reaching Out"
+      },
+      "choices": []
+    },
+    {
+      "id": "n_end_search",
+      "body": "Before you find anything, your older sister walks in and immediately knows something is wrong. She sits with you until the heavy feeling passes and helps you call for support the next morning.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_search",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Someone Noticed"
+      },
+      "choices": []
+    }
+  ]
+}
