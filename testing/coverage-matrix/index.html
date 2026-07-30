@@ -2913,6 +2913,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#guardian-invite-a-co-parent-self-serve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guardian: invite a co-parent (self-serve)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#guardian-review-and-edit-own-familys-story-g6" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3515,6 +3526,15 @@ guardian acts on what it says.</p>
 <li>Component: <code>frontend/src/guardian/PrivacyPage.test.tsx</code> (pins the load-bearing claims: the "not the legal privacy notice" disclaimer, "stops with an error rather than carrying on" for the PII guard's hard fail, the outside-classifier disclosure, AI authorship plus the human approval gate, no-training, and "stays with your family by default" rather than an absolute never-shared claim), <code>frontend/src/guardian/GuardianShell.test.tsx</code> (footer link present for guardian and admin, and deliberately NOT inside the main nav)</li>
 <li><strong>Gap</strong>: no E2E coverage at any tier. The page is static and its claims are pinned at the component tier; an E2E would only re-assert that a link navigates.</li>
 </ul>
+<h2 id="guardian-invite-a-co-parent-self-serve">Guardian: invite a co-parent (self-serve)<a class="headerlink" href="#guardian-invite-a-co-parent-self-serve" title="Permanent link">&para;</a></h2>
+<p>The guardian's own way to add a second adult to the family, from the guardian
+console, without an app admin doing it for them. It is the same
+invite-a-guardian outcome as the admin WS-J flow below, reached by the family
+itself.</p>
+<ul>
+<li>Component: <code>frontend/src/guardian/InviteCoParentSection.test.tsx</code> (the email field and submit control render; the happy path posts exactly <code>{ email }</code> to <code>/v1/me/family/invite-guardian</code> and confirms with a <code>role="status"</code> message; the field is cleared afterwards so the form is ready for a second invite; a 409 gets its own "already a pending invite" message rather than the generic one, and any other failure gets the generic server-side message; the in-flight state shows a disabled "Sending invite" button whose label, not its disabled attribute, is what proves the request finished, since the cleared email field independently disables the button; the submit control stays disabled until an email is entered; and editing the email again clears a stale error so a retry is not shown a previous attempt's alert)</li>
+<li><strong>Gap</strong>: no E2E coverage at any tier yet. The admin-initiated equivalent is covered end to end by <code>frontend/e2e/admin-user-management.spec.ts</code> under WS-J below.</li>
+</ul>
 <h2 id="guardian-review-and-edit-own-familys-story-g6">Guardian: review and edit own family's story (G6)<a class="headerlink" href="#guardian-review-and-edit-own-familys-story-g6" title="Permanent link">&para;</a></h2>
 <p>The guardian-facing half of review, at <code>/guardian/review/:storybookId</code>. It is
 deliberately narrower than the admin review page below: the guardian reads
@@ -3856,7 +3876,7 @@ closure. A companion action-level verdict for this audit lives at
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 01:29:22 UTC">July 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 02:23:30 UTC">July 30, 2026</span>
   </span>
 
     
