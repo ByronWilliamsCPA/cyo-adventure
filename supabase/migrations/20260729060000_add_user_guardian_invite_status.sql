@@ -18,6 +18,17 @@
 -- definition before acting), mirroring
 -- 20260720160000_add_user_awaiting_approval_status.sql, so it is a no-op if
 -- applied a second time or if the constraint already includes the new value.
+--
+-- #CRITICAL: data integrity: this file was authored as 20260729000000 and
+-- renumbered to 20260729060000 because main's ADR-023 work landed
+-- 20260729000000_add_child_profile_personalization.sql at the identical
+-- version prefix. Supabase keys schema_migrations on that prefix alone, so the
+-- collision aborted the whole chain with "duplicate key value violates unique
+-- constraint schema_migrations_pkey"; being idempotent does not help, because
+-- the second file never runs at all.
+-- #VERIFY: the Validate migration chain workflow applies every migration to a
+-- clean database, which is what surfaced this; a new migration must take a
+-- version prefix no other file uses.
 
 -- Widen the column itself first: 'pending_guardian_invite' (23 chars) does not
 -- fit the current character varying(20), and widening a varchar's length is

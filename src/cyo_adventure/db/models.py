@@ -448,7 +448,7 @@ class User(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # test_me_invite_guardian_api.py::
     # test_guardian_invited_user_binds_to_awaiting_approval_not_active.
     # #CRITICAL: timing dependencies: migration
-    # supabase/migrations/20260729000000_add_user_guardian_invite_status.sql
+    # supabase/migrations/20260729060000_add_user_guardian_invite_status.sql
     # widens BOTH this column (to varchar(32)) and the ck_user_status CHECK,
     # and must be applied BEFORE an image carrying
     # 'pending_guardian_invite' deploys; otherwise the invite INSERT fails
