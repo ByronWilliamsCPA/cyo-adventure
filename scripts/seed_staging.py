@@ -19,6 +19,14 @@ is a no-op (it detects the guardian's Auth-subject User row and returns
 early) rather than raising or duplicating rows. The GoTrue Auth users are
 looked up by email before any create call, so a second run reuses the same
 Auth user ids instead of erroring on "already registered".
+
+This script never calls the real moderation pipeline (the two seeded stories
+are hand-authored, already-validated fixture blobs), but Settings still
+boots with review_provider defaulting to "mock", and core/config.py now
+refuses to boot the mock reviewer outside environment="local" unless
+``CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1`` is set (design doc section 2.4 / gap
+G1). ``.env.staging.example`` sets this alongside ``ENVIRONMENT=staging``;
+copy it into ``.env.staging`` rather than re-deriving it.
 """
 
 from __future__ import annotations

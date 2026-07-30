@@ -158,6 +158,37 @@ async def run_moderation_pipeline(
                 message="reviewer is the same backend+model as the generator",
             )
         )
+    # #CRITICAL: security: a report produced by the mock reviewer (the
+    # CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1 escape hatch, config._require_real_
+    # reviewer_outside_local) ran no real safety review at all. Overriding
+    # `reviewer_independent` here (build_review_provider always reports the
+    # mock backend as independent) plus a structural advisory finding is what
+    # makes such a report self-identifying forever (gap G1, design doc
+    # section 2.4), even after it is persisted and the escape hatch is later
+    # unset.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_mock_review_escape_hatch_stamps_report_as_not_independent.
+    mock_reviewer_outside_local = (
+        review_settings.review_provider == "mock"
+        and review_settings.environment != "local"
+    )
+    if mock_reviewer_outside_local:
+        report.reviewer_independent = False
+        report.add(
+            Finding(
+                stage=0,
+                source=Source.PIPELINE,
+                category="pipeline",
+                verdict=Verdict.ADVISORY,
+                message=(
+                    "moderated with the mock reviewer outside a local "
+                    "environment via the CYO_ADVENTURE_ALLOW_MOCK_REVIEW "
+                    "escape hatch; no real safety review ran"
+                ),
+                structural=True,
+                concern="mock_reviewer_active",
+            )
+        )
 
     # #CRITICAL: security: universal at-rest sentinel-integrity backstop
     # (Task 6a). Before this check, Variant B ran ONLY inside

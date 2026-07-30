@@ -99,6 +99,11 @@ class TestInitSentryWithDsn:
             oidc_jwks_url="https://issuer.example.com/jwks.json",
             child_session_secret="a" * 32,
             device_grant_secret="b" * 32,
+            # Unrelated to this test's own concern (the Sentry environment
+            # tag); the default review_provider="mock" outside
+            # environment="local" now requires this hatch
+            # (_require_real_reviewer_outside_local).
+            allow_mock_review=True,
         )
 
         with patch("cyo_adventure.core.observability.sentry_sdk.init") as mock_init:

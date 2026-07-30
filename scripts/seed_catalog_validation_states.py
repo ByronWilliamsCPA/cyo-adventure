@@ -21,19 +21,30 @@ Dry-run by default (reads and prints the plan, writes nothing). Pass
 ``--apply`` to write. Writing to production additionally requires
 ``SEED_CONFIRM=1``.
 
+This script never calls the real moderation pipeline (promote_catalog_story
+only transitions already-validated rows), but Settings still boots with
+review_provider defaulting to "mock", and core/config.py now refuses to boot
+the mock reviewer outside environment="local" unless
+``CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1`` is set (design doc section 2.4 / gap
+G1). Set it alongside ENVIRONMENT below, or export REVIEW_PROVIDER to
+whatever real backend the target environment already runs.
+
 Inspect staging (dry run)::
 
-    ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
+    ENVIRONMENT=staging CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1 \\
+        CYO_ADVENTURE_DATABASE_URL=... \\
         uv run python scripts/seed_catalog_validation_states.py
 
 Apply to staging::
 
-    ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
+    ENVIRONMENT=staging CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1 \\
+        CYO_ADVENTURE_DATABASE_URL=... \\
         uv run python scripts/seed_catalog_validation_states.py --apply
 
 Apply to production (requires explicit confirmation)::
 
-    ENVIRONMENT=production SEED_CONFIRM=1 CYO_ADVENTURE_DATABASE_URL=... \\
+    ENVIRONMENT=production SEED_CONFIRM=1 CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1 \\
+        CYO_ADVENTURE_DATABASE_URL=... \\
         uv run python scripts/seed_catalog_validation_states.py --apply
 
 The child profile the readable books are assigned to is resolved exactly as in
