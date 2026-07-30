@@ -553,18 +553,16 @@ async def get_storybook_version(
     # 404; guardian + unassigned -> 404 (test_guardian_can_fetch_unassigned_
     # version, updated for this fix); guardian + assigned -> blob.
     if not principal.is_admin:
-        assignment_rows = await session.execute(
-            select(StorybookAssignment.child_profile_id, ChildProfile.age_band)
-            .join(
-                ChildProfile,
-                StorybookAssignment.child_profile_id == ChildProfile.id,
-            )
-            .where(
+        assigned_ids = await session.scalars(
+            select(StorybookAssignment.child_profile_id).where(
                 StorybookAssignment.storybook_id == storybook_id,
                 StorybookAssignment.child_profile_id.in_(principal.profile_ids),
             )
         )
-        assigned_bands = [age_band for _, age_band in assignment_rows]
+        assigned_profiles = await session.scalars(
+            select(ChildProfile).where(ChildProfile.id.in_(list(assigned_ids)))
+        )
+        assigned_bands = [p.age_band for p in assigned_profiles]
         if not assigned_bands:
             msg = f"version {version} of storybook '{storybook_id}' not found"
             raise ResourceNotFoundError(msg)
