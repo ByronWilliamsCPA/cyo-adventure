@@ -180,11 +180,26 @@ leaves that decision to the owner rather than encoding an assumption into the vo
 
 ## Decision summary
 
+**Owner decisions recorded 2026-07-29.** Implementation is execution-plan Task D6; the
+expansion-request feature below is Task D7.
+
 | Slot | Count | Decision |
 | --- | --- | --- |
-| `pet_species` | 16 | accept / edit / reject |
-| `kinship_label` | 21 | accept / edit / reject |
-| `dedication` (same 21 values as `kinship_label` unless a distinct list is requested) | 21 | accept / edit / reject |
-| `favorite` (Option A, recommended) | 16 | accept / edit / reject |
-| `favorite` (Option B, alternative) | 36 | accept / edit / reject |
-| `home_type` | 12 | accept / edit / reject |
+| `pet_species` | 16 | **ACCEPTED 2026-07-29** |
+| `kinship_label` | 21 | **ACCEPTED 2026-07-29** |
+| `dedication` (same 21 values as `kinship_label`) | 21 | **ACCEPTED 2026-07-29** |
+| `favorite` (Option A, flat) | 16 | **REJECTED 2026-07-29 in favor of Option B** |
+| `favorite` (Option B, split into three) | 36 | **ACCEPTED 2026-07-29, migration accepted knowingly** |
+| `home_type` | 12 | **ACCEPTED 2026-07-29** |
+
+Judgment-call outcomes, same date:
+
+- **Judgment call 1 overruled**: the owner chose the split (Option B) over the flat list.
+- **Judgment call 2 partially overruled**: the case convention split stands, but **no case
+  normalization** is added anywhere; values are stored and matched exactly as listed.
+- **Judgment call 3 confirmed**: no "none" sentinel member; the story-flow impacts of an
+  explicit "none" would be difficult to overcome, and absence stays "slot unset".
+
+Additionally decided 2026-07-29: **a vocabulary-expansion request feature** (guardian requests
+a new entry; admin validates appropriateness and expands the list) is scheduled as
+execution-plan Task D7, so a family whose term is missing has a path other than `Grown-up`.
