@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.48.0] - 2026-07-30
+
+### Features
+
+- **notifications**: Consume the SSE stream in NotificationBell (G10/S9)
+  ([#478](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/478),
+  [`eceeff9`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/eceeff922ed37e244930fc4cd2b980d0fcaa99e2))
+
+
 ## [0.47.0] - 2026-07-30
 
 ### Features
@@ -2827,6 +2836,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.48.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.47.0...v0.48.0
 [0.47.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.46.0...v0.47.0
 [0.46.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.45.0...v0.46.0
 [0.45.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.44.0...v0.45.0
