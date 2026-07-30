@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.45.0] - 2026-07-30
+
+### Features
+
+- **api**: Let a guardian read their own family's review surface
+  ([#474](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/474),
+  [`62a60f5`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/62a60f5d5368f7e305e012d027d4fe80b6c271f0))
+
+
 ## [0.44.0] - 2026-07-29
 
 ### Features
@@ -2800,6 +2809,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.45.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.44.0...v0.45.0
 [0.44.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.43.0...v0.44.0
 [0.43.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.42.0...v0.43.0
 [0.42.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.41.0...v0.42.0
