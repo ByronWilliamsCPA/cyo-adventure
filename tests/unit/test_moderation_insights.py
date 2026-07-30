@@ -39,6 +39,14 @@ def _finding(
     }
 
 
+def _legacy_finding(category: str, verdict: str, message: str) -> dict[str, object]:
+    """A finding dict shaped like one persisted before Stage A: no
+    "structural" key at all (Finding.to_dict() did not emit it), matching a
+    report written by origin/main's moderation/stages.py before the
+    structural field existed."""
+    return {"category": category, "verdict": verdict, "message": message}
+
+
 def _record(
     *,
     findings: list[dict[str, object]],
@@ -253,6 +261,56 @@ class TestAggregateInsights:
         assert row.structural_findings == 1
         assert row.decided_versions == 1
         assert row.released_versions == 1
+
+    def test_legacy_fail_safe_message_without_structural_key_is_excluded(
+        self,
+    ) -> None:
+        """A finding persisted before Stage A carries no "structural" key at
+        all, only stages.py's fail-safe message. It must still be excluded
+        from decided_versions/override_rate: the exact scenario the
+        controller flagged in commit b67a7b7e (5,048 pre-Stage-A flood rows
+        already in production, one released 16+ book away from a
+        manufactured safety FLAG->BLOCK suggestion)."""
+        records = [
+            _record(
+                findings=[
+                    _legacy_finding(
+                        "safety", "flag", "unknown verdict; defaulted to fail-safe"
+                    )
+                ],
+                outcome=VersionOutcome(decided=True, released=True),
+            )
+        ]
+        insights = aggregate_insights(records)
+        assert len(insights) == 1
+        row = insights[0]
+        assert (row.age_band, row.category) == ("8-11", "safety")
+        assert row.advisory_findings == 0
+        assert row.flag_findings == 0
+        assert row.decided_versions == 0
+        assert row.released_versions == 0
+        assert row.override_rate is None
+        assert row.structural_findings == 1
+
+    def test_legacy_shaped_genuine_finding_still_counts_normally(self) -> None:
+        """A pre-Stage-A finding with no "structural" key and an ordinary
+        message (not one of stages.py's fail-safe markers) is a genuine
+        content judgment and must count toward decided_versions/
+        override_rate exactly as before this fix."""
+        records = [
+            _record(
+                findings=[
+                    _legacy_finding("violence", "flag", "explicit violence in node n3")
+                ],
+                outcome=VersionOutcome(decided=True, released=True),
+            )
+        ]
+        row = aggregate_insights(records)[0]
+        assert row.flag_findings == 1
+        assert row.structural_findings == 0
+        assert row.decided_versions == 1
+        assert row.released_versions == 1
+        assert row.override_rate == 1.0
 
 
 def _insight(
