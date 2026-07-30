@@ -54,11 +54,18 @@ document deliberately does not restate their reasoning, only their build steps.
 | Tri-state personalizable-slot resolver | `src/cyo_adventure/moderation/personalizable_slots.py` |
 | Measurement instrument (offline, standalone, no DB) | `src/cyo_adventure/measurement/`, `scripts/measure_sentinel_survival.py` |
 
-**Not started (this plan):** every P3 title/prompt strip, all persistence, all API routes, all
+**Update 2026-07-29:** Stage A is done and merged (PR #449): the P3 title/prompt strips, the
+leak-guard tests, and the G1 measurement (verdict STOP) are on main. Branch
+`feat/personalization-reinsertion-prototype` (PR #466) carries the re-insertion prototype
+(`measurement/reinsertion.py`, `--save-fills`, analyzer script) **and, since the Stage R
+re-plan, Stages R and B**: the worker's strip-all-then-reinsert step, both persistence tables
+(`child_profile_personalization`, `personalization_disclosure_consent`, RLS enabled with
+service-role-only policies), and the personalization API routes. Still not started: all
 frontend work, all UI, the Route A copy wiring, the catalog migration, and the compliance
-artifacts. No `.contract.json` on disk declares a personalizable slot, so every merged check is
-currently a structural no-op: the first contract that declares one is the feature's power
-switch and is deliberately sequenced late (Task D4).
+artifacts. No `.contract.json` on disk
+declares a personalizable slot, so every merged check is currently a structural no-op: the
+first contract that declares one is the feature's power switch and is deliberately sequenced
+late (Task D4).
 
 **PR #416 has merged**, so the authoring-lessons directive is live: any task below that touches
 validator or authoring behaviour appends its lessons to
@@ -69,7 +76,8 @@ validator or authoring behaviour appends its lessons to
 
 | Gate | What it blocks | Condition to pass |
 |---|---|---|
-| **G1: survival GO/NO-GO** | Stage B onward (everything after leak guards) | Task A1's measured clean-pass rate at or above ~95% is GO; 80-95% means iterate the prompt/delimiter and re-measure before proceeding, with the retry cost line made explicit; below ~80% is STOP: prototype deterministic post-fill re-insertion instead and re-plan Stage B+. **FIRED 2026-07-28: measured 3.3% (1/30) on the primary provider; verdict STOP. Stage B+ as written is void pending a re-plan around deterministic post-fill re-insertion (design plan 3.4, MEASURED block)** |
+| **G1: survival GO/NO-GO** | Stage B onward (everything after leak guards) | Task A1's measured clean-pass rate at or above ~95% is GO; 80-95% means iterate the prompt/delimiter and re-measure before proceeding, with the retry cost line made explicit; below ~80% is STOP: prototype deterministic post-fill re-insertion instead and re-plan Stage B+. **FIRED 2026-07-28: measured 3.3% (1/30) on the primary provider; verdict STOP. Stage B+ as written is void pending a re-plan around deterministic post-fill re-insertion (design plan 3.4, MEASURED block). RESOLVED by the Stage R re-plan of 2026-07-29: gate G1-R (Stage R exit) now blocks Stage B onward** |
+| **G1-R: re-insertion round-trip** | Stage B onward (replaces the fired G1) | Task R4: round-trip integrity 100% through the production fill path; per-slot coverage profile recorded; owner acknowledges the coverage posture (third-party slots high-90s, HERO partial-by-voice, dedication guaranteed). **SATISFIED 2026-07-29: verify_manifest 30/30 (100%) on fresh fills (Task R4 CONFIRMED block); owner acknowledged the coverage posture and approved Stage B the same day. Stage B is unblocked. The vocative nudge experiment ran and was REJECTED the same day (HERO coverage fell to 4.9%, AL-062); it adjusted the coverage profile only, never this gate, and the template edit was reverted before commit.** |
 | **G2: counsel on OD-1/OD-5** | **Shipping** P7 (ring-2) and P9 (consent UI); building them is not blocked | Counsel confirms the ring-2 separate disclosure consent design and the sibling/pet-name raise |
 | **G3: Route A copy precedes the flag** | Enabling `VITE_FEATURE_PERSONALIZATION` anywhere a real family can reach | Task D1 (toggle-aware Route A copy) merged |
 
@@ -389,13 +397,237 @@ DECIDED: dict[tuple[str, str], str] = {
 
 **Stage A exit:** full gate green (`uv run ruff check .`, `uv run basedpyright src/`,
 `ENVIRONMENT=local uv run pytest`), PR opened against main, G1 verdict recorded. Stage B does
-not start on a NO-GO.
+not start on a NO-GO. **Exit reached 2026-07-28: PR #449 merged; G1 verdict STOP; Stage R
+below is the resulting re-plan and now owns the path to Stage B.**
 
 ---
 
-## Stage B: data model and API (blocked on G1 GO)
+## Stage R: deterministic re-insertion pipeline (re-plan of 2026-07-29; replaces prompt-preserved survival as the token supply)
 
-Branch: `feat/personalization-p4-p5-data-api` off origin/main, after the Stage A PR merges.
+**Why this stage exists.** G1 fired STOP twice (3.3%, then 0/30 prompt-preserved survival),
+and the re-insertion prototype run (`20260729T010024Z`, fills persisted, aggregate committed
+at
+[evidence/sentinel-reinsertion/20260729T010024Z-reinsertion-dev.md](evidence/sentinel-reinsertion/20260729T010024Z-reinsertion-dev.md))
+showed the strict per-node expectation was itself wrong: the corpus is
+second-person, so the HERO name structurally cannot appear in most node bodies (42% node
+coverage, absent entirely from 11/30 stories) while named third-party slots re-insert at
+94-99%. The design that survives the data is **derive-not-prescribe**: after the fill, strip
+every model-emitted token, deterministically re-insert wherever the generic inner word
+occurs, record the multiset that re-insertion actually produced as the version's
+`sentinel_manifest`, and verify blob-matches-manifest everywhere integrity is checked today.
+Coverage becomes a soft quality floor; the dedication overlay (Task C5, promoted to
+mandatory below) plus the stripped title rules guarantee at least one personalized surface
+per story regardless of prose. Prototype code (pure transform, round-trip-verified against
+`check_sentinel_integrity`) is on branch `feat/personalization-reinsertion-prototype`
+(`src/cyo_adventure/measurement/reinsertion.py`).
+
+Branch: `feat/personalization-reinsertion-pipeline` off origin/main after the prototype
+branch merges. First step: re-verify every anchor below against then-current main.
+
+### Task R1: matcher hardening, measured offline (no provider spend)
+
+**DONE 2026-07-29** (commit 8916c2d): sentence-start widening recovered 76 of 1,027 misses
+(120 occurrences wrapped verbatim); the plural counter measured **0 bare plurals corpus-wide**,
+so the "72 inflected" bucket was a heuristic artifact (possessives, already handled by the
+word-boundary matcher) and plural matching is dropped from the lift menu (AL-060).
+
+**Files:**
+- Modify: `src/cyo_adventure/measurement/reinsertion.py` (`_word_boundary_pattern`,
+  `_count_in_node_surfaces`, `_wrap_all_in_node`)
+- Test: `tests/unit/test_measurement_reinsertion.py`
+
+Two targeted widenings, each behind its own predicate so the strict matcher remains the
+default path and each widening is separately attributable in the report:
+
+1. **Sentence-start case**: a lowercase multi-word value (`the pup`, `the grown-up`) also
+   matches its sentence-initial capitalization (`The pup`). Only the first character folds;
+   `THE PUP` and mid-sentence `The pup` still miss. 82 of 1,026 measured misses.
+2. **Possessive**: `Explorer's` already matches via `\b`; add coverage proving it, and
+   decide plural policy from data rather than assumption: report (do not yet match)
+   occurrences of `<value>s` so the next run quantifies whether plurals are the character
+   or a common noun. 72 "inflected" misses were measured with a crude prefix heuristic and
+   need this decomposition before any matcher change.
+
+- [ ] **Step 1:** failing tests for both widenings (sentence-start hit; mid-sentence `The
+  pup` still a miss; `Explorer's` hit; `Explorers` counted in the new plural-report field
+  but NOT wrapped).
+- [ ] **Step 2:** implement; run `ENVIRONMENT=local uv run pytest
+  tests/unit/test_measurement_reinsertion.py -q`. Expected: PASS (coverage-gate failure on
+  a filtered run is expected noise).
+- [ ] **Step 3:** re-run the analyzer offline on the saved fills, zero provider spend:
+  `ENVIRONMENT=local uv run python scripts/prototype_sentinel_reinsertion.py
+  results/sentinel-survival/20260729T010024Z`. Record the new per-slot rates next to the
+  2026-07-29 numbers in the design plan's section-3.4 block (expected direction: lowercase
+  descriptive slots approach the third-party 94-99% band; HERO moves little, its misses are
+  structural).
+- [ ] **Step 4: commit** (`feat(measurement): sentence-start and possessive-aware
+  re-insertion matching (ADR-023 Stage R)`).
+
+### Task R2: promote the transform into the domain package
+
+`depends-on: TaskR1 [output]`.
+
+**DONE 2026-07-29** (commit 3fbf080): `storybook/reinsertion.py` public API is
+`reinsert_storybook(bound_skeleton, filled_document) -> ReinsertionOutcome`
+(document, manifest, token_outcomes) plus `build_manifest` and `verify_manifest` (delegates
+to `check_sentinel_integrity`). Manifest keying: node id for the body surface,
+`<node_id>::ending_title` for the ending title, sorted keys, JSON-serializable. Analyzer
+output on the saved fills was byte-identical before and after the move.
+
+**Files:**
+- Create: `src/cyo_adventure/storybook/reinsertion.py` (beside `sentinels.py`; the pure
+  transform and its result types move here, measurement keeps only aggregation/reporting
+  and imports the domain module)
+- Modify: `src/cyo_adventure/measurement/reinsertion.py` (re-export or thin wrapper; no
+  behaviour change, proven by the untouched test suite)
+- Test: `tests/unit/test_storybook_reinsertion.py` (moved tests keep their names)
+
+The transform's contract, stated once here because Stage R and Stage B both depend on it:
+`reinsert(bound_skeleton, filled_document) -> (document, manifest, outcomes)` where
+`manifest` is the per-node token multiset the transform actually inserted (the DERIVED
+expectation), and `check_sentinel_integrity(document, manifest)` passes by construction
+(round-trip property, already tested in the prototype).
+
+- [ ] TDD steps as above; `uv run basedpyright src/cyo_adventure/storybook/` 0 errors.
+  Commit (`refactor(storybook): promote sentinel re-insertion into the domain package`).
+
+### Task R3: wire re-insertion into the fill path and re-point all six integrity sites
+
+`depends-on: TaskR2 [output]`.
+
+**DONE 2026-07-29** (commit a63c06e; full unit suite 5,225 passed, 0 failed). Site audit
+outcomes vs the plan text:
+
+- Worker fill path and the import/resume path (the two Variant A prescription sites) now run
+  `reinsert_storybook`, carry the transform's document forward, and fail closed on
+  `verify_manifest` (transform bug) plus `check_sentinel_integrity_at_rest` (forged/malformed
+  leftovers). `GenerationOutcome.sentinel_manifest` carries the manifest in memory only; the
+  DB column remains Task B2.
+- Moderation entry, repair adoption, and node-edit needed NO change: the at-rest variant was
+  already deliberately corruption-only (unknown slot, malformed, choice label, title) and
+  never prescribed per-node placement, so it is derive-compatible as built.
+- Rescreen's documented placeholder was wired to `check_sentinel_integrity_at_rest`, closing
+  the "when the manifest lands" TODO.
+- Deviation, accepted: the zero-coverage soft floor is a structlog WARNING in the worker, not
+  a validator PL code, because the deterministic gate runs over the pre-reinsertion document
+  (one stage earlier than the manifest exists). Gate-order note: validating pre-reinsertion is
+  semantically equivalent because every gate consumer strips sentinels before scoring and
+  re-insertion only wraps words in place; the plan's "fill -> reinsert -> validate" ordering
+  is therefore not required and was not imposed.
+- The mutated-sentinel worker test changed meaning by design: a forged token no longer fails
+  the job; it is stripped and the document repaired
+  (`test_run_skeleton_fill_sentinel_integrity_forged_value_not_reinserted`).
+
+**Files:**
+- Modify: `src/cyo_adventure/generation/worker.py` (fill path; Variant A call at `:1004`,
+  re-verify anchor)
+- Audit and re-point: the six fail-closed wiring sites listed in Current state (worker fill
+  path, moderation entry, repair adoption, rescreen strip-before-classify, node-edit
+  at-rest re-check, import path)
+- Test: the existing wiring tests per site, plus new derived-manifest cases.
+
+Order in the pipeline **as built**: fill -> deterministic validator gate -> **strip-all-then-reinsert**
+-> moderation. This line originally read `fill -> reinsert -> validator gate -> moderation`; the
+accepted deviation above (see "the zero-coverage soft floor is a structlog WARNING") moved the gate
+ahead of re-insertion, and the two statements sat in contradiction until this correction. Placing the
+gate first is semantically equivalent, not a weakening: every gate consumer strips sentinels before
+scoring, and re-insertion only wraps already-scored words in place.
+Semantics change at each site from "blob matches the skeleton-prescribed multiset" (fails
+on ~100% of real fills) to "blob matches the version's derived `sentinel_manifest`":
+
+- Worker fill path: run the transform immediately after a successful fill; persist the
+  manifest with the version (Task B2's `sentinel_manifest` column, whose description is
+  re-scoped below); Variant A verifies the round-trip property and fails closed only on
+  transform bugs, not on model paraphrase.
+- Repair adoption and node-edit: re-run the transform on the edited/repaired body and
+  REPLACE that node's manifest entry (an edit can legitimately add or remove a generic-word
+  occurrence); at-rest checks then compare against the updated manifest.
+- Rescreen and moderation entry: unchanged strip-before-classify behaviour; they now read
+  the manifest instead of recomputing expectations from the contract.
+- Import path: imports run the transform like a fill does.
+
+Soft floor (report, never gate): when a personalizable contract is active and the HERO
+token appears in zero nodes of a version, emit a validator WARNING naming the dedication
+as the guaranteed surface, mirroring how PL-level warnings report today. A zero-coverage
+story remains publishable; the warning exists so a human sees the posture.
+
+- [ ] **Step 1:** per-site failing tests first (fill produces a manifest; a mutated blob
+  fails at-rest against the manifest; node edit updates the manifest; zero-HERO fill emits
+  the warning and still passes).
+- [ ] **Step 2:** implement; full gate (`uv run ruff check .`, `uv run basedpyright src/`,
+  `ENVIRONMENT=local uv run pytest tests/unit -q`). Expected: PASS.
+- [ ] **Step 3: commit** (`feat(generation): derive-not-prescribe sentinel re-insertion in
+  the fill path (ADR-023 Stage R)`).
+
+### Task R4: end-to-end re-measurement and the Stage R exit record (one provider run)
+
+`depends-on: TaskR3 [output]`.
+
+**PARTIAL 2026-07-29** (commit a12c1a3 added the two gate metrics as permanent report
+fields). Preliminary G1-R evidence over the existing 30 real fills, via the same promoted
+transform the worker calls: **verify_manifest_ok 30/30 (100%)**. Per-slot coverage is now a
+permanent report table: the widening lifted COMPANION from 84% to 98.4%; named third-party
+slots sit at 94.6-99.1%; HERO holds at 42.4% (structural, second-person voice); the
+remaining soft spot is small-sample lowercase relational slots (KIN 58.3%, CHAPERONE 63.9%,
+THRESHOLD 70.0%, COMPANION_KIND 75.0%, ENTRANCE 80.0%). **The confirmatory fresh-fills run
+is BLOCKED: OpenRouter returned HTTP 402 on both models on 2026-07-29 (account out of
+credits; zero spend occurred; the Ollama fallback leg 404s on an unpulled model). Rerun
+after a top-up.** The optional vocative nudge was not exercised; it is an owner spend
+decision and the feature does not depend on it.
+
+**CONFIRMED 2026-07-29** (fresh run `20260729T042510Z`, 30 unseen fills through the
+production route after the credit top-up): **verify_manifest_ok 30/30 (100%)**, the G1-R
+gate requirement, met on data the matcher was never tuned against. The run directory
+`results/sentinel-survival/20260729T042510Z/` is gitignored, so the aggregate report is
+committed at
+[evidence/sentinel-reinsertion/20260729T042510Z-g1r-confirmatory.md](evidence/sentinel-reinsertion/20260729T042510Z-g1r-confirmatory.md)
+and a reader can check these numbers rather than take them on trust.
+Second finding, load-bearing for how the record must be read: per-slot coverage varies
+materially run to run (HERO 26.8% here vs 42.4% on the dev fills; FOUNDER 78.6% vs 94.6%;
+CHAPERONE 30.6% vs 63.9%; LISTENER/OPERATOR stable near 100%). Coverage is a property of
+each fill, not of the transform, which is why it is a soft floor and the integrity check is
+the hard gate (AL-061). Exit-record coverage posture, stated as cross-run ranges: named
+third-party slots roughly 79-100%, HERO roughly 27-42% (structural, second-person voice),
+lowercase relational slots roughly 30-90% small-sample. **Stage R technical exit is met;
+the remaining G1-R clause is the owner's acknowledgment of this coverage posture.**
+
+- [ ] Run the survival instrument once more (30 stories, `--providers openrouter --count 30
+  --slots-per-story 4 --save-fills`; env recipe in Task A1). The instrument stays offline
+  and standalone, but after Task R2 it exercises the SAME promoted domain transform the
+  worker calls, so its numbers are representative of the production path. The number that
+  gates Stage B is no longer model survival; it is **round-trip integrity: required 100%**
+  (any failure is a transform or wiring bug, deterministic and fixable), plus the recorded
+  coverage profile per slot. The worker-side wiring itself is covered by Task R3's tests,
+  not by this run.
+- [ ] Record both in the design plan's section-3.4 block with date; append lessons rows;
+  `uv run python scripts/check_lessons_log.py`.
+- [x] Optional, cheap, separately committed: a one-line vocative nudge in `fill_bound.md`
+  (address the hero by name in dialogue at least once); re-run the analyzer offline on the
+  new fills and record the HERO coverage delta. Adopt only if the delta is material; the
+  feature does not depend on it. **MEASURED AND REJECTED 2026-07-29: HERO coverage fell to
+  4.9% (72/1458) versus the 26.8-42.4% baseline range because the nudge's rationale clause
+  was executed as an instruction (design plan section 3.4 block; AL-062). Template edit
+  reverted, never committed; the run is `20260729T054004Z`, aggregate report committed at
+  [evidence/sentinel-reinsertion/20260729T054004Z-vocative-nudge-rejected.md](evidence/sentinel-reinsertion/20260729T054004Z-vocative-nudge-rejected.md)
+  because `results/` is gitignored.**
+
+**Stage R exit (gate G1-R, replaces the fired G1 for Stage B onward):** round-trip
+integrity 100% on the production path; per-slot coverage profile recorded; owner
+acknowledges the coverage posture (third-party slots high-90s, HERO prose coverage
+partial-by-voice, dedication as the guaranteed surface). Then Stage B proceeds unchanged
+except the three re-scoped points marked **[Stage R re-scope]** below.
+
+**EXIT MET 2026-07-29.** All three clauses closed: integrity 100% (Task R4 CONFIRMED
+block), coverage profile recorded as cross-run ranges (AL-061), and the owner acknowledged
+the posture and approved Stage B on 2026-07-29. The owner also approved the optional
+vocative nudge experiment, which was never a Stage B precondition; it ran the same day and
+was rejected on its measured result (Task R4 checklist, AL-062).
+
+---
+
+## Stage B: data model and API (blocked on Stage R exit / gate G1-R)
+
+Branch: `feat/personalization-p4-p5-data-api` off origin/main, after the Stage R PR merges.
 First step of the stage: re-verify every file/line anchor below against the then-current main.
 
 ### Task B1: migration 1, the slot-value store and profile toggles
@@ -450,7 +682,20 @@ ALTER TABLE child_profile
 - [ ] **Step 2:** write the migration and the ORM model (`__table_args__` mirrors every CHECK
   by name; copy the `#CRITICAL`/`#VERIFY` marker style from `Rating` at `db/models.py:812-820`).
 - [ ] **Step 3:** run the schema-parity test and the drift guard: PASS.
-- [ ] **Step 4: commit** (`feat(db): child_profile_personalization store and ring toggles (ADR-023 P4)`).
+- [x] **Step 4: commit** (`feat(db): child_profile_personalization store and ring toggles (ADR-023 P4)`).
+
+**DONE 2026-07-29 (commit 920d7db, on the Stage R branch per the owner's proceed
+instruction; the off-origin/main branch note above is superseded for B1-B3).** Two
+deviations from the printed DDL, both forced by empirical failures: (1) table references
+schema-qualified as `"public"."..."`, because the baseline migration empties `search_path`
+session-wide and every post-baseline migration already qualifies for that reason; (2) the
+four boolean columns carry `server_default=sa_text("false")` in the ORM, matching
+`User.is_admin`, because Python-side-only defaults fail schema parity against the DDL's
+`DEFAULT FALSE`. Drift guard 5/5, schema parity green, failing-first proof recorded.
+**OPEN owner decision: `child_profile_personalization` has no RLS enabled, unlike most
+tables; it holds child-identifying values, so its ADR-021/ADR-022 tiered-scoping policy
+needs a deliberate decision rather than silent omission. No test fails today (the RLS
+suite iterates only rowsecurity=true tables).**
 
 ### Task B2: migration 2, consent evidence, viewer switch, subject link, eligibility
 
@@ -471,13 +716,23 @@ Contents, per design-plan 5.3/8.2/8.6 (all shapes are settled there; this is tra
   switch; default on because connection consent already implies receive-willingness).
 - `storybook.personalization_subject_profile_id UUID` FK to `child_profile` **SET NULL**.
 - On the storybook-version row: `personalization_eligible BOOLEAN NOT NULL DEFAULT FALSE`,
-  `pronoun_parameterized BOOLEAN NOT NULL DEFAULT FALSE`, `sentinel_manifest JSONB` (per-node
-  expected token sets, written at fill time so rescreen never re-reads the contract from disk).
+  `pronoun_parameterized BOOLEAN NOT NULL DEFAULT FALSE`, `sentinel_manifest JSONB`
+  **[Stage R re-scope]**: the per-node token multiset that deterministic re-insertion
+  actually produced (Task R3), written at re-insertion time, NOT the contract-prescribed
+  expectation; rescreen and at-rest checks read this column so they never re-derive
+  expectations from the contract, and node-edit/repair adoption update it in place.
   Verify the exact version-table model name in `db/models.py` before writing the DDL.
 
-- [ ] Steps: same TDD rhythm as B1 (parity test + tombstone-behaviour unit test first, then
+- [x] Steps: same TDD rhythm as B1 (parity test + tombstone-behaviour unit test first, then
   migration + ORM, then PASS, then commit
   `feat(db): ring-2 consent evidence, viewer switch, subject link (ADR-023 P4)`).
+
+**DONE 2026-07-29 (commit 45da866).** Design-plan sections 5.3/8.2/8.6 matched this text
+exactly; the only drift was the StorybookVersion line anchor (moved to :761 after B1's
+insertion). Tombstone behaviour proven by integration test (connection delete leaves the
+consent row with a NULL connection FK; profile delete removes it); schema parity green;
+no vocab-drift extension needed because `covered_slot_types` is an open JSONB array, not
+a closed CHECK vocabulary. B1's schema-qualification and server_default lessons applied.
 
 ### Task B3: deletion drill and export
 
@@ -496,7 +751,16 @@ Contents, per design-plan 5.3/8.2/8.6 (all shapes are settled there; this is tra
 - [ ] **Step 2:** export gains, per profile: every personalization row (sibling slot as id AND
   display name), the two `real_name_*` booleans, and every consent row **including tombstoned
   ones**. Test: export of a family with one of each contains all three groups.
-- [ ] **Step 3:** commit (`feat(api): export and deletion coverage for personalization data (ADR-023 P4)`).
+- [x] **Step 3:** commit (`feat(api): export and deletion coverage for personalization data (ADR-023 P4)`).
+
+**DONE 2026-07-29 (commit 87ac0e3).** Drill extensions passed first-run because both new
+FKs were already CASCADE (coverage confirmation, not a gap); the connection-tombstone case
+is proven in test_personalization_consent_tombstone.py and referenced, not duplicated.
+Export gap proven failing-first (KeyError on real_name_ring1_enabled), then closed:
+personalization rows (sibling slot as id plus display name), both real_name booleans, and
+consent rows including tombstones. FamilyExportView is an untyped dict blob by design, so
+no OpenAPI contract change and no client regeneration; only its docstring was updated
+(api/schemas.py, docstring-only extra file).
 
 ### Task B4: pipeline event types
 
@@ -515,9 +779,16 @@ EventType.RING2_CONSENT_GRANTED: frozenset({"connected_family_id", "slot_type_co
 EventType.RING2_CONSENT_REVOKED: frozenset({"connected_family_id"}),
 ```
 
-- [ ] TDD steps as above, plus one test asserting a value-bearing key (e.g. `pet_name`) is
+- [x] TDD steps as above, plus one test asserting a value-bearing key (e.g. `pet_name`) is
   rejected by the allowlist. Commit
   (`feat(events): personalization consent/toggle event types (ADR-023 P3/P4)`).
+
+**DONE 2026-07-29 (commit 0ede8917).** One deviation beyond the four named files:
+`db/models.py::_PIPELINE_EVENT_TYPE_VALUES` (the hand-maintained CHECK mirror embedded in
+the ORM CheckConstraint) gained the three values in the same commit, matching every prior
+EventType addition and keeping test_schema_parity.py green. New superset test parses the
+migration file directly, stripping `--` comment lines first because prose apostrophes in
+house-style headers corrupt a naive quoted-string regex.
 
 ### Task B5: write-time validation service
 
@@ -540,9 +811,18 @@ feature existed were never checked, risk R4):
    `api/deps.py:743-754`),
 5. `display_name` gets checks 1 and 2 on profile write too (`api/profiles.py:102-103`, `:286`).
 
-- [ ] TDD steps; include one test per rejection class and one asserting the render-time
+- [x] TDD steps; include one test per rejection class and one asserting the render-time
   fallback contract (invalid value at build time means the slot is omitted from the payload,
   never an error). Commit (`feat(storybook): personalization value validation (ADR-023 5.2)`).
+
+**DONE 2026-07-29 (commit 92fd602d), with one OPEN product decision.** ADR-023 rows 4a/5/6/7
+name categories and examples, not exhaustive lists, so `CLOSED_VOCABULARIES` ships all four
+keys as empty frozensets (fail-closed: every enum-slot value is rejected until real lists
+are supplied). RAD-tagged in the module; B6 can proceed because omission, not error, is the
+contract. Sibling authorization is a pure function taking the caller-supplied family roster
+(no api/ or DB imports); the route layer resolves the roster via authorize_family. Item 5
+(display_name checks on profile write) is NOT in this module and remains for B6's route work
+to confirm or add at `api/profiles.py:102-103`.
 
 ### Task B6: routes (ring 1) and the authz matrix
 
@@ -566,10 +846,25 @@ in this stage (subject in caller's family) and an empty payload otherwise; ring 
 Response carries `sentinel_pattern` (the `SENTINEL_RE` pattern string) so the generated client
 never re-derives it (risk R9).
 
-- [ ] TDD steps; RouteSpec rows follow the dataclass at `test_authz_matrix.py:377-398` (copy
+- [x] TDD steps; RouteSpec rows follow the dataclass at `test_authz_matrix.py:377-398` (copy
   the `PATCH /admin/profiles/{id}` row shape at `:445-451`). Empty payload, never 403, on any
   gate miss. Commit, then **regenerate the OpenAPI client in the same commit** (standing
   constraint). (`feat(api): personalization settings, consent, and ring-1 values routes (ADR-023 P5)`).
+
+**DONE 2026-07-29 (commit e9ebe2c5).** 380 integration tests green (personalization API,
+authz matrix, schema parity, event vocab). Deviations recorded: (1) latent production bug
+found and fixed, `pipeline_event.entity_type` is String(32) so the consent entity logs as
+`personalization_consent` (35-char natural label would overflow); both new entity types
+added to the CHECK mirror with parity migration `20260729030000` (idempotent,
+schema-qualified). (2) Local client regeneration injected a `baseURL: localhost:8000` line
+into `client.gen.ts` that CI's static-dump generation never produces; hand-reverted before
+commit. (3) The frontend-eslint/frontend-prettier local hooks failed on ANY commit staging
+the generated client (eslint ignore-warning under --max-warnings=0; client is raw generator
+output by design so never prettier-clean); root-caused and fixed by excluding
+`frontend/src/client/` from both hooks (commit ec60c89b). (4) B5's open item closed:
+display_name on profile create/update now runs structural + bundle checks
+(`api/profiles.py:189-190`). `_RING1_POLICY_VERSION` is a sentinel constant, not a policy
+registry, per plan scope.
 
 ### Task B7: privacy-model classification entries
 
@@ -577,6 +872,11 @@ never re-derives it (risk R9).
 `docs/planning/privacy-model.md` ("Data Classification" and "If Shared Beyond Family"),
 including the R20 acceptance sentence for the client-held values payload. Commit
 (`docs(privacy): classify personalization data categories (ADR-023 5.6)`).
+
+**DONE 2026-07-29 (commit b6769486).** All four classification entries landed (slot-value
+rows at the child_profile tier, consent rows citing db/models.py, client-held payload with
+the R20 acceptance sentence verbatim), plus a "Ring-2 disclosure (existing,
+guardian-authorized)" subsection; privacy-model version 0.2 to 0.3.
 
 **Stage B exit:** full gate green, contract job green, deletion drill green, PR merged.
 
@@ -662,7 +962,13 @@ slot alone is omitted on failure.
   unconnected-family indistinguishability property. ROUTE_TABLE row added. Commit.
   **Do not enable shipping surfaces until G2 passes.**
 
-### Task C5: dedication overlay (last; first thing dropped if the stage runs long)
+### Task C5: dedication overlay (**[Stage R re-scope]** mandatory, no longer droppable)
+
+Originally "last; first thing dropped if the stage runs long". The re-insertion measurement
+reversed that: 11/30 corpus stories never name the hero in prose (second-person narration),
+so the dedication is the ONE surface guaranteed to carry the child's name in every
+personalized story. It is now a required Stage C deliverable and the surface gate G1-R's
+"dedication guaranteed" clause points at.
 
 **Files:** one component in `frontend/src/reader/` beside `ReaderChrome.tsx`, template
 `For {NAME}, love {KINSHIP}`, composed client-side from values the payload already carries;
@@ -713,7 +1019,10 @@ settings screen says so in as many words. TDD, commit.
 
 - [ ] Declare `kind: "personalizable"` slots (with `role_safety` on real-person fields) in one
   pilot contract; run the full gate; generate a pilot story; confirm Variant A/B checks fire on
-  a deliberately mutated fixture.
+  a deliberately mutated fixture. **[Stage R re-scope]**: "fire" means the mutated blob no
+  longer matches the version's DERIVED `sentinel_manifest` (Task R3 semantics), not the
+  contract-prescribed multiset; also confirm the zero-HERO soft-floor WARNING appears when the
+  pilot story's prose never names the hero, and that the story still publishes.
 - [ ] Replace-by-default migration of any test story worth keeping eligible; everything not
   migrated stays `personalization_eligible = false` with no deadline.
 - [ ] Pronoun audit (per-skeleton, directives not prose; `pronoun_parameterized` flips only
@@ -748,6 +1057,13 @@ settings screen says so in as many words. TDD, commit.
   `ENVIRONMENT=local`; the measurement command names its key prerequisites.
 - Known drift risk: all `file:line` anchors are 2026-07-28 origin/main; each stage re-verifies
   before editing.
+- Stage R revision (2026-07-29) pairwise sweep: the four places that assumed a PRESCRIBED
+  token multiset were each resolved in place and tagged **[Stage R re-scope]** (B2's
+  `sentinel_manifest` semantics, C5's droppable-to-mandatory promotion, D4's Variant A/B
+  firing definition, and the G1 gate row's succession to G1-R). Stages B through D otherwise
+  survive unchanged because they operate on "the blob carries well-formed tokens" and never
+  depended on how tokens entered it. Task R4 deliberately claims representativeness (shared
+  transform), not production-path execution, for the offline instrument.
 
 ## Related
 

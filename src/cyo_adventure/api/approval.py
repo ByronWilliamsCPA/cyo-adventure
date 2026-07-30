@@ -1,11 +1,19 @@
-"""Admin-only storybook approval endpoints.
+"""Storybook approval endpoints, mostly admin-only.
 
 The publish state machine's HTTP surface: submit a draft for review, approve
 (and publish) an in-review story, send one back for revision, or archive a
 published one. Approval is a backend safety process owned by a global admin, so
-every handler requires the admin role (403 otherwise) and authority is
-cross-family (authorize_family is intentionally NOT called). Each handler loads
-the story (404) and calls the publishing service (409 on an illegal transition).
+every mutating handler requires the admin role (403 otherwise) and authority is
+cross-family (authorize_family is intentionally NOT called); each such handler
+loads the story via ``_load_admin_story`` (404) and calls the publishing service
+(409 on an illegal transition).
+
+The one exception is the read-only ``get_review_surface`` (GET .../review),
+which also admits a guardian scoped to their own family via
+``_load_review_target``: register G6's "edit half" gives a guardian read
+access to the same content ``node_edit.py`` already lets them write. Guardian
+veto/reject of a story remains out of scope and undecided (ADR-005); every
+state-transition handler in this module stays admin-only.
 """
 
 from __future__ import annotations
@@ -16,7 +24,7 @@ from fastapi import APIRouter
 from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy import func, select, tuple_
 
-from cyo_adventure.api.deps import Context
+from cyo_adventure.api.deps import Context, authorize_family
 from cyo_adventure.api.review_surface import (
     build_review_queue_item,
     build_review_surface,
@@ -192,6 +200,64 @@ async def archive_storybook(storybook_id: str, ctx: Context) -> ArchivedView:
     return ArchivedView(id=book.id, status=cast("Literal['archived']", book.status))
 
 
+async def _load_review_target(ctx: Context, storybook_id: str) -> Storybook:
+    """Load a storybook for the review surface, enforcing role + ownership.
+
+    Read-only counterpart of ``_load_admin_story``, scoped to the GET review
+    surface only. Admin keeps global (cross-family) access; a guardian may
+    read their own family's story so they can reach the node-edit endpoint's
+    existing guardian-or-admin authorization (``node_edit.py::
+    _load_edit_target``) with content to edit. This does NOT extend to
+    submit/approve/send_back/archive, which stay admin-only via
+    ``_load_admin_story``: those are the publish/veto decision, a separate,
+    open ADR-005 product question this helper does not touch.
+
+    Args:
+        ctx: The request context (principal + session).
+        storybook_id: The story id from the path.
+
+    Returns:
+        Storybook: The storybook (any family for admin; the caller's own
+            family for a guardian).
+
+    Raises:
+        AuthorizationError: If the caller is neither admin nor guardian
+            (-> 403), or a guardian's family does not own the story (-> 403).
+        ResourceNotFoundError: If the story does not exist (-> 404).
+    """
+    # #CRITICAL: security: role gate before any row is read, mirroring
+    # node_edit.py::_load_edit_target exactly. Admin is the global safety
+    # operator; guardian is scoped to their own family below via
+    # authorize_family. Neither a child nor a device token may read the
+    # review surface (it can carry unpublished, possibly-flagged content).
+    # #VERIFY: tests/unit/test_approval_unit.py::test_review_surface_blocks_child,
+    # ::test_review_surface_blocks_device.
+    if not (ctx.principal.is_admin or ctx.principal.is_guardian):
+        msg = "admin or guardian role required"
+        raise AuthorizationError(msg, required_permission="admin_or_guardian")
+    # #ASSUME: concurrency: this is a read-only GET, unlike _load_admin_story
+    # and node_edit.py's _load_edit_target which both lock the row because
+    # they precede a write. No FOR UPDATE lock here: a concurrent
+    # approve/edit racing this read can only produce a stale-but-consistent
+    # snapshot, never a lost update, since this handler writes nothing back.
+    # #VERIFY: tests/unit/test_approval_unit.py asserts no with_for_update()
+    # clause on the statement this helper issues.
+    stmt = select(Storybook).where(Storybook.id == storybook_id)
+    book = (await ctx.session.execute(stmt)).scalar_one_or_none()
+    if book is None:
+        msg = f"storybook '{storybook_id}' not found"
+        raise ResourceNotFoundError(msg)
+    if not ctx.principal.is_admin:
+        # #CRITICAL: security: a guardian may read only their own family's
+        # review surface; admin authority is global and skips this check
+        # (mirrors node_edit.py::_load_edit_target's identical stance).
+        # #VERIFY: tests/integration/test_authz_matrix.py cross-family
+        # guardian case; tests/unit/test_approval_unit.py::
+        # test_review_surface_guardian_other_family_rejected.
+        authorize_family(ctx.principal, book.family_id)
+    return book
+
+
 async def _latest_version(session: AsyncSession, storybook_id: str) -> int:
     """Return the highest version number for a storybook.
 
@@ -225,7 +291,9 @@ async def get_review_surface(
     ctx: Context,
     version: int | None = None,
 ) -> ReviewSurfaceView:
-    """Return the guardian review surface for a story version (admin only).
+    """Return the review surface for a story version.
+
+    Admin (any family), or guardian for their own family's story.
 
     Args:
         storybook_id: The story to review.
@@ -237,21 +305,30 @@ async def get_review_surface(
             story-level findings.
 
     Raises:
-        AuthorizationError: If the caller is not an admin (403).
+        AuthorizationError: If the caller is neither admin nor guardian
+            (403), or a guardian requests another family's story (403).
         ValidationError: If a supplied version is not a positive integer, or the
             stored moderation report is corrupt at rest.
         ResourceNotFoundError: If the story or the requested version does not exist.
     """
-    # #CRITICAL: security: this reads unpublished, possibly-flagged content, so it
-    # must be admin-only; _load_admin_story enforces the admin role (global,
-    # cross-family authority, same as every other handler in this module) before
-    # any row is read (a child token must never reach the review surface).
-    # #VERIFY: _load_admin_story raises AuthorizationError -> 403 for non-admins.
-    book = await _load_admin_story(ctx, storybook_id)
+    # #CRITICAL: security: this reads unpublished, possibly-flagged content, so
+    # access is admin (global) or guardian scoped to their own family;
+    # _load_review_target enforces both the role gate and the family-ownership
+    # check before any row is read (a child or device token must never reach
+    # the review surface). This is the "edit half" of register G6: it gives a
+    # guardian read access to the content node_edit.py already lets them
+    # write. It does NOT extend to submit/approve/send_back/archive, which
+    # remain admin-only via _load_admin_story -- guardian veto/reject is a
+    # separate, open ADR-005 product-scope question, not decided here.
+    # #VERIFY: _load_review_target raises AuthorizationError -> 403 for
+    # non-admin/non-guardian callers and for a guardian outside the story's
+    # family.
+    book = await _load_review_target(ctx, storybook_id)
     # #ASSUME: data integrity: version is a client-supplied query parameter with
     # no schema-level lower bound; reject a non-positive value before it reaches
     # the composite-key lookup below rather than let it silently 404.
-    # #VERIFY: tests/unit/test_approval_unit.py::test_review_surface_rejects_non_positive_version.
+    # #VERIFY: tests/unit/test_approval_unit.py::
+    # test_review_surface_rejects_non_positive_version.
     if version is not None and version <= 0:
         msg = "version must be a positive integer"
         raise ValidationError(msg, field="version", value=version)
@@ -270,11 +347,17 @@ async def get_review_surface(
         raise ResourceNotFoundError(msg)
     # #ASSUME: security: floor denoises the ADMIN review view only; admin_surfaces
     # guarantees FLAG/BLOCK/unscored findings always surface (bright-line 0.0
-    # blocks are never hidden). The floor reaches build_review_surface from two
-    # admin call sites (this detail view and get_review_queue below); guardian
-    # reuse paths keep passing None.
-    # #VERIFY: tests/integration/test_review_surface_noise_floor.py.
-    floor = await load_admin_noise_floor(ctx.session)
+    # blocks are never hidden). A guardian caller gets admin_noise_floor=None
+    # (build_review_surface's un-denoised default), matching node_edit.py's
+    # existing `floor = ... if ctx.principal.is_admin else None` conditional,
+    # so a guardian sees every finding at native score, not the admin-tuned
+    # noise floor meant for a reviewer triaging the whole cross-family queue.
+    # #VERIFY: tests/integration/test_review_surface_noise_floor.py (admin
+    # path unchanged); tests/unit/test_approval_unit.py::
+    # test_review_surface_guardian_gets_no_noise_floor.
+    floor = (
+        await load_admin_noise_floor(ctx.session) if ctx.principal.is_admin else None
+    )
     return build_review_surface(
         status=book.status,
         storybook_id=storybook_id,

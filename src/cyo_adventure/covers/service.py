@@ -5,12 +5,18 @@ from __future__ import annotations
 import asyncio
 import time
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Protocol
 
 import structlog
 from sqlalchemy import select
 
+from cyo_adventure.core.exceptions import (
+    AuthorizationError,
+    BusinessLogicError,
+    ResourceNotFoundError,
+)
 from cyo_adventure.covers.optimize import optimize_cover as _optimize_cover
 from cyo_adventure.covers.prompt import build_cover_prompt
 from cyo_adventure.covers.provider import generate_cover_image
@@ -29,6 +35,7 @@ if TYPE_CHECKING:
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
+    from cyo_adventure.api.deps import Principal
     from cyo_adventure.core.config import Settings
 
 _logger = structlog.get_logger(__name__)
@@ -152,13 +159,46 @@ async def generate_cover(
 ) -> None:
     """Generate, optimize, upload, and record a cover for one story version.
 
-    Sets ``cover_status`` to ``generating`` first (committed), then ``ready`` on
-    success or ``failed`` on any error. Never raises; mirrors the generation
-    worker's own-session/explicit-commit discipline.
+    Sets ``cover_status`` to ``generating`` first (committed), then
+    ``pending_review`` on success or ``failed`` on any error. Never raises;
+    mirrors the generation worker's own-session/explicit-commit discipline.
+
+    A successful generation deliberately stops at ``pending_review``, not
+    ``ready`` (H2, security-hardening-plan-2026-07.md): before this fix, a
+    generated image reached every assigned child's library card the moment
+    the provider returned it, with the only safety net being the provider's
+    own refusal behavior and the prose guardrails in
+    ``covers/prompt.py``. ``covers.service.approve_cover`` is now the sole
+    path from ``pending_review`` to ``ready``, and every API read path that
+    can hand a client a cover URL gates on ``cover_status == "ready"``
+    (``api/library.py``, ``api/recommendations.py``, ``api/covers.py``), so
+    no API response carries a pending_review cover's URL until that
+    approval happens.
+
+    Scope of that guarantee: it covers the API surface, not the stored
+    bytes. The R2 object key is deterministic
+    (``covers/storage.py::cover_object_key``), so anyone who can guess
+    ``{storybook_id}/{version}.webp`` reaches the image directly if the
+    bucket is publicly served. Keeping the bucket private is a separate,
+    infrastructure-side control; see the ``#CRITICAL: security`` invariant
+    at the top of ``covers/storage.py``.
     """
     # #CRITICAL: concurrency: this runs in the worker's own AsyncSession, not the
     # request unit-of-work; it commits explicitly at each state transition.
-    # #VERIFY: sets generating->commit, then ready->commit, or failed->commit.
+    # #VERIFY: sets generating->commit, then pending_review->commit, or
+    # failed->commit.
+    # #CRITICAL: security: H2 fix, human-approval half. An automated
+    # image-safety classifier (the moderation/ analogue of the story-text
+    # gate) does NOT exist in this codebase yet and is deliberately out of
+    # scope for this change (a real image-classifier integration is a much
+    # larger, separately-scoped piece of work); human approval via
+    # approve_cover is the sole gate right now, not a second independent
+    # layer the way text has validator+moderation+approval.
+    # #VERIFY: before removing this marker, confirm an automated
+    # image-safety check runs (and can BLOCK) between the provider's
+    # response and cover_status="pending_review" below, then update this
+    # docstring and the H2 status line in
+    # docs/planning/security-hardening-plan-2026-07.md accordingly.
     row = await session.get(StorybookVersion, (storybook_id, version))
     if row is None:
         _logger.warning(
@@ -192,7 +232,7 @@ async def generate_cover(
         key = cover_object_key(storybook_id, version)
         public_url = await upload(optimized, key, settings)
         row.cover_image_url = f"{public_url}?v={int(time.time())}"
-        row.cover_status = "ready"
+        row.cover_status = "pending_review"
         await session.commit()
     except Exception:
         await session.rollback()
@@ -203,3 +243,77 @@ async def generate_cover(
         _logger.exception(
             "cover_generation_failed", storybook_id=storybook_id, version=version
         )
+
+
+async def approve_cover(
+    session: AsyncSession,
+    principal: Principal,
+    storybook_id: str,
+    version: int,
+) -> StorybookVersion:
+    """Approve a pending-review cover, stamping approval provenance.
+
+    The human-approval half of the H2 fix
+    (``docs/planning/security-hardening-plan-2026-07.md``): a generated
+    cover stops at ``cover_status == "pending_review"`` (``generate_cover``,
+    above) and cannot become ``"ready"``, the only status api/library.py
+    will surface to a child's library card, without an explicit admin
+    approval recorded here. Mirrors how ``publishing.service.approve``
+    stamps ``approved_by``/``published_at`` for story text.
+
+    Args:
+        session: The request session (caller owns the transaction; this
+            function flushes but never commits, per the package's
+            handlers-never-commit unit-of-work convention).
+        principal: The approving admin.
+        storybook_id: The story whose cover is being approved.
+        version: The version number of the cover being approved.
+
+    Returns:
+        StorybookVersion: The stamped version row.
+
+    Raises:
+        AuthorizationError: If ``principal`` does not hold the admin
+            capability. api/covers.py's ``_require_admin`` already gates on
+            this before calling; this is a defense-in-depth re-check at the
+            service boundary, mirroring ``publishing.service.approve``.
+        ResourceNotFoundError: If the version row does not exist.
+        BusinessLogicError: If the cover is not currently
+            ``"pending_review"`` (never generated, already approved, or a
+            failed/in-flight generation) -- ``rule="cover_approve_not_pending"``.
+    """
+    # #CRITICAL: security: this is the SOLE path that may set
+    # cover_status="ready", and it stamps cover_approved_by/cover_approved_at
+    # in the same operation, so no API read path serves a cover URL to a
+    # child's library card without a recorded human approver (the H2 fix's
+    # core invariant, mirroring the approved_by invariant
+    # publishing.service.approve holds for story text). Direct object-storage
+    # access to the deterministic R2 key is out of this invariant's reach and
+    # is controlled by keeping the bucket private (covers/storage.py).
+    # #VERIFY: tests/integration/test_cover_service.py::
+    # test_approve_cover_sets_ready_and_stamps_approver; a non-admin/wrong-status
+    # rejection is covered by test_approve_cover_rejects_non_admin and
+    # test_approve_cover_rejects_when_not_pending_review.
+    if not principal.is_admin:
+        msg = "admin role required to approve a cover"
+        raise AuthorizationError(msg, required_permission="admin")
+    row = await session.get(StorybookVersion, (storybook_id, version))
+    if row is None:
+        msg = f"version {version} of storybook '{storybook_id}' not found"
+        raise ResourceNotFoundError(
+            msg,
+            resource_type="StorybookVersion",
+            resource_id=f"{storybook_id}:{version}",
+        )
+    if row.cover_status != "pending_review":
+        msg = "cannot approve a cover that is not pending review"
+        raise BusinessLogicError(
+            msg,
+            rule="cover_approve_not_pending",
+            context={"cover_status": row.cover_status},
+        )
+    row.cover_status = "ready"
+    row.cover_approved_by = principal.user_id
+    row.cover_approved_at = datetime.now(UTC)
+    await session.flush()
+    return row

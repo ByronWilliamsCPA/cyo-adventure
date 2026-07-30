@@ -8,6 +8,7 @@ import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
+import { guardianReviewPath } from '../routes'
 import { AssignChildrenDialog } from './AssignChildrenDialog'
 import { makeAssignApi } from './assignApi'
 import { BudgetBanner } from './BudgetBanner'
@@ -526,6 +527,17 @@ export function IntakePage() {
                   >
                     Try again
                   </button>
+                ) : null}
+                {/* G6 (edit half): a row waiting on an admin reviewer always
+                    carries a non-null storybook_id (see statusPill's
+                    mapping), so this link is always live once rendered. */}
+                {pill === 'Waiting for review' && job.storybook_id !== null ? (
+                  <Link
+                    to={guardianReviewPath(job.storybook_id)}
+                    className="intake-request__review"
+                  >
+                    View and edit
+                  </Link>
                 ) : null}
               </li>
             )

@@ -102,3 +102,44 @@ async def test_cover_url_null_when_ready_but_r2_unconfigured(
         item for item in resp.json()["stories"] if item["id"] == seed.storybook_id
     )
     assert story["cover_url"] is None
+
+
+async def test_cover_url_null_when_pending_review_and_not_yet_approved(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A cover pending human approval must never reach a child's library card.
+
+    H2 (security-hardening-plan-2026-07.md) acceptance-criterion-3 test:
+    prior to the H2 fix, ``generate_cover`` wrote ``cover_status = "ready"``
+    directly on a successful generation, which this exact library read would
+    have surfaced as a signed URL. Setting R2 credentials here (unlike the
+    "unconfigured" test above) proves the omission is the status gate, not a
+    missing-config fallback.
+    """
+    monkeypatch.setattr(settings, "r2_account_id", "acct123")
+    monkeypatch.setattr(settings, "r2_access_key_id", "AKIDEXAMPLE")
+    monkeypatch.setattr(settings, "r2_secret_access_key", "secret")
+    monkeypatch.setattr(settings, "r2_bucket", "covers")
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        row.cover_image_url = "https://stale.example/unapproved.webp"
+        row.cover_status = "pending_review"
+        await s.commit()
+
+    with patch("cyo_adventure.covers.storage.boto3.client") as mock_boto:
+        resp = await client.get(
+            f"/api/v1/library?profile_id={seed.child_profile_id}",
+            headers=auth(seed.child_token),
+        )
+    assert resp.status_code == 200
+    story = next(
+        item for item in resp.json()["stories"] if item["id"] == seed.storybook_id
+    )
+    assert story["cover_url"] is None
+    # No presigned URL was ever minted for the unapproved cover: the status
+    # gate short-circuits before storage is ever touched.
+    mock_boto.assert_not_called()

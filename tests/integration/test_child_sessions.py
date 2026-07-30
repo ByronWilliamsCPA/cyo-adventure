@@ -781,3 +781,78 @@ async def test_device_grant_mint_requires_pin_when_set(
         headers=auth(device_token),
     )
     assert right_pin.status_code == 201, right_pin.text
+
+
+# ---------------------------------------------------------------------------
+# ADR-014 known limitation: revocation versus a live child session
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_known_limitation_revoked_device_grant_does_not_invalidate_minted_child_session(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """KNOWN LIMITATION: revoking a device grant does not end a live child session.
+
+    This test pins current behavior; it does not endorse it. Revoking sets
+    ``device_grant.revoked_at`` and ``api/deps.py::_device_principal`` rejects
+    the DEVICE token on its next request, so the device can mint no further
+    sessions. But a child session token already minted is backend-signed and
+    self-contained: ``_child_principal`` performs no database round-trip and
+    the token carries no reference to the grant that minted it, so nothing on
+    the read path can learn the grant is gone. The child therefore keeps
+    authenticating for the rest of ``child_session_ttl_seconds`` (default
+    43,200 seconds, i.e. 12 hours), online, whether or not the device
+    reconnects.
+
+    The no-round-trip child principal is the property that makes offline-first
+    kid reading work, so this is a consequence of ADR-014's decision rather
+    than a defect in its implementation. It is disclosed in ADR-014's
+    "Negative / risks" section and scheduled as ``UW-A43`` in
+    ``docs/planning/unscheduled-work-register.md`` (carry the grant ``jti`` in
+    the child-session claims and check it on the read path). When ``UW-A43``
+    lands, this test MUST fail: that failure is the signal the gap closed, and
+    the assertions below should then be inverted rather than deleted.
+    """
+    grant_resp = await client.post(
+        "/api/v1/device-grants", json={}, headers=auth(seed.guardian_token)
+    )
+    assert grant_resp.status_code == 201, grant_resp.text
+    grant_id = grant_resp.json()["id"]
+    device_token = grant_resp.json()["token"]
+
+    mint_resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id)},
+        headers=auth(device_token),
+    )
+    assert mint_resp.status_code == 201, mint_resp.text
+    child_token = mint_resp.json()["token"]
+
+    revoke_resp = await client.delete(
+        f"/api/v1/device-grants/{grant_id}", headers=auth(seed.guardian_token)
+    )
+    assert revoke_resp.status_code == 204, revoke_resp.text
+
+    # The DEVICE token is dead: the grant is re-read from the database on every
+    # request, so revocation bites immediately on the mint path.
+    remint_resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id)},
+        headers=auth(device_token),
+    )
+    assert remint_resp.status_code == 401, remint_resp.text
+
+    # The already-minted CHILD token is NOT dead: it still identifies its
+    # profile and still reads that profile's library, online.
+    me_resp = await client.get("/api/v1/me", headers=auth(child_token))
+    assert me_resp.status_code == 200, me_resp.text
+    assert me_resp.json()["role"] == "child"
+    assert me_resp.json()["profile_ids"] == [str(seed.child_profile_id)]
+
+    library_resp = await client.get(
+        "/api/v1/library",
+        params={"profile_id": str(seed.child_profile_id)},
+        headers=auth(child_token),
+    )
+    assert library_resp.status_code == 200, library_resp.text

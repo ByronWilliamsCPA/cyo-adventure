@@ -95,6 +95,39 @@ async def test_admin_sets_and_clears_reduce_motion(
     assert patched.json()["reduce_motion"] is False
 
 
+async def test_admin_write_points_reject_a_denylisted_display_name(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """Both admin write points refuse a band-denylisted display_name (422).
+
+    A child's ``display_name`` renders directly into their own story prose and
+    is the one personalization value that never passes through
+    ``storybook/personalization_values.py``, so the denylist at these two
+    routes is the only thing standing between an admin-set name and a
+    published story. The guardian-facing twins in ``api/profiles.py`` have had
+    this covered since they gained the check; these did not, which is how the
+    admin routes ended up carrying a ``#VERIFY`` marker naming a test file
+    that was never written.
+    """
+    created = await client.post(
+        _PROFILES,
+        headers=auth(seed.admin_token),
+        json={
+            "family_id": str(seed.family_id),
+            "display_name": "blood",
+            "age_band": "5-8",
+        },
+    )
+    assert created.status_code == 422, created.text
+
+    patched = await client.patch(
+        f"{_PROFILES}/{seed.child_profile_id}",
+        headers=auth(seed.admin_token),
+        json={"display_name": "blood"},
+    )
+    assert patched.status_code == 422, patched.text
+
+
 async def test_pin_hash_never_serialized_on_update(
     client: AsyncClient, seed: Seed
 ) -> None:

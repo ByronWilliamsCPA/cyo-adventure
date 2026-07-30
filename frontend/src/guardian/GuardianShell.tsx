@@ -160,6 +160,11 @@ export function GuardianShell() {
         {principal?.role === 'guardian' ? (
           <NavLink to="/guardian/connections">Connections</NavLink>
         ) : null}
+        {/* G15: device grants are minted per-family (ConsolePage's own
+            device-setup section is guardian-only for the same reason), so
+            this list is guardian-only too, matching Books/Profiles/Connections
+            above. */}
+        {principal?.role === 'guardian' ? <NavLink to="/guardian/devices">Devices</NavLink> : null}
         {principal?.isAdmin ? <NavLink to={ADMIN_CONSOLE_PATH}>Admin console</NavLink> : null}
       </nav>
       {signOutError ? (

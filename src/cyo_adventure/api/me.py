@@ -27,9 +27,11 @@ from cyo_adventure.core.exceptions import AuthorizationError, BusinessLogicError
 from cyo_adventure.db.models import (
     CATALOG_FAMILY_ID,
     ChildProfile,
+    ChildProfilePersonalization,
     Completion,
     Family,
     KidFlag,
+    PersonalizationDisclosureConsent,
     Rating,
     ReadingState,
     StorybookAssignment,
@@ -89,6 +91,10 @@ def _profile_dict(
         "tts_enabled": row.tts_enabled,
         "content_flag_caps": row.allowed_content_flags,
         "banned_themes": row.banned_themes,
+        # ADR-023 P4 (Task B3): this child's OWN real-name consent rings,
+        # distinct from the per-slot rings inside "personalization" below.
+        "real_name_ring1_enabled": row.real_name_ring1_enabled,
+        "real_name_ring2_enabled": row.real_name_ring2_enabled,
         "created_at": row.created_at.isoformat(),
         "deactivated_at": row.deactivated_at.isoformat()
         if row.deactivated_at is not None
@@ -125,10 +131,22 @@ async def _assemble_family_export(
         )
     ).all()
     profile_ids = [row.id for row in profile_rows]
+    # #ASSUME: data-integrity: a sibling-slot ``value_profile_id`` is
+    # validated at write time to name a profile in the SAME family (design
+    # plan Task B5, step 4), so every referenced profile is already among
+    # ``profile_rows`` and this map never has to fall back to a cross-family
+    # lookup or a ``None`` display name for a live reference.
+    # #VERIFY: tests/unit/test_personalization_values.py (Task B5) pins the
+    # same-family invariant at write time.
+    display_name_by_profile_id = {row.id: row.display_name for row in profile_rows}
     state_by_profile: dict[uuid.UUID, list[dict[str, object]]] = defaultdict(list)
     completions_by_profile: dict[uuid.UUID, list[dict[str, object]]] = defaultdict(list)
     ratings_by_profile: dict[uuid.UUID, list[dict[str, object]]] = defaultdict(list)
     assignments_by_profile: dict[uuid.UUID, list[dict[str, object]]] = defaultdict(list)
+    personalization_by_profile: dict[uuid.UUID, list[dict[str, object]]] = defaultdict(
+        list
+    )
+    consents_by_profile: dict[uuid.UUID, list[dict[str, object]]] = defaultdict(list)
     if profile_ids:
         state_rows = await ctx.session.scalars(
             select(ReadingState).where(ReadingState.child_profile_id.in_(profile_ids))
@@ -179,6 +197,64 @@ async def _assemble_family_export(
                     "created_at": assignment.created_at.isoformat(),
                 }
             )
+        personalization_rows = await ctx.session.scalars(
+            select(ChildProfilePersonalization).where(
+                ChildProfilePersonalization.child_profile_id.in_(profile_ids)
+            )
+        )
+        for personalization in personalization_rows:
+            personalization_by_profile[personalization.child_profile_id].append(
+                {
+                    "slot_type": personalization.slot_type,
+                    "value_text": personalization.value_text,
+                    "value_enum": personalization.value_enum,
+                    "value_profile_id": str(personalization.value_profile_id)
+                    if personalization.value_profile_id is not None
+                    else None,
+                    "value_profile_display_name": display_name_by_profile_id.get(
+                        personalization.value_profile_id
+                    )
+                    if personalization.value_profile_id is not None
+                    else None,
+                    "ring1_enabled": personalization.ring1_enabled,
+                    "ring2_enabled": personalization.ring2_enabled,
+                    "created_at": personalization.created_at.isoformat(),
+                    "updated_at": personalization.updated_at.isoformat(),
+                }
+            )
+        # #CRITICAL: security: this includes TOMBSTONED rows
+        # (family_connection_id IS NULL) on purpose -- a guardian's own
+        # export must be complete even after the connection they consented
+        # on was deleted; the query below applies no filter on that column.
+        # #VERIFY: tests/integration/test_deletion_drill.py::
+        # test_export_includes_personalization_and_disclosure_consent_data.
+        consent_rows = await ctx.session.scalars(
+            select(PersonalizationDisclosureConsent).where(
+                PersonalizationDisclosureConsent.child_profile_id.in_(profile_ids)
+            )
+        )
+        for consent in consent_rows:
+            consents_by_profile[consent.child_profile_id].append(
+                {
+                    "id": str(consent.id),
+                    "family_connection_id": str(consent.family_connection_id)
+                    if consent.family_connection_id is not None
+                    else None,
+                    "connected_family_label": consent.connected_family_label,
+                    "covered_slot_types": consent.covered_slot_types,
+                    "sibling_authority_attested": consent.sibling_authority_attested,
+                    "consent_accepted_at": consent.consent_accepted_at.isoformat()
+                    if consent.consent_accepted_at is not None
+                    else None,
+                    "consent_policy_version": consent.consent_policy_version,
+                    "consent_signer_name": consent.consent_signer_name,
+                    "consent_ip": consent.consent_ip,
+                    "revoked_at": consent.revoked_at.isoformat()
+                    if consent.revoked_at is not None
+                    else None,
+                    "created_at": consent.created_at.isoformat(),
+                }
+            )
     request_rows = await ctx.session.scalars(
         select(StoryRequest)
         .where(StoryRequest.family_id == family_id)
@@ -209,6 +285,8 @@ async def _assemble_family_export(
                     "completions": completions_by_profile[row.id],
                     "ratings": ratings_by_profile[row.id],
                     "assignments": assignments_by_profile[row.id],
+                    "personalization": personalization_by_profile[row.id],
+                    "disclosure_consents": consents_by_profile[row.id],
                 },
             )
             for row in profile_rows
@@ -248,6 +326,15 @@ async def export_my_family(ctx: Context) -> FamilyExportView:
     multi-stage LLM output): that field is admin-only everywhere else in this
     API (``api/generation.py::get_generation_job``), and a plain guardian's
     export must not become a side channel around that restriction.
+
+    Each profile also carries its ADR-023 P4 personalization data (Task B3):
+    every ``ChildProfilePersonalization`` row (a sibling-slot row includes
+    both the referenced profile's id and its display name), the two
+    real-name consent-ring booleans, and every
+    ``PersonalizationDisclosureConsent`` row, including a tombstoned one
+    whose ``family_connection_id`` has gone ``NULL`` because the underlying
+    connection was deleted -- the tombstone is evidence the guardian's own
+    export must keep, not something to hide.
 
     Args:
         ctx: The request context (principal + unit-of-work session).
