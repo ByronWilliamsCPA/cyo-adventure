@@ -16,6 +16,7 @@ from pydantic import ValidationError
 
 from cyo_adventure.api.schemas import (
     PersonalizationSlotBody,
+    PersonalizationValuesView,
     Ring2ConsentGrantBody,
 )
 from cyo_adventure.validator.slots import structural_value_violations
@@ -111,3 +112,11 @@ def test_covered_slot_types_still_reject_an_empty_list() -> None:
     """The pre-existing min_length=1 floor is unchanged by the new bound."""
     with pytest.raises(ValidationError):
         _consent([])
+
+
+def test_values_view_declares_the_two_client_contract_fields() -> None:
+    """Both C0 fields are required, non-nullable, and defaulted for the empty view."""
+    fields = PersonalizationValuesView.model_fields
+
+    assert fields["sentinel_pattern"].annotation is str
+    assert fields["slot_bindings"].annotation == dict[str, str]

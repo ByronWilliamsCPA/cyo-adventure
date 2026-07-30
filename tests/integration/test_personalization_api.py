@@ -31,6 +31,7 @@ from cyo_adventure.db.models import (
     Storybook,
     User,
 )
+from cyo_adventure.storybook.sentinels import SENTINEL_RE
 from tests.integration._event_assertions import assert_single_event
 from tests.integration.conftest import Seed, auth
 
@@ -171,6 +172,18 @@ async def test_put_personalization_round_trip(client: AsyncClient, seed: Seed) -
 async def test_put_personalization_replaces_wholesale(
     client: AsyncClient, seed: Seed
 ) -> None:
+    """A second PUT with fewer slots drops the ones it omits (wholesale replace).
+
+    The second slot in ``first`` used to be a ``dedication`` row carrying
+    ``value_text``; ADR-023 Stage C Task C0e closed that as a free-text hole
+    (``dedication`` is a closed kinship enum, like ``kinship_label``, not
+    guardian-authored prose), so that value now correctly 422s and no longer
+    exercises this test's actual concern (multi-slot wholesale replacement).
+    Swapped for ``pronoun_set``, the one slot type
+    ``storybook/personalization_values.py`` documents as deliberately
+    shape-unconstrained, to keep two slots in the first PUT without relying on
+    a closed vocabulary that ships empty by design.
+    """
     first = {
         "real_name_ring1_enabled": False,
         "real_name_ring2_enabled": False,
@@ -182,8 +195,8 @@ async def test_put_personalization_replaces_wholesale(
                 "ring2_enabled": False,
             },
             {
-                "slot_type": "dedication",
-                "value_text": "For Grandma",
+                "slot_type": "pronoun_set",
+                "value_text": "she/her",
                 "ring1_enabled": True,
                 "ring2_enabled": False,
             },
@@ -614,6 +627,38 @@ async def test_values_no_subject_returns_empty(client: AsyncClient, seed: Seed) 
     assert body["values"] == {}
 
 
+async def test_values_payload_carries_the_sentinel_pattern(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """The client never re-derives the sentinel pattern (risk R9).
+
+    A missing book is one of the universal-empty-payload predicate failures
+    (``get_personalization_values``'s own #CRITICAL note); it is used here
+    because it needs no fixture beyond an authenticated caller, and the field
+    is present on EVERY response, including this one.
+    """
+    resp = await client.get(
+        "/api/v1/storybooks/does-not-exist/personalization-values",
+        headers=auth(seed.guardian_token),
+    )
+
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["sentinel_pattern"] == SENTINEL_RE.pattern
+
+
+async def test_empty_values_payload_carries_no_slot_bindings(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """An empty payload stays uniform: an empty map, never a null or a partial one."""
+    resp = await client.get(
+        "/api/v1/storybooks/does-not-exist/personalization-values",
+        headers=auth(seed.guardian_token),
+    )
+
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["slot_bindings"] == {}
+
+
 async def test_values_ring1_happy_path(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
@@ -652,6 +697,13 @@ async def test_values_ring1_happy_path(
     assert body["ring"] == 1
     assert body["values"]["protagonist_first_name"] == "Ring1 Reader"
     assert body["values"]["pet_name"] == "Waffles"
+    # slot_bindings is the slot-id to slot-type join the resolver needs (C0);
+    # it is a property of the book's contract, identical at both rings.
+    # `_storybook` seeds no GenerationJob, so the contract is unresolvable and
+    # the map is legitimately empty here (the empty-vs-populated case is
+    # covered directly by tests/unit/test_personalizable_slots.py).
+    expected_slot_bindings: dict[str, str] = {}
+    assert body["slot_bindings"] == expected_slot_bindings
 
 
 @pytest.mark.parametrize(
@@ -850,6 +902,13 @@ async def test_values_ring2_happy_path(
     body = resp.json()
     assert body["ring"] == 2
     assert body["values"] == {"pet_name": "Ring2Pet"}
+    # slot_bindings is a property of the book's contract, identical at both
+    # rings; `_build_ring2_scenario` seeds its book through `_storybook`,
+    # which adds no GenerationJob, so the contract is unresolvable and the
+    # map is legitimately empty here (see test_values_ring1_happy_path above
+    # for the same reasoning).
+    expected_slot_bindings: dict[str, str] = {}
+    assert body["slot_bindings"] == expected_slot_bindings
 
 
 async def test_values_ring2_not_dual_consented_empty(

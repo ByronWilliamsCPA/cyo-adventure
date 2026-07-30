@@ -71,6 +71,9 @@ from cyo_adventure.db.models import (
     Storybook,
 )
 from cyo_adventure.events import Actor, EventType, record_event
+from cyo_adventure.moderation.personalizable_slots import (
+    personalizable_slot_fields_for_story,
+)
 from cyo_adventure.publishing.state_machine import Visibility
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.personalization_values import (
@@ -78,6 +81,7 @@ from cyo_adventure.storybook.personalization_values import (
     personalization_value_for_payload,
     validate_personalization_value,
 )
+from cyo_adventure.storybook.sentinels import SENTINEL_RE
 from cyo_adventure.storybook.theme_contract import PERSONALIZATION_FIELDS
 from cyo_adventure.utils.logging import get_logger
 
@@ -147,11 +151,22 @@ _PROTAGONIST_NAME_SLOT = "protagonist_first_name"
 _RING1_POLICY_VERSION = "ring1-no-consent-required"
 
 
-def _empty_values_view() -> PersonalizationValuesView:
-    """Return the universal empty-payload response (plan section 8.4).
+def _empty_values_view(
+    slot_bindings: dict[str, str] | None = None,
+) -> PersonalizationValuesView:
+    """Build the universal empty payload (plan section 8.4).
 
-    Every predicate failure, of any kind, renders identically: this is what
-    keeps the route from leaking whether a subject or a connection exists.
+    Every predicate failure renders this exact shape, so nothing about whether
+    a subject, a connection, or a consent exists is observable in the response.
+
+    Args:
+        slot_bindings: The book's slot-id to slot-type map when the book was
+            resolvable, else None. Defaulting to None (rendered as an empty map)
+            keeps the pre-book failure modes, a missing or unreachable book,
+            from having to invent one.
+
+    Returns:
+        PersonalizationValuesView: The empty payload.
     """
     return PersonalizationValuesView(
         subject_profile_id=None,
@@ -159,6 +174,8 @@ def _empty_values_view() -> PersonalizationValuesView:
         policy_version=None,
         resolved_at=datetime.now(UTC),
         values={},
+        sentinel_pattern=SENTINEL_RE.pattern,
+        slot_bindings=slot_bindings or {},
     )
 
 
@@ -1081,7 +1098,9 @@ async def _ring2_values(
 
 
 async def _resolve_ring1_view(
-    session: AsyncSession, subject: ChildProfile
+    session: AsyncSession,
+    subject: ChildProfile,
+    slot_bindings: dict[str, str],
 ) -> PersonalizationValuesView:
     """Resolve the ring-1 (own-family) values view for a live subject.
 
@@ -1092,22 +1111,26 @@ async def _resolve_ring1_view(
         session: The request session.
         subject: The book's personalization subject (already known to be in
             the caller's own family).
+        slot_bindings: The book's slot-id to slot-type map, resolved once by
+            the caller.
 
     Returns:
         PersonalizationValuesView: The ring-1 payload, or the universal
         empty payload if the subject is not live or has no eligible values.
     """
     if not _is_live(subject):
-        return _empty_values_view()
+        return _empty_values_view(slot_bindings)
     values = await _ring1_values(session, subject)
     if not values:
-        return _empty_values_view()
+        return _empty_values_view(slot_bindings)
     return PersonalizationValuesView(
         subject_profile_id=str(subject.id),
         ring=1,
         policy_version=_RING1_POLICY_VERSION,
         resolved_at=datetime.now(UTC),
         values=values,
+        sentinel_pattern=SENTINEL_RE.pattern,
+        slot_bindings=slot_bindings,
     )
 
 
@@ -1145,7 +1168,10 @@ async def _viewer_receives(session: AsyncSession, caller_family_id: uuid.UUID) -
 
 
 async def _resolve_ring2_view(
-    session: AsyncSession, subject: ChildProfile, caller_family_id: uuid.UUID
+    session: AsyncSession,
+    subject: ChildProfile,
+    caller_family_id: uuid.UUID,
+    slot_bindings: dict[str, str],
 ) -> PersonalizationValuesView:
     """Resolve the ring-2 (cross-family) values view for a subject.
 
@@ -1160,6 +1186,8 @@ async def _resolve_ring2_view(
         subject: The book's personalization subject (already known to be in
             a different family than the caller).
         caller_family_id: The caller's own family id (the viewer side).
+        slot_bindings: The book's slot-id to slot-type map, resolved once by
+            the caller.
 
     Returns:
         PersonalizationValuesView: The ring-2 payload, or the universal
@@ -1173,13 +1201,13 @@ async def _resolve_ring2_view(
         )
     )
     if connection is None:
-        return _empty_values_view()
+        return _empty_values_view(slot_bindings)
     # Condition 0: the viewer-side receive toggle, evaluated before any
     # sharer-side lookup.
     if not await _viewer_receives(session, caller_family_id):
-        return _empty_values_view()
+        return _empty_values_view(slot_bindings)
     if not _is_dual_consented(connection):
-        return _empty_values_view()
+        return _empty_values_view(slot_bindings)
     # #ASSUME: security: the four guards above and this one all return the
     # same empty payload but take observably different amounts of work, so a
     # caller timing the route can tell them apart. That is deliberate, and it
@@ -1205,16 +1233,18 @@ async def _resolve_ring2_view(
     # pins it by making `_ring2_values` raise; a refactor that hoists the
     # value read above this guard fails there rather than silently shipping.
     if not _is_live(subject):
-        return _empty_values_view()
+        return _empty_values_view(slot_bindings)
     values, policy_version = await _ring2_values(session, subject, connection)
     if not values:
-        return _empty_values_view()
+        return _empty_values_view(slot_bindings)
     return PersonalizationValuesView(
         subject_profile_id=str(subject.id),
         ring=2,
         policy_version=policy_version,
         resolved_at=datetime.now(UTC),
         values=values,
+        sentinel_pattern=SENTINEL_RE.pattern,
+        slot_bindings=slot_bindings,
     )
 
 
@@ -1289,8 +1319,14 @@ async def get_personalization_values(
     # than by the visibility rule every other read path enforces.
     if not _book_is_reachable(book, ctx.principal.family_id):
         return _empty_values_view()
+    # Resolved once per call, after reachability and before any subject
+    # lookup: a caller who may not address this book must not be able to
+    # make the server read its skeleton and contract off disk.
+    slot_bindings = await personalizable_slot_fields_for_story(
+        ctx.session, storybook_id
+    )
     if book.personalization_subject_profile_id is None:
-        return _empty_values_view()
+        return _empty_values_view(slot_bindings)
     subject = await ctx.session.get(
         ChildProfile, book.personalization_subject_profile_id
     )
@@ -1311,9 +1347,11 @@ async def get_personalization_values(
             storybook_id=storybook_id,
             subject_profile_id=str(book.personalization_subject_profile_id),
         )
-        return _empty_values_view()
+        return _empty_values_view(slot_bindings)
 
     caller_family_id = ctx.principal.family_id
     if subject.family_id == caller_family_id:
-        return await _resolve_ring1_view(ctx.session, subject)
-    return await _resolve_ring2_view(ctx.session, subject, caller_family_id)
+        return await _resolve_ring1_view(ctx.session, subject, slot_bindings)
+    return await _resolve_ring2_view(
+        ctx.session, subject, caller_family_id, slot_bindings
+    )
