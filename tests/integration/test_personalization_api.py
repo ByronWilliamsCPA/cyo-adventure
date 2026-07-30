@@ -33,7 +33,7 @@ from cyo_adventure.db.models import (
 )
 from cyo_adventure.storybook.sentinels import SENTINEL_RE
 from tests.integration._event_assertions import assert_single_event
-from tests.integration.conftest import Seed, auth
+from tests.integration.conftest import Seed, Stranger, auth, mint_device_token
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -810,7 +810,13 @@ async def test_values_unconnected_family_empty(
     )
     assert resp.status_code == 200, resp.text
     body = resp.json()
+    # Full 8.3 indistinguishability, not just an empty values map: an
+    # unconnected family's response must be byte-identical in shape to every
+    # other predicate-failure empty payload, so nothing here leaks that a
+    # subject or connection exists.
+    assert body["subject_profile_id"] is None
     assert body["ring"] is None
+    assert body["policy_version"] is None
     assert body["values"] == {}
 
 
@@ -1507,6 +1513,421 @@ async def test_values_sibling_omitted_when_sibling_lacks_own_consent(
     body = resp.json()
     assert "sibling_name" not in body["values"]
     assert body["values"]["pet_name"] == "A2Pet"
+
+
+async def test_values_sibling_ring2_empty_when_the_subject_did_not_opt_in(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Design plan 8.8: B opted in and A not returns nothing.
+
+    B's own consent authorizes B's NAME being disclosed; it does not authorize a
+    payload about A. With A's ring-2 flags off and no consent row for A, the whole
+    payload is empty, not "empty except the sibling slot".
+    """
+    async with sessions() as session:
+        sharer = Family(name="Sharer-SubjectOptOut")
+        viewer = Family(name="Viewer-SubjectOptOut")
+        session.add_all([sharer, viewer])
+        await session.flush()
+        subject_a = ChildProfile(
+            family_id=sharer.id, display_name="Subject A OptOut", age_band="10-13"
+        )
+        sibling_b = ChildProfile(
+            family_id=sharer.id,
+            display_name="Sibling B OptOut",
+            age_band="10-13",
+            real_name_ring2_enabled=True,
+        )
+        session.add_all([subject_a, sibling_b])
+        await session.flush()
+        # A's own sibling_name row exists but is NOT ring2-enabled: A never
+        # opted its own household into disclosing this slot.
+        session.add(
+            ChildProfilePersonalization(
+                child_profile_id=subject_a.id,
+                slot_type="sibling_name",
+                value_profile_id=sibling_b.id,
+                ring2_enabled=False,
+            )
+        )
+        sharer_guardian = await _guardian(session, sharer.id, "sharer-guardian-optout")
+        viewer_guardian = await _guardian(session, viewer.id, "viewer-guardian-optout")
+        connection = _connection(
+            viewer.id, sharer.id, viewer_guardian.id, sharer_guardian.id
+        )
+        session.add(connection)
+        await session.flush()
+        # No consent row for A at all. B's own consent covers B's own name;
+        # it has no bearing on anything read from A's side.
+        session.add(
+            PersonalizationDisclosureConsent(
+                child_profile_id=sibling_b.id,
+                family_connection_id=connection.id,
+                covered_slot_types=["protagonist_first_name"],
+                consent_accepted_at=datetime.now(UTC),
+                consent_policy_version="v1",
+                consent_signer_name="Sharer Guardian",
+                consent_ip="127.0.0.1",
+            )
+        )
+        book = await _storybook(session, sharer.id, subject_a.id, visibility="catalog")
+        await session.commit()
+        book_id = book.id
+
+    resp = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth("viewer-guardian-optout"),
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["subject_profile_id"] is None
+    assert body["ring"] is None
+    assert body["policy_version"] is None
+    assert body["values"] == {}
+    assert body["sentinel_pattern"] == SENTINEL_RE.pattern
+    assert body["slot_bindings"] == {}
+
+
+async def test_values_sibling_ring2_empty_when_neither_opted_in(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Design plan 8.8: neither A nor B opted in returns nothing.
+
+    Confirms the shape above does not depend on B's participation: with A
+    holding no sibling_name row at all and B never ring-2 enabled, the
+    payload is the same universal empty shape.
+    """
+    async with sessions() as session:
+        sharer = Family(name="Sharer-NeitherOptIn")
+        viewer = Family(name="Viewer-NeitherOptIn")
+        session.add_all([sharer, viewer])
+        await session.flush()
+        subject_a = ChildProfile(
+            family_id=sharer.id, display_name="Subject A Neither", age_band="10-13"
+        )
+        sibling_b = ChildProfile(
+            family_id=sharer.id, display_name="Sibling B Neither", age_band="10-13"
+        )
+        session.add_all([subject_a, sibling_b])
+        await session.flush()
+        # A has no personalization rows of any kind: no sibling_name slot, no
+        # real-name opt-in. B's real_name_ring2_enabled is left False too.
+        sharer_guardian = await _guardian(session, sharer.id, "sharer-guardian-neither")
+        viewer_guardian = await _guardian(session, viewer.id, "viewer-guardian-neither")
+        connection = _connection(
+            viewer.id, sharer.id, viewer_guardian.id, sharer_guardian.id
+        )
+        session.add(connection)
+        await session.flush()
+        book = await _storybook(session, sharer.id, subject_a.id, visibility="catalog")
+        await session.commit()
+        book_id = book.id
+
+    resp = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth("viewer-guardian-neither"),
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["subject_profile_id"] is None
+    assert body["ring"] is None
+    assert body["policy_version"] is None
+    assert body["values"] == {}
+    assert body["sentinel_pattern"] == SENTINEL_RE.pattern
+    assert body["slot_bindings"] == {}
+
+
+@pytest.mark.parametrize(
+    ("deactivated", "restricted"),
+    [(True, False), (False, True)],
+    ids=["deactivated", "processing_restricted"],
+)
+async def test_values_sibling_ring2_omitted_when_the_sibling_is_not_live(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    deactivated: bool,
+    restricted: bool,
+) -> None:
+    """A deactivated or Article-18-restricted sibling's ring-2 name must not render.
+
+    Mirrors ``test_ring1_sibling_name_is_dropped_when_the_sibling_is_not_live``
+    for ring 2: ``_ring2_sibling_value`` already gates on ``_is_live``, but
+    nothing pinned it directly. A's own protagonist_first_name slot stays
+    present so a fix that collapsed the whole payload to empty, rather than
+    omitting only the sibling slot, would still fail here.
+    """
+    async with sessions() as session:
+        sharer = Family(name="Sharer-Ring2SiblingLiveness")
+        viewer = Family(name="Viewer-Ring2SiblingLiveness")
+        session.add_all([sharer, viewer])
+        await session.flush()
+        subject_a = ChildProfile(
+            family_id=sharer.id,
+            display_name="Ring2 Liveness Subject",
+            age_band="10-13",
+            real_name_ring2_enabled=True,
+        )
+        sibling_b = ChildProfile(
+            family_id=sharer.id,
+            display_name="Ring2 Liveness Sibling",
+            age_band="10-13",
+            real_name_ring2_enabled=True,
+            deactivated_at=datetime.now(UTC) if deactivated else None,
+            processing_restricted_at=datetime.now(UTC) if restricted else None,
+        )
+        session.add_all([subject_a, sibling_b])
+        await session.flush()
+        session.add(
+            ChildProfilePersonalization(
+                child_profile_id=subject_a.id,
+                slot_type="sibling_name",
+                value_profile_id=sibling_b.id,
+                ring2_enabled=True,
+            )
+        )
+        sharer_guardian = await _guardian(
+            session, sharer.id, "sharer-guardian-ring2liveness"
+        )
+        viewer_guardian = await _guardian(
+            session, viewer.id, "viewer-guardian-ring2liveness"
+        )
+        connection = _connection(
+            viewer.id, sharer.id, viewer_guardian.id, sharer_guardian.id
+        )
+        session.add(connection)
+        await session.flush()
+        # A's own consent covers both A's own name and the sibling slot.
+        session.add(
+            PersonalizationDisclosureConsent(
+                child_profile_id=subject_a.id,
+                family_connection_id=connection.id,
+                covered_slot_types=["protagonist_first_name", "sibling_name"],
+                sibling_authority_attested=True,
+                consent_accepted_at=datetime.now(UTC),
+                consent_policy_version="v1",
+                consent_signer_name="Sharer Guardian",
+                consent_ip="127.0.0.1",
+            )
+        )
+        # B's own consent covers B's own name; irrelevant here since B fails
+        # the liveness check before its own settings are ever consulted.
+        session.add(
+            PersonalizationDisclosureConsent(
+                child_profile_id=sibling_b.id,
+                family_connection_id=connection.id,
+                covered_slot_types=["protagonist_first_name"],
+                consent_accepted_at=datetime.now(UTC),
+                consent_policy_version="v1",
+                consent_signer_name="Sharer Guardian",
+                consent_ip="127.0.0.1",
+            )
+        )
+        book = await _storybook(session, sharer.id, subject_a.id, visibility="catalog")
+        await session.commit()
+        book_id = book.id
+
+    resp = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth("viewer-guardian-ring2liveness"),
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["values"]["protagonist_first_name"] == "Ring2 Liveness Subject"
+    assert "sibling_name" not in body["values"], (
+        "a non-live sibling's real name reached a ring-2 payload"
+    )
+
+
+async def test_values_device_principal_in_unrelated_family_empty(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    stranger: Stranger,
+) -> None:
+    """A DEVICE principal gets the empty payload, never a 403.
+
+    This route has no guardian gate (its own docstring's rationale: a kid's
+    tablet must be able to render a personalized book), so a DEVICE-role
+    token minted for a family with no connection to the sharer must land on
+    the same unconnected-family empty payload as any other principal type,
+    not on an authorization error.
+    """
+    async with sessions() as session:
+        book_id, _viewer_token = await _build_ring2_scenario(session)
+
+    device_token = await mint_device_token(client, stranger.guardian_token)
+    resp = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth(device_token),
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["ring"] is None
+    assert body["values"] == {}
+
+
+async def test_values_child_session_in_unrelated_family_empty(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    stranger: Stranger,
+) -> None:
+    """A child session in a family with no connection gets the empty payload.
+
+    ``test_values_child_session_in_viewer_family_succeeds`` above proves a
+    child IN the viewer family can read a full ring-2 payload; this proves
+    the flip side, a child session outside any connection to the sharer,
+    lands on the same empty payload a guardian would, never a 403.
+    """
+    async with sessions() as session:
+        book_id, _viewer_token = await _build_ring2_scenario(session)
+
+    resp = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth(stranger.child_token),
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["ring"] is None
+    assert body["values"] == {}
+
+
+async def test_values_empty_after_the_subject_profile_is_deleted(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Deleting the subject profile is the erasure mechanism (plan 8.2/8.7).
+
+    ``Storybook.personalization_subject_profile_id`` is ON DELETE SET NULL:
+    severing the link, not cascading the book away, is how the subject's
+    erasure request reaches every book that named them.
+    """
+    async with sessions() as session:
+        book_id, viewer_token = await _build_ring2_scenario(session)
+
+    before = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth(viewer_token),
+    )
+    assert before.status_code == 200, before.text
+    assert before.json()["values"] == {"pet_name": "Ring2Pet"}
+
+    async with sessions() as session:
+        book = await session.get(Storybook, book_id)
+        assert book is not None
+        subject_id = book.personalization_subject_profile_id
+        assert subject_id is not None
+        subject = await session.get(ChildProfile, subject_id)
+        assert subject is not None
+        await session.delete(subject)
+        await session.commit()
+
+    after = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth(viewer_token),
+    )
+    assert after.status_code == 200, after.text
+    body = after.json()
+    assert body["subject_profile_id"] is None
+    assert body["ring"] is None
+    assert body["values"] == {}
+
+
+async def test_values_sibling_slot_gone_after_the_sibling_profile_is_deleted(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """B's own profile deletion removes only the sibling slot, not A's payload.
+
+    ``ChildProfilePersonalization.value_profile_id`` is ON DELETE CASCADE:
+    deleting sibling B's profile deletes A's sibling_name row that pointed at
+    B outright, rather than leaving a dangling reference for
+    ``_ring2_sibling_value`` to discover and log at read time. A's own name
+    must still render.
+    """
+    async with sessions() as session:
+        sharer = Family(name="Sharer-SiblingDeletion")
+        viewer = Family(name="Viewer-SiblingDeletion")
+        session.add_all([sharer, viewer])
+        await session.flush()
+        subject_a = ChildProfile(
+            family_id=sharer.id,
+            display_name="Deletion Subject A",
+            age_band="10-13",
+            real_name_ring2_enabled=True,
+        )
+        sibling_b = ChildProfile(
+            family_id=sharer.id,
+            display_name="Deletion Sibling B",
+            age_band="10-13",
+            real_name_ring2_enabled=True,
+        )
+        session.add_all([subject_a, sibling_b])
+        await session.flush()
+        sibling_b_id = sibling_b.id
+        session.add(
+            ChildProfilePersonalization(
+                child_profile_id=subject_a.id,
+                slot_type="sibling_name",
+                value_profile_id=sibling_b.id,
+                ring2_enabled=True,
+            )
+        )
+        sharer_guardian = await _guardian(
+            session, sharer.id, "sharer-guardian-sibdeletion"
+        )
+        viewer_guardian = await _guardian(
+            session, viewer.id, "viewer-guardian-sibdeletion"
+        )
+        connection = _connection(
+            viewer.id, sharer.id, viewer_guardian.id, sharer_guardian.id
+        )
+        session.add(connection)
+        await session.flush()
+        session.add(
+            PersonalizationDisclosureConsent(
+                child_profile_id=subject_a.id,
+                family_connection_id=connection.id,
+                covered_slot_types=["protagonist_first_name", "sibling_name"],
+                sibling_authority_attested=True,
+                consent_accepted_at=datetime.now(UTC),
+                consent_policy_version="v1",
+                consent_signer_name="Sharer Guardian",
+                consent_ip="127.0.0.1",
+            )
+        )
+        session.add(
+            PersonalizationDisclosureConsent(
+                child_profile_id=sibling_b.id,
+                family_connection_id=connection.id,
+                covered_slot_types=["protagonist_first_name"],
+                consent_accepted_at=datetime.now(UTC),
+                consent_policy_version="v1",
+                consent_signer_name="Sharer Guardian",
+                consent_ip="127.0.0.1",
+            )
+        )
+        book = await _storybook(session, sharer.id, subject_a.id, visibility="catalog")
+        await session.commit()
+        book_id = book.id
+
+    before = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth("viewer-guardian-sibdeletion"),
+    )
+    assert before.status_code == 200, before.text
+    assert before.json()["values"]["sibling_name"] == "Deletion Sibling B"
+
+    async with sessions() as session:
+        sibling = await session.get(ChildProfile, sibling_b_id)
+        assert sibling is not None
+        await session.delete(sibling)
+        await session.commit()
+
+    after = await client.get(
+        f"/api/v1/storybooks/{book_id}/personalization-values",
+        headers=auth("viewer-guardian-sibdeletion"),
+    )
+    assert after.status_code == 200, after.text
+    body = after.json()
+    assert body["values"]["protagonist_first_name"] == "Deletion Subject A"
+    assert "sibling_name" not in body["values"]
 
 
 # ---------------------------------------------------------------------------
