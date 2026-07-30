@@ -134,6 +134,15 @@ class CategoryInsight:
     released_versions: int
     override_rate: float | None
     last_seen: datetime
+    # Additive (Stage A of the moderation review redesign, design doc
+    # section 2.5/gap G2a): counts findings whose ``structural`` flag is
+    # True (a pipeline fail-safe, not a genuine content judgment) folded
+    # into this category. Tracked separately from, and never counted
+    # toward, advisory_findings/flag_findings/decided_versions/
+    # override_rate, so a flood of fail-safe verdicts (the mock reviewer,
+    # a down classifier) can never drive suggest_thresholds to raise a
+    # safety threshold on manufactured evidence.
+    structural_findings: int = 0
 
 
 @dataclass(slots=True)
@@ -143,6 +152,7 @@ class _CategoryAccumulator:
     flag_findings: int = 0
     decided_versions: int = 0
     released_versions: int = 0
+    structural_findings: int = 0
 
 
 def _fold_finding_into_accumulator(
@@ -191,6 +201,21 @@ def _fold_finding_into_accumulator(
         accumulators[key] = accumulator
     else:
         accumulator.last_seen = max(record.moderated_at, accumulator.last_seen)
+    # #CRITICAL: security: a structural finding (a pipeline fail-safe: the
+    # Stage-1 reviewer-unavailable collapse, a degraded/incomplete-coverage
+    # classifier finding, or the mock-reviewer advisory) is pipeline noise,
+    # not a genuine content judgment a guardian weighed. Counting it toward
+    # decided_versions/override_rate is exactly gap G2a: a mock-moderated or
+    # degraded-classifier corpus would otherwise look like guardians
+    # systematically overriding a real safety signal and drive
+    # suggest_thresholds to propose raising a threshold on manufactured
+    # evidence. Folding it into structural_findings and returning here,
+    # before the decided/released accounting below, is what keeps it out.
+    # #VERIFY: tests/unit/test_moderation_insights.py::
+    # TestAggregateInsights::test_structural_findings_excluded_from_override_rate.
+    if finding.get("structural") is True:
+        accumulator.structural_findings += 1
+        return
     if verdict == Verdict.ADVISORY.value:
         accumulator.advisory_findings += 1
     else:
@@ -222,6 +247,7 @@ def _build_category_insight(
         released_versions=accumulator.released_versions,
         override_rate=override_rate,
         last_seen=accumulator.last_seen,
+        structural_findings=accumulator.structural_findings,
     )
 
 

@@ -28,8 +28,15 @@ _RELEASED = EventType.RELEASED.value
 _SENT_BACK = EventType.SENT_BACK.value
 
 
-def _finding(category: str, verdict: str) -> dict[str, object]:
-    return {"category": category, "verdict": verdict, "score": 0.5}
+def _finding(
+    category: str, verdict: str, *, structural: bool = False
+) -> dict[str, object]:
+    return {
+        "category": category,
+        "verdict": verdict,
+        "score": 0.5,
+        "structural": structural,
+    }
 
 
 def _record(
@@ -193,6 +200,60 @@ class TestAggregateInsights:
         assert row.decided_versions == 1
         assert row.released_versions == 1
 
+    def test_structural_findings_excluded_from_override_rate(self) -> None:
+        """Gap G2a (design doc section 2.5): a structural fail-safe finding
+        (mock reviewer, degraded classifier) must never be counted toward
+        advisory_findings/flag_findings/decided_versions/override_rate; it is
+        tracked only in structural_findings, so a flood of pipeline noise can
+        never manufacture the evidence suggest_thresholds needs to propose
+        raising a real safety threshold.
+        """
+        records = [
+            _record(
+                findings=[_finding("pipeline", "flag", structural=True)],
+                outcome=VersionOutcome(decided=True, released=True),
+                storybook_id="s_1",
+            ),
+            _record(
+                findings=[_finding("pipeline", "advisory", structural=True)],
+                outcome=VersionOutcome(decided=True, released=True),
+                storybook_id="s_2",
+                moderated_at=_LATER,
+            ),
+        ]
+        insights = aggregate_insights(records)
+        assert len(insights) == 1
+        row = insights[0]
+        assert (row.age_band, row.category) == ("8-11", "pipeline")
+        assert row.advisory_findings == 0
+        assert row.flag_findings == 0
+        assert row.decided_versions == 0
+        assert row.released_versions == 0
+        assert row.override_rate is None
+        assert row.structural_findings == 2
+
+    def test_structural_and_genuine_findings_in_same_category_are_tracked_separately(
+        self,
+    ) -> None:
+        """A category mixing a genuine flag with a structural flag (same
+        (age_band, category) key) folds the genuine finding into the normal
+        counters and the structural one into structural_findings, without
+        either affecting the other."""
+        records = [
+            _record(
+                findings=[
+                    _finding("violence", "flag"),
+                    _finding("violence", "flag", structural=True),
+                ],
+                outcome=VersionOutcome(decided=True, released=True),
+            )
+        ]
+        row = aggregate_insights(records)[0]
+        assert row.flag_findings == 1
+        assert row.structural_findings == 1
+        assert row.decided_versions == 1
+        assert row.released_versions == 1
+
 
 def _insight(
     *,
@@ -278,3 +339,45 @@ class TestSuggestThresholds:
             ("8-11", "violence"),
             ("5-8", "fear"),
         ]
+
+
+class TestStructuralFailSafeContainment:
+    """Gap G2a end-to-end: aggregate_insights -> suggest_thresholds must never
+    propose raising a threshold on a corpus padded with structural fail-safes
+    (design doc section 2.5, last bullet)."""
+
+    def test_mixed_corpus_structural_padding_does_not_manufacture_a_suggestion(
+        self,
+    ) -> None:
+        """Below-gate genuine evidence (SUGGESTION_MIN_DECIDED - 1 decided,
+        all released) plus enough structural-only versions to reach the
+        volume gate if they were (wrongly) counted must still produce no
+        suggestion: the structural findings never enter decided_versions.
+        """
+        genuine_count = SUGGESTION_MIN_DECIDED - 1
+        records = [
+            _record(
+                findings=[_finding("violence", "flag")],
+                outcome=VersionOutcome(decided=True, released=True),
+                storybook_id=f"genuine_{i}",
+            )
+            for i in range(genuine_count)
+        ]
+        # Padding: enough structural-only versions that, if miscounted,
+        # would clear SUGGESTION_MIN_DECIDED on their own.
+        records += [
+            _record(
+                findings=[_finding("violence", "flag", structural=True)],
+                outcome=VersionOutcome(decided=True, released=True),
+                storybook_id=f"structural_{i}",
+            )
+            for i in range(SUGGESTION_MIN_DECIDED)
+        ]
+        insights = aggregate_insights(records)
+        assert len(insights) == 1
+        row = insights[0]
+        assert row.decided_versions == genuine_count
+        assert row.structural_findings == SUGGESTION_MIN_DECIDED
+
+        suggestions = suggest_thresholds(insights, ThresholdPolicy(rows={}))
+        assert suggestions == []
