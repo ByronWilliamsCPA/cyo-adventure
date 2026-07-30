@@ -9,6 +9,7 @@ from botocore.exceptions import BotoCoreError, ClientError
 from cyo_adventure.covers.errors import CoverGenerationError
 from cyo_adventure.covers.storage import (
     cover_object_key,
+    delete_cover,
     generate_presigned_cover_url,
     generate_presigned_cover_urls,
     upload_cover,
@@ -107,9 +108,89 @@ async def test_upload_cover_client_construction_failure_propagates() -> None:
         await upload_cover(b"WEBP", "s1/2.webp", settings)
 
 
+@pytest.mark.asyncio
+async def test_delete_cover_removes_the_object_and_reports_success() -> None:
+    """The happy path issues one DeleteObject against the configured bucket."""
+    mock_client = MagicMock()
+    with patch("cyo_adventure.covers.storage.boto3.client", return_value=mock_client):
+        deleted = await delete_cover("s1/2-abc123.webp", _settings())
+
+    assert deleted is True
+    mock_client.delete_object.assert_called_once_with(
+        Bucket="covers", Key="s1/2-abc123.webp"
+    )
+
+
+@pytest.mark.asyncio
+async def test_delete_cover_does_not_require_public_base_url() -> None:
+    """Reclaiming an object builds no URL, so R2_PUBLIC_BASE_URL is optional."""
+    mock_client = MagicMock()
+    settings = _settings(r2_public_base_url=None)
+    with patch("cyo_adventure.covers.storage.boto3.client", return_value=mock_client):
+        deleted = await delete_cover("s1/2-abc123.webp", settings)
+
+    assert deleted is True
+    mock_client.delete_object.assert_called_once()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "missing_field",
+    ["r2_account_id", "r2_access_key_id", "r2_secret_access_key", "r2_bucket"],
+)
+async def test_delete_cover_returns_false_when_unconfigured(
+    missing_field: str,
+) -> None:
+    """An unconfigured R2 reports the delete did not happen rather than raising:
+    the caller has already committed a replacement cover it must not fail."""
+    unconfigured = _settings(**{missing_field: None})
+    with patch("cyo_adventure.covers.storage.boto3.client") as mock_boto:
+        deleted = await delete_cover("s1/2-abc123.webp", unconfigured)
+
+    assert deleted is False
+    mock_boto.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_delete_cover_returns_false_on_client_error() -> None:
+    """A failed DeleteObject is logged and reported, never raised: the orphan
+    is a bounded exposure, but failing here would strand a live cover."""
+    mock_client = MagicMock()
+    mock_client.delete_object.side_effect = ClientError(
+        {"Error": {"Code": "500", "Message": "boom"}}, "DeleteObject"
+    )
+    with patch("cyo_adventure.covers.storage.boto3.client", return_value=mock_client):
+        deleted = await delete_cover("s1/2-abc123.webp", _settings())
+
+    assert deleted is False
+
+
+@pytest.mark.asyncio
+async def test_delete_cover_returns_false_on_client_construction_failure() -> None:
+    """A boto3 construction failure degrades the same way a call failure does."""
+    with patch(
+        "cyo_adventure.covers.storage.boto3.client", side_effect=BotoCoreError()
+    ):
+        deleted = await delete_cover("s1/2-abc123.webp", _settings())
+
+    assert deleted is False
+
+
 def test_cover_object_key_format() -> None:
-    """The canonical key is the single source of truth every caller shares."""
+    """With no salt, the legacy key is the single source of truth every
+    pre-migration caller shares."""
     assert cover_object_key("s1", 2) == "s1/2.webp"
+
+
+def test_cover_object_key_falls_back_without_salt() -> None:
+    """An explicit None salt behaves the same as omitting the argument."""
+    assert cover_object_key("s1", 2, None) == "s1/2.webp"
+
+
+def test_cover_object_key_includes_salt_when_present() -> None:
+    """UW-M07 defense in depth: a salt makes the key unguessable from
+    (storybook_id, version) alone."""
+    assert cover_object_key("s1", 2, "abc123") == "s1/2-abc123.webp"
 
 
 @pytest.mark.asyncio
@@ -167,6 +248,21 @@ async def test_generate_presigned_cover_url_returns_none_when_unconfigured(
 
 
 @pytest.mark.asyncio
+async def test_generate_presigned_cover_url_signs_the_salted_key_when_present() -> None:
+    """UW-M07: a non-None salt reaches the actual R2 key, not just the key builder."""
+    mock_client = MagicMock()
+    mock_client.generate_presigned_url.return_value = "https://r2.example/signed"
+    with patch("cyo_adventure.covers.storage.boto3.client", return_value=mock_client):
+        await generate_presigned_cover_url("s1", 2, _settings(), salt="abc123")
+
+    mock_client.generate_presigned_url.assert_called_once_with(
+        "get_object",
+        Params={"Bucket": "covers", "Key": "s1/2-abc123.webp"},
+        ExpiresIn=3600,
+    )
+
+
+@pytest.mark.asyncio
 async def test_generate_presigned_cover_url_returns_none_on_client_error() -> None:
     mock_client = MagicMock()
     mock_client.generate_presigned_url.side_effect = ClientError(
@@ -191,7 +287,7 @@ async def test_generate_presigned_cover_urls_batch_signs_every_pair_with_one_cli
         "cyo_adventure.covers.storage.boto3.client", return_value=mock_client
     ) as mock_boto:
         result = await generate_presigned_cover_urls(
-            [("s1", 1), ("s2", 3)], _settings()
+            [("s1", 1, None), ("s2", 3, "saltvalue")], _settings()
         )
 
     assert result == {
@@ -200,6 +296,16 @@ async def test_generate_presigned_cover_urls_batch_signs_every_pair_with_one_cli
     }
     mock_boto.assert_called_once()
     assert mock_client.generate_presigned_url.call_count == 2
+    mock_client.generate_presigned_url.assert_any_call(
+        "get_object",
+        Params={"Bucket": "covers", "Key": "s1/1.webp"},
+        ExpiresIn=3600,
+    )
+    mock_client.generate_presigned_url.assert_any_call(
+        "get_object",
+        Params={"Bucket": "covers", "Key": "s2/3-saltvalue.webp"},
+        ExpiresIn=3600,
+    )
 
 
 @pytest.mark.asyncio
@@ -220,7 +326,7 @@ async def test_generate_presigned_cover_urls_returns_empty_dict_when_unconfigure
     """A misconfigured R2 degrades to no covers shown, not a raised error."""
     unconfigured = _settings(r2_account_id=None)
     with patch("cyo_adventure.covers.storage.boto3.client") as mock_boto:
-        result = await generate_presigned_cover_urls([("s1", 1)], unconfigured)
+        result = await generate_presigned_cover_urls([("s1", 1, None)], unconfigured)
 
     assert result == {}
     mock_boto.assert_not_called()
@@ -235,6 +341,6 @@ async def test_generate_presigned_cover_urls_returns_empty_dict_on_client_error(
         {"Error": {"Code": "500", "Message": "boom"}}, "GeneratePresignedUrl"
     )
     with patch("cyo_adventure.covers.storage.boto3.client", return_value=mock_client):
-        result = await generate_presigned_cover_urls([("s1", 1)], _settings())
+        result = await generate_presigned_cover_urls([("s1", 1, None)], _settings())
 
     assert result == {}

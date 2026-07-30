@@ -999,6 +999,20 @@ class StorybookVersion(CreatedAtMixin, Base):
     cover_status: Mapped[str] = mapped_column(
         String(20), default="none", server_default="none"
     )
+    # #CRITICAL: security: UW-M07 defense-in-depth stopgap. The R2 object key
+    # (covers/storage.py::cover_object_key) was deterministic from
+    # (storybook_id, version) alone, so a public bucket binding (the root
+    # cause, closed at the Cloudflare level 2026-07-30) let anyone who could
+    # guess a storybook id enumerate every cover. This salt, generated once
+    # per cover by covers/service.py::generate_cover, is folded into the key
+    # so knowing storybook_id and version is no longer sufficient even if the
+    # public binding is ever mistakenly restored. NULL for every row created
+    # before this column existed; cover_object_key falls back to the legacy
+    # unsalted key for those so already-uploaded objects keep resolving
+    # without an R2-side rename.
+    # #VERIFY: tests/unit/test_cover_storage.py::
+    # test_cover_object_key_includes_salt_when_present.
+    cover_object_salt: Mapped[str | None] = mapped_column(String(32), default=None)
     # #CRITICAL: security: H2 (security-hardening-plan-2026-07.md) closure --
     # these two columns are the cover-art analogue of approved_by/published_at
     # above: the sole record that a human (not the image provider, not the
