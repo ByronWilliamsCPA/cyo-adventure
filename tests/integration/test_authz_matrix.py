@@ -338,6 +338,15 @@ def _admin_user_create_body(seed: Seed) -> dict[str, Any]:
     }
 
 
+def _guardian_invite_body(_seed: Seed) -> dict[str, Any]:
+    # Same fresh-suffix reasoning as _admin_user_create_body: this endpoint
+    # shares create_pending_invite's duplicate-invite-email guard (409), which
+    # now spans BOTH invite kinds, so a fixed address would collide across
+    # resolutions. No family_id field exists on GuardianInviteBody at all: the
+    # target family is always the caller's own (api/me.py::invite_guardian).
+    return {"email": f"authz-matrix-invite-{uuid.uuid4()}@example.com"}
+
+
 def _admin_user_update_body(_seed: Seed) -> dict[str, Any]:
     return {}
 
@@ -636,6 +645,18 @@ _ROUTE_SPECS: list[RouteSpec] = [
     # -- me.py: Phase 3c/3b, guardian-only (role checked before any DB read) -
     RouteSpec("GET", "/api/v1/me/export", frozenset({Role.GUARDIAN})),
     RouteSpec("DELETE", "/api/v1/me/family", frozenset({Role.GUARDIAN})),
+    # G14 guardian self-service co-parent invite. GUARDIAN only: an admin
+    # invites through POST /admin/users instead (this endpoint has no
+    # family_id, so an admin calling it could only invite into their own
+    # family, which is not what the admin console means). Deliberately NOT in
+    # _CROSS_FAMILY_ROUTE_KEYS: there is no cross-family id to resolve, the
+    # target family is always ctx.principal.family_id.
+    RouteSpec(
+        "POST",
+        "/api/v1/me/family/invite-guardian",
+        frozenset({Role.GUARDIAN}),
+        json_body=_guardian_invite_body,
+    ),
     # -- profiles.py ---------------------------------------------------------
     RouteSpec("GET", "/api/v1/profiles", ALL_ROLES),
     RouteSpec(

@@ -16,6 +16,7 @@ import { useAuth } from '../auth/useAuth'
 import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
 import { ADMIN_CONSOLE_PATH, KID_PICKER_PATH } from '../routes'
+import { InviteCoParentSection } from './InviteCoParentSection'
 
 /** Local UI status for the authorize-device action; independent of childCount's load. */
 type DeviceActionStatus = 'idle' | 'busy' | 'error'
@@ -216,6 +217,7 @@ export function ConsolePage() {
           </ul>
         </nav>
       )}
+      {isAdminOnly ? null : <InviteCoParentSection />}
       {isAdminOnly ? null : (
         <section aria-label="Device setup" className="console-device">
           <h2>This device</h2>
