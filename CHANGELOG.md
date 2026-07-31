@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.55.0] - 2026-07-31
+
+### Features
+
+- **personalization**: First personalizable contract and eligibility stamping (ADR-023 D4)
+  ([#517](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/517),
+  [`d639932`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/d639932f2eb7edf2cac0ede5d65ae9c7023ca7a6))
+
+
 ## [0.54.1] - 2026-07-31
 
 ### Bug Fixes
@@ -2930,6 +2939,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.55.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.54.1...v0.55.0
 [0.54.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.54.0...v0.54.1
 [0.54.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.53.0...v0.54.0
 [0.53.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.52.0...v0.53.0

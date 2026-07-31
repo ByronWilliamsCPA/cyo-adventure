@@ -257,6 +257,8 @@ substantially the same work under different headings. Do not triple-book.
 | UW-C18 | `AL-011` document that L2-13 past 460 nodes is correct, so it is not "fixed" later | doc | unscheduled |
 | UW-C19 | `AL-023` the shipped client never sends `choice_path`, so the server-side engine replay that exists to reject a forged `current_node`/`var_state`/`path` is dormant (`api/reading.py` carries the `#ASSUME` admitting it). Any analytics derived from the client-supplied `path` inherits the same trust problem. | 5 | unscheduled |
 | UW-C20 | `AL-068` `CLOSED_VOCABULARIES` drift guard: a test that fails when a slot type exists in the personalization taxonomy with neither a vocabulary entry nor an explicit free-text exemption, mirroring how the DB CHECK lists are pinned to `PERSONALIZATION_FIELDS`. The immediate instance (`dedication` accepting free text) was fixed fail-closed in Stage C commit `f03c7fdc`. Shipped 2026-07-30 (ADR-023 Task D6, branch `feat/personalization-d6-closed-vocabularies`) in commit `bee0c678`: `tests/unit/test_personalization_vocab_drift.py` gained `test_every_personalization_field_has_a_vocabulary_or_an_exemption`, `test_closed_vocabularies_keys_are_a_subset_of_personalization_fields`, `test_every_closed_vocabulary_is_non_empty`, and `test_exempt_fields_carry_no_vocabulary_entry`. | 5 | done |
+| UW-C21 | `AL-072` pre-push or CI check that a branch's new Supabase migration timestamp prefix is strictly greater than the newest prefix on `origin/main`, so a same-day collision between two concurrent branches (D6's `20260730000000_` colliding with PR #494's migration of the same prefix) fails before merge rather than after. | CI hygiene | unscheduled |
+| UW-C22 | `AL-073` resolve `OLLAMA_CA_BUNDLE` and sibling file-path settings repo-root-relative in `core/config.py` (or build the `--preflight` mode `AL-056` already proposed), so a script run from a git worktree does not fail on a cwd-relative CA-bundle path. Second occurrence of the same defect `UW-C16` already tracks; recorded separately per the linkage contract because it is a distinct lesson row, but the fix is the same work item. | CI hygiene | unscheduled |
 
 ## Cluster D: untracked GitHub issues
 
@@ -391,6 +393,7 @@ not scheduled: that is its accurate state.
 | UW-H05 | `R8` they/them handling deferred; ring-3 aggregate rendering; free-text dedications out of scope | 4b | unscheduled |
 | UW-H06 | Capability rows `G18` and `K20` have no phase home, which is why `S10` and `S11`'s ADR-023 extensions have none either | 4b | unscheduled |
 | UW-H07 | Ring-3 exclusion must land as a test in the S12 work | post-launch | unscheduled |
+| UW-H08 | Task R3's open half: `storybook_version.sentinel_manifest` is written once at persist time and never refreshed when a later in-place blob rewrite changes what the blob carries (`moderation/pipeline.py` adopting a repair, `api/node_edit.py` applying an edit). Both sites now re-derive the sibling `personalization_eligible` boolean from the rewritten blob, so the flag is correct; the manifest can still describe the pre-rewrite blob, which is what `verify_manifest` compares against at rest. `db/models.py` records the gap on the column itself. | 4b | unscheduled |
 
 ## Cluster I: reader UX and player
 
