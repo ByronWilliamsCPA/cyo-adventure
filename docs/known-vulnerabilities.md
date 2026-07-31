@@ -368,6 +368,107 @@ which this project consumes rather than controls.
 - Discovered by the Container Security workflow (Trivy) on
   [PR #394](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/394)
 
+---
+
+## CVE-2026-64287 and 6 further kernel-header CVEs | linux-libc-dev | High
+
+| Field | Value |
+|-------|-------|
+| **CVE ID** | CVE-2026-64287, CVE-2026-64364, CVE-2026-64375, CVE-2026-64434, CVE-2026-64534, CVE-2026-64552, CVE-2026-64558 (High, 7 CVEs, none with a fix on the trixie track) |
+| **Package** | linux-libc-dev (Debian binary package from the `linux` kernel source package) |
+| **Affected Version** | 6.12.96-1+dhi0 (Debian 13 "trixie", DHI mirror build) |
+| **Fixed Version** | No fix available. Debian's tracker records `trixie` and `trixie-security` (6.12.96-1) as `vulnerable` for all seven; the fix landed only in `sid` (7.1.5-1), which this base image does not track |
+| **Severity** | High (all 7, per Trivy/Aqua feed; `Total: 7 (HIGH: 7, CRITICAL: 0)`) |
+| **CVSS Score** | Not yet assigned; the Debian tracker shows no CVSS for any of the seven as of 2026-07-30 |
+| **Discovered** | 2026-07-30 |
+| **Reassessment Due** | 2026-09-28 |
+| **Blocking Release** | No |
+
+### Description
+
+Seven further kernel defects reported against `linux-libc-dev`'s tracked kernel
+source version, newly surfaced after the 34-CVE and 8-CVE sets documented in the
+two blocks above. Like those sets they span unrelated kernel subsystems: ARM64
+KVM pKVM hyp vCPU flushing (CVE-2026-64287), HID multitouch out-of-bounds bit
+access (CVE-2026-64364), `proc` `ptrace_may_access()` locking on FD links
+(CVE-2026-64375), a Bluetooth L2CAP use-after-free in channel timeout
+(CVE-2026-64434), an `nvmet-tcp` digest error path (CVE-2026-64534), a
+`virtio-net` length check in `receive_big()` (CVE-2026-64552), and an s390 `pkey`
+handler length check (CVE-2026-64558). All seven report an empty Fixed Version
+with status `affected`. This is the same `linux-libc-dev` false-positive class as
+the two blocks above: kernel UAPI headers, not a running kernel binary.
+
+Note on the block above: the base image has since advanced from 6.12.95-1+dhi0
+to 6.12.96-1+dhi0, so CVE-2026-53399 and CVE-2026-64600 (the "fix-available"
+pair in the 8-CVE entry) no longer appear in the scan output. That entry's
+fixable subset is closed by the same run that surfaced these seven; the run
+reports these seven as the image's only remaining findings.
+
+### Impact on This Project
+
+Identical to the two `linux-libc-dev` entries above: the package ships kernel
+UAPI headers used at compile time by userspace programs, contains no kernel
+binary, and executes no kernel code at runtime. The container serves a FastAPI
+web application under whatever kernel the Docker host provides, not the kernel
+version recorded in this package's own metadata, so patching or removing this
+package would change nothing about which kernel actually runs.
+
+Not overstating the case: two of the seven name subsystems that plausibly exist
+on a typical container host rather than exotic hardware, namely CVE-2026-64375
+(`proc`/`ptrace`) and CVE-2026-64552 (`virtio-net`). Neither is reachable
+*through this image or this package*; if the Docker host runs an affected
+kernel, the remediation is host kernel patching, which is outside this
+repository and unaffected by anything shipped in the image. The remaining five
+(ARM64 pKVM, HID multitouch, Bluetooth L2CAP, `nvmet-tcp`, s390 `pkey`) address
+hardware and subsystems this deployment does not use at all. Exposure through
+the application surface is negligible.
+
+### Remediation Plan
+
+- [ ] Monitor the [Debian security tracker](https://security-tracker.debian.org/tracker/source-package/linux)
+  for a trixie-track `linux-libc-dev` carrying these fixes, and for the DHI
+  mirror to rebuild against that snapshot. As of 2026-07-30 the fix exists only
+  in `sid` (7.1.5-1), so there is nothing for the mirror to pick up yet.
+- [ ] Once a fixed digest is published, re-run the Container Security scan to
+  confirm the seven have cleared, and remove any suppression added for them.
+- [ ] Tracked in [issue #505](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/505)
+- [ ] Reassess by 2026-09-28
+
+### Why Not Fixed Yet
+
+Same reason as the two blocks above, and confirmed independently rather than
+assumed: Debian's tracker records both `trixie` (6.12.94-1) and
+`trixie-security` (6.12.96-1) as `vulnerable` for all seven, with the fix
+present only in `sid` (7.1.5-1). Trivy's empty Fixed Version column is therefore
+accurate for the release track this base image follows, not a feed gap. The
+package is provided by the hardened base image
+(`ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13`), not managed by this
+project's dependency set, and the DHI runtime image ships no shell and no
+package manager, so it cannot upgrade itself even once a fix exists upstream.
+The only path in is a base-image digest refresh from the
+`ByronWilliamsCPA/container-images` mirror pipeline, which this project consumes
+rather than controls.
+
+**Why `Blocking Release | No` on the evidence of 2026-07-30.** No fixed package
+exists on the trixie track, so holding a release would not buy a remediation; it
+would only stall delivery while the exposure stayed exactly where it is. The
+exposure itself is a compile-time header set with no kernel code path in the
+image, and the running kernel is the host's. Per the Release Gate Policy above
+this is a dated verdict, not a standing exemption: it expires on 2026-09-28, at
+which point the process gate closes the release until the entry is reassessed
+against fresh evidence.
+
+### References
+
+- [Aqua AVD CVE-2026-64287](https://avd.aquasec.com/nvd/cve-2026-64287) (the remaining 6 CVEs follow the same `avd.aquasec.com/nvd/<cve-id>` URL pattern)
+- [Debian security tracker: linux](https://security-tracker.debian.org/tracker/source-package/linux)
+- [Debian security tracker: CVE-2026-64287](https://security-tracker.debian.org/tracker/CVE-2026-64287)
+  (trixie and trixie-security both `vulnerable`; the other 6 follow the same
+  `security-tracker.debian.org/tracker/<CVE-ID>` URL pattern and show the same status)
+- Discovered by the Container Security workflow (Trivy) on
+  [PR #494](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/494),
+  [workflow run 30580773808](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/30580773808)
+
 ## Resolved Entries
 
 | CVE              | Package  | Resolved Date | Resolution                                             |
@@ -485,3 +586,4 @@ re-verified rather than carried forward:
 | 2026-07-19  | Byron Williams | Added linux-libc-dev CVE-2026-43185 (Critical) plus 33 further kernel CVEs (runtime base image; kernel UAPI headers only, no running kernel code; no upstream fix). |
 | 2026-07-24  | Byron Williams | Added 8 further linux-libc-dev kernel-header CVEs from PR #394 Trivy: 6 no-fix (53089/53109/53118/53330/63970/64017) plus 2 tracked-with-fix in 6.12.96-1 not yet in the dhi-python base (53399/64600). |
 | 2026-07-29  | Byron Williams | Reassessed 2 overdue entries; resolved both; added gate ruling.       |
+| 2026-07-30  | Byron Williams | Added 7 further linux-libc-dev kernel-header CVEs from the PR #494 Trivy run (64287/64364/64375/64434/64534/64552/64558); all High, none fixed on the trixie track (fix only in sid 7.1.5-1). Tracked in issue #505. Base advanced to 6.12.96-1+dhi0, which clears CVE-2026-53399/64600 from the prior entry. |
