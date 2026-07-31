@@ -53,8 +53,8 @@ chain, cost, deployment, and inert-control cleanup. Each workstream lands as its
 | H3 | High | ADR-007 retention purge unimplemented | D | [ ] needs re-triage |
 | H4 | High | No fail-fast on the no-op `mock` moderation reviewer | C | [ ] needs re-triage (related: ARCH-H3 classifier-degraded shipped 2026-07-17) |
 | K1 | Keystone | Children share the guardian token in R1 | E | [x] done: child-scoped session + device tokens (PRs #228, #247) |
-| M1 | Medium | Reading/completion routes bypass the assignment read-gate | B | [x] done: assignment EXISTS gate plus current/published/approved-version check added to `get_reading_state`, `put_reading_state`, `record_completion` |
-| M2 | Medium | Guardian blob-fetch skips the assignment gate | B | [x] done: `get_storybook_version` now requires an assignment row for any non-admin caller, not only `role == CHILD` |
+| M1 | Medium | Reading/completion routes bypass the assignment read-gate | B | [x] done: assignment EXISTS gate plus current/published/approved-version check added to `get_reading_state`, `put_reading_state`, `record_completion`; only a cross-family admin action is exempt (`acting_role`, not raw `is_admin`) |
+| M2 | Medium | `get_storybook_version` (the reader blob-fetch path) skips the assignment gate for guardians | B | [x] done: `GET /storybooks/{id}/versions/{v}` now requires an assignment row for any caller not acting as a cross-family admin, not only `role == CHILD`. Scope is that one route: `GET /storybooks/{id}/review-surface` (`api/approval.py`) stays ungated by design, because it is the register-G6 draft-review surface for a guardian's OWN family and a draft under review has no assignment to check |
 | M3 | Medium | Auto-repair skips the deterministic validator gate | B | [ ] needs re-triage |
 | M4 | Medium | Review-model IDs bypass the provider allowlist | F | [ ] needs re-triage |
 | M5 | Medium | PII egress guard is display-name-only; birthdate arm dead | D | [ ] needs re-triage |
@@ -229,19 +229,31 @@ moderation), B3 (repair re-gate) if the diff is large.
         an already-established but since-superseded version remains allowed, guarded by
         `::test_put_reading_state_update_allows_since_superseded_version`).
 
-### M2. Enforce the assignment gate on the guardian blob-fetch path
+### M2. Enforce the assignment gate on `get_storybook_version`, the reader blob-fetch path
 
 - **Severity:** Medium.
+- **Scope.** This finding covers exactly one route, `GET /storybooks/{id}/versions/{v}`
+  (`api/library.py::get_storybook_version`), the path a reader client uses to fetch published story
+  content. It does **not** cover `GET /storybooks/{id}/review-surface`
+  (`api/approval.py::get_review_surface`); see "Deliberate exception" below.
 - **Design gap.** `get_storybook_version` enforces the assignment gate only when
   `principal.role == Role.CHILD` (`api/library.py:406-415`); a guardian principal skips it, and R1
   kids use guardian tokens, so the gate never runs for real child readers.
 - **Attack.** On the guardian token, list `GET /library?profile_id=B` to learn a withheld book's id,
   then `GET /storybooks/{id}/versions/{v}` returns the full blob because role is not CHILD.
 - **Fix approach.** Require a `storybook_assignment` row for an explicit target profile on
-  `get_storybook_version` for any non-admin caller, not only `role == CHILD`. (Interacts with E:
-  distinct child tokens close the R1 exposure directly.)
+  `get_storybook_version` for any caller not acting as a cross-family admin, not only
+  `role == CHILD`. (Interacts with E: distinct child tokens close the R1 exposure directly.)
+- **Deliberate exception.** `GET /storybooks/{id}/review-surface` also returns
+  `version_row.blob` with no assignment gate and no age-band ceiling, and stays that way: it is the
+  register-G6 draft-review surface (admin-global, or guardian scoped to their own family via
+  `_load_review_target`), and an unapproved draft under review has no assignment row to check, so an
+  assignment gate there would forbid the review it exists to enable.
 - **Acceptance criteria.**
-  - [x] Non-admin blob fetch requires an assignment row for a named target profile (test).
+  - [x] Non-admin blob fetch on `get_storybook_version` requires an assignment row for a named
+    target profile (test).
+  - [x] The exemption keys on `principal.acting_role(book.family_id) == Role.ADMIN`, not on the raw
+    `is_admin` capability, so a dual-role adult is gated on their own family (test).
 
 ### M3. Re-run the deterministic validator gate on repaired blobs
 
