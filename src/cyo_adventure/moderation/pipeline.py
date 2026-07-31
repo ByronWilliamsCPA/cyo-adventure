@@ -44,6 +44,7 @@ from cyo_adventure.moderation.stages import (
     run_readability_stage,
     run_safety_stage,
 )
+from cyo_adventure.moderation.synthesis import merge_findings
 from cyo_adventure.publishing import service
 from cyo_adventure.storybook.models import Storybook as StoryModel
 from cyo_adventure.storybook.reinsertion import (
@@ -345,7 +346,7 @@ async def run_moderation_pipeline(
             personalizable_slots=personalizable_slots,
         )
 
-    version_row.moderation_report = report.to_dict()
+    _persist_report(version_row, report)
 
     # #CRITICAL: security: guardian is the FINAL gate (ADR-005); this pipeline
     # calls ONLY submit (clean/repaired) or auto_reject (hard block). It MUST NEVER
@@ -378,6 +379,30 @@ async def run_moderation_pipeline(
             "counts": _verdict_counts(report),
         },
     )
+
+
+def _persist_report(version_row: StorybookVersion, report: ModerationReport) -> None:
+    """Persist the report's merged findings, never the raw unmerged report.
+
+    Runs the deterministic (category, concern) merge stage (design doc 2.2)
+    on a COPY used only for persistence; the caller's in-memory ``report``
+    keeps its raw, unmerged findings so gating flags (``has_hard_block``,
+    ``has_soft_flag``) and the repair loop, which read ``report`` before and
+    after this call, are unaffected. Extracted as the single named write
+    path so a future second call site cannot skip the merge by accident.
+
+    Args:
+        version_row: The storybook version row whose ``moderation_report``
+            JSONB column is written.
+        report: The pipeline's accumulated (unmerged) report.
+    """
+    persisted_report = ModerationReport(
+        findings=merge_findings(report.findings),
+        repaired=report.repaired,
+        reviewer_independent=report.reviewer_independent,
+        nodes_reviewed=report.nodes_reviewed,
+    )
+    version_row.moderation_report = persisted_report.to_dict()
 
 
 def _stamp_mock_reviewer(report: ModerationReport) -> None:

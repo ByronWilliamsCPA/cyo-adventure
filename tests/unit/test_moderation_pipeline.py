@@ -1210,6 +1210,52 @@ async def test_invalid_repair_is_discarded_and_original_report_submits(
 
 
 @pytest.mark.unit
+async def test_persisted_report_merges_identical_findings_across_nodes(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """Task B1.4: the persist site runs merge_findings before persistence.
+
+    Reuses the same "readability flags every node, repair discarded"
+    scenario as test_invalid_repair_is_discarded_and_original_report_submits
+    so the original (unrepaired) report -- one identical reading_level FLAG
+    per node -- is what reaches the persist site. Before the merge stage this
+    would persist one finding per node; after it, the identical
+    (category, concern) findings collapse into a single finding whose
+    node_ids names every affected node.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+
+    generation_provider = MockProvider(responses=[json.dumps({"garbage": True})])
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=generation_provider,
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    assert version.moderation_report is not None
+    findings = cast("list[dict[str, object]]", version.moderation_report["findings"])
+    reading_level_findings = [
+        f for f in findings if f.get("category") == "reading_level"
+    ]
+    assert len(reading_level_findings) == 1
+    merged = reading_level_findings[0]
+    assert merged["node_ids"] is not None
+    assert len(cast("list[str]", merged["node_ids"])) == _NODE_COUNT
+    assert "findings merged" in cast("str", merged["message"])
+
+
+@pytest.mark.unit
 async def test_repair_failing_gate_is_discarded_and_routes_to_human_review(
     mock_session: AsyncMock,
     monkeypatch: pytest.MonkeyPatch,

@@ -193,14 +193,22 @@ def node_verdict_from_report(report: dict[str, Any], node_id: str) -> str:
 
     Returns:
         The most severe verdict among findings whose ``node_id`` matches, or
-        "pass" if no finding references this node (the manifest's
-        node_label_convention: an unlisted node is expected pass, and an
-        unreferenced node here has produced no finding).
+        whose ``node_ids`` list contains ``node_id`` (a merged finding,
+        design doc 2.2: identical (category, concern) findings across
+        several nodes collapse into one finding, keeping ``node_id`` as the
+        first affected node and naming every affected node in
+        ``node_ids``), or "pass" if no finding references this node (the
+        manifest's node_label_convention: an unlisted node is expected pass,
+        and an unreferenced node here has produced no finding).
     """
     findings = report.get("findings", [])
     best = "pass"
     for finding in findings:
-        if finding.get("node_id") != node_id:
+        node_ids = finding.get("node_ids")
+        matches = finding.get("node_id") == node_id or (
+            isinstance(node_ids, list) and node_id in node_ids
+        )
+        if not matches:
             continue
         verdict = finding.get("verdict", "pass")
         if verdict_rank(verdict) > verdict_rank(best):
