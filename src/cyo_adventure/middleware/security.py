@@ -25,6 +25,7 @@ import logging
 import time
 import uuid
 from collections import defaultdict
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final, Literal
 
 import structlog
@@ -848,6 +849,92 @@ class SSRFPreventionMiddleware(BaseHTTPMiddleware):
         return await call_next(request)
 
 
+@dataclass(frozen=True, slots=True)
+class _RateLimitRedisConfig:
+    """The four resolved Redis knobs ``RateLimitMiddleware`` is constructed with.
+
+    A value object rather than four locals so that adding a knob means adding a
+    field here (which every construction site must then supply) instead of
+    quietly widening a parameter list that a caller can forget to pass through.
+    Forgetting is exactly what happened in issue #516.
+
+    Attributes:
+        backend: ``"redis"`` or ``"memory"``.
+        redis_url: The Redis connection URL for the ``"redis"`` backend.
+        timeout_seconds: Socket connect/read timeout for the Redis client.
+        cooldown_seconds: Circuit-breaker window after a Redis error.
+    """
+
+    backend: Literal["redis", "memory"]
+    redis_url: str
+    timeout_seconds: float
+    cooldown_seconds: float
+
+
+def _resolve_rate_limit_redis_config(
+    *,
+    backend: Literal["redis", "memory"] | None,
+    redis_url: str | None,
+    timeout_seconds: float | None,
+    cooldown_seconds: float | None,
+) -> _RateLimitRedisConfig:
+    """Fill any unsupplied rate-limit Redis knob from ``core.config.settings``.
+
+    Args:
+        backend: Explicit backend choice, or None to resolve from settings.
+        redis_url: Explicit Redis URL, or None to resolve from settings.
+        timeout_seconds: Explicit socket timeout, or None to resolve from
+            settings.
+        cooldown_seconds: Explicit circuit-breaker window, or None to resolve
+            from settings.
+
+    Returns:
+        _RateLimitRedisConfig: Every knob resolved to a concrete value.
+
+    #CRITICAL: timing: each value here bounds how much latency an unhealthy
+    Redis can add to the request path, so each must actually REACH the
+    middleware. A knob left unresolved does not fail loudly; it silently pins
+    to RateLimitMiddleware's constructor default and makes the matching env
+    var inert. That is how issue #516 (rate_limit_redis_cooldown_seconds) and
+    its sibling rate_limit_redis_timeout_seconds both went unnoticed: the
+    middleware honoured both parameters, and nothing passed them.
+    #VERIFY: tests/unit/test_security.py::TestAddSecurityMiddleware's
+    *_from_settings / *_overrides_settings tests assert on the CONSTRUCTED
+    middleware's kwargs, so dropping a knob fails a test rather than silently
+    reverting to a default.
+    """
+    # Lazy import: keeps this generic middleware-wiring helper IMPORTABLE
+    # without pulling in Settings (env parsing, validators) at module import
+    # time. This is also what makes the Redis backend the real production
+    # default with NO change needed in app.py::create_app, which calls
+    # add_security_middleware() without any of these kwargs:
+    # Settings.rate_limit_backend defaults to "redis" and Settings.redis_url
+    # is the same URL the RQ task queue uses.
+    #
+    # There is deliberately no all-four-supplied fast path around this import.
+    # One was written and no caller could reach it: create_app supplies none
+    # of the four, and no test supplies all four, so at least one knob always
+    # needs _settings. It bought nothing (the import is already lazy and
+    # module-level `settings` is a process-wide singleton) and cost a failing
+    # patch-coverage gate on the safety-critical component.
+    from cyo_adventure.core.config import settings as _settings
+
+    return _RateLimitRedisConfig(
+        backend=backend if backend is not None else _settings.rate_limit_backend,
+        redis_url=redis_url if redis_url is not None else _settings.redis_url,
+        timeout_seconds=(
+            timeout_seconds
+            if timeout_seconds is not None
+            else _settings.rate_limit_redis_timeout_seconds
+        ),
+        cooldown_seconds=(
+            cooldown_seconds
+            if cooldown_seconds is not None
+            else _settings.rate_limit_redis_cooldown_seconds
+        ),
+    )
+
+
 def add_security_middleware(
     app: FastAPI,
     *,
@@ -861,6 +948,8 @@ def add_security_middleware(
     max_body_bytes: int = _DEFAULT_MAX_BODY_BYTES,
     rate_limit_backend: Literal["redis", "memory"] | None = None,
     redis_url: str | None = None,
+    redis_timeout_seconds: float | None = None,
+    redis_retry_cooldown_seconds: float | None = None,
 ) -> None:
     """Add all security middleware to FastAPI application.
 
@@ -892,6 +981,13 @@ def add_security_middleware(
             ``None``, resolved lazily from ``core.config.settings.redis_url``
             (the same URL the RQ task queue uses) alongside
             ``rate_limit_backend``.
+        redis_timeout_seconds: Socket connect/read timeout for
+            ``RateLimitMiddleware``'s Redis client. When ``None``, resolved
+            lazily from ``core.config.settings.rate_limit_redis_timeout_seconds``.
+        redis_retry_cooldown_seconds: Circuit-breaker window for
+            ``RateLimitMiddleware``: how long a Redis error suppresses further
+            Redis attempts. When ``None``, resolved lazily from
+            ``core.config.settings.rate_limit_redis_cooldown_seconds``.
 
     Example:
         >>> from fastapi import FastAPI
@@ -920,29 +1016,20 @@ def add_security_middleware(
 
     # Rate limiting (OWASP A07)
     if enable_rate_limiting:
-        resolved_backend = rate_limit_backend
-        resolved_redis_url = redis_url
-        if resolved_backend is None or resolved_redis_url is None:
-            # Lazy import: keeps this generic middleware-wiring helper
-            # importable/testable without pulling in Settings (env parsing,
-            # validators) when the caller supplies both values explicitly.
-            # This is also what makes the Redis backend the real production
-            # default with NO change needed in app.py::create_app, which
-            # calls add_security_middleware() without either of these two
-            # kwargs: Settings.rate_limit_backend defaults to "redis" and
-            # Settings.redis_url is the same URL the RQ task queue uses.
-            from cyo_adventure.core.config import settings as _settings
-
-            if resolved_backend is None:
-                resolved_backend = _settings.rate_limit_backend
-            if resolved_redis_url is None:
-                resolved_redis_url = _settings.redis_url
+        redis_config = _resolve_rate_limit_redis_config(
+            backend=rate_limit_backend,
+            redis_url=redis_url,
+            timeout_seconds=redis_timeout_seconds,
+            cooldown_seconds=redis_retry_cooldown_seconds,
+        )
         app.add_middleware(
             RateLimitMiddleware,
             requests_per_minute=rate_limit_rpm,
             burst_size=10,
-            backend=resolved_backend,
-            redis_url=resolved_redis_url,
+            backend=redis_config.backend,
+            redis_url=redis_config.redis_url,
+            redis_timeout_seconds=redis_config.timeout_seconds,
+            redis_retry_cooldown_seconds=redis_config.cooldown_seconds,
         )
 
     # SSRF prevention (OWASP A10)

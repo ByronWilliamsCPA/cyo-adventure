@@ -112,7 +112,7 @@ These map to genuine project source. Triage:
 | File | Count | Likely rule | Assessment |
 | --- | --- | --- | --- |
 | `src/cyo_adventure/generation/import_cli.py` | 1 | Path traversal into `read_text` (line 82) | **False positive.** Code already guards with `resolved.relative_to(cwd)` and a RAD/OWASP-LLM07 comment; Snyk's taint engine does not model `relative_to()` as a sanitizer. |
-| `scripts/check_quality_gate.py` | 1 | SSRF: variable URL into `urlopen` (line 69) | **Low risk.** Code pre-validates `parsed.scheme not in ALLOWED_SCHEMES` (already satisfied Bandit B310). CI-only script hitting SonarCloud, not a request handler. |
+| `scripts/check_quality_gate.py` | 1 | SSRF: variable URL into `urlopen` (line 69) | **Moot as of 2026-07-31.** Was assessed **low risk** (the code pre-validated `parsed.scheme not in ALLOWED_SCHEMES`, already satisfying Bandit B310, in a CI-only script hitting SonarCloud rather than a request handler). The script has since been deleted under UW-F22 (e): no nox session, workflow, or hook invoked it, and the gate it re-implemented is already enforced by the org reusable `python-sonarcloud.yml` workflow. There is no longer a file for this finding to attach to. |
 | `tests/unit/test_worker.py` | 3 | Hardcoded credentials | **False positive.** `openrouter_api_key="test-key"` and `user:password` auth-split fixtures are test literals, not secrets. |
 | `scripts/yield_harness.py` | 3 | Tainted file data into `os.environ` / `write_text` (lines 371, 457) | **Worth a real look.** `_load_env()` reads `KEY=VALUE` lines and writes them into `os.environ`. Intentional for a dev harness, but the one pattern here where untrusted file content mutates process state. |
 | `test_cli_guard.py` (panel label) | 1 | n/a | Did not resolve in the main tree (`test_guarded.py`, `test_pii_guard.py` exist). Likely a worktree-only file or a slightly misread label; another symptom of worktrees being in scan scope. |
@@ -206,9 +206,10 @@ only reachable through a dev extra never ships to users and is not an emergency.
 
 Codify that Snyk Code suppressions follow the existing CLAUDE.md rule: inline
 ignore with a documented justification, paired with a tracking reference where a
-real fix is expected. The `import_cli.py` traversal guard and
-`check_quality_gate.py` scheme check are the model: the mitigation lives in code,
-and the suppression cites it.
+real fix is expected. The `import_cli.py` traversal guard is the model: the
+mitigation lives in code, and the suppression cites it. (This section originally
+cited `check_quality_gate.py`'s scheme check as a second example; that script was
+deleted on 2026-07-31 under UW-F22 (e).)
 
 ### F. Clean up org/target naming
 

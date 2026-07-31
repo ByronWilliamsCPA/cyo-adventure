@@ -30,6 +30,7 @@ from cyo_adventure.generation.authoring_metadata import (
     SKELETON_BAND_KEY,
     SKELETON_SLUG_KEY,
     VARIATION_AXIS_KEY,
+    SkeletonAuthoringMetadata,
 )
 from cyo_adventure.generation.skeleton_match import (
     candidates_for_cell,
@@ -231,7 +232,7 @@ def eligibility_warnings(
 
 async def _automated_provider_metadata(
     session: AsyncSession, plan: AuthoringPlanRequest
-) -> dict[str, object] | None:
+) -> SkeletonAuthoringMetadata | None:
     """Validate an automated_provider choice and return its authoring_metadata.
 
     Returns ``None`` for any non-automated_provider mechanism (nothing to
@@ -274,7 +275,7 @@ async def _automated_provider_metadata(
             "enabled allowlist entry"
         )
         raise ValidationError(msg, field="model", value=plan.model)
-    return {"provider": plan.provider, "model": plan.model}
+    return SkeletonAuthoringMetadata(provider=plan.provider, model=plan.model)
 
 
 @dataclass(frozen=True, slots=True)
@@ -598,8 +599,12 @@ async def build_authoring_plan(
         # reproduces it. Deterministic on purpose: a randomly-drawn axis would
         # confound every before-and-after comparison of its effect.
         axis = select_axis(str(request.id))
-        authoring_metadata = {
-            **(authoring_metadata or {}),
+        # Annotated, not bare: SkeletonAuthoringMetadata is the declared shape
+        # of this dict, and applying it here is what keeps the two in step. It
+        # was documentation-only until 2026-07-31 (UW-F22 d) and had drifted by
+        # four keys and four nullabilities, because nothing checked it.
+        skeleton_metadata: SkeletonAuthoringMetadata = {
+            **(authoring_metadata or SkeletonAuthoringMetadata()),
             SKELETON_SLUG_KEY: skeleton_slug,
             SKELETON_BAND_KEY: skeleton_band,
             SKELETON_ALTERNATIVES_KEY: persisted_alternatives,
@@ -615,14 +620,19 @@ async def build_authoring_plan(
             concept_id=concept.id,
             status=status,
             model=prep_model,
-            authoring_metadata=authoring_metadata,
+            # dict(): the JSONB column is dict[str, object]; a TypedDict is not
+            # assignable to it (mutable-value invariance), so the shape is
+            # checked here and widened at the boundary.
+            authoring_metadata=dict(skeleton_metadata),
         )
     else:
         job = GenerationJob(
             concept_id=concept.id,
             status="queued",
             model=prep_model,
-            authoring_metadata=authoring_metadata,
+            authoring_metadata=(
+                dict(authoring_metadata) if authoring_metadata is not None else None
+            ),
         )
 
     session.add(job)

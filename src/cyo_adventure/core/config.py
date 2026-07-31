@@ -327,11 +327,23 @@ class Settings(BaseSettings):
     # #CRITICAL: timing: RateLimitMiddleware.dispatch runs on every request; a
     # slow/black-holed Redis connection must not add unbounded latency to the
     # request path while stuck waiting for a socket. Both socket_connect_timeout
-    # and socket_timeout on the redis client are set from this value.
+    # and socket_timeout are set from this value on BOTH redis clients: the
+    # middleware's (via add_security_middleware) and api/health.py's readiness
+    # probe. Until the #516 sweep it reached only the health probe, so the
+    # middleware ran at its constructor default and this env var was inert
+    # for the request path this comment describes.
     # #VERIFY: tests/unit/test_security.py::test_redis_backend_falls_back_to_memory_on_connection_error
-    # exercises the fallback path this bound protects.
+    # exercises the fallback path this bound protects, and
+    # ::test_add_security_middleware_resolves_redis_timeout_from_settings
+    # asserts the value actually reaches the middleware.
+    # #EDGE: data-integrity: ge=0.0 exists because this value only started
+    # reaching the middleware in the #516 sweep. While it was inert a negative
+    # was harmless; now it is a socket timeout, so reject it at parse time
+    # rather than at the first Redis call.
     rate_limit_redis_timeout_seconds: float = Field(
-        default=0.5, validation_alias="CYO_ADVENTURE_RATE_LIMIT_REDIS_TIMEOUT_SECONDS"
+        default=0.5,
+        ge=0.0,
+        validation_alias="CYO_ADVENTURE_RATE_LIMIT_REDIS_TIMEOUT_SECONDS",
     )
     # #CRITICAL: timing: once a Redis error is observed, RateLimitMiddleware
     # stops retrying Redis for this many seconds and serves every request from
@@ -339,8 +351,23 @@ class Settings(BaseSettings):
     # outage would pay rate_limit_redis_timeout_seconds of added latency on
     # EVERY request, not just the first.
     # #VERIFY: tests/unit/test_security.py::test_redis_backend_circuit_breaker_skips_retry_during_cooldown
+    # proves the middleware HONOURS the window, and
+    # ::test_add_security_middleware_resolves_redis_cooldown_from_settings
+    # proves the application SUPPLIES it. Issue #516 existed because only the
+    # first kind of test was present: it constructs the middleware directly, so
+    # it passed for months while add_security_middleware never passed the value.
+    # #CRITICAL: security: ge=0.0 is load-bearing, not defensive tidiness. The
+    # breaker is armed by `self._redis_unavailable_until = current_time +
+    # cooldown_seconds`; a negative value lands that instant in the PAST, so
+    # every request re-tries a dead Redis and pays the full timeout. That is
+    # precisely the failure the #CRITICAL note above says the breaker exists
+    # to prevent, and it became reachable only when this sweep made the env
+    # var live.
+    # #VERIFY: tests/unit/test_config.py::test_rate_limit_redis_bounds_reject_negative
     rate_limit_redis_cooldown_seconds: float = Field(
-        default=5.0, validation_alias="CYO_ADVENTURE_RATE_LIMIT_REDIS_COOLDOWN_SECONDS"
+        default=5.0,
+        ge=0.0,
+        validation_alias="CYO_ADVENTURE_RATE_LIMIT_REDIS_COOLDOWN_SECONDS",
     )
     # #CRITICAL: timing: RQ's own default job_timeout is 180s; a live Ollama run
     # (see ollama_timeout_seconds's cold-start note) routinely exceeds that, so an
@@ -588,8 +615,16 @@ class Settings(BaseSettings):
     # below fails fast outside "local", and api/deps.py's own import-time guard is a
     # second check against the same invariant for the mocked-settings test scenario.
     oidc_issuer: str | None = Field(default=None, validation_alias="OIDC_ISSUER")
+    # Default sourced from the registry member rather than repeating the
+    # literal, so the two copies of "authenticated" cannot drift apart. The
+    # member's own docstring already claims it "mirrors the default of
+    # settings.oidc_audience"; referencing it here is what makes that claim
+    # enforced rather than aspirational. The setting stays operator-overridable
+    # (it is the one audience the backend does not mint), which is why it is a
+    # default and not a constant, and why GUARDIAN_OIDC is deliberately absent
+    # from the distinctness validator below (see its rationale and issue #251).
     oidc_audience: str = Field(
-        default="authenticated", validation_alias="OIDC_AUDIENCE"
+        default=TokenAudience.GUARDIAN_OIDC.value, validation_alias="OIDC_AUDIENCE"
     )
     oidc_jwks_url: str | None = Field(default=None, validation_alias="OIDC_JWKS_URL")
     # Signature-algorithm allowlist for bearer-token verification (ADR-013:

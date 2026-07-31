@@ -1331,6 +1331,179 @@ class TestAddSecurityMiddleware:
         )
         assert rate_limit_mw.kwargs["backend"] == "memory"
 
+    @pytest.mark.unit
+    def test_add_security_middleware_resolves_redis_cooldown_from_settings(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """add_security_middleware(app), called with no explicit
+        redis_retry_cooldown_seconds (exactly how app.py::create_app calls
+        it), resolves the circuit-breaker window from
+        core.config.settings.rate_limit_redis_cooldown_seconds.
+
+        This asserts the WIRING, not the parameter. The circuit breaker's own
+        behaviour is covered by
+        test_redis_backend_circuit_breaker_skips_retry_during_cooldown, which
+        constructs RateLimitMiddleware directly and so passes whether or not
+        the application ever supplies the value; that gap is what let issue
+        #516 (setting declared, documented, never read) survive. A
+        non-default value is used deliberately so the assertion fails if the
+        wiring is removed and the constructor default silently takes over.
+        """
+        from cyo_adventure.core.config import settings as app_settings
+        from cyo_adventure.middleware.security import (
+            RateLimitMiddleware,
+            add_security_middleware,
+        )
+
+        monkeypatch.setattr(app_settings, "rate_limit_redis_cooldown_seconds", 42.5)
+
+        app = _minimal_app()
+        add_security_middleware(app)
+
+        rate_limit_mw = next(
+            m for m in app.user_middleware if m.cls is RateLimitMiddleware
+        )
+        assert rate_limit_mw.kwargs["redis_retry_cooldown_seconds"] == 42.5
+
+    @pytest.mark.unit
+    def test_add_security_middleware_explicit_redis_cooldown_overrides_settings(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """An explicit redis_retry_cooldown_seconds argument wins over
+        core.config.settings, matching how rate_limit_backend/redis_url
+        behave.
+        """
+        from cyo_adventure.core.config import settings as app_settings
+        from cyo_adventure.middleware.security import (
+            RateLimitMiddleware,
+            add_security_middleware,
+        )
+
+        monkeypatch.setattr(app_settings, "rate_limit_redis_cooldown_seconds", 42.5)
+
+        app = _minimal_app()
+        add_security_middleware(app, redis_retry_cooldown_seconds=7.5)
+
+        rate_limit_mw = next(
+            m for m in app.user_middleware if m.cls is RateLimitMiddleware
+        )
+        assert rate_limit_mw.kwargs["redis_retry_cooldown_seconds"] == 7.5
+
+    @pytest.mark.unit
+    def test_add_security_middleware_resolves_redis_timeout_from_settings(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """add_security_middleware(app) resolves the middleware's Redis socket
+        timeout from core.config.settings.rate_limit_redis_timeout_seconds.
+
+        The same #516-shaped gap as the cooldown, found by the sweep that issue
+        asked for: the setting reached api/health.py's readiness probe client
+        but never RateLimitMiddleware's, even though the setting's own comment
+        describes the middleware's client. Both clients now honour it.
+        """
+        from cyo_adventure.core.config import settings as app_settings
+        from cyo_adventure.middleware.security import (
+            RateLimitMiddleware,
+            add_security_middleware,
+        )
+
+        monkeypatch.setattr(app_settings, "rate_limit_redis_timeout_seconds", 1.25)
+
+        app = _minimal_app()
+        add_security_middleware(app)
+
+        rate_limit_mw = next(
+            m for m in app.user_middleware if m.cls is RateLimitMiddleware
+        )
+        assert rate_limit_mw.kwargs["redis_timeout_seconds"] == 1.25
+
+    @pytest.mark.unit
+    def test_add_security_middleware_explicit_redis_timeout_overrides_settings(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """An explicit redis_timeout_seconds argument wins over settings."""
+        from cyo_adventure.core.config import settings as app_settings
+        from cyo_adventure.middleware.security import (
+            RateLimitMiddleware,
+            add_security_middleware,
+        )
+
+        monkeypatch.setattr(app_settings, "rate_limit_redis_timeout_seconds", 1.25)
+
+        app = _minimal_app()
+        add_security_middleware(app, redis_timeout_seconds=0.25)
+
+        rate_limit_mw = next(
+            m for m in app.user_middleware if m.cls is RateLimitMiddleware
+        )
+        assert rate_limit_mw.kwargs["redis_timeout_seconds"] == 0.25
+
+    @pytest.mark.unit
+    def test_explicit_redis_knobs_survive_middleware_construction(self) -> None:
+        """Drive a real request so the middleware is CONSTRUCTED, not merely
+        registered.
+
+        The four *_from_settings / *_overrides_settings tests above assert on
+        ``app.user_middleware[...].kwargs``, which Starlette records verbatim
+        and does NOT validate: it defers instantiation to the first request.
+        They therefore catch a DROPPED kwarg (KeyError on the dict) but not a
+        RENAMED one, because a stale name in add_security_middleware's call
+        still lands in that dict unchallenged. Renaming
+        RateLimitMiddleware.__init__'s ``redis_timeout_seconds`` parameter
+        leaves all four green; only a request through TestClient surfaces
+        ``TypeError: __init__() got an unexpected keyword argument``.
+
+        Memory backend keeps this a unit test with no Redis dependency; the
+        kwargs still flow through __init__ either way, which is the point.
+        """
+        from cyo_adventure.middleware.security import add_security_middleware
+
+        app = _minimal_app()
+        add_security_middleware(
+            app,
+            rate_limit_backend="memory",
+            redis_url="redis://unused:6379/0",
+            redis_timeout_seconds=0.25,
+            redis_retry_cooldown_seconds=7.5,
+        )
+
+        response = TestClient(app, raise_server_exceptions=True).get("/")
+
+        assert response.status_code == 200
+
+    @pytest.mark.unit
+    def test_explicit_zero_redis_knobs_are_not_replaced_by_settings(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """An explicit 0 is a valid value and must not fall through to
+        settings.
+
+        _resolve_rate_limit_redis_config resolves each knob with
+        ``is not None``, so this passes today. It is pinned because the
+        tempting shortening to ``timeout_seconds or _settings.…`` would
+        silently reintroduce the exact #516 shape for a falsy-but-valid 0:
+        the value supplied, the code ignoring it, and no test objecting.
+        """
+        from cyo_adventure.core.config import settings as app_settings
+        from cyo_adventure.middleware.security import (
+            RateLimitMiddleware,
+            add_security_middleware,
+        )
+
+        monkeypatch.setattr(app_settings, "rate_limit_redis_timeout_seconds", 1.25)
+        monkeypatch.setattr(app_settings, "rate_limit_redis_cooldown_seconds", 42.5)
+
+        app = _minimal_app()
+        add_security_middleware(
+            app, redis_timeout_seconds=0, redis_retry_cooldown_seconds=0
+        )
+
+        rate_limit_mw = next(
+            m for m in app.user_middleware if m.cls is RateLimitMiddleware
+        )
+        assert rate_limit_mw.kwargs["redis_timeout_seconds"] == 0
+        assert rate_limit_mw.kwargs["redis_retry_cooldown_seconds"] == 0
+
 
 # ---------------------------------------------------------------------------
 # Settings.rate_limit_backend and related Redis rate-limit config
