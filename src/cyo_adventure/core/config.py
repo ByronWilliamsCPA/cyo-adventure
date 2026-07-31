@@ -336,8 +336,14 @@ class Settings(BaseSettings):
     # exercises the fallback path this bound protects, and
     # ::test_add_security_middleware_resolves_redis_timeout_from_settings
     # asserts the value actually reaches the middleware.
+    # #EDGE: data-integrity: ge=0.0 exists because this value only started
+    # reaching the middleware in the #516 sweep. While it was inert a negative
+    # was harmless; now it is a socket timeout, so reject it at parse time
+    # rather than at the first Redis call.
     rate_limit_redis_timeout_seconds: float = Field(
-        default=0.5, validation_alias="CYO_ADVENTURE_RATE_LIMIT_REDIS_TIMEOUT_SECONDS"
+        default=0.5,
+        ge=0.0,
+        validation_alias="CYO_ADVENTURE_RATE_LIMIT_REDIS_TIMEOUT_SECONDS",
     )
     # #CRITICAL: timing: once a Redis error is observed, RateLimitMiddleware
     # stops retrying Redis for this many seconds and serves every request from
@@ -350,8 +356,18 @@ class Settings(BaseSettings):
     # proves the application SUPPLIES it. Issue #516 existed because only the
     # first kind of test was present: it constructs the middleware directly, so
     # it passed for months while add_security_middleware never passed the value.
+    # #CRITICAL: security: ge=0.0 is load-bearing, not defensive tidiness. The
+    # breaker is armed by `self._redis_unavailable_until = current_time +
+    # cooldown_seconds`; a negative value lands that instant in the PAST, so
+    # every request re-tries a dead Redis and pays the full timeout. That is
+    # precisely the failure the #CRITICAL note above says the breaker exists
+    # to prevent, and it became reachable only when this sweep made the env
+    # var live.
+    # #VERIFY: tests/unit/test_config.py::test_rate_limit_redis_bounds_reject_negative
     rate_limit_redis_cooldown_seconds: float = Field(
-        default=5.0, validation_alias="CYO_ADVENTURE_RATE_LIMIT_REDIS_COOLDOWN_SECONDS"
+        default=5.0,
+        ge=0.0,
+        validation_alias="CYO_ADVENTURE_RATE_LIMIT_REDIS_COOLDOWN_SECONDS",
     )
     # #CRITICAL: timing: RQ's own default job_timeout is 180s; a live Ollama run
     # (see ollama_timeout_seconds's cold-start note) routinely exceeds that, so an

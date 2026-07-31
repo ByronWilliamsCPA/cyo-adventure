@@ -1431,3 +1431,46 @@ class TestDatabasePoolBounds:
 
         with pytest.raises(ValidationError):
             Settings(database_max_overflow=-1)
+
+
+class TestRateLimitRedisBounds:
+    """Lower bounds on the two rate-limit Redis knobs (issue #516 follow-up).
+
+    Both settings were inert until add_security_middleware started passing
+    them, so a bad value used to do nothing. The cooldown now arms a circuit
+    breaker as ``current_time + cooldown_seconds``; a negative value lands
+    that deadline in the PAST, so the breaker never suppresses a retry and a
+    sustained Redis outage pays the socket timeout on every request. That is
+    exactly the cost the field's own #CRITICAL note says the breaker exists
+    to avoid, which is why the bound belongs at parse time rather than at the
+    first Redis call.
+    """
+
+    @pytest.mark.unit
+    def test_rate_limit_redis_bounds_reject_negative(self) -> None:
+        """A negative timeout or cooldown fails the ge=0.0 bound."""
+        from pydantic import ValidationError
+
+        from cyo_adventure.core.config import Settings
+
+        with pytest.raises(ValidationError):
+            Settings(rate_limit_redis_timeout_seconds=-1.0)
+
+        with pytest.raises(ValidationError):
+            Settings(rate_limit_redis_cooldown_seconds=-1.0)
+
+    @pytest.mark.unit
+    def test_rate_limit_redis_bounds_accept_zero(self) -> None:
+        """0 stays legal for both.
+
+        It is how a deployment opts out of the wait entirely, and
+        _resolve_rate_limit_redis_config preserves it (``is not None``, not
+        ``or``), so the bound must not quietly promote 0 into a default.
+        """
+        from cyo_adventure.core.config import Settings
+
+        timeout_settings = Settings(rate_limit_redis_timeout_seconds=0.0)
+        cooldown_settings = Settings(rate_limit_redis_cooldown_seconds=0.0)
+
+        assert timeout_settings.rate_limit_redis_timeout_seconds == 0.0
+        assert cooldown_settings.rate_limit_redis_cooldown_seconds == 0.0

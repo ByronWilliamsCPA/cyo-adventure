@@ -903,26 +903,20 @@ def _resolve_rate_limit_redis_config(
     middleware's kwargs, so dropping a knob fails a test rather than silently
     reverting to a default.
     """
-    if (
-        backend is not None
-        and redis_url is not None
-        and timeout_seconds is not None
-        and cooldown_seconds is not None
-    ):
-        return _RateLimitRedisConfig(
-            backend=backend,
-            redis_url=redis_url,
-            timeout_seconds=timeout_seconds,
-            cooldown_seconds=cooldown_seconds,
-        )
-    # Lazy import: keeps this generic middleware-wiring helper
-    # importable/testable without pulling in Settings (env parsing,
-    # validators) when the caller supplies every value explicitly. This is
-    # also what makes the Redis backend the real production default with NO
-    # change needed in app.py::create_app, which calls
+    # Lazy import: keeps this generic middleware-wiring helper IMPORTABLE
+    # without pulling in Settings (env parsing, validators) at module import
+    # time. This is also what makes the Redis backend the real production
+    # default with NO change needed in app.py::create_app, which calls
     # add_security_middleware() without any of these kwargs:
     # Settings.rate_limit_backend defaults to "redis" and Settings.redis_url
     # is the same URL the RQ task queue uses.
+    #
+    # There is deliberately no all-four-supplied fast path around this import.
+    # One was written and no caller could reach it: create_app supplies none
+    # of the four, and no test supplies all four, so at least one knob always
+    # needs _settings. It bought nothing (the import is already lazy and
+    # module-level `settings` is a process-wide singleton) and cost a failing
+    # patch-coverage gate on the safety-critical component.
     from cyo_adventure.core.config import settings as _settings
 
     return _RateLimitRedisConfig(
