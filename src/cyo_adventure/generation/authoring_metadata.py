@@ -54,19 +54,43 @@ class SkeletonAuthoringMetadata(TypedDict, total=False):
     load ``skeletons/<skeleton_band>/<skeleton_slug>.json`` from the skeleton's
     own directory rather than the request's.
 
+    This class is applied as the annotation on the writer in
+    :func:`cyo_adventure.story_requests.authoring_plan.build_authoring_plan`.
+    That is deliberate and load-bearing. Until 2026-07-31 it was referenced only
+    from a docstring, so nothing checked it against the dict it describes, and
+    it had silently drifted: the four A6/A7 differentiation keys below
+    (``differentiation_level``, ``variation_axis``, ``prior_titles``,
+    ``prior_theme_tags``) were added to this module as key constants and written
+    by the producer without ever being added to this shape, and four scalars
+    declared here as ``str`` were in fact written as ``str | None``. An unapplied
+    TypedDict documents an intention, not a shape; only an annotation a type
+    checker reads can keep the two in step.
+
     Attributes:
         skeleton_slug: The matched or overridden skeleton's filename stem.
-        skeleton_band: The chosen skeleton's real age band (an AgeBand string).
+            ``None`` is written when a skeleton_fill plan resolves no slug.
+        skeleton_band: The chosen skeleton's real age band (an AgeBand string),
+            or None alongside an unresolved ``skeleton_slug``.
         skeleton_alternatives: WS-7 D7 (design section 6.2). The in-cell
             production-eligible skeleton slugs the AUTO-PICK planner considered
             (already sorted), for the worker's bounded alternate-skeleton
             re-route on a bind failure. An ADMIN OVERRIDE persists ``[]``: an
             override is a deliberate pick and must never be silently re-routed.
             Absent/``[]`` for a fresh_generation job.
+        differentiation_level: A6/A7. The ``DifferentiationLevel`` value driving
+            the fill prompt's escalation, or None on the admin-override path
+            where no similarity context is computed.
+        variation_axis: A7. The craft axis drawn for this fill, seeded on the
+            request id so a re-run reproduces it.
+        prior_titles: A6. Published titles of this family's prior stories on the
+            chosen skeleton. Titles only, never premise or request text: that
+            would route one child's words into another child's story.
+        prior_theme_tags: A6. Canonical similarity tags those stories carry,
+            from the closed vocabulary, so this is not free text either.
         provider: The automated GenerationProvider backend id, when applicable.
         model: The provider model id, when applicable.
-        review_stage1_model: The Stage 1 review model choice, if any.
-        review_stage2_model: The Stage 2 review model choice, if any.
+        review_stage1_model: The Stage 1 review model choice, or None.
+        review_stage2_model: The Stage 2 review model choice, or None.
         theme_brief: The concept brief carried through to the fill job.
         slot_bindings: WS-2 theme-contract slot values recorded for a
             parameterized skeleton fill (manual/skill authoring path), so
@@ -76,12 +100,16 @@ class SkeletonAuthoringMetadata(TypedDict, total=False):
             skeleton_fill job, or a pre-WS-2 job.
     """
 
-    skeleton_slug: str
-    skeleton_band: str
+    skeleton_slug: str | None
+    skeleton_band: str | None
     skeleton_alternatives: list[str]
+    differentiation_level: str | None
+    variation_axis: str
+    prior_titles: list[str]
+    prior_theme_tags: list[str]
     provider: str
     model: str
-    review_stage1_model: str
-    review_stage2_model: str
+    review_stage1_model: str | None
+    review_stage2_model: str | None
     theme_brief: dict[str, object]
     slot_bindings: dict[str, str] | None
