@@ -389,6 +389,7 @@ not scheduled: that is its accurate state.
 | UW-H05 | `R8` they/them handling deferred; ring-3 aggregate rendering; free-text dedications out of scope | 4b | unscheduled |
 | UW-H06 | Capability rows `G18` and `K20` have no phase home, which is why `S10` and `S11`'s ADR-023 extensions have none either | 4b | unscheduled |
 | UW-H07 | Ring-3 exclusion must land as a test in the S12 work | post-launch | unscheduled |
+| UW-H08 | Task R3's open half: `storybook_version.sentinel_manifest` is written once at persist time and never refreshed when a later in-place blob rewrite changes what the blob carries (`moderation/pipeline.py` adopting a repair, `api/node_edit.py` applying an edit). Both sites now re-derive the sibling `personalization_eligible` boolean from the rewritten blob, so the flag is correct; the manifest can still describe the pre-rewrite blob, which is what `verify_manifest` compares against at rest. `db/models.py` records the gap on the column itself. | 4b | unscheduled |
 
 ## Cluster I: reader UX and player
 

@@ -1150,17 +1150,18 @@ settings screen says so in as many words. TDD, commit.
   `test_untouched_pilot_blob_passes_verify_manifest` proves the positive case;
   `test_mutated_pilot_blob_fails_verify_manifest` proves three independent at-rest mutations
   (stripped sentinel, partial strip, forged addition in an unrecorded node) each fail
-  `verify_manifest`; `test_zero_hero_coverage_warns_and_does_not_fail` proves the zero-HERO
+  `verify_manifest`; `test_hero_coverage_warns_only_when_hero_is_uncovered` proves the zero-HERO
   soft-floor WARNING mechanism itself fires (calling `_warn_on_zero_coverage_slots` directly)
-  for the pilot's real declared slot set. All three are unit-level proofs against hand-built or
+  for the pilot's real declared slot set, and stays silent once HERO is covered. All three are unit-level proofs against hand-built or
   directly-invoked fixtures carrying the pilot's real slot id and default value, not a live
   pilot-story generation.
 - [x] Generate a pilot story through the live fill pipeline; confirm Variant A/B fire against
   that story's actual generated `sentinel_manifest` (not a hand-built fixture). **DONE
   2026-07-31**, owner-run, script path (not the worker path; see the scope note below). Run
   slug `20260731T173743Z`, provider openrouter with fallback leg
-  `anthropic/claude-haiku-4.5`, artifacts on the owner's machine at
-  `/tmp/d4-pilot-run/20260731T173743Z/` (`report.md`, `reinsertion-report.md`).
+  `anthropic/claude-haiku-4.5`. The run's aggregate numbers are committed, verbatim and
+  sanitized, at [d4-pilot-run-20260731.md](d4-pilot-run-20260731.md); the raw fill prose and
+  the original `/tmp/d4-pilot-run/20260731T173743Z/` tmpdir are not part of the repo.
   `scripts/measure_sentinel_survival.py --count 1` against the pilot skeleton with its now-
   personalizable HERO slot: first-attempt survival 0/1 clean, consistent with the Stage R
   ~3.3% baseline that motivated the reinsertion design in the first place; **not a failure
@@ -1194,7 +1195,8 @@ settings screen says so in as many words. TDD, commit.
 **Pilot audit record (2026-07-31, pre-generation): the-midnight-museum (10-13).**
 
 - **HERO placement count.** `grep -c "{HERO}" skeletons/10-13/the-midnight-museum.json` returns
-  23 occurrences, all inside `<<FILL ...>>` directive text, across 22 nodes: `n_start`,
+  23 occurrences, all inside `<<FILL ...>>` directive text, one each across 23 distinct nodes
+  (the enumerated list below has 23 entries): `n_start`,
   `a_gems_vitrine`, `a_gems_hide`, `b_egypt_torch`, `n_key`, `k_study`, `v_reveal2`,
   `e_set_alarm`, `e_set_stuck_dark`, `e_set_broken_case`, `e_set_jammed_globe`, `e_set_caught`,
   `e_set_dawn`, `e_win_secret_workshop`, `e_win_mystery_solved`, `e_win_quiet_keeper`,
@@ -1202,8 +1204,10 @@ settings screen says so in as many words. TDD, commit.
   `e_neutral_call_home`, `e_neutral_evidence`, `e_neutral_wiser`.
 - **R11 role-safety verdict, per questionable beat.** The contract declares HERO's
   `role_safety` as `"protagonist"`, so R11 requires every placement to avoid casting HERO as
-  antagonist or as the target of a mishap. The nine endings whose `kind`/`valence` metadata
-  marks them non-positive were each read in full:
+  antagonist or as the target of a mishap. The skeleton has 12 endings whose `kind`/`valence`
+  metadata marks them non-positive (9 `setback`/`negative`, 3 `discovery`/`neutral`); the nine
+  of those that carry a `{HERO}` placement, the only ones R11 has anything to say about, were
+  each read in full:
   - `e_set_alarm`, `e_set_stuck_dark`, `e_set_broken_case`, `e_set_jammed_globe`,
     `e_set_caught`, `e_set_dawn` (all `ending.kind == "setback"`,
     `ending.valence == "negative"`): HERO trips an alarm, gets briefly stuck, damages a case,
@@ -1215,7 +1219,7 @@ settings screen says so in as many words. TDD, commit.
     `ending.kind == "discovery"`, `ending.valence == "neutral"`): HERO chooses to call a
     guardian, hand over evidence, or leave having learned something. HERO is the deciding
     actor in each; no antagonist or mishap framing. **Verdict: PASS.**
-  - The remaining 14 placements (opening/setup nodes and the five positive `e_win_*` endings)
+  - The remaining 14 placements (7 opening/setup nodes and all 7 positive `e_win_*` endings)
     place HERO as the story's protagonist throughout, the framing R11 exists to protect.
     **Verdict: PASS.**
   - **Overall: no UNRESOLVED placements.** All 23 `{HERO}` occurrences keep HERO in the
@@ -1249,6 +1253,13 @@ settings screen says so in as many words. TDD, commit.
   book, if ever wanted, is a separate owner-initiated regeneration run. **Ratified by the owner
   2026-07-31: keep `sk_midnight_museum` v1 exactly as is; no migration of the published prod
   book.**
+  - **Tension with ADR-023 section 6, recorded not resolved.** That section grounds "replace by
+    default" in there being no live child-linked production data; the inventory above establishes
+    the opposite (one published book a child may already have read), and that is precisely the
+    reason not to regenerate it. The outcome is permitted by this task's own "everything not
+    migrated stays false" clause and is owner-ratified, so nothing here is blocked, but the ADR
+    clause's stated premise no longer holds and should be amended the next time ADR-023 is
+    revised. Flagged so the next reader does not treat the ADR premise as still-current fact.
 - **Prod-schema note (deploy-relevant, not D4-blocking).** `storybook_version
   .personalization_eligible` does not exist in prod: the ADR-023 Stage B migrations that add it
   have not been applied there (the live column list ends at `skeleton_slug`, 15 columns).
