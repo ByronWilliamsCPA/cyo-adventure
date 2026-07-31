@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import cast
+
 import pytest
 
 from cyo_adventure.moderation.report import (
@@ -194,7 +196,8 @@ def test_to_dict_excludes_pass_findings_from_persisted_findings() -> None:
     report.add(_finding(Verdict.PASS))
     report.add(_finding(Verdict.FLAG))
     payload = report.to_dict()
-    verdicts = [f["verdict"] for f in payload["findings"]]
+    findings = cast("list[dict[str, object]]", payload["findings"])
+    verdicts = [f["verdict"] for f in findings]
     assert verdicts == ["flag"]
 
 
@@ -226,7 +229,8 @@ def test_to_dict_summary_count_excludes_pass_findings() -> None:
     report.add(_finding(Verdict.PASS))
     report.add(_finding(Verdict.FLAG))
     payload = report.to_dict()
-    assert payload["summary"]["count"] == 1
+    summary = cast("dict[str, object]", payload["summary"])
+    assert summary["count"] == 1
 
 
 def test_gating_properties_still_see_pass_findings_in_memory() -> None:
@@ -240,4 +244,5 @@ def test_to_dict_with_no_findings_has_empty_pass_counts_and_zero_summary() -> No
     report = ModerationReport(nodes_reviewed=2)
     payload = report.to_dict()
     assert payload["aggregate"] == {"nodes_reviewed": 2, "pass_counts": {}}
-    assert payload["summary"]["count"] == 0
+    summary = cast("dict[str, object]", payload["summary"])
+    assert summary["count"] == 0
