@@ -288,7 +288,8 @@ async def assign_storybook(
     # a legacy blob with no metadata.age_band, or a profile whose stored
     # age_band string is not a recognized AgeBand, has no ceiling to compare
     # against, and this is not the layer that should invent one.
-    # #VERIFY: test_assign_storybook_rejects_band_above_profile_band (allow
+    # #VERIFY: tests/integration/test_assignments_api.py::
+    # test_assign_storybook_rejects_band_above_profile_band (allow
     # equal/lower band, reject a book banded above the profile).
     book_rank = await _book_age_band_rank(ctx, book)
     if book_rank is not None:

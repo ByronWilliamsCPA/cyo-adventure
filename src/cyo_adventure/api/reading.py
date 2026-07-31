@@ -19,6 +19,7 @@ from sqlalchemy import select
 
 from cyo_adventure.api.deps import (
     Context,
+    Role,
     authorize_family,
     authorize_profile,
 )
@@ -149,6 +150,42 @@ async def _load_readable_storybook(
     return book
 
 
+def _acts_as_admin(ctx: Context, book: Storybook) -> bool:
+    """Return whether the caller carries ADMIN authority over this book.
+
+    # #CRITICAL: security: the M1/H1 gates below must NOT key on the raw
+    # ``is_admin`` capability flag. ``_profile_ids_for`` in deps.py returns an
+    # empty profile set for anyone whose base role is not GUARDIAN, so an
+    # admin-ONLY adult already 403s at ``authorize_profile`` upstream and never
+    # reaches these gates; an ``is_admin`` test therefore fires for exactly one
+    # population, the dual-role adult (role=GUARDIAN + is_admin=True), whose
+    # profile set is their own whole family. That is precisely the population
+    # the gates protect, so an ``is_admin`` exemption would silently disable
+    # them for a dual-role parent's own children. ``acting_role`` collapses
+    # to ADMIN only for a CROSS-family target, so a dual-role adult is fully
+    # gated on their own family and unrestricted on another family's content
+    # (the cross-family review authority the exemption actually exists for).
+    # On these reading routes the ADMIN branch is in fact unreachable today,
+    # because every one of them is entered through ``authorize_profile`` on a
+    # path ``profile_id``, which already confines the caller to profiles in
+    # their OWN family; it is kept as a deliberate mirror of the same gate in
+    # library.py::get_storybook_version, where cross-family draft review IS
+    # reachable, so the two cannot drift apart. Failing closed here is the
+    # safe direction of that redundancy.
+    # #VERIFY: tests/integration/test_reading_state.py::
+    # test_dual_role_adult_is_gated_on_own_family.
+
+    Args:
+        ctx: The request context (principal + session).
+        book: The storybook whose family is the authorization target.
+
+    Returns:
+        bool: ``True`` only when the principal acts on this book in the ADMIN
+            capacity (a cross-family action by an admin-capable adult).
+    """
+    return ctx.principal.acting_role(book.family_id) == Role.ADMIN
+
+
 async def _require_assignment(
     ctx: Context, storybook_id: str, profile_id: uuid.UUID
 ) -> None:
@@ -266,7 +303,7 @@ async def _validate_against_pinned_version(
     if version_row is None:
         msg = f"version {body.version} of '{book.id}' not found"
         raise ResourceNotFoundError(msg)
-    if require_current and not ctx.principal.is_admin:
+    if require_current and not _acts_as_admin(ctx, book):
         _require_current_published_approved(book, version_row, body.version)
     validate_reading_state(
         version_row.blob,
@@ -306,14 +343,15 @@ async def get_reading_state(
     # #CRITICAL: security: M1 (security-hardening-plan-2026-07.md): an own-family
     # book previously passed _load_readable_storybook with no assignment check
     # at all, so a child could read reading-state for any published story in
-    # their own family, assigned or not. Admins are exempt (they manage every
-    # family's assignments; mirrors library.py::get_storybook_version).
+    # their own family, assigned or not. Only a CROSS-family admin action is
+    # exempt (see _acts_as_admin); an admin-capable adult reading their own
+    # family's content is held to the same gate as any other guardian.
     # #VERIFY: tests/integration/test_reading_state.py::
-    # test_get_reading_state_unassigned_story_404.
+    # test_get_reading_state_unassigned_own_family_story_404.
     parsed = _parse_uuid(profile_id, "profile_id")
     authorize_profile(ctx.principal, parsed)
-    await _load_readable_storybook(ctx, storybook_id, parsed)
-    if not ctx.principal.is_admin:
+    book = await _load_readable_storybook(ctx, storybook_id, parsed)
+    if not _acts_as_admin(ctx, book):
         await _require_assignment(ctx, storybook_id, parsed)
     row = await ctx.session.get(ReadingState, (parsed, storybook_id))
     if row is None:
@@ -473,14 +511,14 @@ async def put_reading_state(
     # #CRITICAL: security: M1 (security-hardening-plan-2026-07.md): an
     # own-family book previously passed _load_readable_storybook with no
     # assignment check, so a child could write reading-state for any
-    # published story in their own family, assigned or not. Admins are
-    # exempt (mirrors library.py::get_storybook_version).
+    # published story in their own family, assigned or not. Only a
+    # CROSS-family admin action is exempt (see _acts_as_admin).
     # #VERIFY: tests/integration/test_reading_state.py::
-    # test_put_reading_state_unassigned_story_404.
+    # test_put_reading_state_unassigned_own_family_story_404.
     parsed = _parse_uuid(profile_id, "profile_id")
     authorize_profile(ctx.principal, parsed)
     book = await _load_readable_storybook(ctx, storybook_id, parsed)
-    if not ctx.principal.is_admin:
+    if not _acts_as_admin(ctx, book):
         await _require_assignment(ctx, storybook_id, parsed)
     # #CRITICAL: concurrency: lock the row for the read-modify-write so two
     # concurrent saves for the same profile/story serialize instead of racing the
@@ -606,14 +644,15 @@ async def record_completion(body: CompletionBody, ctx: Context) -> CompletionVie
     # Unlike the reading-state routes, every completion is a fresh pin (no
     # update path), so the current/published/approved check runs
     # unconditionally here rather than behind a require_current flag.
-    # Admins are exempt (mirrors library.py::get_storybook_version).
+    # Only a CROSS-family admin action is exempt (see _acts_as_admin).
     # #VERIFY: tests/integration/test_reading_state.py::
-    # test_record_completion_unassigned_story_404 and
-    # test_record_completion_non_current_version_rejected.
+    # test_record_completion_unassigned_own_family_story_404 and
+    # test_record_completion_rejects_non_current_version_404.
     parsed = _parse_uuid(body.profile_id, "profile_id")
     authorize_profile(ctx.principal, parsed)
     book = await _load_readable_storybook(ctx, body.storybook_id, parsed)
-    if not ctx.principal.is_admin:
+    acts_as_admin = _acts_as_admin(ctx, book)
+    if not acts_as_admin:
         await _require_assignment(ctx, body.storybook_id, parsed)
     version_row = await ctx.session.get(
         StorybookVersion, (body.storybook_id, body.version)
@@ -621,7 +660,7 @@ async def record_completion(body: CompletionBody, ctx: Context) -> CompletionVie
     if version_row is None:
         msg = f"version {body.version} of '{body.storybook_id}' not found"
         raise ResourceNotFoundError(msg)
-    if not ctx.principal.is_admin:
+    if not acts_as_admin:
         _require_current_published_approved(book, version_row, body.version)
     if body.ending_id not in _version_ending_ids(version_row.blob):
         msg = "ending_id does not belong to the cited version"

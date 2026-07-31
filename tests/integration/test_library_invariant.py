@@ -243,6 +243,66 @@ async def test_guardian_can_fetch_assigned_version(
     assert resp.json()["id"] == story_id
 
 
+async def test_dual_role_adult_cannot_fetch_unassigned_own_family_version(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """M2: the admin exemption is capacity-scoped, not capability-scoped.
+
+    ``seed.dual_token`` is a family-A adult holding role=guardian AND
+    is_admin=True. Keying the M2 exemption on the raw ``is_admin`` flag would
+    exempt exactly this principal (an admin-ONLY adult never gets here: their
+    ``profile_ids`` is empty, so ``authorize_profile`` 403s upstream), which
+    silently disables the gate for a dual-role parent's own children. The gate
+    keys on ``acting_role(book.family_id)`` instead, which is GUARDIAN for an
+    own-family target, so this read is 404 exactly like a plain guardian's.
+    """
+    unassigned_id = await _add_approved_unassigned_story(sessions, seed)
+    resp = await client.get(
+        f"/api/v1/storybooks/{unassigned_id}/versions/1",
+        headers=auth(seed.dual_token),
+    )
+    assert resp.status_code == 404, resp.text
+
+
+async def test_dual_role_adult_can_fetch_unassigned_cross_family_version(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """M2 positive control for the capacity split: cross-family reads still pass.
+
+    Same dual-role principal as the test above, but the story belongs to
+    family B, where ``acting_role`` resolves to ADMIN. The cross-family review
+    authority the exemption exists for is preserved, so the narrowing above is
+    a scope fix rather than a blanket removal.
+    """
+    story_id = "cross-family-unassigned"
+    async with sessions() as session:
+        other_profile = await session.get(ChildProfile, seed.other_child_profile_id)
+        assert other_profile is not None
+        session.add(
+            Storybook(
+                id=story_id,
+                family_id=other_profile.family_id,
+                current_published_version=1,
+                status="published",
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob={"id": story_id},
+                approved_by=seed.admin_user_id,
+            )
+        )
+        await session.commit()
+    resp = await client.get(
+        f"/api/v1/storybooks/{story_id}/versions/1",
+        headers=auth(seed.dual_token),
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["id"] == story_id
+
+
 # ---------------------------------------------------------------------------
 # Child read paths honor catalog visibility (Task 13, post-final-review
 # amendment): an assigned cross-family visibility='catalog' book must be fully

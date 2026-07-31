@@ -25,6 +25,7 @@ from sqlalchemy import and_, exists, or_, select, tuple_
 from cyo_adventure.api.deps import (
     CurrentPrincipal,
     DbSession,
+    Role,
     authorize_family,
     authorize_profile,
 )
@@ -368,7 +369,8 @@ async def list_library(
     # own age_band string is not a recognized AgeBand: this is a filter on
     # top of the existing family/assignment gates, not a new hard dependency
     # on band data being present.
-    # #VERIFY: test_list_library_hides_book_banded_above_profile.
+    # #VERIFY: tests/integration/test_library_invariant.py::
+    # test_list_library_hides_book_banded_above_profile.
     profile = await session.get(ChildProfile, parsed)
     profile_rank = (
         parse_age_band_rank(profile.age_band) if profile is not None else None
@@ -429,7 +431,8 @@ async def list_library(
     # the whole filter; downstream state/rating/cover lookups may still
     # touch a filtered book's id, which wastes a lookup but leaks nothing
     # (its result is never read).
-    # #VERIFY: test_list_library_hides_book_banded_above_profile.
+    # #VERIFY: tests/integration/test_library_invariant.py::
+    # test_list_library_hides_book_banded_above_profile.
     if profile_rank is not None:
         for key in [
             key
@@ -546,13 +549,21 @@ async def get_storybook_version(
     # assignment lookup matches nothing and every direct blob read is 404.
     # Content reaches a device only after it mints a child session, which then
     # reads under its own assignment scope; the device grant itself never
-    # reads story content. Admin reads are unchanged (admin skips this branch
-    # entirely, matching its cross-family review authority elsewhere in this
-    # file).
-    # #VERIFY: child + unassigned -> 404; child + assigned -> blob; device ->
-    # 404; guardian + unassigned -> 404 (test_guardian_can_fetch_unassigned_
-    # version, updated for this fix); guardian + assigned -> blob.
-    if not principal.is_admin:
+    # reads story content. Only a CROSS-family admin action skips this branch:
+    # the exemption keys on ``acting_role(book.family_id) == Role.ADMIN``, not
+    # on the raw ``is_admin`` capability, because an admin-ONLY adult already
+    # holds an empty ``profile_ids`` set (see ``_resolve_profiles`` in deps.py)
+    # and so an ``is_admin`` test would fire for exactly one population, the
+    # dual-role adult (role=GUARDIAN + is_admin=True) acting on their OWN
+    # family, silently exempting the very people this gate protects.
+    # #VERIFY: tests/integration/test_library_invariant.py::
+    # test_child_cannot_fetch_unassigned_version,
+    # test_child_can_fetch_approved_seed_version,
+    # test_guardian_cannot_fetch_unassigned_version (renamed from
+    # test_guardian_can_fetch_unassigned_version by this fix),
+    # test_guardian_can_fetch_assigned_version, and
+    # test_dual_role_adult_cannot_fetch_unassigned_own_family_version.
+    if principal.acting_role(book.family_id) != Role.ADMIN:
         assigned_ids = await session.scalars(
             select(StorybookAssignment.child_profile_id).where(
                 StorybookAssignment.storybook_id == storybook_id,
@@ -571,9 +582,8 @@ async def get_storybook_version(
         # the book's band; lenient (fail open) when the book's band or EVERY
         # assigned profile's band is unparseable, mirroring the same
         # leniency in assign_storybook and list_library.
-        # #VERIFY: see the regression test for this behavior, named
-        # "hides book banded above assigned profile" in
-        # tests/integration/test_library_invariant.py.
+        # #VERIFY: tests/integration/test_library_invariant.py::
+        # test_get_storybook_version_hides_book_banded_above_assigned_profile.
         book_rank = parse_age_band_rank(_blob_age_band(version_row.blob))
         if book_rank is not None:
             profile_ranks = [

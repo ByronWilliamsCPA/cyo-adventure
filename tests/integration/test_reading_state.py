@@ -660,6 +660,52 @@ async def test_record_completion_unassigned_own_family_story_404(
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+async def test_dual_role_adult_is_gated_on_own_family(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """M1: the admin exemption is capacity-scoped, so a dual-role parent is gated.
+
+    ``seed.dual_token`` is a family-A adult holding role=guardian AND
+    is_admin=True. Keying the M1 exemption on the raw ``is_admin`` capability
+    would exempt exactly this principal, and only this principal: an
+    admin-ONLY adult carries an empty ``profile_ids`` set and 403s at
+    ``authorize_profile`` before reaching the gate. The gate keys on
+    ``acting_role(book.family_id)`` instead, which stays GUARDIAN for an
+    own-family target, so an unassigned own-family book is 404 for a
+    dual-role adult exactly as it is for a plain guardian or a child.
+    """
+    story_id = await _add_own_family_book(
+        sessions,
+        seed,
+        "own-family-rs-unassigned-dual",
+        status="published",
+        current_published_version=1,
+        version=1,
+        approved_by=seed.admin_user_id,
+        assign=False,
+    )
+    resp = await client.put(
+        f"/api/v1/reading-state/{seed.child_profile_id}/{story_id}",
+        json=_save_body(1, node="n_cave_fork", revision=0),
+        headers=auth(seed.dual_token),
+    )
+    assert resp.status_code == 404, resp.text
+
+    completion = await client.post(
+        "/api/v1/completions",
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": story_id,
+            "version": 1,
+            "ending_id": "e_treasure_found",
+        },
+        headers=auth(seed.dual_token),
+    )
+    assert completion.status_code == 404, completion.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
 async def test_put_reading_state_create_rejects_non_current_version_404(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
 ) -> None:
