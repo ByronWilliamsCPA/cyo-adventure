@@ -12,10 +12,12 @@ the zero-coverage soft floor (`_warn_on_zero_coverage_slots`,
 `generation/worker.py`) emits a WARNING, never a failure, for this
 contract's declared slot set when the fill prose never mentions it.
 
-Builders reuse the exact patterns already established in
-`test_storybook_reinsertion.py` (`_skeleton`/`_node_text`-style small
-hand-built documents, `_manifest_with_hero_thrice`-style helper) and
-`test_worker.py` (`_WarningCapturingLogger`), rather than reinventing them.
+Builders reuse the small hand-built-document pattern already established in
+`test_storybook_reinsertion.py` (`_skeleton`/`_node_text`-style documents)
+rather than reinventing it. The warning capture is local
+(`_capture_warning`): `test_worker.py`'s `_WarningCapturingLogger` doubles a
+whole logger for the fill path, which this direct call to
+`_warn_on_zero_coverage_slots` does not need.
 """
 
 from __future__ import annotations
@@ -37,7 +39,15 @@ from cyo_adventure.storybook.reinsertion import (
 if TYPE_CHECKING:
     from cyo_adventure.storybook.theme_contract import ThemeContract
 
-_PILOT_SKELETON_PATH = Path("skeletons/10-13/the-midnight-museum.json")
+# Root-anchored, not cwd-relative: three of this module's four tests read this
+# file directly, and pytest is run from worktrees and subdirectories as often
+# as from the repo root (the second occurrence of AL-073's lesson).
+_PILOT_SKELETON_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "skeletons"
+    / "10-13"
+    / "the-midnight-museum.json"
+)
 
 # The contract's own `default_binding.HERO` value (skeletons/10-13/the-midnight-museum.contract.json).
 _PILOT_HERO_VALUE = "Nadia"
@@ -70,10 +80,20 @@ def test_pilot_contract_declares_exactly_hero() -> None:
     (`personalizable_slot_ids` returned the empty set catalog-wide). A
     regression here (an accidental second slot, or HERO reverting to
     `kind: "theme"`) would silently widen or void the pilot's blast radius.
+
+    The slot set alone is too coarse a guard: HERO could keep
+    `kind: "personalizable"` while its `personalization_field` or
+    `role_safety` drifted, which would rebind the slot to the wrong request
+    field or drop it out of protagonist-scoped safety checks without changing
+    the set. Both are asserted here.
     """
     _skeleton, contract = _pilot_skeleton_and_contract()
 
     assert personalizable_slot_ids(contract) == frozenset({"HERO"})
+    hero = next(slot for slot in contract.slots if slot.id == "HERO")
+    assert hero.kind == "personalizable"
+    assert hero.personalization_field == "protagonist_first_name"
+    assert hero.role_safety == "protagonist"
 
 
 @pytest.mark.unit
@@ -179,16 +199,21 @@ def test_mutated_pilot_blob_fails_verify_manifest() -> None:
 
 
 @pytest.mark.unit
-def test_zero_hero_coverage_warns_and_does_not_fail(
+def test_hero_coverage_warns_only_when_hero_is_uncovered(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """The pilot's declared HERO slot with zero body coverage logs a WARNING, never an exception.
+    """The soft floor fires for an uncovered HERO and stays silent for a covered one.
 
     Calls the worker's own `_warn_on_zero_coverage_slots` directly (the
     exact function `_run_skeleton_fill` invokes post-transform), fed the
     real pilot contract's declared slot set, so this proves the soft floor
     actually engages for HERO specifically, not just for a synthetic slot
     id.
+
+    Both halves are asserted because the warning-only half alone is a weak
+    guard: a check that warned unconditionally would satisfy it. The covered
+    case is what makes "soft floor" falsifiable. That the function never
+    raises is proved structurally, by both calls returning.
     """
     _skeleton, contract = _pilot_skeleton_and_contract()
     declared = personalizable_slot_ids(contract)
@@ -220,3 +245,22 @@ def test_zero_hero_coverage_warns_and_does_not_fail(
     event, kwargs = warning_calls[0]
     assert event == "generation_job.personalizable_slot_zero_coverage"
     assert kwargs["slot_ids"] == ["HERO"]
+    assert kwargs["skeleton_slug"] == "the-midnight-museum"
+
+    # The complement: one reinsertable occurrence anywhere covers the slot, so
+    # the same declared set must produce no second warning.
+    worker_module._warn_on_zero_coverage_slots(  # pyright: ignore[reportPrivateUsage]
+        declared,
+        (
+            TokenOutcome(
+                node_id="n_start",
+                slot_id="HERO",
+                value=_PILOT_HERO_VALUE,
+                occurrence_count=1,
+                status="reinsertable",
+            ),
+        ),
+        skeleton_slug="the-midnight-museum",
+    )
+
+    assert len(warning_calls) == 1
