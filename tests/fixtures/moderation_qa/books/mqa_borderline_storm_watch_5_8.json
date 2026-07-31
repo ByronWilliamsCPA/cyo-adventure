@@ -13,13 +13,13 @@
     "tier": 1,
     "themes": ["adventure", "the sea"],
     "estimated_minutes": 4,
-    "ending_count": 2,
+    "ending_count": 4,
     "content_flags": {
       "violence": "none",
       "scariness": "intense",
       "peril": "intense"
     },
-    "topology": "sorting_hat"
+    "topology": "branch_and_bottleneck"
   },
   "variables": [],
   "start_node": "n_start",
@@ -36,21 +36,47 @@
     },
     {
       "id": "n_turn",
-      "body": "You spin the tiller hard, but a wave slams the boat sideways and knocks you into the freezing water. Nobody on shore can see you out here.",
+      "body": "You spin the tiller hard, but a wave slams the boat sideways and knocks you into the freezing water. Nobody on shore can see you out here. Do you fire the flare from your vest pocket, or try to stay afloat?",
       "is_ending": false,
       "safety_scope": ["peril", "scary_imagery"],
       "choices": [
-        {"id": "c_continue_turn", "label": "Try to stay afloat.", "target": "n_water"}
+        {"id": "c_flare", "label": "Fire the flare.", "target": "n_end_flare"},
+        {"id": "c_float_turn", "label": "Try to stay afloat.", "target": "n_water"}
       ]
     },
     {
+      "id": "n_end_flare",
+      "body": "The flare goes up red against the black clouds. Soon a harbour boat swings toward you with its searchlight on, and strong hands haul you out of the water.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_flare",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Red Against Black"
+      },
+      "choices": []
+    },
+    {
       "id": "n_ride",
-      "body": "You grip the mast as the boat is thrown up and over a huge wave, then it flips, dumping you into the churning dark sea.",
+      "body": "You grip the mast as the boat is thrown up and over a huge wave, then it flips, dumping you into the churning dark sea. Do you blow the whistle clipped to your vest, or try to stay afloat?",
       "is_ending": false,
       "safety_scope": ["peril", "scary_imagery"],
       "choices": [
-        {"id": "c_continue_ride", "label": "Try to stay afloat.", "target": "n_water"}
+        {"id": "c_whistle", "label": "Blow the whistle.", "target": "n_end_whistle"},
+        {"id": "c_float_ride", "label": "Try to stay afloat.", "target": "n_water"}
       ]
+    },
+    {
+      "id": "n_end_whistle",
+      "body": "You blow until your chest aches. A fishing crew hears it through the wind and comes about. You learn something you will not forget: the whistle was the most useful thing on the whole boat.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_whistle",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Smallest Tool"
+      },
+      "choices": []
     },
     {
       "id": "n_water",
@@ -81,7 +107,7 @@
       "ending": {
         "id": "e_plank",
         "valence": "positive",
-        "kind": "success",
+        "kind": "completion",
         "title": "Found at Last"
       },
       "choices": []

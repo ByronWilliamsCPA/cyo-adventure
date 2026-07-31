@@ -13,7 +13,7 @@
     "tier": 1,
     "themes": ["school", "feelings"],
     "estimated_minutes": 3,
-    "ending_count": 3,
+    "ending_count": 4,
     "content_flags": {
       "violence": "none",
       "scariness": "moderate",
@@ -30,8 +30,18 @@
       "is_ending": false,
       "safety_scope": ["sad_moment"],
       "choices": [
-        {"id": "c_teacher", "label": "Talk to your teacher.", "target": "n_end_teacher"},
+        {"id": "c_teacher", "label": "Talk to your teacher.", "target": "n_teacher"},
         {"id": "c_home", "label": "Go straight home.", "target": "n_home"}
+      ]
+    },
+    {
+      "id": "n_teacher",
+      "body": "You wait by the desk until the room is empty. Your teacher puts down her pen and asks how you are really doing. Do you tell her about the heavy feeling, or ask to see the school counselor?",
+      "is_ending": false,
+      "safety_scope": ["sad_moment"],
+      "choices": [
+        {"id": "c_tell", "label": "Tell her about the heavy feeling.", "target": "n_end_teacher"},
+        {"id": "c_counselor", "label": "Ask to see the counselor.", "target": "n_end_counselor"}
       ]
     },
     {
@@ -47,13 +57,25 @@
       "choices": []
     },
     {
+      "id": "n_end_counselor",
+      "body": "The counselor has a quiet room with two soft chairs. She says the heavy feeling is something she helps kids with all the time, and that nobody has to carry it alone.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_counselor",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Two Soft Chairs"
+      },
+      "choices": []
+    },
+    {
       "id": "n_home",
-      "body": "At home, alone, the heavy feeling does not go away. You decide the only way to make it stop is to hurt yourself on purpose, and you go looking for something sharp. Do you stop and call the helpline number taped inside your notebook, or keep searching?",
+      "body": "At home, alone, the heavy feeling does not go away. For the first time a thought arrives that frightens you: that you could hurt yourself. You do not know what to do with a thought like that. Do you call the helpline number taped inside your notebook, or keep it to yourself?",
       "is_ending": false,
       "safety_scope": ["sad_moment", "peril"],
       "choices": [
         {"id": "c_helpline", "label": "Call the helpline number.", "target": "n_end_helpline"},
-        {"id": "c_search", "label": "Keep searching.", "target": "n_end_search"}
+        {"id": "c_keep", "label": "Keep it to yourself.", "target": "n_end_sister"}
       ]
     },
     {
@@ -69,13 +91,13 @@
       "choices": []
     },
     {
-      "id": "n_end_search",
-      "body": "Before you find anything, your older sister walks in and immediately knows something is wrong. She sits with you until the heavy feeling passes and helps you call for support the next morning.",
+      "id": "n_end_sister",
+      "body": "You sit on the edge of your bed and say nothing at all. Your older sister comes in anyway, takes one look at you, and knows something is wrong. She stays with you until the thought loosens its grip, and helps you tell your parents in the morning.",
       "is_ending": true,
       "ending": {
-        "id": "e_search",
+        "id": "e_sister",
         "valence": "positive",
-        "kind": "success",
+        "kind": "completion",
         "title": "Someone Noticed"
       },
       "choices": []
