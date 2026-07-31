@@ -1155,24 +1155,41 @@ settings screen says so in as many words. TDD, commit.
   for the pilot's real declared slot set. All three are unit-level proofs against hand-built or
   directly-invoked fixtures carrying the pilot's real slot id and default value, not a live
   pilot-story generation.
-- [ ] **PENDING Task 5, blocked on owner credentials as of 2026-07-31.** Generate a pilot story
-  through the live fill pipeline; confirm Variant A/B fire against that story's actual
-  generated `sentinel_manifest` (not a hand-built fixture); confirm the zero-HERO soft-floor
-  WARNING fires live when the pilot story's prose never names the hero; confirm the story still
-  publishes. The unit-level proofs above establish the mechanism works; they do not establish
-  it fired on a real generation, so this checkbox stays open until Task 5 runs.
-- [ ] Replace-by-default migration of any test story worth keeping eligible; everything not
-  migrated stays `personalization_eligible = false` with no deadline. **RECOMMENDED, PENDING
-  OWNER RATIFICATION, recorded 2026-07-31** (Task 6): see the "Replace-by-default migration
-  decision" block below. Left unchecked: the recommendation has not yet been ratified by the
-  owner.
+- [x] Generate a pilot story through the live fill pipeline; confirm Variant A/B fire against
+  that story's actual generated `sentinel_manifest` (not a hand-built fixture). **DONE
+  2026-07-31**, owner-run, script path (not the worker path; see the scope note below). Run
+  slug `20260731T173743Z`, provider openrouter with fallback leg
+  `anthropic/claude-haiku-4.5`, artifacts on the owner's machine at
+  `/tmp/d4-pilot-run/20260731T173743Z/` (`report.md`, `reinsertion-report.md`).
+  `scripts/measure_sentinel_survival.py --count 1` against the pilot skeleton with its now-
+  personalizable HERO slot: first-attempt survival 0/1 clean, consistent with the Stage R
+  ~3.3% baseline that motivated the reinsertion design in the first place; **not a failure
+  signal**, it is why the deterministic transform exists.
+  `scripts/prototype_sentinel_reinsertion.py` on the saved fill: HERO reinsertable 23/23 nodes
+  (100% coverage of the personalizable slot, so the zero-coverage soft floor correctly did not
+  fire on this run); `verify_manifest` pass 1/1 (100%, the G1-R transform-correctness metric
+  this task requires at 100%); overall 76/78 tokens reinsertable, with the only 2 `not_found`
+  being the theme slots GUARD and THRESHOLD, which production never sentinel-wraps (they are
+  not `kind: "personalizable"`). **Scope note: this proves the script-path generation and
+  reinsertion evidence (real-provider fill plus offline deterministic reinsertion plus
+  manifest self-consistency), not a full worker-path end-to-end.** DB stamping of
+  `personalization_eligible`, the validator gate, moderation, and library visibility remain
+  covered by the Task 2 and Task 4 unit suites and will get their first live coverage on the
+  first staging deploy that runs the actual `generation/worker.py` path against this contract;
+  do not read this checkbox as proof of that.
+- [x] Replace-by-default migration of any test story worth keeping eligible; everything not
+  migrated stays `personalization_eligible = false` with no deadline. **RATIFIED BY OWNER
+  2026-07-31** (Task 6): keep `sk_midnight_museum` v1 exactly as is, a book without
+  personalization; it stays `personalization_eligible = false` with no deadline. See the
+  "Replace-by-default migration decision" block below for the full record.
 - [x] Pronoun audit (per-skeleton, directives not prose; `pronoun_parameterized` flips only
   after a human read) and the R11 role-safety audit ride along. **DONE 2026-07-31** (Task 3,
   commit `a51df507`): see the "Pilot audit record" below.
-- [ ] Append lessons rows; this is squarely authoring/validator work. Commit. **PARTIAL, 2026-
-  07-31**: `AL-071` (the `personalization_eligible` producer-docstring gap this branch closed)
-  and `AL-072` (the D6 migration-prefix collision) are appended, with `AL-072` linked via
-  `UW-C21`. A lesson specific to the live pilot generation (Task 5) is still pending that run.
+- [x] Append lessons rows; this is squarely authoring/validator work. Commit. **DONE 2026-
+  07-31**: `AL-071` (the `personalization_eligible` producer-docstring gap this branch closed),
+  `AL-072` (the D6 migration-prefix collision, linked via `UW-C21`), and `AL-073` (the
+  cwd-relative `.env` file-path setting breaking the owner's Task 5 run from a worktree,
+  linked via `UW-C22`) are appended.
 
 **Pilot audit record (2026-07-31, pre-generation): the-midnight-museum (10-13).**
 
@@ -1214,7 +1231,7 @@ settings screen says so in as many words. TDD, commit.
   `pronoun_parameterized` remains false; pronouns not parameterized; flip requires a future
   per-skeleton audit plus contract change.**
 
-**Replace-by-default migration decision (2026-07-31, RECOMMENDED, pending owner ratification).**
+**Replace-by-default migration decision (2026-07-31, RATIFIED by owner).**
 
 - **Prod inventory.** Exactly one prod `storybook_version` row traces to the pilot skeleton
   (`skeleton_slug = 'the-midnight-museum'`): storybook `sk_midnight_museum`, version 1,
@@ -1229,9 +1246,9 @@ settings screen says so in as many words. TDD, commit.
   replacement requiring the full validator plus moderation plus human approve/publish
   ceremony, and would produce new prose for a book a child may already have read; the pilot's
   eligibility proof comes from a fresh local generation (Task 5) instead. Migrating the prod
-  book, if ever wanted, is a separate owner-initiated regeneration run. **This is a
-  recommendation, not a decision: it awaits explicit owner ratification before this checkbox
-  can be marked done.**
+  book, if ever wanted, is a separate owner-initiated regeneration run. **Ratified by the owner
+  2026-07-31: keep `sk_midnight_museum` v1 exactly as is; no migration of the published prod
+  book.**
 - **Prod-schema note (deploy-relevant, not D4-blocking).** `storybook_version
   .personalization_eligible` does not exist in prod: the ADR-023 Stage B migrations that add it
   have not been applied there (the live column list ends at `skeleton_slug`, 15 columns).
