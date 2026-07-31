@@ -1,12 +1,19 @@
-"""Vulture dead-code baseline: findings adjudicated as false positives.
+"""Vulture dead-code baseline: findings adjudicated during the UW-F22 sweep.
 
-Every entry here was reviewed during the 2026-07-31 vulture calibration
-(UW-F22, UW-F23) and found to be structurally consumed rather than dead:
-Pydantic model fields read by FastAPI's serializer, SQLAlchemy attributes set
-through the ORM, TypedDict keys read by the type checker, AST visitor methods
-dispatched by name, enum members selected by value, and re-exported imports.
-Vulture cannot see any of those callers, so it reports them at its flat 60%
-confidence.
+71 of the 72 entries here were reviewed during the 2026-07-31 vulture
+calibration (UW-F22, UW-F23) and found to be structurally consumed rather than
+dead: Pydantic model fields read by FastAPI's serializer, SQLAlchemy attributes
+set through the ORM, TypedDict keys read by the type checker, AST visitor
+methods dispatched by name, enum members selected by value, and re-exported
+imports. Vulture cannot see any of those callers, so it reports them at its
+flat 60% confidence.
+
+The 72nd is not a false positive. ``forwarded_allow_ips`` is a REAL finding
+whose fix is deferred to UW-F25, and it is tagged inline below so the deferral
+stays greppable rather than hiding among the adjudicated entries. Suppressing
+it is what keeps ``uv run vulture`` at exit 0; the register row, not this file,
+is what keeps it scheduled. Search this file for ``UW-`` before treating it as
+a list of things that are known-fine.
 
 The point of a baseline is that ``uv run vulture`` exits 0 on a clean tree, so
 a NEW finding is a real signal rather than noise item 73. It takes effect
@@ -57,6 +64,11 @@ _.updated_by  # unused attribute (src/cyo_adventure/api/moderation_thresholds.py
 ProviderName  # unused import (src/cyo_adventure/api/provider_allowlist.py:13)
 _.updated_by  # unused attribute (src/cyo_adventure/api/provider_allowlist.py:196)
 JobStatusLiteral  # unused import (src/cyo_adventure/api/story_requests.py:32)
+# UW-F25: DEFERRED TRUE POSITIVE, not an adjudicated false positive. The
+# setting really is never read; uvicorn's --forwarded-allow-ips CLI flag is
+# what takes effect. Suppressed only to keep the baseline at exit 0. Delete
+# this entry when UW-F25 lands, and do not let a regeneration quietly restore
+# it without this comment.
 forwarded_allow_ips  # unused variable (src/cyo_adventure/core/config.py:794)
 run_cover_job_sync  # unused function (src/cyo_adventure/covers/worker.py:39)
 word_count_a  # unused variable (src/cyo_adventure/diversity/leaf.py:54)

@@ -308,7 +308,11 @@ def _coerce_record(row: dict[str, object]) -> AttemptRecord | None:
     # carrying a non-int (hand-edited junk) gets the same treatment as every
     # other malformed optional here: fall back, never raise, because the D7
     # report reads this and a single bad line must not blind the funnel.
-    # #VERIFY: test_coerce_record_defaults_missing_template_set_version.
+    # #VERIFY: tests/unit/test_flywheel_ledger.py::test_load_records_defaults_a_pre_field_row_to_generation_one
+    # covers the missing-field case and
+    # ::test_load_records_defaults_a_junk_template_set_version covers the
+    # non-int case. Both drive `_coerce_record` through `load_records`, which
+    # is the only way it is ever reached.
     version = (
         raw_version
         if isinstance(raw_version, int) and not isinstance(raw_version, bool)

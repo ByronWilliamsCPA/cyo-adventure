@@ -1218,6 +1218,11 @@ skip = [
     "CLAUDE.md",
     "REUSE.toml",
     "docs/template_feedback.md",
+    # Template-shipped and deliberately deleted here (UW-F22 (e)): the script
+    # was wired to nothing, and the org reusable python-sonarcloud.yml already
+    # enforces the same gate. Skipped so a future `cruft update` does not
+    # reintroduce the file this project chose to remove.
+    "scripts/check_quality_gate.py",
 
 ]
 
