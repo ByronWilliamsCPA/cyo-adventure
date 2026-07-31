@@ -1,8 +1,9 @@
 # PR Validation for CYO Adventure
-# Comprehensive pull request validation using org-level workflow plus additional checks.
 #
-# This workflow calls the org-level PR validation workflow and adds supplementary
-# checks for dead code detection, changelog enforcement, and documentation links.
+# Supplementary PR checks that live outside ci.yml: dead-code detection
+# (advisory) and documentation link checking (blocking). The aggregate job
+# `Dependency & Standards Validation` is the required status check, and it
+# fails when the link check fails.
 name: PR Validation
 
 on:
@@ -10,8 +11,6 @@ on:
     types: [opened, synchronize, reopened]
     branches:
       - main
-      - master
-      - develop
   merge_group:
 
 # Cancel in-progress runs for the same PR. The `|| github.ref` fallback is
@@ -26,7 +25,6 @@ concurrency:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   # ==========================================================================
@@ -80,65 +78,69 @@ jobs:
         run: uv sync --all-extras
 
       - name: Run vulture
+        # Scan paths, confidence, exclusions, and ignore rules all come from
+        # [tool.vulture] in pyproject.toml so local runs and CI agree. Do not
+        # re-specify them here: a positional path argument silently overrides
+        # the configured `paths` list.
         run: |
-          echo "## Dead Code Report" >> $GITHUB_STEP_SUMMARY
-          uv run vulture src/ --min-confidence 90 | tee vulture-report.txt || true
-          if [ -s vulture-report.txt ]; then
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            cat vulture-report.txt >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            echo "::warning::Potential dead code detected. Review vulture report."
-          else
-            echo "✅ No dead code detected with 90% confidence." >> $GITHUB_STEP_SUMMARY
-          fi
+          echo "## Dead Code Report" >> "$GITHUB_STEP_SUMMARY"
+          # Vulture exit codes: 0 = clean, 1 = invalid input, 2 = invalid CLI,
+          # 3 = dead code found. Only 3 is a finding; 1 and 2 mean the tool or
+          # its config is broken and must not be swallowed. The previous
+          # `| tee ... || true` discarded the code twice over, so a vulture
+          # that could not start reported the same as a vulture that found
+          # nothing.
+          set +e
+          uv run vulture > vulture-report.txt 2>vulture-stderr.txt
+          rc=$?
+          set -e
+          cat vulture-report.txt
+          cat vulture-stderr.txt >&2
+          case "$rc" in
+            0)
+              echo "✅ No dead code detected." >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            3)
+              {
+                echo '```'
+                cat vulture-report.txt
+                echo '```'
+              } >> "$GITHUB_STEP_SUMMARY"
+              echo "::warning::Potential dead code detected. Review vulture report."
+              ;;
+            *)
+              echo "::error::vulture exited $rc (invocation or config error)."
+              {
+                echo "vulture exited $rc (invocation or config error):"
+                echo '```'
+                cat vulture-stderr.txt
+                echo '```'
+              } >> "$GITHUB_STEP_SUMMARY"
+              exit "$rc"
+              ;;
+          esac
 
-  # Changelog Enforcement (neutralized)
+  # Changelog enforcement was REMOVED, not neutralized, on 2026-07-31.
   #
-  # CHANGELOG.md is now GENERATED at release time by python-semantic-release
-  # from Conventional Commits (see .github/workflows/release.yml); PRs no
-  # longer edit it. The old "every PR must touch CHANGELOG.md" gate is
-  # therefore obsolete, and was itself the source of the merge-queue changelog
-  # conflicts this change eliminates: it forced every PR to edit one shared
-  # file, so the speculative squash of any two queued PRs collided there.
-  #
-  # The job is kept as a passing no-op (rather than deleted) so the required
-  # "Dependency & Standards Validation" summary that `needs:` it keeps its
-  # topology, and any branch-protection required-check named "Changelog Check"
-  # still reports. Conventional Commit subjects drive the changelog now, and
-  # pr-title.yml already enforces those.
-  changelog:
-    name: Changelog Check
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    if: github.event_name == 'pull_request'
-    permissions:
-      contents: read
-    steps:
-      - name: Harden the runner
-        # deferral: 2026-09-18
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
-        with:
-          egress-policy: audit
-
-      - name: Changelog is generated at release (no per-PR entry required)
-        run: |
-          echo "::notice::CHANGELOG.md is generated at release time from" \
-            "Conventional Commits; no per-PR changelog entry is required."
-          {
-            echo "## Changelog Check"
-            echo ""
-            echo "ℹ️ CHANGELOG.md is generated at release by" \
-              "python-semantic-release. Conventional Commit subjects drive it," \
-              "so no per-PR changelog entry is required."
-          } >> "$GITHUB_STEP_SUMMARY"
-
+  # CHANGELOG.md is generated at release time by python-semantic-release from
+  # Conventional Commits (see .github/workflows/release.yml); PRs no longer
+  # edit it. The old "every PR must touch CHANGELOG.md" gate was itself the
+  # source of the merge-queue changelog conflicts: it forced every PR to edit
+  # one shared file, so the speculative squash of any two queued PRs collided
+  # there. The job survived for a while as a passing no-op on the theory that
+  # a required check named "Changelog Check" still needed to report; that was
+  # verified false (no org or repo ruleset requires it), and while it existed
+  # it was the ONLY thing this workflow's required gate could ever fail on,
+  # which meant the gate could not fail at all.
 
   # Documentation Link Check
   link-check:
     name: Documentation Links
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    # Advisory-only and not merged-state-sensitive; see dead-code above.
+    # Blocking (validate-dependencies fails on this result), but not
+    # merged-state-sensitive: it reads file contents only, so the PR run is
+    # authoritative and re-running it in the queue would only add flake.
     if: github.event_name != 'merge_group'
     steps:
       - name: Harden the runner
@@ -156,13 +158,17 @@ jobs:
           args: >-
             --verbose
             --no-progress
+            --max-retries 3
             --accept 200,204,206,301,302,403,429
             --exclude '^https://github.com/.*/(issues|pulls|compare)/.*$'
             --exclude '^https://linear.app/.*$'
+            --exclude '^https?://(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?(/|$)'
             './docs/**/*.md'
             './README.md'
             './CONTRIBUTING.md'
-          fail: false
+          # Blocking. This check found and hid 7 genuinely broken links while
+          # it was advisory; a link check that cannot fail is a link ignorer.
+          fail: true
           jobSummary: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -175,8 +181,11 @@ jobs:
     name: Dependency & Standards Validation
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [dead-code, changelog, link-check]
+    needs: [dead-code, link-check]
     if: always()
+    env:
+      DEAD_CODE_RESULT: ${{ needs.dead-code.result }}
+      LINK_CHECK_RESULT: ${{ needs.link-check.result }}
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
@@ -186,37 +195,44 @@ jobs:
 
       - name: Check validation results
         run: |
-          echo "## Dependency & Standards Validation" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          if [ "${{ needs.dead-code.result }}" == "success" ]; then
-            echo "✅ Dead Code Check: Passed" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "⚠️ Dead Code Check: ${{ needs.dead-code.result }}" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          # Changelog is generated at release, not per PR; the changelog job is
-          # a passing no-op kept only for required-check topology. success and
-          # skipped (merge_group) both mean "not applicable" here.
-          if [ "${{ needs.changelog.result }}" == "success" ] \
-            || [ "${{ needs.changelog.result }}" == "skipped" ]; then
-            echo "ℹ️ Changelog: Generated at release (no per-PR entry)" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "⚠️ Changelog: ${{ needs.changelog.result }}" >> $GITHUB_STEP_SUMMARY
-          fi
-          if [ "${{ needs.link-check.result }}" == "success" ]; then
-            echo "✅ Link Check: Passed" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "⚠️ Link Check: ${{ needs.link-check.result }}" >> $GITHUB_STEP_SUMMARY
-          fi
-          # Fail only if the changelog gate genuinely failed (it is the one hard
-          # gate here; dead-code and link-check are advisory). A skipped changelog
-          # (label-based) is not a failure.
-          if [ "${{ needs.changelog.result }}" == "failure" ]; then
+          {
+            echo "## Dependency & Standards Validation"
             echo ""
-            echo "❌ Changelog check failed. Please review and fix issues." >> $GITHUB_STEP_SUMMARY
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # Both jobs are skipped on merge_group by design (see their `if:`),
+          # so `skipped` is reported as such rather than dressed up as a pass.
+          # Only `failure` blocks, and only for link-check plus a dead-code
+          # job that broke on invocation (vulture findings are warnings, so a
+          # failed dead-code job means the tool or its config is broken).
+          summarize() {
+            case "$2" in
+              success) echo "✅ $1: Passed" ;;
+              skipped) echo "⏭️ $1: Skipped (merge queue)" ;;
+              *)       echo "❌ $1: $2" ;;
+            esac
+          }
+
+          summarize "Dead Code Check" "$DEAD_CODE_RESULT" >> "$GITHUB_STEP_SUMMARY"
+          summarize "Link Check" "$LINK_CHECK_RESULT" >> "$GITHUB_STEP_SUMMARY"
+
+          failed=0
+          for result in "$DEAD_CODE_RESULT" "$LINK_CHECK_RESULT"; do
+            case "$result" in
+              success | skipped) ;;
+              *) failed=1 ;;
+            esac
+          done
+
+          if [ "$failed" -eq 1 ]; then
+            {
+              echo ""
+              echo "❌ Validation failed. Review the job logs above."
+            } >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
 
-          echo ""
-          echo "✅ All validation checks passed!" >> $GITHUB_STEP_SUMMARY
+          {
+            echo ""
+            echo "✅ All validation checks passed!"
+          } >> "$GITHUB_STEP_SUMMARY"
