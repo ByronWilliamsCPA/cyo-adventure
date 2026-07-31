@@ -327,9 +327,15 @@ class Settings(BaseSettings):
     # #CRITICAL: timing: RateLimitMiddleware.dispatch runs on every request; a
     # slow/black-holed Redis connection must not add unbounded latency to the
     # request path while stuck waiting for a socket. Both socket_connect_timeout
-    # and socket_timeout on the redis client are set from this value.
+    # and socket_timeout are set from this value on BOTH redis clients: the
+    # middleware's (via add_security_middleware) and api/health.py's readiness
+    # probe. Until the #516 sweep it reached only the health probe, so the
+    # middleware ran at its constructor default and this env var was inert
+    # for the request path this comment describes.
     # #VERIFY: tests/unit/test_security.py::test_redis_backend_falls_back_to_memory_on_connection_error
-    # exercises the fallback path this bound protects.
+    # exercises the fallback path this bound protects, and
+    # ::test_add_security_middleware_resolves_redis_timeout_from_settings
+    # asserts the value actually reaches the middleware.
     rate_limit_redis_timeout_seconds: float = Field(
         default=0.5, validation_alias="CYO_ADVENTURE_RATE_LIMIT_REDIS_TIMEOUT_SECONDS"
     )
@@ -339,6 +345,11 @@ class Settings(BaseSettings):
     # outage would pay rate_limit_redis_timeout_seconds of added latency on
     # EVERY request, not just the first.
     # #VERIFY: tests/unit/test_security.py::test_redis_backend_circuit_breaker_skips_retry_during_cooldown
+    # proves the middleware HONOURS the window, and
+    # ::test_add_security_middleware_resolves_redis_cooldown_from_settings
+    # proves the application SUPPLIES it. Issue #516 existed because only the
+    # first kind of test was present: it constructs the middleware directly, so
+    # it passed for months while add_security_middleware never passed the value.
     rate_limit_redis_cooldown_seconds: float = Field(
         default=5.0, validation_alias="CYO_ADVENTURE_RATE_LIMIT_REDIS_COOLDOWN_SECONDS"
     )
