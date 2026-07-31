@@ -154,6 +154,7 @@ class ModerationReport:
     findings: list[Finding] = field(default_factory=list)
     repaired: bool = False
     reviewer_independent: bool = True
+    nodes_reviewed: int = 0
 
     def add(self, finding: Finding) -> None:
         """Append a finding."""
@@ -181,11 +182,25 @@ class ModerationReport:
         return not (self.has_hard_block or self.has_soft_flag)
 
     def to_dict(self) -> dict[str, object]:
-        """Return the JSONB payload persisted on the version row."""
+        """Return the JSONB payload persisted on the version row.
+
+        PASS findings are aggregated, not persisted as rows (design doc
+        2.1): the report keeps them in memory for gating, but the stored
+        payload carries only gate-relevant findings plus a pass aggregate.
+        """
+        persisted = [f for f in self.findings if f.verdict is not Verdict.PASS]
+        pass_counts: dict[str, int] = {}
+        for f in self.findings:
+            if f.verdict is Verdict.PASS:
+                pass_counts[f.category] = pass_counts.get(f.category, 0) + 1
         return {
-            "findings": [f.to_dict() for f in self.findings],
+            "findings": [f.to_dict() for f in persisted],
+            "aggregate": {
+                "nodes_reviewed": self.nodes_reviewed,
+                "pass_counts": pass_counts,
+            },
             "summary": {
-                "count": len(self.findings),
+                "count": len(persisted),
                 "hard_block": self.has_hard_block,
                 "soft_flag": self.has_soft_flag,
                 "repaired": self.repaired,

@@ -178,3 +178,66 @@ def test_finding_severity_enum_values() -> None:
     assert FindingSeverity.HIGH.value == "high"
     assert FindingSeverity.MEDIUM.value == "medium"
     assert FindingSeverity.LOW.value == "low"
+
+
+# ---------------------------------------------------------------------------
+# Task B1.2: PASS aggregate block, PASS findings not persisted (design doc 2.1)
+# ---------------------------------------------------------------------------
+
+
+def test_nodes_reviewed_defaults_to_zero() -> None:
+    assert ModerationReport().nodes_reviewed == 0
+
+
+def test_to_dict_excludes_pass_findings_from_persisted_findings() -> None:
+    report = ModerationReport(nodes_reviewed=3)
+    report.add(_finding(Verdict.PASS))
+    report.add(_finding(Verdict.FLAG))
+    payload = report.to_dict()
+    verdicts = [f["verdict"] for f in payload["findings"]]
+    assert verdicts == ["flag"]
+
+
+def test_to_dict_aggregates_pass_counts_by_category() -> None:
+    report = ModerationReport(nodes_reviewed=5)
+    report.add(_finding(Verdict.PASS))
+    report.add(_finding(Verdict.PASS))
+    report.add(
+        Finding(
+            stage=0,
+            source=Source.OPENAI,
+            category="harassment",
+            node_id="n2",
+            verdict=Verdict.PASS,
+            score=0.0,
+            message="m",
+        )
+    )
+    payload = report.to_dict()
+    assert payload["aggregate"] == {
+        "nodes_reviewed": 5,
+        "pass_counts": {"violence": 2, "harassment": 1},
+    }
+
+
+def test_to_dict_summary_count_excludes_pass_findings() -> None:
+    report = ModerationReport()
+    report.add(_finding(Verdict.PASS))
+    report.add(_finding(Verdict.PASS))
+    report.add(_finding(Verdict.FLAG))
+    payload = report.to_dict()
+    assert payload["summary"]["count"] == 1
+
+
+def test_gating_properties_still_see_pass_findings_in_memory() -> None:
+    report = ModerationReport()
+    report.add(_finding(Verdict.PASS))
+    assert report.is_clean is True
+    assert len(report.findings) == 1
+
+
+def test_to_dict_with_no_findings_has_empty_pass_counts_and_zero_summary() -> None:
+    report = ModerationReport(nodes_reviewed=2)
+    payload = report.to_dict()
+    assert payload["aggregate"] == {"nodes_reviewed": 2, "pass_counts": {}}
+    assert payload["summary"]["count"] == 0

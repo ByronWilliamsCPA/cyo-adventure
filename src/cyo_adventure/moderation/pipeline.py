@@ -837,6 +837,11 @@ async def _run_all_stages(
     # dormancy (sentinel-free text) is covered by every other pre-existing
     # test in this module, which are all unmodified by this change.
     nodes = [(node.id, strip_sentinels(node.body)) for node in story.nodes]
+    # Design doc 2.1: nodes_reviewed feeds the persisted "aggregate" block
+    # so the PASS-count-per-category rollup is legible against a known
+    # denominator. Set once, right after the node list is built, so it
+    # reflects the count actually reviewed this pass.
+    report.nodes_reviewed = len(nodes)
 
     # #CRITICAL: security: the classifier calls below are a distinct egress path
     # from the LLM review stages (which are protected structurally by
