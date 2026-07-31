@@ -4339,17 +4339,147 @@ guardian envelope, never widens it; <strong>not rendered at all for the 3-5 band
 settings screen says so in as many words. TDD, commit.</p>
 <h3 id="task-d4-first-personalizable-contract-and-catalog-migration-the-power-switch">Task D4: first personalizable contract and catalog migration (the power switch)<a class="headerlink" href="#task-d4-first-personalizable-contract-and-catalog-migration-the-power-switch" title="Permanent link">&para;</a></h3>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Declare <code>kind: "personalizable"</code> slots (with <code>role_safety</code> on real-person fields) in one
-  pilot contract; run the full gate; generate a pilot story; confirm Variant A/B checks fire on
-  a deliberately mutated fixture. <strong>[Stage R re-scope]</strong>: "fire" means the mutated blob no
-  longer matches the version's DERIVED <code>sentinel_manifest</code> (Task R3 semantics), not the
-  contract-prescribed multiset; also confirm the zero-HERO soft-floor WARNING appears when the
-  pilot story's prose never names the hero, and that the story still publishes.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Replace-by-default migration of any test story worth keeping eligible; everything not
-  migrated stays <code>personalization_eligible = false</code> with no deadline.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Pronoun audit (per-skeleton, directives not prose; <code>pronoun_parameterized</code> flips only
-  after a human read) and the R11 role-safety audit ride along.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Append lessons rows; this is squarely authoring/validator work. Commit.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Declare <code>kind: "personalizable"</code> slots (with <code>role_safety</code> on real-person fields) in one
+  pilot contract; run the full gate. <strong>DONE 2026-07-31</strong> (commits <code>84ef0574</code>, <code>d76a1bc7</code>): HERO
+  declared personalizable in <code>skeletons/10-13/the-midnight-museum.contract.json</code>
+  (<code>personalization_field: "protagonist_first_name"</code>, <code>role_safety: "protagonist"</code>,
+  <code>default_binding.HERO = "Nadia"</code>). Gate evidence: <code>uv run python scripts/check_skeleton.py
+  skeletons/10-13/the-midnight-museum.json --band 10-13</code> reports "ok: skeleton passes gate and
+  brief checks"; <code>uv run python scripts/check_theme_contract.py
+  skeletons/10-13/the-midnight-museum.json</code> passes all 7 WS-2 acceptance checks (gate,
+  contract load/cross-check, forbid-bundle ids, default-binding validation, a synthesized
+  lethal-value rejection on <code>A2_GATE</code>, <code>render_bound_skeleton</code> with zero residual tokens, no
+  retired-theme proper noun). Also exercised directly against the real on-disk files (not a
+  copy) by <code>load_skeleton</code>/<code>load_contract_for</code> in
+  <code>tests/unit/test_d4_pilot_integrity.py::test_pilot_contract_declares_exactly_hero</code>.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Confirm Variant A/B checks fire on a deliberately mutated fixture, proven at unit level
+  against the pilot's own declared slot (HERO) and default-binding value ("Nadia").
+  <strong>[Stage R re-scope]</strong>: "fire" means the mutated blob no longer matches the version's DERIVED
+  <code>sentinel_manifest</code> (Task R3 semantics), not the contract-prescribed multiset. <strong>DONE
+  2026-07-31</strong> (commit <code>7e96e52c</code>, <code>tests/unit/test_d4_pilot_integrity.py</code>):
+  <code>test_untouched_pilot_blob_passes_verify_manifest</code> proves the positive case;
+  <code>test_mutated_pilot_blob_fails_verify_manifest</code> proves three independent at-rest mutations
+  (stripped sentinel, partial strip, forged addition in an unrecorded node) each fail
+  <code>verify_manifest</code>; <code>test_hero_coverage_warns_only_when_hero_is_uncovered</code> proves the zero-HERO
+  soft-floor WARNING mechanism itself fires (calling <code>_warn_on_zero_coverage_slots</code> directly)
+  for the pilot's real declared slot set, and stays silent once HERO is covered. All three are unit-level proofs against hand-built or
+  directly-invoked fixtures carrying the pilot's real slot id and default value, not a live
+  pilot-story generation.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Generate a pilot story through the live fill pipeline; confirm Variant A/B fire against
+  that story's actual generated <code>sentinel_manifest</code> (not a hand-built fixture). <strong>DONE
+  2026-07-31</strong>, owner-run, script path (not the worker path; see the scope note below). Run
+  slug <code>20260731T173743Z</code>, provider openrouter with fallback leg
+  <code>anthropic/claude-haiku-4.5</code>. The run's aggregate numbers are committed, verbatim and
+  sanitized, at <a href="../d4-pilot-run-20260731/">d4-pilot-run-20260731.md</a>; the raw fill prose and
+  the original <code>/tmp/d4-pilot-run/20260731T173743Z/</code> tmpdir are not part of the repo.
+  <code>scripts/measure_sentinel_survival.py --count 1</code> against the pilot skeleton with its now-
+  personalizable HERO slot: first-attempt survival 0/1 clean, consistent with the Stage R
+  ~3.3% baseline that motivated the reinsertion design in the first place; <strong>not a failure
+  signal</strong>, it is why the deterministic transform exists.
+  <code>scripts/prototype_sentinel_reinsertion.py</code> on the saved fill: HERO reinsertable 23/23 nodes
+  (100% coverage of the personalizable slot, so the zero-coverage soft floor correctly did not
+  fire on this run); <code>verify_manifest</code> pass 1/1 (100%, the G1-R transform-correctness metric
+  this task requires at 100%); overall 76/78 tokens reinsertable, with the only 2 <code>not_found</code>
+  being the theme slots GUARD and THRESHOLD, which production never sentinel-wraps (they are
+  not <code>kind: "personalizable"</code>). <strong>Scope note: this proves the script-path generation and
+  reinsertion evidence (real-provider fill plus offline deterministic reinsertion plus
+  manifest self-consistency), not a full worker-path end-to-end.</strong> DB stamping of
+  <code>personalization_eligible</code>, the validator gate, moderation, and library visibility remain
+  covered by the Task 2 and Task 4 unit suites and will get their first live coverage on the
+  first staging deploy that runs the actual <code>generation/worker.py</code> path against this contract;
+  do not read this checkbox as proof of that.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Replace-by-default migration of any test story worth keeping eligible; everything not
+  migrated stays <code>personalization_eligible = false</code> with no deadline. <strong>RATIFIED BY OWNER
+  2026-07-31</strong> (Task 6): keep <code>sk_midnight_museum</code> v1 exactly as is, a book without
+  personalization; it stays <code>personalization_eligible = false</code> with no deadline. See the
+  "Replace-by-default migration decision" block below for the full record.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Pronoun audit (per-skeleton, directives not prose; <code>pronoun_parameterized</code> flips only
+  after a human read) and the R11 role-safety audit ride along. <strong>DONE 2026-07-31</strong> (Task 3,
+  commit <code>a51df507</code>): see the "Pilot audit record" below.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Append lessons rows; this is squarely authoring/validator work. Commit. <strong>DONE 2026-
+  07-31</strong>: <code>AL-071</code> (the <code>personalization_eligible</code> producer-docstring gap this branch closed),
+  <code>AL-072</code> (the D6 migration-prefix collision, linked via <code>UW-C21</code>), and <code>AL-073</code> (the
+  cwd-relative <code>.env</code> file-path setting breaking the owner's Task 5 run from a worktree,
+  linked via <code>UW-C22</code>) are appended.</li>
+</ul>
+<p><strong>Pilot audit record (2026-07-31, pre-generation): the-midnight-museum (10-13).</strong></p>
+<ul>
+<li><strong>HERO placement count.</strong> <code>grep -c "{HERO}" skeletons/10-13/the-midnight-museum.json</code> returns
+  23 occurrences, all inside <code>&lt;&lt;FILL ...&gt;&gt;</code> directive text, one each across 23 distinct nodes
+  (the enumerated list below has 23 entries): <code>n_start</code>,
+  <code>a_gems_vitrine</code>, <code>a_gems_hide</code>, <code>b_egypt_torch</code>, <code>n_key</code>, <code>k_study</code>, <code>v_reveal2</code>,
+  <code>e_set_alarm</code>, <code>e_set_stuck_dark</code>, <code>e_set_broken_case</code>, <code>e_set_jammed_globe</code>, <code>e_set_caught</code>,
+  <code>e_set_dawn</code>, <code>e_win_secret_workshop</code>, <code>e_win_mystery_solved</code>, <code>e_win_quiet_keeper</code>,
+  <code>e_win_lost_wing</code>, <code>e_win_hero_curator</code>, <code>e_win_secret_kept</code>, <code>e_win_donate</code>,
+  <code>e_neutral_call_home</code>, <code>e_neutral_evidence</code>, <code>e_neutral_wiser</code>.</li>
+<li><strong>R11 role-safety verdict, per questionable beat.</strong> The contract declares HERO's
+  <code>role_safety</code> as <code>"protagonist"</code>, so R11 requires every placement to avoid casting HERO as
+  antagonist or as the target of a mishap. The skeleton has 12 endings whose <code>kind</code>/<code>valence</code>
+  metadata marks them non-positive (9 <code>setback</code>/<code>negative</code>, 3 <code>discovery</code>/<code>neutral</code>); the nine
+  of those that carry a <code>{HERO}</code> placement, the only ones R11 has anything to say about, were
+  each read in full:</li>
+<li><code>e_set_alarm</code>, <code>e_set_stuck_dark</code>, <code>e_set_broken_case</code>, <code>e_set_jammed_globe</code>,
+    <code>e_set_caught</code>, <code>e_set_dawn</code> (all <code>ending.kind == "setback"</code>,
+    <code>ending.valence == "negative"</code>): HERO trips an alarm, gets briefly stuck, damages a case,
+    jams a globe exhibit, gets caught, or has to leave at dawn empty-handed. In every one HERO
+    remains the actor making the choice that led to the setback, not the object of harm
+    inflicted by another character; no antagonist role, no injury, no malicious framing.
+    <strong>Verdict: PASS</strong>, no antagonist/mishap framing.</li>
+<li><code>e_neutral_call_home</code>, <code>e_neutral_evidence</code>, <code>e_neutral_wiser</code> (all
+    <code>ending.kind == "discovery"</code>, <code>ending.valence == "neutral"</code>): HERO chooses to call a
+    guardian, hand over evidence, or leave having learned something. HERO is the deciding
+    actor in each; no antagonist or mishap framing. <strong>Verdict: PASS.</strong></li>
+<li>The remaining 14 placements (7 opening/setup nodes and all 7 positive <code>e_win_*</code> endings)
+    place HERO as the story's protagonist throughout, the framing R11 exists to protect.
+    <strong>Verdict: PASS.</strong></li>
+<li><strong>Overall: no UNRESOLVED placements.</strong> All 23 <code>{HERO}</code> occurrences keep HERO in the
+    protagonist role; none is antagonist- or mishap-framed under R11.</li>
+<li><strong>Pronoun audit.</strong> <code>grep -inc</code> for <code>she|her|he\b|him\b|they\b|them\b</code> across
+  <code>skeletons/10-13/the-midnight-museum.json</code> matches 149 lines: the fill directives refer to
+  HERO with a fixed pronoun (she/her) written directly into the directive prose, not through a
+  sentinel or slot token. Per this bullet's own instruction, the audit is of the directives
+  (what the skeleton instructs the fill LLM to write), not of any already-generated prose, and
+  <code>pronoun_parameterized</code> (a per-<code>storybook_version</code> column, <code>db/models.py</code>) flips only after a
+  human read confirms the fixed pronoun could be swapped without a skeleton rewrite; no such
+  contract or skeleton change was made here. <strong>the-midnight-museum D4 pilot:
+  <code>pronoun_parameterized</code> remains false; pronouns not parameterized; flip requires a future
+  per-skeleton audit plus contract change.</strong></li>
+</ul>
+<p><strong>Replace-by-default migration decision (2026-07-31, RATIFIED by owner).</strong></p>
+<ul>
+<li><strong>Prod inventory.</strong> Exactly one prod <code>storybook_version</code> row traces to the pilot skeleton
+  (<code>skeleton_slug = 'the-midnight-museum'</code>): storybook <code>sk_midnight_museum</code>, version 1,
+  approved and published 2026-07-28 15:14 UTC (created 2026-07-21), one of the 28 published
+  catalog books. Full catalog spread: 27 distinct skeleton slugs with 1 version each, plus
+  <code>the-cave-of-echoes</code> (3 versions, series) and 3 versions with a NULL <code>skeleton_slug</code>
+  (pre-column imports, never backfilled by design, <code>models.py:998</code>).</li>
+<li><strong>Recommendation: keep <code>sk_midnight_museum</code> v1 exactly as is.</strong> It stays
+  <code>personalization_eligible = false</code> (see the prod-schema note below: the column does not exist
+  in prod yet) with no deadline, per this task's own "everything not migrated stays false"
+  clause. Regenerating a published prod book through the post-D4 pipeline is a content
+  replacement requiring the full validator plus moderation plus human approve/publish
+  ceremony, and would produce new prose for a book a child may already have read; the pilot's
+  eligibility proof comes from a fresh local generation (Task 5) instead. Migrating the prod
+  book, if ever wanted, is a separate owner-initiated regeneration run. <strong>Ratified by the owner
+  2026-07-31: keep <code>sk_midnight_museum</code> v1 exactly as is; no migration of the published prod
+  book.</strong></li>
+<li><strong>Tension with ADR-023 section 6, recorded not resolved.</strong> That section grounds "replace by
+    default" in there being no live child-linked production data; the inventory above establishes
+    the opposite (one published book a child may already have read), and that is precisely the
+    reason not to regenerate it. The outcome is permitted by this task's own "everything not
+    migrated stays false" clause and is owner-ratified, so nothing here is blocked, but the ADR
+    clause's stated premise no longer holds and should be amended the next time ADR-023 is
+    revised. Flagged so the next reader does not treat the ADR premise as still-current fact.</li>
+<li><strong>Prod-schema note (deploy-relevant, not D4-blocking).</strong> <code>storybook_version
+  .personalization_eligible</code> does not exist in prod: the ADR-023 Stage B migrations that add it
+  have not been applied there (the live column list ends at <code>skeleton_slug</code>, 15 columns).
+  <code>sentinel_manifest</code> and <code>pronoun_parameterized</code> are likewise absent. The next prod deploy
+  must apply the pending <code>supabase/migrations</code> chain before the new image boots, since that
+  image's <code>api/library.py</code> reads these columns (D8). Pairs with the existing note that the next
+  prod image also needs a real moderation reviewer or <code>CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1</code>.</li>
+<li><strong>Staging.</strong> Not queried (the Supabase MCP session is scoped to the prod project).
+  <code>seed_staging.py</code> seeds only the tide-pools and clockwork-garden fixtures, so a
+  midnight-museum story on staging is unlikely but unverified.</li>
 </ul>
 <h3 id="task-d5-compliance-artifacts-and-closeout">Task D5: compliance artifacts and closeout<a class="headerlink" href="#task-d5-compliance-artifacts-and-closeout" title="Permanent link">&para;</a></h3>
 <ul class="task-list">
@@ -4469,7 +4599,7 @@ silently.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 31, 2026 14:47:58 UTC">July 31, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 31, 2026 20:06:32 UTC">July 31, 2026</span>
   </span>
 
     
