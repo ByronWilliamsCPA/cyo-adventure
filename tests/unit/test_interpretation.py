@@ -71,13 +71,14 @@ _ALL_BANDS = list(AgeBand)
 
 
 def test_catalog_every_key_renders_both_registers_with_and_without_element() -> None:
-    """Every (disposition, reason, band_group) renders both registers cleanly.
+    """Every (disposition, reason, band_group, personalized) renders cleanly.
 
     With a phrase and without it, both kid and guardian forms must be non-empty
-    and must leave no unsubstituted ``{...}`` placeholder.
+    and must leave no unsubstituted ``{...}`` placeholder. ADR-023 Task D1
+    added the ``personalized`` toggle axis to the catalog key.
     """
     assert _CATALOG, "catalog must not be empty"
-    for disposition, reason, group in _CATALOG:
+    for disposition, reason, group, personalized in _CATALOG:
         band = _GROUP_BAND[group]
         for element in ("a friendly test phrase", None):
             kid, guardian = _render_pair(
@@ -89,9 +90,10 @@ def test_catalog_every_key_renders_both_registers_with_and_without_element() -> 
                 rule="forbid:lethal",
                 band=band,
                 skeleton_slug="the-cave-of-echoes",
+                personalized=personalized,
             )
             for text in (kid, guardian):
-                assert text.strip(), (disposition, reason, group, element)
+                assert text.strip(), (disposition, reason, group, personalized, element)
                 assert "{" not in text, (disposition, reason, text)
                 assert "}" not in text, (disposition, reason, text)
 
@@ -577,6 +579,160 @@ def test_render_interpretation_is_pure_and_repeatable() -> None:
 
 
 # ---------------------------------------------------------------------------
+# ADR-023 Task D1 (gate G3): the name_personalization_enabled toggle.
+#
+# One test per band group variant, verifying the exact Ask 1b drafted copy
+# (docs/planning/adr/adr-023-story-personalization-slots.md) renders when the
+# toggle is True, plus a fixed set of tests proving the toggle-off default
+# reproduces the pre-D1 Route A copy byte for byte (the gate G3 property).
+# ---------------------------------------------------------------------------
+
+
+def _identity_protection_decision() -> ElementDecision:
+    """A SET_ASIDE/IDENTITY_PROTECTION decision (self-naming, CR-3: no element)."""
+    return ElementDecision(
+        None, ElementDisposition.SET_ASIDE, ReasonCode.IDENTITY_PROTECTION
+    )
+
+
+def test_toggle_on_young_band_uses_ask_1b_personalized_copy() -> None:
+    """Toggle ON, young band group: exact Ask 1b personalized kid/guardian text."""
+    result = render_interpretation(
+        [_identity_protection_decision()],
+        band=AgeBand.BAND_3_5,
+        layer="refined",
+        created_at=_NOW,
+        name_personalization_enabled=True,
+    )
+    (element,) = result.elements
+    assert element.kid_text == (
+        "Every hero starts with a made-up name. Your name might show up when you read!"
+    )
+    assert element.guardian_text == (
+        "The request asked to use the child's real name or self as the "
+        "protagonist; self-naming is disallowed by design (Route A, "
+        'coppa-gdpr-remediation-plan.md Section 5 "Self-naming"), so a '
+        "fictional protagonist was used and no real name reached the generator. "
+        "Name personalization is enabled for this profile, so the child's own "
+        "name may still be substituted at read time on your devices (ADR-023)."
+    )
+
+
+def test_toggle_on_middle_band_uses_ask_1b_personalized_copy() -> None:
+    """Toggle ON, middle band group: exact Ask 1b personalized kid/guardian text."""
+    result = render_interpretation(
+        [_identity_protection_decision()],
+        band=AgeBand.BAND_8_11,
+        layer="refined",
+        created_at=_NOW,
+        name_personalization_enabled=True,
+    )
+    (element,) = result.elements
+    assert element.kid_text == (
+        "Every hero starts with a made-up name. Your grown-up turned your real "
+        "name on, so watch for it when you read!"
+    )
+    assert element.guardian_text == (
+        "The request asked to use the child's real name or self as the "
+        "protagonist; self-naming is disallowed by design (Route A, "
+        'coppa-gdpr-remediation-plan.md Section 5 "Self-naming"), so a '
+        "fictional protagonist was used and no real name reached the generator. "
+        "Name personalization is enabled for this profile, so the child's own "
+        "name may still be substituted at read time on your devices (ADR-023)."
+    )
+
+
+def test_toggle_on_teen_band_uses_ask_1b_personalized_copy() -> None:
+    """Toggle ON, teen band group: exact Ask 1b personalized kid/guardian text."""
+    result = render_interpretation(
+        [_identity_protection_decision()],
+        band=AgeBand.BAND_16_PLUS,
+        layer="refined",
+        created_at=_NOW,
+        name_personalization_enabled=True,
+    )
+    (element,) = result.elements
+    assert element.kid_text == (
+        "Every hero starts with a made-up name. Your grown-up turned on name "
+        "personalization, so your own name may appear when you read."
+    )
+    assert element.guardian_text == (
+        "The request asked to use the child's real name or self as the "
+        "protagonist; self-naming is disallowed by design (Route A, "
+        'coppa-gdpr-remediation-plan.md Section 5 "Self-naming"), so a '
+        "fictional protagonist was used and no real name reached the generator. "
+        "Name personalization is enabled for this profile, so the child's own "
+        "name may still be substituted at read time on your devices (ADR-023)."
+    )
+
+
+@pytest.mark.parametrize(
+    ("band", "expected_kid_text"),
+    [
+        (
+            AgeBand.BAND_3_5,
+            (
+                "Heroes in our stories always have made-up names, so we chose "
+                "one for you!"
+            ),
+        ),
+        (
+            AgeBand.BAND_8_11,
+            (
+                "Heroes in our stories always have made-up names, so we chose "
+                "one for this adventure!"
+            ),
+        ),
+        (
+            AgeBand.BAND_16_PLUS,
+            (
+                "Heroes in our stories always use made-up names, so we chose "
+                "one for this adventure."
+            ),
+        ),
+    ],
+)
+def test_toggle_off_default_reproduces_unchanged_route_a_copy(
+    band: AgeBand, expected_kid_text: str
+) -> None:
+    """Toggle OFF (the default): Route A copy is byte-identical to pre-D1 (G3).
+
+    ``name_personalization_enabled`` is not passed here at all, so this also
+    proves the parameter defaults to ``False`` (fail-closed) rather than
+    requiring every caller to opt in explicitly.
+    """
+    result = render_interpretation(
+        [_identity_protection_decision()],
+        band=band,
+        layer="refined",
+        created_at=_NOW,
+    )
+    (element,) = result.elements
+    assert element.kid_text == expected_kid_text
+    assert element.guardian_text == (
+        "The request asked to use the child's real name/self as the "
+        "protagonist; self-naming is disallowed by design (Route A). A "
+        "fictional protagonist was used."
+    )
+
+
+def test_register_personalized_defaults_match_standard_when_not_supplied() -> None:
+    """A registration with no ``*_personalized`` kwargs is identical toggle on/off.
+
+    Every non-``IDENTITY_PROTECTION`` catalog entry relies on this default;
+    spot-check one (``BUILT_IN``/``BOUND_TO_SLOT``) directly against the
+    catalog so a regression in the default wiring is caught even though no
+    other test iterates every disposition/reason pair with the toggle on.
+    """
+    key = (
+        ElementDisposition.BUILT_IN,
+        ReasonCode.BOUND_TO_SLOT,
+        band_group_for(AgeBand.BAND_8_11),
+    )
+    assert _CATALOG[(*key, False)] == _CATALOG[(*key, True)]
+
+
+# ---------------------------------------------------------------------------
 # CR-1 style: a withheld phrase never appears in any output string.
 # ---------------------------------------------------------------------------
 
@@ -765,11 +921,13 @@ def test_general_layer_template_pairs_are_bespoke_in_all_band_groups() -> None:
     ]
     for disposition, reason in pairs:
         for group in groups:
-            assert (disposition, reason, group) in _CATALOG, (
-                disposition,
-                reason,
-                group,
-            )
+            for personalized in (False, True):
+                assert (disposition, reason, group, personalized) in _CATALOG, (
+                    disposition,
+                    reason,
+                    group,
+                    personalized,
+                )
 
 
 def test_build_general_is_pure_and_repeatable() -> None:

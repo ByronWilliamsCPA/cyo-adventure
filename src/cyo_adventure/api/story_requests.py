@@ -426,6 +426,7 @@ async def create_story_request(
         banned_themes=profile.banned_themes or (),
         premise=body.request_text,
         created_at=datetime.now(tz=UTC),
+        name_personalization_enabled=profile.real_name_ring1_enabled,
     )
     request = StoryRequest(
         family_id=ctx.principal.family_id,
@@ -712,6 +713,9 @@ async def create_authored_story_request(
         banned_themes=(profile.banned_themes or ()) if profile is not None else (),
         premise=body.request_text,
         created_at=datetime.now(tz=UTC),
+        name_personalization_enabled=(
+            profile.real_name_ring1_enabled if profile is not None else False
+        ),
     ).model_dump(mode="json")
     return StoryRequestAuthoredCreatedView(
         id=str(request.id),
