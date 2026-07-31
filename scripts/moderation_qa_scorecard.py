@@ -7,7 +7,11 @@ and compares it against ``docs/planning/safety/moderation-qa-corpus.json``'s
 expected labels, at both the whole-story and per-node level. Prints a
 pass/fail table to stdout and exits nonzero if any comparison fails, so a
 regression in the classifiers/reviewer/repair pipeline is a red CI/manual
-check rather than a silent drift.
+check rather than a silent drift. One caveat on repair coverage: repair
+*adoption* is only reachable for the five gate-clean fixtures, not for
+``mqa_borderline_storm_watch_5_8``, which is deliberately off-ceiling. See
+``scripts/seed_moderation_qa.py``'s "what this corpus does and does not
+exercise" note.
 
 The comparison logic (:func:`compare_book`, :func:`story_verdict_from_report`,
 :func:`node_verdict_from_report`, :func:`meets_floor`,
