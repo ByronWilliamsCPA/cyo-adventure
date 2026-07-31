@@ -25,12 +25,16 @@
  * invented backend change.
  */
 
+import type { ValuesPayload } from '../player/personalization'
 import {
+  cachePersonalizationValues,
+  deletePersonalizationValues,
   deleteReadingState,
   deleteStorybooksById,
   dequeue,
   getAllProfileShelves,
   listCachedStorybookIds,
+  listPersonalizationValues,
   listQueue,
   listReadingStateStorybookIds,
   putProfileShelf,
@@ -120,4 +124,69 @@ export async function reconcileOfflineCache(
       await deleteStorybooksById(id)
     }
   }
+
+  // Personalization values ride the same device-wide still-needed set (ADR-023
+  // P6): the store is keyed by book, not profile, exactly like `storybooks`.
+  // Once no known profile lists a book, its cached values payload (a child's
+  // real first name at rest) has no remaining reader, and no other purge path
+  // will ever reach it: the per-book reconcile in ReaderRoute only fires when
+  // THAT book is opened again, which a revoked book never is. Deleting here is
+  // what keeps a revocation from stranding an unreachable values entry forever.
+  const valuesEntries = await listPersonalizationValues()
+  for (const entry of valuesEntries) {
+    if (!stillNeeded.has(entry.storybook_id)) {
+      await deletePersonalizationValues(entry.storybook_id)
+    }
+  }
+}
+
+// There is deliberately no subject-scoped values purge here. Every one of the
+// spec's purge triggers (Task C2c) already routes through a mechanism that
+// exists: sign-out clears the whole store at once (db.ts
+// clearPersonalizationValues, called from AuthContext's
+// purgeAuthenticatedDataAtRest); a consent or ring change surfaces as an empty
+// payload on the next open of each book, which the per-book
+// reconcilePersonalizationValues below turns into a delete; and revocation of
+// the book itself is covered by reconcileOfflineCache's values deletion above.
+// A subject-keyed purgePersonalizationValues existed briefly but had zero
+// production call sites and was removed rather than left as an untriggered
+// privacy affordance.
+
+/**
+ * Reconcile one book's cached values payload against a fresh, authoritative one.
+ *
+ * The single client-side mechanism behind six of the spec's seven purge triggers
+ * (a ring flag switched off, ring-2 consent revoked, the connection revoked, the
+ * subject deactivated, the subject's processing restricted, the consent policy
+ * version rotated). Every one of them makes the server return a payload that
+ * differs from the cached one, usually the empty payload, because the values
+ * route re-evaluates the whole predicate on each call. The client does not need
+ * to know WHICH of them happened, and deliberately is not told: distinguishing
+ * them is exactly what the route's uniform empty payload refuses to leak.
+ *
+ * @param storybookId - The book whose cache entry this is.
+ * @param fresh - The payload the authoritative fetch returned, or null when the
+ *   fetch failed or was not attempted.
+ */
+export async function reconcilePersonalizationValues(
+  storybookId: string,
+  fresh: ValuesPayload | null
+): Promise<void> {
+  // #CRITICAL: security: the null branch deletes, but know who actually uses
+  // it. It exists for a caller that treats null as an authoritative "no
+  // payload" and wants the fail-safe delete. The only production caller today
+  // (ReaderRoute.tsx's fetcher) deliberately never passes null: the api
+  // adapter (api/personalizationApi.ts) collapses EVERY failure (401, 403,
+  // 500, transport) to null, so treating null as revocation there would purge
+  // the cache on any server blip. The operative consequence: on a server
+  // error a cached payload persists until a successful fetch answers, and
+  // only that answer (an empty or changed payload) revokes it.
+  // #VERIFY: revocation.test.ts "deletes rather than caches when the fetch
+  // produced null" covers this branch; ReaderRoute.tsx's fetcher returns the
+  // cache untouched on a null fetch instead of calling this with null.
+  if (fresh === null || Object.keys(fresh.values).length === 0) {
+    await deletePersonalizationValues(storybookId)
+    return
+  }
+  await cachePersonalizationValues(storybookId, fresh)
 }

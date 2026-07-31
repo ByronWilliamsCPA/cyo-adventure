@@ -49,6 +49,28 @@ _VERDICT_RAISE: dict[str, str] = {
 # the other silently produces wrong suggestions.
 _OVERRIDABLE_VERDICTS = frozenset({Verdict.ADVISORY.value, Verdict.FLAG.value})
 
+# #CRITICAL: security: the two fail-safe messages moderation/stages.py's
+# _parse_verdict has always emitted (unchanged on origin/main), from before
+# Finding.structural (Stage A) existed. A report persisted before Stage A
+# carries no "structural" key at all, so its fail-safe findings look
+# identical to a genuine content judgment to every check that only reads
+# the "structural" key: this is the gap the controller flagged in commit
+# b67a7b7e (5,048 legacy flood rows already in production, (16+, safety)
+# one released book away from a manufactured FLAG->BLOCK suggestion).
+# A finding is treated as this kind of legacy fail-safe only when
+# "structural" is ABSENT from the dict (an explicit structural: False from
+# post-Stage-A code is always a genuine content finding, never legacy).
+# Remove once Stage D re-moderates the legacy corpus and every persisted
+# report has gone through code that stamps "structural" explicitly.
+# #VERIFY: tests/unit/test_moderation_insights.py::
+# TestAggregateInsights::test_legacy_fail_safe_message_without_structural_key_is_excluded.
+_LEGACY_FAIL_SAFE_MESSAGES = frozenset(
+    {
+        "verdict parse failed; defaulted to fail-safe",
+        "unknown verdict; defaulted to fail-safe",
+    }
+)
+
 
 @dataclass(frozen=True, slots=True)
 class VersionOutcome:
@@ -134,6 +156,15 @@ class CategoryInsight:
     released_versions: int
     override_rate: float | None
     last_seen: datetime
+    # Additive (Stage A of the moderation review redesign, design doc
+    # section 2.5/gap G2a): counts findings whose ``structural`` flag is
+    # True (a pipeline fail-safe, not a genuine content judgment) folded
+    # into this category. Tracked separately from, and never counted
+    # toward, advisory_findings/flag_findings/decided_versions/
+    # override_rate, so a flood of fail-safe verdicts (the mock reviewer,
+    # a down classifier) can never drive suggest_thresholds to raise a
+    # safety threshold on manufactured evidence.
+    structural_findings: int = 0
 
 
 @dataclass(slots=True)
@@ -143,6 +174,7 @@ class _CategoryAccumulator:
     flag_findings: int = 0
     decided_versions: int = 0
     released_versions: int = 0
+    structural_findings: int = 0
 
 
 def _fold_finding_into_accumulator(
@@ -191,6 +223,24 @@ def _fold_finding_into_accumulator(
         accumulators[key] = accumulator
     else:
         accumulator.last_seen = max(record.moderated_at, accumulator.last_seen)
+    # #CRITICAL: security: a structural finding (a pipeline fail-safe: the
+    # Stage-1 reviewer-unavailable collapse, a degraded/incomplete-coverage
+    # classifier finding, or the mock-reviewer advisory) is pipeline noise,
+    # not a genuine content judgment a guardian weighed. Counting it toward
+    # decided_versions/override_rate is exactly gap G2a: a mock-moderated or
+    # degraded-classifier corpus would otherwise look like guardians
+    # systematically overriding a real safety signal and drive
+    # suggest_thresholds to propose raising a threshold on manufactured
+    # evidence. Folding it into structural_findings and returning here,
+    # before the decided/released accounting below, is what keeps it out.
+    # #VERIFY: tests/unit/test_moderation_insights.py::
+    # TestAggregateInsights::test_structural_findings_excluded_from_override_rate.
+    is_legacy_fail_safe = "structural" not in finding and (
+        finding.get("message") in _LEGACY_FAIL_SAFE_MESSAGES
+    )
+    if finding.get("structural") is True or is_legacy_fail_safe:
+        accumulator.structural_findings += 1
+        return
     if verdict == Verdict.ADVISORY.value:
         accumulator.advisory_findings += 1
     else:
@@ -222,6 +272,7 @@ def _build_category_insight(
         released_versions=accumulator.released_versions,
         override_rate=override_rate,
         last_seen=accumulator.last_seen,
+        structural_findings=accumulator.structural_findings,
     )
 
 

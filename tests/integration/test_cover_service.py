@@ -82,6 +82,159 @@ async def test_success_path_sets_pending_review_and_writes_url(sessions, seed):
         assert ".webp?v=" in row.cover_image_url
         assert row.cover_approved_by is None
         assert row.cover_approved_at is None
+        # UW-M07 defense in depth: the object key must not be derivable from
+        # storybook_id/version alone, so a successful generation must record
+        # a salt.
+        assert row.cover_object_salt
+
+
+@pytest.mark.asyncio
+async def test_generate_cover_stores_a_random_object_salt(sessions, seed):
+    """Two generations must not reuse the same salt (it is meant to be
+    unguessable, not merely present)."""
+
+    def fake_generate(prompt, settings):
+        return b"PNGSOURCE"
+
+    async def fake_upload(image_bytes, key, settings):
+        return f"https://p.supabase.co/storage/v1/object/public/covers/{key}"
+
+    async def fake_delete(key, settings):
+        return True
+
+    salts: list[str] = []
+    for _ in range(2):
+        async with sessions() as s:
+            await generate_cover(
+                seed.storybook_id,
+                seed.version,
+                session=s,
+                settings=Settings(),
+                generate=fake_generate,
+                optimize=lambda b, **kw: b"WEBP",
+                upload=fake_upload,
+                delete=fake_delete,
+            )
+        async with sessions() as s:
+            row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+            assert row is not None
+            assert row.cover_object_salt is not None
+            salts.append(row.cover_object_salt)
+
+    assert salts[0] != salts[1]
+
+
+def _fake_generate(prompt, settings):
+    """Stand in for the image provider; the bytes are never inspected."""
+    return b"PNGSOURCE"
+
+
+async def _fake_upload(image_bytes, key, settings):
+    """Stand in for the R2 PutObject, echoing the key back inside the URL."""
+    return f"https://p.supabase.co/storage/v1/object/public/covers/{key}"
+
+
+async def _generate(session, seed, *, deleted: list[str], delete_ok: bool = True):
+    """Run one generation, recording every key handed to the delete hook."""
+
+    async def fake_delete(key, settings):
+        deleted.append(key)
+        return delete_ok
+
+    await generate_cover(
+        seed.storybook_id,
+        seed.version,
+        session=session,
+        settings=Settings(),
+        generate=_fake_generate,
+        optimize=lambda b, **kw: b"WEBP",
+        upload=_fake_upload,
+        delete=fake_delete,
+    )
+
+
+@pytest.mark.asyncio
+async def test_first_generation_deletes_nothing(sessions, seed):
+    """A row that never had a cover has no prior object to reclaim, so the
+    delete hook must not be invoked with a key nothing was uploaded to."""
+    deleted: list[str] = []
+    async with sessions() as s:
+        await _generate(s, seed, deleted=deleted)
+
+    assert deleted == []
+
+
+@pytest.mark.asyncio
+async def test_regeneration_deletes_the_previous_object(sessions, seed):
+    """UW-M07 follow-through: because the key now embeds a fresh random salt,
+    a re-roll writes to a NEW key, so the superseded object must be deleted
+    explicitly or it is orphaned in the bucket and stays fetchable by anyone
+    holding a presigned URL minted for it."""
+    deleted: list[str] = []
+    async with sessions() as s:
+        await _generate(s, seed, deleted=deleted)
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        first_salt = row.cover_object_salt
+        assert first_salt is not None
+
+    async with sessions() as s:
+        await _generate(s, seed, deleted=deleted)
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        second_salt = row.cover_object_salt
+
+    assert second_salt != first_salt
+    # Exactly the outgoing key, derived from the OLD salt, not the new one.
+    assert deleted == [f"{seed.storybook_id}/{seed.version}-{first_salt}.webp"]
+    assert row.cover_image_url is not None
+    assert f"{seed.version}-{second_salt}.webp" in row.cover_image_url
+
+
+@pytest.mark.asyncio
+async def test_regeneration_deletes_the_legacy_unsalted_object_when_salt_is_null(
+    sessions, seed
+):
+    """A cover uploaded before the salt column existed lives at the legacy
+    deterministic key; regenerating it must reclaim THAT key, not skip the
+    delete because the stored salt happens to be NULL."""
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        row.cover_status = "ready"
+        row.cover_object_salt = None
+        row.cover_image_url = (
+            f"https://images.example.com/{seed.storybook_id}/{seed.version}.webp"
+        )
+        await s.commit()
+
+    deleted: list[str] = []
+    async with sessions() as s:
+        await _generate(s, seed, deleted=deleted)
+
+    assert deleted == [f"{seed.storybook_id}/{seed.version}.webp"]
+
+
+@pytest.mark.asyncio
+async def test_regeneration_survives_a_failed_delete_of_the_previous_object(
+    sessions, seed
+):
+    """A delete failure is bounded (an orphan the bucket's own privacy still
+    covers); the replacement cover is already committed, so the job must not
+    be flipped to 'failed' over it."""
+    deleted: list[str] = []
+    async with sessions() as s:
+        await _generate(s, seed, deleted=deleted)
+    async with sessions() as s:
+        await _generate(s, seed, deleted=deleted, delete_ok=False)
+
+    assert len(deleted) == 1
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        assert row.cover_status == "pending_review"
 
 
 @pytest.mark.asyncio

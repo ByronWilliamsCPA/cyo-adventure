@@ -2426,6 +2426,19 @@ class PersonalizationValuesView(BaseModel):
     policy_version: str | None
     resolved_at: datetime
     values: dict[str, str]
+    # The canonical sentinel pattern (`storybook.sentinels.SENTINEL_RE.pattern`),
+    # shipped so the client resolver never re-derives it. Plan risk R9: two
+    # rendering implementations drift, and the drift is silent because a
+    # near-miss pattern still matches most tokens. Present on EVERY response
+    # including the empty one, because a client with the flag on and no values
+    # still has to strip markers to their generic words.
+    sentinel_pattern: str
+    # slot id -> personalization field, from the book's theme contract
+    # (`generation.binding.personalizable_slot_fields`). The join the resolver
+    # cannot make on its own: prose sentinels carry the slot id, `values` above
+    # is keyed by slot type. Empty on the empty payload and on any book whose
+    # contract declares no personalizable slot.
+    slot_bindings: dict[str, str]
 
 
 # ---------------------------------------------------------------------------

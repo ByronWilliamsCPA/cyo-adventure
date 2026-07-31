@@ -78,8 +78,8 @@ validator or authoring behaviour appends its lessons to
 |---|---|---|
 | **G1: survival GO/NO-GO** | Stage B onward (everything after leak guards) | Task A1's measured clean-pass rate at or above ~95% is GO; 80-95% means iterate the prompt/delimiter and re-measure before proceeding, with the retry cost line made explicit; below ~80% is STOP: prototype deterministic post-fill re-insertion instead and re-plan Stage B+. **FIRED 2026-07-28: measured 3.3% (1/30) on the primary provider; verdict STOP. Stage B+ as written is void pending a re-plan around deterministic post-fill re-insertion (design plan 3.4, MEASURED block). RESOLVED by the Stage R re-plan of 2026-07-29: gate G1-R (Stage R exit) now blocks Stage B onward** |
 | **G1-R: re-insertion round-trip** | Stage B onward (replaces the fired G1) | Task R4: round-trip integrity 100% through the production fill path; per-slot coverage profile recorded; owner acknowledges the coverage posture (third-party slots high-90s, HERO partial-by-voice, dedication guaranteed). **SATISFIED 2026-07-29: verify_manifest 30/30 (100%) on fresh fills (Task R4 CONFIRMED block); owner acknowledged the coverage posture and approved Stage B the same day. Stage B is unblocked. The vocative nudge experiment ran and was REJECTED the same day (HERO coverage fell to 4.9%, AL-062); it adjusted the coverage profile only, never this gate, and the template edit was reverted before commit.** |
-| **G2: counsel on OD-1/OD-5** | **Shipping** P7 (ring-2) and P9 (consent UI); building them is not blocked | Counsel confirms the ring-2 separate disclosure consent design and the sibling/pet-name raise |
-| **G3: Route A copy precedes the flag** | Enabling `VITE_FEATURE_PERSONALIZATION` anywhere a real family can reach | Task D1 (toggle-aware Route A copy) merged |
+| **G2: counsel on OD-1/OD-5** | **Shipping** P7 (ring-2) and P9 (consent UI); building them is not blocked | Counsel confirms the ring-2 separate disclosure consent design and the sibling/pet-name raise. **SATISFIED 2026-07-29 by owner review (no external counsel exists at this scale): OD-1 closed as separate consent, chosen for conservatism; OD-5 closed conditionally for R1 (immediate family) with mandatory reassessment at every deployment-phase boundary and a hard revisit before iOS/commercial use. ADR-023 flipped Proposed to Accepted the same day; the regulatory classification (COPPA-deferred, GDPR-K contingent) is recorded in its OD-5 closure block. Shipping P7/P9 is unblocked at R1 scope only.** |
+| **G3: Route A copy precedes the flag** | Enabling `VITE_FEATURE_PERSONALIZATION` anywhere a real family can reach | Task D1 (toggle-aware Route A copy) merged. **Task D1 AUTHORIZED by owner 2026-07-29; the gate passes when it merges.** |
 
 Owner decisions recorded 2026-07-28 (this plan is their record; Task A6 propagates them into
 the design plan):
@@ -90,6 +90,25 @@ the design plan):
   family device is a shared trust boundary; no per-profile encryption, no in-memory-only mode.
   The acceptance must be recorded in the DPIA/privacy-model entry (Tasks A6, B7), not silently
   inherited.
+
+Owner decisions recorded 2026-07-29 (post-Stage-C review of draft PR #489):
+
+- **OD-1: separate disclosure consent confirmed**, chosen for conservatism (minimal work,
+  reduced risk). **OD-5: self-verification accepted for R1 only**, reassessed at every
+  deployment-phase boundary, hard revisit before iOS/commercial; regulatory classification
+  (COPPA-deferred, GDPR-K contingent) recorded in ADR-023's OD-5 closure block. Together these
+  satisfy G2 at R1 scope, and ADR-023 flipped Proposed to Accepted.
+- **Task D1 authorized** (G3 passes when it merges).
+- **`personalization_eligible` exposure scheduled** as Task D8 (was Stage C open question 2).
+- **Vocabulary decisions** (proposal doc `personalization-closed-vocabularies-proposal.md`):
+  `favorite` ships **split** (Option B: `favorite_color`/`favorite_food`/`favorite_hobby`, the
+  schema migration accepted knowingly), NOT flat; `pet_species`, `kinship_label` (+`dedication`
+  sharing its list), and `home_type` accepted as proposed; **no case normalization** anywhere
+  (stored and matched exactly as listed); **no "none" sentinel** (story-flow impacts are hard
+  to overcome; absence stays "slot unset"). Implementation is Task D6.
+- **New feature: vocabulary-expansion requests.** A guardian can request a new entry for a
+  closed vocabulary; an admin validates appropriateness and expands the list. Scheduled as
+  Task D7; cite the capability register IDs it serves when it is speced.
 
 ## Standing constraints (apply to every task)
 
@@ -886,6 +905,99 @@ guardian-authorized)" subsection; privacy-model version 0.2 to 0.3.
 
 Branch: `feat/personalization-p6-p7-client`.
 
+### Stage C status (completed 2026-07-29)
+
+C1 through C5 are done on `feat/personalization-p6-p7-client`, executed from the detailed
+Stage C implementation plan (committed beside this document as
+`story-personalization-stage-c-implementation-plan.md`). Commits, by task:
+
+- **C0 (prerequisites, added by the implementation plan; see deviation 1):** `4f3ad847`
+  (slot-id to field map in `generation/binding.py`), `556ebc5d` (story-scoped
+  `moderation/personalizable_slots.py` resolver), `ca50cbc5` (`sentinel_pattern` and
+  `slot_bindings` shipped on the values payload), `f03c7fdc` (`dedication` joins
+  `CLOSED_VOCABULARIES`, fail-closed).
+- **C1 (resolver):** `82d52f93` (`frontend/src/player/personalization.ts`), `3d8cb6e1`
+  (cross-language fallback-pattern pin, risk R9), `e1440b71` (`isPersonalizationEnabled()`
+  flag helper, default off).
+- **C2 (offline store):** `377de008` (`personalization_values` store at `DB_VERSION` 4),
+  `6e7bc145` (purge and reconcile triggers in `offline/revocation.ts`), `55c04e00`
+  (sign-out purge in `AuthContext`).
+- **C3 (render sites, behind the flag):** `31a27834` (values fetch adapter), `7d7ffdc7`
+  (passage, ending title, and read-aloud resolution; includes the C3f flag-off strip pin),
+  `cd794071` (ReaderPage threading), `8df1f9ce` (ReaderRoute flag-gated cache-first port),
+  `20f69463` (admin review-surface marker-visibility pin).
+- **C4 (ring 2):** `97c2fead` (the review's five coverage gaps closed in
+  `tests/integration/test_personalization_api.py`; every test passed first try), `37deeb67`
+  (client ring-agnosticism pin).
+- **C5 (dedication overlay):** `0ca97333` (`DedicationOverlay` component), `b0043c15`
+  (opening-screen-only render).
+- **C6 (stage exit):** `3cce7859` (authoring lessons AL-066..AL-068 plus UW-C20).
+
+The flag (`VITE_FEATURE_PERSONALIZATION`) remains **off**; gate G3 is still open (it passes
+when Task D1 merges), G2 was closed by owner review on 2026-07-29 (see the gates table:
+satisfied at R1 scope, ADR-023 flipped to Accepted), and Stage C never enables any shipping
+surface.
+
+**Deviations from this section as written, each with its reason:**
+
+1. **C0 added** as a prerequisite task group. The values payload lacked `sentinel_pattern`
+   (named in two plan documents, never implemented) and any slot-id to slot-type join
+   (`slot_bindings`), and `dedication` was absent from `CLOSED_VOCABULARIES`. All three were
+   unimplementable-client or fail-open defects that had to land before C1. Lessons AL-066,
+   AL-067, AL-068.
+2. **C4's server half was already merged** in PR #466. `authorize_via_connection` was not
+   added (the connection resolves inline in `_resolve_ring2_view`, per the house convention
+   this section itself cites) and `test_personalization_ring2.py` was not created (the tests
+   live beside the ring-1 ones in `test_personalization_api.py`). C4 became test-list closure
+   plus a client ring-agnosticism pin.
+3. **The offline store is keyed by `storybook_id`, not `subject_profile_id`** as `:917`
+   specifies: the subject id is unknowable offline (it appears in no offline artifact), and a
+   subject-scoped purge scans the bounded per-book key set instead
+   (`purgePersonalizationValues`).
+4. **The fetch is not gated on `personalization_eligible`:** that boolean is in no API
+   response, and exposing it would mean either mutating the immutable version blob or adding
+   a response wrapper. The design plan frames the gate as an optimization, so one cheap extra
+   GET per book open was accepted instead (open question 2 below).
+5. **Choice labels are not resolved:** `generation/binding.py` renders choice labels with the
+   bare value always, and a sentinel in a choice label is treated as corruption by the
+   at-rest check, so there is nothing there to resolve.
+6. **The marker strip is unconditional; only the fetch is flag-gated.** ADR-023 section 10
+   forbids a marker on any kid-facing surface without exception, and the strip is a pure
+   synchronous pass, so `resolvePersonalization(text, null)` runs even with the flag off.
+   This is a deliberate flag-OFF behavior delta the post-Stage-C review re-surfaced: a
+   sentinel-bearing blob that previously showed raw markers now shows each marker's generic
+   word even with `VITE_FEATURE_PERSONALIZATION` off (deliberate strengthening; the Task C3f
+   flag-off strip pin in `frontend/src/player/personalization.test.ts` asserts it).
+7. **The dedication renders `For {NAME}` when no kinship value is available**, which is
+   today's only possible path given the empty vocabulary (C0e fails closed). The Stage R
+   "dedication guaranteed" clause is satisfied by the name half alone.
+8. **An ending with an empty-string title now renders "The End" instead of nothing**
+   (`Reader.tsx`, the ending heading's `endingTitle === '' ? 'The End' : endingTitle`
+   fallback). A second deliberate flag-OFF behavior delta the post-Stage-C review surfaced
+   as undocumented: the fallback also fires when the resolver strips an ending title that
+   was nothing but a marker, so a child never sees a blank ending heading, flag on or off.
+
+**Open questions carried out of Stage C** (recorded, not guessed at; none blocked the stage):
+
+1. **Where should the slot-id to slot-type map be computed?** Stage C computes it per request
+   from the book's theme contract on disk (two JSON reads inside the book-open call). The
+   alternative is persisting it on `storybook_version` beside `sentinel_manifest` at
+   re-insertion time: one migration plus one generation-path edit, no request-path disk read,
+   and the map survives alongside the blob it describes. Reversible either way; owner input
+   wanted, not required.
+2. **Should `personalization_eligible` be exposed so the reader can skip a pointless fetch?**
+   Design plan 8.3 assumes it is on the library and version responses; it is on neither, and
+   the version route returns the raw immutable blob. The cheapest correct shape is a new
+   `LibraryItemView` field threaded from `LibraryPage` into the reader's route state, which
+   is Stage D-sized. Stage C skips the optimization (deviation 4). **ANSWERED 2026-07-29:
+   scheduled as Task D8.**
+3. **The dedication kinship vocabulary is still empty**, so the "love {KINSHIP}" half of the
+   template is unreachable until the owner supplies the list, which belongs in a design-plan
+   update or ADR-023 amendment, not hand-added to the Python dict (its own `#VERIFY` marker
+   says so). **Owner input required** before the overlay can render its full template.
+   **ANSWERED 2026-07-29: lists accepted (with `favorite` split) in
+   `personalization-closed-vocabularies-proposal.md`; implementation is Task D6.**
+
 ### Task C1: the resolver
 
 **Files:** create `frontend/src/player/personalization.ts` + `personalization.test.ts` (the
@@ -1039,8 +1151,40 @@ settings screen says so in as many words. TDD, commit.
   personalization granularity (the parked addendum block marks the spot); coordinate so it is
   written once.
 - [ ] Capability register: flip **G18** and **K20** from ❌ with spec links and covering tests.
-- [ ] ADR-023 status: flip Proposed to Accepted when counsel closes OD-1/OD-5; until then G2
-  keeps P7/P9 unshipped.
+- [x] ADR-023 status: flipped Proposed to Accepted. The original condition read "when counsel
+  closes OD-1/OD-5"; no external counsel exists at this scale, so owner review closed both
+  instead (the gates table's G2 entry is the record). **DONE 2026-07-29: owner review closed
+  both (OD-5 conditionally, R1 scope), satisfying G2 at R1 scope; status flipped the same day
+  on the Stage C branch (PR #489).**
+
+### Task D6: closed-vocabulary implementation (split `favorite`, seed the accepted lists)
+
+Implements the 2026-07-29 vocabulary decisions from
+`personalization-closed-vocabularies-proposal.md` (accepted lists recorded there):
+
+- [ ] Split `favorite` into `favorite_color` / `favorite_food` / `favorite_hobby` (Option B):
+  new slot_type values in the DB CHECK constraint (Supabase migration), `PERSONALIZATION_FIELDS`
+  (`theme_contract.py`), `_PersonalizationSlotType` (`api/schemas.py`), and any theme-contract
+  slot declaration bound to `favorite` today; regenerate the frontend client (contract change).
+- [ ] Seed `CLOSED_VOCABULARIES` with the accepted lists: pet_species (16), kinship_label (21),
+  dedication (same 21), home_type (12), and the three split favorite lists (12 each), citing
+  the proposal doc per the dict's `#VERIFY` marker.
+- [ ] No case normalization anywhere (owner decision): values are stored and matched exactly
+  as listed. No "none" sentinel members. Drift-guard test per AL-068/UW-C20 rides along.
+- [ ] TDD throughout; one membership test per vocabulary; commit.
+
+### Task D7: vocabulary-expansion request feature (owner-requested 2026-07-29)
+
+- [ ] Spec first, citing the capability register IDs served (guardian requests an entry for a
+  closed vocabulary; admin validates appropriateness and expands the list; the expansion is an
+  audited event). Follows the existing request/review shape (story_requests, flags) rather
+  than inventing a new one. Build after D6 lands the split schema.
+
+### Task D8: expose `personalization_eligible` to the reader (owner-scheduled 2026-07-29)
+
+- [ ] Add `personalization_eligible` to the library response (`LibraryItemView`), thread it
+  from `LibraryPage` into the reader route state, and skip the values fetch when false.
+  Closes Stage C open question 2; pure optimization, the fetch already fails safe.
 
 ---
 

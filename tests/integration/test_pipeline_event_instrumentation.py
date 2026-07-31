@@ -1053,6 +1053,60 @@ async def test_repaired_moderation_writes_repair_applied_then_completed(
     assert repair_event.occurred_at <= completed_event.occurred_at
 
 
+async def test_structural_finding_adds_structural_key_to_moderation_completed_counts(
+    sessions: async_sessionmaker[AsyncSession],
+    stub_stages: Callable[..., None],
+) -> None:
+    """A structural finding (a pipeline fail-safe, not a genuine content
+    judgment) is counted separately in the ``moderation_completed`` event's
+    ``counts`` payload under a ``"structural"`` key, on top of its normal
+    verdict-name key (design doc section 2.5, item (a)).
+
+    Stubs Stage 0 with one ADVISORY-verdict structural finding (never gates,
+    per report.py's Verdict docstring, so the run stays clean and routes to
+    submit): this isolates the ``_verdict_counts`` payload-shaping behavior
+    from the Stage-1 collapse mechanics already covered directly against the
+    real stage function in tests/unit/test_moderation_stages.py.
+    """
+    story_id = "s_mod_structural"
+    await _seed_draft_storybook(sessions, story_id)
+
+    stub_stages(
+        classifiers=[
+            Finding(
+                stage=0,
+                source=Source.PIPELINE,
+                category="pipeline",
+                node_id=None,
+                verdict=Verdict.ADVISORY,
+                message="synthetic structural finding for event-payload assertion",
+                structural=True,
+                concern="test_synthetic",
+            )
+        ]
+    )
+
+    async with sessions() as session:
+        await pipeline_mod.run_moderation_pipeline(
+            session=session,
+            story_id=story_id,
+            version=1,
+            settings=_moderation_settings(),
+            generation_provider=MockProvider(responses=[]),
+            pii=_pii(),
+        )
+        await session.commit()
+
+    event = await assert_single_event(
+        sessions,
+        event_type="moderation_completed",
+        entity_type="storybook_version",
+        to_state="in_review",
+        actor_is_system=True,
+    )
+    assert event.payload["counts"] == {"advisory": 1, "structural": 1}
+
+
 async def test_hard_block_moderation_writes_moderation_completed_needs_revision(
     sessions: async_sessionmaker[AsyncSession],
     stub_stages: Callable[..., None],

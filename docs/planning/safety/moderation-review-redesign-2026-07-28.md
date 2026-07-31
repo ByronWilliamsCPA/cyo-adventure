@@ -1,7 +1,7 @@
 ---
 title: "Moderation Review Redesign: Decisions, Not Flags"
 schema_type: planning
-status: draft
+status: approved
 owner: core-maintainer
 purpose: "Propose the replacement review model (bounded, ranked, deduplicated decision surface), the post-Perspective Stage-0 architecture, the Stage-2 readability disposition, and the catalog remediation plan, staged for owner approval before implementation."
 tags:
@@ -14,7 +14,9 @@ source: "Gap report docs/planning/safety/moderation-review-current-state-2026-07
 
 # Moderation Review Redesign: Decisions, Not Flags
 
-> **Status**: Draft design for owner approval. No implementation has started.
+> **Status**: APPROVED by the owner 2026-07-29; all open decisions in
+> section 7 are now recorded. Implementation has not started; section 6's
+> staged delivery (Stages A-D) is the execution plan.
 > Companion gap report:
 > [moderation-review-current-state-2026-07-28.md](moderation-review-current-state-2026-07-28.md).
 > Acceptance bar (owner, verbatim intent): a reviewer approving a book reads
@@ -149,6 +151,14 @@ nothing (18, not the 22-book any-safety-FLAG count; see the gap report's
   measure the current per-band `decided_versions` and `override_rate` for
   `(band, "safety")`: the gates (5 decided, 0.8 override rate) may or may not
   be met today, and no suggestion should be applied until that is known.
+  **Measured 2026-07-29** (live Supabase, SQL mirror of `attribute_outcome`
+  semantics; per-band safety flag counts sum to 5,056, matching the known
+  llm_safety FLAG total, which validates the query): 10-13 = 1 decided /
+  1 released; 13-16 = 1/1; 16+ = 4/4; 3-5, 5-8, 8-11 = 0/0. No band meets
+  the gates today, but **16+ is one released decision away** (4 of 5
+  decided, override rate 1.0, on 2,575 flag findings that are almost
+  entirely mock fail-safe rows), so the flywheel exclusion must land
+  before the next 16+ book is released, not merely "before Stage A ships".
 
 ### 2.6 Surfaces
 
@@ -247,6 +257,14 @@ are the only durable record of their claims.
    --env-file .env --out docs/planning/safety/stage0-baseline-2026-07-28.json`.
    This preserves the calibration oracle whether or not a successor is
    adopted.
+   **Deferred (owner, 2026-07-30):** the capture run is postponed; the rest
+   of the staged delivery proceeds without it. It stays a hard prerequisite
+   for two things only: the Modal guard-model eval (item 3 scores against
+   this baseline) and Perspective retirement (the sunset makes the scores
+   unobtainable afterward). Owner-run step: confirm
+   `CYO_ADVENTURE_PERSPECTIVE_API_KEY` is set in `.env`, then run the
+   command above. Deadline unchanged: before the 2026-12-31 sunset, and
+   before starting the Modal eval.
 3. **Evaluate guard models on Modal as a candidate second axis**, scoped as
    an experiment, not a commitment: Qwen3Guard (0.6B/4B, Apache-2.0-family),
    ShieldGemma, Llama Guard 4, and Granite Guardian HAP-125M (CPU-viable,
@@ -363,31 +381,38 @@ exist in production. Design:
 | --- | --- | --- | --- |
 | **A: stop the bleeding** | Structural-failure collapse (2.3), mock environment guard (2.4), observability (2.5), fenced-JSON regression test | Small PR, no schema change readers must migrate for | nothing |
 | **B: the review model** | Finding schema (2.1), structured verdicts + chunking (2.2), merge stage, surfaces (2.6), RL-13/PL-19 visibility, Stage-2 disposition per owner choice (2.7) | The main PR series | A |
-| **C: Stage-0 successor** | Baseline capture run, Modal guard-model eval, calibration report, Perspective emission retirement (unset `PERSPECTIVE_API_KEY` / remove the leg, all call sites per 3.2 item 5) | Experiment + small PRs | capture ASAP; Perspective retirement due by 2026-12-31 sunset; rest independent of A/B |
+| **C: Stage-0 successor** | Baseline capture run, Modal guard-model eval, calibration report, Perspective emission retirement (unset `PERSPECTIVE_API_KEY` / remove the leg, all call sites per 3.2 item 5) | Experiment + small PRs | capture deferred by owner 2026-07-30 (see 3.2 item 2), still due before the Modal eval and the 2026-12-31 sunset; rest independent of A/B |
 | **D: catalog remediation** | Re-moderate entry point + the 18-book sweep | Small PR + ops run | A, B |
-| **QA corpus (staging)** *(conditional: design awaits decision 6, section 7)* | Labeled storybook fixtures (section 5), staging seed script + containment guards, scorecard diff | Repo fixtures + small PR | authored anytime; seeded before B's UI QA; feeds C's eval |
+| **QA corpus (staging)** *(design confirmed 2026-07-29, decision 6)* | Labeled storybook fixtures (section 5), staging seed script + containment guards, scorecard diff | Repo fixtures + small PR | authored anytime; seeded before B's UI QA; feeds C's eval |
 
 Stage A is deliberately shippable alone: it prevents every future flood and
 makes the failure class visible, even if B's surface redesign takes longer.
 
 ## 7. Decisions requested from the owner
 
-1. **Stage-2 disposition**: option (a) retire + surface RL-13 (recommended),
-   (b) whole-story LLM readability, or (c) keep per-node.
+1. **Stage-2 disposition**: **DECIDED 2026-07-29: option (a).** Retire the
+   per-node LLM readability stage and surface the validator's deterministic
+   RL-13/PL-19 readability findings instead. Note for the record: the
+   section 4 remediation call-count math (~50-80 calls per large book)
+   assumed option (a); this decision is what keeps decision 5's immediate
+   sweep cheap.
 2. **Severity scale**: DECIDED by design in section 2.1: three-level enum
-   (`high | medium | low`). Listed here only if the owner wants to reopen it.
+   (`high | medium | low`). **Confirmed by the owner 2026-07-29;** stands
+   as designed.
 3. **Guardian summary contract**: DECIDED by design in section 2.6:
    story-level summary with a merged concern list, repaired flag, and
-   reviewer-independence; no per-node rows. Listed here only if the owner
-   wants to reopen it.
+   reviewer-independence; no per-node rows. **Confirmed by the owner
+   2026-07-29;** stands as designed.
 4. **Modal guard-model experiment**: **DECIDED 2026-07-28: approved.**
    Owner basis: $30/mo in Modal free credits; current per-second GPU pricing
    keeps an eval sweep nowhere near that cap (see 3.2 item 3).
-5. **Remediation timing**: sweep the 18 books right after B, or batch with
-   the first real catalog refresh.
-6. **Moderation QA corpus** (section 5): owner-proposed 2026-07-28; the
-   design above (repo ground truth, staging-only seeding, containment
-   layers) awaits confirmation alongside decisions 1-3.
+5. **Remediation timing**: **DECIDED 2026-07-29: re-moderate the 18
+   mock-moderated books right after Stage B lands** (not batched with the
+   first catalog refresh). Cost basis per section 4: ~50-80 real review
+   calls per large book under the retired-Stage-2 pipeline from decision 1.
+6. **Moderation QA corpus** (section 5): owner-proposed 2026-07-28;
+   **design CONFIRMED by the owner 2026-07-29** as written: repo ground
+   truth, staging-only `mqa_` seeding, four containment layers.
 7. **Perspective-axis retirement** (section 3.2 item 1): RATIFIED by the
    evidence in this document, not a separate owner decision: Perspective
    contributes zero findings to live data (gap report section 3) and its

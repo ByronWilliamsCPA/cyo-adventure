@@ -478,6 +478,68 @@ async def test_clean_story_routes_to_submit(
 
 
 @pytest.mark.unit
+async def test_mock_review_escape_hatch_stamps_report_as_not_independent(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """The CYO_ADVENTURE_ALLOW_MOCK_REVIEW escape hatch self-identifies forever.
+
+    Design doc section 2.4 / gap G1: a report moderated with the mock
+    reviewer outside environment="local" (only reachable via the explicit
+    escape hatch, since ``_require_real_reviewer_outside_local`` otherwise
+    raises ConfigurationError at Settings construction) must be stamped
+    ``reviewer_independent=False`` plus a structural advisory finding, so the
+    report is self-identifying even after the escape hatch is later unset.
+
+    ``review_seam`` replaces ``build_review_provider`` with a real-verdict
+    responder (rather than exercising the actual mock backend's fixed "{}"
+    body) so this test isolates the pipeline-level stamp from the Stage-1
+    collapse behavior covered separately in test_moderation_stages.py.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider())
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+
+    escape_hatch_settings = Settings(
+        review_provider="mock",
+        environment="staging",
+        allow_mock_review=True,
+        database_url="postgresql+asyncpg://user:pw@staging-db:5432/cyo_adventure",
+        oidc_issuer="https://issuer.example.com",
+        oidc_jwks_url="https://issuer.example.com/jwks.json",
+        child_session_secret="a" * 32,
+        device_grant_secret="b" * 32,
+    )
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=escape_hatch_settings,
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    summary = cast("dict[str, object]", moderation_report["summary"])
+    assert summary["reviewer_independent"] is False
+    findings = cast("list[dict[str, object]]", moderation_report["findings"])
+    mock_reviewer_findings = [
+        f for f in findings if f.get("concern") == "mock_reviewer_active"
+    ]
+    assert len(mock_reviewer_findings) == 1
+    finding = mock_reviewer_findings[0]
+    assert finding["structural"] is True
+    assert finding["verdict"] == "advisory"
+    assert finding["source"] == "pipeline"
+
+
+@pytest.mark.unit
 async def test_soft_flag_triggers_repair_then_submits(
     mock_session: AsyncMock,
     monkeypatch: pytest.MonkeyPatch,
@@ -513,6 +575,135 @@ async def test_soft_flag_triggers_repair_then_submits(
     submit.assert_awaited_once()
     assert version.moderation_report is not None
     assert version.moderation_report["summary"]["repaired"] is True
+
+
+@pytest.mark.unit
+async def test_mock_review_stamp_survives_adopted_repair(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """The gap-G1 mock-reviewer stamp must survive an ADOPTED repair.
+
+    An adopted repair replaces the pipeline's ``report`` wholesale with the
+    fresh report built inside ``_attempt_and_adopt_repair``, and it is that
+    report which gets persisted. Stamping only the pre-repair report therefore
+    lost the stamp on exactly the stories most likely to have it: under the
+    mock reviewer every Stage-1 node fail-safes, so a soft flag (and hence the
+    repair branch) is the normal case, not the exception.
+
+    Unlike ``test_mock_review_escape_hatch_stamps_report_as_not_independent``
+    (which deliberately avoids the repair branch), this drives the REAL repair
+    path: readability FLAGs every node on the first pass, ``attempt_repair``
+    re-prompts the generation provider with a schema-valid revision, and the
+    revision is adopted. The assertions are on the PERSISTED report.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+
+    revised_blob: dict[str, object] = {**_BLOB, "title": "The Forest Path (revised)"}
+    generation_provider = MockProvider(responses=[json.dumps(revised_blob)])
+
+    escape_hatch_settings = Settings(
+        review_provider="mock",
+        environment="staging",
+        allow_mock_review=True,
+        database_url="postgresql+asyncpg://user:pw@staging-db:5432/cyo_adventure",
+        oidc_issuer="https://issuer.example.com",
+        oidc_jwks_url="https://issuer.example.com/jwks.json",
+        child_session_secret="a" * 32,
+        device_grant_secret="b" * 32,
+    )
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=escape_hatch_settings,
+        generation_provider=generation_provider,
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    summary = cast("dict[str, object]", moderation_report["summary"])
+    # The repair really was adopted: without this the test would pass
+    # vacuously on the pre-repair report.
+    assert summary["repaired"] is True
+    assert version.blob["title"] == "The Forest Path (revised)"
+    # Both halves of the stamp survive onto the persisted report.
+    assert summary["reviewer_independent"] is False
+    findings = cast("list[dict[str, object]]", moderation_report["findings"])
+    mock_reviewer_findings = [
+        f for f in findings if f.get("concern") == "mock_reviewer_active"
+    ]
+    assert len(mock_reviewer_findings) == 1
+    finding = mock_reviewer_findings[0]
+    assert finding["structural"] is True
+    assert finding["verdict"] == "advisory"
+    assert finding["source"] == "pipeline"
+
+
+@pytest.mark.unit
+async def test_structural_only_soft_flag_skips_repair_and_submits(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """A report soft-flagged only by a STRUCTURAL finding makes no repair call.
+
+    The degraded-reviewer case: every Stage-1 safety call fails to parse, the
+    stage collapses them into one structural FLAG, and nothing in the prose was
+    actually judged. Re-prompting the generator with "- node None (pipeline):
+    reviewer unavailable ..." spends a full generation budget on a meaningless
+    instruction and risks replacing the persisted blob with its output. The
+    generation provider here has no queued responses, so ``MockProvider``
+    raises loudly if the repair path is ever entered.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+
+    def _respond(prompt: str) -> str:
+        # Stage 1 (safety) bodies are unparseable -> per-node fail-safe, which
+        # the stage collapses into a single structural FLAG. Every other stage
+        # returns a genuine passing verdict, so the structural finding is the
+        # report's ONLY soft flag.
+        if prompt.startswith("Age band:"):
+            return "{}"
+        return '{"verdict": "pass", "reason": "ok"}'
+
+    review_seam(MockProvider(responses=[_respond] * _REVIEW_BUDGET))
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+
+    original_blob = copy.deepcopy(version.blob)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    summary = cast("dict[str, object]", moderation_report["summary"])
+    # Routing is unchanged by the exclusion: the story still soft-flags to a
+    # human, it just never burned a repair call, and the blob is untouched.
+    assert summary["soft_flag"] is True
+    assert summary["repaired"] is False
+    assert version.blob == original_blob
+    findings = cast("list[dict[str, object]]", moderation_report["findings"])
+    soft = [f for f in findings if f["verdict"] == "flag"]
+    assert soft
+    assert all(f["structural"] is True for f in soft)
 
 
 @pytest.mark.unit
@@ -935,7 +1126,19 @@ async def test_classifier_and_review_stage_receive_stripped_sentinel_text(
         return httpx.Response(
             200,
             json={
-                "results": [{"flagged": False, "categories": {}, "category_scores": {}}]
+                "results": [
+                    {
+                        # A non-empty categories dict: the real OpenAI
+                        # Moderation API always returns every category with a
+                        # boolean value, so an empty dict is a malformed
+                        # response shape (gap G11), not a clean-scan
+                        # shorthand; classifiers.py now raises
+                        # ClassifierUnavailable on it.
+                        "flagged": False,
+                        "categories": {"violence": False},
+                        "category_scores": {"violence": 0.01},
+                    }
+                ]
             },
         )
 
@@ -1591,7 +1794,16 @@ async def test_review_model_override_reaches_build_review_provider(
         return httpx.Response(
             200,
             json={
-                "results": [{"flagged": False, "categories": {}, "category_scores": {}}]
+                "results": [
+                    {
+                        # Non-empty categories: see the identical comment in
+                        # test_classifier_and_review_stage_receive_stripped_sentinel_text
+                        # (gap G11, empty dict now raises ClassifierUnavailable).
+                        "flagged": False,
+                        "categories": {"violence": False},
+                        "category_scores": {"violence": 0.01},
+                    }
+                ]
             },
         )
 

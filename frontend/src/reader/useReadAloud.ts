@@ -41,8 +41,15 @@ export interface ReadAloudControls {
    * Cancel any in-flight queue and speak the passage body, then (if any)
    * "Your choices are: ..." with the visible choice labels. A no-op when
    * `available` is false.
+   *
+   * When `genericPassageBody` is provided and differs from `passageBody`, the
+   * passage body is treated as personalized and is only spoken through a voice
+   * with `localService === true`; otherwise the generic variant is spoken
+   * instead (see the TTS egress invariant inside `speak`). Callers with no
+   * personalization applied can omit it or pass an equal string; behavior is
+   * then unchanged.
    */
-  speak: (passageBody: string, choiceLabels: string[]) => void
+  speak: (passageBody: string, choiceLabels: string[], genericPassageBody?: string) => void
   /** Cancel any in-flight speech. Safe to call whether or not anything is
    * currently speaking, and safe when speechSynthesis is unsupported. */
   stop: () => void
@@ -102,12 +109,31 @@ export function useReadAloud(enabled: boolean): ReadAloudControls {
   useEffect(() => stop, [stop])
 
   const speak = useCallback(
-    (passageBody: string, choiceLabels: string[]) => {
+    (passageBody: string, choiceLabels: string[], genericPassageBody?: string) => {
       if (!available) return
       try {
         window.speechSynthesis.cancel()
         setSpokenWordRange(null)
-        const texts = [passageBody]
+        // #CRITICAL: security: personalized text may only be spoken by a voice
+        // with `voice.localService === true`. A non-local voice synthesizes
+        // server-side, transmitting a child's real name off-device (ADR-023 /
+        // COPPA scope: no personal value may leak to an unsanctioned surface).
+        // When the default voice is not local, or the voice list is
+        // unavailable, speak the generic-resolved text instead. When no
+        // payload was applied the two texts are equal and behavior is
+        // unchanged.
+        // #VERIFY: useReadAloud.test.ts "TTS egress" cases: a local voice
+        // speaks the personalized text; a non-local voice and an unavailable
+        // voice list both get the generic text.
+        let body = passageBody
+        if (genericPassageBody !== undefined && genericPassageBody !== passageBody) {
+          const voices = window.speechSynthesis.getVoices?.() ?? []
+          const active = voices.find((voice) => voice.default) ?? voices[0]
+          if (active?.localService !== true) {
+            body = genericPassageBody
+          }
+        }
+        const texts = [body]
         if (choiceLabels.length > 0) {
           texts.push(`Your choices are: ${choiceLabels.join(', ')}`)
         }
@@ -124,13 +150,19 @@ export function useReadAloud(enabled: boolean): ReadAloudControls {
         // Word-position tracking (P-5) only applies to the passage body
         // utterance (index 0): the choice list has no rendered passage text
         // to highlight against, so tracking stops once the body finishes.
+        // When the egress guard substituted the generic text, the spoken
+        // string no longer matches the rendered (personalized) passage, so
+        // boundary indexes would highlight the wrong words; skip highlighting
+        // entirely and degrade to the audio-only experience.
         const bodyUtterance = utterances[0]
-        bodyUtterance.onboundary = (event: SpeechSynthesisEvent) => {
-          // #EDGE: browser-compat: `event.name` is spec'd but inconsistently
-          // populated; only skip when a browser explicitly labels this a
-          // non-word boundary (e.g. "sentence"), otherwise treat it as one.
-          if (event.name && event.name !== 'word') return
-          setSpokenWordRange(wordRangeAtIndex(passageBody, event.charIndex))
+        if (body === passageBody) {
+          bodyUtterance.onboundary = (event: SpeechSynthesisEvent) => {
+            // #EDGE: browser-compat: `event.name` is spec'd but inconsistently
+            // populated; only skip when a browser explicitly labels this a
+            // non-word boundary (e.g. "sentence"), otherwise treat it as one.
+            if (event.name && event.name !== 'word') return
+            setSpokenWordRange(wordRangeAtIndex(passageBody, event.charIndex))
+          }
         }
         // Chain: each utterance's onend queues the next one, so the passage
         // body finishes before "Your choices are: ..." starts.

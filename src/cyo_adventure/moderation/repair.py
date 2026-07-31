@@ -57,7 +57,9 @@ async def attempt_repair(
 
     Args:
         blob: The current story JSON.
-        report: The moderation report whose soft findings drive the repair prompt.
+        report: The moderation report whose GENUINE (non-structural) soft
+            findings drive the repair prompt; structural FLAGs are pipeline
+            conditions, not prose defects, and are excluded.
         generation_provider: The generation provider (re-prompted to revise prose).
         pii: The PII context; the provider is PII-guarded before any call.
         max_tokens: Token budget for the repair completion.
@@ -70,9 +72,26 @@ async def attempt_repair(
             the worker rolls back the unreviewed persist and records the job failed
             so RQ can retry, rather than submitting a partially-reviewed story.
     """
-    soft = [f for f in report.findings if f.verdict is Verdict.FLAG]
+    # #CRITICAL: external-resource: a STRUCTURAL FLAG describes a pipeline
+    # condition (reviewer unavailable, classifier outage, mock reviewer), not
+    # anything in the prose, and carries no node_id. Feeding one to the
+    # generator produced a literal "- node None (pipeline): reviewer
+    # unavailable or unparseable on N node(s)" instruction: a meaningless
+    # _MAX_REPAIR_TOKENS call on every degraded-reviewer story, whose adopted
+    # revision would then silently replace the persisted blob. Excluding them
+    # here changes no routing (ModerationReport.has_soft_flag still sees the
+    # structural FLAG, so the story still routes to submit for human review);
+    # it only removes the pointless generation call and its blob-mutation risk.
+    # #VERIFY: tests/unit/test_moderation_repair.py::
+    # test_structural_only_report_makes_no_repair_call and
+    # tests/unit/test_moderation_pipeline.py::
+    # test_structural_only_soft_flag_skips_repair_and_submits.
+    soft = [
+        f for f in report.findings if f.verdict is Verdict.FLAG and not f.structural
+    ]
     if not soft:
-        # Nothing to repair: a caller with no soft flags gets no LLM call.
+        # Nothing to repair: a caller with no genuine (non-structural) soft
+        # flags gets no LLM call.
         return None
     # #CRITICAL: security: the repair prompt egresses story prose; it MUST run
     # through the PII guard exactly like generation.

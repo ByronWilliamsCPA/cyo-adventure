@@ -479,6 +479,11 @@ detail when a storybook has more than one version).
 - Component: `frontend/src/reader/Reader.test.tsx`, `frontend/src/reader/ReaderPage.test.tsx` (largest suite), `frontend/src/reader/ReaderRoute.test.tsx`, `frontend/src/reader/ReaderChrome.test.tsx`, `frontend/src/reader/ReaderLeave.test.tsx`, `frontend/src/reader/BackToLibrary.test.tsx`, `frontend/src/reader/dialogs.test.tsx`, `frontend/src/reader/readerProgress.test.ts`, `frontend/src/player/engine.test.ts`, `frontend/src/player/evaluator.test.ts`, `frontend/src/player/machine.test.ts`, `frontend/src/api/readerApi.test.ts`
 - Integration: `frontend/src/test/App.test.tsx`
 
+## Kid: personalized story rendering (ADR-023 P6/P7, flag-gated)
+
+- Component: `frontend/src/player/personalization.test.ts` (the pure sentinel resolver, `resolvePersonalization`: value substitution for bound slots including every-occurrence replacement, generic-word fallback for a missing value/binding/empty string, the unconditional strip that runs with no payload at all (the flag-off path), idempotence on resolved text, malformed-marker stripping so a near-miss never reaches a child, the value-free once-per-call strip warning, and rejection of a payload whose `sentinel_pattern` differs from the pinned constant), `frontend/src/api/personalizationApi.test.ts` (the values fetch adapter for `GET /v1/storybooks/{id}/personalization-values`: payload pass-through, and null on any HTTP or transport failure so the reader still renders generic), `frontend/src/reader/DedicationOverlay.test.tsx` (opening-screen dedication overlay: full template with both halves, name-only fallback, and the render-nothing branches for no name, no payload, and a ring-2 payload)
+- **Gap**: no E2E tier at any level yet; `VITE_FEATURE_PERSONALIZATION` is off everywhere (gate G3, Task D1), so E2E coverage lands with the flag's first enablement.
+
 ## Kid: read-aloud (K7)
 
 - E2E-mocked: `frontend/e2e/kid-read-aloud.spec.ts` (the speaker toggle appears only for a profile with `tts_enabled: true`, picked through the real picker flow rather than a deep link, since the flag rides the picker's profiles fetch; tapping it toggles a "speaking" state, and both a re-tap and a choice navigation cancel speech; a fake `speechSynthesis` stands in for headless Chromium's real one, which has no installed voices)

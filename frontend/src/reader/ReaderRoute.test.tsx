@@ -10,7 +10,13 @@ import { MemoryRouter, Route, Routes } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ToastProvider } from '../notifications/ToastProvider'
-import { _resetDbHandle, enqueueWrite } from '../offline/db'
+import {
+  _resetDbHandle,
+  cachePersonalizationValues,
+  enqueueWrite,
+  getCachedPersonalizationValues,
+} from '../offline/db'
+import type { ValuesPayload } from '../player/personalization'
 import type { ReadingState, Storybook } from '../player/types'
 import { ReaderRoute } from './ReaderRoute'
 
@@ -340,6 +346,246 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
     expect(screen.getByRole('button', { name: 'OK' })).toBeTruthy()
     // A failure is not a conflict: no dialog appears.
     expect(screen.queryByTestId('conflict-dialog')).toBeNull()
+  })
+})
+
+describe('ReaderRoute personalization wiring (C3c)', () => {
+  beforeEach(() => {
+    globalThis.indexedDB = new IDBFactory()
+    _resetDbHandle()
+    mockGet.mockReset()
+    mockPut.mockReset()
+    mockPost.mockReset()
+    mockGet.mockImplementation((url: string) => {
+      if (url.startsWith('/v1/storybooks/') && url.includes('personalization-values')) {
+        return Promise.resolve({
+          data: {
+            subject_profile_id: null,
+            ring: null,
+            policy_version: null,
+            resolved_at: '2026-07-29T00:00:00Z',
+            values: {},
+            sentinel_pattern: "\\{~([A-Z][A-Z0-9_]*):([^{}<>'~]+)~\\}",
+            slot_bindings: {},
+          },
+        })
+      }
+      if (url.startsWith('/v1/storybooks/')) {
+        return Promise.resolve({ data: lantern })
+      }
+      if (url.startsWith('/v1/reading-state/')) {
+        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+      }
+      return Promise.reject(new Error(`unexpected GET ${url}`))
+    })
+  })
+
+  afterEach(() => {
+    cleanup()
+  })
+
+  it('does not fetch personalization values when the flag is off', async () => {
+    // The flag is unset in src/test/setup.ts, so this is the default path.
+    renderAt(`/read/p_flagoff/${lantern.id}/${lantern.version}`)
+    await screen.findByTestId('reader')
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(
+      mockGet.mock.calls.filter(([url]) => String(url).includes('personalization-values'))
+    ).toEqual([])
+  })
+
+  it('fetches personalization values when the flag is on', async () => {
+    vi.stubEnv('VITE_FEATURE_PERSONALIZATION', 'true')
+    try {
+      expect(import.meta.env.VITE_FEATURE_PERSONALIZATION).toBe('true')
+      renderAt(`/read/p_flagon/${lantern.id}/${lantern.version}`)
+      await waitFor(() => {
+        expect(
+          mockGet.mock.calls.some(([url]) => String(url).includes('personalization-values'))
+        ).toBe(true)
+      })
+    } finally {
+      vi.unstubAllEnvs()
+    }
+  })
+})
+
+// A minimal story whose opening passage carries a canonical sentinel, so the
+// fetcher's outcome is observable in the rendered prose: 'Maya' means the
+// values payload was applied, 'Explorer' means the generic fallback rendered.
+const sentinelStory: Storybook = {
+  schema_version: '1.0',
+  id: 's_persona',
+  version: 1,
+  title: 'Persona',
+  metadata: {},
+  variables: [],
+  start_node: 'n_start',
+  nodes: [
+    {
+      id: 'n_start',
+      body: 'Hello {~HERO:Explorer~}, the door creaks open.',
+      is_ending: false,
+      choices: [{ id: 'c_go', label: 'go', target: 'n_end' }],
+    },
+    {
+      id: 'n_end',
+      body: 'The end.',
+      is_ending: true,
+      ending: { id: 'e', kind: 'success', valence: 'positive', title: 'End' },
+      choices: [],
+    },
+  ],
+}
+
+const cachedPayload: ValuesPayload = {
+  subject_profile_id: 'p_subject',
+  ring: 1,
+  policy_version: 'ring1-no-consent-required',
+  resolved_at: '2026-07-29T00:00:00Z',
+  values: { protagonist_first_name: 'Maya' },
+  sentinel_pattern: "\\{~([A-Z][A-Z0-9_]*):([^{}<>'~]+)~\\}",
+  slot_bindings: { HERO: 'protagonist_first_name' },
+}
+
+const emptyValuesPayload: ValuesPayload = {
+  subject_profile_id: null,
+  ring: null,
+  policy_version: null,
+  resolved_at: '2026-07-29T00:00:00Z',
+  values: {},
+  sentinel_pattern: "\\{~([A-Z][A-Z0-9_]*):([^{}<>'~]+)~\\}",
+  slot_bindings: {},
+}
+
+describe('ReaderRoute personalization fetcher behavior (C3c)', () => {
+  beforeEach(() => {
+    globalThis.indexedDB = new IDBFactory()
+    _resetDbHandle()
+    mockGet.mockReset()
+    mockPut.mockReset()
+    mockPost.mockReset()
+    vi.stubEnv('VITE_FEATURE_PERSONALIZATION', 'true')
+  })
+
+  afterEach(() => {
+    vi.unstubAllEnvs()
+    cleanup()
+  })
+
+  /** Route GETs for the sentinel story; the values endpoint fails or answers. */
+  function mockStoryWithValues(values: 'reject' | ValuesPayload) {
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('personalization-values')) {
+        return values === 'reject'
+          ? Promise.reject(mockAxiosError({ isAxiosError: true, code: 'ERR_NETWORK' }))
+          : Promise.resolve({ data: values })
+      }
+      if (url.startsWith('/v1/storybooks/')) {
+        return Promise.resolve({ data: sentinelStory })
+      }
+      if (url.startsWith('/v1/reading-state/')) {
+        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+      }
+      return Promise.reject(new Error(`unexpected GET ${url}`))
+    })
+  }
+
+  it('renders the cached name and keeps the cache entry when the values fetch fails', async () => {
+    await cachePersonalizationValues(sentinelStory.id, cachedPayload)
+    mockStoryWithValues('reject')
+
+    renderAt(`/read/p_cache/${sentinelStory.id}/1`)
+
+    await screen.findByTestId('reader')
+    // The adapter maps the rejected GET to null; the fetcher falls back to the
+    // cached payload, so the child's name still renders offline.
+    await waitFor(() => expect(screen.getByTestId('passage-body').textContent).toContain('Maya'))
+    expect(await getCachedPersonalizationValues(sentinelStory.id)).toEqual(cachedPayload)
+  })
+
+  it('deletes the cache entry and renders generic when the server answers with the empty payload', async () => {
+    await cachePersonalizationValues(sentinelStory.id, cachedPayload)
+    mockStoryWithValues(emptyValuesPayload)
+
+    renderAt(`/read/p_revoked/${sentinelStory.id}/1`)
+
+    await screen.findByTestId('reader')
+    // The authoritative empty payload is a revocation: the reconcile deletes
+    // the entry, and the fetcher resolves null so the generic word renders.
+    await waitFor(async () =>
+      expect(await getCachedPersonalizationValues(sentinelStory.id)).toBeUndefined()
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('passage-body').textContent).toContain('Explorer')
+    )
+    expect(screen.getByTestId('passage-body').textContent).not.toContain('Maya')
+  })
+
+  it('does not delete the cache entry when the fetch fails', async () => {
+    await cachePersonalizationValues(sentinelStory.id, cachedPayload)
+    mockStoryWithValues('reject')
+
+    renderAt(`/read/p_keep/${sentinelStory.id}/1`)
+
+    await screen.findByTestId('reader')
+    // Let the fetcher settle fully before asserting nothing was purged: a
+    // failed fetch is "no authoritative answer", never a revocation.
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(await getCachedPersonalizationValues(sentinelStory.id)).toEqual(cachedPayload)
+  })
+})
+
+describe('ReaderRoute flag-off residue purge', () => {
+  beforeEach(() => {
+    globalThis.indexedDB = new IDBFactory()
+    _resetDbHandle()
+    mockGet.mockReset()
+    mockPut.mockReset()
+    mockPost.mockReset()
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('personalization-values')) {
+        return Promise.resolve({ data: emptyValuesPayload })
+      }
+      if (url.startsWith('/v1/storybooks/')) {
+        return Promise.resolve({ data: lantern })
+      }
+      if (url.startsWith('/v1/reading-state/')) {
+        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+      }
+      return Promise.reject(new Error(`unexpected GET ${url}`))
+    })
+  })
+
+  afterEach(() => {
+    vi.unstubAllEnvs()
+    cleanup()
+  })
+
+  it('clears cached personalization values on mount when the flag is off', async () => {
+    // The flag is unset in src/test/setup.ts, so this is the default (off)
+    // path: a payload cached while the flag was on must not stay at rest.
+    await cachePersonalizationValues('s_residue', cachedPayload)
+
+    renderAt(`/read/p_off/${lantern.id}/${lantern.version}`)
+
+    await screen.findByTestId('reader')
+    await waitFor(async () =>
+      expect(await getCachedPersonalizationValues('s_residue')).toBeUndefined()
+    )
+  })
+
+  it('leaves cached values for other books alone when the flag is on', async () => {
+    vi.stubEnv('VITE_FEATURE_PERSONALIZATION', 'true')
+    // A different book's entry: the route book's own entry is governed by the
+    // reconcile, but the residue purge must not fire at all with the flag on.
+    await cachePersonalizationValues('s_other_book', cachedPayload)
+
+    renderAt(`/read/p_on/${lantern.id}/${lantern.version}`)
+
+    await screen.findByTestId('reader')
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(await getCachedPersonalizationValues('s_other_book')).toEqual(cachedPayload)
   })
 })
 

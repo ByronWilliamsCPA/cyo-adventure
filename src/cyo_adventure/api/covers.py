@@ -77,7 +77,9 @@ async def _cover_url(row: StorybookVersion) -> str | None:
     # ::test_cover_status_returns_presigned_url_when_pending_review.
     if row.cover_status not in ("ready", "pending_review"):
         return None
-    return await generate_presigned_cover_url(row.storybook_id, row.version, settings)
+    return await generate_presigned_cover_url(
+        row.storybook_id, row.version, settings, salt=row.cover_object_salt
+    )
 
 
 async def _status_view(row: StorybookVersion) -> CoverStatusView:

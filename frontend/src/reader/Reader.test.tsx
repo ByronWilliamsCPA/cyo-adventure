@@ -7,7 +7,8 @@ import { MemoryRouter } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { choose } from '../player/engine'
-import type { Storybook } from '../player/types'
+import type { ValuesPayload } from '../player/personalization'
+import type { ReadingState, Storybook } from '../player/types'
 import { clearChildSession, setChildSession } from '../auth/childSession'
 import type { SubmitFlagParams } from '../api/readerApi'
 import type { KidFlagCreatedView, ReadingHistoryItem } from '../client/types.gen'
@@ -31,6 +32,71 @@ const lantern = (
     traces: { story: Storybook }[]
   }
 ).traces[0].story
+
+// A minimal fixture (same shape as endedStory/endedSeriesStory below) whose
+// body and ending title carry an ADR-023 sentinel, for the personalization
+// resolution tests (C3e). "Continue" (choice id "c") is the only path, so a
+// test can reach the ending without caring about lantern-specific branching.
+const sentinelStory: Storybook = {
+  schema_version: '2.0',
+  id: 's_sentinel',
+  version: 1,
+  title: 'Sentinel',
+  metadata: {},
+  variables: [],
+  start_node: 'n_start',
+  nodes: [
+    {
+      id: 'n_start',
+      body: 'Then {~HERO:Explorer~} ran.',
+      is_ending: false,
+      // The label carries a sentinel deliberately: labels never legally do
+      // (generation/binding.py), but the Reader applies a defensive strip and
+      // the tests below assert it.
+      choices: [{ id: 'c', label: 'Follow {~HERO:Explorer~}', target: 'n_end' }],
+    },
+    {
+      id: 'n_end',
+      body: 'Then {~HERO:Explorer~} ran.',
+      is_ending: true,
+      choices: [],
+      ending: {
+        id: 'e_end',
+        kind: 'success',
+        valence: 'positive',
+        title: "{~HERO:Explorer~}'s last stand",
+      },
+    },
+  ],
+}
+
+function valuesPayload(): ValuesPayload {
+  return {
+    subject_profile_id: 'p_1',
+    ring: 1,
+    policy_version: 'ring1-no-consent-required',
+    resolved_at: '2026-07-29T00:00:00Z',
+    values: { protagonist_first_name: 'Maya' },
+    sentinel_pattern: "\\{~([A-Z][A-Z0-9_]*):([^{}<>'~]+)~\\}",
+    slot_bindings: { HERO: 'protagonist_first_name' },
+  }
+}
+
+// A resumed-read reading state sitting on `nodeId`, with more than one entry
+// in `path` (ADR-023 C5b: `atOpening` gates on path length, not just node id,
+// so this is what distinguishes "the start node after going back" from "the
+// start node on a fresh read").
+function readingAt(nodeId: string): ReadingState {
+  return {
+    current_node: nodeId,
+    var_state: {},
+    path: ['n_start', nodeId],
+    visit_set: ['n_start', nodeId],
+    version: sentinelStory.version,
+    state_revision: 0,
+    save_slots: {},
+  }
+}
 
 // jsdom's window.scrollTo exists but only logs "Not implemented"; the reader
 // scrolls on every passage change, so stub it once per test to keep output
@@ -154,6 +220,153 @@ describe('Reader', () => {
     fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
     fireEvent.click(screen.getByTestId('choice-c_dark_passage'))
     expect(completed).toEqual(['e_treasure_found', 'e_safe_exit'])
+  })
+})
+
+describe('Reader personalization (ADR-023 C3e)', () => {
+  it('renders the personalized name in the passage when a payload is present', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" personalization={valuesPayload()} />
+      </MemoryRouter>
+    )
+    expect(screen.getByTestId('passage-body')).toHaveTextContent('Then Maya ran')
+    expect(screen.getByTestId('passage-body')).not.toHaveTextContent('{~HERO')
+  })
+
+  it('renders the generic word when there is no payload', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" />
+      </MemoryRouter>
+    )
+    expect(screen.getByTestId('passage-body')).toHaveTextContent('Then Explorer ran')
+    expect(screen.getByTestId('passage-body')).not.toHaveTextContent('{~HERO')
+  })
+
+  it('strips markers to generic words even with the flag off', () => {
+    // Deliberate strengthening of the Stage C spec (see Task C3f). The flag gates
+    // the FETCH; the strip is unconditional, because ADR-023 section 10 forbids a
+    // marker on any kid-facing surface regardless of opt-in state.
+    expect(import.meta.env.VITE_FEATURE_PERSONALIZATION).toBeUndefined()
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" />
+      </MemoryRouter>
+    )
+    const passage = screen.getByTestId('passage-body')
+    expect(passage).toHaveTextContent('Then Explorer ran')
+    expect(passage.textContent).not.toContain('{~')
+    expect(passage.textContent).not.toContain('~}')
+  })
+
+  it('resolves the ending title', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" personalization={valuesPayload()} />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c'))
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent("Maya's last stand")
+  })
+
+  it('strips the ending title to its generic word on the generic path', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c'))
+    const heading = screen.getByRole('heading', { level: 2 })
+    expect(heading).toHaveTextContent("Explorer's last stand")
+    expect(heading.textContent).not.toContain('{~')
+  })
+
+  it('defensively strips a sentinel in a choice label to its generic word, never the marker', () => {
+    // Labels are stripped, not resolved: a personal value in a label would be
+    // a new egress surface, so even with a payload present the label shows the
+    // generic word.
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" personalization={valuesPayload()} />
+      </MemoryRouter>
+    )
+    const label = screen.getByTestId('choice-c').textContent ?? ''
+    expect(label).toContain('Follow Explorer')
+    expect(label).not.toContain('{~')
+    expect(label).not.toContain('Maya')
+  })
+})
+
+describe('Reader dedication overlay (ADR-023 C5b)', () => {
+  it('shows the dedication on the opening passage', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" personalization={valuesPayload()} />
+      </MemoryRouter>
+    )
+    expect(screen.getByTestId('dedication')).toBeInTheDocument()
+  })
+
+  it('hides the dedication once the child has moved on', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" personalization={valuesPayload()} />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c'))
+    expect(screen.queryByTestId('dedication')).not.toBeInTheDocument()
+  })
+
+  it('shows no dedication on a resumed read that is past the start node', () => {
+    render(
+      <MemoryRouter>
+        <Reader
+          story={sentinelStory}
+          profileId="p1"
+          personalization={valuesPayload()}
+          initialReading={readingAt('n_end')}
+        />
+      </MemoryRouter>
+    )
+    expect(screen.queryByTestId('dedication')).not.toBeInTheDocument()
+  })
+
+  it('shows no dedication without a payload', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" />
+      </MemoryRouter>
+    )
+    expect(screen.queryByTestId('dedication')).not.toBeInTheDocument()
+  })
+
+  it('re-shows the dedication after going back to the opening page (by design)', () => {
+    // The engine's back() truncates the recorded path, so a post-back return
+    // to the start node is indistinguishable from a short read and
+    // legitimately re-shows the dedication.
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" personalization={valuesPayload()} />
+      </MemoryRouter>
+    )
+    expect(screen.getByTestId('dedication')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('choice-c'))
+    expect(screen.queryByTestId('dedication')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('go-back'))
+    expect(screen.getByTestId('dedication')).toBeInTheDocument()
+  })
+
+  it('re-shows the dedication after Read again (RESTART)', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" personalization={valuesPayload()} />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c'))
+    expect(screen.queryByTestId('dedication')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('restart'))
+    expect(screen.getByTestId('dedication')).toBeInTheDocument()
   })
 })
 
@@ -564,8 +777,17 @@ describe('Reader read-aloud (K7)', () => {
   const speakMock = vi.fn()
   const cancelMock = vi.fn()
 
-  function installSpeechSynthesis() {
-    vi.stubGlobal('speechSynthesis', { speak: speakMock, cancel: cancelMock })
+  // Defaults to a local default voice so the TTS egress guard (personalized
+  // text only through voice.localService === true) permits personalized
+  // speech; the non-local case overrides the voice list explicitly.
+  function installSpeechSynthesis(
+    voices: SpeechSynthesisVoice[] = [{ default: true, localService: true } as SpeechSynthesisVoice]
+  ) {
+    vi.stubGlobal('speechSynthesis', {
+      speak: speakMock,
+      cancel: cancelMock,
+      getVoices: () => voices,
+    })
     vi.stubGlobal('SpeechSynthesisUtterance', MockUtterance)
   }
 
@@ -720,5 +942,41 @@ describe('Reader read-aloud (K7)', () => {
     } finally {
       logSpy.mockRestore()
     }
+  })
+
+  // ADR-023 C3e placement note: this lives here, not in useReadAloud.test.ts,
+  // because the substitution under test (raw node.body vs. the resolved
+  // bodyText) happens in Reader.tsx's speak() call site, not inside the hook
+  // itself; useReadAloud.test.ts already covers the hook's own queueing
+  // mechanics in isolation and has no notion of personalization.
+  it('speaks the resolved passage, not the marker (local voice)', () => {
+    installSpeechSynthesis()
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" personalization={valuesPayload()} ttsEnabled />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByLabelText('Read this page aloud'))
+    expect(speakMock).toHaveBeenCalledTimes(1)
+    const bodyUtterance = speakMock.mock.calls[0][0] as MockUtterance
+    expect(bodyUtterance.text).toContain('Maya')
+    expect(bodyUtterance.text).not.toContain('{~HERO')
+  })
+
+  it('speaks the generic passage through a non-local voice (TTS egress guard)', () => {
+    // A non-local voice synthesizes server-side; the child's real name must
+    // never ride that egress, so the generic-resolved text is spoken instead.
+    installSpeechSynthesis([{ default: true, localService: false } as SpeechSynthesisVoice])
+    render(
+      <MemoryRouter>
+        <Reader story={sentinelStory} profileId="p1" personalization={valuesPayload()} ttsEnabled />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByLabelText('Read this page aloud'))
+    expect(speakMock).toHaveBeenCalledTimes(1)
+    const bodyUtterance = speakMock.mock.calls[0][0] as MockUtterance
+    expect(bodyUtterance.text).toContain('Explorer')
+    expect(bodyUtterance.text).not.toContain('Maya')
+    expect(bodyUtterance.text).not.toContain('{~HERO')
   })
 })

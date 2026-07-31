@@ -14,6 +14,7 @@ import * as db from '../offline/db'
 import { _resetDbHandle, getReadingState, putReadingState } from '../offline/db'
 import type { PutResponse, SyncApi } from '../offline/sync'
 import { OfflineError } from '../offline/sync'
+import type { ValuesPayload } from '../player/personalization'
 import type { ContinuationSeed } from '../player/series'
 import type { ReadingState, Storybook } from '../player/types'
 import { ReaderPage } from './ReaderPage'
@@ -25,6 +26,39 @@ const lantern = (
     traces: { story: Storybook }[]
   }
 ).traces[0].story
+
+// A minimal fixture (mirrors Reader.test.tsx's sentinelStory) whose body
+// carries an ADR-023 sentinel, for the C3d personalization-wiring tests. No
+// choices: these tests only need the start passage to render.
+const sentinelStory: Storybook = {
+  schema_version: '2.0',
+  id: 's_sentinel',
+  version: 1,
+  title: 'Sentinel',
+  metadata: {},
+  variables: [],
+  start_node: 'n_start',
+  nodes: [
+    {
+      id: 'n_start',
+      body: 'Then {~HERO:Explorer~} ran.',
+      is_ending: false,
+      choices: [],
+    },
+  ],
+}
+
+function valuesPayload(): ValuesPayload {
+  return {
+    subject_profile_id: 'p_1',
+    ring: 1,
+    policy_version: 'ring1-no-consent-required',
+    resolved_at: '2026-07-29T00:00:00Z',
+    values: { protagonist_first_name: 'Maya' },
+    sentinel_pattern: "\\{~([A-Z][A-Z0-9_]*):([^{}<>'~]+)~\\}",
+    slot_bindings: { HERO: 'protagonist_first_name' },
+  }
+}
 
 function okApi(): SyncApi {
   let rev = 0
@@ -881,5 +915,59 @@ describe('ReaderPage', () => {
     )
     expect(await screen.findByText('Something went wrong')).toBeTruthy()
     expect(screen.queryByTestId('loading')).toBeNull()
+  })
+})
+
+describe('ReaderPage personalization (ADR-023 C3d)', () => {
+  it('passes a resolved values payload down to the Reader', async () => {
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(sentinelStory)}
+          profileId="p_pers_on"
+          storybookId="s_sentinel"
+          version={1}
+          fetchPersonalizationValues={() => Promise.resolve(valuesPayload())}
+        />
+      </MemoryRouter>
+    )
+    await waitFor(() => {
+      expect(screen.getByTestId('passage-body')).toHaveTextContent('Then Maya ran')
+    })
+  })
+
+  it('passes null when no fetcher is provided (flag off)', async () => {
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(sentinelStory)}
+          profileId="p_pers_off"
+          storybookId="s_sentinel"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    expect(screen.getByTestId('passage-body')).toHaveTextContent('Then Explorer ran')
+  })
+
+  it('still renders the story when the values fetch rejects', async () => {
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(sentinelStory)}
+          profileId="p_pers_fail"
+          storybookId="s_sentinel"
+          version={1}
+          fetchPersonalizationValues={() => Promise.reject(new Error('boom'))}
+        />
+      </MemoryRouter>
+    )
+    await waitFor(() => {
+      expect(screen.getByTestId('reader')).toBeInTheDocument()
+    })
   })
 })

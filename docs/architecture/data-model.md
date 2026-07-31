@@ -188,6 +188,7 @@ erDiagram
         timestamptz created_at
         varchar(512) cover_image_url "NULL"
         varchar(20) cover_status "none, generating, pending_review, ready, failed"
+        varchar(32) cover_object_salt "NULL; UW-M07 per-cover R2 key salt"
         uuid cover_approved_by FK "NULL; H2 cover-approval gate"
         timestamptz cover_approved_at "NULL"
         boolean personalization_eligible "default false; ADR-023"
