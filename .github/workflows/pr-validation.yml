@@ -160,6 +160,7 @@ jobs:
             --no-progress
             --max-retries 3
             --max-concurrency 16
+            --accept-timeouts
             --accept 200,204,206,301,302,403,429
             --exclude '^https://github.com/.*/(issues|pulls|compare)/.*$'
             --exclude '^https://linear.app/.*$'
@@ -169,15 +170,29 @@ jobs:
             './CONTRIBUTING.md'
           # Blocking. This check found and hid 7 genuinely broken links while
           # it was advisory; a link check that cannot fail is a link ignorer.
+          # The two flags below are what make blocking survivable, because a
+          # gate that fails on third-party network weather gets ignored just
+          # as fast as one that never fails at all.
           #
-          # `--max-concurrency 16` (default is 128) is what makes blocking
-          # safe. At the default, the Cloudflare-fronted DPA URL in
-          # docs/compliance/ fails with "HTTP/2 protocol error" in a full-corpus
-          # run while passing when checked alone: the edge drops the connection
-          # under the fan-out. Verified locally against lychee v0.24.2, the
-          # version this action pins: 1 error at default concurrency, 0 errors
-          # across 5 consecutive runs at 16, and the whole run got FASTER
-          # (7.2s to 2.5s) because it stopped burning time on retries.
+          # `--max-concurrency 16` (default is 128). At the default, the
+          # Cloudflare-fronted DPA URL in docs/compliance/ fails with "HTTP/2
+          # protocol error" in a full-corpus run while passing when checked
+          # alone: the edge drops the connection under the fan-out. Verified
+          # locally against lychee v0.24.2, the version this action pins: 1
+          # error at default concurrency, 0 errors across 5 consecutive runs
+          # at 16, and the whole run got FASTER (7.2s to 2.5s) because it
+          # stopped burning time on retries.
+          #
+          # `--accept-timeouts` fails the job on broken links but not on slow
+          # ones. lychee reports timeouts in a SEPARATE bucket from errors and
+          # yet counts both toward exit code 2, so the first blocking run
+          # printed "Errors | 0" and still exited 2, on a single 20s timeout
+          # against securityscorecards.dev (live, 200 in 0.2s from elsewhere).
+          # Reproduced locally with `--timeout 1`: exit 2 with 0 errors and 1
+          # timeout, exit 0 with this flag. The residual blind spot is a host
+          # that blackholes rather than refuses, which presents as a timeout;
+          # a dead domain still fails DNS and is still reported as an error,
+          # verified against a 404 and a nonexistent host with the flag on.
           fail: true
           jobSummary: true
         env:
