@@ -158,8 +158,13 @@ async def persist_storybook(session: AsyncSession, params: StorybookParams) -> s
         # generation/import_story.py) each hold the manifest and the declared
         # personalizable-slot set in different local scopes; this is only the
         # single point both are written to the row.
-        # #VERIFY: test_fill_stamps_personalization_eligible_when_contract_declares_slots,
-        # test_fill_leaves_personalization_eligible_false_without_manifest.
+        # #VERIFY: tests/unit/test_persistence.py::
+        # test_persist_records_personalization_eligible and
+        # ::test_persist_personalization_eligible_defaults_to_false cover THIS
+        # write; the caller-side computation this field carries is covered
+        # separately by tests/unit/test_worker.py::
+        # test_fill_stamps_personalization_eligible_when_contract_declares_slots
+        # and its sibling false cases.
         personalization_eligible=params.personalization_eligible,
     )
     session.add(version_row)

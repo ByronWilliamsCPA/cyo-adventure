@@ -1033,6 +1033,30 @@ def build_manifest(document: Mapping[str, object]) -> dict[str, object]:
     return {"tokens": {key: surfaces[key] for key in sorted(surfaces)}}
 
 
+def manifest_carries_tokens(manifest: Mapping[str, object] | None) -> bool:
+    """Report whether a manifest records at least one surviving sentinel.
+
+    :func:`build_manifest` always returns a mapping, never ``None``, and
+    :func:`reinsert_storybook` calls it unconditionally. A document that
+    carries no sentinel therefore still yields a manifest, just an empty one
+    (``{"tokens": {}}``). Manifest PRESENCE is consequently not evidence the
+    reinsertion transform found anything; only a non-empty ``"tokens"`` map
+    is. Callers deciding whether a stored version is actually personalizable
+    must ask this question rather than testing the manifest against ``None``.
+
+    Args:
+        manifest: The at-rest sentinel manifest, or ``None`` when the
+            reinsertion transform never ran for this version.
+
+    Returns:
+        bool: ``True`` when ``manifest["tokens"]`` is a non-empty mapping;
+            ``False`` for ``None``, a malformed manifest, or an empty tally.
+    """
+    if manifest is None:
+        return False
+    return bool(_as_dict(manifest.get("tokens")))
+
+
 def _reference_document_from_manifest(
     manifest: Mapping[str, object],
 ) -> dict[str, object]:

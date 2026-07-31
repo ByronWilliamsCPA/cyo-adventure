@@ -40,7 +40,11 @@ from cyo_adventure.moderation.personalizable_slots import (
     PersonalizableSlotsArg,
     personalizable_slot_ids_for_job,
 )
-from cyo_adventure.storybook.reinsertion import reinsert_storybook, verify_manifest
+from cyo_adventure.storybook.reinsertion import (
+    manifest_carries_tokens,
+    reinsert_storybook,
+    verify_manifest,
+)
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import run_gate
 from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity_at_rest
@@ -158,22 +162,28 @@ async def import_filled_story(
     # #CRITICAL: data integrity: this is the import/resume path's ONLY
     # computation of personalization_eligible; the reader (api/library.py,
     # D8) trusts the persisted column verbatim. True requires BOTH a real,
-    # non-empty declared personalizable-slot set AND a real manifest (the
-    # reinsertion transform actually ran and verified). `personalizable_slots`
-    # is a tri-state (see moderation/personalizable_slots.py): a genuine
-    # frozenset (possibly empty), an explicit `None` (contract uncomputable,
-    # fail closed), or the `PERSONALIZABLE_SLOTS_UNSET` marker for callers
-    # (import_cli.py, import_catalog.py) that never resolved it because they
-    # also never populate `request.sentinel_manifest`; the `isinstance` check
-    # below normalizes UNSET to falsy explicitly rather than relying on
-    # `sentinel_manifest is not None` alone to coincidentally cancel it out.
-    # #VERIFY: test_resume_stamps_personalization_eligible_when_contract_declares_slots,
-    # test_resume_leaves_personalization_eligible_false_without_manifest.
+    # non-empty declared personalizable-slot set AND a manifest that actually
+    # tallies at least one surviving sentinel. Manifest PRESENCE alone is not
+    # enough: `build_manifest` returns `{"tokens": {}}` rather than `None` for
+    # a document carrying no sentinel, so a presence test would stamp True for
+    # a blob with nothing to personalize, contradicting the column's contract
+    # in db/models.py. `manifest_carries_tokens` is the shared predicate.
+    # `personalizable_slots` is a tri-state (see
+    # moderation/personalizable_slots.py): a genuine frozenset (possibly
+    # empty), an explicit `None` (contract uncomputable, fail closed), or the
+    # `PERSONALIZABLE_SLOTS_UNSET` marker for callers (import_cli.py,
+    # import_catalog.py) that never resolved it because they also never
+    # populate `request.sentinel_manifest`; the `isinstance` check below
+    # normalizes UNSET to falsy explicitly rather than relying on the manifest
+    # leg alone to coincidentally cancel it out.
+    # #VERIFY: tests/unit/test_import_story.py::test_import_stamps_personalization_eligible_when_contract_declares_slots,
+    # tests/unit/test_import_story.py::test_import_leaves_personalization_eligible_false_without_manifest,
+    # tests/unit/test_import_story.py::test_import_leaves_personalization_eligible_false_for_empty_manifest.
     declared_slots = (
         personalizable_slots if isinstance(personalizable_slots, frozenset) else None
     )
-    personalization_eligible = bool(declared_slots) and (
-        request.sentinel_manifest is not None
+    personalization_eligible = bool(declared_slots) and manifest_carries_tokens(
+        request.sentinel_manifest
     )
 
     params = StorybookParams(

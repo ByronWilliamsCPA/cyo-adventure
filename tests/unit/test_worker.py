@@ -1817,7 +1817,10 @@ async def test_run_skeleton_fill_sentinel_integrity_forged_value_not_reinserted(
 # ADR-023 Task D4: personalization_eligible stamping. `_run_skeleton_fill` is
 # the fill path's only producer of the flag (worker.py's inline #CRITICAL
 # marker); these pin the two-legged rule: bool(personalizable_slots) and
-# (sentinel_manifest is not None).
+# manifest_carries_tokens(sentinel_manifest). The second leg asks whether the
+# manifest TALLIES anything, not whether it exists: `build_manifest` returns
+# `{"tokens": {}}` rather than `None` for a document carrying no sentinel, so
+# a presence test would stamp True for the zero-coverage case.
 # ---------------------------------------------------------------------------
 
 
@@ -1867,6 +1870,71 @@ async def test_fill_stamps_personalization_eligible_when_contract_declares_slots
 
     assert outcome.sentinel_manifest is not None
     assert outcome.personalization_eligible is True
+
+
+@pytest.mark.asyncio
+async def test_fill_leaves_personalization_eligible_false_for_empty_manifest(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A transform that ran but tallied nothing stays False (D4).
+
+    The zero-coverage case: the bound contract declares PROTAGONIST
+    personalizable, but the fill forged the sentinel, so
+    `reinsert_storybook` strips it and finds no expected value to re-wrap
+    (the exact fixture
+    ``test_run_skeleton_fill_sentinel_integrity_forged_value_not_reinserted``
+    pins). The transform still returns a manifest, because `build_manifest`
+    is called unconditionally and returns ``{"tokens": {}}`` rather than
+    ``None``. Testing that manifest for presence alone would stamp True for a
+    document with no sentinel left in it, so the second leg asks what the
+    manifest tallies instead.
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract = _personalizable_dispatch_contract()
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract_path.write_bytes(contract.model_dump_json().encode("utf-8"))
+
+    original_skeleton = _personalizable_dispatch_skeleton()
+
+    # Typed nested functions rather than this module's older
+    # `lambda _band, _slug: ...` idiom: `tests/CLAUDE.md` requires annotations
+    # on helpers, and an unannotated lambda draws `reportUnknownLambdaType`
+    # under BasedPyright strict.
+    def _resolve_skeleton_path(_band: str, _slug: str) -> Path:
+        return skeleton_path
+
+    def _load_skeleton(_path: Path) -> dict[str, object]:
+        return original_skeleton
+
+    monkeypatch.setattr(worker_module, "resolve_skeleton_path", _resolve_skeleton_path)
+    monkeypatch.setattr(worker_module, "load_skeleton", _load_skeleton)
+
+    provider = MockProvider(
+        responses=[_interpret_bind_response(_BOUND_DISPATCH_BINDINGS)]
+    )
+    filled_storybook = _personalizable_filled_storybook(wrap("PROTAGONIST", "Champion"))
+    monkeypatch.setattr(
+        worker_module, "fill_skeleton", _stub_returning(filled_storybook)
+    )
+
+    outcome = await _run_skeleton_fill(
+        _SkeletonFillContext(
+            authoring={
+                "skeleton_slug": "themed-slug",
+                "theme_brief": {"premise": "a fox"},
+            },
+            brief=_dispatch_brief(),
+            effective_provider=provider,
+            pii=_dispatch_pii(),
+        )
+    )
+
+    # Present, and empty: exactly the state a `is not None` test would have
+    # read as evidence the transform found something.
+    assert outcome.sentinel_manifest == {"tokens": {}}
+    assert outcome.personalization_eligible is False
 
 
 @pytest.mark.asyncio

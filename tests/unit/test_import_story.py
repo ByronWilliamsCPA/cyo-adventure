@@ -40,6 +40,19 @@ class _FakeSession:
         return _FakeResult(self._child_names)
 
 
+# A manifest that actually tallies a surviving sentinel, as `build_manifest`
+# emits for a document carrying one. Distinct from `{"tokens": {}}`, which
+# `build_manifest` returns for a document carrying NONE: the empty form is the
+# zero-coverage case, and eligibility must not treat the two alike.
+_POPULATED_MANIFEST: dict[str, object] = {
+    "tokens": {"start": [{"slot_id": "HERO", "value": "Explorer", "count": 1}]}
+}
+
+# What `build_manifest` returns when the reinsertion transform ran but found
+# no sentinel to tally. Present, but evidence of nothing.
+_EMPTY_MANIFEST: dict[str, object] = {"tokens": {}}
+
+
 def _filled_story() -> dict[str, object]:
     return {
         "schema_version": "2.0",
@@ -188,10 +201,10 @@ async def test_import_persists_skeleton_slug_provenance(
 async def test_import_stamps_personalization_eligible_when_contract_declares_slots(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """ADR-023 Task D4: a real declared slot set plus a real manifest stamps True.
+    """ADR-023 Task D4: declared slots plus a token-bearing manifest stamps True.
 
     Mirrors the fill path's stamping rule at the import/resume persist
-    anchor: ``bool(personalizable_slots) and sentinel_manifest is not None``.
+    anchor: ``bool(personalizable_slots) and manifest_carries_tokens(...)``.
     """
     moderation = AsyncMock()
     monkeypatch.setattr(
@@ -201,7 +214,7 @@ async def test_import_stamps_personalization_eligible_when_contract_declares_slo
     request = ImportRequest(
         blob=_filled_story(),
         family_id=uuid.uuid4(),
-        sentinel_manifest={"tokens": {}},
+        sentinel_manifest=dict(_POPULATED_MANIFEST),
     )
     await import_filled_story(
         session, request, personalizable_slots=frozenset({"HERO"})
@@ -209,6 +222,37 @@ async def test_import_stamps_personalization_eligible_when_contract_declares_slo
     versions = [r for r in session.added if isinstance(r, StorybookVersion)]
     assert len(versions) == 1
     assert versions[0].personalization_eligible is True
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_import_leaves_personalization_eligible_false_for_empty_manifest(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A present-but-empty manifest is evidence of nothing and stays False.
+
+    ``build_manifest`` returns ``{"tokens": {}}``, never ``None``, when the
+    reinsertion transform ran but found no sentinel to tally, and
+    ``reinsert_storybook`` calls it unconditionally. Testing the manifest for
+    presence alone would therefore stamp True for a blob with nothing to
+    personalize, contradicting the column's contract in ``db/models.py``.
+    """
+    moderation = AsyncMock()
+    monkeypatch.setattr(
+        "cyo_adventure.generation.import_story.run_moderation_pipeline", moderation
+    )
+    session = _FakeSession()
+    request = ImportRequest(
+        blob=_filled_story(),
+        family_id=uuid.uuid4(),
+        sentinel_manifest=dict(_EMPTY_MANIFEST),
+    )
+    await import_filled_story(
+        session, request, personalizable_slots=frozenset({"HERO"})
+    )
+    versions = [r for r in session.added if isinstance(r, StorybookVersion)]
+    assert len(versions) == 1
+    assert versions[0].personalization_eligible is False
 
 
 @pytest.mark.unit
@@ -245,8 +289,9 @@ async def test_import_leaves_personalization_eligible_false_for_empty_slot_set(
 
     Every contract on disk before the D4 pilot declares zero personalizable
     slots, so ``personalizable_slot_ids_for_job`` resolves an empty
-    frozenset for them; eligibility must stay False even if a manifest
-    happens to be present.
+    frozenset for them; eligibility must stay False even when the manifest
+    leg passes. The manifest here is deliberately token-bearing so this test
+    isolates the slot-set leg rather than failing closed for two reasons.
     """
     moderation = AsyncMock()
     monkeypatch.setattr(
@@ -256,7 +301,7 @@ async def test_import_leaves_personalization_eligible_false_for_empty_slot_set(
     request = ImportRequest(
         blob=_filled_story(),
         family_id=uuid.uuid4(),
-        sentinel_manifest={"tokens": {}},
+        sentinel_manifest=dict(_POPULATED_MANIFEST),
     )
     await import_filled_story(session, request, personalizable_slots=frozenset())
     versions = [r for r in session.added if isinstance(r, StorybookVersion)]
@@ -269,7 +314,11 @@ async def test_import_leaves_personalization_eligible_false_for_empty_slot_set(
 async def test_import_leaves_personalization_eligible_false_when_slots_unresolved(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Fail-closed: an unresolvable slot set (``None``) stays False even with a manifest."""
+    """Fail-closed: an unresolvable slot set (``None``) stays False even with tokens.
+
+    The manifest here is token-bearing, so the only leg that can hold this
+    False is the tri-state slot set normalizing to falsy.
+    """
     moderation = AsyncMock()
     monkeypatch.setattr(
         "cyo_adventure.generation.import_story.run_moderation_pipeline", moderation
@@ -278,7 +327,7 @@ async def test_import_leaves_personalization_eligible_false_when_slots_unresolve
     request = ImportRequest(
         blob=_filled_story(),
         family_id=uuid.uuid4(),
-        sentinel_manifest={"tokens": {}},
+        sentinel_manifest=dict(_POPULATED_MANIFEST),
     )
     await import_filled_story(session, request, personalizable_slots=None)
     versions = [r for r in session.added if isinstance(r, StorybookVersion)]
