@@ -41,6 +41,7 @@ from cyo_adventure.db.models import (
 )
 from cyo_adventure.generation.provider import _CANNED_STORY, MockProvider
 from cyo_adventure.moderation import personalizable_slots as pslots_mod
+from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.sentinels import wrap
 from cyo_adventure.storybook.theme_contract import SlotScope, SlotSpec, ThemeContract
@@ -433,7 +434,12 @@ async def test_prose_edit_applies_body_and_choice_label() -> None:
         for f in findings
     )
     assert any(f["message"] == "whole-story note" for f in findings)
-    assert any(
+    # The fresh Stage-1 re-review PASSes (the autouse review backend always
+    # answers "safe" per _safe_review_provider), and design doc 2.1 (Task
+    # B1.8) says PASS is never persisted: the fresh PASS finding is filtered
+    # out, and the stale finding was already dropped above, so no llm_safety
+    # finding for the edited node survives in either form.
+    assert not any(
         f["node_id"] == _NODE_ID and f["source"] == "llm_safety" for f in findings
     )
 
@@ -866,6 +872,194 @@ async def test_edit_records_event_without_prose() -> None:
     assert event.entity_type == "storybook_version"
     assert event.entity_id == "s1:1"
     session.flush.assert_awaited()
+
+
+# ---------------------------------------------------------------------------
+# _merge_moderation_report (Task B1.8: align with the Stage B persisted shape)
+# ---------------------------------------------------------------------------
+
+
+def _fresh_finding(verdict: Verdict, *, source: Source = Source.LLM_SAFETY) -> Finding:
+    return Finding(
+        stage=1,
+        source=source,
+        category="safety",
+        node_id=_NODE_ID,
+        verdict=verdict,
+        score=None,
+        message="fresh re-review",
+    )
+
+
+def test_aggregate_carried_verbatim_when_present() -> None:
+    """The stored report's aggregate block is copied through unchanged: this
+    single-node re-review has no way to recompute nodes_reviewed/pass_counts
+    (the old PASS rows they were built from are not persisted), so recomputing
+    here would fabricate a number, not refresh one."""
+    stored: dict[str, object] = {
+        "findings": [],
+        "summary": {
+            "count": 0,
+            "hard_block": False,
+            "soft_flag": False,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+        "aggregate": {"nodes_reviewed": 7, "pass_counts": {"safety": 5}},
+    }
+    result = node_edit._merge_moderation_report(stored, _NODE_ID, [], independent=True)
+    assert result["aggregate"] == {"nodes_reviewed": 7, "pass_counts": {"safety": 5}}
+
+
+def test_aggregate_omitted_when_absent() -> None:
+    """A legacy stored report with no aggregate block yields a merged report
+    with no aggregate key at all, never a fabricated empty one."""
+    stored: dict[str, object] = {
+        "findings": [],
+        "summary": {
+            "count": 0,
+            "hard_block": False,
+            "soft_flag": False,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+    result = node_edit._merge_moderation_report(stored, _NODE_ID, [], independent=True)
+    assert "aggregate" not in result
+
+
+def test_fresh_pass_findings_not_persisted() -> None:
+    """A fresh single-node re-review can still emit a clean PASS (e.g. the
+    classifier or safety stage finding nothing); design doc 2.1 says PASS is
+    never persisted, and that must hold for this write path too."""
+    fresh = [_fresh_finding(Verdict.PASS), _fresh_finding(Verdict.FLAG)]
+    result = node_edit._merge_moderation_report(None, _NODE_ID, fresh, independent=True)
+    findings = result["findings"]
+    assert isinstance(findings, list)
+    assert len(findings) == 1
+    assert findings[0]["verdict"] == "flag"
+    summary = result["summary"]
+    assert isinstance(summary, dict)
+    assert summary["count"] == 1
+
+
+def test_single_node_merged_finding_dropped_as_stale() -> None:
+    """A merged Stage-B finding scoped to ONLY the edited node (node_ids ==
+    [node_id]) is fully superseded by the fresh re-review and dropped, same
+    as the pre-Stage-B bare node_id match."""
+    stored: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": _NODE_ID,
+                "verdict": "flag",
+                "score": None,
+                "message": "stale single-node merged finding",
+                "node_ids": [_NODE_ID],
+            }
+        ],
+        "summary": {
+            "count": 1,
+            "hard_block": False,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+    result = node_edit._merge_moderation_report(stored, _NODE_ID, [], independent=True)
+    findings = result["findings"]
+    assert isinstance(findings, list)
+    assert findings == []
+
+
+def test_multi_node_merged_finding_kept_intact_on_edit() -> None:
+    """A merged Stage-B finding whose node_ids contains the edited node
+    ALONGSIDE other nodes must survive untouched: dropping it would silently
+    discard the other nodes' coverage, which this single-node endpoint has no
+    way to recompute.
+
+    # #EDGE: data integrity: this leaves stale coverage on the edited node
+    # (the finding may no longer be accurate for the freshly-edited prose),
+    # but that is the conservative direction: it can only over-flag a node
+    # that is actually clean now, never hide a real problem the fresh
+    # re-review missed.
+    # #VERIFY: this test.
+    """
+    stored: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": _NODE_ID,
+                "verdict": "flag",
+                "score": None,
+                "message": "multi-node merged finding (2 findings merged)",
+                "node_ids": [_NODE_ID, "n_clearing_fork"],
+            }
+        ],
+        "summary": {
+            "count": 1,
+            "hard_block": False,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+    result = node_edit._merge_moderation_report(stored, _NODE_ID, [], independent=True)
+    findings = result["findings"]
+    assert isinstance(findings, list)
+    assert len(findings) == 1
+    assert findings[0]["message"] == "multi-node merged finding (2 findings merged)"
+    assert findings[0]["node_ids"] == [_NODE_ID, "n_clearing_fork"]
+
+
+def test_legacy_old_shape_report_merges_cleanly() -> None:
+    """A pre-Stage-B stored report (no severity/concern/node_ids/aggregate
+    anywhere) still merges without raising: the bare node_id match still
+    drops the stale same-node finding, unrelated findings survive, and no
+    aggregate key is fabricated."""
+    stored: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": _NODE_ID,
+                "verdict": "flag",
+                "score": None,
+                "message": "old-shape stale finding",
+            },
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": "n_clearing_fork",
+                "verdict": "block",
+                "score": None,
+                "message": "old-shape unrelated finding",
+            },
+        ],
+        "summary": {
+            "count": 2,
+            "hard_block": True,
+            "soft_flag": False,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+    fresh = [_fresh_finding(Verdict.ADVISORY)]
+    result = node_edit._merge_moderation_report(
+        stored, _NODE_ID, fresh, independent=True
+    )
+    findings = result["findings"]
+    assert isinstance(findings, list)
+    assert not any(f.get("message") == "old-shape stale finding" for f in findings)
+    assert any(f.get("message") == "old-shape unrelated finding" for f in findings)
+    assert any(f.get("message") == "fresh re-review" for f in findings)
+    assert "aggregate" not in result
 
 
 # ---------------------------------------------------------------------------
