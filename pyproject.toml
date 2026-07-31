@@ -187,6 +187,12 @@ exclude = [
     "build",
     "migrations",
     "out",
+    # Vulture's generated dead-code baseline. It is parsed by vulture, never
+    # imported or executed, and its bare undefined names are the mechanism
+    # rather than a defect (see the file's own docstring). Excluded, not
+    # per-file-ignored: the ignore list would have to name a dozen rules and
+    # would grow with every regeneration.
+    "vulture_whitelist.py",
 ]
 
 [tool.ruff.format]
@@ -620,6 +626,9 @@ exclude = [
     ".venv",
     "build",
     "dist",
+    # Vulture's generated dead-code baseline: parsed by vulture, never
+    # imported. Its undefined bare names are what make it work.
+    "vulture_whitelist.py",
 ]
 
 # Strict mode customizations
@@ -958,7 +967,12 @@ critical_branch_threshold = 80
 # entire cross-module-deadness category, which is the only reason to run
 # vulture alongside Ruff at all.
 min_confidence = 60
-paths = ["src/", "scripts/"]
+# vulture_whitelist.py is a PATH, not a config key: vulture consumes a
+# whitelist by parsing it as source, so a file sitting at the repo root does
+# nothing until it is scanned. Listing it here rather than in the workflow
+# keeps `uv run vulture` identical locally and in CI (see the comment in
+# .github/workflows/pr-validation.yml, which deliberately passes no paths).
+paths = ["src/", "scripts/", "vulture_whitelist.py"]
 exclude = [
     "tests/",
     "docs/",
