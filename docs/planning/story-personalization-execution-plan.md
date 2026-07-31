@@ -1129,17 +1129,50 @@ settings screen says so in as many words. TDD, commit.
 
 ### Task D4: first personalizable contract and catalog migration (the power switch)
 
-- [ ] Declare `kind: "personalizable"` slots (with `role_safety` on real-person fields) in one
-  pilot contract; run the full gate; generate a pilot story; confirm Variant A/B checks fire on
-  a deliberately mutated fixture. **[Stage R re-scope]**: "fire" means the mutated blob no
-  longer matches the version's DERIVED `sentinel_manifest` (Task R3 semantics), not the
-  contract-prescribed multiset; also confirm the zero-HERO soft-floor WARNING appears when the
-  pilot story's prose never names the hero, and that the story still publishes.
+- [x] Declare `kind: "personalizable"` slots (with `role_safety` on real-person fields) in one
+  pilot contract; run the full gate. **DONE 2026-07-31** (commits `84ef0574`, `d76a1bc7`): HERO
+  declared personalizable in `skeletons/10-13/the-midnight-museum.contract.json`
+  (`personalization_field: "protagonist_first_name"`, `role_safety: "protagonist"`,
+  `default_binding.HERO = "Nadia"`). Gate evidence: `uv run python scripts/check_skeleton.py
+  skeletons/10-13/the-midnight-museum.json --band 10-13` reports "ok: skeleton passes gate and
+  brief checks"; `uv run python scripts/check_theme_contract.py
+  skeletons/10-13/the-midnight-museum.json` passes all 7 WS-2 acceptance checks (gate,
+  contract load/cross-check, forbid-bundle ids, default-binding validation, a synthesized
+  lethal-value rejection on `A2_GATE`, `render_bound_skeleton` with zero residual tokens, no
+  retired-theme proper noun). Also exercised directly against the real on-disk files (not a
+  copy) by `load_skeleton`/`load_contract_for` in
+  `tests/unit/test_d4_pilot_integrity.py::test_pilot_contract_declares_exactly_hero`.
+- [x] Confirm Variant A/B checks fire on a deliberately mutated fixture, proven at unit level
+  against the pilot's own declared slot (HERO) and default-binding value ("Nadia").
+  **[Stage R re-scope]**: "fire" means the mutated blob no longer matches the version's DERIVED
+  `sentinel_manifest` (Task R3 semantics), not the contract-prescribed multiset. **DONE
+  2026-07-31** (commit `7e96e52c`, `tests/unit/test_d4_pilot_integrity.py`):
+  `test_untouched_pilot_blob_passes_verify_manifest` proves the positive case;
+  `test_mutated_pilot_blob_fails_verify_manifest` proves three independent at-rest mutations
+  (stripped sentinel, partial strip, forged addition in an unrecorded node) each fail
+  `verify_manifest`; `test_zero_hero_coverage_warns_and_does_not_fail` proves the zero-HERO
+  soft-floor WARNING mechanism itself fires (calling `_warn_on_zero_coverage_slots` directly)
+  for the pilot's real declared slot set. All three are unit-level proofs against hand-built or
+  directly-invoked fixtures carrying the pilot's real slot id and default value, not a live
+  pilot-story generation.
+- [ ] **PENDING Task 5, blocked on owner credentials as of 2026-07-31.** Generate a pilot story
+  through the live fill pipeline; confirm Variant A/B fire against that story's actual
+  generated `sentinel_manifest` (not a hand-built fixture); confirm the zero-HERO soft-floor
+  WARNING fires live when the pilot story's prose never names the hero; confirm the story still
+  publishes. The unit-level proofs above establish the mechanism works; they do not establish
+  it fired on a real generation, so this checkbox stays open until Task 5 runs.
 - [ ] Replace-by-default migration of any test story worth keeping eligible; everything not
-  migrated stays `personalization_eligible = false` with no deadline.
-- [ ] Pronoun audit (per-skeleton, directives not prose; `pronoun_parameterized` flips only
-  after a human read) and the R11 role-safety audit ride along.
-- [ ] Append lessons rows; this is squarely authoring/validator work. Commit.
+  migrated stays `personalization_eligible = false` with no deadline. **RECOMMENDED, PENDING
+  OWNER RATIFICATION, recorded 2026-07-31** (Task 6): see the "Replace-by-default migration
+  decision" block below. Left unchecked: the recommendation has not yet been ratified by the
+  owner.
+- [x] Pronoun audit (per-skeleton, directives not prose; `pronoun_parameterized` flips only
+  after a human read) and the R11 role-safety audit ride along. **DONE 2026-07-31** (Task 3,
+  commit `a51df507`): see the "Pilot audit record" below.
+- [ ] Append lessons rows; this is squarely authoring/validator work. Commit. **PARTIAL, 2026-
+  07-31**: `AL-071` (the `personalization_eligible` producer-docstring gap this branch closed)
+  and `AL-072` (the D6 migration-prefix collision) are appended, with `AL-072` linked via
+  `UW-C21`. A lesson specific to the live pilot generation (Task 5) is still pending that run.
 
 **Pilot audit record (2026-07-31, pre-generation): the-midnight-museum (10-13).**
 
@@ -1180,6 +1213,35 @@ settings screen says so in as many words. TDD, commit.
   contract or skeleton change was made here. **the-midnight-museum D4 pilot:
   `pronoun_parameterized` remains false; pronouns not parameterized; flip requires a future
   per-skeleton audit plus contract change.**
+
+**Replace-by-default migration decision (2026-07-31, RECOMMENDED, pending owner ratification).**
+
+- **Prod inventory.** Exactly one prod `storybook_version` row traces to the pilot skeleton
+  (`skeleton_slug = 'the-midnight-museum'`): storybook `sk_midnight_museum`, version 1,
+  approved and published 2026-07-28 15:14 UTC (created 2026-07-21), one of the 28 published
+  catalog books. Full catalog spread: 27 distinct skeleton slugs with 1 version each, plus
+  `the-cave-of-echoes` (3 versions, series) and 3 versions with a NULL `skeleton_slug`
+  (pre-column imports, never backfilled by design, `models.py:998`).
+- **Recommendation: keep `sk_midnight_museum` v1 exactly as is.** It stays
+  `personalization_eligible = false` (see the prod-schema note below: the column does not exist
+  in prod yet) with no deadline, per this task's own "everything not migrated stays false"
+  clause. Regenerating a published prod book through the post-D4 pipeline is a content
+  replacement requiring the full validator plus moderation plus human approve/publish
+  ceremony, and would produce new prose for a book a child may already have read; the pilot's
+  eligibility proof comes from a fresh local generation (Task 5) instead. Migrating the prod
+  book, if ever wanted, is a separate owner-initiated regeneration run. **This is a
+  recommendation, not a decision: it awaits explicit owner ratification before this checkbox
+  can be marked done.**
+- **Prod-schema note (deploy-relevant, not D4-blocking).** `storybook_version
+  .personalization_eligible` does not exist in prod: the ADR-023 Stage B migrations that add it
+  have not been applied there (the live column list ends at `skeleton_slug`, 15 columns).
+  `sentinel_manifest` and `pronoun_parameterized` are likewise absent. The next prod deploy
+  must apply the pending `supabase/migrations` chain before the new image boots, since that
+  image's `api/library.py` reads these columns (D8). Pairs with the existing note that the next
+  prod image also needs a real moderation reviewer or `CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1`.
+- **Staging.** Not queried (the Supabase MCP session is scoped to the prod project).
+  `seed_staging.py` seeds only the tide-pools and clockwork-garden fixtures, so a
+  midnight-museum story on staging is unlikely but unverified.
 
 ### Task D5: compliance artifacts and closeout
 
