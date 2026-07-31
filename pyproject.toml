@@ -940,11 +940,30 @@ critical_line_threshold = 90
 critical_branch_threshold = 80
 
 # Vulture Configuration (Dead Code Detection)
-# Detects unused code to maintain clean codebase
-# Run: uv run vulture src/
+#
+# Vulture earns its place next to Ruff because it is a WHOLE-PROGRAM
+# reachability analyser: Ruff's F401/F841/ARG are per-file AST checks and
+# structurally cannot see that a function defined in one module is called from
+# nowhere in the codebase. Roughly half of vulture's findings here are of that
+# cross-module kind, so the two tools do not overlap.
+#
+# Run: uv run vulture   (no arguments: every knob lives here, and a positional
+# path argument silently overrides `paths` below)
+#
+# Calibrated 2026-07-31 by adjudicating all 194 findings individually. The
+# funnel was 346 raw -> 227 after ignore_decorators -> 194 after adding
+# scripts/ -> 77 after the exclusions below, with all 6 true positives
+# surviving every rule. Full adjudication basis: UW-F22 in
+# docs/planning/unscheduled-work-register.md.
 [tool.vulture]
-min_confidence = 80
-paths = ["src/"]
+# 80 was above every finding this repo produces. Vulture assigns confidence by
+# CATEGORY, not probability: unreachable code is 100%, unused imports 90%, and
+# EVERYTHING else (functions, classes, methods, attributes, properties,
+# variables) is a flat 60%. Any threshold above 60 therefore discards the
+# entire cross-module-deadness category, which is the only reason to run
+# vulture alongside Ruff at all.
+min_confidence = 60
+paths = ["src/", "scripts/"]
 exclude = [
     "tests/",
     "docs/",
@@ -952,15 +971,29 @@ exclude = [
     "venv/",
     "build/",
     "dist/",
+    # Pydantic response/request models: fields are read by FastAPI's serializer
+    # via the metaclass, never by name in Python source, so every field on a
+    # response-only model reads as dead. 100% false-positive rate when audited.
+    "src/cyo_adventure/api/schemas.py",
+    # SQLAlchemy ORM columns: `mapped_column` attributes are consumed by the
+    # mapper and by SQL, not by attribute access. All 20 flagged columns were
+    # checked against supabase/migrations/ and every one has a live column.
+    "src/cyo_adventure/db/models.py",
 ]
-# Whitelist common false positives
+# Decorated callables are registered with a framework rather than called by
+# name, so vulture cannot see the caller. Each pattern below was validated by
+# replaying it against the adjudicated findings: none suppresses a true
+# positive.
+ignore_decorators = [
+    "@router.*",  # FastAPI route handlers (invoked by the ASGI router)
+    "@app.*",  # app-level handlers, exception handlers, lifespan
+    "@field_validator",  # Pydantic v2 validators (invoked by the metaclass)
+    "@model_validator",
+]
 ignore_names = [
-    "visit_*",  # AST visitor methods
-    "setUp",
-    "tearDown",
-    "setUpClass",
-    "tearDownClass",
-    "__*__",  # Magic methods
+    "model_config",  # Pydantic v2 config attribute, read by the metaclass
+    "dispatch",  # Starlette BaseHTTPMiddleware entrypoint
+    "__*__",  # dunders, invoked by the interpreter
 ]
 
 # UV Configuration
