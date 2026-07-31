@@ -1141,6 +1141,46 @@ settings screen says so in as many words. TDD, commit.
   after a human read) and the R11 role-safety audit ride along.
 - [ ] Append lessons rows; this is squarely authoring/validator work. Commit.
 
+**Pilot audit record (2026-07-31, pre-generation): the-midnight-museum (10-13).**
+
+- **HERO placement count.** `grep -c "{HERO}" skeletons/10-13/the-midnight-museum.json` returns
+  23 occurrences, all inside `<<FILL ...>>` directive text, across 22 nodes: `n_start`,
+  `a_gems_vitrine`, `a_gems_hide`, `b_egypt_torch`, `n_key`, `k_study`, `v_reveal2`,
+  `e_set_alarm`, `e_set_stuck_dark`, `e_set_broken_case`, `e_set_jammed_globe`, `e_set_caught`,
+  `e_set_dawn`, `e_win_secret_workshop`, `e_win_mystery_solved`, `e_win_quiet_keeper`,
+  `e_win_lost_wing`, `e_win_hero_curator`, `e_win_secret_kept`, `e_win_donate`,
+  `e_neutral_call_home`, `e_neutral_evidence`, `e_neutral_wiser`.
+- **R11 role-safety verdict, per questionable beat.** The contract declares HERO's
+  `role_safety` as `"protagonist"`, so R11 requires every placement to avoid casting HERO as
+  antagonist or as the target of a mishap. The nine endings whose `kind`/`valence` metadata
+  marks them non-positive were each read in full:
+  - `e_set_alarm`, `e_set_stuck_dark`, `e_set_broken_case`, `e_set_jammed_globe`,
+    `e_set_caught`, `e_set_dawn` (all `ending.kind == "setback"`,
+    `ending.valence == "negative"`): HERO trips an alarm, gets briefly stuck, damages a case,
+    jams a globe exhibit, gets caught, or has to leave at dawn empty-handed. In every one HERO
+    remains the actor making the choice that led to the setback, not the object of harm
+    inflicted by another character; no antagonist role, no injury, no malicious framing.
+    **Verdict: PASS**, no antagonist/mishap framing.
+  - `e_neutral_call_home`, `e_neutral_evidence`, `e_neutral_wiser` (all
+    `ending.kind == "discovery"`, `ending.valence == "neutral"`): HERO chooses to call a
+    guardian, hand over evidence, or leave having learned something. HERO is the deciding
+    actor in each; no antagonist or mishap framing. **Verdict: PASS.**
+  - The remaining 14 placements (opening/setup nodes and the five positive `e_win_*` endings)
+    place HERO as the story's protagonist throughout, the framing R11 exists to protect.
+    **Verdict: PASS.**
+  - **Overall: no UNRESOLVED placements.** All 23 `{HERO}` occurrences keep HERO in the
+    protagonist role; none is antagonist- or mishap-framed under R11.
+- **Pronoun audit.** `grep -inc` for `she|her|he\b|him\b|they\b|them\b` across
+  `skeletons/10-13/the-midnight-museum.json` matches 149 lines: the fill directives refer to
+  HERO with a fixed pronoun (she/her) written directly into the directive prose, not through a
+  sentinel or slot token. Per this bullet's own instruction, the audit is of the directives
+  (what the skeleton instructs the fill LLM to write), not of any already-generated prose, and
+  `pronoun_parameterized` (a per-`storybook_version` column, `db/models.py`) flips only after a
+  human read confirms the fixed pronoun could be swapped without a skeleton rewrite; no such
+  contract or skeleton change was made here. **the-midnight-museum D4 pilot:
+  `pronoun_parameterized` remains false; pronouns not parameterized; flip requires a future
+  per-skeleton audit plus contract change.**
+
 ### Task D5: compliance artifacts and closeout
 
 - [ ] Erasure response template sentence (design-plan 8.7) into the remediation plan's Phase 3
