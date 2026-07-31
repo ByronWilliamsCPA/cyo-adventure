@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.55.1] - 2026-07-31
+
+### Bug Fixes
+
+- Wire the rate-limit Redis knobs and close the UW-F22 dead-symbol findings
+  ([#520](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/520),
+  [`bb42b30`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/bb42b308b218aaf12ea21903ff2780fdcb6137f9))
+
+
 ## [0.55.0] - 2026-07-31
 
 ### Features
@@ -2939,6 +2948,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.55.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.55.0...v0.55.1
 [0.55.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.54.1...v0.55.0
 [0.54.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.54.0...v0.54.1
 [0.54.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.53.0...v0.54.0
