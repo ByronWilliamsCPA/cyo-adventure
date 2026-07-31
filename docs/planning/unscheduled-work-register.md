@@ -290,8 +290,8 @@ already on the Phase 5 checklist; the Medium and Low tiers are not, and they inc
 
 | ID | Item | Phase | Status |
 |----|------|-------|--------|
-| UW-E01 | `M1` reading and completion routes bypass the assignment gate | 5 | unscheduled |
-| UW-E02 | `M2` guardian blob-fetch skips the gate | 5 | unscheduled |
+| UW-E01 | `M1` reading and completion routes bypass the assignment gate. Closed 2026-07-29: `api/reading.py`'s `get_reading_state`/`put_reading_state`/`record_completion` now gate on a `_require_assignment` check for non-admin callers, plus a `_require_current_published_approved` check on the create path (commit `72175c8`, branch `fix/child-safety-band-and-read-gate`) | 5 | done |
+| UW-E02 | `M2` guardian blob-fetch skips the gate. Closed 2026-07-29: `api/library.py`'s `get_storybook_version` now gates on assignment for all non-admin callers, not just `role == CHILD` (commit `72175c8`, branch `fix/child-safety-band-and-read-gate`) | 5 | done |
 | UW-E03 | `M3` repair skips the validator. Verified 2026-07-29 stale: `moderation/repair.py:7-12` documents that `moderation/pipeline.py` schema-validates and re-runs `validator.gate.run_gate` on repaired output before it may replace the pre-repair blob, matching capability S4's 2026-07-16 ruling. Distinct from `UW-C04` (`AL-039` fidelity-gate fence gap), which still stands. | 5 | done |
 | UW-E04 | `M4` review-model allowlist | 5 | unscheduled |
 | UW-E05 | `M5` real PII detector | 5 | unscheduled |

@@ -32,7 +32,14 @@ from cyo_adventure.core.exceptions import (
     ResourceNotFoundError,
     ValidationError,
 )
-from cyo_adventure.db.models import Rating, ReadingState, Storybook, StorybookVersion
+from cyo_adventure.db.models import (
+    ChildProfile,
+    Rating,
+    ReadingState,
+    Storybook,
+    StorybookAssignment,
+    StorybookVersion,
+)
 from cyo_adventure.storybook.sentinels import wrap
 
 if TYPE_CHECKING:
@@ -60,6 +67,22 @@ class _FakeScalars:
         return iter(self._rows)
 
 
+def _selected_entity(stmt: object) -> object | None:
+    """Return the ORM entity a SELECT's first column belongs to, or None.
+
+    ``get_storybook_version``'s M2 assignment gate issues two ``scalars()``
+    calls (``StorybookAssignment.child_profile_id`` then ``ChildProfile``) that
+    are unrelated to ``list_library``'s fixed storybooks/versions/states/ratings
+    sequence, so the fake dispatches on the selected entity rather than on call
+    order.
+    """
+    descriptions = getattr(stmt, "column_descriptions", None)
+    if not descriptions:
+        return None
+    first = descriptions[0]
+    return first.get("entity") if isinstance(first, dict) else None
+
+
 class _FakeSession:
     """Minimal async session double for library API handlers."""
 
@@ -72,6 +95,8 @@ class _FakeSession:
         ratings: list[Rating] | None = None,
         get_map: dict[tuple[type[object], object], object] | None = None,
         scalar_result: object | None = None,
+        assigned_profile_ids: list[uuid.UUID] | None = None,
+        assigned_profiles: list[ChildProfile] | None = None,
     ) -> None:
         # scalars() cycles in order: storybooks, versions, reading states, ratings.
         self._scalars_queue: list[list[object]] = [
@@ -82,6 +107,8 @@ class _FakeSession:
         ]
         self._get_map: dict[tuple[type[object], object], object] = get_map or {}
         self._scalar_result = scalar_result
+        self._assigned_profile_ids: list[object] = list(assigned_profile_ids or [])
+        self._assigned_profiles: list[object] = list(assigned_profiles or [])
         self.scalars_calls: list[object] = []
         self.get_calls: list[tuple[type[object], object]] = []
 
@@ -91,13 +118,18 @@ class _FakeSession:
         return self._get_map.get((model, key))
 
     async def scalar(self, stmt: object) -> object | None:
-        """Return the seeded scalar (the assignment lookup in get_storybook_version)."""
+        """Return the seeded scalar result."""
         self.scalars_calls.append(stmt)
         return self._scalar_result
 
     async def scalars(self, stmt: object) -> _FakeScalars:
-        """Return rows from the queue in order (storybooks then versions)."""
+        """Return the assignment-gate rows, else the queue in order."""
         self.scalars_calls.append(stmt)
+        entity = _selected_entity(stmt)
+        if entity is StorybookAssignment:
+            return _FakeScalars(self._assigned_profile_ids)
+        if entity is ChildProfile:
+            return _FakeScalars(self._assigned_profiles)
         rows = self._scalars_queue[0] if self._scalars_queue else []
         if self._scalars_queue:
             self._scalars_queue = self._scalars_queue[1:]
@@ -140,6 +172,24 @@ def _guardian_principal(family_id: uuid.UUID) -> Principal:
         role="guardian",
         family_id=family_id,
         profile_ids=frozenset(),
+    )
+
+
+def _assigned_profile(
+    profile_id: uuid.UUID, family_id: uuid.UUID, band: str = "10-13"
+) -> ChildProfile:
+    """Build the ChildProfile row the M2 assignment gate loads for its band check.
+
+    ``get_storybook_version`` resolves the assigned profiles behind an
+    assignment row so it can compare their age bands against the book's (H1);
+    a fixture that seeds only the assignment id would leave ``assigned_bands``
+    empty and 404 on the existence check.
+    """
+    return ChildProfile(
+        id=profile_id,
+        family_id=family_id,
+        display_name="Reader",
+        age_band=band,
     )
 
 
@@ -681,6 +731,7 @@ class TestGetStorybookVersion:
     async def test_happy_path_returns_blob(self) -> None:
         """A valid storybook+version owned by the principal returns the blob."""
         family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id, version=1)
         blob: dict[str, object] = {"title": "Test", "nodes": []}
         version = _version_row("story-1", 1, blob=blob)
@@ -691,7 +742,13 @@ class TestGetStorybookVersion:
             (Storybook, "story-1"): book,
             (StorybookVersion, ("story-1", 1)): version,
         }
-        session = _FakeSession(get_map=get_map)
+        # M2: a non-admin caller now needs an assignment row plus the assigned
+        # profile's band; a guardian is held to the same gate as their child.
+        session = _FakeSession(
+            get_map=get_map,
+            assigned_profile_ids=[profile_id],
+            assigned_profiles=[_assigned_profile(profile_id, family_id)],
+        )
         principal = _guardian_principal(family_id)
 
         result = await get_storybook_version("story-1", 1, principal, session)
@@ -721,13 +778,18 @@ class TestGetStorybookVersion:
             "nodes": [],
         }
         expected = copy.deepcopy(blob)
+        profile_id = uuid.uuid4()
         version = _version_row("story-1", 1, blob=blob)
         version.approved_by = uuid.uuid4()
         get_map: dict[tuple[type[object], object], object] = {
             (Storybook, "story-1"): book,
             (StorybookVersion, ("story-1", 1)): version,
         }
-        session = _FakeSession(get_map=get_map)
+        session = _FakeSession(
+            get_map=get_map,
+            assigned_profile_ids=[profile_id],
+            assigned_profiles=[_assigned_profile(profile_id, family_id)],
+        )
         principal = _guardian_principal(family_id)
 
         result = await get_storybook_version("story-1", 1, principal, session)
@@ -782,12 +844,20 @@ class TestGetStorybookVersion:
             (StorybookVersion, ("story-1", 1)): version,
         }
 
-        session_a = _FakeSession(get_map=get_map, scalar_result="story-1")
+        session_a = _FakeSession(
+            get_map=get_map,
+            assigned_profile_ids=[profile_a],
+            assigned_profiles=[_assigned_profile(profile_a, family_id)],
+        )
         principal_a = _child_principal(family_id, profile_a)
         result_a = await get_storybook_version("story-1", 1, principal_a, session_a)
         snapshot_a = json.dumps(result_a, sort_keys=True)
 
-        session_b = _FakeSession(get_map=get_map, scalar_result="story-1")
+        session_b = _FakeSession(
+            get_map=get_map,
+            assigned_profile_ids=[profile_b],
+            assigned_profiles=[_assigned_profile(profile_b, family_id)],
+        )
         principal_b = _child_principal(family_id, profile_b)
         result_b = await get_storybook_version("story-1", 1, principal_b, session_b)
         snapshot_b = json.dumps(result_b, sort_keys=True)
@@ -889,7 +959,7 @@ class TestGetStorybookVersion:
             (Storybook, "story-1"): book,
             (StorybookVersion, ("story-1", 1)): version,
         }
-        session = _FakeSession(get_map=get_map, scalar_result=None)  # not assigned
+        session = _FakeSession(get_map=get_map)  # not assigned (no rows seeded)
         principal = _child_principal(family_id, profile_id)
         with pytest.raises(ResourceNotFoundError):
             await get_storybook_version("story-1", 1, principal, session)
@@ -908,7 +978,11 @@ class TestGetStorybookVersion:
             (Storybook, "story-1"): book,
             (StorybookVersion, ("story-1", 1)): version,
         }
-        session = _FakeSession(get_map=get_map, scalar_result="story-1")  # assigned
+        session = _FakeSession(  # assigned
+            get_map=get_map,
+            assigned_profile_ids=[profile_id],
+            assigned_profiles=[_assigned_profile(profile_id, family_id)],
+        )
         principal = _child_principal(family_id, profile_id)
         result = await get_storybook_version("story-1", 1, principal, session)
         assert result == blob

@@ -48,13 +48,13 @@ chain, cost, deployment, and inert-control cleanup. Each workstream lands as its
 | ID | Severity | Title | Workstream | Status |
 | --- | --- | --- | --- | --- |
 | C1 | Critical | `environment` defaults to unverified auth stub (fail-open) | A | [x] done: `core/config.py` fails closed on an unset tier / weak secrets |
-| H1 | High | No age-band ceiling from approval through delivery | B | [ ] needs re-triage |
+| H1 | High | No age-band ceiling from approval through delivery | B | [x] done: `assign_storybook` band ceiling, read-gate band check, and approve/authored-create confirmation-band check all added |
 | H2 | High | AI cover images reach children unmoderated | B | [x] done 2026-07-28: human-approval gate (`cover_status` stops at `pending_review`; `covers.service.approve_cover` is the sole path to `ready`); automated image-safety check deliberately deferred, see acceptance criteria below |
 | H3 | High | ADR-007 retention purge unimplemented | D | [ ] needs re-triage |
 | H4 | High | No fail-fast on the no-op `mock` moderation reviewer | C | [ ] needs re-triage (related: ARCH-H3 classifier-degraded shipped 2026-07-17) |
 | K1 | Keystone | Children share the guardian token in R1 | E | [x] done: child-scoped session + device tokens (PRs #228, #247) |
-| M1 | Medium | Reading/completion routes bypass the assignment read-gate | B | [ ] needs re-triage |
-| M2 | Medium | Guardian blob-fetch skips the assignment gate | B | [ ] needs re-triage |
+| M1 | Medium | Reading/completion routes bypass the assignment read-gate | B | [x] done: assignment EXISTS gate plus current/published/approved-version check added to `get_reading_state`, `put_reading_state`, `record_completion`; only a cross-family admin action is exempt (`acting_role`, not raw `is_admin`) |
+| M2 | Medium | `get_storybook_version` (the reader blob-fetch path) skips the assignment gate for guardians | B | [x] done: `GET /storybooks/{id}/versions/{v}` now requires an assignment row for any caller not acting as a cross-family admin, not only `role == CHILD`. Scope is that one route: `GET /storybooks/{id}/review-surface` (`api/approval.py`) stays ungated by design, because it is the register-G6 draft-review surface for a guardian's OWN family and a draft under review has no assignment to check |
 | M3 | Medium | Auto-repair skips the deterministic validator gate | B | [ ] needs re-triage |
 | M4 | Medium | Review-model IDs bypass the provider allowlist | F | [ ] needs re-triage |
 | M5 | Medium | PII egress guard is display-name-only; birthdate arm dead | D | [ ] needs re-triage |
@@ -138,9 +138,13 @@ moderation), B3 (repair re-gate) if the diff is large.
   authored-create; reject (or require a logged explicit override) assigning a storybook whose band
   exceeds the target profile's band; add the band comparison to the read gate as defense in depth.
 - **Acceptance criteria.**
-  - [ ] Approve with a band above the profile's band is rejected (test).
-  - [ ] `assign_storybook` rejects a higher-band book for a lower-band profile (test).
-  - [ ] Read gate filters/refuses a higher-band book even if a mismatched assignment row exists (test).
+  - [x] Approve with a band above the profile's band is rejected (test): `approve_story_request` and
+        `create_authored_request` in `story_requests/service.py` now compare `confirmation.age_band`
+        against the requesting profile's band and raise `ValidationError` when it exceeds it
+        (`tests/unit/test_story_requests.py::test_approve_rejects_confirmation_band_above_profile_band`,
+        `::test_authored_create_rejects_confirmation_band_above_profile_band`).
+  - [x] `assign_storybook` rejects a higher-band book for a lower-band profile (test).
+  - [x] Read gate filters/refuses a higher-band book even if a mismatched assignment row exists (test).
 
 ### H2. Moderate and human-approve AI cover images before children see them
 
@@ -210,22 +214,46 @@ moderation), B3 (repair re-gate) if the diff is large.
   reading routes; restrict the accepted version to the approved, published, current version for
   non-admin principals. Update the `StorybookAssignment` docstring to enumerate every gated route.
 - **Acceptance criteria.**
-  - [ ] All three reading routes 403/404 for a story not assigned to the acting profile (test).
-  - [ ] Reading routes reject a non-published / non-current / unapproved version for non-admins (test).
+  - [x] All three reading routes 403/404 for a story not assigned to the acting profile (test):
+        `_require_assignment` added to `get_reading_state`, `put_reading_state`, `record_completion`
+        in `api/reading.py`
+        (`tests/integration/test_reading_state.py::test_get_reading_state_unassigned_own_family_story_404`,
+        `::test_put_reading_state_unassigned_own_family_story_404`,
+        `::test_record_completion_unassigned_own_family_story_404`).
+  - [x] Reading routes reject a non-published / non-current / unapproved version for non-admins (test):
+        `_require_current_published_approved` in `api/reading.py`
+        (`tests/integration/test_reading_state.py::test_put_reading_state_create_rejects_non_current_version_404`,
+        `::test_put_reading_state_create_rejects_unapproved_version_404`,
+        `::test_put_reading_state_create_rejects_non_published_book_404`,
+        `::test_record_completion_rejects_non_current_version_404`; a same-family create/update against
+        an already-established but since-superseded version remains allowed, guarded by
+        `::test_put_reading_state_update_allows_since_superseded_version`).
 
-### M2. Enforce the assignment gate on the guardian blob-fetch path
+### M2. Enforce the assignment gate on `get_storybook_version`, the reader blob-fetch path
 
 - **Severity:** Medium.
+- **Scope.** This finding covers exactly one route, `GET /storybooks/{id}/versions/{v}`
+  (`api/library.py::get_storybook_version`), the path a reader client uses to fetch published story
+  content. It does **not** cover `GET /storybooks/{id}/review-surface`
+  (`api/approval.py::get_review_surface`); see "Deliberate exception" below.
 - **Design gap.** `get_storybook_version` enforces the assignment gate only when
   `principal.role == Role.CHILD` (`api/library.py:406-415`); a guardian principal skips it, and R1
   kids use guardian tokens, so the gate never runs for real child readers.
 - **Attack.** On the guardian token, list `GET /library?profile_id=B` to learn a withheld book's id,
   then `GET /storybooks/{id}/versions/{v}` returns the full blob because role is not CHILD.
 - **Fix approach.** Require a `storybook_assignment` row for an explicit target profile on
-  `get_storybook_version` for any non-admin caller, not only `role == CHILD`. (Interacts with E:
-  distinct child tokens close the R1 exposure directly.)
+  `get_storybook_version` for any caller not acting as a cross-family admin, not only
+  `role == CHILD`. (Interacts with E: distinct child tokens close the R1 exposure directly.)
+- **Deliberate exception.** `GET /storybooks/{id}/review-surface` also returns
+  `version_row.blob` with no assignment gate and no age-band ceiling, and stays that way: it is the
+  register-G6 draft-review surface (admin-global, or guardian scoped to their own family via
+  `_load_review_target`), and an unapproved draft under review has no assignment row to check, so an
+  assignment gate there would forbid the review it exists to enable.
 - **Acceptance criteria.**
-  - [ ] Non-admin blob fetch requires an assignment row for a named target profile (test).
+  - [x] Non-admin blob fetch on `get_storybook_version` requires an assignment row for a named
+    target profile (test).
+  - [x] The exemption keys on `principal.acting_role(book.family_id) == Role.ADMIN`, not on the raw
+    `is_admin` capability, so a dual-role adult is gated on their own family (test).
 
 ### M3. Re-run the deterministic validator gate on repaired blobs
 

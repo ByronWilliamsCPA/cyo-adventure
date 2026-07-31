@@ -11,6 +11,7 @@ import pytest
 
 from cyo_adventure.db.models import (
     ChildProfile,
+    ReadingState,
     Storybook,
     StorybookAssignment,
     StorybookVersion,
@@ -18,6 +19,8 @@ from cyo_adventure.db.models import (
 from tests.integration.conftest import Seed, auth
 
 if TYPE_CHECKING:
+    import uuid
+
     from httpx import AsyncClient
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -500,6 +503,377 @@ async def test_child_cannot_save_progress_on_cross_family_private_book(
         headers=auth(seed.child_token),
     )
     assert done.status_code == 403, done.text
+
+
+# ---------------------------------------------------------------------------
+# M1 (security-hardening-plan-2026-07.md, register UW-E01): the assignment
+# gate applies to OWN-family books too, and a first (create) save/completion
+# must cite the book's current, published, approved version. Before this fix,
+# an own-family book always passed _load_readable_storybook, so these two
+# predicates never ran at all for the common case (only the cross-family
+# catalog arm above was covered).
+# ---------------------------------------------------------------------------
+
+
+async def _add_own_family_book(
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    story_id: str,
+    *,
+    status: str,
+    current_published_version: int | None,
+    version: int,
+    approved_by: uuid.UUID | None,
+    assign: bool,
+) -> str:
+    """Insert a Family-A-owned book/version row with independently-set fields.
+
+    Bypasses the real publish/assign services (``publishing/``,
+    ``api/assignments.py``) so ``status``, ``current_published_version``, and
+    ``approved_by`` can each be set independently of the others, isolating
+    which single M1 predicate (assignment, or current/published/approved) a
+    given test exercises.
+    """
+    blob = json.loads(_LANTERN.read_text(encoding="utf-8"))
+    async with sessions() as session:
+        session.add(
+            Storybook(
+                id=story_id,
+                family_id=seed.family_id,
+                current_published_version=current_published_version,
+                status=status,
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=version,
+                blob=blob,
+                approved_by=approved_by,
+            )
+        )
+        if assign:
+            session.add(
+                StorybookAssignment(
+                    child_profile_id=seed.child_profile_id,
+                    storybook_id=story_id,
+                )
+            )
+        await session.commit()
+        return story_id
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_get_reading_state_unassigned_own_family_story_404(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """An own-family published story with no assignment row is 404 on GET.
+
+    Regression guard for the M1 gap: before this fix, an own-family book
+    always passed the family/visibility gate with no assignment check, so a
+    child could read reading-state for any published story in their family.
+    A ReadingState row is hand-inserted (bypassing PUT) so a pass here proves
+    the gate itself blocks the read, not merely that no row happens to exist
+    yet: without this, GET would 404 either way (no assignment gate, vs. no
+    saved state), and the test would pass for the wrong reason.
+    """
+    story_id = await _add_own_family_book(
+        sessions,
+        seed,
+        "own-family-rs-unassigned-get",
+        status="published",
+        current_published_version=1,
+        version=1,
+        approved_by=seed.admin_user_id,
+        assign=False,
+    )
+    async with sessions() as session:
+        session.add(
+            ReadingState(
+                child_profile_id=seed.child_profile_id,
+                storybook_id=story_id,
+                version=1,
+                current_node="n_entrance",
+            )
+        )
+        await session.commit()
+    resp = await client.get(
+        f"/api/v1/reading-state/{seed.child_profile_id}/{story_id}",
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 404, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_put_reading_state_unassigned_own_family_story_404(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """An own-family published story with no assignment row is 404 on PUT."""
+    story_id = await _add_own_family_book(
+        sessions,
+        seed,
+        "own-family-rs-unassigned-put",
+        status="published",
+        current_published_version=1,
+        version=1,
+        approved_by=seed.admin_user_id,
+        assign=False,
+    )
+    resp = await client.put(
+        f"/api/v1/reading-state/{seed.child_profile_id}/{story_id}",
+        json=_save_body(1, node="n_cave_fork", revision=0),
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 404, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_record_completion_unassigned_own_family_story_404(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """An own-family published story with no assignment row is 404 on completion."""
+    story_id = await _add_own_family_book(
+        sessions,
+        seed,
+        "own-family-rs-unassigned-completion",
+        status="published",
+        current_published_version=1,
+        version=1,
+        approved_by=seed.admin_user_id,
+        assign=False,
+    )
+    resp = await client.post(
+        "/api/v1/completions",
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": story_id,
+            "version": 1,
+            "ending_id": "e_treasure_found",
+        },
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 404, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_dual_role_adult_is_gated_on_own_family(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """M1: the admin exemption is capacity-scoped, so a dual-role parent is gated.
+
+    ``seed.dual_token`` is a family-A adult holding role=guardian AND
+    is_admin=True. Keying the M1 exemption on the raw ``is_admin`` capability
+    would exempt exactly this principal, and only this principal: an
+    admin-ONLY adult carries an empty ``profile_ids`` set and 403s at
+    ``authorize_profile`` before reaching the gate. The gate keys on
+    ``acting_role(book.family_id)`` instead, which stays GUARDIAN for an
+    own-family target, so an unassigned own-family book is 404 for a
+    dual-role adult exactly as it is for a plain guardian or a child.
+    """
+    story_id = await _add_own_family_book(
+        sessions,
+        seed,
+        "own-family-rs-unassigned-dual",
+        status="published",
+        current_published_version=1,
+        version=1,
+        approved_by=seed.admin_user_id,
+        assign=False,
+    )
+    resp = await client.put(
+        f"/api/v1/reading-state/{seed.child_profile_id}/{story_id}",
+        json=_save_body(1, node="n_cave_fork", revision=0),
+        headers=auth(seed.dual_token),
+    )
+    assert resp.status_code == 404, resp.text
+
+    completion = await client.post(
+        "/api/v1/completions",
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": story_id,
+            "version": 1,
+            "ending_id": "e_treasure_found",
+        },
+        headers=auth(seed.dual_token),
+    )
+    assert completion.status_code == 404, completion.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_put_reading_state_create_rejects_non_current_version_404(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """A first save citing a superseded (non-current) version is 404.
+
+    ``current_published_version`` is 2 while the cited version row is 1: the
+    book has moved on, so a brand-new pin to the stale version must be
+    rejected, not silently accepted.
+    """
+    story_id = await _add_own_family_book(
+        sessions,
+        seed,
+        "own-family-rs-noncurrent",
+        status="published",
+        current_published_version=2,
+        version=1,
+        approved_by=seed.admin_user_id,
+        assign=True,
+    )
+    resp = await client.put(
+        f"/api/v1/reading-state/{seed.child_profile_id}/{story_id}",
+        json=_save_body(1, node="n_cave_fork", revision=0),
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 404, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_put_reading_state_create_rejects_unapproved_version_404(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """A first save citing an unapproved version is 404 even if it is current."""
+    story_id = await _add_own_family_book(
+        sessions,
+        seed,
+        "own-family-rs-unapproved",
+        status="published",
+        current_published_version=1,
+        version=1,
+        approved_by=None,
+        assign=True,
+    )
+    resp = await client.put(
+        f"/api/v1/reading-state/{seed.child_profile_id}/{story_id}",
+        json=_save_body(1, node="n_cave_fork", revision=0),
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 404, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_put_reading_state_create_rejects_non_published_book_404(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """A first save against a non-published book is 404.
+
+    The assignment row is hand-inserted (the real assign endpoint already
+    rejects a non-published book; see test_non_published_story_400 in
+    test_assignments_api.py), isolating the current/published/approved check
+    under test from the assignment check.
+    """
+    story_id = await _add_own_family_book(
+        sessions,
+        seed,
+        "own-family-rs-not-published",
+        status="in_review",
+        current_published_version=None,
+        version=1,
+        approved_by=seed.admin_user_id,
+        assign=True,
+    )
+    resp = await client.put(
+        f"/api/v1/reading-state/{seed.child_profile_id}/{story_id}",
+        json=_save_body(1, node="n_cave_fork", revision=0),
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 404, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_put_reading_state_update_allows_since_superseded_version(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """An update to an already-pinned row keeps working after a republish.
+
+    Regression guard for the create/update split: the create-path check
+    above must not be applied on every save, or continued reading on a
+    since-superseded version (a supported, existing scenario) would start
+    404ing on the very next save after a republish.
+    """
+    story_id = await _add_own_family_book(
+        sessions,
+        seed,
+        "own-family-rs-update-superseded",
+        status="published",
+        current_published_version=1,
+        version=1,
+        approved_by=seed.admin_user_id,
+        assign=True,
+    )
+    url = f"/api/v1/reading-state/{seed.child_profile_id}/{story_id}"
+    create = await client.put(
+        url,
+        json=_save_body(1, node="n_cave_fork", revision=0),
+        headers=auth(seed.child_token),
+    )
+    assert create.status_code == 200, create.text
+
+    # Republish: version 2 becomes current; the row stays pinned to version 1.
+    async with sessions() as session:
+        book = await session.get(Storybook, story_id)
+        assert book is not None
+        book.current_published_version = 2
+        blob = json.loads(_LANTERN.read_text(encoding="utf-8"))
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=2,
+                blob=blob,
+                approved_by=seed.admin_user_id,
+            )
+        )
+        await session.commit()
+
+    update = await client.put(
+        url,
+        json=_save_body(1, node="n_treasure", revision=1),
+        headers=auth(seed.child_token),
+    )
+    assert update.status_code == 200, update.text
+    assert update.json()["current_node"] == "n_treasure"
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_record_completion_rejects_non_current_version_404(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """A completion citing a superseded version is 404.
+
+    Unlike reading-state, completions have no update path (each call is a
+    fresh pin), so the current/published/approved check runs unconditionally
+    here, not behind a create/update split.
+    """
+    story_id = await _add_own_family_book(
+        sessions,
+        seed,
+        "own-family-completion-noncurrent",
+        status="published",
+        current_published_version=2,
+        version=1,
+        approved_by=seed.admin_user_id,
+        assign=True,
+    )
+    resp = await client.post(
+        "/api/v1/completions",
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": story_id,
+            "version": 1,
+            "ending_id": "e_treasure_found",
+        },
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 404, resp.text
 
 
 # ---------------------------------------------------------------------------
