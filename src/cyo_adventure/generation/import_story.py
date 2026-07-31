@@ -155,6 +155,27 @@ async def import_filled_story(
         msg = "filled story has no string id"
         raise ValidationError(msg)
 
+    # #CRITICAL: data integrity: this is the import/resume path's ONLY
+    # computation of personalization_eligible; the reader (api/library.py,
+    # D8) trusts the persisted column verbatim. True requires BOTH a real,
+    # non-empty declared personalizable-slot set AND a real manifest (the
+    # reinsertion transform actually ran and verified). `personalizable_slots`
+    # is a tri-state (see moderation/personalizable_slots.py): a genuine
+    # frozenset (possibly empty), an explicit `None` (contract uncomputable,
+    # fail closed), or the `PERSONALIZABLE_SLOTS_UNSET` marker for callers
+    # (import_cli.py, import_catalog.py) that never resolved it because they
+    # also never populate `request.sentinel_manifest`; the `isinstance` check
+    # below normalizes UNSET to falsy explicitly rather than relying on
+    # `sentinel_manifest is not None` alone to coincidentally cancel it out.
+    # #VERIFY: test_resume_stamps_personalization_eligible_when_contract_declares_slots,
+    # test_resume_leaves_personalization_eligible_false_without_manifest.
+    declared_slots = (
+        personalizable_slots if isinstance(personalizable_slots, frozenset) else None
+    )
+    personalization_eligible = bool(declared_slots) and (
+        request.sentinel_manifest is not None
+    )
+
     params = StorybookParams(
         story_id=story_id,
         blob=request.blob,
@@ -166,6 +187,7 @@ async def import_filled_story(
         validation_report=result.report.to_dict(),
         skeleton_slug=request.skeleton_slug,
         sentinel_manifest=request.sentinel_manifest,
+        personalization_eligible=personalization_eligible,
     )
     await persist_storybook(session, params)
 

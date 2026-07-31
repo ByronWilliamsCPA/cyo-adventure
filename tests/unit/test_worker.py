@@ -1690,6 +1690,10 @@ async def test_run_skeleton_fill_sentinel_integrity_dormant_for_non_personalizab
 
     assert outcome.status == "passed"
     assert outcome.storybook == filled_storybook
+    # D4 regression: eligibility stays False for every contract with no
+    # personalizable slots (today's whole catalog minus the D4 pilot),
+    # exactly as it would with no stamping logic at all.
+    assert outcome.personalization_eligible is False
 
 
 @pytest.mark.asyncio
@@ -1807,6 +1811,118 @@ async def test_run_skeleton_fill_sentinel_integrity_forged_value_not_reinserted(
     assert "Champion" in start_body
     assert wrap("PROTAGONIST", "Champion") not in start_body
     assert wrap("PROTAGONIST", "Ada") not in start_body
+
+
+# ---------------------------------------------------------------------------
+# ADR-023 Task D4: personalization_eligible stamping. `_run_skeleton_fill` is
+# the fill path's only producer of the flag (worker.py's inline #CRITICAL
+# marker); these pin the two-legged rule: bool(personalizable_slots) and
+# (sentinel_manifest is not None).
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_fill_stamps_personalization_eligible_when_contract_declares_slots(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A declared personalizable slot plus a real manifest stamps True (D4).
+
+    Reuses the exact fixture
+    ``test_run_skeleton_fill_sentinel_integrity_passes_verbatim_copy`` sets
+    up: PROTAGONIST is declared personalizable and the fill copies its
+    sentinel verbatim, so `reinsert_storybook` derives a real manifest.
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract = _personalizable_dispatch_contract()
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract_path.write_bytes(contract.model_dump_json().encode("utf-8"))
+
+    monkeypatch.setattr(
+        worker_module, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    original_skeleton = _personalizable_dispatch_skeleton()
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: original_skeleton)
+
+    provider = MockProvider(
+        responses=[_interpret_bind_response(_BOUND_DISPATCH_BINDINGS)]
+    )
+    filled_storybook = _personalizable_filled_storybook(wrap("PROTAGONIST", "Ada"))
+    monkeypatch.setattr(
+        worker_module, "fill_skeleton", _stub_returning(filled_storybook)
+    )
+
+    outcome = await _run_skeleton_fill(
+        _SkeletonFillContext(
+            authoring={
+                "skeleton_slug": "themed-slug",
+                "theme_brief": {"premise": "a fox"},
+            },
+            brief=_dispatch_brief(),
+            effective_provider=provider,
+            pii=_dispatch_pii(),
+        )
+    )
+
+    assert outcome.sentinel_manifest is not None
+    assert outcome.personalization_eligible is True
+
+
+@pytest.mark.asyncio
+async def test_fill_leaves_personalization_eligible_false_without_manifest(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Declared slots but no manifest (transform skipped) stays False (D4).
+
+    The fill produces no document at all (``storybook=None``, a "failed"
+    outcome), so the reinsertion transform never runs and no manifest is
+    ever derived, even though the bound contract declares PROTAGONIST
+    personalizable. `StorybookVersion.personalization_eligible`'s own
+    contract is "does this version's BLOB carry any sentinel-bound slots";
+    with no blob there is no evidence, so this fails closed.
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract = _personalizable_dispatch_contract()
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract_path.write_bytes(contract.model_dump_json().encode("utf-8"))
+
+    monkeypatch.setattr(
+        worker_module, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    original_skeleton = _personalizable_dispatch_skeleton()
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: original_skeleton)
+
+    provider = MockProvider(
+        responses=[_interpret_bind_response(_BOUND_DISPATCH_BINDINGS)]
+    )
+
+    async def _fake_fill_skeleton_no_doc(
+        *_args: object, **_kwargs: object
+    ) -> GenerationOutcome:
+        return GenerationOutcome(
+            status="failed", storybook=None, report={}, attempts=0, stage_log=[]
+        )
+
+    monkeypatch.setattr(worker_module, "fill_skeleton", _fake_fill_skeleton_no_doc)
+
+    outcome = await _run_skeleton_fill(
+        _SkeletonFillContext(
+            authoring={
+                "skeleton_slug": "themed-slug",
+                "theme_brief": {"premise": "a fox"},
+            },
+            brief=_dispatch_brief(),
+            effective_provider=provider,
+            pii=_dispatch_pii(),
+        )
+    )
+
+    assert outcome.storybook is None
+    assert outcome.sentinel_manifest is None
+    assert outcome.personalization_eligible is False
 
 
 def test_regate_after_transform_skips_when_document_unchanged() -> None:

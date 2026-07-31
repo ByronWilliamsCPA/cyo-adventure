@@ -1198,6 +1198,19 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         ctx=ctx,
         created_at=datetime.now(UTC),
     )
+    # #CRITICAL: data integrity: this is the fill path's ONLY computation of
+    # personalization_eligible; the reader (api/library.py, D8) trusts the
+    # persisted column verbatim. True requires BOTH a declared personalizable
+    # slot set (`personalizable_slots`, resolved from the bound contract
+    # above) AND a real manifest (the reinsertion transform actually ran and
+    # verified, not skipped because `outcome.storybook is None`). A contract
+    # that declares slots but whose transform never ran stays False: fails
+    # closed per the column's own contract (db/models.py's docstring: "does
+    # this version's blob carry any sentinel-bound slots at all").
+    # #VERIFY: test_fill_leaves_personalization_eligible_false_without_manifest.
+    personalization_eligible = bool(personalizable_slots) and (
+        sentinel_manifest is not None
+    )
     # Built via the GenerationOutcome constructor directly (not
     # dataclasses.replace): replace()'s generic TypeVar-bound return type
     # resolves to the DataclassInstance protocol under some type-checker
@@ -1214,6 +1227,7 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         attempts=outcome.attempts,
         stage_log=outcome.stage_log,
         sentinel_manifest=sentinel_manifest,
+        personalization_eligible=personalization_eligible,
     )
 
 
@@ -1505,6 +1519,7 @@ async def _persist_and_moderate(
             skeleton_slug=_skeleton_slug_of(ctx.authoring),
             validation_report=dict(outcome.report),
             sentinel_manifest=outcome.sentinel_manifest,
+            personalization_eligible=outcome.personalization_eligible,
             version=_FIRST_VERSION,
         ),
     )

@@ -54,6 +54,14 @@ class StorybookParams:
             (``storybook/reinsertion.py::build_manifest``), or None for any
             path that ran no transform (a sentinel-free import, or a resume
             whose reference skeleton could not be computed). ADR-023 Task R3.
+        personalization_eligible: Whether this version's blob carries any
+            sentinel-bound personalizable slots. Computed by the caller
+            (``generation/worker.py`` and ``generation/import_story.py``,
+            ADR-023 Task D4) as ``bool(declared_personalizable_slots) and
+            sentinel_manifest is not None``, both legs required: a contract
+            that declares slots but produced no manifest (transform skipped)
+            must stay ``False``. Defaults to ``False``, matching the
+            column's own default.
         status: Storybook lifecycle status (default ``"draft"``).
         version: Version number (default 1).
     """
@@ -68,6 +76,7 @@ class StorybookParams:
     skeleton_slug: str | None = None
     validation_report: dict[str, object] | None = None
     sentinel_manifest: dict[str, object] | None = None
+    personalization_eligible: bool = False
     status: str = "draft"
     version: int = _FIRST_VERSION
 
@@ -141,6 +150,17 @@ async def persist_storybook(session: AsyncSession, params: StorybookParams) -> s
         # #VERIFY: tests/unit/test_persistence.py::
         # test_persist_records_the_sentinel_manifest.
         sentinel_manifest=params.sentinel_manifest,
+        # #CRITICAL: data integrity: this is the ONLY write to
+        # storybook_version.personalization_eligible; the reader
+        # (api/library.py, D8) trusts it verbatim. The boolean itself is
+        # computed by the caller (see StorybookParams.personalization_eligible),
+        # not here, because the two producers (generation/worker.py,
+        # generation/import_story.py) each hold the manifest and the declared
+        # personalizable-slot set in different local scopes; this is only the
+        # single point both are written to the row.
+        # #VERIFY: test_fill_stamps_personalization_eligible_when_contract_declares_slots,
+        # test_fill_leaves_personalization_eligible_false_without_manifest.
+        personalization_eligible=params.personalization_eligible,
     )
     session.add(version_row)
     await session.flush()

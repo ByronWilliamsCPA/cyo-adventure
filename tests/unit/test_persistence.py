@@ -245,3 +245,44 @@ async def test_persist_rejects_oversized_sentinel_manifest() -> None:
         await persist_storybook(session, params)
 
     assert session.added == []
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_persist_records_personalization_eligible() -> None:
+    """The caller-computed eligibility flag reaches the column verbatim.
+
+    ADR-023 Task D4: this is the ONLY write path to
+    ``storybook_version.personalization_eligible``; the boolean itself is
+    computed by the caller (worker.py / import_story.py), not here.
+    """
+    session = _FakeSession()
+    params = StorybookParams(
+        story_id="s_eligible",
+        blob={"id": "ignored", "title": "T", "nodes": []},
+        family_id=uuid.uuid4(),
+        provider="mock",
+        sentinel_manifest={"tokens": {}},
+        personalization_eligible=True,
+    )
+    await persist_storybook(session, params)
+
+    versions = _added(session, StorybookVersion)
+    assert versions[0].personalization_eligible is True
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_persist_personalization_eligible_defaults_to_false() -> None:
+    """A caller that never sets the flag persists False, matching the column default."""
+    session = _FakeSession()
+    params = StorybookParams(
+        story_id="s_not_eligible",
+        blob={"id": "ignored", "title": "T", "nodes": []},
+        family_id=uuid.uuid4(),
+        provider="mock",
+    )
+    await persist_storybook(session, params)
+
+    versions = _added(session, StorybookVersion)
+    assert versions[0].personalization_eligible is False

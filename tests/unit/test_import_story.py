@@ -185,6 +185,109 @@ async def test_import_persists_skeleton_slug_provenance(
 
 @pytest.mark.unit
 @pytest.mark.asyncio
+async def test_import_stamps_personalization_eligible_when_contract_declares_slots(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """ADR-023 Task D4: a real declared slot set plus a real manifest stamps True.
+
+    Mirrors the fill path's stamping rule at the import/resume persist
+    anchor: ``bool(personalizable_slots) and sentinel_manifest is not None``.
+    """
+    moderation = AsyncMock()
+    monkeypatch.setattr(
+        "cyo_adventure.generation.import_story.run_moderation_pipeline", moderation
+    )
+    session = _FakeSession()
+    request = ImportRequest(
+        blob=_filled_story(),
+        family_id=uuid.uuid4(),
+        sentinel_manifest={"tokens": {}},
+    )
+    await import_filled_story(
+        session, request, personalizable_slots=frozenset({"HERO"})
+    )
+    versions = [r for r in session.added if isinstance(r, StorybookVersion)]
+    assert len(versions) == 1
+    assert versions[0].personalization_eligible is True
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_import_leaves_personalization_eligible_false_without_manifest(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Declared slots but no manifest (a sentinel-free import) stays False.
+
+    ``request.sentinel_manifest`` is unset (no transform ran, e.g. a plain
+    sentinel-free import), so eligibility fails closed even though a
+    personalizable slot set is threaded through.
+    """
+    moderation = AsyncMock()
+    monkeypatch.setattr(
+        "cyo_adventure.generation.import_story.run_moderation_pipeline", moderation
+    )
+    session = _FakeSession()
+    request = ImportRequest(blob=_filled_story(), family_id=uuid.uuid4())
+    await import_filled_story(
+        session, request, personalizable_slots=frozenset({"HERO"})
+    )
+    versions = [r for r in session.added if isinstance(r, StorybookVersion)]
+    assert len(versions) == 1
+    assert versions[0].personalization_eligible is False
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_import_leaves_personalization_eligible_false_for_empty_slot_set(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Regression: a manifest with no declared personalizable slots stays False.
+
+    Every contract on disk before the D4 pilot declares zero personalizable
+    slots, so ``personalizable_slot_ids_for_job`` resolves an empty
+    frozenset for them; eligibility must stay False even if a manifest
+    happens to be present.
+    """
+    moderation = AsyncMock()
+    monkeypatch.setattr(
+        "cyo_adventure.generation.import_story.run_moderation_pipeline", moderation
+    )
+    session = _FakeSession()
+    request = ImportRequest(
+        blob=_filled_story(),
+        family_id=uuid.uuid4(),
+        sentinel_manifest={"tokens": {}},
+    )
+    await import_filled_story(session, request, personalizable_slots=frozenset())
+    versions = [r for r in session.added if isinstance(r, StorybookVersion)]
+    assert len(versions) == 1
+    assert versions[0].personalization_eligible is False
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_import_leaves_personalization_eligible_false_when_slots_unresolved(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Fail-closed: an unresolvable slot set (``None``) stays False even with a manifest."""
+    moderation = AsyncMock()
+    monkeypatch.setattr(
+        "cyo_adventure.generation.import_story.run_moderation_pipeline", moderation
+    )
+    session = _FakeSession()
+    request = ImportRequest(
+        blob=_filled_story(),
+        family_id=uuid.uuid4(),
+        sentinel_manifest={"tokens": {}},
+    )
+    await import_filled_story(session, request, personalizable_slots=None)
+    versions = [r for r in session.added if isinstance(r, StorybookVersion)]
+    assert len(versions) == 1
+    assert versions[0].personalization_eligible is False
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
 async def test_import_screens_the_persisted_story(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

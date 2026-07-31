@@ -126,6 +126,17 @@ class GenerationOutcome:
             ``storybook_version.sentinel_manifest``. A ``None`` here
             therefore persists as a NULL column, meaning "no transform ran",
             not "the transform found nothing".
+        personalization_eligible: ``True`` only when the contract that bound
+            declared at least one ``personalizable`` slot AND the reinsertion
+            transform actually produced a manifest for `storybook` (ADR-023
+            Task D4). Computed once, at the same point `sentinel_manifest` is
+            derived, and carried unchanged to ``generation/worker.py``'s
+            persist step, which stamps it onto
+            ``storybook_version.personalization_eligible`` verbatim. Defaults
+            to ``False``, matching the column's own default and every
+            non-fill early-return path in ``_run_skeleton_fill`` (e.g. the
+            cannot-carry degraded-interpretation return), none of which has
+            resolved a manifest yet.
     """
 
     status: Literal["passed", "needs_review", "failed"]
@@ -134,6 +145,7 @@ class GenerationOutcome:
     attempts: int
     stage_log: list[str]
     sentinel_manifest: dict[str, object] | None = None
+    personalization_eligible: bool = False
 
 
 @dataclass(frozen=True, slots=True)
