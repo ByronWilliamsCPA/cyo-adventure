@@ -115,6 +115,9 @@
       "scope": "global",
       "meaning": "The child protagonist.",
       "guidance": "A single kid-relatable explorer; capable, curious, not reckless.",
+      "kind": "personalizable",
+      "personalization_field": "protagonist_first_name",
+      "role_safety": "protagonist",
       "constraints": {
         "max_words": 6,
         "forbid": [
