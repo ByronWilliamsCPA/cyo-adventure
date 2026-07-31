@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.51.2] - 2026-07-31
+
+### Bug Fixes
+
+- **moderation**: Make the QA corpus fixtures match their labels and clear the gate
+  ([#510](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/510),
+  [`96aa6f7`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/96aa6f784d7c97ce82dbbb94f0f653d00ccb49f2))
+
+- **security**: Close H1/M1/M2 child-safety age-band and read-gate findings
+  ([#493](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/493),
+  [`07904e3`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/07904e3797d76b0df5641291846e7c7a68d0007c))
+
+
 ## [0.51.1] - 2026-07-30
 
 ### Bug Fixes
@@ -2881,6 +2894,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.51.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.51.1...v0.51.2
 [0.51.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.51.0...v0.51.1
 [0.51.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.50.1...v0.51.0
 [0.50.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.50.0...v0.50.1
