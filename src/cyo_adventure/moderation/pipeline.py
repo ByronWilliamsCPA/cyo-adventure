@@ -46,6 +46,10 @@ from cyo_adventure.moderation.stages import (
 )
 from cyo_adventure.publishing import service
 from cyo_adventure.storybook.models import Storybook as StoryModel
+from cyo_adventure.storybook.reinsertion import (
+    build_manifest,
+    manifest_carries_tokens,
+)
 from cyo_adventure.storybook.sentinels import strip_sentinels
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import run_gate
@@ -511,6 +515,22 @@ async def _attempt_and_adopt_repair(
 
     repaired_report.repaired = True
     version_row.blob = revised
+    # #CRITICAL: data-integrity: the blob just changed under a flag derived
+    # from the PREVIOUS blob. `personalization_eligible` is written once at
+    # persist time (generation/persistence.py) and read verbatim by
+    # api/library.py, so an adopted repair that drops the story's last
+    # sentinel would otherwise leave the column advertising a personalization
+    # affordance the blob can no longer honor. `_repair_is_adoptable` does not
+    # close this: its sentinel check "cannot catch a DROPPED sentinel" (see
+    # the module note above). Re-derive from the blob actually being stored.
+    # `sentinel_manifest` is deliberately NOT refreshed here; that is the open
+    # half of Task R3 recorded on the column itself in db/models.py, and
+    # widening it is out of this change's scope.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_adopted_repair_clears_personalization_eligible_when_sentinels_lost.
+    version_row.personalization_eligible = bool(
+        personalizable_slots
+    ) and manifest_carries_tokens(build_manifest(revised))
     # #ASSUME: data-integrity: the event log must record a repair the moment
     # the revised blob is adopted, before moderation_report is overwritten by
     # the caller, so repair_applied always precedes moderation_completed in

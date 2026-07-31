@@ -1557,7 +1557,11 @@ async def test_repair_preserving_declared_sentinel_is_adopted(
 
     story = _story()
     version = StorybookVersion(
-        storybook_id="s1", version=1, blob=original_blob, model="gen-model"
+        storybook_id="s1",
+        version=1,
+        blob=original_blob,
+        model="gen-model",
+        personalization_eligible=True,
     )
     _load(mock_session, story, version, job=job)
     review_seam(_verdict_review_provider(readability_flags_first_pass=True))
@@ -1590,6 +1594,78 @@ async def test_repair_preserving_declared_sentinel_is_adopted(
     assert summary["repaired"] is True
     assert version.blob == revised_blob
     assert sentinel in revised_start["body"]
+    # Positive control for the recompute added alongside the adoption write:
+    # the sentinel survived, so the flag must survive with it. Paired with
+    # ::test_adopted_repair_clears_personalization_eligible_when_sentinels_lost,
+    # which drives the same recompute the other way.
+    assert version.personalization_eligible is True
+
+
+@pytest.mark.unit
+async def test_adopted_repair_clears_personalization_eligible_when_sentinels_lost(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+    tmp_path: Path,
+) -> None:
+    """An adopted repair that DROPS the story's last sentinel must clear
+    ``personalization_eligible`` on the row it just rewrote.
+
+    ``_repair_is_adoptable``'s sentinel check is a forged/unknown/malformed
+    backstop and explicitly "cannot catch a DROPPED sentinel", so this repair
+    is adopted, correctly. But the flag was derived at persist time from the
+    PREVIOUS blob, and ``api/library.py`` reads it verbatim to advertise a
+    personalization affordance. Without the recompute at the adoption write,
+    the column would keep promising a slot the stored blob can no longer fill.
+    """
+    job = _wire_personalizable_job(monkeypatch, tmp_path)
+    sentinel = wrap("HERO", "Ada")
+    original_blob = copy.deepcopy(_BLOB)
+    nodes = cast("list[dict[str, object]]", original_blob["nodes"])
+    start_node = next(n for n in nodes if n["id"] == "n_start")
+    plain_body = cast("str", start_node["body"])
+    start_node["body"] = f"{plain_body} {sentinel}"
+
+    story = _story()
+    version = StorybookVersion(
+        storybook_id="s1",
+        version=1,
+        blob=original_blob,
+        model="gen-model",
+        personalization_eligible=True,
+    )
+    _load(mock_session, story, version, job=job)
+    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+
+    # The repair rewrites the sentinel-bearing node back to plain prose: a
+    # well-formed, gate-passing blob that simply no longer carries a sentinel.
+    revised_blob = copy.deepcopy(original_blob)
+    revised_nodes = cast("list[dict[str, object]]", revised_blob["nodes"])
+    revised_start = next(n for n in revised_nodes if n["id"] == "n_start")
+    revised_start["body"] = f"{plain_body} (revised)"
+    generation_provider = MockProvider(responses=[json.dumps(revised_blob)])
+
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=generation_provider,
+        pii=_pii(),
+    )
+
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    summary = cast("dict[str, object]", moderation_report["summary"])
+    assert summary["repaired"] is True
+    assert version.blob == revised_blob
+    assert sentinel not in revised_start["body"]
+    assert version.personalization_eligible is False
 
 
 @pytest.mark.unit
