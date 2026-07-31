@@ -15,8 +15,11 @@
 #   - openssl / libssl CVE-2026-45447: resolved by `apt-get upgrade`.
 #   - Go stdlib / esbuild CVEs: frontend/node_modules excluded via .dockerignore.
 #
-# Last reviewed: 2026-07-24 (linux-libc-dev new-CVE additions from the PR #394
-# Container Security run; gawk block 2026-07-14). See each block's own
+# Last reviewed: 2026-07-30 (added the 7-CVE linux-libc-dev block from the
+# PR #494 Container Security run; removed the CVE-2026-53399 / CVE-2026-64600
+# block, whose own removal condition was met when the dhi-python:3.14-debian13
+# base advanced from 6.12.95-1+dhi0 to 6.12.96-1+dhi0, the version Debian
+# records as fixing both. gawk block 2026-07-14). See each block's own
 # "Confirmed via" comment below for when it was individually last re-verified
 # against a live Trivy run.
 
@@ -120,13 +123,22 @@ CVE-2026-53330
 CVE-2026-63970
 CVE-2026-64017
 
-# --- linux-libc-dev CVEs that DO have an upstream fix (linux-libc-dev
-# 6.12.96-1) which the dhi-python:3.14-debian13 base does not yet ship (it still
-# carries 6.12.95-1+dhi0, and the runtime-stage apt-get upgrade does not pull
-# the newer package). Ignored meanwhile under the same kernel-UAPI-headers
-# non-applicability rationale, and TRACKED for removal when the dhi-python base
-# digest refreshes to include 6.12.96-1 (Renovate digest bump). This is a
-# tracked suppression with an expected proper fix, not a permanent dismissal.
-# See docs/known-vulnerabilities.md; reassess 2026-08-24. ---
-CVE-2026-53399
-CVE-2026-64600
+# --- linux-libc-dev (6.12.96-1+dhi0); kernel UAPI headers only, no running
+# kernel code in this image; no Debian fix on the trixie track ---
+# Confirmed via the PR #494 Container Security run against
+# ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13: all seven report an empty
+# Fixed Version with status "affected", and were that run's only findings
+# (Total: 7, HIGH: 7, CRITICAL: 0). Independently corroborated against the
+# Debian security tracker, which records both trixie (6.12.94-1) and
+# trixie-security (6.12.96-1) as "vulnerable" for all seven; the fix landed only
+# in sid (7.1.5-1), which this base image does not track. Same kernel-UAPI-
+# headers non-applicability rationale as the blocks above: compile-time headers,
+# not a running kernel binary, and the container runs on the host's kernel.
+# Documented in docs/known-vulnerabilities.md; reassess 2026-09-28.
+CVE-2026-64287
+CVE-2026-64364
+CVE-2026-64375
+CVE-2026-64434
+CVE-2026-64534
+CVE-2026-64552
+CVE-2026-64558
