@@ -53,6 +53,18 @@ class Finding:
         verdict: Its gating role.
         score: Optional numeric score (classifier probability or model confidence).
         message: Human-readable explanation for the guardian.
+        structural: True when the finding reflects a pipeline condition (a
+            parse failure, a classifier outage, a mock reviewer in use)
+            rather than a genuine content judgment. Additive field (Stage A
+            of the moderation review redesign, design doc section 2.3/2.5):
+            old persisted reports without this key load fine, since it
+            defaults to ``False`` and every reader accesses findings via
+            ``.get()``. Dashboard aggregates and the threshold flywheel must
+            key off this flag to avoid conflating pipeline noise with real
+            safety signal (gap G2a).
+        concern: Optional machine-readable reason code for a structural
+            finding (for example ``"reviewer_unavailable"``); ``None`` for
+            genuine content findings.
     """
 
     stage: int
@@ -62,6 +74,8 @@ class Finding:
     message: str
     node_id: str | None = None
     score: float | None = None
+    structural: bool = False
+    concern: str | None = None
 
     def __post_init__(self) -> None:
         """Enforce the documented field ranges at construction.
@@ -87,6 +101,8 @@ class Finding:
             "verdict": self.verdict.value,
             "score": self.score,
             "message": self.message,
+            "structural": self.structural,
+            "concern": self.concern,
         }
 
 

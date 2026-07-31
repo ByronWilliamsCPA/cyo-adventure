@@ -10,7 +10,7 @@ Covers:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 import pytest
 
@@ -208,6 +208,10 @@ class TestValidatorRejectDevUrlOutsideLocal:
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
             child_session_secret=_CHILD_SECRET,
             device_grant_secret=_DEVICE_SECRET,
+            # Unrelated to this test's own invariant (database_url); the
+            # default review_provider="mock" outside environment="local"
+            # now requires this hatch (_require_real_reviewer_outside_local).
+            allow_mock_review=True,
         )
         assert settings.database_url == _PROD_DB_URL
         assert settings.environment == environment
@@ -280,6 +284,7 @@ class TestEnvironmentAlias:
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
             child_session_secret=_CHILD_SECRET,
             device_grant_secret=_DEVICE_SECRET,
+            allow_mock_review=True,
         )
         assert s.environment == "staging"
 
@@ -298,6 +303,7 @@ class TestEnvironmentAlias:
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
             child_session_secret=_CHILD_SECRET,
             device_grant_secret=_DEVICE_SECRET,
+            allow_mock_review=True,
         )
         assert s.environment == "production"
 
@@ -382,6 +388,85 @@ class TestModerationReviewSettings:
         with pytest.raises(ConfigurationError) as excinfo:
             Settings(review_provider="openrouter")
         assert "OPENAI_API_KEY" in str(excinfo.value)
+
+
+class TestValidatorRequireRealReviewerOutsideLocal:
+    """Tests for the _require_real_reviewer_outside_local model_validator.
+
+    Design doc section 2.4 (moderation review redesign, Stage A): the mock
+    reviewer runs no real safety review, so booting with it outside
+    environment="local" must fail fast unless the operator explicitly opts
+    in via allow_mock_review / CYO_ADVENTURE_ALLOW_MOCK_REVIEW.
+    """
+
+    _OIDC_KWARGS: ClassVar[dict[str, str]] = {
+        "oidc_issuer": "https://project.supabase.co/auth/v1",
+        "oidc_jwks_url": "https://project.supabase.co/auth/v1/.well-known/jwks.json",
+        "child_session_secret": _CHILD_SECRET,
+        "device_grant_secret": _DEVICE_SECRET,
+    }
+
+    @pytest.mark.unit
+    def test_local_environment_with_mock_review_is_valid(self) -> None:
+        """The default posture (local + mock) boots without the hatch."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings()
+        assert settings.environment == "local"
+        assert settings.review_provider == "mock"
+        assert settings.allow_mock_review is False
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("environment", ["dev", "staging", "production"])
+    def test_non_local_environment_with_mock_review_without_hatch_raises(
+        self, environment: str
+    ) -> None:
+        """A non-local process defaulting to the mock reviewer refuses to boot."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError) as excinfo:
+            Settings(
+                environment=environment,
+                database_url=_PROD_DB_URL,
+                review_provider="mock",
+                **self._OIDC_KWARGS,
+            )
+        message = str(excinfo.value)
+        assert environment in message
+        assert "CYO_ADVENTURE_ALLOW_MOCK_REVIEW" in message
+
+    @pytest.mark.unit
+    def test_non_local_environment_with_mock_review_and_hatch_boots(self) -> None:
+        """The explicit escape hatch allows the same combination to boot."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(
+            environment="staging",
+            database_url=_PROD_DB_URL,
+            review_provider="mock",
+            allow_mock_review=True,
+            **self._OIDC_KWARGS,
+        )
+        assert settings.review_provider == "mock"
+        assert settings.allow_mock_review is True
+
+    @pytest.mark.unit
+    def test_non_local_environment_with_real_reviewer_and_no_hatch_is_valid(
+        self,
+    ) -> None:
+        """A real (non-mock) reviewer never needs the hatch outside local."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(
+            environment="production",
+            database_url=_PROD_DB_URL,
+            review_provider="openrouter",
+            openai_api_key="k",
+            **self._OIDC_KWARGS,
+        )
+        assert settings.review_provider == "openrouter"
+        assert settings.allow_mock_review is False
 
 
 class TestModalGenerationSettings:
@@ -646,6 +731,7 @@ class TestValidatorRequireOidcConfigOutsideLocal:
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
             child_session_secret=_CHILD_SECRET,
             device_grant_secret=_DEVICE_SECRET,
+            allow_mock_review=True,
         )
         assert settings.oidc_issuer == "https://project.supabase.co/auth/v1"
         assert (
@@ -750,6 +836,12 @@ def _non_local_settings(**overrides: object) -> Settings:
         "oidc_jwks_url": ("https://project.supabase.co/auth/v1/.well-known/jwks.json"),
         "child_session_secret": _CHILD_SECRET,
         "device_grant_secret": _DEVICE_SECRET,
+        # Unrelated to what each caller's test actually varies; the default
+        # review_provider="mock" outside environment="local" now requires
+        # this hatch (_require_real_reviewer_outside_local). A caller
+        # testing an earlier-declared validator's raise path is unaffected:
+        # that validator still fires first regardless of this value.
+        "allow_mock_review": True,
     }
     kwargs.update(overrides)
     return Settings(**kwargs)  # type: ignore[arg-type]

@@ -101,6 +101,86 @@ async def test_repair_returns_none_without_soft_flags() -> None:
     assert new_blob is None
 
 
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_structural_only_report_makes_no_repair_call() -> None:
+    """A report whose only FLAG is structural must not reach the generator.
+
+    A structural FLAG (reviewer unavailable, classifier outage, mock reviewer)
+    describes a pipeline condition and carries no ``node_id``: re-prompting the
+    generator with it produced a literal "- node None (pipeline): ..."
+    instruction, burning a full-budget generation call on nothing and putting
+    an adopted revision of the persisted blob at risk. ``MockProvider`` with no
+    queued responses raises if it is ever called, so this pins the no-call
+    contract rather than merely the ``None`` return.
+    """
+    report = ModerationReport()
+    report.add(
+        Finding(
+            stage=1,
+            source=Source.PIPELINE,
+            category="pipeline",
+            node_id=None,
+            verdict=Verdict.FLAG,
+            message="reviewer unavailable or unparseable on 3 node(s)",
+            structural=True,
+            concern="reviewer_unavailable",
+        )
+    )
+    provider = MockProvider(responses=[])
+
+    new_blob = await attempt_repair(
+        blob={"id": "s1", "nodes": []},
+        report=report,
+        generation_provider=provider,
+        pii=PiiContext(child_names=frozenset()),
+        max_tokens=4096,
+    )
+
+    assert new_blob is None
+    # Routing is unaffected: the structural FLAG still soft-flags the report,
+    # so the story still goes to a human rather than skipping review.
+    assert report.has_soft_flag is True
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_genuine_flag_alongside_structural_still_repairs_genuine_only() -> None:
+    """A mixed report repairs the genuine finding and omits the structural one."""
+    report = _soft_report()
+    report.add(
+        Finding(
+            stage=1,
+            source=Source.PIPELINE,
+            category="pipeline",
+            node_id=None,
+            verdict=Verdict.FLAG,
+            message="reviewer unavailable or unparseable on 3 node(s)",
+            structural=True,
+            concern="reviewer_unavailable",
+        )
+    )
+    captured: list[str] = []
+
+    def _respond(prompt: str) -> str:
+        captured.append(prompt)
+        return json.dumps({"id": "s1", "nodes": []})
+
+    new_blob = await attempt_repair(
+        blob={"id": "s1", "nodes": []},
+        report=report,
+        generation_provider=MockProvider(responses=[_respond]),
+        pii=PiiContext(child_names=frozenset()),
+        max_tokens=4096,
+    )
+
+    assert new_blob is not None
+    assert len(captured) == 1
+    assert "- node n1 (reading_level): too hard" in captured[0]
+    assert "node None" not in captured[0]
+    assert "reviewer unavailable" not in captured[0]
+
+
 # ---------------------------------------------------------------------------
 # Delimiter + instruction-hierarchy hardening (fifth unhardened concat site):
 # the repair prompt concatenates raw story JSON (containing node prose) and

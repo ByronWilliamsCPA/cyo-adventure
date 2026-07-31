@@ -28,6 +28,19 @@ harness. The mock default keeps CI and casual runs free of network I/O. A live
 ``OPENAI_API_KEY``; see ``main()`` for how a missing one is surfaced.
 ``PERSPECTIVE_API_KEY`` is an optional second opinion and does not substitute
 for it (Perspective sunsets 2026-12-31).
+
+Mock-run environment note (design doc section 2.4 / gap G1): ``main()``
+passes ``allow_mock_review=True`` whenever ``--review-provider mock`` is
+selected, so the harness's own ``Settings.model_validate`` call never trips
+core/config.py's outside-local mock-reviewer guard. That guard fires first,
+though, at IMPORT time on the module-level ``settings`` singleton
+(``core/config.py``'s eager ``Settings()``), which reads pure env vars with
+no way for this script's code to intervene first. Running this harness from
+a shell whose ``ENVIRONMENT`` is already exported to "staging" or
+"production" (for example, reused from a prior live-provider run) therefore
+still needs ``CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1`` exported in that same
+shell; the typical local invocation (``ENVIRONMENT`` unset, default "local")
+is unaffected either way.
 """
 
 from __future__ import annotations
@@ -634,7 +647,24 @@ def main() -> None:
     if provider_name != "mock":
         _load_env_file(env_path)
     try:
-        settings = Settings.model_validate({"review_provider": provider_name})
+        # #ASSUME: external-resources: the mock provider is this harness's
+        # documented default (a deliberate non-evidence run per the "Honesty
+        # guardrail" module docstring; report.is_evidence already gates on
+        # review_provider != "mock" downstream). Without the escape hatch,
+        # core/config.py's _require_real_reviewer_outside_local would refuse
+        # to boot Settings whenever the invoking shell's ENVIRONMENT happens
+        # to be "staging"/"production" (e.g. a shell also configured for a
+        # live-provider run), even though this harness never claims the mock
+        # run is a real safety evaluation.
+        # #VERIFY: only set for provider_name == "mock"; a live-provider run
+        # (openrouter/ollama) is unaffected and still requires a real
+        # environment=local or a genuinely configured non-mock backend.
+        settings = Settings.model_validate(
+            {
+                "review_provider": provider_name,
+                "allow_mock_review": provider_name == "mock",
+            }
+        )
         review_provider, _independent = build_review_provider(
             settings, generator_provider=None, generator_model=None
         )

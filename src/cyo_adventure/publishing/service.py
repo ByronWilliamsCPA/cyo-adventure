@@ -18,6 +18,7 @@ from typing import TYPE_CHECKING
 from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy import func, select, update
 
+from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     BusinessLogicError,
@@ -41,6 +42,48 @@ if TYPE_CHECKING:
     from cyo_adventure.api.deps import Principal
 
 _logger = get_logger(__name__)
+
+# #CRITICAL: security: the staging Moderation QA corpus
+# (moderation-review-redesign-2026-07-28.md section 5) namespaces every
+# fixture storybook id with this prefix precisely so a single string check
+# can gate publishing everywhere it matters, regardless of how the id got
+# into the approve() call (admin misclick, a future automation, a copy-pasted
+# storybook id). See _reject_mqa_fixture_outside_staging below.
+# #VERIFY: test_approve_rejects_mqa_fixture_outside_staging and
+# test_approve_allows_mqa_fixture_in_staging in
+# tests/unit/test_publishing_service_unit.py.
+_MODERATION_QA_PREFIX = "mqa_"
+
+
+def _reject_mqa_fixture_outside_staging(storybook_id: str) -> None:
+    """Refuse to publish a Moderation QA fixture anywhere but staging.
+
+    Defense in depth (moderation-review-redesign-2026-07-28.md section 5,
+    point 3): the seed script (scripts/seed_moderation_qa.py) never calls
+    approve/publish itself, and its own environment guard already prevents
+    the fixtures from being inserted outside staging. This is the second,
+    independent layer at the sole publish path itself, so an admin who
+    somehow acquires an ``mqa_``-prefixed storybook row outside staging (a
+    misclick, a copied id, a future automation) still cannot publish it.
+
+    Args:
+        storybook_id: The id of the storybook being approved.
+
+    Raises:
+        BusinessLogicError: If the id carries the ``mqa_`` containment prefix
+            and the running environment is not ``staging``.
+    """
+    if (
+        storybook_id.startswith(_MODERATION_QA_PREFIX)
+        and settings.environment != "staging"
+    ):
+        msg = (
+            f"cannot approve or publish moderation QA fixture '{storybook_id}' "
+            f"outside staging (current environment: {settings.environment!r}); "
+            "this id is reserved for deliberately off-band and bright-line "
+            "test content that must never reach a real reader"
+        )
+        raise BusinessLogicError(msg, rule="mqa_fixture_outside_staging")
 
 
 async def submit(session: AsyncSession, storybook: Storybook) -> None:
@@ -255,6 +298,7 @@ async def approve(
     if not principal.is_admin:
         msg = "admin role required to approve a storybook"
         raise AuthorizationError(msg, required_permission="admin")
+    _reject_mqa_fixture_outside_staging(storybook.id)
     # #CRITICAL: concurrency: `storybook` arrives already locked (SELECT ... FOR
     # UPDATE, same transaction) for every caller of this module's transitions:
     # api/approval.py::_load_admin_story for the admin path, and

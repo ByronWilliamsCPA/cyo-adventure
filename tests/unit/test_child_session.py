@@ -366,6 +366,12 @@ def _base_nonlocal_kwargs() -> dict[str, Any]:
         # (ADR-014), so this satisfies the latter without affecting any
         # test below that targets the child-session secret specifically.
         "device_grant_secret": SecretStr("unit-test-device-grant-secret-0123456789ab"),
+        # Unrelated to the child-session invariant these tests exercise; the
+        # default review_provider="mock" outside environment="local" now
+        # requires this hatch (_require_real_reviewer_outside_local). The
+        # child-session validator is declared earlier and still fires first,
+        # so the raise-path test above is unaffected.
+        "allow_mock_review": True,
     }
 
 

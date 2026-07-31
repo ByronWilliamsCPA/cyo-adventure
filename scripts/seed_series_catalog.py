@@ -8,14 +8,24 @@ staging AND production. Unlike `scripts/seed_staging.py`, this script does
 NOT hard-refuse a non-staging environment: it is meant to run against either
 staging or production (with an explicit confirmation gate for production).
 
+This script never calls the real moderation pipeline (it writes already-
+validated fixture blobs directly), but Settings still boots with
+review_provider defaulting to "mock", and core/config.py now refuses to boot
+the mock reviewer outside environment="local" unless
+``CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1`` is set (design doc section 2.4 / gap
+G1). Set it alongside ENVIRONMENT below, or export REVIEW_PROVIDER to
+whatever real backend the target environment already runs.
+
 Run against staging:
 
-    ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
+    ENVIRONMENT=staging CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1 \\
+        CYO_ADVENTURE_DATABASE_URL=... \\
         uv run python scripts/seed_series_catalog.py
 
 Run against production (requires explicit confirmation):
 
-    ENVIRONMENT=production SEED_CONFIRM=1 CYO_ADVENTURE_DATABASE_URL=... \\
+    ENVIRONMENT=production SEED_CONFIRM=1 CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1 \\
+        CYO_ADVENTURE_DATABASE_URL=... \\
         uv run python scripts/seed_series_catalog.py
 
 The child profile the books are assigned to is resolved by looking for

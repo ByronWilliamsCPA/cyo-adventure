@@ -3,7 +3,7 @@
 # UV uses standard PEP 621 pyproject.toml format with uv.lock for reproducible builds.
 [project]
 name = "cyo-adventure"
-version = "0.49.0"
+version = "0.51.1"
 description = "A choose-your-own-adventure reading app for kids"
 authors = [
     {name = "Byron Williams", email = "byronawilliams@gmail.com"}
@@ -433,6 +433,14 @@ known-first-party = ["cyo_adventure"]
 # work, config, and the three pluggable stages) with no sensible default.
 # A config object would obscure which stage a caller is overriding.
 "**/covers/service.py" = ["PLR0913"]
+
+# generate_presigned_cover_url carries storybook_id, version, settings, and
+# two keyword-only options (salt, expires_in); salt is the UW-M07
+# defense-in-depth token (StorybookVersion.cover_object_salt, None for a
+# pre-migration row) and expires_in is the presign TTL, each an independent,
+# optional axis with its own default. A config object would obscure that
+# both are optional overrides, not a single cohesive value.
+"**/covers/storage.py" = ["PLR0913"]
 
 # record_event carries session, actor, entity_type, entity_id, event_type,
 # from_state, to_state, and payload; all but the last two are mandatory and
