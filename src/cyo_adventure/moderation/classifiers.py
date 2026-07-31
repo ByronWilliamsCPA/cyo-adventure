@@ -21,7 +21,7 @@ import httpx
 if TYPE_CHECKING:
     from collections.abc import Awaitable, Callable, Sequence
 
-from cyo_adventure.moderation.report import Finding, Source, Verdict
+from cyo_adventure.moderation.report import Finding, FindingSeverity, Source, Verdict
 from cyo_adventure.utils.logging import get_logger
 
 _logger = get_logger(__name__)
@@ -87,6 +87,15 @@ _MAX_CONSECUTIVE_FAILURES = 3
 _COVERAGE_SAMPLE_SIZE = 10
 
 
+def _severity_from_score(score: float) -> FindingSeverity:
+    """Map a classifier probability to a surface ranking band (design doc 2.1)."""
+    if score >= 0.8:
+        return FindingSeverity.HIGH
+    if score >= 0.5:
+        return FindingSeverity.MEDIUM
+    return FindingSeverity.LOW
+
+
 # Not an error state, a control-flow signal: N818 (error-suffix naming) does
 # not apply to this exception, so its bare name is intentional.
 class ClassifierUnavailable(Exception):  # noqa: N818
@@ -114,6 +123,7 @@ def _degraded_finding(source: Source, reason: str) -> Finding:
         score=None,
         message=f"{source.value} classifier unavailable: {reason}",
         structural=True,
+        severity=FindingSeverity.MEDIUM,
     )
 
 
@@ -152,6 +162,7 @@ def _incomplete_coverage_finding(
             f"report cannot be read as clean for them: {sample}"
         ),
         structural=True,
+        severity=FindingSeverity.HIGH,
     )
 
 
@@ -436,6 +447,19 @@ def _openai_finding(
         )
         reportable_score = None
         over_floor = False
+    # #ASSUME: data-integrity: a scored finding's severity is normally
+    # derived from its own score (design doc 2.1), but reportable_score can
+    # legitimately be None here (the non-finite-score guard above). A
+    # flagged bright-line/advisory signal with an unreadable score is still
+    # a real provider signal, not a low-confidence one, so it degrades to
+    # HIGH rather than silently losing its severity band.
+    # #VERIFY: test_classifiers covers a flagged non-finite-score OpenAI
+    # finding still carrying severity=HIGH.
+    severity = (
+        _severity_from_score(reportable_score)
+        if reportable_score is not None
+        else FindingSeverity.HIGH
+    )
     if flagged and category in _OPENAI_BRIGHTLINE:
         return Finding(
             stage=0,
@@ -445,6 +469,7 @@ def _openai_finding(
             verdict=Verdict.BLOCK,
             score=reportable_score,
             message=f"OpenAI bright-line category '{category}' flagged",
+            severity=severity,
         )
     if flagged or over_floor:
         return Finding(
@@ -454,6 +479,7 @@ def _openai_finding(
             node_id=node_id,
             verdict=Verdict.ADVISORY,
             score=reportable_score,
+            severity=severity,
             message=f"OpenAI graded signal for '{category}'",
         )
     return None
@@ -667,4 +693,5 @@ def _perspective_attribute_finding(
         verdict=Verdict.BLOCK if is_brightline else Verdict.ADVISORY,
         score=score,
         message=f"Perspective '{attribute}' score {score:.2f}",
+        severity=_severity_from_score(score),
     )

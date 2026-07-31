@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 from cyo_adventure.moderation import classifiers
 from cyo_adventure.moderation.classifiers import run_classifiers
-from cyo_adventure.moderation.report import Source, Verdict
+from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
 
 pytestmark = pytest.mark.asyncio
 
@@ -972,3 +972,110 @@ async def test_unconfigured_key_does_not_flag_coverage() -> None:
     assert not [
         f for f in findings if f.category == "classifier_coverage_incomplete"
     ], "no key configured is a deployment choice, not a screening shortfall"
+
+
+# ---------------------------------------------------------------------------
+# Task B1.3: Stage-0 severity mapping (design doc 2.1)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("score", "expected"),
+    [
+        (0.0, FindingSeverity.LOW),
+        (0.49, FindingSeverity.LOW),
+        (0.5, FindingSeverity.MEDIUM),
+        (0.79, FindingSeverity.MEDIUM),
+        (0.8, FindingSeverity.HIGH),
+        (1.0, FindingSeverity.HIGH),
+    ],
+    ids=[
+        "floor",
+        "just_below_medium",
+        "medium_boundary",
+        "just_below_high",
+        "high_boundary",
+        "ceiling",
+    ],
+)
+async def test_severity_from_score_bands(
+    score: float, expected: FindingSeverity
+) -> None:
+    assert classifiers._severity_from_score(score) is expected
+
+
+@pytest.mark.unit
+async def test_openai_brightline_finding_has_severity() -> None:
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "results": [
+                    {
+                        "flagged": True,
+                        "categories": {"sexual/minors": True},
+                        "category_scores": {"sexual/minors": 0.99},
+                    }
+                ]
+            },
+        )
+
+    findings = await run_classifiers(
+        nodes=[("n1", "some text")],
+        openai_key="k",
+        perspective_key=None,
+        client=_client(handler),
+    )
+    block = next(f for f in findings if f.verdict is Verdict.BLOCK)
+    assert block.severity is FindingSeverity.HIGH
+
+
+@pytest.mark.unit
+async def test_perspective_graded_finding_has_severity_from_score() -> None:
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "attributeScores": {
+                    "TOXICITY": {"summaryScore": {"value": 0.6}},
+                }
+            },
+        )
+
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key=None,
+        perspective_key="k",
+        client=_client(handler),
+    )
+    toxicity = next(f for f in findings if f.category == "toxicity")
+    assert toxicity.severity is FindingSeverity.MEDIUM
+
+
+@pytest.mark.unit
+async def test_degraded_classifier_finding_has_fixed_medium_severity() -> None:
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key="k",
+        perspective_key=None,
+        client=_client(lambda _r: httpx.Response(500)),
+    )
+    degraded = next(f for f in findings if f.category == "classifier_degraded")
+    assert degraded.severity is FindingSeverity.MEDIUM
+    assert degraded.score is None
+
+
+@pytest.mark.unit
+async def test_incomplete_coverage_finding_has_fixed_high_severity() -> None:
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key="k",
+        perspective_key=None,
+        client=_client(lambda _r: httpx.Response(500)),
+    )
+    coverage = next(
+        f for f in findings if f.category == "classifier_coverage_incomplete"
+    )
+    assert coverage.severity is FindingSeverity.HIGH
+    assert coverage.score is None

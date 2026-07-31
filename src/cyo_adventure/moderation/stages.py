@@ -12,7 +12,7 @@ import json
 import re
 from typing import TYPE_CHECKING, cast
 
-from cyo_adventure.moderation.report import Finding, Source, Verdict
+from cyo_adventure.moderation.report import Finding, FindingSeverity, Source, Verdict
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -246,6 +246,7 @@ async def run_safety_stage(
                 ),
                 structural=True,
                 concern="reviewer_unavailable",
+                severity=FindingSeverity.HIGH,
             )
         )
     return findings
