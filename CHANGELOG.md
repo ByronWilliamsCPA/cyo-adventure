@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.52.0] - 2026-07-31
+
+### Features
+
+- **personalization**: Toggle-aware Route A copy (ADR-023 D1, gate G3)
+  ([#506](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/506),
+  [`78049ac`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/78049ac53368027019ff1fb8d44677d40864ed3c))
+
+
 ## [0.51.2] - 2026-07-31
 
 ### Bug Fixes
@@ -2894,6 +2903,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.52.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.51.2...v0.52.0
 [0.51.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.51.1...v0.51.2
 [0.51.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.51.0...v0.51.1
 [0.51.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.50.1...v0.51.0
