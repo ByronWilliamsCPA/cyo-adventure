@@ -2963,12 +2963,12 @@ readers must tolerate absent new fields on old reports):</p>
 <tr>
 <td><code>concern</code></td>
 <td>short slug from a fixed taxonomy (e.g. <code>real_world_danger</code>, <code>too_mature</code>, <code>frightening_content</code>, <code>cruelty</code>, <code>reviewer_unavailable</code>)</td>
-<td>The dedup/merge key. Free-text <code>message</code> remains for detail.</td>
+<td>Part of the dedup/merge key (see 2.2 item 3 for the full key). Validated against <code>CONCERN_TAXONOMY</code> at construction, so an off-taxonomy value cannot form its own merge group; parse boundaries degrade to <code>other</code>. Free-text <code>message</code> remains for detail.</td>
 </tr>
 <tr>
 <td><code>node_ids</code></td>
-<td><code>list[str]</code> (replaces single <code>node_id</code> on merged findings; <code>node_id</code> kept for compat)</td>
-<td>One finding can now reference every node it applies to.</td>
+<td><code>list[str]</code> (populated on every merged finding, including a group of one; <code>node_id</code> kept for compat and names only the FIRST covered node)</td>
+<td>One finding can now reference every node it applies to. Readers must fan out across <code>node_ids</code> when present.</td>
 </tr>
 <tr>
 <td><code>structural</code></td>
@@ -2987,6 +2987,17 @@ high) rather than a score-derived one.</p>
 roughly half of all stored findings (6,430 PASS rows in live data) and fixes
 <code>summary.count</code> badge inflation. Audit needs are covered by the aggregate
 plus the existing <code>moderation_completed</code> event counts.</p>
+<p><code>nodes_reviewed</code> is a coverage measurement, not a restatement of the node
+count, and it is assigned past the last stage rather than beside the node
+list. Once PASS rows stop being persisted it is the only signal separating
+"reviewed everything and found nothing" from "never got that far": a run that
+short-circuits (entry rejection, a Stage-0 bright-line block, a Stage-1 block)
+keeps the 0 default, which reads correctly as no complete coverage and matches
+the empty <code>pass_counts</code> beside it. #CRITICAL: data-integrity: setting it beside
+the node list would persist full coverage for a story whose safety reviewer
+never ran, and the aggregate is what the dashboard and flywheel read. #VERIFY:
+tests/unit/test_moderation_pipeline.py::test_nodes_reviewed_zero_when_stage0_block_short_circuits
+and ::test_nodes_reviewed_counts_every_node_on_a_complete_pass.</p>
 <h3 id="22-stage-1-safety-redesign">2.2 Stage 1 (safety) redesign<a class="headerlink" href="#22-stage-1-safety-redesign" title="Permanent link">&para;</a></h3>
 <p>Per-node review remains the hard gate (a BLOCK must still name its node),
 with three changes:</p>
@@ -3005,14 +3016,37 @@ with three changes:</p>
    adversarial corpus (tests/llm_eval) and compare recall before enabling
    batching by default.</li>
 <li><strong>Merge stage (deterministic, post-review).</strong> After all stages run, a new
-   <code>moderation/synthesis.py</code> groups content findings by
-   <code>(category, concern)</code>, merges each group into one finding carrying
-   <code>node_ids</code>, the max severity, a representative message, and the count.
-   Live example: <code>sk_hollow_lighthouse</code>'s 12 identical above-band
+   <code>moderation/synthesis.py</code> groups content findings by every field the
+   merged finding takes from a single survivor: <code>(category, concern, source,
+   verdict, severity, message)</code>. Each group becomes one finding carrying
+   <code>node_ids</code>, the shared verdict/severity/message, the max score, and the
+   count. Live example: <code>sk_hollow_lighthouse</code>'s 12 identical above-band
    readability flags become one finding listing 12 nodes. The merge is
    plain code, not an LLM call; an optional whole-story LLM synthesis
    ("decision card" prose) can be layered later without changing storage.</li>
 </ol>
+<p><strong>Why the key is the full tuple and not <code>(category, concern)</code>.</strong> The
+   original spec named <code>(category, concern)</code>, which is a prefix of this key,
+   so everything the worked example intends to merge still merges. The
+   narrower key is only lossless when group members are interchangeable, and
+   that does not hold in the order these items ship: item 1 supplies
+   <code>concern</code>, so until it lands Stage 1 emits none and <code>(category, concern)</code>
+   degenerates to <code>(category,)</code>. Every distinct safety reason in a book would
+   then collapse into one row whose surviving message is whichever finding
+   happened to sort first, with the rest discarded and no per-finding raw
+   output to recover them from. Widening the key keeps the merge a display
+   compression rather than a lossy edit to a safety record.
+   #CRITICAL: security: the guardian reading the merged row is the final gate
+   under ADR-005; a merged row must never attribute a verdict, severity, or
+   message to a node that did not produce it. #VERIFY:
+   tests/unit/test_moderation_synthesis.py covers distinct messages, mixed
+   verdicts, and mixed severities all staying separate.</p>
+<p>Readers must fan out across <code>node_ids</code>, not group on <code>node_id</code>: <code>node_id</code>
+   names only the FIRST covered node and exists for pre-Stage-B readers.
+   #CRITICAL: security: grouping a merged finding by <code>node_id</code> renders one
+   affected passage and leaves the rest of the flagged prose looking clean.
+   #VERIFY: tests/unit/test_review_surface.py::
+   test_merged_finding_fans_out_across_every_affected_node.</p>
 <h3 id="23-structural-failure-collapse-the-flood-killer">2.3 Structural-failure collapse (the flood killer)<a class="headerlink" href="#23-structural-failure-collapse-the-flood-killer" title="Permanent link">&para;</a></h3>
 <p><code>_parse_verdict</code> failures no longer create per-node findings. This covers
 Stage 1's LLM fail-safe only; the Stage-0 malformed-payload fail-open (gap
@@ -3407,7 +3441,7 @@ makes the failure class visible, even if B's surface redesign takes longer.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 20:44:36 UTC">July 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 31, 2026 23:46:27 UTC">July 31, 2026</span>
   </span>
 
     
