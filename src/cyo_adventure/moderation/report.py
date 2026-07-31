@@ -41,6 +41,36 @@ class Verdict(StrEnum):
     PASS = "pass"  # noqa: S105  # nosec B105
 
 
+class FindingSeverity(StrEnum):
+    """Ranking key for surfaced findings (design doc 2.1).
+
+    Required on FLAG/ADVISORY findings produced by Stage B code paths;
+    absent (``None``) on findings from old persisted reports that predate
+    this field.
+    """
+
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+
+# Fixed concern taxonomy (design doc 2.1): the dedup/merge key. "other" is
+# the degrade target for an unrecognized model-emitted concern (2.2 item 1).
+CONCERN_TAXONOMY: frozenset[str] = frozenset(
+    {
+        "real_world_danger",
+        "too_mature",
+        "frightening_content",
+        "cruelty",
+        "sexual_content",
+        "self_harm",
+        "profanity",
+        "reviewer_unavailable",
+        "other",
+    }
+)
+
+
 @dataclass(frozen=True, slots=True)
 class Finding:
     """One moderation result.
@@ -65,6 +95,13 @@ class Finding:
         concern: Optional machine-readable reason code for a structural
             finding (for example ``"reviewer_unavailable"``); ``None`` for
             genuine content findings.
+        severity: Ranking key for the surfaced findings list (design doc
+            2.1). ``None`` on old persisted reports and on findings that
+            never carried a severity band.
+        node_ids: Every node this finding covers, populated by the merge
+            stage (design doc 2.2) when identical (category, concern)
+            findings collapse into one. ``None`` on an unmerged finding;
+            readers should fall back to ``node_id`` in that case.
     """
 
     stage: int
@@ -76,6 +113,8 @@ class Finding:
     score: float | None = None
     structural: bool = False
     concern: str | None = None
+    severity: FindingSeverity | None = None
+    node_ids: tuple[str, ...] | None = None
 
     def __post_init__(self) -> None:
         """Enforce the documented field ranges at construction.
@@ -103,6 +142,8 @@ class Finding:
             "message": self.message,
             "structural": self.structural,
             "concern": self.concern,
+            "severity": self.severity.value if self.severity else None,
+            "node_ids": list(self.node_ids) if self.node_ids is not None else None,
         }
 
 
