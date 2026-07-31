@@ -1162,16 +1162,39 @@ settings screen says so in as many words. TDD, commit.
 Implements the 2026-07-29 vocabulary decisions from
 `personalization-closed-vocabularies-proposal.md` (accepted lists recorded there):
 
-- [ ] Split `favorite` into `favorite_color` / `favorite_food` / `favorite_hobby` (Option B):
+- [x] Split `favorite` into `favorite_color` / `favorite_food` / `favorite_hobby` (Option B):
   new slot_type values in the DB CHECK constraint (Supabase migration), `PERSONALIZATION_FIELDS`
   (`theme_contract.py`), `_PersonalizationSlotType` (`api/schemas.py`), and any theme-contract
   slot declaration bound to `favorite` today; regenerate the frontend client (contract change).
-- [ ] Seed `CLOSED_VOCABULARIES` with the accepted lists: pet_species (16), kinship_label (21),
+- [x] Seed `CLOSED_VOCABULARIES` with the accepted lists: pet_species (16), kinship_label (21),
   dedication (same 21), home_type (12), and the three split favorite lists (12 each), citing
   the proposal doc per the dict's `#VERIFY` marker.
-- [ ] No case normalization anywhere (owner decision): values are stored and matched exactly
+- [x] No case normalization anywhere (owner decision): values are stored and matched exactly
   as listed. No "none" sentinel members. Drift-guard test per AL-068/UW-C20 rides along.
-- [ ] TDD throughout; one membership test per vocabulary; commit.
+- [x] TDD throughout; one membership test per vocabulary; commit.
+
+**DONE 2026-07-31 (PR #507).** No theme-contract slot was bound to `favorite`: no contract on
+disk declares a `kind="personalizable"` slot yet, so the split cost no catalog edit. Two
+deviations found in review and fixed on the branch:
+
+1. **The vocabulary has two stores, and the first draft swept only one.**
+   `child_profile_personalization.slot_type` carries a DB CHECK, which made a `'favorite'` row
+   unwritable, so the migration's `DELETE` is purely defensive. But
+   `personalization_disclosure_consent.covered_slot_types` is an *unconstrained* JSONB array holding the
+   same names, gated only in Python, where `'favorite'` genuinely was writable. The migration
+   now sweeps it too, **removing** the element rather than expanding it into the three new keys:
+   rewriting one grant into three would widen a ring-2 sharing scope to facts the guardian was
+   never shown. Pinned by a new drift guard binding that column's admissible vocabulary to the
+   same ceiling as `ck_cpp_ring2_ceiling`.
+2. **Migration version collision.** The file first shipped as `20260730000000_`, which `#494`
+   had already taken for `add_cover_object_salt.sql`; Supabase keys `schema_migrations` on that
+   prefix, so both integration legs failed on `duplicate key value violates unique constraint
+   "schema_migrations_pkey"`. Renamed to `20260730010000_`.
+
+Also recorded: the longest vocabulary member is 3 words (`mac and cheese`), which becomes a
+floor on `max_words` for the first catalog slot bound to a personalization field. Latent today
+(no personalizable slot exists), pinned by a ceiling test so a longer member cannot be added
+silently.
 
 ### Task D7: vocabulary-expansion request feature (owner-requested 2026-07-29)
 

@@ -54,23 +54,37 @@ Pure module: stdlib + `cyo_adventure.storybook.models` (`AgeBand`) +
 randomness, or I/O of any kind, mirroring `validator/slots.py`'s own
 pure-module contract.
 
-**On `CLOSED_VOCABULARIES`'s empty vocabularies (ADR-023 rows 4a/5/6/7/8).**
-ADR-023's taxonomy table describes these five enum slots conceptually and
-gives a handful of illustrative examples, but never enumerates a shippable,
+**On `CLOSED_VOCABULARIES` (ADR-023 rows 4a/5/6/7/8, seeded by Task D6).**
+ADR-023's taxonomy table describes these enum slots conceptually and gives a
+handful of illustrative examples, but never itself enumerated a shippable,
 exhaustive closed vocabulary for any of them: row 7 (home type) explicitly
-trails off with "house, apartment, farm, ..."; row 6 (favorite) names
-categories (color, food, hobby), not values; row 4a (pet species) names no
-example at all; row 5 (kinship label) gives four quoted examples ("Grandma",
-"Abuela", "Auntie", "Grandpa") without stating they are the complete list;
+trailed off with "house, apartment, farm, ..."; row 6 (favorite) named
+categories (color, food, hobby), not values; row 4a (pet species) named no
+example at all; row 5 (kinship label) gave four quoted examples ("Grandma",
+"Abuela", "Auntie", "Grandpa") without stating they were the complete list;
 row 8 (dedication) stores a kinship label in the same shape as row 5, added
 by ADR-023 Stage C Task C0e (it was missing from this dict until then, which
-made the dedication a free-text channel onto a kid-facing screen; see
-`CLOSED_VOCABULARIES`'s inline comment). Seeding a vocabulary here would mean
-inventing values no design document actually ratified. Each entry is
-therefore left empty (fail-closed: every enum candidate for that slot is
-rejected as "not a member") until
-`docs/planning/story-personalization-implementation-plan.md` or a future
-ADR-023 amendment supplies the real, shippable lists.
+made the dedication a free-text channel onto a kid-facing screen; see AL-068
+in `docs/planning/authoring-lessons-log.md`). Every entry shipped empty
+(fail-closed: every enum candidate was rejected as "not a member") until the
+owner reviewed and accepted concrete lists on 2026-07-29 in
+`docs/planning/personalization-closed-vocabularies-proposal.md`, which this
+module's `CLOSED_VOCABULARIES` now implements (ADR-023 execution-plan
+Task D6). That review also split the flat `favorite` slot into
+`favorite_color` / `favorite_food` / `favorite_hobby` (Option B: a single
+flat vocabulary could not encode which sub-category a candidate belonged
+to), which is why `PERSONALIZATION_FIELDS` (`storybook.theme_contract`) and
+the `child_profile_personalization.slot_type` DB CHECK carry three fields
+where the taxonomy table names one.
+
+Two owner decisions the seeded lists deliberately do NOT implement:
+**no case normalization anywhere** (a value is stored and matched exactly as
+listed; `pet_species`/`favorite_*`/`home_type` are lowercase common nouns,
+`kinship_label`/`dedication` are Title Case vocative address terms, and
+nothing in this module folds one into the other), and **no "none"/sentinel
+member** in any list (an unset slot is already the existing "absence"
+contract via `personalization_value_for_payload`'s omission behavior; adding
+a sentinel would invent product policy ADR-023 never stated).
 """
 
 from __future__ import annotations
@@ -95,27 +109,170 @@ if TYPE_CHECKING:
 # value is a value_profile_id rather than free text or a closed enum.
 SIBLING_SLOT_TYPE = "sibling_name"
 
-# #EDGE: data-integrity: every entry is empty (see the module docstring's
-# "On CLOSED_VOCABULARIES's empty vocabularies" note); this fails closed, so
-# every enum candidate for these five slots is rejected until product/ADR-023
-# supplies the real, shippable lists.
-# #VERIFY: docs/planning/story-personalization-implementation-plan.md is
-# where the concrete lists belong; do not hand-add values here without a
-# design-plan update or an ADR-023 amendment recording the vocabulary.
+# 21 vocative address terms, Title Case (used mid-sentence, e.g.
+# "love {KINSHIP}"), never a real adult's personal name (ADR-023 row 5).
+#
+# Shared verbatim by two `CLOSED_VOCABULARIES` keys, `kinship_label` and
+# `dedication`. They stay SEPARATE KEYS because ADR-023 row 8 gives them
+# different meanings (the dedication names the book's giver; the kinship
+# label names the in-story trusted adult, and a guardian may legitimately
+# pick different terms for each), but there has never been a reason for the
+# two to draw from different value sets. Bound to one constant rather than
+# written out twice so a vocabulary edit is one edit, not a two-place edit
+# with nothing structural to catch a half-done one.
+_KINSHIP_VOCABULARY: frozenset[str] = frozenset(
+    {
+        "Mom",
+        "Dad",
+        "Grandma",
+        "Grandpa",
+        "Nana",
+        "Papa",
+        "Gran",
+        "Pop",
+        "Abuela",
+        "Abuelo",
+        "Oma",
+        "Opa",
+        "Auntie",
+        "Aunt",
+        "Uncle",
+        "Mama",
+        "Mommy",
+        "Daddy",
+        "Nonna",
+        "Nonno",
+        "Grown-up",
+    }
+)
+
+# #EDGE: data-integrity: every list below is cited to a specific, owner-
+# reviewed source rather than hand-invented; see the module docstring's "On
+# CLOSED_VOCABULARIES" note for the acceptance history.
+# #VERIFY: docs/planning/personalization-closed-vocabularies-proposal.md is
+# the accepted source of truth for every value below (owner review closed
+# 2026-07-29); do not hand-add or hand-remove a value here without an update
+# to that document or a future ADR-023 amendment recording the change.
+#
+# #EDGE: data-integrity: the longest member below is 3 words
+# ("mac and cheese"); every other multi-word value is exactly 2. A catalog
+# slot bound to one of these personalization fields must therefore declare
+# `max_words >= 3`, because `validate_personalization_value` applies only the
+# structural and denylist checks and never the theme contract's own
+# `max_words`/`pattern`/`legacy_lexicon` constraints. A personalizable slot
+# authored onto a `max_words: 2` slot would store and render a value the
+# contract would have rejected. Latent today: no contract on disk declares a
+# `kind="personalizable"` slot yet, so nothing can bind these values.
+# #VERIFY: tests/unit/test_closed_vocabularies.py pins the 3-word ceiling, so
+# adding a longer member fails there rather than in rendered prose. When the
+# first personalizable slot IS authored, `_check_personalizable_slots`
+# (storybook/theme_contract.py) should grow a rule rejecting a slot whose
+# `max_words` is below the longest member of its field's vocabulary.
 CLOSED_VOCABULARIES: dict[str, frozenset[str]] = {
-    "pet_species": frozenset(),
-    "kinship_label": frozenset(),
-    "favorite": frozenset(),
-    "home_type": frozenset(),
-    # ADR-023 row 8 / design plan section 9: the dedication stores a KINSHIP
-    # LABEL, the same closed shape as `kinship_label` above, because the "from"
-    # kinship can legitimately differ from the in-story trusted-adult kinship.
-    # It was missing from this dict until ADR-023 Stage C Task C0e, which meant
-    # `_shape_violations` permitted `value_text` on it and the membership check
-    # below never fired, making the dedication a free-text channel onto a
-    # kid-facing screen. Empty, like its four neighbours, until product supplies
-    # the real list.
-    "dedication": frozenset(),
+    # 16 common kid-household and small-farm pets, lowercase common nouns
+    # (interpolated mid-sentence, e.g. "a pet {PET_SPECIES}").
+    "pet_species": frozenset(
+        {
+            "dog",
+            "cat",
+            "rabbit",
+            "hamster",
+            "fish",
+            "bird",
+            "guinea pig",
+            "turtle",
+            "lizard",
+            "snake",
+            "frog",
+            "hermit crab",
+            "chicken",
+            "ferret",
+            "goat",
+            "horse",
+        }
+    ),
+    # See `_KINSHIP_VOCABULARY` above for the list and for why `dedication`
+    # below shares it.
+    "kinship_label": _KINSHIP_VOCABULARY,
+    # 12 lowercase common nouns (ADR-023 row 6, favorite color).
+    "favorite_color": frozenset(
+        {
+            "red",
+            "blue",
+            "green",
+            "purple",
+            "yellow",
+            "orange",
+            "pink",
+            "black",
+            "white",
+            "teal",
+            "silver",
+            "gold",
+        }
+    ),
+    # 12 lowercase common nouns (ADR-023 row 6, favorite food).
+    "favorite_food": frozenset(
+        {
+            "pizza",
+            "tacos",
+            "ice cream",
+            "pancakes",
+            "spaghetti",
+            "burgers",
+            "waffles",
+            "sushi",
+            "mac and cheese",
+            "strawberries",
+            "cookies",
+            "soup",
+        }
+    ),
+    # 12 lowercase common nouns/activities (ADR-023 row 6, favorite hobby).
+    "favorite_hobby": frozenset(
+        {
+            "soccer",
+            "dancing",
+            "drawing",
+            "swimming",
+            "dinosaurs",
+            "space",
+            "robots",
+            "reading",
+            "gymnastics",
+            "building blocks",
+            "biking",
+            "singing",
+        }
+    ),
+    # 12 lowercase common nouns (ADR-023 row 7, which itself trails off with
+    # "house, apartment, farm, ...").
+    "home_type": frozenset(
+        {
+            "house",
+            "apartment",
+            "farm",
+            "cabin",
+            "houseboat",
+            "trailer",
+            "cottage",
+            "condo",
+            "duplex",
+            "ranch",
+            "bungalow",
+            "tent",
+        }
+    ),
+    # ADR-023 row 8: the dedication stores a KINSHIP LABEL, the same closed
+    # shape and the SAME 21-value list as `kinship_label` above, because the
+    # "from" kinship on a dedication can legitimately differ from the
+    # in-story trusted-adult kinship. It was missing from this dict entirely
+    # until ADR-023 Stage C Task C0e (AL-068), which meant `_shape_violations`
+    # permitted `value_text` on it and the membership check below never
+    # fired, making the dedication a free-text channel onto a kid-facing
+    # screen; see `tests/unit/test_personalization_vocab_drift.py` for the
+    # drift guard that now pins this key against `PERSONALIZATION_FIELDS`.
+    "dedication": _KINSHIP_VOCABULARY,
 }
 
 
@@ -273,12 +430,14 @@ def validate_personalization_value(  # noqa: PLR0913
             # is that it never contains the candidate story text, and this
             # message flows to logger.warning("project_error", ...) in
             # app.py and into the 422 body (_client_safe_error strips
-            # `value` and `context`, not `message`). Every vocabulary here
-            # ships empty by design, so EVERY value_enum submission for these
-            # five slots takes this branch; kinship_label is designed to hold
-            # values like "Grandma Rosita". Application logs have no erasure
-            # path, so echoing the value here writes a child's kinship term
-            # for a real relative into log storage on the default path.
+            # `value` and `context`, not `message`). Every vocabulary here is
+            # a closed, finite list (Task D6 seeded the real values), so a
+            # candidate outside the list still routinely takes this branch;
+            # kinship_label is designed to hold values like "Grandma Rosita",
+            # which is NOT itself a member (only the bare "Grandma" is).
+            # Application logs have no erasure path, so echoing the value
+            # here writes a child's kinship term for a real relative into log
+            # storage on the default path.
             # #VERIFY: tests/unit/test_personalization_values.py asserts the
             # message does not contain the candidate.
             enum_message = (

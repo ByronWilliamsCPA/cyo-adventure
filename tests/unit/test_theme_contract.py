@@ -198,7 +198,9 @@ def test_personalization_fields_vocabulary_is_closed():
                 "pet_species",
                 "pet_name",
                 "kinship_label",
-                "favorite",
+                "favorite_color",
+                "favorite_food",
+                "favorite_hobby",
                 "home_type",
                 "dedication",
             }

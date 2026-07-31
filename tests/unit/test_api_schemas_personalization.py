@@ -92,9 +92,11 @@ def test_empty_value_text_is_rejected_by_the_structural_gate() -> None:
 
 def test_covered_slot_types_are_deduplicated_in_first_seen_order() -> None:
     """Repeats collapse and the guardian's chosen order survives."""
-    body = _consent(["dedication", "pet_name", "dedication", "favorite", "pet_name"])
+    body = _consent(
+        ["dedication", "pet_name", "dedication", "favorite_color", "pet_name"]
+    )
 
-    assert body.covered_slot_types == ["dedication", "pet_name", "favorite"]
+    assert body.covered_slot_types == ["dedication", "pet_name", "favorite_color"]
 
 
 def test_covered_slot_types_reject_a_flood_of_repeats() -> None:

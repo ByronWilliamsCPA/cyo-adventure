@@ -2204,7 +2204,9 @@ _PersonalizationSlotType = Literal[
     "pet_species",
     "pet_name",
     "kinship_label",
-    "favorite",
+    "favorite_color",
+    "favorite_food",
+    "favorite_hobby",
     "home_type",
     "dedication",
 ]

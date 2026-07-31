@@ -210,11 +210,13 @@ _USER_STATUS_VALUES = (
 # unchanged; kept in sync by tests/unit/test_personalization_vocab_drift.py.
 _PERSONALIZATION_SLOT_TYPE_VALUES = (
     "'protagonist_first_name', 'pronoun_set', 'sibling_name', 'pet_species', "
-    "'pet_name', 'kinship_label', 'favorite', 'home_type', 'dedication'"
+    "'pet_name', 'kinship_label', 'favorite_color', 'favorite_food', "
+    "'favorite_hobby', 'home_type', 'dedication'"
 )
 _PERSONALIZATION_RING2_SLOT_TYPE_VALUES = (
     "'protagonist_first_name', 'sibling_name', 'pet_species', 'pet_name', "
-    "'kinship_label', 'favorite', 'home_type'"
+    "'kinship_label', 'favorite_color', 'favorite_food', 'favorite_hobby', "
+    "'home_type'"
 )
 
 
