@@ -1477,6 +1477,17 @@ export type FamilyView = {
 };
 
 /**
+ * FindingSeverity
+ *
+ * Ranking key for surfaced findings (design doc 2.1).
+ *
+ * Required on FLAG/ADVISORY findings produced by Stage B code paths;
+ * absent (``None``) on findings from old persisted reports that predate
+ * this field.
+ */
+export type FindingSeverity = 'high' | 'medium' | 'low';
+
+/**
  * FindingView
  *
  * One moderation finding, shaped for the guardian review UI.
@@ -1504,6 +1515,19 @@ export type FindingView = {
      * Message
      */
     message: string;
+    severity?: FindingSeverity | null;
+    /**
+     * Node Ids
+     */
+    node_ids?: Array<string> | null;
+    /**
+     * Structural
+     */
+    structural?: boolean;
+    /**
+     * Concern
+     */
+    concern?: string | null;
 };
 
 /**

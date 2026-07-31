@@ -21,7 +21,7 @@ from cyo_adventure.api.schemas import (
     ReviewSurfaceView,
 )
 from cyo_adventure.core.exceptions import ValidationError
-from cyo_adventure.moderation.report import Source, Verdict
+from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
 from cyo_adventure.moderation.thresholds import admin_surfaces
 from cyo_adventure.storybook.models import ContentFlags
 
@@ -159,6 +159,7 @@ def _finding_view(finding: dict[str, object]) -> FindingView:
     """Narrow one persisted finding dict into a FindingView."""
     node_id = finding.get("node_id")
     score = finding.get("score")
+    concern = finding.get("concern")
     return FindingView(
         stage=_as_int(finding.get("stage")),
         source=_as_source(finding.get("source")),
@@ -169,7 +170,33 @@ def _finding_view(finding: dict[str, object]) -> FindingView:
         if isinstance(score, (int, float)) and not isinstance(score, bool)
         else None,
         message=_as_str(finding.get("message")),
+        severity=_as_severity(finding.get("severity")),
+        node_ids=_as_node_ids(finding.get("node_ids")),
+        structural=_as_bool(finding.get("structural")),
+        concern=concern if isinstance(concern, str) else None,
     )
+
+
+def _as_severity(value: object) -> FindingSeverity | None:
+    """Narrow a JSON value to a FindingSeverity, or None on any mismatch.
+
+    Unlike ``_as_source``/``_as_verdict``, severity is a ranking hint, not a
+    gate: an old report legitimately lacks it, and a corrupt value should
+    degrade quietly rather than block the whole review surface.
+    """
+    if isinstance(value, str):
+        try:
+            return FindingSeverity(value)
+        except ValueError:
+            return None
+    return None
+
+
+def _as_node_ids(value: object) -> list[str] | None:
+    """Narrow a JSON value to a list[str], or None on any mismatch."""
+    if isinstance(value, list) and all(isinstance(v, str) for v in value):
+        return cast(list[str], value)  # noqa: TC006 (see _findings above)
+    return None
 
 
 def _summary(report: dict[str, object] | None) -> ReviewSummary | None:

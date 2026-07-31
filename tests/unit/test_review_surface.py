@@ -11,7 +11,7 @@ from cyo_adventure.api.review_surface import (
     build_review_surface,
 )
 from cyo_adventure.core.exceptions import ValidationError
-from cyo_adventure.moderation.report import Source, Verdict
+from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
 from cyo_adventure.moderation.thresholds import ThresholdPolicy
 
 _DEFAULT_POLICY = ThresholdPolicy(rows={})
@@ -172,6 +172,135 @@ def test_finding_on_absent_node_gets_empty_prose() -> None:
     passage = view.flagged_passages[0]
     assert passage.node_id == "n_missing"
     assert passage.prose == ""
+
+
+@pytest.mark.unit
+def test_old_shape_finding_projects_with_default_new_fields() -> None:
+    """A pre-Stage-B finding dict, with none of the four new keys, still
+    projects; the additive fields fall back to their documented defaults
+    rather than raising (design doc 2.1: old persisted reports must keep
+    reading through unmodified reader code)."""
+    report: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": "n_start",
+                "verdict": "flag",
+                "score": None,
+                "message": "mild peril",
+            }
+        ],
+        "summary": None,
+    }
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=report,
+    )
+    finding = view.flagged_passages[0].findings[0]
+    assert finding.severity is None
+    assert finding.node_ids is None
+    assert finding.structural is False
+    assert finding.concern is None
+
+
+@pytest.mark.unit
+def test_new_shape_finding_round_trips_additive_fields() -> None:
+    """A merged, Stage-B-shaped finding carries severity, node_ids,
+    structural, and concern through the projection unchanged."""
+    report: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": "n_start",
+                "verdict": "flag",
+                "score": None,
+                "message": "mild peril (3 findings merged)",
+                "severity": "high",
+                "node_ids": ["n_start", "n_end"],
+                "structural": False,
+                "concern": "frightening_content",
+            }
+        ],
+        "summary": None,
+    }
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=report,
+    )
+    finding = view.flagged_passages[0].findings[0]
+    assert finding.severity is FindingSeverity.HIGH
+    assert finding.node_ids == ["n_start", "n_end"]
+    assert finding.structural is False
+    assert finding.concern == "frightening_content"
+
+
+@pytest.mark.unit
+def test_corrupt_severity_string_degrades_to_none() -> None:
+    """Unlike source/verdict, an unrecognized severity string is a ranking
+    hint, not a gate; it degrades to None rather than raising, since old
+    reports legitimately lack it and a bad value should not block review."""
+    report: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": "n_start",
+                "verdict": "flag",
+                "score": None,
+                "message": "x",
+                "severity": "not_a_real_severity",
+            }
+        ],
+        "summary": None,
+    }
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=report,
+    )
+    assert view.flagged_passages[0].findings[0].severity is None
+
+
+@pytest.mark.unit
+def test_non_list_node_ids_degrades_to_none() -> None:
+    """A corrupt-at-rest node_ids value (not a list) degrades to None rather
+    than raising, matching the severity coercion's non-gating posture."""
+    report: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": "n_start",
+                "verdict": "flag",
+                "score": None,
+                "message": "x",
+                "node_ids": "not-a-list",
+            }
+        ],
+        "summary": None,
+    }
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=report,
+    )
+    assert view.flagged_passages[0].findings[0].node_ids is None
 
 
 @pytest.mark.unit
