@@ -11,6 +11,16 @@ and every manifest label must reference a real node in its book. These are
 pure parse/shape checks; the corpus's live behavior against a real reviewer
 is exercised by scripts/seed_moderation_qa.py in staging and compared by
 scripts/moderation_qa_scorecard.py, neither of which this module runs.
+
+One check here is not a shape check: the corpus is also run through the
+deterministic validation gate. The corpus originally shipped without ever
+being gated, and five of six fixtures turned out to be blocked (a 10-13 book
+declaring intense flags its own band caps at moderate, two mis-declared
+topologies, and four books under their band's ending/decision floors). That
+is invisible at the manifest level but decides whether an auto-repair can be
+adopted, because moderation/pipeline.py only adopts a repaired blob that
+itself clears run_gate. So gate status is pinned, with an explicit allowlist
+for the one book whose off-ceiling declaration is the point of the fixture.
 """
 
 from __future__ import annotations
@@ -22,6 +32,8 @@ from typing import Any
 import pytest
 
 from cyo_adventure.storybook.models import Storybook as StorybookDoc
+from cyo_adventure.validator.gate import run_gate
+from cyo_adventure.validator.report import Severity
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _MANIFEST_PATH = (
@@ -29,6 +41,14 @@ _MANIFEST_PATH = (
 )
 _KNOWN_VERDICTS = frozenset({"pass", "advisory", "flag", "block"})
 _KNOWN_CATEGORIES = frozenset({"clean_control", "band_borderline", "bright_line_block"})
+
+# The only corpus book allowed to fail the deterministic gate, and the only
+# rule it is allowed to fail on. Its whole purpose is to declare content above
+# its band's ceiling, so PL-16 firing is the fixture working, not a defect.
+# Adding a book here costs that book its repair-adoption coverage, so it is a
+# deliberate, documented trade rather than a way to quiet a red test.
+_GATE_BLOCKED_BY_DESIGN = frozenset({"mqa_borderline_storm_watch_5_8"})
+_ALLOWED_BLOCKING_RULES = frozenset({"PL-16"})
 
 
 def _manifest() -> dict[str, Any]:
@@ -94,6 +114,37 @@ def test_every_book_parses_as_a_valid_storybook() -> None:
             f"manifest id {entry['id']!r} does not match blob id {story.id!r}"
         )
         assert story.id.startswith("mqa_")
+
+
+@pytest.mark.unit
+def test_gate_blocked_books_are_exactly_the_declared_exceptions() -> None:
+    """Only the allowlisted book may fail run_gate, and only on PL-16.
+
+    A gate-blocked fixture can be moderated but can never have a repair
+    adopted, because moderation/pipeline.py re-runs run_gate over the repaired
+    blob before swapping it in. Silently letting a fixture drift off-gate
+    therefore removes repair coverage without removing any manifest label, so
+    the failure mode is a corpus that quietly tests less than it claims.
+    """
+    blocked: dict[str, list[str]] = {}
+    for entry in _books():
+        result = run_gate(_load_blob(entry))
+        if not result.blocked:
+            continue
+        blocked[entry["id"]] = sorted(
+            {
+                finding.rule_id
+                for finding in result.report.findings
+                if finding.severity is Severity.ERROR
+            }
+        )
+    assert set(blocked) == set(_GATE_BLOCKED_BY_DESIGN), (
+        f"gate-blocked books changed: {blocked}"
+    )
+    for book_id, rule_ids in blocked.items():
+        assert set(rule_ids) <= _ALLOWED_BLOCKING_RULES, (
+            f"{book_id} is blocked by more than its declared exception: {rule_ids}"
+        )
 
 
 @pytest.mark.unit

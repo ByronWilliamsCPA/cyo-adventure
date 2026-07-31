@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router'
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
 
 import { BookCard } from './BookCard'
@@ -233,6 +233,47 @@ describe('BookCard', () => {
       expect(
         screen.queryByRole('button', { name: /ask for the next book/i })
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('ADR-023 Task D8: personalization_eligible route-state threading', () => {
+    /** Renders the probe's route-state as text after following the cover link. */
+    function LocationStateProbe() {
+      const location = useLocation()
+      return <div data-testid="location-state">{JSON.stringify(location.state)}</div>
+    }
+
+    function renderCardThenNavigate(item: LibraryItemView) {
+      render(
+        <MemoryRouter initialEntries={['/']}>
+          <Routes>
+            <Route path="/" element={<BookCard item={item} profileId="p1" onRate={() => {}} />} />
+            <Route path="/read/:profileId/:storybookId/:version" element={<LocationStateProbe />} />
+          </Routes>
+        </MemoryRouter>
+      )
+      fireEvent.click(screen.getByRole('link'))
+    }
+
+    it('carries personalizationEligible: false through router state', () => {
+      renderCardThenNavigate({ ...BASE_ITEM, personalization_eligible: false })
+      expect(screen.getByTestId('location-state').textContent).toBe(
+        JSON.stringify({ personalizationEligible: false })
+      )
+    })
+
+    it('carries personalizationEligible: true through router state', () => {
+      renderCardThenNavigate({ ...BASE_ITEM, personalization_eligible: true })
+      expect(screen.getByTestId('location-state').textContent).toBe(
+        JSON.stringify({ personalizationEligible: true })
+      )
+    })
+
+    it('carries no state at all when personalization_eligible is absent (offline-cached item)', () => {
+      // BASE_ITEM deliberately omits the optional personalization_eligible
+      // key, matching an item cached offline before this field existed.
+      renderCardThenNavigate(BASE_ITEM)
+      expect(screen.getByTestId('location-state').textContent).toBe('null')
     })
   })
 

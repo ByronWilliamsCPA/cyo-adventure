@@ -641,6 +641,166 @@ async def test_approve_story_request_without_profile_skips_profile_lookup() -> N
 
 
 @pytest.mark.asyncio
+async def test_approve_rejects_confirmation_band_above_profile_band() -> None:
+    """H1 (security-hardening-plan-2026-07.md): a confirmed band above the
+    requesting profile's own band is rejected at approval time.
+
+    Neither the assignment gate (assignments.py::assign_storybook) nor the
+    read-gate defense in depth (library.py::get_storybook_version/
+    list_library) can see a request that has not yet produced a published
+    story, so this is the only point in the pipeline that can catch a
+    guardian confirming a band the child's own profile does not support."""
+    family_id = uuid.uuid4()
+    profile = _profile("8-11")
+    profile.id = uuid.uuid4()
+    principal = _guardian(family_id)
+    request = StoryRequest(
+        family_id=family_id,
+        profile_id=profile.id,
+        request_text="a story about a brave fox",
+        status="pending",
+        age_band="8-11",
+    )
+    session = _FakeSession(get_result=profile, child_names=[])
+    confirmation = ApprovalConfirmation(
+        age_band=AgeBand.BAND_16_PLUS,
+        length=Length.MEDIUM,
+        narrative_style=NarrativeStyle.PROSE,
+    )
+
+    with pytest.raises(ValidationError, match="age band"):
+        await service.approve_story_request(
+            session,
+            principal,
+            request,
+            confirmation=confirmation,
+        )
+    assert not session.added
+    assert request.status == "pending"
+
+
+@pytest.mark.asyncio
+async def test_approve_allows_confirmation_band_at_or_below_profile_band() -> None:
+    """Positive control: a confirmed band at or below the profile's band still
+    approves (the H1 ceiling check must not block a legitimate confirmation)."""
+    family_id = uuid.uuid4()
+    profile = _profile("13-16")
+    profile.id = uuid.uuid4()
+    principal = _guardian(family_id)
+    request = StoryRequest(
+        family_id=family_id,
+        profile_id=profile.id,
+        request_text="a story about a brave fox",
+        status="pending",
+        age_band="8-11",
+    )
+    session = _FakeSession(get_result=profile, child_names=[])
+    confirmation = ApprovalConfirmation(
+        age_band=AgeBand.BAND_8_11,
+        length=Length.MEDIUM,
+        narrative_style=NarrativeStyle.PROSE,
+    )
+
+    concept_id = await service.approve_story_request(
+        session,
+        principal,
+        request,
+        confirmation=confirmation,
+    )
+
+    assert request.status == "approved"
+    assert concept_id == str(request.concept_id)
+
+
+@pytest.mark.asyncio
+async def test_authored_create_rejects_confirmation_band_above_profile_band() -> None:
+    """H1: the same ceiling applies to the authored-create path.
+
+    An authored request skips the pending queue and is approved in the same
+    call, so this is the only chance to catch the over-band confirmation
+    before it is stamped onto the request and used to build the brief."""
+    family_id = uuid.uuid4()
+    profile = _profile("8-11")
+    profile.id = uuid.uuid4()
+    principal = _guardian(family_id)
+    session = _FakeSession(get_result=None, child_names=[])
+    confirmation = ApprovalConfirmation(
+        age_band=AgeBand.BAND_16_PLUS,
+        length=Length.MEDIUM,
+        narrative_style=NarrativeStyle.PROSE,
+    )
+
+    with pytest.raises(ValidationError, match="age band"):
+        await service.create_authored_request(
+            session,
+            principal,
+            family_id=family_id,
+            profile=profile,
+            request_text="a story about a brave fox",
+            confirmation=confirmation,
+            screening=_FakeScreening(blocked=False),
+        )
+    assert not session.added
+
+
+@pytest.mark.asyncio
+async def test_authored_create_allows_confirmation_band_at_or_below_profile_band() -> (
+    None
+):
+    """Positive control mirroring the approve-path one above."""
+    family_id = uuid.uuid4()
+    profile = _profile("13-16")
+    profile.id = uuid.uuid4()
+    principal = _guardian(family_id)
+    session = _FakeSession(get_result=None, child_names=[])
+    confirmation = ApprovalConfirmation(
+        age_band=AgeBand.BAND_8_11,
+        length=Length.MEDIUM,
+        narrative_style=NarrativeStyle.PROSE,
+    )
+
+    request, concept_id = await service.create_authored_request(
+        session,
+        principal,
+        family_id=family_id,
+        profile=profile,
+        request_text="a story about a brave fox",
+        confirmation=confirmation,
+        screening=_FakeScreening(blocked=False),
+    )
+
+    assert request.status == "approved"
+    assert concept_id == str(request.concept_id)
+
+
+@pytest.mark.asyncio
+async def test_authored_create_without_profile_skips_band_check() -> None:
+    """A profile-less authored request (no target child, e.g. an admin
+    catalog request) has no band to compare against and is unaffected by H1."""
+    family_id = uuid.uuid4()
+    principal = _guardian(family_id)
+    session = _FakeSession(get_result=None, child_names=[])
+    confirmation = ApprovalConfirmation(
+        age_band=AgeBand.BAND_16_PLUS,
+        length=Length.MEDIUM,
+        narrative_style=NarrativeStyle.PROSE,
+    )
+
+    request, concept_id = await service.create_authored_request(
+        session,
+        principal,
+        family_id=family_id,
+        profile=None,
+        request_text="a story about a brave fox",
+        confirmation=confirmation,
+        screening=_FakeScreening(blocked=False),
+    )
+
+    assert request.status == "approved"
+    assert concept_id == str(request.concept_id)
+
+
+@pytest.mark.asyncio
 async def test_create_series_derives_carries_state_episodic() -> None:
     """A '5-8' (episodic) band series does not carry state (ADR-011)."""
     family_id = uuid.uuid4()

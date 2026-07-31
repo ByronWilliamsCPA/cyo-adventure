@@ -4,9 +4,31 @@ Implements moderation-review-redesign-2026-07-28.md section 5: a set of
 labeled test storybooks (``docs/planning/safety/moderation-qa-corpus.json`` +
 ``tests/fixtures/moderation_qa/books/*.json``) seeded into staging as real
 ``storybook``/``storybook_version`` rows, so the real worker code path
-(classifiers, reviewer, repair, routing) processes a known-bad book end to
-end. Inappropriate content never needs to exist in production: this script
-hard-refuses to run outside staging.
+(classifiers, reviewer, repair attempt, routing) processes a known-bad book
+end to end. Inappropriate content never needs to exist in production: this
+script hard-refuses to run outside staging.
+
+What this corpus does and does not exercise
+-------------------------------------------
+
+Exercised for every fixture: stage 0-N classifiers, the review provider, the
+leaf-diversity guard, verdict aggregation, and submit/auto_reject routing.
+
+Exercised for five of the six fixtures: the soft-gate auto-repair path
+*including adoption*. ``moderation/pipeline.py`` only adopts a repaired blob
+that itself passes ``validator/gate.py::run_gate``, so a fixture that cannot
+clear the gate can have a repair attempted but never adopted. Those five
+fixtures are gate-clean (PL-16/PL-17/PL-18 all pass; only advisory L1-7 node
+budget and RL-13 reading-level warnings remain, neither of which blocks).
+
+NOT exercised, by design, for ``mqa_borderline_storm_watch_5_8``: repair
+adoption. That fixture declares intense scariness and peril at the 5-8 band,
+whose ceiling is mild, so ``run_gate`` raises PL-16 twice. Being off-ceiling
+IS the test, so this is intended behaviour, not a defect to fix, and the
+consequence is that a repair for this one book can be generated but never
+adopted. If a future change needs repair-adoption coverage on a
+ceiling-violating book, that needs a new fixture (or a pipeline change), not
+a softening of this one.
 
 Run against staging::
 

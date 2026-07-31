@@ -40,6 +40,7 @@ from cyo_adventure.db.models import (
     Completion,
     ReadingState,
     Storybook,
+    StorybookAssignment,
     StorybookVersion,
 )
 from cyo_adventure.storybook.sentinels import wrap
@@ -55,11 +56,31 @@ _FIXED_TS = datetime(2026, 1, 1, tzinfo=UTC)
 # ---------------------------------------------------------------------------
 
 
+_ASSIGNED = "assigned"
+
+
+def _is_assignment_query(stmt: object) -> bool:
+    """Return whether a SELECT reads ``StorybookAssignment`` (the M1 read gate).
+
+    ``_require_assignment`` adds a second ``scalar()`` call ahead of
+    ``put_reading_state``'s SELECT ... FOR UPDATE, so the fake dispatches on
+    the selected entity rather than returning one seeded result to both.
+    """
+    descriptions = getattr(stmt, "column_descriptions", None)
+    if not descriptions:
+        return False
+    first = descriptions[0]
+    return isinstance(first, dict) and first.get("entity") is StorybookAssignment
+
+
 class _FakeSession:
     """Minimal async session double for reading/completion API handlers.
 
     ``get_map`` maps (model_type, key) -> row-or-None.
-    ``scalar_result`` is returned from the single scalar() call in put_reading_state.
+    ``scalar_result`` is returned from the SELECT ... FOR UPDATE scalar() call
+    in put_reading_state. ``assignment`` is returned from the M1 assignment
+    lookup and defaults to a present row, so only the tests that specifically
+    exercise the unassigned-story 404 have to say so.
     """
 
     def __init__(
@@ -67,9 +88,11 @@ class _FakeSession:
         *,
         get_map: dict[tuple[type[object], object], object] | None = None,
         scalar_result: object | None = None,
+        assignment: object | None = _ASSIGNED,
     ) -> None:
         self._get_map: dict[tuple[type[object], object], object] = get_map or {}
         self._scalar_result = scalar_result
+        self._assignment = assignment
         self.added: list[object] = []
         self.flush_count = 0
         self.refresh_calls: list[tuple[object, list[str] | None]] = []
@@ -97,8 +120,10 @@ class _FakeSession:
             obj.found_at = _FIXED_TS
 
     async def scalar(self, stmt: object) -> object | None:
-        """Capture the statement, then return the seeded SELECT...FOR UPDATE result."""
+        """Capture the statement, then return the seeded result for its entity."""
         self.scalar_calls.append(stmt)
+        if _is_assignment_query(stmt):
+            return self._assignment
         return self._scalar_result
 
 
@@ -136,6 +161,24 @@ def _published_book(storybook_id: str, family_id: uuid.UUID) -> Storybook:
     book.status = "published"
     book.current_published_version = 1
     return book
+
+
+def _approved_version(
+    storybook_id: str, version: int, blob: dict[str, Any]
+) -> StorybookVersion:
+    """Build an APPROVED version row.
+
+    M1 gates a first reading-state save and every completion on the book's
+    current, published, APPROVED version, so a fixture that leaves
+    ``approved_by`` unset now 404s on those paths (which is the point of the
+    gate, not a defect in it).
+    """
+    return StorybookVersion(
+        storybook_id=storybook_id,
+        version=version,
+        blob=blob,
+        approved_by=uuid.uuid4(),
+    )
 
 
 def _state_row(
@@ -574,9 +617,7 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
-        version = StorybookVersion(
-            storybook_id="story-1", version=1, blob=_valid_blob()
-        )
+        version = _approved_version("story-1", 1, _valid_blob())
         session = _FakeSession(
             get_map={
                 (Storybook, "story-1"): book,
@@ -590,8 +631,10 @@ class TestPutReadingState:
             str(profile_id), "story-1", _body(state_revision=0), ctx
         )
 
-        assert len(session.scalar_calls) == 1
-        stmt = cast("Select[Any]", session.scalar_calls[0])
+        # Two scalar() calls now: the M1 assignment lookup, then the locked
+        # read-modify-write read this test is about.
+        assert len(session.scalar_calls) == 2
+        stmt = cast("Select[Any]", session.scalar_calls[1])
         # The row scope lives in the WHERE clause; the SELECT column list names
         # every column, so checking the full statement would not catch a dropped
         # predicate.
@@ -622,9 +665,7 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
-        version = StorybookVersion(
-            storybook_id="story-1", version=1, blob=_valid_blob()
-        )
+        version = _approved_version("story-1", 1, _valid_blob())
         session = _FakeSession(
             get_map={
                 (Storybook, "story-1"): book,
@@ -651,9 +692,7 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
-        version = StorybookVersion(
-            storybook_id="story-1", version=1, blob=_valid_blob()
-        )
+        version = _approved_version("story-1", 1, _valid_blob())
         session = _FakeSession(
             get_map={
                 (Storybook, "story-1"): book,
@@ -678,9 +717,7 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
-        version = StorybookVersion(
-            storybook_id="story-1", version=1, blob=_valid_blob()
-        )
+        version = _approved_version("story-1", 1, _valid_blob())
         existing = _state_row(profile_id, "story-1", state_revision=3)
         session = _FakeSession(
             get_map={
@@ -709,9 +746,7 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
-        version = StorybookVersion(
-            storybook_id="story-1", version=1, blob=_valid_blob()
-        )
+        version = _approved_version("story-1", 1, _valid_blob())
         existing = _state_row(profile_id, "story-1", state_revision=5)
         session = _FakeSession(
             get_map={
@@ -738,9 +773,7 @@ class TestPutReadingState:
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
         # body targets version 2, so validation loads the version-2 pin.
-        version = StorybookVersion(
-            storybook_id="story-1", version=2, blob=_valid_blob()
-        )
+        version = _approved_version("story-1", 2, _valid_blob())
         existing = _state_row(profile_id, "story-1", version=1, state_revision=3)
         session = _FakeSession(
             get_map={
@@ -798,9 +831,7 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
-        version = StorybookVersion(
-            storybook_id="story-1", version=1, blob=_valid_blob()
-        )
+        version = _approved_version("story-1", 1, _valid_blob())
         existing = _state_row(
             profile_id, "story-1", state_revision=3, event_id="evt-xyz"
         )
@@ -858,9 +889,7 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
-        version = StorybookVersion(
-            storybook_id="story-1", version=1, blob=_valid_blob()
-        )
+        version = _approved_version("story-1", 1, _valid_blob())
         existing = _state_row(profile_id, "story-1", state_revision=0)
         session = _FakeSession(
             get_map={
@@ -884,7 +913,7 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("s_syn", family_id)
-        version = StorybookVersion(storybook_id="s_syn", version=1, blob=_story_blob())
+        version = _approved_version("s_syn", 1, _story_blob())
         session = _FakeSession(
             get_map={
                 (Storybook, "s_syn"): book,
@@ -940,7 +969,7 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("s_syn", family_id)
-        version = StorybookVersion(storybook_id="s_syn", version=1, blob=_story_blob())
+        version = _approved_version("s_syn", 1, _story_blob())
         session = _FakeSession(
             get_map={
                 (Storybook, "s_syn"): book,
@@ -969,7 +998,7 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("s_syn", family_id)
-        version = StorybookVersion(storybook_id="s_syn", version=1, blob=_story_blob())
+        version = _approved_version("s_syn", 1, _story_blob())
         session = _FakeSession(
             get_map={
                 (Storybook, "s_syn"): book,
@@ -1004,7 +1033,7 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("s_syn", family_id)
-        version = StorybookVersion(storybook_id="s_syn", version=1, blob=_story_blob())
+        version = _approved_version("s_syn", 1, _story_blob())
         session = _FakeSession(
             get_map={
                 (Storybook, "s_syn"): book,
@@ -1038,7 +1067,7 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("s_syn", family_id)
-        version = StorybookVersion(storybook_id="s_syn", version=1, blob=_story_blob())
+        version = _approved_version("s_syn", 1, _story_blob())
         session = _FakeSession(
             get_map={
                 (Storybook, "s_syn"): book,
@@ -1078,7 +1107,7 @@ class TestRecordCompletion:
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
         blob = _completion_blob("end-happy")
-        sv = StorybookVersion(storybook_id="story-1", version=1, blob=blob)
+        sv = _approved_version("story-1", 1, blob)
         key = (profile_id, "story-1", 1, "end-happy")
         session = _FakeSession(
             get_map={
@@ -1109,7 +1138,7 @@ class TestRecordCompletion:
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
         blob = _completion_blob("end-sad")
-        sv = StorybookVersion(storybook_id="story-1", version=1, blob=blob)
+        sv = _approved_version("story-1", 1, blob)
         existing = Completion(
             child_profile_id=profile_id,
             storybook_id="story-1",
@@ -1146,7 +1175,7 @@ class TestRecordCompletion:
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
         blob = _completion_blob("real-end")
-        sv = StorybookVersion(storybook_id="story-1", version=1, blob=blob)
+        sv = _approved_version("story-1", 1, blob)
         session = _FakeSession(
             get_map={
                 (Storybook, "story-1"): book,
@@ -1302,7 +1331,7 @@ class TestGetSeriesNext:
         token = wrap("HERO", "Explorer")
         blob = _valid_blob()
         blob["title"] = f"{token} and the Map"
-        version = StorybookVersion(storybook_id="story-2", version=1, blob=blob)
+        version = _approved_version("story-2", 1, blob)
         session = _FakeSession(
             get_map={
                 (Storybook, "story-1"): book,

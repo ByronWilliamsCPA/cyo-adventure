@@ -369,6 +369,17 @@ async def test_raw_version_endpoint_returns_sentinel_verbatim_contrast(
                 approved_by=seed.admin_user_id,
             )
         )
+        # M2: the blob-fetch path requires an assignment row for one of the
+        # caller's own profiles, guardians included; without it this seed is
+        # an unassigned book and the endpoint correctly 404s before any
+        # sentinel handling runs.
+        session.add(
+            StorybookAssignment(
+                child_profile_id=seed.child_profile_id,
+                storybook_id="sentinel-raw",
+                assigned_by=seed.admin_user_id,
+            )
+        )
         await session.commit()
 
     resp = await client.get(

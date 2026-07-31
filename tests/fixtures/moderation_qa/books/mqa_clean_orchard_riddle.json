@@ -13,7 +13,7 @@
     "tier": 1,
     "themes": ["mystery", "friendship"],
     "estimated_minutes": 4,
-    "ending_count": 2,
+    "ending_count": 3,
     "content_flags": {
       "violence": "none",
       "scariness": "none",
@@ -35,11 +35,24 @@
     },
     {
       "id": "n_riddle",
-      "body": "The bark is carved with looping letters: 'I have branches but grow no leaves in winter, and I count every year I have lived. What am I?' Sam grins, already guessing.",
+      "body": "The bark is carved with looping letters: 'I have branches but grow no leaves in winter, and I count every year I have lived. What am I?' Sam grins, already guessing. Do you think it over together, or call out the first answer that comes to mind?",
       "is_ending": false,
       "choices": [
-        {"id": "c_continue_riddle", "label": "Think it over together.", "target": "n_middle"}
+        {"id": "c_continue_riddle", "label": "Think it over together.", "target": "n_middle"},
+        {"id": "c_guess", "label": "Call out your first answer.", "target": "n_end_guess"}
       ]
+    },
+    {
+      "id": "n_end_guess",
+      "body": "You blurt out 'a calendar!' The little door stays shut, but Sam laughs so hard he has to sit down in the grass. You agree to come back tomorrow with better ideas and a bigger snack.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_guess",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "Back Tomorrow"
+      },
+      "choices": []
     },
     {
       "id": "n_hint",

@@ -64,6 +64,17 @@ export function BookCard({
   ratable = true,
 }: BookCardProps) {
   const readTo = `/read/${profileId}/${item.id}/${item.version}`
+  // ADR-023 Task D8 (closes Stage C open question 2): thread the library's
+  // own personalization_eligible read into the reader's router location
+  // state, the same channel ContinueSeries.tsx already uses for its
+  // `continuation` key. Undefined (an offline-cached item saved before this
+  // field existed) carries no key at all rather than an explicit `false`;
+  // ReaderRoute's parser treats an absent key as "unknown", which keeps its
+  // values fetch attempted exactly as it was before this field existed.
+  const readState =
+    item.personalization_eligible === undefined
+      ? undefined
+      : { personalizationEligible: item.personalization_eligible }
   const pct = percentComplete(item)
   const started = item.progress !== null
   // A broken or expired cover URL falls back to the letter tile instead of
@@ -133,7 +144,7 @@ export function BookCard({
           <span className="book-card__offline-note">Preview only</span>
         </div>
       ) : downloaded ? (
-        <Link className="book-card__link" to={readTo}>
+        <Link className="book-card__link" to={readTo} state={readState}>
           {inner}
         </Link>
       ) : (

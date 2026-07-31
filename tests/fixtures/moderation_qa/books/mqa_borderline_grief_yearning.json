@@ -13,7 +13,7 @@
     "tier": 1,
     "themes": ["grief", "friendship", "coming of age"],
     "estimated_minutes": 5,
-    "ending_count": 2,
+    "ending_count": 4,
     "content_flags": {
       "violence": "none",
       "scariness": "none",
@@ -36,21 +36,47 @@
     },
     {
       "id": "n_in",
-      "body": "You sit together at the kitchen table in silence for a while. Theo does not try to fix anything; he just stays. You notice, not for the first time, how steady his presence feels.",
+      "body": "You sit together at the kitchen table in silence for a while. Theo does not try to fix anything; he just stays. You notice, not for the first time, how steady his presence feels. Do you let the quiet stretch on, or ask him to stay and eat with you?",
       "is_ending": false,
       "safety_scope": ["sad_moment"],
       "choices": [
-        {"id": "c_continue_in", "label": "Let the quiet stretch on.", "target": "n_middle"}
+        {"id": "c_continue_in", "label": "Let the quiet stretch on.", "target": "n_middle"},
+        {"id": "c_soup", "label": "Ask him to stay and eat.", "target": "n_end_soup"}
       ]
     },
     {
+      "id": "n_end_soup",
+      "body": "You eat at her table, in her kitchen, with someone who knew her too. It is the first meal since the funeral that does not feel like a chore, and you tell him so before you can talk yourself out of it.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_soup",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Her Kitchen, Still"
+      },
+      "choices": []
+    },
+    {
       "id": "n_walk",
-      "body": "You walk the block twice before either of you says anything. When you finally talk about her, your voice cracks, and Theo just keeps walking beside you, unhurried.",
+      "body": "You walk the block twice before either of you says anything. When you finally talk about her, your voice cracks, and Theo just keeps walking beside you, unhurried. Do you keep talking as you walk, or ask for the last block by yourself?",
       "is_ending": false,
       "safety_scope": ["sad_moment"],
       "choices": [
-        {"id": "c_continue_walk", "label": "Keep talking as you walk.", "target": "n_middle"}
+        {"id": "c_continue_walk", "label": "Keep talking as you walk.", "target": "n_middle"},
+        {"id": "c_alone", "label": "Ask for the last block by yourself.", "target": "n_end_alone"}
       ]
+    },
+    {
+      "id": "n_end_alone",
+      "body": "He says of course, and means it. You walk the last block alone and let yourself cry where nobody can see. When you get home there is a message waiting from him that just says he is around whenever. You read it four times.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_alone",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Around Whenever"
+      },
+      "choices": []
     },
     {
       "id": "n_middle",

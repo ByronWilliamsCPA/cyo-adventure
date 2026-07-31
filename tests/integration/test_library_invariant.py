@@ -192,21 +192,115 @@ async def test_child_cannot_fetch_unassigned_version(
     assert resp.status_code == 404
 
 
-async def test_guardian_can_fetch_unassigned_version(
+async def test_guardian_cannot_fetch_unassigned_version(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
 ) -> None:
-    """A guardian fetching an approved+published unassigned version is unaffected.
+    """M2: a guardian fetching an approved+published UNASSIGNED version is 404.
 
-    The assignment gate is child-only; a guardian reads any approved current
-    version in their family regardless of per-profile assignment.
+    Before M2, the assignment gate in ``get_storybook_version`` was scoped to
+    ``Role.CHILD``/``Role.DEVICE`` only, so a guardian principal skipped it
+    entirely and could fetch any published/approved blob in their family
+    regardless of whether any child had ever been granted it. This pins the
+    fix: the story clears every other predicate (family, published, approved,
+    current), so the 404 is attributable solely to the missing assignment,
+    mirroring ``test_child_cannot_fetch_unassigned_version`` for the guardian
+    role. See ``test_guardian_can_fetch_assigned_version`` for the positive
+    control proving the gate does not also block a legitimate assigned read.
     """
     unassigned_id = await _add_approved_unassigned_story(sessions, seed)
     resp = await client.get(
         f"/api/v1/storybooks/{unassigned_id}/versions/1",
         headers=auth(seed.guardian_token),
     )
-    assert resp.status_code == 200
-    assert resp.json()["id"] == unassigned_id
+    assert resp.status_code == 404, resp.text
+
+
+async def test_guardian_can_fetch_assigned_version(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """M2 positive control: a guardian still reads a version assigned to their child.
+
+    Same setup as ``test_guardian_cannot_fetch_unassigned_version`` except the
+    story is assigned to ``seed.child_profile_id`` (age_band "10-13") first;
+    this proves the M2 gate is a real assignment check, not a guardian-wide
+    denial. principal.profile_ids for a guardian is every non-deactivated
+    child in their family, so "assigned to some child in the family" is the
+    correct guardian-facing predicate.
+    """
+    story_id = await _add_approved_unassigned_story(sessions, seed)
+    async with sessions() as session:
+        session.add(
+            StorybookAssignment(
+                child_profile_id=seed.child_profile_id, storybook_id=story_id
+            )
+        )
+        await session.commit()
+    resp = await client.get(
+        f"/api/v1/storybooks/{story_id}/versions/1",
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["id"] == story_id
+
+
+async def test_dual_role_adult_cannot_fetch_unassigned_own_family_version(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """M2: the admin exemption is capacity-scoped, not capability-scoped.
+
+    ``seed.dual_token`` is a family-A adult holding role=guardian AND
+    is_admin=True. Keying the M2 exemption on the raw ``is_admin`` flag would
+    exempt exactly this principal (an admin-ONLY adult never gets here: their
+    ``profile_ids`` is empty, so ``authorize_profile`` 403s upstream), which
+    silently disables the gate for a dual-role parent's own children. The gate
+    keys on ``acting_role(book.family_id)`` instead, which is GUARDIAN for an
+    own-family target, so this read is 404 exactly like a plain guardian's.
+    """
+    unassigned_id = await _add_approved_unassigned_story(sessions, seed)
+    resp = await client.get(
+        f"/api/v1/storybooks/{unassigned_id}/versions/1",
+        headers=auth(seed.dual_token),
+    )
+    assert resp.status_code == 404, resp.text
+
+
+async def test_dual_role_adult_can_fetch_unassigned_cross_family_version(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """M2 positive control for the capacity split: cross-family reads still pass.
+
+    Same dual-role principal as the test above, but the story belongs to
+    family B, where ``acting_role`` resolves to ADMIN. The cross-family review
+    authority the exemption exists for is preserved, so the narrowing above is
+    a scope fix rather than a blanket removal.
+    """
+    story_id = "cross-family-unassigned"
+    async with sessions() as session:
+        other_profile = await session.get(ChildProfile, seed.other_child_profile_id)
+        assert other_profile is not None
+        session.add(
+            Storybook(
+                id=story_id,
+                family_id=other_profile.family_id,
+                current_published_version=1,
+                status="published",
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob={"id": story_id},
+                approved_by=seed.admin_user_id,
+            )
+        )
+        await session.commit()
+    resp = await client.get(
+        f"/api/v1/storybooks/{story_id}/versions/1",
+        headers=auth(seed.dual_token),
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["id"] == story_id
 
 
 # ---------------------------------------------------------------------------
@@ -392,22 +486,24 @@ async def test_child_cannot_read_cross_family_private_book(
     assert rating.status_code == 403, rating.text
 
 
-async def test_guardian_reads_catalog_blob_but_not_private_cross_family(
+async def test_guardian_reads_assigned_catalog_blob_but_not_private_cross_family(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
 ) -> None:
     """Guardian parity for the visibility branch in ``get_storybook_version``.
 
     The child-perspective tests above pin the catalog widening through the
-    assignment-gated child surfaces; this pins the other arm asserted only in a
-    comment on ``get_storybook_version`` (``api/library.py``): a guardian of
-    Family A may fetch a published, approved, ``visibility='catalog'`` book
-    owned by Family B with no assignment row at all (the assignment gate is
-    child-only), while a Family B book left at the default ``visibility='family'``
-    still 403s for the same guardian, exactly as the plain family-ownership rule
-    always required.
+    assignment-gated child surfaces. This pins the guardian arm post-M2: the
+    visibility='catalog' cross-family widening still lets a Family A guardian
+    reach a Family B catalog book (unlike the private book below, which stays
+    403'd by the plain family-ownership rule), but ONLY once it is assigned to
+    one of their own children; the assignment gate is no longer child-only.
+    An unassigned catalog book is covered by
+    ``test_guardian_cannot_fetch_unassigned_version`` above (family-owned
+    case) and by M2's general assignment requirement here (cross-family
+    case): both routes converge on the same gate.
     """
     catalog_id = await _add_cross_family_catalog_book(
-        sessions, seed, "catalog-cross-family-guardian", assign=False
+        sessions, seed, "catalog-cross-family-guardian", assign=True
     )
     catalog_blob = await client.get(
         f"/api/v1/storybooks/{catalog_id}/versions/1",
@@ -441,3 +537,80 @@ async def test_guardian_reads_catalog_blob_but_not_private_cross_family(
         headers=auth(seed.guardian_token),
     )
     assert private_blob.status_code == 403, private_blob.text
+
+
+# ---------------------------------------------------------------------------
+# H1 defense in depth: library.py's read paths repeat the age-band ceiling
+# check even when a StorybookAssignment row exists, in case one was ever
+# created another way than assign_storybook (its primary gate). These tests
+# insert the assignment row DIRECTLY via the session, bypassing
+# assign_storybook entirely, to simulate exactly that "somehow exists" case.
+# ---------------------------------------------------------------------------
+
+
+async def _add_band_mismatched_assigned_story(
+    sessions: async_sessionmaker[AsyncSession], seed: Seed, story_id: str
+) -> str:
+    """Insert an approved, published, own-family story banded "16+" and
+    assign it directly to ``seed.child_profile_id`` (age_band "10-13"),
+    bypassing ``assign_storybook``'s own age-band ceiling check entirely.
+    """
+    async with sessions() as session:
+        session.add(
+            Storybook(
+                id=story_id,
+                family_id=seed.family_id,
+                current_published_version=1,
+                status="published",
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob={"id": story_id, "metadata": {"age_band": "16+"}},
+                approved_by=seed.admin_user_id,
+            )
+        )
+        session.add(
+            StorybookAssignment(
+                child_profile_id=seed.child_profile_id, storybook_id=story_id
+            )
+        )
+        await session.commit()
+        return story_id
+
+
+async def test_list_library_hides_book_banded_above_profile(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """H1 defense in depth: the listing hides a book banded above the profile
+    even though a StorybookAssignment row exists for it.
+    """
+    over_band_id = await _add_band_mismatched_assigned_story(
+        sessions, seed, "over-band-listed"
+    )
+    resp = await client.get(
+        f"/api/v1/library?profile_id={seed.child_profile_id}",
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 200, resp.text
+    listed = {item["id"] for item in resp.json()["stories"]}
+    assert seed.storybook_id in listed  # the correctly-banded seed story shows
+    assert over_band_id not in listed  # the over-band one is filtered despite the row
+
+
+async def test_get_storybook_version_hides_book_banded_above_assigned_profile(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """H1 defense in depth: direct blob fetch also honors the age-band ceiling
+    even though a genuine StorybookAssignment row exists for it.
+    """
+    over_band_id = await _add_band_mismatched_assigned_story(
+        sessions, seed, "over-band-fetch"
+    )
+    resp = await client.get(
+        f"/api/v1/storybooks/{over_band_id}/versions/1",
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 404, resp.text

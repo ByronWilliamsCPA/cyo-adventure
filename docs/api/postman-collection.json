@@ -426,7 +426,7 @@
                   "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
                   "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"display_name\": {\"type\": \"string\"}, \"age_band\": {\"type\": \"string\", \"enum\": [\"3-5\", \"5-8\", \"8-11\", \"10-13\", \"13-16\", \"16+\"]}, \"reading_level_cap\": {\"type\": \"number\"}, \"avatar\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"tts_enabled\": {\"type\": \"boolean\"}, \"reduce_motion\": {\"type\": \"boolean\"}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"display_name\", \"age_band\", \"reading_level_cap\", \"avatar\", \"tts_enabled\", \"reduce_motion\", \"created_at\"]};",
                   "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
-                  "pm.test(\"echoes the created profile\", function () { var body = pm.response.json(); pm.expect(body.display_name).to.eql(\"Newman Sibling\"); pm.expect(body.age_band).to.eql(\"5-8\"); pm.collectionVariables.set(\"new_profile_id\", body.id); });"
+                  "pm.test(\"echoes the created profile\", function () { var body = pm.response.json(); pm.expect(body.display_name).to.eql(\"Newman Sibling\"); pm.expect(body.age_band).to.eql(\"8-11\"); pm.collectionVariables.set(\"new_profile_id\", body.id); });"
                 ],
                 "type": "text/javascript"
               }
@@ -458,7 +458,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"display_name\": \"Newman Sibling\",\n  \"age_band\": \"5-8\",\n  \"reading_level_cap\": 99.0,\n  \"tts_enabled\": false\n}",
+              "raw": "{\n  \"display_name\": \"Newman Sibling\",\n  \"age_band\": \"8-11\",\n  \"reading_level_cap\": 99.0,\n  \"tts_enabled\": false\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2778,6 +2778,102 @@
                   "language": "json"
                 }
               }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST assignments of a book banded above the profile -> 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 400\", function () { pm.response.to.have.status(400); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names BusinessLogicError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"BusinessLogicError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "description": "H1 age-band ceiling: storybook 2 (The Clockwork Garden) is banded 10-13 and the sibling profile is banded 8-11, so the assignment must be refused rather than merely hidden at read time. The GET that follows proves the refusal wrote nothing.",
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_2}}/assignments",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_2}}",
+                "assignments"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_ids\": [\n    \"{{new_profile_id}}\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET assignments for storybook 2 (the refused assignment wrote nothing)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"storybook_id\": {\"type\": \"string\"}, \"profile_ids\": {\"items\": {\"type\": \"string\"}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"storybook_id\", \"profile_ids\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"the above-band sibling was not assigned\", function () { var body = pm.response.json(); pm.expect(body.profile_ids).to.not.include(pm.collectionVariables.get(\"new_profile_id\")); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_2}}/assignments",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_2}}",
+                "assignments"
+              ]
             }
           },
           "response": []
