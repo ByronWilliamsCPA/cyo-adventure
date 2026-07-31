@@ -601,11 +601,6 @@ known-first-party = ["cyo_adventure"]
     "TC002",   # Processor needs to be runtime-available
 ]
 
-# Quality gate script - Intentional URL handling
-"scripts/check_quality_gate.py" = [
-    "S310",    # URL schemes are validated before use (see nosec comment)
-]
-
 # BasedPyright Configuration
 # Replaces MyPy with faster, stricter type checking
 # Reference: https://docs.basedpyright.com
