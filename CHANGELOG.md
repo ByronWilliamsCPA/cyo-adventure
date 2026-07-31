@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.53.0] - 2026-07-31
+
+### Features
+
+- **personalization**: Expose personalization_eligible on the library response (ADR-023 D8)
+  ([#508](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/508),
+  [`070aac2`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/070aac20abf47c36794d4c6b568ff40441b89021))
+
+
 ## [0.52.0] - 2026-07-31
 
 ### Features
@@ -2903,6 +2912,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.53.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.52.0...v0.53.0
 [0.52.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.51.2...v0.52.0
 [0.51.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.51.1...v0.51.2
 [0.51.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.51.0...v0.51.1
