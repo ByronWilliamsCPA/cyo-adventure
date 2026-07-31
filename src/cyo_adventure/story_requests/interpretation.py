@@ -828,9 +828,9 @@ _GUARDIAN_IDENTITY_PROTECTION_PERSONALIZED = (
 # ADR-023 Task D1 (gate G3), toggle-on kid copy for the middle and teen band
 # groups, drafted verbatim in the ADR-023 coordination doc's Ask 1b. Named as
 # module constants (matching the guardian constant above) rather than inlined
-# in the _register() call below, so the two-line strings stay single
-# literals for basedpyright's reportImplicitStringConcatenation instead of
-# reading as an implicit concatenation inside a function-call argument.
+# in the _register() call below, because these strings need wrapping and a
+# named constant keeps the registration call readable. The young-band string
+# fits on one line and is inlined at its call site for the same reason.
 _KID_IDENTITY_PROTECTION_PERSONALIZED_MIDDLE = (
     "Every hero starts with a made-up name. Your grown-up turned your real "
     "name on, so watch for it when you read!"

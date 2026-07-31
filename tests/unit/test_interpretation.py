@@ -921,11 +921,13 @@ def test_general_layer_template_pairs_are_bespoke_in_all_band_groups() -> None:
     ]
     for disposition, reason in pairs:
         for group in groups:
-            assert (disposition, reason, group, False) in _CATALOG, (
-                disposition,
-                reason,
-                group,
-            )
+            for personalized in (False, True):
+                assert (disposition, reason, group, personalized) in _CATALOG, (
+                    disposition,
+                    reason,
+                    group,
+                    personalized,
+                )
 
 
 def test_build_general_is_pure_and_repeatable() -> None:
