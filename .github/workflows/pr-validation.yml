@@ -159,6 +159,7 @@ jobs:
             --verbose
             --no-progress
             --max-retries 3
+            --max-concurrency 16
             --accept 200,204,206,301,302,403,429
             --exclude '^https://github.com/.*/(issues|pulls|compare)/.*$'
             --exclude '^https://linear.app/.*$'
@@ -168,6 +169,15 @@ jobs:
             './CONTRIBUTING.md'
           # Blocking. This check found and hid 7 genuinely broken links while
           # it was advisory; a link check that cannot fail is a link ignorer.
+          #
+          # `--max-concurrency 16` (default is 128) is what makes blocking
+          # safe. At the default, the Cloudflare-fronted DPA URL in
+          # docs/compliance/ fails with "HTTP/2 protocol error" in a full-corpus
+          # run while passing when checked alone: the edge drops the connection
+          # under the fan-out. Verified locally against lychee v0.24.2, the
+          # version this action pins: 1 error at default concurrency, 0 errors
+          # across 5 consecutive runs at 16, and the whole run got FASTER
+          # (7.2s to 2.5s) because it stopped burning time on retries.
           fail: true
           jobSummary: true
         env:
