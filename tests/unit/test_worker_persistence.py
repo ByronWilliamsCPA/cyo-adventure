@@ -60,6 +60,22 @@ class _FakeResult:
         """Return rows as one-tuples, matching ``select(column)`` results."""
         return [(name,) for name in self._names]
 
+    def scalar_one_or_none(self) -> object | None:
+        """Return ``None`` for every scalar query this double serves.
+
+        ``_FakeSession.execute`` ignores the statement, so a single result
+        object stands in for every query ``run_generation_job`` issues. The
+        only scalar consumer on that path is
+        ``_resolve_name_personalization_enabled`` (ADR-023 Task D1), and
+        ``None`` is the one safe constant: it resolves to the fail-closed
+        ``False``, which is the correct production answer for a fixture that
+        seeds no profile and no personalization consent. Deriving a value
+        from ``self._names`` would silently flip personalization on for
+        fixtures seeded with a child name and change render behaviour these
+        persistence tests never intend to exercise.
+        """
+        return None
+
 
 class _FakeSession:
     """Minimal async session double for the worker's call surface.
