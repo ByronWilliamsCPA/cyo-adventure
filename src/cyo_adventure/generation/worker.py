@@ -31,6 +31,7 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Literal, cast
 
 from sqlalchemy import select
+from sqlalchemy.exc import MultipleResultsFound
 
 from cyo_adventure.core.config import settings as _default_settings
 from cyo_adventure.core.database import get_worker_session
@@ -1733,7 +1734,17 @@ async def _load_concept_and_pii(
 # (False) is deliberate: the worse failure mode here is silently staying
 # "made-up name only" for an opted-in family, never falsely promising
 # personalization to a family that never enabled it.
-# #VERIFY: test_resolve_name_personalization_enabled_* in test_worker.py.
+# #CRITICAL: data integrity: StoryRequest.concept_id carries no unique
+# constraint at the ORM or database level, so a duplicate would make
+# scalar_one_or_none() raise MultipleResultsFound rather than fail closed.
+# The explicit catch below makes the fail-closed contract real rather than
+# merely asserted.
+# #VERIFY: a partial unique index on story_request (concept_id) WHERE
+# concept_id IS NOT NULL would promote this to a schema invariant.
+# #VERIFY: test_resolve_name_personalization_enabled_* in test_worker.py cover
+# the branching; tests/integration/test_worker_interpretation.py exercises the
+# real join, both liveness filters, and the duplicate-concept_id case that only
+# a real schema can demonstrate.
 async def _resolve_name_personalization_enabled(
     session: AsyncSession, job_row: GenerationJob
 ) -> bool:
@@ -1742,29 +1753,53 @@ async def _resolve_name_personalization_enabled(
     Resolves ``StoryRequest WHERE concept_id == job_row.concept_id`` to the
     requesting child's ``profile_id``, then reads that profile's
     ``real_name_ring1_enabled`` flag (Task D1, gate G3) in the same query (an
-    inner join, not two round trips). Fails closed (``False``) for a
-    guardian-authored concept with no originating request row, a
-    profile-less request (``profile_id IS NULL``), or a request whose
-    profile no longer exists: the toggle-off Route A copy is always the safe
-    default, matching :func:`~cyo_adventure.story_requests.interpretation.
-    render_interpretation`'s own ``name_personalization_enabled=False``
-    default.
+    inner join, not two round trips).
+
+    Fails closed (``False``) whenever the join yields no live, opted-in
+    profile. Several situations collapse into that one zero-row case: a
+    guardian-authored concept with no originating request row, and a request
+    whose ``profile_id`` is NULL, which also covers a deleted profile because
+    the FK is ``ON DELETE SET NULL``. An inner join excludes both under SQL
+    NULL-comparison semantics.
+
+    A deactivated or Article-18 processing-restricted profile is excluded
+    explicitly, mirroring
+    :func:`~cyo_adventure.api.personalization._is_live`. The read path
+    suppresses substitution for those profiles in either ring, so the copy
+    must not tell a guardian their child's name may still appear.
 
     Args:
         session: The worker's owned session.
         job_row: The job whose ``concept_id`` resolves the request row.
 
     Returns:
-        ``True`` only when a request row exists, has a non-null
-        ``profile_id``, and that profile's ``real_name_ring1_enabled`` is
-        ``True``.
+        ``True`` only when a live request-owning profile exists and its
+        ``real_name_ring1_enabled`` is ``True``.
     """
-    result = await session.execute(
+    statement = (
         select(ChildProfile.real_name_ring1_enabled)
         .join(StoryRequest, StoryRequest.profile_id == ChildProfile.id)
-        .where(StoryRequest.concept_id == job_row.concept_id)
+        .where(
+            StoryRequest.concept_id == job_row.concept_id,
+            ChildProfile.deactivated_at.is_(None),
+            ChildProfile.processing_restricted_at.is_(None),
+        )
     )
-    enabled = result.scalar_one_or_none()
+    try:
+        enabled = (await session.execute(statement)).scalar_one_or_none()
+    except MultipleResultsFound:
+        logger.warning(
+            "generation_job.name_personalization_ambiguous_concept",
+            concept_id=str(job_row.concept_id),
+            resolved_enabled=False,
+        )
+        return False
+    logger.debug(
+        "generation_job.name_personalization_resolved",
+        concept_id=str(job_row.concept_id),
+        profile_found=enabled is not None,
+        resolved_enabled=bool(enabled),
+    )
     return bool(enabled)
 
 

@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING, Any, cast
 from unittest.mock import AsyncMock
 
 import pytest
+from sqlalchemy.exc import MultipleResultsFound
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.core.config import settings as config_settings
@@ -2617,8 +2618,10 @@ async def test_resolve_name_personalization_enabled_false_when_profile_opted_out
 async def test_resolve_name_personalization_enabled_false_when_no_request_row() -> None:
     """No originating StoryRequest row (guardian-authored concept) fails closed.
 
-    scalar_one_or_none() returning None means either no request row joined at
-    all, or the join found a row whose profile_id is NULL: both cases must
+    The query is an INNER join, so scalar_one_or_none() returning None covers
+    every zero-row case at once: no request row carries this concept_id, the
+    request's profile_id is NULL (ondelete=SET NULL after a profile delete), or
+    the joined profile is excluded by the liveness predicates. All of them must
     fail closed to False, never raise.
     """
     import uuid
@@ -2628,6 +2631,41 @@ async def test_resolve_name_personalization_enabled_false_when_no_request_row() 
 
     result = await worker_module._resolve_name_personalization_enabled(  # pyright: ignore[reportPrivateUsage]
         cast("AsyncSession", session), job
+    )
+
+    assert result is False
+
+
+@pytest.mark.asyncio
+async def test_resolve_name_personalization_enabled_false_when_concept_ambiguous() -> (
+    None
+):
+    """Two request rows sharing one concept_id fail closed instead of raising.
+
+    ``StoryRequest.concept_id`` carries no unique constraint, so a duplicate is
+    representable and would make ``scalar_one_or_none()`` raise
+    ``MultipleResultsFound``. An unhandled raise here would abort the whole
+    generation job, so the resolver catches it and returns the fail-closed
+    False that the surrounding security contract promises.
+    """
+    import uuid
+
+    class _AmbiguousResult:
+        """A result whose scalar accessor raises as SQLAlchemy would on 2 rows."""
+
+        def scalar_one_or_none(self) -> object:
+            raise MultipleResultsFound
+
+    class _AmbiguousSession:
+        """A session double returning the ambiguous result for any statement."""
+
+        async def execute(self, _statement: object) -> _AmbiguousResult:
+            return _AmbiguousResult()
+
+    job = cast("GenerationJob", SimpleNamespace(concept_id=uuid.uuid4()))
+
+    result = await worker_module._resolve_name_personalization_enabled(  # pyright: ignore[reportPrivateUsage]
+        cast("AsyncSession", _AmbiguousSession()), job
     )
 
     assert result is False

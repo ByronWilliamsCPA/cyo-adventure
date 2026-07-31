@@ -21,6 +21,7 @@ import copy
 import json
 import uuid
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, cast
 
 import pytest
@@ -44,6 +45,12 @@ from cyo_adventure.generation.provider import (
     MockProvider,
 )
 from cyo_adventure.generation.worker import run_generation_job
+from cyo_adventure.story_requests.interpretation import (
+    _CATALOG,
+    BandGroup,
+    ElementDisposition,
+    ReasonCode,
+)
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.theme_contract import (
     SlotConstraints,
@@ -570,3 +577,316 @@ async def test_reroute_exhausted_persists_cannot_carry(
         assert row.interpretation is not None
         row_elements = cast("list[dict[str, object]]", row.interpretation["elements"])
         assert any(e["disposition"] == "cannot_carry" for e in row_elements)
+
+
+# ---------------------------------------------------------------------------
+# ADR-023 Task D1 (gate G3): _resolve_name_personalization_enabled against a
+# REAL session. The unit tests in tests/unit/test_worker.py drive this resolver
+# through a statement-blind session double, so they prove the Python branching
+# but cannot prove the SQL: the join predicate, the two liveness filters, and
+# the absence of a uniqueness guarantee on story_request.concept_id are all
+# invisible to a double that ignores the statement it is handed.
+# ---------------------------------------------------------------------------
+
+
+async def _seed_personalization_job(
+    sessions: async_sessionmaker[AsyncSession],
+    *,
+    ring1_enabled: bool = False,
+    deactivated: bool = False,
+    processing_restricted: bool = False,
+    request_rows: int = 1,
+    display_name: str = "PersonKid",
+) -> dict[str, object]:
+    """Seed a Concept + GenerationJob and ``request_rows`` linked StoryRequests.
+
+    ``request_rows=0`` models a guardian-authored concept (no originating
+    request); ``request_rows=2`` models the duplicate-concept_id case the
+    resolver's MultipleResultsFound catch exists for.
+    """
+    now = datetime.now(UTC)
+    async with sessions() as session:
+        fam = Family(name="Personalization Family")
+        session.add(fam)
+        await session.flush()
+
+        guardian = User(
+            family_id=fam.id, role="guardian", authn_subject=f"g-{uuid.uuid4()}"
+        )
+        child = ChildProfile(
+            family_id=fam.id,
+            display_name=display_name,
+            age_band="3-5",
+            real_name_ring1_enabled=ring1_enabled,
+            deactivated_at=now if deactivated else None,
+            processing_restricted_at=now if processing_restricted else None,
+        )
+        session.add_all([guardian, child])
+        await session.flush()
+
+        concept = Concept(
+            family_id=fam.id,
+            created_by=guardian.id,
+            brief={
+                "premise": "A brave explorer discovers a hidden garden.",
+                "protagonist": {"name": "Captain Rosa", "age": 5, "role": "explorer"},
+                "point_of_view": "second",
+                "age_band": "3-5",
+                "reading_level_target": 1.0,
+                "tier": 1,
+                "tone": "adventurous",
+                "themes_allowed": ["exploration"],
+                "content_nogo": [],
+                "target_node_count": 3,
+                "ending_count": 2,
+                "structure_pattern": "time_cave",
+                "desired_variables": [],
+                "special_constraints": [],
+            },
+        )
+        session.add(concept)
+        await session.flush()
+
+        requests = [
+            StoryRequest(
+                family_id=fam.id,
+                profile_id=child.id,
+                request_text="A brave explorer discovers a hidden garden.",
+                status="approved",
+                age_band="3-5",
+                concept_id=concept.id,
+            )
+            for _ in range(request_rows)
+        ]
+        job = GenerationJob(
+            concept_id=concept.id,
+            status="queued",
+            authoring_metadata={
+                "skeleton_slug": "themed-slug",
+                "theme_brief": {
+                    "premise": "A brave explorer discovers a hidden garden."
+                },
+            },
+        )
+        session.add_all([*requests, job])
+        await session.commit()
+
+        return {
+            "job_id": job.id,
+            "profile_id": child.id,
+            "request_ids": [row.id for row in requests],
+        }
+
+
+async def _resolve_for(
+    sessions: async_sessionmaker[AsyncSession], job_id: uuid.UUID
+) -> bool:
+    """Run the resolver against a real session for the given job."""
+    async with sessions() as session:
+        job = await session.get(GenerationJob, job_id)
+        assert job is not None
+        return await worker_module._resolve_name_personalization_enabled(  # pyright: ignore[reportPrivateUsage]
+            session, job
+        )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("ring1_enabled", "deactivated", "processing_restricted", "expected"),
+    [
+        (True, False, False, True),
+        (False, False, False, False),
+        (True, True, False, False),
+        (True, False, True, False),
+    ],
+    ids=[
+        "live-opted-in",
+        "live-opted-out",
+        "deactivated-profile",
+        "processing-restricted-profile",
+    ],
+)
+async def test_resolve_name_personalization_reads_live_requesting_profile(
+    sessions: async_sessionmaker[AsyncSession],
+    *,
+    ring1_enabled: bool,
+    deactivated: bool,
+    processing_restricted: bool,
+    expected: bool,
+) -> None:
+    """The real join reaches the requesting profile and honors both liveness
+    gates: only a live, opted-in profile resolves True (ADR-023 Task D1).
+
+    The deactivated and processing-restricted cases are the ones a
+    statement-blind unit double cannot reach; both profiles here carry
+    ``real_name_ring1_enabled=True``, so a resolver missing either filter would
+    return True and promise personalization the read path will not deliver.
+    """
+    seed = await _seed_personalization_job(
+        sessions,
+        ring1_enabled=ring1_enabled,
+        deactivated=deactivated,
+        processing_restricted=processing_restricted,
+    )
+
+    result = await _resolve_for(sessions, cast("uuid.UUID", seed["job_id"]))
+
+    assert result is expected
+
+
+@pytest.mark.asyncio
+async def test_resolve_name_personalization_false_when_concept_has_no_request(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A guardian-authored concept with no originating StoryRequest row fails
+    closed through the real inner join, not just through the double."""
+    seed = await _seed_personalization_job(sessions, ring1_enabled=True, request_rows=0)
+
+    result = await _resolve_for(sessions, cast("uuid.UUID", seed["job_id"]))
+
+    assert result is False
+
+
+@pytest.mark.asyncio
+async def test_resolve_name_personalization_false_when_concept_id_duplicated(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """Two StoryRequest rows may share one concept_id, and that fails closed.
+
+    This is the integration half of the resolver's ``#CRITICAL: data integrity``
+    marker. The insert succeeding at all is the finding: there is no unique
+    constraint on ``story_request.concept_id``, so ``scalar_one_or_none()``
+    really can raise ``MultipleResultsFound`` in production. The resolver must
+    absorb it rather than aborting the generation job.
+    """
+    seed = await _seed_personalization_job(sessions, ring1_enabled=True, request_rows=2)
+    assert len(cast("list[uuid.UUID]", seed["request_ids"])) == 2
+
+    result = await _resolve_for(sessions, cast("uuid.UUID", seed["job_id"]))
+
+    assert result is False
+
+
+# ---------------------------------------------------------------------------
+# ADR-023 Task D1 (gate G3): end-to-end. The resolver's answer has to survive
+# the whole worker path (context -> derive_dispositions -> render_interpretation
+# -> the persisted request row), not merely be computed correctly and dropped.
+# ---------------------------------------------------------------------------
+
+_SELF_NAME = "Marisol"
+
+
+def _self_naming_bind_response() -> str:
+    """An interpret-and-bind response whose element names the requesting child.
+
+    ``derive_dispositions`` rule 2 (self-naming) maps this to
+    ``SET_ASIDE / IDENTITY_PROTECTION``, the single catalog key whose toggle-on
+    copy differs from its toggle-off copy, so it is the only element that can
+    observe the resolved flag end to end.
+    """
+    payload: dict[str, object] = {
+        "bindings": dict(_BINDINGS),
+        "elements": [{"phrase": _SELF_NAME, "slot_id": None}],
+    }
+    return json.dumps(payload)
+
+
+@pytest.mark.asyncio
+async def test_bound_fill_persists_personalized_copy_when_profile_opted_in(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """An opted-in profile's toggle-ON identity-protection copy reaches the
+    persisted request row (ADR-023 Task D1, gate G3).
+
+    Proves the whole chain rather than the resolver alone: the flag is read
+    from the profile, threaded into the skeleton-fill context, passed to
+    ``render_interpretation`` as ``personalized=True``, and the resulting kid
+    copy is what lands in ``story_request.interpretation``.
+    """
+    band_dir = tmp_path / "3-5"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract_path.write_bytes(_bound_contract().model_dump_json().encode("utf-8"))
+
+    monkeypatch.setattr(
+        worker_module, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: _bound_skeleton())
+
+    async def _fake_fill(
+        skeleton: dict[str, object],
+        theme_brief: dict[str, object],
+        provider_arg: object,
+        pii: object,
+        **_kwargs: object,
+    ) -> GenerationOutcome:
+        return GenerationOutcome(
+            status="passed",
+            storybook=copy.deepcopy(_CANNED_STORY),
+            report={},
+            attempts=0,
+            stage_log=[],
+        )
+
+    monkeypatch.setattr(worker_module, "fill_skeleton", _fake_fill)
+
+    seed = await _seed_personalization_job(
+        sessions, ring1_enabled=True, display_name=_SELF_NAME
+    )
+    job_id = cast("uuid.UUID", seed["job_id"])
+    request_id = cast("list[uuid.UUID]", seed["request_ids"])[0]
+
+    responses: list[str | Callable[[str], str]] = [_self_naming_bind_response()]
+    responses.extend([_CANNED_STORY_JSON] * 8)
+
+    await run_generation_job(
+        job_id,
+        provider=MockProvider(responses=responses),
+        session_factory=_make_session_factory(sessions),
+    )
+
+    personalized = _CATALOG[
+        (
+            ElementDisposition.SET_ASIDE,
+            ReasonCode.IDENTITY_PROTECTION,
+            BandGroup.YOUNG,
+            True,
+        )
+    ]
+    default = _CATALOG[
+        (
+            ElementDisposition.SET_ASIDE,
+            ReasonCode.IDENTITY_PROTECTION,
+            BandGroup.YOUNG,
+            False,
+        )
+    ]
+    # Guards the assertion below: if the two variants were ever collapsed to
+    # the same string this test would pass vacuously.
+    assert personalized.kid_without != default.kid_without
+
+    async with sessions() as session:
+        job = await session.get(GenerationJob, job_id)
+        assert job is not None
+        assert job.status == "passed", f"expected passed, got {job.status}"
+
+        result = await session.execute(
+            select(StoryRequest).where(StoryRequest.id == request_id)
+        )
+        row = result.scalar_one()
+        assert row.interpretation is not None
+        elements = cast("list[dict[str, object]]", row.interpretation["elements"])
+        protected = [
+            element
+            for element in elements
+            if element["reason"] == ReasonCode.IDENTITY_PROTECTION.value
+        ]
+        assert protected, f"no identity_protection element in {elements}"
+        # CR-3: a protected reason never echoes the phrase back.
+        assert all(element["element"] is None for element in protected)
+        assert all(
+            element["kid_text"] == personalized.kid_without for element in protected
+        )
