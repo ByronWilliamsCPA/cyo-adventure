@@ -105,8 +105,11 @@ async def _approved_count_since(
     # regresses out of "approved" (see StoryRequest.approved_at's docstring),
     # so this count is stable for a past month and monotonically
     # non-decreasing for the current one.
-    # #VERIFY: tests/unit/test_story_requests.py::TestBudget pins the
-    # month-boundary behavior with injected `now` values; a real ledger table
+    # #VERIFY: tests/integration/test_story_requests_budget.py::
+    # test_family_monthly_spend_excludes_prior_month_at_the_boundary pins the
+    # month-boundary behavior with injected `now` values (it needs a real
+    # database: the unit suite's _FakeSession cannot distinguish a
+    # family-scoped count from a profile-scoped one); a real ledger table
     # is tracked as a G13 follow-up once spend needs finer-grained accounting
     # (partial refunds, credits) than a monthly approval count can express.
     stmt = (
@@ -277,8 +280,9 @@ async def enforce_family_quota(
     # (ADR-015 G7); every non-admin path that can create a Concept MUST run
     # this check first. A missed call site would let a request spend
     # generation budget with no guardian consent recorded.
-    # #VERIFY: tests/unit/test_story_requests.py::TestBudget pins the block
-    # (nothing created past this point) and the admin-bypass exemption;
+    # #VERIFY: tests/unit/test_story_requests.py::TestEnforceFamilyQuota pins
+    # the block, the under-quota pass, and the admin-bypass exemption
+    # (including that the bypass never even reads the family row);
     # tests/integration/test_story_requests_budget.py pins it end to end
     # through both the approve and authored-create HTTP endpoints.
     if _bypasses_family_quota(principal, family_id):
@@ -333,22 +337,29 @@ async def can_auto_approve(
     # by count_pending_for_profile above). Auto-approval is a convenience
     # path with a human-set ceiling behind it (the guardian's own envelope
     # choice), not a hard financial ledger, so this is accepted for R1.
-    # #VERIFY: tests/unit/test_story_requests.py::TestBudget covers the
-    # single-request decision matrix; a stricter guarantee would need a
+    # #VERIFY: tests/unit/test_story_requests.py::TestCanAutoApprove covers the
+    # no-DB short-circuits and tests/integration/test_story_requests_budget.py's
+    # test_auto_approve_* trio covers the envelope-vs-quota decision matrix
+    # against a real database; a stricter guarantee would need a
     # partial unique index or advisory lock, deferred as unnecessary here.
     if not profile.request_auto_approve or profile.monthly_request_envelope is None:
         return False
+    # #CRITICAL: timing: `now` is resolved ONCE here and passed explicitly into
+    # both spend calls. Both helpers default a None `now` to their own
+    # datetime.now(UTC), so omitting it would let the two counts land on
+    # opposite sides of a month boundary for a request submitted at 23:59:59.999
+    # on the last of the month: the child would be measured against the new
+    # month's envelope and the family against the old month's quota, or the
+    # reverse. One instant in, one month start out of both.
+    # #VERIFY: tests/integration/test_story_requests_budget.py::
+    # test_can_auto_approve_uses_one_instant_for_both_spend_counts pins it;
+    # keep passing `now=now` if these calls are refactored again.
     now = now or datetime.now(UTC)
-    since = _month_start(now)
-    profile_spent = await _approved_count_since(
-        session, profile_id=profile.id, since=since
-    )
+    profile_spent = await profile_monthly_spend(session, profile.id, now=now)
     if profile_spent >= profile.monthly_request_envelope:
         return False
     quota = resolve_family_quota(family)
-    family_spent = await _approved_count_since(
-        session, family_id=family.id, since=since
-    )
+    family_spent = await family_monthly_spend(session, family.id, now=now)
     return family_spent < quota
 
 
@@ -512,8 +523,10 @@ async def approve_story_request(
     # never creates a Series row, never re-syncs an anchor's series_id, and
     # never reaches _build_concept (no Concept, and therefore no later
     # GenerationJob, is ever created for a blocked approval).
-    # #VERIFY: tests/unit/test_story_requests.py::TestBudget asserts a 409
-    # AND that no Concept row exists afterward.
+    # #VERIFY: tests/unit/test_story_requests.py::TestApproveStoryRequestQuotaGate
+    # asserts the StateTransitionError (the 409 at the HTTP layer) AND that no
+    # Concept row was added; test_story_requests_budget.py's
+    # test_authored_guardian_blocked_by_quota_via_http pins the 409 itself.
     await enforce_family_quota(session, principal, request.family_id, now=now)
     profile: ChildProfile | None = None
     if request.profile_id is not None:

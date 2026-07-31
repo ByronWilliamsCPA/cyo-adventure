@@ -126,6 +126,79 @@ async def test_family_monthly_spend_excludes_prior_month_at_the_boundary(
         assert spend == 1
 
 
+async def test_can_auto_approve_uses_one_instant_for_both_spend_counts(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """``can_auto_approve`` passes its resolved ``now`` into BOTH spend counts.
+
+    ``profile_monthly_spend`` and ``family_monthly_spend`` each default a
+    ``None`` ``now`` to their own ``datetime.now(UTC)``, so dropping the
+    explicit ``now=now`` at either call site silently re-points that one count
+    at the real current month. The spend here is seeded in a long-past month
+    (June 2020) and the decision is asked for that same month, so either
+    omission collapses the corresponding count to 0 and flips the answer from
+    False to True. Two families, one per call site, so neither can be dropped
+    without failing: the profile check short-circuits before the family check,
+    which would otherwise mask a regression on the family side.
+    """
+    when = datetime(2020, 6, 15, 12, 0, 0, tzinfo=UTC)
+
+    async with sessions() as session:
+        # Family A: the CHILD's envelope is exhausted, the family quota is not.
+        fam_a = Family(name="Envelope Family", monthly_story_quota=99)
+        session.add(fam_a)
+        await session.flush()
+        kid_a = ChildProfile(
+            family_id=fam_a.id,
+            display_name="Envelope Kid",
+            age_band="8-11",
+            request_auto_approve=True,
+            monthly_request_envelope=1,
+        )
+        session.add(kid_a)
+        await session.flush()
+        await _seed_approved_request(
+            session, family_id=fam_a.id, profile_id=kid_a.id, approved_at=when
+        )
+
+        # Family B: the FAMILY quota is exhausted, the child's envelope is not.
+        fam_b = Family(name="Quota Family", monthly_story_quota=1)
+        session.add(fam_b)
+        await session.flush()
+        kid_b = ChildProfile(
+            family_id=fam_b.id,
+            display_name="Quota Kid",
+            age_band="8-11",
+            request_auto_approve=True,
+            monthly_request_envelope=99,
+        )
+        session.add(kid_b)
+        await session.flush()
+        # Attributed to a SIBLING (profile_id=None here), so this row counts
+        # against the family only and leaves kid_b's own envelope untouched.
+        await _seed_approved_request(
+            session, family_id=fam_b.id, profile_id=None, approved_at=when
+        )
+        await session.commit()
+
+    async with sessions() as session:
+        profile_a = await session.get(ChildProfile, kid_a.id)
+        family_a = await session.get(Family, fam_a.id)
+        assert profile_a is not None
+        assert family_a is not None
+        assert not await service.can_auto_approve(
+            session, profile_a, family_a, now=when
+        )
+
+        profile_b = await session.get(ChildProfile, kid_b.id)
+        family_b = await session.get(Family, fam_b.id)
+        assert profile_b is not None
+        assert family_b is not None
+        assert not await service.can_auto_approve(
+            session, profile_b, family_b, now=when
+        )
+
+
 async def test_enforce_family_quota_blocks_and_creates_nothing(
     sessions: async_sessionmaker[AsyncSession],
 ) -> None:
