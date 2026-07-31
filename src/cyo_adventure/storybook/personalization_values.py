@@ -109,6 +109,43 @@ if TYPE_CHECKING:
 # value is a value_profile_id rather than free text or a closed enum.
 SIBLING_SLOT_TYPE = "sibling_name"
 
+# 21 vocative address terms, Title Case (used mid-sentence, e.g.
+# "love {KINSHIP}"), never a real adult's personal name (ADR-023 row 5).
+#
+# Shared verbatim by two `CLOSED_VOCABULARIES` keys, `kinship_label` and
+# `dedication`. They stay SEPARATE KEYS because ADR-023 row 8 gives them
+# different meanings (the dedication names the book's giver; the kinship
+# label names the in-story trusted adult, and a guardian may legitimately
+# pick different terms for each), but there has never been a reason for the
+# two to draw from different value sets. Bound to one constant rather than
+# written out twice so a vocabulary edit is one edit, not a two-place edit
+# with nothing structural to catch a half-done one.
+_KINSHIP_VOCABULARY: frozenset[str] = frozenset(
+    {
+        "Mom",
+        "Dad",
+        "Grandma",
+        "Grandpa",
+        "Nana",
+        "Papa",
+        "Gran",
+        "Pop",
+        "Abuela",
+        "Abuelo",
+        "Oma",
+        "Opa",
+        "Auntie",
+        "Aunt",
+        "Uncle",
+        "Mama",
+        "Mommy",
+        "Daddy",
+        "Nonna",
+        "Nonno",
+        "Grown-up",
+    }
+)
+
 # #EDGE: data-integrity: every list below is cited to a specific, owner-
 # reviewed source rather than hand-invented; see the module docstring's "On
 # CLOSED_VOCABULARIES" note for the acceptance history.
@@ -116,6 +153,21 @@ SIBLING_SLOT_TYPE = "sibling_name"
 # the accepted source of truth for every value below (owner review closed
 # 2026-07-29); do not hand-add or hand-remove a value here without an update
 # to that document or a future ADR-023 amendment recording the change.
+#
+# #EDGE: data-integrity: the longest member below is 3 words
+# ("mac and cheese"); every other multi-word value is exactly 2. A catalog
+# slot bound to one of these personalization fields must therefore declare
+# `max_words >= 3`, because `validate_personalization_value` applies only the
+# structural and denylist checks and never the theme contract's own
+# `max_words`/`pattern`/`legacy_lexicon` constraints. A personalizable slot
+# authored onto a `max_words: 2` slot would store and render a value the
+# contract would have rejected. Latent today: no contract on disk declares a
+# `kind="personalizable"` slot yet, so nothing can bind these values.
+# #VERIFY: tests/unit/test_closed_vocabularies.py pins the 3-word ceiling, so
+# adding a longer member fails there rather than in rendered prose. When the
+# first personalizable slot IS authored, `_check_personalizable_slots`
+# (storybook/theme_contract.py) should grow a rule rejecting a slot whose
+# `max_words` is below the longest member of its field's vocabulary.
 CLOSED_VOCABULARIES: dict[str, frozenset[str]] = {
     # 16 common kid-household and small-farm pets, lowercase common nouns
     # (interpolated mid-sentence, e.g. "a pet {PET_SPECIES}").
@@ -139,33 +191,9 @@ CLOSED_VOCABULARIES: dict[str, frozenset[str]] = {
             "horse",
         }
     ),
-    # 21 vocative address terms, Title Case (used mid-sentence, e.g.
-    # "love {KINSHIP}"), never a real adult's personal name (ADR-023 row 5).
-    "kinship_label": frozenset(
-        {
-            "Mom",
-            "Dad",
-            "Grandma",
-            "Grandpa",
-            "Nana",
-            "Papa",
-            "Gran",
-            "Pop",
-            "Abuela",
-            "Abuelo",
-            "Oma",
-            "Opa",
-            "Auntie",
-            "Aunt",
-            "Uncle",
-            "Mama",
-            "Mommy",
-            "Daddy",
-            "Nonna",
-            "Nonno",
-            "Grown-up",
-        }
-    ),
+    # See `_KINSHIP_VOCABULARY` above for the list and for why `dedication`
+    # below shares it.
+    "kinship_label": _KINSHIP_VOCABULARY,
     # 12 lowercase common nouns (ADR-023 row 6, favorite color).
     "favorite_color": frozenset(
         {
@@ -244,31 +272,7 @@ CLOSED_VOCABULARIES: dict[str, frozenset[str]] = {
     # fired, making the dedication a free-text channel onto a kid-facing
     # screen; see `tests/unit/test_personalization_vocab_drift.py` for the
     # drift guard that now pins this key against `PERSONALIZATION_FIELDS`.
-    "dedication": frozenset(
-        {
-            "Mom",
-            "Dad",
-            "Grandma",
-            "Grandpa",
-            "Nana",
-            "Papa",
-            "Gran",
-            "Pop",
-            "Abuela",
-            "Abuelo",
-            "Oma",
-            "Opa",
-            "Auntie",
-            "Aunt",
-            "Uncle",
-            "Mama",
-            "Mommy",
-            "Daddy",
-            "Nonna",
-            "Nonno",
-            "Grown-up",
-        }
-    ),
+    "dedication": _KINSHIP_VOCABULARY,
 }
 
 

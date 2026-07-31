@@ -18,10 +18,13 @@ The migration side is resolved dynamically (the newest migration that
 defines a ``slot_type IN (...)`` CHECK), not hardcoded to the original
 creation migration, mirroring
 ``test_pipeline_event_check_vocab.py::_newest_event_type_check_migration``:
-Task D6 (``20260730000000_split_favorite_personalization_slot.sql``)
-replaces both CHECKs wholesale to split the flat ``favorite`` slot into
-``favorite_color``/``favorite_food``/``favorite_hobby``, so only the newest
-migration describes the vocabulary the database actually ends up with.
+Task D6's split migration replaces both CHECKs wholesale to split the flat
+``favorite`` slot into ``favorite_color``/``favorite_food``/
+``favorite_hobby``, so only the newest migration describes the vocabulary the
+database actually ends up with. Deliberately named here by role rather than
+by filename: a timestamp prefix in prose goes stale the moment the file is
+renamed (this one already was, to resolve a version collision), which is the
+exact failure mode this module exists to prevent.
 
 This module also carries the ``CLOSED_VOCABULARIES``-vs-``PERSONALIZATION_
 FIELDS`` drift guard from AL-068/UW-C20
@@ -43,6 +46,9 @@ from pathlib import Path
 
 from sqlalchemy import CheckConstraint
 
+from cyo_adventure.api.personalization import (
+    _RING2_EXCLUDED_SLOT_TYPES,
+)
 from cyo_adventure.db.models import ChildProfilePersonalization
 from cyo_adventure.storybook.personalization_values import (
     CLOSED_VOCABULARIES,
@@ -72,6 +78,31 @@ _FREE_TEXT_OR_REFERENCE_EXEMPT_FIELDS = frozenset(
 )
 
 
+def _executable_ddl(path: Path) -> str:
+    """Return a migration's text with its ``--`` comment lines removed.
+
+    #EDGE: data-integrity: this project's SQL migration header comments are
+    prose and routinely quote the very DDL they describe (the D6 split
+    migration's own header explains the ``slot_type IN (...)`` CHECK it
+    replaces). Both the migration SELECTOR and the list PARSER below must
+    therefore agree that only executable DDL counts; a selector that matched
+    on raw text would happily nominate a comment-only or policy-only
+    migration as "the newest one defining the CHECK", and the parser would
+    then fail with "found 0 occurrences", pointing the next engineer at a
+    nonexistent DDL defect instead of at the selector.
+
+    Args:
+        path: The migration file to read.
+
+    Returns:
+        str: The file's lines with every ``--`` comment line dropped.
+    """
+    raw = path.read_text(encoding="utf-8")
+    return "\n".join(
+        line for line in raw.splitlines() if not line.strip().startswith("--")
+    )
+
+
 def _newest_slot_type_check_migration() -> Path:
     """Locate the last-sorting migration that defines a slot_type CHECK.
 
@@ -94,7 +125,7 @@ def _newest_slot_type_check_migration() -> Path:
     candidates = sorted(
         path
         for path in _MIGRATIONS_DIR.glob("*.sql")
-        if "slot_type IN (" in path.read_text(encoding="utf-8")
+        if "slot_type IN (" in _executable_ddl(path)
     )
     if not candidates:
         message = (
@@ -118,16 +149,12 @@ def _migration_slot_type_lists() -> tuple[set[str], set[str]]:
         narrower list guarded by ``ck_cpp_ring2_ceiling``, in the order they
         appear in the file.
     """
-    # #EDGE: data-integrity: this project's SQL migration header comments are
-    # prose and may themselves mention the literal text "slot_type IN (...)"
-    # (e.g. explaining why a later migration replaces it); `--`-comment lines
-    # are stripped before parsing so a comment's mention is never mistaken
-    # for one of the two executable DDL occurrences. Mirrors
+    # Comment lines are stripped by `_executable_ddl` (see its docstring for
+    # why the selector above must use the same view of the file), so a header
+    # comment's mention of "slot_type IN (...)" is never mistaken for one of
+    # the two executable DDL occurrences. Mirrors
     # test_pipeline_event_check_vocab.py's identical guard for apostrophes.
-    raw = _newest_slot_type_check_migration().read_text(encoding="utf-8")
-    ddl = "\n".join(
-        line for line in raw.splitlines() if not line.strip().startswith("--")
-    )
+    ddl = _executable_ddl(_newest_slot_type_check_migration())
     occurrences = re.findall(r"slot_type IN \(([^)]*)\)", ddl)
     assert len(occurrences) == 2, (
         f"expected exactly 2 'slot_type IN (...)' occurrences "
@@ -259,3 +286,69 @@ def test_exempt_fields_carry_no_vocabulary_entry() -> None:
     disagree about which check governs it.
     """
     assert _FREE_TEXT_OR_REFERENCE_EXEMPT_FIELDS.isdisjoint(CLOSED_VOCABULARIES)
+
+
+# ---------------------------------------------------------------------------
+# The SECOND store of this vocabulary: personalization_consent.covered_slot_types.
+# ---------------------------------------------------------------------------
+
+
+def test_consent_covered_slot_types_vocabulary_matches_personalization_fields() -> None:
+    """The consent scope's admissible vocabulary is exactly the ring-2 eligible set.
+
+    `personalization_consent.covered_slot_types` is an UNCONSTRAINED JSONB
+    string array holding the same slot-type names the CHECK-guarded
+    `child_profile_personalization.slot_type` column holds. Unlike that
+    column, nothing at the database level bounds it: the only gate is
+    `api/personalization.py`'s write-time
+    ``slot_type not in PERSONALIZATION_FIELDS or slot_type in
+    _RING2_EXCLUDED_SLOT_TYPES`` check.
+
+    That asymmetry is exactly how Task D6 nearly shipped a half-done data
+    migration. The split migration reasoned carefully about why a
+    `slot_type = 'favorite'` ROW was unwritable (empty frozenset plus
+    `_shape_violations`) and wrote a defensive DELETE anyway, while the store
+    where `'favorite'` genuinely WAS writable went untouched. A stale entry
+    there fails closed (`_ring2_values` excludes any row whose slot_type is
+    not in `covered`, so the family under-shares rather than over-shares) but
+    leaves a consent record naming a slot type the system no longer has, and
+    `GET /v1/me` echoes that dead string back verbatim.
+
+    This test binds the Python-side gate to the same source of truth the DB
+    CHECKs are bound to above, so the next vocabulary change fails here rather
+    than silently stranding consent records.
+    """
+    admissible = set(PERSONALIZATION_FIELDS) - _RING2_EXCLUDED_SLOT_TYPES
+    assert admissible == set(PERSONALIZATION_FIELDS) - _RING1_ONLY_FIELDS, (
+        "api/personalization.py's consent-scope gate and this module's "
+        "ring-1-only set disagree about which slot types a ring-2 consent may "
+        "cover; they must name the same ceiling as ck_cpp_ring2_ceiling"
+    )
+    _, ring2_ceiling = _migration_slot_type_lists()
+    assert admissible == ring2_ceiling, (
+        "the consent scope's admissible vocabulary drifted from the DB's own "
+        "ring-2 ceiling; a consent could then name a slot type the "
+        "child_profile_personalization CHECK rejects, or vice versa"
+    )
+
+
+def test_split_migration_sweeps_the_consent_scope_too() -> None:
+    """The D6 split migration clears 'favorite' from the consent scope column.
+
+    The companion to the guard above, pinned as a regression test rather than
+    a vocabulary assertion: the split migration must touch BOTH stores. The
+    element is removed rather than expanded into the three new keys because
+    rewriting a single 'favorite' grant into favorite_color + favorite_food +
+    favorite_hobby would widen a ring-2 sharing scope to three distinct facts
+    the guardian was never shown.
+    """
+    ddl = _executable_ddl(_newest_slot_type_check_migration())
+    assert "personalization_consent" in ddl, (
+        "the newest slot_type migration does not touch "
+        "personalization_consent.covered_slot_types, the second (unconstrained) "
+        "store of this same vocabulary"
+    )
+    assert "- 'favorite'" in ddl, (
+        "expected a `covered_slot_types - 'favorite'` removal; an expansion "
+        "into the three new keys would widen consent beyond what was granted"
+    )

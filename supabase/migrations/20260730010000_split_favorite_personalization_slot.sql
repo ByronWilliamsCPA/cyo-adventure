@@ -30,6 +30,37 @@
 -- against `storybook.theme_contract.PERSONALIZATION_FIELDS`.
 DELETE FROM "public"."child_profile_personalization" WHERE slot_type = 'favorite';
 
+-- #CRITICAL: data integrity: `child_profile_personalization.slot_type` is NOT
+-- the only store of this vocabulary. `personalization_consent.covered_slot_types`
+-- is an unconstrained JSONB string array holding the same slot-type names, and
+-- unlike the CHECK-guarded column above it COULD legitimately hold 'favorite'
+-- today: its only gate is api/personalization.py's `slot_type not in
+-- PERSONALIZATION_FIELDS or slot_type in _RING2_EXCLUDED_SLOT_TYPES`, and
+-- 'favorite' satisfied both before this migration. So the DELETE above is
+-- defensive, but the UPDATE below is a real data migration.
+--
+-- The element is REMOVED rather than expanded into the three new keys. That
+-- direction is deliberate and is the COPPA-safe one: a guardian consented to
+-- share "favorite", which under Option A was a single undifferentiated value.
+-- Rewriting that grant into favorite_color + favorite_food + favorite_hobby
+-- would widen a ring-2 sharing scope to three distinct facts the guardian was
+-- never shown, which is exactly the consent-inflation ADR-023's ring model
+-- exists to prevent. Removing it means the new slots start unshared until the
+-- guardian re-consents, so the failure direction is under-share.
+--
+-- `jsonb - text` removes every matching string element from a JSONB array and
+-- is a no-op on an array that does not contain it; the `?` guard keeps the
+-- UPDATE from rewriting untouched rows. NULL rows are skipped by `?` returning
+-- NULL, which is correct: a NULL scope covers nothing.
+-- #VERIFY: tests/unit/test_personalization_vocab_drift.py::
+-- test_consent_covered_slot_types_vocabulary_matches_personalization_fields
+-- pins this column's admissible vocabulary to PERSONALIZATION_FIELDS, so the
+-- next vocabulary change fails there rather than silently stranding a consent
+-- record that names a slot type the system no longer has.
+UPDATE "public"."personalization_consent"
+   SET covered_slot_types = covered_slot_types - 'favorite'
+ WHERE covered_slot_types ? 'favorite';
+
 DO $$
 BEGIN
     IF EXISTS (
