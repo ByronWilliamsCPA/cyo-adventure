@@ -46,6 +46,17 @@ _OUTCOMES: frozenset[str] = frozenset(
     {OUTCOME_PROMOTABLE, OUTCOME_HELD, OUTCOME_DISCARDED, OUTCOME_SHELVED}
 )
 
+# The template-set generation a ledger row with no ``template_set_version`` key
+# belongs to. This is a HISTORICAL FACT, not a current value: every such row was
+# written before the field existed, hence before any bump of
+# ``strategy.TEMPLATE_SET_VERSION``, hence under generation 1. It must therefore
+# stay 1 forever and must NOT be replaced with an import of
+# ``strategy.TEMPLATE_SET_VERSION`` when that is bumped, which would silently
+# re-label every historical row as belonging to the newest template set and
+# destroy the very attribution this field exists to provide. (An import would
+# also be circular: strategy imports this module.)
+_UNVERSIONED_TEMPLATE_SET = 1
+
 
 def chain_signature(steps: Sequence[ChainStep]) -> list[dict[str, object]]:
     """Return a chain's canonical, JSON-round-trippable step list.
@@ -122,6 +133,15 @@ class AttemptRecord:
             (``parent_distance`` and ``min_in_cell_distance``); empty otherwise.
         timestamp: The ISO-8601 record time, supplied by the caller. NOT part of
             :attr:`attempt_sig` (design 6.3), so replay determinism holds.
+        template_set_version: The chain-template set generation this attempt was
+            planned under (design 6.2,
+            :data:`~cyo_adventure.flywheel.strategy.TEMPLATE_SET_VERSION`).
+            Deliberately has NO default: a writer must state which template set
+            produced the chain, because that is the one fact a later reader
+            cannot reconstruct from the record itself. NOT part of
+            :attr:`attempt_sig`, for the same reason ``timestamp`` is not:
+            replaying the same chain under a bumped template set must still
+            collapse onto the same signature.
     """
 
     attempt_sig: str
@@ -134,6 +154,7 @@ class AttemptRecord:
     discard_reason: str
     distances: dict[str, float]
     timestamp: str
+    template_set_version: int
 
     def to_json(self) -> dict[str, object]:
         """Return the record as a JSON-serializable dict.
@@ -152,6 +173,7 @@ class AttemptRecord:
             "discard_reason": self.discard_reason,
             "distances": self.distances,
             "timestamp": self.timestamp,
+            "template_set_version": self.template_set_version,
         }
 
 
@@ -278,6 +300,20 @@ def _coerce_record(row: dict[str, object]) -> AttemptRecord | None:
     )
     failing_stage = row.get("failing_stage")
     discard_reason = row.get("discard_reason")
+    raw_version = row.get("template_set_version")
+    # #ASSUME: data-integrity: a row with no ``template_set_version`` was
+    # written before the field existed, which was necessarily before any
+    # template-set bump, so it belongs to generation
+    # _UNVERSIONED_TEMPLATE_SET by definition rather than by guess. A row
+    # carrying a non-int (hand-edited junk) gets the same treatment as every
+    # other malformed optional here: fall back, never raise, because the D7
+    # report reads this and a single bad line must not blind the funnel.
+    # #VERIFY: test_coerce_record_defaults_missing_template_set_version.
+    version = (
+        raw_version
+        if isinstance(raw_version, int) and not isinstance(raw_version, bool)
+        else _UNVERSIONED_TEMPLATE_SET
+    )
     return AttemptRecord(
         attempt_sig=sig,
         parent_slug=parent_slug,
@@ -289,6 +325,7 @@ def _coerce_record(row: dict[str, object]) -> AttemptRecord | None:
         discard_reason=discard_reason if isinstance(discard_reason, str) else "",
         distances=distances,
         timestamp=timestamp,
+        template_set_version=version,
     )
 
 

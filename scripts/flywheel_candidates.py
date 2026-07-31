@@ -53,6 +53,7 @@ from cyo_adventure.flywheel.reguide_draft import (
     draft_resolutions,
 )
 from cyo_adventure.flywheel.strategy import (
+    TEMPLATE_SET_VERSION,
     Catalog,
     Cell,
     compute_candidate_metrics,
@@ -262,6 +263,7 @@ def _run_one(
             discard_reason=result.discard_reason,
             distances={},
             timestamp=timestamp,
+            template_set_version=TEMPLATE_SET_VERSION,
         )
         return None, record
     siblings = load_in_cell_catalog(chain.candidate, plan.parent_slug)
@@ -287,6 +289,7 @@ def _run_one(
             "min_in_cell_distance": metrics.min_in_cell_distance,
         },
         timestamp=timestamp,
+        template_set_version=TEMPLATE_SET_VERSION,
     )
     survivor = _Survivor(
         plan=plan, chain=chain, result=result, metrics=metrics, contract=contract
@@ -553,6 +556,7 @@ def run_cell_candidates(
                         "min_in_cell_distance": survivor.metrics.min_in_cell_distance,
                     },
                     timestamp=datetime.datetime.now(datetime.UTC).isoformat(),
+                    template_set_version=TEMPLATE_SET_VERSION,
                 ),
             )
 

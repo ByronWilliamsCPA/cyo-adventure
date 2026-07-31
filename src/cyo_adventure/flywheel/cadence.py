@@ -11,8 +11,9 @@ dropped. Demand is only ever deferred, never lost.
 The four cell-facing bounds this gate enforces (the trigger threshold is applied
 upstream by D1; ``MAX_ATTEMPTS_PER_CELL`` is applied per cell inside the strategy):
 
-- **open PRs per cell** (:data:`~cyo_adventure.flywheel.strategy.OPEN_PR_PER_CELL`):
-  a cell that already has an open ``skeleton-promotion`` PR waits;
+- **open PRs per cell** (no constant; the bound is the ``cell in open_pr_cells``
+  membership test in :func:`_blocking_bound`): a cell that already has an open
+  ``skeleton-promotion`` PR waits;
 - **open PRs global** (:data:`~cyo_adventure.flywheel.strategy.OPEN_PR_GLOBAL`):
   the cycle admits cells only up to the remaining global open-PR capacity;
 - **per-cell cool-down** (:data:`~cyo_adventure.flywheel.strategy.COOLDOWN_DAYS`):
@@ -190,6 +191,13 @@ def _blocking_bound(  # noqa: PLR0913 -- the four 8.2 bounds plus running budget
     Returns:
         str | None: The blocking bound id, or None when the cell may grow.
     """
+    # At most one open ``skeleton-promotion`` PR per cell: the reviewer compares
+    # one candidate against one cell at a time, so a second candidate for the
+    # same cell waits (design 8.2). The "one" is this membership test, not a
+    # constant: bare presence in ``open_pr_cells`` blocks, so the bound is
+    # structural and there is no number to tune. Expressing it as
+    # ``strategy.OPEN_PR_PER_CELL = 1`` (which nothing read) was a trap, since
+    # editing that constant to 2 would have changed nothing here.
     if cell in open_pr_cells:
         return CAP_OPEN_PR_PER_CELL
     merged_on = last_merge_by_cell.get(cell)
