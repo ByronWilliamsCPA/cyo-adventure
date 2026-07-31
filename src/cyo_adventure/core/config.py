@@ -561,6 +561,16 @@ class Settings(BaseSettings):
     review_provider: Literal["mock", "ollama", "openrouter", "modal"] = "mock"
     review_openrouter_model: str = "anthropic/claude-sonnet-4.6"
     review_ollama_model: str = "qwen2.5:14b"
+    # Escape hatch for `review_provider="mock"` outside `environment="local"`
+    # (design doc section 2.4, moderation review redesign). The mock reviewer
+    # runs no real safety review; a non-local process quietly booting with it
+    # would persist unreviewed moderation reports as if they were reviewed
+    # (gap G1). `_require_real_reviewer_outside_local` below refuses to boot
+    # in that combination unless this is explicitly set, which is also the
+    # signal the moderation pipeline uses to stamp `reviewer_independent=false`
+    # plus a structural advisory finding on every report it produces, so a
+    # mock-moderated report stays self-identifying forever.
+    allow_mock_review: bool = False
 
     # Stage-0 deterministic classifier credentials. Both optional individually; a
     # missing key skips that classifier. Both unset is rejected below when review runs.
@@ -1225,6 +1235,48 @@ class Settings(BaseSettings):
                 f"'{self.review_provider}'. PERSPECTIVE_API_KEY no longer "
                 "satisfies this requirement: Perspective sunsets 2026-12-31 "
                 "and a set key is not evidence of a working classifier."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _require_real_reviewer_outside_local(self) -> Settings:
+        """Refuse a mock moderation reviewer outside ``environment="local"``.
+
+        Mirrors ``_require_classifier_when_reviewing``: a posture invariant
+        enforced conditionally, not blanket. The mock reviewer (Stage 1-4
+        LLM review) runs no real safety judgment at all; a deployed process
+        booting with it would persist moderation reports that read as
+        reviewed but never were (gap G1, design doc section 2.4). Set
+        ``CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1`` for the narrow legitimate case
+        (catalog seeding, local-parity smoke runs against a non-local
+        database) and expect ``moderation/pipeline.py`` to stamp every
+        report produced under it as non-independent plus a structural
+        advisory finding, so it is never mistaken for real review.
+
+        Raises:
+            ConfigurationError: when ``review_provider == "mock"``,
+                ``environment != "local"``, and ``allow_mock_review`` is False.
+        """
+        # #CRITICAL: security: no unreviewed children's content persisted as
+        # a real moderation report outside local dev, without an explicit,
+        # self-documenting opt-in.
+        # #VERIFY: tests/unit/test_config.py::
+        # TestValidatorRequireRealReviewerOutsideLocal::
+        # test_non_local_environment_with_mock_review_without_hatch_raises and
+        # ::test_non_local_environment_with_mock_review_and_hatch_boots.
+        if (
+            self.review_provider == "mock"
+            and self.environment != "local"
+            and not self.allow_mock_review
+        ):
+            msg = (
+                "review_provider is 'mock' but environment is "
+                f"'{self.environment}', not 'local'. The mock reviewer runs no "
+                "real safety review; set CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1 if "
+                "this is an intentional non-evidence run (for example catalog "
+                "seeding), which also stamps every report it produces as "
+                "reviewer_independent=false with a structural advisory finding."
             )
             raise ConfigurationError(msg)
         return self

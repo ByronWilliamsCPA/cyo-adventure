@@ -130,7 +130,7 @@ def _sanitize_delimited(prose: str) -> str:
 # ---------------------------------------------------------------------------
 
 
-def _parse_verdict(raw: str, *, fail_safe: Verdict) -> tuple[Verdict, str]:
+def _parse_verdict(raw: str, *, fail_safe: Verdict) -> tuple[Verdict, str, bool]:
     """Parse a model verdict JSON; map unknown or unparseable output to fail_safe.
 
     Args:
@@ -139,7 +139,12 @@ def _parse_verdict(raw: str, *, fail_safe: Verdict) -> tuple[Verdict, str]:
             gates, ``PASS`` for soft/advisory stages).
 
     Returns:
-        ``(verdict, reason)``.
+        ``(verdict, reason, is_fail_safe)``. ``is_fail_safe`` is True when the
+        model output could not be parsed or mapped to a known verdict (design
+        doc section 2.3): callers that emit one finding per unparseable node
+        would flood the report under the mock reviewer or any degraded
+        upstream model; ``is_fail_safe`` lets a caller collapse those into a
+        single story-level structural finding instead.
     """
     mapping: dict[str, Verdict] = {
         "safe": Verdict.PASS,
@@ -160,11 +165,11 @@ def _parse_verdict(raw: str, *, fail_safe: Verdict) -> tuple[Verdict, str]:
         reason = str(payload.get("reason", ""))
     except (json.JSONDecodeError, AttributeError, TypeError):
         _logger.warning("verdict_parse_failed", raw=raw[:200])
-        return fail_safe, "verdict parse failed; defaulted to fail-safe"
+        return fail_safe, "verdict parse failed; defaulted to fail-safe", True
     if verdict is None:
         _logger.warning("verdict_unknown", raw=raw[:200])
-        return fail_safe, "unknown verdict; defaulted to fail-safe"
-    return verdict, reason
+        return fail_safe, "unknown verdict; defaulted to fail-safe", True
+    return verdict, reason, False
 
 
 # ---------------------------------------------------------------------------
@@ -188,12 +193,23 @@ async def run_safety_stage(
         max_tokens: Token budget per review call.
 
     Returns:
-        One finding per node (``BLOCK``/``FLAG``/``PASS``).
+        One finding per node that produced a genuine verdict, plus (per
+        design doc section 2.3) at most one additional story-level
+        structural finding collapsing every node whose verdict could not be
+        parsed. A story where every node fails to parse (the mock reviewer's
+        ``"{}"`` response, or any degraded upstream model) therefore
+        produces exactly one finding, not one per node.
     """
     # #CRITICAL: security: this is the only hard safety gate; a parse failure
-    # must fail safe (FLAG for human review), never silently PASS.
-    # #VERIFY: _parse_verdict maps unknown/garbled output to FLAG, not PASS.
+    # must fail safe (FLAG for human review), never silently PASS. The
+    # collapse below preserves that posture: the single structural finding
+    # still carries verdict=FLAG, so has_soft_flag stays True and the story
+    # still cannot reach a guardian without human review.
+    # #VERIFY: tests/unit/test_moderation_stages.py::
+    # test_safety_stage_all_nodes_fail_safe_collapses_to_one_finding and
+    # ::test_safety_stage_collapsed_finding_still_soft_flags.
     findings: list[Finding] = []
+    fail_safe_node_count = 0
     for node_id, prose in nodes:
         prompt = (
             f"Age band: {age_band}\n<untrusted_passage>\n"
@@ -202,7 +218,10 @@ async def run_safety_stage(
         raw = await provider.complete(
             system=_SAFETY_SYSTEM, prompt=prompt, max_tokens=max_tokens
         )
-        verdict, reason = _parse_verdict(raw, fail_safe=Verdict.FLAG)
+        verdict, reason, is_fail_safe = _parse_verdict(raw, fail_safe=Verdict.FLAG)
+        if is_fail_safe:
+            fail_safe_node_count += 1
+            continue
         findings.append(
             Finding(
                 stage=1,
@@ -211,6 +230,22 @@ async def run_safety_stage(
                 node_id=node_id,
                 verdict=verdict,
                 message=reason,
+            )
+        )
+    if fail_safe_node_count:
+        findings.append(
+            Finding(
+                stage=1,
+                source=Source.PIPELINE,
+                category="pipeline",
+                node_id=None,
+                verdict=Verdict.FLAG,
+                message=(
+                    f"reviewer unavailable or unparseable on "
+                    f"{fail_safe_node_count} node(s); defaulted to fail-safe"
+                ),
+                structural=True,
+                concern="reviewer_unavailable",
             )
         )
     return findings
@@ -254,7 +289,7 @@ async def run_readability_stage(
         raw = await provider.complete(
             system=_READABILITY_SYSTEM, prompt=prompt, max_tokens=max_tokens
         )
-        verdict, reason = _parse_verdict(raw, fail_safe=Verdict.PASS)
+        verdict, reason, _is_fail_safe = _parse_verdict(raw, fail_safe=Verdict.PASS)
         findings.append(
             Finding(
                 stage=2,
@@ -303,7 +338,7 @@ async def run_coherence_stage(
     raw = await provider.complete(
         system=_COHERENCE_SYSTEM, prompt=prompt, max_tokens=max_tokens
     )
-    verdict, reason = _parse_verdict(raw, fail_safe=Verdict.PASS)
+    verdict, reason, _is_fail_safe = _parse_verdict(raw, fail_safe=Verdict.PASS)
     return [
         Finding(
             stage=3,
@@ -351,7 +386,7 @@ async def run_engagement_stage(
     raw = await provider.complete(
         system=_ENGAGEMENT_SYSTEM, prompt=prompt, max_tokens=max_tokens
     )
-    verdict, reason = _parse_verdict(raw, fail_safe=Verdict.PASS)
+    verdict, reason, _is_fail_safe = _parse_verdict(raw, fail_safe=Verdict.PASS)
     return [
         Finding(
             stage=4,

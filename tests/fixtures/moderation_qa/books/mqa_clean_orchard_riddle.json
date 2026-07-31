@@ -1,0 +1,86 @@
+{
+  "schema_version": "2.0",
+  "id": "mqa_clean_orchard_riddle",
+  "version": 1,
+  "title": "The Orchard's Riddle Tree",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 3.5,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": ["mystery", "friendship"],
+    "estimated_minutes": 4,
+    "ending_count": 2,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "branch_and_bottleneck"
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "The old orchard is famous for its riddle tree, said to grant a wish to whoever solves its puzzle. Your friend Sam is already there with a notebook. Do you examine the carved riddle first, or ask the groundskeeper for a hint?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_riddle", "label": "Examine the carved riddle.", "target": "n_riddle"},
+        {"id": "c_hint", "label": "Ask the groundskeeper for a hint.", "target": "n_hint"}
+      ]
+    },
+    {
+      "id": "n_riddle",
+      "body": "The bark is carved with looping letters: 'I have branches but grow no leaves in winter, and I count every year I have lived. What am I?' Sam grins, already guessing.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_continue_riddle", "label": "Think it over together.", "target": "n_middle"}
+      ]
+    },
+    {
+      "id": "n_hint",
+      "body": "The groundskeeper chuckles and points at the tree's own rings without saying a word. You and Sam count them together, and the answer starts to dawn on you both.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_continue_hint", "label": "Follow the hint.", "target": "n_middle"}
+      ]
+    },
+    {
+      "id": "n_middle",
+      "body": "Whichever way you found it, the answer clicks into place: the tree itself! A small door at its base creaks open, revealing a woven basket of apples. Do you take an apple, or leave a note of thanks instead?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_apple", "label": "Take an apple.", "target": "n_end_apple"},
+        {"id": "c_note", "label": "Leave a note of thanks.", "target": "n_end_note"}
+      ]
+    },
+    {
+      "id": "n_end_apple",
+      "body": "The apple is the sweetest you have ever tasted. Sam laughs and says the riddle tree clearly approves of good guessers.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_apple",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Sweetest Apple"
+      },
+      "choices": []
+    },
+    {
+      "id": "n_end_note",
+      "body": "You tuck a small note into the basket instead, and the door closes with a satisfied little click, as if the tree had been thanked exactly the way it wanted.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_note",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Note of Thanks"
+      },
+      "choices": []
+    }
+  ]
+}

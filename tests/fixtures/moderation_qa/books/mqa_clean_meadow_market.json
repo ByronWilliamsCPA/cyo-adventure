@@ -1,0 +1,103 @@
+{
+  "schema_version": "2.0",
+  "id": "mqa_clean_meadow_market",
+  "version": 1,
+  "title": "Market Day in Meadow Square",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": ["everyday life", "friendship"],
+    "estimated_minutes": 3,
+    "ending_count": 4,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "sorting_hat"
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "It is market day in the village square! Colorful stalls line the cobblestones, and the smell of fresh bread drifts through the air. Do you visit the toy stall or follow the sound of music?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_toys", "label": "Visit the toy stall.", "target": "n_toys"},
+        {"id": "c_music", "label": "Follow the music.", "target": "n_music"}
+      ]
+    },
+    {
+      "id": "n_toys",
+      "body": "The toy stall is full of carved wooden animals and spinning tops. The stall keeper, Mr. Finch, waves hello and lets you pick one to try. Do you choose a wooden fox or a spinning top?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_fox", "label": "Choose the wooden fox.", "target": "n_end_fox"},
+        {"id": "c_top", "label": "Choose the spinning top.", "target": "n_end_top"}
+      ]
+    },
+    {
+      "id": "n_music",
+      "body": "A fiddler plays a cheerful tune near the fountain, and a little girl is dancing in circles, giggling the whole time. Do you join the dance or sit and listen quietly?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_dance", "label": "Join the dance.", "target": "n_end_dance"},
+        {"id": "c_listen", "label": "Sit and listen.", "target": "n_end_listen"}
+      ]
+    },
+    {
+      "id": "n_end_fox",
+      "body": "The little wooden fox fits perfectly in your pocket. Mr. Finch tells you it is good luck, and you grin the whole walk home.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fox",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A New Friend for Your Pocket"
+      },
+      "choices": []
+    },
+    {
+      "id": "n_end_top",
+      "body": "You spin the top right there on the stall counter, and it spins so long that Mr. Finch laughs and claps along with you.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_top",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Still Spinning"
+      },
+      "choices": []
+    },
+    {
+      "id": "n_end_dance",
+      "body": "You join the circle, laughing and stumbling through the steps, and by the end the whole square is clapping along with the fiddler.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_dance",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Dancing in the Square"
+      },
+      "choices": []
+    },
+    {
+      "id": "n_end_listen",
+      "body": "You sit on the fountain's edge and let the music wash over you, humming along until the last note fades into the afternoon sun.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_listen",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Quiet Tune"
+      },
+      "choices": []
+    }
+  ]
+}

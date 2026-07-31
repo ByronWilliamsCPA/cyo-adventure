@@ -380,12 +380,12 @@ async def list_library(
     )
     blobs: dict[tuple[str, int], dict[str, object]] = {}
     published_ats: dict[tuple[str, int], datetime | None] = {}
-    ready_covers: list[tuple[str, int]] = []
+    ready_covers: list[tuple[str, int, str | None]] = []
     for row in version_rows:
         blobs[(row.storybook_id, row.version)] = row.blob
         published_ats[(row.storybook_id, row.version)] = row.published_at
         if row.cover_status == "ready":
-            ready_covers.append((row.storybook_id, row.version))
+            ready_covers.append((row.storybook_id, row.version, row.cover_object_salt))
     # #CRITICAL: security: covers are private-by-default in R2 (Phase 1d); the
     # only way a client legitimately learns a cover's URL is a freshly
     # generated, short-lived signed GET URL, never the stored (permanent,

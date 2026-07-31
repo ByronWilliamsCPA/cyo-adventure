@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from cyo_adventure.covers.storage import cover_object_key
 from cyo_adventure.db.models import StorybookVersion
 
 from .conftest import Seed, auth
@@ -31,6 +32,28 @@ def _settings_missing(field: str) -> SimpleNamespace:
     values = dict(vars(_CONFIGURED))
     values[field] = None
     return SimpleNamespace(**values)
+
+
+# A recognizable stand-in for a real 32-hex-char cover_object_salt.
+_SALT = "0123456789abcdef0123456789abcdef"
+
+
+async def _fake_presign(
+    storybook_id: str,
+    version: int,
+    _settings: object,
+    *,
+    salt: str | None = None,
+    expires_in: int = 3600,
+) -> str:
+    """Stand in for the R2 presigner, echoing the derived object key.
+
+    `salt` is declared explicitly rather than absorbed into `**kwargs`, and it
+    reaches the returned URL via the production `cover_object_key`, so a
+    caller that stopped forwarding `row.cover_object_salt` changes the URL a
+    test can assert on instead of silently passing.
+    """
+    return f"https://signed.example.com/{cover_object_key(storybook_id, version, salt)}"
 
 
 async def test_non_admin_forbidden(
@@ -204,9 +227,11 @@ async def test_cover_status_returns_presigned_url_when_pending_review(
     # An admin reviewer must be able to see a pending cover before deciding
     # whether to approve it; _cover_url deliberately widens the presign gate
     # to "pending_review" (not just "ready") for this admin-only endpoint.
-    async def _fake_presign(storybook_id: str, version: int, _settings: object) -> str:
-        return f"https://signed.example.com/{storybook_id}/{version}"
-
+    #
+    # The stub takes `salt` explicitly (never **kwargs) and folds it into the
+    # URL through the production key builder: a fake that swallowed the salt
+    # would pass whether or not api/covers.py forwarded row.cover_object_salt,
+    # which is the entire behavior UW-M07's defense in depth rests on.
     monkeypatch.setattr(
         "cyo_adventure.api.covers.generate_presigned_cover_url", _fake_presign
     )
@@ -214,6 +239,7 @@ async def test_cover_status_returns_presigned_url_when_pending_review(
         row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
         assert row is not None
         row.cover_status = "pending_review"
+        row.cover_object_salt = _SALT
         await s.commit()
 
     resp = await client.get(
@@ -224,7 +250,38 @@ async def test_cover_status_returns_presigned_url_when_pending_review(
     body = resp.json()
     assert body["cover_status"] == "pending_review"
     assert body["cover_url"] == (
-        f"https://signed.example.com/{seed.storybook_id}/{seed.version}"
+        f"https://signed.example.com/{seed.storybook_id}/{seed.version}-{_SALT}.webp"
+    )
+    # Redundant with the equality above on purpose: this is the assertion that
+    # fails loudly if the salt ever stops reaching the presign call.
+    assert _SALT in body["cover_url"]
+
+
+async def test_cover_status_url_uses_the_legacy_key_when_salt_is_null(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A row predating cover_object_salt must keep resolving at the unsalted
+    key: its object was never renamed in R2, so a salted key would 404."""
+    monkeypatch.setattr(
+        "cyo_adventure.api.covers.generate_presigned_cover_url", _fake_presign
+    )
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        row.cover_status = "pending_review"
+        row.cover_object_salt = None
+        await s.commit()
+
+    resp = await client.get(
+        f"/api/v1/storybooks/{seed.storybook_id}/versions/{seed.version}/cover",
+        headers=auth(seed.admin_token),
+    )
+    assert resp.status_code == 200
+    assert resp.json()["cover_url"] == (
+        f"https://signed.example.com/{seed.storybook_id}/{seed.version}.webp"
     )
 
 

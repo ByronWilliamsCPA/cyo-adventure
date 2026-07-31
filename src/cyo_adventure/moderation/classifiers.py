@@ -113,6 +113,7 @@ def _degraded_finding(source: Source, reason: str) -> Finding:
         verdict=Verdict.ADVISORY,
         score=None,
         message=f"{source.value} classifier unavailable: {reason}",
+        structural=True,
     )
 
 
@@ -150,6 +151,7 @@ def _incomplete_coverage_finding(
             f"{len(unscreened)} node(s) were never bright-line screened and the "
             f"report cannot be read as clean for them: {sample}"
         ),
+        structural=True,
     )
 
 
@@ -479,12 +481,22 @@ async def _run_openai(
         _logger.warning("openai_moderation_failed", node_id=node_id, error=str(exc))
         raise ClassifierUnavailable(Source.OPENAI, str(exc)) from exc
 
+    # #CRITICAL: external-resources: an OpenAI response-shape change (top not a
+    # dict, missing/empty results, a non-dict result, or missing categories)
+    # used to log a warning and silently return [], indistinguishable from a
+    # genuinely clean node (gap G11). Each malformed shape now raises
+    # ClassifierUnavailable so it flows through the same retry/circuit-breaker
+    # path as an HTTP failure and lands as a structural degraded-classifier
+    # finding instead of vanishing.
+    # #VERIFY: tests/unit/test_moderation_classifiers.py::
+    # test_openai_non_dict_top_level_response_raises_classifier_unavailable
+    # and the sibling malformed-shape tests.
     top = _as_str_map(data)
     if top is None:
         _logger.warning(
             "openai_moderation_malformed", node_id=node_id, reason="top not a dict"
         )
-        return []
+        raise ClassifierUnavailable(Source.OPENAI, "response top-level was not a dict")
 
     results = top.get("results")
     if not isinstance(results, list) or not results:
@@ -493,7 +505,9 @@ async def _run_openai(
             node_id=node_id,
             reason="results missing or empty",
         )
-        return []
+        raise ClassifierUnavailable(
+            Source.OPENAI, "response 'results' missing or empty"
+        )
 
     result = _as_str_map(cast("object", results[0]))
     if result is None:
@@ -502,21 +516,18 @@ async def _run_openai(
             node_id=node_id,
             reason="result[0] not a dict",
         )
-        return []
+        raise ClassifierUnavailable(Source.OPENAI, "response result[0] was not a dict")
 
     categories = _narrow_bool_map(result.get("categories"))
     scores = _narrow_float_map(result.get("category_scores"))
-    # #EDGE: external-resources: `_narrow_bool_map` degrades a missing or
-    # non-dict `categories` field to `{}` rather than raising, so a shape
-    # change on OpenAI's side would otherwise fail silently (empty findings,
-    # no signal that the payload was malformed). Log it like the sibling
-    # shape checks above so the degrade is observable.
-    # #VERIFY: alerting on openai_moderation_malformed log volume.
     if not categories:
         _logger.warning(
             "openai_moderation_malformed",
             node_id=node_id,
             reason="categories missing or not a dict",
+        )
+        raise ClassifierUnavailable(
+            Source.OPENAI, "response 'categories' missing or not a dict"
         )
 
     findings: list[Finding] = []
@@ -555,19 +566,32 @@ async def _run_perspective(
         _logger.warning("perspective_failed", node_id=node_id, error=str(exc))
         raise ClassifierUnavailable(Source.PERSPECTIVE, str(exc)) from exc
 
+    # #CRITICAL: external-resources: a Perspective response-shape change (top
+    # not a dict, or a missing attributeScores map) used to log a warning and
+    # silently return [], indistinguishable from a genuinely clean node (gap
+    # G11). Both now raise ClassifierUnavailable so they flow through the same
+    # retry/circuit-breaker path as an HTTP failure and land as a structural
+    # degraded-classifier finding instead of vanishing.
+    # #VERIFY: tests/unit/test_moderation_classifiers.py::
+    # test_perspective_non_dict_top_level_response_raises_classifier_unavailable
+    # and the sibling malformed-shape test.
     top = _as_str_map(data)
     if top is None:
         _logger.warning(
             "perspective_malformed", node_id=node_id, reason="top not a dict"
         )
-        return []
+        raise ClassifierUnavailable(
+            Source.PERSPECTIVE, "response top-level was not a dict"
+        )
 
     attribute_scores = _as_str_map(top.get("attributeScores"))
     if attribute_scores is None:
         _logger.warning(
             "perspective_malformed", node_id=node_id, reason="attributeScores missing"
         )
-        return []
+        raise ClassifierUnavailable(
+            Source.PERSPECTIVE, "response 'attributeScores' missing or not a dict"
+        )
 
     findings: list[Finding] = []
     for attribute, payload in attribute_scores.items():
