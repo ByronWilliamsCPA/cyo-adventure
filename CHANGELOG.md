@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.51.1] - 2026-07-30
+
+### Bug Fixes
+
+- **covers**: Randomize R2 object keys as UW-M07 defense in depth
+  ([#494](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/494),
+  [`1a60e3d`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/1a60e3deea7d6c1b1d5e00e61d98ea01ee75b86d))
+
+
+## [0.51.0] - 2026-07-30
+
+### Features
+
+- **moderation**: Staging Moderation QA ground-truth corpus and seed tooling
+  ([#497](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/497),
+  [`efdb978`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/efdb978b245c9b1f9ef2f5cf19330a5596469945))
+
+
+## [0.50.1] - 2026-07-30
+
+### Bug Fixes
+
+- **moderation**: Collapse fail-safe verdict floods and gate the mock reviewer (Stage A)
+  ([#496](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/496),
+  [`8ca8d1b`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/8ca8d1b3edd09a289f6dc8b50e303936eff03d1a))
+
+
+## [0.50.0] - 2026-07-30
+
+### Chores
+
+- **deps**: Update dependency jsdom to v30
+  ([#490](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/490),
+  [`7077b88`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/7077b887f915877a8cd50e54d3366605b59bb9b5))
+
+
 ## [0.49.0] - 2026-07-30
 
 ### Features
@@ -2845,6 +2881,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.51.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.51.0...v0.51.1
+[0.51.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.50.1...v0.51.0
+[0.50.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.50.0...v0.50.1
+[0.50.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.49.0...v0.50.0
 [0.49.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.48.0...v0.49.0
 [0.48.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.47.0...v0.48.0
 [0.47.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.46.0...v0.47.0

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import secrets
 import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -20,7 +21,11 @@ from cyo_adventure.core.exceptions import (
 from cyo_adventure.covers.optimize import optimize_cover as _optimize_cover
 from cyo_adventure.covers.prompt import build_cover_prompt
 from cyo_adventure.covers.provider import generate_cover_image
-from cyo_adventure.covers.storage import cover_object_key, upload_cover
+from cyo_adventure.covers.storage import (
+    cover_object_key,
+    delete_cover,
+    upload_cover,
+)
 from cyo_adventure.db.models import (
     ChildProfile,
     Concept,
@@ -156,6 +161,7 @@ async def generate_cover(
     generate: Callable[[str, Settings], bytes] = generate_cover_image,
     optimize: _OptimizeFn = _optimize_cover,
     upload: Callable[[bytes, str, Settings], Awaitable[str]] = upload_cover,
+    delete: Callable[[str, Settings], Awaitable[bool]] = delete_cover,
 ) -> None:
     """Generate, optimize, upload, and record a cover for one story version.
 
@@ -176,12 +182,22 @@ async def generate_cover(
     approval happens.
 
     Scope of that guarantee: it covers the API surface, not the stored
-    bytes. The R2 object key is deterministic
-    (``covers/storage.py::cover_object_key``), so anyone who can guess
-    ``{storybook_id}/{version}.webp`` reaches the image directly if the
-    bucket is publicly served. Keeping the bucket private is a separate,
-    infrastructure-side control; see the ``#CRITICAL: security`` invariant
-    at the top of ``covers/storage.py``.
+    bytes. Keeping the R2 bucket private (no public custom domain or r2.dev
+    binding) is the primary control on the stored image, and is
+    infrastructure-side, not code (see the ``#CRITICAL: security`` invariant
+    at the top of ``covers/storage.py``; UW-M07 records the 2026-07-28
+    incident where that binding was live and the 2026-07-30 fix). This
+    function additionally mints a random ``cover_object_salt`` per cover
+    (defense in depth, not a substitute for the bucket being private): the
+    R2 key folds it in via ``covers/storage.py::cover_object_key``, so
+    knowing ``storybook_id`` and ``version`` alone is no longer sufficient
+    to reach the object even if the public binding is ever mistakenly
+    restored.
+
+    A consequence of that salt is that regenerating a cover no longer
+    overwrites the previous object in place (the new key differs), so this
+    function deletes the prior key after the replacement is committed. See
+    the ``#CRITICAL: security`` marker on that step below.
     """
     # #CRITICAL: concurrency: this runs in the worker's own AsyncSession, not the
     # request unit-of-work; it commits explicitly at each state transition.
@@ -205,6 +221,22 @@ async def generate_cover(
             "cover_target_missing", storybook_id=storybook_id, version=version
         )
         return
+    # #CRITICAL: data integrity: read the OUTGOING salt before anything
+    # overwrites it; once row.cover_object_salt is reassigned below the only
+    # pointer to the previous R2 object is gone and it can never be reclaimed.
+    # A None salt here is a row whose cover predates the salt column (or a
+    # backfilled one), whose object sits at the legacy unsalted key; a None
+    # cover_image_url is a row that never had a cover uploaded at all, so
+    # there is nothing to delete.
+    # #VERIFY: tests/integration/test_cover_service.py::
+    # test_regeneration_deletes_the_previous_object,
+    # ::test_regeneration_deletes_the_legacy_unsalted_object_when_salt_is_null,
+    # ::test_first_generation_deletes_nothing.
+    previous_key = (
+        cover_object_key(storybook_id, version, row.cover_object_salt)
+        if row.cover_image_url
+        else None
+    )
     row.cover_status = "generating"
     await session.commit()
     try:
@@ -229,8 +261,17 @@ async def generate_cover(
             quality=settings.cover_quality,
             max_bytes=settings.cover_max_bytes,
         )
-        key = cover_object_key(storybook_id, version)
+        # #CRITICAL: security: UW-M07 defense-in-depth stopgap -- a fresh
+        # 128-bit token per cover, so the R2 key (below) is not derivable
+        # from (storybook_id, version) alone. See this function's docstring
+        # and covers/storage.py::cover_object_key for the full rationale;
+        # this does not replace the bucket needing to stay private.
+        # #VERIFY: tests/integration/test_cover_service.py::
+        # test_generate_cover_stores_a_random_object_salt.
+        salt = secrets.token_hex(16)
+        key = cover_object_key(storybook_id, version, salt)
         public_url = await upload(optimized, key, settings)
+        row.cover_object_salt = salt
         row.cover_image_url = f"{public_url}?v={int(time.time())}"
         row.cover_status = "pending_review"
         await session.commit()
@@ -243,6 +284,24 @@ async def generate_cover(
         _logger.exception(
             "cover_generation_failed", storybook_id=storybook_id, version=version
         )
+    else:
+        # #CRITICAL: security: reclaim the object the previous cover lived at.
+        # Before the salt existed the key was deterministic, so PutObject
+        # above overwrote the old image in place; now every re-roll lands on a
+        # new key and the superseded object would otherwise stay in the bucket
+        # forever, still fetchable by anyone holding a presigned URL minted
+        # for it and still billed against R2's 10GB free tier. Deliberately
+        # placed after the commit and outside the try above: the replacement
+        # cover is already durable, so a delete failure must NOT roll the row
+        # back to "failed". delete_cover swallows and logs its own errors, so
+        # the guard here is only against re-deleting the key we just wrote
+        # (possible when the previous cover was unsalted and this one somehow
+        # resolved to the same key).
+        # #VERIFY: tests/integration/test_cover_service.py::
+        # test_regeneration_deletes_the_previous_object,
+        # ::test_regeneration_survives_a_failed_delete_of_the_previous_object.
+        if previous_key is not None and previous_key != key:
+            await delete(previous_key, settings)
 
 
 async def approve_cover(

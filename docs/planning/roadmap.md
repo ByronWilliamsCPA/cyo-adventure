@@ -814,13 +814,19 @@ runs on Supabase-managed infrastructure instead of the homelab; see
 - [x] **Newly surfaced by the 2026-07-20 audit**: H2, `generate_cover` flips
       `cover_status` straight `generating -> ready` with no moderation/approval gate, so
       an AI cover image can reach a child's shelf without the human review A16 promises
-      (the story-text safety guarantee, A6, is unaffected). Closed 2026-07-28 on
-      `feat/cover-review-ui`: the backend gate (`generate_cover` stops at
-      `pending_review`, `covers.service.approve_cover` is the sole admin-only path to
-      `ready`) merged from `fix/cover-moderation-gate` (commit b56b11f), and the admin
-      review UI (`ReviewDetailPage.tsx` renders the pending cover image plus an "Approve
-      cover" action) closes the remaining A16 gap the 2026-07-29 audit had found; A16
-      flipped to done in `capability-register.md`.
+      (the story-text safety guarantee, A6, is unaffected). Closed 2026-07-28: the
+      backend gate (`generate_cover` stops at `pending_review`,
+      `covers.service.approve_cover` is the sole admin-only path to `ready`) merged in
+      PR #469 (`30a988b5`), and the admin review UI (`ReviewDetailPage.tsx` renders the
+      pending cover image plus an "Approve cover" action) merged in PR #471
+      (`584a8a57`). `UW-M07` had held A16 open past H2: the R2 bucket served cover
+      images at a deterministic object key over a public custom domain, so an
+      unapproved cover's bytes stayed fetchable without passing this gate. The project
+      owner disconnected that domain in Cloudflare on 2026-07-30 (outside this
+      repository), re-verified by `dig cyo-bucket.williamshome.family` failing to
+      resolve against a working general-egress check, so the gate now governs actual
+      reachability and both H2 and A16 are closed. See `capability-register.md`'s A16
+      row for the live status.
 
 **Newly surfaced by the 2026-07-28 unscheduled-work sweep.** The security plan's Medium and Low
 tiers, and the authoring log's blocking lessons, had no phase home. Full detail by ID in the

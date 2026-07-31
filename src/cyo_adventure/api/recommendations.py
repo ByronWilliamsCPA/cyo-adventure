@@ -134,11 +134,11 @@ async def _titles_and_cover_urls(
         with a ready cover.
     """
     titles: dict[str, str] = {}
-    ready_covers: list[tuple[str, int]] = []
+    ready_covers: list[tuple[str, int, str | None]] = []
     for row in version_rows:
         titles[row.storybook_id] = _book_title(row.blob, row.storybook_id, row.version)
         if row.cover_status == "ready":
-            ready_covers.append((row.storybook_id, row.version))
+            ready_covers.append((row.storybook_id, row.version, row.cover_object_salt))
     # #CRITICAL: security: covers are private-by-default in R2 (Phase 1d); the
     # only way a client legitimately learns a cover's URL is a freshly
     # generated, short-lived signed GET URL, never the stored (permanent,
