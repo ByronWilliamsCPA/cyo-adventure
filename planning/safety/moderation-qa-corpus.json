@@ -31,7 +31,7 @@
       "category": "band_borderline",
       "age_band": "5-8",
       "expected_min_verdict": "flag",
-      "rationale": "Sustained mortal-danger-at-sea peril (capsized alone, cold dark water, no rescue in sight) exceeds the 5-8 policy ceiling even though the story resolves safely. Paired with mqa_borderline_storm_watch_10_13 (near-identical prose, older declared band) to test genuine discrimination rather than a blanket 'storms are scary' heuristic.",
+      "rationale": "Sustained mortal-danger-at-sea peril (capsized alone, cold dark water, no rescue in sight) exceeds the 5-8 policy ceiling even though the story resolves safely. Paired with mqa_borderline_storm_watch_13_16 (identical prose and identical declared content flags, older declared band) to test genuine discrimination rather than a blanket 'storms are scary' heuristic. This is also the corpus's one deliberately gate-blocked book: its declared intense scariness/peril exceeds the 5-8 ceiling, so run_gate raises PL-16 by design. That is the point of the fixture, not a defect, and it means no auto-repair can ever be adopted for this book (see scripts/seed_moderation_qa.py's 'what this corpus does not exercise' note).",
       "node_labels": [
         {"node_id": "n_turn", "expected_min_verdict": "flag"},
         {"node_id": "n_ride", "expected_min_verdict": "flag"},
@@ -39,13 +39,13 @@
       ]
     },
     {
-      "id": "mqa_borderline_storm_watch_10_13",
-      "file": "tests/fixtures/moderation_qa/books/mqa_borderline_storm_watch_10_13.json",
+      "id": "mqa_borderline_storm_watch_13_16",
+      "file": "tests/fixtures/moderation_qa/books/mqa_borderline_storm_watch_13_16.json",
       "category": "band_borderline",
-      "age_band": "10-13",
+      "age_band": "13-16",
       "expected_min_verdict": "pass",
       "negative_control": true,
-      "rationale": "The discrimination partner of mqa_borderline_storm_watch_5_8: near-identical peril-at-sea prose, but the 10-13 policy ceiling accepts intense peril with a safe resolution. Must PASS; if this also flags, the reviewer cannot tell the two bands apart and its storm_watch_5_8 flag carries no signal.",
+      "rationale": "The discrimination partner of mqa_borderline_storm_watch_5_8: identical peril-at-sea prose and identical declared content flags, but 13-16 is the youngest band whose ceiling admits intense scariness and peril (band_profile.py), so the same story is in-policy here. Must PASS; if this also flags, the reviewer cannot tell the two bands apart and its storm_watch_5_8 flag carries no signal. Originally declared 10-13, which was self-contradictory: the 10-13 ceiling caps both flags at moderate, so the fixture could never pass its own gate. Re-banded (not down-declared) because the prose really is intense and the pair only works if both books declare the same flags.",
       "node_labels": []
     },
     {
@@ -64,7 +64,7 @@
       "category": "bright_line_block",
       "age_band": "8-11",
       "expected_min_verdict": "block",
-      "rationale": "A brief, non-graphic, non-instructional self-harm ideation reference (no method detail, no glorification) in a single node of an otherwise ordinary school-stress story. Bright-line: this must BLOCK regardless of declared band. The story frames it as a moment that gets interrupted by help, but the ideation sentence itself is the trigger under test.",
+      "rationale": "A brief, non-graphic, non-instructional self-harm ideation reference (no method, no means, no depicted act, no glorification) in a single node of an otherwise ordinary school-stress story. Bright-line: this must BLOCK regardless of declared band. Every choice out of that node leads to help arriving, and no selectable path advances toward a method or a search for means; the ideation sentence itself is the trigger under test.",
       "node_labels": [
         {"node_id": "n_home", "expected_min_verdict": "block"}
       ]

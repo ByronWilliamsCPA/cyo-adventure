@@ -3560,6 +3560,16 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>open</td>
 <td>Immediate instance fixed in commit <code>f03c7fdc</code> (dedication now fails closed); the drift guard itself is UW-C20</td>
 </tr>
+<tr>
+<td>AL-069</td>
+<td>2026-07-30</td>
+<td>Moderation QA corpus fixture fixes (PR #497 follow-up)</td>
+<td>tooling</td>
+<td>Six hand-authored storybook fixtures shipped with schema/shape tests but were never run through <code>validator/gate.py::run_gate</code>, and five of the six were gate-blocked: one declared <code>intense</code> scariness/peril at a band whose ceiling is <code>moderate</code>, two declared a topology their own graph does not admit, and four sat under their band's PL-17 ending/decision floors. None of that is visible to a parse-and-shape test, and none of it stops moderation from running, so it looked fine. What it silently removed was repair coverage: <code>moderation/pipeline.py</code> re-runs <code>run_gate</code> over a repaired blob before adopting it, so a fixture that cannot clear the gate can have a repair generated but never adopted, and the seed script's docstring claim that the corpus exercises "repair" end to end was false for five of six books. A second defect rode along: the self-harm fixture's prose stated intent and a search for means while its own manifest entry claimed "no method detail", so the label and the labelled artifact disagreed in a public repo.</td>
+<td>Any hand-authored storybook fixture set needs a gate assertion, not just a schema assertion, with an explicit allowlist for fixtures whose gate violation IS the test. Adding to that allowlist must be a documented trade (it costs that fixture its repair-adoption coverage), never a way to quiet a red test. Where a manifest asserts a property of fixture prose, the prose is the thing to fix, not the assertion.</td>
+<td>applied</td>
+<td><code>tests/unit/test_moderation_qa_corpus.py::test_gate_blocked_books_are_exactly_the_declared_exceptions</code>, plus the "what this corpus does and does not exercise" section of <code>scripts/seed_moderation_qa.py</code></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -3599,7 +3609,7 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 15:52:00 UTC">July 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 31, 2026 04:05:55 UTC">July 31, 2026</span>
   </span>
 
     

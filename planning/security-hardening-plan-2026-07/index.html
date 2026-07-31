@@ -2832,10 +2832,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#m2-enforce-the-assignment-gate-on-the-guardian-blob-fetch-path" class="md-nav__link">
+  <a href="#m2-enforce-the-assignment-gate-on-get_storybook_version-the-reader-blob-fetch-path" class="md-nav__link">
     <span class="md-ellipsis">
       
-        M2. Enforce the assignment gate on the guardian blob-fetch path
+        M2. Enforce the assignment gate on get_storybook_version, the reader blob-fetch path
       
     </span>
   </a>
@@ -3230,7 +3230,7 @@ work, not trusted from this table.</p>
 <td>High</td>
 <td>No age-band ceiling from approval through delivery</td>
 <td>B</td>
-<td>[ ] needs re-triage</td>
+<td>[x] done: <code>assign_storybook</code> band ceiling, read-gate band check, and approve/authored-create confirmation-band check all added</td>
 </tr>
 <tr>
 <td>H2</td>
@@ -3265,14 +3265,14 @@ work, not trusted from this table.</p>
 <td>Medium</td>
 <td>Reading/completion routes bypass the assignment read-gate</td>
 <td>B</td>
-<td>[ ] needs re-triage</td>
+<td>[x] done: assignment EXISTS gate plus current/published/approved-version check added to <code>get_reading_state</code>, <code>put_reading_state</code>, <code>record_completion</code>; only a cross-family admin action is exempt (<code>acting_role</code>, not raw <code>is_admin</code>)</td>
 </tr>
 <tr>
 <td>M2</td>
 <td>Medium</td>
-<td>Guardian blob-fetch skips the assignment gate</td>
+<td><code>get_storybook_version</code> (the reader blob-fetch path) skips the assignment gate for guardians</td>
 <td>B</td>
-<td>[ ] needs re-triage</td>
+<td>[x] done: <code>GET /storybooks/{id}/versions/{v}</code> now requires an assignment row for any caller not acting as a cross-family admin, not only <code>role == CHILD</code>. Scope is that one route: <code>GET /storybooks/{id}/review-surface</code> (<code>api/approval.py</code>) stays ungated by design, because it is the register-G6 draft-review surface for a guardian's OWN family and a draft under review has no assignment to check</td>
 </tr>
 <tr>
 <td>M3</td>
@@ -3416,9 +3416,13 @@ moderation), B3 (repair re-gate) if the diff is large.</p>
   authored-create; reject (or require a logged explicit override) assigning a storybook whose band
   exceeds the target profile's band; add the band comparison to the read gate as defense in depth.</li>
 <li><strong>Acceptance criteria.</strong></li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Approve with a band above the profile's band is rejected (test).</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>assign_storybook</code> rejects a higher-band book for a lower-band profile (test).</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Read gate filters/refuses a higher-band book even if a mismatched assignment row exists (test).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Approve with a band above the profile's band is rejected (test): <code>approve_story_request</code> and
+        <code>create_authored_request</code> in <code>story_requests/service.py</code> now compare <code>confirmation.age_band</code>
+        against the requesting profile's band and raise <code>ValidationError</code> when it exceeds it
+        (<code>tests/unit/test_story_requests.py::test_approve_rejects_confirmation_band_above_profile_band</code>,
+        <code>::test_authored_create_rejects_confirmation_band_above_profile_band</code>).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <code>assign_storybook</code> rejects a higher-band book for a lower-band profile (test).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Read gate filters/refuses a higher-band book even if a mismatched assignment row exists (test).</li>
 </ul>
 <h3 id="h2-moderate-and-human-approve-ai-cover-images-before-children-see-them">H2. Moderate and human-approve AI cover images before children see them<a class="headerlink" href="#h2-moderate-and-human-approve-ai-cover-images-before-children-see-them" title="Permanent link">&para;</a></h3>
 <ul class="task-list">
@@ -3488,22 +3492,46 @@ moderation), B3 (repair re-gate) if the diff is large.</p>
   reading routes; restrict the accepted version to the approved, published, current version for
   non-admin principals. Update the <code>StorybookAssignment</code> docstring to enumerate every gated route.</li>
 <li><strong>Acceptance criteria.</strong></li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> All three reading routes 403/404 for a story not assigned to the acting profile (test).</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Reading routes reject a non-published / non-current / unapproved version for non-admins (test).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> All three reading routes 403/404 for a story not assigned to the acting profile (test):
+        <code>_require_assignment</code> added to <code>get_reading_state</code>, <code>put_reading_state</code>, <code>record_completion</code>
+        in <code>api/reading.py</code>
+        (<code>tests/integration/test_reading_state.py::test_get_reading_state_unassigned_own_family_story_404</code>,
+        <code>::test_put_reading_state_unassigned_own_family_story_404</code>,
+        <code>::test_record_completion_unassigned_own_family_story_404</code>).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Reading routes reject a non-published / non-current / unapproved version for non-admins (test):
+        <code>_require_current_published_approved</code> in <code>api/reading.py</code>
+        (<code>tests/integration/test_reading_state.py::test_put_reading_state_create_rejects_non_current_version_404</code>,
+        <code>::test_put_reading_state_create_rejects_unapproved_version_404</code>,
+        <code>::test_put_reading_state_create_rejects_non_published_book_404</code>,
+        <code>::test_record_completion_rejects_non_current_version_404</code>; a same-family create/update against
+        an already-established but since-superseded version remains allowed, guarded by
+        <code>::test_put_reading_state_update_allows_since_superseded_version</code>).</li>
 </ul>
-<h3 id="m2-enforce-the-assignment-gate-on-the-guardian-blob-fetch-path">M2. Enforce the assignment gate on the guardian blob-fetch path<a class="headerlink" href="#m2-enforce-the-assignment-gate-on-the-guardian-blob-fetch-path" title="Permanent link">&para;</a></h3>
+<h3 id="m2-enforce-the-assignment-gate-on-get_storybook_version-the-reader-blob-fetch-path">M2. Enforce the assignment gate on <code>get_storybook_version</code>, the reader blob-fetch path<a class="headerlink" href="#m2-enforce-the-assignment-gate-on-get_storybook_version-the-reader-blob-fetch-path" title="Permanent link">&para;</a></h3>
 <ul class="task-list">
 <li><strong>Severity:</strong> Medium.</li>
+<li><strong>Scope.</strong> This finding covers exactly one route, <code>GET /storybooks/{id}/versions/{v}</code>
+  (<code>api/library.py::get_storybook_version</code>), the path a reader client uses to fetch published story
+  content. It does <strong>not</strong> cover <code>GET /storybooks/{id}/review-surface</code>
+  (<code>api/approval.py::get_review_surface</code>); see "Deliberate exception" below.</li>
 <li><strong>Design gap.</strong> <code>get_storybook_version</code> enforces the assignment gate only when
   <code>principal.role == Role.CHILD</code> (<code>api/library.py:406-415</code>); a guardian principal skips it, and R1
   kids use guardian tokens, so the gate never runs for real child readers.</li>
 <li><strong>Attack.</strong> On the guardian token, list <code>GET /library?profile_id=B</code> to learn a withheld book's id,
   then <code>GET /storybooks/{id}/versions/{v}</code> returns the full blob because role is not CHILD.</li>
 <li><strong>Fix approach.</strong> Require a <code>storybook_assignment</code> row for an explicit target profile on
-  <code>get_storybook_version</code> for any non-admin caller, not only <code>role == CHILD</code>. (Interacts with E:
-  distinct child tokens close the R1 exposure directly.)</li>
+  <code>get_storybook_version</code> for any caller not acting as a cross-family admin, not only
+  <code>role == CHILD</code>. (Interacts with E: distinct child tokens close the R1 exposure directly.)</li>
+<li><strong>Deliberate exception.</strong> <code>GET /storybooks/{id}/review-surface</code> also returns
+  <code>version_row.blob</code> with no assignment gate and no age-band ceiling, and stays that way: it is the
+  register-G6 draft-review surface (admin-global, or guardian scoped to their own family via
+  <code>_load_review_target</code>), and an unapproved draft under review has no assignment row to check, so an
+  assignment gate there would forbid the review it exists to enable.</li>
 <li><strong>Acceptance criteria.</strong></li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Non-admin blob fetch requires an assignment row for a named target profile (test).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Non-admin blob fetch on <code>get_storybook_version</code> requires an assignment row for a named
+    target profile (test).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> The exemption keys on <code>principal.acting_role(book.family_id) == Role.ADMIN</code>, not on the raw
+    <code>is_admin</code> capability, so a dual-role adult is gated on their own family (test).</li>
 </ul>
 <h3 id="m3-re-run-the-deterministic-validator-gate-on-repaired-blobs">M3. Re-run the deterministic validator gate on repaired blobs<a class="headerlink" href="#m3-re-run-the-deterministic-validator-gate-on-repaired-blobs" title="Permanent link">&para;</a></h3>
 <ul class="task-list">
@@ -3811,7 +3839,7 @@ open decisions are not lost.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 18:53:44 UTC">July 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 31, 2026 04:06:36 UTC">July 31, 2026</span>
   </span>
 
     
