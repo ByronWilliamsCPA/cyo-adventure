@@ -4208,6 +4208,18 @@ needs to become these named actions.</p>
 <td>CI hygiene</td>
 <td>unscheduled</td>
 </tr>
+<tr>
+<td>UW-F22</td>
+<td>Six symbols with no reader anywhere in the codebase, confirmed by the 2026-07-31 vulture calibration. Vulture is right that all six are unreferenced; the consequence differs per symbol, so each needs its own call between wire-it-up and delete-it. (a) <code>flywheel/strategy.py:81</code> <code>OPEN_PR_PER_CELL = 1</code> is documented as the per-cell open-PR cap, but <code>cadence.py:194</code> implements the bound as <code>if cell in open_pr_cells</code>, a set-membership test that hardcodes "at most 1". Behaviour matches the constant TODAY, so nothing is broken; changing the constant would silently do nothing. Latent trap, not a live defect. (b) <code>flywheel/strategy.py:105</code> <code>TEMPLATE_SET_VERSION = 1</code> has zero references, and <code>ledger.py</code>'s <code>AttemptRecord</code> (lines 105-158) carries no version field, so the ledger genuinely does not record the template-set version its own comment says it should. &copy; <code>core/token_audience.py:42</code> <code>TokenAudience.GUARDIAN_OIDC = "authenticated"</code> is documentation of <code>Settings.oidc_audience</code>'s default rather than dead code, but <code>config.py:592</code> repeats the literal <code>"authenticated"</code> instead of referencing the member, so two copies of one value can drift with nothing asserting they agree. Fix is <code>default=TokenAudience.GUARDIAN_OIDC.value</code>. (d) <code>generation/authoring_metadata.py:44</code> <code>SkeletonAuthoringMetadata</code> is a TypedDict referenced only from a docstring cross-reference at <code>import_story.py:235</code>, never used as an annotation. (e) <code>scripts/check_quality_gate.py:85</code> <code>get_measures</code> is a dead method; the script is invoked by no nox session, workflow, or hook. (f) <code>story_requests/service.py:149</code> <code>profile_monthly_spend</code> is a public wrapper with no caller; its siblings <code>family_monthly_spend</code> and <code>profile_monthly_spend_by_family</code> both have callers, and the ADR-015 G3 envelope it wraps IS enforced at <code>can_auto_approve</code> (<code>service.py:343-346</code>) via the private <code>_approved_count_since</code>. Dead wrapper only, no control gap.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-F23</td>
+<td>Generate the vulture <code>--make-whitelist</code> baseline, but only AFTER UW-F22 is closed, otherwise the baseline freezes the six true positives as accepted. Regenerate at commit time: whitelist entries are line-anchored and drift on any edit above them. Residual finding count after the 2026-07-31 calibration is 77 (from 346 raw), all adjudicated false-positive or test-only.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-g-content-diversity-and-catalog-workstream">Cluster G: content diversity and catalog workstream<a class="headerlink" href="#cluster-g-content-diversity-and-catalog-workstream" title="Permanent link">&para;</a></h2>
@@ -4829,6 +4841,12 @@ complete; each is filed as a GitHub issue.</p>
 <td><a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/461">#461</a></td>
 <td>unscheduled</td>
 </tr>
+<tr>
+<td>UW-L03</td>
+<td><code>Settings.rate_limit_redis_cooldown_seconds</code> (<code>core/config.py:342</code>, carries a <code>#CRITICAL: timing</code> tag and has unit-test coverage) is never threaded into <code>RateLimitMiddleware</code>: <code>middleware/security.py:916-937</code>'s <code>add_security_middleware</code> does not pass it, so the middleware falls back to a hardcoded <code>5.0</code>. Setting <code>CYO_ADVENTURE_RATE_LIMIT_REDIS_COOLDOWN_SECONDS</code> in any deployed environment therefore has zero effect, and the tests pass because they exercise the setting rather than the wiring. The sibling <code>rate_limit_redis_timeout_seconds</code> IS correctly wired (<code>api/health.py:215-216</code>), which is why the pattern looks right at a glance. The <code>#VERIFY</code> test (<code>tests/unit/test_security.py:655</code>) constructs <code>RateLimitMiddleware</code> directly with the parameter, so it proves the circuit breaker honours it and says nothing about whether the app supplies it. Found by the 2026-07-31 vulture calibration.</td>
+<td><a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/516">#516</a></td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-m-external-and-owner-gated">Cluster M: external and owner-gated<a class="headerlink" href="#cluster-m-external-and-owner-gated" title="Permanent link">&para;</a></h2>
@@ -4971,7 +4989,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 31, 2026 14:47:58 UTC">July 31, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 31, 2026 18:11:01 UTC">July 31, 2026</span>
   </span>
 
     
