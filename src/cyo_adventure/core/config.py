@@ -599,8 +599,16 @@ class Settings(BaseSettings):
     # below fails fast outside "local", and api/deps.py's own import-time guard is a
     # second check against the same invariant for the mocked-settings test scenario.
     oidc_issuer: str | None = Field(default=None, validation_alias="OIDC_ISSUER")
+    # Default sourced from the registry member rather than repeating the
+    # literal, so the two copies of "authenticated" cannot drift apart. The
+    # member's own docstring already claims it "mirrors the default of
+    # settings.oidc_audience"; referencing it here is what makes that claim
+    # enforced rather than aspirational. The setting stays operator-overridable
+    # (it is the one audience the backend does not mint), which is why it is a
+    # default and not a constant, and why GUARDIAN_OIDC is deliberately absent
+    # from the distinctness validator below (see its rationale and issue #251).
     oidc_audience: str = Field(
-        default="authenticated", validation_alias="OIDC_AUDIENCE"
+        default=TokenAudience.GUARDIAN_OIDC.value, validation_alias="OIDC_AUDIENCE"
     )
     oidc_jwks_url: str | None = Field(default=None, validation_alias="OIDC_JWKS_URL")
     # Signature-algorithm allowlist for bearer-token verification (ADR-013:
