@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.54.1] - 2026-07-31
+
+### Bug Fixes
+
+- **ci**: Make the PR validation gate able to fail, and calibrate vulture
+  ([#518](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/518),
+  [`d6497ea`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/d6497eaed532cd629d3c525770af3ded7b04f579))
+
+
 ## [0.54.0] - 2026-07-31
 
 ### Features
@@ -2921,6 +2930,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.54.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.54.0...v0.54.1
 [0.54.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.53.0...v0.54.0
 [0.53.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.52.0...v0.53.0
 [0.52.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.51.2...v0.52.0

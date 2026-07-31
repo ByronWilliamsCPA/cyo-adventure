@@ -828,7 +828,7 @@ validation = [
 
 [[package]]
 name = "cyo-adventure"
-version = "0.54.0"
+version = "0.54.1"
 source = { editable = "." }
 dependencies = [
     { name = "cryptography" },
