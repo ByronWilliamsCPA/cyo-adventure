@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.54.0] - 2026-07-31
+
+### Features
+
+- **personalization**: Split favorite and seed the closed vocabularies (ADR-023 D6)
+  ([#507](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/507),
+  [`5a79303`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/5a793038199d5527d33ad85dc4b5a4f30b6829b7))
+
+
 ## [0.53.0] - 2026-07-31
 
 ### Features
@@ -2912,6 +2921,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.54.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.53.0...v0.54.0
 [0.53.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.52.0...v0.53.0
 [0.52.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.51.2...v0.52.0
 [0.51.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.51.1...v0.51.2
