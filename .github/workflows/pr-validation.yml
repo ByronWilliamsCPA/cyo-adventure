@@ -152,13 +152,30 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      # Restores `.lycheecache` so a re-run of the same commit re-requests only
+      # the URLs that were NOT already confirmed good. See the `--cache` note on
+      # the step below for why that is the actual fix for the reset flake.
+      # `key` carries the sha so each commit saves its own entry; `restore-keys`
+      # falls back to the newest entry in scope, and a re-run of an unchanged sha
+      # hits `key` exactly. `github.sha` is a hex commit id, not user-controlled
+      # text, and it is consumed as an action input rather than shell.
+      - name: Restore link-check cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .lycheecache
+          key: lychee-${{ github.sha }}
+          restore-keys: lychee-
+
       - name: Check documentation links
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
           args: >-
             --verbose
             --no-progress
+            --cache
+            --max-cache-age 1d
             --max-retries 3
+            --retry-wait-time 5
             --max-concurrency 16
             --accept-timeouts
             --accept 200,204,206,301,302,403,429
@@ -170,9 +187,9 @@ jobs:
             './CONTRIBUTING.md'
           # Blocking. This check found and hid 7 genuinely broken links while
           # it was advisory; a link check that cannot fail is a link ignorer.
-          # The two flags below are what make blocking survivable, because a
-          # gate that fails on third-party network weather gets ignored just
-          # as fast as one that never fails at all.
+          # The flags below are what make blocking survivable, because a gate
+          # that fails on third-party network weather gets ignored just as fast
+          # as one that never fails at all.
           #
           # `--max-concurrency 16` (default is 128). At the default, the
           # Cloudflare-fronted DPA URL in docs/compliance/ fails with "HTTP/2
@@ -193,6 +210,42 @@ jobs:
           # that blackholes rather than refuses, which presents as a timeout;
           # a dead domain still fails DNS and is still reported as an error,
           # verified against a 404 and a nonexistent host with the flag on.
+          #
+          # `--cache --max-cache-age 1d` plus the restore step above address a
+          # THIRD failure mode: a bare `Connection reset by peer (os error 104)`
+          # from a host that is up. PR #520 hit it twice in a row on two
+          # DIFFERENT hosts (docs/OPENSSF_COMPLIANCE.md and docs/PROJECT_SETUP.md,
+          # then www.conventionalcommits.org from CONTRIBUTING.md and README.md),
+          # 2 errors of 1264 links and 0 timeouts each time, with every flag
+          # above already in place. Both hosts answered 200 in under a second
+          # from a developer machine, so this is runner-network or bot-protection
+          # behaviour, not link rot. That makes "just re-run it" a coin flip
+          # rather than a remedy, which is what the cache fixes: lychee writes
+          # only SUCCESSES to `.lycheecache` (verified on v0.24.2, the version
+          # this action pins: a connection failure and a 404 in the same run
+          # produced a cache file holding just the one 200), so a re-run can
+          # never replay a stale failure, and it re-requests only what has not
+          # already passed. Measured on this corpus: 129 remote URLs cached from
+          # 1266 links, cold run 8.2s, warm re-run 0.11s with ZERO outbound
+          # requests. GitHub scopes a PR's cache writes to its own ref, so the
+          # first run of a PR is still cold and carries the original exposure;
+          # every re-run of it does not.
+          #
+          # `--retry-wait-time 5` (default is 1) is what helps that first cold
+          # run. lychee retries connection resets but on an exponential ladder
+          # based at this value, so the default spends 1+2+4 = 7s before giving
+          # up, which loses to a host that stays hostile longer than that.
+          # Verified against a local socket that accepts and immediately RSTs
+          # (SO_LINGER 0): `--max-retries 1 --retry-wait-time 3` took 3.0s and
+          # `--max-retries 3 --retry-wait-time 3` took 21.0s, i.e. 3+6+12, so
+          # the ladder is real and this value sets its base. At 5 the budget is
+          # 5+10+20 = 35s per failing URL, still far inside `timeout-minutes`.
+          # It costs nothing when nothing fails: back-to-back cold runs came in
+          # at 2.38s (wait 1) and 2.39s (wait 5).
+          #
+          # Both are cheap insurance and neither weakens the gate: a genuinely
+          # broken link is still an error, still uncached, and still fails the
+          # job.
           fail: true
           jobSummary: true
         env:

@@ -350,3 +350,9 @@ out/mutations/
 # mkdocs.yml's exclude_docs, and still on cruft's skip list in pyproject.toml so
 # an update never overwrites it. Format reference: .standards/template_feedback.baseline.md
 docs/template_feedback.md
+
+# lychee's link-check cache, written to the repo root by `--cache` in the
+# link-check job and by any local `lychee --cache` run. It is per-machine
+# state keyed by URL, restored in CI from the actions/cache entry rather than
+# from git.
+.lycheecache
