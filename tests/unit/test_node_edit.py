@@ -974,17 +974,24 @@ def test_single_node_merged_finding_dropped_as_stale() -> None:
     assert findings == []
 
 
-def test_multi_node_merged_finding_kept_intact_on_edit() -> None:
-    """A merged Stage-B finding whose node_ids contains the edited node
-    ALONGSIDE other nodes must survive untouched: dropping it would silently
-    discard the other nodes' coverage, which this single-node endpoint has no
-    way to recompute.
+def test_multi_node_merged_finding_narrows_to_the_unedited_nodes() -> None:
+    """A merged finding covering the edited node ALONGSIDE others is narrowed.
 
-    # #EDGE: data integrity: this leaves stale coverage on the edited node
-    # (the finding may no longer be accurate for the freshly-edited prose),
-    # but that is the conservative direction: it can only over-flag a node
-    # that is actually clean now, never hide a real problem the fresh
-    # re-review missed.
+    Neither whole-finding outcome is acceptable. Dropping it discards the other
+    nodes' coverage, which this single-node endpoint cannot recompute. Keeping
+    it whole pins a stale flag to the edited node permanently: the fresh
+    re-review that just cleared that node cannot dislodge it, and no later edit
+    to any other node will either, so the guardian sees a flag on prose that has
+    been clean for every review since.
+
+    Narrowing gives both: the edited node loses coverage it no longer warrants,
+    the others keep theirs. It is sound only because ``merge_findings`` groups
+    on the full field tuple, so every node in ``node_ids`` carries the same
+    verdict, severity, and message; removing one leaves the rest accurate.
+
+    # #CRITICAL: data integrity: node_id is rewritten to the first REMAINING
+    # node, never left pointing at the removed one, so pre-Stage-B readers that
+    # only understand node_id do not attribute the finding to cleared prose.
     # #VERIFY: this test.
     """
     stored: dict[str, object] = {
@@ -996,8 +1003,8 @@ def test_multi_node_merged_finding_kept_intact_on_edit() -> None:
                 "node_id": _NODE_ID,
                 "verdict": "flag",
                 "score": None,
-                "message": "multi-node merged finding (2 findings merged)",
-                "node_ids": [_NODE_ID, "n_clearing_fork"],
+                "message": "multi-node merged finding (3 findings merged)",
+                "node_ids": [_NODE_ID, "n_clearing_fork", "n_river_bank"],
             }
         ],
         "summary": {
@@ -1012,8 +1019,42 @@ def test_multi_node_merged_finding_kept_intact_on_edit() -> None:
     findings = result["findings"]
     assert isinstance(findings, list)
     assert len(findings) == 1
-    assert findings[0]["message"] == "multi-node merged finding (2 findings merged)"
-    assert findings[0]["node_ids"] == [_NODE_ID, "n_clearing_fork"]
+    assert findings[0]["message"] == "multi-node merged finding (3 findings merged)"
+    # The edited node is gone; the other two keep their coverage.
+    assert findings[0]["node_ids"] == ["n_clearing_fork", "n_river_bank"]
+    # node_id follows node_ids rather than continuing to name cleared prose.
+    assert findings[0]["node_id"] == "n_clearing_fork"
+
+
+def test_merged_finding_covering_an_untouched_node_set_is_left_alone() -> None:
+    """Editing a node absent from node_ids must not perturb the finding."""
+    stored: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": "n_clearing_fork",
+                "verdict": "flag",
+                "score": None,
+                "message": "elsewhere in the book (2 findings merged)",
+                "node_ids": ["n_clearing_fork", "n_river_bank"],
+            }
+        ],
+        "summary": {
+            "count": 1,
+            "hard_block": False,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+    result = node_edit._merge_moderation_report(stored, _NODE_ID, [], independent=True)
+    findings = result["findings"]
+    assert isinstance(findings, list)
+    assert len(findings) == 1
+    assert findings[0]["node_ids"] == ["n_clearing_fork", "n_river_bank"]
+    assert findings[0]["node_id"] == "n_clearing_fork"
 
 
 def test_legacy_old_shape_report_merges_cleanly() -> None:
@@ -1085,3 +1126,145 @@ def test_node_edit_body_accepts_choice_labels_only() -> None:
 def test_node_edit_body_rejects_unknown_field() -> None:
     with pytest.raises(PydanticValidationError):
         NodeEditBody.model_validate({"body": "x", "target": "somewhere-else"})
+
+
+# ---------------------------------------------------------------------------
+# A FLAGGING re-review: the fresh finding must actually land in the report
+# ---------------------------------------------------------------------------
+
+
+def _flag_review_provider() -> MockProvider:
+    """A review backend double whose Stage-1 safety call FLAGs."""
+
+    def _respond(prompt: str) -> str:
+        if prompt.startswith("Age band:"):
+            return '{"verdict": "flag", "reason": "freshly flagged prose"}'
+        return '{"verdict": "pass", "reason": "ok"}'
+
+    return MockProvider(responses=[_respond] * 8)
+
+
+@pytest.mark.asyncio
+async def test_fresh_flag_replaces_the_stale_finding_for_the_edited_node(
+    review_seam: Callable[[MockProvider], None],
+) -> None:
+    """The stale finding goes and the fresh FLAG takes its place.
+
+    Every other edited-node test in this module runs against the autouse
+    PASSing backend, where design doc 2.1 drops the fresh finding before
+    persistence. That makes "no llm_safety finding for the edited node" the
+    expected outcome whether the splice works or is a no-op, so it cannot
+    distinguish a working re-review from one whose result is discarded. A
+    FLAGging backend does: the fresh finding is gate-relevant, so it must be
+    visible in the persisted report.
+    """
+    review_seam(_flag_review_provider())
+    story = _story("in_review")
+    version_row = _version_row(
+        moderation_report={
+            "findings": [
+                {
+                    "stage": 1,
+                    "source": "llm_safety",
+                    "category": "safety",
+                    "node_id": _NODE_ID,
+                    "verdict": "flag",
+                    "score": None,
+                    "message": "stale pre-edit finding",
+                },
+            ],
+            "summary": {
+                "count": 1,
+                "hard_block": False,
+                "soft_flag": True,
+                "repaired": False,
+                "reviewer_independent": True,
+            },
+        }
+    )
+    session = AsyncMock(spec=AsyncSession)
+    _wire_session(session, story=story, version_row=version_row)
+    ctx = _ctx("admin", session)
+
+    await node_edit.edit_node(
+        "s1",
+        1,
+        _NODE_ID,
+        NodeEditBody(body="Prose the reviewer will flag."),
+        ctx=ctx,
+    )
+
+    report = cast("dict[str, object]", version_row.moderation_report)
+    findings = cast("list[dict[str, object]]", report["findings"])
+    edited_node_safety = [
+        f for f in findings if f["node_id"] == _NODE_ID and f["source"] == "llm_safety"
+    ]
+    assert len(edited_node_safety) == 1
+    assert edited_node_safety[0]["message"] == "freshly flagged prose"
+    assert edited_node_safety[0]["verdict"] == "flag"
+    # The gate flags follow the fresh finding, not the discarded stale one.
+    summary = cast("dict[str, object]", report["summary"])
+    assert summary["soft_flag"] is True
+
+
+@pytest.mark.asyncio
+async def test_fresh_flag_lands_alongside_a_narrowed_merged_finding(
+    review_seam: Callable[[MockProvider], None],
+) -> None:
+    """The narrowing and the splice compose on one report.
+
+    A merged finding covering the edited node plus another is narrowed off the
+    edited node, and the fresh single-node FLAG is spliced in for it. The other
+    node keeps the merged coverage the endpoint cannot recompute.
+    """
+    review_seam(_flag_review_provider())
+    story = _story("in_review")
+    version_row = _version_row(
+        moderation_report={
+            "findings": [
+                {
+                    "stage": 1,
+                    "source": "llm_safety",
+                    "category": "safety",
+                    "node_id": _NODE_ID,
+                    "verdict": "flag",
+                    "score": None,
+                    "message": "merged across two nodes (2 findings merged)",
+                    "node_ids": [_NODE_ID, "n_clearing_fork"],
+                },
+            ],
+            "summary": {
+                "count": 1,
+                "hard_block": False,
+                "soft_flag": True,
+                "repaired": False,
+                "reviewer_independent": True,
+            },
+        }
+    )
+    session = AsyncMock(spec=AsyncSession)
+    _wire_session(session, story=story, version_row=version_row)
+    ctx = _ctx("admin", session)
+
+    await node_edit.edit_node(
+        "s1",
+        1,
+        _NODE_ID,
+        NodeEditBody(body="Prose the reviewer will flag."),
+        ctx=ctx,
+    )
+
+    report = cast("dict[str, object]", version_row.moderation_report)
+    findings = cast("list[dict[str, object]]", report["findings"])
+    merged = [f for f in findings if f.get("node_ids")]
+    assert len(merged) == 1
+    # Narrowed off the edited node, still covering the other.
+    assert merged[0]["node_ids"] == ["n_clearing_fork"]
+    assert merged[0]["node_id"] == "n_clearing_fork"
+    # The fresh finding covers the edited node in its place.
+    fresh = [
+        f
+        for f in findings
+        if f["node_id"] == _NODE_ID and f["message"] == "freshly flagged prose"
+    ]
+    assert len(fresh) == 1

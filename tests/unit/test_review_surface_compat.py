@@ -100,3 +100,86 @@ def test_build_content_summary_succeeds_on_legacy_report() -> None:
         policy=ThresholdPolicy(rows={}),
     )
     assert summary.screened is True
+
+
+def _expected_gating_counts(report: dict[str, object]) -> dict[str, int]:
+    """Return per-node counts of the findings the surface actually renders.
+
+    PASS findings are excluded from the review surface, so they must be
+    excluded here too or the expectation would not match by construction.
+    """
+    findings = report["findings"]
+    assert isinstance(findings, list)
+    counts: dict[str, int] = {}
+    for entry in findings:
+        assert isinstance(entry, dict)
+        if entry["verdict"] == "pass":
+            continue
+        for node_id in entry.get("node_ids") or [entry["node_id"]]:
+            counts[node_id] = counts.get(node_id, 0) + 1
+    return counts
+
+
+@pytest.mark.unit
+def test_legacy_findings_still_route_by_node_id() -> None:
+    """The node_ids fan-out must not disturb the pre-Stage-B fallback path.
+
+    Every finding in the fixture names a node via the bare ``node_id`` key and
+    carries no ``node_ids``. Each must still land on the one node it names,
+    exactly as before the merge stage existed. The expected counts are derived
+    from the fixture rather than hardcoded, because the surface drops PASS
+    findings and only the non-PASS ones become passage findings.
+    """
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s_legacy",
+        version=1,
+        blob=_blob(),
+        moderation_report=_legacy_report(),
+    )
+    per_node = {p.node_id: len(p.findings) for p in view.flagged_passages}
+    assert per_node == _expected_gating_counts(_legacy_report())
+
+
+@pytest.mark.unit
+def test_mixed_legacy_and_merged_shapes_in_one_report() -> None:
+    """The realistic mid-migration shape: both finding shapes side by side.
+
+    ``api/node_edit.py`` splices freshly re-reviewed single-node findings (no
+    ``node_ids``) into a stored report that may already hold merged findings,
+    so a single persisted report legitimately carries both shapes at once.
+    Each must route by its own rule rather than one shape's presence changing
+    how the other is read.
+    """
+    report = _legacy_report()
+    findings = report["findings"]
+    assert isinstance(findings, list)
+    findings.append(
+        {
+            "stage": 2,
+            "source": "llm_readability",
+            "category": "reading_level",
+            "node_id": "n_gate",
+            "verdict": "flag",
+            "score": None,
+            "message": "reading level above band (2 findings merged)",
+            "severity": "medium",
+            "node_ids": ["n_gate", "n_vault"],
+        }
+    )
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s_legacy",
+        version=1,
+        blob=_blob(),
+        moderation_report=report,
+    )
+    per_node = {p.node_id: len(p.findings) for p in view.flagged_passages}
+    # The merged finding adds itself to both nodes it names, and to no other;
+    # n_hallway is untouched, and neither shape perturbs the other's routing.
+    baseline = _expected_gating_counts(_legacy_report())
+    assert per_node == {
+        "n_gate": baseline["n_gate"] + 1,
+        "n_hallway": baseline["n_hallway"],
+        "n_vault": baseline["n_vault"] + 1,
+    }

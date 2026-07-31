@@ -194,10 +194,14 @@ def node_verdict_from_report(report: dict[str, Any], node_id: str) -> str:
     Returns:
         The most severe verdict among findings whose ``node_id`` matches, or
         whose ``node_ids`` list contains ``node_id`` (a merged finding,
-        design doc 2.2: identical (category, concern) findings across
-        several nodes collapse into one finding, keeping ``node_id`` as the
-        first affected node and naming every affected node in
-        ``node_ids``), or "pass" if no finding references this node (the
+        design doc 2.2: interchangeable findings across several nodes
+        collapse into one finding, keeping ``node_id`` as the first affected
+        node and naming every affected node in ``node_ids``). Crediting each
+        of those nodes with the merged verdict is only sound because the
+        merge groups on the verdict itself: every node in ``node_ids``
+        genuinely produced this verdict, so the fan-out cannot inflate the
+        scorecard the way a max-verdict survivor would have. Otherwise
+        "pass" if no finding references this node (the
         manifest's node_label_convention: an unlisted node is expected pass,
         and an unreferenced node here has produced no finding).
     """

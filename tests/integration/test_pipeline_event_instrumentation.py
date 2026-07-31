@@ -1081,7 +1081,11 @@ async def test_structural_finding_adds_structural_key_to_moderation_completed_co
                 verdict=Verdict.ADVISORY,
                 message="synthetic structural finding for event-payload assertion",
                 structural=True,
-                concern="test_synthetic",
+                # "other" rather than a made-up slug: concern is validated
+                # against CONCERN_TAXONOMY at construction, and this test is
+                # about the structural key in the event payload, not the
+                # concern value.
+                concern="other",
             )
         ]
     )

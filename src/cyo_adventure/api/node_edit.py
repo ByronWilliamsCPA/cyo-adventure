@@ -307,41 +307,53 @@ async def _family_child_names(
     return frozenset(rows.all())
 
 
-def _is_stale_for_node(finding: dict[str, object], node_id: str) -> bool:
-    """Whether a stored finding is fully superseded by this node's re-review.
+def _without_edited_node(
+    finding: dict[str, object], node_id: str
+) -> dict[str, object] | None:
+    """Return the stored finding with the edited node's coverage withdrawn.
 
-    A finding is scoped to the edited node ALONE (and therefore stale) in
-    two equivalent shapes: the pre-Stage-B bare ``node_id`` match with no
-    ``node_ids`` list, or a Stage-B merged finding whose ``node_ids`` is
-    exactly ``[node_id]``.
+    The edited node has just been re-reviewed from scratch, so any stored
+    finding from a refreshed source no longer speaks for it. Three outcomes:
+
+    * The finding does not cover the edited node (or comes from a source this
+      endpoint does not refresh): returned unchanged.
+    * Its ONLY coverage is the edited node: returned as ``None`` (dropped),
+      superseded by the fresh re-review.
+    * It is a merged finding (design doc 2.2) covering the edited node
+      ALONGSIDE others: returned narrowed, with the edited node removed from
+      ``node_ids`` and ``node_id`` re-pointed at the first survivor.
+
+    # #CRITICAL: data integrity: narrowing is only sound because the merge
+    # stage is lossless: ``moderation/synthesis.py`` groups on the full tuple
+    # of fields a merged finding carries, so every node in ``node_ids`` shares
+    # one verdict, severity, and message. Dropping one node therefore leaves a
+    # finding that is still exactly true of the survivors. Were the merge to
+    # widen its key again so a group could mix verdicts or messages, this
+    # function would have to split the finding instead.
+    # #VERIFY: tests/unit/test_node_edit.py::
+    # test_multi_node_merged_finding_narrows_to_the_unedited_nodes,
+    # ::test_single_node_merged_finding_dropped_as_stale,
+    # ::test_merged_finding_covering_an_untouched_node_set_is_left_alone.
 
     Args:
         finding: One stored finding dict (any shape: pre- or post-Stage-B).
         node_id: The edited node's id.
 
     Returns:
-        bool: True if this finding's ONLY coverage is the edited node and
-        its source is one this endpoint fully refreshes.
-
-    # #EDGE: data integrity: a merged finding whose node_ids contains the
-    # edited node ALONGSIDE other nodes is deliberately NOT matched here, so
-    # it is kept intact by the caller: dropping it would silently discard
-    # the OTHER nodes' coverage (this endpoint only re-reviews one node),
-    # and leaving stale coverage on the edited node is the conservative
-    # direction (it can only over-flag a node that is actually clean now,
-    # never hide a real problem the fresh re-review missed). Splitting the
-    # finding to drop only the edited node's share is out of scope for this
-    # single-node endpoint.
-    # #VERIFY: tests/unit/test_node_edit.py::
-    # test_multi_node_merged_finding_kept_intact_on_edit,
-    # ::test_single_node_merged_finding_dropped_as_stale.
+        dict[str, object] | None: The finding to keep, or ``None`` to drop it.
     """
     if finding.get("source") not in {s.value for s in _REFRESHED_SOURCES}:
-        return False
+        return finding
     node_ids = finding.get("node_ids")
-    if isinstance(node_ids, list):
-        return node_ids == [node_id]
-    return finding.get("node_id") == node_id
+    if not isinstance(node_ids, list):
+        return None if finding.get("node_id") == node_id else finding
+    typed_ids = [n for n in cast("list[object]", node_ids) if isinstance(n, str)]
+    if node_id not in typed_ids:
+        return finding
+    remaining = [n for n in typed_ids if n != node_id]
+    if not remaining:
+        return None
+    return {**finding, "node_ids": remaining, "node_id": remaining[0]}
 
 
 def _merge_moderation_report(
@@ -367,13 +379,14 @@ def _merge_moderation_report(
 
     Returns:
         dict[str, object]: A new ``ModerationReport.to_dict()``-shaped
-        mapping: this node's stale single-node findings are dropped (see
-        ``_is_stale_for_node``), every other finding (other nodes' per-node
-        findings, multi-node merged findings covering this node, whole-story
-        Stage 2-4 findings) is carried over verbatim, and the fresh non-PASS
-        findings are appended. The stored report's ``aggregate`` block, if
-        present, is carried over verbatim (never recomputed here) and
-        omitted entirely when the stored report predates it.
+        mapping: this node's stale findings are withdrawn (see
+        ``_without_edited_node``, which drops a finding scoped to this node
+        alone and narrows a merged finding that also covers others), every
+        other finding (other nodes' per-node findings, whole-story Stage 2-4
+        findings) is carried over verbatim, and the fresh non-PASS findings
+        are appended. The stored report's ``aggregate`` block, if present, is
+        carried over verbatim (never recomputed here) and omitted entirely
+        when the stored report predates it.
     """
     old_findings_raw = stored.get("findings") if isinstance(stored, dict) else None
     old_findings: list[object] = (
@@ -385,9 +398,9 @@ def _merge_moderation_report(
     for entry in old_findings:
         if not isinstance(entry, dict):
             continue
-        typed = cast("dict[str, object]", entry)
-        if not _is_stale_for_node(typed, node_id):
-            kept.append(typed)
+        retained = _without_edited_node(cast("dict[str, object]", entry), node_id)
+        if retained is not None:
+            kept.append(retained)
     # #ASSUME: data integrity: design doc 2.1: PASS is never persisted. A
     # fresh single-node re-review can still emit PASS (a clean classifier or
     # safety-stage result); filter it here so this write path matches

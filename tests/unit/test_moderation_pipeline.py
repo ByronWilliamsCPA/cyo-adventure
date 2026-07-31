@@ -2201,3 +2201,119 @@ async def test_atg_no_partner_path_matches_atg_fully_stubbed_noop(
     submit_a.assert_awaited_once()
     submit_b.assert_awaited_once()
     assert version_a.moderation_report == version_b.moderation_report
+
+
+# aggregate.nodes_reviewed: the coverage denominator (design doc 2.1).
+# Once PASS findings stop being persisted as rows, this counter is the only
+# signal distinguishing "reviewed everything and found nothing" from "never
+# got there", so it must track actual coverage rather than intent.
+
+
+def _aggregate(version: StorybookVersion) -> dict[str, object]:
+    assert version.moderation_report is not None
+    return cast("dict[str, object]", version.moderation_report["aggregate"])
+
+
+@pytest.mark.unit
+async def test_nodes_reviewed_counts_every_node_on_a_complete_pass(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """A run that reaches the end reports coverage of the whole node list."""
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider())
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", AsyncMock())
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    aggregate = _aggregate(version)
+    assert aggregate["nodes_reviewed"] == _NODE_COUNT
+    # A complete clean pass also records the PASS rollup the counter denominates.
+    assert aggregate["pass_counts"]
+
+
+@pytest.mark.unit
+async def test_nodes_reviewed_zero_when_stage0_block_short_circuits(
+    mock_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A Stage-0 bright-line block never reviews a node, so coverage stays 0.
+
+    Setting the counter beside the node list would have persisted full
+    coverage here, claiming every node was reviewed by a safety stage that
+    never ran.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+
+    def _brightline_handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "results": [
+                    {
+                        "flagged": True,
+                        "categories": {"sexual/minors": True},
+                        "category_scores": {"sexual/minors": 0.99},
+                    }
+                ]
+            },
+        )
+
+    _install_canned_classifier_http(monkeypatch, _brightline_handler)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", AsyncMock())
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", AsyncMock())
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=Settings(review_provider="mock", openai_api_key="k"),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    aggregate = _aggregate(version)
+    assert aggregate["nodes_reviewed"] == 0
+    # The empty PASS rollup beside it tells the same story, consistently.
+    assert aggregate["pass_counts"] == {}
+
+
+@pytest.mark.unit
+async def test_nodes_reviewed_zero_when_stage1_block_short_circuits(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """A Stage-1 safety block also leaves the review incomplete.
+
+    Stage 1 blocks on its first node, so the later stages never run and the
+    story has not been reviewed end to end even though Stage 0 passed.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_safety_block_review_provider())
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", AsyncMock())
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", AsyncMock())
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    assert version.moderation_report is not None
+    summary = cast("dict[str, object]", version.moderation_report["summary"])
+    assert summary["hard_block"] is True
+    assert _aggregate(version)["nodes_reviewed"] == 0

@@ -7,6 +7,7 @@ from typing import cast
 import pytest
 
 from cyo_adventure.moderation.report import (
+    CONCERN_TAXONOMY,
     Finding,
     FindingSeverity,
     ModerationReport,
@@ -246,3 +247,54 @@ def test_to_dict_with_no_findings_has_empty_pass_counts_and_zero_summary() -> No
     assert payload["aggregate"] == {"nodes_reviewed": 2, "pass_counts": {}}
     summary = cast("dict[str, object]", payload["summary"])
     assert summary["count"] == 0
+
+
+@pytest.mark.unit
+def test_unknown_concern_rejected_at_construction() -> None:
+    """An off-taxonomy concern must not reach a Finding.
+
+    concern is half the documented merge key (design doc 2.2). An unrecognized
+    value would silently form its own merge group and, once B2 has models
+    emitting concerns, drift the taxonomy by accident. Callers that parse a
+    model response degrade to "other" at the parse boundary instead.
+    """
+    with pytest.raises(ValueError, match="CONCERN_TAXONOMY"):
+        Finding(
+            stage=1,
+            source=Source.LLM_SAFETY,
+            category="safety",
+            node_id="n1",
+            verdict=Verdict.FLAG,
+            message="m",
+            concern="scary_clowns",
+        )
+
+
+@pytest.mark.unit
+def test_every_taxonomy_member_is_accepted() -> None:
+    """The validation admits the whole documented taxonomy, not a subset."""
+    for concern in CONCERN_TAXONOMY:
+        finding = Finding(
+            stage=1,
+            source=Source.LLM_SAFETY,
+            category="safety",
+            node_id="n1",
+            verdict=Verdict.FLAG,
+            message="m",
+            concern=concern,
+        )
+        assert finding.concern == concern
+
+
+@pytest.mark.unit
+def test_absent_concern_is_still_allowed() -> None:
+    """Stage 1 emits no concern until design doc 2.2 item 1 lands (B2)."""
+    finding = Finding(
+        stage=1,
+        source=Source.LLM_SAFETY,
+        category="safety",
+        node_id="n1",
+        verdict=Verdict.FLAG,
+        message="m",
+    )
+    assert finding.concern is None

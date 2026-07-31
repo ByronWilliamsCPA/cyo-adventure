@@ -384,12 +384,19 @@ async def run_moderation_pipeline(
 def _persist_report(version_row: StorybookVersion, report: ModerationReport) -> None:
     """Persist the report's merged findings, never the raw unmerged report.
 
-    Runs the deterministic (category, concern) merge stage (design doc 2.2)
-    on a COPY used only for persistence; the caller's in-memory ``report``
-    keeps its raw, unmerged findings so gating flags (``has_hard_block``,
-    ``has_soft_flag``) and the repair loop, which read ``report`` before and
-    after this call, are unaffected. Extracted as the single named write
-    path so a future second call site cannot skip the merge by accident.
+    Runs the deterministic merge stage (design doc 2.2) on a COPY used only
+    for persistence; the caller's in-memory ``report`` keeps its raw,
+    unmerged findings so gating flags (``has_hard_block``, ``has_soft_flag``)
+    and the repair loop, which read ``report`` before and after this call,
+    are unaffected.
+
+    This is the pipeline's only write to ``moderation_report``, but NOT the
+    repo's: ``api/node_edit.py::_merge_moderation_report`` rebuilds the
+    stored payload after a node edit and is the second writer. That path
+    deliberately does not re-run the merge (it splices fresh single-node
+    findings into an already-merged report), so a reader must handle a
+    payload where merged findings carrying ``node_ids`` sit beside fresh ones
+    without it. Any third writer must be added to that list here.
 
     Args:
         version_row: The storybook version row whose ``moderation_report``
@@ -862,11 +869,6 @@ async def _run_all_stages(
     # dormancy (sentinel-free text) is covered by every other pre-existing
     # test in this module, which are all unmodified by this change.
     nodes = [(node.id, strip_sentinels(node.body)) for node in story.nodes]
-    # Design doc 2.1: nodes_reviewed feeds the persisted "aggregate" block
-    # so the PASS-count-per-category rollup is legible against a known
-    # denominator. Set once, right after the node list is built, so it
-    # reflects the count actually reviewed this pass.
-    report.nodes_reviewed = len(nodes)
 
     # #CRITICAL: security: the classifier calls below are a distinct egress path
     # from the LLM review stages (which are protected structurally by
@@ -931,3 +933,17 @@ async def _run_all_stages(
         max_tokens=_MAX_REVIEW_TOKENS,
     ):
         report.add(finding)
+
+    # #CRITICAL: data-integrity: nodes_reviewed is the denominator the persisted
+    # "aggregate" block gives the PASS-count rollup (design doc 2.1), and it is
+    # the ONLY coverage signal left once PASS rows stop being persisted. It is
+    # therefore set here, past the last stage, rather than beside the node list:
+    # every `return` above (the entry short-circuit, a Stage-0 bright-line block,
+    # a Stage-1 block) leaves the review INCOMPLETE, and an early assignment
+    # would persist full coverage for a story whose safety reviewer never ran.
+    # A short-circuited pass keeps the 0 default, which reads correctly as "no
+    # complete review coverage" and matches the empty pass_counts beside it.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_nodes_reviewed_zero_when_stage0_block_short_circuits and
+    # ::test_nodes_reviewed_counts_every_node_on_a_complete_pass.
+    report.nodes_reviewed = len(nodes)

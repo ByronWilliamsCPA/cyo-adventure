@@ -51,8 +51,8 @@ readers must tolerate absent new fields on old reports):
 | Field | Type | Purpose |
 | --- | --- | --- |
 | `severity` | `high \| medium \| low`, required on FLAG/ADVISORY | The ranking key surfaces sort on. LLM stages emit it from a rubric in the prompt; Stage-0 maps score bands to it. |
-| `concern` | short slug from a fixed taxonomy (e.g. `real_world_danger`, `too_mature`, `frightening_content`, `cruelty`, `reviewer_unavailable`) | The dedup/merge key. Free-text `message` remains for detail. |
-| `node_ids` | `list[str]` (replaces single `node_id` on merged findings; `node_id` kept for compat) | One finding can now reference every node it applies to. |
+| `concern` | short slug from a fixed taxonomy (e.g. `real_world_danger`, `too_mature`, `frightening_content`, `cruelty`, `reviewer_unavailable`) | Part of the dedup/merge key (see 2.2 item 3 for the full key). Validated against `CONCERN_TAXONOMY` at construction, so an off-taxonomy value cannot form its own merge group; parse boundaries degrade to `other`. Free-text `message` remains for detail. |
+| `node_ids` | `list[str]` (populated on every merged finding, including a group of one; `node_id` kept for compat and names only the FIRST covered node) | One finding can now reference every node it applies to. Readers must fan out across `node_ids` when present. |
 | `structural` | `bool`, default false | Marks pipeline-condition findings (parse failure, unknown verdict, degraded classifier) so dashboards and surfaces can class them separately from content findings. |
 
 `severity` also applies to the two Stage-0 whole-story findings
@@ -66,6 +66,18 @@ PASS is no longer persisted as rows. The report gains an aggregate block:
 roughly half of all stored findings (6,430 PASS rows in live data) and fixes
 `summary.count` badge inflation. Audit needs are covered by the aggregate
 plus the existing `moderation_completed` event counts.
+
+`nodes_reviewed` is a coverage measurement, not a restatement of the node
+count, and it is assigned past the last stage rather than beside the node
+list. Once PASS rows stop being persisted it is the only signal separating
+"reviewed everything and found nothing" from "never got that far": a run that
+short-circuits (entry rejection, a Stage-0 bright-line block, a Stage-1 block)
+keeps the 0 default, which reads correctly as no complete coverage and matches
+the empty `pass_counts` beside it. #CRITICAL: data-integrity: setting it beside
+the node list would persist full coverage for a story whose safety reviewer
+never ran, and the aggregate is what the dashboard and flywheel read. #VERIFY:
+tests/unit/test_moderation_pipeline.py::test_nodes_reviewed_zero_when_stage0_block_short_circuits
+and ::test_nodes_reviewed_counts_every_node_on_a_complete_pass.
 
 ### 2.2 Stage 1 (safety) redesign
 
@@ -86,13 +98,38 @@ with three changes:
    adversarial corpus (tests/llm_eval) and compare recall before enabling
    batching by default.
 3. **Merge stage (deterministic, post-review).** After all stages run, a new
-   `moderation/synthesis.py` groups content findings by
-   `(category, concern)`, merges each group into one finding carrying
-   `node_ids`, the max severity, a representative message, and the count.
-   Live example: `sk_hollow_lighthouse`'s 12 identical above-band
+   `moderation/synthesis.py` groups content findings by every field the
+   merged finding takes from a single survivor: `(category, concern, source,
+   verdict, severity, message)`. Each group becomes one finding carrying
+   `node_ids`, the shared verdict/severity/message, the max score, and the
+   count. Live example: `sk_hollow_lighthouse`'s 12 identical above-band
    readability flags become one finding listing 12 nodes. The merge is
    plain code, not an LLM call; an optional whole-story LLM synthesis
    ("decision card" prose) can be layered later without changing storage.
+
+   **Why the key is the full tuple and not `(category, concern)`.** The
+   original spec named `(category, concern)`, which is a prefix of this key,
+   so everything the worked example intends to merge still merges. The
+   narrower key is only lossless when group members are interchangeable, and
+   that does not hold in the order these items ship: item 1 supplies
+   `concern`, so until it lands Stage 1 emits none and `(category, concern)`
+   degenerates to `(category,)`. Every distinct safety reason in a book would
+   then collapse into one row whose surviving message is whichever finding
+   happened to sort first, with the rest discarded and no per-finding raw
+   output to recover them from. Widening the key keeps the merge a display
+   compression rather than a lossy edit to a safety record.
+   #CRITICAL: security: the guardian reading the merged row is the final gate
+   under ADR-005; a merged row must never attribute a verdict, severity, or
+   message to a node that did not produce it. #VERIFY:
+   tests/unit/test_moderation_synthesis.py covers distinct messages, mixed
+   verdicts, and mixed severities all staying separate.
+
+   Readers must fan out across `node_ids`, not group on `node_id`: `node_id`
+   names only the FIRST covered node and exists for pre-Stage-B readers.
+   #CRITICAL: security: grouping a merged finding by `node_id` renders one
+   affected passage and leaves the rest of the flagged prose looking clean.
+   #VERIFY: tests/unit/test_review_surface.py::
+   test_merged_finding_fans_out_across_every_affected_node.
 
 ### 2.3 Structural-failure collapse (the flood killer)
 

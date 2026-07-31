@@ -54,8 +54,11 @@ class FindingSeverity(StrEnum):
     LOW = "low"
 
 
-# Fixed concern taxonomy (design doc 2.1): the dedup/merge key. "other" is
-# the degrade target for an unrecognized model-emitted concern (2.2 item 1).
+# Fixed concern taxonomy (design doc 2.1): part of the dedup/merge key.
+# "other" is the degrade target for an unrecognized model-emitted concern
+# (2.2 item 1); that degrade belongs at the parse boundary where a model
+# response is turned into a Finding, so by the time a Finding is constructed
+# the value must already be a member. Enforced in ``Finding.__post_init__``.
 CONCERN_TAXONOMY: frozenset[str] = frozenset(
     {
         "real_world_danger",
@@ -65,7 +68,9 @@ CONCERN_TAXONOMY: frozenset[str] = frozenset(
         "sexual_content",
         "self_harm",
         "profanity",
+        # Structural concerns: pipeline conditions, not content judgments.
         "reviewer_unavailable",
+        "mock_reviewer_active",
         "other",
     }
 )
@@ -92,16 +97,22 @@ class Finding:
             ``.get()``. Dashboard aggregates and the threshold flywheel must
             key off this flag to avoid conflating pipeline noise with real
             safety signal (gap G2a).
-        concern: Optional machine-readable reason code for a structural
-            finding (for example ``"reviewer_unavailable"``); ``None`` for
-            genuine content findings.
+        concern: Optional machine-readable reason code from
+            ``CONCERN_TAXONOMY``, forming part of the merge key. Currently
+            set only on structural findings (for example
+            ``"reviewer_unavailable"``); content findings get theirs from
+            the structured-verdict work in design doc 2.2 item 1.
         severity: Ranking key for the surfaced findings list (design doc
             2.1). ``None`` on old persisted reports and on findings that
             never carried a severity band.
-        node_ids: Every node this finding covers, populated by the merge
-            stage (design doc 2.2) when identical (category, concern)
-            findings collapse into one. ``None`` on an unmerged finding;
-            readers should fall back to ``node_id`` in that case.
+        node_ids: Every node this finding covers. Populated by the merge
+            stage (design doc 2.2) on every finding it emits, including a
+            group of one, so readers get a uniform shape; ``None`` only on
+            findings that never went through the merge (pre-Stage-B reports,
+            and the fresh single-node findings ``api/node_edit.py`` splices
+            in). Readers must fan out across ``node_ids`` when it is present
+            and fall back to ``node_id`` when it is not: ``node_id`` names
+            only the FIRST covered node.
     """
 
     stage: int
@@ -120,14 +131,28 @@ class Finding:
         """Enforce the documented field ranges at construction.
 
         Raises:
-            ValueError: when ``stage`` is outside 0-4 or ``score`` is outside
-                ``[0.0, 1.0]`` (a non-None probability/confidence).
+            ValueError: when ``stage`` is outside 0-4, ``score`` is outside
+                ``[0.0, 1.0]`` (a non-None probability/confidence), or
+                ``concern`` is not a member of ``CONCERN_TAXONOMY``.
         """
         if not 0 <= self.stage <= 4:
             msg = f"Finding.stage must be 0-4, got {self.stage}"
             raise ValueError(msg)
         if self.score is not None and not 0.0 <= self.score <= 1.0:
             msg = f"Finding.score must be in [0.0, 1.0] or None, got {self.score}"
+            raise ValueError(msg)
+        # #ASSUME: data integrity: concern is part of the merge key (design
+        # doc 2.2). An unrecognized value would silently form its own group
+        # and, once B2 has models emitting it, drift the taxonomy by accident.
+        # Callers that parse a model response must degrade to "other" before
+        # constructing the Finding rather than passing the raw string through.
+        # #VERIFY: tests/unit/test_moderation_report.py::
+        # test_unknown_concern_rejected_at_construction.
+        if self.concern is not None and self.concern not in CONCERN_TAXONOMY:
+            msg = (
+                f"Finding.concern must be in CONCERN_TAXONOMY or None, "
+                f"got {self.concern!r}"
+            )
             raise ValueError(msg)
 
     def to_dict(self) -> dict[str, object]:

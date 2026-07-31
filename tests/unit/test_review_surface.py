@@ -739,3 +739,116 @@ def test_content_summary_rejects_corrupt_report() -> None:
             age_band="",
             policy=_DEFAULT_POLICY,
         )
+
+
+# Merged findings (design doc 2.2 item 3): one finding, many covered nodes.
+
+
+def _merged_blob() -> dict[str, object]:
+    return {
+        "title": "The Lantern",
+        "nodes": [
+            {"id": "n_start", "body": "Start prose."},
+            {"id": "n_fork", "body": "Fork prose."},
+            {"id": "n_end", "body": "End prose."},
+        ],
+    }
+
+
+def _merged_report() -> dict[str, object]:
+    return {
+        "findings": [
+            {
+                "stage": 2,
+                "source": "llm_readability",
+                "category": "reading_level",
+                "node_id": "n_start",
+                "verdict": "flag",
+                "score": None,
+                "message": "reading level above band (3 findings merged)",
+                "severity": "medium",
+                "node_ids": ["n_start", "n_fork", "n_end"],
+            }
+        ],
+        "summary": {
+            "count": 1,
+            "hard_block": False,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+
+
+@pytest.mark.unit
+def test_merged_finding_fans_out_across_every_affected_node() -> None:
+    """Every node in node_ids becomes its own flagged passage, with its prose.
+
+    Grouping on node_id alone would render only n_start and leave n_fork and
+    n_end looking clean to the human approver, who is the final gate under
+    ADR-005. The merge exists to shorten the list, not to hide two thirds of
+    the flagged prose.
+    """
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_merged_blob(),
+        moderation_report=_merged_report(),
+    )
+    assert len(view.flagged_passages) == 3
+    passages = {p.node_id: p for p in view.flagged_passages}
+    assert passages["n_start"].prose == "Start prose."
+    assert passages["n_fork"].prose == "Fork prose."
+    assert passages["n_end"].prose == "End prose."
+    # Every rendered passage carries the same single finding, unchanged.
+    for passage in view.flagged_passages:
+        assert len(passage.findings) == 1
+        assert passage.findings[0].category == "reading_level"
+    assert view.story_level_findings == []
+
+
+@pytest.mark.unit
+def test_queue_item_flagged_count_counts_every_merged_node() -> None:
+    """The badge must match the passages the admin sees after clicking through."""
+    item = build_review_queue_item(
+        storybook_id="s1",
+        status="in_review",
+        version=1,
+        blob=_merged_blob(),
+        moderation_report=_merged_report(),
+    )
+    assert item.flagged_count == 3
+
+
+@pytest.mark.unit
+def test_content_summary_flagged_count_counts_every_merged_node() -> None:
+    """The guardian-facing count follows the same fan-out."""
+    summary = build_content_summary(
+        storybook_id="s1",
+        version=1,
+        blob=_merged_blob(),
+        moderation_report=_merged_report(),
+        age_band="6-8",
+        policy=_DEFAULT_POLICY,
+    )
+    assert summary.flagged_count == 3
+
+
+@pytest.mark.unit
+def test_merged_finding_with_null_node_ids_stays_story_level() -> None:
+    """A whole-story merged finding has no nodes to fan out to."""
+    report = _merged_report()
+    findings = report["findings"]
+    assert isinstance(findings, list)
+    findings[0]["node_id"] = None
+    findings[0]["node_ids"] = None
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_merged_blob(),
+        moderation_report=report,
+    )
+    assert view.flagged_passages == []
+    assert len(view.story_level_findings) == 1

@@ -90,13 +90,25 @@ def build_review_surface(
                 view.verdict, view.score, noise_floor=admin_noise_floor
             ):
                 continue
-            if view.node_id is None:
+            # #CRITICAL: security: a merged finding (design doc 2.2) names every
+            # affected node in node_ids and only the first in node_id. Grouping
+            # on node_id alone would render one passage and leave the rest of
+            # the flagged prose looking clean to the human approver, who is the
+            # final gate under ADR-005. Fan out across node_ids, falling back to
+            # node_id for unmerged and pre-Stage-B findings.
+            # #VERIFY: tests/unit/test_review_surface.py::
+            # test_merged_finding_fans_out_across_every_affected_node.
+            target_nodes = view.node_ids or (
+                [] if view.node_id is None else [view.node_id]
+            )
+            if not target_nodes:
                 story_level.append(view)
                 continue
-            if view.node_id not in flagged:
-                flagged[view.node_id] = []
-                order.append(view.node_id)
-            flagged[view.node_id].append(view)
+            for nid in target_nodes:
+                if nid not in flagged:
+                    flagged[nid] = []
+                    order.append(nid)
+                flagged[nid].append(view)
         passages = [
             FlaggedPassage(
                 node_id=nid, prose=prose_by_id.get(nid, ""), findings=flagged[nid]
