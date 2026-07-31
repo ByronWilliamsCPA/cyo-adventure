@@ -163,4 +163,4 @@ For questions about a specific ADR, reach out to:
 
 ---
 
-**Reference**: This ADR process is based on [Nygard's ADR format](https://github.com/adr/adr-template) with modifications for CYO Adventure.
+**Reference**: This ADR process is based on [Nygard's ADR format](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) with modifications for CYO Adventure.

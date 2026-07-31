@@ -993,8 +993,9 @@ uv run pytest tests/unit/test_example.py::test_function_name -v
   that `chore(release):` commit merges, with notes from
   `scripts/extract_changelog_section.py`. The changelog is no longer
   hand-curated per PR, so PRs never touch `CHANGELOG.md` and the merge-queue
-  changelog conflict is gone; the `Changelog Check` gate in `pr-validation.yml`
-  is a passing no-op kept only for required-check topology. Requires the
+  changelog conflict is gone; the `Changelog Check` job in `pr-validation.yml`
+  survived for a while as a passing no-op and was DELETED on 2026-07-31 after
+  verifying no org or repo ruleset requires a check by that name. Requires the
   `RELEASE_TOKEN`
   fine-grained PAT secret, contents + pull-requests write, because
   `GITHUB_TOKEN`-created PRs do not trigger required CI workflows.

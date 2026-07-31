@@ -430,7 +430,7 @@ Use the feature request template and include:
 
 ## Questions?
 
-- **General Questions**: Open a [GitHub Discussion](https://github.com/ByronWilliamsCPA/cyo-adventure/discussions)
+- **General Questions**: Open a [GitHub Issue](https://github.com/ByronWilliamsCPA/cyo-adventure/issues) with the `question` label
 - **Bug Reports**: Open a [GitHub Issue](https://github.com/ByronWilliamsCPA/cyo-adventure/issues)
 - **Security Issues**: See [ByronWilliamsCPA Security Policy](https://github.com/ByronWilliamsCPA/.github/blob/main/SECURITY.md)
 - **Email**: byronawilliams@gmail.com
