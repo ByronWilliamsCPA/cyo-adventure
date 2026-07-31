@@ -98,7 +98,7 @@ project-side upgrade path exists until Debian ships a fix.
 
 ### References
 
-- [Aqua AVD CVE-2026-53615](https://avd.aquasec.com/nvd/cve-2026-53615)
+- [NVD CVE-2026-53615](https://nvd.nist.gov/vuln/detail/CVE-2026-53615)
 - [Debian security tracker CVE-2026-53615](https://security-tracker.debian.org/tracker/CVE-2026-53615)
 - Discovered by the Container Security workflow (Trivy) on
   [PR #165](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/165)

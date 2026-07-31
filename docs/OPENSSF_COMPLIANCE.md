@@ -408,7 +408,7 @@ The template meets 44/46 passing-level criteria:
 
 - [GitHub Security Best Practices](https://docs.github.com/en/code-security)
 - [Python Security Best Practices](https://python.readthedocs.io/en/latest/library/security_warnings.html)
-- [Supply Chain Security](https://www.cisa.gov/software-supply-chain-security)
+- [NIST Secure Software Development Framework (SSDF)](https://csrc.nist.gov/Projects/ssdf)
 
 ---
 
