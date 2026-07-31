@@ -1180,7 +1180,7 @@ deviations found in review and fixed on the branch:
 1. **The vocabulary has two stores, and the first draft swept only one.**
    `child_profile_personalization.slot_type` carries a DB CHECK, which made a `'favorite'` row
    unwritable, so the migration's `DELETE` is purely defensive. But
-   `personalization_consent.covered_slot_types` is an *unconstrained* JSONB array holding the
+   `personalization_disclosure_consent.covered_slot_types` is an *unconstrained* JSONB array holding the
    same names, gated only in Python, where `'favorite'` genuinely was writable. The migration
    now sweeps it too, **removing** the element rather than expanding it into the three new keys:
    rewriting one grant into three would widen a ring-2 sharing scope to facts the guardian was

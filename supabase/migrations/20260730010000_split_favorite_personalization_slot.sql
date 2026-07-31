@@ -31,7 +31,7 @@
 DELETE FROM "public"."child_profile_personalization" WHERE slot_type = 'favorite';
 
 -- #CRITICAL: data integrity: `child_profile_personalization.slot_type` is NOT
--- the only store of this vocabulary. `personalization_consent.covered_slot_types`
+-- the only store of this vocabulary. `personalization_disclosure_consent.covered_slot_types`
 -- is an unconstrained JSONB string array holding the same slot-type names, and
 -- unlike the CHECK-guarded column above it COULD legitimately hold 'favorite'
 -- today: its only gate is api/personalization.py's `slot_type not in
@@ -57,7 +57,7 @@ DELETE FROM "public"."child_profile_personalization" WHERE slot_type = 'favorite
 -- pins this column's admissible vocabulary to PERSONALIZATION_FIELDS, so the
 -- next vocabulary change fails there rather than silently stranding a consent
 -- record that names a slot type the system no longer has.
-UPDATE "public"."personalization_consent"
+UPDATE "public"."personalization_disclosure_consent"
    SET covered_slot_types = covered_slot_types - 'favorite'
  WHERE covered_slot_types ? 'favorite';
 

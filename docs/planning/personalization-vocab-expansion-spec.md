@@ -452,7 +452,7 @@ print('D6 present:', {k: len(v) for k, v in V.items()})"
 
 Note the last assertion: D6 **removed** the flat `favorite` key rather than keeping it as an alias.
 The same removal-not-expansion choice was made for existing data. D6's migration strips `'favorite'`
-from `personalization_consent.covered_slot_types` instead of rewriting it into the three new keys,
+from `personalization_disclosure_consent.covered_slot_types` instead of rewriting it into the three new keys,
 because a guardian who consented to share one undifferentiated "favorite" never saw three distinct
 facts, and inflating one grant into three is exactly the consent widening ADR-023's ring model
 exists to prevent. D7's own review flow inherits that posture: a newly approved vocabulary member

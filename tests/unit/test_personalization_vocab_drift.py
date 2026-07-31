@@ -289,14 +289,15 @@ def test_exempt_fields_carry_no_vocabulary_entry() -> None:
 
 
 # ---------------------------------------------------------------------------
-# The SECOND store of this vocabulary: personalization_consent.covered_slot_types.
+# The SECOND store of this vocabulary:
+# personalization_disclosure_consent.covered_slot_types.
 # ---------------------------------------------------------------------------
 
 
 def test_consent_covered_slot_types_vocabulary_matches_personalization_fields() -> None:
     """The consent scope's admissible vocabulary is exactly the ring-2 eligible set.
 
-    `personalization_consent.covered_slot_types` is an UNCONSTRAINED JSONB
+    `personalization_disclosure_consent.covered_slot_types` is an UNCONSTRAINED JSONB
     string array holding the same slot-type names the CHECK-guarded
     `child_profile_personalization.slot_type` column holds. Unlike that
     column, nothing at the database level bounds it: the only gate is
@@ -343,12 +344,59 @@ def test_split_migration_sweeps_the_consent_scope_too() -> None:
     the guardian was never shown.
     """
     ddl = _executable_ddl(_newest_slot_type_check_migration())
-    assert "personalization_consent" in ddl, (
+    assert "personalization_disclosure_consent" in ddl, (
         "the newest slot_type migration does not touch "
-        "personalization_consent.covered_slot_types, the second (unconstrained) "
-        "store of this same vocabulary"
+        "personalization_disclosure_consent.covered_slot_types, the second "
+        "(unconstrained) store of this same vocabulary"
     )
     assert "- 'favorite'" in ddl, (
         "expected a `covered_slot_types - 'favorite'` removal; an expansion "
         "into the three new keys would widen consent beyond what was granted"
+    )
+
+
+def test_split_migration_only_names_tables_that_a_migration_creates() -> None:
+    """Every `"public"."<table>"` the split migration touches actually exists.
+
+    The guard above asserts the migration NAMES the second store, which is
+    necessary but, on its own, vacuous: it reads the migration's own text, so a
+    misspelled table name satisfies it as happily as a correct one. That is not
+    hypothetical. The consent sweep first shipped against
+    ``"public"."personalization_consent"``, and the real table is
+    ``personalization_disclosure_consent``; the string assertion passed locally
+    because the test and the typo agreed, and the defect surfaced only in CI as
+    ``relation "public.personalization_consent" does not exist (SQLSTATE
+    42P01)`` after every unit test had gone green.
+
+    This test closes that gap without needing a database: it resolves each
+    schema-qualified name in the migration against the set of tables the
+    migration directory as a whole creates. A name no `CREATE TABLE` ever
+    introduced cannot be a table this migration can touch.
+
+    #EDGE: data-integrity: this checks table names only, not columns; a typo in
+    `covered_slot_types` would still reach CI. Columns would need the ORM
+    metadata or a live schema to resolve, and the table name is where the whole
+    statement fails, so this is the cheap 90%.
+    #VERIFY: a real schema check runs in the `Validate migration chain` and
+    `Playwright (real-backend PR smoke)` CI jobs, which apply every migration
+    against a live Postgres.
+    """
+    migrations = sorted(_MIGRATIONS_DIR.glob("*.sql"))
+    created: set[str] = set()
+    for path in migrations:
+        created.update(
+            re.findall(
+                r'CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?"public"\."(\w+)"',
+                _executable_ddl(path),
+                flags=re.IGNORECASE,
+            )
+        )
+    assert created, "no CREATE TABLE statements found; the parser is broken"
+
+    ddl = _executable_ddl(_newest_slot_type_check_migration())
+    referenced = set(re.findall(r'"public"\."(\w+)"', ddl))
+    unknown = referenced - created
+    assert not unknown, (
+        f"the split migration references {sorted(unknown)}, which no migration "
+        f"in {_MIGRATIONS_DIR.name}/ creates; check for a misspelled table name"
     )
