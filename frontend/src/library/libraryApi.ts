@@ -49,6 +49,15 @@ export interface LibraryItemView {
    * row on the backend, both degrade to "not new" rather than throwing.
    */
   published_at?: string | null
+  /**
+   * ADR-023 Task D8: mirrors the backend's LibraryItem.personalization_eligible
+   * (itself a verbatim read of StorybookVersion.personalization_eligible from
+   * Stage B). Optional: an offline-cached item saved before this field existed
+   * has no key at all, which ReaderRoute's route-state threading treats the
+   * same as "unknown" (absent), not as an explicit false, so the
+   * personalization-values fetch is still attempted for it, same as today.
+   */
+  personalization_eligible?: boolean
 }
 
 export interface RatingView {

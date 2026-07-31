@@ -27,6 +27,20 @@ import { KID_PICKER_PATH } from '../routes'
 import { BackToLibrary } from './BackToLibrary'
 import { ReaderPage } from './ReaderPage'
 
+// #ASSUME: security: router location.state is untrusted input, same caveat as
+// parseContinuation in player/series.ts (any page can craft it via history
+// manipulation). Only a literal boolean at the expected key is accepted;
+// anything else (missing key, wrong type, a forged non-boolean) reads as
+// undefined ("unknown"), which is exactly the pre-D8 behavior: the values
+// fetch is still attempted. Only an explicit `false` ever skips it.
+// #VERIFY: ReaderRoute.test.tsx "ReaderRoute personalization eligibility
+// route state (D8)".
+function parsePersonalizationEligibleState(state: unknown): boolean | undefined {
+  if (typeof state !== 'object' || state === null) return undefined
+  const flag = (state as { personalizationEligible?: unknown }).personalizationEligible
+  return typeof flag === 'boolean' ? flag : undefined
+}
+
 /**
  * Router-driven entry point for the reader, migrated off App.tsx's former
  * hard-coded demo config onto real route params: /read/:profileId/:storybookId/:version.
@@ -42,6 +56,15 @@ export function ReaderRoute() {
     version: string
   }>()
   const api = useApi()
+  // ADR-023 Task D8: read ahead of the fetchPersonalizationValues memo below
+  // (which closes over it), so location must be resolved here rather than
+  // further down where the rest of the route's useLocation() call used to
+  // live.
+  const location = useLocation()
+  const personalizationEligible = useMemo(
+    () => parsePersonalizationEligibleState(location.state),
+    [location.state]
+  )
   const syncApi = useMemo(() => makeSyncApi(api), [api])
   const fetchStory = useMemo(() => makeFetchStory(api), [api])
   // Memoized like syncApi/fetchStory above, keyed on the same stable `api`
@@ -68,6 +91,23 @@ export function ReaderRoute() {
     if (!isPersonalizationEnabled()) return undefined
     const fetchValues = makeFetchPersonalizationValues(api)
     return async (storybookId: string) => {
+      // ADR-023 Task D8 (closes Stage C open question 2): when the library
+      // listing said this book carries no personalizable slots at all
+      // (personalization_eligible === false, threaded through router state
+      // by BookCard), skip the network fetch AND the cache read entirely
+      // instead of making a round trip that could only ever come back
+      // empty. Only an explicit `false` skips: an absent flag (a deep link,
+      // an offline entry, a stale route-state after a republish, or a
+      // continuation navigated from ContinueSeries, which never carries
+      // this key at all) falls through to the fetch exactly as before D8,
+      // because absence means "unknown", not "ineligible". Pure
+      // optimization: the fetch this replaces already fails safe (any
+      // failure resolves to null, which ReaderPage renders as the generic
+      // story), so a stale eligibility hint can only ever cost or save one
+      // avoidable round trip, never change what the child sees.
+      // #VERIFY: ReaderRoute.test.tsx "ReaderRoute personalization
+      // eligibility route state (D8)".
+      if (personalizationEligible === false) return null
       // Fetch-authoritative with a cached fallback, NOT cache-first: both reads
       // start together (they are independent), but the network answer decides
       // the outcome whenever the server responds, and the cache is consulted
@@ -109,7 +149,7 @@ export function ReaderRoute() {
       }
       return Object.keys(fresh.values).length === 0 ? null : fresh
     }
-  }, [api])
+  }, [api, personalizationEligible])
   // Flag-off residue purge (ADR-023 rollout): a build with
   // VITE_FEATURE_PERSONALIZATION off must not leave previously cached values
   // payloads at rest until sign-out. With the flag off the fetcher above never
@@ -125,7 +165,6 @@ export function ReaderRoute() {
     })
   }, [])
   const navigate = useNavigate()
-  const location = useLocation()
   const continuation = useMemo(() => parseContinuation(location.state), [location.state])
   // K7 / Phase 4b read-aloud: this route only ever gets a profile id, never
   // the full ProfileView (and its tts_enabled flag), so it reads back the

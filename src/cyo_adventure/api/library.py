@@ -230,6 +230,7 @@ def _library_item(
     book_index: int | None = None,
     cover_url: str | None = None,
     published_at: datetime | None = None,
+    personalization_eligible: bool = False,
 ) -> LibraryItem:
     """Build a library item from a stored Storybook blob.
 
@@ -253,6 +254,10 @@ def _library_item(
         published_at: When this version was published (K9 "what's new" leg),
             sourced from ``StorybookVersion.published_at``, or None for a
             pre-migration row that predates the column.
+        personalization_eligible: ADR-023 Task D8, sourced verbatim from
+            ``StorybookVersion.personalization_eligible`` (Stage B). Defaults
+            to False, matching the column's own default for a version that
+            predates it or carries no personalizable slots.
 
     Returns:
         LibraryItem: The listing item with safe, finite, correctly typed
@@ -330,6 +335,7 @@ def _library_item(
         book_index=book_index,
         cover_url=cover_url,
         published_at=published_at,
+        personalization_eligible=personalization_eligible,
     )
 
 
@@ -418,10 +424,17 @@ async def list_library(
     )
     blobs: dict[tuple[str, int], dict[str, object]] = {}
     published_ats: dict[tuple[str, int], datetime | None] = {}
+    # ADR-023 Task D8: read verbatim off the version row, same keying as
+    # published_ats above; never recomputed here (Stage B already decided
+    # eligibility at fill/import time).
+    personalization_eligibles: dict[tuple[str, int], bool] = {}
     ready_covers: list[tuple[str, int, str | None]] = []
     for row in version_rows:
         blobs[(row.storybook_id, row.version)] = row.blob
         published_ats[(row.storybook_id, row.version)] = row.published_at
+        personalization_eligibles[(row.storybook_id, row.version)] = (
+            row.personalization_eligible
+        )
         if row.cover_status == "ready":
             ready_covers.append((row.storybook_id, row.version, row.cover_object_salt))
     # #CRITICAL: security: H1 defense in depth (continued from the comment
@@ -478,6 +491,9 @@ async def list_library(
             book_index=book_index,
             cover_url=covers.get((storybook_id, version)),
             published_at=published_ats.get((storybook_id, version)),
+            personalization_eligible=personalization_eligibles.get(
+                (storybook_id, version), False
+            ),
         )
         for storybook_id, version, series_id, book_index in books
         if (storybook_id, version) in blobs

@@ -219,6 +219,7 @@ def _version_row(
     version: int,
     blob: dict[str, object] | None = None,
     published_at: datetime | None = None,
+    personalization_eligible: bool = False,
 ) -> StorybookVersion:
     """Return a StorybookVersion with a minimal content blob."""
     if blob is None:
@@ -235,6 +236,7 @@ def _version_row(
         version=version,
         blob=blob,
         published_at=published_at,
+        personalization_eligible=personalization_eligible,
     )
 
 
@@ -1004,6 +1006,7 @@ class TestLibraryItemEnrichmentFields:
         assert item.node_count == 0
         assert item.rating is None
         assert item.progress is None
+        assert item.personalization_eligible is False
 
     @pytest.mark.unit
     def test_progress_round_trip(self) -> None:
@@ -1147,6 +1150,40 @@ class TestListLibraryEnrichment:
             str(profile_id), _child_principal(family_id, profile_id), session
         )
         assert view.stories[0].published_at is None
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_personalization_eligible_attached_from_version_row(self) -> None:
+        """D8: list_library carries each version's personalization_eligible
+        column (Stage B) through to its LibraryItem, keyed correctly per
+        (storybook_id, version), so the frontend can skip the values fetch
+        for a book with no personalizable slots at all."""
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        session = _FakeSession(
+            storybooks=[_published_book("s1", family_id, version=1)],
+            versions=[_version_row("s1", 1, personalization_eligible=True)],
+        )
+        view = await list_library(
+            str(profile_id), _child_principal(family_id, profile_id), session
+        )
+        assert view.stories[0].personalization_eligible is True
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_personalization_eligible_defaults_false(self) -> None:
+        """A version row that is not personalization-eligible (the Stage B
+        column default) yields False, not None/missing."""
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        session = _FakeSession(
+            storybooks=[_published_book("s1", family_id, version=1)],
+            versions=[_version_row("s1", 1, personalization_eligible=False)],
+        )
+        view = await list_library(
+            str(profile_id), _child_principal(family_id, profile_id), session
+        )
+        assert view.stories[0].personalization_eligible is False
 
     @pytest.mark.unit
     @pytest.mark.asyncio
