@@ -1,18 +1,25 @@
 """Build sentinel-bearing specimens for the survival measurement (plan 3.4).
 
-No contract on disk declares a ``kind="personalizable"`` slot yet, so a real
-catalog skeleton renders no sentinels at all (the "dormancy fact" driving this
+Catalog contracts declare few or no ``kind="personalizable"`` slots, so a real
+catalog skeleton renders few or no sentinels (the "dormancy fact" driving this
 whole package's existence). This module authors its own fixtures instead: it
-loads a real skeleton+contract pair, flips a chosen number of the contract's
-``theme`` slots to ``personalizable`` with a GENERIC default binding word (see
-the identity-safety note below), and renders the bound skeleton
+loads a real skeleton+contract pair, brings a chosen number of the contract's
+slots to ``personalizable`` with a GENERIC default binding word (see the
+identity-safety note below), and renders the bound skeleton
 (:func:`cyo_adventure.generation.binding.render_bound_skeleton`) so it actually
 carries ``{~SLOTID:GenericWord~}`` sentinels. The result is a
 :class:`Specimen`: a pre-fill, sentinel-bearing skeleton ready for
 :func:`cyo_adventure.generation.orchestrator.fill_skeleton`.
 
+A slot the contract ALREADY declares personalizable is rebound too, not left
+alone: its catalog default (a character name such as ``"Nadia"``) is replaced
+with the generic word for its declared ``personalization_field``. Leaving it
+would send an uncontrolled catalog value to the provider and make that
+specimen's data point non-comparable to the bands whose slots this module
+bound itself.
+
 Pure and deterministic: given the same skeleton/contract pair and
-``slots_per_story``, :func:`build_specimen` always flips the same slots to the
+``slots_per_story``, :func:`build_specimen` always binds the same slots to the
 same generic values, so a fixture is reproducible across runs.
 """
 
@@ -37,7 +44,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 # The candidate (personalization_field, generic default word, role_safety)
-# tuples this module tries, in priority order, when flipping a theme slot to
+# tuples this module tries, in priority order, when bringing a slot to
 # personalizable. `role_safety` is required by the schema only for a
 # REAL_PERSON_PERSONALIZATION_FIELDS member (protagonist_first_name,
 # sibling_name); every other field must leave it None.
@@ -158,29 +165,35 @@ def load_pair(
 def _personalize_contract(
     contract: ThemeContract, *, slots_per_story: int
 ) -> ThemeContract:
-    """Return a contract with up to ``slots_per_story`` theme slots flipped.
+    """Return a contract with up to ``slots_per_story`` slots personalizable.
 
-    Walks the contract's slots in declared order; for each still-``theme``
-    slot, tries each :data:`_CANDIDATES` entry (preferring a
-    ``personalization_field`` not yet used by an earlier flip in this same
-    contract) until one round-trips through :class:`ThemeContract`'s own
-    validators (the contract-time invariants Task 2 added, including the
-    default-binding constraint check). Stops once ``slots_per_story`` slots
-    are flipped or every slot has been tried.
+    Walks the contract's slots in declared order, regardless of each slot's
+    current ``kind``, and tries each :data:`_CANDIDATES` entry until one
+    round-trips through :class:`ThemeContract`'s own validators (the
+    contract-time invariants Task 2 added, including the default-binding
+    constraint check). Candidates are ordered to prefer the slot's own
+    declared ``personalization_field`` first, then any field not yet used by
+    an earlier slot in this same contract. Stops once ``slots_per_story``
+    slots are bound or every slot has been tried.
+
+    A slot that is already ``kind="personalizable"`` is NOT skipped. Skipping
+    it would leave its catalog default binding (a real character name) in the
+    rendered sentinel, so the pass rebinds it to the generic word for its
+    declared field.
 
     Args:
         contract: The source contract (unmodified; a new contract is
             returned).
-        slots_per_story: The target number of slots to flip.
+        slots_per_story: The target number of slots to bind.
 
     Returns:
-        ThemeContract: A new, independently validated contract with the
-            flipped slots and their generic default bindings.
+        ThemeContract: A new, independently validated contract with the bound
+            slots and their generic default bindings.
 
     Raises:
-        ValueError: If not even one slot could be flipped (no candidate
-            satisfies any theme slot's constraints), since a specimen with
-            zero personalizable slots has nothing to measure.
+        ValueError: If not even one slot could be bound (no candidate
+            satisfies any slot's constraints), since a specimen with zero
+            personalizable slots has nothing to measure.
     """
     data = cast("dict[str, object]", contract.model_dump(mode="json"))
     slots = cast("list[dict[str, object]]", data["slots"])
@@ -191,10 +204,16 @@ def _personalize_contract(
     for slot in slots:
         if len(flipped) >= slots_per_story:
             break
-        if slot.get("kind", "theme") != "theme":
-            continue
         slot_id = cast("str", slot["id"])
-        ordered_candidates = sorted(_CANDIDATES, key=lambda c: c[0] in used_fields)
+        declared_raw = slot.get("personalization_field")
+        declared_field = declared_raw if isinstance(declared_raw, str) else None
+        ordered_candidates = sorted(
+            _CANDIDATES,
+            key=lambda c, declared=declared_field: (
+                c[0] != declared,
+                c[0] in used_fields,
+            ),
+        )
         for field, word, role in ordered_candidates:
             trial_slots: list[dict[str, object]] = copy.deepcopy(slots)
             trial_binding = dict(binding)
