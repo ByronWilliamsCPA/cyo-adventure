@@ -1,0 +1,281 @@
+{
+  "findings": [
+    {
+      "stage": 1,
+      "source": "llm_safety",
+      "category": "safety",
+      "node_id": "n_gate",
+      "verdict": "flag",
+      "score": null,
+      "message": "verdict parse failed; defaulted to fail-safe"
+    },
+    {
+      "stage": 1,
+      "source": "openai",
+      "category": "reading_level",
+      "node_id": "n_gate",
+      "verdict": "advisory",
+      "score": 0.1,
+      "message": "finding 1 on n_gate"
+    },
+    {
+      "stage": 0,
+      "source": "perspective",
+      "category": "coherence",
+      "node_id": "n_gate",
+      "verdict": "block",
+      "score": 0.2,
+      "message": "finding 2 on n_gate"
+    },
+    {
+      "stage": 1,
+      "source": "llm_safety",
+      "category": "safety",
+      "node_id": "n_gate",
+      "verdict": "pass",
+      "score": 0.3,
+      "message": "finding 3 on n_gate"
+    },
+    {
+      "stage": 0,
+      "source": "openai",
+      "category": "reading_level",
+      "node_id": "n_gate",
+      "verdict": "flag",
+      "score": 0.4,
+      "message": "finding 4 on n_gate"
+    },
+    {
+      "stage": 1,
+      "source": "perspective",
+      "category": "coherence",
+      "node_id": "n_gate",
+      "verdict": "advisory",
+      "score": 0.5,
+      "message": "finding 5 on n_gate"
+    },
+    {
+      "stage": 0,
+      "source": "llm_safety",
+      "category": "safety",
+      "node_id": "n_gate",
+      "verdict": "block",
+      "score": 0.6,
+      "message": "finding 6 on n_gate"
+    },
+    {
+      "stage": 1,
+      "source": "openai",
+      "category": "reading_level",
+      "node_id": "n_gate",
+      "verdict": "pass",
+      "score": 0.7,
+      "message": "finding 7 on n_gate"
+    },
+    {
+      "stage": 0,
+      "source": "perspective",
+      "category": "coherence",
+      "node_id": "n_gate",
+      "verdict": "flag",
+      "score": 0.8,
+      "message": "finding 8 on n_gate"
+    },
+    {
+      "stage": 1,
+      "source": "llm_safety",
+      "category": "safety",
+      "node_id": "n_gate",
+      "verdict": "advisory",
+      "score": 0.9,
+      "message": "finding 9 on n_gate"
+    },
+    {
+      "stage": 1,
+      "source": "llm_safety",
+      "category": "safety",
+      "node_id": "n_hallway",
+      "verdict": "flag",
+      "score": null,
+      "message": "verdict parse failed; defaulted to fail-safe"
+    },
+    {
+      "stage": 1,
+      "source": "perspective",
+      "category": "coherence",
+      "node_id": "n_hallway",
+      "verdict": "pass",
+      "score": 0.1,
+      "message": "finding 11 on n_hallway"
+    },
+    {
+      "stage": 0,
+      "source": "llm_safety",
+      "category": "safety",
+      "node_id": "n_hallway",
+      "verdict": "flag",
+      "score": 0.2,
+      "message": "finding 12 on n_hallway"
+    },
+    {
+      "stage": 1,
+      "source": "openai",
+      "category": "reading_level",
+      "node_id": "n_hallway",
+      "verdict": "advisory",
+      "score": 0.3,
+      "message": "finding 13 on n_hallway"
+    },
+    {
+      "stage": 0,
+      "source": "perspective",
+      "category": "coherence",
+      "node_id": "n_hallway",
+      "verdict": "block",
+      "score": 0.4,
+      "message": "finding 14 on n_hallway"
+    },
+    {
+      "stage": 1,
+      "source": "llm_safety",
+      "category": "safety",
+      "node_id": "n_hallway",
+      "verdict": "pass",
+      "score": 0.5,
+      "message": "finding 15 on n_hallway"
+    },
+    {
+      "stage": 0,
+      "source": "openai",
+      "category": "reading_level",
+      "node_id": "n_hallway",
+      "verdict": "flag",
+      "score": 0.6,
+      "message": "finding 16 on n_hallway"
+    },
+    {
+      "stage": 1,
+      "source": "perspective",
+      "category": "coherence",
+      "node_id": "n_hallway",
+      "verdict": "advisory",
+      "score": 0.7,
+      "message": "finding 17 on n_hallway"
+    },
+    {
+      "stage": 0,
+      "source": "llm_safety",
+      "category": "safety",
+      "node_id": "n_hallway",
+      "verdict": "block",
+      "score": 0.8,
+      "message": "finding 18 on n_hallway"
+    },
+    {
+      "stage": 1,
+      "source": "openai",
+      "category": "reading_level",
+      "node_id": "n_hallway",
+      "verdict": "pass",
+      "score": 0.9,
+      "message": "finding 19 on n_hallway"
+    },
+    {
+      "stage": 1,
+      "source": "llm_safety",
+      "category": "safety",
+      "node_id": "n_vault",
+      "verdict": "flag",
+      "score": null,
+      "message": "verdict parse failed; defaulted to fail-safe"
+    },
+    {
+      "stage": 1,
+      "source": "llm_safety",
+      "category": "safety",
+      "node_id": "n_vault",
+      "verdict": "advisory",
+      "score": 0.1,
+      "message": "finding 21 on n_vault"
+    },
+    {
+      "stage": 0,
+      "source": "openai",
+      "category": "reading_level",
+      "node_id": "n_vault",
+      "verdict": "block",
+      "score": 0.2,
+      "message": "finding 22 on n_vault"
+    },
+    {
+      "stage": 1,
+      "source": "perspective",
+      "category": "coherence",
+      "node_id": "n_vault",
+      "verdict": "pass",
+      "score": 0.3,
+      "message": "finding 23 on n_vault"
+    },
+    {
+      "stage": 0,
+      "source": "llm_safety",
+      "category": "safety",
+      "node_id": "n_vault",
+      "verdict": "flag",
+      "score": 0.4,
+      "message": "finding 24 on n_vault"
+    },
+    {
+      "stage": 1,
+      "source": "openai",
+      "category": "reading_level",
+      "node_id": "n_vault",
+      "verdict": "advisory",
+      "score": 0.5,
+      "message": "finding 25 on n_vault"
+    },
+    {
+      "stage": 0,
+      "source": "perspective",
+      "category": "coherence",
+      "node_id": "n_vault",
+      "verdict": "block",
+      "score": 0.6,
+      "message": "finding 26 on n_vault"
+    },
+    {
+      "stage": 1,
+      "source": "llm_safety",
+      "category": "safety",
+      "node_id": "n_vault",
+      "verdict": "pass",
+      "score": 0.7,
+      "message": "finding 27 on n_vault"
+    },
+    {
+      "stage": 0,
+      "source": "openai",
+      "category": "reading_level",
+      "node_id": "n_vault",
+      "verdict": "flag",
+      "score": 0.8,
+      "message": "finding 28 on n_vault"
+    },
+    {
+      "stage": 1,
+      "source": "perspective",
+      "category": "coherence",
+      "node_id": "n_vault",
+      "verdict": "advisory",
+      "score": 0.9,
+      "message": "finding 29 on n_vault"
+    }
+  ],
+  "summary": {
+    "count": 36,
+    "hard_block": true,
+    "soft_flag": true,
+    "repaired": false,
+    "reviewer_independent": true
+  }
+}

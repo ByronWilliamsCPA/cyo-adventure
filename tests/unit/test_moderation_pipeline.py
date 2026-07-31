@@ -1210,6 +1210,52 @@ async def test_invalid_repair_is_discarded_and_original_report_submits(
 
 
 @pytest.mark.unit
+async def test_persisted_report_merges_identical_findings_across_nodes(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """Task B1.4: the persist site runs merge_findings before persistence.
+
+    Reuses the same "readability flags every node, repair discarded"
+    scenario as test_invalid_repair_is_discarded_and_original_report_submits
+    so the original (unrepaired) report -- one identical reading_level FLAG
+    per node -- is what reaches the persist site. Before the merge stage this
+    would persist one finding per node; after it, the identical
+    (category, concern) findings collapse into a single finding whose
+    node_ids names every affected node.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+
+    generation_provider = MockProvider(responses=[json.dumps({"garbage": True})])
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=generation_provider,
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    assert version.moderation_report is not None
+    findings = cast("list[dict[str, object]]", version.moderation_report["findings"])
+    reading_level_findings = [
+        f for f in findings if f.get("category") == "reading_level"
+    ]
+    assert len(reading_level_findings) == 1
+    merged = reading_level_findings[0]
+    assert merged["node_ids"] is not None
+    assert len(cast("list[str]", merged["node_ids"])) == _NODE_COUNT
+    assert "findings merged" in cast("str", merged["message"])
+
+
+@pytest.mark.unit
 async def test_repair_failing_gate_is_discarded_and_routes_to_human_review(
     mock_session: AsyncMock,
     monkeypatch: pytest.MonkeyPatch,
@@ -2155,3 +2201,119 @@ async def test_atg_no_partner_path_matches_atg_fully_stubbed_noop(
     submit_a.assert_awaited_once()
     submit_b.assert_awaited_once()
     assert version_a.moderation_report == version_b.moderation_report
+
+
+# aggregate.nodes_reviewed: the coverage denominator (design doc 2.1).
+# Once PASS findings stop being persisted as rows, this counter is the only
+# signal distinguishing "reviewed everything and found nothing" from "never
+# got there", so it must track actual coverage rather than intent.
+
+
+def _aggregate(version: StorybookVersion) -> dict[str, object]:
+    assert version.moderation_report is not None
+    return cast("dict[str, object]", version.moderation_report["aggregate"])
+
+
+@pytest.mark.unit
+async def test_nodes_reviewed_counts_every_node_on_a_complete_pass(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """A run that reaches the end reports coverage of the whole node list."""
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider())
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", AsyncMock())
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    aggregate = _aggregate(version)
+    assert aggregate["nodes_reviewed"] == _NODE_COUNT
+    # A complete clean pass also records the PASS rollup the counter denominates.
+    assert aggregate["pass_counts"]
+
+
+@pytest.mark.unit
+async def test_nodes_reviewed_zero_when_stage0_block_short_circuits(
+    mock_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A Stage-0 bright-line block never reviews a node, so coverage stays 0.
+
+    Setting the counter beside the node list would have persisted full
+    coverage here, claiming every node was reviewed by a safety stage that
+    never ran.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+
+    def _brightline_handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "results": [
+                    {
+                        "flagged": True,
+                        "categories": {"sexual/minors": True},
+                        "category_scores": {"sexual/minors": 0.99},
+                    }
+                ]
+            },
+        )
+
+    _install_canned_classifier_http(monkeypatch, _brightline_handler)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", AsyncMock())
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", AsyncMock())
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=Settings(review_provider="mock", openai_api_key="k"),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    aggregate = _aggregate(version)
+    assert aggregate["nodes_reviewed"] == 0
+    # The empty PASS rollup beside it tells the same story, consistently.
+    assert aggregate["pass_counts"] == {}
+
+
+@pytest.mark.unit
+async def test_nodes_reviewed_zero_when_stage1_block_short_circuits(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """A Stage-1 safety block also leaves the review incomplete.
+
+    Stage 1 blocks on its first node, so the later stages never run and the
+    story has not been reviewed end to end even though Stage 0 passed.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_safety_block_review_provider())
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", AsyncMock())
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", AsyncMock())
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    assert version.moderation_report is not None
+    summary = cast("dict[str, object]", version.moderation_report["summary"])
+    assert summary["hard_block"] is True
+    assert _aggregate(version)["nodes_reviewed"] == 0

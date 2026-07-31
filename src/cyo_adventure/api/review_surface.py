@@ -21,7 +21,7 @@ from cyo_adventure.api.schemas import (
     ReviewSurfaceView,
 )
 from cyo_adventure.core.exceptions import ValidationError
-from cyo_adventure.moderation.report import Source, Verdict
+from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
 from cyo_adventure.moderation.thresholds import admin_surfaces
 from cyo_adventure.storybook.models import ContentFlags
 
@@ -90,13 +90,25 @@ def build_review_surface(
                 view.verdict, view.score, noise_floor=admin_noise_floor
             ):
                 continue
-            if view.node_id is None:
+            # #CRITICAL: security: a merged finding (design doc 2.2) names every
+            # affected node in node_ids and only the first in node_id. Grouping
+            # on node_id alone would render one passage and leave the rest of
+            # the flagged prose looking clean to the human approver, who is the
+            # final gate under ADR-005. Fan out across node_ids, falling back to
+            # node_id for unmerged and pre-Stage-B findings.
+            # #VERIFY: tests/unit/test_review_surface.py::
+            # test_merged_finding_fans_out_across_every_affected_node.
+            target_nodes = view.node_ids or (
+                [] if view.node_id is None else [view.node_id]
+            )
+            if not target_nodes:
                 story_level.append(view)
                 continue
-            if view.node_id not in flagged:
-                flagged[view.node_id] = []
-                order.append(view.node_id)
-            flagged[view.node_id].append(view)
+            for nid in target_nodes:
+                if nid not in flagged:
+                    flagged[nid] = []
+                    order.append(nid)
+                flagged[nid].append(view)
         passages = [
             FlaggedPassage(
                 node_id=nid, prose=prose_by_id.get(nid, ""), findings=flagged[nid]
@@ -159,6 +171,7 @@ def _finding_view(finding: dict[str, object]) -> FindingView:
     """Narrow one persisted finding dict into a FindingView."""
     node_id = finding.get("node_id")
     score = finding.get("score")
+    concern = finding.get("concern")
     return FindingView(
         stage=_as_int(finding.get("stage")),
         source=_as_source(finding.get("source")),
@@ -169,7 +182,33 @@ def _finding_view(finding: dict[str, object]) -> FindingView:
         if isinstance(score, (int, float)) and not isinstance(score, bool)
         else None,
         message=_as_str(finding.get("message")),
+        severity=_as_severity(finding.get("severity")),
+        node_ids=_as_node_ids(finding.get("node_ids")),
+        structural=_as_bool(finding.get("structural")),
+        concern=concern if isinstance(concern, str) else None,
     )
+
+
+def _as_severity(value: object) -> FindingSeverity | None:
+    """Narrow a JSON value to a FindingSeverity, or None on any mismatch.
+
+    Unlike ``_as_source``/``_as_verdict``, severity is a ranking hint, not a
+    gate: an old report legitimately lacks it, and a corrupt value should
+    degrade quietly rather than block the whole review surface.
+    """
+    if isinstance(value, str):
+        try:
+            return FindingSeverity(value)
+        except ValueError:
+            return None
+    return None
+
+
+def _as_node_ids(value: object) -> list[str] | None:
+    """Narrow a JSON value to a list[str], or None on any mismatch."""
+    if isinstance(value, list) and all(isinstance(v, str) for v in value):
+        return cast(list[str], value)  # noqa: TC006 (see _findings above)
+    return None
 
 
 def _summary(report: dict[str, object] | None) -> ReviewSummary | None:

@@ -307,6 +307,55 @@ async def _family_child_names(
     return frozenset(rows.all())
 
 
+def _without_edited_node(
+    finding: dict[str, object], node_id: str
+) -> dict[str, object] | None:
+    """Return the stored finding with the edited node's coverage withdrawn.
+
+    The edited node has just been re-reviewed from scratch, so any stored
+    finding from a refreshed source no longer speaks for it. Three outcomes:
+
+    * The finding does not cover the edited node (or comes from a source this
+      endpoint does not refresh): returned unchanged.
+    * Its ONLY coverage is the edited node: returned as ``None`` (dropped),
+      superseded by the fresh re-review.
+    * It is a merged finding (design doc 2.2) covering the edited node
+      ALONGSIDE others: returned narrowed, with the edited node removed from
+      ``node_ids`` and ``node_id`` re-pointed at the first survivor.
+
+    # #CRITICAL: data integrity: narrowing is only sound because the merge
+    # stage is lossless: ``moderation/synthesis.py`` groups on the full tuple
+    # of fields a merged finding carries, so every node in ``node_ids`` shares
+    # one verdict, severity, and message. Dropping one node therefore leaves a
+    # finding that is still exactly true of the survivors. Were the merge to
+    # widen its key again so a group could mix verdicts or messages, this
+    # function would have to split the finding instead.
+    # #VERIFY: tests/unit/test_node_edit.py::
+    # test_multi_node_merged_finding_narrows_to_the_unedited_nodes,
+    # ::test_single_node_merged_finding_dropped_as_stale,
+    # ::test_merged_finding_covering_an_untouched_node_set_is_left_alone.
+
+    Args:
+        finding: One stored finding dict (any shape: pre- or post-Stage-B).
+        node_id: The edited node's id.
+
+    Returns:
+        dict[str, object] | None: The finding to keep, or ``None`` to drop it.
+    """
+    if finding.get("source") not in {s.value for s in _REFRESHED_SOURCES}:
+        return finding
+    node_ids = finding.get("node_ids")
+    if not isinstance(node_ids, list):
+        return None if finding.get("node_id") == node_id else finding
+    typed_ids = [n for n in cast("list[object]", node_ids) if isinstance(n, str)]
+    if node_id not in typed_ids:
+        return finding
+    remaining = [n for n in typed_ids if n != node_id]
+    if not remaining:
+        return None
+    return {**finding, "node_ids": remaining, "node_id": remaining[0]}
+
+
 def _merge_moderation_report(
     stored: dict[str, object] | None,
     node_id: str,
@@ -321,17 +370,23 @@ def _merge_moderation_report(
             ``None`` if the version was never moderated.
         node_id: The edited node's id.
         fresh_findings: The newly computed Stage 0 + Stage 1 findings for
-            this node.
+            this node. May include PASS verdicts (a clean classifier or
+            safety-stage result); these are filtered out before persisting,
+            matching design doc 2.1's PASS-is-never-persisted rule.
         independent: Whether THIS re-review's provider is independent of the
             generator; ANDed with the stored report's own flag so the report
             only claims full independence when every contributing review was.
 
     Returns:
         dict[str, object]: A new ``ModerationReport.to_dict()``-shaped
-        mapping: this node's old Stage 0/Stage 1 findings are dropped, every
+        mapping: this node's stale findings are withdrawn (see
+        ``_without_edited_node``, which drops a finding scoped to this node
+        alone and narrows a merged finding that also covers others), every
         other finding (other nodes' per-node findings, whole-story Stage 2-4
-        findings) is carried over verbatim, and the fresh findings are
-        appended.
+        findings) is carried over verbatim, and the fresh non-PASS findings
+        are appended. The stored report's ``aggregate`` block, if present, is
+        carried over verbatim (never recomputed here) and omitted entirely
+        when the stored report predates it.
     """
     old_findings_raw = stored.get("findings") if isinstance(stored, dict) else None
     old_findings: list[object] = (
@@ -343,13 +398,17 @@ def _merge_moderation_report(
     for entry in old_findings:
         if not isinstance(entry, dict):
             continue
-        typed = cast("dict[str, object]", entry)
-        is_stale_for_node = typed.get("node_id") == node_id and typed.get("source") in {
-            s.value for s in _REFRESHED_SOURCES
-        }
-        if not is_stale_for_node:
-            kept.append(typed)
-    merged = [*kept, *(f.to_dict() for f in fresh_findings)]
+        retained = _without_edited_node(cast("dict[str, object]", entry), node_id)
+        if retained is not None:
+            kept.append(retained)
+    # #ASSUME: data integrity: design doc 2.1: PASS is never persisted. A
+    # fresh single-node re-review can still emit PASS (a clean classifier or
+    # safety-stage result); filter it here so this write path matches
+    # moderation/pipeline.py::_persist_report's PASS-aggregation rule
+    # instead of reintroducing the persisted-PASS-row shape Stage B removed.
+    # #VERIFY: tests/unit/test_node_edit.py::test_fresh_pass_findings_not_persisted.
+    fresh_non_pass = [f for f in fresh_findings if f.verdict is not Verdict.PASS]
+    merged = [*kept, *(f.to_dict() for f in fresh_non_pass)]
     hard_block = any(f.get("verdict") == Verdict.BLOCK.value for f in merged)
     soft_flag = (not hard_block) and any(
         f.get("verdict") == Verdict.FLAG.value for f in merged
@@ -360,7 +419,7 @@ def _merge_moderation_report(
     )
     old_repaired = old_summary_dict.get("repaired")
     old_independent = old_summary_dict.get("reviewer_independent")
-    return {
+    result: dict[str, object] = {
         "findings": merged,
         "summary": {
             "count": len(merged),
@@ -371,6 +430,19 @@ def _merge_moderation_report(
             and (old_independent if isinstance(old_independent, bool) else True),
         },
     }
+    # #ASSUME: data integrity: the stored aggregate block (nodes_reviewed /
+    # pass_counts) reflects the LAST FULL pipeline pass, not this single-node
+    # re-review; carry it verbatim rather than recomputing, since the old
+    # PASS rows it was built from are no longer persisted and cannot be
+    # recovered here. This node's fresh PASS evidence (if any) is
+    # deliberately NOT folded into pass_counts: a slight undercount is the
+    # fail-safe direction, it never overstates how much was reviewed clean.
+    # #VERIFY: tests/unit/test_node_edit.py::
+    # test_aggregate_carried_verbatim_when_present,
+    # ::test_aggregate_omitted_when_absent.
+    if isinstance(stored, dict) and "aggregate" in stored:
+        result["aggregate"] = stored["aggregate"]
+    return result
 
 
 @router.patch("/storybooks/{storybook_id}/versions/{version}/nodes/{node_id}")

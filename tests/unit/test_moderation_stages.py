@@ -7,7 +7,12 @@ import json
 import pytest
 
 from cyo_adventure.generation.provider import MockProvider
-from cyo_adventure.moderation.report import ModerationReport, Source, Verdict
+from cyo_adventure.moderation.report import (
+    FindingSeverity,
+    ModerationReport,
+    Source,
+    Verdict,
+)
 from cyo_adventure.moderation.stages import (
     _COHERENCE_SYSTEM,  # pyright: ignore[reportPrivateUsage]
     _ENGAGEMENT_SYSTEM,  # pyright: ignore[reportPrivateUsage]
@@ -134,6 +139,22 @@ async def test_safety_stage_all_nodes_fail_safe_collapses_to_one_finding() -> No
     assert findings[0].structural is True
     assert findings[0].concern == "reviewer_unavailable"
     assert "5" in findings[0].message
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_safety_stage_collapsed_finding_has_fixed_high_severity() -> None:
+    """Task B1.3 / design doc 2.3: the reviewer_unavailable fail-safe
+    finding is a fixed HIGH severity, not derived from a score (it has none)."""
+    provider = MockProvider(responses=["{}"] * 3)
+    findings = await run_safety_stage(
+        provider=provider,
+        nodes=[(f"n{i}", "text") for i in range(3)],
+        age_band="6-9",
+        max_tokens=512,
+    )
+    assert len(findings) == 1
+    assert findings[0].severity is FindingSeverity.HIGH
 
 
 @pytest.mark.unit

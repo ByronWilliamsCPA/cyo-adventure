@@ -41,6 +41,41 @@ class Verdict(StrEnum):
     PASS = "pass"  # noqa: S105  # nosec B105
 
 
+class FindingSeverity(StrEnum):
+    """Ranking key for surfaced findings (design doc 2.1).
+
+    Required on FLAG/ADVISORY findings produced by Stage B code paths;
+    absent (``None``) on findings from old persisted reports that predate
+    this field.
+    """
+
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+
+# Fixed concern taxonomy (design doc 2.1): part of the dedup/merge key.
+# "other" is the degrade target for an unrecognized model-emitted concern
+# (2.2 item 1); that degrade belongs at the parse boundary where a model
+# response is turned into a Finding, so by the time a Finding is constructed
+# the value must already be a member. Enforced in ``Finding.__post_init__``.
+CONCERN_TAXONOMY: frozenset[str] = frozenset(
+    {
+        "real_world_danger",
+        "too_mature",
+        "frightening_content",
+        "cruelty",
+        "sexual_content",
+        "self_harm",
+        "profanity",
+        # Structural concerns: pipeline conditions, not content judgments.
+        "reviewer_unavailable",
+        "mock_reviewer_active",
+        "other",
+    }
+)
+
+
 @dataclass(frozen=True, slots=True)
 class Finding:
     """One moderation result.
@@ -62,9 +97,22 @@ class Finding:
             ``.get()``. Dashboard aggregates and the threshold flywheel must
             key off this flag to avoid conflating pipeline noise with real
             safety signal (gap G2a).
-        concern: Optional machine-readable reason code for a structural
-            finding (for example ``"reviewer_unavailable"``); ``None`` for
-            genuine content findings.
+        concern: Optional machine-readable reason code from
+            ``CONCERN_TAXONOMY``, forming part of the merge key. Currently
+            set only on structural findings (for example
+            ``"reviewer_unavailable"``); content findings get theirs from
+            the structured-verdict work in design doc 2.2 item 1.
+        severity: Ranking key for the surfaced findings list (design doc
+            2.1). ``None`` on old persisted reports and on findings that
+            never carried a severity band.
+        node_ids: Every node this finding covers. Populated by the merge
+            stage (design doc 2.2) on every finding it emits, including a
+            group of one, so readers get a uniform shape; ``None`` only on
+            findings that never went through the merge (pre-Stage-B reports,
+            and the fresh single-node findings ``api/node_edit.py`` splices
+            in). Readers must fan out across ``node_ids`` when it is present
+            and fall back to ``node_id`` when it is not: ``node_id`` names
+            only the FIRST covered node.
     """
 
     stage: int
@@ -76,19 +124,35 @@ class Finding:
     score: float | None = None
     structural: bool = False
     concern: str | None = None
+    severity: FindingSeverity | None = None
+    node_ids: tuple[str, ...] | None = None
 
     def __post_init__(self) -> None:
         """Enforce the documented field ranges at construction.
 
         Raises:
-            ValueError: when ``stage`` is outside 0-4 or ``score`` is outside
-                ``[0.0, 1.0]`` (a non-None probability/confidence).
+            ValueError: when ``stage`` is outside 0-4, ``score`` is outside
+                ``[0.0, 1.0]`` (a non-None probability/confidence), or
+                ``concern`` is not a member of ``CONCERN_TAXONOMY``.
         """
         if not 0 <= self.stage <= 4:
             msg = f"Finding.stage must be 0-4, got {self.stage}"
             raise ValueError(msg)
         if self.score is not None and not 0.0 <= self.score <= 1.0:
             msg = f"Finding.score must be in [0.0, 1.0] or None, got {self.score}"
+            raise ValueError(msg)
+        # #ASSUME: data integrity: concern is part of the merge key (design
+        # doc 2.2). An unrecognized value would silently form its own group
+        # and, once B2 has models emitting it, drift the taxonomy by accident.
+        # Callers that parse a model response must degrade to "other" before
+        # constructing the Finding rather than passing the raw string through.
+        # #VERIFY: tests/unit/test_moderation_report.py::
+        # test_unknown_concern_rejected_at_construction.
+        if self.concern is not None and self.concern not in CONCERN_TAXONOMY:
+            msg = (
+                f"Finding.concern must be in CONCERN_TAXONOMY or None, "
+                f"got {self.concern!r}"
+            )
             raise ValueError(msg)
 
     def to_dict(self) -> dict[str, object]:
@@ -103,6 +167,8 @@ class Finding:
             "message": self.message,
             "structural": self.structural,
             "concern": self.concern,
+            "severity": self.severity.value if self.severity else None,
+            "node_ids": list(self.node_ids) if self.node_ids is not None else None,
         }
 
 
@@ -113,6 +179,7 @@ class ModerationReport:
     findings: list[Finding] = field(default_factory=list)
     repaired: bool = False
     reviewer_independent: bool = True
+    nodes_reviewed: int = 0
 
     def add(self, finding: Finding) -> None:
         """Append a finding."""
@@ -140,11 +207,25 @@ class ModerationReport:
         return not (self.has_hard_block or self.has_soft_flag)
 
     def to_dict(self) -> dict[str, object]:
-        """Return the JSONB payload persisted on the version row."""
+        """Return the JSONB payload persisted on the version row.
+
+        PASS findings are aggregated, not persisted as rows (design doc
+        2.1): the report keeps them in memory for gating, but the stored
+        payload carries only gate-relevant findings plus a pass aggregate.
+        """
+        persisted = [f for f in self.findings if f.verdict is not Verdict.PASS]
+        pass_counts: dict[str, int] = {}
+        for f in self.findings:
+            if f.verdict is Verdict.PASS:
+                pass_counts[f.category] = pass_counts.get(f.category, 0) + 1
         return {
-            "findings": [f.to_dict() for f in self.findings],
+            "findings": [f.to_dict() for f in persisted],
+            "aggregate": {
+                "nodes_reviewed": self.nodes_reviewed,
+                "pass_counts": pass_counts,
+            },
             "summary": {
-                "count": len(self.findings),
+                "count": len(persisted),
                 "hard_block": self.has_hard_block,
                 "soft_flag": self.has_soft_flag,
                 "repaired": self.repaired,

@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+from typing import cast
+
 import pytest
 
 from cyo_adventure.moderation.report import (
+    CONCERN_TAXONOMY,
     Finding,
+    FindingSeverity,
     ModerationReport,
     Source,
     Verdict,
@@ -121,3 +125,176 @@ def test_finding_score_none_does_not_raise() -> None:
         message="m",
     )
     assert finding.score is None
+
+
+# ---------------------------------------------------------------------------
+# Task B1.1: FindingSeverity + Finding.severity/node_ids (design doc 2.1)
+# ---------------------------------------------------------------------------
+
+
+def test_finding_severity_and_node_ids_default_to_none() -> None:
+    finding = _finding(Verdict.FLAG)
+    assert finding.severity is None
+    assert finding.node_ids is None
+
+
+def test_finding_severity_and_node_ids_round_trip_construction() -> None:
+    finding = Finding(
+        stage=1,
+        source=Source.LLM_SAFETY,
+        category="reading_level",
+        node_id="n1",
+        verdict=Verdict.FLAG,
+        score=None,
+        message="m",
+        severity=FindingSeverity.HIGH,
+        node_ids=("n1", "n2", "n3"),
+    )
+    assert finding.severity is FindingSeverity.HIGH
+    assert finding.node_ids == ("n1", "n2", "n3")
+
+
+def test_finding_to_dict_serializes_severity_and_node_ids() -> None:
+    finding = Finding(
+        stage=1,
+        source=Source.LLM_SAFETY,
+        category="reading_level",
+        node_id="n1",
+        verdict=Verdict.FLAG,
+        score=None,
+        message="m",
+        severity=FindingSeverity.MEDIUM,
+        node_ids=("n1", "n2"),
+    )
+    payload = finding.to_dict()
+    assert payload["severity"] == "medium"
+    assert payload["node_ids"] == ["n1", "n2"]
+
+
+def test_finding_to_dict_serializes_absent_severity_and_node_ids_as_none() -> None:
+    payload = _finding(Verdict.PASS).to_dict()
+    assert payload["severity"] is None
+    assert payload["node_ids"] is None
+
+
+def test_finding_severity_enum_values() -> None:
+    assert FindingSeverity.HIGH.value == "high"
+    assert FindingSeverity.MEDIUM.value == "medium"
+    assert FindingSeverity.LOW.value == "low"
+
+
+# ---------------------------------------------------------------------------
+# Task B1.2: PASS aggregate block, PASS findings not persisted (design doc 2.1)
+# ---------------------------------------------------------------------------
+
+
+def test_nodes_reviewed_defaults_to_zero() -> None:
+    assert ModerationReport().nodes_reviewed == 0
+
+
+def test_to_dict_excludes_pass_findings_from_persisted_findings() -> None:
+    report = ModerationReport(nodes_reviewed=3)
+    report.add(_finding(Verdict.PASS))
+    report.add(_finding(Verdict.FLAG))
+    payload = report.to_dict()
+    findings = cast("list[dict[str, object]]", payload["findings"])
+    verdicts = [f["verdict"] for f in findings]
+    assert verdicts == ["flag"]
+
+
+def test_to_dict_aggregates_pass_counts_by_category() -> None:
+    report = ModerationReport(nodes_reviewed=5)
+    report.add(_finding(Verdict.PASS))
+    report.add(_finding(Verdict.PASS))
+    report.add(
+        Finding(
+            stage=0,
+            source=Source.OPENAI,
+            category="harassment",
+            node_id="n2",
+            verdict=Verdict.PASS,
+            score=0.0,
+            message="m",
+        )
+    )
+    payload = report.to_dict()
+    assert payload["aggregate"] == {
+        "nodes_reviewed": 5,
+        "pass_counts": {"violence": 2, "harassment": 1},
+    }
+
+
+def test_to_dict_summary_count_excludes_pass_findings() -> None:
+    report = ModerationReport()
+    report.add(_finding(Verdict.PASS))
+    report.add(_finding(Verdict.PASS))
+    report.add(_finding(Verdict.FLAG))
+    payload = report.to_dict()
+    summary = cast("dict[str, object]", payload["summary"])
+    assert summary["count"] == 1
+
+
+def test_gating_properties_still_see_pass_findings_in_memory() -> None:
+    report = ModerationReport()
+    report.add(_finding(Verdict.PASS))
+    assert report.is_clean is True
+    assert len(report.findings) == 1
+
+
+def test_to_dict_with_no_findings_has_empty_pass_counts_and_zero_summary() -> None:
+    report = ModerationReport(nodes_reviewed=2)
+    payload = report.to_dict()
+    assert payload["aggregate"] == {"nodes_reviewed": 2, "pass_counts": {}}
+    summary = cast("dict[str, object]", payload["summary"])
+    assert summary["count"] == 0
+
+
+@pytest.mark.unit
+def test_unknown_concern_rejected_at_construction() -> None:
+    """An off-taxonomy concern must not reach a Finding.
+
+    concern is half the documented merge key (design doc 2.2). An unrecognized
+    value would silently form its own merge group and, once B2 has models
+    emitting concerns, drift the taxonomy by accident. Callers that parse a
+    model response degrade to "other" at the parse boundary instead.
+    """
+    with pytest.raises(ValueError, match="CONCERN_TAXONOMY"):
+        Finding(
+            stage=1,
+            source=Source.LLM_SAFETY,
+            category="safety",
+            node_id="n1",
+            verdict=Verdict.FLAG,
+            message="m",
+            concern="scary_clowns",
+        )
+
+
+@pytest.mark.unit
+def test_every_taxonomy_member_is_accepted() -> None:
+    """The validation admits the whole documented taxonomy, not a subset."""
+    for concern in CONCERN_TAXONOMY:
+        finding = Finding(
+            stage=1,
+            source=Source.LLM_SAFETY,
+            category="safety",
+            node_id="n1",
+            verdict=Verdict.FLAG,
+            message="m",
+            concern=concern,
+        )
+        assert finding.concern == concern
+
+
+@pytest.mark.unit
+def test_absent_concern_is_still_allowed() -> None:
+    """Stage 1 emits no concern until design doc 2.2 item 1 lands (B2)."""
+    finding = Finding(
+        stage=1,
+        source=Source.LLM_SAFETY,
+        category="safety",
+        node_id="n1",
+        verdict=Verdict.FLAG,
+        message="m",
+    )
+    assert finding.concern is None

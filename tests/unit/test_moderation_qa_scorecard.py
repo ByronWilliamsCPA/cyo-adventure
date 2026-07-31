@@ -44,7 +44,12 @@ def _report(*findings: dict[str, object]) -> dict[str, object]:
     return {"findings": list(findings), "summary": {"count": len(findings)}}
 
 
-def _finding(verdict: str, node_id: str | None = None) -> dict[str, object]:
+def _finding(
+    verdict: str,
+    node_id: str | None = None,
+    *,
+    node_ids: list[str] | None = None,
+) -> dict[str, object]:
     return {
         "stage": "stage1",
         "source": "classifier",
@@ -53,6 +58,7 @@ def _finding(verdict: str, node_id: str | None = None) -> dict[str, object]:
         "verdict": verdict,
         "score": 1.0,
         "message": "test finding",
+        "node_ids": node_ids,
     }
 
 
@@ -120,6 +126,36 @@ def test_node_verdict_from_report_only_considers_matching_node() -> None:
 
 def test_node_verdict_from_report_is_pass_when_node_has_no_findings() -> None:
     report = _report(_finding("block", node_id="n_other"))
+    assert scorecard.node_verdict_from_report(report, "n_x") == "pass"
+
+
+# ---------------------------------------------------------------------------
+# Task B1.4 item 4: node_verdict_from_report against a merged finding's
+# node_ids (design doc 2.2). A merged finding carries node_id=node_ids[0]
+# (reader compat) and node_ids=[every affected node]; a manifest lookup for
+# any OTHER affected node must still resolve through node_ids.
+# ---------------------------------------------------------------------------
+
+
+def test_node_verdict_from_report_matches_via_node_ids() -> None:
+    report = _report(
+        _finding("flag", node_id="n1", node_ids=["n1", "n2", "n3"]),
+    )
+    assert scorecard.node_verdict_from_report(report, "n2") == "flag"
+    assert scorecard.node_verdict_from_report(report, "n3") == "flag"
+
+
+def test_node_verdict_from_report_matches_primary_node_id_without_node_ids() -> None:
+    """An unmerged (single-node) finding still resolves via node_id alone,
+    since node_ids is None on it."""
+    report = _report(_finding("block", node_id="n1"))
+    assert scorecard.node_verdict_from_report(report, "n1") == "block"
+
+
+def test_node_verdict_from_report_ignores_node_ids_of_a_non_matching_finding() -> None:
+    report = _report(
+        _finding("block", node_id="n_other", node_ids=["n_other", "n_other2"]),
+    )
     assert scorecard.node_verdict_from_report(report, "n_x") == "pass"
 
 

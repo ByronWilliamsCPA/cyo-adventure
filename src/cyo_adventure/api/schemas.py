@@ -23,7 +23,7 @@ from pydantic import (
 )
 
 from cyo_adventure.generation.concept import ConceptBrief
-from cyo_adventure.moderation.report import Source, Verdict
+from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
 from cyo_adventure.storybook.evaluator import VarState
 from cyo_adventure.storybook.models import (
     AgeBand,
@@ -1377,6 +1377,14 @@ class FindingView(BaseModel):
     verdict: Verdict
     score: float | None
     message: str
+    # Additive (Stage B, design doc 2.2): severity/node_ids come from the
+    # post-review merge stage; structural/concern existed on persisted
+    # findings since Stage A but were never projected until B3's surfaces
+    # needed them. All four default so a pre-Stage-B report still projects.
+    severity: FindingSeverity | None = None
+    node_ids: list[str] | None = None
+    structural: bool = False
+    concern: str | None = None
 
 
 class ReviewSummary(BaseModel):
