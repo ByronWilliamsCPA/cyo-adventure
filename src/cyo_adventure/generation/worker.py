@@ -93,6 +93,7 @@ from cyo_adventure.story_requests.interpretation import (
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.reinsertion import (
     TokenOutcome,
+    manifest_carries_tokens,
     reinsert_storybook,
     verify_manifest,
 )
@@ -1198,6 +1199,29 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         ctx=ctx,
         created_at=datetime.now(UTC),
     )
+    # #CRITICAL: data integrity: this is the fill path's ONLY computation of
+    # personalization_eligible; the reader (api/library.py, D8) trusts the
+    # persisted column verbatim. True requires BOTH a declared personalizable
+    # slot set (`personalizable_slots`, resolved from the bound contract
+    # above) AND a manifest that actually tallies at least one surviving
+    # sentinel. Manifest presence alone is not enough: `build_manifest`
+    # returns `{"tokens": {}}` rather than `None` for a document carrying no
+    # sentinel, so a presence test would stamp True for the zero-coverage case
+    # `_warn_on_zero_coverage_slots` warns about without blocking. A contract
+    # that declares slots but whose transform found nothing stays False: fails
+    # closed per the column's own contract (db/models.py's docstring: "does
+    # this version's blob carry any sentinel-bound slots at all"). Scope note:
+    # the OTHER False-producing state on this path, no transform at all
+    # (`sentinel_manifest is None`, when `outcome.storybook is None`), is
+    # observable on the returned `GenerationOutcome` but never at persist time,
+    # because `_persist_and_moderate` returns before `persist_storybook` for a
+    # `None` storybook. Its test asserts the outcome, not a row.
+    # #VERIFY: tests/unit/test_worker.py::test_fill_stamps_personalization_eligible_when_contract_declares_slots,
+    # tests/unit/test_worker.py::test_fill_leaves_personalization_eligible_false_without_manifest,
+    # tests/unit/test_worker.py::test_fill_leaves_personalization_eligible_false_for_empty_manifest.
+    personalization_eligible = bool(personalizable_slots) and manifest_carries_tokens(
+        sentinel_manifest
+    )
     # Built via the GenerationOutcome constructor directly (not
     # dataclasses.replace): replace()'s generic TypeVar-bound return type
     # resolves to the DataclassInstance protocol under some type-checker
@@ -1214,6 +1238,7 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         attempts=outcome.attempts,
         stage_log=outcome.stage_log,
         sentinel_manifest=sentinel_manifest,
+        personalization_eligible=personalization_eligible,
     )
 
 
@@ -1505,6 +1530,7 @@ async def _persist_and_moderate(
             skeleton_slug=_skeleton_slug_of(ctx.authoring),
             validation_report=dict(outcome.report),
             sentinel_manifest=outcome.sentinel_manifest,
+            personalization_eligible=outcome.personalization_eligible,
             version=_FIRST_VERSION,
         ),
     )

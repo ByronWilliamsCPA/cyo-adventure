@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import copy
 import uuid
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -40,12 +40,16 @@ from cyo_adventure.db.models import (
     StorybookVersion,
 )
 from cyo_adventure.generation.provider import _CANNED_STORY, MockProvider
+from cyo_adventure.moderation import personalizable_slots as pslots_mod
+from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.sentinels import wrap
+from cyo_adventure.storybook.theme_contract import SlotScope, SlotSpec, ThemeContract
 from cyo_adventure.validator.gate import GateResult
 from cyo_adventure.validator.report import Severity, ValidationFinding, ValidationReport
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from pathlib import Path
 
     from sqlalchemy import Select
 
@@ -616,6 +620,140 @@ async def test_edit_contract_unrecoverable_sentinel_free_succeeds() -> None:
 
     assert result.status == "in_review"
     assert version_row.blob["nodes"][0]["body"] == "A perfectly ordinary edit."  # type: ignore[index]
+
+
+def _wire_personalizable_job(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> GenerationJob:
+    """Write a real contract sidecar and wire the loader seam for one HERO slot.
+
+    Mirrors tests/unit/test_moderation_pipeline.py::_wire_personalizable_job:
+    ``resolve_skeleton_path``/``load_skeleton`` are doubled so no real skeleton
+    file is needed, but ``load_contract_for``'s own sidecar read is the REAL
+    function reading a REAL file, so the contract chain that
+    ``personalizable_slot_ids_for_story`` drives runs end to end.
+
+    Returns:
+        A ``GenerationJob`` row naming the wired skeleton, ready for
+        ``_wire_session(..., job=...)``.
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract = ThemeContract(
+        contract_version=1,
+        skeleton_slug="themed-slug",
+        age_band=AgeBand.BAND_8_11,
+        legacy_lexicon=[],
+        default_binding={"HERO": "Ada"},
+        slots=[
+            SlotSpec(
+                id="HERO",
+                scope=SlotScope.GLOBAL,
+                meaning="the reader's own child, personalized",
+                kind="personalizable",
+                personalization_field="protagonist_first_name",
+                role_safety="protagonist",
+            ),
+        ],
+    )
+    skeleton_path.with_name("themed-slug.contract.json").write_bytes(
+        contract.model_dump_json().encode("utf-8")
+    )
+
+    def _resolve(_band: object, _slug: object) -> Path:
+        return skeleton_path
+
+    def _load_skeleton(_path: object) -> dict[str, object]:
+        # Must carry a `{HERO}` token: `load_contract_for` cross-checks the
+        # contract's declared slot ids against the skeleton's own tokens and
+        # fails the load (declared_but_absent) on a mismatch, which would
+        # resolve the slot set to None and silently make the tests below pass
+        # for the wrong reason. Mirrors test_moderation_pipeline.py's
+        # `_personalizable_skeleton`.
+        return {
+            "nodes": [
+                {
+                    "id": "n_start",
+                    "body": (
+                        "<<FILL role=setup words=40 beats='The hero, {HERO}, "
+                        "arrives and must choose a path.'>>"
+                    ),
+                    "choices": [],
+                },
+            ],
+        }
+
+    monkeypatch.setattr(pslots_mod, "resolve_skeleton_path", _resolve)
+    monkeypatch.setattr(pslots_mod, "load_skeleton", _load_skeleton)
+    return GenerationJob(
+        concept_id=uuid.uuid4(),
+        storybook_id="s1",
+        authoring_metadata={"skeleton_slug": "themed-slug", "skeleton_band": "8-11"},
+    )
+
+
+@pytest.mark.asyncio
+async def test_edit_removing_last_sentinel_clears_personalization_eligible(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Editing away the story's only sentinel must clear the eligibility flag.
+
+    ``personalization_eligible`` is derived once at persist time from the blob
+    as it stood then, and ``api/library.py`` reads it verbatim to advertise a
+    personalization affordance to the caller. A node edit rewrites the stored
+    blob in place, so an edit that removes the last sentinel leaves the column
+    promising a slot the blob can no longer fill unless it is recomputed at the
+    same write. The at-rest sentinel check cannot substitute: it validates
+    sentinels that are PRESENT and says nothing about one that is gone.
+    """
+    story = _story("in_review")
+    blob = copy.deepcopy(_CANNED_STORY)
+    nodes = cast("list[dict[str, object]]", blob["nodes"])
+    nodes[0]["body"] = f"{nodes[0]['body']} {wrap('HERO', 'Ada')}"
+    version_row = _version_row()
+    version_row.blob = blob
+    version_row.personalization_eligible = True
+    job = _wire_personalizable_job(monkeypatch, tmp_path)
+    session = AsyncMock(spec=AsyncSession)
+    _wire_session(session, story=story, version_row=version_row, job=job)
+    ctx = _ctx("admin", session)
+
+    result = await node_edit.edit_node(
+        "s1", 1, _NODE_ID, NodeEditBody(body="Plain prose, no sentinel."), ctx=ctx
+    )
+
+    assert result.status == "in_review"
+    assert version_row.blob["nodes"][0]["body"] == "Plain prose, no sentinel."  # type: ignore[index]
+    assert version_row.personalization_eligible is False
+
+
+@pytest.mark.asyncio
+async def test_edit_preserving_sentinel_keeps_personalization_eligible(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Positive control for the sibling test: an edit that leaves a declared
+    sentinel standing in ANOTHER node must not clear the flag. The recompute
+    reads the whole rewritten blob, not just the edited node, so a story that
+    still carries a sentinel elsewhere stays eligible.
+    """
+    story = _story("in_review")
+    blob = copy.deepcopy(_CANNED_STORY)
+    nodes = cast("list[dict[str, object]]", blob["nodes"])
+    nodes[1]["body"] = f"{nodes[1]['body']} {wrap('HERO', 'Ada')}"
+    version_row = _version_row()
+    version_row.blob = blob
+    version_row.personalization_eligible = True
+    job = _wire_personalizable_job(monkeypatch, tmp_path)
+    session = AsyncMock(spec=AsyncSession)
+    _wire_session(session, story=story, version_row=version_row, job=job)
+    ctx = _ctx("admin", session)
+
+    await node_edit.edit_node(
+        "s1", 1, _NODE_ID, NodeEditBody(body="Plain prose, no sentinel."), ctx=ctx
+    )
+
+    assert version_row.personalization_eligible is True
 
 
 @pytest.mark.asyncio

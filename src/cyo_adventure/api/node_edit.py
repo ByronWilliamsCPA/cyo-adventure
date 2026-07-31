@@ -101,6 +101,10 @@ from cyo_adventure.moderation.review_provider import (
 from cyo_adventure.moderation.stages import run_safety_stage
 from cyo_adventure.moderation.thresholds import load_admin_noise_floor
 from cyo_adventure.publishing.state_machine import Status
+from cyo_adventure.storybook.reinsertion import (
+    build_manifest,
+    manifest_carries_tokens,
+)
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import run_gate
 from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity_at_rest
@@ -491,8 +495,8 @@ async def edit_node(
     personalizable_slots = await personalizable_slot_ids_for_story(
         ctx.session, storybook_id
     )
-    slots_for_check = (
-        personalizable_slots if personalizable_slots is not None else frozenset()
+    slots_for_check: frozenset[str] = (
+        personalizable_slots if personalizable_slots is not None else frozenset[str]()
     )
     integrity_result = check_sentinel_integrity_at_rest(new_blob, slots_for_check)
     if not integrity_result.ok:
@@ -573,6 +577,21 @@ async def edit_node(
     version_row.blob = new_blob
     version_row.validation_report = gate_result.report.to_dict()
     version_row.moderation_report = refreshed_report
+    # #CRITICAL: data integrity: the blob just changed under a flag derived
+    # from the PREVIOUS blob. `personalization_eligible` is written once at
+    # persist time (generation/persistence.py) and read verbatim by
+    # api/library.py, so an edit that deletes the story's last sentinel would
+    # otherwise leave the column advertising a personalization affordance the
+    # blob can no longer honor. `check_sentinel_integrity_at_rest` above does
+    # not close this: it rejects a FORGED or mutated sentinel, and deleting
+    # one is a legitimate edit. Re-derive from the blob actually being stored.
+    # `sentinel_manifest` is deliberately NOT refreshed here; that is the open
+    # half of Task R3 recorded on the column itself in db/models.py.
+    # #VERIFY: tests/unit/test_node_edit.py::
+    # test_edit_removing_last_sentinel_clears_personalization_eligible.
+    version_row.personalization_eligible = bool(
+        slots_for_check
+    ) and manifest_carries_tokens(build_manifest(new_blob))
 
     # #CRITICAL: data integrity: the append-only audit record of this edit;
     # payload is the node id ONLY, never the edited prose (spec D3). Flushed
