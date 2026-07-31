@@ -3610,6 +3610,16 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>open</td>
 <td>recurrence of <code>AL-056</code>; run record committed at <code>d4-pilot-run-20260731.md</code>; tracked by <code>UW-C22</code> in <code>unscheduled-work-register.md</code></td>
 </tr>
+<tr>
+<td>AL-074</td>
+<td>2026-07-31</td>
+<td>UW-F22 dead-symbol sweep and PR #520 review</td>
+<td>tooling</td>
+<td>A TypedDict that is never used as an annotation is prose, not a contract, and it drifts silently from the dict it claims to describe. <code>SkeletonAuthoringMetadata</code> was referenced only from a docstring cross-reference in <code>import_story.py</code>, so nothing compared it to its producer; the moment it was applied as a real annotation, BasedPyright showed the producer had been writing four A6/A7 differentiation keys the shape never declared, and that four fields typed <code>str</code> are in fact written <code>str \| None</code>. Vulture found it only as a by-product of hunting unreferenced symbols, which means the detection was luck rather than design. The second half of the lesson is that the type checker is now the ONLY guard: a future producer writing a key absent from the shape is caught by BasedPyright and by no test, so narrowing type-check scope would silently reopen the same hole.</td>
+<td>Treat "declared but never annotated" as a defect class in its own right: any TypedDict describing an authoring artifact must be applied at its producer and consumer, not cross-referenced from a docstring. Where the shape crosses a JSONB boundary, add one runtime assertion so the contract survives a type-check gap.</td>
+<td>applied</td>
+<td>PR #520, commit <code>83b4c58a</code>; shape widened and the divergence recorded in the class docstring, with the register outcome in <code>unscheduled-work-register.md</code> UW-F22 (d)</td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -3649,7 +3659,7 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 31, 2026 20:06:32 UTC">July 31, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 31, 2026 21:33:03 UTC">July 31, 2026</span>
   </span>
 
     
