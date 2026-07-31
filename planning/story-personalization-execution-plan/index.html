@@ -4371,17 +4371,39 @@ settings screen says so in as many words. TDD, commit.</p>
 <p>Implements the 2026-07-29 vocabulary decisions from
 <code>personalization-closed-vocabularies-proposal.md</code> (accepted lists recorded there):</p>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Split <code>favorite</code> into <code>favorite_color</code> / <code>favorite_food</code> / <code>favorite_hobby</code> (Option B):
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Split <code>favorite</code> into <code>favorite_color</code> / <code>favorite_food</code> / <code>favorite_hobby</code> (Option B):
   new slot_type values in the DB CHECK constraint (Supabase migration), <code>PERSONALIZATION_FIELDS</code>
   (<code>theme_contract.py</code>), <code>_PersonalizationSlotType</code> (<code>api/schemas.py</code>), and any theme-contract
   slot declaration bound to <code>favorite</code> today; regenerate the frontend client (contract change).</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Seed <code>CLOSED_VOCABULARIES</code> with the accepted lists: pet_species (16), kinship_label (21),
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Seed <code>CLOSED_VOCABULARIES</code> with the accepted lists: pet_species (16), kinship_label (21),
   dedication (same 21), home_type (12), and the three split favorite lists (12 each), citing
   the proposal doc per the dict's <code>#VERIFY</code> marker.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> No case normalization anywhere (owner decision): values are stored and matched exactly
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> No case normalization anywhere (owner decision): values are stored and matched exactly
   as listed. No "none" sentinel members. Drift-guard test per AL-068/UW-C20 rides along.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> TDD throughout; one membership test per vocabulary; commit.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> TDD throughout; one membership test per vocabulary; commit.</li>
 </ul>
+<p><strong>DONE 2026-07-31 (PR #507).</strong> No theme-contract slot was bound to <code>favorite</code>: no contract on
+disk declares a <code>kind="personalizable"</code> slot yet, so the split cost no catalog edit. Two
+deviations found in review and fixed on the branch:</p>
+<ol>
+<li><strong>The vocabulary has two stores, and the first draft swept only one.</strong>
+   <code>child_profile_personalization.slot_type</code> carries a DB CHECK, which made a <code>'favorite'</code> row
+   unwritable, so the migration's <code>DELETE</code> is purely defensive. But
+   <code>personalization_disclosure_consent.covered_slot_types</code> is an <em>unconstrained</em> JSONB array holding the
+   same names, gated only in Python, where <code>'favorite'</code> genuinely was writable. The migration
+   now sweeps it too, <strong>removing</strong> the element rather than expanding it into the three new keys:
+   rewriting one grant into three would widen a ring-2 sharing scope to facts the guardian was
+   never shown. Pinned by a new drift guard binding that column's admissible vocabulary to the
+   same ceiling as <code>ck_cpp_ring2_ceiling</code>.</li>
+<li><strong>Migration version collision.</strong> The file first shipped as <code>20260730000000_</code>, which <code>#494</code>
+   had already taken for <code>add_cover_object_salt.sql</code>; Supabase keys <code>schema_migrations</code> on that
+   prefix, so both integration legs failed on <code>duplicate key value violates unique constraint
+   "schema_migrations_pkey"</code>. Renamed to <code>20260730010000_</code>.</li>
+</ol>
+<p>Also recorded: the longest vocabulary member is 3 words (<code>mac and cheese</code>), which becomes a
+floor on <code>max_words</code> for the first catalog slot bound to a personalization field. Latent today
+(no personalizable slot exists), pinned by a ceiling test so a longer member cannot be added
+silently.</p>
 <h3 id="task-d7-vocabulary-expansion-request-feature-owner-requested-2026-07-29">Task D7: vocabulary-expansion request feature (owner-requested 2026-07-29)<a class="headerlink" href="#task-d7-vocabulary-expansion-request-feature-owner-requested-2026-07-29" title="Permanent link">&para;</a></h3>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Spec first, citing the capability register IDs served (guardian requests an entry for a
@@ -4447,7 +4469,7 @@ settings screen says so in as many words. TDD, commit.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 15:52:00 UTC">July 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 31, 2026 14:47:58 UTC">July 31, 2026</span>
   </span>
 
     

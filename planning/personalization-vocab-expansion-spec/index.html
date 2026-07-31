@@ -3021,10 +3021,11 @@
 
 <h1 id="personalization-vocabulary-expansion-request-feature-specification">Personalization vocabulary-expansion request: feature specification<a class="headerlink" href="#personalization-vocabulary-expansion-request-feature-specification" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Draft (2026-07-29, dependency re-verified 2026-07-30). Spec only, no implementation.
-Blocked on Task D6 (seeding the shipped <code>CLOSED_VOCABULARIES</code> lists and splitting <code>favorite</code> into
-<code>favorite_color</code>, <code>favorite_food</code>, <code>favorite_hobby</code>), which is still outstanding on <code>origin/main</code>.
-See "Dependency" at the end of this document.
+<p><strong>Status</strong>: Draft (2026-07-29, dependency cleared 2026-07-31). Spec only, no implementation.
+Task D6 (seeding the shipped <code>CLOSED_VOCABULARIES</code> lists and splitting <code>favorite</code> into
+<code>favorite_color</code>, <code>favorite_food</code>, <code>favorite_hobby</code>) has landed, so this spec is no longer
+blocked; it is unscheduled, not blocked. See "Dependency" at the end of this document for the
+one-command check that confirms it on whatever revision you are working from.
 <strong>Serves</strong>: <a href="../capability-register/">G18</a> (extends it; see "Capability register linkage").
 <strong>Proposes</strong>: a new admin row, <strong>A17</strong> (see "Capability register linkage").
 <strong>Constrained by</strong>: <a href="../capability-register/">S10</a> (privacy architecture), the ADR-023 "never
@@ -3507,23 +3508,35 @@ precedent in <code>src/cyo_adventure/events/models.py</code> and its payload-all
    and narrow later if a specific slot type proves to attract low-quality requests.</li>
 </ol>
 <h2 id="8-dependency">8. Dependency<a class="headerlink" href="#8-dependency" title="Permanent link">&para;</a></h2>
-<p>Blocked on <strong>Task D6</strong>: seed the accepted vocabularies from ADR-023 rows 4a/&#8538;/7, including
+<p>Depended on <strong>Task D6</strong>: seed the accepted vocabularies from ADR-023 rows 4a/&#8538;/7, including
 splitting <code>favorite</code> into <code>favorite_color</code>/<code>favorite_food</code>/<code>favorite_hobby</code>.</p>
-<p>PR #489 has since merged (<code>274e49a5</code>), so the part of this dependency that waited on it is
-satisfied: <code>CLOSED_VOCABULARIES</code> now exists on <code>origin/main</code> at
-<code>src/cyo_adventure/storybook/personalization_values.py</code> with the <code>dedication</code> entry alongside
-<code>pet_species</code>, <code>kinship_label</code>, <code>favorite</code>, and <code>home_type</code>. That closed the free-text hole on the
-dedication slot, which is what #489 was for.</p>
-<p><strong>D6 itself did not land with it, and remains the live blocker.</strong> Re-verified on <code>origin/main</code>
-2026-07-30: all five vocabularies are still empty frozensets, and <code>favorite</code> is still one key
-rather than the three ADR-023 row 6 calls for. The module's own <code>#EDGE</code> marker says as much,
-"every enum candidate for these five slots is rejected until product/ADR-023 supplies the real,
-shippable lists."</p>
-<p>This feature (D7) cannot land its data model or routes against all-empty frozensets, because there
-is no vocabulary for a guardian to request an addition to. Implementation work on this spec should
-not start until D6 is verified present on <code>origin/main</code>: check that
-<code>CLOSED_VOCABULARIES</code> holds non-empty sets and carries the three split <code>favorite_*</code> keys. Do not
-treat "#489 merged" as the signal; it is necessary but not sufficient.</p>
+<p><strong>That dependency is now cleared.</strong> Two PRs were needed, and conflating them was the trap this
+section previously warned about. PR #489 (<code>274e49a5</code>) created <code>CLOSED_VOCABULARIES</code> in
+<code>src/cyo_adventure/storybook/personalization_values.py</code> and added the <code>dedication</code> entry, closing
+the free-text hole on that one slot, but it left every vocabulary an empty frozenset and left
+<code>favorite</code> as a single key. <strong>PR #507 is what actually did D6</strong>: it seeded all seven vocabularies
+with shippable lists and split <code>favorite</code> into the three ADR-023 row 6 keys, in both the DB CHECK
+constraint and the Python contract. The module's old <code>#EDGE</code> marker ("every enum candidate for
+these five slots is rejected until product/ADR-023 supplies the real, shippable lists") is gone
+with it.</p>
+<p>D7 could not have landed its data model or routes against all-empty frozensets, because there
+would have been no vocabulary for a guardian to request an addition to. That is no longer the
+case, so this spec is unscheduled rather than blocked. Before starting implementation, confirm the
+dependency on whatever revision you are actually working from rather than trusting this paragraph:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="s2">from cyo_adventure.storybook.personalization_values import CLOSED_VOCABULARIES as V</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="s2">assert all(V.values()), [k for k, v in V.items() if not v]</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="s2">assert {&#39;favorite_color&#39;, &#39;favorite_food&#39;, &#39;favorite_hobby&#39;} &lt;= V.keys()</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="s2">assert &#39;favorite&#39; not in V</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="s2">print(&#39;D6 present:&#39;, {k: len(v) for k, v in V.items()})&quot;</span>
+</span></code></pre></div>
+<p>Note the last assertion: D6 <strong>removed</strong> the flat <code>favorite</code> key rather than keeping it as an alias.
+The same removal-not-expansion choice was made for existing data. D6's migration strips <code>'favorite'</code>
+from <code>personalization_disclosure_consent.covered_slot_types</code> instead of rewriting it into the three new keys,
+because a guardian who consented to share one undifferentiated "favorite" never saw three distinct
+facts, and inflating one grant into three is exactly the consent widening ADR-023's ring model
+exists to prevent. D7's own review flow inherits that posture: a newly approved vocabulary member
+becomes selectable, it never becomes selected.</p>
 <h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../adr/adr-023-story-personalization-slots/">ADR-023</a>, the decision record this feature
@@ -3556,7 +3569,7 @@ treat "#489 merged" as the signal; it is necessary but not sufficient.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 20:46:09 UTC">July 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 31, 2026 14:47:58 UTC">July 31, 2026</span>
   </span>
 
     

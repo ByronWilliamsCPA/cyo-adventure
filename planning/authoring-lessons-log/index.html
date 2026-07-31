@@ -3557,8 +3557,8 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>tooling</td>
 <td><code>dedication</code> was absent from <code>CLOSED_VOCABULARIES</code>, so a kid-facing surface accepted free text while two plan sections said it was a closed enum. The registry and the slot taxonomy it claims to cover had no drift guard between them, so a slot type added to one and not the other fails open (free text accepted) rather than closed.</td>
 <td>A closed-vocabulary registry needs a drift guard against the slot taxonomy it claims to cover, the same way the DB CHECK lists are pinned to <code>PERSONALIZATION_FIELDS</code>: a test that fails when a slot type exists in the taxonomy with neither a vocabulary entry nor an explicit free-text exemption.</td>
-<td>open</td>
-<td>Immediate instance fixed in commit <code>f03c7fdc</code> (dedication now fails closed); the drift guard itself is UW-C20</td>
+<td>applied</td>
+<td>Immediate instance fixed in commit <code>f03c7fdc</code> (dedication now fails closed); the drift guard itself (UW-C20) shipped in PR #507, <code>tests/unit/test_personalization_vocab_drift.py</code> (every <code>PERSONALIZATION_FIELDS</code> member has a vocabulary or an exemption, <code>CLOSED_VOCABULARIES</code> keys are a subset of <code>PERSONALIZATION_FIELDS</code>, every vocabulary is non-empty, exempt fields carry no entry, and the consent scope's admissible vocabulary matches the same ceiling)</td>
 </tr>
 <tr>
 <td>AL-069</td>
@@ -3569,6 +3569,16 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>Any hand-authored storybook fixture set needs a gate assertion, not just a schema assertion, with an explicit allowlist for fixtures whose gate violation IS the test. Adding to that allowlist must be a documented trade (it costs that fixture its repair-adoption coverage), never a way to quiet a red test. Where a manifest asserts a property of fixture prose, the prose is the thing to fix, not the assertion.</td>
 <td>applied</td>
 <td><code>tests/unit/test_moderation_qa_corpus.py::test_gate_blocked_books_are_exactly_the_declared_exceptions</code>, plus the "what this corpus does and does not exercise" section of <code>scripts/seed_moderation_qa.py</code></td>
+</tr>
+<tr>
+<td>AL-070</td>
+<td>2026-07-31</td>
+<td>ADR-023 Task D6 PR review (PR #507)</td>
+<td>tooling</td>
+<td>A test that reads an artifact's own text can only prove the artifact is self-consistent, never that it is correct, and it silently pins whatever typo it was written alongside. The D6 consent sweep shipped against <code>"public"."personalization_consent"</code>; the real table is <code>personalization_disclosure_consent</code>. Its guard asserted <code>"personalization_consent" in ddl</code> against the migration source, so the test and the typo agreed and every unit test went green. The defect surfaced only in the real-backend CI leg as <code>relation "public.personalization_consent" does not exist (SQLSTATE 42P01)</code>, after review, commit, and push.</td>
+<td>A guard that reads a migration's text must resolve every identifier it checks against a second, independent source rather than against the same file: here, the set of tables the migration directory as a whole creates. Where the independent source needs a live database (columns, types), say so in the docstring and name the CI job that does check it, so the cheap guard's limits are on the record instead of implied.</td>
+<td>applied</td>
+<td>PR #507, <code>tests/unit/test_personalization_vocab_drift.py::test_split_migration_only_names_tables_that_a_migration_creates</code>; non-vacuity confirmed by reintroducing the typo and checking the failure message names it</td>
 </tr>
 </tbody>
 </table>
@@ -3609,7 +3619,7 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 31, 2026 04:05:55 UTC">July 31, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 31, 2026 14:47:58 UTC">July 31, 2026</span>
   </span>
 
     
