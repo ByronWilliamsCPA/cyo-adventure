@@ -303,18 +303,25 @@ around 2026-06-28 with no fix currently in flight there.
 
 ---
 
-## CVE-2026-53089 and 7 further kernel-header CVEs (2 with an upstream fix) | linux-libc-dev | High
+## CVE-2026-53089 and 7 further kernel-header CVEs (2 since resolved) | linux-libc-dev | High
+
+> **Partially resolved 2026-07-30.** CVE-2026-53399 and CVE-2026-64600, the two
+> "fix-available-but-not-yet-shipped" CVEs in this entry, are **closed**: the
+> `dhi-python:3.14-debian13` base advanced from `linux-libc-dev` 6.12.95-1+dhi0
+> to 6.12.96-1+dhi0, which is the version Debian records as fixing both. See
+> "Resolution of the 2 fixable CVEs" below. The 6 no-fix CVEs remain **open**
+> and keep their 2026-09-24 reassessment date.
 
 | Field | Value |
 |-------|-------|
-| **CVE ID** | No-fix (6): CVE-2026-53089, CVE-2026-53109, CVE-2026-53118, CVE-2026-53330, CVE-2026-63970, CVE-2026-64017. Fix-available-but-not-yet-shipped (2): CVE-2026-53399, CVE-2026-64600 |
+| **CVE ID** | Open, no fix (6): CVE-2026-53089, CVE-2026-53109, CVE-2026-53118, CVE-2026-53330, CVE-2026-63970, CVE-2026-64017. Resolved 2026-07-30 (2): CVE-2026-53399, CVE-2026-64600 |
 | **Package** | linux-libc-dev (Debian binary package from the `linux` kernel source package) |
-| **Affected Version** | 6.12.95-1+dhi0 (Debian 13 "trixie", DHI mirror build) |
-| **Fixed Version** | 6 report no fix available; CVE-2026-53399 and CVE-2026-64600 are fixed in `linux-libc-dev` 6.12.96-1, which the `dhi-python:3.14-debian13` base does not yet ship |
+| **Affected Version** | 6.12.95-1+dhi0 at discovery (Debian 13 "trixie", DHI mirror build); the base now ships 6.12.96-1+dhi0 |
+| **Fixed Version** | The 6 open CVEs report no fix available. CVE-2026-53399 and CVE-2026-64600 are fixed in `linux-libc-dev` 6.12.96-1, which the base image now ships |
 | **Severity** | High (all 8, per Trivy/Aqua feed) |
 | **CVSS Score** | Not individually catalogued here; see per-CVE Aqua/NVD links below |
 | **Discovered** | 2026-07-24 |
-| **Reassessment Due** | 2026-08-24 (the 2 fixable); 2026-09-24 (the 6 no-fix) |
+| **Reassessment Due** | 2026-09-24 (the 6 open no-fix CVEs). The 2 fixable CVEs were resolved on 2026-07-30 and no longer carry a date |
 | **Blocking Release** | No |
 
 ### Description
@@ -324,8 +331,29 @@ source version, newly surfaced after the 34-CVE set documented in the block
 above. Like that set they span unrelated kernel subsystems and follow the same
 `linux-libc-dev` false-positive class (kernel UAPI headers, not a running
 kernel binary). Six report an empty Fixed Version with status `affected`. Two
-(CVE-2026-53399, CVE-2026-64600) now have an upstream fix in `linux-libc-dev`
-6.12.96-1 that the base image has not yet picked up.
+(CVE-2026-53399, CVE-2026-64600) had an upstream fix in `linux-libc-dev`
+6.12.96-1 that the base image had not yet picked up at discovery; it has since
+picked it up, and those two are resolved (see below).
+
+### Resolution of the 2 fixable CVEs (2026-07-30)
+
+CVE-2026-53399 and CVE-2026-64600 are **resolved**. The condition this entry set
+for closing them, that the `dhi-python:3.14-debian13` base advance to a build
+carrying `linux-libc-dev` 6.12.96-1, has been met: the Container Security run on
+[PR #494](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/494)
+([run 30580773808](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/30580773808))
+reports the installed package as **6.12.96-1+dhi0**, up from the 6.12.95-1+dhi0
+recorded at discovery. The Debian security tracker records both CVEs as `fixed`
+in `trixie-security` 6.12.96-1, so the DHI rebuild of that version carries the
+fix. Their `.trivyignore` entries have been removed accordingly.
+
+One caveat recorded deliberately, because it affects how this was verified:
+neither CVE appears in the PR #494 scan output, but that alone proves nothing,
+since both were suppressed by `.trivyignore` at the time of that run and would
+have been hidden whether fixed or not. The closure rests on the two facts above,
+the installed version and Debian's `fixed` status for it, not on their absence
+from the output. The next Container Security run after the suppressions are
+removed will confirm it directly.
 
 ### Impact on This Project
 
@@ -337,14 +365,11 @@ this package's metadata. Exposure through the application surface is negligible.
 
 ### Remediation Plan
 
-- [ ] **CVE-2026-53399, CVE-2026-64600 (tracked, fix exists):** these are a
-  tracked suppression, not a permanent dismissal. The fix is in
-  `linux-libc-dev` 6.12.96-1; the blocker is that
-  `ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13` still ships
-  6.12.95-1+dhi0 and the DHI runtime image has no package manager to upgrade
-  itself. Remove both `.trivyignore` entries as soon as a Renovate digest bump
-  advances the `dhi-python` base to a build carrying 6.12.96-1, then re-run the
-  Container Security scan to confirm. Reassess by 2026-08-24.
+- [x] **CVE-2026-53399, CVE-2026-64600 (tracked, fix exists): DONE 2026-07-30.**
+  These were a tracked suppression, not a permanent dismissal, and the track has
+  now closed. The base advanced to `linux-libc-dev` 6.12.96-1+dhi0, the version
+  Debian records as fixing both, and their `.trivyignore` entries have been
+  removed. See "Resolution of the 2 fixable CVEs" above.
 - [ ] **The 6 no-fix CVEs:** monitor the
   [Debian security tracker](https://security-tracker.debian.org/tracker/source-package/linux)
   for the DHI mirror to rebuild against a newer kernel-headers snapshot; remove
@@ -354,12 +379,15 @@ this package's metadata. Exposure through the application surface is negligible.
 
 For the 6 no-fix CVEs: same reason as the 34-CVE block above; Debian has not
 released a patched `linux-libc-dev` for the DHI mirror snapshot, and the base
-image is not managed by this project's dependency set. For the 2 fixable CVEs:
-an upstream fix exists (6.12.96-1) but has not propagated into the
-`dhi-python:3.14-debian13` digest this project pins; the DHI runtime image
-ships no shell or package manager, so the fix can only arrive via a base-image
-digest refresh from the `ByronWilliamsCPA/container-images` mirror pipeline,
-which this project consumes rather than controls.
+image is not managed by this project's dependency set. These 6 remain open.
+
+For the 2 fixable CVEs, this section is now historical: an upstream fix existed
+(6.12.96-1) but had not propagated into the `dhi-python:3.14-debian13` digest
+this project pinned, and the DHI runtime image ships no shell or package
+manager, so the fix could only arrive via a base-image digest refresh from the
+`ByronWilliamsCPA/container-images` mirror pipeline, which this project consumes
+rather than controls. That refresh has since happened, which is exactly the
+predicted path, and both CVEs are resolved.
 
 ### References
 
@@ -471,10 +499,12 @@ against fresh evidence.
 
 ## Resolved Entries
 
-| CVE              | Package  | Resolved Date | Resolution                                             |
-|------------------|----------|---------------|--------------------------------------------------------|
-| PYSEC-2022-42969 | py       | 2026-07-29    | Withdrawn upstream as disputed. See detail below.      |
-| PYSEC-2026-89    | markdown | 2026-07-29    | Not affected; 3.10.2 carries the 3.8.1 fix. See below. |
+| CVE              | Package        | Resolved Date | Resolution                                             |
+|------------------|----------------|---------------|--------------------------------------------------------|
+| PYSEC-2022-42969 | py             | 2026-07-29    | Withdrawn upstream as disputed. See detail below.      |
+| PYSEC-2026-89    | markdown       | 2026-07-29    | Not affected; 3.10.2 carries the 3.8.1 fix. See below. |
+| CVE-2026-53399   | linux-libc-dev | 2026-07-30    | Fixed by base 6.12.96-1+dhi0. See entry above.         |
+| CVE-2026-64600   | linux-libc-dev | 2026-07-30    | Fixed by base 6.12.96-1+dhi0. See entry above.         |
 
 Aliases: PYSEC-2022-42969 is CVE-2022-42969 and GHSA-w596-4wvx-j9j6 (duplicate OSV record
 PYSEC-2022-43183); PYSEC-2026-89 is CVE-2025-69534 and GHSA-5wmx-573v-2qwq.
@@ -587,3 +617,4 @@ re-verified rather than carried forward:
 | 2026-07-24  | Byron Williams | Added 8 further linux-libc-dev kernel-header CVEs from PR #394 Trivy: 6 no-fix (53089/53109/53118/53330/63970/64017) plus 2 tracked-with-fix in 6.12.96-1 not yet in the dhi-python base (53399/64600). |
 | 2026-07-29  | Byron Williams | Reassessed 2 overdue entries; resolved both; added gate ruling.       |
 | 2026-07-30  | Byron Williams | Added 7 further linux-libc-dev kernel-header CVEs from the PR #494 Trivy run (64287/64364/64375/64434/64534/64552/64558); all High, none fixed on the trixie track (fix only in sid 7.1.5-1). Tracked in issue #505. Base advanced to 6.12.96-1+dhi0, which clears CVE-2026-53399/64600 from the prior entry. |
+| 2026-07-30  | Byron Williams | Suppressed the 7 new CVEs in .trivyignore per that file's stated scope (base-image OS-package CVEs with no upstream fix, each paired with an entry here). Resolved CVE-2026-53399/64600: removed their .trivyignore block, whose own removal condition (base ships 6.12.96-1) is met; verified fixed in trixie-security 6.12.96-1 on the Debian tracker rather than inferred from scan absence, which suppression would have masked. |
