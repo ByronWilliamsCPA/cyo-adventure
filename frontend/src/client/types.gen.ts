@@ -8620,6 +8620,10 @@ export type GetMyProgressApiV1MeProgressGetErrors = {
      */
     401: ErrorResponse;
     /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
      * Validation Error
      */
     422: HttpValidationError;
@@ -8648,6 +8652,10 @@ export type FlushReadingTimeApiV1MeReadingTimePostErrors = {
      * Missing, malformed, expired, or unknown bearer token.
      */
     401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
     /**
      * Validation Error
      */

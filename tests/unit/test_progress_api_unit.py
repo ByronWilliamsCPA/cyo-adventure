@@ -20,6 +20,7 @@ from cyo_adventure.api.progress import (
     _week_start,
     get_my_progress,
 )
+from cyo_adventure.api.progress import router as progress_router
 from cyo_adventure.core.exceptions import AuthorizationError
 from cyo_adventure.db.models import (
     ChildProfile,
@@ -121,9 +122,12 @@ class TestGetMyProgress:
         assert result.totals.endings_found == 0
         assert result.days_read_this_week == 0
         assert result.lifetime_days_read == 0
-        # Fallback band ("8-11") default when the profile row is missing.
-        assert result.settings.ring_enabled is True
-        assert result.settings.ring_goal_days == 3
+        # A missing profile row is an age the server cannot establish, so it
+        # resolves through the same conservative fallback as an unrecognized
+        # band (the youngest band's row), not the mid-range "8-11" it used to
+        # invent. See _UNKNOWN_BAND.
+        assert result.settings.ring_enabled is False
+        assert result.settings.ring_goal_days == 2
         assert result.settings.badges_enabled is True
         assert result.settings.time_capture_paused is False
 
@@ -243,10 +247,29 @@ class TestResolveRingSettings:
         )
         assert goal == 6
 
-    def test_unknown_band_falls_back_to_inert_default(self) -> None:
+    def test_unknown_age_band_falls_back_to_the_youngest_bands_defaults(self) -> None:
+        """An unrecognized band must resolve DOWN, not up.
+
+        This replaces an assertion that the fallback was ``(True, 3)``. That
+        was the 8-11 row, not a conservative default: the band table exists
+        precisely because 3-5 is the one band D17 excludes, so falling back to
+        "on" turns the streak ring on for readers whose age the server could
+        not establish, which may well be the youngest. The safe fallback is
+        the youngest band's own row.
+        """
         enabled, goal = _resolve_ring_settings("unknown-band", None, None)
+        assert enabled is False
+        assert goal == 2
+        assert (enabled, goal) == _resolve_ring_settings("3-5", None, None)
+
+    def test_an_explicit_setting_still_wins_for_an_unknown_band(self) -> None:
+        # The conservative fallback governs the DEFAULT only; a guardian who
+        # has explicitly chosen is still obeyed.
+        enabled, goal = _resolve_ring_settings(
+            "unknown-band", ring_enabled=True, ring_goal_days=4
+        )
         assert enabled is True
-        assert goal == 3
+        assert goal == 4
 
 
 @pytest.mark.unit
@@ -329,3 +352,16 @@ def test_found_ending_title_strips_sentinels() -> None:
     title = found_endings_by_book["story-a"][0].title
     assert "{~" not in title
     assert "Explorer" in title
+
+
+@pytest.mark.unit
+def test_router_declares_the_403_it_can_raise() -> None:
+    """A denial the client cannot model is a denial the UI mishandles.
+
+    Every route here runs ``_require_child_profile``, which raises
+    ``AuthorizationError`` (403) for a non-child principal. With only 401
+    declared, the generated client's error union omitted 403 entirely, so a
+    guardian previewing as a child got an unmodelled failure that read as an
+    empty success rather than a denial.
+    """
+    assert set(progress_router.responses) >= {401, 403}

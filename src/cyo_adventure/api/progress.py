@@ -53,6 +53,7 @@ from cyo_adventure.db.models import (
 from cyo_adventure.progress.badges import compute_progress
 from cyo_adventure.progress.blob import book_title, ending_count, ending_valence_map
 from cyo_adventure.progress.models import BookFacts
+from cyo_adventure.storybook.models import AgeBand
 
 if TYPE_CHECKING:
     import uuid
@@ -63,16 +64,36 @@ if TYPE_CHECKING:
     from cyo_adventure.api.deps import Principal
     from cyo_adventure.progress.models import ProgressFacts
 
-router = APIRouter(prefix="/api/v1", tags=["progress"], responses=error_responses(401))
+# #ASSUME: security: every route on this router runs _require_child_profile,
+# which raises AuthorizationError for a non-child principal; app.py maps that
+# to 403. Declaring only 401 left the generated client with no 403 in its
+# error union, so a guardian previewing as a child hit an UNMODELLED failure
+# that surfaced as an empty-looking success rather than a denial.
+# #VERIFY: tests/unit/test_progress_api_unit.py::
+# test_router_declares_the_403_it_can_raise.
+router = APIRouter(
+    prefix="/api/v1", tags=["progress"], responses=error_responses(401, 403)
+)
 
 # W3.4 (gamification-recommendation-2026-08-01.md section 4 / design review
 # P-A, ratified as D17): per-band weekly-ring defaults. Keyed on the raw
 # ChildProfile.age_band string (mirrors _AGE_BAND_RANK's own choice in
 # storybook/models.py) rather than the AgeBand enum, since a profile row may
-# in principle carry a value this deploy's enum does not recognize yet; an
-# unknown band falls back to the most conservative "on, goal 3" reading via
-# ``dict.get`` defaults below rather than raising, so a settings read can
-# never 500 a kid's whole progress screen over a band-table gap.
+# in principle carry a value this deploy's enum does not recognize yet. An
+# unknown band resolves through _UNKNOWN_BAND rather than raising, so a
+# settings read can never 500 a kid's whole progress screen over a band-table
+# gap.
+#
+# #CRITICAL: security: the fallback direction matters and is easy to get
+# backwards. These tables exist precisely BECAUSE "3-5" differs from every
+# other band, so a per-key default of ``True`` (the shape a bare
+# ``dict.get(band, True)`` takes) points the wrong way: any band string that
+# fails to match turns the streak ring ON for what may be the youngest
+# readers, which is the one group D17 deliberately excludes. Resolve an
+# unrecognized band to the youngest band's row instead, which is the only
+# genuinely conservative reading.
+# #VERIFY: tests/unit/test_progress_api_unit.py::
+# test_unknown_age_band_falls_back_to_the_youngest_bands_defaults.
 _RING_DEFAULT_ENABLED: dict[str, bool] = {
     "3-5": False,
     "5-8": True,
@@ -98,6 +119,12 @@ _RING_DEFAULT_GOAL_DAYS: dict[str, int] = {
 # before any of those bounds existed, or restored from a backup taken between
 # them, still resolves to a safe value here.
 _RING_GOAL_DAYS_MAX = 6
+
+# The band an unrecognized (or unavailable) age_band string resolves to. Tied
+# to the enum rather than a bare "3-5" literal so a future band rename cannot
+# silently turn this into an unknown key of its own. See the #CRITICAL note on
+# _RING_DEFAULT_ENABLED for why the YOUNGEST band is the safe choice here.
+_UNKNOWN_BAND = AgeBand.BAND_3_5.value
 
 
 def _resolve_ring_settings(
@@ -135,15 +162,10 @@ def _resolve_ring_settings(
     Returns:
         tuple[bool, int]: ``(effective_enabled, effective_goal_days)``.
     """
-    enabled = (
-        _RING_DEFAULT_ENABLED.get(age_band, True)
-        if ring_enabled is None
-        else ring_enabled
-    )
+    band = age_band if age_band in _RING_DEFAULT_ENABLED else _UNKNOWN_BAND
+    enabled = _RING_DEFAULT_ENABLED[band] if ring_enabled is None else ring_enabled
     goal_days = (
-        _RING_DEFAULT_GOAL_DAYS.get(age_band, 3)
-        if ring_goal_days is None
-        else ring_goal_days
+        _RING_DEFAULT_GOAL_DAYS[band] if ring_goal_days is None else ring_goal_days
     )
     return enabled, min(goal_days, _RING_GOAL_DAYS_MAX)
 
@@ -285,12 +307,14 @@ async def get_my_progress(
 
     # #EDGE: external resources: profile_row can only be None if the child's
     # own profile row vanished between token verification and this query (a
-    # concurrent delete/erasure racing this request); the "8-11"/None/None
-    # fallback below resolves to that band's inert default (ring on, goal 3,
-    # badges on) rather than raising, so a race does not 500 the response.
+    # concurrent delete/erasure racing this request). Resolving that through
+    # _UNKNOWN_BAND rather than inventing a mid-range band keeps the whole
+    # module on one fallback policy: an age we cannot establish is treated as
+    # the youngest, so a race degrades to the least-pressuring settings rather
+    # than raising or guessing upward.
     profile_row = profile_rows[0] if profile_rows else None
     ring_enabled, ring_goal_days = _resolve_ring_settings(
-        profile_row.age_band if profile_row is not None else "8-11",
+        profile_row.age_band if profile_row is not None else _UNKNOWN_BAND,
         profile_row.ring_enabled if profile_row is not None else None,
         profile_row.ring_goal_days if profile_row is not None else None,
     )

@@ -43,8 +43,13 @@ if TYPE_CHECKING:
 
 _logger = get_logger(__name__)
 
+# #ASSUME: security: _require_child_profile raises AuthorizationError for a
+# non-child principal, which app.py maps to 403. See api/progress.py for why
+# omitting it from the generated client's error union matters.
+# #VERIFY: tests/unit/test_reading_time_api_unit.py::
+# test_router_declares_the_403_it_can_raise.
 router = APIRouter(
-    prefix="/api/v1", tags=["reading-time"], responses=error_responses(401)
+    prefix="/api/v1", tags=["reading-time"], responses=error_responses(401, 403)
 )
 
 # A single flush can never plausibly represent more than this much active

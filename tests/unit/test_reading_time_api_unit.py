@@ -27,6 +27,7 @@ from cyo_adventure.api.reading_time import (
     accumulate_stmt,
     flush_reading_time,
 )
+from cyo_adventure.api.reading_time import router as reading_time_router
 from cyo_adventure.api.schemas import ReadingTimeFlushBody
 from cyo_adventure.core.exceptions import AuthorizationError, ValidationError
 from cyo_adventure.db.models import ChildProfile, ReadingActivityDay
@@ -532,3 +533,9 @@ class TestFlushReadingTime:
         # Damage stays bounded by the per-flush clamp, which is what makes
         # this residual acceptable for a literacy signal.
         assert result.settled_seconds <= _MAX_SINGLE_FLUSH_SECONDS
+
+
+@pytest.mark.unit
+def test_router_declares_the_403_it_can_raise() -> None:
+    """See api/progress.py's twin test: _require_child_profile raises 403."""
+    assert set(reading_time_router.responses) >= {401, 403}
