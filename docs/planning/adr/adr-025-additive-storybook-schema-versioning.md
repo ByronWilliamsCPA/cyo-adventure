@@ -22,6 +22,12 @@ tags:
 > **Cross-sign**: `storybook/models.py`, `storybook/schema_export.py`, `schema/storybook.schema.json`,
 > both player engines, and the conformance corpus. No database migration; published blobs are not
 > rewritten.
+> **Scope**: this ADR is a design record only. Nothing in it ships with the commit that accepts it:
+> `_check_schema_version` still requires exact equality with `SCHEMA_VERSION = "2.0"`, there is no
+> `SCHEMA_MINOR` constant, and no range check exists anywhere. The decision text below is written in
+> the present tense as a specification of the target state, in the same voice as
+> [ADR-027](./adr-027-in-story-illustration.md), which carries the identical disclaimer.
+> Implementation is separately scheduled work.
 
 ## TL;DR
 
@@ -78,6 +84,42 @@ Mitigating facts that shape the decision:
    newer minor. Sequence: deploy the code that understands `2.(x+1)` everywhere first; only then
    allow content at `2.(x+1)` to be authored or imported. With a single-operator deployment this is
    a release-notes rule, not tooling.
+
+## Alternatives Considered
+
+### Alternative 1: keep exact-equality versioning and migrate published blobs on each bump
+
+Bump `SCHEMA_VERSION` to `2.1` as today, keep the exact string comparison, and rewrite every stored
+blob to the new version as part of the release.
+
+Rejected. A published blob is not just a document, it is the artifact a reading state pins by
+`(storybook_id, version)`, and the offline cache holds copies this server cannot reach at all. A
+rewrite would either invalidate live reading states or leave device caches disagreeing with the
+server about what version `2.1` contains. It also converts every additive field into a data
+migration with a rollback story, which is the cost this ADR exists to remove.
+
+### Alternative 2: an extension bag (`extra="allow"`, or a single `extensions` dict)
+
+Relax `extra="forbid"` and `additionalProperties: false`, or add one open `extensions: dict` field
+that new features write into without a version bump at all.
+
+Rejected, and it is the option this ADR most deliberately refuses. Strict field enumeration is
+not incidental strictness; it is the gate that catches malformed LLM output before a human
+reviewer ever sees it, and an open bag is exactly the hole a generator hallucinating a plausible
+field key would fall through undetected. It also gives up the one property the range check buys:
+a parser can still say precisely which fields it does and does not understand.
+
+### Alternative 3: major-version-per-addition
+
+Treat every schema change as a major bump with its own ADR, accepting that each one is a breaking
+change and scheduling it as such.
+
+Rejected as honest but unaffordable. Four features already queued behind the format wall (ending
+rarity, per-node media, sound cues, band presentation hints) would each become a breaking change
+with a deploy sequence and a compatibility window, for additions that by construction change
+nothing about how an existing story reads. The decision keeps the major-bump discipline for
+changes that genuinely are breaking; it only declines to treat "one new optional field" as one of
+them.
 
 ## Consequences
 

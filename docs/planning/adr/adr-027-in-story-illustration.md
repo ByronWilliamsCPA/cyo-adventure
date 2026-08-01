@@ -151,6 +151,52 @@ explicitly, lets the pilot ship without that dependency and forces the conversat
    (text-only, today's behavior), never a broken-image state or a placeholder that looks like
    content.
 
+## Alternatives Considered
+
+### Alternative 1: leave ADR-017 decision 1 standing (cover art only, at every band)
+
+Decline the amendment; keep per-passage illustration categorically out of scope.
+
+Rejected on the band that needs it most. At 3-5 the reader is largely pre-literate and is being
+read to, so a text-only page with a single cover thumbnail is not a picture book, it is a
+transcript. The media recommendation's own framing at this band is "the image is the page". The
+cost of saying no is concentrated entirely on the youngest readers.
+
+### Alternative 2: per-node art at every band, not just 3-5
+
+Authorize per-node illustration across the catalog in one decision.
+
+Rejected on both moderation load and reader value. The load argument is decisive: per-node art
+converts one review artifact per book into 10-45, and ADR-017 decision 4 names exactly that
+("volume outgrows per-item human review") as the trigger requiring automated image moderation
+first. Doing it catalogue-wide would demand the classifier this ADR explicitly does not build. The
+value argument is independent: an 8-11 or 13-16 reader reads prose, and heavy per-page art there
+would work against the text rather than carry it. Hence per-node at 3-5, per-scene at 5-8, and
+unchanged above.
+
+### Alternative 3: build the automated image-moderation classifier first, then pilot
+
+Treat the classifier as a hard precondition for any in-story art at all.
+
+Rejected as sequencing, not as principle: the classifier is still required, just not yet. A
+seven-skeleton pilot is a volume per-item human review demonstrably absorbs (it is the same gate
+that already approves every cover and every passage of prose), so gating the pilot on the
+classifier would build a scale mechanism before knowing whether the thing being scaled is worth
+scaling. Decision 5 keeps the precondition binding at the point it actually starts to matter: any
+expansion past the pilot.
+
+### Alternative 4: a separate in-story-illustration pipeline
+
+Build a new generation/storage/serving path tuned for node-grain images rather than extending
+`covers/`.
+
+Rejected as duplication with a safety cost. The covers pipeline already carries the parts that are
+hard to get right and dangerous to get wrong twice: injection-hardened prompt construction, the
+no-child-PII rule, WebP optimization, R2 storage with presigned delivery, and the RQ worker
+pattern. A second pipeline would be a second place for the PII and injection rules to drift out of
+agreement. The genuine delta (per-node instead of per-version job grain, and node body text in the
+prompt) is small enough to be an extension, which decisions 3 and 6 make explicit.
+
 ## Consequences
 
 - K8 ("picture support at lower bands... per-passage illustrations as an explicit decision" in

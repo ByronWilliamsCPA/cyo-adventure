@@ -30,7 +30,8 @@ A **node is not a screen**. The reader composes **rendered stops**: for bands 8-
 and 16+, consecutive single-choice non-ending nodes flow into one scrollable passage that ends at
 the next real choice or ending, so every stop a child makes ends in a choice. For 3-5 and 5-8 the
 reader keeps discrete pages (picture-book pacing) and the choice cadence is governed by the
-per-band choice grammar (pending ratification as an ADR-011 amendment). The graph keeps its linear
+per-band choice grammar ([ADR-011](./adr-011-story-scale-framework.md) section 10, ratified as D15
+alongside this ADR). The graph keeps its linear
 beats, preserving the researched genre shape, the words-per-node ceilings, and every published blob.
 
 ## Context
@@ -63,8 +64,12 @@ instead.
    run is never observable. This matches the button's purpose (undo a mis-tapped choice).
 4. **Young bands keep pages.** At 3-5 and 5-8 the reader renders one node per page. Choice cadence,
    flavor mix, and any scaffold-interaction affordance are governed by the per-band choice grammar
-   table (design review Q2), which lands as an ADR-011 amendment once ratified; this ADR only fixes
-   the presentation split by band.
+   table (design review Q2), ratified as D15 and landed in the same change as this ADR as
+   [ADR-011](./adr-011-story-scale-framework.md) section 10; this ADR only fixes the presentation
+   split by band. Note the split of authority: ADR-011 section 10 says how many choices a band's
+   content should carry, this ADR says how a band renders them, and `validator/choice_grammar.py`
+   enforces neither by default (its `enforce_grammar` flag is off; see the CG family in
+   [validator-rules.md](../validator-rules.md)).
 5. **Conformance-gated.** Stop composition is pure traversal logic and must be implemented
    identically in `player/engine.py` and `frontend/src/player/engine.ts` (or a shared
    stop-composition layer over them), with `schema/conformance/` cases covering: flow across
@@ -75,6 +80,50 @@ instead.
 6. **Band source of truth.** The band comes from the reading profile (`data-age-band` already
    stamps the kid shell); a guardian changing a profile's band changes presentation on next load,
    with no content change.
+
+## Alternatives Considered
+
+### Alternative 1: force-branch the content (make every node a real choice)
+
+Satisfy D1 structurally rather than presentationally: rewrite skeletons and generation prompts so
+no non-ending node has exactly one choice.
+
+Rejected. 69% of non-ending nodes are single-choice and 0 of 61 skeletons would pass, so this is a
+rewrite of the entire catalog, not a change to it. It also fights ADR-011's research lock directly:
+decisions-per-path is anchored at ~4-8 on measurement of the printed genre, and linear passages are
+the substance carrier. No source in the research appendix supports force-branching every node, and
+inkle's ink "gather" architecture, the strongest adaptation precedent, does the opposite: linear
+graph structure under a choice-dense surface.
+
+### Alternative 2: keep the "Continue" button and accept the tap
+
+Change nothing; treat "Continue" as an acceptable page turn.
+
+Rejected by D1 itself, which is a ruling about what a child experiences, and the measurement is why
+it was ruled: at 69% single-choice nodes, a reader spends most of a book tapping a button that
+offers no decision. That is the "interactive book that is mostly not interactive" the design review
+set out to fix.
+
+### Alternative 3: flow at every band, including 3-5 and 5-8
+
+Apply one rendering rule everywhere rather than splitting by band.
+
+Rejected on the research the same review cites for the opposite conclusion at young bands:
+comprehension competes with interaction for pre-readers, so raising interaction density at 3-5
+costs understanding. A picture-book page is also a deliberate unit at that age. The split is the
+cost of this decision, not an oversight: two rendering modes must both stay corpus-proven, which
+decision 5 makes explicit.
+
+### Alternative 4: compose stops server-side and send the reader a flat page list
+
+Have the backend do the flowing and hand the client pre-composed stops, avoiding a second
+implementation.
+
+Rejected because it breaks offline reading, which is a load-bearing product property (ADR-002): a
+cached blob must be playable with no server, so the client needs the composition logic regardless.
+Having built it client-side, the server copy exists for replay validation and is held identical by
+`schema/conformance/stop_traces.json` rather than by hoping. That dual-engine tax is acknowledged
+in decision 5 rather than avoided.
 
 ## Implementation notes (2026-08-01, first implementation)
 
