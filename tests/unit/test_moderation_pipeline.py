@@ -145,6 +145,23 @@ def _verdict_review_provider(*, safety_flags_first_pass: bool = False) -> MockPr
             Stage 1 safety instead, since it is the only stage left capable
             of a per-node FLAG.
 
+    Coupled to ``review_batch_size == 1`` (the default) in two ways, neither
+    of which announces itself if the default changes:
+
+    1. It answers with a single verdict OBJECT. The batched Stage-1 prompt
+       starts with the same ``"Age band:"`` prefix this dispatches on, but
+       ``_parse_batch_verdicts`` expects a JSON ARRAY, so at a batch size
+       above 1 every batch would be rejected as malformed and every node
+       would fail safe to FLAG.
+    2. ``safety_calls <= _NODE_COUNT`` assumes one call per node, which is
+       how it tells the first moderation pass from the post-repair one. At a
+       batch size of B that boundary is ``ceil(_NODE_COUNT / B)``.
+
+    Symptom if the default is ever raised: these tests fail with unexplained
+    fail-safe FLAGs rather than with anything naming the batch size. The fix
+    is to return an array keyed by the node ids in the prompt and to derive
+    the pass boundary from the batch size, not to relax the assertions.
+
     Returns:
         A :class:`MockProvider` seeded with the dispatching responder.
     """
