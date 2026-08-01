@@ -1101,3 +1101,114 @@ async def test_admin_story_status_is_empty(client: AsyncClient, seed: Seed) -> N
     )
     assert resp.status_code == 200, resp.text
     assert resp.json()["statuses"] == []
+
+
+# ---------------------------------------------------------------------------
+# W3.4 gamification settings (kid-appeal-implementation-plan.md; gamification-
+# recommendation-2026-08-01.md section 4)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_defaults_gamification_fields_to_band_default_state(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A create body with no gamification fields stores null/true/false."""
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "8-11"},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 201, resp.text
+    body = resp.json()
+    # Raw stored values: null means "no override, follow the P-A band
+    # default" -- resolution happens only in GET /me/progress.
+    assert body["ring_enabled"] is None
+    assert body["ring_goal_days"] is None
+    assert body["badges_enabled"] is True
+    assert body["time_capture_paused"] is False
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_update_ring_settings_round_trips(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """PATCH sets ring_enabled/ring_goal_days/badges_enabled/time_capture_paused."""
+    guardian = auth(seed.guardian_token)
+    created = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "5-8"},
+        headers=guardian,
+    )
+    pid = created.json()["id"]
+
+    resp = await client.patch(
+        f"/api/v1/profiles/{pid}",
+        json={
+            "ring_enabled": True,
+            "ring_goal_days": 4,
+            "badges_enabled": False,
+            "time_capture_paused": True,
+        },
+        headers=guardian,
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["ring_enabled"] is True
+    assert body["ring_goal_days"] == 4
+    assert body["badges_enabled"] is False
+    assert body["time_capture_paused"] is True
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_update_ring_settings_explicit_null_clears_to_band_default(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """An explicit null on ring_enabled/ring_goal_days clears back to null."""
+    guardian = auth(seed.guardian_token)
+    created = await client.post(
+        "/api/v1/profiles",
+        json={
+            "display_name": "Nova",
+            "age_band": "5-8",
+            "ring_enabled": True,
+            "ring_goal_days": 5,
+        },
+        headers=guardian,
+    )
+    pid = created.json()["id"]
+
+    resp = await client.patch(
+        f"/api/v1/profiles/{pid}",
+        json={"ring_enabled": None, "ring_goal_days": None},
+        headers=guardian,
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["ring_enabled"] is None
+    assert body["ring_goal_days"] is None
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_update_ring_goal_days_rejects_above_six(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A goal above 6 is a 422: the recommendation's one-guaranteed-free-day cap."""
+    guardian = auth(seed.guardian_token)
+    created = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "8-11"},
+        headers=guardian,
+    )
+    pid = created.json()["id"]
+
+    resp = await client.patch(
+        f"/api/v1/profiles/{pid}",
+        json={"ring_goal_days": 7},
+        headers=guardian,
+    )
+    assert resp.status_code == 422

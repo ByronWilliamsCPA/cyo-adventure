@@ -504,6 +504,15 @@ class ChildProfile(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
             "monthly_request_envelope IS NULL OR monthly_request_envelope >= 0",
             name="ck_child_profile_monthly_request_envelope_non_negative",
         ),
+        # W3.4: mirrors the CHECK added by
+        # supabase/migrations/20260801050000_add_child_profile_gamification_settings.sql;
+        # NULL (band default) is always allowed, a non-null goal must sit in
+        # the selectable range the gamification recommendation's "Plan
+        # defaults" item 4 fixes (max 6, one guaranteed free day).
+        CheckConstraint(
+            "ring_goal_days IS NULL OR ring_goal_days BETWEEN 1 AND 6",
+            name="ck_child_profile_ring_goal_days_range",
+        ),
         # Phase 4c: backs purge_stale_deactivated_profile_activity's WHERE
         # clause (supabase/migrations/20260720150000_add_retention_purge_jobs.sql).
         Index(
@@ -609,6 +618,28 @@ class ChildProfile(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # #VERIFY: tests/integration/test_profiles.py::
     # test_restrict_processing_blocks_new_story_requests.
     processing_restricted_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    # W3.4 (kid-appeal-implementation-plan.md; gamification-recommendation-
+    # 2026-08-01.md section 4/P-A): per-profile gamification toggles. The
+    # weekly-ring pair is nullable-means-band-default (mirrors banned_themes'
+    # "None = no override" contract, not "None = empty"); resolution into a
+    # concrete on/off + goal happens server-side in
+    # api/progress.py::_resolve_ring_settings so every client (kid, future
+    # guardian display) reads the SAME resolved values rather than each
+    # re-implementing the P-A band table.
+    # #CRITICAL: data-integrity: a NULL here must resolve to the P-A band
+    # default, never to "off"/"0", or a profile that has never been touched by
+    # a guardian would silently lose its band-appropriate ring instead of
+    # getting it.
+    # #VERIFY: tests/unit/test_progress_api_unit.py::TestResolveRingSettings;
+    # tests/integration/test_profiles.py gamification-fields round-trip tests.
+    ring_enabled: Mapped[bool | None] = mapped_column(default=None)
+    ring_goal_days: Mapped[int | None] = mapped_column(default=None)
+    badges_enabled: Mapped[bool] = mapped_column(
+        server_default=sa_text("true"), default=True
+    )
+    time_capture_paused: Mapped[bool] = mapped_column(
+        server_default=sa_text("false"), default=False
+    )
 
 
 class ChildProfilePersonalization(CreatedAtMixin, UpdatedAtMixin, Base):

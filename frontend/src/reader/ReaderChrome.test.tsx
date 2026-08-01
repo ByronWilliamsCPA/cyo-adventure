@@ -1,11 +1,29 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ReaderChrome } from './ReaderChrome'
+import { playChoiceTapSound, playEndingChimeSound, playPageTurnSound } from './sounds'
+
+// W4.2: the mute toggle's playback path goes through sounds.ts's exported
+// functions; mocked here so these tests assert "did it decide to play",
+// not WebAudio mechanics (covered separately by sounds.test.ts against a
+// mocked AudioContext).
+vi.mock('./sounds', () => ({
+  playPageTurnSound: vi.fn(),
+  playChoiceTapSound: vi.fn(),
+  playEndingChimeSound: vi.fn(),
+}))
 
 function setOnLine(value: boolean) {
   Object.defineProperty(navigator, 'onLine', { configurable: true, value })
 }
 afterEach(() => setOnLine(true))
+
+beforeEach(() => {
+  localStorage.clear()
+  vi.mocked(playPageTurnSound).mockClear()
+  vi.mocked(playChoiceTapSound).mockClear()
+  vi.mocked(playEndingChimeSound).mockClear()
+})
 
 describe('ReaderChrome', () => {
   it('shows no connection badge while online, just the position pill', () => {
@@ -59,16 +77,18 @@ describe('ReaderChrome', () => {
     expect(screen.getByRole('button', { name: 'Leave' })).toBeTruthy()
   })
 
-  it('renders nothing extra when the back slot is omitted', () => {
+  it('renders nothing extra when the back slot is omitted (only the always-on sound toggle)', () => {
     setOnLine(true)
     render(<ReaderChrome position={{ label: 'Page 1' }} />)
-    expect(screen.queryByRole('button')).toBeNull()
+    // W4.2: the sound-effects mute toggle is always present, unlike back/
+    // readAloud/flag which are opt-in slots; this is the one button left.
+    expect(screen.getAllByRole('button')).toHaveLength(1)
+    expect(screen.queryByRole('button', { name: 'Leave' })).toBeNull()
   })
 
   describe('read-aloud toggle (K7)', () => {
     it('is not rendered when the readAloud prop is omitted', () => {
       render(<ReaderChrome position={{ label: 'Page 1' }} />)
-      expect(screen.queryByRole('button')).toBeNull()
       expect(screen.queryByLabelText('Read this page aloud')).toBeNull()
       expect(screen.queryByLabelText('Stop reading aloud')).toBeNull()
     })
@@ -107,7 +127,7 @@ describe('ReaderChrome', () => {
   describe('flag slot (K15)', () => {
     it('is not rendered when the flag prop is omitted', () => {
       render(<ReaderChrome position={{ label: 'Page 1' }} />)
-      expect(screen.queryByRole('button')).toBeNull()
+      expect(screen.queryByRole('button', { name: 'Tell a grown-up' })).toBeNull()
     })
 
     it('renders the caller-supplied flag node', () => {
@@ -118,6 +138,104 @@ describe('ReaderChrome', () => {
         />
       )
       expect(screen.getByRole('button', { name: 'Tell a grown-up' })).toBeTruthy()
+    })
+  })
+
+  describe('sound-effects mute toggle (W4.2, D7)', () => {
+    it('defaults to sound ON when nothing is stored and there is no reduce-motion signal', () => {
+      render(<ReaderChrome position={{ label: 'Page 1' }} />)
+      const button = screen.getByRole('button', { name: 'Turn sound effects off' })
+      expect(button).toHaveAttribute('aria-pressed', 'true')
+    })
+
+    it('defaults to muted when a reduce_motion ancestor is present (plan default)', () => {
+      render(
+        <div data-reduce-motion="true">
+          <ReaderChrome position={{ label: 'Page 1' }} />
+        </div>
+      )
+      const button = screen.getByRole('button', { name: 'Turn sound effects on' })
+      expect(button).toHaveAttribute('aria-pressed', 'false')
+    })
+
+    it('tapping the toggle flips state and persists across a remount', () => {
+      const { unmount } = render(<ReaderChrome position={{ label: 'Page 1' }} />)
+      const button = screen.getByRole('button', { name: 'Turn sound effects off' })
+      fireEvent.click(button)
+      expect(screen.getByRole('button', { name: 'Turn sound effects on' })).toHaveAttribute(
+        'aria-pressed',
+        'false'
+      )
+      unmount()
+      // A fresh mount picks up the persisted choice instead of re-deriving
+      // the reduce-motion default.
+      render(<ReaderChrome position={{ label: 'Page 1' }} />)
+      expect(screen.getByRole('button', { name: 'Turn sound effects on' })).toHaveAttribute(
+        'aria-pressed',
+        'false'
+      )
+    })
+
+    it('plays the choice-tap sound on a click that lands on Reader.tsx-style choice markup', () => {
+      render(
+        <div>
+          <ReaderChrome position={{ label: 'Page 1' }} />
+          <button type="button" data-testid="choice-abc">
+            Open the door
+          </button>
+        </div>
+      )
+      fireEvent.click(screen.getByTestId('choice-abc'))
+      expect(playChoiceTapSound).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not play the choice-tap sound while muted', () => {
+      render(
+        <div>
+          <ReaderChrome position={{ label: 'Page 1' }} />
+          <button type="button" data-testid="choice-abc">
+            Open the door
+          </button>
+        </div>
+      )
+      fireEvent.click(screen.getByRole('button', { name: 'Turn sound effects off' }))
+      fireEvent.click(screen.getByTestId('choice-abc'))
+      expect(playChoiceTapSound).not.toHaveBeenCalled()
+    })
+
+    it('does not play the choice-tap sound for a click elsewhere in the document', () => {
+      render(
+        <div>
+          <ReaderChrome position={{ label: 'Page 1' }} />
+          <button type="button">Not a choice</button>
+        </div>
+      )
+      fireEvent.click(screen.getByRole('button', { name: 'Not a choice' }))
+      expect(playChoiceTapSound).not.toHaveBeenCalled()
+    })
+
+    it('plays the page-turn sound when the position label changes, not on the first render', () => {
+      const { rerender } = render(<ReaderChrome position={{ label: 'Page 1' }} />)
+      expect(playPageTurnSound).not.toHaveBeenCalled()
+      rerender(<ReaderChrome position={{ label: 'Page 2' }} />)
+      expect(playPageTurnSound).toHaveBeenCalledTimes(1)
+    })
+
+    it('plays the ending chime exactly once when the position becomes complete', () => {
+      const { rerender } = render(<ReaderChrome position={{ label: 'Page 3' }} />)
+      rerender(
+        <ReaderChrome position={{ label: 'You finished this story!', complete: true }} />
+      )
+      expect(playEndingChimeSound).toHaveBeenCalledTimes(1)
+      // Re-rendering while still complete (e.g. a font-size change) must not
+      // replay the chime.
+      rerender(
+        <ReaderChrome
+          position={{ label: 'You finished this story!', complete: true }}
+          showLabel
+        />
+      )
+      expect(playEndingChimeSound).toHaveBeenCalledTimes(1)
     })
   })
 })

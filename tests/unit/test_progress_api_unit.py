@@ -7,14 +7,26 @@ badge math itself is covered by ``tests/unit/test_progress_badges.py``.
 from __future__ import annotations
 
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 
 import pytest
 
 from cyo_adventure.api.deps import Principal
-from cyo_adventure.api.progress import _require_child_profile, get_my_progress
+from cyo_adventure.api.progress import (
+    _reading_day_totals,
+    _require_child_profile,
+    _resolve_ring_settings,
+    _week_start,
+    get_my_progress,
+)
 from cyo_adventure.core.exceptions import AuthorizationError
-from cyo_adventure.db.models import Completion, Storybook, StorybookVersion
+from cyo_adventure.db.models import (
+    ChildProfile,
+    Completion,
+    ReadingActivityDay,
+    Storybook,
+    StorybookVersion,
+)
 
 _T1 = datetime(2026, 1, 1, tzinfo=UTC)
 
@@ -96,13 +108,22 @@ class TestGetMyProgress:
 
     async def test_empty_profile_returns_empty_projection(self) -> None:
         # completions, ratings, story_requests all empty -> no book/version
-        # queries fire (book_ids/version_keys stay empty).
-        session = _FakeSession([[], [], []])
+        # queries fire (book_ids/version_keys stay empty); the trailing two
+        # entries are the W3.4 ChildProfile and ReadingActivityDay queries,
+        # both empty here (no profile row -> the inert fallback resolves).
+        session = _FakeSession([[], [], [], [], []])
         result = await get_my_progress(_child_principal(), session)
         assert result.badges == []
         assert result.books == []
         assert result.totals.books_finished == 0
         assert result.totals.endings_found == 0
+        assert result.days_read_this_week == 0
+        assert result.lifetime_days_read == 0
+        # Fallback band ("8-11") default when the profile row is missing.
+        assert result.settings.ring_enabled is True
+        assert result.settings.ring_goal_days == 3
+        assert result.settings.badges_enabled is True
+        assert result.settings.time_capture_paused is False
 
     async def test_first_completion_earns_first_ending_badge(self) -> None:
         profile_id = uuid.uuid4()
@@ -135,9 +156,26 @@ class TestGetMyProgress:
                 ],
             },
         )
+        profile = ChildProfile(
+            family_id=uuid.uuid4(),
+            display_name="Kid",
+            age_band="5-8",
+            badges_enabled=True,
+            time_capture_paused=False,
+        )
+        profile.id = profile_id
+        activity = ReadingActivityDay(
+            child_profile_id=profile_id,
+            activity_date=date(2026, 1, 1),
+            active_seconds=600,
+        )
+
         # queue order: completions, ratings, story_requests, storybooks,
-        # storybook_versions, (no series query: series_id is None)
-        session = _FakeSession([[completion], [], [], [book], [version]])
+        # storybook_versions, (no series query: series_id is None),
+        # child_profile, reading_activity_day.
+        session = _FakeSession(
+            [[completion], [], [], [book], [version], [profile], [activity]]
+        )
 
         result = await get_my_progress(_child_principal(profile_id), session)
 
@@ -147,3 +185,104 @@ class TestGetMyProgress:
         assert result.books[0].title == "Story A"
         assert result.books[0].total_endings == 2
         assert result.totals.books_finished == 1
+        # 5-8 band default: ring on, goal 2 (P-A table).
+        assert result.settings.ring_enabled is True
+        assert result.settings.ring_goal_days == 2
+        assert result.lifetime_days_read == 1
+        assert len(result.books[0].found_endings) == 1
+        assert result.books[0].found_endings[0].ending_id == "e1"
+        assert result.books[0].found_endings[0].title == "Yay"
+        assert result.books[0].found_endings[0].valence == "positive"
+
+
+@pytest.mark.unit
+class TestResolveRingSettings:
+    """Pins the P-A band-default table (D17) and the max-6 goal clamp."""
+
+    @pytest.mark.parametrize(
+        ("age_band", "expected_enabled", "expected_goal"),
+        [
+            ("3-5", False, 2),
+            ("5-8", True, 2),
+            ("8-11", True, 3),
+            ("10-13", True, 3),
+            ("13-16", True, 4),
+            ("16+", True, 4),
+        ],
+    )
+    def test_band_default_when_both_columns_null(
+        self, age_band: str, expected_enabled: bool, expected_goal: int
+    ) -> None:
+        enabled, goal = _resolve_ring_settings(age_band, None, None)
+        assert enabled is expected_enabled
+        assert goal == expected_goal
+
+    def test_explicit_override_wins_over_band_default(self) -> None:
+        # 3-5 defaults off; an explicit True overrides it (a guardian who
+        # opts a pre-reader in).
+        enabled, goal = _resolve_ring_settings(
+            "3-5", ring_enabled=True, ring_goal_days=5
+        )
+        assert enabled is True
+        assert goal == 5
+
+    def test_explicit_false_overrides_an_on_by_default_band(self) -> None:
+        enabled, _goal = _resolve_ring_settings(
+            "8-11", ring_enabled=False, ring_goal_days=None
+        )
+        assert enabled is False
+
+    def test_goal_above_six_is_clamped(self) -> None:
+        # Backstop: the Pydantic Field bound and the DB CHECK should already
+        # prevent this from ever reaching here, but the resolver clamps
+        # anyway (see its #CRITICAL note).
+        _enabled, goal = _resolve_ring_settings(
+            "16+", ring_enabled=True, ring_goal_days=99
+        )
+        assert goal == 6
+
+    def test_unknown_band_falls_back_to_inert_default(self) -> None:
+        enabled, goal = _resolve_ring_settings("unknown-band", None, None)
+        assert enabled is True
+        assert goal == 3
+
+
+@pytest.mark.unit
+class TestReadingDayTotals:
+    """Pins the ISO-week-Monday-start and lifetime-days-read computation."""
+
+    def test_week_start_is_monday(self) -> None:
+        # 2026-01-01 is a Thursday.
+        assert _week_start(date(2026, 1, 1)) == date(2025, 12, 29)
+        assert _week_start(date(2025, 12, 29)) == date(2025, 12, 29)
+
+    def test_zero_second_days_do_not_count(self) -> None:
+        profile_id = uuid.uuid4()
+        rows = [
+            ReadingActivityDay(
+                child_profile_id=profile_id,
+                activity_date=date(2025, 12, 30),
+                active_seconds=0,
+            ),
+            ReadingActivityDay(
+                child_profile_id=profile_id,
+                activity_date=date(2025, 12, 31),
+                active_seconds=120,
+            ),
+        ]
+        days_this_week, lifetime_days = _reading_day_totals(rows, date(2026, 1, 1))
+        assert days_this_week == 1
+        assert lifetime_days == 1
+
+    def test_days_outside_the_current_week_still_count_lifetime(self) -> None:
+        profile_id = uuid.uuid4()
+        rows = [
+            ReadingActivityDay(
+                child_profile_id=profile_id,
+                activity_date=date(2025, 11, 1),
+                active_seconds=300,
+            ),
+        ]
+        days_this_week, lifetime_days = _reading_day_totals(rows, date(2026, 1, 1))
+        assert days_this_week == 0
+        assert lifetime_days == 1

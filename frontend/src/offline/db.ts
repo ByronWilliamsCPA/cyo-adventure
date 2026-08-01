@@ -27,6 +27,20 @@
  *   payload and is unknowable offline. A subject-scoped purge therefore scans this
  *   store's bounded key set (see offline/revocation.ts). Never merged into
  *   `storybooks`, which is deliberately device-wide and profile-independent.
+ * - `reading_time_days` (W3.3): a per-(profile, reader-local date) active-reading-
+ *   seconds bucket, keyed by `${profileId}:${date}`. `seconds` is the running
+ *   local total (grows the instant the reader accumulates active time, online or
+ *   off); `syncedSeconds` is how much of that total the server has acknowledged.
+ *   A `pending` attempt (flushId + the exact delta/snapshot it represents) is
+ *   frozen once minted so a retry-while-offline resends the SAME flush_id and
+ *   delta rather than silently growing it (see offline/readingTimeSync.ts for
+ *   why that distinction matters for the server's idempotency contract).
+ * - `badge_seen` (W3.2): badge ids this device has already shown an unlock toast
+ *   for, per profile (keyed by `${profileId}:${badgeId}`). Client-side "seen"
+ *   state per the gamification recommendation section 5 ("badge seen-state lives
+ *   client-side in IndexedDB, avoiding a table"): a badge a profile has earned
+ *   but this device has not yet toasted stays toast-eligible; once toasted here
+ *   it never re-toasts on this device, even across a badge re-fetch.
  */
 
 import { type DBSchema, type IDBPDatabase, openDB } from 'idb'
@@ -35,6 +49,13 @@ import type { DeviceGrant } from '../auth/deviceGrant'
 import type { LibraryItemView } from '../library/libraryApi'
 import type { ValuesPayload } from '../player/personalization'
 import type { ReadingState, Storybook } from '../player/types'
+import {
+  checkDownloadBudget,
+  estimateByteSize,
+  forgetStoryRecency,
+  recordDownloadRefusal,
+  recordStoryOpened,
+} from './downloadBudget'
 
 export interface QueuedWrite {
   event_id: string
@@ -58,6 +79,52 @@ export interface PersonalizationValuesEntry {
   payload: ValuesPayload
 }
 
+/**
+ * A pending, not-yet-acknowledged reading-time flush attempt (W3.3).
+ *
+ * `flushId`/`deltaSeconds`/`snapshotSeconds` are frozen together the moment a
+ * flush attempt is minted (see offline/readingTimeSync.ts), so a retry while
+ * offline resends the EXACT same payload the server already knows how to
+ * dedupe on `flush_id`, rather than silently growing the delta underneath an
+ * id the server has already partially processed.
+ */
+export interface PendingReadingTimeFlush {
+  flushId: string
+  deltaSeconds: number
+  /** `bucket.seconds` at the moment this attempt was minted; on success the
+   * bucket's `syncedSeconds` is set to exactly this value (never `+=`), so a
+   * successful ack can never double-count seconds accrued mid-flight. */
+  snapshotSeconds: number
+}
+
+/** A profile's active-reading-seconds bucket for one reader-local day (W3.3). */
+export interface ReadingTimeDayBucket {
+  profileId: string
+  /** Reader-local calendar date, `YYYY-MM-DD`.
+   * #ASSUME: data integrity: this is the DEVICE's local calendar date, not
+   * UTC, matching the accumulator hook's own day-boundary choice (see
+   * reader/useReadingTimeAccumulator.ts). A read spanning local midnight
+   * splits across two buckets exactly as a real day would; a day that
+   * straddles a DST transition or a timezone change mid-read is accepted
+   * imprecision for a literacy signal, not a billing ledger.
+   * #VERIFY: offline/readingTimeSync.test.ts. */
+  date: string
+  /** Running local total; grows the instant active time accrues, online or
+   * off. Never decreases. */
+  seconds: number
+  /** How much of `seconds` the server has acknowledged. */
+  syncedSeconds: number
+  /** The in-flight or queued-for-retry flush attempt, if any; `null` when
+   * every accrued second has been acknowledged. */
+  pending: PendingReadingTimeFlush | null
+}
+
+/** One badge this device has already shown an unlock toast for (W3.2). */
+export interface BadgeSeenEntry {
+  profileId: string
+  badgeId: string
+}
+
 interface ReaderDB extends DBSchema {
   storybooks: { key: string; value: Storybook }
   reading_states: { key: string; value: ReadingState }
@@ -69,10 +136,12 @@ interface ReaderDB extends DBSchema {
   library_lists: { key: string; value: LibraryItemView[] }
   profile_shelf: { key: string; value: ProfileShelfSnapshot }
   personalization_values: { key: string; value: ValuesPayload }
+  reading_time_days: { key: string; value: ReadingTimeDayBucket }
+  badge_seen: { key: string; value: BadgeSeenEntry }
 }
 
 const DB_NAME = 'cyo-reader'
-const DB_VERSION = 4
+const DB_VERSION = 5
 /** Singleton key: one device grant per device. */
 const DEVICE_GRANT_KEY = 'current'
 
@@ -105,19 +174,27 @@ export function getDb(): Promise<IDBPDatabase<ReaderDB>> {
   // Fire-and-forget; a rejection or unsupported browser must not block opening.
   void requestPersistentStorage()
   const opening = openDB<ReaderDB>(DB_NAME, DB_VERSION, {
-    // #ASSUME: data-integrity: idb's upgrade callback receives the OLD
+    // #CRITICAL: data-integrity: idb's upgrade callback receives the OLD
     // version (0 for a brand-new database), and each `if` runs the schema
     // change for every version the open needed to pass through, so a
     // brand-new database (oldVersion 0) creates all stores in one pass, an
     // existing v1 database (oldVersion 1) gains `device_grant`, `library_lists`,
     // and `profile_shelf`, an existing v2 database (oldVersion 2) gains
-    // `library_lists` and `profile_shelf`, and an existing v3 database
-    // (oldVersion 3) gains `personalization_values`.
+    // `library_lists` and `profile_shelf`, an existing v3 database
+    // (oldVersion 3) gains `personalization_values`, and an existing v4
+    // database (oldVersion 4) gains `reading_time_days` and `badge_seen`
+    // (W3.3/W3.2). Every branch MUST stay additive (create, never drop, a
+    // store) and every earlier branch MUST stay exactly as it ran for a real
+    // upgraded user's database: reordering or collapsing an old `if` would
+    // silently change what an existing v1-v4 database receives on its next
+    // open, which idb has no way to detect or warn about.
     // #VERIFY: db.test.ts "creates the device_grant store on a fresh
     // database", the v1-to-v3 and v2-to-v3 migration tests, "creates the
     // store when upgrading a v3 database to v4", "keeps the pre-existing
-    // stores reachable across the v4 upgrade", and offline/db.test.ts's
-    // existing stores stay reachable across every migration path.
+    // stores reachable across the v4 upgrade", offline/db.test.ts's
+    // existing stores stay reachable across every migration path, and the
+    // new v4-to-v5 migration test asserting `reading_time_days`/`badge_seen`
+    // appear without disturbing any earlier store.
     upgrade(db, oldVersion) {
       if (oldVersion < 1) {
         db.createObjectStore('storybooks')
@@ -133,6 +210,10 @@ export function getDb(): Promise<IDBPDatabase<ReaderDB>> {
       }
       if (oldVersion < 4) {
         db.createObjectStore('personalization_values')
+      }
+      if (oldVersion < 5) {
+        db.createObjectStore('reading_time_days')
+        db.createObjectStore('badge_seen')
       }
     },
     // #CRITICAL: timing (ARCH-M5): without these callbacks a DB_VERSION bump
@@ -239,19 +320,61 @@ export async function clearPersonalizationValues(): Promise<void> {
   await db.clear('personalization_values')
 }
 
-/** Cache a downloaded story blob for offline play. */
+/**
+ * Cache a downloaded story blob for offline play.
+ *
+ * W4.3 (D20): gated by the offline download budget (`downloadBudget.ts`)
+ * before the write. A refusal is silent from THIS function's own contract
+ * (it still resolves, never rejects, for a budget refusal specifically) so
+ * the existing caller (`ReaderPage.tsx::load()`) keeps working unedited: it
+ * already treats a caching failure as best-effort ("the story is already in
+ * hand from the network, so a failure to cache it locally must not block
+ * reading it now"), and a budget refusal is exactly that same shape -- the
+ * story is still readable this session, it just will not be available
+ * offline. `recordDownloadRefusal` leaves a flag `LibraryPage.tsx` surfaces
+ * as a kid-facing banner the next time this profile's shelf loads, since
+ * `ReaderPage.tsx` is out of scope for this change and cannot be edited to
+ * show it directly.
+ *
+ * #ASSUME timing/external-resources: the budget check itself is wrapped in
+ * its own try/catch and fails open (proceeds to cache) on any unexpected
+ * error, so a diagnostic feature never costs offline reading.
+ */
 export async function cacheStorybook(story: Storybook): Promise<void> {
   const db = await getDb()
+  try {
+    const newBytes = estimateByteSize(story)
+    const cachedIds = await listCachedStorybookIds()
+    const decision = await checkDownloadBudget(story.id, newBytes, cachedIds)
+    if (!decision.allowed) {
+      recordDownloadRefusal()
+      return
+    }
+    if (decision.evictStoryId) {
+      await deleteStorybooksById(decision.evictStoryId)
+    }
+  } catch {
+    // Best-effort: proceed to cache even if the budget check itself failed.
+  }
   await db.put('storybooks', story, storyKey(story.id, story.version))
+  recordStoryOpened(story.id)
 }
 
-/** Read a cached story blob, or undefined if it is not downloaded. */
+/**
+ * Read a cached story blob, or undefined if it is not downloaded.
+ *
+ * W4.3: every successful read also refreshes that story's recency (not just
+ * every download), so the offline budget's eviction order reflects actual
+ * last-OPENED, not just last-downloaded (see `downloadBudget.ts`).
+ */
 export async function getCachedStorybook(
   id: string,
   version: number
 ): Promise<Storybook | undefined> {
   const db = await getDb()
-  return db.get('storybooks', storyKey(id, version))
+  const story = await db.get('storybooks', storyKey(id, version))
+  if (story) recordStoryOpened(id)
+  return story
 }
 
 /** Persist the latest reading state locally. */
@@ -335,7 +458,12 @@ export async function listReadingStateStorybookIds(profileId: string): Promise<s
   return keys.filter((key) => key.startsWith(prefix)).map((key) => key.slice(prefix.length))
 }
 
-/** Remove every cached version of a storybook (offline-copy revocation). */
+/**
+ * Remove every cached version of a storybook (offline-copy revocation, and
+ * W4.3's own budget-driven eviction). Also drops the story's offline-budget
+ * recency entry (`downloadBudget.ts`) so a later re-download starts clean
+ * rather than inheriting a stale eviction-time timestamp.
+ */
 export async function deleteStorybooksById(id: string): Promise<void> {
   const db = await getDb()
   const keys = await db.getAllKeys('storybooks')
@@ -345,6 +473,7 @@ export async function deleteStorybooksById(id: string): Promise<void> {
       await db.delete('storybooks', key)
     }
   }
+  forgetStoryRecency(id)
 }
 
 /** Distinct storybook ids currently cached on this device, across every version. */
@@ -369,6 +498,56 @@ export async function putProfileShelf(profileId: string, storybookIds: string[])
 export async function getAllProfileShelves(): Promise<ProfileShelfSnapshot[]> {
   const db = await getDb()
   return db.getAll('profile_shelf')
+}
+
+function readingTimeKey(profileId: string, date: string): string {
+  return `${profileId}:${date}`
+}
+
+/** Read one profile's reading-time bucket for a reader-local date, or undefined. */
+export async function getReadingTimeBucket(
+  profileId: string,
+  date: string
+): Promise<ReadingTimeDayBucket | undefined> {
+  const db = await getDb()
+  return db.get('reading_time_days', readingTimeKey(profileId, date))
+}
+
+/** Persist a reading-time bucket (overwrites the previous value wholesale). */
+export async function putReadingTimeBucket(bucket: ReadingTimeDayBucket): Promise<void> {
+  const db = await getDb()
+  await db.put('reading_time_days', bucket, readingTimeKey(bucket.profileId, bucket.date))
+}
+
+/** Every reading-time bucket stored for a profile, in no particular order. */
+export async function listReadingTimeBuckets(profileId: string): Promise<ReadingTimeDayBucket[]> {
+  const db = await getDb()
+  const keys = await db.getAllKeys('reading_time_days')
+  const prefix = `${profileId}:`
+  const buckets: ReadingTimeDayBucket[] = []
+  for (const key of keys) {
+    if (!key.startsWith(prefix)) continue
+    const bucket = await db.get('reading_time_days', key)
+    if (bucket !== undefined) buckets.push(bucket)
+  }
+  return buckets
+}
+
+function badgeSeenKey(profileId: string, badgeId: string): string {
+  return `${profileId}:${badgeId}`
+}
+
+/** Whether this device has already shown an unlock toast for this badge (W3.2). */
+export async function isBadgeSeen(profileId: string, badgeId: string): Promise<boolean> {
+  const db = await getDb()
+  const row = await db.get('badge_seen', badgeSeenKey(profileId, badgeId))
+  return row !== undefined
+}
+
+/** Record that this device has now shown the unlock toast for this badge. */
+export async function markBadgeSeen(profileId: string, badgeId: string): Promise<void> {
+  const db = await getDb()
+  await db.put('badge_seen', { profileId, badgeId }, badgeSeenKey(profileId, badgeId))
 }
 
 /** Reset the cached database handle (test isolation helper). */

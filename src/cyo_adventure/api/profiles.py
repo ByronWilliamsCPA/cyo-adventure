@@ -111,6 +111,10 @@ def _view(row: ChildProfile) -> ProfileView:
         request_auto_approve=row.request_auto_approve,
         monthly_request_envelope=row.monthly_request_envelope,
         processing_restricted=row.processing_restricted_at is not None,
+        ring_enabled=row.ring_enabled,
+        ring_goal_days=row.ring_goal_days,
+        badges_enabled=row.badges_enabled,
+        time_capture_paused=row.time_capture_paused,
         created_at=row.created_at,
     )
 
@@ -190,6 +194,37 @@ def _apply_g2_content_controls(row: ChildProfile, body: ProfileUpdateBody) -> No
         row.request_auto_approve = body.request_auto_approve
     if "monthly_request_envelope" in fields:
         row.monthly_request_envelope = body.monthly_request_envelope
+
+
+def _apply_gamification_settings(row: ChildProfile, body: ProfileUpdateBody) -> None:
+    """Apply the W3.4 gamification-toggle fields of a PATCH.
+
+    ``ring_enabled``/``ring_goal_days`` follow the avatar/pin "explicit null
+    clears (back to the P-A band default), omitted leaves unchanged"
+    contract; ``badges_enabled``/``time_capture_paused`` follow the
+    non-null-applies contract, since they always have a concrete default and
+    no legitimate "clear" state.
+
+    Args:
+        row: The profile row being updated (mutated in place).
+        body: The PATCH body; ``model_fields_set`` distinguishes omitted from
+            explicit null.
+    """
+    fields = body.model_fields_set
+    # #CRITICAL: data-integrity: an explicit null here must land as a stored
+    # NULL (band default resumes), not be silently dropped -- resolution
+    # happens downstream in api/progress.py, not here, so this write path
+    # must preserve the "no override" state precisely.
+    # #VERIFY: tests/integration/test_profiles.py::
+    # test_update_ring_settings_explicit_null_clears_to_band_default.
+    if "ring_enabled" in fields:
+        row.ring_enabled = body.ring_enabled
+    if "ring_goal_days" in fields:
+        row.ring_goal_days = body.ring_goal_days
+    if body.badges_enabled is not None:
+        row.badges_enabled = body.badges_enabled
+    if body.time_capture_paused is not None:
+        row.time_capture_paused = body.time_capture_paused
 
 
 def validate_display_name(display_name: str, age_band: str) -> None:
@@ -509,6 +544,12 @@ async def create_profile(body: ProfileCreateBody, ctx: Context) -> ProfileView:
         # #VERIFY: test_profiles.py::test_create_and_update_envelope_fields.
         request_auto_approve=body.request_auto_approve,
         monthly_request_envelope=body.monthly_request_envelope,
+        # W3.4: omitted at creation means "no override, follow the P-A band
+        # default" (see ProfileCreateBody's field docstring).
+        ring_enabled=body.ring_enabled,
+        ring_goal_days=body.ring_goal_days,
+        badges_enabled=body.badges_enabled,
+        time_capture_paused=body.time_capture_paused,
     )
     ctx.session.add(row)
     # The unit-of-work dependency commits on success; flush + refresh to read
@@ -580,6 +621,7 @@ async def update_profile(
             datetime.now(UTC) if body.processing_restricted else None
         )
     _apply_g2_content_controls(row, body)
+    _apply_gamification_settings(row, body)
     await ctx.session.flush()
     return _view(row)
 

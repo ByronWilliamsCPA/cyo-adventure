@@ -1,8 +1,15 @@
-import type { ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 import { ProgressBar } from '@ds/components/ProgressBar'
 import { StatusBadge } from '@ds/components/StatusBadge'
 import { useOnlineStatus } from '../hooks/useOnlineStatus'
+import { emitReaderSoundEvent, onReaderSoundEvent } from './readerSoundEvents'
+import { playChoiceTapSound, playEndingChimeSound, playPageTurnSound } from './sounds'
+import {
+  DEVICE_PREFERENCE_KEY,
+  getSoundMutedPreference,
+  setSoundMutedPreference,
+} from './soundPreference'
 
 export interface ReaderChromeProps {
   /**
@@ -67,6 +74,16 @@ export interface ReaderChromeProps {
    * should not render, e.g. no child session for this profile.
    */
   flag?: ReactNode
+  /**
+   * Profile id for per-profile sound-mute persistence (W4.2). Optional and
+   * not threaded through by any caller today: `Reader.tsx` does not pass it
+   * (out of scope for this change; see `soundPreference.ts`'s doc comment).
+   * Omitted, the mute toggle falls back to one device-level preference
+   * instead of a true per-profile one. When a future change threads a real
+   * profile id through, per-profile scoping activates with no further
+   * change to this component.
+   */
+  profileId?: string
 }
 
 /**
@@ -74,6 +91,16 @@ export interface ReaderChromeProps {
  * that appears only while offline. Being online is the unremarkable normal,
  * so no badge renders then; going offline shows a kid-readable "No internet"
  * so the change of state is the thing that gets named.
+ *
+ * Also owns the sound-effects mute toggle (W4.2, D7) end to end: default
+ * resolution, persistence, and playback. See `readerSoundEvents.ts`'s doc
+ * comment for why sound *triggering* lives here rather than in `Reader.tsx`
+ * (a concurrent agent owns that file for this change): page-turn and
+ * ending-chime moments are derived from this component's own `position`
+ * prop, which already changes on every page turn and the moment the story
+ * completes; choice-tap has no equivalent prop, so it is detected via a
+ * document-level click listener matching `Reader.tsx`'s existing (unedited)
+ * `data-testid="choice-{id}"` markup on each `ChoiceButton`.
  */
 export function ReaderChrome({
   position,
@@ -82,12 +109,119 @@ export function ReaderChrome({
   fontControl,
   readAloud,
   flag,
+  profileId,
 }: ReaderChromeProps) {
   const online = useOnlineStatus()
+  const headerRef = useRef<HTMLElement>(null)
+  const mutePreferenceKey = profileId ?? DEVICE_PREFERENCE_KEY
+  // `null` = "not yet resolved" (the very first render, before the mount
+  // effect below has had a chance to check the stored preference and the
+  // reduce-motion signal); treated as muted in the meantime so no sound can
+  // play before the real default is known.
+  const [muted, setMuted] = useState<boolean | null>(null)
+  const effectiveMuted = muted ?? true
+
+  // Resolve the mute default once per mount / preference-key change: an
+  // explicit stored choice wins; otherwise fall back to the plan default
+  // (sound on, except a reduce_motion profile default of muted). Mirrors
+  // Reader.tsx's own reduce-motion detection (OS media query OR the
+  // guardian-set per-profile flag riding in as data-reduce-motion on the
+  // kid shell, see band-tokens.css) -- done here via `headerRef` since this
+  // component has no `ageBand`/profile data of its own to look the flag up
+  // any other way.
+  useEffect(() => {
+    const stored = getSoundMutedPreference(mutePreferenceKey)
+    if (stored !== undefined) {
+      setMuted(stored)
+      return
+    }
+    // #EDGE: browser-compat: jsdom implements neither matchMedia nor a real
+    // DOM tree rooted under data-reduce-motion in every test; both guards
+    // degrade to "no reduced-motion signal" rather than throwing.
+    const reduceMotion =
+      (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false) ||
+      Boolean(headerRef.current?.closest('[data-reduce-motion="true"]'))
+    setMuted(reduceMotion)
+  }, [mutePreferenceKey])
+
+  const toggleMuted = (): void => {
+    const next = !effectiveMuted
+    setMuted(next)
+    setSoundMutedPreference(mutePreferenceKey, next)
+  }
+
+  // Page-turn sound: the position label changes on every page turn (page
+  // bands) and every rendered-stop change (flowed bands, ADR-026); skip the
+  // very first label the component sees (mount), which is not a turn.
+  const lastLabelRef = useRef<string | null>(null)
+  useEffect(() => {
+    const previous = lastLabelRef.current
+    lastLabelRef.current = position.label
+    if (previous !== null && previous !== position.label) {
+      emitReaderSoundEvent('page-turn')
+    }
+  }, [position.label])
+
+  // Ending chime: fires once, the moment `position.complete` first becomes
+  // true (never on mount already-complete, e.g. a caller re-rendering an
+  // already-finished ending screen after a font-size change).
+  const wasCompleteRef = useRef(false)
+  useEffect(() => {
+    const isComplete = position.complete === true
+    if (isComplete && !wasCompleteRef.current) {
+      emitReaderSoundEvent('ending')
+    }
+    wasCompleteRef.current = isComplete
+  }, [position.complete])
+
+  // Choice tap: document-level delegation against Reader.tsx's existing,
+  // unedited `data-testid="choice-{id}"` markup (see the module doc comment
+  // on readerSoundEvents.ts for why this is the chosen integration point).
+  useEffect(() => {
+    function onDocumentClick(event: MouseEvent): void {
+      const target = event.target
+      if (!(target instanceof Element)) return
+      if (target.closest('[data-testid^="choice-"]')) {
+        emitReaderSoundEvent('choice-tap')
+      }
+    }
+    document.addEventListener('click', onDocumentClick)
+    return () => document.removeEventListener('click', onDocumentClick)
+  }, [])
+
+  // The single playback subscription: every sound moment, muted or not,
+  // funnels through here so there is exactly one place that decides
+  // whether a sound actually plays.
+  useEffect(() => {
+    const unsubscribe = [
+      onReaderSoundEvent('page-turn', () => {
+        if (!effectiveMuted) playPageTurnSound()
+      }),
+      onReaderSoundEvent('choice-tap', () => {
+        if (!effectiveMuted) playChoiceTapSound()
+      }),
+      onReaderSoundEvent('ending', () => {
+        if (!effectiveMuted) playEndingChimeSound()
+      }),
+    ]
+    return () => unsubscribe.forEach((unsub) => unsub())
+  }, [effectiveMuted])
+
   return (
-    <header className="reader-chrome">
+    <header className="reader-chrome" ref={headerRef}>
       {back}
       {flag}
+      <button
+        type="button"
+        className={
+          effectiveMuted ? 'reader-sound-toggle' : 'reader-sound-toggle reader-sound-toggle--on'
+        }
+        aria-pressed={!effectiveMuted}
+        aria-label={effectiveMuted ? 'Turn sound effects on' : 'Turn sound effects off'}
+        onClick={toggleMuted}
+      >
+        <span aria-hidden="true">{effectiveMuted ? '🔇' : '🔊'}</span>
+      </button>
       {readAloud ? (
         <button
           type="button"

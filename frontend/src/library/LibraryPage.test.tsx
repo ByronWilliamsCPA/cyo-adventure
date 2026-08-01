@@ -95,6 +95,9 @@ beforeEach(() => {
   globalThis.indexedDB = new IDBFactory()
   _resetDbHandle()
   mockReconcile.mockReset().mockResolvedValue(undefined)
+  // W4.3: clear any pending download-refusal flag so one test's banner never
+  // leaks into the next.
+  localStorage.clear()
 })
 
 describe('LibraryPage', () => {
@@ -754,6 +757,28 @@ describe('LibraryPage', () => {
         expect(errorSpy).toHaveBeenCalledWith('offline cache reconcile failed', 'reconcile boom')
       )
       errorSpy.mockRestore()
+    })
+  })
+
+  describe('offline download budget refusal banner (W4.3, D20)', () => {
+    it('shows the kid-friendly full-shelf notice once, consuming the pending refusal flag', async () => {
+      localStorage.setItem('offline_download_refusal', String(Date.now()))
+      mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS] } })
+      renderLibrary()
+      expect(
+        await screen.findByText("This tablet's bookshelf is full. Ask a grown-up to remove a book.")
+      ).toBeInTheDocument()
+      // Consumed: a stored refusal is gone after being read once.
+      expect(localStorage.getItem('offline_download_refusal')).toBeNull()
+    })
+
+    it('shows no notice when no download was ever refused', async () => {
+      mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS] } })
+      renderLibrary()
+      await screen.findByRole('region', { name: /continue reading/i })
+      expect(
+        screen.queryByText("This tablet's bookshelf is full. Ask a grown-up to remove a book.")
+      ).not.toBeInTheDocument()
     })
   })
 })

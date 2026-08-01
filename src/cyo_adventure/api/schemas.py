@@ -309,6 +309,20 @@ class EarnedBadgeView(BaseModel):
     earned_at: datetime
 
 
+class FoundEndingView(BaseModel):
+    """One found ending, card-ready for the Endings Gallery (W3.2).
+
+    Deliberately carries no data for an UNFOUND ending: the gallery renders
+    those as generic "still hidden" silhouette placeholders (count only,
+    ``total_endings - len(found_endings)``), never a real title or id, so a
+    child can never learn what an ending is called before finding it.
+    """
+
+    ending_id: str
+    title: str
+    valence: str
+
+
 class BookProgressView(BaseModel):
     """One book's collection state for a profile (W3.1, the Endings Gallery)."""
 
@@ -318,6 +332,10 @@ class BookProgressView(BaseModel):
     total_endings: int
     finished: bool
     every_path_walked: bool
+    # W3.2: every distinct ending this profile has found in this book, oldest
+    # find first, card-ready for the gallery. See FoundEndingView's docstring
+    # for why unfound endings carry no identity here.
+    found_endings: list[FoundEndingView] = Field(default_factory=list)
 
 
 class ProgressTotalsView(BaseModel):
@@ -327,12 +345,40 @@ class ProgressTotalsView(BaseModel):
     endings_found: int
 
 
+class ResolvedGamificationSettingsView(BaseModel):
+    """A profile's gamification settings, resolved to concrete values (W3.4).
+
+    Resolution (nullable stored column -> concrete value per the P-A band
+    table) happens once, server-side, in
+    ``api/progress.py::_resolve_ring_settings`` -- the kid client renders
+    directly from this view and never re-implements the band-default table
+    itself. See ``ChildProfile.ring_enabled``/``ring_goal_days`` for the raw,
+    guardian-editable stored values.
+    """
+
+    ring_enabled: bool
+    ring_goal_days: int
+    badges_enabled: bool
+    time_capture_paused: bool
+
+
 class ProgressView(BaseModel):
-    """``GET /me/progress`` response: badges, collection state, totals (W3.1)."""
+    """``GET /me/progress`` response: badges, collection state, totals (W3.1).
+
+    ``days_read_this_week``/``lifetime_days_read`` (W3.4) feed the weekly
+    ring and badge 12 ("Forty Days of Stories"): counts only, computed from
+    ``reading_activity_day``, matching the guardian summary's own
+    ISO-week-Monday-start definition in ``api/reading_history.py``. The kid
+    client shows days, never minutes (gamification recommendation P4);
+    minutes exist only on the guardian-facing reading summary.
+    """
 
     badges: list[EarnedBadgeView]
     books: list[BookProgressView]
     totals: ProgressTotalsView
+    days_read_this_week: int = 0
+    lifetime_days_read: int = 0
+    settings: ResolvedGamificationSettingsView
 
 
 # Loose upper bound on a single reading-time flush's seconds_delta: one full
@@ -1303,6 +1349,18 @@ class ProfileView(BaseModel):
     # has_pin derives from pin_hash is not None -- the timestamp itself is
     # never serialized, only the boolean state.
     processing_restricted: bool
+    # W3.4 gamification settings (gamification-recommendation-2026-08-01.md
+    # section 4). ring_enabled/ring_goal_days are the RAW stored value, null
+    # meaning "no override, use the P-A band default"; this view is what the
+    # guardian settings form edits, so it must distinguish "guardian chose
+    # off" from "never touched, following the band default" rather than
+    # showing a pre-resolved value that would hide that distinction. The
+    # kid-facing resolved value (what actually renders) comes from
+    # ``GET /me/progress``'s ``settings`` field instead.
+    ring_enabled: bool | None
+    ring_goal_days: int | None
+    badges_enabled: bool
+    time_capture_paused: bool
     created_at: datetime
 
 
@@ -1357,6 +1415,14 @@ class ProfileCreateBody(BaseModel):
     ) = None
     request_auto_approve: bool = False
     monthly_request_envelope: Annotated[int, Field(ge=0, le=100)] | None = None
+    # W3.4: omitted/null at creation means "no override yet, follow the P-A
+    # band default" (see ProfileView's field docstring); a guardian who wants
+    # a non-default ring state sets it via a follow-up PATCH, same as every
+    # other optional G2/G3 field on create.
+    ring_enabled: bool | None = None
+    ring_goal_days: Annotated[int, Field(ge=1, le=6)] | None = None
+    badges_enabled: bool = True
+    time_capture_paused: bool = False
 
 
 class ProfileUpdateBody(BaseModel):
@@ -1399,6 +1465,16 @@ class ProfileUpdateBody(BaseModel):
     # a null here rather than simply omitting the field). True sets
     # processing_restricted_at to now; False clears it back to None.
     processing_restricted: bool | None = None
+    # W3.4 gamification settings (gamification-recommendation-2026-08-01.md
+    # section 4). ring_enabled/ring_goal_days follow the avatar/pin
+    # "explicit null clears back to band default, omitted leaves unchanged"
+    # contract via model_fields_set; badges_enabled/time_capture_paused
+    # follow the non-null-applies contract (no legitimate "clear" state --
+    # they always have a concrete, non-band-dependent default).
+    ring_enabled: bool | None = None
+    ring_goal_days: Annotated[int, Field(ge=1, le=6)] | None = None
+    badges_enabled: bool | None = None
+    time_capture_paused: bool | None = None
 
 
 # ---------------------------------------------------------------------------

@@ -13,8 +13,17 @@ export default defineConfig({
         name: 'CYO Adventure',
         short_name: 'Adventure',
         description: 'Choose-your-own-adventure reader for the family library.',
-        theme_color: '#1d3557',
-        background_color: '#f1faee',
+        // W4.3: corrected from a leftover navy/mint pair (#1d3557/#f1faee)
+        // that matched neither this app's actual light nor dark palette.
+        // background_color is the install/splash-screen background, so it
+        // takes the light-mode parchment surface (design-system/src/tokens.css
+        // --color-parchment). theme_color is the OS install-time chrome
+        // accent (a manifest has no per-color-scheme variant, unlike
+        // index.html's <meta name="theme-color"> tags below), so it takes the
+        // brand amber accent (--color-amber-deep) rather than the background
+        // color again.
+        theme_color: '#c17b2a',
+        background_color: '#f8f3e8',
         display: 'standalone',
         start_url: '/',
         // Chrome suppresses the install prompt without a 192px and a 512px

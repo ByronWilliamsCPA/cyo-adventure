@@ -6,6 +6,7 @@ import { classifyApiError } from '../hooks/classifyApiError'
 import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
 import { Mascot } from '../kid/Mascot'
+import { consumeDownloadRefusal, OFFLINE_BUDGET_FULL_MESSAGE } from '../offline/downloadBudget'
 import { reconcileOfflineCache } from '../offline/revocation'
 import { GUARDIAN_LOGIN_PATH, KID_PICKER_PATH } from '../routes'
 import { cacheLibraryList, getCachedLibraryList, getCachedStorybook } from '../offline/db'
@@ -85,6 +86,13 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   const libraryApi = useMemo(() => makeLibraryApi(api), [api])
   const recommendationsApi = useMemo(() => makeRecommendationsApi(api), [api])
   const [state, setState] = useState<LibraryState>({ status: 'loading' })
+  // W4.3: a story download refused during a PAST reader session (offline
+  // storage budget, D20) surfaces here, once, the next time this profile's
+  // shelf loads. LibraryPage is the reachable kid-facing surface for this:
+  // ReaderPage.tsx (the only place a download is actually initiated) is out
+  // of scope for this change, so it cannot show the refusal copy directly;
+  // see offline/downloadBudget.ts for the full flow.
+  const [budgetFull, setBudgetFull] = useState(false)
   const [continueAnchor, setContinueAnchor] = useState<ContinueAnchor | null>(null)
   // Bumped by the shelf's "Ask for a new story" end-cap tile; RequestStory
   // opens on the bump and the effect below brings the form into view. A
@@ -252,6 +260,14 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   }, [libraryApi, recommendationsApi, profileId])
 
   useEffect(load, [load])
+
+  // W4.3: check once per mount, not per `load()` call, so a retry ("Try
+  // again") does not re-show a banner already consumed this page view.
+  useEffect(() => {
+    if (consumeDownloadRefusal()) {
+      setBudgetFull(true)
+    }
+  }, [])
 
   // Offline-copy revocation (roadmap Phase 5, G8/A5): re-fetch on reconnect
   // too, not just on mount. A device can sit on this page through a
@@ -425,6 +441,11 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
       {offline ? (
         <p className="library__offline-banner" role="status">
           No internet. These books are ready to read.
+        </p>
+      ) : null}
+      {budgetFull ? (
+        <p className="library__offline-banner" role="status">
+          {OFFLINE_BUDGET_FULL_MESSAGE}
         </p>
       ) : null}
       {hero ? (

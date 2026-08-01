@@ -27,6 +27,7 @@ import type { DeviceGrant } from '../auth/deviceGrant'
 import type { ValuesPayload } from '../player/personalization'
 import type { ReadingState, Storybook } from '../player/types'
 import type { LibraryItemView } from '../library/libraryApi'
+import { consumeDownloadRefusal } from './downloadBudget'
 import {
   _resetDbHandle,
   cacheLibraryList,
@@ -110,6 +111,11 @@ beforeEach(() => {
   // Fresh in-memory IndexedDB per test.
   globalThis.indexedDB = new IDBFactory()
   _resetDbHandle()
+  // W4.3: cacheStorybook/getCachedStorybook now also touch localStorage
+  // (offline/downloadBudget.ts's recency map and refusal flag); reset it
+  // alongside IndexedDB so no test's recency history leaks into another's.
+  localStorage.clear()
+  Object.defineProperty(navigator, 'storage', { configurable: true, value: undefined })
 })
 
 describe('offline IndexedDB cache', () => {
@@ -399,5 +405,57 @@ describe('personalization values store', () => {
     // And the store the upgrade added works on the same database.
     await cachePersonalizationValues(story.id, valuesPayload)
     expect(await getCachedPersonalizationValues(story.id)).toEqual(valuesPayload)
+  })
+})
+
+describe('offline download budget enforcement (W4.3, D20)', () => {
+  const MB = 1024 * 1024
+
+  function mockStorageEstimate(usage: number): void {
+    Object.defineProperty(navigator, 'storage', {
+      configurable: true,
+      value: { estimate: vi.fn().mockResolvedValue({ usage, quota: 1024 * MB }) },
+    })
+  }
+
+  it('caches normally when storage.estimate is unsupported (fail open)', async () => {
+    await cacheStorybook(story)
+    expect((await getCachedStorybook(story.id, story.version))?.id).toBe(story.id)
+  })
+
+  it('caches normally under the 250MB soft cap', async () => {
+    mockStorageEstimate(50 * MB)
+    await cacheStorybook(story)
+    expect((await getCachedStorybook(story.id, story.version))?.id).toBe(story.id)
+  })
+
+  it('evicts the least-recently-opened other cached book once usage crosses the soft cap', async () => {
+    const other: Storybook = { ...story, id: 's_other' }
+    mockStorageEstimate(10 * MB)
+    await cacheStorybook(other)
+    // Reading it back marks it as "opened" (recency), then a second, newer
+    // book pushes projected usage over the 250MB soft cap.
+    expect(await getCachedStorybook('s_other', 1)).toBeDefined()
+
+    mockStorageEstimate(250 * MB)
+    await cacheStorybook(story)
+
+    expect(await getCachedStorybook(story.id, story.version)).toBeDefined()
+    expect(await getCachedStorybook('s_other', 1)).toBeUndefined()
+  })
+
+  it('refuses the download outright past the hard cap with nothing to evict, and records a refusal', async () => {
+    // Just under the 500MB hard cap: any real (non-zero-byte) story blob
+    // pushes projected usage over it, with nothing else cached to evict.
+    mockStorageEstimate(500 * MB - 10)
+    await cacheStorybook(story)
+    expect(await getCachedStorybook(story.id, story.version)).toBeUndefined()
+    expect(consumeDownloadRefusal()).toBe(true)
+  })
+
+  it('does not record a refusal for an ordinary successful cache', async () => {
+    mockStorageEstimate(10 * MB)
+    await cacheStorybook(story)
+    expect(consumeDownloadRefusal()).toBe(false)
   })
 })
