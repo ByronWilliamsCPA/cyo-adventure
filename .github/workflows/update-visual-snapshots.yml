@@ -47,6 +47,16 @@
 # emits one merged text node, and browsers shape and kern per text run, so a
 # glyph pair spanning the old node boundary lands on a different subpixel.
 # Cosmetically and semantically inert; the baseline is simply pixel-exact.
+#
+# Baseline bump 2026-08-01 (2): the three kid baselines (picker, library,
+# reader) were being captured with `/v1/me/progress` and
+# `/v1/profiles/story-status` UNROUTED, so both adapters failed closed against a
+# backend that is not running and the weekly ring, badge-case button,
+# endings-gallery button and "new story!" pill were absent from every baseline.
+# visual.spec.ts now mocks both endpoints with the ON settings a 6-8 reader
+# actually resolves to, so those three baselines legitimately gain the
+# gamification chrome this PR added. Review the diff as an addition of chrome
+# that was previously invisible, not as a layout regression.
 name: Update Visual Snapshots
 
 on:
