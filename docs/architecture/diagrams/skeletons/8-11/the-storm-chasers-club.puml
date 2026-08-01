@@ -40,8 +40,8 @@ r_end_clear : success (positive)
 r_end_clear : "{A11_PRIZE1}"
 state r_a_mid #D1C4E9
 r_a_mid : rising · 96w
-state r_end_crackle #FFCDD2
-r_end_crackle : setback (negative)
+state r_end_crackle #E0E0E0
+r_end_crackle : setback (neutral)
 r_end_crackle : "{A11_PRIZE2}"
 state r_b_spool #D1C4E9
 r_b_spool : rising · 96w
@@ -58,8 +58,8 @@ r_end_longway : success (positive)
 r_end_longway : "{A12_PRIZE1}"
 state r_b_faint #D1C4E9
 r_b_faint : rising · 96w
-state r_end_quiet #FFCDD2
-r_end_quiet : setback (negative)
+state r_end_quiet #E0E0E0
+r_end_quiet : setback (neutral)
 r_end_quiet : "{A12_PRIZE2}"
 state r_n_seat #D1C4E9
 r_n_seat : rising · 96w
@@ -424,7 +424,7 @@ legend right
   The Storm Chasers Club
   Band 8-11 · Tier 1 · ~10 min
   Topology: sorting_hat
-  121 nodes · 25 endings (16+ / 3n / 6-)
+  121 nodes · 25 endings (16+ / 5n / 4-)
   Production-eligible
   Scale: medium · prose
 endlegend

@@ -514,7 +514,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_set_compost",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "{B3_SETBACK}"
       }
@@ -525,7 +525,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_set_splash",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "{E3_SETBACK}"
       }
@@ -536,7 +536,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_set_dash",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "{F3_SETBACK}"
       }

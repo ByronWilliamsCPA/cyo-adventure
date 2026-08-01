@@ -750,7 +750,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_ds_spill",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Runaway {ROUTE_A_MISHAP}"
       }
@@ -761,7 +761,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_tc_slosh",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "{ROUTE_C_MISHAP}"
       }
@@ -772,7 +772,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_tm_spring",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "{ROUTE_D_MISHAP}"
       }
@@ -783,7 +783,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_mc_gong",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "{ROUTE_F_MISHAP}"
       }

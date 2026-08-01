@@ -77,25 +77,25 @@ by narrative role.
 | Baking Day with Grandma Vole | 3-5 | 4 | 1 | loop_and_grow | 30 | 6/0/0 | [svg](diagrams/skeletons/3-5/baking-day-with-grandma-vole.svg) |
 | Puddle Jumping Day | 3-5 | 3 | 1 | time_cave | 19 | 4/0/0 | [svg](diagrams/skeletons/3-5/puddle-jumping-day.svg) |
 | The Big Red Balloon | 3-5 | 4 | 1 | time_cave | 32 | 5/1/0 | [svg](diagrams/skeletons/3-5/the-big-red-balloon.svg) |
-| Clover and the Butterfly | 3-5 | 3 | 1 | time_cave | 20 | 4/0/3 | [svg](diagrams/skeletons/3-5/the-clover-and-the-butterfly.svg) |
+| Clover and the Butterfly | 3-5 | 3 | 1 | time_cave | 20 | 4/3/0 | [svg](diagrams/skeletons/3-5/the-clover-and-the-butterfly.svg) |
 | The Lost Mitten | 3-5 | 5 | 1 | loop_and_grow | 11 | 3/0/0 | [svg](diagrams/skeletons/3-5/the-lost-mitten.svg) |
 | The Sleepy Little Star | 3-5 | 3 | 1 | loop_and_grow | 17 | 3/0/0 | [svg](diagrams/skeletons/3-5/the-sleepy-little-star.svg) |
-| The Teddy Bears' Picnic | 3-5 | 5 | 1 | loop_and_grow | 29 | 5/0/6 | [svg](diagrams/skeletons/3-5/the-teddy-bears-picnic.svg) |
-| The Backyard Treasure Map | 5-8 | 7 | 1 | time_cave | 61 | 6/0/6 | [svg](diagrams/skeletons/5-8/the-backyard-treasure-map.svg) |
-| The Lantern Festival | 5-8 | 6 | 1 | loop_and_grow | 36 | 7/0/3 | [svg](diagrams/skeletons/5-8/the-lantern-festival.svg) |
-| The Night Market | 5-8 | 7 | 1 | open_map | 59 | 9/0/4 | [svg](diagrams/skeletons/5-8/the-night-market.svg) |
-| The School Garden Mystery | 5-8 | 5 | 1 | open_map | 35 | 4/0/3 | [svg](diagrams/skeletons/5-8/the-school-garden-mystery.svg) |
-| The Snow Day Expedition | 5-8 | 5 | 1 | time_cave | 38 | 8/0/2 | [svg](diagrams/skeletons/5-8/the-snow-day-expedition.svg) |
+| The Teddy Bears' Picnic | 3-5 | 5 | 1 | loop_and_grow | 29 | 5/6/0 | [svg](diagrams/skeletons/3-5/the-teddy-bears-picnic.svg) |
+| The Backyard Treasure Map | 5-8 | 7 | 1 | time_cave | 61 | 6/6/0 | [svg](diagrams/skeletons/5-8/the-backyard-treasure-map.svg) |
+| The Lantern Festival | 5-8 | 6 | 1 | loop_and_grow | 36 | 7/3/0 | [svg](diagrams/skeletons/5-8/the-lantern-festival.svg) |
+| The Night Market | 5-8 | 7 | 1 | open_map | 59 | 9/4/0 | [svg](diagrams/skeletons/5-8/the-night-market.svg) |
+| The School Garden Mystery | 5-8 | 5 | 1 | open_map | 35 | 4/3/0 | [svg](diagrams/skeletons/5-8/the-school-garden-mystery.svg) |
+| The Snow Day Expedition | 5-8 | 5 | 1 | time_cave | 38 | 8/2/0 | [svg](diagrams/skeletons/5-8/the-snow-day-expedition.svg) |
 | The Tide Pool Rescue | 5-8 | 7 | 1 | loop_and_grow | 57 | 10/2/0 | [svg](diagrams/skeletons/5-8/the-tide-pool-rescue.svg) |
-| The Cave of Echoes | 8-11 | 8 | 1 | time_cave | 64 | 10/0/6 | [svg](diagrams/skeletons/8-11/the-cave-of-echoes.svg) |
-| The Clockwork Menagerie | 8-11 | 18 | 1 | branch_and_bottleneck | 166 | 14/3/10 | [svg](diagrams/skeletons/8-11/the-clockwork-menagerie.svg) |
+| The Cave of Echoes | 8-11 | 8 | 1 | time_cave | 64 | 10/6/0 | [svg](diagrams/skeletons/8-11/the-cave-of-echoes.svg) |
+| The Clockwork Menagerie | 8-11 | 18 | 1 | branch_and_bottleneck | 166 | 14/6/7 | [svg](diagrams/skeletons/8-11/the-clockwork-menagerie.svg) |
 | The Guild of Junior Inventors | 8-11 | 12 | 1 | sorting_hat | 191 | 11/8/15 | [svg](diagrams/skeletons/8-11/the-guild-of-junior-inventors.svg) |
-| The Hundred-Door Hotel | 8-11 | 12 | 1 | open_map | 176 | 6/13/12 | [svg](diagrams/skeletons/8-11/the-hundred-door-hotel.svg) |
-| The Locked Carousel | 8-11 | 8 | 1 | open_map | 71 | 6/2/5 | [svg](diagrams/skeletons/8-11/the-locked-carousel.svg) |
-| The River of Small Boats | 8-11 | 10 | 1 | time_cave | 127 | 17/7/2 | [svg](diagrams/skeletons/8-11/the-river-of-small-boats.svg) |
+| The Hundred-Door Hotel | 8-11 | 12 | 1 | open_map | 176 | 6/24/1 | [svg](diagrams/skeletons/8-11/the-hundred-door-hotel.svg) |
+| The Locked Carousel | 8-11 | 8 | 1 | open_map | 71 | 6/7/0 | [svg](diagrams/skeletons/8-11/the-locked-carousel.svg) |
+| The River of Small Boats | 8-11 | 10 | 1 | time_cave | 127 | 17/9/0 | [svg](diagrams/skeletons/8-11/the-river-of-small-boats.svg) |
 | The Robot Fair Sabotage | 8-11 | 8 | 1 | branch_and_bottleneck | 74 | 5/5/4 | [svg](diagrams/skeletons/8-11/the-robot-fair-sabotage.svg) |
-| The Sky-Ship Stowaway | 8-11 | 11 | 1 | branch_and_bottleneck | 111 | 8/1/11 | [svg](diagrams/skeletons/8-11/the-sky-ship-stowaway.svg) |
-| The Storm Chasers Club | 8-11 | 10 | 1 | sorting_hat | 121 | 16/3/6 | [svg](diagrams/skeletons/8-11/the-storm-chasers-club.svg) |
+| The Sky-Ship Stowaway | 8-11 | 11 | 1 | branch_and_bottleneck | 111 | 8/8/4 | [svg](diagrams/skeletons/8-11/the-sky-ship-stowaway.svg) |
+| The Storm Chasers Club | 8-11 | 10 | 1 | sorting_hat | 121 | 16/5/4 | [svg](diagrams/skeletons/8-11/the-storm-chasers-club.svg) |
 
 ### Band coverage
 

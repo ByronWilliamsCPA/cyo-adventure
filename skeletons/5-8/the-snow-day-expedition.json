@@ -154,7 +154,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_m_retreat",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Turned Back at {A1_GATE}"
       }
@@ -443,7 +443,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_p_retreat",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Turned Back at {B2_GATE}"
       }

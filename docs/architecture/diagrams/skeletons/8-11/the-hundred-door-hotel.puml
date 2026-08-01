@@ -65,11 +65,11 @@ state lb_door100 #D1C4E9
 lb_door100 : rising · 94w
 state lb_promise #FFF9C4
 lb_promise : choice · 100w
-state e_lb_ladder #FFCDD2
-e_lb_ladder : setback (negative)
+state e_lb_ladder #E0E0E0
+e_lb_ladder : setback (neutral)
 e_lb_ladder : "The Ladder Takes a Ride"
-state e_lb_horn #FFCDD2
-e_lb_horn : setback (negative)
+state e_lb_horn #E0E0E0
+e_lb_horn : setback (neutral)
 e_lb_horn : "Four Answers, No Footsteps"
 state e_lb_chimes #E0E0E0
 e_lb_chimes : discovery (neutral)
@@ -130,14 +130,14 @@ state kt_note #D1C4E9
 kt_note : rising · 92w
 state kt_promise #FFF9C4
 kt_promise : choice · 102w
-state e_kt_jam #FFCDD2
-e_kt_jam : setback (negative)
+state e_kt_jam #E0E0E0
+e_kt_jam : setback (neutral)
 e_kt_jam : "The Plum Jam Avalanche"
-state e_kt_cocoa #FFCDD2
-e_kt_cocoa : setback (negative)
+state e_kt_cocoa #E0E0E0
+e_kt_cocoa : setback (neutral)
 e_kt_cocoa : "Cocoa Gets the Last Word"
-state e_kt_ride #FFCDD2
-e_kt_ride : setback (negative)
+state e_kt_ride #E0E0E0
+e_kt_ride : setback (neutral)
 e_kt_ride : "Stairs Exist"
 state e_kt_sketch #E0E0E0
 e_kt_sketch : discovery (neutral)
@@ -195,14 +195,14 @@ state wg_spy #FFF9C4
 wg_spy : choice · 90w
 state wg_promise #FFF9C4
 wg_promise : choice · 100w
-state e_wg_tap #FFCDD2
-e_wg_tap : setback (negative)
+state e_wg_tap #E0E0E0
+e_wg_tap : setback (neutral)
 e_wg_tap : "The Forty-Year Rainstorm"
 state e_wg_fish #E0E0E0
 e_wg_fish : discovery (neutral)
 e_wg_fish : "The Goldfish Made of Light"
-state e_wg_climb #FFCDD2
-e_wg_climb : setback (negative)
+state e_wg_climb #E0E0E0
+e_wg_climb : setback (neutral)
 e_wg_climb : "The Compost Heap Catches"
 state e_wg_plant #E0E0E0
 e_wg_plant : discovery (neutral)
@@ -258,14 +258,14 @@ state gf_caps #FFF9C4
 gf_caps : choice · 92w
 state gf_promise #FFF9C4
 gf_promise : choice · 98w
-state e_gf_lost #FFCDD2
-e_gf_lost : setback (negative)
+state e_gf_lost #E0E0E0
+e_gf_lost : setback (neutral)
 e_gf_lost : "Warmer, Colder, Morning"
-state e_gf_early #FFCDD2
-e_gf_early : setback (negative)
+state e_gf_early #E0E0E0
+e_gf_early : setback (neutral)
 e_gf_early : "The Point That Would Not Count"
-state e_gf_rounds #FFCDD2
-e_gf_rounds : setback (negative)
+state e_gf_rounds #E0E0E0
+e_gf_rounds : setback (neutral)
 e_gf_rounds : "Thirty Rounds Past Bedtime"
 state e_gf_chute #E0E0E0
 e_gf_chute : discovery (neutral)
@@ -311,8 +311,8 @@ state ob_whistle #FFF9C4
 ob_whistle : choice · 94w
 state ob_promise #FFF9C4
 ob_promise : choice · 98w
-state e_ob_ride #FFCDD2
-e_ob_ride : setback (negative)
+state e_ob_ride #E0E0E0
+e_ob_ride : setback (neutral)
 e_ob_ride : "Two Laps of the Heavens"
 state e_ob_banner #FFCDD2
 e_ob_banner : setback (negative)
@@ -720,7 +720,7 @@ legend right
   The Hundred-Door Hotel
   Band 8-11 · Tier 1 · ~12 min
   Topology: open_map
-  176 nodes · 31 endings (6+ / 13n / 12-)
+  176 nodes · 31 endings (6+ / 24n / 1-)
   Production-eligible
   Scale: long · prose
 endlegend

@@ -609,7 +609,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_a_short_net_end",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "{A2_BRIDGE_PRIZE2}"
       }
@@ -1651,7 +1651,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_c_torn_end",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "{C2_ISLAND_PRIZE2}"
       }

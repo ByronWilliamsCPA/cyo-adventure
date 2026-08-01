@@ -99,17 +99,17 @@ state f_circle #D1C4E9
 f_circle : rising · 66w
 state f_countdown #FFF9C4
 f_countdown : choice · 80w
-state e_ds_spill #FFCDD2
-e_ds_spill : setback (negative)
+state e_ds_spill #E0E0E0
+e_ds_spill : setback (neutral)
 e_ds_spill : "Runaway {ROUTE_A_MISHAP}"
-state e_tc_slosh #FFCDD2
-e_tc_slosh : setback (negative)
+state e_tc_slosh #E0E0E0
+e_tc_slosh : setback (neutral)
 e_tc_slosh : "{ROUTE_C_MISHAP}"
-state e_tm_spring #FFCDD2
-e_tm_spring : setback (negative)
+state e_tm_spring #E0E0E0
+e_tm_spring : setback (neutral)
 e_tm_spring : "{ROUTE_D_MISHAP}"
-state e_mc_gong #FFCDD2
-e_mc_gong : setback (negative)
+state e_mc_gong #E0E0E0
+e_mc_gong : setback (neutral)
 e_mc_gong : "{ROUTE_F_MISHAP}"
 state e_wish_pip #C8E6C9
 e_wish_pip : completion (positive)
@@ -234,7 +234,7 @@ legend right
   The Night Market
   Band 5-8 · Tier 1 · ~7 min
   Topology: open_map
-  59 nodes · 13 endings (9+ / 0n / 4-)
+  59 nodes · 13 endings (9+ / 4n / 0-)
   Production-eligible
   Scale: medium · prose
 endlegend

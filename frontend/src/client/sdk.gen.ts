@@ -192,7 +192,12 @@ export const getSeriesNextApiV1SeriesNextProfileIdStorybookIdGet = <ThrowOnError
  * ctx: The request context.
  *
  * Returns:
- * CompletionView: The recorded (or pre-existing) completion.
+ * CompletionRecordedView: The recorded (or pre-existing) completion,
+ * plus ``is_new`` (whether this call inserted the row rather than
+ * hitting an existing one), ``found`` (this profile's distinct-ending
+ * count for the book/version after this call), and ``total`` (the
+ * version's declared ending count). See design review 2026-08-01
+ * section 3.4 / kid-appeal-implementation-plan.md W0.3.
  *
  * Raises:
  * ResourceNotFoundError: If the story or version does not exist.

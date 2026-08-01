@@ -69,8 +69,8 @@ state c_nest_risk #FFF9C4
 c_nest_risk : choice · 100w
 state c_nest_recover #D1C4E9
 c_nest_recover : rising · 90w
-state e_set_nest #FFCDD2
-e_set_nest : setback (negative)
+state e_set_nest #E0E0E0
+e_set_nest : setback (neutral)
 e_set_nest : "Down from {C_GATE}"
 state d_salon1 #D1C4E9
 d_salon1 : rising · 100w
@@ -90,8 +90,8 @@ state d_salon_risk #FFF9C4
 d_salon_risk : choice · 100w
 state d_salon_recover #D1C4E9
 d_salon_recover : rising · 90w
-state e_set_salon #FFCDD2
-e_set_salon : setback (negative)
+state e_set_salon #E0E0E0
+e_set_salon : setback (neutral)
 e_set_salon : "Spotted in {D_GATE}"
 state n_friend #FFF9C4
 n_friend : choice · 115w
@@ -103,8 +103,8 @@ state f_galley_b #FFF9C4
 f_galley_b : choice · 100w
 state f_galley_mid #D1C4E9
 f_galley_mid : rising · 95w
-state e_set_galley #FFCDD2
-e_set_galley : setback (negative)
+state e_set_galley #E0E0E0
+e_set_galley : setback (neutral)
 e_set_galley : "The Cook Catches On"
 state f_cabin1 #FFF9C4
 f_cabin1 : choice · 100w
@@ -114,8 +114,8 @@ state f_cabin_b #FFF9C4
 f_cabin_b : choice · 100w
 state f_cabin_mid #D1C4E9
 f_cabin_mid : rising · 95w
-state e_set_cabin #FFCDD2
-e_set_cabin : setback (negative)
+state e_set_cabin #E0E0E0
+e_set_cabin : setback (neutral)
 e_set_cabin : "Under {F_GATE}"
 state f_rig1 #FFF9C4
 f_rig1 : choice · 100w
@@ -138,8 +138,8 @@ state s_deck_b #FFF9C4
 s_deck_b : choice · 100w
 state s_deck_mid #D1C4E9
 s_deck_mid : rising · 95w
-state e_set_storm1 #FFCDD2
-e_set_storm1 : setback (negative)
+state e_set_storm1 #E0E0E0
+e_set_storm1 : setback (neutral)
 e_set_storm1 : "Waiting Out the Blow"
 state s_crew1 #FFF9C4
 s_crew1 : choice · 100w
@@ -149,8 +149,8 @@ state s_crew_b #FFF9C4
 s_crew_b : choice · 100w
 state s_crew_mid #D1C4E9
 s_crew_mid : rising · 95w
-state e_set_storm2 #FFCDD2
-e_set_storm2 : setback (negative)
+state e_set_storm2 #E0E0E0
+e_set_storm2 : setback (neutral)
 e_set_storm2 : "Knocked Off Her Feet"
 state s_hold1 #FFF9C4
 s_hold1 : choice · 100w
@@ -178,8 +178,8 @@ state p_reveal_a2 #D1C4E9
 p_reveal_a2 : rising · 95w
 state p_reveal_mid #D1C4E9
 p_reveal_mid : rising · 95w
-state e_set_reveal #FFCDD2
-e_set_reveal : setback (negative)
+state e_set_reveal #E0E0E0
+e_set_reveal : setback (neutral)
 e_set_reveal : "Too Slow Through {L_GATE}"
 state p_people1 #FFF9C4
 p_people1 : choice · 100w
@@ -409,7 +409,7 @@ legend right
   The Sky-Ship Stowaway
   Band 8-11 · Tier 1 · ~11 min
   Topology: branch_and_bottleneck
-  111 nodes · 20 endings (8+ / 1n / 11-)
+  111 nodes · 20 endings (8+ / 8n / 4-)
   Production-eligible
   Scale: medium · prose
 endlegend

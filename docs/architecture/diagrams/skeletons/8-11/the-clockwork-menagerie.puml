@@ -84,8 +84,8 @@ state sv_rec #D1C4E9
 sv_rec : rising · 90w
 state sv_rec2 #D1C4E9
 sv_rec2 : rising · 88w
-state e_set_sv #FFCDD2
-e_set_sv : setback (negative)
+state e_set_sv #E0E0E0
+e_set_sv : setback (neutral)
 e_set_sv : "Cornered by {B_GATE}"
 state ds_x0 #D1C4E9
 ds_x0 : rising · 96w
@@ -185,8 +185,8 @@ state k_c2 #D1C4E9
 k_c2 : rising · 92w
 state k_c3 #D1C4E9
 k_c3 : rising · 92w
-state e_set_key #FFCDD2
-e_set_key : setback (negative)
+state e_set_key #E0E0E0
+e_set_key : setback (neutral)
 e_set_key : "Turned Around at {KC_GATE}"
 state n_spring #FFF9C4
 n_spring : choice · 130w
@@ -363,8 +363,8 @@ e_win_note : "A Note for the Morning"
 state e_neu_caretaker #E0E0E0
 e_neu_caretaker : discovery (neutral)
 e_neu_caretaker : "Waiting for the Keepers"
-state e_set_dawn #FFCDD2
-e_set_dawn : setback (negative)
+state e_set_dawn #E0E0E0
+e_set_dawn : setback (neutral)
 e_set_dawn : "Caught by {DAWN_CLEANER}"
 n_start --> av_x0 : Enter {ROUTE_A_ZONE}.
 n_start --> sv_x0 : Cross into {ROUTE_B_ZONE}.
@@ -580,7 +580,7 @@ legend right
   The Clockwork Menagerie
   Band 8-11 · Tier 1 · ~18 min
   Topology: branch_and_bottleneck
-  166 nodes · 27 endings (14+ / 3n / 10-)
+  166 nodes · 27 endings (14+ / 6n / 7-)
   Production-eligible
   Scale: long · prose
 endlegend
