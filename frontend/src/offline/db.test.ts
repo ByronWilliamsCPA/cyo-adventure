@@ -27,7 +27,7 @@ import type { DeviceGrant } from '../auth/deviceGrant'
 import type { ValuesPayload } from '../player/personalization'
 import type { ReadingState, Storybook } from '../player/types'
 import type { LibraryItemView } from '../library/libraryApi'
-import { consumeDownloadRefusal } from './downloadBudget'
+import { consumeDownloadEviction, consumeDownloadRefusal } from './downloadBudget'
 import {
   _resetDbHandle,
   cacheLibraryList,
@@ -447,6 +447,61 @@ describe('offline download budget enforcement (W4.3, D20)', () => {
 
     expect(await getCachedStorybook(story.id, story.version)).toBeDefined()
     expect(await getCachedStorybook('s_other', 1)).toBeUndefined()
+    // An eviction is a thing that happened TO the child's shelf, so it is
+    // reported, and never as the "bookshelf is full" refusal copy.
+    expect(consumeDownloadEviction()).toBe(true)
+    expect(consumeDownloadRefusal()).toBe(false)
+  })
+
+  it('refuses the write when a REQUIRED eviction fails, rather than caching past the hard cap', async () => {
+    const other: Storybook = { ...story, id: 's_other' }
+    mockStorageEstimate(10 * MB)
+    await cacheStorybook(other)
+    consumeDownloadEviction()
+
+    // Past the hard cap WITH a candidate, so the eviction is the only reason
+    // the write is allowed at all. Break the delete and the write must not
+    // proceed: caching here is exactly the over-budget state the gate exists
+    // to prevent, and it used to happen silently.
+    mockStorageEstimate(500 * MB - 10)
+    const deleteSpy = vi.spyOn(IDBObjectStore.prototype, 'delete').mockImplementation(() => {
+      throw new Error('delete failed')
+    })
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      await cacheStorybook(story)
+    } finally {
+      deleteSpy.mockRestore()
+    }
+
+    expect(await getCachedStorybook(story.id, story.version)).toBeUndefined()
+    expect(consumeDownloadRefusal()).toBe(true)
+    expect(consumeDownloadEviction()).toBe(false)
+    expect(consoleError).toHaveBeenCalledWith('[offline] eviction failed', expect.anything())
+    consoleError.mockRestore()
+  })
+
+  it('records a refusal and rethrows when the cache write itself fails', async () => {
+    // The real QuotaExceededError shape: the budget check passes (well under
+    // the cap) and the device is out of space anyway. This used to escape the
+    // try entirely and land in ReaderPage's best-effort catch, producing no
+    // book, no banner, and no log.
+    mockStorageEstimate(10 * MB)
+    const putSpy = vi.spyOn(IDBObjectStore.prototype, 'put').mockImplementation(() => {
+      throw new DOMException('quota exceeded', 'QuotaExceededError')
+    })
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      await expect(cacheStorybook(story)).rejects.toThrow(/quota/i)
+    } finally {
+      putSpy.mockRestore()
+    }
+    expect(consumeDownloadRefusal()).toBe(true)
+    expect(consoleError).toHaveBeenCalledWith(
+      '[offline] storybook cache write failed',
+      expect.anything()
+    )
+    consoleError.mockRestore()
   })
 
   it('refuses the download outright past the hard cap with nothing to evict, and records a refusal', async () => {

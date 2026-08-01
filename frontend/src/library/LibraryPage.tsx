@@ -7,7 +7,12 @@ import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
 import { EMPTY_PROGRESS, makeProgressApi, type ProgressSummary } from '../kid/progressApi'
 import { Mascot } from '../kid/Mascot'
-import { consumeDownloadRefusal, OFFLINE_BUDGET_FULL_MESSAGE } from '../offline/downloadBudget'
+import {
+  consumeDownloadEviction,
+  consumeDownloadRefusal,
+  OFFLINE_BUDGET_FULL_MESSAGE,
+  OFFLINE_EVICTION_MESSAGE,
+} from '../offline/downloadBudget'
 import { reconcileOfflineCache } from '../offline/revocation'
 import { GUARDIAN_LOGIN_PATH, KID_PICKER_PATH } from '../routes'
 import { cacheLibraryList, getCachedLibraryList, getCachedStorybook } from '../offline/db'
@@ -119,6 +124,10 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   // of scope for this change, so it cannot show the refusal copy directly;
   // see offline/downloadBudget.ts for the full flow.
   const [budgetFull, setBudgetFull] = useState(false)
+  // Same flow, opposite outcome: a book WAS saved, and an older one was
+  // removed to make room. Reported separately because the refusal copy
+  // ("bookshelf is full") would be actively wrong here.
+  const [evicted, setEvicted] = useState(false)
   const [continueAnchor, setContinueAnchor] = useState<ContinueAnchor | null>(null)
   // Bumped by the shelf's "Ask for a new story" end-cap tile; RequestStory
   // opens on the bump and the effect below brings the form into view. A
@@ -298,6 +307,9 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
     const timer = setTimeout(() => {
       if (consumeDownloadRefusal()) {
         setBudgetFull(true)
+      }
+      if (consumeDownloadEviction()) {
+        setEvicted(true)
       }
     }, 0)
     return () => clearTimeout(timer)
@@ -490,6 +502,11 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
       {budgetFull ? (
         <p className="library__offline-banner" role="status">
           {OFFLINE_BUDGET_FULL_MESSAGE}
+        </p>
+      ) : null}
+      {evicted ? (
+        <p className="library__offline-banner" role="status">
+          {OFFLINE_EVICTION_MESSAGE}
         </p>
       ) : null}
       {hero ? (

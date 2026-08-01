@@ -26,9 +26,17 @@ and false negatives (a warm ending phrased outside the word list) are
 expected. A human makes every re-tag decision; this script only narrows
 where to look.
 
+Structural defects are reported separately from SUSPECT triage rows and are
+NOT informational. An ending the audit could not actually audit (no ending
+object, a missing or unrecognized ``valence``) is the strongest form of the
+defect this script exists to catch, so it is surfaced as a PROBLEM row and
+changes the exit code rather than being dropped or silently treated as
+benign.
+
 Exit codes:
-    0 - scan completed (SUSPECT findings are informational, not a failure)
+    0 - scan completed cleanly (SUSPECT findings are informational)
     1 - a catalog file failed to load or parse
+    2 - the scan completed but at least one ending could not be audited
 """
 
 from __future__ import annotations
@@ -103,6 +111,9 @@ _SUSPECT_HEURISTIC_WORDS: tuple[str, ...] = (
 )
 
 
+_VALID_VALENCES: frozenset[str] = frozenset({"positive", "neutral", "negative"})
+
+
 @dataclass
 class EndingRow:
     """One ending's audit record: identity, declared valence, and closing prose."""
@@ -117,6 +128,9 @@ class EndingRow:
     unfilled: bool
     tail: str
     suspect: bool
+    # Empty when the ending was auditable. Otherwise names why it was not:
+    # the row is still emitted and counted, never dropped.
+    problem: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         """Return a plain dict for JSON export.
@@ -125,6 +139,26 @@ class EndingRow:
             A dict with the same fields as this dataclass.
         """
         return asdict(self)
+
+
+def _display_path(path: Path) -> str:
+    """Return ``path`` relative to the repo root, or absolute if outside it.
+
+    ``--skeletons-root`` / ``--out-root`` accept ANY directory, so a bare
+    ``relative_to(_REPO_ROOT)`` raises ValueError and crashes the whole scan
+    on a perfectly valid invocation (and made this script untestable against
+    a tmp_path fixture).
+
+    Args:
+        path: The catalog file path.
+
+    Returns:
+        A repo-relative path string when possible, else the absolute path.
+    """
+    try:
+        return str(path.relative_to(_REPO_ROOT))
+    except ValueError:
+        return str(path)
 
 
 def _tail_words(body: str, count: int = _TAIL_WORD_COUNT) -> str:
@@ -182,45 +216,82 @@ def _load_json(path: Path) -> dict[str, Any] | None:
     return data
 
 
-def _rows_for_story(path: Path, source: str, default_band: str) -> list[EndingRow]:
+def _rows_for_story(
+    path: Path, source: str, default_band: str, story: dict[str, Any]
+) -> list[EndingRow]:
     """Return one EndingRow per ending node in a decoded story file.
 
     Args:
-        path: The story file path (skeleton or filled).
+        path: The story file path (skeleton or filled), for the ``file`` column.
         source: "skeleton" or "filled", recorded on each row.
         default_band: The age band to use when ``metadata.age_band`` is
             missing (for skeletons this is the containing band directory).
+        story: The already-decoded story object. Passed in rather than loaded
+            here so the caller reads each file exactly once; loading inside
+            meant a load failure was reported twice and re-read the file.
 
     Returns:
-        A list of EndingRow, one per ending node. Empty if the file failed
-        to load or decode, or declares no ending nodes.
+        A list of EndingRow, one per ending node, including rows whose
+        ``problem`` is set. Empty only when the file declares no ending nodes.
     """
-    story = _load_json(path)
-    if story is None:
-        return []
     metadata = story.get("metadata")
     band = default_band
     if isinstance(metadata, dict) and isinstance(metadata.get("age_band"), str):
         band = metadata["age_band"]
     nodes = story.get("nodes")
     if not isinstance(nodes, list):
+        # Not a load failure (the JSON parsed), but the file contributes zero
+        # rows, which is indistinguishable from a story that legitimately has
+        # no endings unless it says so.
+        sys.stderr.write(f"PROBLEM {path}: 'nodes' is not a list; no endings audited\n")
         return []
     rows: list[EndingRow] = []
     for node in nodes:
         if not isinstance(node, dict) or not node.get("is_ending"):
             continue
         ending = node.get("ending")
-        if not isinstance(ending, dict):
-            continue
         body = node.get("body")
         body_text = body if isinstance(body, str) else ""
         unfilled = FILL_MARKER in body_text
         tail = "UNFILLED" if unfilled else _tail_words(body_text)
-        valence = str(ending.get("valence", ""))
+        if not isinstance(ending, dict):
+            # A node claiming to BE an ending with no ending object is a data
+            # defect, not a row to skip. It was silently dropped before, so
+            # the audit reported a smaller catalog than it scanned.
+            rows.append(
+                EndingRow(
+                    source=source,
+                    file=_display_path(path),
+                    band=band,
+                    ending_id=str(node.get("id", "")),
+                    title="",
+                    kind="",
+                    valence="",
+                    unfilled=unfilled,
+                    tail=tail,
+                    suspect=False,
+                    problem="no-ending-object",
+                )
+            )
+            continue
+        raw_valence = ending.get("valence")
+        valence = str(raw_valence) if isinstance(raw_valence, str) else ""
+        # #CRITICAL: data-integrity: a MISSING valence used to collapse into
+        # "" via `.get("valence", "")`, and `_is_suspect` returns False for
+        # anything that is not exactly "negative". An ending with no declared
+        # valence is the strongest form of the mis-tagging this audit exists
+        # to find, and it was the one case guaranteed to be invisible.
+        # #VERIFY: tests/unit/test_audit_ending_valence.py::
+        # test_missing_valence_is_reported_as_a_problem.
+        problem = (
+            ""
+            if valence in _VALID_VALENCES
+            else f"bad-valence:{valence or '<missing>'}"
+        )
         rows.append(
             EndingRow(
                 source=source,
-                file=str(path.relative_to(_REPO_ROOT)),
+                file=_display_path(path),
                 band=band,
                 ending_id=str(ending.get("id", "")),
                 title=str(ending.get("title", "")),
@@ -229,6 +300,7 @@ def _rows_for_story(path: Path, source: str, default_band: str) -> list[EndingRo
                 unfilled=unfilled,
                 tail=tail,
                 suspect=False if unfilled else _is_suspect(valence, tail),
+                problem=problem,
             )
         )
     return rows
@@ -275,16 +347,18 @@ def _collect_rows(skeletons_root: Path, out_root: Path) -> tuple[list[EndingRow]
     if skeletons_root.is_dir():
         for path in _iter_skeleton_files(skeletons_root):
             band_dir = path.relative_to(skeletons_root).parts[0]
-            file_rows = _rows_for_story(path, "skeleton", band_dir)
-            if not file_rows and _load_json(path) is None:
+            story = _load_json(path)
+            if story is None:
                 any_failed = True
-            rows.extend(file_rows)
+                continue
+            rows.extend(_rows_for_story(path, "skeleton", band_dir, story))
     if out_root.is_dir():
         for path in _iter_filled_files(out_root):
-            file_rows = _rows_for_story(path, "filled", "?")
-            if not file_rows and _load_json(path) is None:
+            story = _load_json(path)
+            if story is None:
                 any_failed = True
-            rows.extend(file_rows)
+                continue
+            rows.extend(_rows_for_story(path, "filled", "?", story))
     return rows, any_failed
 
 
@@ -304,16 +378,22 @@ def _print_table(rows: list[EndingRow]) -> None:
     print(header)
     print("-" * len(header))
     for row in rows:
-        flag = "SUSPECT" if row.suspect else ""
+        flag = "PROBLEM" if row.problem else ("SUSPECT" if row.suspect else "")
         print(
             f"{flag:8} {row.band:6} {row.file:45} {row.ending_id:22} "
             f"{row.kind:10} {row.valence:9} {row.title}"
         )
+        if row.problem:
+            print(f"{'':8} {'':6} problem: {row.problem}")
         print(f"{'':8} {'':6} tail: {row.tail}")
 
     suspects = [row for row in rows if row.suspect]
+    problems = [row for row in rows if row.problem]
     print("-" * len(header))
-    print(f"total endings: {len(rows)}  SUSPECT: {len(suspects)}")
+    print(
+        f"total endings: {len(rows)}  SUSPECT: {len(suspects)}  "
+        f"PROBLEM (not auditable): {len(problems)}"
+    )
     by_band: dict[str, int] = {}
     for row in suspects:
         by_band[row.band] = by_band.get(row.band, 0) + 1
@@ -328,8 +408,8 @@ def main(argv: list[str] | None = None) -> int:
         argv: Optional argument list (defaults to sys.argv).
 
     Returns:
-        Exit code: 0 on a completed scan, 1 if any catalog file failed to
-        load or parse.
+        Exit code: 0 on a clean scan, 1 if any catalog file failed to load or
+        parse, 2 if the scan completed but some ending could not be audited.
     """
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -366,6 +446,10 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     rows, any_failed = _collect_rows(args.skeletons_root, args.out_root)
+    # Computed over the FULL scan, before --band/--suspect-only narrow the
+    # printed table: a filter chosen for readability must not be able to
+    # silence a defect the scan actually found.
+    any_problem = any(row.problem for row in rows)
 
     if args.band:
         wanted_bands = set(args.band)
@@ -378,7 +462,9 @@ def main(argv: list[str] | None = None) -> int:
     else:
         _print_table(rows)
 
-    return 1 if any_failed else 0
+    if any_failed:
+        return 1
+    return 2 if any_problem else 0
 
 
 if __name__ == "__main__":

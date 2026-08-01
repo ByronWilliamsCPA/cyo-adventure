@@ -50,9 +50,11 @@ import type { LibraryItemView } from '../library/libraryApi'
 import type { ValuesPayload } from '../player/personalization'
 import type { ReadingState, Storybook } from '../player/types'
 import {
+  type BudgetGateResult,
   checkDownloadBudget,
   estimateByteSize,
   forgetStoryRecency,
+  recordDownloadEviction,
   recordDownloadRefusal,
   recordStoryOpened,
 } from './downloadBudget'
@@ -336,27 +338,70 @@ export async function clearPersonalizationValues(): Promise<void> {
  * `ReaderPage.tsx` is out of scope for this change and cannot be edited to
  * show it directly.
  *
- * #ASSUME timing/external-resources: the budget check itself is wrapped in
- * its own try/catch and fails open (proceeds to cache) on any unexpected
- * error, so a diagnostic feature never costs offline reading.
+ * #ASSUME timing/external-resources: the budget CHECK fails open (proceeds
+ * to cache) on any unexpected error, so a diagnostic feature never costs
+ * offline reading. Three outcomes around it are deliberately NOT fail-open,
+ * because each is an enforcement step rather than a diagnostic: a refusal
+ * past the hard cap, a required eviction that did not happen, and the cache
+ * write itself failing. Every one of the three records a refusal so the
+ * kid-facing banner fires, and every one logs.
+ * #VERIFY: db.test.ts budget cases.
  */
 export async function cacheStorybook(story: Storybook): Promise<void> {
   const db = await getDb()
+  let decision: BudgetGateResult
   try {
     const newBytes = estimateByteSize(story)
     const cachedIds = await listCachedStorybookIds()
-    const decision = await checkDownloadBudget(story.id, newBytes, cachedIds)
-    if (!decision.allowed) {
-      recordDownloadRefusal()
-      return
-    }
-    if (decision.evictStoryId) {
-      await deleteStorybooksById(decision.evictStoryId)
-    }
-  } catch {
-    // Best-effort: proceed to cache even if the budget check itself failed.
+    decision = await checkDownloadBudget(story.id, newBytes, cachedIds)
+  } catch (error) {
+    // The DIAGNOSTIC failing open is deliberate (see the doc block above);
+    // failing open silently is not. Previously this catch also covered the
+    // eviction below, so a failed delete was indistinguishable from a failed
+    // estimate and both proceeded to write.
+    console.error('[offline] download budget check failed', { storyId: story.id, error })
+    decision = { allowed: true }
   }
-  await db.put('storybooks', story, storyKey(story.id, story.version))
+  if (!decision.allowed) {
+    recordDownloadRefusal()
+    return
+  }
+  if (decision.evictStoryId !== undefined) {
+    try {
+      await deleteStorybooksById(decision.evictStoryId)
+      recordDownloadEviction()
+    } catch (error) {
+      console.error('[offline] eviction failed', {
+        storyId: story.id,
+        evictStoryId: decision.evictStoryId,
+        required: decision.evictionRequired === true,
+        error,
+      })
+      if (decision.evictionRequired === true) {
+        // Past the hard cap with no room freed: writing anyway is what the
+        // budget exists to prevent.
+        recordDownloadRefusal()
+        return
+      }
+    }
+  }
+  try {
+    await db.put('storybooks', story, storyKey(story.id, story.version))
+  } catch (error) {
+    // #CRITICAL: external-resources: the genuine `QuotaExceededError` path.
+    // The budget check is an estimate against a fixed cap and can pass while
+    // the device itself is out of space; this write is where that shows up.
+    // It previously escaped past the try entirely, into ReaderPage's
+    // best-effort `catch {}`, producing neither the book offline nor the
+    // "bookshelf is full" banner nor a log line. Records the refusal so the
+    // kid-facing surface says something, then rethrows so the caller's own
+    // handling is unchanged.
+    // #VERIFY: db.test.ts "records a refusal and rethrows when the cache
+    // write itself fails".
+    console.error('[offline] storybook cache write failed', { storyId: story.id, error })
+    recordDownloadRefusal()
+    throw error
+  }
   recordStoryOpened(story.id)
 }
 

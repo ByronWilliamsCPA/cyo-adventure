@@ -34,12 +34,19 @@ const HARD_CAP_BYTES = 500 * 1024 * 1024 // 500MB: refuse the download past here
 
 const RECENCY_KEY = 'offline_story_last_opened'
 const REFUSAL_KEY = 'offline_download_refusal'
+const EVICTION_KEY = 'offline_download_eviction'
 
 /** Kid-facing copy for a refused download, matching the existing kid-language
  * error patterns (short, concrete, names the grown-up as the next step; see
  * e.g. reader/DownloadNeeded.tsx and library/LibraryPage.tsx's EmptyState copy). */
 export const OFFLINE_BUDGET_FULL_MESSAGE =
   "This tablet's bookshelf is full. Ask a grown-up to remove a book."
+
+/** Kid-facing copy for a book that was removed to make room for a new one.
+ * Eviction is not a failure, so this is framed as information, not an error:
+ * the book is still in the library and re-downloads on the next open. */
+export const OFFLINE_EVICTION_MESSAGE =
+  'We made room for your new book, so an older one is not saved on this tablet anymore. It is still in your library.'
 
 type RecencyMap = Record<string, number>
 
@@ -133,6 +140,32 @@ export function consumeDownloadRefusal(): boolean {
   }
 }
 
+/** Record that a previously-downloaded book was evicted to make room, so the
+ * same kid-facing surface can say so once. Separate flag from the refusal:
+ * the two outcomes are opposites (the new book WAS saved here) and reporting
+ * an eviction as "bookshelf is full" would be wrong. */
+export function recordDownloadEviction(): void {
+  try {
+    localStorage.setItem(EVICTION_KEY, String(Date.now()))
+  } catch {
+    // #EDGE: browser-compat: same degrade as recordDownloadRefusal -- the
+    // eviction happened either way; only the notice is lost.
+  }
+}
+
+/** Read and clear the pending eviction flag. Returns true at most once per
+ * eviction. */
+export function consumeDownloadEviction(): boolean {
+  try {
+    const raw = localStorage.getItem(EVICTION_KEY)
+    if (!raw) return false
+    localStorage.removeItem(EVICTION_KEY)
+    return true
+  } catch {
+    return false
+  }
+}
+
 export interface StorageEstimate {
   usage: number
   quota?: number
@@ -182,6 +215,18 @@ export interface BudgetGateResult {
   /** Set when a book should be evicted (by story id) before/alongside the
    * write proceeding. */
   evictStoryId?: string
+  /**
+   * True when the eviction is the ONLY reason `allowed` is true, i.e. the
+   * projected usage is past the hard cap. The caller must treat a failed
+   * eviction as a refusal in that case.
+   *
+   * #CRITICAL: data-integrity: without this the two eviction bands are
+   * indistinguishable at the call site, so a failed `deleteStorybooksById`
+   * led to caching anyway, knowingly past the hard cap; the next write then
+   * hits a real `QuotaExceededError` the budget exists to prevent.
+   * #VERIFY: db.test.ts "refuses the write when a required eviction fails".
+   */
+  evictionRequired?: boolean
 }
 
 /**
@@ -218,5 +263,7 @@ export async function checkDownloadBudget(
   // best-effort attempt to get back under budget, not a verified guarantee;
   // "keep it simple" per the task, not a bin-packing solver. Refuse only
   // when there is truly nothing else to evict.
-  return candidate ? { allowed: true, evictStoryId: candidate } : { allowed: false }
+  return candidate
+    ? { allowed: true, evictStoryId: candidate, evictionRequired: true }
+    : { allowed: false }
 }

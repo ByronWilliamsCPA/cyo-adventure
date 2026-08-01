@@ -793,6 +793,20 @@ describe('LibraryPage', () => {
         screen.queryByText("This tablet's bookshelf is full. Ask a grown-up to remove a book.")
       ).not.toBeInTheDocument()
     })
+
+    it('reports an eviction as its own notice, not as the full-shelf refusal', async () => {
+      // Opposite outcomes: the new book WAS saved. Telling a child the shelf
+      // is full when it is not, and saying nothing at all when one of their
+      // downloaded books just disappeared, are both wrong.
+      localStorage.setItem('offline_download_eviction', String(Date.now()))
+      mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS] } })
+      renderLibrary()
+      expect(await screen.findByText(/We made room for your new book/)).toBeInTheDocument()
+      expect(
+        screen.queryByText("This tablet's bookshelf is full. Ask a grown-up to remove a book.")
+      ).not.toBeInTheDocument()
+      expect(localStorage.getItem('offline_download_eviction')).toBeNull()
+    })
   })
 })
 
