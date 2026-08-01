@@ -545,6 +545,83 @@ The owner asked how the initial research handles choice-per-node versus words-pe
   whether the naive-user session (`UW-M02`) runs before the request-page and choice-grammar
   changes ship, per the standing gate in `handoff-s5-reader-ux-remaining-2026-07-26.md`.
 
+### Research appendix: digital choice pacing for children (2026-08-01)
+
+External research pass (web sources; evidence graded strong = peer-reviewed and measured, pract =
+practitioner heuristic). Full sourcing sits in the findings below; the headline items:
+
+1. **Flavor choices work, if and only if the next line acknowledges them.** Fendt, Harrison, Ware,
+   Cardona-Rivera and Roberts (ICIDS 2012, "Achieving the Illusion of Agency") found no significant
+   difference in felt agency between a truly branching story and a linear story whose choices got
+   immediate textual acknowledgment; choices with no feedback underperformed. This is the strongest
+   single result behind D2's flavor-choice allowance, and it adds a requirement: the fill gate
+   should require choice acknowledgment in the following passage. (strong)
+2. **The act of choosing motivates children independent of consequence, with diminishing returns.**
+   Patall, Cooper and Robinson (Psychological Bulletin 2008, 41-study meta-analysis): choice
+   enhances intrinsic motivation and effort, strongest at 2-4 successive choices per session, and
+   more options per choice raises cognitive cost. Few options, frequent-but-bounded choices.
+   (strong)
+3. **For pre-readers, interaction competes with comprehension.** Takacs, Swart and Bus (Review of
+   Educational Research 2015, 43 studies, ages ~2-12): story-incongruent interactive features hurt
+   comprehension via cognitive load, worst for the youngest. Peebles, Bonus and Mares (Computers in
+   Human Behavior 2018): preschool comprehension gains came from scaffolding interactions
+   (questions, predictions), not from plot agency. Implication: at 3-5, "a choice on every page"
+   should relax to "a story-congruent interaction on most pages," with short continue-runs
+   acceptable. (strong)
+4. **Delayed, state-gated consequences reliably land from about age 8-9.** The causal-comprehension
+   literature (Frontiers in Psychology 2014 review; Trabasso et al.) puts adult-like narrative
+   causal processing at ~9; before ~6, consequence-tracking barely exists, so consequences must be
+   immediate and visible. This calibrates D2's consequence gradient. (strong)
+5. **The winning print-to-digital adaptation kept linear beats in the graph and removed them from
+   the surface.** inkle's Sorcery!/80 Days re-authored long gamebook passages into short beats with
+   frequent low-consequence, immediately-acknowledged choices; the ink language's gather syntax
+   exists precisely so a graph keeps linear structure while the rendered surface flows and nearly
+   every stop ends in a choice. Tin Man Games' faithful page-per-section ports served nostalgic
+   adults, and their own lead conceded the format needed more. Netflix's user-tested cadence for
+   lean-back interactive titles is a decision every 3-5 minutes, binary options, with reconvergence
+   framed diegetically. (pract, strong track record)
+6. **Explicit answer to Q1's fork**: the evidence favors render-time flow (merge linear beats into
+   scrolling prose so every stop ends in a choice) for 8-11 and up, and a modified hybrid at 3-5
+   and 5-8 (discrete pages, choice on a regular cadence rather than every page, scaffold
+   interactions between). No source supports force-branching every node, and Patall 2008 predicts
+   diminishing returns from doing so. This confirms the section 8.3 reconciliation and keeps
+   ADR-011's researched constants intact.
+7. **Named evidence gaps**: no measured study of choice frequency in children's reading apps
+   specifically, none on whether children detect reconvergence on replay, none on tap versus
+   scroll for early readers. The per-band numbers below are triangulated calibrations, not
+   measured optima; the naive-user session (`UW-M02`) is the project's chance to measure some of
+   this directly.
+
+Key sources: Fendt et al. 2012 (ciigar.csc.ncsu.edu/files/bib/Fendt2012-IllusionOfAgency.pdf);
+Patall, Cooper and Robinson 2008 (Psychological Bulletin 134(2)); Takacs, Swart and Bus 2015
+(RER 85(4)); Peebles, Bonus and Mares 2018 (CHB 85); Kolhoff and Nack, ICIDS 2019; Reed,
+"50 Years of Text Games" on 80 Days (if50.substack.com/p/2014-80-days); Humfrey, "Open sourcing
+ink" (gamedeveloper.com); Ingold GDC 2015/2017; Variety 2018 on Netflix cadence; children's
+publishing word-count norms (Kole; Cioffi).
+
+### Draft per-band choice grammar (proposal for Q2, awaiting owner sign-off)
+
+"Stop" means a rendered page the child lands on, after Q1's render-flow merge where that applies.
+Words per stop follow children's publishing norms and stay compatible with ADR-011's per-node caps
+once linear beats merge.
+
+| Band | Presentation | Choice cadence | Max choiceless stops in a row | Flavor vs consequential | Options per choice | Words per stop |
+|---|---|---|---|---|---|---|
+| 3-5 | discrete pages | choice every 2nd-4th stop; scaffold interaction (predict, point, answer) on other pages | 2-3 | ~90/10; consequences immediate and visible on the next page; reconvergence free | 2 | 10-40 |
+| 5-8 | discrete pages | choice every 1st-2nd stop | 2 | ~70/30; same-scene payoff; every pick acknowledged in the next line | 2-3 | 30-70 |
+| 8-11 | flowed prose | every stop ends in a choice | 1, prefer 0 | ~50/50; state-gated consequences begin, always with a visible "noticed" cue | 3 | 60-135 |
+| 10-13 | flowed prose | every stop ends in a choice | 0-1 | ~40/60; delayed and cross-scene consequences expected; distinct targets | 3 | 80-150 |
+| 13-16 | flowed prose | every stop ends in a choice | 0-1 | ~30/70; consequence foreshadowed (foreseeability was the measured weak point in Bandersnatch) | 3-4 | 100-200 |
+| 16+ | flowed prose | every stop ends in a choice | 0-1 | ~30/70, gamebook style may push higher lethality per ADR-011 | 3-4 | 100-230 |
+
+Cross-cutting rules (all bands): every choice acknowledged in the immediately following prose
+(fill-gate rule); options few, choices bounded; every interaction story-congruent, none decorative;
+from 8-11 up, design for replay detection of reconvergence (differing acknowledgment lines,
+visible state). New concept introduced by the research that needs its own owner call, folded into
+Q2: **scaffold interactions** at 3-5 (predict/answer beats that are not plot forks) are what the
+evidence actually supports on choiceless pages; they are a new node affordance and would need a
+schema minor (cheap under ADR-025) and prompt support.
+
 The original question sheet (first round) is preserved below for the record; struck items were
 answered by the decisions table above.
 
