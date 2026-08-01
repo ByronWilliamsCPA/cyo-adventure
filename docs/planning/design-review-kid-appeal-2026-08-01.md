@@ -432,3 +432,101 @@ Constraints honored throughout: ADR-016 (no free text, no discovery, no feed mec
 to providers, no third-party SDKs in the kid context, parental gate), ADR-023 (personalization
 blocked pending re-plan and counsel; only its upstream data work is recommended), ADR-014 (kid
 bundle must not import Supabase; new kid surfaces ride the child-session principal).
+
+---
+
+## 8. Owner decisions and open questions (2026-08-01)
+
+### Decision D1 (owner, 2026-08-01): every non-terminal node must offer a choice
+
+The owner's ruling on finding 2.3: all non-ending nodes should present a choice, not a "Continue"
+tap. Measured impact against the committed catalog:
+
+- 5,873 of 8,573 non-ending nodes (69%) currently have exactly one choice.
+- **0 of 61 skeletons comply** as authored.
+- Single-choice nodes cluster in short runs: of 3,241 runs, 39% are length 1 and 43% length 2
+  (max 13). They are scene-splits, almost certainly produced by ADR-011's per-node word ceilings
+  (e.g. 90 words/node at 3-5), not deliberate corridors.
+
+Consequence: D1 cannot be a retroactive hard rule without voiding the catalog; it needs the
+calibration questions A1-A5 below answered, and it likely requires an ADR-011 amendment on the
+words-per-node side (whichever way A4 lands).
+
+### Open questions for the owner
+
+**A. Calibrating D1 (choice density)**
+
+- **A1. What counts as "a choice"?** (a) 2+ options with any targets, which permits flavor choices
+  that reconverge immediately; (b) 2+ options with distinct targets; (c) 2+ options where at least
+  one has a downstream consequence (flag set or different subtree). Suggested: (b) at 8-11 and up,
+  (a) allowed at 3-5/5-8.
+- **A2. Enforcement point and severity.** Hard failure at skeleton promotion for new content, with
+  advisory-only on the existing catalog until A3 is decided? Or hard everywhere on a deadline?
+- **A3. What happens to the 61 existing skeletons and 23 fills?** Options: (1) authoring-time merge
+  of single-choice chains into their predecessor node (colliding with word caps, see A4); (2)
+  player render-time merge: the engine walks through single-choice nodes and renders one scrollable
+  passage until the next real choice, so "Continue" disappears with zero content changes (both
+  engines plus the conformance corpus must change, and node-count-based progress semantics shift);
+  (3) a mutation-pipeline pass that adds real branches; (4) grandfather the catalog. Suggested:
+  (2) as the fast win, plus the hard rule for new content; revisit (3) per skeleton over time.
+- **A4. Which rule gives way: choice-per-node or words-per-node?** If every node must branch, then
+  either per-node word ceilings rise (or a node body may span multiple rendered screens with the
+  cap becoming per-screen advisory), or stories get denser branching and ADR-011's
+  nodes-from-words arithmetic changes. Either way ADR-011 needs an amendment; which side?
+- **A5. Does D1 apply fully to the 3-5 band,** where reading is adult-mediated and picture-book
+  pacing is partly linear by convention? (Only 69 single-choice nodes exist at 3-5, so full
+  compliance is cheap if wanted.)
+
+**B. Content and genre**
+
+- **B1.** Rank the genre wave for under-13 skeletons: dragons/magic, space, dinosaurs, pirates,
+  gentle-spooky, comedy, sports, superheroes, mystery. Any to exclude on principle?
+- **B2.** Which growth path gets investment first: fixing hand-authoring promotion (`UW-C01`,
+  currently nothing passes), harvesting the mutation pipeline, or an LLM structure pass?
+- **B3.** Target ending-valence mix for teen books (currently 83% negative at 13-16/16+; one book
+  is 147 deaths of 150 endings). A ratio ceiling per book, or leave gamebook-lethal as a style?
+
+**C. Request loop and defaults**
+
+- **C1.** Where may "your story is ready" reach the kid: in-app only (picker pill, library banner,
+  request-card flip), or is PWA push on the table (new ADR-018 privacy surface)?
+- **C2.** Reflect-back voice: show the stored K19 interpretation verbatim, or invest in
+  LLM-authored kid-facing prose (`OQ-5` / `UW-I07`)?
+- **C3.** Define the tone vocabulary a child may request per band (does "a little spooky" exist at
+  8-11? is "funny" available everywhere?). Tone can only leave "gentle" once the allowed set is
+  named.
+- **C4.** Story size on request: auto mid-band, or kid-selectable short/long?
+
+**D. Celebration and gamification**
+
+- **D2. The gamification ceiling.** Which mechanics are in-bounds for this product: collection
+  (endings gallery, finished shelf) vs achievement badges vs streaks? Streaks are a re-engagement
+  pressure mechanic some families explicitly reject; this is a values call, not an engineering one.
+- **D3.** Ending rarity/secret markers: authored in skeleton metadata (stable, band-reviewable) or
+  derived from reading data? Suggested: authored.
+- **D4.** Large-book denominator (`AL-028`): curated signature endings (the author names ~5-9
+  headline endings as the kid-visible set) vs milestone framing ("3 new endings found")?
+
+**E. Art, audio, and voice**
+
+- **E1.** In-story illustration: pilot now (per-node at 3-5 only, or per-bottleneck-scene at
+  3-5/5-8) or post-launch? At that volume ADR-017's amendment clause triggers: is the automated
+  image-moderation precondition acceptable? What is the art budget per book?
+- **E2.** Sound: none, soft UI sounds (page turn, choice tap, ending chime; muted by default or
+  not), or ambient audio? Read-aloud is already slated as a subscription feature post-launch; does
+  browser TTS stay free?
+- **E3.** POV per band: second person everywhere (the drafting guide as written) or third person at
+  3-5/5-8 with second person from 8-11 up? This decision gates both the corpus fix (2.2) and where
+  hero-name personalization can land (2.6).
+
+**F. Sequencing and process**
+
+- **F1.** Approve the additive-minor format-evolution policy (server accepts a declared `2.x`
+  range; minor versions are additive-optional)? It sequences before ending metadata, images, and
+  sound cues.
+- **F2.** May the personalization contract-slot data work proceed now, while ADR-023 remains
+  blocked on counsel, on the understanding nothing ships until the ADR is Accepted?
+- **F3.** May a ring-1/ring-2 recommendation surface an unassigned published book to a kid as a
+  one-tap "ask for it" request (routing through the normal guardian consent gate)?
+- **F4.** When can the naive-user session with real children run (`UW-M02`)? It gates the
+  request-page reshape and two reader-UX items, and would pressure-test most of the choices above.
