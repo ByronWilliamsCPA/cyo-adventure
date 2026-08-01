@@ -133,6 +133,7 @@ from cyo_adventure.core.exceptions import (
 )
 from cyo_adventure.db.models import ChildProfile, Storybook, StorybookVersion
 from cyo_adventure.events import ADMIN_ACTOR_ROLE, Actor, EventType, record_event
+from cyo_adventure.generation.import_story import IMPORT_PROVIDER
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import build_provider
 from cyo_adventure.moderation.pipeline import run_moderation_pipeline
@@ -420,10 +421,28 @@ async def remoderate_storybook_version(
 
     child_names = await _family_child_names(session, storybook.family_id)
     pii = PiiContext(child_names=child_names)
+    # #EDGE: data-integrity: StorybookVersion.provider is a provenance field,
+    # not always a provider name: offline-authored books carry the "import"
+    # sentinel (generation/import_story.py), which build_provider rightly
+    # rejects. The generation provider on this path only serves the
+    # auto-repair re-prompt, and re-moderation always runs allow_repair=False,
+    # so for imported books fall back to the configured default provider (the
+    # same fallback a NULL provider already gets) instead of failing the whole
+    # re-moderation before any review happens. The stored model is dropped
+    # with it: an import row's model column cannot name a model usable by a
+    # provider the row does not name.
+    # #VERIFY: covered by test_import_provenance_falls_back_to_default_provider
+    # in tests/unit/test_remoderate_unit.py.
+    if version_row.provider == IMPORT_PROVIDER:
+        provider_override = None
+        model_override = None
+    else:
+        provider_override = version_row.provider
+        model_override = version_row.model
     generation_provider = build_provider(
         ctx.settings,
-        provider_override=version_row.provider,
-        model_override=version_row.model,
+        provider_override=provider_override,
+        model_override=model_override,
     )
 
     started = time.monotonic()

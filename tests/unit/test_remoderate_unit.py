@@ -41,6 +41,7 @@ from cyo_adventure.core.exceptions import (
 )
 from cyo_adventure.db.models import GenerationJob, Storybook, StorybookVersion
 from cyo_adventure.events import Actor
+from cyo_adventure.generation.import_story import IMPORT_PROVIDER
 from cyo_adventure.generation.provider import _CANNED_STORY, MockProvider
 from cyo_adventure.moderation import pipeline as pipeline_mod
 
@@ -87,13 +88,16 @@ def _story(status: str = "published") -> Storybook:
 
 def _version_row(
     moderation_report: dict[str, object] | None = None,
+    *,
+    provider: str = "mock",
+    model: str | None = "gen-model",
 ) -> StorybookVersion:
     return StorybookVersion(
         storybook_id="s1",
         version=1,
         blob=_blob(),
-        model="gen-model",
-        provider="mock",
+        model=model,
+        provider=provider,
         moderation_report=moderation_report,
     )
 
@@ -335,6 +339,89 @@ async def test_happy_path_returns_fresh_summary(
     assert view.structural_count == 1
     assert view.prior_reviewer_independent is True
     assert story.status == "published"
+
+
+_PASSING_REPORT: dict[str, object] = {
+    "findings": [{"verdict": "flag", "structural": False}],
+    "summary": {
+        "hard_block": False,
+        "soft_flag": True,
+        "count": 1,
+        "repaired": False,
+        "reviewer_independent": True,
+    },
+    "aggregate": {"nodes_reviewed": 3, "pass_counts": {}},
+}
+
+
+async def test_import_provenance_falls_back_to_default_provider(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The 'import' provenance sentinel must not be treated as a provider name.
+
+    Offline-authored books store ``provider="import"``
+    (generation/import_story.py's ``IMPORT_PROVIDER``), which
+    ``build_provider`` rejects with ConfigurationError; before the fix that
+    failed the whole re-moderation before any review ran (found live by the
+    2026-08-01 ops sweep: 9 of its 10 targets were imports). Imported rows
+    must fall back to the configured default provider, dropping the stored
+    model with the unusable provider name.
+    """
+    version_row = _version_row(
+        copy.deepcopy(_PASSING_REPORT), provider=IMPORT_PROVIDER, model=None
+    )
+    story = _story()
+    _wire_session(mock_async_session, story, version_row)
+
+    captured: dict[str, object] = {}
+
+    def _capture_build(settings: Settings, **kwargs: object) -> MockProvider:
+        captured.update(kwargs)
+        return MockProvider(responses=["{}"])
+
+    monkeypatch.setattr(remoderate_api, "build_provider", _capture_build)
+    monkeypatch.setattr(
+        remoderate_api, "run_moderation_pipeline", AsyncMock(return_value=None)
+    )
+
+    ctx = _ctx(_ADMIN, mock_async_session)
+    view = await remoderate_api.trigger_remoderate("s1", 1, ctx)
+
+    assert captured == {"provider_override": None, "model_override": None}
+    assert view.status == "published"
+
+
+async def test_generated_provenance_passes_provider_and_model_through(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A real generation-provider name and its model still reach build_provider.
+
+    Guards the else branch of the import-sentinel fallback: the repair
+    re-prompt for a generated book must keep using the provider/model that
+    produced the book, not silently degrade to the configured default.
+    """
+    version_row = _version_row(
+        copy.deepcopy(_PASSING_REPORT), provider="openrouter", model="m-1"
+    )
+    story = _story()
+    _wire_session(mock_async_session, story, version_row)
+
+    captured: dict[str, object] = {}
+
+    def _capture_build(settings: Settings, **kwargs: object) -> MockProvider:
+        captured.update(kwargs)
+        return MockProvider(responses=["{}"])
+
+    monkeypatch.setattr(remoderate_api, "build_provider", _capture_build)
+    monkeypatch.setattr(
+        remoderate_api, "run_moderation_pipeline", AsyncMock(return_value=None)
+    )
+
+    ctx = _ctx(_ADMIN, mock_async_session)
+    view = await remoderate_api.trigger_remoderate("s1", 1, ctx)
+
+    assert captured == {"provider_override": "openrouter", "model_override": "m-1"}
+    assert view.status == "published"
 
 
 async def test_event_actor_role_is_admin(
