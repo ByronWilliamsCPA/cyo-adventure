@@ -181,6 +181,51 @@
   font-size: var(--text-lg, 1.25rem);
 }
 
+/* W1.4 (design review 4.1): "new story!" pill on a profile tile whose
+   picker-stage GET /profiles/story-status check found a recent assignment.
+   Warm, small, non-numeric by design (anti-leaderboard: the picker never
+   shows counts, per W3.2's own "profile picker stays number-free" rule) --
+   matches .book-card__new-badge's palette so a child meets the same "new"
+   signal on the shelf and on the picker. Sits in normal flow (unlike the
+   absolutely-positioned PIN padlock) so it never collides with that corner. */
+.picker-tile__new-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2, 0.5rem);
+  border-radius: var(--radius-full, 999px);
+  background: var(--color-amber-subtle, #fdf3e6);
+  color: var(--color-amber-deep, #c17b2a);
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--weight-bold, 700);
+  white-space: nowrap;
+  animation: picker-pill-glow 2.4s var(--easing-default, ease-in-out) infinite;
+}
+
+@keyframes picker-pill-glow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .picker-tile__new-pill {
+    animation: none;
+  }
+}
+
+/* Guardian-set per-profile reduce_motion twin (see the matching rule for
+   .picker-tile--picking below): the picker itself never carries
+   data-reduce-motion today (no profile is picked yet), but this keeps the
+   file aligned with the band-tokens.css contract if that ever changes. */
+[data-reduce-motion='true'] .picker-tile__new-pill {
+  animation: none;
+}
+
 /* P6-07: corner padlock on a PIN-locked profile tile, so the PIN prompt is
    anticipated. Absolutely positioned so the tile's flex layout is untouched. */
 .picker-tile__pin {

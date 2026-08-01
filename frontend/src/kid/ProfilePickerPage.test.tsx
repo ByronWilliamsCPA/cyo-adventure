@@ -183,7 +183,12 @@ describe('ProfilePickerPage', () => {
       'href',
       '/library/p1'
     )
-    expect(mockGet).toHaveBeenCalledTimes(2)
+    // 3, not 2: the failed load, the successful retry, and (W1.4) the
+    // story-status fetch fired once the picker reaches 'ready'. The third
+    // call resolves to `undefined` data here (no mockResolvedValueOnce queued
+    // for it), which the story-status effect swallows silently (see its own
+    // try/catch), so it never affects the assertions above.
+    await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(3))
   })
 
   it('offers a grown-up sign-in link from the error state', async () => {

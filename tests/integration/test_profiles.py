@@ -7,11 +7,12 @@ family's rows.
 
 from __future__ import annotations
 
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
 import pytest
 
-from cyo_adventure.db.models import Family, User
+from cyo_adventure.db.models import ChildProfile, Family, StorybookAssignment, User
 from tests.integration.conftest import Seed, auth, mint_device_token
 
 if TYPE_CHECKING:
@@ -933,3 +934,170 @@ async def test_create_and_update_envelope_fields(
     )
     assert cleared.status_code == 200, cleared.text
     assert cleared.json()["monthly_request_envelope"] is None
+
+
+# ---------------------------------------------------------------------------
+# W1.4: GET /profiles/story-status (profile-picker "new story ready!" pill,
+# design review 4.1 / kid-appeal-implementation-plan.md).
+# ---------------------------------------------------------------------------
+
+
+async def _add_sibling(
+    sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> str:
+    """Add a second Family A child profile with NO storybook assignment.
+
+    Mirrors ``test_assignments_api.py::_add_sibling``, trimmed to just the
+    profile id this module's tests need (no sibling login token).
+
+    Args:
+        sessions: The session factory bound to the test engine.
+        seed: The seeded fixture data (supplies the Family A id).
+
+    Returns:
+        str: The new sibling profile's id.
+    """
+    async with sessions() as session:
+        sibling = ChildProfile(
+            family_id=seed.family_id, display_name="Reader A2", age_band="10-13"
+        )
+        session.add(sibling)
+        await session.commit()
+        return str(sibling.id)
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_story_status_requires_authentication(client: AsyncClient) -> None:
+    """GET /profiles/story-status without a bearer is a 401."""
+    resp = await client.get("/api/v1/profiles/story-status")
+    assert resp.status_code == 401
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_story_status_true_for_assignment_within_seven_days(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """The seed's own (freshly created) assignment reads has_new_story=True."""
+    resp = await client.get(
+        "/api/v1/profiles/story-status", headers=auth(seed.guardian_token)
+    )
+    assert resp.status_code == 200, resp.text
+    statuses = resp.json()["statuses"]
+    row = next(s for s in statuses if s["profile_id"] == str(seed.child_profile_id))
+    assert row["has_new_story"] is True
+    # Boolean-only: no title, no storybook id, no count ever leaks here.
+    assert set(row.keys()) == {"profile_id", "has_new_story"}
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_story_status_false_for_profile_with_no_assignment(
+    client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A sibling profile with no assignment at all reads has_new_story=False."""
+    sibling_id = await _add_sibling(sessions, seed)
+    resp = await client.get(
+        "/api/v1/profiles/story-status", headers=auth(seed.guardian_token)
+    )
+    assert resp.status_code == 200, resp.text
+    statuses = resp.json()["statuses"]
+    row = next(s for s in statuses if s["profile_id"] == sibling_id)
+    assert row["has_new_story"] is False
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_story_status_excludes_assignment_older_than_seven_days(
+    client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """An assignment created more than 7 days ago no longer counts as "new".
+
+    #ASSUME: data-integrity: the 7-day fallback window
+    (``api/profiles.py::_NEW_STORY_WINDOW``) is exercised directly here by
+    backdating the seed's own assignment row, since the API itself always
+    stamps ``created_at`` at insert time (there is no "assign as of a past
+    date" endpoint to call instead).
+    """
+    async with sessions() as session:
+        row = await session.get(
+            StorybookAssignment, (seed.child_profile_id, seed.storybook_id)
+        )
+        assert row is not None
+        row.created_at = datetime.now(UTC) - timedelta(days=8)
+        await session.commit()
+
+    resp = await client.get(
+        "/api/v1/profiles/story-status", headers=auth(seed.guardian_token)
+    )
+    assert resp.status_code == 200, resp.text
+    statuses = resp.json()["statuses"]
+    row_view = next(
+        s for s in statuses if s["profile_id"] == str(seed.child_profile_id)
+    )
+    assert row_view["has_new_story"] is False
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_story_status_cross_family_profile_never_appears(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """Family A's guardian never sees Family B's profile in the response."""
+    resp = await client.get(
+        "/api/v1/profiles/story-status", headers=auth(seed.guardian_token)
+    )
+    assert resp.status_code == 200, resp.text
+    ids = {s["profile_id"] for s in resp.json()["statuses"]}
+    assert str(seed.other_child_profile_id) not in ids
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_story_status_device_grant_scoped_to_own_family(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A device grant sees its own family's pill state and no other family's.
+
+    Mirrors ``test_device_grant_lists_own_family_profiles``: the picker
+    (pre-child-session, holding only a device grant) is the primary caller
+    this endpoint exists for.
+    """
+    device_token = await mint_device_token(client, seed.guardian_token)
+    resp = await client.get(
+        "/api/v1/profiles/story-status", headers=auth(device_token)
+    )
+    assert resp.status_code == 200, resp.text
+    statuses = resp.json()["statuses"]
+    ids = {s["profile_id"] for s in statuses}
+    assert str(seed.child_profile_id) in ids
+    assert str(seed.other_child_profile_id) not in ids
+    row = next(s for s in statuses if s["profile_id"] == str(seed.child_profile_id))
+    assert row["has_new_story"] is True
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_story_status_child_scoped_to_own_profile(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A child token resolves to exactly its own profile's pill status."""
+    resp = await client.get(
+        "/api/v1/profiles/story-status", headers=auth(seed.child_token)
+    )
+    assert resp.status_code == 200, resp.text
+    statuses = resp.json()["statuses"]
+    assert [s["profile_id"] for s in statuses] == [str(seed.child_profile_id)]
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_admin_story_status_is_empty(client: AsyncClient, seed: Seed) -> None:
+    """An admin-only token resolves no profile set, so the list is empty."""
+    del seed  # fixture seeds the admin-a user
+    resp = await client.get(
+        "/api/v1/profiles/story-status", headers=auth("admin-a")
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["statuses"] == []

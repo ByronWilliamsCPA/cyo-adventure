@@ -1223,6 +1223,34 @@ class ProfileListView(BaseModel):
     profiles: list[ProfileView]
 
 
+class ProfileStoryStatusView(BaseModel):
+    """One profile's "new story ready" pill status (W1.4, design review 4.1).
+
+    Deliberately boolean-only: this view is served to a pre-child-session
+    picker principal (a device grant, or a guardian who has not yet handed
+    the device to a specific child), which may legitimately list every
+    profile in the family (``api/profiles.py::_listable_profiles``) but must
+    never learn a SIBLING profile's book titles or shelf counts from the
+    picker screen. ``has_new_story`` is the only signal; no
+    ``storybook_id``/``title``/``count`` field is ever added here (see the
+    endpoint docstring for the "new" definition).
+    """
+
+    profile_id: str
+    has_new_story: bool
+
+
+class ProfileStoryStatusListView(BaseModel):
+    """Bulk "new story ready" status for every profile the caller may list.
+
+    One entry per profile ``api/profiles.py::_listable_profiles`` returns for
+    the calling principal, in the same order; a profile the principal cannot
+    list never appears here either (see ``GET /profiles/story-status``).
+    """
+
+    statuses: list[ProfileStoryStatusView]
+
+
 class ProfileCreateBody(BaseModel):
     """A guardian's request to create a child profile."""
 

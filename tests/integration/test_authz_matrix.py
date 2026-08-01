@@ -681,6 +681,11 @@ _ROUTE_SPECS: list[RouteSpec] = [
     ),
     # -- profiles.py ---------------------------------------------------------
     RouteSpec("GET", "/api/v1/profiles", ALL_ROLES),
+    # W1.4: same allowed-role set as GET /profiles by construction -- both
+    # endpoints derive their visible profile set from the identical
+    # api/profiles.py::_listable_profiles helper, so whichever roles may list
+    # profiles at all may also read this boolean-only pill status for them.
+    RouteSpec("GET", "/api/v1/profiles/story-status", ALL_ROLES),
     RouteSpec(
         "POST",
         "/api/v1/profiles",
@@ -1615,4 +1620,20 @@ async def test_device_token_allowed_on_profiles_list(
     """A device grant lists its own family's profiles (200, not 403)."""
     device_token = await mint_device_token(client, seed.guardian_token)
     resp = await client.get("/api/v1/profiles", headers=auth(device_token))
+    assert resp.status_code == 200, resp.text
+
+
+async def test_device_token_allowed_on_profile_story_status(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """W1.4: a device grant reads the picker's story-status pill (200, not 403).
+
+    The picker calls this endpoint pre-child-session, exactly the device-grant
+    scenario ADR-014 phase 2 introduced ``GET /profiles`` for; this pins the
+    same allowance for its story-status sibling.
+    """
+    device_token = await mint_device_token(client, seed.guardian_token)
+    resp = await client.get(
+        "/api/v1/profiles/story-status", headers=auth(device_token)
+    )
     assert resp.status_code == 200, resp.text
