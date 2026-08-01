@@ -3191,6 +3191,78 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cve-2026-63879-cve-2026-64530-cve-2026-64531-linux-libc-dev-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CVE-2026-63879, CVE-2026-64530, CVE-2026-64531 | linux-libc-dev | High
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CVE-2026-63879, CVE-2026-64530, CVE-2026-64531 | linux-libc-dev | High">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#description_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Description
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact-on-this-project_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Impact on This Project
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remediation-plan_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remediation Plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-not-fixed-yet_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Not Fixed Yet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#references_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#resolved-entries" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3905,6 +3977,136 @@ against fresh evidence.</p>
   <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/494">PR #494</a>,
   <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/30580773808">workflow run 30580773808</a></li>
 </ul>
+<h2 id="cve-2026-63879-cve-2026-64530-cve-2026-64531-linux-libc-dev-high">CVE-2026-63879, CVE-2026-64530, CVE-2026-64531 | linux-libc-dev | High<a class="headerlink" href="#cve-2026-63879-cve-2026-64530-cve-2026-64531-linux-libc-dev-high" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CVE ID</strong></td>
+<td>CVE-2026-63879 (no fix), CVE-2026-64530 and CVE-2026-64531 (both fixed in 6.12.100-1)</td>
+</tr>
+<tr>
+<td><strong>Package</strong></td>
+<td>linux-libc-dev (Debian binary package from the <code>linux</code> kernel source package)</td>
+</tr>
+<tr>
+<td><strong>Affected Version</strong></td>
+<td>6.12.96-1+dhi0 (Debian 13 "trixie", DHI mirror build)</td>
+</tr>
+<tr>
+<td><strong>Fixed Version</strong></td>
+<td>Mixed, and this is the first <code>linux-libc-dev</code> entry here that is not uniformly "no fix": Trivy reports 6.12.100-1 for CVE-2026-64530 and CVE-2026-64531, and an empty Fixed Version with status <code>affected</code> for CVE-2026-63879</td>
+</tr>
+<tr>
+<td><strong>Severity</strong></td>
+<td>High (all 3, per Trivy/Aqua feed; <code>Total: 3 (HIGH: 3, CRITICAL: 0)</code>)</td>
+</tr>
+<tr>
+<td><strong>CVSS Score</strong></td>
+<td>Not yet assigned in the scan output for any of the three as of 2026-08-01</td>
+</tr>
+<tr>
+<td><strong>Discovered</strong></td>
+<td>2026-08-01</td>
+</tr>
+<tr>
+<td><strong>Reassessment Due</strong></td>
+<td>2026-09-30</td>
+</tr>
+<tr>
+<td><strong>Blocking Release</strong></td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<h3 id="description_6">Description<a class="headerlink" href="#description_6" title="Permanent link">&para;</a></h3>
+<p>Three kernel defects reported against <code>linux-libc-dev</code>'s tracked kernel source
+version, surfaced by a Trivy vulnerability-database refresh on 2026-08-01. They
+span unrelated subsystems: an AMD GPU DRM fix in <code>amdgpu_hmm_range_get_pages</code>
+(CVE-2026-63879), a use-after-free in the network scheduler via a missing
+handler (CVE-2026-64530), and an Open vSwitch oversized-nested-action rejection
+(CVE-2026-64531).</p>
+<p>This entry supersedes rather than extends the seven-CVE block above: the same
+run that surfaced these three reports them as the image's only remaining
+findings, so that block's seven no longer appear in scan output. The base-image
+version is unchanged at 6.12.96-1+dhi0, so the turnover is a feed change, not an
+image change.</p>
+<p><strong>What is different about this set.</strong> Every prior <code>linux-libc-dev</code> entry in this
+document recorded "No fix available" for every CVE in it. Two of these three
+carry a Fixed Version. That makes this set partly actionable rather than purely
+a wait-for-upstream case: a base-image digest refresh onto a kernel-header build
+at or above 6.12.100-1 clears CVE-2026-64530 and CVE-2026-64531 outright.</p>
+<h3 id="impact-on-this-project_6">Impact on This Project<a class="headerlink" href="#impact-on-this-project_6" title="Permanent link">&para;</a></h3>
+<p>The same structural argument as the three <code>linux-libc-dev</code> entries above, which
+is a statement about what the package <em>is</em> rather than a judgement about
+severity: it ships kernel UAPI headers used at compile time by userspace
+programs, contains no kernel binary, and executes no kernel code at runtime. The
+container serves a FastAPI web application under whatever kernel the Docker host
+provides. Patching or removing this package would not change which kernel
+actually runs.</p>
+<p>Not overstating the case: two of the three name networking subsystems that can
+plausibly exist on a container host rather than exotic hardware, namely
+CVE-2026-64530 (<code>net/sched</code>) and CVE-2026-64531 (<code>net/openvswitch</code>), though
+Docker's default bridge networking does not use Open vSwitch. Neither is
+reachable <em>through this image or this package</em>; if the Docker host runs an
+affected kernel, the remediation is host kernel patching, which is outside this
+repository and unaffected by anything shipped in the image. CVE-2026-63879
+targets AMD GPU hardware this deployment does not use at all. Exposure through
+the application surface is negligible.</p>
+<h3 id="remediation-plan_6">Remediation Plan<a class="headerlink" href="#remediation-plan_6" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Confirm each CVE's status on the <a href="https://security-tracker.debian.org/tracker/source-package/linux">Debian security tracker</a>
+  for the <code>trixie</code> and <code>trixie-security</code> tracks. Unlike the entries above, the
+  Fixed Version recorded here comes from Trivy's feed and has <strong>not</strong> yet been
+  independently verified against Debian; do that before treating 6.12.100-1 as
+  reachable on this release track.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Once <code>linux-libc-dev &gt;= 6.12.100-1</code> reaches the trixie track, request a
+  base-image digest refresh from the <code>ByronWilliamsCPA/container-images</code> mirror
+  pipeline.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Re-run the Container Security scan to confirm CVE-2026-64530 and
+  CVE-2026-64531 have cleared.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Close <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/505">issue #505</a>
+  if its seven CVEs remain absent from scan output.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Tracked in <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/535">issue #535</a></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Reassess by 2026-09-30</li>
+</ul>
+<h3 id="why-not-fixed-yet_6">Why Not Fixed Yet<a class="headerlink" href="#why-not-fixed-yet_6" title="Permanent link">&para;</a></h3>
+<p>For CVE-2026-63879, Trivy reports no fix. For the other two a fix exists
+upstream, but the package is provided by the hardened base image
+(<code>ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13</code>), not managed by this
+project's dependency set, and the DHI runtime image ships no shell and no
+package manager, so it cannot upgrade itself. The only path in is a base-image
+digest refresh from the <code>ByronWilliamsCPA/container-images</code> mirror pipeline,
+which this project consumes rather than controls, and which in turn depends on
+the trixie track carrying 6.12.100-1.</p>
+<p><strong>Why <code>Blocking Release | No</code> on the evidence of 2026-08-01.</strong> The exposure is a
+compile-time header set with no kernel code path in the image, and the running
+kernel is the host's, so holding a release would not reduce exposure; it would
+only stall delivery. This verdict rests on a narrower evidence base than the
+entries above, which is recorded here rather than glossed: the Debian tracker
+was not consulted, so whether 6.12.100-1 is actually reachable on the trixie
+track is unconfirmed. That does not change the reachability argument, which does
+not depend on fix availability, but it is the first thing to check at
+reassessment. Per the Release Gate Policy above this is a dated verdict, not a
+standing exemption: it expires on 2026-09-30, at which point the process gate
+closes the release until the entry is reassessed against fresh evidence.</p>
+<h3 id="references_6">References<a class="headerlink" href="#references_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://avd.aquasec.com/nvd/cve-2026-63879">Aqua AVD CVE-2026-63879</a>
+  (the other 2 follow the same <code>avd.aquasec.com/nvd/&lt;cve-id&gt;</code> URL pattern)</li>
+<li><a href="https://security-tracker.debian.org/tracker/source-package/linux">Debian security tracker: linux</a></li>
+<li>Discovered by the Container Security workflow (Trivy) on
+  <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/529">PR #529</a>,
+  <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/30711029139">workflow run 30711029139</a>.
+  The immediately preceding run on <code>main</code> (16:33 UTC, same day) passed, and the
+  branch changes no dependency, lockfile, or Dockerfile, which is what
+  identifies this as a feed refresh rather than a change introduced by that PR.</li>
+</ul>
 <h2 id="resolved-entries">Resolved Entries<a class="headerlink" href="#resolved-entries" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -4109,7 +4311,7 @@ re-verified rather than carried forward:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 31, 2026 18:11:01 UTC">July 31, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 1, 2026 18:23:21 UTC">August 1, 2026</span>
   </span>
 
     
