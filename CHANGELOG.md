@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.56.0] - 2026-08-01
+
+### Features
+
+- **moderation**: Stage B1 review-model schema, PASS aggregation, and merge stage
+  ([#521](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/521),
+  [`3d7f31c`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/3d7f31c59d193e06c9167bc4e71c94b99979d6b7))
+
+- **moderation**: Structured Stage-1 verdicts, chunked review, retire Stage-2 readability
+  ([#527](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/527),
+  [`e9a4ac3`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/e9a4ac30a119640ab762a4c0c217ccf723992a69))
+
+
 ## [0.55.2] - 2026-07-31
 
 ### Bug Fixes
@@ -2957,6 +2970,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.56.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.55.2...v0.56.0
 [0.55.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.55.1...v0.55.2
 [0.55.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.55.0...v0.55.1
 [0.55.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.54.1...v0.55.0
