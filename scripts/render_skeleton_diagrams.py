@@ -43,6 +43,19 @@ JAR_CACHE = (
     Path.home() / ".cache" / "cyo-adventure" / f"plantuml-{PLANTUML_VERSION}.jar"
 )
 
+# #CRITICAL: data integrity: PlantUML exits 0 and writes a small "error card" SVG
+#            when Graphviz is absent or the source fails to parse, so neither the
+#            return code nor the file's existence proves a diagram was rendered.
+#            Committing such a card silently replaces a real diagram with a ~6 KB
+#            picture of an error message.
+# #VERIFY: reject any rendered SVG carrying one of these markers, in both render
+#          and --check mode, so a corrupt card cannot reach a commit or survive CI.
+SVG_ERROR_MARKERS = (
+    "Cannot find Graphviz",
+    "Dot Executable",
+    "Syntax Error?",
+)
+
 
 def slug_for(path: Path) -> str:
     """Return the diagram slug for a skeleton file (its filename stem)."""
@@ -153,25 +166,56 @@ def resolve_jar() -> Path | None:
     return JAR_CACHE
 
 
-def render_svgs(puml_paths: list[Path], *, jar: Path | None) -> list[Path]:
-    """Render each ``.puml`` to ``.svg`` next to it. Returns rendered SVG paths.
+def svg_error_marker(svg: Path) -> str | None:
+    """Return the error-card marker found in a rendered SVG, or None if it looks real.
 
-    When ``jar`` is None the step is a no-op (returns ``[]``); callers warn rather
-    than fail so the generator still produces committed ``.puml`` source. A
-    missing ``java`` binary or a per-file render failure is likewise degraded to
-    a stderr warning and a partial result rather than an uncaught exception: the
-    jar's SHA-256 is already verified by ``resolve_jar`` before this runs, so a
-    failure here is an environment or input problem, never an unverified execution.
+    Args:
+        svg: Path to a rendered ``.svg``.
+
+    Returns:
+        The first marker from ``SVG_ERROR_MARKERS`` present in the file, the string
+        ``"unreadable"`` if the file cannot be read, or None when the SVG carries no
+        known error-card text.
+    """
+    try:
+        text = svg.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return "unreadable"
+    return next((m for m in SVG_ERROR_MARKERS if m in text), None)
+
+
+def render_svgs(
+    puml_paths: list[Path], *, jar: Path | None
+) -> tuple[list[Path], list[Path]]:
+    """Render each ``.puml`` to ``.svg`` next to it.
+
+    Args:
+        puml_paths: ``.puml`` files to render.
+        jar: SHA-verified PlantUML jar, or None to skip rendering entirely.
+
+    Returns:
+        A ``(rendered, corrupt)`` pair. ``rendered`` holds SVGs that passed the
+        error-card check; ``corrupt`` holds outputs that PlantUML claimed to
+        write successfully but that carry an error marker or never appeared.
+        Callers must treat a non-empty ``corrupt`` list as a failure.
+
+    When ``jar`` is None the step is a no-op; callers warn rather than fail so the
+    generator still produces committed ``.puml`` source. A missing ``java`` binary
+    or a per-file render failure is likewise degraded to a stderr warning and a
+    partial result rather than an uncaught exception: the jar's SHA-256 is already
+    verified by ``resolve_jar`` before this runs, so a failure here is an
+    environment or input problem, never an unverified execution.
     """
     if jar is None or not puml_paths:
-        return []
+        return [], []
     rendered: list[Path] = []
+    corrupt: list[Path] = []
     for puml in puml_paths:
         try:
             # #CRITICAL: external resource: shells out to a subprocess to render SVGs.
             # #VERIFY: jar is SHA-256 verified before this call (see resolve_jar);
             # list-form argv avoids shell injection.
-            subprocess.run(  # nosec B603 B607
+            proc = subprocess.run(  # nosec B603 B607
                 ["java", "-jar", str(jar), "-tsvg", str(puml)],
                 check=True,
                 capture_output=True,
@@ -184,9 +228,27 @@ def render_svgs(puml_paths: list[Path], *, jar: Path | None) -> list[Path]:
             sys.stderr.write(f"PlantUML failed to render {puml}: {stderr}\n")
             continue
         svg = puml.with_suffix(".svg")
-        if svg.is_file():
-            rendered.append(svg)
-    return rendered
+        if not svg.is_file():
+            sys.stderr.write(f"PlantUML reported success but wrote no SVG for {puml}\n")
+            corrupt.append(svg)
+            continue
+        marker = svg_error_marker(svg)
+        if marker is not None:
+            # A zero exit told us nothing; the stack trace PlantUML wrote to stderr
+            # is the only diagnostic, and it is worthless unless surfaced here.
+            detail = (
+                proc.stderr.decode("utf-8", errors="replace") if proc.stderr else ""
+            )
+            sys.stderr.write(
+                f"PlantUML wrote an error card instead of a diagram: {svg}\n"
+                f"  marker: {marker!r}\n"
+                f"  install Graphviz (`dot`) and re-run, then discard the bad SVG\n"
+                + (f"  PlantUML stderr:\n{detail}\n" if detail else "")
+            )
+            corrupt.append(svg)
+            continue
+        rendered.append(svg)
+    return rendered, corrupt
 
 
 def regenerate_catalog(skeletons_dir: Path, catalog_path: Path) -> str:
@@ -211,6 +273,28 @@ def regenerate_catalog(skeletons_dir: Path, catalog_path: Path) -> str:
     region = build_catalog_region(skeletons, slugs=slugs)
     doc = catalog_path.read_text(encoding="utf-8")
     return splice_region(doc, region)
+
+
+def check_committed_svgs(mapping: dict[Path, str]) -> list[tuple[Path, str]]:
+    """Return committed SVGs that are PlantUML error cards rather than diagrams.
+
+    Args:
+        mapping: The ``.puml`` path to content mapping produced by ``generate_puml``.
+
+    Returns:
+        ``(path, marker)`` pairs for every sibling ``.svg`` carrying an error marker.
+        Missing SVGs are not reported: rendering is optional (``--no-svg``), so
+        absence is a legitimate state while corruption never is.
+    """
+    corrupt: list[tuple[Path, str]] = []
+    for puml in mapping:
+        svg = puml.with_suffix(".svg")
+        if not svg.is_file():
+            continue
+        marker = svg_error_marker(svg)
+        if marker is not None:
+            corrupt.append((svg, marker))
+    return corrupt
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -248,6 +332,15 @@ def main(argv: list[str] | None = None) -> int:
                 + "\n"
             )
             return 1
+        corrupt = check_committed_svgs(mapping)
+        if corrupt:
+            sys.stderr.write(
+                "Committed SVGs are PlantUML error cards, not diagrams. Install"
+                " Graphviz (`dot`), re-run the generator, and commit the result:\n"
+                + "\n".join(f"  {p} ({marker})" for p, marker in corrupt)
+                + "\n"
+            )
+            return 1
         sys.stdout.write(
             f"All {len(mapping)} skeleton diagrams and the catalog are up to date.\n"
         )
@@ -268,8 +361,14 @@ def main(argv: list[str] | None = None) -> int:
             )
             sys.stderr.write(_msg)
         else:
-            rendered = render_svgs(written, jar=jar)
+            rendered, corrupt = render_svgs(written, jar=jar)
             sys.stdout.write(f"Rendered {len(rendered)} .svg file(s).\n")
+            if corrupt:
+                sys.stderr.write(
+                    f"{len(corrupt)} SVG(s) rendered as error cards; see above."
+                    " Revert them (git checkout) rather than committing.\n"
+                )
+                return 1
     return 0
 
 
