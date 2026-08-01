@@ -8,10 +8,11 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, date, datetime, timedelta
+from unittest.mock import patch
 
 import pytest
-from structlog.testing import capture_logs
 
+from cyo_adventure.api import progress as progress_module
 from cyo_adventure.api.deps import Principal
 from cyo_adventure.api.progress import (
     _build_current_version_facts,
@@ -415,6 +416,20 @@ class TestBuildCurrentVersionFacts:
     ending_count``) logs its own degrade and documents that it does.
     """
 
+    # These patch the module's ``_logger`` rather than using
+    # ``structlog.testing.capture_logs``. capture_logs is NOT reliable here:
+    # ``utils/logging.py`` configures structlog with
+    # ``cache_logger_on_first_use=True``, so once any earlier test in the
+    # session causes this module's ``_logger`` to bind, it holds the real
+    # processor chain forever and a later ``capture_logs()`` (which only swaps
+    # the configured processors) silently observes nothing. That failure mode
+    # is order-dependent and therefore invisible to a single-file run: the
+    # first draft of these tests passed alone and on the whole file, and
+    # failed only in the full suite, reporting an empty capture while pytest's
+    # own "Captured log call" section showed the log had in fact been emitted.
+    # A spy asserts the call itself, needs no global state, and pins the exact
+    # keyword arguments rather than just the event name.
+
     @staticmethod
     def _version(book_id: str, version: int) -> StorybookVersion:
         return StorybookVersion(
@@ -431,17 +446,15 @@ class TestBuildCurrentVersionFacts:
         book = Storybook(id="story-a", family_id=uuid.uuid4())
         book.current_published_version = None
 
-        with capture_logs() as logs:
+        with patch.object(progress_module, "_logger") as logger:
             totals, titles = _build_current_version_facts({"story-a": book}, {})
 
         assert totals == {}
         assert titles == {}
-        assert [
-            entry
-            for entry in logs
-            if entry["event"] == "progress_book_has_no_published_version"
-            and entry["storybook_id"] == "story-a"
-        ]
+        logger.info.assert_called_once_with(
+            "progress_book_has_no_published_version", storybook_id="story-a"
+        )
+        logger.warning.assert_not_called()
 
     def test_dangling_pinned_version_logs_a_warning(self) -> None:
         """A pin pointing at a row that is not there is not routine.
@@ -454,20 +467,19 @@ class TestBuildCurrentVersionFacts:
         book = Storybook(id="story-a", family_id=uuid.uuid4())
         book.current_published_version = 7
 
-        with capture_logs() as logs:
+        with patch.object(progress_module, "_logger") as logger:
             totals, titles = _build_current_version_facts({"story-a": book}, {})
 
         assert totals == {}
         assert titles == {}
-        warnings = [
-            entry
-            for entry in logs
-            if entry["event"] == "progress_pinned_version_row_missing"
-        ]
-        assert warnings, "the dangling pin must be reported, not swallowed"
-        assert warnings[0]["log_level"] == "warning"
-        assert warnings[0]["storybook_id"] == "story-a"
-        assert warnings[0]["version"] == 7
+        # warning, not info: the severity split is the point of this test, so
+        # asserting the method is as load-bearing as asserting the fields.
+        logger.warning.assert_called_once_with(
+            "progress_pinned_version_row_missing",
+            storybook_id="story-a",
+            version=7,
+        )
+        logger.info.assert_not_called()
 
     def test_a_resolvable_book_logs_nothing_and_still_resolves(self) -> None:
         """The negative half, so the logging cannot become unconditional.
@@ -479,14 +491,15 @@ class TestBuildCurrentVersionFacts:
         book = Storybook(id="story-a", family_id=uuid.uuid4())
         book.current_published_version = 1
 
-        with capture_logs() as logs:
+        with patch.object(progress_module, "_logger") as logger:
             totals, titles = _build_current_version_facts(
                 {"story-a": book}, {("story-a", 1): self._version("story-a", 1)}
             )
 
         assert totals == {"story-a": 2}
         assert titles == {"story-a": "Story A"}
-        assert logs == []
+        logger.info.assert_not_called()
+        logger.warning.assert_not_called()
 
 
 @pytest.mark.unit
