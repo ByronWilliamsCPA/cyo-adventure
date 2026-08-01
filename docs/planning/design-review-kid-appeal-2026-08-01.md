@@ -396,6 +396,10 @@ treat "corpus entry included" as review policy for player changes.
    as "ship it or downgrade").
 4. `13-16/the-sunken-temple` and `13-16/the-harrowstone-keep` are structurally identical; the
    catalog counts should treat them as one tree until one is re-derived.
+5. ADR-011 cites `docs/planning/research/` as the home of its empirical basis (JHM 2019 and the
+   four-source reconciliation); that directory does not exist in the repo. The underlying data is
+   unrecoverable from the repository as committed; fix the citation or commit the research notes
+   (found 2026-08-01 during the D1 research review, section 8).
 
 ---
 
@@ -452,7 +456,97 @@ Consequence: D1 cannot be a retroactive hard rule without voiding the catalog; i
 calibration questions A1-A5 below answered, and it likely requires an ADR-011 amendment on the
 words-per-node side (whichever way A4 lands).
 
-### Open questions for the owner
+### Decisions recorded 2026-08-01 (second round, answering the sheet below)
+
+| ID | Decision (owner, 2026-08-01) | Answers |
+|---|---|---|
+| D2 | Choice depth varies by band: lower bands may use flavor choices (reconverging targets, no real consequences); older bands require more consequential, distinct-target choices with fewer flavor choices. Loop-back routes are allowed. | A1, A5 |
+| D3 | Existing 61 skeletons are grandfathered for now but must be phased out; new content meets the choice rule. Deprecation mechanics open (Q3 below). | A2, A3 |
+| D4 | "Your story is ready" reaches the kid in-app only; no web/PWA push channel. | C1 |
+| D5 | A tone axis is approved for child requests; the per-band tone vocabulary still needs definition (Q4 below). | C3 |
+| D6 | Gamification is in scope, and broadly: collection mechanics, badges, and streaks are all included. | D2 (gamification) |
+| D7 | Media (art, audio) ship as optional built-in format fields; budgets are set by balancing Supabase free storage and R2 capacity against reasonable offline download sizes. Any sound feature requires a mute control. | E1, E2 |
+| D8 | POV (second person, "you are the hero") is to be available in all bands. | E3 |
+| D9 | The additive-minor format-evolution policy is approved: ratified as [ADR-025](adr/adr-025-additive-storybook-schema-versioning.md) (Accepted 2026-08-01). | F1 |
+
+### Research review: D1 versus ADR-011 (2026-08-01)
+
+The owner asked how the initial research handles choice-per-node versus words-per-node. Findings:
+
+1. **ADR-011 locks constants that conflict with D1 as literally stated.** Section 6 fixes
+   "decisions per path ~4-8 (length adds breadth, not depth; do not inflate); choices per decision
+   2-3; setup before first choice ~2-3 nodes," and section 4 mandates that fastest-finish substance
+   "is added with mandatory **linear passages**, not extra decisions." The linear passage (1 to 1)
+   is a first-class flow primitive in section 7. The empirical anchor is JHM 2019: 40 classic
+   printed CYOA books (ages 9-12), ~5 decisions per playthrough, substance carried between
+   decisions by linear pages.
+2. **The conflict is presentational, which suggests the reconciliation.** In a printed book a
+   linear passage is continuous prose the reader flows through; our app renders each linear node as
+   a discrete screen ending in a "Continue" tap, which is what makes 69% of stops choiceless. The
+   graph shape matches the researched genre; the node-equals-screen rendering does not match the
+   researched reading experience. The candidate reconciliation is therefore: keep linear beats in
+   the graph (preserving ADR-011's researched constants and the words-per-node ceilings), and make
+   the renderer flow consecutive single-choice nodes into one scrollable passage so that **every
+   stop a child makes ends in a choice**, which satisfies D1's intent. D2's band grading then
+   applies to the choices themselves, not to a per-node quota.
+3. **The research base is print-only and 9-12-only.** JHM 2019 measured printed books for ages
+   9-12; 3-5 and 16+ are explicitly product-defined, and no source addresses digital tap pacing,
+   flavor-choice tolerance by age, or screen-length norms. A dedicated external research pass on
+   digital choice pacing for children was dispatched 2026-08-01; its findings will be appended to
+   this document and should inform the per-band grammar (Q2) before ADR-011 is amended.
+4. **Broken citation found**: ADR-011 cites `docs/planning/research/` as the home of the empirical
+   basis; that directory does not exist in the repo. The nearest on-topic documents are
+   `cyoa-book-benchmark-comparison.md` and `pathfinder-structure-exploration.md`, neither of which
+   contains the JHM 2019 data. Either the research files were never committed or the path is stale;
+   this needs correcting in ADR-011 (added to section 6 as item 5).
+
+### Remaining decisions before an implementation plan can be built
+
+- **Q1. Ratify the D1 reconciliation.** Adopt render-time flow of linear passages (every stop ends
+  in a choice; graph keeps linear beats; ADR-011 constants stand) versus amend ADR-011 to require
+  choices on every node (voids the researched shape, changes generation budgets). Recommended:
+  render-time flow, pending the external research findings. Whichever way, this is a new ADR
+  (player semantics change) plus conformance-corpus work.
+- **Q2. Approve the per-band choice grammar numbers** implementing D2. A concrete,
+  validator-expressible table needs owner sign-off, for each band: options per choice (2-3 per
+  research), allowed flavor-choice share, required consequential-choice count (Tier-2 gated at
+  which bands), loop-back allowance, and (if Q1 lands on render-flow) max words per rendered stop.
+  The dispatched research pass feeds this; a draft table belongs in the implementation plan.
+- **Q3. Deprecation mechanics for the grandfathered catalog** (D3): marker (`production_eligible`
+  flip versus a new `deprecated` flag with a reason), effect (excluded from new generation and new
+  assignment while already-published books stay readable), and the retirement trigger (per cell,
+  once N compliant skeletons exist, or a date). Also: are the 23 committed fills imported under
+  grandfather status (`UW-G14`), or held to the new rule?
+- **Q4. The tone vocabulary per band** (D5). Proposal to approve or edit: gentle / funny /
+  exciting at every band; add "a little spooky" from 8-11; add "scary" and "sad" from 13-16.
+  Screening still caps tone by the band's content-flag ceilings regardless of request.
+- **Q5. Gamification shape** (D6). (a) Streak definition: consecutive calendar days versus
+  reading-days-per-week with grace, and whether a lapsed streak resets visibly (pressure) or
+  quietly. (b) Badge taxonomy seed set (first book, every ending in a book, N books, first
+  request, series complete). (c) Surfaces: library, profile picker, both. (d) Guardian per-profile
+  off-switch for streaks? (e) Compliance check: engagement mechanics in a child-directed app get
+  App Store Kids Category and COPPA scrutiny; fold into the ADR-018 counsel bundle (`UW-M03`).
+  All data stays first-party per ADR-018; new tables carry the standing four-artifact tax.
+- **Q6. Media budgets** (D7). Numbers to set: per-book offline download ceiling per band
+  (reference points: story blobs are ~100-400KB gzipped; covers are 800px WebP at a ~256KB
+  ceiling; a fully-illustrated 3-5 book at 10-23 nodes and ~500px art lands roughly 1-3MB).
+  Whether UI sounds ship app-bundled (no storage cost, one-time download) versus per-story audio
+  (R2 storage and per-book size); mute scope (global toggle versus per-profile persisted, and
+  default on or off). Current storage facts: covers live on Cloudflare R2 (S3 API); Supabase holds
+  Postgres only, so media budget planning is primarily an R2 and download-size question, not a
+  Supabase one.
+- **Q7. POV operationalization** (D8). "Available in all bands" needs one of: (a) second person
+  becomes the rule everywhere (drafting guide as written, kid-band corpus is out of spec and gets
+  refilled or phased out with D3), or (b) a per-story `pov` field (second or third person) with a
+  band default, letting both exist. (b) requires a schema minor (now cheap via ADR-025) and
+  fill-gate enforcement of consistency. Owner intent reads as (a)-leaning ("I wanted POV available
+  in all bands"); confirm, and decide the existing-fills remedy.
+- **Q8. Sequencing.** Which of the above land in the Content workstream versus Phase 4b, and
+  whether the naive-user session (`UW-M02`) runs before the request-page and choice-grammar
+  changes ship, per the standing gate in `handoff-s5-reader-ux-remaining-2026-07-26.md`.
+
+The original question sheet (first round) is preserved below for the record; struck items were
+answered by the decisions table above.
 
 **A. Calibrating D1 (choice density)**
 
