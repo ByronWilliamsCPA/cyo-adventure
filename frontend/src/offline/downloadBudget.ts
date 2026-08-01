@@ -181,9 +181,28 @@ async function estimateUsage(): Promise<StorageEstimate | null> {
   }
   try {
     const estimate = await storage.estimate()
-    if (typeof estimate.usage !== 'number') return null
+    if (typeof estimate.usage !== 'number') {
+      // #EDGE: browser-compat: StorageManager exists but reports no numeric
+      // usage. Same fail-open as the missing-API branch, and same reason: a
+      // budget cannot be enforced against a number we do not have.
+      return null
+    }
     return { usage: estimate.usage, quota: estimate.quota }
-  } catch {
+  } catch (error) {
+    // #EDGE: external resources: an API that EXISTS and then throws is a
+    // different case from the two above, and it was the only one of the three
+    // arriving with no rationale and no trace. Returning null is still the
+    // right call (`checkDownloadBudget` maps null to `{ allowed: true }`, so
+    // this disables the entire D20 budget: no soft cap, no eviction, no
+    // refusal), because blocking a child's downloads over a failed
+    // MEASUREMENT would trade a possible quota error for a certain broken
+    // feature. What was wrong was doing it invisibly: `db.ts` already logs
+    // when `checkDownloadBudget` throws, but swallowing here means that log
+    // can never fire, so a browser whose estimate() rejects reads exactly
+    // like a browser comfortably under budget. Log, then fail open.
+    console.warn('[offline] storage estimate failed; download budget disabled', {
+      error,
+    })
     return null
   }
 }

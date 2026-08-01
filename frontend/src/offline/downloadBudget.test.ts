@@ -87,6 +87,42 @@ describe('checkDownloadBudget', () => {
     expect(result).toEqual({ allowed: true })
   })
 
+  it('fails open but logs when storage.estimate() rejects', async () => {
+    // The distinction the untested `catch` erased: a browser whose estimate()
+    // throws produced byte-for-byte the same result as a browser sitting
+    // comfortably under budget, so the entire D20 budget could be off with
+    // nothing anywhere saying so. `db.ts` does log when checkDownloadBudget
+    // throws, but the swallow here guarantees that log never fires. Failing
+    // open is still correct; failing open in silence is not.
+    Object.defineProperty(navigator, 'storage', {
+      configurable: true,
+      value: { estimate: vi.fn().mockRejectedValue(new Error('estimate boom')) },
+    })
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    const result = await checkDownloadBudget('story-1', 500 * MB, ['other'])
+
+    // 500MB is past the HARD cap, so this is the case the budget would
+    // otherwise refuse outright: proof that the null really does bypass every
+    // band of the gate rather than just the soft one.
+    expect(result).toEqual({ allowed: true })
+    expect(warn).toHaveBeenCalledOnce()
+    warn.mockRestore()
+  })
+
+  it('does not log when the estimate succeeds', async () => {
+    // Pins the warn to the failure path only. Without it, hoisting the log
+    // out of the catch leaves the test above green while every download on
+    // every healthy browser writes a console warning.
+    mockStorageEstimate(100 * MB)
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    await checkDownloadBudget('story-1', 10 * MB, ['other'])
+
+    expect(warn).not.toHaveBeenCalled()
+    warn.mockRestore()
+  })
+
   it('allows without eviction when projected usage stays under the 250MB soft cap', async () => {
     mockStorageEstimate(100 * MB)
     const result = await checkDownloadBudget('story-1', 10 * MB, ['other'])

@@ -54,6 +54,7 @@ from cyo_adventure.progress.badges import compute_progress
 from cyo_adventure.progress.blob import book_title, ending_count, ending_valence_map
 from cyo_adventure.progress.models import BookFacts
 from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     import uuid
@@ -63,6 +64,8 @@ if TYPE_CHECKING:
 
     from cyo_adventure.api.deps import Principal
     from cyo_adventure.progress.models import ProgressFacts
+
+_logger = get_logger(__name__)
 
 # #ASSUME: security: every route on this router runs _require_child_profile,
 # which raises AuthorizationError for a non-child principal; app.py maps that
@@ -338,7 +341,7 @@ async def get_my_progress(
         # exactly the wrong default. This is also what the #EDGE note above
         # already claims the whole module does (degrade to the least-pressuring
         # settings); the ring obeyed it via _UNKNOWN_BAND, this did not.
-        # #VERIFY: tests/unit/test_progress_api.py::
+        # #VERIFY: tests/unit/test_progress_api_unit.py::
         # test_missing_profile_row_resolves_time_capture_to_paused.
         time_capture_paused=(
             profile_row.time_capture_paused if profile_row is not None else True
@@ -413,15 +416,44 @@ def _build_ending_valence(
 def _build_current_version_facts(
     books: dict[str, Storybook], versions: dict[tuple[str, int], StorybookVersion]
 ) -> tuple[dict[str, int], dict[str, str]]:
-    """Return (ending_total_by_book, book_titles) from each book's pinned version."""
+    """Return (ending_total_by_book, book_titles) from each book's pinned version.
+
+    # #ASSUME: data integrity: a book absent from the returned mapping reads
+    # downstream as a total of 0 (``badges.py`` uses ``.get(id, 0)``), and
+    # badges are recomputed from scratch on every request with nothing
+    # persisted. So a book whose pinned version cannot be resolved does not
+    # merely lose a number: ``every_path_walked`` and the "walked every path"
+    # badge both go from earned to unearned for as long as the condition
+    # lasts, and a child sees a badge they already collected disappear. The
+    # ``> 0`` guard in ``badges.py`` makes the DIRECTION safe (a missing total
+    # can never falsely award), which is why this degrades rather than raises.
+    # Both skips below are now logged, matching ``progress/blob.py``, which
+    # logs its own malformed-blob degrade rather than swallowing it.
+    # #VERIFY: tests/unit/test_progress_api_unit.py::
+    # test_book_with_an_unresolvable_pinned_version_is_skipped_and_logged.
+    """
     ending_total_by_book: dict[str, int] = {}
     book_titles: dict[str, str] = {}
     for book_id, book in books.items():
         pinned_version = book.current_published_version
         if pinned_version is None:
+            # Ordinary for a book that has never published; noisy only if it
+            # happens for a book the child has a completion against, which is
+            # exactly the case worth seeing in the log.
+            _logger.info(
+                "progress_book_has_no_published_version",
+                storybook_id=book_id,
+            )
             continue
         pinned_row = versions.get((book_id, pinned_version))
         if pinned_row is None:
+            # Not ordinary: the book points at a version row that was not
+            # loaded, which means the pin is dangling or the query missed it.
+            _logger.warning(
+                "progress_pinned_version_row_missing",
+                storybook_id=book_id,
+                version=pinned_version,
+            )
             continue
         ending_total_by_book[book_id] = ending_count(
             pinned_row.blob, book_id, pinned_version

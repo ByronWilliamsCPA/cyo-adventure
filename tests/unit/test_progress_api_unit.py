@@ -10,9 +10,11 @@ import uuid
 from datetime import UTC, date, datetime, timedelta
 
 import pytest
+from structlog.testing import capture_logs
 
 from cyo_adventure.api.deps import Principal
 from cyo_adventure.api.progress import (
+    _build_current_version_facts,
     _build_found_endings,
     _reading_day_totals,
     _require_child_profile,
@@ -397,6 +399,94 @@ def test_found_ending_title_strips_sentinels() -> None:
     title = found_endings_by_book["story-a"][0].title
     assert "{~" not in title
     assert "Explorer" in title
+
+
+@pytest.mark.unit
+class TestBuildCurrentVersionFacts:
+    """The two skips in ``_build_current_version_facts``.
+
+    A skipped book is absent from ``ending_total_by_book``, which
+    ``progress/badges.py`` reads with ``.get(id, 0)``. Badges are recomputed
+    from scratch per request with nothing persisted, so a book that drops out
+    here does not merely lose a number: the child watches an already-collected
+    badge disappear. That makes "which book, and why" the thing the log has to
+    say, and until this change it said nothing at all: the module had no
+    logger, while the sibling helper it calls (``progress/blob.py::
+    ending_count``) logs its own degrade and documents that it does.
+    """
+
+    @staticmethod
+    def _version(book_id: str, version: int) -> StorybookVersion:
+        return StorybookVersion(
+            storybook_id=book_id,
+            version=version,
+            blob={
+                "title": "Story A",
+                "metadata": {"ending_count": 2},
+                "nodes": [],
+            },
+        )
+
+    def test_unpublished_book_is_skipped_and_logged(self) -> None:
+        book = Storybook(id="story-a", family_id=uuid.uuid4())
+        book.current_published_version = None
+
+        with capture_logs() as logs:
+            totals, titles = _build_current_version_facts({"story-a": book}, {})
+
+        assert totals == {}
+        assert titles == {}
+        assert [
+            entry
+            for entry in logs
+            if entry["event"] == "progress_book_has_no_published_version"
+            and entry["storybook_id"] == "story-a"
+        ]
+
+    def test_dangling_pinned_version_logs_a_warning(self) -> None:
+        """A pin pointing at a row that is not there is not routine.
+
+        Distinct severity from the case above on purpose: a book that has
+        never published is ordinary, whereas a book pinned to a version the
+        query did not return means the pin is dangling or the load is
+        incomplete, and that is a data-integrity signal rather than a state.
+        """
+        book = Storybook(id="story-a", family_id=uuid.uuid4())
+        book.current_published_version = 7
+
+        with capture_logs() as logs:
+            totals, titles = _build_current_version_facts({"story-a": book}, {})
+
+        assert totals == {}
+        assert titles == {}
+        warnings = [
+            entry
+            for entry in logs
+            if entry["event"] == "progress_pinned_version_row_missing"
+        ]
+        assert warnings, "the dangling pin must be reported, not swallowed"
+        assert warnings[0]["log_level"] == "warning"
+        assert warnings[0]["storybook_id"] == "story-a"
+        assert warnings[0]["version"] == 7
+
+    def test_a_resolvable_book_logs_nothing_and_still_resolves(self) -> None:
+        """The negative half, so the logging cannot become unconditional.
+
+        Without this, moving either call out of its branch (or dropping the
+        ``continue``s entirely) leaves both tests above green while every
+        healthy book emits a spurious warning on every single request.
+        """
+        book = Storybook(id="story-a", family_id=uuid.uuid4())
+        book.current_published_version = 1
+
+        with capture_logs() as logs:
+            totals, titles = _build_current_version_facts(
+                {"story-a": book}, {("story-a", 1): self._version("story-a", 1)}
+            )
+
+        assert totals == {"story-a": 2}
+        assert titles == {"story-a": "Story A"}
+        assert logs == []
 
 
 @pytest.mark.unit
