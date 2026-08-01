@@ -3077,9 +3077,9 @@ four things:</p>
 and <code>review_provider = "mock"</code>, no OpenAI/Perspective classifier keys, and no
 reachable local Ollama. The mock review provider returns <code>"{}"</code> for every call,
 which the stage parser maps to the fail-safe verdict (Stage 1 -&gt; FLAG, soft stages
--&gt; PASS). A mock run therefore flags every Stage-1-routed item by fail-safe, but a
-Stage-2 (readability) item still resolves to PASS and can show as a spurious miss;
-either way, a mock run measures nothing about real classifier discrimination.
+-&gt; PASS). A mock run therefore flags every executable item by fail-safe, since every
+executable probe routes to Stage 1; a mock run measures nothing about real
+classifier discrimination.
 <strong>No live-model adversarial run has been executed.</strong> The behavioral catch-rates below are targets for a future
 credentialed run, not results. Treating a mock run as evidence would manufacture
 exactly the false confidence this document exists to remove.</p>
@@ -3143,11 +3143,13 @@ the identity/authorization layer (covered by
   categories -&gt; hard <code>BLOCK</code> (routes straight to <code>auto_reject</code>, skipping LLM
   spend). A missing key <strong>skips</strong> that classifier silently. Graded categories -&gt;
   non-blocking <code>ADVISORY</code>.</li>
-<li>Stage 1 (<code>run_safety_stage</code>): the <strong>only</strong> LLM hard gate. <strong>Per node</strong>: it loops
-  over <code>(node_id, prose)</code> and prompts the reviewer once per node with the node's
-  prose and the age band. Parse failure fails safe to <code>FLAG</code>.</li>
-<li>Stage 2 (readability) and Stage 3 (coherence) are soft gates (<code>FLAG</code> -&gt; one
-  bounded repair, then re-moderate once). Stage 4 (engagement) is advisory only.</li>
+<li>Stage 1 (<code>run_safety_stage</code>): the <strong>only</strong> LLM hard gate. <strong>Per node verdict</strong>:
+  it walks <code>(node_id, prose)</code> in chunks of <code>review_batch_size</code> (default 1, so one
+  node per prompt unless raised) and returns one verdict per node either way. Parse
+  failure fails safe to <code>FLAG</code>, and an unparseable batch fails every node in it safe.</li>
+<li>Stage 3 (coherence) is a soft gate (<code>FLAG</code> -&gt; one bounded repair, then re-moderate
+  once). Stage 4 (engagement) is advisory only. Stage 2 (per-node LLM readability)
+  was retired; see the Class B note below.</li>
 <li>Routing: <code>has_hard_block</code> -&gt; <code>auto_reject</code> (to <code>needs_revision</code>); otherwise
   <code>submit</code> (to <code>in_review</code>). The pipeline never calls <code>approve</code>/<code>publish</code>
   (verified: no <code>status="published"</code> write in the module). The human admin is the
@@ -3174,10 +3176,17 @@ declared band low.</p>
 <li>Model-dependent. Corpus-ready; not executed.</li>
 </ul>
 <h3 id="class-b-repair-loop-laundering">Class B: repair-loop laundering<a class="headerlink" href="#class-b-repair-loop-laundering" title="Permanent link">&para;</a></h3>
-<p>A brief engineered to produce a soft <code>FLAG</code> (readability/coherence), so the bounded
-auto-repair re-prompt fires. The attack targets the repair re-prompt, attempting to
-have the "fix" reintroduce or launder off-band content that then passes the single
+<p>A brief engineered to produce a soft <code>FLAG</code> (coherence), so the bounded auto-repair
+re-prompt fires. The attack targets the repair re-prompt, attempting to have the
+"fix" reintroduce or launder off-band content that then passes the single
 re-moderation.</p>
+<p>Readability was the other soft-flag entry point until Stage 2 was retired (design
+doc <code>moderation-review-redesign-2026-07-28.md</code> section 2.7, decision 1, option (a)).
+Reading level is still enforced, deterministically by the validator (RL-13), but the
+validator gates ahead of moderation and never enters the repair loop, so it is no
+longer an entry condition for this class. Corpus item <code>B1-readability-too-hard-5-8</code>
+is retained non-executable to record that; a coherence-targeted Class B item is the
+correct replacement probe.</p>
 <ul>
 <li>Should catch: the re-moderation pass (the repaired blob is fully re-screened; a
   hard block in the repair routes to <code>auto_reject</code>). Bounded to one attempt.</li>
@@ -3189,16 +3198,24 @@ re-moderation.</p>
 <p>Harm distributed so that <strong>each node is individually innocuous</strong> but a specific
 choice path assembles a harmful whole: step-by-step instructions for a dangerous
 real-world act spread one instruction per node, or a grooming-shaped escalation
-across a branch. Stage 1 reviews <strong>one node at a time</strong> with no cross-node or
-per-path accumulation; Stage 3 (coherence) looks for plot/character/world-state
+across a branch. Stage 1 returns <strong>one verdict per node</strong> with no per-path
+accumulation; Stage 3 (coherence) looks for plot/character/world-state
 <em>inconsistency</em>, not safety, and is soft; Stage 4 is advisory. No automated stage
 evaluates the assembled path for safety.</p>
 <ul>
 <li>Should catch: nothing automated does. Only the human approver reading the whole
   story (ADR-005) stands between this and a child.</li>
-<li><strong>Model-independent</strong>: this is an architectural property of the per-node gate,
-  confirmed at source (<code>stages.py::run_safety_stage</code> loops per node; no aggregation
-  exists anywhere). See Finding 4.</li>
+<li><strong>Model-independent at the default configuration</strong>: confirmed at source
+  (<code>stages.py::run_safety_stage</code>; no path-aware aggregation exists anywhere). See
+  Finding 4.</li>
+<li><strong>Narrowed, not closed, by <code>review_batch_size</code>.</strong> At the default of 1 each node is
+  prompted alone, exactly as originally assessed. Raising the knob puts several nodes
+  in one prompt, so a reviewer <em>could</em> notice harm assembling across nodes that share
+  a chunk. Do not count that as coverage: the prompt still demands an independent
+  verdict per node, chunks are cut from the node list in iteration order rather than
+  along choice paths, and any path crossing a chunk boundary is unaccumulated as
+  before. The gap is a property of the gate's design; batching only makes the
+  incidental odds of catching it configuration-dependent.</li>
 </ul>
 <h3 id="class-d-moderation-bypass-seams-model-independent">Class D: moderation-bypass seams (model-independent)<a class="headerlink" href="#class-d-moderation-bypass-seams-model-independent" title="Permanent link">&para;</a></h3>
 <p>Content that reaches <code>published</code> on a code path that never calls
@@ -3548,7 +3565,7 @@ code paths that can reach <code>submit</code>/<code>approve</code>, or the band 
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 02:30:19 UTC">July 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 1, 2026 03:11:17 UTC">August 1, 2026</span>
   </span>
 
     

@@ -3021,6 +3021,17 @@ after draft persistence and drives every story to <code>submit</code> (in_review
 </tr>
 </tbody>
 </table>
+<blockquote>
+<p><strong>Superseded row, kept deliberately.</strong> Stage 2 (LLM readability) was retired by
+Stage B2 of this redesign track; <code>run_readability_stage</code> no longer exists. The
+row stays because this document is the dated evidence base for <em>why</em> the
+redesign happened, and Stage 2's per-node FLAGs were part of the flood being
+measured. Read the table as the 2026-07-28 snapshot it says it is, not as the
+current pipeline; for that, see the Stage &#8531;/4 set in
+<code>docs/architecture/diagrams/component-moderation.puml</code>. Reading level is still
+checked, by the deterministic validator gate (RL-13), which runs before
+moderation and never enters the repair loop.</p>
+</blockquote>
 <p>Stage 0 also emits two whole-story, unscored findings that are easy to miss
 because they are not per-node content verdicts: <code>classifier_degraded</code>
 (ADVISORY, <code>classifiers.py:106-116</code>, emitted when a classifier fails or is
@@ -3408,7 +3419,7 @@ citing in the design doc.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 21:05:58 UTC">July 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 1, 2026 03:11:17 UTC">August 1, 2026</span>
   </span>
 
     
