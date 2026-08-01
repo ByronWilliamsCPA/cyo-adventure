@@ -29,7 +29,7 @@ from cyo_adventure.api.schemas import (
     error_responses,
 )
 from cyo_adventure.core.exceptions import AuthorizationError, ValidationError
-from cyo_adventure.db.models import ReadingActivityDay
+from cyo_adventure.db.models import ChildProfile, ReadingActivityDay
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -198,7 +198,25 @@ async def flush_reading_time(
     now = datetime.now(UTC)
     _validate_activity_date(body.date, now)
 
+    # #CRITICAL: security: time_capture_paused is a guardian privacy toggle
+    # ("families who want none of it recorded"), so it must hold server-side,
+    # not only in the client accumulator: a stale or offline client that
+    # missed the settings change still gets its flush discarded here. The
+    # discard returns the bucket's current (or zero) state rather than an
+    # error so queued offline flushes drain without retry loops.
+    # #VERIFY: tests/unit/test_reading_time_api_unit.py::
+    # test_paused_profile_flush_is_discarded.
+    profile = await session.get(ChildProfile, profile_id)
     row = await session.get(ReadingActivityDay, (profile_id, body.date))
+    if profile is not None and profile.time_capture_paused:
+        _logger.info(
+            "reading_time_flush_discarded_paused", profile_id=str(profile_id)
+        )
+        if row is not None:
+            return _to_view(row)
+        return ReadingActivityDayView(
+            activity_date=body.date, active_seconds=0, updated_at=now
+        )
     # #ASSUME: concurrency: single-slot idempotency, matching
     # db/models.py::ReadingActivityDay's own #ASSUME -- a replay of the LAST
     # applied flush_id is a no-op; a client that single-flights retries

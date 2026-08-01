@@ -181,12 +181,21 @@ export function ReaderPage({
   // settings fetch never silently stops a session's reading time from
   // accruing; it only ever turns capture OFF once the real setting is known.
   const [timeCapturePaused, setTimeCapturePaused] = useState(false)
+  // Badge toasts follow the guardian's badges_enabled toggle (G19): off
+  // suppresses the toast while awards still compute server-side, per the
+  // gamification recommendation's controls table. Defaults true (show) and
+  // only ever turns off once the real setting is known, mirroring the
+  // capture toggle's fail-open-for-celebration posture above.
+  const badgesEnabledRef = useRef(true)
   useEffect(() => {
     let cancelled = false
     progressApi
       .getProgress()
       .then((progress) => {
-        if (!cancelled) setTimeCapturePaused(progress.settings.time_capture_paused)
+        if (!cancelled) {
+          setTimeCapturePaused(progress.settings.time_capture_paused)
+          badgesEnabledRef.current = progress.settings.badges_enabled
+        }
       })
       .catch((error: unknown) => {
         // Best-effort: a failed settings fetch must never block reading;
@@ -215,6 +224,7 @@ export function ReaderPage({
   const checkForNewBadge = useCallback(
     async (badgesBefore: Promise<Set<string>>) => {
       try {
+        if (!badgesEnabledRef.current) return
         const before = await badgesBefore
         const after = await progressApi.getProgress()
         const candidate = after.badges.find((badge) => !before.has(badge.id))

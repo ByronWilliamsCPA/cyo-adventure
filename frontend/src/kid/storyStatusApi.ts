@@ -2,12 +2,12 @@
  * Adapter for the profile-picker "new story ready!" pill (W1.4, design
  * review 4.1).
  *
- * Hand-typed like profilesApi.ts and childSessionApi.ts's own wire-shape
- * comment: ``GET /v1/profiles/story-status`` is new in this change and has
- * not yet been regenerated into ``src/client/`` (the frontend client is
- * committed and CI fails on drift; regeneration happens centrally). Mirrors
- * ``ProfileStoryStatusView`` / ``ProfileStoryStatusListView`` in
- * ``api/schemas.py``.
+ * Hand-typed like profilesApi.ts and childSessionApi.ts. The generated
+ * client has since been regenerated and includes this route
+ * (``ProfileStoryStatusView`` / ``ProfileStoryStatusListView`` in
+ * ``src/client/types.gen.ts``); this adapter is retained for its defensive
+ * malformed-response handling. Follow-up: assert parity in
+ * ``apiContractParity.ts``.
  */
 
 import type { AxiosInstance } from 'axios'

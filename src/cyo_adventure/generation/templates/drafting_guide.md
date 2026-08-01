@@ -134,7 +134,7 @@ distance (design review sections 2.2 and 2.6).
 **Enforcement**: this guide is prompt-side guidance only, as of this revision. A fill-gate check
 that measures second-person density (the design review's own audit measured 15-57 "you" per 1,000
 words in compliant books versus 0-6.6 in the third-person kid-band corpus) and rejects an
-out-of-spec fill is a separate, later work item (`W2.1` in the kid-appeal implementation plan) and
+out-of-spec fill is a separate, later work item (`W2.3` in the kid-appeal implementation plan) and
 is not active yet. Until it lands, follow this rule directly; do not treat the absence of an
 automated gate as license to draft in third person.
 

@@ -206,6 +206,28 @@ describe('router: kid surface', () => {
   })
 
   it('renders the reader for a valid story route', async () => {
+    // ReaderPage fires a best-effort GET /me/progress for gamification
+    // settings on mount; resolve it (and any other stray GET) instead of
+    // leaving the reset mock returning undefined, whose rejected `.data`
+    // access made this test load-order flaky under the full run.
+    mockGet.mockImplementation((url: string) =>
+      Promise.resolve({
+        data: url.includes('/me/progress')
+          ? {
+              badges: [],
+              books: [],
+              days_read_this_week: 0,
+              lifetime_days_read: 0,
+              settings: {
+                ring_enabled: false,
+                ring_goal_days: 3,
+                badges_enabled: true,
+                time_capture_paused: false,
+              },
+            }
+          : {},
+      }),
+    )
     renderAt('/read/p1/s_demo/1')
     expect(await screen.findByTestId('reader')).toBeInTheDocument()
     expect(screen.getByText('Hello reader')).toBeInTheDocument()

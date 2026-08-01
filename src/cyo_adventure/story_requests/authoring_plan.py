@@ -38,6 +38,7 @@ from cyo_adventure.generation.skeleton_match import (
     recent_skeleton_usage,
     select_skeleton_for_cell,
     skeleton_matches_cell,
+    theme_overlap_for_candidates,
 )
 from cyo_adventure.generation.variation import select_axis
 from cyo_adventure.utils.logging import get_logger
@@ -437,11 +438,19 @@ async def _resolve_skeleton_fill(
         brief=concept.brief if isinstance(concept.brief, dict) else {},
         cell_slugs=skeleton_alternatives,
     )
+    # W2.2 (D5, design review 2.5): steer the in-cell pick toward skeletons
+    # whose curated themes overlap the child's own premise, so a cave request
+    # draws the cave skeleton instead of a reskin. Zero overlap everywhere
+    # reproduces the pre-W2.2 recency-weighted pick exactly.
+    theme_overlap = theme_overlap_for_candidates(
+        request.request_text or "", band, skeleton_alternatives
+    )
     selection = select_skeleton_for_cell(
         skeleton_alternatives,
         recent_usage,
         random.SystemRandom(),
         similar_usage=sim_ctx.similar_count_per_slug,
+        theme_overlap=theme_overlap,
     )
     if sim_ctx.recommendation is DifferentiationLevel.LEAF:
         warnings.append(

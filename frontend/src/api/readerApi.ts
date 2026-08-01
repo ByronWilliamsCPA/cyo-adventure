@@ -139,11 +139,10 @@ export interface CompletionRequest {
 /**
  * The celebration-relevant fields of POST /v1/completions' response (mirrors
  * CompletionRecordedView server-side; W0.3, design review 2026-08-01 section
- * 3.4). Hand-typed rather than imported from `client/types.gen.ts`: the
- * generated client has not been regenerated against the updated OpenAPI
- * schema for this change (see the record_completion route docstring), so
- * this is the interim source of truth for the shape until that
- * regeneration lands.
+ * 3.4). Hand-typed narrowing of the regenerated client's
+ * `CompletionRecordedView` (`client/types.gen.ts`); retained for the
+ * celebration-relevant subset. Follow-up: assert parity in
+ * `apiContractParity.ts`.
  */
 export interface CompletionResult {
   is_new: boolean

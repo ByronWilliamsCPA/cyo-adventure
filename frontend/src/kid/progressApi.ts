@@ -1,14 +1,11 @@
 /**
  * Adapter for `GET /v1/me/progress` (W3.1/W3.2/W3.4).
  *
- * Hand-typed like `storyStatusApi.ts`'s own wire-shape comment: this route's
- * response gained `found_endings`, `days_read_this_week`,
- * `lifetime_days_read`, and `settings` fields (W3.2/W3.4, this change) after
- * the last client regeneration, so `src/client/types.gen.ts`'s `ProgressView`
- * is stale relative to the live backend response. Regenerate
- * (`npm run generate-client`, backend running) once this change lands, then
- * this file's request/response types can be swapped for the generated ones;
- * the wire shape should already match.
+ * Hand-typed like `storyStatusApi.ts`. The generated client
+ * (`src/client/types.gen.ts` `ProgressView`) has since been regenerated and
+ * carries the same wire shape; this adapter is retained for its narrowed
+ * types and defensive fallbacks. Follow-up: assert parity against the
+ * generated type in `apiContractParity.ts` (tracked in the wave PR notes).
  *
  * Mirrors `src/cyo_adventure/api/schemas.py`: `EarnedBadgeView`,
  * `FoundEndingView`, `BookProgressView`, `ProgressTotalsView`,

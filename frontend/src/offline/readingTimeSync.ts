@@ -42,16 +42,11 @@ export interface ReadingTimeApi {
   ): Promise<ReadingTimeFlushResult>
 }
 
-// #ASSUME: external resources: `POST /v1/me/reading-time` exists server-side
-// (src/cyo_adventure/api/reading_time.py, landed the same day as this
-// change) but the generated client under src/client/ has not been
-// regenerated to include it with the exact wire shape used here (the
-// project's client is committed and regenerated centrally, per CLAUDE.md).
-// Hand-typed here like frontend/src/kid/storyStatusApi.ts, rather than
-// importing a generated SDK function. Regenerate `npm run generate-client`
-// once the backend change lands and this file's request/response types can
-// then be swapped for the generated ones (the wire shape should already
-// match; nothing here should need to change at that point, only the import).
+// #ASSUME: external resources: `POST /v1/me/reading-time`
+// (src/cyo_adventure/api/reading_time.py) is in the regenerated client
+// (`ReadingActivityDayView` in src/client/types.gen.ts); this hand-typed
+// shape is retained like frontend/src/kid/storyStatusApi.ts for its
+// narrowed types. Follow-up: assert parity in apiContractParity.ts.
 // #VERIFY: reading_time.py's ReadingTimeFlushBody/ReadingActivityDayView are
 // the source of truth this hand-typed shape must track.
 export function makeReadingTimeApi(api: AxiosInstance): ReadingTimeApi {

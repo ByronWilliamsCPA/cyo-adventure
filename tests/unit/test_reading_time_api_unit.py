@@ -23,7 +23,7 @@ from cyo_adventure.api.reading_time import (
 )
 from cyo_adventure.api.schemas import ReadingTimeFlushBody
 from cyo_adventure.core.exceptions import AuthorizationError, ValidationError
-from cyo_adventure.db.models import ReadingActivityDay
+from cyo_adventure.db.models import ChildProfile, ReadingActivityDay
 
 _NOW = datetime(2026, 1, 15, 12, 0, 0, tzinfo=UTC)
 _TODAY = _NOW.date()
@@ -39,13 +39,21 @@ class _FakeSession:
     test_reading_api_unit.py's own fake.
     """
 
-    def __init__(self, *, existing: ReadingActivityDay | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        existing: ReadingActivityDay | None = None,
+        profile: ChildProfile | None = None,
+    ) -> None:
         self._existing = existing
+        self._profile = profile
         self.added: list[object] = []
         self.flush_count = 0
         self.refresh_calls: list[object] = []
 
-    async def get(self, _model: type[object], _key: object) -> object | None:
+    async def get(self, model: type[object], _key: object) -> object | None:
+        if model is ChildProfile:
+            return self._profile
         return self._existing
 
     def add(self, obj: object) -> None:
@@ -204,6 +212,42 @@ class TestFlushReadingTime:
         )
         assert result.active_seconds == 45
         assert len(session.added) == 1
+
+    async def test_paused_profile_flush_is_discarded(self) -> None:
+        """The guardian privacy toggle holds server-side, not just in the
+        client accumulator: a flush against a paused profile writes nothing
+        and reports a zero bucket so queued offline flushes drain quietly.
+        """
+        session = _FakeSession(
+            existing=None, profile=ChildProfile(time_capture_paused=True)
+        )
+        result = await flush_reading_time(
+            _body(seconds_delta=45), _child_principal(), session
+        )
+        assert result.active_seconds == 0
+        assert session.added == []
+        assert session.flush_count == 0
+
+    async def test_paused_profile_returns_existing_bucket_unchanged(self) -> None:
+        profile_id = uuid.uuid4()
+        existing = ReadingActivityDay(
+            child_profile_id=profile_id,
+            activity_date=_TODAY,
+            active_seconds=300,
+            last_flush_id="flush-0",
+            updated_at=_NOW,
+        )
+        session = _FakeSession(
+            existing=existing, profile=ChildProfile(time_capture_paused=True)
+        )
+        result = await flush_reading_time(
+            _body(seconds_delta=45, flush_id="flush-2"),
+            _child_principal(profile_id),
+            session,
+        )
+        assert result.active_seconds == 300
+        assert existing.last_flush_id == "flush-0"
+        assert session.flush_count == 0
 
     async def test_accumulates_into_an_existing_bucket(self) -> None:
         profile_id = uuid.uuid4()
