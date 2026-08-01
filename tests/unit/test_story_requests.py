@@ -1167,6 +1167,60 @@ def test_to_view_blocked_row_carries_generic_interpretation_and_no_text() -> Non
     assert premise not in view.interpretation.model_dump_json()
 
 
+def test_to_view_resulting_storybook_id_none_before_publish() -> None:
+    """An approved-but-not-yet-published request projects resulting_storybook_id=None.
+
+    W0.4: the column is only ever stamped by publishing/service.py::approve();
+    an ordinary row (never touched by that path) stays NULL and projects to
+    None, so the kid-facing card keeps reading "being written".
+    """
+    request = StoryRequest(
+        id=uuid.uuid4(),
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a dragon who loves pancakes",
+        status="approved",
+        initiator_role="child",
+        age_band="10-13",
+        narrative_style="prose",
+        moderation_flags={"blocked": False, "flags": []},
+        created_at=datetime(2026, 7, 20, tzinfo=UTC),
+    )
+
+    view = _to_view(request, policy=ThresholdPolicy(rows={}), surface_all=False)
+
+    assert view.resulting_storybook_id is None
+
+
+def test_to_view_resulting_storybook_id_projected_once_stamped() -> None:
+    """A published-and-stamped request projects its resulting_storybook_id.
+
+    W0.4: projected for every caller (guardian, admin, or the child token
+    this surface runs under in R1) with no further narrowing, because a
+    non-None value here can only exist once publishing/service.py::approve()
+    has already moved the storybook to status="published" -- see _to_view's
+    own #ASSUME for why this is safe even before the book is assigned to any
+    profile.
+    """
+    request = StoryRequest(
+        id=uuid.uuid4(),
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a dragon who loves pancakes",
+        status="approved",
+        initiator_role="child",
+        age_band="10-13",
+        narrative_style="prose",
+        moderation_flags={"blocked": False, "flags": []},
+        resulting_storybook_id="s_dragon_pancakes",
+        created_at=datetime(2026, 7, 20, tzinfo=UTC),
+    )
+
+    view = _to_view(request, policy=ThresholdPolicy(rows={}), surface_all=False)
+
+    assert view.resulting_storybook_id == "s_dragon_pancakes"
+
+
 # ---------------------------------------------------------------------------
 # ADR-015 budget-consent delta: G7 guardian cost gate, G3 pre-authorization.
 #

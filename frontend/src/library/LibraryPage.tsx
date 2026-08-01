@@ -511,7 +511,7 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
             profileId={profileId}
             anchor={continueAnchor}
             onClearAnchor={clearContinueAnchor}
-            libraryTitles={items.map((item) => item.title)}
+            libraryIds={items.map((item) => item.id)}
             openSignal={requestOpenSignal}
           />
         </div>

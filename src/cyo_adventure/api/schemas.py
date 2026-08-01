@@ -211,6 +211,23 @@ class CompletionView(BaseModel):
     found_at: datetime
 
 
+class CompletionRecordedView(CompletionView):
+    """The result of ``POST /completions``: the row plus the celebration signal.
+
+    Design review 2026-08-01 section 3.4 / kid-appeal-implementation-plan.md
+    W0.3: the previous response (bare ``CompletionView``) discarded whether
+    this call's insert was new, so the frontend re-fetched reading-history in
+    a race that could under-report the ending just reached. ``is_new``,
+    ``found``, and ``total`` are computed fresh on every call, not cached, so
+    the ending screen can render "you found a NEW ending!" versus a repeat
+    visit directly from this response instead of a second, racing GET.
+    """
+
+    is_new: bool
+    found: int
+    total: int
+
+
 class CompletionListView(BaseModel):
     """A profile's recorded completions (COPPA 312.6(a) / GDPR Article 15 read path)."""
 
@@ -784,6 +801,18 @@ class StoryRequestView(BaseModel):
     created before WS-7 shipped (no stored interpretation). For a blocked row it
     is the generic, premise-free interpretation, safe to surface alongside
     ``request_text=None`` (CR-1); ``_to_view`` does not redact it separately.
+
+    ``resulting_storybook_id`` (W0.4) is the storybook this request produced,
+    or ``None`` until publish. It is stamped exactly once, by
+    ``publishing/service.py::approve()`` -- the sole path that sets
+    ``storybook.status="published"`` -- so a non-``None`` value here always
+    names a fully moderated, human-approved book; unlike ``status`` (which
+    stays ``"approved"`` forever and never itself distinguishes "still
+    generating" from "on the shelf"), this field is the honest signal the
+    kid-facing request card needs. ``_to_view`` applies no further
+    per-caller narrowing beyond the row projection every other field here
+    gets (see its own #ASSUME for why exposing the bare id, even before the
+    book is assigned to any profile, is safe).
     """
 
     id: str
@@ -800,6 +829,7 @@ class StoryRequestView(BaseModel):
     proposed_series_title: str | None = None
     anchor_storybook_id: str | None = None
     interpretation: RequestInterpretationView | None = None
+    resulting_storybook_id: str | None = None
 
 
 class StoryRequestListView(BaseModel):

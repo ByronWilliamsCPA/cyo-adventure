@@ -1313,6 +1313,11 @@ class StoryRequest(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
             from, or ``None``.
         proposed_series_title: The kid's original series title proposal,
             retained as an audit trail after ratification or request decline.
+        resulting_storybook_id: The storybook this request produced, stamped
+            once at publish (``publishing/service.py::approve``), or
+            ``None`` before publish. See the column's own comment for the
+            resolution path and why publish (not generation) is the stamp
+            point (W0.4).
         created_at: Wall-clock insert time (UTC, TIMESTAMPTZ).
     """
 
@@ -1458,6 +1463,43 @@ class StoryRequest(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         default=None,
     )
     proposed_series_title: Mapped[str | None] = mapped_column(String(120), default=None)
+    # W0.4 (kid-appeal-implementation-plan.md, design review section 4.1): the
+    # storybook this request actually produced, or None until publish. Stamped
+    # exactly once, in publishing/service.py::approve() (the sole
+    # draft/in_review -> published transition), by resolving
+    # GenerationJob WHERE (storybook_id, version) == the approved storybook's
+    # (id, version) to a concept_id, then StoryRequest WHERE concept_id ==
+    # that concept_id -- the same two-hop resolution
+    # _stamp_request_interpretation (generation/worker.py) already uses for
+    # the K19 interpretation write, reused here instead of adding a third way
+    # to walk request -> concept -> job -> storybook. Never set at generation
+    # time (job/storybook creation): a story is fully moderated and
+    # human-approved by the time this column is non-null, so a kid seeing it
+    # never learns of an unpublished or rejected draft (api/story_requests.py
+    # ``_to_view`` exposes it with no further narrowing for exactly this
+    # reason; see the #ASSUME there). Never updated after (a request produces
+    # at most one storybook; a re-run after a failure creates a new
+    # GenerationJob/Storybook pair tied to the same concept_id, and only the
+    # run that actually reaches approve() stamps this field).
+    # #CRITICAL: data-integrity: SET NULL, not CASCADE. A storybook row is
+    # never deleted by any live application code path today (no admin
+    # "delete storybook" endpoint exists; family deletion CASCADEs both the
+    # storybook and the story_request together via family_id, so that path
+    # never triggers this SET NULL in practice either). This is still the
+    # correct ondelete action, matching every other nullable non-owning
+    # reference on this row (profile_id, reviewed_by, concept_id,
+    # anchor_storybook_id): the request itself is family-owned content that
+    # must survive a storybook row vanishing by any other means (a manual
+    # admin fixup, a future hard-delete tool, direct SQL), not silently fail
+    # to delete or drag the request down with it.
+    # #VERIFY: tests/integration/test_deletion_drill.py and
+    # tests/unit/test_publishing_service_unit.py::
+    # test_approve_stamps_resulting_storybook_id_and_survives_storybook_delete.
+    resulting_storybook_id: Mapped[str | None] = mapped_column(
+        String(120),
+        ForeignKey(_FK_STORYBOOK, ondelete=_ONDELETE_SET_NULL),
+        default=None,
+    )
 
 
 _MIN_VERDICT_VALUES = "'advisory', 'flag', 'block'"

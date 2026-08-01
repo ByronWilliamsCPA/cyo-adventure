@@ -141,59 +141,53 @@ describe('RequestStory', () => {
     expect(screen.getByText(/A robot on the moon/)).toBeInTheDocument()
   })
 
-  describe('K12: approved generation status', () => {
-    it('shows "being written" with no library data to match against', async () => {
+  describe('W0.4: approved generation status', () => {
+    it('shows "being written" with no resulting_storybook_id yet', async () => {
       mockGet.mockResolvedValue({
-        data: { requests: [{ id: 'req1', status: 'approved', proposed_series_title: null }] },
+        data: {
+          requests: [{ id: 'req1', status: 'approved', resulting_storybook_id: null }],
+        },
       })
       render(<RequestStory profileId="p1" />)
       const item = await screen.findByText(/your story is being written/i)
       expect(item.closest('li')).toHaveAttribute('data-status', 'generating')
     })
 
-    it('shows "being written" even with library data when the request has no series title', async () => {
-      mockGet.mockResolvedValue({
-        data: { requests: [{ id: 'req1', status: 'approved', proposed_series_title: null }] },
-      })
-      render(<RequestStory profileId="p1" libraryTitles={['The Cupcake Chronicles: Book One']} />)
-      expect(await screen.findByText(/your story is being written/i)).toBeInTheDocument()
-    })
-
-    it('shows "it\'s on your shelf" once a shelf title matches the confirmed series title', async () => {
+    it('shows "being written" when resulting_storybook_id is set but not yet on this shelf', async () => {
       mockGet.mockResolvedValue({
         data: {
           requests: [
-            { id: 'req1', status: 'approved', proposed_series_title: 'The Cupcake Chronicles' },
+            { id: 'req1', status: 'approved', resulting_storybook_id: 's_cupcake_chronicles' },
           ],
         },
       })
-      render(<RequestStory profileId="p1" libraryTitles={['The Cupcake Chronicles: Book One']} />)
+      render(<RequestStory profileId="p1" libraryIds={['s_sky_pirates']} />)
+      expect(await screen.findByText(/your story is being written/i)).toBeInTheDocument()
+    })
+
+    it('shows "it\'s on your shelf" once resulting_storybook_id is in the library list', async () => {
+      mockGet.mockResolvedValue({
+        data: {
+          requests: [
+            { id: 'req1', status: 'approved', resulting_storybook_id: 's_cupcake_chronicles' },
+          ],
+        },
+      })
+      render(<RequestStory profileId="p1" libraryIds={['s_cupcake_chronicles']} />)
       const item = await screen.findByText(/it's on your shelf!/i)
       expect(item.closest('li')).toHaveAttribute('data-status', 'published')
       expect(screen.queryByText(/your story is being written/i)).not.toBeInTheDocument()
     })
 
-    it('matching is case-insensitive', async () => {
+    it('does not match an unrelated library id', async () => {
       mockGet.mockResolvedValue({
         data: {
           requests: [
-            { id: 'req1', status: 'approved', proposed_series_title: 'the cupcake chronicles' },
+            { id: 'req1', status: 'approved', resulting_storybook_id: 's_cupcake_chronicles' },
           ],
         },
       })
-      render(<RequestStory profileId="p1" libraryTitles={['THE CUPCAKE CHRONICLES']} />)
-      expect(await screen.findByText(/it's on your shelf!/i)).toBeInTheDocument()
-    })
-
-    it('does not match an unrelated shelf title', async () => {
-      mockGet.mockResolvedValue({
-        data: {
-          requests: [
-            { id: 'req1', status: 'approved', proposed_series_title: 'The Cupcake Chronicles' },
-          ],
-        },
-      })
-      render(<RequestStory profileId="p1" libraryTitles={['Sky Pirates']} />)
+      render(<RequestStory profileId="p1" libraryIds={['s_sky_pirates']} />)
       expect(await screen.findByText(/your story is being written/i)).toBeInTheDocument()
       expect(screen.queryByText(/it's on your shelf!/i)).not.toBeInTheDocument()
     })

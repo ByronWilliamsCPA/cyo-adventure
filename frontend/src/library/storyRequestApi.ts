@@ -17,10 +17,16 @@ export interface KidStoryRequest {
   request_text: string
   /** The guardian-confirmed series name (K12), when this request named one.
    * Null for a one-off idea or an anchor-driven "ask for the next book"
-   * continuation. Used only as a best-effort hint for matching an approved
-   * request to a book that has since appeared on the shelf; never shown
-   * verbatim to the child. */
+   * continuation. */
   proposedSeriesTitle: string | null
+  /** W0.4: the storybook this request produced, once the backend has
+   * stamped it (publishing/service.py::approve(), at publish time). Null
+   * until then. A non-null value here always names a published book (see
+   * the backend's #ASSUME on api/story_requests.py::_to_view), but it may
+   * not yet be assigned to this child's shelf; RequestStory only flips its
+   * "it's on your shelf!" copy once this id also appears in the profile's
+   * own library list. */
+  resultingStorybookId: string | null
 }
 
 // Internal wire type: full response from backend (not exported)
@@ -36,6 +42,7 @@ interface WireStoryRequest {
     verdict: string
     message: string
   }>
+  resulting_storybook_id?: string | null
 }
 
 export interface CreateStoryRequestExtras {
@@ -77,6 +84,7 @@ export function makeKidStoryRequestApi(api: AxiosInstance): KidStoryRequestApi {
         status: res.data.status,
         request_text: res.data.request_text,
         proposedSeriesTitle: res.data.proposed_series_title ?? null,
+        resultingStorybookId: res.data.resulting_storybook_id ?? null,
       }
     },
     async listForProfile(profileId: string): Promise<KidStoryRequest[]> {
@@ -91,6 +99,7 @@ export function makeKidStoryRequestApi(api: AxiosInstance): KidStoryRequestApi {
         status: r.status,
         request_text: r.request_text,
         proposedSeriesTitle: r.proposed_series_title ?? null,
+        resultingStorybookId: r.resulting_storybook_id ?? null,
       }))
     },
   }

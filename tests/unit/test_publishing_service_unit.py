@@ -10,7 +10,7 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 from types import SimpleNamespace
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -22,7 +22,7 @@ from cyo_adventure.core.exceptions import (
     ResourceNotFoundError,
     StateTransitionError,
 )
-from cyo_adventure.db.models import Storybook, StorybookVersion
+from cyo_adventure.db.models import Storybook, StorybookVersion, StoryRequest
 from cyo_adventure.publishing import service
 from tests.conftest import make_clean_moderation_report
 
@@ -139,6 +139,12 @@ async def test_approve_publishes_and_stamps() -> None:
     )
     session = AsyncMock(spec=AsyncSession)
     session.get = AsyncMock(return_value=version_row)
+    # W0.4: no GenerationJob is modeled for this storybook/version, so
+    # _stamp_resulting_storybook_id's concept_id lookup must no-op cleanly;
+    # a bare AsyncMock(spec=AsyncSession) makes session.execute(...) itself
+    # return an AsyncMock whose scalar_one_or_none() is a coroutine, not a
+    # value, so it must be given a real (sync) Result double here.
+    session.execute = AsyncMock(return_value=_scalar_result(None))
     principal = _principal("admin")
 
     result = await service.approve(session, principal, story, 1)
@@ -246,6 +252,8 @@ async def test_approve_allows_mqa_fixture_in_staging(
     )
     session = AsyncMock(spec=AsyncSession)
     session.get = AsyncMock(return_value=version_row)
+    # W0.4: see the matching comment on test_approve_publishes_and_stamps.
+    session.execute = AsyncMock(return_value=_scalar_result(None))
     principal = _principal("admin")
 
     result = await service.approve(session, principal, story, 1)
@@ -342,6 +350,8 @@ async def test_approve_stamps_utc_published_at() -> None:
     )
     session = AsyncMock(spec=AsyncSession)
     session.get = AsyncMock(return_value=version_row)
+    # W0.4: see the matching comment on test_approve_publishes_and_stamps.
+    session.execute = AsyncMock(return_value=_scalar_result(None))
     before = datetime.now(UTC)
 
     await service.approve(session, _principal("admin"), story, 2)
@@ -350,6 +360,120 @@ async def test_approve_stamps_utc_published_at() -> None:
     assert version_row.published_at is not None
     assert version_row.published_at.tzinfo is not None
     assert before <= version_row.published_at <= after
+
+
+def _scalar_result(value: object) -> MagicMock:
+    """Build a fake ``Result`` whose ``scalar_one_or_none()`` returns ``value``.
+
+    Mirrors this module's other hand-rolled session-mocking helpers: no real
+    SQLAlchemy Result is constructed, only the one method
+    ``_stamp_resulting_storybook_id`` calls on it.
+    """
+    result = MagicMock()
+    result.scalar_one_or_none.return_value = value
+    return result
+
+
+@pytest.mark.unit
+async def test_approve_stamps_resulting_storybook_id() -> None:
+    """approve() links the originating request's resulting_storybook_id (W0.4).
+
+    session.execute is called three times by approve(): the report-nulling
+    UPDATE, then _stamp_resulting_storybook_id's two SELECTs (concept_id,
+    then the request row); side_effect supplies each in that order.
+    """
+    story = _story("in_review")
+    version_row = StorybookVersion(
+        storybook_id="s1",
+        version=1,
+        blob={},
+        moderation_report=make_clean_moderation_report(),
+    )
+    session = AsyncMock(spec=AsyncSession)
+    session.get = AsyncMock(return_value=version_row)
+    concept_id = uuid.uuid4()
+    request_row = StoryRequest(
+        family_id=uuid.uuid4(),
+        request_text="a dragon who loves pancakes",
+        age_band="5-8",
+        concept_id=concept_id,
+    )
+    session.execute = AsyncMock(
+        side_effect=[
+            MagicMock(),  # report-nulling UPDATE result, unused
+            _scalar_result(concept_id),
+            _scalar_result(request_row),
+        ]
+    )
+
+    await service.approve(session, _principal("admin"), story, 1)
+
+    assert request_row.resulting_storybook_id == "s1"
+
+
+@pytest.mark.unit
+async def test_approve_resulting_storybook_id_noop_without_generation_job() -> None:
+    """approve() leaves resulting_storybook_id untouched with no matching job.
+
+    A catalog-imported or hand-crafted storybook with no GenerationJob row
+    (storybook_id, version) has nothing to resolve a concept_id from; this is
+    the same silent no-op contract as
+    generation/worker.py::_stamp_request_interpretation.
+    """
+    story = _story("in_review")
+    version_row = StorybookVersion(
+        storybook_id="s1",
+        version=1,
+        blob={},
+        moderation_report=make_clean_moderation_report(),
+    )
+    session = AsyncMock(spec=AsyncSession)
+    session.get = AsyncMock(return_value=version_row)
+    session.execute = AsyncMock(
+        side_effect=[
+            MagicMock(),
+            _scalar_result(None),  # no GenerationJob matches
+        ]
+    )
+
+    result = await service.approve(session, _principal("admin"), story, 1)
+
+    assert result is version_row
+    assert story.status == "published"
+    # Only two execute() calls: the report-nulling UPDATE and the concept
+    # lookup; the request lookup is never reached with no concept_id.
+    assert session.execute.await_count == 2
+
+
+@pytest.mark.unit
+async def test_approve_resulting_storybook_id_noop_without_request_row() -> None:
+    """approve() leaves resulting_storybook_id untouched with no request row.
+
+    A guardian-authored or catalog concept has no originating StoryRequest;
+    this is a silent no-op, matching
+    generation/worker.py::_stamp_request_interpretation's own contract.
+    """
+    story = _story("in_review")
+    version_row = StorybookVersion(
+        storybook_id="s1",
+        version=1,
+        blob={},
+        moderation_report=make_clean_moderation_report(),
+    )
+    session = AsyncMock(spec=AsyncSession)
+    session.get = AsyncMock(return_value=version_row)
+    session.execute = AsyncMock(
+        side_effect=[
+            MagicMock(),
+            _scalar_result(uuid.uuid4()),
+            _scalar_result(None),  # no StoryRequest matches the concept_id
+        ]
+    )
+
+    result = await service.approve(session, _principal("admin"), story, 1)
+
+    assert result is version_row
+    assert story.status == "published"
 
 
 @pytest.mark.unit

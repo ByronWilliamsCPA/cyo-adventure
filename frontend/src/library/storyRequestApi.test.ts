@@ -17,7 +17,12 @@ describe('makeKidStoryRequestApi', () => {
       profile_id: 'p1',
       request_text: 'Please write a dragon story',
     })
-    expect(result).toEqual({ id: 'req1', status: 'pending', proposedSeriesTitle: null })
+    expect(result).toEqual({
+      id: 'req1',
+      status: 'pending',
+      proposedSeriesTitle: null,
+      resultingStorybookId: null,
+    })
   })
 
   it('create maps proposed_series_title from the wire response (K12)', async () => {
@@ -43,12 +48,14 @@ describe('makeKidStoryRequestApi', () => {
     })
     const result = await makeKidStoryRequestApi(api).create('p1', 'Please write a dragon story')
     // Returned object carries ONLY the kid-safe keys: id, status, the child's
-    // own request_text (UX-K3), and the proposed series title (K12). Guardian-
-    // facing fields (created_at, moderation_flags, profile_id) are stripped.
+    // own request_text (UX-K3), the proposed series title (K12), and the
+    // resulting storybook id (W0.4). Guardian-facing fields (created_at,
+    // moderation_flags, profile_id) are stripped.
     expect(Object.keys(result).sort()).toEqual([
       'id',
       'proposedSeriesTitle',
       'request_text',
+      'resultingStorybookId',
       'status',
     ])
     expect(result).toEqual({
@@ -56,6 +63,7 @@ describe('makeKidStoryRequestApi', () => {
       status: 'pending',
       request_text: 'Please write a dragon story',
       proposedSeriesTitle: null,
+      resultingStorybookId: null,
     })
   })
 
@@ -69,8 +77,8 @@ describe('makeKidStoryRequestApi', () => {
     const result = await makeKidStoryRequestApi(api).listForProfile('p1')
     expect(get).toHaveBeenCalledWith('/v1/story-requests?profile_id=p1')
     expect(result).toEqual([
-      { id: 'req1', status: 'pending', proposedSeriesTitle: null },
-      { id: 'req2', status: 'approved', proposedSeriesTitle: null },
+      { id: 'req1', status: 'pending', proposedSeriesTitle: null, resultingStorybookId: null },
+      { id: 'req2', status: 'approved', proposedSeriesTitle: null, resultingStorybookId: null },
     ])
   })
 
@@ -112,6 +120,17 @@ describe('makeKidStoryRequestApi', () => {
     expect(result.map((r) => r.proposedSeriesTitle)).toEqual(['Fox Tales', null])
   })
 
+  it('listForProfile maps resulting_storybook_id per row (W0.4)', async () => {
+    const { api } = fakeAxios({
+      requests: [
+        { id: 'req1', status: 'approved', resulting_storybook_id: 's_fox_tales' },
+        { id: 'req2', status: 'approved', resulting_storybook_id: null },
+      ],
+    })
+    const result = await makeKidStoryRequestApi(api).listForProfile('p1')
+    expect(result.map((r) => r.resultingStorybookId)).toEqual(['s_fox_tales', null])
+  })
+
   it('listForProfile strips guardian-facing fields from full wire response', async () => {
     // Realistic full wire fixture with all backend fields
     const { api } = fakeAxios({
@@ -136,19 +155,22 @@ describe('makeKidStoryRequestApi', () => {
     })
     const result = await makeKidStoryRequestApi(api).listForProfile('p1')
     // Returned objects contain ONLY the kid-safe keys: id, status, request_text
-    // (UX-K3), and proposedSeriesTitle (K12). Guardian-facing fields (profile_id,
-    // created_at, moderation_flags) are stripped.
+    // (UX-K3), proposedSeriesTitle (K12), and resultingStorybookId (W0.4).
+    // Guardian-facing fields (profile_id, created_at, moderation_flags) are
+    // stripped.
     expect(result).toHaveLength(2)
     expect(Object.keys(result[0]).sort()).toEqual([
       'id',
       'proposedSeriesTitle',
       'request_text',
+      'resultingStorybookId',
       'status',
     ])
     expect(Object.keys(result[1]).sort()).toEqual([
       'id',
       'proposedSeriesTitle',
       'request_text',
+      'resultingStorybookId',
       'status',
     ])
     expect(result[0]).toEqual({
@@ -156,12 +178,14 @@ describe('makeKidStoryRequestApi', () => {
       status: 'pending',
       request_text: 'Please write a dragon story',
       proposedSeriesTitle: null,
+      resultingStorybookId: null,
     })
     expect(result[1]).toEqual({
       id: 'req2',
       status: 'approved',
       request_text: 'Can you make a wizard adventure',
       proposedSeriesTitle: null,
+      resultingStorybookId: null,
     })
   })
 })
