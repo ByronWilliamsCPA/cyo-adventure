@@ -174,7 +174,7 @@ export function ReaderPage({
   // exact wire shapes yet.
   const rawApi = useApi()
   const readingTimeApi = useMemo(() => makeReadingTimeApi(rawApi), [rawApi])
-  const progressApi = useMemo(() => makeProgressApi(rawApi), [rawApi])
+  const progressApi = useMemo(() => makeProgressApi(rawApi, profileId), [rawApi, profileId])
 
   // Guardian per-profile "pause time capture" toggle (W3.4), resolved
   // best-effort on mount. Starts false (capture on) so a slow or failing
@@ -230,7 +230,10 @@ export function ReaderPage({
         // before the mount-time settings fetch resolves would pass it.
         if (!badgesEnabledRef.current) return
         const before = await badgesBefore
-        const after = await progressApi.getProgress()
+        // `fresh`: this read is ordered AFTER the completion POST, so it must
+        // be a request of its own rather than one already in flight from a
+        // mount effect (see ProgressReadOptions).
+        const after = await progressApi.getProgress({ fresh: true })
         const candidate = after.badges.find((badge) => !before.has(badge.id))
         if (candidate === undefined) return
         // #CRITICAL: security: the authoritative gate, read from the response
@@ -615,8 +618,11 @@ export function ReaderPage({
       // THIS completion from one earned earlier that this device simply
       // never toasted). Started in parallel with the completion POST, not
       // awaited here, so it never delays the ending-screen tracker.
+      // `fresh` here too, and for a blunter reason than the "after" read: a
+      // mount-time fetch that is still hanging would otherwise BE this
+      // snapshot, so the diff would wait on it instead of on the completion.
       const badgesBefore = progressApi
-        .getProgress()
+        .getProgress({ fresh: true })
         .then((progress) => new Set(progress.badges.map((badge) => badge.id)))
         .catch(() => new Set<string>())
       void recordCompletion({

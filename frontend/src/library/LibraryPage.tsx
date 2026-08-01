@@ -92,7 +92,7 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   const api = useApi()
   const libraryApi = useMemo(() => makeLibraryApi(api), [api])
   const recommendationsApi = useMemo(() => makeRecommendationsApi(api), [api])
-  const progressApi = useMemo(() => makeProgressApi(api), [api])
+  const progressApi = useMemo(() => makeProgressApi(api, profileId), [api, profileId])
   const [state, setState] = useState<LibraryState>({ status: 'loading' })
   // W3.2: the Endings Gallery / "Every path walked!" data source, fetched
   // independently of the shelf (best-effort, like history/recommendations):

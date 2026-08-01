@@ -47,7 +47,7 @@ export function KidNav({ profileId }: KidNavProps) {
   const profile = useKidProfile(profileId)?.profile ?? null
 
   const rawApi = useApi()
-  const progressApi = useMemo(() => makeProgressApi(rawApi), [rawApi])
+  const progressApi = useMemo(() => makeProgressApi(rawApi, profileId), [rawApi, profileId])
   const [progress, setProgress] = useState<ProgressSummary>(EMPTY_PROGRESS)
   useEffect(() => {
     let cancelled = false

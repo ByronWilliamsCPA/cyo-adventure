@@ -131,36 +131,119 @@ export const EMPTY_PROGRESS: ProgressSummary = {
   settings: FALLBACK_SETTINGS,
 }
 
+export interface ProgressReadOptions {
+  /**
+   * Issue a request of this caller's own instead of joining one already in
+   * flight. For a caller whose read is ORDERED against a write rather than
+   * simply wanting the current value.
+   *
+   * #CRITICAL: data integrity: the badge toast diffs a pre-completion badge
+   * set against a post-completion read. Both halves must be requests of their
+   * own: joining an in-flight mount-time read would compare against a snapshot
+   * taken before the completion POST even existed, or (if that read never
+   * settles, which a 10s axios timeout makes a real 10-second window) hang the
+   * diff entirely and leave the G19 badges_enabled re-check unable to fire.
+   * #VERIFY: ReaderPage.badgeToast.test.tsx "suppresses the toast when
+   * badges_enabled is off, even if the mount-time settings fetch never
+   * resolved"; progressApi.test.ts "a fresh read never joins one in flight".
+   */
+  fresh?: boolean
+}
+
 export interface ProgressApi {
   /** The caller's own progress (badges, collection state, totals, resolved
    * gamification settings). Child-token-scoped server-side; no profile id
    * parameter (mirrors `GET /v1/me`'s own "me" shape). */
-  getProgress(): Promise<ProgressSummary>
+  getProgress(options?: ProgressReadOptions): Promise<ProgressSummary>
 }
 
-export function makeProgressApi(api: AxiosInstance): ProgressApi {
+/**
+ * In-flight `GET /v1/me/progress` requests, keyed by the profile whose child
+ * session issued them.
+ *
+ * Module-level rather than per-adapter on purpose: `useApi()` memoises on its
+ * own `[config]`, so KidNav, LibraryPage and ReaderPage each hold a DIFFERENT
+ * axios instance and each build their own adapter. A per-adapter map would
+ * therefore dedupe nothing, which is the whole reason the same endpoint was
+ * fetched two or three times on a single kid route.
+ *
+ * #CRITICAL: security: keyed by profile id, never global. `/v1/me/progress`
+ * resolves from the child session token, so a global key would let a child who
+ * switches readers mid-flight receive the PREVIOUS child's progress: the second
+ * mount would join a request issued under a different session. Keying on the
+ * profile makes that coalescing impossible rather than merely unlikely.
+ * #VERIFY: progressApi.test.ts "never coalesces across profiles".
+ */
+const inFlightProgress = new Map<string, Promise<ProgressSummary>>()
+
+/**
+ * Drop every in-flight entry. Called from the global vitest setup so module
+ * state cannot leak between test files.
+ *
+ * This exists because a request that NEVER settles never runs the `.finally`
+ * that clears its key, and several suites deliberately mock exactly that (a
+ * fetch left pending to assert an unmount guard). In the browser axios' 10s
+ * timeout rejects such a request and the entry clears itself, so the wedge is
+ * bounded there; in a test the module lives for the whole file and the wedge
+ * is permanent, silently serving a later case a promise from an earlier one.
+ */
+export function clearInFlightProgress(): void {
+  inFlightProgress.clear()
+}
+
+/**
+ * @param profileId - The reading child, used only as the coalescing key (the
+ *   request itself is "me"-scoped and carries no profile parameter). Omit to
+ *   opt out of coalescing entirely, which is what a test wanting one request
+ *   per call wants.
+ */
+export function makeProgressApi(api: AxiosInstance, profileId?: string): ProgressApi {
+  const fetchProgress = async (): Promise<ProgressSummary> => {
+    const res = await api.get<Partial<ProgressSummary>>('/v1/me/progress')
+    const data = res.data
+    // #ASSUME: data-integrity: a malformed/partial response (a stale mock,
+    // a future contract change) degrades field-by-field to the empty/
+    // fallback shape rather than throwing, so a shape mismatch on this
+    // best-effort, decorative-only surface (ring, badge case, gallery)
+    // never turns into a reader-blocking error. Every caller of this
+    // adapter already treats a rejected promise the same permissive way,
+    // but a malformed 200 would otherwise slip past that guard.
+    // #VERIFY: progressApi.test.ts "tolerates a malformed response".
+    return {
+      badges: Array.isArray(data.badges) ? data.badges : [],
+      books: Array.isArray(data.books) ? data.books : [],
+      totals: normalizeTotals(data.totals),
+      days_read_this_week:
+        typeof data.days_read_this_week === 'number' ? data.days_read_this_week : 0,
+      lifetime_days_read: typeof data.lifetime_days_read === 'number' ? data.lifetime_days_read : 0,
+      settings: normalizeSettings(data.settings),
+    }
+  }
   return {
-    async getProgress(): Promise<ProgressSummary> {
-      const res = await api.get<Partial<ProgressSummary>>('/v1/me/progress')
-      const data = res.data
-      // #ASSUME: data-integrity: a malformed/partial response (a stale mock,
-      // a future contract change) degrades field-by-field to the empty/
-      // fallback shape rather than throwing, so a shape mismatch on this
-      // best-effort, decorative-only surface (ring, badge case, gallery)
-      // never turns into a reader-blocking error. Every caller of this
-      // adapter already treats a rejected promise the same permissive way,
-      // but a malformed 200 would otherwise slip past that guard.
-      // #VERIFY: progressApi.test.ts "tolerates a malformed response".
-      return {
-        badges: Array.isArray(data.badges) ? data.badges : [],
-        books: Array.isArray(data.books) ? data.books : [],
-        totals: normalizeTotals(data.totals),
-        days_read_this_week:
-          typeof data.days_read_this_week === 'number' ? data.days_read_this_week : 0,
-        lifetime_days_read:
-          typeof data.lifetime_days_read === 'number' ? data.lifetime_days_read : 0,
-        settings: normalizeSettings(data.settings),
-      }
+    getProgress(options?: ProgressReadOptions): Promise<ProgressSummary> {
+      // A fresh read neither joins an in-flight entry nor becomes one: it must
+      // not be handed someone else's older request, and a later mount must not
+      // be handed this one either, since "fresh" is a property of the moment
+      // this caller asked, not of the response.
+      if (profileId === undefined || options?.fresh === true) return fetchProgress()
+      const existing = inFlightProgress.get(profileId)
+      if (existing !== undefined) return existing
+      // #CRITICAL: concurrency: the entry is cleared INSIDE the promise the
+      // caller receives, not in a separate `.then` on the raw fetch. That
+      // ordering is what makes a sequential pair safe: every consumer
+      // continuation runs on `started`, which settles only after the deletion
+      // has already run, so a caller that awaits one result and then asks for
+      // another can never be handed the first one back. ReaderPage's badge
+      // toast depends on exactly that (it diffs a pre-completion snapshot
+      // against a post-completion read; coalescing those two would compare a
+      // value against itself and no badge would ever toast).
+      // #VERIFY: progressApi.test.ts "a sequential second call is a fresh
+      // request, not the settled first one".
+      const started = fetchProgress().finally(() => {
+        inFlightProgress.delete(profileId)
+      })
+      inFlightProgress.set(profileId, started)
+      return started
     },
   }
 }
