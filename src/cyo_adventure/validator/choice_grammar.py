@@ -29,8 +29,8 @@ section 10):
   shares a word with its choice label (no finding) and one that does not (a
   finding), plus the FILL-marker skip.
 
-Grandfathering (D3/D11)
-------------------------
+Grandfathering (D3/D11), and what "inert" means today
+-----------------------------------------------------
 The existing 61-skeleton catalog predates this grammar and is grandfathered:
 no machine-readable "this skeleton is grandfathered" marker exists yet (the
 D11 ``deprecated`` marker is tracked as future work, W2.4). Until that marker
@@ -40,6 +40,21 @@ caller for genuinely new skeletons opts in explicitly. The individual
 ``check_*`` functions below run unconditionally when called directly (for
 unit testing and for a future promotion path that wants one rule at a time);
 only the combinator applies the gate.
+
+Be precise about the current state, because "advisory" understates it: **no
+production caller passes the flag**, so CG-1 through CG-4 emit no finding on
+any real story. ``validator/gate.py::run_gate`` defaults it ``False`` and
+forwards it, and the only call site anywhere that passes ``True`` is
+``tests/unit/test_choice_grammar.py``. That is grandfathering by omission
+rather than by decision, so state the flip condition rather than leaving it
+implied:
+
+**Flip condition.** When the D11 ``deprecated`` per-skeleton marker lands
+(W2.4), a story carrying it is grandfathered and one that does not is new,
+which is the discrimination the flag is standing in for. At that point
+``check_choice_grammar`` can key off the marker and ``enforce_grammar`` can
+default ``True``. Tracked as ``UW-C24``; the decision to flip is the owner's,
+not this module's.
 
 Rule id family
 --------------
@@ -70,12 +85,32 @@ if TYPE_CHECKING:
 _FILL_MARKER = "<<FILL"
 _FILL_WORDS_RE = re.compile(r"\bwords=(\d+)")
 
-# Choiceless-run cap: discrete-page bands (3-5, 5-8) cap the run length
-# directly; flowed bands (8-11 and up) tolerate longer linear beats in the
-# graph (ADR-026: they flow into one rendered stop) and are capped instead at
-# the point a composed run would blow the words-per-stop budget for any
-# plausible per-node length, which the ADR-011 section 10 table amendment
-# fixes at 6.
+# Choiceless-run cap. The two halves have different provenance, and an
+# earlier version of this comment blurred them by citing the ADR for both.
+#
+# Discrete-page bands (3-5, 5-8) read straight off ADR-011 section 10's "Max
+# choiceless stops in a row" column (2-3 and 2), and one node IS one stop at
+# these bands, so the numbers transfer unit-for-unit. This is also the only
+# enforcement section 10 asks for: its closing paragraph scopes graph-level
+# run caps to "the discrete-page bands".
+#
+# The flowed cap is NOT from the ADR. Section 10's flowed rows read
+# "1, prefer 0" (8-11) and "0-1" (10-13/13-16/16+), and they count STOPS,
+# where a stop is a whole flowed multi-node passage (ADR-026). The number 6
+# appears nowhere in the ADR. It is a derived NODE-level backstop: past about
+# six single-choice nodes a composed stop blows the words-per-stop ceiling
+# for any plausible per-node length, which is why the finding message
+# reports the composed word count alongside it.
+#
+# #ASSUME: data-integrity: this cap is a proxy, not the section 10
+# constraint. The real flowed rule ("at most one choiceless STOP in a row")
+# needs stop-level adjacency, which nothing here computes; it is unimplemented,
+# not enforced-by-another-name. Reading a green CG-1 as "section 10 satisfied"
+# at a flowed band is wrong in both directions: a story can sit under 6 nodes
+# and still chain several choiceless stops, and a 7-node run inside one stop
+# is not a section 10 violation at all.
+# #VERIFY: UW-C10 tracks implementing the stop-level rule; until it lands,
+# CG-1's own message says "advisory only".
 _DISCRETE_RUN_CAP: dict[str, int] = {"3-5": 3, "5-8": 2}
 _FLOWED_RUN_CAP = 6
 _FLOWED_BANDS: frozenset[str] = frozenset({"8-11", "10-13", "13-16", "16+"})

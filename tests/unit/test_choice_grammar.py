@@ -10,6 +10,9 @@ each rule is exercised both firing and non-firing, per the implementation plan.
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 from cyo_adventure.storybook.models import Storybook
 from cyo_adventure.validator.choice_grammar import (
     check_choice_grammar,
@@ -18,6 +21,7 @@ from cyo_adventure.validator.choice_grammar import (
     check_options_per_choice,
     check_words_per_stop,
 )
+from cyo_adventure.validator.gate import run_gate
 from cyo_adventure.validator.report import Severity
 
 # ---------------------------------------------------------------------------
@@ -374,3 +378,61 @@ class TestEnforceGrammarGate:
         assert report.findings, "expected findings to assert severity over"
         assert all(f.severity is Severity.WARNING for f in report.findings)
         assert report.ok is True
+
+
+class TestRunGateForwardsTheFlag:
+    """The gate wiring itself, which no test previously exercised.
+
+    Every assertion above calls ``check_choice_grammar`` directly, so the
+    forwarding through ``run_gate`` (the only path any production caller
+    takes) was unproven in both directions. Since ``run_gate`` defaults the
+    flag ``False`` and nothing in ``src/`` or ``scripts/`` passes ``True``,
+    these rules emit no finding on any real story today; see the module
+    docstring's flip condition and ``UW-C24``. That is a deliberate
+    grandfathering state, not a reason to leave the wiring untested.
+    """
+
+    def _raw(self) -> dict[str, object]:
+        """A committed fixture that CLEARS Layer 1, not a synthetic chain.
+
+        ``run_gate`` returns early when Layer 1 fails, before the grammar
+        checks run at all. The synthetic ``_chain_story`` fixtures used above
+        trip L1-7's branch-depth budget, so a gate-level test built on one
+        would assert "no CG findings" against a code path that never reached
+        the grammar stage: green for the wrong reason, in both directions.
+        This fixture passes the gate cleanly and trips CG-2 and CG-4.
+        """
+        path = (
+            Path(__file__).resolve().parents[1]
+            / "fixtures"
+            / "storybook"
+            / "valid"
+            / "03_tier2_lantern.json"
+        )
+        return json.loads(path.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
+
+    def test_fixture_reaches_the_grammar_stage(self) -> None:
+        """Guards the guard: the two tests below are only meaningful while
+        this fixture clears Layer 1 and the policy layer."""
+        assert run_gate(self._raw()).blocked is False
+
+    def test_default_emits_no_cg_finding_through_the_gate(self) -> None:
+        result = run_gate(self._raw())
+        assert [f for f in result.report.findings if f.rule_id.startswith("CG-")] == []
+
+    def test_opt_in_emits_cg_findings_through_the_gate(self) -> None:
+        result = run_gate(self._raw(), enforce_grammar=True)
+        assert {
+            f.rule_id for f in result.report.findings if f.rule_id.startswith("CG-")
+        }
+        assert all(
+            f.severity is Severity.WARNING
+            for f in result.report.findings
+            if f.rule_id.startswith("CG-")
+        )
+
+    def test_cg_findings_never_block_the_gate(self) -> None:
+        """Advisory means advisory: opting in must not change blocked-ness."""
+        raw = self._raw()
+        assert run_gate(raw, enforce_grammar=True).blocked is False
+        assert run_gate(raw, enforce_grammar=True).report.ok is True
