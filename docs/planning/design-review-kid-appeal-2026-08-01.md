@@ -513,8 +513,14 @@ The owner asked how the initial research handles choice-per-node versus words-pe
 ### Remaining decisions before an implementation plan can be built
 
 > **Status update (third round, 2026-08-01)**: Q1 resolved (D10, ADR-026). Q3 resolved (D11).
-> Q7 resolved (D14). Q5 and Q6 are commissioned to agents (D12, D13); their recommendations will
-> be appended to this document for owner approval. Still fully open: **Q2** (the per-band choice
+> Q7 resolved (D14). The commissioned recommendations (D12, D13) are delivered and await owner
+> approval: [gamification-recommendation-2026-08-01.md](gamification-recommendation-2026-08-01.md)
+> (weekly reading-days ring, 12-badge seed taxonomy, endings gallery, day-grain active-reading-time
+> table; five sharp open questions in its section 7) and
+> [media-budget-recommendation-2026-08-01.md](media-budget-recommendation-2026-08-01.md)
+> (per-band budgets, WebP 1536px at ~150KB per illustration, app-bundled SFX only, 250MB default /
+> 500MB cap offline library, Add-to-Home-Screen gating on iOS; four decision points in its
+> section 7). Still fully open: **Q2** (the per-band choice
 > grammar table below awaits sign-off), **Q4** (tone vocabulary), and **Q8** (sequencing). The
 > streak-design question raised by the owner (calendar days versus reading days) is answered
 > inside the commissioned gamification recommendation's scope; in short, a calendar-day streak
