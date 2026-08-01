@@ -129,19 +129,31 @@ export function ReaderChrome({
   // kid shell, see band-tokens.css) -- done here via `headerRef` since this
   // component has no `ageBand`/profile data of its own to look the flag up
   // any other way.
+  // #ASSUME: timing dependencies: the resolution itself is deferred through
+  // setTimeout(fn, 0) rather than calling setMuted directly in the effect
+  // body; a direct call here would set state synchronously from inside the
+  // effect, which `react-hooks/set-state-in-effect` flags as a
+  // cascading-render risk (the established fix elsewhere in this codebase,
+  // e.g. guardian/BudgetBanner.tsx and guardian/NotificationBell.tsx). No
+  // sound can play before this resolves regardless (`effectiveMuted`
+  // defaults `null` to muted), so the one-tick delay is inaudible.
   useEffect(() => {
-    const stored = getSoundMutedPreference(mutePreferenceKey)
-    if (stored !== undefined) {
-      setMuted(stored)
-      return
+    const resolve = () => {
+      const stored = getSoundMutedPreference(mutePreferenceKey)
+      if (stored !== undefined) {
+        setMuted(stored)
+        return
+      }
+      // #EDGE: browser-compat: jsdom implements neither matchMedia nor a
+      // real DOM tree rooted under data-reduce-motion in every test; both
+      // guards degrade to "no reduced-motion signal" rather than throwing.
+      const reduceMotion =
+        (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false) ||
+        Boolean(headerRef.current?.closest('[data-reduce-motion="true"]'))
+      setMuted(reduceMotion)
     }
-    // #EDGE: browser-compat: jsdom implements neither matchMedia nor a real
-    // DOM tree rooted under data-reduce-motion in every test; both guards
-    // degrade to "no reduced-motion signal" rather than throwing.
-    const reduceMotion =
-      (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false) ||
-      Boolean(headerRef.current?.closest('[data-reduce-motion="true"]'))
-    setMuted(reduceMotion)
+    const timer = setTimeout(resolve, 0)
+    return () => clearTimeout(timer)
   }, [mutePreferenceKey])
 
   const toggleMuted = (): void => {

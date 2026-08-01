@@ -17,6 +17,7 @@ import { useMachine } from '@xstate/react'
 
 import type { CompletionOutcome, SeriesNextBookInfo, SubmitFlagParams } from '../api/readerApi'
 import type { KidFlagCreatedView, ReadingHistoryItem } from '../client/types.gen'
+import type { EarnedBadgeCard, ProgressApi } from '../kid/progressApi'
 import { canGoBack, currentEndingId, visibleChoices } from '../player/engine'
 import { Mascot } from '../kid/Mascot'
 import { readerMachine } from '../player/machine'
@@ -28,14 +29,18 @@ import {
 import { SATISFYING_ENDING_KINDS, seriesMeta } from '../player/series'
 import { canGoBackOneStop } from '../player/stops'
 import type { ReadingState, Storybook } from '../player/types'
+import type { ReadingTimeApi } from '../offline/readingTimeSync'
 import { BackToLibrary } from './BackToLibrary'
+import { BadgeUnlockToast } from './BadgeUnlockToast'
 import { ContinueSeries } from './ContinueSeries'
 import { DedicationOverlay } from './DedicationOverlay'
+import { EndingsGalleryButton } from './EndingsGalleryButton'
 import { EndingsProgress } from './EndingsProgress'
 import { FlagButton } from './FlagButton'
 import { ReaderChrome } from './ReaderChrome'
 import { TextSizeControl } from './TextSizeControl'
 import { useReaderFontScale } from './useReaderFontScale'
+import { useReadingTimeAccumulator } from './useReadingTimeAccumulator'
 import { isFlowedBand, readerPositionLabel } from './readerProgress'
 import { useFlowedStop } from './useFlowedStop'
 import { useReadAloud } from './useReadAloud'
@@ -106,6 +111,30 @@ export interface ReaderProps {
    * the exact band list.
    */
   ageBand?: string
+  /**
+   * The reading-time flush port (W3.3), forwarded straight to the
+   * accumulator hook. Omitted entirely (e.g. most existing tests) means the
+   * hook still accrues into IndexedDB locally but never attempts a network
+   * flush; see `useReadingTimeAccumulator`'s own doc.
+   */
+  readingTimeApi?: ReadingTimeApi
+  /** Guardian per-profile "pause time capture" toggle (resolved gamification
+   * settings). Defaults to false (capture on) so a caller with no settings
+   * fetch wired yet (most existing tests) behaves as before. */
+  timeCapturePaused?: boolean
+  /**
+   * The progress port (W3.2), forwarded to the ending screen's Endings
+   * Gallery entry. Omitted entirely means the "See your endings" button
+   * does not render (mirrors `fetchReadingHistory`'s own optional pattern).
+   */
+  progressApi?: ProgressApi
+  /** A newly-earned badge to toast on the ending screen (W3.2), or null/
+   * undefined for none. The caller (ReaderPage) owns the pre/post progress
+   * comparison and the IndexedDB "seen" bookkeeping; this component only
+   * renders whatever it is handed. */
+  newlyEarnedBadge?: EarnedBadgeCard | null
+  /** Dismisses the badge-unlock toast (marks it seen on the caller's side). */
+  onDismissBadgeToast?: () => void
 }
 
 export function Reader({
@@ -122,6 +151,11 @@ export function Reader({
   submitFlag,
   personalization = null,
   ageBand,
+  readingTimeApi,
+  timeCapturePaused = false,
+  progressApi,
+  newlyEarnedBadge,
+  onDismissBadgeToast,
 }: ReaderProps) {
   const navigate = useNavigate()
   const fontScale = useReaderFontScale(profileId)
@@ -211,6 +245,23 @@ export function Reader({
   // Read-aloud (K7): the toggle itself renders in ReaderChrome, but the
   // speech content (passage body, then choice labels) is only known here.
   const readAloud = useReadAloud(ttsEnabled)
+
+  // Active reading-time accumulation (W3.3): shared across all three render
+  // branches below (error/ended/normal), each of which mounts its own
+  // `.reader-shell` root -- only one branch renders at a time, so one ref
+  // reattaching across them is correct, not a bug. Passive pointerdown/
+  // keydown/scroll listeners on the shell (attached inside the hook) plus
+  // the explicit recordInteraction() calls on choose()/go-back below cover
+  // every interaction the recommendation names; read-aloud playing counts
+  // via `isReadAloudPlaying` with no tap required.
+  const shellRef = useRef<HTMLDivElement>(null)
+  const { recordInteraction } = useReadingTimeAccumulator({
+    profileId,
+    api: readingTimeApi,
+    paused: timeCapturePaused,
+    isReadAloudPlaying: readAloud.speaking,
+    containerRef: shellRef,
+  })
   // Choice labels never legally carry sentinels (generation/binding.py), but
   // the module's own rationale applies here too: a defensive strip to generic
   // words is cheaper than trusting every future write path, and a label is a
@@ -272,6 +323,7 @@ export function Reader({
     // navigation within the same mounted Reader (no unmount), so this is not
     // covered by the hook's unmount cleanup.
     readAloud.stop()
+    recordInteraction()
     send({ type: 'CHOOSE', choiceId })
   }
 
@@ -383,6 +435,7 @@ export function Reader({
         // Going back changes the current node without unmounting the Reader,
         // so read-aloud must be stopped explicitly here.
         readAloud.stop()
+        recordInteraction()
         for (let i = 0; i < goBackSteps; i += 1) {
           send({ type: 'BACK' })
         }
@@ -449,7 +502,7 @@ export function Reader({
 
   if (choiceError) {
     return (
-      <div className="reader-shell" style={shellStyle}>
+      <div className="reader-shell" style={shellStyle} ref={shellRef}>
         {chrome}
         <section className="reader-error" role="alert">
           <Mascot size={96} className="reader-error__mascot" />
@@ -488,7 +541,7 @@ export function Reader({
     // data celebrates: finishing a story is a win by default.
     const celebrate = ending?.valence !== 'negative'
     return (
-      <div className="reader-shell" style={shellStyle}>
+      <div className="reader-shell" style={shellStyle} ref={shellRef}>
         {chrome}
         <section data-testid="ending-screen" className="reader-ending">
           <div
@@ -533,6 +586,27 @@ export function Reader({
               completionOutcome={completionOutcome}
             />
           ) : null}
+          {/* W3.2: the Endings Gallery's ending-screen entry point. Omitted
+              entirely (no button) when the caller has no progress port
+              wired, mirroring fetchReadingHistory's own optional pattern. */}
+          {progressApi ? (
+            <EndingsGalleryButton
+              profileId={profileId}
+              storybookId={story.id}
+              bookTitle={story.title}
+              api={progressApi}
+            />
+          ) : null}
+          {/* W3.2: badge-unlock toast. The caller (ReaderPage) decides WHICH
+              badge (pre/post progress comparison + IndexedDB seen-state);
+              this only renders whatever it is handed and clears it on
+              dismiss (tap or auto-dismiss). */}
+          {newlyEarnedBadge ? (
+            <BadgeUnlockToast
+              badge={newlyEarnedBadge}
+              onDismiss={() => onDismissBadgeToast?.()}
+            />
+          ) : null}
           <div className="reader-ending__actions">
             <Button
               variant="primary"
@@ -540,6 +614,7 @@ export function Reader({
               data-testid="restart"
               onClick={() => {
                 readAloud.stop()
+                recordInteraction()
                 send({ type: 'RESTART' })
               }}
             >
@@ -565,7 +640,7 @@ export function Reader({
   }
 
   return (
-    <div className="reader-shell" style={shellStyle}>
+    <div className="reader-shell" style={shellStyle} ref={shellRef}>
       {chrome}
       <section data-testid="reader" className="reader">
         {atOpening ? <DedicationOverlay personalization={personalization} /> : null}

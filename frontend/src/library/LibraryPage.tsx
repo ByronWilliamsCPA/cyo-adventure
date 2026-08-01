@@ -263,10 +263,18 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
 
   // W4.3: check once per mount, not per `load()` call, so a retry ("Try
   // again") does not re-show a banner already consumed this page view.
+  // #ASSUME: timing dependencies: deferred through setTimeout(fn, 0) rather
+  // than calling setBudgetFull directly in the effect body; a direct call
+  // here would set state synchronously from inside the effect, which
+  // `react-hooks/set-state-in-effect` flags as a cascading-render risk (the
+  // established fix elsewhere in this codebase, e.g. guardian/BudgetBanner.tsx).
   useEffect(() => {
-    if (consumeDownloadRefusal()) {
-      setBudgetFull(true)
-    }
+    const timer = setTimeout(() => {
+      if (consumeDownloadRefusal()) {
+        setBudgetFull(true)
+      }
+    }, 0)
+    return () => clearTimeout(timer)
   }, [])
 
   // Offline-copy revocation (roadmap Phase 5, G8/A5): re-fetch on reconnect

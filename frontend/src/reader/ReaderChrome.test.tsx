@@ -142,25 +142,33 @@ describe('ReaderChrome', () => {
   })
 
   describe('sound-effects mute toggle (W4.2, D7)', () => {
-    it('defaults to sound ON when nothing is stored and there is no reduce-motion signal', () => {
+    // The mute default is resolved a tick after mount (deferred via
+    // setTimeout(fn, 0) to satisfy react-hooks/set-state-in-effect, see
+    // ReaderChrome.tsx); until it resolves the toggle stays in its
+    // fail-safe-silent "muted" state (`effectiveMuted` defaults `null` to
+    // `true`). Every test below that cares about the RESOLVED default (or
+    // that plays a sound, which requires the resolved default to be "on"
+    // first) uses `findByRole` to wait for it rather than `getByRole`.
+
+    it('defaults to sound ON when nothing is stored and there is no reduce-motion signal', async () => {
       render(<ReaderChrome position={{ label: 'Page 1' }} />)
-      const button = screen.getByRole('button', { name: 'Turn sound effects off' })
+      const button = await screen.findByRole('button', { name: 'Turn sound effects off' })
       expect(button).toHaveAttribute('aria-pressed', 'true')
     })
 
-    it('defaults to muted when a reduce_motion ancestor is present (plan default)', () => {
+    it('defaults to muted when a reduce_motion ancestor is present (plan default)', async () => {
       render(
         <div data-reduce-motion="true">
           <ReaderChrome position={{ label: 'Page 1' }} />
         </div>
       )
-      const button = screen.getByRole('button', { name: 'Turn sound effects on' })
+      const button = await screen.findByRole('button', { name: 'Turn sound effects on' })
       expect(button).toHaveAttribute('aria-pressed', 'false')
     })
 
-    it('tapping the toggle flips state and persists across a remount', () => {
+    it('tapping the toggle flips state and persists across a remount', async () => {
       const { unmount } = render(<ReaderChrome position={{ label: 'Page 1' }} />)
-      const button = screen.getByRole('button', { name: 'Turn sound effects off' })
+      const button = await screen.findByRole('button', { name: 'Turn sound effects off' })
       fireEvent.click(button)
       expect(screen.getByRole('button', { name: 'Turn sound effects on' })).toHaveAttribute(
         'aria-pressed',
@@ -170,13 +178,12 @@ describe('ReaderChrome', () => {
       // A fresh mount picks up the persisted choice instead of re-deriving
       // the reduce-motion default.
       render(<ReaderChrome position={{ label: 'Page 1' }} />)
-      expect(screen.getByRole('button', { name: 'Turn sound effects on' })).toHaveAttribute(
-        'aria-pressed',
-        'false'
-      )
+      expect(
+        await screen.findByRole('button', { name: 'Turn sound effects on' })
+      ).toHaveAttribute('aria-pressed', 'false')
     })
 
-    it('plays the choice-tap sound on a click that lands on Reader.tsx-style choice markup', () => {
+    it('plays the choice-tap sound on a click that lands on Reader.tsx-style choice markup', async () => {
       render(
         <div>
           <ReaderChrome position={{ label: 'Page 1' }} />
@@ -185,11 +192,13 @@ describe('ReaderChrome', () => {
           </button>
         </div>
       )
+      // Wait for the default (sound ON) to resolve before the tap.
+      await screen.findByRole('button', { name: 'Turn sound effects off' })
       fireEvent.click(screen.getByTestId('choice-abc'))
       expect(playChoiceTapSound).toHaveBeenCalledTimes(1)
     })
 
-    it('does not play the choice-tap sound while muted', () => {
+    it('does not play the choice-tap sound while muted', async () => {
       render(
         <div>
           <ReaderChrome position={{ label: 'Page 1' }} />
@@ -198,34 +207,35 @@ describe('ReaderChrome', () => {
           </button>
         </div>
       )
-      fireEvent.click(screen.getByRole('button', { name: 'Turn sound effects off' }))
+      fireEvent.click(await screen.findByRole('button', { name: 'Turn sound effects off' }))
       fireEvent.click(screen.getByTestId('choice-abc'))
       expect(playChoiceTapSound).not.toHaveBeenCalled()
     })
 
-    it('does not play the choice-tap sound for a click elsewhere in the document', () => {
+    it('does not play the choice-tap sound for a click elsewhere in the document', async () => {
       render(
         <div>
           <ReaderChrome position={{ label: 'Page 1' }} />
           <button type="button">Not a choice</button>
         </div>
       )
+      await screen.findByRole('button', { name: 'Turn sound effects off' })
       fireEvent.click(screen.getByRole('button', { name: 'Not a choice' }))
       expect(playChoiceTapSound).not.toHaveBeenCalled()
     })
 
-    it('plays the page-turn sound when the position label changes, not on the first render', () => {
+    it('plays the page-turn sound when the position label changes, not on the first render', async () => {
       const { rerender } = render(<ReaderChrome position={{ label: 'Page 1' }} />)
+      await screen.findByRole('button', { name: 'Turn sound effects off' })
       expect(playPageTurnSound).not.toHaveBeenCalled()
       rerender(<ReaderChrome position={{ label: 'Page 2' }} />)
       expect(playPageTurnSound).toHaveBeenCalledTimes(1)
     })
 
-    it('plays the ending chime exactly once when the position becomes complete', () => {
+    it('plays the ending chime exactly once when the position becomes complete', async () => {
       const { rerender } = render(<ReaderChrome position={{ label: 'Page 3' }} />)
-      rerender(
-        <ReaderChrome position={{ label: 'You finished this story!', complete: true }} />
-      )
+      await screen.findByRole('button', { name: 'Turn sound effects off' })
+      rerender(<ReaderChrome position={{ label: 'You finished this story!', complete: true }} />)
       expect(playEndingChimeSound).toHaveBeenCalledTimes(1)
       // Re-rendering while still complete (e.g. a font-size change) must not
       // replay the chime.

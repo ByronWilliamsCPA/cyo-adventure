@@ -41,6 +41,11 @@ class MockAudioContext {
   close = vi.fn(() => Promise.resolve())
 }
 
+/** Remove `window.AudioContext` without an unsafe `any` cast. */
+function deleteWindowAudioContext(): void {
+  Reflect.deleteProperty(window, 'AudioContext')
+}
+
 describe('reader sounds (W4.2 placeholder WebAudio synthesis)', () => {
   let originalAudioContext: typeof window.AudioContext | undefined
 
@@ -56,8 +61,7 @@ describe('reader sounds (W4.2 placeholder WebAudio synthesis)', () => {
     if (originalAudioContext) {
       window.AudioContext = originalAudioContext
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      delete (window as any).AudioContext
+      deleteWindowAudioContext()
     }
   })
 
@@ -97,8 +101,7 @@ describe('reader sounds (W4.2 placeholder WebAudio synthesis)', () => {
   })
 
   it('never throws when WebAudio is unsupported (no AudioContext at all)', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    delete (window as any).AudioContext
+    deleteWindowAudioContext()
     expect(() => playPageTurnSound()).not.toThrow()
     expect(() => playChoiceTapSound()).not.toThrow()
     expect(() => playEndingChimeSound()).not.toThrow()

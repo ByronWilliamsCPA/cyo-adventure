@@ -47,13 +47,18 @@ import {
   getDb,
   getDeviceGrantMirror,
   getReadingState,
+  getReadingTimeBucket,
+  isBadgeSeen,
   listCachedStorybookIds,
   listPersonalizationValues,
   listQueue,
   listReadingStateStorybookIds,
+  listReadingTimeBuckets,
+  markBadgeSeen,
   putDeviceGrantMirror,
   putProfileShelf,
   putReadingState,
+  putReadingTimeBucket,
   type PersonalizationValuesEntry,
   type QueuedWrite,
 } from './db'
@@ -457,5 +462,107 @@ describe('offline download budget enforcement (W4.3, D20)', () => {
     mockStorageEstimate(10 * MB)
     await cacheStorybook(story)
     expect(consumeDownloadRefusal()).toBe(false)
+  })
+})
+
+describe('reading-time day buckets (W3.3)', () => {
+  beforeEach(() => {
+    _resetDbHandle()
+  })
+
+  it('round-trips a bucket keyed by profile and date', async () => {
+    await putReadingTimeBucket({
+      profileId: 'p_1',
+      date: '2026-01-01',
+      seconds: 90,
+      syncedSeconds: 0,
+      pending: null,
+    })
+    expect(await getReadingTimeBucket('p_1', '2026-01-01')).toEqual({
+      profileId: 'p_1',
+      date: '2026-01-01',
+      seconds: 90,
+      syncedSeconds: 0,
+      pending: null,
+    })
+  })
+
+  it('returns undefined for a profile/date with no bucket', async () => {
+    expect(await getReadingTimeBucket('p_1', '2026-01-01')).toBeUndefined()
+  })
+
+  it('lists only the requested profile\'s buckets', async () => {
+    await putReadingTimeBucket({
+      profileId: 'p_1',
+      date: '2026-01-01',
+      seconds: 10,
+      syncedSeconds: 0,
+      pending: null,
+    })
+    await putReadingTimeBucket({
+      profileId: 'p_1',
+      date: '2026-01-02',
+      seconds: 20,
+      syncedSeconds: 0,
+      pending: null,
+    })
+    await putReadingTimeBucket({
+      profileId: 'p_2',
+      date: '2026-01-01',
+      seconds: 99,
+      syncedSeconds: 0,
+      pending: null,
+    })
+    const rows = await listReadingTimeBuckets('p_1')
+    expect(rows.map((r) => r.date).sort()).toEqual(['2026-01-01', '2026-01-02'])
+  })
+
+  it('creates the reading_time_days and badge_seen stores when upgrading a v4 database to v5', async () => {
+    _resetDbHandle()
+    const legacy = await openDB(DB_NAME, 4, {
+      upgrade(db) {
+        db.createObjectStore('storybooks')
+        db.createObjectStore('reading_states')
+        db.createObjectStore('offline_queue', { keyPath: 'event_id' })
+        db.createObjectStore('device_grant')
+        db.createObjectStore('library_lists')
+        db.createObjectStore('profile_shelf')
+        db.createObjectStore('personalization_values')
+      },
+    })
+    await legacy.put('storybooks', story, `${story.id}@${story.version}`)
+    legacy.close()
+    _resetDbHandle()
+
+    await putReadingTimeBucket({
+      profileId: 'p_1',
+      date: '2026-01-01',
+      seconds: 5,
+      syncedSeconds: 0,
+      pending: null,
+    })
+    expect((await getReadingTimeBucket('p_1', '2026-01-01'))?.seconds).toBe(5)
+    // The pre-existing v4 store still works, undisturbed by the upgrade.
+    expect(await getCachedStorybook(story.id, story.version)).toEqual(story)
+  })
+})
+
+describe('badge seen-state (W3.2)', () => {
+  beforeEach(() => {
+    _resetDbHandle()
+  })
+
+  it('reports false for a never-seen badge', async () => {
+    expect(await isBadgeSeen('p_1', 'first_ending')).toBe(false)
+  })
+
+  it('reports true once a badge has been marked seen', async () => {
+    await markBadgeSeen('p_1', 'first_ending')
+    expect(await isBadgeSeen('p_1', 'first_ending')).toBe(true)
+  })
+
+  it('scopes seen-state per profile', async () => {
+    await markBadgeSeen('p_1', 'first_ending')
+    expect(await isBadgeSeen('p_2', 'first_ending')).toBe(false)
   })
 })
