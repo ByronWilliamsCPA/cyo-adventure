@@ -480,7 +480,10 @@ detail when a storybook has more than one version).
   catalog), `frontend/src/kid/progressApi.test.ts` (adapter shape degradation to safe defaults),
   `frontend/src/library/EndingsGallery.test.tsx` (found cards, hidden silhouettes, large-M
   milestone mode, no negative framing), `frontend/src/reader/ReaderPage.badgeToast.test.tsx`
-  (unlock diff + IndexedDB seen-state dedupe)
+  (unlock diff + IndexedDB seen-state dedupe), `frontend/src/reader/BadgeUnlockToast.test.tsx`
+  (auto-dismiss, manual close, disabled auto-dismiss, unmount cleanup),
+  `frontend/src/reader/EndingsGalleryButton.test.tsx` (opens only after the fetch settles,
+  in-flight disable, failure logs profile context and degrades to the empty state)
 - Integration: `frontend/src/test/App.test.tsx`
 
 ## Kid: read a story (reader page, choices, endings)
