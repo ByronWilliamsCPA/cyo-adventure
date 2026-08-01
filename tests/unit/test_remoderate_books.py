@@ -232,6 +232,29 @@ async def test_resolve_book_id_targets_raises_404_for_no_published_version() -> 
         await remoderate_books._resolve_book_id_targets(session, ["s1"])
 
 
+@pytest.mark.asyncio
+async def test_resolve_book_id_targets_collapses_duplicate_ids() -> None:
+    """A repeated --book-id yields one target, in first-occurrence order.
+
+    Sweeping the same book twice would make the full review-model fan-out
+    twice to reach one result (the second report overwrites the first) while
+    reporting the book as two successes.
+    """
+    session = AsyncMock()
+    session.get = AsyncMock(
+        side_effect=lambda _model, book_id: _storybook(
+            book_id, current_published_version=1
+        )
+    )
+
+    targets = await remoderate_books._resolve_book_id_targets(
+        session, ["s2", "s1", "s2", "s1", "s2"]
+    )
+
+    assert targets == [("s2", 1), ("s1", 1)]
+    assert session.get.await_count == 2
+
+
 # ---------------------------------------------------------------------------
 # sweep(): selector validation
 # ---------------------------------------------------------------------------

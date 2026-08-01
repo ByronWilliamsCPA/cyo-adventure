@@ -68,6 +68,10 @@ _GUARDIAN = Principal(
 _NODE_COUNT = len(cast("list[object]", _CANNED_STORY["nodes"]))
 _REVIEW_BUDGET = 4 * (2 * _NODE_COUNT + 2)
 
+# Generous enough that a loaded CI runner never trips it, short enough that a
+# genuine deadlock fails in seconds rather than at the job timeout.
+_SLOT_TEST_TIMEOUT = 10.0
+
 
 def _ctx(principal: Principal, session: AsyncMock) -> RequestContext:
     return RequestContext(principal=principal, session=session)
@@ -830,7 +834,14 @@ async def test_second_concurrent_remoderation_is_rejected(
 
     ctx = _ctx(_ADMIN, mock_async_session)
     first = asyncio.create_task(remoderate_api.trigger_remoderate("s1", 1, ctx))
-    await started.wait()
+    # Bound both waits. This project installs no pytest-timeout, so an
+    # unbounded wait here would not fail the test, it would hang the whole
+    # pytest process until the CI job's own timeout killed it, reporting as
+    # an opaque infrastructure failure rather than as this test. If the first
+    # call raises before reaching the slot, `started` is never set; if the
+    # slot is never released, `first` never completes. Both become a
+    # TimeoutError naming this line instead.
+    await asyncio.wait_for(started.wait(), timeout=_SLOT_TEST_TIMEOUT)
 
     try:
         with pytest.raises(BusinessLogicError) as excinfo:
@@ -838,7 +849,73 @@ async def test_second_concurrent_remoderation_is_rejected(
         assert excinfo.value.details["rule"] == "remoderate_already_running"
     finally:
         release.set()
-        await first
+        await asyncio.wait_for(first, timeout=_SLOT_TEST_TIMEOUT)
 
     # The slot is released for the next caller once the first call returns.
     assert not remoderate_api._REMODERATION_SLOT.locked()
+
+
+async def test_child_names_passed_to_pipeline_for_pii_guard(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The story family's child names reach the pipeline as the PII denylist.
+
+    The names travel INWARD so the pipeline can keep them out of provider
+    prompts. The family queried is the STORY's, which for a cross-family
+    admin sweep is not the caller's; narrowing it to the principal's own
+    family would silently disable the guard for exactly those sweeps.
+    """
+    _wire_session(
+        mock_async_session,
+        _story(),
+        _version_row(),
+        child_names=["Briella", "Ember"],
+    )
+
+    async def _fake_pipeline(**_kwargs: object) -> None:
+        raise StateTransitionError(
+            "cannot submit", rule="invalid_state_transition", context={}
+        )
+
+    pipeline = AsyncMock(side_effect=_fake_pipeline)
+    monkeypatch.setattr(remoderate_api, "run_moderation_pipeline", pipeline)
+
+    await remoderate_api.trigger_remoderate("s1", 1, _ctx(_ADMIN, mock_async_session))
+
+    assert pipeline.call_args.kwargs["pii"].child_names == frozenset(
+        {"Briella", "Ember"}
+    )
+
+
+async def test_remoderate_response_excludes_child_names(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Child names reach the pipeline but never the response or the audit event.
+
+    The PII denylist is the one genuinely-sensitive value this module holds.
+    An event payload or response field carrying it would exfiltrate exactly
+    what the guard exists to protect, into a store with different retention
+    and access rules than the profile table.
+    """
+    names = ["Briella", "Ember"]
+    _wire_session(mock_async_session, _story(), _version_row(), child_names=list(names))
+
+    async def _fake_pipeline(**_kwargs: object) -> None:
+        raise StateTransitionError(
+            "cannot submit", rule="invalid_state_transition", context={}
+        )
+
+    monkeypatch.setattr(
+        remoderate_api, "run_moderation_pipeline", AsyncMock(side_effect=_fake_pipeline)
+    )
+
+    view = await remoderate_api.trigger_remoderate(
+        "s1", 1, _ctx(_ADMIN, mock_async_session)
+    )
+
+    serialized = view.model_dump_json()
+    event = mock_async_session.add.call_args.args[0]
+    event_payload = repr(event.payload)
+    for name in names:
+        assert name not in serialized
+        assert name not in event_payload

@@ -497,6 +497,113 @@ against fresh evidence.
   [PR #494](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/494),
   [workflow run 30580773808](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/30580773808)
 
+## CVE-2026-63879, CVE-2026-64530, CVE-2026-64531 | linux-libc-dev | High
+
+| Field | Value |
+|-------|-------|
+| **CVE ID** | CVE-2026-63879 (no fix), CVE-2026-64530 and CVE-2026-64531 (both fixed in 6.12.100-1) |
+| **Package** | linux-libc-dev (Debian binary package from the `linux` kernel source package) |
+| **Affected Version** | 6.12.96-1+dhi0 (Debian 13 "trixie", DHI mirror build) |
+| **Fixed Version** | Mixed, and this is the first `linux-libc-dev` entry here that is not uniformly "no fix": Trivy reports 6.12.100-1 for CVE-2026-64530 and CVE-2026-64531, and an empty Fixed Version with status `affected` for CVE-2026-63879 |
+| **Severity** | High (all 3, per Trivy/Aqua feed; `Total: 3 (HIGH: 3, CRITICAL: 0)`) |
+| **CVSS Score** | Not yet assigned in the scan output for any of the three as of 2026-08-01 |
+| **Discovered** | 2026-08-01 |
+| **Reassessment Due** | 2026-09-30 |
+| **Blocking Release** | No |
+
+### Description
+
+Three kernel defects reported against `linux-libc-dev`'s tracked kernel source
+version, surfaced by a Trivy vulnerability-database refresh on 2026-08-01. They
+span unrelated subsystems: an AMD GPU DRM fix in `amdgpu_hmm_range_get_pages`
+(CVE-2026-63879), a use-after-free in the network scheduler via a missing
+handler (CVE-2026-64530), and an Open vSwitch oversized-nested-action rejection
+(CVE-2026-64531).
+
+This entry supersedes rather than extends the seven-CVE block above: the same
+run that surfaced these three reports them as the image's only remaining
+findings, so that block's seven no longer appear in scan output. The base-image
+version is unchanged at 6.12.96-1+dhi0, so the turnover is a feed change, not an
+image change.
+
+**What is different about this set.** Every prior `linux-libc-dev` entry in this
+document recorded "No fix available" for every CVE in it. Two of these three
+carry a Fixed Version. That makes this set partly actionable rather than purely
+a wait-for-upstream case: a base-image digest refresh onto a kernel-header build
+at or above 6.12.100-1 clears CVE-2026-64530 and CVE-2026-64531 outright.
+
+### Impact on This Project
+
+The same structural argument as the three `linux-libc-dev` entries above, which
+is a statement about what the package *is* rather than a judgement about
+severity: it ships kernel UAPI headers used at compile time by userspace
+programs, contains no kernel binary, and executes no kernel code at runtime. The
+container serves a FastAPI web application under whatever kernel the Docker host
+provides. Patching or removing this package would not change which kernel
+actually runs.
+
+Not overstating the case: two of the three name networking subsystems that can
+plausibly exist on a container host rather than exotic hardware, namely
+CVE-2026-64530 (`net/sched`) and CVE-2026-64531 (`net/openvswitch`), though
+Docker's default bridge networking does not use Open vSwitch. Neither is
+reachable *through this image or this package*; if the Docker host runs an
+affected kernel, the remediation is host kernel patching, which is outside this
+repository and unaffected by anything shipped in the image. CVE-2026-63879
+targets AMD GPU hardware this deployment does not use at all. Exposure through
+the application surface is negligible.
+
+### Remediation Plan
+
+- [ ] Confirm each CVE's status on the [Debian security tracker](https://security-tracker.debian.org/tracker/source-package/linux)
+  for the `trixie` and `trixie-security` tracks. Unlike the entries above, the
+  Fixed Version recorded here comes from Trivy's feed and has **not** yet been
+  independently verified against Debian; do that before treating 6.12.100-1 as
+  reachable on this release track.
+- [ ] Once `linux-libc-dev >= 6.12.100-1` reaches the trixie track, request a
+  base-image digest refresh from the `ByronWilliamsCPA/container-images` mirror
+  pipeline.
+- [ ] Re-run the Container Security scan to confirm CVE-2026-64530 and
+  CVE-2026-64531 have cleared.
+- [ ] Close [issue #505](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/505)
+  if its seven CVEs remain absent from scan output.
+- [ ] Tracked in [issue #535](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/535)
+- [ ] Reassess by 2026-09-30
+
+### Why Not Fixed Yet
+
+For CVE-2026-63879, Trivy reports no fix. For the other two a fix exists
+upstream, but the package is provided by the hardened base image
+(`ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13`), not managed by this
+project's dependency set, and the DHI runtime image ships no shell and no
+package manager, so it cannot upgrade itself. The only path in is a base-image
+digest refresh from the `ByronWilliamsCPA/container-images` mirror pipeline,
+which this project consumes rather than controls, and which in turn depends on
+the trixie track carrying 6.12.100-1.
+
+**Why `Blocking Release | No` on the evidence of 2026-08-01.** The exposure is a
+compile-time header set with no kernel code path in the image, and the running
+kernel is the host's, so holding a release would not reduce exposure; it would
+only stall delivery. This verdict rests on a narrower evidence base than the
+entries above, which is recorded here rather than glossed: the Debian tracker
+was not consulted, so whether 6.12.100-1 is actually reachable on the trixie
+track is unconfirmed. That does not change the reachability argument, which does
+not depend on fix availability, but it is the first thing to check at
+reassessment. Per the Release Gate Policy above this is a dated verdict, not a
+standing exemption: it expires on 2026-09-30, at which point the process gate
+closes the release until the entry is reassessed against fresh evidence.
+
+### References
+
+- [Aqua AVD CVE-2026-63879](https://avd.aquasec.com/nvd/cve-2026-63879)
+  (the other 2 follow the same `avd.aquasec.com/nvd/<cve-id>` URL pattern)
+- [Debian security tracker: linux](https://security-tracker.debian.org/tracker/source-package/linux)
+- Discovered by the Container Security workflow (Trivy) on
+  [PR #529](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/529),
+  [workflow run 30711029139](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/30711029139).
+  The immediately preceding run on `main` (16:33 UTC, same day) passed, and the
+  branch changes no dependency, lockfile, or Dockerfile, which is what
+  identifies this as a feed refresh rather than a change introduced by that PR.
+
 ## Resolved Entries
 
 | CVE              | Package        | Resolved Date | Resolution                                             |

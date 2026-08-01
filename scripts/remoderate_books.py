@@ -209,7 +209,8 @@ async def _resolve_book_id_targets(
         book_ids: Storybook ids named on the command line.
 
     Returns:
-        ``(storybook_id, version)`` pairs in the order given.
+        ``(storybook_id, version)`` pairs in the order given, with repeated
+        ids collapsed to their first occurrence.
 
     Raises:
         ResourceNotFoundError: If a named storybook does not exist, or has
@@ -224,8 +225,23 @@ async def _resolve_book_id_targets(
     # #VERIFY: tests/unit/test_remoderate_books.py::
     # test_resolve_book_id_targets_raises_404_for_unknown_book and
     # ::test_resolve_book_id_targets_raises_404_for_no_published_version.
+    #
+    # #EDGE: external-resources: a repeated --book-id is collapsed rather than
+    # swept twice. Re-moderating a book twice in one run is not merely
+    # wasteful, it is EXPENSIVE and misleading: each pass makes the full
+    # review-model fan-out (dozens of calls), and the second pass's report
+    # overwrites the first, so the sweep would bill twice to arrive at one
+    # result while reporting the book as two successes. Duplicates come from
+    # an operator's long command line, not from intent, so first-occurrence
+    # order is preserved and no error is raised.
+    # #VERIFY: tests/unit/test_remoderate_books.py::
+    # test_resolve_book_id_targets_collapses_duplicate_ids.
     targets: list[tuple[str, int]] = []
+    seen: set[str] = set()
     for book_id in book_ids:
+        if book_id in seen:
+            continue
+        seen.add(book_id)
         storybook = await session.get(Storybook, book_id)
         if storybook is None:
             msg = f"storybook {book_id!r} not found"

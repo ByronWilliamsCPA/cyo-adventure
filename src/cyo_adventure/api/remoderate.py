@@ -253,6 +253,31 @@ async def _family_child_names(
         frozenset[str]: Every child display name in the family, for the PII
         egress guard on the re-review and repair prompts.
     """
+    # #CRITICAL: security: this is the only value in this module that IS
+    # children's PII rather than a reference to it, and its whole purpose is
+    # to be handed to the moderation pipeline so the pipeline can keep those
+    # names OUT of provider prompts. The direction matters: the names travel
+    # inward as a denylist, never outward. Two properties keep that true and
+    # both must survive any edit here.
+    #
+    # First, the value stays in-process. It is passed to
+    # run_moderation_pipeline and is never logged, never placed in a
+    # RemoderateResult, never written to the pipeline event payload, and
+    # never reaches RemoderateResultView; the endpoint's response carries
+    # only verdict counts. A log line or event payload added here would
+    # exfiltrate exactly what the guard exists to protect, into a store with
+    # a different retention and access model than the profile table.
+    #
+    # Second, the family scope is the STORY's family, not the caller's, and
+    # that is deliberate rather than an oversight: an admin re-moderating
+    # another family's book must still suppress THAT family's names, so the
+    # query cannot be narrowed to the principal's own family without
+    # silently disabling the guard for every cross-family sweep, which is
+    # the case the ops script (scripts/remoderate_books.py) drives.
+    # #VERIFY: tests/unit/test_remoderate_unit.py::
+    # test_child_names_passed_to_pipeline_for_pii_guard asserts the names
+    # reach the pipeline call; ::test_remoderate_response_excludes_child_names
+    # asserts they appear in neither the response nor the recorded event.
     rows = await session.scalars(
         select(ChildProfile.display_name).where(ChildProfile.family_id == family_id)
     )
