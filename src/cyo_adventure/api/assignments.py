@@ -571,7 +571,12 @@ def _guardian_book_item(
             moderation_report=version_row.moderation_report,
             age_band=_book_age_band(version_row.blob),
             policy=policy,
-            validation_report=version_row.validation_report,
+            # validation_report is deliberately NOT passed here. This row only
+            # reads screened and flagged_count; GuardianBookItem carries no
+            # validator_notes field, so forwarding it would run the RL-13/PL-19
+            # allowlist parse once per book in the browse list and discard every
+            # result. The single-book content-summary route (get_content_summary)
+            # is the caller that does return validator_notes, and it passes it.
         )
         screened = summary.screened
         flagged_count = summary.flagged_count

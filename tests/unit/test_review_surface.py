@@ -1183,30 +1183,57 @@ def test_structural_findings_split_into_own_block() -> None:
 
 
 @pytest.mark.unit
-def test_ranked_and_structural_findings_still_reject_pass_verdict() -> None:
-    """The pass-verdict guard rejects a leak through the new B3 buckets too."""
+def _pass_finding() -> FindingView:
+    """A PASS-verdict finding, the thing _no_pass_verdict_leaks must reject."""
+    return FindingView(
+        stage=1,
+        source=Source.LLM_SAFETY,
+        category="safety",
+        node_id=None,
+        verdict=Verdict.PASS,
+        score=None,
+        message="clean",
+    )
+
+
+def _surface_with_buckets(
+    *,
+    ranked: list[FindingView] | None = None,
+    structural: list[FindingView] | None = None,
+    low_advisory: list[FindingView] | None = None,
+) -> ReviewSurfaceView:
+    """Build a minimal surface populating exactly one of the three B3 buckets."""
+    return ReviewSurfaceView(
+        storybook_id="s1",
+        version=1,
+        status="in_review",
+        blob={},
+        screened=True,
+        summary=None,
+        flagged_passages=[],
+        story_level_findings=[],
+        ranked_findings=ranked if ranked is not None else [],
+        structural_findings=structural if structural is not None else [],
+        low_advisory_findings=low_advisory if low_advisory is not None else [],
+    )
+
+
+@pytest.mark.unit
+def test_every_new_b3_bucket_still_rejects_pass_verdict() -> None:
+    """The pass-verdict guard rejects a leak through EACH new B3 bucket.
+
+    _no_pass_verdict_leaks gained three `or any(...)` clauses in Stage B3, one
+    per new bucket. Populating only ranked_findings leaves the other two at
+    their [] defaults, so a single-bucket test passes even if the other two
+    clauses were dropped or misspelled. Exercise all three independently.
+    """
+    leaked = _pass_finding()
     with pytest.raises(PydanticValidationError, match="pass-verdict"):
-        ReviewSurfaceView(
-            storybook_id="s1",
-            version=1,
-            status="in_review",
-            blob={},
-            screened=True,
-            summary=None,
-            flagged_passages=[],
-            story_level_findings=[],
-            ranked_findings=[
-                FindingView(
-                    stage=1,
-                    source=Source.LLM_SAFETY,
-                    category="safety",
-                    node_id=None,
-                    verdict=Verdict.PASS,
-                    score=None,
-                    message="clean",
-                )
-            ],
-        )
+        _surface_with_buckets(ranked=[leaked])
+    with pytest.raises(PydanticValidationError, match="pass-verdict"):
+        _surface_with_buckets(structural=[leaked])
+    with pytest.raises(PydanticValidationError, match="pass-verdict"):
+        _surface_with_buckets(low_advisory=[leaked])
 
 
 # Validator findings (design doc 2.7 option (a)): read-only RL-13/PL-19 projection.
@@ -1271,6 +1298,78 @@ def test_validator_findings_absent_report_is_empty() -> None:
         validation_report=None,
     )
     assert view.validator_findings == []
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "stored_severity",
+    [None, "", "warn", "critical", 3, ["error"]],
+    ids=["missing", "empty", "typo", "unknown", "int", "list"],
+)
+def test_validator_finding_with_unreadable_severity_defaults_to_error(
+    stored_severity: object,
+) -> None:
+    """An unreadable severity fails toward the LOUDER tier, never the calmer one.
+
+    PL-19 spans both validator severities (per-node word wall is `error`,
+    story-mean drift is `warning`), and this projection feeds the guardian's
+    assignment screen through _validator_notes. Defaulting a corrupt value to
+    `warning` would silently downgrade an error to advisory text under the
+    exact control a guardian uses to hand a book to a child. Over-warning is
+    recoverable; under-warning is not. Degrading must also never RAISE: the
+    Literal on ValidatorFindingView.severity is normalized against, not
+    validated against, or one bad row would 422 the whole review surface.
+    """
+    validation_report: dict[str, object] = {
+        "ok": False,
+        "findings": [
+            {
+                "rule_id": "PL-19",
+                "severity": stored_severity,
+                "node_id": "n1",
+                "message": "PL-19: node word wall",
+            }
+        ],
+    }
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_ranking_blob(),
+        moderation_report=None,
+        validation_report=validation_report,
+    )
+    assert len(view.validator_findings) == 1
+    assert view.validator_findings[0].severity == "error"
+
+
+@pytest.mark.unit
+def test_validator_finding_readable_warning_is_not_escalated() -> None:
+    """The fail-loud default must not swallow a legitimately-lower severity.
+
+    Pairs with the test above: escalating everything would make the `warning`
+    tier unreachable and the guardian note meaningless.
+    """
+    validation_report: dict[str, object] = {
+        "ok": False,
+        "findings": [
+            {
+                "rule_id": "RL-13",
+                "severity": "warning",
+                "node_id": "n1",
+                "message": "RL-13: story-mean drift",
+            }
+        ],
+    }
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_ranking_blob(),
+        moderation_report=None,
+        validation_report=validation_report,
+    )
+    assert view.validator_findings[0].severity == "warning"
 
 
 # Guardian validator notes (Stage B3 follow-up, design doc 2.7 option (a)):
@@ -1407,3 +1506,186 @@ def test_content_summary_validator_notes_carry_no_node_identifiers() -> None:
         assert not hasattr(note, "message")
     _assert_no_node_identifiers(summary.model_dump())
     _assert_no_node_identifiers(summary.model_dump(mode="json"))
+
+
+# Guardian merge identity and bucket-ordering invariants (Stage B3 review
+# follow-up). Both target branches that every pre-existing test passes through
+# without discriminating, so an inverted condition would have shipped silently.
+
+
+def _same_message_two_concerns_report() -> dict[str, object]:
+    """Two findings identical in every merge-key field EXCEPT concern.
+
+    Isolating one dimension is the point: if any other field differed, the
+    test could not tell whether concern or that other field split the rows.
+    """
+    shared = {
+        "stage": 1,
+        "source": "llm_safety",
+        "category": "safety",
+        "verdict": "flag",
+        "score": None,
+        "message": "identical message",
+        "severity": "medium",
+    }
+    return {
+        "findings": [
+            {**shared, "node_id": "n_start", "concern": "frightening_content"},
+            {**shared, "node_id": "n_fork", "concern": "peril"},
+            # And two carrying NO concern at all, identical except for
+            # category, which isolates the other half of the fallback.
+            {
+                "stage": 3,
+                "source": "llm_coherence",
+                "category": "coherence",
+                "node_id": None,
+                "verdict": "flag",
+                "score": None,
+                "message": "no concern set",
+            },
+            {
+                "stage": 3,
+                "source": "llm_coherence",
+                "category": "reading_level",
+                "node_id": None,
+                "verdict": "flag",
+                "score": None,
+                "message": "no concern set",
+            },
+        ],
+        "summary": {
+            "count": 4,
+            "hard_block": False,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+
+
+@pytest.mark.unit
+def test_guardian_merge_keys_on_concern_not_category() -> None:
+    """Two concerns under one category stay two guardian rows.
+
+    _guardian_group_key uses `concern if concern is not None else category`.
+    Every other guardian test uses findings whose messages already differ, so
+    they merge into distinct rows no matter which half of that expression is
+    used, and inverting it to `category if ... else concern` would pass them
+    all. Here the two findings are identical except for concern: keying on
+    category alone collapses them into ONE row and hides a distinct safety
+    concern from the adult deciding whether a child may read the book.
+    """
+    summary = build_content_summary(
+        storybook_id="s1",
+        version=1,
+        blob=_merged_blob(),
+        moderation_report=_same_message_two_concerns_report(),
+        age_band="6-8",
+        policy=_DEFAULT_POLICY,
+    )
+    concerns = [f.concern for f in summary.findings]
+    assert "frightening_content" in concerns
+    assert "peril" in concerns
+    # Four surfaced occurrences, four rows: two split by concern, two split
+    # by the category fallback. Keying on category alone collapses the first
+    # pair to one row and yields three.
+    assert summary.flagged_count == 4
+    assert len(summary.findings) == 4
+
+
+@pytest.mark.unit
+def test_guardian_merge_falls_back_to_category_when_concern_is_absent() -> None:
+    """Concern-less findings still separate, because they key on category.
+
+    The other half of the fallback. The two concern-less findings differ ONLY
+    in category, so dropping the `else category` branch keys both on None and
+    merges two distinct concerns into a single guardian row.
+    """
+    summary = build_content_summary(
+        storybook_id="s1",
+        version=1,
+        blob=_merged_blob(),
+        moderation_report=_same_message_two_concerns_report(),
+        age_band="6-8",
+        policy=_DEFAULT_POLICY,
+    )
+    fallback = [f for f in summary.findings if f.concern is None]
+    assert len(fallback) == 2
+    assert {f.category for f in fallback} == {"coherence", "reading_level"}
+
+
+@pytest.mark.unit
+def test_structural_beats_low_advisory_when_a_finding_is_both() -> None:
+    """A structural finding that is ALSO low+advisory belongs in structural.
+
+    _rank_and_split checks `structural` first, then the low-advisory case.
+    Every other fixture's structural finding is high severity with a flag
+    verdict, so it can never match the low-advisory branch and swapping the
+    two conditions passes the whole suite. This finding matches BOTH, so it
+    discriminates: collapsing a pipeline failure behind the low-priority
+    toggle would hide a reviewer outage from the approver by default.
+    """
+    report: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "pipeline",
+                "node_id": None,
+                "verdict": "advisory",
+                "score": None,
+                "message": "reviewer unavailable on 2 nodes",
+                "severity": "low",
+                "structural": True,
+            }
+        ],
+        "summary": None,
+    }
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_merged_blob(),
+        moderation_report=report,
+    )
+    assert len(view.structural_findings) == 1
+    assert view.structural_findings[0].structural is True
+    assert view.low_advisory_findings == []
+    assert view.ranked_findings == []
+
+
+@pytest.mark.unit
+def test_validator_finding_with_unreadable_message_says_so() -> None:
+    """A corrupt message renders as an explicit note, not an empty cell.
+
+    Closes the Copilot review point about blank rows. Dropping the finding
+    entirely was the alternative; it was rejected because rule_id, severity,
+    and node_id remain independently actionable, and silently discarding a
+    validator signal is the worse failure on a safety-review surface.
+    """
+    validation_report: dict[str, object] = {
+        "ok": False,
+        "findings": [
+            {
+                "rule_id": "RL-13",
+                "severity": "warning",
+                "node_id": "n1",
+                "message": {"unexpected": "shape"},
+            }
+        ],
+    }
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_ranking_blob(),
+        moderation_report=None,
+        validation_report=validation_report,
+    )
+    assert len(view.validator_findings) == 1
+    finding = view.validator_findings[0]
+    assert finding.message == "(RL-13: stored message unreadable)"
+    # The readable fields survive: the row is still actionable.
+    assert finding.rule_id == "RL-13"
+    assert finding.severity == "warning"
+    assert finding.node_id == "n1"

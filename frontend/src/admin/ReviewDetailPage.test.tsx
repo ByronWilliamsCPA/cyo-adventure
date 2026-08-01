@@ -883,11 +883,19 @@ describe('ReviewDetailPage', () => {
     expect(screen.queryByRole('button', { name: /^Approve$/i })).not.toBeInTheDocument()
   })
 
-  it('renders story-level notes when the surface carries story-level findings', async () => {
+  // The "Story-level notes" section (which rendered story_level_findings
+  // directly) was removed in Stage B3 as a pure duplicate: ranked_findings
+  // and structural_findings are built from the same FindingView objects that
+  // populate story_level_findings, so a story-level finding now reaches the
+  // admin surface through one of those two sections instead. This test used
+  // to assert the finding under a "Story-level notes" heading; it now
+  // asserts the same finding reaches the reviewer under "Ranked findings"
+  // (non-structural findings land there).
+  it('surfaces a story-level finding under ranked findings', async () => {
     mockGet.mockResolvedValue({
       data: {
         ...SURFACE,
-        story_level_findings: [
+        ranked_findings: [
           {
             stage: 2,
             source: 'llm_safety',
@@ -901,7 +909,7 @@ describe('ReviewDetailPage', () => {
       },
     })
     renderAt('s1')
-    expect(await screen.findByText('Story-level notes')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Ranked findings' })).toBeInTheDocument()
     expect(screen.getByText('overall tone is tense')).toBeInTheDocument()
   })
 

@@ -1405,6 +1405,13 @@ class FlaggedPassage(BaseModel):
     findings: list[FindingView] = Field(min_length=1)
 
 
+# The deterministic validator's own severity vocabulary
+# (validator/report.py::Severity). Deliberately NOT FindingSeverity
+# (high/medium/low), which is the moderation scale; the two are different
+# axes and must not be interchangeable at the API boundary.
+ValidatorSeverity = Literal["error", "warning"]
+
+
 class ValidatorFindingView(BaseModel):
     """One deterministic-gate finding, projected read-only onto the admin surface.
 
@@ -1415,11 +1422,16 @@ class ValidatorFindingView(BaseModel):
     validator. ``severity`` here is the validator's own ``error``/``warning``
     vocabulary (``validator/report.py::Severity``), a distinct scale from the
     moderation ``FindingSeverity`` (high/medium/low) used elsewhere on this
-    surface; keeping it a plain ``str`` avoids conflating the two.
+    surface. It is typed as its own two-member ``Literal`` rather than reused
+    from ``FindingSeverity``, which keeps the two scales from conflating while
+    still making the vocabulary explicit at the contract boundary. Normalizing
+    an unreadable value is ``_validator_findings``' job, not this model's: it
+    maps anything outside the two members to ``"error"`` so a corrupt row
+    degrades loudly instead of raising and 422-ing the whole review surface.
     """
 
     rule_id: str
-    severity: str
+    severity: ValidatorSeverity
     node_id: str | None
     message: str
 
@@ -1591,7 +1603,7 @@ class GuardianValidatorNote(BaseModel):
     """
 
     rule_id: str
-    severity: str
+    severity: ValidatorSeverity
     count: int = Field(ge=1)
 
 

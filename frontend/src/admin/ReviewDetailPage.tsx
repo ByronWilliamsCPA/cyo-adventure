@@ -458,35 +458,32 @@ export function ReviewDetailPage() {
         </p>
       ) : null}
 
-      {surface.story_level_findings.length > 0 ? (
-        <div className="review-group">
-          <h2>Story-level notes</h2>
-          <ul className="review-findings">
-            {surface.story_level_findings.map((finding, index) => (
-              // Findings are static per render; index key is stable here.
-              <Finding key={index} finding={finding} />
-            ))}
-          </ul>
-        </div>
-      ) : null}
-
       {/*
         Stage B3 (design doc 2.6): the merged findings ranked by
         (verdict, severity, affected-node-count, stable tiebreak), with
         structural findings split into their own block and low-ADVISORY
         findings collapsed behind a toggle. All four buckets default empty on
         an older backend response or a pre-Stage-B stored report, so this
-        renders nothing extra in that case; the pre-existing "Flagged
-        passages" / "Story-level notes" sections above are unchanged.
+        renders nothing extra in that case.
+        The "Story-level notes" section (which rendered story_level_findings
+        directly) was removed here as a pure duplicate: ranked_findings and
+        structural_findings are built from the SAME FindingView objects that
+        populate flagged_passages and story_level_findings, so every
+        story-level finding already lands in one of the two sections below
+        (structural if `structural` is true, otherwise ranked or
+        low-advisory). The overlap between "Flagged passages" above and
+        "Ranked findings" below is deliberate, not the same duplication:
+        "Flagged passages" joins each finding to its node prose for reading
+        in context (drill-down), while "Ranked findings" is a triage-ordered
+        list for scanning severity/verdict across the whole story.
       */}
       {rankedFindings.length > 0 ? (
         <div className="review-group" id="ranked-findings">
           <h2>Ranked findings</h2>
           <ul className="review-findings review-findings--ranked">
-            {rankedFindings.map((finding, index) => (
-              // Findings are static per render; index key is stable here.
+            {rankedFindings.map((finding) => (
               <RankedFinding
-                key={index}
+                key={`${finding.concern ?? finding.category}-${finding.severity ?? ''}-${finding.verdict}-${finding.message}`}
                 finding={finding}
                 onJump={jumpToPassage}
                 knownIds={readThrough.knownIds}
@@ -500,10 +497,9 @@ export function ReviewDetailPage() {
         <div className="review-group" id="structural-findings">
           <h2>Structural findings</h2>
           <ul className="review-findings review-findings--ranked">
-            {structuralFindings.map((finding, index) => (
-              // Findings are static per render; index key is stable here.
+            {structuralFindings.map((finding) => (
               <RankedFinding
-                key={index}
+                key={`${finding.concern ?? finding.category}-${finding.severity ?? ''}-${finding.verdict}-${finding.message}`}
                 finding={finding}
                 onJump={jumpToPassage}
                 knownIds={readThrough.knownIds}
@@ -517,10 +513,9 @@ export function ReviewDetailPage() {
         <details className="review-group" id="low-advisory-findings">
           <summary>Low-priority advisories ({lowAdvisoryFindings.length})</summary>
           <ul className="review-findings review-findings--ranked">
-            {lowAdvisoryFindings.map((finding, index) => (
-              // Findings are static per render; index key is stable here.
+            {lowAdvisoryFindings.map((finding) => (
               <RankedFinding
-                key={index}
+                key={`${finding.concern ?? finding.category}-${finding.severity ?? ''}-${finding.verdict}-${finding.message}`}
                 finding={finding}
                 onJump={jumpToPassage}
                 knownIds={readThrough.knownIds}
@@ -538,9 +533,11 @@ export function ReviewDetailPage() {
             words-per-node); these never gate approval.
           </p>
           <ul className="review-findings">
-            {validatorFindings.map((finding, index) => (
-              // Findings are static per render; index key is stable here.
-              <li key={index} className="review-finding">
+            {validatorFindings.map((finding) => (
+              <li
+                key={`${finding.rule_id}-${finding.severity}-${finding.node_id ?? ''}-${finding.message}`}
+                className="review-finding"
+              >
                 <span className="review-finding__category">{finding.rule_id}</span>
                 <span
                   className={`review-finding__severity review-finding__severity--${finding.severity}`}

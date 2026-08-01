@@ -1837,7 +1837,7 @@ export type GuardianValidatorNote = {
     /**
      * Severity
      */
-    severity: string;
+    severity: 'error' | 'warning';
     /**
      * Count
      */
@@ -4263,7 +4263,12 @@ export type ValidationError = {
  * validator. ``severity`` here is the validator's own ``error``/``warning``
  * vocabulary (``validator/report.py::Severity``), a distinct scale from the
  * moderation ``FindingSeverity`` (high/medium/low) used elsewhere on this
- * surface; keeping it a plain ``str`` avoids conflating the two.
+ * surface. It is typed as its own two-member ``Literal`` rather than reused
+ * from ``FindingSeverity``, which keeps the two scales from conflating while
+ * still making the vocabulary explicit at the contract boundary. Normalizing
+ * an unreadable value is ``_validator_findings``' job, not this model's: it
+ * maps anything outside the two members to ``"error"`` so a corrupt row
+ * degrades loudly instead of raising and 422-ing the whole review surface.
  */
 export type ValidatorFindingView = {
     /**
@@ -4273,7 +4278,7 @@ export type ValidatorFindingView = {
     /**
      * Severity
      */
-    severity: string;
+    severity: 'error' | 'warning';
     /**
      * Node Id
      */

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
@@ -468,10 +469,27 @@ async def test_guardian_sees_content_summary(
     # The per-node "violence" flag clears the default (FLAG) threshold; the
     # story-level "coherence" advisory does not, so only the flag is counted.
     assert body["flagged_count"] == 1
-    # Only the story-level finding is enumerated; no flagged_passages key exists.
+    # #CRITICAL: security: the guardian summary is story-level ONLY. The
+    # per-node fan-out (flagged_passages) must never appear on this response,
+    # because passage prose spoils the story and leaks generation internals.
+    # #VERIFY: the whole-body node-id sweep below, which catches a leak
+    # embedded in free-form finding text, not just one under a known key.
     assert "flagged_passages" not in body
-    # The advisory is below the default threshold, so it is filtered out here.
-    assert body["findings"] == []
+    # Stage B3 (design doc 2.6) widened this list: it previously enumerated
+    # ONLY story-level findings, so this asserted []. It now merges every
+    # threshold-surfaced finding, per-node ones included, into one row per
+    # distinct concern carrying a node_count. The per-node "violence" flag is
+    # therefore enumerated; the "coherence" advisory is still filtered out for
+    # sitting below the default threshold. A count is not a locator: node_count
+    # conveys scale ("3 passages") with no id, order, or prose.
+    assert len(body["findings"]) == 1
+    surfaced = body["findings"][0]
+    assert surfaced["category"] == "violence"
+    assert surfaced["node_count"] == 1
+    # The node this finding came from is "n1". Sweep the ENTIRE serialized
+    # body, values included, so a node id embedded in free-form reviewer text
+    # fails here rather than reaching a guardian.
+    assert "n1" not in json.dumps(body)
 
 
 async def test_child_cannot_get_content_summary(

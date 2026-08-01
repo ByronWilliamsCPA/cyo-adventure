@@ -1,8 +1,9 @@
 """C3-4 review-surface projection: reshape a stored moderation report for review.
 
-Pure and synchronous. Turns a version's stored ``moderation_report`` plus its
-story ``blob`` into the guardian-facing view: flagged passages (node prose joined
-to per-node findings) and whole-story findings.
+Pure and synchronous: no database, network, or filesystem access (diagnostic
+logging aside). Turns a version's stored ``moderation_report`` plus its story
+``blob`` into the guardian-facing view: flagged passages (node prose joined to
+per-node findings) and whole-story findings.
 """
 
 from __future__ import annotations
@@ -21,17 +22,21 @@ from cyo_adventure.api.schemas import (
     ReviewSummary,
     ReviewSurfaceView,
     ValidatorFindingView,
+    ValidatorSeverity,
 )
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
 from cyo_adventure.moderation.thresholds import admin_surfaces
 from cyo_adventure.storybook.models import ContentFlags
+from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from datetime import datetime
 
     from cyo_adventure.moderation.thresholds import ThresholdPolicy
+
+_logger = get_logger(__name__)
 
 # Deterministic admin ranking (design doc 2.6): verdict outranks severity
 # outranks node count. PASS never reaches these buckets (filtered before
@@ -281,10 +286,23 @@ def _validator_findings(
         return []
     raw = validation_report.get("findings")
     if not isinstance(raw, list):
+        # Degrading to [] is deliberate (see docstring), but a silent degrade
+        # is indistinguishable from "this story genuinely has no RL-13/PL-19
+        # findings". A future change to ValidationReport.to_dict() would zero
+        # out validator visibility for every book with no operational signal,
+        # so leave a breadcrumb without changing the non-raising contract.
+        _logger.debug(
+            "validation_report_findings_not_a_list",
+            findings_type=type(raw).__name__,
+        )
         return []
     views: list[ValidatorFindingView] = []
     for entry in raw:
         if not isinstance(entry, dict):
+            _logger.debug(
+                "validation_report_finding_not_a_dict",
+                entry_type=type(entry).__name__,
+            )
             continue
         entry = cast(dict[str, object], entry)  # noqa: TC006 (see _findings above)
         rule_id = entry.get("rule_id")
@@ -293,12 +311,49 @@ def _validator_findings(
         severity = entry.get("severity")
         message = entry.get("message")
         node_id = entry.get("node_id")
+        # #CRITICAL: security: an unreadable severity must fail toward the
+        # LOUDER tier, not the calmer one. PL-19 spans both values (per-node
+        # word wall is ERROR, story-mean drift is WARNING), and this projection
+        # feeds the guardian's assignment screen via _validator_notes, which
+        # groups by (rule_id, severity). Defaulting to "warning" would let a
+        # corrupt row silently downgrade an error into advisory text under the
+        # exact button a guardian presses to give a book to a child, and would
+        # additionally split one "RL-13 error x6" note into "error x5" plus
+        # "warning x1". Over-warning is recoverable; under-warning is not.
+        # #VERIFY: tests/unit/test_review_surface.py::
+        # test_validator_finding_with_unreadable_severity_defaults_to_error.
+        if severity not in ("error", "warning"):
+            _logger.debug(
+                "validator_finding_severity_unreadable",
+                rule_id=rule_id,
+                severity_repr=repr(severity),
+            )
+        # Normalize HERE rather than letting ValidatorSeverity's Literal reject
+        # it: a pydantic failure inside build_review_surface is caught and
+        # re-raised as a 422, which would take down the entire review surface
+        # over a read-only annex this function's docstring promises to degrade
+        # on. A typo'd "warn" therefore becomes "error", never a third bucket
+        # that would silently split a guardian's "RL-13 error xN" note.
+        severity_value: ValidatorSeverity = (
+            "warning" if severity == "warning" else "error"
+        )
         views.append(
             ValidatorFindingView(
                 rule_id=rule_id,
-                severity=severity if isinstance(severity, str) else "warning",
+                severity=severity_value,
                 node_id=node_id if isinstance(node_id, str) else None,
-                message=message if isinstance(message, str) else "",
+                # An unreadable message says so, rather than rendering as an
+                # empty cell an admin would read as "this rule fired and had
+                # nothing to add". Dropping the whole finding instead (the
+                # other obvious option) would hide a real validator signal
+                # over one corrupt field, which is the wrong trade on a
+                # safety-review surface: rule_id, severity, and node_id are
+                # each independently actionable without the prose.
+                message=(
+                    message
+                    if isinstance(message, str)
+                    else f"({rule_id}: stored message unreadable)"
+                ),
             )
         )
     return views
@@ -689,8 +744,11 @@ def _validator_notes(
         list[GuardianValidatorNote]: One row per distinct (rule_id, severity)
             pair, each carrying the total occurrence count.
     """
-    counts: dict[tuple[str, str], int] = {}
-    order: list[tuple[str, str]] = []
+    # Keyed on ValidatorSeverity, not str: widening it here would let an
+    # arbitrary string reach GuardianValidatorNote.severity through the
+    # grouping, which is the exact hop the Literal exists to close.
+    counts: dict[tuple[str, ValidatorSeverity], int] = {}
+    order: list[tuple[str, ValidatorSeverity]] = []
     for finding in validator_findings:
         key = (finding.rule_id, finding.severity)
         if key not in counts:
@@ -769,6 +827,18 @@ def _content_summary_findings(
             order.append(key)
         node_counts[key] += node_weight
 
+    # #CRITICAL: security: guardian and kid surfaces filter by the age-band
+    # threshold; the admin review surface (build_review_surface) never does.
+    # Both loops below MUST apply surfaces_fn before they either increment
+    # flagged_count or _record a row, and they must apply the SAME predicate,
+    # or the "N flagged" badge contradicts the list printed under it. Stage B3
+    # raised the stakes: pre-B3 a drift here desynced a count from an
+    # (almost always empty) list, whereas now the same predicate governs both
+    # the badge AND which concerns a guardian reads before handing a book to a
+    # child, so an over-permissive filter here leaks a below-threshold concern
+    # into guardian-visible text rather than merely inflating a number.
+    # #VERIFY: tests/integration/test_content_summary_thresholds.py::
+    # test_guardian_summary_hides_below_threshold_advisory.
     for passage in surface.flagged_passages:
         for finding in passage.findings:
             if not surfaces_fn(finding.category, finding.verdict, finding.score):
