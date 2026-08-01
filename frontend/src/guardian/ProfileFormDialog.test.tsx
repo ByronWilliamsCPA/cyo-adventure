@@ -17,6 +17,13 @@ function existingProfile(hasPin: boolean): ProfileView {
     has_pin: hasPin,
     content_flag_caps: {},
     banned_themes: [],
+    // W3.4: the RAW stored values. Both nulls are the "no override, follow
+    // the band default" state the dialog's 'default' ring choice seeds from,
+    // which is what an existing pre-W3.4 profile actually reads back as.
+    ring_enabled: null,
+    ring_goal_days: null,
+    badges_enabled: true,
+    time_capture_paused: false,
     created_at: '2026-07-02T00:00:00Z',
   }
 }

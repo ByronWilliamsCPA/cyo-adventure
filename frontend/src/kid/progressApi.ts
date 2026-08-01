@@ -60,10 +60,11 @@ export interface ProgressSummary {
   settings: ResolvedGamificationSettings
 }
 
-// #ASSUME: data integrity: unlike the backend's own inert fallback (which
-// resolves a genuinely missing profile row to the P-A "on" default, since it
-// must always answer with SOME concrete value), a CLIENT-SIDE fetch failure
-// means this device simply does not know the real resolved settings yet.
+// #ASSUME: data integrity: a CLIENT-SIDE fetch failure means this device
+// simply does not know the real resolved settings yet, which is a stronger
+// unknown than the backend's own missing-profile-row fallback (that one
+// resolves to the YOUNGEST band's row, so it too fails closed on
+// ring_enabled; see api/progress.py's _UNKNOWN_BAND).
 // Failing closed (everything off/hidden) is the safe direction: showing a
 // ring or badge case for a profile whose real band default is OFF (3-5)
 // would be a visible K14/P-A violation, while hiding a ring that should be

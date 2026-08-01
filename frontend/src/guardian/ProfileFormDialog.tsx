@@ -13,6 +13,7 @@ import {
   type ContentFlagCaps,
   type ContentFlagLevelValue,
   type ProfileCreateBody,
+  type ProfileGamificationFields,
   type ProfileView,
 } from '../profiles/profilesApi'
 import { ageBandLabel } from './storyRequestOptions'
@@ -25,31 +26,6 @@ const BANNED_THEME_MAX_LENGTH = 40
 // W3.4 (gamification-recommendation-2026-08-01.md section 4): the
 // selectable goal caps at 6 at every band (one guaranteed free day).
 const RING_GOAL_DAYS_MAX = 6
-
-/**
- * W3.4 gamification settings, hand-typed as a local extension of
- * `ProfileView`/`ProfileCreateBody` (both from `profiles/profilesApi.ts`)
- * rather than added to that file directly: this change's touch scope is
- * `guardian/ProfileFormDialog.tsx` only, and `profilesApi.ts`'s own
- * `create`/`update` functions pass their `body` argument straight through to
- * axios (`api.post('/v1/profiles', body)`) with no field allowlist, so
- * these extra keys reach the wire correctly even though the imported
- * `ProfileCreateBody`/`ProfileUpdateBody` types do not declare them yet.
- * Regenerating/widening those hand types is the follow-up (noted at every
- * call site below); nothing here should need to change once that lands,
- * only the cast.
- *
- * Mirrors `api/schemas.py`: `ring_enabled`/`ring_goal_days` are the RAW
- * nullable stored values (null = "no override, follow the P-A band
- * default"); `badges_enabled`/`time_capture_paused` always carry a concrete
- * value.
- */
-interface ProfileGamificationFields {
-  ring_enabled?: boolean | null
-  ring_goal_days?: number | null
-  badges_enabled?: boolean
-  time_capture_paused?: boolean
-}
 
 /** The three states the ring-enabled control can be in; `'default'` is the
  * nullable "no override" state, distinct from an explicit on/off so a
@@ -102,13 +78,18 @@ interface ProfileFormDialogBaseProps {
   onClose: () => void
   /**
    * The child's current ADR-015 G3 pre-approval settings, when known.
-   * ProfileView carries neither field (see profilesApi.ts's
-   * ProfileEnvelopeFields doc), so this cannot be derived from `initial`;
-   * the only place they round-trip today is GET /v1/families/me/budget's
-   * per-child usage rows (budgetApi.ts's ChildEnvelopeUsage), which the
-   * caller (ProfilesPage) fetches separately and matches by profile id.
-   * Absent (create mode, or a failed/not-yet-loaded budget fetch) seeds the
-   * section to its off/no-limit default.
+   * The caller (ProfilesPage) reads them from GET /v1/families/me/budget's
+   * per-child usage rows (budgetApi.ts's ChildEnvelopeUsage) and matches by
+   * profile id. Absent (create mode, or a failed/not-yet-loaded budget
+   * fetch) seeds the section to its off/no-limit default.
+   *
+   * This prop is now reducible: the backend's own ProfileView serializes
+   * `request_auto_approve` and `monthly_request_envelope` (api/schemas.py),
+   * so a later change can declare them on the hand-typed ProfileView and
+   * seed straight from `initial`, dropping the separate budget fetch. Left
+   * as-is here because that touches ProfilesPage's load path, not this
+   * dialog. An earlier version of this doc claimed ProfileView carries
+   * neither field; that has not been true since the G3 write path landed.
    */
   envelopeInfo?: ProfileEnvelopeInfo
 }
@@ -143,12 +124,6 @@ type PinChoice = 'keep' | 'set' | 'clear'
  */
 export function ProfileFormDialog(props: ProfileFormDialogProps) {
   const { title, initial, onClose, envelopeInfo } = props
-  // See ProfileGamificationFields' doc above for why this widened type
-  // annotation, rather than a profilesApi.ts type change, is this change's
-  // touch-scoped answer. A plain annotation (not an `as` assertion): the
-  // fields are all optional, so `initial` already satisfies this wider type
-  // structurally.
-  const initialGamification: (ProfileView & ProfileGamificationFields) | undefined = initial
   const [displayName, setDisplayName] = useState(initial?.display_name ?? '')
   const [ageBand, setAgeBand] = useState(initial?.age_band ?? '5-8')
   const [cap, setCap] = useState(String(initial?.reading_level_cap ?? 99))
@@ -177,16 +152,12 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
   // override) for a fresh create, matching ring_enabled/ring_goal_days'
   // omitted-on-create semantics (see ProfileCreateBody's own field doc in
   // api/schemas.py).
-  const [ringChoice, setRingChoice] = useState<RingChoice>(
-    ringChoiceFrom(initialGamification?.ring_enabled)
-  )
+  const [ringChoice, setRingChoice] = useState<RingChoice>(ringChoiceFrom(initial?.ring_enabled))
   const [ringGoalText, setRingGoalText] = useState(
-    initialGamification?.ring_goal_days != null ? String(initialGamification.ring_goal_days) : ''
+    initial?.ring_goal_days != null ? String(initial.ring_goal_days) : ''
   )
-  const [badgesEnabled, setBadgesEnabled] = useState(initialGamification?.badges_enabled ?? true)
-  const [timeCapturePaused, setTimeCapturePaused] = useState(
-    initialGamification?.time_capture_paused ?? false
-  )
+  const [badgesEnabled, setBadgesEnabled] = useState(initial?.badges_enabled ?? true)
+  const [timeCapturePaused, setTimeCapturePaused] = useState(initial?.time_capture_paused ?? false)
   // ADR-015 G3 "Story requests" section. Seeded from envelopeInfo (not
   // `initial`, which cannot carry these fields -- see the prop's doc); a
   // fresh create or a missing envelopeInfo seeds off/no-limit.
@@ -253,17 +224,27 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
         autoApprove !== initialAutoApprove || envelopeValue !== initialEnvelope
       const ringGoalTrimmed = ringGoalText.trim()
       // W3.4: sent unconditionally (unlike the G3 envelope fields above,
-      // which gate on "touched" because the backend does not accept them
-      // yet) -- these fields ARE live server-side, and always reflecting
-      // the current control state keeps a resave idempotent: an untouched
-      // control just resends the value it was seeded with.
+      // which gate on "touched" to preserve PATCH's omitted-vs-null
+      // distinction) -- always reflecting the current control state keeps a
+      // resave idempotent: an untouched control just resends the value it
+      // was seeded with.
+      //
+      // #CRITICAL: external-resources: unconditional means these four keys
+      // are on the wire for EVERY create and edit, and both bodies are
+      // `extra="forbid"` server-side, so one divergent field name 422s a
+      // guardian renaming their child, not just this section. That is why
+      // ProfileGamificationFields is a shared profilesApi.ts type under
+      // apiContractParity.ts rather than a local mirror here.
+      // #VERIFY: apiContractParity.ts turns the divergence into a
+      // `npm run typecheck` failure; ProfileFormDialog.test.tsx pins that
+      // an untouched form still round-trips its seeded values.
       const gamification: ProfileGamificationFields = {
         ring_enabled: ringChoiceToValue(ringChoice),
         ring_goal_days: ringGoalTrimmed === '' ? null : Number(ringGoalTrimmed),
         badges_enabled: badgesEnabled,
         time_capture_paused: timeCapturePaused,
       }
-      const base: ProfileFormCreateBody & ProfileGamificationFields = {
+      const base: ProfileFormCreateBody = {
         display_name: displayName,
         age_band: ageBand,
         reading_level_cap: Number(cap),
@@ -282,7 +263,7 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
       if (props.initial === undefined) {
         await props.onSubmit(base)
       } else {
-        const body: ProfileFormEditBody & ProfileGamificationFields = { ...base }
+        const body: ProfileFormEditBody = { ...base }
         // Include `pin` only for an actual mutation: a string sets/changes,
         // an explicit null removes, and omitting it keeps whatever is stored.
         if (pinChoice === 'set') body.pin = pinValue
