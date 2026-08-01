@@ -9,11 +9,14 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, date, datetime, timedelta
+from typing import TYPE_CHECKING
 
 import pytest
+from sqlalchemy.dialects import postgresql
 
 from cyo_adventure.api.deps import Principal
 from cyo_adventure.api.reading_time import (
+    _MAX_PAST_DAYS,
     _MAX_SINGLE_FLUSH_SECONDS,
     _MAX_UTC_OFFSET_SECONDS,
     _ONE_DAY_SECONDS,
@@ -21,11 +24,15 @@ from cyo_adventure.api.reading_time import (
     _elapsed_ceiling_seconds,
     _require_child_profile,
     _validate_activity_date,
+    accumulate_stmt,
     flush_reading_time,
 )
 from cyo_adventure.api.schemas import ReadingTimeFlushBody
 from cyo_adventure.core.exceptions import AuthorizationError, ValidationError
 from cyo_adventure.db.models import ChildProfile, ReadingActivityDay
+
+if TYPE_CHECKING:
+    from sqlalchemy.sql.expression import Executable
 
 _NOW = datetime(2026, 1, 15, 12, 0, 0, tzinfo=UTC)
 _TODAY = _NOW.date()
@@ -36,9 +43,33 @@ _TODAY = _NOW.date()
 # ---------------------------------------------------------------------------
 
 
+class _FakeResult:
+    """The narrow slice of ``Result`` this handler uses."""
+
+    def __init__(self, row: tuple[int, datetime] | None) -> None:
+        self._row = row
+
+    def one_or_none(self) -> tuple[int, datetime] | None:
+        return self._row
+
+    def one(self) -> tuple[int, datetime]:
+        if self._row is None:
+            msg = "no row"
+            raise AssertionError(msg)
+        return self._row
+
+
 class _FakeSession:
     """Minimal async session double: one row keyed by (model, key), like
     test_reading_api_unit.py's own fake.
+
+    ``execute`` stands in for the ON CONFLICT DO UPDATE accumulate. It records
+    every statement so a test can assert WHICH statement was emitted, and
+    simulates the increment arithmetic so the handler's own control flow stays
+    exercised. It deliberately does NOT model the concurrency semantics: what
+    makes the upsert atomic is asserted against the compiled SQL in
+    ``TestAccumulateStmt``, and end to end against a real database is I24's
+    integration-test gap, not something a fake can speak to.
     """
 
     def __init__(
@@ -46,17 +77,30 @@ class _FakeSession:
         *,
         existing: ReadingActivityDay | None = None,
         profile: ChildProfile | None = None,
+        applied_override: int | None = None,
     ) -> None:
         self._existing = existing
         self._profile = profile
+        self._applied_override = applied_override
         self.added: list[object] = []
         self.flush_count = 0
         self.refresh_calls: list[object] = []
+        self.statements: list[Executable] = []
 
     async def get(self, model: type[object], _key: object) -> object | None:
         if model is ChildProfile:
             return self._profile
         return self._existing
+
+    async def execute(self, statement: Executable) -> _FakeResult:
+        self.statements.append(statement)
+        # Recover the delta the handler chose from the statement's own bound
+        # values, so the fake never invents a number of its own.
+        applied = self._applied_override
+        if applied is None:
+            applied = int(statement.compile().params["active_seconds"])
+        base = self._existing.active_seconds if self._existing is not None else 0
+        return _FakeResult((base + applied, _NOW))
 
     def add(self, obj: object) -> None:
         self.added.append(obj)
@@ -80,6 +124,40 @@ def _child_principal(profile_id: uuid.UUID | None = None) -> Principal:
     )
 
 
+def _unpaused() -> ChildProfile:
+    """A profile whose guardian has NOT paused time capture.
+
+    Passed explicitly everywhere rather than defaulted, because a missing
+    profile row is now itself meaningful (it fails closed, like a paused one).
+    """
+    return ChildProfile(time_capture_paused=False)
+
+
+def _bucket(
+    profile_id: uuid.UUID,
+    *,
+    active_seconds: int,
+    last_flush_id: str,
+    written_seconds_ago: int = 0,
+) -> ReadingActivityDay:
+    """An existing day bucket, dated against the REAL clock.
+
+    ``flush_reading_time`` calls ``datetime.now(UTC)`` itself with no
+    injection point, so anything the handler compares against a date (the
+    past/future window, the elapsed-time clamp) has to be expressed relative
+    to the real now, not the frozen ``_NOW`` the pure helpers above use.
+    """
+    now = datetime.now(UTC)
+    row = ReadingActivityDay(
+        child_profile_id=profile_id,
+        activity_date=now.date(),
+        active_seconds=active_seconds,
+        last_flush_id=last_flush_id,
+    )
+    row.updated_at = now - timedelta(seconds=written_seconds_ago)
+    return row
+
+
 def _guardian_principal() -> Principal:
     return Principal(
         subject="sub",
@@ -92,12 +170,15 @@ def _guardian_principal() -> Principal:
 
 def _body(
     *,
-    activity_date: date = _TODAY,
+    activity_date: date | None = None,
     seconds_delta: int = 60,
     flush_id: str = "flush-1",
 ) -> ReadingTimeFlushBody:
+    """A flush body defaulting to the REAL today; see ``_bucket``."""
     return ReadingTimeFlushBody(
-        date=activity_date, seconds_delta=seconds_delta, flush_id=flush_id
+        date=activity_date or datetime.now(UTC).date(),
+        seconds_delta=seconds_delta,
+        flush_id=flush_id,
     )
 
 
@@ -138,6 +219,18 @@ class TestValidateActivityDate:
     def test_far_future_is_rejected(self) -> None:
         with pytest.raises(ValidationError):
             _validate_activity_date(_TODAY + timedelta(days=2), _NOW)
+
+    def test_recent_past_within_the_window_is_valid(self) -> None:
+        # A device offline for a long stretch drains real accrued buckets, so
+        # the past window has to stay generous.
+        _validate_activity_date(_TODAY - timedelta(days=_MAX_PAST_DAYS), _NOW)
+
+    def test_far_past_is_rejected(self) -> None:
+        # Unbounded on the past side, a tampered client can mint an arbitrary
+        # number of historical rows, each with a fresh flush_id and a full-day
+        # elapsed ceiling.
+        with pytest.raises(ValidationError):
+            _validate_activity_date(_TODAY - timedelta(days=_MAX_PAST_DAYS + 1), _NOW)
 
 
 # ---------------------------------------------------------------------------
@@ -224,6 +317,58 @@ class TestClamp:
 
 
 # ---------------------------------------------------------------------------
+# accumulate_stmt
+# ---------------------------------------------------------------------------
+
+
+def _compiled_accumulate(flush_id: str = "flush-1", applied: int = 45) -> str:
+    stmt = accumulate_stmt(
+        profile_id=uuid.uuid4(),
+        activity_date=_TODAY,
+        applied=applied,
+        flush_id=flush_id,
+    )
+    return str(stmt.compile(dialect=postgresql.dialect()))
+
+
+@pytest.mark.unit
+class TestAccumulateStmt:
+    """The accumulate must be ONE statement, not a read-modify-write.
+
+    These assert against the compiled SQL rather than against a fake, because
+    the property at stake is a concurrency property of the statement itself:
+    a fake session cannot distinguish an atomic increment from a lost one.
+    """
+
+    def test_is_an_upsert_rather_than_a_plain_insert(self) -> None:
+        sql = _compiled_accumulate()
+        assert "ON CONFLICT" in sql
+        assert "DO UPDATE" in sql
+
+    def test_conflict_target_is_the_composite_primary_key(self) -> None:
+        sql = _compiled_accumulate()
+        assert "child_profile_id" in sql
+        assert "activity_date" in sql
+
+    def test_increment_reads_the_stored_column_not_a_client_value(self) -> None:
+        # ``reading_activity_day.active_seconds + :param`` is what makes two
+        # concurrent flushes sum instead of one overwriting the other.
+        sql = _compiled_accumulate()
+        assert "reading_activity_day.active_seconds +" in sql
+
+    def test_do_update_carries_the_idempotency_guard(self) -> None:
+        # The replay check has to live INSIDE the write, not only in the
+        # read above it, or a retry racing its own original applies twice.
+        sql = _compiled_accumulate()
+        assert "WHERE" in sql.split("DO UPDATE")[1]
+        assert "IS DISTINCT FROM" in sql
+
+    def test_returns_the_post_write_state(self) -> None:
+        sql = _compiled_accumulate()
+        assert "RETURNING" in sql
+
+
+# ---------------------------------------------------------------------------
 # flush_reading_time (route handler)
 # ---------------------------------------------------------------------------
 
@@ -232,18 +377,20 @@ class TestClamp:
 @pytest.mark.asyncio
 class TestFlushReadingTime:
     async def test_guardian_and_admin_rejected(self) -> None:
-        session = _FakeSession()
+        session = _FakeSession(profile=_unpaused())
         with pytest.raises(AuthorizationError):
             await flush_reading_time(_body(), _guardian_principal(), session)
 
     async def test_creates_a_new_bucket(self) -> None:
-        session = _FakeSession(existing=None)
+        session = _FakeSession(existing=None, profile=_unpaused())
         result = await flush_reading_time(
             _body(seconds_delta=45), _child_principal(), session
         )
         assert result.active_seconds == 45
         assert result.settled_seconds == 45
-        assert len(session.added) == 1
+        # One statement, not a SELECT-then-INSERT: see TestAccumulateStmt.
+        assert len(session.statements) == 1
+        assert session.added == []
 
     async def test_clamped_flush_settles_only_what_it_applied(self) -> None:
         """The response must report the APPLIED seconds, not the requested
@@ -251,14 +398,13 @@ class TestFlushReadingTime:
         over-reporting here is what silently deletes the clamped remainder.
         """
         profile_id = uuid.uuid4()
-        existing = ReadingActivityDay(
-            child_profile_id=profile_id,
-            activity_date=_TODAY,
+        existing = _bucket(
+            profile_id,
             active_seconds=100,
             last_flush_id="prior-flush",
+            written_seconds_ago=10,
         )
-        existing.updated_at = _NOW - timedelta(seconds=10)
-        session = _FakeSession(existing=existing)
+        session = _FakeSession(existing=existing, profile=_unpaused())
 
         result = await flush_reading_time(
             _body(seconds_delta=3600, flush_id="new-flush"),
@@ -283,18 +429,27 @@ class TestFlushReadingTime:
         # Settled in full so the client stops retrying: the seconds are
         # intentionally dropped by policy, not lost to a transient failure.
         assert result.settled_seconds == 45
+        assert session.statements == []
         assert session.added == []
         assert session.flush_count == 0
 
+    async def test_missing_profile_row_is_treated_as_paused(self) -> None:
+        """A privacy toggle that cannot be read must fail CLOSED.
+
+        The prior ``profile is not None and profile.time_capture_paused``
+        recorded behavioural data for a profile whose settings were
+        unavailable, which is the wrong direction for a privacy control.
+        """
+        session = _FakeSession(existing=None, profile=None)
+        result = await flush_reading_time(
+            _body(seconds_delta=45), _child_principal(), session
+        )
+        assert result.active_seconds == 0
+        assert session.statements == []
+
     async def test_paused_profile_returns_existing_bucket_unchanged(self) -> None:
         profile_id = uuid.uuid4()
-        existing = ReadingActivityDay(
-            child_profile_id=profile_id,
-            activity_date=_TODAY,
-            active_seconds=300,
-            last_flush_id="flush-0",
-            updated_at=_NOW,
-        )
+        existing = _bucket(profile_id, active_seconds=300, last_flush_id="flush-0")
         session = _FakeSession(
             existing=existing, profile=ChildProfile(time_capture_paused=True)
         )
@@ -305,18 +460,18 @@ class TestFlushReadingTime:
         )
         assert result.active_seconds == 300
         assert existing.last_flush_id == "flush-0"
+        assert session.statements == []
         assert session.flush_count == 0
 
     async def test_accumulates_into_an_existing_bucket(self) -> None:
         profile_id = uuid.uuid4()
-        existing = ReadingActivityDay(
-            child_profile_id=profile_id,
-            activity_date=_TODAY,
+        existing = _bucket(
+            profile_id,
             active_seconds=100,
             last_flush_id="prior-flush",
+            written_seconds_ago=200,
         )
-        existing.updated_at = _NOW - timedelta(seconds=200)
-        session = _FakeSession(existing=existing)
+        session = _FakeSession(existing=existing, profile=_unpaused())
 
         result = await flush_reading_time(
             _body(seconds_delta=30, flush_id="new-flush"),
@@ -324,18 +479,17 @@ class TestFlushReadingTime:
             session,
         )
         assert result.active_seconds == 130
-        assert existing.last_flush_id == "new-flush"
+        # The new id rides on the statement rather than on a mutated ORM
+        # object, because the write is now a single upsert.
+        params = session.statements[0].compile().params
+        assert params["last_flush_id"] == "new-flush"
 
     async def test_replayed_flush_id_is_a_noop(self) -> None:
         profile_id = uuid.uuid4()
-        existing = ReadingActivityDay(
-            child_profile_id=profile_id,
-            activity_date=_TODAY,
-            active_seconds=100,
-            last_flush_id="already-applied",
+        existing = _bucket(
+            profile_id, active_seconds=100, last_flush_id="already-applied"
         )
-        existing.updated_at = _NOW
-        session = _FakeSession(existing=existing)
+        session = _FakeSession(existing=existing, profile=_unpaused())
 
         result = await flush_reading_time(
             _body(seconds_delta=999, flush_id="already-applied"),
@@ -343,5 +497,38 @@ class TestFlushReadingTime:
             session,
         )
         assert result.active_seconds == 100  # unchanged: no-op replay
+        assert session.statements == []
         assert session.flush_count == 0
         assert session.added == []
+
+    async def test_aba_cross_device_replay_is_a_known_residual(self) -> None:
+        """Pin the A-B-A window the single-slot guard cannot close.
+
+        Device 1 loses the ack for flush A, device 2 lands flush B, then
+        device 1 retries A. The slot holds B, so A no longer looks like a
+        replay and its seconds are banked a second time. This asserts the
+        CURRENT behaviour deliberately: closing it needs a per-device slot or
+        a bounded set of recent ids, i.e. a schema change. If a future change
+        makes this a no-op, that is an improvement and this test should be
+        updated to demand it, not deleted.
+        """
+        profile_id = uuid.uuid4()
+        # last_flush_id is B; device 1 now retries A.
+        existing = _bucket(
+            profile_id,
+            active_seconds=100,
+            last_flush_id="flush-B",
+            written_seconds_ago=600,
+        )
+        session = _FakeSession(existing=existing, profile=_unpaused())
+
+        result = await flush_reading_time(
+            _body(seconds_delta=60, flush_id="flush-A"),
+            _child_principal(profile_id),
+            session,
+        )
+        assert result.active_seconds == 160  # A applied a second time
+        assert len(session.statements) == 1
+        # Damage stays bounded by the per-flush clamp, which is what makes
+        # this residual acceptable for a literacy signal.
+        assert result.settled_seconds <= _MAX_SINGLE_FLUSH_SECONDS

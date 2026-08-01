@@ -21,6 +21,8 @@ from datetime import UTC, date, datetime, time, timedelta
 from typing import TYPE_CHECKING
 
 from fastapi import APIRouter
+from sqlalchemy import func, select
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from cyo_adventure.api.deps import CurrentPrincipal, DbSession, Role
 from cyo_adventure.api.schemas import (
@@ -34,6 +36,8 @@ from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     import uuid
+
+    from sqlalchemy.sql.dml import ReturningInsert
 
     from cyo_adventure.api.deps import Principal
 
@@ -59,6 +63,18 @@ _CLAMP_GRACE_SECONDS = 120
 # for a device whose local clock/timezone reads ahead of the server's UTC
 # "today", while still catching a clearly bogus far-future date.
 _MAX_FUTURE_DAYS = 1
+
+# #CRITICAL: security: ``date`` is the one field of this body with no
+# intrinsic bound (``seconds_delta`` and ``flush_id`` are both constrained in
+# ReadingTimeFlushBody). Left open on the past side, an authenticated child's
+# tampered client can mint an unbounded number of rows for arbitrary
+# historical dates, each with a fresh flush_id and a full-day elapsed ceiling,
+# inflating lifetime day counts and growing reading_activity_day without
+# limit. This window still comfortably covers a device that was offline for
+# months and is draining its accrued buckets.
+# #VERIFY: tests/unit/test_reading_time_api_unit.py::
+# TestValidateActivityDate::test_far_past_is_rejected.
+_MAX_PAST_DAYS = 90
 
 _ONE_DAY_SECONDS = 24 * 60 * 60
 
@@ -100,7 +116,7 @@ def _require_child_profile(principal: Principal) -> uuid.UUID:
 
 
 def _validate_activity_date(activity_date: date, now: datetime) -> None:
-    """Reject an activity date implausibly far in the future.
+    """Reject an activity date implausibly far from the server's today.
 
     Args:
         activity_date: The client-reported day this flush's seconds belong
@@ -109,10 +125,15 @@ def _validate_activity_date(activity_date: date, now: datetime) -> None:
 
     Raises:
         ValidationError: If ``activity_date`` is more than
-            ``_MAX_FUTURE_DAYS`` ahead of the server's current UTC date.
+            ``_MAX_FUTURE_DAYS`` ahead of, or ``_MAX_PAST_DAYS`` behind, the
+            server's current UTC date.
     """
-    if activity_date > now.date() + timedelta(days=_MAX_FUTURE_DAYS):
+    today = now.date()
+    if activity_date > today + timedelta(days=_MAX_FUTURE_DAYS):
         msg = "activity date is too far in the future"
+        raise ValidationError(msg, field="date", value=activity_date.isoformat())
+    if activity_date < today - timedelta(days=_MAX_PAST_DAYS):
+        msg = "activity date is too far in the past"
         raise ValidationError(msg, field="date", value=activity_date.isoformat())
 
 
@@ -184,6 +205,64 @@ def _clamp_seconds_delta(
     )
 
 
+def accumulate_stmt(
+    *, profile_id: uuid.UUID, activity_date: date, applied: int, flush_id: str
+) -> ReturningInsert[tuple[int, datetime]]:
+    """Build the single atomic statement that banks one flush's seconds.
+
+    # #CRITICAL: concurrency: this MUST stay one statement. The obvious
+    # read-modify-write (``session.get`` then ``row.active_seconds += applied``)
+    # is not atomic against a second flush for the same (profile, date): two
+    # concurrent first-flushes both see no row and race the composite primary
+    # key (one 500s), and two concurrent updates both read the same base value
+    # so one increment is silently lost, UNDERcounting the day. ``ON CONFLICT
+    # DO UPDATE`` performs the increment inside the row lock Postgres already
+    # takes for the conflicting insert, so both orderings sum correctly and
+    # neither can raise a unique violation.
+    # #VERIFY: tests/unit/test_reading_time_api_unit.py::TestAccumulateStmt
+    # asserts the compiled SQL is an upsert whose increment reads the stored
+    # column, and that the DO UPDATE carries the idempotency guard below.
+
+    # #ASSUME: concurrency: the ``WHERE last_flush_id IS DISTINCT FROM`` guard
+    # makes the single-slot replay check atomic rather than merely
+    # read-then-write, so a retry racing its own original cannot apply twice.
+    # It does NOT close the A-B-A window; see ``flush_reading_time``.
+
+    Args:
+        profile_id: The child profile whose bucket is being written.
+        activity_date: The day this flush's seconds belong to.
+        applied: The already-clamped seconds to add.
+        flush_id: The client-minted idempotency key for this attempt.
+
+    Returns:
+        ReturningInsert: An upsert returning the bucket's post-write state,
+        or no rows
+        at all when the idempotency guard rejects it as a replay.
+    """
+    return (
+        pg_insert(ReadingActivityDay)
+        .values(
+            child_profile_id=profile_id,
+            activity_date=activity_date,
+            active_seconds=applied,
+            last_flush_id=flush_id,
+        )
+        .on_conflict_do_update(
+            index_elements=[
+                ReadingActivityDay.child_profile_id,
+                ReadingActivityDay.activity_date,
+            ],
+            set_={
+                "active_seconds": ReadingActivityDay.active_seconds + applied,
+                "last_flush_id": flush_id,
+                "updated_at": func.now(),
+            },
+            where=ReadingActivityDay.last_flush_id.is_distinct_from(flush_id),
+        )
+        .returning(ReadingActivityDay.active_seconds, ReadingActivityDay.updated_at)
+    )
+
+
 def _to_view(row: ReadingActivityDay, *, settled: int) -> ReadingActivityDayView:
     """Build the wire view of a reading-activity-day row.
 
@@ -231,12 +310,17 @@ async def flush_reading_time(
     # not only in the client accumulator: a stale or offline client that
     # missed the settings change still gets its flush discarded here. The
     # discard returns the bucket's current (or zero) state rather than an
-    # error so queued offline flushes drain without retry loops.
+    # error so queued offline flushes drain without retry loops. A MISSING
+    # profile row takes the same branch: failing open there would record
+    # behavioural data for a profile whose settings cannot be read, which is
+    # the wrong direction for a privacy toggle (and the insert would violate
+    # the FK anyway).
     # #VERIFY: tests/unit/test_reading_time_api_unit.py::
-    # test_paused_profile_flush_is_discarded.
+    # test_paused_profile_flush_is_discarded,
+    # test_missing_profile_row_is_treated_as_paused.
     profile = await session.get(ChildProfile, profile_id)
     row = await session.get(ReadingActivityDay, (profile_id, body.date))
-    if profile is not None and profile.time_capture_paused:
+    if profile is None or profile.time_capture_paused:
         _logger.info("reading_time_flush_discarded_paused", profile_id=str(profile_id))
         # Settled in full: the seconds are intentionally dropped by policy, so
         # the client must advance its baseline past them rather than retrying
@@ -253,8 +337,20 @@ async def flush_reading_time(
     # db/models.py::ReadingActivityDay's own #ASSUME -- a replay of the LAST
     # applied flush_id is a no-op; a client that single-flights retries
     # before starting its next flush never double-counts.
+    #
+    # KNOWN RESIDUAL (A-B-A across devices): the slot holds only the most
+    # recent id, so device 1 losing the ack for flush A, device 2 then landing
+    # flush B, and device 1 finally retrying A leaves the slot at B and applies
+    # A a second time. ``ReadingTimeFlushBody.device_id`` shows multi-device is
+    # anticipated, so this is a real window, not a hypothetical one; closing it
+    # needs a per-device slot or a bounded set of recent ids, i.e. a schema
+    # change, which is out of scope here. The damage is bounded by design: the
+    # per-flush clamp caps one duplicate at 6h, this is a literacy signal
+    # rather than a ledger, and the duplicate can only be a delta the child
+    # genuinely read once.
     # #VERIFY: tests/unit/test_reading_time_api_unit.py::
-    # test_replayed_flush_id_is_a_noop.
+    # test_replayed_flush_id_is_a_noop,
+    # test_aba_cross_device_replay_is_a_known_residual.
     if row is not None and row.last_flush_id == body.flush_id:
         # A replay of the last-applied flush: those seconds are already banked,
         # so from the client's perspective the whole delta is settled.
@@ -274,17 +370,37 @@ async def flush_reading_time(
             applied_seconds=applied,
         )
 
-    if row is None:
-        row = ReadingActivityDay(
-            child_profile_id=profile_id,
-            activity_date=body.date,
-            active_seconds=applied,
-            last_flush_id=body.flush_id,
+    written = (
+        await session.execute(
+            accumulate_stmt(
+                profile_id=profile_id,
+                activity_date=body.date,
+                applied=applied,
+                flush_id=body.flush_id,
+            )
         )
-        session.add(row)
+    ).one_or_none()
+    if written is None:
+        # The idempotency guard inside the upsert rejected this as a replay of
+        # the slot's current id, which means a concurrent request applied the
+        # same flush between our read above and this write. Report the bucket
+        # as it now stands; the seconds are banked exactly once.
+        current = (
+            await session.execute(
+                select(
+                    ReadingActivityDay.active_seconds, ReadingActivityDay.updated_at
+                ).where(
+                    ReadingActivityDay.child_profile_id == profile_id,
+                    ReadingActivityDay.activity_date == body.date,
+                )
+            )
+        ).one()
+        active_seconds, updated_at = current
     else:
-        row.active_seconds += applied
-        row.last_flush_id = body.flush_id
-    await session.flush()
-    await session.refresh(row, ["updated_at", "active_seconds"])
-    return _to_view(row, settled=applied)
+        active_seconds, updated_at = written
+    return ReadingActivityDayView(
+        activity_date=body.date,
+        active_seconds=active_seconds,
+        updated_at=updated_at,
+        settled_seconds=applied,
+    )

@@ -1250,7 +1250,7 @@ class StorybookAssignment(CreatedAtMixin, Base):
     )
 
 
-class ReadingActivityDay(Base):
+class ReadingActivityDay(UpdatedAtMixin, Base):
     """A child's active-reading-seconds bucket for one calendar day (W3.3).
 
     Day-grain by design (S10 posture; gamification-recommendation-2026-08-01.md
@@ -1271,11 +1271,17 @@ class ReadingActivityDay(Base):
     #ASSUME: concurrency: single-slot idempotency (the LAST applied flush id
     only, not a set of every id ever seen) assumes the client single-flights
     retries of one flush before starting the next, exactly like
-    ReadingState.last_event_id. Two flushes for the same (profile, date) racing
-    from different devices/tabs could double-count; acceptable here because
-    this is a literacy signal, not a billing ledger (recommendation section
-    2.4), and the day-level clamp in api/reading_time.py bounds the damage.
-    #VERIFY: tests/unit/test_reading_time_api_unit.py covers replay dedup.
+    ReadingState.last_event_id. The residual window is A-B-A across devices:
+    device 1 loses the ack for flush A, device 2 lands flush B, device 1
+    retries A, and A is applied twice. Note the direction, since it is easy to
+    get backwards: the accumulate itself is an ON CONFLICT DO UPDATE in
+    api/reading_time.py::accumulate_stmt, so racing writes SUM correctly and
+    cannot lose an increment or collide on the primary key; only the A-B-A
+    replay above can over-count. Acceptable here because this is a literacy
+    signal, not a billing ledger (recommendation section 2.4), and the
+    per-flush clamp in api/reading_time.py bounds one duplicate to 6h.
+    #VERIFY: tests/unit/test_reading_time_api_unit.py covers replay dedup and
+    pins the A-B-A residual explicitly.
 
     Retention: the kid-appeal-implementation-plan.md "Plan defaults" section
     (item 2) adopts a 12-month retention default for day-grain rows, after
@@ -1303,9 +1309,6 @@ class ReadingActivityDay(Base):
     activity_date: Mapped[date] = mapped_column(Date, primary_key=True)
     active_seconds: Mapped[int] = mapped_column(default=0, server_default=text("0"))
     last_flush_id: Mapped[str | None] = mapped_column(String(64), default=None)
-    updated_at: Mapped[datetime] = mapped_column(
-        _TS, server_default=func.now(), onupdate=func.now()
-    )
 
 
 class Concept(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
