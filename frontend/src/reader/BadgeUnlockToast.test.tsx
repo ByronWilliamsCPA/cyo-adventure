@@ -36,6 +36,39 @@ describe('BadgeUnlockToast', () => {
     expect(onDismiss).toHaveBeenCalledTimes(1)
   })
 
+  it('auto-dismisses on schedule even when the parent re-renders', () => {
+    // The regression this guards: Reader.tsx passes an inline arrow, so
+    // `onDismiss` changes identity on every parent render. While it sat in
+    // the effect's dependency array, each re-render tore down and rebuilt
+    // the timer, restarting the countdown; an ending screen that re-rendered
+    // more often than the delay would never auto-dismiss. Re-rendering with
+    // a FRESH function each time is the whole point, so passing a stable
+    // `onDismiss` here would test nothing.
+    const onDismiss = vi.fn()
+    const { rerender } = render(
+      <BadgeUnlockToast badge={BADGE} onDismiss={() => void onDismiss()} />
+    )
+    for (let elapsed = 0; elapsed < 7500; elapsed += 500) {
+      vi.advanceTimersByTime(500)
+      rerender(<BadgeUnlockToast badge={BADGE} onDismiss={() => void onDismiss()} />)
+    }
+    expect(onDismiss).not.toHaveBeenCalled()
+    vi.advanceTimersByTime(500)
+    expect(onDismiss).toHaveBeenCalledTimes(1)
+  })
+
+  it('calls the LATEST onDismiss, not the one captured at mount', () => {
+    // The ref pattern must not freeze the first callback: the timer fires
+    // once, and it has to reach whatever handler is current by then.
+    const first = vi.fn()
+    const second = vi.fn()
+    const { rerender } = render(<BadgeUnlockToast badge={BADGE} onDismiss={first} />)
+    rerender(<BadgeUnlockToast badge={BADGE} onDismiss={second} />)
+    vi.advanceTimersByTime(8000)
+    expect(first).not.toHaveBeenCalled()
+    expect(second).toHaveBeenCalledTimes(1)
+  })
+
   it('never auto-dismisses when autoDismissMs is 0', () => {
     const onDismiss = vi.fn()
     render(<BadgeUnlockToast badge={BADGE} onDismiss={onDismiss} autoDismissMs={0} />)

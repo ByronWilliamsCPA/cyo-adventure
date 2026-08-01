@@ -119,6 +119,13 @@ export function WeeklyRing({
           : `You read on ${clampedDays} days this week, out of a goal of ${clampedGoal}`
       }
     >
+      {/* --color-ring-track / --color-ring-fill are defined in the design
+          system's tokens.css, per palette. The literals below mirror the
+          LIGHT palette exactly and are a last resort for a failed stylesheet
+          load, NOT a second source of truth: these two tokens previously had
+          no definition anywhere, so the fallbacks WERE the definition and
+          dark mode drew a light-palette ring with the unfilled track
+          brighter than the filled arc. Keep them in sync with tokens.css. */}
       <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
         <circle
           cx="18"
@@ -133,7 +140,7 @@ export function WeeklyRing({
           cy="18"
           r={radius}
           fill="none"
-          stroke="var(--color-ring-fill, #e07f2e)"
+          stroke="var(--color-ring-fill, #a8661d)"
           strokeWidth="4"
           strokeLinecap="round"
           strokeDasharray={circumference}

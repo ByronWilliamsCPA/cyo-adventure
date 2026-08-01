@@ -51,6 +51,15 @@ export function BadgeCase({ open, onClose, earnedBadges }: BadgeCaseProps) {
                 {earned ? '🏅' : '⭐'}
               </span>
               <span className="badge-case__name">{entry.name}</span>
+              {/* Earned/locked was previously carried ONLY by the card's
+                  colour and a decorative aria-hidden emoji, so a screen
+                  reader read an earned and an unearned badge identically,
+                  and a colourblind child had only saturation to go on.
+                  Visible text rather than an aria-label on the <li>: an
+                  aria-label would override the name and hint underneath it,
+                  trading one lost fact for two. Mirrors EndingsGallery's
+                  "Still hidden" tile. */}
+              <span className="badge-case__state">{earned ? 'Earned!' : 'Not yet'}</span>
               <span className="badge-case__hint">{entry.description}</span>
             </li>
           )

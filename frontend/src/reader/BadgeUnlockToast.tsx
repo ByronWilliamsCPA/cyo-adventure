@@ -8,7 +8,7 @@
  * awareness, it just renders the one badge it was handed.
  */
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { Mascot } from '../kid/Mascot'
 import type { EarnedBadgeCard } from '../kid/progressApi'
@@ -29,11 +29,25 @@ export function BadgeUnlockToast({
   onDismiss,
   autoDismissMs = 8000,
 }: BadgeUnlockToastProps) {
+  // #ASSUME: timing dependency: the only call site (Reader.tsx) passes an
+  // inline `onDismiss={() => onDismissBadgeToast?.()}`, so the prop has a new
+  // identity on every parent render. With it in the dependency array the
+  // effect tore down and rebuilt the timer each time, restarting the 8s
+  // countdown from zero; a reader whose ending screen re-renders more often
+  // than every 8s would never see the toast auto-dismiss at all.
+  // #VERIFY: keep onDismiss out of the dependency array (via ref) so the
+  // timer is armed once per mount. Covered by BadgeUnlockToast.test.tsx
+  // "auto-dismisses on schedule even when the parent re-renders".
+  const onDismissRef = useRef(onDismiss)
+  useEffect(() => {
+    onDismissRef.current = onDismiss
+  })
+
   useEffect(() => {
     if (autoDismissMs <= 0) return
-    const timer = setTimeout(onDismiss, autoDismissMs)
+    const timer = setTimeout(() => onDismissRef.current(), autoDismissMs)
     return () => clearTimeout(timer)
-  }, [autoDismissMs, onDismiss])
+  }, [autoDismissMs])
 
   return (
     <div

@@ -30,7 +30,9 @@
   margin: 0;
   font-size: var(--text-xs, 0.75rem);
   font-weight: var(--weight-bold, 700);
-  color: var(--color-amber-deep, #c17b2a);
+  /* amber-TEXT: 0.75rem uppercase eyebrow text, the smallest text in the
+     toast, so it needs the strictest contrast token, not the fill token. */
+  color: var(--color-amber-text, #87561d);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }

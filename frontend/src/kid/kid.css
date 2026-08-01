@@ -87,7 +87,15 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2, 0.5rem);
-  flex-shrink: 0;
+  /* Shrinkable, NOT flex-shrink: 0. The nav reserves 68px on the right for
+     the absolutely-positioned theme toggle, leaving ~236px of content box at
+     the 320px floor this app supports; the avatar, ring, "Badges" button and
+     this link cannot all fit in that. Something has to yield, and yielding
+     here (an ellipsized label beside a glyph that still reads as "switch")
+     costs less than a page that scrolls sideways. The wrap rule further down
+     means this only actually bites in the narrowest cases. */
+  flex-shrink: 1;
+  min-width: 0;
   min-height: 44px;
   padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
   border-radius: var(--radius-full, 9999px);
@@ -109,6 +117,41 @@
   .kid-nav__switch:hover {
     border-color: var(--color-amber, #e07f2e);
     background: var(--color-amber-subtle, #fdf3e6);
+  }
+}
+
+/* The glyph must never be what shrinks: an icon squeezed to 4px wide is worse
+   than a truncated word, and it is the part that survives truncation. */
+.kid-nav__switch svg {
+  flex-shrink: 0;
+}
+
+.kid-nav__switch-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Narrow phones: give the child's name and avatar their own row so the
+   gamification cluster and the switch link get the full width below it,
+   rather than competing with the avatar for ~236px. Without this the shrink
+   rules above still prevent overflow, but they do it by truncating "Switch
+   reader" down to a couple of letters, which a 6-year-old cannot read.
+   26rem covers the 320-390px range where the three clusters do not fit. */
+@media (max-width: 26rem) {
+  .kid-nav {
+    flex-wrap: wrap;
+    gap: var(--space-2, 0.5rem);
+    padding-left: var(--space-3, 0.75rem);
+  }
+
+  .kid-nav__who {
+    flex-basis: 100%;
+  }
+
+  .kid-nav__switch {
+    padding-left: var(--space-3, 0.75rem);
+    padding-right: var(--space-3, 0.75rem);
   }
 }
 
@@ -194,7 +237,10 @@
   padding: 2px var(--space-2, 0.5rem);
   border-radius: var(--radius-full, 999px);
   background: var(--color-amber-subtle, #fdf3e6);
-  color: var(--color-amber-deep, #c17b2a);
+  /* amber-TEXT, not amber-deep: this is 0.75rem bold text, so it needs the
+     4.5:1 normal-text minimum. The token file records amber-deep at only
+     3.09:1 on parchment, which covers borders and large fills but not this. */
+  color: var(--color-amber-text, #87561d);
   font-size: var(--text-xs, 0.75rem);
   font-weight: var(--weight-bold, 700);
   white-space: nowrap;
@@ -548,9 +594,21 @@
   background: var(--color-amber-subtle, #fdf3e6);
 }
 
+/* Muted by SURFACE, not by opacity. `opacity: 0.6` on the whole card faded
+   its text along with everything else, compositing the hint down to 3.15:1
+   and the name to 4.28:1 against parchment, both under the 4.5:1 AA minimum.
+   A recessed background plus a dashed border reads as "not yet" just as
+   clearly while leaving the text at full strength (hint 7.81:1, name
+   13.34:1 on parchment-dark). The grayscale now applies only to the icon,
+   which is aria-hidden decoration and carries no contrast obligation. */
 .badge-case__card--locked {
-  opacity: 0.6;
+  border-style: dashed;
+  background: var(--color-parchment-dark, #ede6d0);
+}
+
+.badge-case__card--locked .badge-case__icon {
   filter: grayscale(1);
+  opacity: 0.75;
 }
 
 .badge-case__icon {
@@ -561,6 +619,23 @@
 .badge-case__name {
   font-weight: var(--weight-bold, 700);
   font-size: var(--text-sm, 0.875rem);
+}
+
+/* The earned/locked word. Small and quiet, but never hidden: it is the only
+   non-colour carrier of the card's state. */
+.badge-case__state {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--weight-bold, 700);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.badge-case__card--earned .badge-case__state {
+  color: var(--color-amber-text, #87561d);
+}
+
+.badge-case__card--locked .badge-case__state {
+  color: var(--color-ink-secondary, #5a3e28);
 }
 
 .badge-case__hint {

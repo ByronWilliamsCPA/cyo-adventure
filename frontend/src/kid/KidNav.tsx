@@ -122,7 +122,10 @@ export function KidNav({ profileId }: KidNavProps) {
             d="M4 8 H16 L13 5 M20 16 H8 L11 19"
           />
         </svg>
-        Switch reader
+        {/* Wrapped in a span so the LABEL can ellipsize at narrow widths
+            while the glyph beside it stays full size; a bare text node is
+            not styleable. See .kid-nav__switch-label in kid.css. */}
+        <span className="kid-nav__switch-label">Switch reader</span>
       </Link>
       {progress.settings.badges_enabled ? (
         <BadgeCase

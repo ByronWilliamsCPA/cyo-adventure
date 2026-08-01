@@ -6,45 +6,45 @@
   /* ── Colors: storybook palette ───────────────────── */
 
   /* Parchment: warm cream backgrounds */
-  --color-parchment:       #f8f3e8;
-  --color-parchment-dark:  #ede6d0;
+  --color-parchment: #f8f3e8;
+  --color-parchment-dark: #ede6d0;
   --color-parchment-deeper: #e0d5b8;
 
   /* Ink: deep warm browns for text */
-  --color-ink:             #2c1a0e;
-  --color-ink-secondary:   #5a3e28;
+  --color-ink: #2c1a0e;
+  --color-ink-secondary: #5a3e28;
   /* UX-C2: darkened from #8c6f56 (4.20:1, below WCAG AA) to #806048 (5.15:1 on
      --color-parchment) so muted copy that turned out to be load-bearing (wait-
      time hints, submit blockers, kid-surface labels) clears AA. */
-  --color-ink-muted:       #806048;
+  --color-ink-muted: #806048;
 
   /* Border: warm neutral hairline for card, row, and form-field boundaries
      (ink at low opacity). Consolidates 6+ former inline
      rgb(44 26 14 / 12%) declarations in the guardian surface. */
-  --color-border-soft:     rgb(44 26 14 / 12%);
+  --color-border-soft: rgb(44 26 14 / 12%);
 
   /* Surface: translucent white card fill for raised rows/panels sitting on
      the parchment wash. Consolidates 4 former inline
      rgb(255 255 255 / 55%) declarations in the guardian surface. */
-  --surface-raised:        rgb(255 255 255 / 55%);
+  --surface-raised: rgb(255 255 255 / 55%);
 
   /* Ink wash: neutral ink-tinted badge/highlight background, for a
      status-badge fill that isn't one of the semantic colors below (advisory,
      processing). Consolidates former inline rgb(90 62 40 / 10%) and
      rgb(140 111 86 / 12%) declarations in the guardian surface, both of
      which were untethered from any token and so did not adapt in dark mode. */
-  --color-ink-wash:        rgb(44 26 14 / 6%);
+  --color-ink-wash: rgb(44 26 14 / 6%);
 
   /* Amber: primary interactive accent (brightened to a sunnier tangerine for
      the kid surface; still warm enough to sit on parchment) */
-  --color-amber:           #e07f2e;
-  --color-amber-hover:     #c4681c;
-  --color-amber-light:     #f7e2c4;
-  --color-amber-subtle:    #fdf3e6;
+  --color-amber: #e07f2e;
+  --color-amber-hover: #c4681c;
+  --color-amber-light: #f7e2c4;
+  --color-amber-subtle: #fdf3e6;
   /* Contrast-safe amber for white-on-amber fills and small amber glyphs on
      parchment (white 3.42:1, on-parchment 3.09:1; the bright amber fails
      both at 2.90/2.62 vs the 3:1 WCAG 1.4.11 minimum). */
-  --color-amber-deep:      #c17b2a;
+  --color-amber-deep: #c17b2a;
   /* AA-safe amber for TEXT on parchment surfaces: 5.62:1 on
      --color-parchment, 4.98:1 on --color-parchment-dark (verified against
      both parchment shades, not just the lighter one, after axe-core's
@@ -57,93 +57,115 @@
      light foreground text, prefer ink text on the fill instead (4.86:1;
      see guardian.css's .intake-request__assign / .flag-badge--flag
      precedent) over this token. */
-  --color-amber-text:      #87561d;
+  --color-amber-text: #87561d;
+
+  /* Weekly reading ring (kid/WeeklyRing.tsx). Two strokes on one circle: the
+     TRACK is the unfilled groove, the FILL is the progress arc. These were
+     previously defined NOWHERE and existed only as var() fallbacks inside
+     the component, so dark mode silently drew a light-palette ring.
+
+     The arc is the only thing that conveys the GOAL to a sighted user (the
+     visible number gives the count; "out of 4" lives solely in the ring's
+     extent and in the aria-label), so it is a meaningful graphic under WCAG
+     1.4.11 and needs 3:1 against every colour it touches: the parchment
+     behind it AND the track beneath it. That joint constraint is why the
+     fill is its own value rather than --color-amber (2.66:1 on parchment)
+     or --color-amber-deep (3.09:1 on parchment but only 2.47:1 on the
+     track). Measured: fill on parchment 4.14:1, on parchment-dark 3.67:1,
+     on track 3.30:1. The track itself sits at 1.25:1 on parchment by
+     design, a faint groove; it carries no information the arc does not.
+
+     Polarity is the load-bearing part across palettes: the fill must stay
+     more prominent than the track, or a 1-of-4 week reads as nearly done.
+     Light mode gets a pale track under a deep arc; dark mode inverts that. */
+  --color-ring-track: #e8d9c3;
+  --color-ring-fill: #a8661d;
 
   /* Forest: secondary (success, connected) */
-  --color-forest:          #2d5a3d;
-  --color-forest-light:    #d4e8da;
+  --color-forest: #2d5a3d;
+  --color-forest-light: #d4e8da;
 
   /* Sky: tertiary (informational) */
-  --color-sky:             #4a7fb5;
-  --color-sky-light:       #daeaf7;
+  --color-sky: #4a7fb5;
+  --color-sky-light: #daeaf7;
 
   /* Berry + treasure: RESERVED for upcoming kid-surface accents (not yet
      consumed by any component). Not used for status semantics. */
-  --color-berry:           #d8577b;
-  --color-berry-light:     #fbe1e8;
-  --color-gold:            #f4c430;
+  --color-berry: #d8577b;
+  --color-berry-light: #fbe1e8;
+  --color-gold: #f4c430;
 
   /* Adventure cover gradients: colour a book spine by its "world" so the
      bookshelf reads as pictures, not text. Consumed by library/coverPalette.ts. */
-  --cover-forest:  linear-gradient(150deg, #2e8b63, #1f6b4a);
-  --cover-lagoon:  linear-gradient(150deg, #3d8fc4, #2a6b98);
-  --cover-berry:   linear-gradient(150deg, #d8577b, #b23d60);
-  --cover-plum:    linear-gradient(150deg, #8b5cc4, #654098);
-  --cover-sunset:  linear-gradient(150deg, #e07f2e, #c85b1e);
-  --cover-teal:    linear-gradient(150deg, #2f9c9c, #1f7373);
+  --cover-forest: linear-gradient(150deg, #2e8b63, #1f6b4a);
+  --cover-lagoon: linear-gradient(150deg, #3d8fc4, #2a6b98);
+  --cover-berry: linear-gradient(150deg, #d8577b, #b23d60);
+  --cover-plum: linear-gradient(150deg, #8b5cc4, #654098);
+  --cover-sunset: linear-gradient(150deg, #e07f2e, #c85b1e);
+  --cover-teal: linear-gradient(150deg, #2f9c9c, #1f7373);
 
   /* Semantic */
-  --color-error:           #9b2c2c;
-  --color-error-light:     #fde8e8;
-  --color-success:         #276749;
-  --color-success-light:   #d4eddf;
-  --color-warning:         #92600a;
-  --color-warning-light:   #fef3cd;
+  --color-error: #9b2c2c;
+  --color-error-light: #fde8e8;
+  --color-success: #276749;
+  --color-success-light: #d4eddf;
+  --color-warning: #92600a;
+  --color-warning-light: #fef3cd;
 
   /* ── Typography ──────────────────────────────────── */
   --font-serif: Georgia, 'Palatino Linotype', Palatino, 'Book Antiqua', serif;
-  --font-sans:  'Segoe UI', system-ui, -apple-system, sans-serif;
-  --font-mono:  'Courier New', Courier, monospace;
+  --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Courier New', Courier, monospace;
 
   /* Scale: slightly larger base for readability */
-  --text-xs:   0.75rem;   /* 12px */
-  --text-sm:   0.875rem;  /* 14px */
-  --text-base: 1.125rem;  /* 18px */
-  --text-lg:   1.25rem;   /* 20px */
-  --text-xl:   1.5rem;    /* 24px */
-  --text-2xl:  1.875rem;  /* 30px */
-  --text-3xl:  2.25rem;   /* 36px */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.875rem; /* 14px */
+  --text-base: 1.125rem; /* 18px */
+  --text-lg: 1.25rem; /* 20px */
+  --text-xl: 1.5rem; /* 24px */
+  --text-2xl: 1.875rem; /* 30px */
+  --text-3xl: 2.25rem; /* 36px */
 
   /* Line heights */
-  --leading-tight:   1.3;
-  --leading-normal:  1.6;
-  --leading-relaxed: 1.8;  /* generous for reading passages */
+  --leading-tight: 1.3;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.8; /* generous for reading passages */
 
   /* Weights */
-  --weight-normal:   400;
-  --weight-medium:   500;
+  --weight-normal: 400;
+  --weight-medium: 500;
   --weight-semibold: 600;
-  --weight-bold:     700;
+  --weight-bold: 700;
 
   /* ── Spacing: 4px base scale ────────────────────── */
-  --space-1:  0.25rem;   /* 4px  */
-  --space-2:  0.5rem;    /* 8px  */
-  --space-3:  0.75rem;   /* 12px */
-  --space-4:  1rem;      /* 16px */
-  --space-5:  1.25rem;   /* 20px */
-  --space-6:  1.5rem;    /* 24px */
-  --space-8:  2rem;      /* 32px */
-  --space-10: 2.5rem;    /* 40px */
-  --space-12: 3rem;      /* 48px */
-  --space-16: 4rem;      /* 64px */
+  --space-1: 0.25rem; /* 4px  */
+  --space-2: 0.5rem; /* 8px  */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem; /* 24px */
+  --space-8: 2rem; /* 32px */
+  --space-10: 2.5rem; /* 40px */
+  --space-12: 3rem; /* 48px */
+  --space-16: 4rem; /* 64px */
 
   /* ── Border radius ───────────────────────────────── */
-  --radius-sm:   4px;
-  --radius-md:   8px;
-  --radius-lg:   12px;
-  --radius-xl:   20px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
   --radius-full: 9999px;
 
   /* ── Shadows: warm toned ────────────────────────── */
-  --shadow-sm: 0 1px 3px rgba(44, 26, 14, 0.10);
+  --shadow-sm: 0 1px 3px rgba(44, 26, 14, 0.1);
   --shadow-md: 0 4px 12px rgba(44, 26, 14, 0.14);
-  --shadow-lg: 0 8px 24px rgba(44, 26, 14, 0.20);
+  --shadow-lg: 0 8px 24px rgba(44, 26, 14, 0.2);
 
   /* ── Motion ──────────────────────────────────────── */
-  --duration-fast:   120ms;
+  --duration-fast: 120ms;
   --duration-normal: 220ms;
-  --duration-slow:   380ms;
-  --easing-default:  ease-in-out;
+  --duration-slow: 380ms;
+  --easing-default: ease-in-out;
 }
 
 /* ── Dark mode: chosen via src/theme (ThemeProvider), OS by default ──
@@ -180,8 +202,8 @@
   /* Parchment: deep warm brown-black backgrounds, ascending lightness
      (parchment < parchment-dark < parchment-deeper) so parchment-deeper
      still reads as a border against either background tier. */
-  --color-parchment:       #1a130d;
-  --color-parchment-dark:  #20180f;
+  --color-parchment: #1a130d;
+  --color-parchment-dark: #20180f;
   --color-parchment-deeper: #8a6d4c;
 
   /* Ink: warm cream/tan text, brightest tier first.
@@ -189,24 +211,24 @@
      ink-secondary on parchment: 9.72:1. ink-muted on parchment: 5.65:1
      (an improvement on the light palette's own ~4.20:1, which the
      utilities.css comment already documents as below AA). */
-  --color-ink:             #f3e6d2;
-  --color-ink-secondary:   #d3b98f;
-  --color-ink-muted:       #a68a67;
+  --color-ink: #f3e6d2;
+  --color-ink-secondary: #d3b98f;
+  --color-ink-muted: #a68a67;
 
   /* Border: same ink-tinted hairline, lightened relative to the new dark
      background (was a low-opacity darkening tint on light parchment). */
-  --color-border-soft:     rgb(243 230 210 / 16%);
+  --color-border-soft: rgb(243 230 210 / 16%);
 
   /* Surface: a faint lightening wash for a card raised off the dark
      parchment (was a faint white wash raising a card off light
      parchment; full 55% white would wash out the dark aesthetic, so the
      tint stays warm and the opacity drops). */
-  --surface-raised:        rgb(255 244 224 / 8%);
+  --surface-raised: rgb(255 244 224 / 8%);
 
   /* Ink wash: same neutral badge wash, lightened relative to the dark
      background (was a low-opacity darkening tint on light parchment, same
      relationship as --color-border-soft above). */
-  --color-ink-wash:        rgb(243 230 210 / 8%);
+  --color-ink-wash: rgb(243 230 210 / 8%);
 
   /* Amber: primary interactive accent.
      amber (border/decorative only, never a text fill) on parchment:
@@ -221,27 +243,39 @@
      review); amber-deep on parchment 3.27:1, on parchment-dark 3.12:1,
      on amber-subtle 3.04:1 (>= the 3:1 non-text/large-text minimum, the
      same threshold the light palette's own amber-deep relies on). */
-  --color-amber:           #eb9b4c;
-  --color-amber-hover:     #8f5d27;
-  --color-amber-light:     #86602d;
-  --color-amber-subtle:    #241a10;
-  --color-amber-deep:      #905c1f;
+  --color-amber: #eb9b4c;
+  --color-amber-hover: #8f5d27;
+  --color-amber-light: #86602d;
+  --color-amber-subtle: #241a10;
+  --color-amber-deep: #905c1f;
   /* amber-text on amber-subtle: 8.51:1; on parchment: 9.17:1 (both clear
      the 4.5:1 AA normal-text minimum the light palette documents). */
-  --color-amber-text:      #f0a860;
+  --color-amber-text: #f0a860;
+
+  /* Weekly reading ring: the inverted polarity the light palette's own note
+     describes. A DARK groove under a BRIGHT arc, so the filled portion
+     still reads as the prominent one; the light palette's values applied
+     here unchanged (the bug this replaces) gave a track brighter than the
+     background and an arc barely above it, making a 1-of-4 week look nearly
+     complete. Measured: fill on parchment 9.17:1, on parchment-dark 8.74:1,
+     on track 6.50:1 (all >= the 3:1 WCAG 1.4.11 minimum for the arc against
+     every colour it touches); track on parchment 1.41:1, the same
+     deliberately-faint groove as in light mode. */
+  --color-ring-track: #3d2e21;
+  --color-ring-fill: #f0a860;
 
   /* Forest: secondary (success, connected). Reads as text (guardian
      console "connected" labels) on parchment (5.25:1) and, in one place
      (the landing page's guardian door icon), as a solid fill under a
      hardcoded white icon glyph (3.50:1, clears the 3:1 non-text
      minimum); tuned to a mid-tone that satisfies both. */
-  --color-forest:          #4c9867;
-  --color-forest-light:    #1a2f20;
+  --color-forest: #4c9867;
+  --color-forest-light: #1a2f20;
 
   /* Sky: tertiary (informational). sky on parchment: 7.23:1; ink on
      sky-light (toast--info body text): 12.04:1. */
-  --color-sky:             #6fa8d8;
-  --color-sky-light:       #17293b;
+  --color-sky: #6fa8d8;
+  --color-sky-light: #17293b;
 
   /* Semantic: error and success are read as TEXT on their own "-light"
      wash (StatusBadge), the pairing called out for verification.
@@ -251,19 +285,19 @@
      (Button.css's danger fill, background: error / color: parchment,
      stays >= 4.5:1 too: 7.29:1, since dark-mode parchment is near-black
      and error is kept light enough to read as text elsewhere.) */
-  --color-error:           #e58a8a;
-  --color-error-light:     #3b1a1a;
-  --color-success:         #7bc99a;
-  --color-success-light:   #17331f;
-  --color-warning:         #e0b04c;
-  --color-warning-light:   #3a2c10;
+  --color-error: #e58a8a;
+  --color-error-light: #3b1a1a;
+  --color-success: #7bc99a;
+  --color-success-light: #17331f;
+  --color-warning: #e0b04c;
+  --color-warning-light: #3a2c10;
 
   /* Shadows bake in a color, not just alpha: the light palette tints them
      with ink so they read on a pale background. On a near-black
      background that same warm-brown tint would barely register, so dark
      mode switches to a plain black tint at higher opacity for the same
      visible depth. */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.40);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.50);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.60);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
 }

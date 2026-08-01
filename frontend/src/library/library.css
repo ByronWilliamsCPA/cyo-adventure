@@ -580,7 +580,9 @@
 .book-card__every-path-label {
   font-size: var(--text-xs);
   font-weight: var(--weight-bold, 600);
-  color: var(--color-amber-deep, #c17b2a);
+  /* amber-TEXT: --text-xs is below the large-text threshold, so amber-deep's
+     3:1 non-text minimum does not apply here. See the token file's own note. */
+  color: var(--color-amber-text, #87561d);
   white-space: nowrap;
 }
 
@@ -596,7 +598,11 @@
   padding: 2px var(--space-2);
   border: none;
   background: none;
-  color: var(--color-amber-deep, #c17b2a);
+  /* amber-TEXT: a transparent-background text link is the exact case the
+     token file names ("ghost-button labels"); amber-deep is for fills and
+     borders. This button also sits on .book-card's parchment-DARK surface,
+     which is the shade that failed axe-core at 4.0:1 with a lighter value. */
+  color: var(--color-amber-text, #87561d);
   font-family: var(--font-sans);
   font-size: var(--text-xs);
   font-weight: var(--weight-bold, 600);
@@ -610,7 +616,9 @@
 .endings-gallery__milestone {
   margin: 0 0 var(--space-3, 0.75rem);
   font-weight: var(--weight-bold, 700);
-  color: var(--color-amber-deep, #c17b2a);
+  /* amber-TEXT: inherits the body size, so this is normal-size bold text at
+     the 4.5:1 threshold, not the 3:1 one amber-deep is documented against. */
+  color: var(--color-amber-text, #87561d);
 }
 
 .endings-gallery__grid {
