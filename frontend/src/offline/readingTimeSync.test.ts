@@ -1,5 +1,6 @@
 import 'fake-indexeddb/auto'
 
+import type { AxiosInstance } from 'axios'
 import { IDBFactory } from 'fake-indexeddb'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -8,6 +9,7 @@ import {
   accrueReadingTime,
   flushAllReadingTime,
   flushReadingTimeBucket,
+  makeReadingTimeApi,
   type ReadingTimeApi,
   RetryableFlushError,
 } from './readingTimeSync'
@@ -242,6 +244,70 @@ describe('flushReadingTimeBucket', () => {
       deviceId: 'device-1',
     })
     expect(flush).toHaveBeenCalledWith(DATE, 10, 'flush-x', 'device-1')
+  })
+})
+
+describe('makeReadingTimeApi', () => {
+  // Real axios rejections are `AxiosError` instances (an `Error` subclass), so
+  // these doubles build a real `Error` carrying the shape axios attaches
+  // (`isAxiosError`, `response`), mirroring api/readerApi.test.ts.
+  function mockAxiosError(props: Record<string, unknown>): Error {
+    return Object.assign(new Error('mock axios error'), props)
+  }
+
+  function axiosPostReject(error: Error): AxiosInstance {
+    return { post: () => Promise.reject(error) } as unknown as AxiosInstance
+  }
+
+  it('posts the flush body and returns the response data', async () => {
+    const post = vi.fn(() =>
+      Promise.resolve({ data: { activity_date: DATE, active_seconds: 30, updated_at: 't' } })
+    )
+    const api = makeReadingTimeApi({ post } as unknown as AxiosInstance)
+    const result = await api.flush(DATE, 30, 'flush-1', 'device-1')
+    expect(post).toHaveBeenCalledWith('/v1/me/reading-time', {
+      date: DATE,
+      seconds_delta: 30,
+      flush_id: 'flush-1',
+      device_id: 'device-1',
+    })
+    expect(result.active_seconds).toBe(30)
+  })
+
+  it('maps a transport failure (no HTTP response) to OfflineError', async () => {
+    const api = makeReadingTimeApi(
+      axiosPostReject(mockAxiosError({ isAxiosError: true, response: undefined }))
+    )
+    await expect(api.flush(DATE, 30, 'flush-1')).rejects.toBeInstanceOf(OfflineError)
+  })
+
+  it('maps a 5xx to RetryableFlushError carrying the status', async () => {
+    const api = makeReadingTimeApi(
+      axiosPostReject(mockAxiosError({ isAxiosError: true, response: { status: 503 } }))
+    )
+    await expect(api.flush(DATE, 30, 'flush-1')).rejects.toMatchObject({
+      name: 'RetryableFlushError',
+      status: 503,
+    })
+  })
+
+  it('maps a 429 to RetryableFlushError', async () => {
+    const api = makeReadingTimeApi(
+      axiosPostReject(mockAxiosError({ isAxiosError: true, response: { status: 429 } }))
+    )
+    await expect(api.flush(DATE, 30, 'flush-1')).rejects.toBeInstanceOf(RetryableFlushError)
+  })
+
+  it('rethrows a 4xx as itself so the caller drops the attempt', async () => {
+    const error = mockAxiosError({ isAxiosError: true, response: { status: 422 } })
+    const api = makeReadingTimeApi(axiosPostReject(error))
+    await expect(api.flush(DATE, 30, 'flush-1')).rejects.toBe(error)
+  })
+
+  it('rethrows a non-axios error untouched', async () => {
+    const error = new TypeError('serializer exploded')
+    const api = makeReadingTimeApi(axiosPostReject(error))
+    await expect(api.flush(DATE, 30, 'flush-1')).rejects.toBe(error)
   })
 })
 
