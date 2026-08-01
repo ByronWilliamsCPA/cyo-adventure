@@ -24,6 +24,24 @@ export interface BadgeCaseProps {
 export function BadgeCase({ open, onClose, earnedBadges }: BadgeCaseProps) {
   if (!open) return null
   const earnedIds = new Set(earnedBadges.map((b) => b.id))
+  // #ASSUME: data integrity: an earned badge whose id is NOT in the local
+  // catalog must still appear, rendered from the server's own name and
+  // description. Iterating BADGE_CATALOG alone silently dropped it, and the
+  // child saw the sharpest possible contradiction: BadgeUnlockToast
+  // celebrates "You earned X!" from `badge.name` on the wire, then X is
+  // nowhere in the badge case a tap later.
+  //
+  // badgeCatalog.test.ts does NOT cover this. It parses `progress/badges.py`
+  // and pins the catalogs id-for-id, which makes BUILD-time drift between two
+  // files in one repo impossible. The pairing that actually fails is a
+  // DEPLOYED server against a DEPLOYED client: this is a PWA with an offline
+  // cache and a service worker, so a device can hold an older bundle than the
+  // backend it is talking to for as long as the child does not get a fresh
+  // install. A repo-internal lockstep test cannot see across that gap.
+  // #VERIFY: BadgeCase.test.tsx "shows an earned badge the local catalog does
+  // not know about".
+  const catalogIds = new Set(BADGE_CATALOG.map((entry) => entry.id))
+  const uncatalogued = earnedBadges.filter((badge) => !catalogIds.has(badge.id))
   return (
     <Dialog
       title="Your Badges"
@@ -64,6 +82,20 @@ export function BadgeCase({ open, onClose, earnedBadges }: BadgeCaseProps) {
             </li>
           )
         })}
+        {/* Always earned by construction (they came from the earned list), so
+            no locked variant and no state ternary. Rendered after the roster
+            rather than merged into it: their position in the server's badge
+            order means nothing to the catalog's deliberate ordering. */}
+        {uncatalogued.map((badge) => (
+          <li key={badge.id} className="badge-case__card badge-case__card--earned">
+            <span className="badge-case__icon" aria-hidden="true">
+              🏅
+            </span>
+            <span className="badge-case__name">{badge.name}</span>
+            <span className="badge-case__state">Earned!</span>
+            <span className="badge-case__hint">{badge.description}</span>
+          </li>
+        ))}
       </ul>
     </Dialog>
   )

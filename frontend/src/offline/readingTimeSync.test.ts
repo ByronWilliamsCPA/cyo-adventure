@@ -116,7 +116,7 @@ describe('flushReadingTimeBucket', () => {
     await accrueReadingTime(PROFILE_ID, DATE, 30)
     const bucket = await getReadingTimeBucket(PROFILE_ID, DATE)
     await flushReadingTimeBucket(makeApi(flush), bucket!, { newId: () => 'flush-1' })
-    expect(flush).toHaveBeenCalledWith(DATE, 30, 'flush-1', undefined)
+    expect(flush).toHaveBeenCalledWith(DATE, 30, 'flush-1', undefined, undefined)
     const after = await getReadingTimeBucket(PROFILE_ID, DATE)
     expect(after).toEqual({
       profileId: PROFILE_ID,
@@ -154,7 +154,7 @@ describe('flushReadingTimeBucket', () => {
       settled_seconds: 1680,
     })
     await flushReadingTimeBucket(makeApi(retry), after!, { newId: () => 'flush-2' })
-    expect(retry).toHaveBeenCalledWith(DATE, 1680, 'flush-2', undefined)
+    expect(retry).toHaveBeenCalledWith(DATE, 1680, 'flush-2', undefined, undefined)
     expect((await getReadingTimeBucket(PROFILE_ID, DATE))?.syncedSeconds).toBe(1800)
   })
 
@@ -189,7 +189,7 @@ describe('flushReadingTimeBucket', () => {
     // Retry: same flush_id and delta resent verbatim, even though seconds
     // have since grown to 25.
     await flushReadingTimeBucket(makeApi(flush), bucket!, { newId: () => 'flush-b' })
-    expect(flush).toHaveBeenLastCalledWith(DATE, 20, 'flush-a', undefined)
+    expect(flush).toHaveBeenLastCalledWith(DATE, 20, 'flush-a', undefined, undefined)
   })
 
   it('a non-offline failure drops pending and the next flush recomputes from the unadvanced synced baseline', async () => {
@@ -209,7 +209,7 @@ describe('flushReadingTimeBucket', () => {
       .fn()
       .mockResolvedValue({ activity_date: DATE, active_seconds: 25, updated_at: 't' })
     await flushReadingTimeBucket(makeApi(flushOk), bucket!, { newId: () => 'flush-c' })
-    expect(flushOk).toHaveBeenCalledWith(DATE, 25, 'flush-c', undefined)
+    expect(flushOk).toHaveBeenCalledWith(DATE, 25, 'flush-c', undefined, undefined)
   })
 
   it('a 5xx keeps the attempt pending for a verbatim retry', async () => {
@@ -230,7 +230,7 @@ describe('flushReadingTimeBucket', () => {
     expect(bucket?.syncedSeconds).toBe(0)
 
     await flushReadingTimeBucket(makeApi(flush), bucket!, { newId: () => 'flush-b' })
-    expect(flush).toHaveBeenLastCalledWith(DATE, 20, 'flush-a', undefined)
+    expect(flush).toHaveBeenLastCalledWith(DATE, 20, 'flush-a', undefined, undefined)
   })
 
   it('forwards deviceId when provided', async () => {
@@ -243,7 +243,35 @@ describe('flushReadingTimeBucket', () => {
       newId: () => 'flush-x',
       deviceId: 'device-1',
     })
-    expect(flush).toHaveBeenCalledWith(DATE, 10, 'flush-x', 'device-1')
+    expect(flush).toHaveBeenCalledWith(DATE, 10, 'flush-x', 'device-1', undefined)
+  })
+
+  it('passes keepalive through to the transport only when asked', async () => {
+    // The unload-path flush is the one that most needs to arrive and, with a
+    // plain XHR, the one least likely to: the browser aborts in-flight
+    // requests when it discards the page. Two assertions rather than one,
+    // because "always keepalive" would pass a single positive check while
+    // moving every routine tick onto the fetch adapter as a side effect.
+    const flush = vi
+      .fn()
+      .mockResolvedValue({ activity_date: DATE, active_seconds: 10, updated_at: 't' })
+    await accrueReadingTime(PROFILE_ID, DATE, 10)
+    const bucket = await getReadingTimeBucket(PROFILE_ID, DATE)
+    await flushReadingTimeBucket(makeApi(flush), bucket!, {
+      newId: () => 'flush-k',
+      keepalive: true,
+    })
+    expect(flush).toHaveBeenCalledWith(DATE, 10, 'flush-k', undefined, true)
+  })
+
+  it('leaves keepalive off when the caller does not ask for it', async () => {
+    const flush = vi
+      .fn()
+      .mockResolvedValue({ activity_date: DATE, active_seconds: 10, updated_at: 't' })
+    await accrueReadingTime(PROFILE_ID, DATE, 10)
+    const bucket = await getReadingTimeBucket(PROFILE_ID, DATE)
+    await flushReadingTimeBucket(makeApi(flush), bucket!, { newId: () => 'flush-n' })
+    expect(flush).toHaveBeenCalledWith(DATE, 10, 'flush-n', undefined, undefined)
   })
 })
 

@@ -174,17 +174,28 @@ export function useReadingTimeAccumulator({
     }
   }, [containerRef, recordInteraction])
 
-  const attemptFlush = useCallback(() => {
-    const currentApi = apiRef.current
-    if (currentApi === undefined) return
-    void flushAllReadingTime(currentApi, profileId, { deviceId }).catch((error: unknown) => {
-      // Best-effort: a flush failure must never surface to the reader UI.
-      // offline/readingTimeSync.ts itself already keeps unsynced seconds
-      // safely pending for the next opportunity; this catch only guards
-      // against an unexpected throw escaping that module's own handling.
-      console.error('[reading-time] opportunistic flush failed', { profileId, error })
-    })
-  }, [profileId, deviceId])
+  // `keepalive` marks the two callers that fire as the page is going away
+  // (visibility -> hidden, unmount). Those are exactly the flushes a plain
+  // XHR loses, because the browser aborts in-flight requests when it
+  // discards the page, so the flush that exists FOR leaving was the one
+  // least likely to arrive. The periodic tick leaves it off: the page is
+  // demonstrably alive there, and the default adapter stays the normal path.
+  const attemptFlush = useCallback(
+    (keepalive = false) => {
+      const currentApi = apiRef.current
+      if (currentApi === undefined) return
+      void flushAllReadingTime(currentApi, profileId, { deviceId, keepalive }).catch(
+        (error: unknown) => {
+          // Best-effort: a flush failure must never surface to the reader UI.
+          // offline/readingTimeSync.ts itself already keeps unsynced seconds
+          // safely pending for the next opportunity; this catch only guards
+          // against an unexpected throw escaping that module's own handling.
+          console.error('[reading-time] opportunistic flush failed', { profileId, error })
+        }
+      )
+    },
+    [profileId, deviceId]
+  )
 
   // The tick loop: while mounted and not paused, wake every TICK_INTERVAL_MS,
   // credit elapsed active time (if any) to today's bucket, and flush
@@ -220,7 +231,7 @@ export function useReadingTimeAccumulator({
     if (typeof document === 'undefined') return
     const handler = () => {
       if (document.visibilityState === 'hidden') {
-        attemptFlush()
+        attemptFlush(true)
       } else {
         // Coming back to the foreground counts as an interaction: a child
         // who switched apps and returned did not "idle out" the story.
@@ -239,7 +250,7 @@ export function useReadingTimeAccumulator({
   // until their next visit.
   useEffect(() => {
     return () => {
-      attemptFlush()
+      attemptFlush(true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

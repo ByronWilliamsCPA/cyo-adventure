@@ -68,7 +68,8 @@ export interface ReadingTimeApi {
     date: string,
     secondsDelta: number,
     flushId: string,
-    deviceId?: string
+    deviceId?: string,
+    keepalive?: boolean
   ): Promise<ReadingTimeFlushResult>
 }
 
@@ -81,14 +82,30 @@ export interface ReadingTimeApi {
 // the source of truth this hand-typed shape must track.
 export function makeReadingTimeApi(api: AxiosInstance): ReadingTimeApi {
   return {
-    async flush(date, secondsDelta, flushId, deviceId) {
+    async flush(date, secondsDelta, flushId, deviceId, keepalive) {
       try {
-        const res = await api.post<ReadingTimeFlushResult>('/v1/me/reading-time', {
-          date,
-          seconds_delta: secondsDelta,
-          flush_id: flushId,
-          device_id: deviceId,
-        })
+        const res = await api.post<ReadingTimeFlushResult>(
+          '/v1/me/reading-time',
+          {
+            date,
+            seconds_delta: secondsDelta,
+            flush_id: flushId,
+            device_id: deviceId,
+          },
+          // `keepalive` is a fetch-only capability, so the unload path has to
+          // switch adapters to get it; the default XHR adapter has no
+          // equivalent and its request dies with the page. Routing through
+          // axios rather than calling `fetch` directly is the whole point:
+          // this instance's request interceptor picks the Authorization
+          // header from a THREE-branch chain (child-session token, then
+          // device-grant token, then the adult token in localStorage), and a
+          // hand-rolled beacon would have to duplicate that auth selection
+          // and then keep it in step forever. `sendBeacon` is not an option
+          // for the same reason: it cannot set an Authorization header at all.
+          keepalive === true
+            ? { adapter: 'fetch' as const, fetchOptions: { keepalive: true } }
+            : undefined
+        )
         return res.data
       } catch (error) {
         // Same convention as api/readerApi.ts::makeSyncApi: no HTTP response
@@ -152,6 +169,24 @@ export interface FlushOptions {
   deviceId?: string
   /** Injectable id factory for deterministic tests; defaults to crypto.randomUUID. */
   newId?: () => string
+  /**
+   * Ask the transport to outlive the page (`fetch`'s `keepalive`). Set only
+   * on the unload-ish paths (visibility -> hidden, unmount); leave off for
+   * the periodic tick, where the page is plainly still alive and the default
+   * XHR adapter is the better-instrumented path.
+   *
+   * #EDGE: timing dependencies: without this, the hide-path flush is a plain
+   * XHR that the browser ABORTS when it discards the page, which is the only
+   * moment that flush exists to cover. Nothing is lost when it dies (the
+   * bucket keeps its `pending` attempt and the next visit retries the same
+   * flush_id), so this widens a window rather than fixing data loss: the
+   * child's seconds land now instead of whenever they next open the app.
+   * `keepalive` caps the body at 64KB, which this 4-field JSON is nowhere
+   * near.
+   * #VERIFY: offline/readingTimeSync.test.ts "passes keepalive through to the
+   * transport only when asked".
+   */
+  keepalive?: boolean
 }
 
 /**
@@ -190,7 +225,13 @@ export async function flushReadingTimeBucket(
   }
   let result: ReadingTimeFlushResult
   try {
-    result = await api.flush(working.date, attempt.deltaSeconds, attempt.flushId, opts.deviceId)
+    result = await api.flush(
+      working.date,
+      attempt.deltaSeconds,
+      attempt.flushId,
+      opts.deviceId,
+      opts.keepalive
+    )
   } catch (error) {
     if (error instanceof OfflineError || error instanceof RetryableFlushError) {
       // Still offline, or the server failed in a way that may have committed

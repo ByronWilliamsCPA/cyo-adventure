@@ -94,4 +94,57 @@ describe('BadgeCase', () => {
     )
     expect(container.querySelectorAll('.badge-case__card--earned')).toHaveLength(0)
   })
+
+  it('shows an earned badge the local catalog does not know about', () => {
+    // The runtime pairing badgeCatalog.test.ts cannot reach. That test parses
+    // progress/badges.py and pins the two catalogs id-for-id, so they cannot
+    // drift within one repo; it says nothing about an older CACHED bundle
+    // (this is a PWA with a service worker) talking to a newer backend. In
+    // that pairing the child gets a BadgeUnlockToast reading the server's
+    // `badge.name`, then finds the badge missing from the case a tap later.
+    const { container, getByText } = render(
+      <BadgeCase
+        open
+        onClose={vi.fn()}
+        earnedBadges={[
+          {
+            id: 'wish_come_true',
+            name: 'Wish Come True',
+            description: 'A story you asked for came true!',
+            earned_at: 't',
+          },
+        ]}
+      />
+    )
+    expect(getByText('Wish Come True')).toBeInTheDocument()
+    // The server's description, not a placeholder: these are the wire fields
+    // BadgeUnlockToast already treats as authoritative, and the point of the
+    // fix is that this component stops discarding them.
+    expect(getByText('A story you asked for came true!')).toBeInTheDocument()
+    // Earned, never locked: it is in the earned list by construction.
+    const earned = container.querySelectorAll('.badge-case__card--earned')
+    expect(earned).toHaveLength(1)
+    expect(earned[0]?.textContent).toContain('Earned!')
+    // The known roster is untouched and still fully locked.
+    expect(container.querySelectorAll('.badge-case__card--locked')).toHaveLength(
+      BADGE_CATALOG.length
+    )
+  })
+
+  it('does not duplicate an earned badge that IS in the catalog', () => {
+    // Guards the obvious wrong fix (appending every earned badge rather than
+    // only the uncatalogued ones), which would render 'First Ending' twice:
+    // once earned from the roster, once again from the server list.
+    const { container, getAllByText } = render(
+      <BadgeCase
+        open
+        onClose={vi.fn()}
+        earnedBadges={[
+          { id: 'first_ending', name: 'First Ending', description: 'x', earned_at: 't' },
+        ]}
+      />
+    )
+    expect(getAllByText('First Ending')).toHaveLength(1)
+    expect(container.querySelectorAll('.badge-case__card')).toHaveLength(BADGE_CATALOG.length)
+  })
 })

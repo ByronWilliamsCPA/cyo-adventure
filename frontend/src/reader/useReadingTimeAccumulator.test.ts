@@ -195,6 +195,43 @@ describe('useReadingTimeAccumulator', () => {
     expect(flushMock).toHaveBeenCalledTimes(1)
   })
 
+  it('asks for keepalive on the unmount flush but not on the periodic one', () => {
+    // The two flushes differ in whether the page is about to stop existing,
+    // and only the transport knows the difference: a plain XHR is aborted
+    // when the browser discards the page, so the flush that exists FOR
+    // leaving was the one least likely to land. Asserting both directions,
+    // because always-on keepalive would satisfy the unmount half while
+    // silently moving every routine tick onto the fetch adapter.
+    const clock = new Date(2026, 0, 1, 10, 0, 0)
+    const { unmount } = renderHook(() =>
+      useReadingTimeAccumulator({ profileId: PROFILE_ID, now: () => clock, api: DUMMY_API })
+    )
+    act(() => {
+      vi.advanceTimersByTime(FLUSH_INTERVAL_MS)
+    })
+    expect(flushMock.mock.calls[0]?.[2]).toMatchObject({ keepalive: false })
+
+    flushMock.mockClear()
+    act(() => {
+      unmount()
+    })
+    expect(flushMock.mock.calls[0]?.[2]).toMatchObject({ keepalive: true })
+  })
+
+  it('asks for keepalive when the tab goes hidden', () => {
+    const clock = new Date(2026, 0, 1, 10, 0, 0)
+    const { unmount } = renderHook(() =>
+      useReadingTimeAccumulator({ profileId: PROFILE_ID, now: () => clock, api: DUMMY_API })
+    )
+    flushMock.mockClear()
+    act(() => {
+      setVisibility('hidden')
+      document.dispatchEvent(new Event('visibilitychange'))
+    })
+    expect(flushMock.mock.calls[0]?.[2]).toMatchObject({ keepalive: true })
+    unmount()
+  })
+
   it('flushes opportunistically at most every FLUSH_INTERVAL_MS while active', () => {
     const clock = new Date(2026, 0, 1, 10, 0, 0)
     const { unmount } = renderHook(() =>
