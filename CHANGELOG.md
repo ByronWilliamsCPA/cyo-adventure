@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.57.0] - 2026-08-01
+
+### Features
+
+- **moderation**: Admin ranked review surface, guardian summary, validator visibility
+  ([#528](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/528),
+  [`af98df1`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/af98df1a6db4e66685dd7d4f30b105e6978d90d6))
+
+
 ## [0.56.0] - 2026-08-01
 
 ### Features
@@ -2970,6 +2979,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.57.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.56.0...v0.57.0
 [0.56.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.55.2...v0.56.0
 [0.55.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.55.1...v0.55.2
 [0.55.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.55.0...v0.55.1
