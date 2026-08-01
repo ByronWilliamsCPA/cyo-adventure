@@ -13,9 +13,9 @@
 
 import { type AxiosInstance, isAxiosError } from 'axios'
 
-import type { ContentFlagLevel, ContentFlags } from '../client/types.gen'
+import type { ContentFlagLevel, ContentFlags, FindingSeverity } from '../client/types.gen'
 
-export type { ContentFlagLevel, ContentFlags }
+export type { ContentFlagLevel, ContentFlags, FindingSeverity }
 
 export type FindingVerdict = 'block' | 'flag' | 'advisory' | 'pass'
 
@@ -54,6 +54,21 @@ export interface FindingView {
   verdict: FindingVerdict
   score: number | null
   message: string
+  // Additive (Stage B, design doc 2.2/2.6): severity/node_ids come from the
+  // post-review merge stage; structural/concern existed on persisted findings
+  // since Stage A but were only projected starting with B3. All four are
+  // null/false/absent on a pre-Stage-B report.
+  severity?: FindingSeverity | null
+  node_ids?: string[] | null
+  structural?: boolean
+  concern?: string | null
+}
+
+export interface ValidatorFindingView {
+  rule_id: string
+  severity: string
+  node_id: string | null
+  message: string
 }
 
 export interface FlaggedPassage {
@@ -71,6 +86,14 @@ export interface ReviewSurface {
   summary: ReviewSummary | null
   flagged_passages: FlaggedPassage[]
   story_level_findings: FindingView[]
+  // Stage B3 additive fields (design doc 2.6): a flat, non-fanned merged-
+  // finding view alongside flagged_passages/story_level_findings above. Each
+  // entry still carries node_ids for on-demand drill-down. All four default
+  // empty on a pre-B3 backend response or a legacy stored report.
+  ranked_findings?: FindingView[]
+  structural_findings?: FindingView[]
+  low_advisory_findings?: FindingView[]
+  validator_findings?: ValidatorFindingView[]
 }
 
 export interface ApprovedResult {

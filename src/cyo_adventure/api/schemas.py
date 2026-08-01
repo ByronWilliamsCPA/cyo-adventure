@@ -1405,6 +1405,37 @@ class FlaggedPassage(BaseModel):
     findings: list[FindingView] = Field(min_length=1)
 
 
+# The deterministic validator's own severity vocabulary
+# (validator/report.py::Severity). Deliberately NOT FindingSeverity
+# (high/medium/low), which is the moderation scale; the two are different
+# axes and must not be interchangeable at the API boundary.
+ValidatorSeverity = Literal["error", "warning"]
+
+
+class ValidatorFindingView(BaseModel):
+    """One deterministic-gate finding, projected read-only onto the admin surface.
+
+    Design doc 2.7 option (a): RL-13 (advisory reading level) and PL-19 (words-
+    per-node) currently gate nothing and show nowhere. This is a pure read of
+    the story's already-persisted ``StorybookVersion.validation_report``
+    (``validator/report.py::ValidationReport.to_dict()``); it never re-runs the
+    validator. ``severity`` here is the validator's own ``error``/``warning``
+    vocabulary (``validator/report.py::Severity``), a distinct scale from the
+    moderation ``FindingSeverity`` (high/medium/low) used elsewhere on this
+    surface. It is typed as its own two-member ``Literal`` rather than reused
+    from ``FindingSeverity``, which keeps the two scales from conflating while
+    still making the vocabulary explicit at the contract boundary. Normalizing
+    an unreadable value is ``_validator_findings``' job, not this model's: it
+    maps anything outside the two members to ``"error"`` so a corrupt row
+    degrades loudly instead of raising and 422-ing the whole review surface.
+    """
+
+    rule_id: str
+    severity: ValidatorSeverity
+    node_id: str | None
+    message: str
+
+
 class ReviewSurfaceView(BaseModel):
     """The full guardian review surface for one story version (C3-4)."""
 
@@ -1416,6 +1447,17 @@ class ReviewSurfaceView(BaseModel):
     summary: ReviewSummary | None
     flagged_passages: list[FlaggedPassage]
     story_level_findings: list[FindingView]
+    # Stage B3 additive fields (design doc 2.6): a flat, non-fanned merged-
+    # finding view alongside the existing node-joined flagged_passages above.
+    # Each entry still carries node_ids, so the frontend can drill down to
+    # affected nodes on demand without the admin surface pre-joining prose to
+    # every occurrence the way flagged_passages does. All four default empty
+    # so a caller that has not been updated to pass validation_report, or an
+    # older stored report, still projects a valid surface.
+    ranked_findings: list[FindingView] = Field(default_factory=list)
+    structural_findings: list[FindingView] = Field(default_factory=list)
+    low_advisory_findings: list[FindingView] = Field(default_factory=list)
+    validator_findings: list[ValidatorFindingView] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def _no_pass_verdict_leaks(self) -> ReviewSurfaceView:
@@ -1424,13 +1466,20 @@ class ReviewSurfaceView(BaseModel):
         build_review_surface already filters Verdict.PASS out before constructing
         this view; this is a second, independent guard so a future regression in
         that filter fails the request instead of silently showing a guardian a
-        non-gating finding as if it needed review.
+        non-gating finding as if it needed review. Extended in Stage B3 to cover
+        the three new merged-finding buckets alongside the original two.
         """
-        leaked = any(
-            f.verdict is Verdict.PASS
-            for passage in self.flagged_passages
-            for f in passage.findings
-        ) or any(f.verdict is Verdict.PASS for f in self.story_level_findings)
+        leaked = (
+            any(
+                f.verdict is Verdict.PASS
+                for passage in self.flagged_passages
+                for f in passage.findings
+            )
+            or any(f.verdict is Verdict.PASS for f in self.story_level_findings)
+            or any(f.verdict is Verdict.PASS for f in self.ranked_findings)
+            or any(f.verdict is Verdict.PASS for f in self.structural_findings)
+            or any(f.verdict is Verdict.PASS for f in self.low_advisory_findings)
+        )
         if leaked:
             msg = "review surface must not contain a pass-verdict finding"
             raise ValueError(msg)
@@ -1517,24 +1566,63 @@ class GuardianFinding(BaseModel):
     """A redacted, story-level moderation finding shown to a guardian.
 
     Deliberately narrower than FindingView: it drops source, stage, score, and
-    node_id so the guardian assign flow never leaks generation internals or a
-    per-node passage locator. Only the category, gating verdict, and the
-    human-readable message reach the guardian.
+    node_id (and node_ids) so the guardian assign flow never leaks generation
+    internals or a per-node passage locator. This is the "GuardianFinding
+    rule" a comment in story_requests/screening.py names for the narrower,
+    unrelated StoryRequestFlag boundary; it does not freeze this model's field
+    count. Only category, gating verdict, message, plus (Stage B3, design doc
+    2.6) concern and severity, and node_count -- a COUNT, never the node ids
+    themselves -- reach the guardian.
     """
 
     category: str
     verdict: Verdict
     message: str
+    # Additive (Stage B3, design doc 2.6): the merged concern list's per-row
+    # signal. concern/severity mirror FindingView's own fields (None on a
+    # pre-Stage-B report or an unconcerned category-only finding). node_count
+    # is the finding's total node coverage (len(node_ids), or 1 for a single
+    # unmerged node finding, or 0 for a genuinely story-level finding),
+    # deliberately a count and never the node ids: see the class docstring.
+    concern: str | None = None
+    severity: FindingSeverity | None = None
+    node_count: int = Field(default=0, ge=0)
+
+
+class GuardianValidatorNote(BaseModel):
+    """A story-level, node-id-free count of one validator rule's findings.
+
+    Design doc 2.7 option (a) closes the gap: RL-13 (advisory reading level)
+    and PL-19 (words-per-node) must be visible on BOTH the admin review
+    surface (``ValidatorFindingView``, per-finding with a node id) and the
+    guardian content summary (this type). The guardian view is story-level
+    only (design doc 2.6), so this drops node_id and the per-node message
+    entirely and keeps only an aggregate ``count`` per (rule_id, severity):
+    the guardian sees e.g. "RL-13 warning x12", never which node or what the
+    per-node message said (a per-node PL-19 message embeds node context).
+    """
+
+    rule_id: str
+    severity: ValidatorSeverity
+    count: int = Field(ge=1)
 
 
 class ContentSummaryView(BaseModel):
     """The guardian-facing content review summary for a published story.
 
-    A redacted projection of the admin review surface: it carries the gating
-    summary and story-level findings, plus a total flagged count, but never the
-    per-node flagged passages (which can spoil content and leak generation
-    internals). ``findings`` holds only whole-story findings; per-node findings
-    are counted in ``flagged_count`` but not enumerated.
+    A redacted, story-level-only projection of the admin review surface
+    (design doc 2.6): the gating summary, a total flagged count, and a merged
+    concern list, but never a per-node row or a node id. ``findings`` merges
+    every threshold-surfaced finding (both the admin surface's per-node and
+    story-level findings) by concern/severity/verdict/message, so a single
+    admin-visible finding that spans several nodes collapses into one
+    guardian row whose ``node_count`` sums that coverage, never a passage
+    list. See ``review_surface.py::_content_summary_findings``.
+
+    ``validator_notes`` (Stage B3 follow-up, design doc 2.7 option (a)) is
+    the guardian-side validator projection: additive, defaults to ``[]`` so
+    an older backend response or a report predating validator persistence
+    still projects a valid summary. See ``review_surface.py::_validator_notes``.
     """
 
     storybook_id: str
@@ -1543,6 +1631,7 @@ class ContentSummaryView(BaseModel):
     summary: ReviewSummary | None
     flagged_count: int = Field(ge=0)
     findings: list[GuardianFinding]
+    validator_notes: list[GuardianValidatorNote] = Field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------

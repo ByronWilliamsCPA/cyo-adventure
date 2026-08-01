@@ -100,6 +100,43 @@ def test_build_content_summary_succeeds_on_legacy_report() -> None:
         policy=ThresholdPolicy(rows={}),
     )
     assert summary.screened is True
+    # Stage B3 (design doc 2.6): every surfaced legacy finding's additive
+    # concern/severity fields degrade to None, and node_count is still a
+    # non-negative count derived from the pre-Stage-B node_id-only shape
+    # (never a node id or a raised error), for every row the merge produces.
+    for finding in summary.findings:
+        assert finding.concern is None
+        assert finding.severity is None
+        assert finding.node_count >= 0
+    # Stage B3 follow-up (design doc 2.7 option (a)): no validation_report was
+    # passed (this call predates validator persistence), so validator_notes
+    # degrades to an empty aggregate rather than raising or fabricating rows.
+    assert summary.validator_notes == []
+
+
+@pytest.mark.unit
+def test_build_review_surface_new_buckets_degrade_on_legacy_report() -> None:
+    """The Stage B3 ranked/structural/low-advisory/validator fields all
+    degrade cleanly on a pre-Stage-B report: every legacy finding lacks
+    ``structural`` and ``severity``, so none can land in the structural or
+    low-advisory buckets, and every one lands in ``ranked_findings`` instead;
+    a missing ``validation_report`` (not passed here) yields an empty
+    ``validator_findings`` rather than raising.
+    """
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s_legacy",
+        version=1,
+        blob=_blob(),
+        moderation_report=_legacy_report(),
+    )
+    assert view.structural_findings == []
+    assert view.low_advisory_findings == []
+    assert view.validator_findings == []
+    assert len(view.ranked_findings) > 0
+    for finding in view.ranked_findings:
+        assert finding.severity is None
+        assert finding.structural is False
 
 
 def _expected_gating_counts(report: dict[str, object]) -> dict[str, int]:

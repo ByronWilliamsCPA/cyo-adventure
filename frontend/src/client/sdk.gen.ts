@@ -715,8 +715,10 @@ export const listRatingsApiV1RatingsProfileIdGet = <ThrowOnError extends boolean
  *
  * Guardians see this in the assign flow so they know what a book was flagged
  * for before granting it to a child. It carries the gating summary, the total
- * flagged count, and story-level findings only; per-node flagged passages are
- * withheld (the admin review surface owns those).
+ * flagged count, story-level findings, and a story-level validator note
+ * aggregate (design doc 2.7 option (a): RL-13/PL-19 counts, no node ids);
+ * per-node flagged passages are withheld (the admin review surface owns
+ * those).
  *
  * Args:
  * storybook_id: The published story to summarize.
@@ -931,8 +933,9 @@ export const archiveStorybookApiV1StorybooksStorybookIdArchivePost = <ThrowOnErr
  * version: The version to review; defaults to the latest.
  *
  * Returns:
- * ReviewSurfaceView: Blob plus moderation summary, flagged passages, and
- * story-level findings.
+ * ReviewSurfaceView: Blob plus moderation summary, flagged passages,
+ * story-level findings, the ranked/structural/low-advisory merged-
+ * finding buckets, and the story's validator (RL-13/PL-19) findings.
  *
  * Raises:
  * AuthorizationError: If the caller is neither admin nor guardian

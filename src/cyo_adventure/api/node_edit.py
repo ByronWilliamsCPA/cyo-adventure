@@ -650,8 +650,12 @@ async def edit_node(
         version_row.moderation_report, node_id, fresh_findings, independent=independent
     )
 
+    # Serialized once and reused by the response projection below, so the
+    # persisted column and the returned surface cannot drift apart.
+    validation_report = gate_result.report.to_dict()
+
     version_row.blob = new_blob
-    version_row.validation_report = gate_result.report.to_dict()
+    version_row.validation_report = validation_report
     version_row.moderation_report = refreshed_report
     # #CRITICAL: data integrity: the blob just changed under a flag derived
     # from the PREVIOUS blob. `personalization_eligible` is written once at
@@ -695,4 +699,10 @@ async def edit_node(
         blob=new_blob,
         moderation_report=refreshed_report,
         admin_noise_floor=floor,
+        # The gate re-ran above (`gate_result`) and the SAME serialized report
+        # was assigned to `version_row.validation_report` a few lines up; reuse
+        # that exact object so the refreshed surface's validator findings
+        # reflect this edit immediately, not the pre-edit stored value, and so
+        # the response can never disagree with what was just persisted.
+        validation_report=validation_report,
     )

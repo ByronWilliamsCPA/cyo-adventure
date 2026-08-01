@@ -301,8 +301,9 @@ async def get_review_surface(
         version: The version to review; defaults to the latest.
 
     Returns:
-        ReviewSurfaceView: Blob plus moderation summary, flagged passages, and
-            story-level findings.
+        ReviewSurfaceView: Blob plus moderation summary, flagged passages,
+            story-level findings, the ranked/structural/low-advisory merged-
+            finding buckets, and the story's validator (RL-13/PL-19) findings.
 
     Raises:
         AuthorizationError: If the caller is neither admin nor guardian
@@ -365,6 +366,7 @@ async def get_review_surface(
         blob=version_row.blob,
         moderation_report=version_row.moderation_report,
         admin_noise_floor=floor,
+        validation_report=version_row.validation_report,
     )
 
 

@@ -1010,11 +1010,19 @@ export type ContentFlags = {
  *
  * The guardian-facing content review summary for a published story.
  *
- * A redacted projection of the admin review surface: it carries the gating
- * summary and story-level findings, plus a total flagged count, but never the
- * per-node flagged passages (which can spoil content and leak generation
- * internals). ``findings`` holds only whole-story findings; per-node findings
- * are counted in ``flagged_count`` but not enumerated.
+ * A redacted, story-level-only projection of the admin review surface
+ * (design doc 2.6): the gating summary, a total flagged count, and a merged
+ * concern list, but never a per-node row or a node id. ``findings`` merges
+ * every threshold-surfaced finding (both the admin surface's per-node and
+ * story-level findings) by concern/severity/verdict/message, so a single
+ * admin-visible finding that spans several nodes collapses into one
+ * guardian row whose ``node_count`` sums that coverage, never a passage
+ * list. See ``review_surface.py::_content_summary_findings``.
+ *
+ * ``validator_notes`` (Stage B3 follow-up, design doc 2.7 option (a)) is
+ * the guardian-side validator projection: additive, defaults to ``[]`` so
+ * an older backend response or a report predating validator persistence
+ * still projects a valid summary. See ``review_surface.py::_validator_notes``.
  */
 export type ContentSummaryView = {
     /**
@@ -1038,6 +1046,10 @@ export type ContentSummaryView = {
      * Findings
      */
     findings: Array<GuardianFinding>;
+    /**
+     * Validator Notes
+     */
+    validator_notes?: Array<GuardianValidatorNote>;
 };
 
 /**
@@ -1755,9 +1767,13 @@ export type GuardianBooksView = {
  * A redacted, story-level moderation finding shown to a guardian.
  *
  * Deliberately narrower than FindingView: it drops source, stage, score, and
- * node_id so the guardian assign flow never leaks generation internals or a
- * per-node passage locator. Only the category, gating verdict, and the
- * human-readable message reach the guardian.
+ * node_id (and node_ids) so the guardian assign flow never leaks generation
+ * internals or a per-node passage locator. This is the "GuardianFinding
+ * rule" a comment in story_requests/screening.py names for the narrower,
+ * unrelated StoryRequestFlag boundary; it does not freeze this model's field
+ * count. Only category, gating verdict, message, plus (Stage B3, design doc
+ * 2.6) concern and severity, and node_count -- a COUNT, never the node ids
+ * themselves -- reach the guardian.
  */
 export type GuardianFinding = {
     /**
@@ -1769,6 +1785,15 @@ export type GuardianFinding = {
      * Message
      */
     message: string;
+    /**
+     * Concern
+     */
+    concern?: string | null;
+    severity?: FindingSeverity | null;
+    /**
+     * Node Count
+     */
+    node_count?: number;
 };
 
 /**
@@ -1788,6 +1813,35 @@ export type GuardianInviteBody = {
      * Email
      */
     email: string;
+};
+
+/**
+ * GuardianValidatorNote
+ *
+ * A story-level, node-id-free count of one validator rule's findings.
+ *
+ * Design doc 2.7 option (a) closes the gap: RL-13 (advisory reading level)
+ * and PL-19 (words-per-node) must be visible on BOTH the admin review
+ * surface (``ValidatorFindingView``, per-finding with a node id) and the
+ * guardian content summary (this type). The guardian view is story-level
+ * only (design doc 2.6), so this drops node_id and the per-node message
+ * entirely and keeps only an aggregate ``count`` per (rule_id, severity):
+ * the guardian sees e.g. "RL-13 warning x12", never which node or what the
+ * per-node message said (a per-node PL-19 message embeds node context).
+ */
+export type GuardianValidatorNote = {
+    /**
+     * Rule Id
+     */
+    rule_id: string;
+    /**
+     * Severity
+     */
+    severity: 'error' | 'warning';
+    /**
+     * Count
+     */
+    count: number;
 };
 
 /**
@@ -3351,6 +3405,22 @@ export type ReviewSurfaceView = {
      * Story Level Findings
      */
     story_level_findings: Array<FindingView>;
+    /**
+     * Ranked Findings
+     */
+    ranked_findings?: Array<FindingView>;
+    /**
+     * Structural Findings
+     */
+    structural_findings?: Array<FindingView>;
+    /**
+     * Low Advisory Findings
+     */
+    low_advisory_findings?: Array<FindingView>;
+    /**
+     * Validator Findings
+     */
+    validator_findings?: Array<ValidatorFindingView>;
 };
 
 /**
@@ -4179,6 +4249,44 @@ export type ValidationError = {
     ctx?: {
         [key: string]: unknown;
     };
+};
+
+/**
+ * ValidatorFindingView
+ *
+ * One deterministic-gate finding, projected read-only onto the admin surface.
+ *
+ * Design doc 2.7 option (a): RL-13 (advisory reading level) and PL-19 (words-
+ * per-node) currently gate nothing and show nowhere. This is a pure read of
+ * the story's already-persisted ``StorybookVersion.validation_report``
+ * (``validator/report.py::ValidationReport.to_dict()``); it never re-runs the
+ * validator. ``severity`` here is the validator's own ``error``/``warning``
+ * vocabulary (``validator/report.py::Severity``), a distinct scale from the
+ * moderation ``FindingSeverity`` (high/medium/low) used elsewhere on this
+ * surface. It is typed as its own two-member ``Literal`` rather than reused
+ * from ``FindingSeverity``, which keeps the two scales from conflating while
+ * still making the vocabulary explicit at the contract boundary. Normalizing
+ * an unreadable value is ``_validator_findings``' job, not this model's: it
+ * maps anything outside the two members to ``"error"`` so a corrupt row
+ * degrades loudly instead of raising and 422-ing the whole review surface.
+ */
+export type ValidatorFindingView = {
+    /**
+     * Rule Id
+     */
+    rule_id: string;
+    /**
+     * Severity
+     */
+    severity: 'error' | 'warning';
+    /**
+     * Node Id
+     */
+    node_id: string | null;
+    /**
+     * Message
+     */
+    message: string;
 };
 
 /**
