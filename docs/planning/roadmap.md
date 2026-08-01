@@ -130,6 +130,7 @@ done.**
 | ADR-018 D1-D4 execution, G11 trust surface, G12 export, A12 abuse workflow, A14 compliance reporting | 7 |
 | G13 full credits/IAP | 8 |
 | A9 curation surface, A7 ops dashboards, A8 runtime levers, A4 full catalog re-screen | 9 |
+| K21 collection/badges, K22 weekly reading ring, K23 day-grain reading time, G19 gamification controls (minted 2026-08-01, v1.9) | Kid-appeal implementation plan wave 3 ([kid-appeal-implementation-plan.md](./kid-appeal-implementation-plan.md)); backend substrate landed 2026-08-01, kid/guardian UI in flight |
 | S12 ring-3 recommendations, A11 corpus quality tooling | Post-launch backlog |
 | Android, web direct billing, education persona, i18n | Parked: each needs its design element first (no ADR/register ID) |
 

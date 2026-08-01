@@ -17,12 +17,22 @@ class TestEndingValenceMap:
                 {
                     "id": "n2",
                     "is_ending": True,
-                    "ending": {"id": "e-sad", "valence": "negative", "kind": "setback", "title": "Oh no"},
+                    "ending": {
+                        "id": "e-sad",
+                        "valence": "negative",
+                        "kind": "setback",
+                        "title": "Oh no",
+                    },
                 },
                 {
                     "id": "n3",
                     "is_ending": True,
-                    "ending": {"id": "e-happy", "valence": "positive", "kind": "success", "title": "Yay"},
+                    "ending": {
+                        "id": "e-happy",
+                        "valence": "positive",
+                        "kind": "success",
+                        "title": "Yay",
+                    },
                 },
             ]
         }
@@ -84,8 +94,14 @@ class TestBookTitle:
     def test_falls_back_on_missing_title(self) -> None:
         assert book_title({}, "fallback-id", 1) == "fallback-id"
 
-    def test_strips_sentinels(self) -> None:
-        token = wrap("HERO", "Explorer")
-        title = book_title({"title": f"{token} and the Map"}, "fallback-id", 1)
-        assert "{~" not in title
-        assert "Explorer" in title
+
+@pytest.mark.unit
+def test_book_title_strips_sentinels() -> None:
+    """Referenced by name from tests/unit/test_title_strip_registry.py's
+    ENFORCED mapping (``BookProgressView.title``); kept as a bare top-level
+    function so that registry's plain-text ``def <name>(`` scan finds it.
+    """
+    token = wrap("HERO", "Explorer")
+    title = book_title({"title": f"{token} and the Map"}, "fallback-id", 1)
+    assert "{~" not in title
+    assert "Explorer" in title

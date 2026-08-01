@@ -562,6 +562,38 @@ export type AuthoringPlanResponse = {
 };
 
 /**
+ * BookProgressView
+ *
+ * One book's collection state for a profile (W3.1, the Endings Gallery).
+ */
+export type BookProgressView = {
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Endings Found
+     */
+    endings_found: number;
+    /**
+     * Total Endings
+     */
+    total_endings: number;
+    /**
+     * Finished
+     */
+    finished: boolean;
+    /**
+     * Every Path Walked
+     */
+    every_path_walked: boolean;
+};
+
+/**
  * BookVerdictView
  *
  * One published storybook's re-screen outcome, on the wire.
@@ -637,6 +669,9 @@ export type CategoryInsightView = {
  * Deliberately signals-only (G9's privacy model: signals, not surveillance):
  * no story title, node, or choice content is carried here, only counts and
  * ids already visible to the guardian elsewhere (the library listing).
+ * ``minutes_last_7_days``/``days_read_this_week`` (W3.3) extend that same
+ * signals-only posture to active reading time: day-grain counts and minute
+ * totals only, never a session-level or sub-day breakdown.
  */
 export type ChildEngagementItem = {
     /**
@@ -663,6 +698,14 @@ export type ChildEngagementItem = {
      * Last Activity At
      */
     last_activity_at: string | null;
+    /**
+     * Minutes Last 7 Days
+     */
+    minutes_last_7_days?: Array<DailyMinutesView>;
+    /**
+     * Days Read This Week
+     */
+    days_read_this_week?: number;
 };
 
 /**
@@ -1130,6 +1173,28 @@ export type CoverStatusView = {
 };
 
 /**
+ * DailyMinutesView
+ *
+ * Active reading minutes for one calendar day (W3.3, guardian-only).
+ *
+ * Derived from ``reading_activity_day.active_seconds // 60``. Guardian-only
+ * by construction: this type is nested only in ``ChildEngagementItem``,
+ * which ``get_family_reading_summary`` (guardian/admin-only) is the sole
+ * producer of. Kids see days, never minutes (gamification recommendation
+ * section 2.4, P4): no kid-facing surface serves this type.
+ */
+export type DailyMinutesView = {
+    /**
+     * Activity Date
+     */
+    activity_date: string;
+    /**
+     * Minutes
+     */
+    minutes: number;
+};
+
+/**
  * DeviceGrantCreateBody
  *
  * A guardian's (or admin's) request to mint a device grant.
@@ -1208,6 +1273,30 @@ export type DeviceGrantView = {
      * Authorized By
      */
     authorized_by: string;
+};
+
+/**
+ * EarnedBadgeView
+ *
+ * One badge a profile has earned (W3.1, gamification recommendation 2.2).
+ */
+export type EarnedBadgeView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Description
+     */
+    description: string;
+    /**
+     * Earned At
+     */
+    earned_at: string;
 };
 
 /**
@@ -2891,6 +2980,39 @@ export type ProfileView = {
 };
 
 /**
+ * ProgressTotalsView
+ *
+ * Lifetime totals across every book a profile has touched (W3.1).
+ */
+export type ProgressTotalsView = {
+    /**
+     * Books Finished
+     */
+    books_finished: number;
+    /**
+     * Endings Found
+     */
+    endings_found: number;
+};
+
+/**
+ * ProgressView
+ *
+ * ``GET /me/progress`` response: badges, collection state, totals (W3.1).
+ */
+export type ProgressView = {
+    /**
+     * Badges
+     */
+    badges: Array<EarnedBadgeView>;
+    /**
+     * Books
+     */
+    books: Array<BookProgressView>;
+    totals: ProgressTotalsView;
+};
+
+/**
  * Protagonist
  *
  * The fictional story character whose role the reader takes.
@@ -3063,6 +3185,26 @@ export type ReadinessStatus = {
 };
 
 /**
+ * ReadingActivityDayView
+ *
+ * A profile's active-reading-seconds bucket for one day (W3.3).
+ */
+export type ReadingActivityDayView = {
+    /**
+     * Activity Date
+     */
+    activity_date: string;
+    /**
+     * Active Seconds
+     */
+    active_seconds: number;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+};
+
+/**
  * ReadingHistoryItem
  *
  * One storybook's reading-history summary for a profile (register K6/G9).
@@ -3225,6 +3367,35 @@ export type ReadingStateView = {
      * Last Synced At
      */
     last_synced_at: string | null;
+};
+
+/**
+ * ReadingTimeFlushBody
+ *
+ * A client-side active-reading-time flush for one day bucket (W3.3).
+ *
+ * ``device_id`` is accepted for parity with the reading-state sync
+ * contract and future per-device analytics, but is not currently persisted
+ * (the recommendation's data-model sketch, section 5, carries no
+ * device_id column); see ``db/models.py::ReadingActivityDay``.
+ */
+export type ReadingTimeFlushBody = {
+    /**
+     * Date
+     */
+    date: string;
+    /**
+     * Seconds Delta
+     */
+    seconds_delta: number;
+    /**
+     * Flush Id
+     */
+    flush_id: string;
+    /**
+     * Device Id
+     */
+    device_id?: string | null;
 };
 
 /**
@@ -8307,3 +8478,61 @@ export type GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationVal
 };
 
 export type GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetResponse = GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetResponses[keyof GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetResponses];
+
+export type GetMyProgressApiV1MeProgressGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/progress';
+};
+
+export type GetMyProgressApiV1MeProgressGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetMyProgressApiV1MeProgressGetError = GetMyProgressApiV1MeProgressGetErrors[keyof GetMyProgressApiV1MeProgressGetErrors];
+
+export type GetMyProgressApiV1MeProgressGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: ProgressView;
+};
+
+export type GetMyProgressApiV1MeProgressGetResponse = GetMyProgressApiV1MeProgressGetResponses[keyof GetMyProgressApiV1MeProgressGetResponses];
+
+export type FlushReadingTimeApiV1MeReadingTimePostData = {
+    body: ReadingTimeFlushBody;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/reading-time';
+};
+
+export type FlushReadingTimeApiV1MeReadingTimePostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type FlushReadingTimeApiV1MeReadingTimePostError = FlushReadingTimeApiV1MeReadingTimePostErrors[keyof FlushReadingTimeApiV1MeReadingTimePostErrors];
+
+export type FlushReadingTimeApiV1MeReadingTimePostResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReadingActivityDayView;
+};
+
+export type FlushReadingTimeApiV1MeReadingTimePostResponse = FlushReadingTimeApiV1MeReadingTimePostResponses[keyof FlushReadingTimeApiV1MeReadingTimePostResponses];

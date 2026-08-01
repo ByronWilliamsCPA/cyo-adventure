@@ -241,6 +241,20 @@ _OPENAPI_TAGS: list[dict[str, str]] = [
         "description": "Reading-history reads for the kid and guardian surfaces.",
     },
     {
+        "name": "progress",
+        "description": (
+            "Kid-scoped badges, collection state, and lifetime totals "
+            "(gamification recommendation 2026-08-01, plan W3.1)."
+        ),
+    },
+    {
+        "name": "reading-time",
+        "description": (
+            "Idempotent, clamped active-reading-time flushes into the "
+            "day-grain reading_activity_day substrate (plan W3.3)."
+        ),
+    },
+    {
         "name": "recommendations",
         "description": "A profile's recommendation feed across the family and connected-family rings (ADR-016).",
     },

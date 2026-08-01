@@ -39,7 +39,9 @@ if TYPE_CHECKING:
 
 _logger = get_logger(__name__)
 
-router = APIRouter(prefix="/api/v1", tags=["reading-time"], responses=error_responses(401))
+router = APIRouter(
+    prefix="/api/v1", tags=["reading-time"], responses=error_responses(401)
+)
 
 # A single flush can never plausibly represent more than this much active
 # reading (the recommendation's own "e.g. 6 hours" sanity example); a delta
@@ -139,7 +141,11 @@ def _elapsed_ceiling_seconds(
 
 
 def _clamp_seconds_delta(
-    requested: int, *, activity_date: date, now: datetime, last_updated_at: datetime | None
+    requested: int,
+    *,
+    activity_date: date,
+    now: datetime,
+    last_updated_at: datetime | None,
 ) -> int:
     """Bound a requested delta to what could plausibly have elapsed.
 
@@ -155,7 +161,9 @@ def _clamp_seconds_delta(
         elapsed-time-plus-grace ceiling, and the absolute per-flush cap.
     """
     ceiling = _elapsed_ceiling_seconds(activity_date, now, last_updated_at)
-    return int(min(requested, ceiling + _CLAMP_GRACE_SECONDS, _MAX_SINGLE_FLUSH_SECONDS))
+    return int(
+        min(requested, ceiling + _CLAMP_GRACE_SECONDS, _MAX_SINGLE_FLUSH_SECONDS)
+    )
 
 
 def _to_view(row: ReadingActivityDay) -> ReadingActivityDayView:

@@ -1652,7 +1652,5 @@ async def test_device_token_allowed_on_profile_story_status(
     same allowance for its story-status sibling.
     """
     device_token = await mint_device_token(client, seed.guardian_token)
-    resp = await client.get(
-        "/api/v1/profiles/story-status", headers=auth(device_token)
-    )
+    resp = await client.get("/api/v1/profiles/story-status", headers=auth(device_token))
     assert resp.status_code == 200, resp.text

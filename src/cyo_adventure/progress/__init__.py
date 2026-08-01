@@ -12,6 +12,7 @@ from __future__ import annotations
 from cyo_adventure.progress.badges import BADGE_CATALOG, compute_progress
 from cyo_adventure.progress.models import (
     BadgeDef,
+    BookFacts,
     BookProgress,
     EarnedBadge,
     ProgressFacts,
@@ -21,6 +22,7 @@ from cyo_adventure.progress.models import (
 __all__ = [
     "BADGE_CATALOG",
     "BadgeDef",
+    "BookFacts",
     "BookProgress",
     "EarnedBadge",
     "ProgressFacts",

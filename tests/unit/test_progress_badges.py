@@ -16,6 +16,7 @@ import pytest
 
 from cyo_adventure.db.models import Completion, Rating, StoryRequest
 from cyo_adventure.progress.badges import BADGE_CATALOG, compute_progress
+from cyo_adventure.progress.models import BookFacts
 
 if TYPE_CHECKING:
     from cyo_adventure.progress.models import ProgressFacts
@@ -44,9 +45,7 @@ def _completion(
     return row
 
 
-def _rating(
-    storybook_id: str, *, value: int = 5, rated_at: datetime = _T1
-) -> Rating:
+def _rating(storybook_id: str, *, value: int = 5, rated_at: datetime = _T1) -> Rating:
     row = Rating(child_profile_id=uuid.uuid4(), storybook_id=storybook_id, value=value)
     row.rated_at = rated_at
     return row
@@ -90,11 +89,13 @@ def _compute(
         completions=completions or [],
         ratings=ratings or [],
         child_story_requests=story_requests or [],
-        ending_valence=ending_valence or {},
-        ending_total_by_book=ending_total_by_book or {},
-        book_titles={},
-        series_by_book=series_by_book or {},
-        series_membership=series_membership or {},
+        book_facts=BookFacts(
+            ending_valence=ending_valence or {},
+            ending_total_by_book=ending_total_by_book or {},
+            book_titles={},
+            series_by_book=series_by_book or {},
+            series_membership=series_membership or {},
+        ),
     )
 
 
@@ -229,7 +230,9 @@ class TestBookwormAndShelfHero:
 
     def test_shelf_hero_earns_at_ten_distinct_books(self) -> None:
         completions = [
-            _completion(f"s{i}", "e1", found_at=datetime(2026, 1, (i % 28) + 1, tzinfo=UTC))
+            _completion(
+                f"s{i}", "e1", found_at=datetime(2026, 1, (i % 28) + 1, tzinfo=UTC)
+            )
             for i in range(10)
         ]
         facts = _compute(completions=completions)
@@ -252,7 +255,9 @@ class TestEndingCollector:
     def test_earns_at_twenty_five_distinct_endings(self) -> None:
         completions = [
             _completion(
-                f"s{i // 5}", f"e{i}", found_at=datetime(2026, 1, (i % 28) + 1, tzinfo=UTC)
+                f"s{i // 5}",
+                f"e{i}",
+                found_at=datetime(2026, 1, (i % 28) + 1, tzinfo=UTC),
             )
             for i in range(25)
         ]
@@ -263,7 +268,9 @@ class TestEndingCollector:
     def test_not_earned_at_twenty_four(self) -> None:
         completions = [
             _completion(
-                f"s{i // 5}", f"e{i}", found_at=datetime(2026, 1, (i % 28) + 1, tzinfo=UTC)
+                f"s{i // 5}",
+                f"e{i}",
+                found_at=datetime(2026, 1, (i % 28) + 1, tzinfo=UTC),
             )
             for i in range(24)
         ]

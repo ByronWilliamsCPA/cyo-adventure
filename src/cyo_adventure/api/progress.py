@@ -22,7 +22,6 @@ with a guardian-supplied profile id rather than duplicate the projection.
 
 from __future__ import annotations
 
-import uuid
 from typing import TYPE_CHECKING
 
 from fastapi import APIRouter
@@ -46,8 +45,11 @@ from cyo_adventure.db.models import (
 )
 from cyo_adventure.progress.badges import compute_progress
 from cyo_adventure.progress.blob import book_title, ending_count, ending_valence_map
+from cyo_adventure.progress.models import BookFacts
 
 if TYPE_CHECKING:
+    import uuid
+
     from sqlalchemy.ext.asyncio import AsyncSession
 
     from cyo_adventure.api.deps import Principal
@@ -85,7 +87,9 @@ def _require_child_profile(principal: Principal) -> uuid.UUID:
 
 
 @router.get("/me/progress")
-async def get_my_progress(principal: CurrentPrincipal, session: DbSession) -> ProgressView:
+async def get_my_progress(
+    principal: CurrentPrincipal, session: DbSession
+) -> ProgressView:
     """Return the caller's own badges, collection state, and lifetime totals.
 
     Args:
@@ -204,7 +208,9 @@ async def _load_series_membership(
     touched, since "finished every book in the series" must be checked
     against every book that exists in it.
     """
-    series_ids = {book.series_id for book in books.values() if book.series_id is not None}
+    series_ids = {
+        book.series_id for book in books.values() if book.series_id is not None
+    }
     if not series_ids:
         return {}
     series_rows = await session.scalars(
@@ -244,11 +250,13 @@ async def _build_progress_facts(
         completions=completions,
         ratings=ratings,
         child_story_requests=story_requests,
-        ending_valence=ending_valence,
-        ending_total_by_book=ending_total_by_book,
-        book_titles=book_titles,
-        series_by_book=series_by_book,
-        series_membership=series_membership,
+        book_facts=BookFacts(
+            ending_valence=ending_valence,
+            ending_total_by_book=ending_total_by_book,
+            book_titles=book_titles,
+            series_by_book=series_by_book,
+            series_membership=series_membership,
+        ),
     )
 
 

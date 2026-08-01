@@ -551,9 +551,9 @@ async def get_family_reading_summary(
 
     seconds_by_profile: dict[uuid.UUID, dict[date, int]] = {}
     for row in activity_rows:
-        seconds_by_profile.setdefault(row.child_profile_id, {})[
-            row.activity_date
-        ] = row.active_seconds
+        seconds_by_profile.setdefault(row.child_profile_id, {})[row.activity_date] = (
+            row.active_seconds
+        )
 
     children = [
         ChildEngagementItem(

@@ -43,6 +43,7 @@ if TYPE_CHECKING:
     from datetime import datetime
 
     from cyo_adventure.db.models import Completion, Rating, StoryRequest
+    from cyo_adventure.progress.models import BookFacts
 
 # The story-themed badge names and conditions are pinned verbatim from
 # gamification-recommendation-2026-08-01.md section 2.2's table; descriptions
@@ -79,9 +80,7 @@ BADGE_CATALOG: dict[str, BadgeDef] = {
     "story_wisher": BadgeDef(
         "story_wisher", "Story Wisher", "You asked for your very own story idea."
     ),
-    "star_giver": BadgeDef(
-        "star_giver", "Star Giver", "You rated 3 different books."
-    ),
+    "star_giver": BadgeDef("star_giver", "Star Giver", "You rated 3 different books."),
     "series_finisher": BadgeDef(
         "series_finisher",
         "Series Finisher",
@@ -145,9 +144,7 @@ def _badge_path_not_taken(completions: Sequence[Completion]) -> datetime | None:
         completions
     ).items():
         by_book.setdefault(storybook_id, []).append(found_at)
-    earn_times = [
-        sorted(times)[1] for times in by_book.values() if len(times) >= 2
-    ]
+    earn_times = [sorted(times)[1] for times in by_book.values() if len(times) >= 2]
     return min(earn_times) if earn_times else None
 
 
@@ -322,11 +319,7 @@ def compute_progress(
     completions: Sequence[Completion],
     ratings: Sequence[Rating],
     child_story_requests: Sequence[StoryRequest],
-    ending_valence: Mapping[tuple[str, int, str], str],
-    ending_total_by_book: Mapping[str, int],
-    book_titles: Mapping[str, str],
-    series_by_book: Mapping[str, str | None],
-    series_membership: Mapping[str, frozenset[str]],
+    book_facts: BookFacts,
 ) -> ProgressFacts:
     """Compute one profile's full progress projection from pre-loaded rows.
 
@@ -335,18 +328,9 @@ def compute_progress(
         ratings: Every ``Rating`` row for this profile.
         child_story_requests: Every ``StoryRequest`` row for this profile
             (both child- and adult-initiated; badge 8 filters internally).
-        ending_valence: ``(storybook_id, version, ending_id) -> valence``,
-            derived from each played version's stored blob (badge 7 only).
-        ending_total_by_book: ``storybook_id -> declared ending count`` of
-            the CURRENT published version (0 when unavailable), mirroring
-            ``reading_history.py``.
-        book_titles: ``storybook_id -> display title`` of the current
-            published version, falling back to the id.
-        series_by_book: ``storybook_id -> series_id`` for every touched book
-            (``None`` for a standalone book).
-        series_membership: ``series_id -> every storybook_id in that
-            series`` (not only the ones this profile has touched), needed to
-            know whether a series is fully finished.
+        book_facts: The blob/series facts ``api/progress.py`` has already
+            resolved (ending valence, ending totals, titles, series
+            membership); see ``BookFacts`` for the field-by-field contract.
 
     Returns:
         ProgressFacts: Earned badges, per-book collection state, and lifetime
@@ -356,16 +340,16 @@ def compute_progress(
         "first_ending": _badge_first_ending(completions),
         "path_not_taken": _badge_path_not_taken(completions),
         "every_path_walked": _badge_every_path_walked(
-            completions, ending_total_by_book
+            completions, book_facts.ending_total_by_book
         ),
         "bookworm": _badge_bookworm(completions),
         "shelf_hero": _badge_shelf_hero(completions),
         "ending_collector": _badge_ending_collector(completions),
-        "brave_reader": _badge_brave_reader(completions, ending_valence),
+        "brave_reader": _badge_brave_reader(completions, book_facts.ending_valence),
         "story_wisher": _badge_story_wisher(child_story_requests),
         "star_giver": _badge_star_giver(ratings),
         "series_finisher": _badge_series_finisher(
-            completions, series_by_book, series_membership
+            completions, book_facts.series_by_book, book_facts.series_membership
         ),
     }
     badges = [
@@ -386,6 +370,8 @@ def compute_progress(
     )
     return ProgressFacts(
         badges=badges,
-        books=_book_states(completions, ending_total_by_book, book_titles),
+        books=_book_states(
+            completions, book_facts.ending_total_by_book, book_facts.book_titles
+        ),
         totals=totals,
     )

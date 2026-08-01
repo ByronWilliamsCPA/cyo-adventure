@@ -72,7 +72,10 @@ def _child_principal(profile_id: uuid.UUID | None = None) -> Principal:
 
 def _guardian_principal() -> Principal:
     return Principal(
-        subject="sub", user_id=uuid.uuid4(), role="guardian", family_id=uuid.uuid4(),
+        subject="sub",
+        user_id=uuid.uuid4(),
+        role="guardian",
+        family_id=uuid.uuid4(),
         profile_ids=frozenset(),
     )
 
@@ -141,7 +144,7 @@ class TestClamp:
 
     def test_new_bucket_today_bounds_by_time_since_midnight(self) -> None:
         ceiling = _elapsed_ceiling_seconds(_TODAY, _NOW, None)
-        expected = (_NOW - datetime.combine(_TODAY, datetime.min.time(), tzinfo=UTC))
+        expected = _NOW - datetime.combine(_TODAY, datetime.min.time(), tzinfo=UTC)
         assert ceiling == pytest.approx(expected.total_seconds())
 
     def test_new_bucket_past_day_bounds_by_a_full_day(self) -> None:
@@ -150,7 +153,10 @@ class TestClamp:
 
     def test_clamp_passes_through_a_small_honest_delta(self) -> None:
         applied = _clamp_seconds_delta(
-            60, activity_date=_TODAY, now=_NOW, last_updated_at=_NOW - timedelta(seconds=90)
+            60,
+            activity_date=_TODAY,
+            now=_NOW,
+            last_updated_at=_NOW - timedelta(seconds=90),
         )
         assert applied == 60
 
@@ -158,7 +164,10 @@ class TestClamp:
         # Only 10 seconds elapsed since the last write; requesting an hour is
         # implausible and must be clamped near the elapsed-plus-grace ceiling.
         applied = _clamp_seconds_delta(
-            3600, activity_date=_TODAY, now=_NOW, last_updated_at=_NOW - timedelta(seconds=10)
+            3600,
+            activity_date=_TODAY,
+            now=_NOW,
+            last_updated_at=_NOW - timedelta(seconds=10),
         )
         assert applied < 3600
         assert applied <= 10 + 120  # elapsed + grace margin

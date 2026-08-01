@@ -8,7 +8,7 @@ already read.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -90,6 +90,35 @@ class ProgressTotals:
 
     books_finished: int
     endings_found: int
+
+
+@dataclass(frozen=True, slots=True)
+class BookFacts:
+    """Blob/series facts resolved by ``api/progress.py`` for compute_progress.
+
+    Bundled into one value so ``compute_progress`` stays within this
+    project's argument-count lint budget (PLR0913), mirroring
+    ``reading_history.py``'s own ``_BookActivity`` bundling.
+
+    Attributes:
+        ending_valence: ``(storybook_id, version, ending_id) -> valence``,
+            derived from each PLAYED version's stored blob (badge 7 only;
+            not necessarily the current published version).
+        ending_total_by_book: ``storybook_id -> declared ending count`` of
+            the CURRENT published version (0 when unavailable).
+        book_titles: ``storybook_id -> display title`` of the current
+            published version, falling back to the id.
+        series_by_book: ``storybook_id -> series_id`` for every touched
+            book (``None`` for a standalone book).
+        series_membership: ``series_id -> every storybook_id in that
+            series`` (not only the ones this profile has touched).
+    """
+
+    ending_valence: dict[tuple[str, int, str], str] = field(default_factory=dict)
+    ending_total_by_book: dict[str, int] = field(default_factory=dict)
+    book_titles: dict[str, str] = field(default_factory=dict)
+    series_by_book: dict[str, str | None] = field(default_factory=dict)
+    series_membership: dict[str, frozenset[str]] = field(default_factory=dict)
 
 
 @dataclass(frozen=True, slots=True)
