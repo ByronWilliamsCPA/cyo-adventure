@@ -482,9 +482,17 @@ jobs:
       - name: Install backend (api extra)
         run: uv sync --extra api
 
+      # Write the file from Python rather than redirecting stdout: importing
+      # the app emits structlog lines on stdout (e.g. "sentry_disabled"), and a
+      # shell redirect splices them into the JSON, so the regenerate step below
+      # would fail to parse a schema that is actually fine.
       - name: Dump OpenAPI schema from the app in-process
         run: |
-          uv run python -c "import json; from cyo_adventure.app import app; print(json.dumps(app.openapi()))" > openapi.json
+          uv run python -c "
+          import json, pathlib
+          from cyo_adventure.app import app
+          pathlib.Path('openapi.json').write_text(json.dumps(app.openapi()))
+          "
 
       - name: Setup Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
