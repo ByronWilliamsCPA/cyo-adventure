@@ -84,7 +84,7 @@ def test_is_mock_moderated_true_on_reviewer_unavailable_concern() -> None:
     assert remoderate_books._is_mock_moderated(report) is True
 
 
-def test_is_mock_moderated_true_on_legacy_message_substring() -> None:
+def test_is_mock_moderated_true_on_fail_safe_message_substring() -> None:
     """Pre-collapse reports may carry the literal message with no concern tag."""
     report = {
         "findings": [
@@ -166,6 +166,35 @@ async def test_list_mock_moderated_targets_skips_books_with_no_current_version()
 
     assert targets == []
     session.get.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_list_mock_moderated_targets_skips_missing_version_row() -> None:
+    """A dangling current_published_version pointer is skipped, not fatal.
+
+    One book whose version row is missing must not make the whole sweep
+    unselectable. Such a book is also unreadable by a child (the reader loads
+    the same row), so skipping it hides nothing a reader would see.
+    """
+    books = [_storybook("s_dangling"), _storybook("s_real")]
+    scalars_result = MagicMock()
+    scalars_result.all = MagicMock(return_value=books)
+    execute_result = MagicMock()
+    execute_result.scalars = MagicMock(return_value=scalars_result)
+    session = AsyncMock()
+    session.execute = AsyncMock(return_value=execute_result)
+
+    async def _get(_model: Any, key: tuple[str, int]) -> MagicMock | None:
+        story_id, _version = key
+        if story_id == "s_dangling":
+            return None
+        return _version_row_stub({"summary": {"reviewer_independent": False}})
+
+    session.get = AsyncMock(side_effect=_get)
+
+    targets = await remoderate_books.list_mock_moderated_targets(session)
+
+    assert targets == [("s_real", 2)]
 
 
 # ---------------------------------------------------------------------------
@@ -301,38 +330,37 @@ async def test_sweep_dry_run_with_explicit_book_ids_never_calls_remoderate() -> 
 # ---------------------------------------------------------------------------
 
 
-class _FakeSavepoint:
-    """Stand-in for ``AsyncSession.begin_nested()``, mirrors test_seed_moderation_qa.py."""
-
-    def __init__(self, log: list[str]) -> None:
-        self._log = log
-
-    async def __aenter__(self) -> _FakeSavepoint:
-        self._log.append("enter")
-        return self
-
-    async def __aexit__(self, exc_type: object, _exc: object, _tb: object) -> bool:
-        self._log.append("rollback" if exc_type is not None else "commit")
-        return False
-
-
 def _execute_session(book_ids: list[str]) -> tuple[AsyncMock, list[str]]:
+    """Build a session that records the ORDER of commit/rollback calls.
+
+    The sweep commits per book rather than once at the end, so the ordering
+    is the assertion that matters: a commit between books is what makes an
+    already-succeeded book durable and releases its ``FOR UPDATE`` row lock.
+    """
+    del book_ids
     session = AsyncMock()
     session.get = AsyncMock(
         side_effect=lambda _model, book_id: _storybook(
             book_id, current_published_version=1
         )
     )
-    session.commit = AsyncMock()
     log: list[str] = []
-    session.begin_nested = MagicMock(side_effect=lambda: _FakeSavepoint(log))
+    session.commit = AsyncMock(side_effect=lambda: log.append("commit"))
+    session.rollback = AsyncMock(side_effect=lambda: log.append("rollback"))
     return session, log
+
+
+def _verdict(overall: str) -> MagicMock:
+    """A stand-in for the RemoderateResult the entry point returns."""
+    result = MagicMock()
+    result.overall_verdict = overall
+    return result
 
 
 @pytest.mark.asyncio
 async def test_sweep_execute_calls_remoderate_with_system_actor_per_target() -> None:
     session, _log = _execute_session(["s1", "s2"])
-    remoderate_fn = AsyncMock()
+    remoderate_fn = AsyncMock(return_value=_verdict("pass"))
 
     with patch.object(remoderate_books, "remoderate_storybook_version", remoderate_fn):
         result = await remoderate_books.sweep(
@@ -350,20 +378,47 @@ async def test_sweep_execute_calls_remoderate_with_system_actor_per_target() -> 
         ctx = call.args[3]
         assert ctx.actor.actor_role == SYSTEM_ACTOR_ROLE
         assert ctx.actor.actor_id is None
-    session.commit.assert_awaited_once()
+    assert session.commit.await_count == 2
+
+
+@pytest.mark.asyncio
+async def test_sweep_commits_after_each_book() -> None:
+    """Durability and lock release both depend on committing per book.
+
+    A sweep-wide transaction (the savepoint-only shape) would leave every
+    already-processed book uncommitted until the very end, so a crash on the
+    last book would discard all prior work and the LLM spend behind it, and
+    Postgres would hold each book's ``SELECT ... FOR UPDATE`` lock for the
+    whole run, blocking concurrent admin actions on all of them.
+    """
+    session, log = _execute_session(["s1", "s2", "s3"])
+    remoderate_fn = AsyncMock(return_value=_verdict("pass"))
+
+    with patch.object(remoderate_books, "remoderate_storybook_version", remoderate_fn):
+        result = await remoderate_books.sweep(
+            engine=_mock_engine(),
+            session_factory=_mock_session_factory(session),
+            book_ids=["s1", "s2", "s3"],
+            execute=True,
+        )
+
+    assert result.succeeded == [("s1", 1), ("s2", 1), ("s3", 1)]
+    assert log == ["commit", "commit", "commit"]
+    session.rollback.assert_not_awaited()
 
 
 @pytest.mark.asyncio
 async def test_sweep_continues_after_one_failure() -> None:
-    """A single book's failure is isolated by its own savepoint, not fatal."""
+    """A single book's failure rolls back alone; earlier books stay committed."""
     session, log = _execute_session(["s_bad", "s_good"])
 
     async def _fake_remoderate(
         _session: object, storybook_id: str, _version: int, _ctx: object
-    ) -> None:
+    ) -> MagicMock:
         if storybook_id == "s_bad":
             msg = "provider timeout"
             raise RuntimeError(msg)
+        return _verdict("pass")
 
     with patch.object(
         remoderate_books,
@@ -379,8 +434,41 @@ async def test_sweep_continues_after_one_failure() -> None:
 
     assert result.succeeded == [("s_good", 1)]
     assert result.failed == [("s_bad", 1)]
-    assert log == ["enter", "rollback", "enter", "commit"]
-    session.commit.assert_awaited_once()
+    assert log == ["rollback", "commit"]
+
+
+@pytest.mark.asyncio
+async def test_sweep_records_blocked_and_flagged_verdicts() -> None:
+    """A dirty verdict is a successful call, so it needs its own bucket.
+
+    ADR-005 means a hard block changes nothing about the book: it stays
+    published and readable. Counting it as a plain success (which it is, as a
+    call) would hide exactly the outcome an operator has to act on.
+    """
+    session, _log = _execute_session(["s_block", "s_flag", "s_ok"])
+    verdicts = {"s_block": "block", "s_flag": "flag", "s_ok": "pass"}
+
+    async def _fake_remoderate(
+        _session: object, storybook_id: str, _version: int, _ctx: object
+    ) -> MagicMock:
+        return _verdict(verdicts[storybook_id])
+
+    with patch.object(
+        remoderate_books,
+        "remoderate_storybook_version",
+        AsyncMock(side_effect=_fake_remoderate),
+    ):
+        result = await remoderate_books.sweep(
+            engine=_mock_engine(),
+            session_factory=_mock_session_factory(session),
+            book_ids=["s_block", "s_flag", "s_ok"],
+            execute=True,
+        )
+
+    assert result.succeeded == [("s_block", 1), ("s_flag", 1), ("s_ok", 1)]
+    assert result.failed == []
+    assert result.blocked == [("s_block", 1)]
+    assert result.flagged == [("s_flag", 1)]
 
 
 # ---------------------------------------------------------------------------
@@ -415,3 +503,97 @@ def test_parse_args_requires_a_selector(capsys: pytest.CaptureFixture[str]) -> N
         remoderate_books._parse_args([])
     captured = capsys.readouterr()
     assert "one of the arguments" in captured.err
+
+
+# ---------------------------------------------------------------------------
+# main(): the operator-facing signal
+# ---------------------------------------------------------------------------
+
+
+def _run_main(result: Any) -> None:
+    """Drive main() with a canned SweepResult, bypassing argv and the DB."""
+    args = MagicMock(book_id=["s1"], mock_moderated=False, execute=True)
+    with (
+        patch.object(remoderate_books, "_parse_args", MagicMock(return_value=args)),
+        patch.object(remoderate_books, "sweep", AsyncMock(return_value=result)),
+    ):
+        remoderate_books.main()
+
+
+def test_main_exits_nonzero_when_a_book_is_blocked(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A hard block is a SUCCESSFUL call whose outcome still needs a human.
+
+    The book is still published and still readable (ADR-005 reserves every
+    status change for a human), so a zero exit here would report "sweep
+    clean" over a book that just failed moderation.
+    """
+    result = remoderate_books.SweepResult(
+        targets=[("s1", 1)],
+        executed=True,
+        succeeded=[("s1", 1)],
+        blocked=[("s1", 1)],
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _run_main(result)
+
+    assert excinfo.value.code is not None
+    assert "1 book(s) hard-blocked" in str(excinfo.value.code)
+    out = capsys.readouterr().out
+    assert "HARD BLOCK, still published and readable" in out
+    assert "s1 v1" in out
+
+
+def test_main_exits_zero_when_every_book_comes_back_clean(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    result = remoderate_books.SweepResult(
+        targets=[("s1", 1)],
+        executed=True,
+        succeeded=[("s1", 1)],
+    )
+
+    _run_main(result)
+
+    out = capsys.readouterr().out
+    assert "1 succeeded (0 blocked, 0 flagged), 0 failed." in out
+    assert "HARD BLOCK" not in out
+
+
+def test_main_reports_soft_flags_without_exiting_nonzero(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A soft flag is worth printing but is not an emergency.
+
+    It does not gate the exit code: unlike a hard block, a flagged book was
+    already publishable under the same thresholds a human approved it under.
+    """
+    result = remoderate_books.SweepResult(
+        targets=[("s1", 1)],
+        executed=True,
+        succeeded=[("s1", 1)],
+        flagged=[("s1", 1)],
+    )
+
+    _run_main(result)
+
+    out = capsys.readouterr().out
+    assert "soft-flagged (still published, review when convenient)" in out
+
+
+def test_main_exits_nonzero_when_a_book_fails(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    result = remoderate_books.SweepResult(
+        targets=[("s1", 1)],
+        executed=True,
+        failed=[("s1", 1)],
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _run_main(result)
+
+    assert "1 book(s) failed" in str(excinfo.value.code)
+    assert "failed (rolled back, retry by re-running)" in capsys.readouterr().out

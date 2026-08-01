@@ -21,6 +21,25 @@ this endpoint to published-only keeps its contract to exactly one thing: "give
 me a fresh moderation report for a book that already shipped," never a state
 transition.
 
+Synchronous, but NOT for api/rescreen.py's reason
+--------------------------------------------------------------------------
+The synchronous shape is borrowed from ``api/rescreen.py``, but that module's
+justification for it does not transfer and must not be assumed here.
+``moderation/rescreen.py`` is synchronous precisely BECAUSE it makes no LLM
+review calls ("adding their LLM cost/latency to every sweep would buy no
+signal"). This endpoint inverts that premise: it makes the full review-model
+fan-out, which the design doc estimates at ~50-80 calls for a large book,
+inside one HTTP request.
+
+The consequences are accepted deliberately, not overlooked. There is no job
+row and no status-polling path, so a client disconnect loses the RESULT VIEW
+(the report itself is committed by the request's unit-of-work, and the
+pipeline event records the verdict, so nothing is lost but the response).
+Concurrency is bounded by the single-flight slot in ``trigger_remoderate``
+rather than by a queue. If re-moderation ever needs to be fire-and-forget or
+survive a disconnect, it wants the RQ path ``generation/queue.py`` already
+provides, which is a bigger change than this endpoint.
+
 Why the pipeline's own state-transition call is caught, not avoided
 ---------------------------------------------------------------------
 ``run_moderation_pipeline`` is not modified (out of scope; owned by workstream
@@ -45,29 +64,57 @@ to move the book, never the freshly written report.
 # other status, and StateTransitionError is caught, never reraised, for the
 # one status this endpoint allows through.
 
-Residual risk: bounded auto-repair can still rewrite the published blob
+Auto-repair is disabled on this path
 --------------------------------------------------------------------------
-``run_moderation_pipeline`` has one behavior this endpoint inherits and cannot
-suppress without forking the pipeline (out of scope): if the fresh report has
-a soft ``FLAG`` and no hard ``BLOCK``, the pipeline attempts one bounded
-LLM-driven auto-repair and, if adopted, rewrites ``version_row.blob`` in
-place -- the actual published story content -- with no additional human gate
-beyond what the ordinary generation-time pipeline already provides. For a
-book a guardian has already approved and a child may already be reading
-offline, this means a re-moderation call can silently alter the text a family
-has on their shelf. This is accepted, inherited pipeline behavior, not
-something this endpoint adds; it is flagged here rather than worked around
-because the fix (an ``allow_repair`` opt-out on the pipeline) touches
-``moderation/pipeline.py``, which this task is not permitted to modify. See
-the Stage D handoff report for the follow-up recommendation.
-# #ASSUME: data-integrity: an admin invoking re-moderation on a published,
-# previously-clean book accepts that a newly-introduced soft flag (e.g. a
-# stricter model or updated policy) may trigger a silent content rewrite.
-# #VERIFY: none in this module; tracked as an open follow-up, not closed here.
+``run_moderation_pipeline`` will, for a soft ``FLAG`` with no hard ``BLOCK``,
+attempt one bounded LLM-driven auto-repair and, if adopted, rewrite
+``version_row.blob`` in place. That is correct on the generation path, where
+the subject is an unapproved draft and a guardian still reviews the result.
+It is NOT correct here: the subject is an already-published book that a
+guardian approved and a child may be reading offline, so a silent rewrite
+would alter a family's shelf with no human gate, defeating ADR-005. This
+endpoint therefore passes ``allow_repair=False``, matching the rule already
+enforced structurally by ``api/node_edit.py::_EDITABLE_STATUSES``
+("immutable once released, ADR-005"), ``generation/series_link.py``'s
+``embed_into_approved_blob`` guard, and ``moderation/rescreen.py``
+("a re-screen tool must never silently rewrite already-published,
+already-approved content").
+
+The consequence is deliberate: re-moderation REPORTS on a published book, it
+never edits one. A book whose fresh report carries a soft flag stays published
+with that flag recorded, and moving it (send back, archive, or edit via the
+node editor after a status change) remains a human decision.
+# #CRITICAL: security: re-moderation must never mutate published prose.
+# #VERIFY: ``allow_repair=False`` is passed below;
+# tests/unit/test_remoderate_unit.py::
+# test_published_blob_unchanged_when_repair_disallowed asserts the stored blob
+# is byte-identical after a soft-FLAG re-moderation.
+
+What a hard BLOCK here does, and does not, do
+--------------------------------------------------------------------------
+Nothing automatic. The book stays ``published``, stays assigned, and stays
+readable, including offline on a device that already synced it. That follows
+from the same ADR-005 rule as everything above: only a human moves a book.
+
+Be precise about where that leaves the signal, because no existing surface
+shows it. ``api/approval.py``'s review queue filters to ``IN_REVIEW``, so a
+published book never appears there. ``StorybookSummary`` (``api/schemas.py``)
+has no verdict field, so a freshly-blocked book is indistinguishable from a
+healthy one in the admin library listing. The signal is therefore exactly
+three things, all added deliberately: the ``overall_verdict`` in this
+endpoint's response, the ``storybook_remoderated`` pipeline event (which
+carries the verdict in its payload), and a WARNING log line. The ops sweep
+adds a fourth for its own callers, escalating a block to a nonzero exit
+(``scripts/remoderate_books.py::main``).
+
+A passive admin-console surface for "published books with a fresh block" is
+a real gap and a real feature: it needs a response-schema field and frontend
+work, so it is tracked separately rather than half-built here.
 """
 
 from __future__ import annotations
 
+import asyncio
 import time
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
@@ -100,6 +147,12 @@ if TYPE_CHECKING:
 router = APIRouter(prefix="/api/v1", tags=["remoderate"])
 
 _logger = get_logger(__name__)
+
+# Single-flight slot for the HTTP path only; see trigger_remoderate for why.
+# The ops sweep (scripts/remoderate_books.py) calls
+# remoderate_storybook_version directly and is deliberately NOT gated by this:
+# it is an operator running one sequential loop, not a concurrency source.
+_REMODERATION_SLOT = asyncio.Semaphore(1)
 
 
 def _require_admin(ctx: Context) -> None:
@@ -237,22 +290,39 @@ def _summarize_report(
     ``run_moderation_pipeline`` returns nothing; the persisted dict is the
     only artifact available here).
     """
+    # #ASSUME: data-integrity: ``moderation_report`` is JSONB, so its runtime
+    # shape is whatever was stored, not whatever the annotation claims.
+    # ``cast`` is erased at runtime and validates nothing, so every read below
+    # is isinstance-guarded rather than cast: a legacy row, a hand-edited
+    # report, or a stored ``summary: null`` would otherwise raise
+    # AttributeError/TypeError here, AFTER the pipeline has already written
+    # its fresh report, turning a cosmetic summarization step into a failed
+    # request. This mirrors _prior_reviewer_independent's defensive reads.
+    # #VERIFY: tests/unit/test_remoderate_unit.py::
+    # test_summarize_report_tolerates_malformed_shapes covers null summary,
+    # non-dict findings, and a non-list findings value.
     if report is None:
         return "pass", {}, 0
-    summary = cast("dict[str, object]", report.get("summary", {}))
+    raw_summary = report.get("summary")
+    summary: dict[str, object] = raw_summary if isinstance(raw_summary, dict) else {}
     if summary.get("hard_block"):
         overall = "block"
     elif summary.get("soft_flag"):
         overall = "flag"
     else:
         overall = "pass"
-    findings = cast("list[dict[str, object]]", report.get("findings", []))
+    raw_findings = report.get("findings")
+    findings: list[object] = raw_findings if isinstance(raw_findings, list) else []
     counts: dict[str, int] = {}
     structural = 0
     for finding in findings:
-        verdict = cast("str", finding.get("verdict", "unknown"))
+        if not isinstance(finding, dict):
+            continue
+        entry = cast("dict[str, object]", finding)
+        raw_verdict = entry.get("verdict")
+        verdict = raw_verdict if isinstance(raw_verdict, str) else "unknown"
         counts[verdict] = counts.get(verdict, 0) + 1
-        if finding.get("structural"):
+        if entry.get("structural"):
             structural += 1
     return overall, counts, structural
 
@@ -340,6 +410,7 @@ async def remoderate_storybook_version(
             settings=ctx.settings,
             generation_provider=generation_provider,
             pii=pii,
+            allow_repair=False,
         )
     except StateTransitionError:
         # #CRITICAL: security: expected and swallowed for every call this
@@ -359,11 +430,58 @@ async def remoderate_storybook_version(
             storybook_id=storybook_id,
             version=version,
         )
+    except Exception as exc:
+        # #CRITICAL: data-integrity: any OTHER failure (a provider timeout, a
+        # DB error) propagates, and api/deps.py::get_db_session then rolls the
+        # whole request transaction back. That rollback is the reason this
+        # branch logs instead of calling record_event: an event row written
+        # here would be discarded with everything else, so recording one would
+        # only manufacture the appearance of an audit trail. This log line IS
+        # the record of an attempted-but-failed re-moderation, and it is
+        # correlation-ID stamped (utils/logging.py) so it joins the request.
+        # The rollback also means the failure is clean: no half-written
+        # moderation_report survives, and the published blob is untouched
+        # regardless (see the auto-repair section of the module docstring).
+        # #VERIFY: tests/unit/test_remoderate_unit.py::
+        # test_provider_failure_logs_and_propagates asserts the exception
+        # reaches the caller (so the unit-of-work rolls back) and that no
+        # pipeline event is recorded.
+        _logger.exception(
+            "remoderate.failed",
+            storybook_id=storybook_id,
+            version=version,
+            actor_role=ctx.actor.actor_role,
+            error_type=type(exc).__name__,
+        )
+        raise
     duration = time.monotonic() - started
 
     overall_verdict, verdict_counts, structural_count = _summarize_report(
         version_row.moderation_report
     )
+
+    if overall_verdict == "block":
+        # #CRITICAL: security: a hard block on a PUBLISHED book does not
+        # unpublish it. ADR-005 reserves every status change for a human, and
+        # this endpoint deliberately never moves a book (see the module
+        # docstring), so the book stays published, stays assigned, and stays
+        # readable offline until an admin acts. Nothing else surfaces that: the
+        # review queue filters to IN_REVIEW (api/approval.py) so a published
+        # book never enters it, and StorybookSummary (api/schemas.py) carries
+        # no verdict field, so a freshly-blocked book renders identically to a
+        # healthy one in the admin library. This WARNING plus the event below
+        # are therefore the whole signal; the sweep script escalates the same
+        # verdict to a nonzero exit (scripts/remoderate_books.py::main).
+        # #VERIFY: tests/unit/test_remoderate_unit.py::
+        # test_hard_block_on_published_book_logs_warning. A passive admin-UI
+        # surface for this state is deliberately NOT in this endpoint's scope;
+        # it is a schema + frontend change tracked separately.
+        _logger.warning(
+            "remoderate.hard_block_on_published_book",
+            storybook_id=storybook_id,
+            version=version,
+            structural_count=structural_count,
+        )
 
     # #CRITICAL: data-integrity: this is the sole durable audit-trail record
     # of this re-moderation, since the pipeline's own MODERATION_COMPLETED
@@ -412,7 +530,7 @@ async def trigger_remoderate(
     book's ``status`` is never changed by this call (ADR-005: a published
     book stays published; the guardian/admin remains the only path that can
     ever move it again). See the module docstring for the published-only
-    scope and the inherited auto-repair content-mutation risk.
+    scope, the disabled auto-repair, and what a hard block does not do.
 
     Args:
         storybook_id: The storybook id from the path.
@@ -425,19 +543,46 @@ async def trigger_remoderate(
     Raises:
         AuthorizationError: If the caller is not an admin (403).
         ResourceNotFoundError: If the storybook or version does not exist (404).
-        BusinessLogicError: If the storybook is not currently published (400).
+        BusinessLogicError: If the storybook is not currently published, or if
+            a re-moderation is already in flight on this worker (400).
     """
     _require_admin(ctx)
+    # #CRITICAL: external-resources: this is the most expensive action any
+    # admin can trigger (the design doc estimates ~50-80 review-model calls
+    # for a large book, all inside one HTTP request), and the app-wide
+    # RateLimitMiddleware default of 60 req/min per IP does nothing to bound
+    # it: 60 accepted requests would be 60 concurrent pipelines. This slot
+    # caps a process at one in-flight re-moderation and REJECTS rather than
+    # queues, because queueing inside the request would pile up connections
+    # and turn a burst into a pool exhaustion instead of a clear error.
+    # The check-then-acquire is atomic despite the two steps: acquiring an
+    # uncontended asyncio.Semaphore returns without yielding, so no other
+    # task can run between `locked()` and the `async with`.
+    # #ASSUME: concurrency: this is per-PROCESS, not cluster-wide. With more
+    # than one worker it caps N concurrent re-moderations, not one. That is
+    # the honest bound of an in-process guard; a global cap needs the Redis
+    # backend RateLimitMiddleware already talks to, which is a shared-
+    # middleware change deliberately not made here.
+    # #VERIFY: tests/unit/test_remoderate_unit.py::
+    # test_second_concurrent_remoderation_is_rejected.
+    if _REMODERATION_SLOT.locked():
+        msg = (
+            "a re-moderation is already running on this worker; "
+            "re-moderation is single-flight because one run makes dozens of "
+            "review-model calls. Retry when it finishes."
+        )
+        raise BusinessLogicError(msg, rule="remoderate_already_running")
     # #CRITICAL: security: the actor is stamped "admin" (not the principal's
     # base role) on the pipeline event this call writes, mirroring
     # api/rescreen.py::trigger_rescreen: a dual-role guardian+admin is
     # audited in the capacity that authorized the re-moderation.
     # #VERIFY: tests/unit/test_remoderate_unit.py::test_event_actor_role_is_admin.
     actor = Actor.from_principal(ctx.principal, acting_role=ADMIN_ACTOR_ROLE)
-    result = await remoderate_storybook_version(
-        ctx.session,
-        storybook_id,
-        version,
-        RemoderateContext(settings=settings, actor=actor),
-    )
+    async with _REMODERATION_SLOT:
+        result = await remoderate_storybook_version(
+            ctx.session,
+            storybook_id,
+            version,
+            RemoderateContext(settings=settings, actor=actor),
+        )
     return _view(result)

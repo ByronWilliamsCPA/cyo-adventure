@@ -84,6 +84,7 @@ async def run_moderation_pipeline(
     pii: PiiContext,
     review_model_override: str | None = None,
     personalizable_slots: PersonalizableSlotsArg = PERSONALIZABLE_SLOTS_UNSET,
+    allow_repair: bool = True,
 ) -> None:
     """Screen a persisted draft story and drive it to in_review or needs_revision.
 
@@ -115,6 +116,12 @@ async def run_moderation_pipeline(
             still fails closed below: it means the caller itself already
             determined personalization was possible but the contract could
             not be recovered (M1).
+        allow_repair: When False, skip the bounded auto-repair entirely and
+            report on the story exactly as it stands. Every generation-path
+            caller leaves this True (a pre-publish draft is repairable by
+            definition). ``api/remoderate.py`` passes False because its
+            subject is an already-PUBLISHED book: see the repair branch
+            below for why that distinction is load-bearing.
 
     Raises:
         ResourceNotFoundError: when the story or version row is missing.
@@ -325,8 +332,25 @@ async def run_moderation_pipeline(
     # #VERIFY: tests/unit/test_moderation_pipeline.py::
     # test_entry_contract_unrecoverable_routes_to_human_review confirms the
     # repair path is never entered when personalizable_slots is None.
+    # #CRITICAL: security: `allow_repair=False` is the guard that keeps this
+    # pipeline from rewriting an ALREADY-PUBLISHED book's prose.
+    # `_attempt_and_adopt_repair` assigns `version_row.blob = revised`, and
+    # adoption is gated only by deterministic checks, never by a human. On the
+    # generation path that is correct (the draft has not been approved by
+    # anyone yet, and a guardian still reviews the result). On a published
+    # book it would silently alter text a guardian already approved and a
+    # child may be reading offline, defeating ADR-005. The same rule is
+    # enforced structurally elsewhere for the same reason: see
+    # api/node_edit.py::_EDITABLE_STATUSES ("immutable once released,
+    # ADR-005"), generation/series_link.py's `embed_into_approved_blob`, and
+    # moderation/rescreen.py ("a re-screen tool must never silently rewrite
+    # already-published, already-approved content").
+    # #VERIFY: tests/unit/test_remoderate_unit.py::
+    # test_published_blob_unchanged_when_repair_disallowed asserts the blob is
+    # byte-identical after a soft-FLAG re-moderation through api/remoderate.py.
     if (
-        report.has_soft_flag
+        allow_repair
+        and report.has_soft_flag
         and not report.has_hard_block
         and personalizable_slots is not None
     ):

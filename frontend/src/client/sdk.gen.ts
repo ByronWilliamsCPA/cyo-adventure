@@ -1330,7 +1330,7 @@ export const triggerRescreenApiV1AdminRescreenPost = <ThrowOnError extends boole
  * book's ``status`` is never changed by this call (ADR-005: a published
  * book stays published; the guardian/admin remains the only path that can
  * ever move it again). See the module docstring for the published-only
- * scope and the inherited auto-repair content-mutation risk.
+ * scope, the disabled auto-repair, and what a hard block does not do.
  *
  * Args:
  * storybook_id: The storybook id from the path.
@@ -1343,7 +1343,8 @@ export const triggerRescreenApiV1AdminRescreenPost = <ThrowOnError extends boole
  * Raises:
  * AuthorizationError: If the caller is not an admin (403).
  * ResourceNotFoundError: If the storybook or version does not exist (404).
- * BusinessLogicError: If the storybook is not currently published (400).
+ * BusinessLogicError: If the storybook is not currently published, or if
+ * a re-moderation is already in flight on this worker (400).
  */
 export const triggerRemoderateApiV1AdminRemoderateStorybookIdVersionPost = <ThrowOnError extends boolean = false>(options: Options<TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostData, ThrowOnError>): RequestResult<TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostResponses, TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostErrors, ThrowOnError> => (options.client ?? client).post<TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostResponses, TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostErrors, ThrowOnError>({
     responseType: 'json',
