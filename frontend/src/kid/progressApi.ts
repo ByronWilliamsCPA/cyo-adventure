@@ -80,6 +80,48 @@ const FALLBACK_SETTINGS: ResolvedGamificationSettings = {
   time_capture_paused: false,
 }
 
+/**
+ * Normalize the nested `settings` object field-by-field.
+ *
+ * The outer normalizer's `data.settings ?? FALLBACK_SETTINGS` only caught a
+ * settings object that was absent entirely. A PARTIAL one (`{ring_enabled:
+ * true}` from a stale mock or a mid-rollout contract change) passed straight
+ * through, so `ring_goal_days` arrived `undefined`, `Math.max(1, undefined)`
+ * evaluated to NaN, and WeeklyRing rendered `strokeDashoffset={NaN}` under an
+ * aria-label reading "out of a goal of NaN". Every scalar at the top level was
+ * already guarded this way; the nested object was the gap.
+ *
+ * Note the asymmetry that is deliberate: the two booleans fall back to FALSE
+ * on a bad value, matching FALLBACK_SETTINGS' fail-closed posture (showing a
+ * ring for a 3-5 reader whose band default is off is a visible K14 violation),
+ * while `ring_goal_days` falls back to a plausible 3 because it is inert
+ * whenever `ring_enabled` is false.
+ */
+function normalizeSettings(raw: unknown): ResolvedGamificationSettings {
+  if (typeof raw !== 'object' || raw === null) return FALLBACK_SETTINGS
+  const s = raw as Partial<ResolvedGamificationSettings>
+  return {
+    ring_enabled: s.ring_enabled === true,
+    ring_goal_days:
+      typeof s.ring_goal_days === 'number' && Number.isFinite(s.ring_goal_days)
+        ? s.ring_goal_days
+        : FALLBACK_SETTINGS.ring_goal_days,
+    badges_enabled: s.badges_enabled === true,
+    time_capture_paused: s.time_capture_paused === true,
+  }
+}
+
+/** Same field-by-field treatment for the totals object, for the same reason:
+ * a partial one rendered `undefined` into the kid-facing counts. */
+function normalizeTotals(raw: unknown): ProgressTotalsCard {
+  if (typeof raw !== 'object' || raw === null) return { books_finished: 0, endings_found: 0 }
+  const t = raw as Partial<ProgressTotalsCard>
+  return {
+    books_finished: typeof t.books_finished === 'number' ? t.books_finished : 0,
+    endings_found: typeof t.endings_found === 'number' ? t.endings_found : 0,
+  }
+}
+
 export const EMPTY_PROGRESS: ProgressSummary = {
   badges: [],
   books: [],
@@ -112,12 +154,12 @@ export function makeProgressApi(api: AxiosInstance): ProgressApi {
       return {
         badges: Array.isArray(data.badges) ? data.badges : [],
         books: Array.isArray(data.books) ? data.books : [],
-        totals: data.totals ?? EMPTY_PROGRESS.totals,
+        totals: normalizeTotals(data.totals),
         days_read_this_week:
           typeof data.days_read_this_week === 'number' ? data.days_read_this_week : 0,
         lifetime_days_read:
           typeof data.lifetime_days_read === 'number' ? data.lifetime_days_read : 0,
-        settings: data.settings ?? FALLBACK_SETTINGS,
+        settings: normalizeSettings(data.settings),
       }
     },
   }

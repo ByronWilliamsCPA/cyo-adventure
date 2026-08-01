@@ -66,4 +66,61 @@ describe('makeProgressApi', () => {
     expect(result.books).toEqual([])
     expect(result.settings).toEqual(EMPTY_PROGRESS.settings)
   })
+
+  /**
+   * The case above omits `settings` ENTIRELY, which the old
+   * `data.settings ?? FALLBACK_SETTINGS` already handled. The gap was a
+   * settings object that is present but incomplete: it passed through
+   * wholesale, so `ring_goal_days` reached WeeklyRing as `undefined` and
+   * `Math.max(1, undefined)` rendered `strokeDashoffset={NaN}` under an
+   * aria-label reading "out of a goal of NaN".
+   */
+  it('fills in a settings object that is present but incomplete', async () => {
+    const get = vi.fn().mockResolvedValue({ data: { settings: { ring_enabled: true } } })
+    const api = makeProgressApi(fakeAxios({ get }))
+
+    const result = await api.getProgress()
+
+    expect(result.settings.ring_enabled).toBe(true)
+    expect(result.settings.ring_goal_days).toBe(3)
+    expect(Number.isFinite(result.settings.ring_goal_days)).toBe(true)
+    expect(result.settings.badges_enabled).toBe(false)
+    expect(result.settings.time_capture_paused).toBe(false)
+  })
+
+  it('rejects a non-numeric ring goal rather than passing it through', async () => {
+    const get = vi.fn().mockResolvedValue({
+      data: { settings: { ring_enabled: true, ring_goal_days: 'four', badges_enabled: true } },
+    })
+    const api = makeProgressApi(fakeAxios({ get }))
+
+    const result = await api.getProgress()
+
+    expect(result.settings.ring_goal_days).toBe(3)
+    expect(result.settings.badges_enabled).toBe(true)
+  })
+
+  it('fails the two toggles CLOSED on a non-boolean, never open', async () => {
+    // Direction matters: a truthy-but-not-true value must not switch a
+    // 3-5 reader's ring on. Hiding a ring that should show costs a
+    // decoration; showing one that should not is a visible K14 violation.
+    const get = vi.fn().mockResolvedValue({
+      data: { settings: { ring_enabled: 'yes', badges_enabled: 1 } },
+    })
+    const api = makeProgressApi(fakeAxios({ get }))
+
+    const result = await api.getProgress()
+
+    expect(result.settings.ring_enabled).toBe(false)
+    expect(result.settings.badges_enabled).toBe(false)
+  })
+
+  it('fills in a totals object that is present but incomplete', async () => {
+    const get = vi.fn().mockResolvedValue({ data: { totals: { books_finished: 2 } } })
+    const api = makeProgressApi(fakeAxios({ get }))
+
+    const result = await api.getProgress()
+
+    expect(result.totals).toEqual({ books_finished: 2, endings_found: 0 })
+  })
 })

@@ -244,7 +244,16 @@
   font-size: var(--text-xs, 0.75rem);
   font-weight: var(--weight-bold, 700);
   white-space: nowrap;
-  animation: picker-pill-glow 2.4s var(--easing-default, ease-in-out) infinite;
+  /* Two iterations (4.8s), not `infinite`. WCAG 2.2.2 (Pause, Stop, Hide)
+     applies to automatically-starting motion that runs longer than five
+     seconds, and this pill has no pause control: the OS query and the
+     [data-reduce-motion] twin below both still it, but the per-profile
+     attribute is never stamped on the picker route (no profile is chosen
+     yet), so a guardian who set reduce_motion for their child could not
+     actually stop it here. Stopping on its own before the five-second mark
+     removes the obligation instead of arguing about it, and the pulse has
+     already done its job of drawing the eye by then. */
+  animation: picker-pill-glow 2.4s var(--easing-default, ease-in-out) 2;
 }
 
 @keyframes picker-pill-glow {

@@ -96,8 +96,18 @@ export function WeeklyRing({
   reduceMotion,
   now = () => new Date(),
 }: WeeklyRingProps) {
-  const clampedGoal = Math.max(1, goalDays)
-  const clampedDays = Math.max(0, Math.min(daysReadThisWeek, clampedGoal))
+  // #ASSUME: data-integrity: these are typed `number`, but they originate in
+  // a network payload, and Math.max/Math.min propagate NaN rather than
+  // rejecting it. A non-finite value here rendered strokeDashoffset={NaN}
+  // under an aria-label reading "out of a goal of NaN" to a child. The
+  // boundary fix is progressApi's normalizeSettings; this is the second
+  // layer, because the failure is user-visible and the guard costs nothing.
+  // #VERIFY: WeeklyRing.test.tsx "falls back to a sane goal when the settings
+  // payload carries a non-numeric goal".
+  const safeGoal = Number.isFinite(goalDays) ? goalDays : 1
+  const safeDays = Number.isFinite(daysReadThisWeek) ? daysReadThisWeek : 0
+  const clampedGoal = Math.max(1, safeGoal)
+  const clampedDays = Math.max(0, Math.min(safeDays, clampedGoal))
   const filled = clampedDays >= clampedGoal
   const currentWeek = weekKey(now())
   const celebrate = filled && !hasCelebratedThisWeek(profileId, currentWeek)

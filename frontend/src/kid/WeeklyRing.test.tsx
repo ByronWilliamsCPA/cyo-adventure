@@ -26,6 +26,32 @@ describe('WeeklyRing', () => {
     ).toBeInTheDocument()
   })
 
+  /**
+   * The props are typed `number`, but they come from a network payload and
+   * Math.max/Math.min PROPAGATE NaN rather than rejecting it, so a bad value
+   * reached the child as an aria-label reading "out of a goal of NaN" and a
+   * `strokeDashoffset={NaN}` attribute. progressApi.normalizeSettings is the
+   * boundary fix; this is the component's own second layer.
+   */
+  it('falls back to a sane goal when the settings payload carries a non-numeric goal', () => {
+    render(
+      <WeeklyRing profileId="p1" daysReadThisWeek={0} goalDays={Number.NaN} reduceMotion={false} />
+    )
+    const ring = screen.getByTestId('weekly-ring')
+    expect(ring.getAttribute('aria-label')).not.toContain('NaN')
+    expect(
+      ring.querySelector('circle[stroke-dashoffset]')?.getAttribute('stroke-dashoffset')
+    ).not.toContain('NaN')
+  })
+
+  it('does not announce a NaN day count', () => {
+    render(
+      <WeeklyRing profileId="p1" daysReadThisWeek={Number.NaN} goalDays={4} reduceMotion={false} />
+    )
+    const ring = screen.getByTestId('weekly-ring')
+    expect(ring.getAttribute('aria-label')).toBe('You read on 0 days this week, out of a goal of 4')
+  })
+
   it('shows the day count as plain text, never minutes', () => {
     render(<WeeklyRing profileId="p1" daysReadThisWeek={2} goalDays={3} reduceMotion={false} />)
     expect(screen.getByText('2')).toBeInTheDocument()
