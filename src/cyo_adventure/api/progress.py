@@ -324,8 +324,24 @@ async def get_my_progress(
         badges_enabled=(
             profile_row.badges_enabled if profile_row is not None else True
         ),
+        # #CRITICAL: security: a missing row resolves to PAUSED, not to the
+        # column default. The other two fall back to their column defaults
+        # because they are decoration; this one is the guardian privacy toggle,
+        # and api/reading_time.py::flush_reading_time already reasons the
+        # opposite way for the identical condition ("failing open there would
+        # record behavioural data for a profile whose settings cannot be
+        # read"). Resolving False here told the client accumulator to start
+        # measuring and transmitting for a profile whose settings the server
+        # cannot read, which the flush endpoint would then discard: work the
+        # child's device should never have done. The only way to reach this is
+        # a delete/erasure racing the request, where "keep recording" is
+        # exactly the wrong default. This is also what the #EDGE note above
+        # already claims the whole module does (degrade to the least-pressuring
+        # settings); the ring obeyed it via _UNKNOWN_BAND, this did not.
+        # #VERIFY: tests/unit/test_progress_api.py::
+        # test_missing_profile_row_resolves_time_capture_to_paused.
         time_capture_paused=(
-            profile_row.time_capture_paused if profile_row is not None else False
+            profile_row.time_capture_paused if profile_row is not None else True
         ),
     )
 

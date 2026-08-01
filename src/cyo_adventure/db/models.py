@@ -30,7 +30,6 @@ from sqlalchemy import (
     func,
     text,
 )
-from sqlalchemy import text as sa_text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -297,7 +296,7 @@ class Family(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # policy version, just a stored preference, matching 8.6's "a notice
     # fixes surprise; a signature would not fix it any better".
     personalization_receive_enabled: Mapped[bool] = mapped_column(
-        server_default=sa_text("true"), default=True
+        server_default=text("true"), default=True
     )
 
 
@@ -409,9 +408,7 @@ class User(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # #VERIFY: apply the migration in each environment ahead of the image
     # rollout (migrate-before-deploy), per the header comment in the
     # migration file.
-    is_admin: Mapped[bool] = mapped_column(
-        server_default=sa_text("false"), default=False
-    )
+    is_admin: Mapped[bool] = mapped_column(server_default=text("false"), default=False)
     authn_subject: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     # Contact data ONLY, never an identity key. Populated from the Supabase
     # user's email claim at JIT onboarding (P6-03) for receipts and consent
@@ -469,7 +466,7 @@ class User(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # _USER_STATUS_VALUES; String(16) truncated 'awaiting_approval' before
     # (StringDataRightTruncationError), and String(20) would truncate this one.
     status: Mapped[str] = mapped_column(
-        String(32), default="active", server_default=sa_text("'active'")
+        String(32), default="active", server_default=text("'active'")
     )
     # #CRITICAL: security: Phase 2 / ADR-018 D1 verifiable-parental-consent
     # record. A guardian's typed full-legal-name attestation counts as the
@@ -518,7 +515,7 @@ class ChildProfile(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         Index(
             "ix_child_profile_deactivated_at",
             "deactivated_at",
-            postgresql_where=sa_text("deactivated_at IS NOT NULL"),
+            postgresql_where=text("deactivated_at IS NOT NULL"),
         ),
     )
 
@@ -564,10 +561,10 @@ class ChildProfile(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # connected families (FamilyConnection). Both default False: a real
     # name is never personalized in without an explicit guardian opt-in.
     real_name_ring1_enabled: Mapped[bool] = mapped_column(
-        server_default=sa_text("false"), default=False
+        server_default=text("false"), default=False
     )
     real_name_ring2_enabled: Mapped[bool] = mapped_column(
-        server_default=sa_text("false"), default=False
+        server_default=text("false"), default=False
     )
     avatar: Mapped[str | None] = mapped_column(String(255), default=None)
     # #CRITICAL: security: write-only PIN credential material (P6-07), encoded
@@ -635,10 +632,10 @@ class ChildProfile(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     ring_enabled: Mapped[bool | None] = mapped_column(default=None)
     ring_goal_days: Mapped[int | None] = mapped_column(default=None)
     badges_enabled: Mapped[bool] = mapped_column(
-        server_default=sa_text("true"), default=True
+        server_default=text("true"), default=True
     )
     time_capture_paused: Mapped[bool] = mapped_column(
-        server_default=sa_text("false"), default=False
+        server_default=text("false"), default=False
     )
 
 
@@ -699,10 +696,10 @@ class ChildProfilePersonalization(CreatedAtMixin, UpdatedAtMixin, Base):
         ForeignKey(_FK_CHILD_PROFILE, ondelete="CASCADE"), default=None
     )
     ring1_enabled: Mapped[bool] = mapped_column(
-        server_default=sa_text("false"), default=False
+        server_default=text("false"), default=False
     )
     ring2_enabled: Mapped[bool] = mapped_column(
-        server_default=sa_text("false"), default=False
+        server_default=text("false"), default=False
     )
 
 
@@ -766,7 +763,7 @@ class FamilyConnection(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         Index(
             "ix_family_connection_active_viewer",
             "family_id",
-            postgresql_where=sa_text(
+            postgresql_where=text(
                 "consented_by_viewer_user_id IS NOT NULL"
                 " AND consented_by_sharer_user_id IS NOT NULL"
             ),
@@ -848,7 +845,7 @@ class PersonalizationDisclosureConsent(UUIDPrimaryKeyMixin, CreatedAtMixin, Base
             "child_profile_id",
             "family_connection_id",
             unique=True,
-            postgresql_where=sa_text("family_connection_id IS NOT NULL"),
+            postgresql_where=text("family_connection_id IS NOT NULL"),
         ),
         # Referencing-side FK index: family_connection_id is ON DELETE SET
         # NULL, so every family_connection deletion scans this table without
@@ -891,7 +888,7 @@ class PersonalizationDisclosureConsent(UUIDPrimaryKeyMixin, CreatedAtMixin, Base
     # Set only for a consent whose covered_slot_types includes the sibling
     # slot; see design plan 10.1 for the attestation ceremony this backs.
     sibling_authority_attested: Mapped[bool] = mapped_column(
-        server_default=sa_text("false"), default=False
+        server_default=text("false"), default=False
     )
     consent_accepted_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
     consent_policy_version: Mapped[str | None] = mapped_column(String(32), default=None)
@@ -1071,14 +1068,14 @@ class StorybookVersion(CreatedAtMixin, Base):
     # set by the fill/import path only when the skeleton contract declares
     # personalizable slots.
     personalization_eligible: Mapped[bool] = mapped_column(
-        server_default=sa_text("false"), default=False
+        server_default=text("false"), default=False
     )
     # A separate, narrower flag (design plan section 2/5): whether this
     # version's contract additionally parameterizes pronouns. Off by
     # default, set only by an explicit per-skeleton audit; never implied by
     # personalization_eligible alone.
     pronoun_parameterized: Mapped[bool] = mapped_column(
-        server_default=sa_text("false"), default=False
+        server_default=text("false"), default=False
     )
     # Stage R re-scope (Task R3): the per-node token multiset that
     # deterministic re-insertion actually produced
@@ -1787,7 +1784,7 @@ class PipelineEvent(UUIDPrimaryKeyMixin, Base):
     from_state: Mapped[str | None] = mapped_column(String(32), nullable=True)
     to_state: Mapped[str | None] = mapped_column(String(32), nullable=True)
     payload: Mapped[dict[str, object]] = mapped_column(
-        JSONB, nullable=False, server_default=sa_text("'{}'::jsonb")
+        JSONB, nullable=False, server_default=text("'{}'::jsonb")
     )
 
 

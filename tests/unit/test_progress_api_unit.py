@@ -7,7 +7,7 @@ badge math itself is covered by ``tests/unit/test_progress_badges.py``.
 from __future__ import annotations
 
 import uuid
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 
 import pytest
 
@@ -21,6 +21,7 @@ from cyo_adventure.api.progress import (
     get_my_progress,
 )
 from cyo_adventure.api.progress import router as progress_router
+from cyo_adventure.api.reading_history import _week_start as _history_week_start
 from cyo_adventure.core.exceptions import AuthorizationError
 from cyo_adventure.db.models import (
     ChildProfile,
@@ -128,8 +129,32 @@ class TestGetMyProgress:
         # invent. See _UNKNOWN_BAND.
         assert result.settings.ring_enabled is False
         assert result.settings.ring_goal_days == 2
+        # Decoration, so this one keeps its column default: an absent row says
+        # nothing about whether badges should show, and showing them costs a
+        # profile that no longer exists nothing.
         assert result.settings.badges_enabled is True
-        assert result.settings.time_capture_paused is False
+        # See test_missing_profile_row_resolves_time_capture_to_paused: the one
+        # privacy toggle in this block does NOT follow its column default.
+        assert result.settings.time_capture_paused is True
+
+    async def test_missing_profile_row_resolves_time_capture_to_paused(self) -> None:
+        """A profile whose row vanished must not be told to keep recording.
+
+        This resolved value is what the client accumulator obeys, so returning
+        "not paused" here started measurement and transmission on the child's
+        device for a profile whose settings the server cannot read.
+        ``api/reading_time.py::flush_reading_time`` already fails CLOSED on the
+        identical condition and would discard whatever arrived, so the two
+        endpoints disagreed and the recording was pure waste on the wrong side
+        of a privacy boundary. The only way to reach this state is a
+        delete/erasure racing the request, where "keep recording" is the worst
+        available default.
+        """
+        session = _FakeSession([[], [], [], [], []])
+
+        result = await get_my_progress(_child_principal(), session)
+
+        assert result.settings.time_capture_paused is True
 
     async def test_first_completion_earns_first_ending_badge(self) -> None:
         profile_id = uuid.uuid4()
@@ -280,6 +305,26 @@ class TestReadingDayTotals:
         # 2026-01-01 is a Thursday.
         assert _week_start(date(2026, 1, 1)) == date(2025, 12, 29)
         assert _week_start(date(2025, 12, 29)) == date(2025, 12, 29)
+
+    def test_week_start_agrees_with_the_guardian_summarys_own_copy(self) -> None:
+        """The two ``_week_start`` copies must never disagree.
+
+        ``api/reading_history.py`` defines the same helper for the guardian
+        summary; ``api/progress.py`` duplicates it rather than importing,
+        because that one is module-private and W3's touch scope did not include
+        editing the guardian module to export it. That is a defensible scope
+        call, but until now only this copy was tested, so a change to either
+        could silently make the kid's ring and the guardian's "days read this
+        week" disagree about which days count. Same story, two numbers, no
+        failing test.
+
+        Sweeping a full year plus both year boundaries covers every weekday
+        alignment and the ISO-week/calendar-year seam where a naive
+        implementation diverges.
+        """
+        for offset in range(370):
+            day = date(2025, 12, 25) + timedelta(days=offset)
+            assert _week_start(day) == _history_week_start(day), day
 
     def test_zero_second_days_do_not_count(self) -> None:
         profile_id = uuid.uuid4()
