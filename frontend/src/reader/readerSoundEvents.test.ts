@@ -22,7 +22,7 @@ describe('readerSoundEvents (W4.2 module-level bus)', () => {
     expect(listener).not.toHaveBeenCalled()
   })
 
-  it('keeps event names isolated: emitting one never calls a different event\'s listener', () => {
+  it("keeps event names isolated: emitting one never calls a different event's listener", () => {
     const listener = vi.fn()
     const unsubscribe = onReaderSoundEvent('ending', listener)
     emitReaderSoundEvent('page-turn')

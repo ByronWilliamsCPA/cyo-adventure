@@ -37,7 +37,10 @@ test('creates a child profile with a preset avatar', async ({ page }) => {
   await page.getByRole('radio', { name: /Owl/ }).check()
   await page.getByRole('button', { name: 'Save' }).click()
 
-  await expect(page.getByText('Nova')).toBeVisible()
+  // exact: true because the new gamification-toggle hints interpolate the
+  // child's name ("A small ring in Nova's library...", G19), so a substring
+  // match is a strict-mode violation while the dialog is still closing.
+  await expect(page.getByText('Nova', { exact: true })).toBeVisible()
   expect(created).toMatchObject({ display_name: 'Nova', age_band: '5-8', avatar: 'owl' })
 })
 

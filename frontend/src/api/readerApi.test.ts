@@ -186,9 +186,7 @@ describe('makeRecordCompletion', () => {
   })
 
   it('resolves with the response body (W0.3 is_new/found/total)', async () => {
-    const post = vi.fn(() =>
-      Promise.resolve({ data: { is_new: true, found: 2, total: 4 } })
-    )
+    const post = vi.fn(() => Promise.resolve({ data: { is_new: true, found: 2, total: 4 } }))
     const recordCompletion = makeRecordCompletion({ post } as unknown as AxiosInstance)
     const result = await recordCompletion({
       profile_id: 'p1',

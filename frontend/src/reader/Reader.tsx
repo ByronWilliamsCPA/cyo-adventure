@@ -602,10 +602,7 @@ export function Reader({
               this only renders whatever it is handed and clears it on
               dismiss (tap or auto-dismiss). */}
           {newlyEarnedBadge ? (
-            <BadgeUnlockToast
-              badge={newlyEarnedBadge}
-              onDismiss={() => onDismissBadgeToast?.()}
-            />
+            <BadgeUnlockToast badge={newlyEarnedBadge} onDismiss={() => onDismissBadgeToast?.()} />
           ) : null}
           <div className="reader-ending__actions">
             <Button

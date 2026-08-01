@@ -339,7 +339,8 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
   if (capInvalid) missingInputs.push('a reading level from 0 to 99')
   if (!pinValid) missingInputs.push('a 4-8 digit PIN')
   if (envelopeInvalid) missingInputs.push('a monthly auto-approve limit of 0 or more, or blank')
-  if (ringGoalInvalid) missingInputs.push(`a reading-days goal from 1 to ${RING_GOAL_DAYS_MAX}, or blank`)
+  if (ringGoalInvalid)
+    missingInputs.push(`a reading-days goal from 1 to ${RING_GOAL_DAYS_MAX}, or blank`)
   const saveHint =
     !saving && missingInputs.length > 0 ? `Enter ${missingInputs.join(' and ')} to save.` : null
 
@@ -516,8 +517,8 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
             Badges
           </label>
           <p id="badges-help" className="profile-form__hint">
-            Off hides the badge case and stops new-badge celebrations; badges still quietly earn
-            in the background, so turning this back on restores everything at once.
+            Off hides the badge case and stops new-badge celebrations; badges still quietly earn in
+            the background, so turning this back on restores everything at once.
           </p>
           <label className="cyo-field cyo-field--checkbox">
             <input
@@ -529,8 +530,8 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
             Pause reading-time tracking
           </label>
           <p id="time-capture-help" className="profile-form__hint">
-            When on, we stop recording how many minutes {displayName.trim() || 'this child'}{' '}
-            reads. The weekly ring and reading summary keep working from days already recorded.
+            When on, we stop recording how many minutes {displayName.trim() || 'this child'} reads.
+            The weekly ring and reading summary keep working from days already recorded.
           </p>
         </fieldset>
         <fieldset className="profile-form__budget">

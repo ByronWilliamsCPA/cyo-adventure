@@ -8,7 +8,9 @@ function fakeAxios(overrides: Partial<AxiosInstance>): AxiosInstance {
 }
 
 const FULL_RESPONSE: ProgressSummary = {
-  badges: [{ id: 'first_ending', name: 'First Ending', description: 'You found one!', earned_at: 't' }],
+  badges: [
+    { id: 'first_ending', name: 'First Ending', description: 'You found one!', earned_at: 't' },
+  ],
   books: [
     {
       storybook_id: 's1',

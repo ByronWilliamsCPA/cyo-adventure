@@ -36,9 +36,7 @@ export interface StoryStatusApi {
 export function makeStoryStatusApi(api: AxiosInstance): StoryStatusApi {
   return {
     async list(): Promise<ProfileStoryStatus[]> {
-      const res = await api.get<{ statuses: ProfileStoryStatus[] }>(
-        '/v1/profiles/story-status'
-      )
+      const res = await api.get<{ statuses: ProfileStoryStatus[] }>('/v1/profiles/story-status')
       // #ASSUME: data-integrity: a malformed/missing `statuses` array (a
       // stale mock in a test, or a future backend contract change) degrades
       // to "no pills" here rather than throwing, so a shape mismatch on this

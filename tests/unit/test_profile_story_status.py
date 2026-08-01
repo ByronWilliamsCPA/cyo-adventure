@@ -48,15 +48,11 @@ class TestBuildStoryStatusView:
 
     def test_profile_in_new_set_reads_true(self) -> None:
         result = _build_story_status_view([_PROFILE_1], {_PROFILE_1})
-        assert result.statuses == [
-            _view_of(profile_id=_PROFILE_1, has_new_story=True)
-        ]
+        assert result.statuses == [_view_of(profile_id=_PROFILE_1, has_new_story=True)]
 
     def test_profile_absent_from_new_set_reads_false(self) -> None:
         result = _build_story_status_view([_PROFILE_1], set())
-        assert result.statuses == [
-            _view_of(profile_id=_PROFILE_1, has_new_story=False)
-        ]
+        assert result.statuses == [_view_of(profile_id=_PROFILE_1, has_new_story=False)]
 
     def test_preserves_caller_order_and_mixes_true_and_false(self) -> None:
         result = _build_story_status_view(

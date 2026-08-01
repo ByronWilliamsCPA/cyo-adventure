@@ -246,9 +246,6 @@ describe('makeKidStoryRequestApi', () => {
       ],
     })
     const result = await makeKidStoryRequestApi(api).listForProfile('p1')
-    expect(result.map((r) => r.kidSummary)).toEqual([
-      'We are getting your adventure ready!',
-      null,
-    ])
+    expect(result.map((r) => r.kidSummary)).toEqual(['We are getting your adventure ready!', null])
   })
 })

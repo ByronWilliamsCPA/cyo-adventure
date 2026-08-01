@@ -322,9 +322,7 @@ export function RequestStory({
               // with nothing after it.
               const heard =
                 (req.status === 'pending' || req.status === 'approved') && req.kidSummary ? (
-                  <span className="request-story__item-status">
-                    We heard you: {req.kidSummary}
-                  </span>
+                  <span className="request-story__item-status">We heard you: {req.kidSummary}</span>
                 ) : null
               if (req.status !== 'approved') {
                 return (

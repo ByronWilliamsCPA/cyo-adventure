@@ -18,6 +18,8 @@
 # whatever the app renders, so a human must confirm the new appearance is
 # correct, not a regression.
 #
+# Bump: 2026-08-01 regenerate after the reader chrome change (PR #532: the
+# position pill replaced the in-read progress bar per AL-029/ADR-026).
 # Re-run trigger: touch this file (a comment bump is enough) and push to a
 # feature branch to regenerate after a UI change or a merge from main.
 #

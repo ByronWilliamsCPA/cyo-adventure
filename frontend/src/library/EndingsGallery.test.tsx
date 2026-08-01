@@ -12,14 +12,26 @@ const FOUND: FoundEndingCard[] = [
 describe('EndingsGallery', () => {
   it('renders nothing when closed', () => {
     const { container } = render(
-      <EndingsGallery open={false} onClose={vi.fn()} bookTitle="A Book" totalEndings={3} foundEndings={[]} />
+      <EndingsGallery
+        open={false}
+        onClose={vi.fn()}
+        bookTitle="A Book"
+        totalEndings={3}
+        foundEndings={[]}
+      />
     )
     expect(container.firstChild).toBeNull()
   })
 
   it('renders a found card with its real title for each found ending', () => {
     render(
-      <EndingsGallery open onClose={vi.fn()} bookTitle="A Book" totalEndings={3} foundEndings={FOUND} />
+      <EndingsGallery
+        open
+        onClose={vi.fn()}
+        bookTitle="A Book"
+        totalEndings={3}
+        foundEndings={FOUND}
+      />
     )
     expect(screen.getByText('The Happy Ending')).toBeInTheDocument()
     expect(screen.getByText('A Quiet Ending')).toBeInTheDocument()
@@ -27,14 +39,26 @@ describe('EndingsGallery', () => {
 
   it('renders a silhouette placeholder for each unfound ending, below the large-M threshold', () => {
     render(
-      <EndingsGallery open onClose={vi.fn()} bookTitle="A Book" totalEndings={3} foundEndings={FOUND} />
+      <EndingsGallery
+        open
+        onClose={vi.fn()}
+        bookTitle="A Book"
+        totalEndings={3}
+        foundEndings={FOUND}
+      />
     )
     expect(screen.getAllByText('Still hidden')).toHaveLength(1)
   })
 
   it('never reveals a real title for an unfound ending', () => {
     render(
-      <EndingsGallery open onClose={vi.fn()} bookTitle="A Book" totalEndings={5} foundEndings={FOUND} />
+      <EndingsGallery
+        open
+        onClose={vi.fn()}
+        bookTitle="A Book"
+        totalEndings={5}
+        foundEndings={FOUND}
+      />
     )
     // Only "Still hidden" placeholders for the 3 unfound; nothing else leaks.
     expect(screen.getAllByText('Still hidden')).toHaveLength(3)
@@ -55,7 +79,15 @@ describe('EndingsGallery', () => {
   })
 
   it('shows an encouraging empty state when nothing has been found yet', () => {
-    render(<EndingsGallery open onClose={vi.fn()} bookTitle="A Book" totalEndings={5} foundEndings={[]} />)
+    render(
+      <EndingsGallery
+        open
+        onClose={vi.fn()}
+        bookTitle="A Book"
+        totalEndings={5}
+        foundEndings={[]}
+      />
+    )
     expect(screen.getByText('Keep reading to start finding endings!')).toBeInTheDocument()
   })
 

@@ -84,7 +84,22 @@ export function EndingsProgress({
   // (it is an effect dependency), re-evaluating this guard at that point.
   // #VERIFY: EndingsProgress.test.tsx "does not fetch while the completion
   // outcome is pending" / "fetches when the outcome is unavailable".
-  const shouldFetch = completionOutcome === undefined || completionOutcome.status === 'unavailable'
+  // #EDGE: data integrity: a 'ready' outcome whose found/total are not finite
+  // numbers (a stale mock, a proxy mangling the body, an old server without
+  // W0.3's fields) must never render "undefined of undefined" to a child;
+  // treat it exactly like 'unavailable' and use the fallback fetch.
+  // #VERIFY: EndingsProgress.test.tsx "falls back to the fetch when a ready
+  // result is malformed".
+  const readyResult =
+    completionOutcome?.status === 'ready' &&
+    Number.isFinite(completionOutcome.result.found) &&
+    Number.isFinite(completionOutcome.result.total)
+      ? completionOutcome.result
+      : null
+  const shouldFetch =
+    completionOutcome === undefined ||
+    completionOutcome.status === 'unavailable' ||
+    (completionOutcome.status === 'ready' && readyResult === null)
 
   useEffect(() => {
     if (!shouldFetch) return
@@ -112,8 +127,8 @@ export function EndingsProgress({
 
   if (completionOutcome?.status === 'pending') return null
 
-  if (completionOutcome?.status === 'ready') {
-    const { is_new, found, total } = completionOutcome.result
+  if (readyResult !== null) {
+    const { is_new, found, total } = readyResult
     if (total <= 1) return null
     return (
       <p className="reader-ending__endings-tracker" data-testid="endings-tracker">

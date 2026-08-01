@@ -21,6 +21,7 @@ export interface EndingsGalleryButtonProps {
 }
 
 export function EndingsGalleryButton({
+  profileId,
   storybookId,
   bookTitle,
   api,
@@ -29,8 +30,11 @@ export function EndingsGalleryButton({
   const [book, setBook] = useState<BookProgressCard | null>(null)
   const [loading, setLoading] = useState(false)
 
+  // The modal opens only once the fetch settles: rendering it mid-flight
+  // with zero endings would flash the gallery's "keep reading" empty-state
+  // copy at a child whose real collection just has not loaded yet. The
+  // button disables while loading so a double-tap cannot stack fetches.
   const handleOpen = () => {
-    setOpen(true)
     setLoading(true)
     api
       .getProgress()
@@ -40,10 +44,17 @@ export function EndingsGalleryButton({
       .catch((error: unknown) => {
         // Best-effort, decorative surface: a failed fetch just shows the
         // empty-gallery state, never an error the child has to dismiss.
-        console.error('[reader] endings gallery fetch failed', { storybookId, error })
+        console.error('[reader] endings gallery fetch failed', {
+          profileId,
+          storybookId,
+          error,
+        })
         setBook(null)
       })
-      .finally(() => setLoading(false))
+      .finally(() => {
+        setLoading(false)
+        setOpen(true)
+      })
   }
 
   return (
@@ -53,6 +64,7 @@ export function EndingsGalleryButton({
         className="reader-ending__gallery-button"
         data-testid="open-endings-gallery"
         onClick={handleOpen}
+        disabled={loading}
       >
         See your endings
       </button>
@@ -62,7 +74,7 @@ export function EndingsGalleryButton({
           onClose={() => setOpen(false)}
           bookTitle={bookTitle}
           totalEndings={book?.total_endings ?? 0}
-          foundEndings={loading ? [] : (book?.found_endings ?? [])}
+          foundEndings={book?.found_endings ?? []}
         />
       ) : null}
     </>

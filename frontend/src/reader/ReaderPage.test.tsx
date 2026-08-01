@@ -513,9 +513,7 @@ describe('ReaderPage', () => {
   })
 
   it('posts a completion when the story reaches an ending', async () => {
-    const recordCompletion = vi.fn(() =>
-      Promise.resolve({ is_new: true, found: 1, total: 4 })
-    )
+    const recordCompletion = vi.fn(() => Promise.resolve({ is_new: true, found: 1, total: 4 }))
     render(
       <MemoryRouter>
         <ReaderPage
@@ -567,9 +565,7 @@ describe('ReaderPage', () => {
   // response drives the ending-screen tracker directly, with no second,
   // racing GET, and distinguishes a first find from a repeat.
   it('renders the NEW-ending tracker from the completion response, without a reading-history fetch', async () => {
-    const recordCompletion = vi.fn(() =>
-      Promise.resolve({ is_new: true, found: 1, total: 4 })
-    )
+    const recordCompletion = vi.fn(() => Promise.resolve({ is_new: true, found: 1, total: 4 }))
     const fetchReadingHistory = vi.fn(() => Promise.resolve([]))
     render(
       <MemoryRouter>

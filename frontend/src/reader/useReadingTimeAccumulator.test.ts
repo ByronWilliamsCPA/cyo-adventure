@@ -87,7 +87,9 @@ describe('useReadingTimeAccumulator', () => {
     let elapsedMs = 0
     const start = new Date(2026, 0, 1, 10, 0, 0).getTime()
     const clock = () => new Date(start + elapsedMs)
-    const { unmount } = renderHook(() => useReadingTimeAccumulator({ profileId: PROFILE_ID, now: clock }))
+    const { unmount } = renderHook(() =>
+      useReadingTimeAccumulator({ profileId: PROFILE_ID, now: clock })
+    )
 
     const ticksToIdle = Math.ceil(IDLE_WINDOW_MS / TICK_INTERVAL_MS) + 2
     for (let i = 0; i < ticksToIdle; i += 1) {

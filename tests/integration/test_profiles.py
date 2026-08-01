@@ -942,9 +942,7 @@ async def test_create_and_update_envelope_fields(
 # ---------------------------------------------------------------------------
 
 
-async def _add_sibling(
-    sessions: async_sessionmaker[AsyncSession], seed: Seed
-) -> str:
+async def _add_sibling(sessions: async_sessionmaker[AsyncSession], seed: Seed) -> str:
     """Add a second Family A child profile with NO storybook assignment.
 
     Mirrors ``test_assignments_api.py::_add_sibling``, trimmed to just the
@@ -1065,9 +1063,7 @@ async def test_story_status_device_grant_scoped_to_own_family(
     this endpoint exists for.
     """
     device_token = await mint_device_token(client, seed.guardian_token)
-    resp = await client.get(
-        "/api/v1/profiles/story-status", headers=auth(device_token)
-    )
+    resp = await client.get("/api/v1/profiles/story-status", headers=auth(device_token))
     assert resp.status_code == 200, resp.text
     statuses = resp.json()["statuses"]
     ids = {s["profile_id"] for s in statuses}
@@ -1096,9 +1092,7 @@ async def test_story_status_child_scoped_to_own_profile(
 async def test_admin_story_status_is_empty(client: AsyncClient, seed: Seed) -> None:
     """An admin-only token resolves no profile set, so the list is empty."""
     del seed  # fixture seeds the admin-a user
-    resp = await client.get(
-        "/api/v1/profiles/story-status", headers=auth("admin-a")
-    )
+    resp = await client.get("/api/v1/profiles/story-status", headers=auth("admin-a"))
     assert resp.status_code == 200, resp.text
     assert resp.json()["statuses"] == []
 

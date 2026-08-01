@@ -25,7 +25,11 @@ export interface BadgeCatalogEntry {
 }
 
 export const BADGE_CATALOG: readonly BadgeCatalogEntry[] = [
-  { id: 'first_ending', name: 'First Ending', description: 'You found your very first story ending!' },
+  {
+    id: 'first_ending',
+    name: 'First Ending',
+    description: 'You found your very first story ending!',
+  },
   {
     id: 'path_not_taken',
     name: 'The Path Not Taken',
@@ -48,7 +52,11 @@ export const BADGE_CATALOG: readonly BadgeCatalogEntry[] = [
     name: 'Brave Reader',
     description: 'After a tricky ending, you tried again and found a new one.',
   },
-  { id: 'story_wisher', name: 'Story Wisher', description: 'You asked for your very own story idea.' },
+  {
+    id: 'story_wisher',
+    name: 'Story Wisher',
+    description: 'You asked for your very own story idea.',
+  },
   { id: 'star_giver', name: 'Star Giver', description: 'You rated 3 different books.' },
   {
     id: 'series_finisher',

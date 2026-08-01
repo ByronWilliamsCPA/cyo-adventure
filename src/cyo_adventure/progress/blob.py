@@ -2,10 +2,13 @@
 
 Deliberately duplicated in shape from ``api/reading_history.py``'s own
 ``_ending_count``/``_book_title`` (which this module's ``ending_count``
-mirrors) and ``api/reading.py``'s ``_version_ending_ids``: this package has
-no cross-router dependency, per this repo's small-helper-duplication
+mirrors) and ``api/reading.py``'s ``_version_ending_ids``: this package
+depends on no *router* module, per this repo's small-helper-duplication
 convention (see ``reading.py::_completion_ending_count``'s own docstring for
-the same rationale).
+the same rationale). The one ``api``-package import it does carry is
+``api/sentinel_log.py``'s ``strip_and_log``, which is a shared security
+helper (registered in ``tests/unit/test_title_strip_registry.py``), not a
+router; duplicating it here would fork a security-relevant behavior.
 """
 
 from __future__ import annotations

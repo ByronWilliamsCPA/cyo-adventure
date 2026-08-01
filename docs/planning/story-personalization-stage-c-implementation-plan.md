@@ -696,16 +696,14 @@ In `get_personalization_values`, resolve the map once, immediately after the rea
 and before the subject lookup, so a book the caller may not address never triggers a disk read:
 
 ```python
-    if not _book_is_reachable(book, ctx.principal.family_id):
-        return _empty_values_view()
-    # Resolved once per call, after reachability and before any subject lookup:
-    # a caller who may not address this book must not be able to make the server
-    # read its skeleton and contract off disk.
-    slot_bindings = await personalizable_slot_fields_for_story(
-        ctx.session, storybook_id
-    )
-    if book.personalization_subject_profile_id is None:
-        return _empty_values_view(slot_bindings)
+if not _book_is_reachable(book, ctx.principal.family_id):
+    return _empty_values_view()
+# Resolved once per call, after reachability and before any subject lookup:
+# a caller who may not address this book must not be able to make the server
+# read its skeleton and contract off disk.
+slot_bindings = await personalizable_slot_fields_for_story(ctx.session, storybook_id)
+if book.personalization_subject_profile_id is None:
+    return _empty_values_view(slot_bindings)
 ```
 
 and pass `slot_bindings` to the remaining `_empty_values_view(...)` call and to both

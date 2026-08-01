@@ -22,7 +22,9 @@ describe('BadgeCase', () => {
       <BadgeCase
         open
         onClose={vi.fn()}
-        earnedBadges={[{ id: 'first_ending', name: 'First Ending', description: 'x', earned_at: 't' }]}
+        earnedBadges={[
+          { id: 'first_ending', name: 'First Ending', description: 'x', earned_at: 't' },
+        ]}
       />
     )
     const cards = container.querySelectorAll('.badge-case__card--earned')
@@ -34,15 +36,21 @@ describe('BadgeCase', () => {
       <BadgeCase
         open
         onClose={vi.fn()}
-        earnedBadges={[{ id: 'first_ending', name: 'First Ending', description: 'x', earned_at: 't' }]}
+        earnedBadges={[
+          { id: 'first_ending', name: 'First Ending', description: 'x', earned_at: 't' },
+        ]}
       />
     )
-    expect(container.querySelectorAll('.badge-case__card--locked')).toHaveLength(BADGE_CATALOG.length - 1)
+    expect(container.querySelectorAll('.badge-case__card--locked')).toHaveLength(
+      BADGE_CATALOG.length - 1
+    )
   })
 
   it('shows every badge as locked when nothing has been earned yet', () => {
     const { container } = render(<BadgeCase open onClose={vi.fn()} earnedBadges={[]} />)
-    expect(container.querySelectorAll('.badge-case__card--locked')).toHaveLength(BADGE_CATALOG.length)
+    expect(container.querySelectorAll('.badge-case__card--locked')).toHaveLength(
+      BADGE_CATALOG.length
+    )
     expect(container.querySelectorAll('.badge-case__card--earned')).toHaveLength(0)
   })
 })

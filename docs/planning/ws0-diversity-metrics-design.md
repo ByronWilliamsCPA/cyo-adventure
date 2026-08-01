@@ -381,7 +381,7 @@ def anti_template_verdict(
     *,
     brief_a: Mapping[str, object] | None = None,
     brief_b: Mapping[str, object] | None = None,
-    thresholds: AntiTemplateThresholds | None = None,   # per-band override, section 3.5
+    thresholds: AntiTemplateThresholds | None = None,  # per-band override, section 3.5
 ) -> AntiTemplateReport:
     """Judge whether two fills of one tree are genuinely different leaves.
 
@@ -395,9 +395,10 @@ def anti_template_verdict(
 
 ```python
 class AntiTemplateVerdict(StrEnum):
-    PASS_ = "pass"          # genuinely re-authored leaves
-    WARN = "warn"           # gray zone: human look, does not block
-    FAIL = "fail"           # template / noun-swap: hard regression
+    PASS_ = "pass"  # genuinely re-authored leaves
+    WARN = "warn"  # gray zone: human look, does not block
+    FAIL = "fail"  # template / noun-swap: hard regression
+
 
 class AntiTemplateReport(BaseModel):
     verdict: AntiTemplateVerdict
@@ -406,7 +407,7 @@ class AntiTemplateReport(BaseModel):
     p10_distance: float
     mean_bigram_distance: float
     entity_count: int
-    templated_nodes: tuple[str, ...]   # node ids with d_uni < node_flag_floor
+    templated_nodes: tuple[str, ...]  # node ids with d_uni < node_flag_floor
     node_count: int
 ```
 
@@ -526,29 +527,33 @@ The offline `PS` proxy is a stand-in for a perceptual judgment. The validation l
 @dataclass(frozen=True, slots=True)
 class HistoryEntry:
     """One prior story of the family, reduced to what similarity needs."""
+
     storybook_id: str
     version: int
     skeleton_slug: str | None
-    theme_sig: frozenset[str]        # theme_signature() of its brief + metadata.themes
+    theme_sig: frozenset[str]  # theme_signature() of its brief + metadata.themes
     created_at: datetime
+
 
 @dataclass(frozen=True, slots=True)
 class StoryNeighbor:
     storybook_id: str
     version: int
     skeleton_slug: str | None
-    theme_similarity: float          # Jaccard vs the request signature
+    theme_similarity: float  # Jaccard vs the request signature
+
 
 class DifferentiationLevel(StrEnum):
-    TREE = "tree"                    # pick a different skeleton; plenty of room
-    LEAF = "leaf"                    # cell saturated for this theme; push leaf variation
-    CATALOG = "catalog"              # even leaf room is thin; grow the catalog (WS-5/WS-8)
+    TREE = "tree"  # pick a different skeleton; plenty of room
+    LEAF = "leaf"  # cell saturated for this theme; push leaf variation
+    CATALOG = "catalog"  # even leaf room is thin; grow the catalog (WS-5/WS-8)
+
 
 @dataclass(frozen=True, slots=True)
 class SimilarityContext:
-    neighbors: tuple[StoryNeighbor, ...]     # desc by theme_similarity, capped at 10
-    cell_theme_saturation: float             # [0, 1], section 5.3
-    used_slugs: frozenset[str]               # slugs already used for similar-theme stories
+    neighbors: tuple[StoryNeighbor, ...]  # desc by theme_similarity, capped at 10
+    cell_theme_saturation: float  # [0, 1], section 5.3
+    used_slugs: frozenset[str]  # slugs already used for similar-theme stories
     similar_count_per_slug: Mapping[str, int]
     recommendation: DifferentiationLevel
 ```
@@ -562,8 +567,8 @@ def score_history(
     *,
     request_theme_sig: frozenset[str],
     history: Sequence[HistoryEntry],
-    cell_slugs: Sequence[str],                 # from candidates_for_cell(band, length, style)
-    theme_threshold: float = 0.35,             # tau_theme, calibrated like section 4
+    cell_slugs: Sequence[str],  # from candidates_for_cell(band, length, style)
+    theme_threshold: float = 0.35,  # tau_theme, calibrated like section 4
 ) -> SimilarityContext: ...
 ```
 
@@ -574,7 +579,7 @@ async def load_family_history(
     session: AsyncSession,
     family_id: uuid.UUID | None,
     *,
-    window: int = 20,                          # matches skeleton_match._RECENT_WINDOW
+    window: int = 20,  # matches skeleton_match._RECENT_WINDOW
 ) -> list[HistoryEntry]: ...
 ```
 
@@ -585,7 +590,7 @@ async def similarity_context(
     session: AsyncSession,
     *,
     family_id: uuid.UUID | None,
-    brief: Mapping[str, object],               # the request's ConceptBrief dump
+    brief: Mapping[str, object],  # the request's ConceptBrief dump
     band: str,
     length: str,
     style: str,

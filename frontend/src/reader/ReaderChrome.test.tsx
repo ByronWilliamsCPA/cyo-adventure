@@ -178,9 +178,10 @@ describe('ReaderChrome', () => {
       // A fresh mount picks up the persisted choice instead of re-deriving
       // the reduce-motion default.
       render(<ReaderChrome position={{ label: 'Page 1' }} />)
-      expect(
-        await screen.findByRole('button', { name: 'Turn sound effects on' })
-      ).toHaveAttribute('aria-pressed', 'false')
+      expect(await screen.findByRole('button', { name: 'Turn sound effects on' })).toHaveAttribute(
+        'aria-pressed',
+        'false'
+      )
     })
 
     it('plays the choice-tap sound on a click that lands on Reader.tsx-style choice markup', async () => {
@@ -240,10 +241,7 @@ describe('ReaderChrome', () => {
       // Re-rendering while still complete (e.g. a font-size change) must not
       // replay the chime.
       rerender(
-        <ReaderChrome
-          position={{ label: 'You finished this story!', complete: true }}
-          showLabel
-        />
+        <ReaderChrome position={{ label: 'You finished this story!', complete: true }} showLabel />
       )
       expect(playEndingChimeSound).toHaveBeenCalledTimes(1)
     })

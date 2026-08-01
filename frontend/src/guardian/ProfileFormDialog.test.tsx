@@ -632,7 +632,12 @@ describe('ProfileFormDialog ADR-015 G3 "Story requests" section', () => {
         time_capture_paused: true,
       }
       render(
-        <ProfileFormDialog title="Edit Robin" initial={profile} onSubmit={vi.fn()} onClose={vi.fn()} />
+        <ProfileFormDialog
+          title="Edit Robin"
+          initial={profile}
+          onSubmit={vi.fn()}
+          onClose={vi.fn()}
+        />
       )
       expect(screen.getByLabelText(/weekly reading-days ring/i)).toHaveValue('on')
       expect(screen.getByLabelText(/weekly goal/i)).toHaveValue(5)
@@ -681,7 +686,12 @@ describe('ProfileFormDialog ADR-015 G3 "Story requests" section', () => {
       const onSubmit = vi.fn().mockResolvedValue(undefined)
       const profile = { ...existingProfile(false), ring_enabled: true, ring_goal_days: 5 }
       render(
-        <ProfileFormDialog title="Edit Robin" initial={profile} onSubmit={onSubmit} onClose={vi.fn()} />
+        <ProfileFormDialog
+          title="Edit Robin"
+          initial={profile}
+          onSubmit={onSubmit}
+          onClose={vi.fn()}
+        />
       )
       await user.selectOptions(screen.getByLabelText(/weekly reading-days ring/i), 'default')
       await user.clear(screen.getByLabelText(/weekly goal/i))

@@ -236,6 +236,30 @@ describe('EndingsProgress completionOutcome (W0.3)', () => {
     expect(fetchReadingHistory).toHaveBeenCalledWith('p1')
   })
 
+  it('falls back to the fetch when a ready result is malformed', async () => {
+    // A 'ready' outcome without finite counts (stale mock, old server, a
+    // proxy mangling the body) must never render "undefined of undefined";
+    // it degrades to the same fallback as 'unavailable'.
+    const fetchReadingHistory = vi
+      .fn()
+      .mockResolvedValue([historyRow({ endings_found: 2, total_endings: 4 })])
+    render(
+      <EndingsProgress
+        profileId="p1"
+        storybookId="s1"
+        fetchReadingHistory={fetchReadingHistory}
+        completionOutcome={{
+          status: 'ready',
+          result: { is_new: true } as unknown as import('../api/readerApi').CompletionResult,
+        }}
+      />
+    )
+    expect(
+      await screen.findByText('You found ending 2 of 4! Read again to find more.')
+    ).toBeInTheDocument()
+    expect(screen.queryByText(/undefined/)).not.toBeInTheDocument()
+  })
+
   it('shows the all-found celebration when this completion reaches every ending (W1.3a)', async () => {
     const fetchReadingHistory = vi.fn().mockResolvedValue([])
     render(

@@ -359,9 +359,7 @@ describe('ProfilePickerPage story-status pill (W1.4)', () => {
 
     const tile = await screen.findByRole('link', { name: /Reader A/ })
     expect(tile).not.toHaveTextContent('new story!')
-    await waitFor(() =>
-      expect(errorSpy).toHaveBeenCalledWith('story status fetch failed', 'boom')
-    )
+    await waitFor(() => expect(errorSpy).toHaveBeenCalledWith('story status fetch failed', 'boom'))
     errorSpy.mockRestore()
   })
 

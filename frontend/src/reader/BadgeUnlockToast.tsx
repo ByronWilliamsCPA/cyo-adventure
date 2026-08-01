@@ -24,7 +24,11 @@ export interface BadgeUnlockToastProps {
   autoDismissMs?: number
 }
 
-export function BadgeUnlockToast({ badge, onDismiss, autoDismissMs = 8000 }: BadgeUnlockToastProps) {
+export function BadgeUnlockToast({
+  badge,
+  onDismiss,
+  autoDismissMs = 8000,
+}: BadgeUnlockToastProps) {
   useEffect(() => {
     if (autoDismissMs <= 0) return
     const timer = setTimeout(onDismiss, autoDismissMs)
@@ -32,7 +36,12 @@ export function BadgeUnlockToast({ badge, onDismiss, autoDismissMs = 8000 }: Bad
   }, [autoDismissMs, onDismiss])
 
   return (
-    <div className="badge-unlock-toast" role="status" aria-live="polite" data-testid="badge-unlock-toast">
+    <div
+      className="badge-unlock-toast"
+      role="status"
+      aria-live="polite"
+      data-testid="badge-unlock-toast"
+    >
       <Mascot size={48} className="badge-unlock-toast__mascot" />
       <div className="badge-unlock-toast__text">
         <p className="badge-unlock-toast__title">New badge!</p>

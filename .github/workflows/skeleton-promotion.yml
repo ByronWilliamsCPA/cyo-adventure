@@ -85,9 +85,25 @@ jobs:
           # Only added/modified (not deleted) skeleton files are proved. Fail
           # closed: if the diff cannot resolve, the prover must not be skipped.
           git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- 'skeletons/**' \
-            > changed-skeletons.txt
+            > changed-all.txt
+          # Re-proving applies to PROMOTED skeletons: shells whose mutation
+          # lineage sidecar exists. A hand-authored original has no lineage to
+          # re-prove, and demanding one blocks legitimate metadata-only edits
+          # to the curated catalog (AL-014/UW-C01; hit by the 2026-08-01
+          # valence re-tag). Sidecars themselves are covered via their shell.
+          : > changed-skeletons.txt
+          while IFS= read -r f; do
+            case "$f" in
+              *.contract.json|*.lineage.json) continue ;;
+            esac
+            if [ -f "${f%.json}.lineage.json" ]; then
+              echo "$f" >> changed-skeletons.txt
+            else
+              echo "skip (hand-authored, no lineage sidecar): $f"
+            fi
+          done < changed-all.txt
           echo "count=$(wc -l < changed-skeletons.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
-          echo "Changed skeleton files:"; cat changed-skeletons.txt
+          echo "Changed promoted skeleton files:"; cat changed-skeletons.txt
 
       - name: Re-prove changed skeletons from scratch
         if: ${{ steps.changed.outputs.count != '0' }}

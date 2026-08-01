@@ -209,6 +209,7 @@ All functions must include type hints:
 from pathlib import Path
 from typing import Optional, Any
 
+
 def process_data(
     input_path: Path,
     output_dir: Optional[Path] = None,
@@ -288,10 +289,12 @@ import pytest
 from pathlib import Path
 from cyo_adventure.core import YourModule
 
+
 def test_module_initialization():
     """Test module initializes correctly."""
     module = YourModule()
     assert module is not None
+
 
 def test_module_processes_data(tmp_path: Path):
     """Test module processes data correctly."""

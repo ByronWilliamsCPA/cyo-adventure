@@ -226,7 +226,7 @@ describe('router: kid surface', () => {
               },
             }
           : {},
-      }),
+      })
     )
     renderAt('/read/p1/s_demo/1')
     expect(await screen.findByTestId('reader')).toBeInTheDocument()

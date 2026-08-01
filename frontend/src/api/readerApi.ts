@@ -158,9 +158,7 @@ export interface CompletionResult {
  * distinguishable at the type level instead of collapsing to one falsy value.
  */
 export type CompletionOutcome =
-  | { status: 'pending' }
-  | { status: 'ready'; result: CompletionResult }
-  | { status: 'unavailable' }
+  { status: 'pending' } | { status: 'ready'; result: CompletionResult } | { status: 'unavailable' }
 
 /**
  * Fetch the server's saved reading state for cross-device resume. Returns null

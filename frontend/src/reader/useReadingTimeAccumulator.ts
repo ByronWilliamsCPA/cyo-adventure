@@ -23,7 +23,11 @@
 import { useCallback, useEffect, useRef } from 'react'
 import type { RefObject } from 'react'
 
-import { accrueReadingTime, flushAllReadingTime, type ReadingTimeApi } from '../offline/readingTimeSync'
+import {
+  accrueReadingTime,
+  flushAllReadingTime,
+  type ReadingTimeApi,
+} from '../offline/readingTimeSync'
 
 // #ASSUME: timing dependencies: 90 seconds, per the recommendation's own
 // number ("long enough for a slow reader on a long passage at the teen

@@ -54,6 +54,7 @@ dependencies = [
 ```python
 # TOML parsing
 import sys
+
 if sys.version_info >= (3, 11):
     import tomllib
 else:
@@ -95,6 +96,7 @@ The following features are **natively available** in Python 3.11+ and **do not r
   ```python
   import asyncio
 
+
   async def main():
       async with asyncio.TaskGroup() as tg:
           tg.create_task(task1())
@@ -116,6 +118,7 @@ The following features are **natively available** in Python 3.11+ and **do not r
 
   ```python
   from typing import Self
+
 
   class Builder:
       def set_value(self, value: int) -> Self:
@@ -209,6 +212,7 @@ python -c "import sys; print(f'GIL enabled: {sys._is_gil_enabled()}')"
 # Python 3.13 and earlier
 def func(x: expensive_type_check()):  # Evaluated immediately
     pass
+
 
 # Python 3.14
 def func(x: expensive_type_check()):  # Deferred until introspection
@@ -322,6 +326,7 @@ This project **requires** the `from __future__ import annotations` import when u
 ```python
 from __future__ import annotations
 
+
 def process(data: str | bytes) -> int | None:
     """This is enforced by scripts/check_type_hints.py"""
     ...
@@ -346,6 +351,7 @@ from typing import TYPE_CHECKING, Self
 if TYPE_CHECKING:
     # Import types only for type checking (avoids circular imports)
     from mypackage.models import User
+
 
 class UserManager:
     def create(self, name: str) -> Self:

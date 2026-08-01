@@ -28,6 +28,8 @@ erDiagram
     storybook ||--o{ reading_state : "read as"
     storybook_version ||--o{ reading_state : "pins version"
     child_profile ||--o{ completion : "completes"
+    child_profile ||--o{ reading_activity_day : "reads on days"
+    storybook |o--o{ story_request : "resulting storybook"
     storybook_version ||--o{ completion : "pins version"
     child_profile ||--o{ rating : "rates"
     child_profile ||--o{ storybook_assignment : "assigned to"
@@ -89,6 +91,10 @@ erDiagram
         timestamptz processing_restricted_at "NULL; GDPR Art 18/21"
         boolean real_name_ring1_enabled "default false; ADR-023 own-family real name"
         boolean real_name_ring2_enabled "default false; ADR-023 connected-family real name"
+        boolean ring_enabled "NULL; G19/K22 band default when NULL"
+        int ring_goal_days "NULL; G19/K22 1-6, band default when NULL"
+        boolean badges_enabled "default true; G19/K21"
+        boolean time_capture_paused "default false; G19/K23 server discards flushes"
     }
 
     family_connection {
@@ -202,6 +208,14 @@ erDiagram
         timestamptz found_at
     }
 
+    reading_activity_day {
+        uuid child_profile_id PK, FK
+        date activity_date PK
+        int active_seconds "CHECK >= 0; K23 day-grain only"
+        varchar(120) last_flush_id "NULL; single-slot idempotency"
+        timestamptz updated_at
+    }
+
     rating {
         uuid child_profile_id PK, FK
         varchar(120) storybook_id PK, FK
@@ -254,6 +268,7 @@ erDiagram
         uuid concept_id FK "NULL; set on approval"
         uuid series_id FK "NULL; WS-B PR3 continuation"
         varchar(120) anchor_storybook_id FK "NULL; soft-continuation source"
+        varchar(120) resulting_storybook_id FK "NULL; W0.4 stamped at publish, SET NULL on delete"
         varchar(120) proposed_series_title "NULL"
         timestamptz created_at
     }

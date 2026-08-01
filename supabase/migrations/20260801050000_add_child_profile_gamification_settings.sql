@@ -32,6 +32,11 @@ ALTER TABLE "public"."child_profile"
     ADD COLUMN IF NOT EXISTS badges_enabled BOOLEAN NOT NULL DEFAULT TRUE,
     ADD COLUMN IF NOT EXISTS time_capture_paused BOOLEAN NOT NULL DEFAULT FALSE;
 
+-- DROP-then-ADD keeps re-application idempotent, matching the FK migration
+-- pattern in 20260801000000_add_story_request_resulting_storybook_id.sql
+-- (the ADD COLUMN lines above are already IF NOT EXISTS-guarded).
+ALTER TABLE "public"."child_profile"
+    DROP CONSTRAINT IF EXISTS ck_child_profile_ring_goal_days_range;
 ALTER TABLE "public"."child_profile"
     ADD CONSTRAINT ck_child_profile_ring_goal_days_range
         CHECK (ring_goal_days IS NULL OR ring_goal_days BETWEEN 1 AND 6);

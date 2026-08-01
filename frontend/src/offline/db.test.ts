@@ -491,7 +491,7 @@ describe('reading-time day buckets (W3.3)', () => {
     expect(await getReadingTimeBucket('p_1', '2026-01-01')).toBeUndefined()
   })
 
-  it('lists only the requested profile\'s buckets', async () => {
+  it("lists only the requested profile's buckets", async () => {
     await putReadingTimeBucket({
       profileId: 'p_1',
       date: '2026-01-01',

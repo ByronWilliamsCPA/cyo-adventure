@@ -41,7 +41,11 @@ export function BadgeCase({ open, onClose, earnedBadges }: BadgeCaseProps) {
           return (
             <li
               key={entry.id}
-              className={earned ? 'badge-case__card badge-case__card--earned' : 'badge-case__card badge-case__card--locked'}
+              className={
+                earned
+                  ? 'badge-case__card badge-case__card--earned'
+                  : 'badge-case__card badge-case__card--locked'
+              }
             >
               <span className="badge-case__icon" aria-hidden="true">
                 {earned ? '🏅' : '⭐'}

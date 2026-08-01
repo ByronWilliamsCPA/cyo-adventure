@@ -249,8 +249,8 @@ conventions. Required RAD markers (mandatory per `src/cyo_adventure/CLAUDE.md`):
 async def run_leaf_diversity_check(
     *,
     session: AsyncSession,
-    storybook: Storybook,          # the db row: id, family_id
-    version_row: StorybookVersion, # blob, skeleton_slug, version
+    storybook: Storybook,  # the db row: id, family_id
+    version_row: StorybookVersion,  # blob, skeleton_slug, version
 ) -> list[Finding]:
     """Run the anti-template guard against the family's prior same-tree fill.
 
@@ -264,6 +264,7 @@ async def run_leaf_diversity_check(
         an ATG FAIL (repair targets), one story-level ADVISORY summary on
         FAIL or WARN, [] on PASS or any fail-open path.
     """
+
 
 def findings_from_anti_template(
     report: AntiTemplateReport,

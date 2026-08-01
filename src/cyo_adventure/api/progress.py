@@ -161,9 +161,7 @@ def _week_start(today: date) -> date:
     return today - timedelta(days=today.weekday())
 
 
-def _reading_day_totals(
-    rows: list[ReadingActivityDay], today: date
-) -> tuple[int, int]:
+def _reading_day_totals(rows: list[ReadingActivityDay], today: date) -> tuple[int, int]:
     """Return ``(days_read_this_week, lifetime_days_read)`` from day rows.
 
     # #ASSUME: timing dependencies: "today" is the server's current UTC date,
@@ -273,9 +271,7 @@ async def get_my_progress(
     # composer owns; keeping them separate avoids widening ProgressFacts (a
     # pure, DB-free dataclass) with DB-shaped concerns.
     profile_rows = list(
-        await session.scalars(
-            select(ChildProfile).where(ChildProfile.id == profile_id)
-        )
+        await session.scalars(select(ChildProfile).where(ChildProfile.id == profile_id))
     )
     activity_rows = list(
         await session.scalars(
@@ -285,9 +281,7 @@ async def get_my_progress(
         )
     )
     today = datetime.now(UTC).date()
-    days_read_this_week, lifetime_days_read = _reading_day_totals(
-        activity_rows, today
-    )
+    days_read_this_week, lifetime_days_read = _reading_day_totals(activity_rows, today)
 
     # #EDGE: external resources: profile_row can only be None if the child's
     # own profile row vanished between token verification and this query (a

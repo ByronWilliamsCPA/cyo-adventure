@@ -368,13 +368,14 @@ event through `events/writer.py`:
 ```python
 @dataclass(frozen=True, slots=True)
 class SaturationReading:
-    band: str          # validated AgeBand member
-    length: str        # validated length member
-    style: str         # validated style member
-    catalog_events: int      # CATALOG-level events in the window
-    leaf_events: int         # LEAF-level events in the window (context only)
-    distinct_requests: int   # distinct request anchors behind catalog_events
+    band: str  # validated AgeBand member
+    length: str  # validated length member
+    style: str  # validated style member
+    catalog_events: int  # CATALOG-level events in the window
+    leaf_events: int  # LEAF-level events in the window (context only)
+    distinct_requests: int  # distinct request anchors behind catalog_events
     window_days: int
+
 
 def saturated_cells(
     readings: Sequence[SaturationReading],
@@ -679,7 +680,7 @@ contract):
 
 ```python
 class LineageV2(BaseModel):
-    lineage_version: int          # 2
+    lineage_version: int  # 2
     origin: Literal["mutation", "fresh", "composed"]
     mutant_slug: str
     # origin == "mutation": exactly the v1 fields
@@ -688,7 +689,7 @@ class LineageV2(BaseModel):
     donor_slugs: list[str]
     op_chain: list[OpChainEntry]  # empty permitted only for origin != "mutation"
     # origin == "fresh" (WS-6): the generation provenance instead
-    generator: str | None         # e.g. "ws6:<pipeline-version>"
+    generator: str | None  # e.g. "ws6:<pipeline-version>"
     generation_params_sha256: str | None
     created_at: str
     tool_version: str

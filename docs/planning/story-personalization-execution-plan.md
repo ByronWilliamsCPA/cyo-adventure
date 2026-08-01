@@ -320,7 +320,9 @@ git commit -S -m "feat(covers): strip personalization sentinels from cover-art p
 ```python
 def test_book_title_strips_sentinels() -> None:
     token = wrap("HERO", "Explorer")
-    assert _book_title({"title": f"{token} and the Map"}, "sb-1") == "Explorer and the Map"
+    assert (
+        _book_title({"title": f"{token} and the Map"}, "sb-1") == "Explorer and the Map"
+    )
 ```
 
 - [ ] **Step 2: run, expect FAIL.**
@@ -342,7 +344,8 @@ def test_book_title_strips_sentinels() -> None:
 - [ ] **Step 1: failing tests**
 
 ```python
-def test_library_item_title_is_stripped(): ...   # same shape as A3
+def test_library_item_title_is_stripped(): ...  # same shape as A3
+
 
 async def test_version_endpoint_returns_blob_verbatim(client, seeded_sentinel_book):
     # GET /api/v1/storybooks/{id}/versions/{v} is the artifact the client

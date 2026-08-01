@@ -19,7 +19,10 @@ export interface KidNavProps {
 // preference" rather than throwing, matching Reader.tsx's own guard for the
 // identical media query.
 function prefersReducedMotionOS(): boolean {
-  return typeof window !== 'undefined' && Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)
+  return (
+    typeof window !== 'undefined' &&
+    Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)
+  )
 }
 
 /**

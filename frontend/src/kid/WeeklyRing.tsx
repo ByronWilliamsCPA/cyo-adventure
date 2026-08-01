@@ -61,7 +61,11 @@ function hasCelebratedThisWeek(profileId: string, weekOf: string): boolean {
  * deliberately never calls setState -- `WeeklyRing` derives `shouldCelebrate`
  * straight from `hasCelebratedThisWeek` during render instead, so there is
  * no derived-state effect to trigger a cascading re-render. */
-function useRecordWeeklyCelebration(profileId: string, weekOf: string, shouldCelebrate: boolean): void {
+function useRecordWeeklyCelebration(
+  profileId: string,
+  weekOf: string,
+  shouldCelebrate: boolean
+): void {
   useEffect(() => {
     if (!shouldCelebrate) return
     try {
@@ -106,11 +110,7 @@ export function WeeklyRing({
 
   return (
     <div
-      className={
-        celebrate && !reduceMotion
-          ? 'weekly-ring weekly-ring--celebrate'
-          : 'weekly-ring'
-      }
+      className={celebrate && !reduceMotion ? 'weekly-ring weekly-ring--celebrate' : 'weekly-ring'}
       data-testid="weekly-ring"
       role="img"
       aria-label={

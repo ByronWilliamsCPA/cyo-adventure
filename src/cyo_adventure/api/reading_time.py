@@ -209,9 +209,7 @@ async def flush_reading_time(
     profile = await session.get(ChildProfile, profile_id)
     row = await session.get(ReadingActivityDay, (profile_id, body.date))
     if profile is not None and profile.time_capture_paused:
-        _logger.info(
-            "reading_time_flush_discarded_paused", profile_id=str(profile_id)
-        )
+        _logger.info("reading_time_flush_discarded_paused", profile_id=str(profile_id))
         if row is not None:
             return _to_view(row)
         return ReadingActivityDayView(

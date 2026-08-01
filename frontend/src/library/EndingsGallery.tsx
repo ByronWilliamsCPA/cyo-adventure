@@ -64,7 +64,10 @@ export function EndingsGallery({
         ) : null}
         <ul className="endings-gallery__grid">
           {foundEndings.map((ending) => (
-            <li key={ending.ending_id} className="endings-gallery__card endings-gallery__card--found">
+            <li
+              key={ending.ending_id}
+              className="endings-gallery__card endings-gallery__card--found"
+            >
               <span className="endings-gallery__icon" aria-hidden="true">
                 {endingIcon(ending.valence)}
               </span>

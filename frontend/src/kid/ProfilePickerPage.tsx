@@ -92,9 +92,7 @@ export function ProfilePickerPage() {
   // #VERIFY: a failure here degrades silently to "no pills shown" (see the
   // effect below), matching RequestStory.tsx's own background-refresh
   // posture, rather than surfacing a scary error for a decorative signal.
-  const [newStoryProfileIds, setNewStoryProfileIds] = useState<
-    ReadonlySet<string>
-  >(new Set())
+  const [newStoryProfileIds, setNewStoryProfileIds] = useState<ReadonlySet<string>>(new Set())
   // UX-K8: which pin-less tile is mid-mint, so the tap has visible feedback
   // (tile pulse + "Opening your books…") instead of a dead second on a slow
   // connection. Latched like pickInFlightRef: every pick path ends in
@@ -285,9 +283,7 @@ export function ProfilePickerPage() {
         const statuses = await storyStatusApi.list()
         if (!cancelled) {
           setNewStoryProfileIds(
-            new Set(
-              statuses.filter((s) => s.has_new_story).map((s) => s.profile_id)
-            )
+            new Set(statuses.filter((s) => s.has_new_story).map((s) => s.profile_id))
           )
         }
       } catch (err) {

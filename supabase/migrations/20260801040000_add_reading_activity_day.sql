@@ -61,5 +61,12 @@ DROP POLICY IF EXISTS service_rw ON "public"."reading_activity_day";
 CREATE POLICY service_rw ON "public"."reading_activity_day"
   FOR ALL TO cyo_api, cyo_worker USING (true) WITH CHECK (true);
 
+-- RLS policies gate rows only once the GRANT layer admits the role at all;
+-- both service roles need the table-level grants too (the omission fails
+-- tests/integration/test_rls_service_roles.py::
+-- test_every_rls_table_grants_both_service_roles).
+GRANT SELECT, INSERT, UPDATE, DELETE ON
+  "public"."reading_activity_day" TO cyo_api, cyo_worker;
+
 -- Forward-only migration per this project's Supabase CLI convention
 -- (ADR-012); no down script.
