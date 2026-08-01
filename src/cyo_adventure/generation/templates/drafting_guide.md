@@ -13,7 +13,7 @@ source: "docs/planning/tech-spec.md sections Authoring Pipeline, Validation Gate
 
 # Story Drafting Guide
 
-> **Status**: Draft | **Version**: 0.1 | **Updated**: 2026-06-20
+> **Status**: Draft | **Version**: 0.2 | **Updated**: 2026-08-01
 
 ## Purpose
 
@@ -32,9 +32,18 @@ ranges:
 
 | Age band | Tier | Target node count | Max branch depth |
 |----------|------|-------------------|------------------|
+| 3-5 | 1 (branching only) | 8-20 nodes | 4 levels |
+| 5-8 | 1 (branching only) | 12-30 nodes | 6 levels |
 | 8-11 | 1 (branching only) | 15-30 nodes | 6 levels |
 | 10-13 | 1 or 2 | 25-50 nodes | 8 levels |
 | 13-16 | 1 or 2 | 30-60 nodes | 10 levels |
+| 16+ | 1 or 2 | 30-60 nodes | 12 levels |
+
+These band-level ranges are `validator/band_profile.py`'s `_PROFILES` table (the floor/ceiling the
+gate enforces when a story is not scale-classified into an ADR-011 length/style cell). A
+scale-classified story instead uses the narrower per-cell envelope from `_PRODUCTION_CELLS`
+(ADR-011 section 5's master cell table, for example `8-11`/`short`/`prose` is 60-100 nodes, not the
+band-level 15-30); consult that table directly when drafting to a declared length tier.
 
 "Node count" is the total number of `Node` records in the story, including all endings.
 "Branch depth" is the longest path from `start_node` to any ending node, measured in
@@ -94,16 +103,21 @@ because the LLM runs out of distinctive beats.
 
 ## Voice, Tense, and Perspective
 
-All story prose is written in **second person, present tense**:
+**Second person, present tense, is the POV standard for every band, `3-5` through `16+`, with no
+per-band exception.** This was ratified as decision D14 (design review section 8,
+2026-08-01): "second person is the standard for all bands." There is no band where third person is
+correct; a prior reading of this guide that implied otherwise for the young bands was never policy,
+it was drift between the guide and an un-audited corpus (design review section 2.2).
 
 > You push open the heavy door. The corridor stretches ahead, lit by a single lantern
 > hanging from the ceiling. To your left, a narrow staircase leads upward. To your right,
 > water drips from a stone alcove.
 
-Rules:
+Rules, all bands:
 
 - Address the reader as "you," never "the protagonist" or a character name in body text
-  (the protagonist name belongs in the concept brief only).
+  (the protagonist name belongs in the concept brief only, and is the hook a
+  `personalizable` HERO slot binds to, where a skeleton declares one).
 - Use present tense throughout, including flashbacks described as memories ("you remember
   the day you first...").
 - Choice labels use the imperative or a description of the action ("Open the door" or
@@ -111,23 +125,66 @@ Rules:
 - Endings state what happens, do not ask what the reader wants to do next. Ending nodes
   have `is_ending: true` and zero choices.
 
+**At 3-5**, the prose is read aloud by an adult, not decoded silently by the child; "you" still
+addresses the child directly, present tense narrates what is happening to them right now, in the
+story. Do not soften second person to a named third-person character to make the read-aloud voice
+easier: "you" is what makes the story theirs, and read-aloud delivery does not require narrating
+distance (design review sections 2.2 and 2.6).
+
+**Enforcement**: this guide is prompt-side guidance only, as of this revision. A fill-gate check
+that measures second-person density (the design review's own audit measured 15-57 "you" per 1,000
+words in compliant books versus 0-6.6 in the third-person kid-band corpus) and rejects an
+out-of-spec fill is a separate, later work item (`W2.1` in the kid-appeal implementation plan) and
+is not active yet. Until it lands, follow this rule directly; do not treat the absence of an
+automated gate as license to draft in third person.
+
+**Existing catalog**: the 3-5/5-8/8-11 skeletons filled before 2026-08-01 are third person and are
+grandfathered under decision D11: they stay readable, but a cell stops offering them for new
+generation once a compliant (second-person) skeleton exists for that cell. They are not a style
+reference for new fills.
+
 ---
 
 ## Age-Band Reading Levels
 
-The `reading_level_target` field in the concept brief sets the Flesch-Kincaid grade target.
-The validator checks against this target with the `tolerance` defined in the story metadata
-(advisory warning only; the parent makes the final call).
+The `reading_level_target` field in the concept brief sets the Flesch-Kincaid grade target. The
+validator checks against this target with the `tolerance` defined in the story metadata (advisory
+warning only; the parent makes the final call).
 
-| Age band | FK grade target | Guidance |
-|----------|----------------|----------|
-| 8-11 | 3.0 to 4.5 | Short sentences (10-14 words average). Simple vocabulary. One idea per sentence. Concrete imagery. |
-| 10-13 | 5.0 to 7.0 | Moderate sentence length (14-18 words average). Can introduce unfamiliar words if context makes them clear. |
-| 13-16 | 7.0 to 9.5 | Longer sentences acceptable. Figurative language, irony, and ambiguous outcomes are age-appropriate. |
+| Age band | FK grade target | Target +/- tolerance | Guidance |
+|----------|-----------------:|------------------------|----------|
+| 3-5 | 1.0 | 0.0 to 2.0 | Very short, rhythmic sentences; heavy repetition. See "Craft for Delight" below: draft for the read-aloud ear before this window. |
+| 5-8 | 2.0 | 1.0 to 3.0 | Short, simple sentences. Familiar vocabulary. One idea per sentence. |
+| 8-11 | 4.0 | 3.0 to 5.0 | Short sentences (10-14 words average). Simple vocabulary. One idea per sentence. Concrete imagery. |
+| 10-13 | 6.0 | 5.0 to 7.0 | Moderate sentence length (14-18 words average). Can introduce unfamiliar words if context makes them clear. |
+| 13-16 | 8.0 | 7.0 to 9.0 | Longer sentences acceptable. Figurative language, irony, and ambiguous outcomes are age-appropriate. |
+| 16+ | 10.0 | 9.0 to 11.0 | Full adult sentence variety. Figurative language, irony, moral ambiguity, and gamebook terseness (in the `gamebook` style) are all in bounds. |
 
-Node body length: aim for 80-150 words per node for the 8-11 band, 100-200 words for the
-10-13 band, and 120-250 words for the 13-16 band. Longer bodies push the FK grade up and
-slow the reading experience; shorter bodies leave the story feeling sparse.
+Targets are `story_requests/brief.py`'s `_BAND_FK_TARGET` table (the FK-target source of record
+used when a child's `reading_level_cap` is unset); the tolerance window applies
+`storybook/models.py`'s `ReadingLevel.tolerance` default of `1.0`. See "Craft for Delight" below
+for why the 3-5 window should not be drafted to as a literal, line-by-line target.
+
+### Node body length
+
+Node body length is governed by `validator/band_profile.py`'s words-per-node envelope (ADR-011
+section 3): a story-level **mean**, checked as an advisory warning, plus a hard per-node **max**,
+checked as an error. There is no hard per-node minimum: a one-line beat is legitimate.
+
+| Age band | Style | Mean words/node | Advisory band | Per-node max |
+|----------|-------|------------------:|-----------------|---------------:|
+| 3-5 | prose | 40 | 28-55 | 90 |
+| 5-8 | prose | 70 | 50-95 | 155 |
+| 8-11 | prose | 100 | 70-135 | 220 |
+| 10-13 | prose | 100 | 70-135 | 220 |
+| 13-16 | prose | 140 | 100-185 | 310 |
+| 13-16 | gamebook | 65 | 45-90 | 145 |
+| 16+ | prose | 175 | 125-230 | 385 |
+| 16+ | gamebook | 80 | 55-110 | 175 |
+
+Aim for the advisory band as a story-wide average, not a per-node rule: a tense beat can run three
+words, a setup node can legitimately run to the per-node max. Longer bodies push the FK grade up
+and slow the reading experience; shorter bodies leave the story feeling sparse.
 
 ---
 
@@ -212,6 +269,86 @@ mechanically happened (`success`, `setback`, `death`, `capture`, `completion`,
 `discovery`), and `valence`, how it feels (`positive`, `neutral`, `negative`). Both are
 required on every ending block. Choose the pair that best matches the outcome so the
 parent reviewer gets a quick read on each ending.
+
+---
+
+## Craft for Delight
+
+Every section above this one is a constraint: a budget, a depth limit, a schema shape, what not to
+change. This section is the positive half. Nothing here is enforced by the validator; it is
+directed at the LLM and at a human author, and the kid-appeal design review found that a pipeline
+optimized only for the sections above produces prose that is safe, on-budget, and flat (design
+review section 2.4). Follow this section with the same seriousness as the budgets.
+
+**A memorable recurring image.** Give every story one concrete, sensory image the reader meets
+early and meets again, changed, before the story ends: a lantern that burns a different color the
+second time, a paper boat that keeps returning, a nervous laugh that becomes a brave one. Choose it
+at the concept-brief stage and thread it through every stage after. A recurring image is what a
+child describes to a parent afterward ("the story with the boat"), not "chapter 3."
+
+**A laugh per chapter or scene, at the young bands.** At `3-5`, `5-8`, and `8-11`, aim for at least
+one moment of real, age-appropriate humor per chapter or major scene, plus one warm surprise (a
+friendly reveal, an unexpected kindness, a small joke that pays off later). The generation pipeline
+has no lever for this today except prose choices; reach for the humor and wonder variation axes in
+`generation/variation.py` (`running_joke`, `awestruck_wonder`, `playful_figurative`,
+`mischievous_narrator`) so a given story can lean toward funny or wondrous rather than defaulting
+every story to sincere and safe.
+
+**Sensory specificity native to the theme's world.** Generic sensory description ("it was cold,"
+"the room smelled strange") reads as filler. Ground every scene in the sensory texture specific to
+its setting and genre: a cave story smells of wet stone and bat guano, not "spooky"; a bakery story
+smells of butter and scorched sugar, not "yummy." Pull the concrete, world-native detail from the
+concept brief's `premise` and `themes_allowed` rather than reaching for a generic descriptor.
+
+**A strong last line, on every ending.** The final sentence of an ending node is the last thing the
+reader hears before the celebration screen. It should land as a complete beat, not trail off: name
+the outcome's feeling, not only its fact. Compare "You made it home safely." (flat) to "You made it
+home, and the porch light was already on, like someone knew you were coming." (lands).
+
+**Every choice acknowledged in the immediately following prose.** This is the fill-gate rule from
+ADR-011 section 10's cross-cutting rules (companion to the grammar table below), grounded in Fendt,
+Harrison, Ware, Cardona-Rivera and Roberts (ICIDS 2012): felt agency comes from the acknowledgment,
+not from the branch existing at all. The very first line after a choice must visibly register that
+specific pick, even a "flavor" choice with no mechanical consequence. Not yet automated in this
+pipeline as of this revision; hold the rule as you draft.
+
+**At 3-5, rhythm and repetition beat Flesch-Kincaid compliance.** The 3-5 FK window (see the table
+above) is the tightest of any band and, taken as a line-by-line target, produces choppy staccato
+prose ("Clover is a little kitten. She sat in a sunny garden."). 3-5 prose is read *aloud* by an
+adult, not decoded silently by the child; real picture-book prose favors longer rhythmic sentences,
+repetition, refrain, and page-turn hooks over short declarative sentences (design review section
+2.8). Draft for the ear first and treat the FK window as a loose ceiling, not a sentence-by-sentence
+rule: a repeated refrain can push the mechanical grade up while making the passage easier, not
+harder, for a 3- or 4-year-old to follow aloud.
+
+### Per-band choice grammar (ADR-011 section 10)
+
+Adopted 2026-08-01 as decision D15, companion to ADR-026's rendered-stop flow. A "stop" is one
+rendered page the child lands on: a single node at `3-5`/`5-8`, a flowed multi-node passage from
+`8-11` up.
+
+| Band | Presentation | Choice cadence | Max choiceless stops in a row | Flavor vs consequential | Options per choice | Words per stop |
+|------|--------------|-----------------|--------------------------------:|----------------------------|-----------------------|-------------------|
+| 3-5 | discrete pages | every 2nd-4th page; scaffold interaction (predict, point, answer) elsewhere | 2-3 | ~90/10; consequences immediate and visible; reconvergence free | 2 | 10-40 |
+| 5-8 | discrete pages | every 1st-2nd page | 2 | ~70/30; same-scene payoff | 2-3 | 30-70 |
+| 8-11 | flowed prose | every stop ends in a choice | 1, prefer 0 | ~50/50; state-gated consequences begin, with a visible "noticed" cue | 3 | 60-135 |
+| 10-13 | flowed prose | every stop ends in a choice | 0-1 | ~40/60; delayed, cross-scene consequences; distinct targets | 3 | 80-150 |
+| 13-16 | flowed prose | every stop ends in a choice | 0-1 | ~30/70; consequence foreshadowed | 3-4 | 100-200 |
+| 16+ | flowed prose | every stop ends in a choice | 0-1 | ~30/70; gamebook lethality per the section 5 shape | 3-4 | 100-230 |
+
+Cross-cutting rules, all bands (ADR-011 section 10):
+
+- Every choice is acknowledged in the immediately following prose (see above).
+- Every interaction is story-congruent; none is decorative (Takacs, Swart and Bus 2015).
+- From `8-11` up, design for replay detection of reconvergence: differing acknowledgment lines,
+  visible state, so a re-read notices its own echo.
+- Scaffold interactions at `3-5` (predict/answer beats that are not plot forks) are the approved
+  mechanism for choiceless pages; they need a schema minor and their own prompt support, not yet
+  shipped as of this revision.
+
+This table governs **new** content under decision D15; it is not yet a validator hard rule
+(enforcement lands per the kid-appeal implementation plan's `W2.1`). Grandfathered skeletons
+authored before 2026-08-01 do not conform and are not a style reference.
 
 ---
 
