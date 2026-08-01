@@ -37,6 +37,64 @@ export function Finding({ finding }: { finding: FindingView }) {
   )
 }
 
+/**
+ * A ranked/structural/low-advisory finding (Stage B3, design doc 2.6): the
+ * same badge/category/message as `Finding` above, plus a severity pill when
+ * present and an on-demand node drill-down. The finding's affected nodes
+ * (`node_ids` when the merge stage fanned it across several, falling back to
+ * the single `node_id` otherwise) stay collapsed behind a <details> so the
+ * ranked list itself stays scannable; expanding it offers a jump-to-passage
+ * button per node that resolves in the current read-through.
+ */
+export function RankedFinding({
+  finding,
+  onJump,
+  knownIds,
+}: {
+  finding: FindingView
+  onJump: (nodeId: string) => void
+  knownIds: Set<string>
+}) {
+  const nodeIds =
+    finding.node_ids && finding.node_ids.length > 0
+      ? finding.node_ids
+      : finding.node_id !== null && finding.node_id !== undefined
+        ? [finding.node_id]
+        : []
+  return (
+    <li className="review-finding review-finding--ranked">
+      <FlagBadge tone={verdictTone(finding.verdict)} />
+      {finding.severity ? (
+        <span className={`review-finding__severity review-finding__severity--${finding.severity}`}>
+          {finding.severity}
+        </span>
+      ) : null}
+      <span className="review-finding__category">{finding.concern ?? finding.category}</span>
+      <span className="review-finding__message">{finding.message}</span>
+      {nodeIds.length > 0 ? (
+        <details className="review-finding__nodes">
+          <summary>
+            {nodeIds.length} affected node{nodeIds.length === 1 ? '' : 's'}
+          </summary>
+          <ul>
+            {nodeIds.map((nodeId) => (
+              <li key={nodeId}>
+                {knownIds.has(nodeId) ? (
+                  <button type="button" className="review-jump" onClick={() => onJump(nodeId)}>
+                    {nodeId}
+                  </button>
+                ) : (
+                  <span className="cyo-text-muted">{nodeId}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </details>
+      ) : null}
+    </li>
+  )
+}
+
 export interface PassageProps {
   node: StoryNodeView
   isStart: boolean

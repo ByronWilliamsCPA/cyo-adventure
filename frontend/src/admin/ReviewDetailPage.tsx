@@ -10,7 +10,7 @@ import { makeCoverApi } from '../guardian/coverApi'
 import { makeRescreenApi, type BookVerdictView } from './rescreenApi'
 import { FlagBadge } from '../guardian/FlagBadge'
 import { makePassageEditApi } from '../guardian/passageEditApi'
-import { Finding, passageDomId, Passage } from '../guardian/ReviewPassage'
+import { Finding, passageDomId, Passage, RankedFinding } from '../guardian/ReviewPassage'
 import { makeReviewApi, type ReviewSurface, type Visibility } from '../guardian/reviewApi'
 import { StoryStructureSummary } from '../guardian/StoryStructureSummary'
 import { usePassageEdit } from '../guardian/usePassageEdit'
@@ -292,6 +292,14 @@ export function ReviewDetailPage() {
     ...surface.flagged_passages.flatMap((passage) => passage.findings),
     ...surface.story_level_findings,
   ]
+  // Stage B3 additive fields (design doc 2.6): default to [] so an older
+  // backend response or a pre-Stage-B stored report (which projects these as
+  // empty, per test_build_review_surface_new_buckets_degrade_on_legacy_report)
+  // renders none of the new sections rather than throwing on `undefined`.
+  const rankedFindings = surface.ranked_findings ?? []
+  const structuralFindings = surface.structural_findings ?? []
+  const lowAdvisoryFindings = surface.low_advisory_findings ?? []
+  const validatorFindings = surface.validator_findings ?? []
   const title =
     typeof surface.blob.title === 'string' && surface.blob.title
       ? surface.blob.title
@@ -457,6 +465,99 @@ export function ReviewDetailPage() {
             {surface.story_level_findings.map((finding, index) => (
               // Findings are static per render; index key is stable here.
               <Finding key={index} finding={finding} />
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {/*
+        Stage B3 (design doc 2.6): the merged findings ranked by
+        (verdict, severity, affected-node-count, stable tiebreak), with
+        structural findings split into their own block and low-ADVISORY
+        findings collapsed behind a toggle. All four buckets default empty on
+        an older backend response or a pre-Stage-B stored report, so this
+        renders nothing extra in that case; the pre-existing "Flagged
+        passages" / "Story-level notes" sections above are unchanged.
+      */}
+      {rankedFindings.length > 0 ? (
+        <div className="review-group" id="ranked-findings">
+          <h2>Ranked findings</h2>
+          <ul className="review-findings review-findings--ranked">
+            {rankedFindings.map((finding, index) => (
+              // Findings are static per render; index key is stable here.
+              <RankedFinding
+                key={index}
+                finding={finding}
+                onJump={jumpToPassage}
+                knownIds={readThrough.knownIds}
+              />
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {structuralFindings.length > 0 ? (
+        <div className="review-group" id="structural-findings">
+          <h2>Structural findings</h2>
+          <ul className="review-findings review-findings--ranked">
+            {structuralFindings.map((finding, index) => (
+              // Findings are static per render; index key is stable here.
+              <RankedFinding
+                key={index}
+                finding={finding}
+                onJump={jumpToPassage}
+                knownIds={readThrough.knownIds}
+              />
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {lowAdvisoryFindings.length > 0 ? (
+        <details className="review-group" id="low-advisory-findings">
+          <summary>Low-priority advisories ({lowAdvisoryFindings.length})</summary>
+          <ul className="review-findings review-findings--ranked">
+            {lowAdvisoryFindings.map((finding, index) => (
+              // Findings are static per render; index key is stable here.
+              <RankedFinding
+                key={index}
+                finding={finding}
+                onJump={jumpToPassage}
+                knownIds={readThrough.knownIds}
+              />
+            ))}
+          </ul>
+        </details>
+      ) : null}
+
+      {validatorFindings.length > 0 ? (
+        <div className="review-group" id="validator-findings">
+          <h2>Validator findings</h2>
+          <p className="cyo-text-muted">
+            Read-only projections from the deterministic validation gate (reading level and
+            words-per-node); these never gate approval.
+          </p>
+          <ul className="review-findings">
+            {validatorFindings.map((finding, index) => (
+              // Findings are static per render; index key is stable here.
+              <li key={index} className="review-finding">
+                <span className="review-finding__category">{finding.rule_id}</span>
+                <span
+                  className={`review-finding__severity review-finding__severity--${finding.severity}`}
+                >
+                  {finding.severity}
+                </span>
+                <span className="review-finding__message">{finding.message}</span>
+                {finding.node_id !== null && readThrough.knownIds.has(finding.node_id) ? (
+                  <button
+                    type="button"
+                    className="review-jump"
+                    onClick={() => jumpToPassage(finding.node_id as string)}
+                  >
+                    Show in story
+                  </button>
+                ) : null}
+              </li>
             ))}
           </ul>
         </div>

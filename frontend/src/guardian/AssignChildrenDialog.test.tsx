@@ -158,6 +158,39 @@ describe('AssignChildrenDialog', () => {
     expect(screen.getByText('slightly disjoint')).toBeInTheDocument()
   })
 
+  it('renders the Stage B3 concern, severity, and passage-count fields without leaking node ids', async () => {
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/content-summary')) {
+        return Promise.resolve({
+          data: {
+            ...CONTENT_SUMMARY,
+            findings: [
+              {
+                category: 'safety',
+                verdict: 'flag',
+                message: 'mild peril',
+                concern: 'violence',
+                severity: 'medium',
+                node_count: 3,
+              },
+            ],
+          },
+        })
+      }
+      if (url.includes('/versions/')) return Promise.resolve({ data: STORY_BLOB })
+      if (url.includes('/assignments'))
+        return Promise.resolve({ data: { storybook_id: 's1', profile_ids: ['p1'] } })
+      return Promise.resolve({ data: PROFILES })
+    })
+    render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
+    expect(await screen.findByText('violence')).toBeInTheDocument()
+    expect(screen.getByText('medium')).toBeInTheDocument()
+    expect(screen.getByText('mild peril')).toBeInTheDocument()
+    expect(screen.getByText('3 passages')).toBeInTheDocument()
+    // The guardian surface must never leak a node id or per-node prose.
+    expect(screen.queryByText(/n_gate|n_vault|n_hallway/)).not.toBeInTheDocument()
+  })
+
   it('still renders the assign list and a review-unavailable notice when the content summary fails', async () => {
     mockGet.mockImplementation((url: string) => {
       if (url.includes('/content-summary')) return Promise.reject(new Error('down'))

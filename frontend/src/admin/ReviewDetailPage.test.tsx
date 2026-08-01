@@ -230,6 +230,127 @@ describe('ReviewDetailPage', () => {
     expect(screen.getByText(/The path forked/)).toBeInTheDocument()
   })
 
+  describe('Stage B3 decision surfaces (design doc 2.6)', () => {
+    it('renders ranked findings with a severity pill and an on-demand node drill-down', async () => {
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          ranked_findings: [
+            {
+              stage: 1,
+              source: 'llm_safety',
+              category: 'safety',
+              node_id: 'n1',
+              verdict: 'block',
+              score: null,
+              message: 'graphic violence',
+              severity: 'high',
+              node_ids: ['n1', 'n2'],
+              structural: false,
+              concern: 'violence',
+            },
+          ],
+        },
+      })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'Ranked findings' })
+      expect(screen.getByText('graphic violence')).toBeInTheDocument()
+      expect(screen.getByText('violence')).toBeInTheDocument()
+      expect(screen.getByText('high')).toBeInTheDocument()
+      // The affected nodes stay collapsed behind a <details> until expanded.
+      const user = userEvent.setup()
+      await user.click(screen.getByText('2 affected nodes'))
+      expect(screen.getByRole('button', { name: 'n1' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'n2' })).toBeInTheDocument()
+    })
+
+    it('splits structural findings into their own block', async () => {
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          structural_findings: [
+            {
+              stage: 1,
+              source: 'pipeline',
+              category: 'topology',
+              node_id: 'n1',
+              verdict: 'flag',
+              score: null,
+              message: 'unreachable ending',
+              severity: 'medium',
+              node_ids: null,
+              structural: true,
+              concern: null,
+            },
+          ],
+        },
+      })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'Structural findings' })
+      expect(screen.getByText('unreachable ending')).toBeInTheDocument()
+    })
+
+    it('collapses low-priority advisories behind a toggle', async () => {
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          low_advisory_findings: [
+            {
+              stage: 1,
+              source: 'llm_engagement',
+              category: 'pacing',
+              node_id: 'n2',
+              verdict: 'advisory',
+              score: null,
+              message: 'slow middle section',
+              severity: 'low',
+              node_ids: null,
+              structural: false,
+              concern: null,
+            },
+          ],
+        },
+      })
+      renderAt('s1')
+      const toggle = await screen.findByText('Low-priority advisories (1)')
+      // Collapsed by default (no `open` attribute on the <details>).
+      const details = toggle.closest('details')
+      expect(details).not.toBeNull()
+      expect(details).not.toHaveAttribute('open')
+      const user = userEvent.setup()
+      await user.click(toggle)
+      expect(screen.getByText('slow middle section')).toBeInTheDocument()
+    })
+
+    it('projects validator findings read-only from the stored validation report', async () => {
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          validator_findings: [
+            { rule_id: 'RL-13', severity: 'warning', node_id: 'n1', message: 'reading level high' },
+            { rule_id: 'PL-19', severity: 'error', node_id: null, message: 'story mean too long' },
+          ],
+        },
+      })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'Validator findings' })
+      expect(screen.getByText('RL-13')).toBeInTheDocument()
+      expect(screen.getByText('reading level high')).toBeInTheDocument()
+      expect(screen.getByText('PL-19')).toBeInTheDocument()
+      expect(screen.getByText('story mean too long')).toBeInTheDocument()
+    })
+
+    it('renders none of the new sections when the backend has not sent the additive fields', async () => {
+      mockGet.mockResolvedValue({ data: SURFACE })
+      renderAt('s1')
+      await screen.findByText('possibly scary')
+      expect(screen.queryByRole('heading', { name: 'Ranked findings' })).not.toBeInTheDocument()
+      expect(screen.queryByRole('heading', { name: 'Structural findings' })).not.toBeInTheDocument()
+      expect(screen.queryByText(/Low-priority advisories/)).not.toBeInTheDocument()
+      expect(screen.queryByRole('heading', { name: 'Validator findings' })).not.toBeInTheDocument()
+    })
+  })
+
   it('renders sentinels visibly for the reviewer', async () => {
     // ADR-023 section 10: markers are shown DELIBERATELY in review and never in
     // the reader. This asserts the negative, that the admin surface does not

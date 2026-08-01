@@ -8,7 +8,7 @@
 
 import type { AxiosInstance } from 'axios'
 
-import type { ContentFlags, FindingVerdict, ReviewSummary } from './reviewApi'
+import type { ContentFlags, FindingSeverity, FindingVerdict, ReviewSummary } from './reviewApi'
 
 export interface AssignmentList {
   storybook_id: string
@@ -19,6 +19,14 @@ export interface ContentFinding {
   category: string
   verdict: FindingVerdict
   message: string
+  // Additive (Stage B3, design doc 2.6): the merged concern list's per-row
+  // signal. concern/severity mirror FindingView's own fields (null on a
+  // pre-Stage-B report or an unconcerned category-only finding). node_count
+  // is a COUNT of affected nodes, never a node id (guardian must never see
+  // per-node detail).
+  concern?: string | null
+  severity?: FindingSeverity | null
+  node_count?: number
 }
 
 export interface ContentSummary {

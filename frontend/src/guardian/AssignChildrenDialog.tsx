@@ -53,16 +53,36 @@ function ContentSummarySection({ summary }: { summary: ContentSummary }) {
       {summary.findings.length > 0 ? (
         <ul className="assign__findings">
           {summary.findings.map((finding) => (
-            // Content-derived key: story-level findings are distinct by
-            // (category, verdict, message), so this stays stable if the list
-            // is ever reordered or spliced, unlike an array index.
+            // Content-derived key: the merged concern list is distinct by
+            // (concern-or-category, severity, verdict, message), matching
+            // the backend's own merge key (review_surface.py::
+            // _guardian_group_key), so this stays stable if the list is ever
+            // reordered or spliced, unlike an array index.
             <li
-              key={`${finding.category}-${finding.verdict}-${finding.message}`}
+              key={`${finding.concern ?? finding.category}-${finding.severity ?? ''}-${finding.verdict}-${finding.message}`}
               className="review-finding"
             >
               <FlagBadge tone={verdictTone(finding.verdict)} />
-              <span className="review-finding__category">{finding.category}</span>
+              {/* Stage B3 (design doc 2.6): severity pill when the merge
+                  stage assigned one; absent on a pre-Stage-B report. */}
+              {finding.severity ? (
+                <span
+                  className={`review-finding__severity review-finding__severity--${finding.severity}`}
+                >
+                  {finding.severity}
+                </span>
+              ) : null}
+              <span className="review-finding__category">
+                {finding.concern ?? finding.category}
+              </span>
               <span className="review-finding__message">{finding.message}</span>
+              {/* node_count is a COUNT only, never a node id or passage: the
+                  guardian must never see per-node detail (invariant 4). */}
+              {finding.node_count !== undefined && finding.node_count > 1 ? (
+                <span className="review-finding__node-count cyo-text-muted">
+                  {finding.node_count} passages
+                </span>
+              ) : null}
             </li>
           ))}
         </ul>

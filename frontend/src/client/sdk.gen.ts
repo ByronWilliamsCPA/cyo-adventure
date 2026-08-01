@@ -931,8 +931,9 @@ export const archiveStorybookApiV1StorybooksStorybookIdArchivePost = <ThrowOnErr
  * version: The version to review; defaults to the latest.
  *
  * Returns:
- * ReviewSurfaceView: Blob plus moderation summary, flagged passages, and
- * story-level findings.
+ * ReviewSurfaceView: Blob plus moderation summary, flagged passages,
+ * story-level findings, the ranked/structural/low-advisory merged-
+ * finding buckets, and the story's validator (RL-13/PL-19) findings.
  *
  * Raises:
  * AuthorizationError: If the caller is neither admin nor guardian
