@@ -15,7 +15,7 @@ import { ChoiceButton } from '@ds/components/ChoiceButton'
 import { PassageText } from '@ds/components/PassageText'
 import { useMachine } from '@xstate/react'
 
-import type { SeriesNextBookInfo, SubmitFlagParams } from '../api/readerApi'
+import type { CompletionOutcome, SeriesNextBookInfo, SubmitFlagParams } from '../api/readerApi'
 import type { KidFlagCreatedView, ReadingHistoryItem } from '../client/types.gen'
 import { canGoBack, currentEndingId, visibleChoices } from '../player/engine'
 import { Mascot } from '../kid/Mascot'
@@ -70,6 +70,13 @@ export interface ReaderProps {
    * ending screen shows "You found ending N of M" once total_endings > 1.
    * Omitted entirely (no fetch attempted) when the caller has none to offer. */
   fetchReadingHistory?: (profileId: string) => Promise<ReadingHistoryItem[]>
+  /** The just-reached ending's POST /completions outcome (W0.3), forwarded
+   * to EndingsProgress so the ending screen can render the tracker directly
+   * from the completion response (and distinguish a new find from a repeat
+   * visit) instead of always racing fetchReadingHistory. Omitted entirely
+   * by a caller with no POST-outcome tracking, which keeps the
+   * fetchReadingHistory-only behavior. */
+  completionOutcome?: CompletionOutcome
   /** Submits a child's structured content flag (K15). When provided, the
    * chrome offers a "Tell a grown-up" affordance; FlagButton itself hides
    * when no valid child session exists for this profile, so omitting this
@@ -98,6 +105,7 @@ export function Reader({
   fetchSeriesNext,
   ttsEnabled = false,
   fetchReadingHistory,
+  completionOutcome,
   submitFlag,
   personalization = null,
 }: ReaderProps) {
@@ -435,6 +443,7 @@ export function Reader({
               profileId={profileId}
               storybookId={story.id}
               fetchReadingHistory={fetchReadingHistory}
+              completionOutcome={completionOutcome}
             />
           ) : null}
           <div className="reader-ending__actions">

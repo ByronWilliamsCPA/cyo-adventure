@@ -513,7 +513,9 @@ describe('ReaderPage', () => {
   })
 
   it('posts a completion when the story reaches an ending', async () => {
-    const recordCompletion = vi.fn(() => Promise.resolve())
+    const recordCompletion = vi.fn(() =>
+      Promise.resolve({ is_new: true, found: 1, total: 4 })
+    )
     render(
       <MemoryRouter>
         <ReaderPage
@@ -559,6 +561,73 @@ describe('ReaderPage', () => {
     fireEvent.click(await screen.findByTestId('choice-c_take_lantern'))
     fireEvent.click(await screen.findByTestId('choice-c_dark_passage'))
     expect(await screen.findByTestId('ending-screen')).toBeTruthy()
+  })
+
+  // W0.3 (design review 2026-08-01 section 3.4): the completion POST's own
+  // response drives the ending-screen tracker directly, with no second,
+  // racing GET, and distinguishes a first find from a repeat.
+  it('renders the NEW-ending tracker from the completion response, without a reading-history fetch', async () => {
+    const recordCompletion = vi.fn(() =>
+      Promise.resolve({ is_new: true, found: 1, total: 4 })
+    )
+    const fetchReadingHistory = vi.fn(() => Promise.resolve([]))
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          recordCompletion={recordCompletion}
+          fetchReadingHistory={fetchReadingHistory}
+          profileId="p_complete_new"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    fireEvent.click(await screen.findByTestId('choice-c_take_lantern'))
+    fireEvent.click(await screen.findByTestId('choice-c_dark_passage'))
+    expect(
+      await screen.findByText('You found a NEW ending! 1 of 4 found so far.')
+    ).toBeInTheDocument()
+    expect(fetchReadingHistory).not.toHaveBeenCalled()
+  })
+
+  it('falls back to the reading-history fetch when the completion POST rejects', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const recordCompletion = vi.fn(() => Promise.reject(new Error('boom')))
+    const fetchReadingHistory = vi.fn(() =>
+      Promise.resolve([
+        {
+          storybook_id: 's_lantern_cave',
+          title: 'Lantern',
+          endings_found: 1,
+          ending_ids: ['e_treasure_found'],
+          total_endings: 4,
+          in_progress: false,
+          last_activity_at: '2026-07-01T00:00:00Z',
+        },
+      ])
+    )
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          recordCompletion={recordCompletion}
+          fetchReadingHistory={fetchReadingHistory}
+          profileId="p_complete_fallback"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    fireEvent.click(await screen.findByTestId('choice-c_take_lantern'))
+    fireEvent.click(await screen.findByTestId('choice-c_dark_passage'))
+    expect(
+      await screen.findByText('You found ending 1 of 4! Read again to find more.')
+    ).toBeInTheDocument()
+    expect(fetchReadingHistory).toHaveBeenCalledWith('p_complete_fallback')
+    errorSpy.mockRestore()
   })
 
   const SERVER_RESUME: ReadingState = {

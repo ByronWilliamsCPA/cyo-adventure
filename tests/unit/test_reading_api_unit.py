@@ -224,8 +224,19 @@ def _body(
     )
 
 
-def _completion_blob(*ending_ids: str) -> dict[str, object]:
-    """Build a minimal Storybook blob with the given ending ids."""
+def _completion_blob(
+    *ending_ids: str, ending_count: int | None = None
+) -> dict[str, object]:
+    """Build a minimal Storybook blob with the given ending ids.
+
+    Args:
+        *ending_ids: Ending node ids to declare.
+        ending_count: When given, adds ``metadata.ending_count`` so callers
+            exercising the W0.3 ``total`` field can control it independently
+            of the actual node count (mirrors a real blob, where the two are
+            enforced equal at validation time but the read path here trusts
+            the metadata field rather than recounting nodes).
+    """
     nodes: list[object] = [
         {
             "id": eid,
@@ -234,7 +245,10 @@ def _completion_blob(*ending_ids: str) -> dict[str, object]:
         }
         for eid in ending_ids
     ]
-    return {"nodes": nodes}
+    blob: dict[str, object] = {"nodes": nodes}
+    if ending_count is not None:
+        blob["metadata"] = {"ending_count": ending_count}
+    return blob
 
 
 def _valid_blob() -> dict[str, object]:
@@ -1102,11 +1116,11 @@ class TestRecordCompletion:
     @pytest.mark.unit
     @pytest.mark.asyncio
     async def test_new_completion_inserted_and_returned(self) -> None:
-        """A first completion for an ending is inserted and returned."""
+        """A first completion for an ending is inserted, with is_new/found/total (W0.3)."""
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
-        blob = _completion_blob("end-happy")
+        blob = _completion_blob("end-happy", "end-other", ending_count=2)
         sv = _approved_version("story-1", 1, blob)
         key = (profile_id, "story-1", 1, "end-happy")
         session = _FakeSession(
@@ -1114,7 +1128,10 @@ class TestRecordCompletion:
                 (Storybook, "story-1"): book,
                 (StorybookVersion, ("story-1", 1)): sv,
                 (Completion, key): None,
-            }
+            },
+            # Stands in for the post-flush distinct-ending count query: this
+            # profile has found 1 distinct ending (the one just inserted).
+            scalar_result=1,
         )
         ctx = _ctx(_child_principal(family_id, profile_id), session)
         body = CompletionBody(
@@ -1129,15 +1146,18 @@ class TestRecordCompletion:
         assert result.ending_id == "end-happy"
         assert result.found_at == _FIXED_TS
         assert len(session.added) == 1
+        assert result.is_new is True
+        assert result.found == 1
+        assert result.total == 2
 
     @pytest.mark.unit
     @pytest.mark.asyncio
     async def test_existing_completion_returned_without_insert(self) -> None:
-        """A duplicate completion request returns the existing row idempotently."""
+        """A duplicate completion request returns the existing row, is_new=False (W0.3)."""
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
-        blob = _completion_blob("end-sad")
+        blob = _completion_blob("end-sad", ending_count=1)
         sv = _approved_version("story-1", 1, blob)
         existing = Completion(
             child_profile_id=profile_id,
@@ -1152,7 +1172,9 @@ class TestRecordCompletion:
                 (Storybook, "story-1"): book,
                 (StorybookVersion, ("story-1", 1)): sv,
                 (Completion, key): existing,
-            }
+            },
+            # The repeat completion does not change the distinct-ending count.
+            scalar_result=1,
         )
         ctx = _ctx(_child_principal(family_id, profile_id), session)
         body = CompletionBody(
@@ -1166,6 +1188,9 @@ class TestRecordCompletion:
 
         assert result.found_at == _FIXED_TS
         assert session.added == []  # no new row inserted
+        assert result.is_new is False
+        assert result.found == 1
+        assert result.total == 1
 
     @pytest.mark.unit
     @pytest.mark.asyncio

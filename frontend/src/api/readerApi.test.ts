@@ -184,6 +184,20 @@ describe('makeRecordCompletion', () => {
       ending_id: 'e_treasure_found',
     })
   })
+
+  it('resolves with the response body (W0.3 is_new/found/total)', async () => {
+    const post = vi.fn(() =>
+      Promise.resolve({ data: { is_new: true, found: 2, total: 4 } })
+    )
+    const recordCompletion = makeRecordCompletion({ post } as unknown as AxiosInstance)
+    const result = await recordCompletion({
+      profile_id: 'p1',
+      storybook_id: 's1',
+      version: 1,
+      ending_id: 'e_treasure_found',
+    })
+    expect(result).toEqual({ is_new: true, found: 2, total: 4 })
+  })
 })
 
 describe('makeFetchSeriesNext', () => {

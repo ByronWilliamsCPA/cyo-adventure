@@ -17,7 +17,9 @@ import {
   ForbiddenError,
   StoryNotFoundError,
   UnauthenticatedError,
+  type CompletionOutcome,
   type CompletionRequest,
+  type CompletionResult,
   type SeriesNextBookInfo,
   type SubmitFlagParams,
 } from '../api/readerApi'
@@ -72,7 +74,7 @@ export interface ReaderPageProps {
 }
 
 type FetchServerState = (profileId: string, storybookId: string) => Promise<ReadingState | null>
-type RecordCompletion = (body: CompletionRequest) => Promise<void>
+type RecordCompletion = (body: CompletionRequest) => Promise<CompletionResult>
 
 // Stable module-level defaults, not inline default-parameter expressions: a
 // default-parameter expression is re-evaluated to a fresh function reference
@@ -82,7 +84,15 @@ type RecordCompletion = (body: CompletionRequest) => Promise<void>
 // every render and forming an unbounded reload loop (~650 GETs/500ms
 // observed). A stable reference by identity is what keeps `load` stable.
 const NO_SERVER_STATE: FetchServerState = () => Promise.resolve(null)
-const NO_RECORD_COMPLETION: RecordCompletion = () => Promise.resolve()
+// #ASSUME: data-integrity: this default's resolved value is never actually
+// rendered from: a caller that omits `recordCompletion` also has no reason
+// to wire `fetchReadingHistory`/EndingsProgress, so the ending screen's
+// tracker never mounts to read it. It exists only so handleComplete's
+// `.then` has a well-typed value to flow through when the prop is omitted.
+// #VERIFY: ReaderPage.test.tsx "does not reload in a loop when
+// fetchServerState/recordCompletion are omitted".
+const NO_RECORD_COMPLETION: RecordCompletion = () =>
+  Promise.resolve({ is_new: false, found: 0, total: 0 })
 
 type ErrorPhase = 'not-found' | 'forbidden' | 'unauthenticated' | 'offline' | 'error'
 
@@ -462,25 +472,57 @@ export function ReaderPage({
     })()
   }, [navigate, profileId])
 
+  // W0.3 (design review 2026-08-01 section 3.4): the completion POST's own
+  // response carries {is_new, found, total}, so EndingsProgress can render
+  // the ending-screen tracker from it directly instead of racing a second
+  // GET. 'pending' is the state while the POST is in flight; the ending
+  // screen shows nothing rather than fetching (which would risk the same
+  // under-report race this replaces).
+  const [completionOutcome, setCompletionOutcome] = useState<CompletionOutcome>({
+    status: 'pending',
+  })
+
   const handleComplete = useCallback(
     (endingId: string) => {
-      // #EDGE: external-resources: completion recording is best-effort. A failed
-      // post must never surface a raw error on the kid ending screen.
-      // #VERIFY: swallow to console.error; the child still sees "The End".
+      // #ASSUME: timing dependencies: reset to 'pending' the instant a new
+      // ending is reached, before this call's POST settles, so
+      // EndingsProgress can never show a stale PREVIOUS ending's outcome (or
+      // prematurely fall back to fetching) while this ending's completion is
+      // still in flight. RESTART re-reaching an earlier ending, or reaching a
+      // second distinct ending later in the same session, are both covered:
+      // Reader.tsx's completedEndingsRef gates onComplete to at-most-once per
+      // distinct ending, but each of those calls still resets this state.
+      // #VERIFY: ReaderPage.test.tsx "resets the completion outcome to
+      // pending for each newly reached ending".
+      setCompletionOutcome({ status: 'pending' })
       void recordCompletion({
         profile_id: profileId,
         storybook_id: storybookId,
         version,
         ending_id: endingId,
-      }).catch((error: unknown) => {
-        console.error('[reader] completion post failed', {
-          profileId,
-          storybookId,
-          version,
-          endingId,
-          error,
-        })
       })
+        .then((result) => {
+          setCompletionOutcome({ status: 'ready', result })
+        })
+        .catch((error: unknown) => {
+          // #EDGE: external-resources: completion recording is best-effort. A
+          // failed post must never surface a raw error on the kid ending
+          // screen; it also leaves no {is_new, found, total} to render
+          // directly, so EndingsProgress falls back to its own
+          // fetchReadingHistory lookup (see its #ASSUME) instead of showing
+          // nothing forever.
+          // #VERIFY: swallow to console.error; the child still sees "The
+          // End"; ReaderPage.test.tsx "falls back to unavailable when the
+          // completion POST rejects".
+          console.error('[reader] completion post failed', {
+            profileId,
+            storybookId,
+            version,
+            endingId,
+            error,
+          })
+          setCompletionOutcome({ status: 'unavailable' })
+        })
     },
     [recordCompletion, profileId, storybookId, version]
   )
@@ -579,6 +621,7 @@ export function ReaderPage({
         fetchSeriesNext={fetchSeriesNext}
         ttsEnabled={ttsEnabled}
         fetchReadingHistory={fetchReadingHistory}
+        completionOutcome={completionOutcome}
         submitFlag={submitFlag}
         personalization={personalization}
       />

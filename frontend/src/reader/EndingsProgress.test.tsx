@@ -131,3 +131,109 @@ describe('EndingsProgress (K6, ending screen)', () => {
     ).toBeInTheDocument()
   })
 })
+
+describe('EndingsProgress completionOutcome (W0.3)', () => {
+  it('renders nothing and does not fetch while the outcome is pending', () => {
+    const fetchReadingHistory = vi.fn().mockReturnValue(new Promise(() => {}))
+    const { container } = render(
+      <EndingsProgress
+        profileId="p1"
+        storybookId="s1"
+        fetchReadingHistory={fetchReadingHistory}
+        completionOutcome={{ status: 'pending' }}
+      />
+    )
+    expect(container.textContent).toBe('')
+    expect(fetchReadingHistory).not.toHaveBeenCalled()
+  })
+
+  it('renders the NEW-ending copy directly from a ready outcome, without fetching', async () => {
+    const fetchReadingHistory = vi.fn().mockResolvedValue([])
+    render(
+      <EndingsProgress
+        profileId="p1"
+        storybookId="s1"
+        fetchReadingHistory={fetchReadingHistory}
+        completionOutcome={{ status: 'ready', result: { is_new: true, found: 2, total: 4 } }}
+      />
+    )
+    expect(
+      await screen.findByText('You found a NEW ending! 2 of 4 found so far.')
+    ).toBeInTheDocument()
+    expect(fetchReadingHistory).not.toHaveBeenCalled()
+  })
+
+  it('renders the repeat-visit copy from a ready outcome when is_new is false', async () => {
+    const fetchReadingHistory = vi.fn().mockResolvedValue([])
+    render(
+      <EndingsProgress
+        profileId="p1"
+        storybookId="s1"
+        fetchReadingHistory={fetchReadingHistory}
+        completionOutcome={{ status: 'ready', result: { is_new: false, found: 3, total: 4 } }}
+      />
+    )
+    expect(
+      await screen.findByText('You found ending 3 of 4! Read again to find more.')
+    ).toBeInTheDocument()
+    expect(fetchReadingHistory).not.toHaveBeenCalled()
+  })
+
+  it('renders nothing for a ready outcome when total is 1 or fewer', async () => {
+    const fetchReadingHistory = vi.fn().mockResolvedValue([])
+    const { container } = render(
+      <EndingsProgress
+        profileId="p1"
+        storybookId="s1"
+        fetchReadingHistory={fetchReadingHistory}
+        completionOutcome={{ status: 'ready', result: { is_new: true, found: 1, total: 1 } }}
+      />
+    )
+    await waitFor(() => expect(fetchReadingHistory).not.toHaveBeenCalled())
+    expect(container.textContent).toBe('')
+  })
+
+  it('falls back to fetchReadingHistory when the outcome is unavailable (POST failed)', async () => {
+    const fetchReadingHistory = vi
+      .fn()
+      .mockResolvedValue([historyRow({ endings_found: 2, total_endings: 4 })])
+    render(
+      <EndingsProgress
+        profileId="p1"
+        storybookId="s1"
+        fetchReadingHistory={fetchReadingHistory}
+        completionOutcome={{ status: 'unavailable' }}
+      />
+    )
+    expect(
+      await screen.findByText('You found ending 2 of 4! Read again to find more.')
+    ).toBeInTheDocument()
+    expect(fetchReadingHistory).toHaveBeenCalledWith('p1')
+  })
+
+  it('re-fetches once the outcome transitions from pending to unavailable', async () => {
+    const fetchReadingHistory = vi
+      .fn()
+      .mockResolvedValue([historyRow({ endings_found: 1, total_endings: 2 })])
+    const { rerender } = render(
+      <EndingsProgress
+        profileId="p1"
+        storybookId="s1"
+        fetchReadingHistory={fetchReadingHistory}
+        completionOutcome={{ status: 'pending' }}
+      />
+    )
+    expect(fetchReadingHistory).not.toHaveBeenCalled()
+    rerender(
+      <EndingsProgress
+        profileId="p1"
+        storybookId="s1"
+        fetchReadingHistory={fetchReadingHistory}
+        completionOutcome={{ status: 'unavailable' }}
+      />
+    )
+    expect(
+      await screen.findByText('You found ending 1 of 2! Read again to find more.')
+    ).toBeInTheDocument()
+  })
+})
