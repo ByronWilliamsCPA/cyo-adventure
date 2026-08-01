@@ -19,6 +19,7 @@ from cyo_adventure.api.schemas import (
     ReviewQueueItem,
     ReviewSummary,
     ReviewSurfaceView,
+    ValidatorFindingView,
 )
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
@@ -26,9 +27,36 @@ from cyo_adventure.moderation.thresholds import admin_surfaces
 from cyo_adventure.storybook.models import ContentFlags
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from datetime import datetime
 
     from cyo_adventure.moderation.thresholds import ThresholdPolicy
+
+# Deterministic admin ranking (design doc 2.6): verdict outranks severity
+# outranks node count. PASS never reaches these buckets (filtered before
+# construction), but is included so _VERDICT_RANK.get() never needs a
+# fallback default for a value the type system already guarantees is a
+# Verdict member.
+_VERDICT_RANK: dict[Verdict, int] = {
+    Verdict.BLOCK: 3,
+    Verdict.FLAG: 2,
+    Verdict.ADVISORY: 1,
+    Verdict.PASS: 0,
+}
+
+_SEVERITY_RANK: dict[FindingSeverity | None, int] = {
+    FindingSeverity.HIGH: 3,
+    FindingSeverity.MEDIUM: 2,
+    FindingSeverity.LOW: 1,
+    None: 0,
+}
+
+# Design doc 2.7 option (a): only these two rule ids are ever surfaced; every
+# other validator rule id (topology, safety, band-profile, etc.) already gates
+# through the deterministic validator/moderation pipeline before generation
+# reaches review, so projecting it here too would be a duplicate, confusing
+# signal.
+_VALIDATOR_RULE_IDS = frozenset({"RL-13", "PL-19"})
 
 
 def build_review_surface(
@@ -39,6 +67,7 @@ def build_review_surface(
     blob: dict[str, object],
     moderation_report: dict[str, object] | None,
     admin_noise_floor: float | None = None,
+    validation_report: dict[str, object] | None = None,
 ) -> ReviewSurfaceView:
     """Build the guardian review surface for one story version.
 
@@ -57,10 +86,18 @@ def build_review_surface(
             surfaces are gated by the age-band ``ThresholdPolicy`` instead
             (default ``min_verdict=FLAG``), and the floor is an admin-only
             denoise, never a guardian filter.
+        validation_report: The story's stored ``validation_report`` (design
+            doc 2.7 option (a)), or ``None`` when the caller has none to pass
+            (a pre-validator-persistence row, or a call site, like the
+            guardian content-summary reuse path, that does not need it).
+            Read-only: this function never re-runs the validator, it only
+            projects RL-13/PL-19 findings already in the stored report.
 
     Returns:
-        ReviewSurfaceView: Blob plus summary, flagged passages, and story-level
-            findings. Empty projections when the report is ``None``.
+        ReviewSurfaceView: Blob plus summary, flagged passages, story-level
+            findings, the ranked/structural/low-advisory merged-finding
+            buckets, and validator findings. Empty projections when the
+            report is ``None``.
 
     Raises:
         ValidationError: If the stored report no longer conforms to the view
@@ -77,6 +114,7 @@ def build_review_surface(
         flagged: dict[str, list[FindingView]] = {}
         order: list[str] = []
         story_level: list[FindingView] = []
+        all_views: list[FindingView] = []
         for finding in _findings(moderation_report):
             view = _finding_view(finding)
             if view.verdict is Verdict.PASS:
@@ -90,6 +128,18 @@ def build_review_surface(
                 view.verdict, view.score, noise_floor=admin_noise_floor
             ):
                 continue
+            # #CRITICAL: security: all_views must be appended to BEFORE the
+            # structural guard below, because _rank_and_split reads all_views to
+            # build structural_findings. Moving this append after the guard's
+            # `continue` leaves structural_findings permanently empty, which
+            # looks like "no pipeline problems" on the admin surface rather than
+            # like a bug. The two routings are orthogonal: all_views feeds the
+            # ranker, flagged/story_level feed the legacy fan-out.
+            # #VERIFY: tests/unit/test_review_surface.py::
+            # test_structural_finding_with_node_ids_stays_story_level asserts
+            # both halves (story-level routing AND structural_findings
+            # membership) so either ordering mistake fails it.
+            all_views.append(view)
             # #CRITICAL: security: a structural finding describes the PIPELINE
             # ("the reviewer was unavailable on 12 nodes"), not the prose of any
             # one passage, so it must never enter the per-node fan-out below.
@@ -133,6 +183,7 @@ def build_review_surface(
             )
             for nid in order
         ]
+        structural, low_advisory, ranked = _rank_and_split(all_views)
         return ReviewSurfaceView(
             storybook_id=storybook_id,
             version=version,
@@ -144,10 +195,112 @@ def build_review_surface(
             summary=_summary(moderation_report),
             flagged_passages=passages,
             story_level_findings=story_level,
+            ranked_findings=ranked,
+            structural_findings=structural,
+            low_advisory_findings=low_advisory,
+            validator_findings=_validator_findings(validation_report),
         )
     except PydanticValidationError as exc:
         msg = "review surface cannot be built from a malformed moderation report"
         raise ValidationError(msg, field="moderation_report") from exc
+
+
+def _target_node_count(view: FindingView) -> int:
+    """Return how many nodes a finding covers, fan-out aware (design doc 2.2).
+
+    Mirrors the ``target_nodes`` computation in ``build_review_surface``'s main
+    loop exactly, so the ranking's node-count term and the passage fan-out
+    always agree on what a finding covers.
+    """
+    if view.node_ids:
+        return len(view.node_ids)
+    return 0 if view.node_id is None else 1
+
+
+def _ranking_key(view: FindingView) -> tuple[int, int, int]:
+    """Deterministic admin ranking key: verdict desc, severity desc, node-count desc.
+
+    ``list.sort``/``sorted`` are stable, so findings tied on all three ranks
+    keep the persisted report's original order as the final tiebreak (design
+    doc 2.6's "stable tiebreak"), rather than an arbitrary or reshuffled order
+    on every request.
+    """
+    return (
+        -_VERDICT_RANK.get(view.verdict, 0),
+        -_SEVERITY_RANK.get(view.severity, 0),
+        -_target_node_count(view),
+    )
+
+
+def _rank_and_split(
+    findings: list[FindingView],
+) -> tuple[list[FindingView], list[FindingView], list[FindingView]]:
+    """Split findings into (structural, low_advisory, ranked-primary), each ranked.
+
+    Design doc 2.6: structural findings get their own visually distinct block
+    regardless of severity (checked first, so a structural finding never also
+    lands in the low-advisory bucket). Everything else that is a low-severity
+    advisory collapses behind the low-ADVISORY toggle; the admin_noise_floor
+    row (applied earlier, in the caller) remains the mechanism for Stage-0
+    scored advisories, so this severity-based split is purely additive, not a
+    replacement. Everything remaining is the primary ranked list.
+    """
+    structural: list[FindingView] = []
+    low_advisory: list[FindingView] = []
+    primary: list[FindingView] = []
+    for view in findings:
+        if view.structural:
+            structural.append(view)
+        elif view.severity is FindingSeverity.LOW and view.verdict is Verdict.ADVISORY:
+            low_advisory.append(view)
+        else:
+            primary.append(view)
+    structural.sort(key=_ranking_key)
+    low_advisory.sort(key=_ranking_key)
+    primary.sort(key=_ranking_key)
+    return structural, low_advisory, primary
+
+
+def _validator_findings(
+    validation_report: dict[str, object] | None,
+) -> list[ValidatorFindingView]:
+    """Project RL-13/PL-19 findings from the stored validation report.
+
+    Read-only (design doc 2.7 option (a)): this never re-runs the validator,
+    it only reads ``validator/report.py::ValidationReport.to_dict()``'s
+    already-persisted shape (``{"ok": bool, "findings": [...]}}``). A missing
+    report, a malformed entry, or any rule id outside the two-item allowlist
+    degrades to omission rather than raising: unlike moderation source/verdict,
+    an unrecognized validator rule id is not a corrupt-at-rest signal worth
+    failing the whole review surface over, since ``validation_report`` is a
+    read-only annex to it, not the report this function's caller must not
+    silently mis-render.
+    """
+    if validation_report is None:
+        return []
+    raw = validation_report.get("findings")
+    if not isinstance(raw, list):
+        return []
+    views: list[ValidatorFindingView] = []
+    for entry in raw:
+        if not isinstance(entry, dict):
+            continue
+        entry = cast(dict[str, object], entry)  # noqa: TC006 (see _findings above)
+        rule_id = entry.get("rule_id")
+        if not isinstance(rule_id, str) or rule_id not in _VALIDATOR_RULE_IDS:
+            continue
+        severity = entry.get("severity")
+        message = entry.get("message")
+        node_id = entry.get("node_id")
+        views.append(
+            ValidatorFindingView(
+                rule_id=rule_id,
+                severity=severity if isinstance(severity, str) else "warning",
+                node_id=node_id if isinstance(node_id, str) else None,
+                message=message if isinstance(message, str) else "",
+            )
+        )
+    return views
 
 
 def _prose_index(blob: dict[str, object]) -> dict[str, str]:
@@ -451,12 +604,15 @@ def build_content_summary(
 
     Reuses build_review_surface so Verdict.PASS filtering, the screened-versus-
     unscreened rule, and corrupt-report rejection are defined in exactly one
-    place. It then projects the admin surface down to a guardian-safe view: the
-    gating summary, the total flagged count (per-node plus story-level, filtered
-    by the age-band threshold policy), and the story-level findings that clear
-    the threshold. Per-node flagged passages are intentionally dropped: a
-    guardian is the assigner, not the safety reviewer, and passage prose can
-    spoil content and leak generation internals.
+    place. It then projects the admin surface down to a guardian-safe,
+    story-level-only view (design doc 2.6): the gating summary, a total
+    flagged count (per-node plus story-level, filtered by the age-band
+    threshold policy), and a merged concern list -- every surfaced finding
+    collapsed by concern/severity/verdict/message into one row per concern,
+    carrying a node COUNT but never a node id. Per-node flagged passages
+    themselves are never handed to the guardian: a guardian is the assigner,
+    not the safety reviewer, and passage prose can spoil content and leak
+    generation internals. See ``_content_summary_findings``.
 
     Args:
         storybook_id: The story id.
@@ -468,8 +624,8 @@ def build_content_summary(
 
     Returns:
         ContentSummaryView: Screened flag, gating summary, flagged count, and
-            story-level findings (category, verdict, message) that meet the
-            age-band threshold.
+            the merged concern list (category, concern, severity, verdict,
+            message, node_count) that meets the age-band threshold.
 
     Raises:
         ValidationError: If the stored moderation report is corrupt at rest
@@ -488,29 +644,7 @@ def build_content_summary(
             age_band=age_band, category=category, verdict=verdict, score=score
         )
 
-    # #CRITICAL: security: guardian/kid surfaces filter by threshold; the admin
-    # review surface (build_review_surface) never does. flagged_count MUST count
-    # only surfaced findings or the badge contradicts the visible list.
-    # #VERIFY: test_guardian_summary_hides_below_threshold_advisory.
-    flagged_count = sum(
-        1
-        for passage in surface.flagged_passages
-        for finding in passage.findings
-        if _surfaces(finding.category, finding.verdict, finding.score)
-    ) + sum(
-        1
-        for finding in surface.story_level_findings
-        if _surfaces(finding.category, finding.verdict, finding.score)
-    )
-    findings = [
-        GuardianFinding(
-            category=finding.category,
-            verdict=finding.verdict,
-            message=finding.message,
-        )
-        for finding in surface.story_level_findings
-        if _surfaces(finding.category, finding.verdict, finding.score)
-    ]
+    flagged_count, findings = _content_summary_findings(surface, _surfaces)
     return ContentSummaryView(
         storybook_id=storybook_id,
         version=version,
@@ -519,3 +653,95 @@ def build_content_summary(
         flagged_count=flagged_count,
         findings=findings,
     )
+
+
+def _guardian_group_key(
+    finding: FindingView,
+) -> tuple[str, FindingSeverity | None, Verdict, str]:
+    """The guardian merge key: concern (or category), severity, verdict, message.
+
+    Mirrors ``moderation/synthesis.py``'s admin merge key
+    (``category, concern, source, verdict, severity, message``) minus source
+    and the bare category (concern, when set, is the more specific signal;
+    category is still carried on the group as a display fallback, never part
+    of the identity once concern is present) -- the guardian view carries
+    neither node identity nor classifier provenance. Keying on the full tuple
+    including message is deliberately conservative: it collapses only
+    findings that are, in effect, the exact same admin-visible finding fanned
+    across nodes (which already carry an identical message from
+    ``moderation/synthesis.py``'s own merge), rather than risking two
+    genuinely distinct concerns silently merging under a shared category.
+    """
+    concern_or_category = (
+        finding.concern if finding.concern is not None else finding.category
+    )
+    return (concern_or_category, finding.severity, finding.verdict, finding.message)
+
+
+def _content_summary_findings(
+    surface: ReviewSurfaceView,
+    surfaces_fn: Callable[[str, Verdict, float | None], bool],
+) -> tuple[int, list[GuardianFinding]]:
+    """Merge every threshold-surfaced finding into one concern-level guardian row.
+
+    Design doc 2.6: the guardian view is story-level only, no per-node rows,
+    no node ids. Every surfaced occurrence of a finding (once per node it
+    covers via ``surface.flagged_passages``' existing fan-out, or once with
+    zero node weight for a genuinely story-level finding) is grouped by
+    ``_guardian_group_key``, so one admin-merged finding collapses to exactly
+    one guardian row whose ``node_count`` sums its true node coverage.
+    ``flagged_count`` stays the total surfaced-occurrence count, unchanged
+    from the pre-Stage-B3 behavior this replaces (one pass over
+    flagged_passages plus one over story_level_findings, each threshold-
+    filtered), so the "N flagged" badge still matches what a passage-fan-out
+    admin view would show, even though the guardian never sees the passages
+    themselves.
+
+    Args:
+        surface: The (undenoised) admin review surface to redact and merge.
+        surfaces_fn: The age-band threshold predicate (category, verdict,
+            score) -> bool.
+
+    Returns:
+        tuple[int, list[GuardianFinding]]: The total flagged-occurrence count,
+            and the merged, ranked-by-first-occurrence guardian findings.
+    """
+    flagged_count = 0
+    node_counts: dict[tuple[str, FindingSeverity | None, Verdict, str], int] = {}
+    categories: dict[tuple[str, FindingSeverity | None, Verdict, str], str] = {}
+    concerns: dict[tuple[str, FindingSeverity | None, Verdict, str], str | None] = {}
+    order: list[tuple[str, FindingSeverity | None, Verdict, str]] = []
+
+    def _record(finding: FindingView, *, node_weight: int) -> None:
+        key = _guardian_group_key(finding)
+        if key not in node_counts:
+            node_counts[key] = 0
+            categories[key] = finding.category
+            concerns[key] = finding.concern
+            order.append(key)
+        node_counts[key] += node_weight
+
+    for passage in surface.flagged_passages:
+        for finding in passage.findings:
+            if not surfaces_fn(finding.category, finding.verdict, finding.score):
+                continue
+            flagged_count += 1
+            _record(finding, node_weight=1)
+    for finding in surface.story_level_findings:
+        if not surfaces_fn(finding.category, finding.verdict, finding.score):
+            continue
+        flagged_count += 1
+        _record(finding, node_weight=0)
+
+    findings = [
+        GuardianFinding(
+            category=categories[key],
+            verdict=key[2],
+            message=key[3],
+            concern=concerns[key],
+            severity=key[1],
+            node_count=node_counts[key],
+        )
+        for key in order
+    ]
+    return flagged_count, findings

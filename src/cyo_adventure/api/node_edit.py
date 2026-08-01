@@ -695,4 +695,9 @@ async def edit_node(
         blob=new_blob,
         moderation_report=refreshed_report,
         admin_noise_floor=floor,
+        # The gate re-ran above (`gate_result`) and its report is already
+        # persisted to `version_row.validation_report` a few lines up; reuse
+        # that in-memory report so the refreshed surface's validator findings
+        # reflect this edit immediately, not the pre-edit stored value.
+        validation_report=gate_result.report.to_dict(),
     )
