@@ -486,6 +486,18 @@ Fourth round (owner, 2026-08-01):
 | D15 | The per-band choice grammar table is ratified as proposed. Adopted as ADR-011 section 10 (amendment, 2026-08-01), companion to ADR-026. | Q2 |
 | D16 | The weekly reading-days ring design is approved, with the modification that it varies by age band. Per-band defaults proposed below for sign-off. | gamification section 7 Q3/Q4 |
 
+Fifth round (owner, 2026-08-01):
+
+| ID | Decision (owner, 2026-08-01) | Answers |
+|---|---|---|
+| D17 | The per-band reading-ring defaults table (P-A) is approved as proposed. | P-A |
+| D18 | The tone vocabulary table (P-B) is approved as a starting point, with the expectation that it expands in a future push. Expansion is future work, not v1 scope. | Q4 / P-B |
+| D19 | The sequencing waves (P-C) are approved. | Q8 / P-C |
+| D20 | The media budget recommendation is adopted as appropriate: per-band budget table, WebP at 1536px, app-bundled UI SFX only for v1 with mute, 250MB default / 500MB hard offline cap, Add-to-Home-Screen gating of the offline promise on iOS. | media recommendation section 7 |
+
+With D15-D20 the decision set needed for an implementation plan is complete; the plan lives at
+[kid-appeal-implementation-plan.md](kid-appeal-implementation-plan.md).
+
 ### Proposals awaiting owner approval (fourth round)
 
 **P-A. Per-band reading-ring defaults (implements D16).** The ring's mechanics are identical at
