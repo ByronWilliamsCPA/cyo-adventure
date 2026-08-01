@@ -479,6 +479,56 @@ Third round (owner, 2026-08-01, answering Q1/Q3/Q5/Q6/Q7 below):
 | D13 | Media budgets: adopt a best-practice recommendation (external research dispatched 2026-08-01) rather than ad hoc numbers. | Q6 |
 | D14 | POV: second person is the standard for all bands. Existing third-person books are phased out under D11's mechanism, so that ultimately every book in the catalog carries the reader-POV voice. | Q7 |
 
+Fourth round (owner, 2026-08-01):
+
+| ID | Decision (owner, 2026-08-01) | Answers |
+|---|---|---|
+| D15 | The per-band choice grammar table is ratified as proposed. Adopted as ADR-011 section 10 (amendment, 2026-08-01), companion to ADR-026. | Q2 |
+| D16 | The weekly reading-days ring design is approved, with the modification that it varies by age band. Per-band defaults proposed below for sign-off. | gamification section 7 Q3/Q4 |
+
+### Proposals awaiting owner approval (fourth round)
+
+**P-A. Per-band reading-ring defaults (implements D16).** The ring's mechanics are identical at
+every band (fill days, celebrate, never punish); what varies is default state, default goal, and
+who may adjust the goal. Selectable goal caps at 6 at every band so one free day is always
+guaranteed (gamification recommendation section 7 Q3).
+
+| Band | Ring default | Default goal (days/week) | Goal adjustable by | Notes |
+|---|---|---|---|---|
+| 3-5 | off | 2 if enabled | guardian | habit mechanics on pre-readers reward the parent's schedule; badges and gallery stay on |
+| 5-8 | on | 2 | guardian | ring rendered in the simplest visual form (stars filling) |
+| 8-11 | on | 3 | guardian | the recommendation's baseline |
+| 10-13 | on | 3 | guardian | |
+| 13-16 | on | 4 | kid, within guardian cap | teen agency: the reader sets their own goal, guardian sets the ceiling |
+| 16+ | on | 4 | kid, within guardian cap | |
+
+**P-B. Tone vocabulary per band (Q4).** Tone is derived from the request text by the screened
+mapping (D5), defaults to `gentle` when nothing is detected, and is always additionally capped by
+the guardian's banned themes and the band's content-flag ceilings and ending-kind rules (ADR-011);
+a requested tone can narrow but never widen a band's safety envelope.
+
+| Tone | 3-5 | 5-8 | 8-11 | 10-13 | 13-16 | 16+ |
+|---|---|---|---|---|---|---|
+| gentle | yes | yes | yes | yes | yes | yes |
+| funny | yes | yes | yes | yes | yes | yes |
+| exciting | yes | yes | yes | yes | yes | yes |
+| mysterious | - | yes | yes | yes | yes | yes |
+| a little spooky | - | - | yes | yes | yes | yes |
+| scary | - | - | - | - | yes | yes |
+| sad (bittersweet) | - | - | - | - | yes | yes |
+
+**P-C. Sequencing (Q8).** Waves, not phases: each wave is separately shippable, and waves 2-4 can
+overlap once wave 0 lands. Register/phase homes noted for the linkage sweep.
+
+| Wave | Name | Contents | Depends on | Decisions |
+|---|---|---|---|---|
+| 0 | Unblockers (Content WS, now) | Import/publish the 23 filled books under grandfather status (`UW-G14`, D11); ending-valence re-tag audit; `POST /completions` returns `{is_new, found, total}`; `story_request.resulting_storybook_id` plus honest request status | nothing | D3, D11 |
+| 1 | Reader: stops and loop closure (Phase 4b) | ADR-026 stop-flow in both engines plus conformance corpus, memoized replay (`AL-030`), route-relative progress (`AL-029`); NEW-ending celebration; profile-picker "story ready" pill and kid-scoped story-ready projection; K19 reflect-back surfaced | wave 0 | D10, D4 |
+| 2 | Content: grammar and tone (Content WS) | Grammar validator rules for new content (ADR-011 section 10); genre wave skeletons (re-scope `UW-G13` with the under-13 genre quota); tone axis plus unforced request defaults plus theme-aware skeleton selection; POV second-person fill-gate rule (D14); drafting-guide craft/humor rewrite | ADR-011 amendment (done); P-B approval | D2, D5, D14, D15 |
+| 3 | Engagement (Phase 4b/4c) | Gamification v1 per the recommendation: endings gallery, badges 1-8/10/11, weekly ring with P-A defaults, `reading_activity_day` and time sync; badges 9 and 12 trail their dependencies | waves 0-1 | D6, D12, D16 |
+| 4 | Media (new ADR) | In-story illustration ADR and 3-5 band pilot per the media budget table; app-bundled UI SFX with mute; PWA manifest color fix rides along | ADR-025 (done); media table approval | D7, D13 |
+| M | Measure (owner-gated) | The naive-user session with real children (`UW-M02`) runs once wave 1 is testable, before the request-page reshape (`UW-I01`) and the reader-UX items it gates (`UW-I02`) ship; it also validates the grammar's felt pacing and the ring framing | wave 1 testable | standing gate |
+
 ### Research review: D1 versus ADR-011 (2026-08-01)
 
 The owner asked how the initial research handles choice-per-node versus words-per-node. Findings:
