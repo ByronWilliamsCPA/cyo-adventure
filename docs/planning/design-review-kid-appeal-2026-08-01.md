@@ -469,6 +469,16 @@ words-per-node side (whichever way A4 lands).
 | D8 | POV (second person, "you are the hero") is to be available in all bands. | E3 |
 | D9 | The additive-minor format-evolution policy is approved: ratified as [ADR-025](adr/adr-025-additive-storybook-schema-versioning.md) (Accepted 2026-08-01). | F1 |
 
+Third round (owner, 2026-08-01, answering Q1/Q3/Q5/Q6/Q7 below):
+
+| ID | Decision (owner, 2026-08-01) | Answers |
+|---|---|---|
+| D10 | The D1 reconciliation is ratified: render-time flow for 8-11 and up, discrete pages with a choice cadence at 3-5/5-8. Ratified as [ADR-026](adr/adr-026-rendered-stop-flow.md) (Accepted 2026-08-01). The per-band grammar table remains a proposal pending sign-off. | Q1 |
+| D11 | Deprecation rule for the grandfathered catalog: a grandfathered skeleton may be used for a cell only until at least one updated (grammar-compliant) skeleton exists for that cell; from then on it is excluded from selection for new generation. Already-published books stay readable. | Q3 |
+| D12 | Gamification (amending D6): an agent-developed recommendation is commissioned (dispatched 2026-08-01). Total active reading time is added to the tracked metrics. Engagement is child-focused; some elements may be family-visible; nothing ever leaves ring 1. | Q5 |
+| D13 | Media budgets: adopt a best-practice recommendation (external research dispatched 2026-08-01) rather than ad hoc numbers. | Q6 |
+| D14 | POV: second person is the standard for all bands. Existing third-person books are phased out under D11's mechanism, so that ultimately every book in the catalog carries the reader-POV voice. | Q7 |
+
 ### Research review: D1 versus ADR-011 (2026-08-01)
 
 The owner asked how the initial research handles choice-per-node versus words-per-node. Findings:
@@ -501,6 +511,16 @@ The owner asked how the initial research handles choice-per-node versus words-pe
    this needs correcting in ADR-011 (added to section 6 as item 5).
 
 ### Remaining decisions before an implementation plan can be built
+
+> **Status update (third round, 2026-08-01)**: Q1 resolved (D10, ADR-026). Q3 resolved (D11).
+> Q7 resolved (D14). Q5 and Q6 are commissioned to agents (D12, D13); their recommendations will
+> be appended to this document for owner approval. Still fully open: **Q2** (the per-band choice
+> grammar table below awaits sign-off), **Q4** (tone vocabulary), and **Q8** (sequencing). The
+> streak-design question raised by the owner (calendar days versus reading days) is answered
+> inside the commissioned gamification recommendation's scope; in short, a calendar-day streak
+> breaks after any single day without reading, while a reading-days design counts days-read within
+> a rolling window (for example 4 reading days per week keeps the streak alive) so a missed school
+> night or a weekend at a grandparent's does not zero a child's progress.
 
 - **Q1. Ratify the D1 reconciliation.** Adopt render-time flow of linear passages (every stop ends
   in a choice; graph keeps linear beats; ADR-011 constants stand) versus amend ADR-011 to require
