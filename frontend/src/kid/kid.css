@@ -544,10 +544,24 @@
   }
 }
 
+/* Both reduce-motion paths still the ring's TRANSITION as well as its
+   celebrate animation. The transition is the easier one to forget, because
+   it is declared far from the keyframes and reads as decoration, but it is
+   the motion a child actually sees most: the sweep fires on every progress
+   change, whereas the pop fires once a week. Neutralising only the animation
+   left the ring still animating for exactly the readers who asked it not to. */
 @media (prefers-reduced-motion: reduce) {
+  .weekly-ring svg circle {
+    transition: none;
+  }
+
   .weekly-ring--celebrate svg {
     animation: none;
   }
+}
+
+[data-reduce-motion='true'] .weekly-ring svg circle {
+  transition: none;
 }
 
 [data-reduce-motion='true'] .weekly-ring--celebrate svg {
