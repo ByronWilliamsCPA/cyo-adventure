@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.58.0] - 2026-08-01
+
+### Bug Fixes
+
+- **moderation**: Re-moderate imported books instead of rejecting 'import' provenance
+  ([#537](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/537),
+  [`6682ec1`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/6682ec17f0a059f986b53e94b9830bf8ec0b6e23))
+
+### Features
+
+- **moderation**: Admin re-moderation entry point and catalog sweep script
+  ([#529](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/529),
+  [`ea3970c`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/ea3970c82a8bd1b28440ad4d7b7f11aee12d1e47))
+
+
 ## [0.57.0] - 2026-08-01
 
 ### Features
@@ -2979,6 +2994,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.58.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.57.0...v0.58.0
 [0.57.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.56.0...v0.57.0
 [0.56.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.55.2...v0.56.0
 [0.55.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.55.1...v0.55.2
