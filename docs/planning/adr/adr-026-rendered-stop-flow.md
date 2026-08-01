@@ -76,6 +76,23 @@ instead.
    stamps the kid shell); a guardian changing a profile's band changes presentation on next load,
    with no content change.
 
+## Implementation notes (2026-08-01, first implementation)
+
+The engine layer (`player/stops.py`, `frontend/src/player/stops.ts`,
+`schema/conformance/stop_traces.json`) pinned four semantics worth recording:
+
+1. The branch/dead-end decision counts the node's **raw** `choices`, not the visible subset: a
+   2-choice node with one condition-hidden choice ends the stop (and may therefore render a single
+   visible choice). This matches the decision text literally; revisit only if reader data shows it
+   reads as a broken page.
+2. The loop guard is **per-stop**: only a would-be revisit within the same composed run halts
+   flow; cross-stop revisits (loop_and_grow topologies) are unaffected.
+3. Loop detection halts at the current node **without** applying the looping transition, so the
+   reader can still choose to take the loop; it just never auto-flows.
+4. Go-back-by-stop lives frontend-only (`backOneStop` replays the existing `back()` per node in
+   the stop), consistent with the engines' existing convention that back-navigation is not
+   mirrored server-side; stop composition itself is corpus-proven identical on both sides.
+
 ## Consequences
 
 - D1 is satisfied for 8+ readers with zero content rewrites and no change to generation budgets,
