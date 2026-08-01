@@ -14,8 +14,11 @@ from cyo_adventure.generation.skeleton_match import (
     candidates_for_cell,
     find_skeleton_metadata,
     is_continuation_skeleton,
+    request_theme_signature,
     resolve_skeleton_path,
+    select_skeleton_for_cell,
     skeleton_matches_cell,
+    theme_overlap_for_candidates,
 )
 from cyo_adventure.storybook.models import AgeBand, NarrativeStyle, StoryMetadata
 
@@ -603,3 +606,145 @@ def test_no_catalog_continuation_book_is_offered_for_any_cell() -> None:
                     f"{slug} is a continuation book but is offered for "
                     f"({band}, {length}, {style})"
                 )
+
+
+# ---------------------------------------------------------------------------
+# W2.2: theme-aware skeleton selection
+# ---------------------------------------------------------------------------
+
+
+def _themed_metadata(themes: list[str]) -> StoryMetadata:
+    """Build minimal 10-13/medium/prose metadata declaring the given themes."""
+    return StoryMetadata.model_validate(
+        {
+            "age_band": "10-13",
+            "reading_level": {"target": 6.0},
+            "tier": 1,
+            "themes": themes,
+            "estimated_minutes": 8,
+            "ending_count": 3,
+            "topology": "branch_and_bottleneck",
+        }
+    )
+
+
+def test_request_theme_signature_maps_recognized_premise_words() -> None:
+    tags = request_theme_signature("a story about a dragon hiding in a cave")
+    assert {"dragon", "cave"} <= tags
+
+
+def test_request_theme_signature_empty_for_unrecognized_premise() -> None:
+    """A premise with no vocabulary hits yields an empty signature (the
+    zero-overlap case that must leave every candidate's bonus at 0.0)."""
+    assert request_theme_signature("xyzzy plugh quux") == frozenset()
+
+
+def test_theme_overlap_bonus_full_containment() -> None:
+    metadata = _themed_metadata(["dragon"])
+    bonus = skeleton_match._theme_overlap_bonus(frozenset({"dragon"}), metadata)
+    assert bonus == pytest.approx(1.0)
+
+
+def test_theme_overlap_bonus_no_overlap_is_zero() -> None:
+    metadata = _themed_metadata(["courage"])
+    bonus = skeleton_match._theme_overlap_bonus(frozenset({"dragon"}), metadata)
+    assert bonus == 0.0
+
+
+def test_theme_overlap_bonus_empty_request_is_zero() -> None:
+    """containment(empty, story) == 0.0: nothing was asked for, so nothing
+    can be "covered" (mirrors diversity.normalize.containment's own contract)."""
+    metadata = _themed_metadata(["dragon"])
+    bonus = skeleton_match._theme_overlap_bonus(frozenset(), metadata)
+    assert bonus == 0.0
+
+
+def test_theme_overlap_for_candidates_matches_real_catalog_cell() -> None:
+    """10-13/medium/prose: a river-themed request scores 'the-flooded-quarter'
+    (declared theme 'the river') above its cell-mates, which declare no
+    subject tag the request premise mentions."""
+    candidates = candidates_for_cell("10-13", "medium", "prose")
+    assert "the-flooded-quarter" in candidates
+    overlap = theme_overlap_for_candidates(
+        "a story about a great river adventure", "10-13", candidates
+    )
+    assert overlap["the-flooded-quarter"] > 0.0
+    for slug in candidates:
+        if slug != "the-flooded-quarter":
+            assert overlap.get(slug, 0.0) <= overlap["the-flooded-quarter"]
+
+
+def test_theme_overlap_for_candidates_zero_overlap_premise_is_all_zero() -> None:
+    candidates = candidates_for_cell("10-13", "medium", "prose")
+    overlap = theme_overlap_for_candidates("xyzzy plugh quux", "10-13", candidates)
+    assert all(bonus == 0.0 for bonus in overlap.values())
+
+
+def test_select_skeleton_for_cell_matching_candidate_reliably_wins() -> None:
+    """A theme-matching candidate outdraws a non-matching one over many seeds,
+    with recency/similarity held equal between them."""
+    candidates = ["matching", "plain"]
+    recent_usage = {"matching": 0, "plain": 0}
+    theme_overlap = {"matching": 1.0, "plain": 0.0}
+    picks = [
+        select_skeleton_for_cell(
+            candidates,
+            recent_usage,
+            random.Random(seed),
+            theme_overlap=theme_overlap,
+        ).slug
+        for seed in range(200)
+    ]
+    matching_count = picks.count("matching")
+    plain_count = picks.count("plain")
+    assert matching_count > plain_count
+    # Never fully excluded: "plain" is still drawable (bonus only scales
+    # weight, never zeroes it, mirroring the C-4 novelty floor).
+    assert plain_count > 0
+
+
+def test_select_skeleton_for_cell_theme_overlap_none_matches_legacy_pick() -> None:
+    """theme_overlap=None (the default) reproduces the pre-W2.2 pick exactly
+    under the same seeded RNG, pinning backward compatibility."""
+    candidates = ["cave-of-echoes", "clockwork-menagerie", "sky-ship-stowaway"]
+    recent_usage = {
+        "cave-of-echoes": 5,
+        "clockwork-menagerie": 0,
+        "sky-ship-stowaway": 0,
+    }
+    legacy = select_skeleton_for_cell(candidates, recent_usage, random.Random(42))
+    explicit_none = select_skeleton_for_cell(
+        candidates, recent_usage, random.Random(42), theme_overlap=None
+    )
+    assert legacy.slug == explicit_none.slug == "sky-ship-stowaway"
+
+
+def test_select_skeleton_for_cell_zero_overlap_keeps_recency_weighting() -> None:
+    """Every candidate at bonus 0.0 (a request the vocabulary did not
+    recognize) reproduces the recency-only pick exactly: today's behavior is
+    unchanged for a zero-overlap request."""
+    candidates = ["cave-of-echoes", "clockwork-menagerie", "sky-ship-stowaway"]
+    recent_usage = {
+        "cave-of-echoes": 5,
+        "clockwork-menagerie": 0,
+        "sky-ship-stowaway": 0,
+    }
+    zero_overlap = dict.fromkeys(candidates, 0.0)
+    legacy = select_skeleton_for_cell(candidates, recent_usage, random.Random(42))
+    with_zero_overlap = select_skeleton_for_cell(
+        candidates, recent_usage, random.Random(42), theme_overlap=zero_overlap
+    )
+    assert legacy.slug == with_zero_overlap.slug == "sky-ship-stowaway"
+
+
+def test_select_skeleton_for_cell_band_and_cell_filtering_unchanged() -> None:
+    """Theme-aware selection never widens or narrows candidates_for_cell's own
+    band/length/style filtering; it only re-weights within it."""
+    band, length, style = "10-13", "medium", "prose"
+    candidates = candidates_for_cell(band, length, style)
+    overlap = theme_overlap_for_candidates("a great river adventure", band, candidates)
+    selection = select_skeleton_for_cell(
+        candidates, {}, random.Random(0), theme_overlap=overlap
+    )
+    assert selection.slug in candidates
+    assert set(selection.alternatives) == set(candidates)

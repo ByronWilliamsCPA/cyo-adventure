@@ -120,7 +120,9 @@ class TestChoicelessRunCap:
         assert cg1[0].severity is Severity.WARNING
 
     def test_5_8_band_cap_is_two(self) -> None:
-        assert check_choiceless_run_cap(_chain_story("5-8", run_length=2)).findings == []
+        assert (
+            check_choiceless_run_cap(_chain_story("5-8", run_length=2)).findings == []
+        )
         over = check_choiceless_run_cap(_chain_story("5-8", run_length=3))
         assert len(over.findings) == 1
 
@@ -167,7 +169,7 @@ def _decision_story(band: str, option_count: int) -> Storybook:
         {"id": f"c{i}", "label": f"Option {i}.", "target": "n_end"}
         for i in range(option_count)
     ]
-    nodes = [
+    nodes: list[dict[str, object]] = [
         {"id": "n0", "body": "Pick a path.", "is_ending": False, "choices": choices},
         _ending_node("n_end", "e_done"),
     ]
@@ -236,7 +238,7 @@ class TestWordsPerStop:
     def test_unfilled_skeleton_uses_declared_words(self) -> None:
         """A skeleton body (``<<FILL ... words=N ...>>``) is sized from its
         declared word target rather than skipped outright."""
-        nodes = [
+        nodes: list[dict[str, object]] = [
             {
                 "id": "n0",
                 "body": "<<FILL role=beat words=120>>",
@@ -264,7 +266,7 @@ class TestWordsPerStop:
 
 class TestFillGateAcknowledgment:
     def test_shared_content_word_is_silent(self) -> None:
-        nodes = [
+        nodes: list[dict[str, object]] = [
             {
                 "id": "n0",
                 "body": "Pick a path.",
@@ -293,7 +295,7 @@ class TestFillGateAcknowledgment:
         assert [f for f in report.findings if f.node_id == "n_tower"] == []
 
     def test_no_shared_content_word_fires(self) -> None:
-        nodes = [
+        nodes: list[dict[str, object]] = [
             {
                 "id": "n0",
                 "body": "Pick a path.",
@@ -326,7 +328,7 @@ class TestFillGateAcknowledgment:
         assert cg4[0].severity is Severity.WARNING
 
     def test_unfilled_target_is_skipped(self) -> None:
-        nodes = [
+        nodes: list[dict[str, object]] = [
             {
                 "id": "n0",
                 "body": "Pick a path.",
