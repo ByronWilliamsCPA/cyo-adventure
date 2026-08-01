@@ -99,16 +99,45 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   // a failed or slow fetch degrades to no ribbon and no gallery button,
   // never an error state for the shelf itself.
   const [progress, setProgress] = useState<ProgressSummary>(EMPTY_PROGRESS)
+  // #ASSUME: data integrity: EMPTY_PROGRESS is indistinguishable from a real
+  // empty result, so the gallery needs to know WHY it has nothing. Without
+  // this, a failed fetch opens the modal on the empty-state copy ("Keep
+  // reading to start finding endings!"), and it does so in the one place the
+  // contradiction is visible on screen: the gallery BUTTON is gated on
+  // `endingsFor`, which reads reading HISTORY, a separate fetch. So a child
+  // whose card badge reads "3 of 5" can tap through to a modal telling them
+  // they have found none. `/v1/me/progress` is child-principal-only, so a
+  // guardian previewing as their child hits this every time via a 403.
+  // 'loading' shares the unavailable branch: the fetch starts on mount so a
+  // tap almost always lands after it settles, but "we could not load this
+  // yet" is the honest thing to say in the window where it has not.
+  // #VERIFY: LibraryPage.test.tsx "does not report an empty ending collection
+  // when the progress fetch failed".
+  const [progressLoad, setProgressLoad] = useState<{
+    profileId: string
+    status: 'ready' | 'failed'
+  } | null>(null)
+  // Stored WITH the profile it belongs to and derived during render, rather
+  // than reset to 'loading' inside the effect: that would be a synchronous
+  // setState in an effect body (react-hooks/set-state-in-effect). The derived
+  // form is also the more correct one, since it makes a settled result
+  // implicitly stale the moment the profile changes instead of relying on a
+  // reset to land first.
+  const progressStatus: 'loading' | 'ready' | 'failed' =
+    progressLoad !== null && progressLoad.profileId === profileId ? progressLoad.status : 'loading'
   useEffect(() => {
     if (!profileId) return undefined
     let cancelled = false
     progressApi
       .getProgress()
       .then((result) => {
-        if (!cancelled) setProgress(result)
+        if (cancelled) return
+        setProgress(result)
+        setProgressLoad({ profileId, status: 'ready' })
       })
       .catch((err: unknown) => {
         logApiError('progress fetch failed', err)
+        if (!cancelled) setProgressLoad({ profileId, status: 'failed' })
       })
     return () => {
       cancelled = true
@@ -461,7 +490,10 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   const recommendationFor = (item: LibraryItemView) => recommendationsByBook.get(item.id)
   // W3.2: keyed by storybook id, same shape as historyByBook above. A book
   // with no row (progress fetch still loading, failed, or genuinely no
-  // completion yet) simply gets no ribbon and no gallery button.
+  // completion yet) gets no ribbon. It does NOT get "no gallery button": the
+  // button is gated on `endingsFor`, which comes from reading history, so it
+  // can be present while this map is empty. That gap is what `progressStatus`
+  // above exists to close.
   const progressByBook = new Map(progress.books.map((book) => [book.storybook_id, book]))
   const everyPathWalkedFor = (item: LibraryItemView): boolean =>
     progressByBook.get(item.id)?.every_path_walked ?? false
@@ -609,6 +641,7 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
           bookTitle={galleryItem?.title ?? ''}
           totalEndings={galleryBook?.total_endings ?? 0}
           foundEndings={galleryBook?.found_endings ?? []}
+          unavailable={progressStatus !== 'ready'}
         />
       ) : null}
     </div>

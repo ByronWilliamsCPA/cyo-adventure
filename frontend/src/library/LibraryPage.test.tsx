@@ -611,6 +611,62 @@ describe('LibraryPage', () => {
       expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
       expect(screen.queryByText(/endings found/i)).not.toBeInTheDocument()
     })
+
+    // W3.2: the gallery BUTTON is gated on reading history, the gallery's
+    // CONTENTS come from /v1/me/progress. Two fetches, and only one of them
+    // has to succeed for the button to appear, so the failure below is the
+    // one where the screen contradicts itself: the card badge says "2 of 5"
+    // and the modal it opens says nothing has been found.
+    it('does not report an empty ending collection when the progress fetch failed', async () => {
+      mockGet.mockImplementation((url: string) => {
+        if (url === '/v1/me/progress') return Promise.reject(new Error('progress boom'))
+        if (url.startsWith('/v1/reading-history/')) {
+          return Promise.resolve({
+            data: {
+              profile_id: 'p1',
+              books: [{ storybook_id: IN_PROGRESS.id, endings_found: 2, total_endings: 5 }],
+            },
+          })
+        }
+        return Promise.resolve({ data: { stories: [IN_PROGRESS] } })
+      })
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      renderLibrary()
+      const hero = await screen.findByRole('region', { name: /continue reading/i })
+      // The badge proves the child HAS found endings, which is exactly what
+      // makes the empty-state copy a lie rather than merely unhelpful.
+      expect(await within(hero).findByText('2 of 5 endings found')).toBeInTheDocument()
+
+      fireEvent.click(await within(hero).findByTestId('open-endings-gallery'))
+      expect(await screen.findByTestId('endings-gallery-unavailable')).toBeInTheDocument()
+      expect(screen.queryByText(/keep reading to start finding endings/i)).not.toBeInTheDocument()
+      errorSpy.mockRestore()
+    })
+
+    it('still shows the real empty state when progress loads and is genuinely empty', async () => {
+      mockGet.mockImplementation((url: string) => {
+        if (url === '/v1/me/progress') {
+          return Promise.resolve({ data: { badges: [], books: [], totals: null } })
+        }
+        if (url.startsWith('/v1/reading-history/')) {
+          return Promise.resolve({
+            data: {
+              profile_id: 'p1',
+              books: [{ storybook_id: IN_PROGRESS.id, endings_found: 0, total_endings: 5 }],
+            },
+          })
+        }
+        return Promise.resolve({ data: { stories: [IN_PROGRESS] } })
+      })
+      renderLibrary()
+      const hero = await screen.findByRole('region', { name: /continue reading/i })
+      fireEvent.click(await within(hero).findByTestId('open-endings-gallery'))
+      // The point of the pair: 'unavailable' must not become the answer to
+      // every empty gallery, or it just relabels the same wrong message.
+      await waitFor(() => {
+        expect(screen.queryByTestId('endings-gallery-unavailable')).not.toBeInTheDocument()
+      })
+    })
   })
 
   describe('K17 recommendations feed (ADR-016 rings 1-2)', () => {
