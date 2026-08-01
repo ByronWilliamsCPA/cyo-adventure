@@ -11,8 +11,8 @@ existing catalog without an admin having to reopen every book by hand.
 First-cut scope (family-tier; A4's full public-catalog sweep is Phase 9):
 
 - Re-runs ONLY the deterministic gate and the Stage-0 classifiers, never the
-  four LLM review stages (safety/readability/coherence/engagement,
-  ``moderation.stages``). Those stages judge prose quality and independence,
+  LLM review stages (safety/coherence/engagement, ``moderation.stages``).
+  Those stages judge prose quality and independence,
   which a band-policy or classifier-threshold edit does not change; adding
   their LLM cost/latency to every sweep would buy no signal relevant to what
   triggered the sweep. See ``docs/planning/roadmap.md`` Phase 5 and

@@ -588,6 +588,25 @@ class Settings(BaseSettings):
     review_provider: Literal["mock", "ollama", "openrouter", "modal"] = "mock"
     review_openrouter_model: str = "anthropic/claude-sonnet-4.6"
     review_ollama_model: str = "qwen2.5:14b"
+    # Nodes reviewed per Stage-1 safety call (design doc moderation-review-
+    # redesign-2026-07-28.md, section 2.2 item 2). Production target is
+    # ~10-20 nodes/call; default 1 makes every chunk a single-node call,
+    # which is byte-identical to the pre-chunking behavior the stage always
+    # had (pinned by tests/unit/test_moderation_stages.py::
+    # test_safety_stage_batch_size_one_matches_unbatched_behavior, which
+    # asserts the single-node system prompt, prompt text, and unscaled token
+    # budget rather than comparing two runs of the same branch).
+    # Raising the default is gated on an owner-run recall comparison
+    # between batch sizes over the adversarial corpus
+    # (tests/llm_eval/test_adversarial_safety_eval.py), not on this knob
+    # existing; B2 ships the knob at 1 and leaves the comparison to the
+    # owner (B2.6, out of this PR's scope).
+    # #ASSUME: external-resources: batched verdicts may be less accurate
+    # than single-node calls once real passages (not the mock reviewer) are
+    # reviewed several-to-a-call.
+    # #VERIFY: the recall comparison above must pass before any environment
+    # sets this above 1.
+    review_batch_size: int = Field(default=1, ge=1, le=50)
     # Escape hatch for `review_provider="mock"` outside `environment="local"`
     # (design doc section 2.4, moderation review redesign). The mock reviewer
     # runs no real safety review; a non-local process quietly booting with it

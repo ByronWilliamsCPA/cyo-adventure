@@ -195,13 +195,40 @@ class TestObserveItemTargetStageGuard:
 
     @pytest.mark.asyncio
     async def test_target_stage_type_mismatch_raises(self) -> None:
-        """A hand-authored corpus typo (e.g. a string stage) fails loud."""
+        """A hand-authored corpus typo (e.g. a string stage) fails loud.
+
+        Uses ``"1"`` rather than ``"2"`` so the raise can only be attributed to
+        the type mismatch: since Stage 2's retirement a bare ``2`` is itself
+        unrecognized, which would make a ``"2"`` fixture pass for two reasons.
+        """
         item: dict[str, object] = {
             "id": "C9",
             "taxonomy_class": "C",
             "executable": True,
-            "target_stage": "2",  # str, not the expected int 2 or "aggregate"
+            "target_stage": "1",  # str, not the expected int 1 or "aggregate"
             "age_band": "6-8",
+            "nodes": [{"id": "n1", "body": "hello"}],
+        }
+        provider = MockProvider(responses=[])
+        with pytest.raises(ValidationError, match="unrecognized target_stage"):
+            _ = await _observe_item(item, provider)
+
+    @pytest.mark.asyncio
+    async def test_retired_stage_2_raises_rather_than_scoring(self) -> None:
+        """A stale ``target_stage: 2`` must fail loud, not score as a miss.
+
+        Stage 2 (per-node LLM readability) was retired, so its probe branch is
+        gone. Without an explicit raise a leftover corpus item would fall
+        through to an empty verdict list and be recorded as an automatic miss,
+        quietly depressing its taxonomy class's catch-rate with a routing bug
+        dressed up as a safety result.
+        """
+        item: dict[str, object] = {
+            "id": "B9",
+            "taxonomy_class": "B",
+            "executable": True,
+            "target_stage": 2,
+            "age_band": "5-8",
             "nodes": [{"id": "n1", "body": "hello"}],
         }
         provider = MockProvider(responses=[])

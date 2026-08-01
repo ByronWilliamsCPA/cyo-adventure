@@ -63,11 +63,12 @@ _BLOB: dict[str, object] = dict(_CANNED_STORY)
 
 _NODE_COUNT = len(cast("list[object]", _CANNED_STORY["nodes"]))
 
-# Review calls per moderation pass: safety + readability per node, coherence +
-# engagement once each. A repair run makes two passes; pad the budget so an
-# exhausted MockProvider (which raises loudly) signals a real pipeline bug,
-# not a miscounted fixture.
-_REVIEW_BUDGET = 4 * (2 * _NODE_COUNT + 2)
+# Review calls per moderation pass: safety per node (review_batch_size=1, the
+# Settings default, so every chunk is one node), coherence + engagement once
+# each. A repair run makes two passes; pad the budget so an exhausted
+# MockProvider (which raises loudly) signals a real pipeline bug, not a
+# miscounted fixture.
+_REVIEW_BUDGET = 4 * (_NODE_COUNT + 2)
 
 
 def _settings() -> Settings:
@@ -126,9 +127,7 @@ def _load(
     session.get = AsyncMock(return_value=version_row)
 
 
-def _verdict_review_provider(
-    *, readability_flags_first_pass: bool = False
-) -> MockProvider:
+def _verdict_review_provider(*, safety_flags_first_pass: bool = False) -> MockProvider:
     """Build a review backend double that answers each stage with a real verdict.
 
     Unlike the settings-level mock backend (``review_provider="mock"``, whose
@@ -138,24 +137,43 @@ def _verdict_review_provider(
     real verdicts.
 
     Args:
-        readability_flags_first_pass: When True, every readability call in the
-            FIRST moderation pass returns ``"flag"`` (the soft gate), and any
-            later pass (the post-repair re-moderation) returns ``"pass"``.
+        safety_flags_first_pass: When True, every safety call in the FIRST
+            moderation pass returns ``"flag"`` (the soft gate), and any later
+            pass (the post-repair re-moderation) returns ``"safe"``. Stage 2
+            (readability) was retired (design doc 2.7 option (a)); the soft
+            FLAG that used to drive the repair-trigger tests now comes from
+            Stage 1 safety instead, since it is the only stage left capable
+            of a per-node FLAG.
+
+    Coupled to ``review_batch_size == 1`` (the default) in two ways, neither
+    of which announces itself if the default changes:
+
+    1. It answers with a single verdict OBJECT. The batched Stage-1 prompt
+       starts with the same ``"Age band:"`` prefix this dispatches on, but
+       ``_parse_batch_verdicts`` expects a JSON ARRAY, so at a batch size
+       above 1 every batch would be rejected as malformed and every node
+       would fail safe to FLAG.
+    2. ``safety_calls <= _NODE_COUNT`` assumes one call per node, which is
+       how it tells the first moderation pass from the post-repair one. At a
+       batch size of B that boundary is ``ceil(_NODE_COUNT / B)``.
+
+    Symptom if the default is ever raised: these tests fail with unexplained
+    fail-safe FLAGs rather than with anything naming the batch size. The fix
+    is to return an array keyed by the node ids in the prompt and to derive
+    the pass boundary from the batch size, not to relax the assertions.
 
     Returns:
         A :class:`MockProvider` seeded with the dispatching responder.
     """
-    state = {"readability_calls": 0}
+    state = {"safety_calls": 0}
 
     def _respond(prompt: str) -> str:
         if prompt.startswith("Age band:"):
-            return '{"verdict": "safe", "reason": "ok"}'
-        if prompt.startswith("Flesch-Kincaid"):
-            state["readability_calls"] += 1
-            first_pass = state["readability_calls"] <= _NODE_COUNT
-            if readability_flags_first_pass and first_pass:
+            state["safety_calls"] += 1
+            first_pass = state["safety_calls"] <= _NODE_COUNT
+            if safety_flags_first_pass and first_pass:
                 return '{"verdict": "flag", "reason": "too hard"}'
-            return '{"verdict": "pass", "reason": "ok"}'
+            return '{"verdict": "safe", "reason": "ok"}'
         # Coherence and engagement (whole-story prompts) both accept "pass".
         return '{"verdict": "pass", "reason": "ok"}'
 
@@ -182,8 +200,8 @@ def _safety_block_review_provider() -> MockProvider:
             if state["safety_calls"] == 1:
                 return '{"verdict": "block", "reason": "unsafe content"}'
             return '{"verdict": "safe", "reason": "ok"}'
-        # Never reached: a hard block short-circuits before readability/
-        # coherence/engagement run, but answer "pass" defensively so a future
+        # Never reached: a hard block short-circuits before coherence/
+        # engagement run, but answer "pass" defensively so a future
         # short-circuit regression fails on an assertion, not a starved
         # MockProvider raising BusinessLogicError.
         return '{"verdict": "pass", "reason": "ok"}'
@@ -420,8 +438,8 @@ async def test_safety_stage_block_routes_to_auto_reject(
     the real ``run_safety_stage`` to a genuine ``Verdict.BLOCK``. Here Stage 0
     passes (no classifier keys configured, so ``run_classifiers`` is a no-op),
     and the real safety stage parses a "block" verdict on its first node,
-    which must: (1) short-circuit the remaining LLM stages (readability/
-    coherence/engagement never asked for a verdict beyond the padded budget),
+    which must: (1) short-circuit the remaining LLM stages (coherence/
+    engagement never asked for a verdict beyond the padded budget),
     (2) mark the persisted report hard_block=True with an ``llm_safety``
     sourced block finding, and (3) drive ``auto_reject``, never ``submit``.
     """
@@ -548,14 +566,14 @@ async def test_soft_flag_triggers_repair_then_submits(
     """A soft FLAG triggers repair; if repair succeeds and re-moderation is clean,
     submit is awaited and the report carries repaired=True.
 
-    Runs the REAL repair path: readability FLAGs every node on the first
-    pass, the real ``attempt_repair`` re-prompts the generation provider
-    (a MockProvider queued with a revised, schema-valid blob), and the
+    Runs the REAL repair path: safety FLAGs every node on the first pass,
+    the real ``attempt_repair`` re-prompts the generation provider (a
+    MockProvider queued with a revised, schema-valid blob), and the
     re-moderation pass comes back clean.
     """
     story, version = _story(), _version()
     _load(mock_session, story, version)
-    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+    review_seam(_verdict_review_provider(safety_flags_first_pass=True))
 
     revised_blob: dict[str, object] = {**_BLOB, "title": "The Forest Path (revised)"}
     generation_provider = MockProvider(responses=[json.dumps(revised_blob)])
@@ -594,13 +612,13 @@ async def test_mock_review_stamp_survives_adopted_repair(
 
     Unlike ``test_mock_review_escape_hatch_stamps_report_as_not_independent``
     (which deliberately avoids the repair branch), this drives the REAL repair
-    path: readability FLAGs every node on the first pass, ``attempt_repair``
+    path: safety FLAGs every node on the first pass, ``attempt_repair``
     re-prompts the generation provider with a schema-valid revision, and the
     revision is adopted. The assertions are on the PERSISTED report.
     """
     story, version = _story(), _version()
     _load(mock_session, story, version)
-    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+    review_seam(_verdict_review_provider(safety_flags_first_pass=True))
     submit = AsyncMock()
     monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
 
@@ -1186,7 +1204,7 @@ async def test_invalid_repair_is_discarded_and_original_report_submits(
     """
     story, version = _story(), _version()
     _load(mock_session, story, version)
-    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+    review_seam(_verdict_review_provider(safety_flags_first_pass=True))
 
     # Repair yields a structurally invalid blob (parses as JSON, fails schema).
     generation_provider = MockProvider(responses=[json.dumps({"garbage": True})])
@@ -1217,17 +1235,17 @@ async def test_persisted_report_merges_identical_findings_across_nodes(
 ) -> None:
     """Task B1.4: the persist site runs merge_findings before persistence.
 
-    Reuses the same "readability flags every node, repair discarded"
-    scenario as test_invalid_repair_is_discarded_and_original_report_submits
-    so the original (unrepaired) report -- one identical reading_level FLAG
-    per node -- is what reaches the persist site. Before the merge stage this
-    would persist one finding per node; after it, the identical
-    (category, concern) findings collapse into a single finding whose
-    node_ids names every affected node.
+    Reuses the same "safety flags every node, repair discarded" scenario as
+    test_invalid_repair_is_discarded_and_original_report_submits so the
+    original (unrepaired) report -- one identical safety FLAG per node -- is
+    what reaches the persist site. Before the merge stage this would persist
+    one finding per node; after it, the identical (category, concern)
+    findings collapse into a single finding whose node_ids names every
+    affected node.
     """
     story, version = _story(), _version()
     _load(mock_session, story, version)
-    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+    review_seam(_verdict_review_provider(safety_flags_first_pass=True))
 
     generation_provider = MockProvider(responses=[json.dumps({"garbage": True})])
     submit = AsyncMock()
@@ -1245,11 +1263,9 @@ async def test_persisted_report_merges_identical_findings_across_nodes(
     submit.assert_awaited_once()
     assert version.moderation_report is not None
     findings = cast("list[dict[str, object]]", version.moderation_report["findings"])
-    reading_level_findings = [
-        f for f in findings if f.get("category") == "reading_level"
-    ]
-    assert len(reading_level_findings) == 1
-    merged = reading_level_findings[0]
+    safety_findings = [f for f in findings if f.get("category") == "safety"]
+    assert len(safety_findings) == 1
+    merged = safety_findings[0]
     assert merged["node_ids"] is not None
     assert len(cast("list[str]", merged["node_ids"])) == _NODE_COUNT
     assert "findings merged" in cast("str", merged["message"])
@@ -1276,7 +1292,7 @@ async def test_repair_failing_gate_is_discarded_and_routes_to_human_review(
     """
     story, version = _story(), _version()
     _load(mock_session, story, version)
-    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+    review_seam(_verdict_review_provider(safety_flags_first_pass=True))
 
     broken_blob = copy.deepcopy(_BLOB)
     nodes = cast("list[dict[str, object]]", broken_blob["nodes"])
@@ -1333,7 +1349,7 @@ async def test_repair_identity_mismatch_is_discarded(
         storybook_id="s1", version=1, blob=imported_blob, model="gen-model"
     )
     _load(mock_session, story, version)
-    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+    review_seam(_verdict_review_provider(safety_flags_first_pass=True))
 
     # The mock generation provider returns its canned stub (id "s_mock_generated"):
     # schema-valid and gate-clean, but a different story than the import.
@@ -1374,7 +1390,7 @@ async def test_repair_passing_gate_is_adopted(
     """
     story, version = _story(), _version()
     _load(mock_session, story, version)
-    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+    review_seam(_verdict_review_provider(safety_flags_first_pass=True))
 
     revised_blob: dict[str, object] = {**_BLOB, "title": "The Forest Path (revised)"}
     generation_provider = MockProvider(responses=[json.dumps(revised_blob)])
@@ -1610,7 +1626,7 @@ async def test_repair_preserving_declared_sentinel_is_adopted(
         personalization_eligible=True,
     )
     _load(mock_session, story, version, job=job)
-    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+    review_seam(_verdict_review_provider(safety_flags_first_pass=True))
 
     revised_blob = copy.deepcopy(original_blob)
     revised_nodes = cast("list[dict[str, object]]", revised_blob["nodes"])
@@ -1681,7 +1697,7 @@ async def test_adopted_repair_clears_personalization_eligible_when_sentinels_los
         personalization_eligible=True,
     )
     _load(mock_session, story, version, job=job)
-    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+    review_seam(_verdict_review_provider(safety_flags_first_pass=True))
 
     # The repair rewrites the sentinel-bearing node back to plain prose: a
     # well-formed, gate-passing blob that simply no longer carries a sentinel.
@@ -1732,7 +1748,7 @@ async def test_repair_forged_sentinel_is_discarded_and_routes_to_human_review(
     """
     story, version = _story(), _version()
     _load(mock_session, story, version)
-    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+    review_seam(_verdict_review_provider(safety_flags_first_pass=True))
 
     revised_blob = copy.deepcopy(_BLOB)
     nodes = cast("list[dict[str, object]]", revised_blob["nodes"])
@@ -1789,7 +1805,7 @@ async def test_repair_contract_unrecoverable_is_discarded(
         authoring_metadata={"skeleton_slug": "themed-slug"},  # no skeleton_band
     )
     _load(mock_session, story, version, job=job)
-    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+    review_seam(_verdict_review_provider(safety_flags_first_pass=True))
 
     revised_blob: dict[str, object] = {**_BLOB, "title": "The Forest Path (revised)"}
     generation_provider = MockProvider(responses=[json.dumps(revised_blob)])
@@ -1853,7 +1869,7 @@ async def test_repair_contract_file_missing_is_discarded_and_routes_to_human_rev
         },
     )
     _load(mock_session, story, version, job=job)
-    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+    review_seam(_verdict_review_provider(safety_flags_first_pass=True))
 
     missing_path = tmp_path / "themed-slug.json"
     monkeypatch.setattr(
@@ -2317,3 +2333,111 @@ async def test_nodes_reviewed_zero_when_stage1_block_short_circuits(
     summary = cast("dict[str, object]", version.moderation_report["summary"])
     assert summary["hard_block"] is True
     assert _aggregate(version)["nodes_reviewed"] == 0
+
+
+# ---------------------------------------------------------------------------
+# review_batch_size wiring (design doc 2.2 item 2): settings.review_batch_size
+# reaches run_safety_stage through the pipeline call site.
+# ---------------------------------------------------------------------------
+
+
+def _extract_batch_node_ids(prompt: str) -> list[str]:
+    """Pull node ids from a Stage-1 batch prompt's "[node_id] <untrusted_passage>" lines."""
+    return [
+        line[1 : line.index("]")]
+        for line in prompt.splitlines()
+        if line.startswith("[") and "]" in line
+    ]
+
+
+def _batched_verdict_review_provider() -> MockProvider:
+    """Build a review backend double that answers Stage-1 batch prompts.
+
+    Unlike ``_verdict_review_provider`` (one node per call), this recognizes
+    the batch prompt shape (``"Age band:"`` followed by a ``"Nodes:"``
+    section) and returns one schema-correct array entry per node id found in
+    the prompt, so a chunked ``run_safety_stage`` call gets a genuine
+    per-node verdict for every node in its batch.
+    """
+
+    def _respond(prompt: str) -> str:
+        if prompt.startswith("Age band:") and "Nodes:" in prompt:
+            node_ids = _extract_batch_node_ids(prompt)
+            return json.dumps(
+                [
+                    {"verdict": "safe", "reason": "ok", "node_id": nid}
+                    for nid in node_ids
+                ]
+            )
+        if prompt.startswith("Age band:"):
+            return '{"verdict": "safe", "reason": "ok"}'
+        # Coherence and engagement (whole-story prompts) both accept "pass".
+        return '{"verdict": "pass", "reason": "ok"}'
+
+    return MockProvider(responses=[_respond] * _REVIEW_BUDGET)
+
+
+@pytest.mark.unit
+async def test_review_batch_size_from_settings_drives_chunked_safety_calls(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """settings.review_batch_size reaches run_safety_stage through the
+    pipeline's call site. With every node fitting in a single batch, Stage 1
+    issues one call instead of one per node, and the story still reviews
+    clean end to end.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    provider = _batched_verdict_review_provider()
+    review_seam(provider)
+    settings = Settings(review_provider="mock", review_batch_size=_NODE_COUNT)
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=settings,
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    safety_calls = [c for c in provider.calls if c.startswith("Age band:")]
+    assert len(safety_calls) == 1
+    assert version.moderation_report is not None
+    findings = cast("list[dict[str, object]]", version.moderation_report["findings"])
+    assert not any(f.get("category") == "pipeline" for f in findings)
+    assert _aggregate(version)["nodes_reviewed"] == _NODE_COUNT
+
+
+@pytest.mark.unit
+async def test_review_batch_size_default_is_one_node_per_call(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """The Settings default (review_batch_size=1) issues one Stage-1 call per
+    node, matching pre-chunking behavior exactly (B2.1/B2.2 parity)."""
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    provider = _batched_verdict_review_provider()
+    review_seam(provider)
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    safety_calls = [c for c in provider.calls if c.startswith("Age band:")]
+    assert len(safety_calls) == _NODE_COUNT

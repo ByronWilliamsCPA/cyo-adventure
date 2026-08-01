@@ -10,8 +10,10 @@
 '   src/cyo_adventure/moderation/classifiers.py      (Stage 0: OpenAI Moderation +
 '                                                     Perspective; bright-line block,
 '                                                     graded advisory floor 0.01)
-'   src/cyo_adventure/moderation/stages.py           (Stages 1-4: LLM safety/
-'                                                     readability/coherence/engagement)
+'   src/cyo_adventure/moderation/stages.py           (Stages 1, 3-4: LLM safety/
+'                                                     coherence/engagement; Stage 2
+'                                                     readability was retired, the
+'                                                     validator gate covers it)
 '   src/cyo_adventure/moderation/repair.py           (attempt_repair: one bounded
 '                                                     re-prompt on a soft flag)
 '   src/cyo_adventure/moderation/report.py           (Finding, ModerationReport,
@@ -70,9 +72,8 @@ package "Moderation Pipeline" #E8F5E9 {
     component "run_classifiers()\nmoderation/classifiers.py\nOpenAI Moderation + Perspective\nbright-line category -> BLOCK\ngraded score >= 0.01 -> ADVISORY\n(missing key -> classifier skipped)" as stage0 #DCEDC8
   }
 
-  package "Stages 1-4: LLM Review" #DCEDC8 {
-    component "Stage 1: Safety\nrun_safety_stage()\nHARD gate: safe|flag|block" as stage1 #FFCDD2
-    component "Stage 2: Readability\nrun_readability_stage()\nsoft gate: flag|pass" as stage2 #FFF9C4
+  package "Stages 1, 3-4: LLM Review" #DCEDC8 {
+    component "Stage 1: Safety\nrun_safety_stage()\nHARD gate: safe|flag|block\nnodes reviewed in chunks of\nreview_batch_size (default 1)" as stage1 #FFCDD2
     component "Stage 3: Coherence\nrun_coherence_stage()\nsoft gate: flag|pass" as stage3 #FFF9C4
     component "Stage 4: Engagement\nrun_engagement_stage()\nadvisory only" as stage4 #C8E6C9
   }
@@ -114,11 +115,9 @@ stage0 --> report : "bright-line BLOCK /\nadvisory findings"
 entry ..> stage1 : "skip Stage 0->4 entirely\nif Stage 0 hard block"
 review_provider --> stage1
 stage1 --> report : "BLOCK / FLAG / PASS"
-entry ..> stage2 : "skip Stages 1-4\nif Stage 1 BLOCK"
-review_provider --> stage2
+entry ..> stage3 : "skip Stages 3-4\nif Stage 1 BLOCK"
 review_provider --> stage3
 review_provider --> stage4
-stage2 --> report
 stage3 --> report
 stage4 --> report
 

@@ -472,7 +472,7 @@ async def test_embed_series_block_survives_moderation_repair(
     ``tests/unit/test_moderation_pipeline.py::test_soft_flag_triggers_repair_then_submits``
     and
     ``tests/integration/test_pipeline_event_instrumentation.py::test_repaired_moderation_writes_repair_applied_then_completed``:
-    readability FLAGs once, everything else is clean, and ``attempt_repair``
+    coherence FLAGs once, everything else is clean, and ``attempt_repair``
     is stubbed to return a schema-valid revised blob that carries NO
     ``metadata.series`` -- exactly the shape a real repair produces, since
     its prompt only asks the model to preserve node ids/choices/branching,
@@ -537,24 +537,21 @@ async def test_embed_series_block_survives_moderation_repair(
             pipeline_mod, "run_safety_stage", AsyncMock(return_value=[])
         )
         monkeypatch.setattr(
-            pipeline_mod, "run_coherence_stage", AsyncMock(return_value=[])
-        )
-        monkeypatch.setattr(
             pipeline_mod, "run_engagement_stage", AsyncMock(return_value=[])
         )
         flag_finding = Finding(
-            stage=2,
-            source=Source.LLM_READABILITY,
-            category="reading_level",
+            stage=3,
+            source=Source.LLM_COHERENCE,
+            category="coherence",
             node_id="n_start",
             verdict=Verdict.FLAG,
-            message="too hard",
+            message="state contradiction",
         )
         # First call (initial moderation) FLAGs; second call (post-repair
         # re-moderation) is clean, so the repair is adopted.
         monkeypatch.setattr(
             pipeline_mod,
-            "run_readability_stage",
+            "run_coherence_stage",
             AsyncMock(side_effect=[[flag_finding], []]),
         )
         revised_blob: dict[str, object] = {
@@ -691,16 +688,21 @@ def _series_seed_rows(family: Family, series: Series, concept: Concept) -> Story
 
 
 def _stub_moderation_stages(
-    monkeypatch: pytest.MonkeyPatch, *, readability: AsyncMock
+    monkeypatch: pytest.MonkeyPatch, *, coherence: AsyncMock
 ) -> None:
-    """All-clean moderation stages except the supplied readability stub."""
+    """All-clean moderation stages except the supplied coherence stub.
+
+    Coherence (Stage 3) is the soft gate these tests drive: it is the cheapest
+    way to make ``has_soft_flag`` true and fire the real ``attempt_repair``
+    path. Any soft-FLAG source would do, since routing keys off the verdict,
+    not the finding's ``source``.
+    """
     monkeypatch.setattr(pipeline_mod, "run_classifiers", AsyncMock(return_value=[]))
     monkeypatch.setattr(pipeline_mod, "run_safety_stage", AsyncMock(return_value=[]))
-    monkeypatch.setattr(pipeline_mod, "run_coherence_stage", AsyncMock(return_value=[]))
     monkeypatch.setattr(
         pipeline_mod, "run_engagement_stage", AsyncMock(return_value=[])
     )
-    monkeypatch.setattr(pipeline_mod, "run_readability_stage", readability)
+    monkeypatch.setattr(pipeline_mod, "run_coherence_stage", coherence)
 
 
 async def test_persist_and_moderate_repair_roundtrip_embeds_series_block(
@@ -740,16 +742,16 @@ async def test_persist_and_moderate_repair_roundtrip_embeds_series_block(
         await session.flush()
 
         flag_finding = Finding(
-            stage=2,
-            source=Source.LLM_READABILITY,
-            category="reading_level",
+            stage=3,
+            source=Source.LLM_COHERENCE,
+            category="coherence",
             node_id="n_start",
             verdict=Verdict.FLAG,
-            message="too hard",
+            message="state contradiction",
         )
         _stub_moderation_stages(
             monkeypatch,
-            readability=AsyncMock(side_effect=[[flag_finding], []]),
+            coherence=AsyncMock(side_effect=[[flag_finding], []]),
         )
         story_id = f"s_{job.id}"
         revised_blob: dict[str, object] = {
@@ -837,7 +839,7 @@ async def test_persist_and_moderate_embed_failure_rolls_back_and_fails_job(
         # production it is: the worker commits the running transition first).
         await session.commit()
 
-        _stub_moderation_stages(monkeypatch, readability=AsyncMock(return_value=[]))
+        _stub_moderation_stages(monkeypatch, coherence=AsyncMock(return_value=[]))
         monkeypatch.setattr(
             worker_mod, "_default_settings", Settings(review_provider="mock")
         )

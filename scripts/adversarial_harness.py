@@ -9,9 +9,9 @@ thresholds in ``docs/planning/safety/adversarial-safety-evaluation.md``.
 
 Honesty guardrail: the mock review provider returns ``"{}"`` for every call, which
 the stage parser maps to the fail-safe verdict (Stage 1 -> FLAG, soft stages ->
-PASS). A mock run therefore flags every Stage-1-routed item by fail-safe, but a
-Stage-2 (readability) item still resolves to PASS and can show as a spurious miss;
-either way, a mock run measures nothing about real classifier discrimination. The
+PASS). A mock run therefore flags every executable item by fail-safe, since every
+executable probe now routes to Stage 1; a mock run measures nothing about real
+classifier discrimination. The
 harness detects ``review_provider == "mock"`` and refuses to report the run as
 evidence: it prints a prominent notice and exits non-zero regardless of the apparent
 catch-rate. A real evaluation needs a live review model::
@@ -62,7 +62,7 @@ from cyo_adventure.moderation.review_provider import (
     ReviewProvider,
     build_review_provider,
 )
-from cyo_adventure.moderation.stages import run_readability_stage, run_safety_stage
+from cyo_adventure.moderation.stages import run_safety_stage
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 
@@ -90,23 +90,6 @@ ItemStatus = Literal[
 ]
 ReviewProviderName = Literal["mock", "openrouter", "ollama"]
 
-# Stage-2 (readability) needs a Flesch-Kincaid grade target; the corpus items are
-# banded, not grade-tagged, so map each band to a representative grade for the probe.
-# #ASSUME: data integrity: the mapped grade is approximate by design. The current
-# Stage-2 corpus item is far outside any reasonable band, so the exact target does
-# not change its flag outcome.
-# #VERIFY: if a future Stage-2 item sits close to a band boundary, confirm the
-# approximation still doesn't flip caught/missed before trusting its result.
-_BAND_GRADE: dict[str, float] = {
-    "3-5": 0.5,
-    "5-8": 2.0,
-    "8-11": 4.0,
-    "10-13": 6.0,
-    "13-16": 9.0,
-    "16+": 11.0,
-}
-
-_READABILITY_TOLERANCE = 1.5
 _PROBE_MAX_TOKENS = 1024
 
 
@@ -307,24 +290,15 @@ async def _observe_item(
             return [], True
         return [], False
 
-    # #ASSUME: security: production (moderation/pipeline.py) always routes Stage
-    # 1/2 calls through a PiiGuardedProvider, never the bare review provider. This
+    # #ASSUME: security: production (moderation/pipeline.py) always routes Stage 1
+    # calls through a PiiGuardedProvider, never the bare review provider. This
     # probe must match that topology so a guard regression would show up here too,
     # not just in production.
-    # #VERIFY: guarded, not review_provider, is passed to both stage calls below.
+    # #VERIFY: guarded, not review_provider, is passed to the stage call below.
     nodes = _nodes_of(item)
     stage = item.get("target_stage")
     band = _as_str(item.get("age_band"))
-    if stage == 2:
-        target_grade = _BAND_GRADE.get(band, 4.0)
-        findings = await run_readability_stage(
-            provider=guarded,
-            nodes=nodes,
-            reading_target=target_grade,
-            tolerance=_READABILITY_TOLERANCE,
-            max_tokens=_PROBE_MAX_TOKENS,
-        )
-    elif stage in (1, "aggregate"):
+    if stage in (1, "aggregate"):
         # Stage 1 (per-node safety) covers both target_stage == 1 and the
         # aggregate (known-gap) items, which are run per node to demonstrate the gap.
         findings = await run_safety_stage(
@@ -335,8 +309,10 @@ async def _observe_item(
         )
     else:
         # #ASSUME: data integrity: target_stage is hand-authored corpus JSON with no
-        # schema validation on load. A typo (e.g. "2" instead of 2) must not silently
-        # misroute an item into the wrong probe and corrupt its scored outcome.
+        # schema validation on load. A typo (e.g. "1" instead of 1) must not silently
+        # misroute an item into the wrong probe and corrupt its scored outcome. Since
+        # Stage 2's retirement this branch also catches a stale target_stage == 2,
+        # which must fail loudly rather than score as an automatic miss.
         # #VERIFY: test_target_stage_type_mismatch_raises exercises this branch.
         item_id = _as_str(item.get("id")) or "<unknown>"
         msg = f"item {item_id!r} has an unrecognized target_stage: {stage!r}"

@@ -90,6 +90,24 @@ def build_review_surface(
                 view.verdict, view.score, noise_floor=admin_noise_floor
             ):
                 continue
+            # #CRITICAL: security: a structural finding describes the PIPELINE
+            # ("the reviewer was unavailable on 12 nodes"), not the prose of any
+            # one passage, so it must never enter the per-node fan-out below.
+            # Stage A (8ca8d1b3) collapsed N per-node fail-safe findings into a
+            # single story-level finding precisely to stop a reviewer outage from
+            # flooding the approver's queue with N identical rows. Stage B2 gave
+            # that finding node_ids so the ranking stage can weigh its true node
+            # coverage; without this guard those ids route it straight back
+            # through the fan-out and reinstate the flood, while simultaneously
+            # dropping it out of the guardian content summary, which is built
+            # from story_level_findings. Both regressions, opposite directions,
+            # one cause. node_ids stays populated on the view for the admin
+            # detail panel and the ranker; only the routing changes.
+            # #VERIFY: tests/unit/test_review_surface.py::
+            # test_structural_finding_with_node_ids_stays_story_level.
+            if view.structural:
+                story_level.append(view)
+                continue
             # #CRITICAL: security: a merged finding (design doc 2.2) names every
             # affected node in node_ids and only the first in node_id. Grouping
             # on node_id alone would render one passage and leave the rest of

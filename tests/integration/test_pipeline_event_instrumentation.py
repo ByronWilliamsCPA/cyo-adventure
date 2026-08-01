@@ -36,9 +36,6 @@ from cyo_adventure.moderation.stages import (
     run_engagement_stage as _real_engagement,
 )
 from cyo_adventure.moderation.stages import (
-    run_readability_stage as _real_readability,
-)
-from cyo_adventure.moderation.stages import (
     run_safety_stage as _real_safety,
 )
 from tests.conftest import make_clean_moderation_report
@@ -88,7 +85,7 @@ def stub_stages(monkeypatch: pytest.MonkeyPatch) -> Callable[..., None]:
 
     Returns:
         An installer accepting ``classifiers`` (Stage-0 findings, default
-        clean) and ``readability`` (a pre-built async mock for tests needing
+        clean) and ``safety`` (a pre-built async mock for tests needing
         per-call side effects; build it with ``create_autospec`` to keep the
         signature check, default clean); all other stages are stubbed clean.
     """
@@ -96,7 +93,7 @@ def stub_stages(monkeypatch: pytest.MonkeyPatch) -> Callable[..., None]:
     def _install(
         *,
         classifiers: list[Finding] | None = None,
-        readability: AsyncMock | None = None,
+        safety: AsyncMock | None = None,
     ) -> None:
         monkeypatch.setattr(
             pipeline_mod,
@@ -104,7 +101,6 @@ def stub_stages(monkeypatch: pytest.MonkeyPatch) -> Callable[..., None]:
             create_autospec(_real_classifiers, return_value=classifiers or []),
         )
         for name, real in (
-            ("run_safety_stage", _real_safety),
             ("run_coherence_stage", _real_coherence),
             ("run_engagement_stage", _real_engagement),
         ):
@@ -113,10 +109,10 @@ def stub_stages(monkeypatch: pytest.MonkeyPatch) -> Callable[..., None]:
             )
         monkeypatch.setattr(
             pipeline_mod,
-            "run_readability_stage",
-            readability
-            if readability is not None
-            else create_autospec(_real_readability, return_value=[]),
+            "run_safety_stage",
+            safety
+            if safety is not None
+            else create_autospec(_real_safety, return_value=[]),
         )
 
     return _install
@@ -992,7 +988,7 @@ async def test_repaired_moderation_writes_repair_applied_then_completed(
     event followed by exactly one moderation_completed event with
     payload["repaired"] is True.
 
-    Readability FLAGs on the first pass, then reports clean after the repair,
+    Safety FLAGs on the first pass, then reports clean after the repair,
     exercised against a real session so both events land in the durable
     pipeline_event table. The repair itself runs the REAL ``attempt_repair``
     against a MockProvider queued with the revised, schema-valid blob.
@@ -1001,18 +997,16 @@ async def test_repaired_moderation_writes_repair_applied_then_completed(
     await _seed_draft_storybook(sessions, story_id)
 
     flag_finding = Finding(
-        stage=2,
-        source=Source.LLM_READABILITY,
-        category="reading_level",
+        stage=1,
+        source=Source.LLM_SAFETY,
+        category="safety",
         node_id="n1",
         verdict=Verdict.FLAG,
         message="too hard",
     )
     # First call (initial moderation) returns the FLAG; second call (post-repair
     # re-moderation) returns clean.
-    stub_stages(
-        readability=create_autospec(_real_readability, side_effect=[[flag_finding], []])
-    )
+    stub_stages(safety=create_autospec(_real_safety, side_effect=[[flag_finding], []]))
     revised_blob: dict[str, object] = {
         **dict(_CANNED_STORY),
         "title": "The Forest Path (revised)",

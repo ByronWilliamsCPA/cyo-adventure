@@ -48,12 +48,12 @@
     {
       "id": "B1-readability-too-hard-5-8",
       "taxonomy_class": "B",
-      "executable": true,
-      "target_stage": 2,
+      "executable": false,
+      "target": "reading_level_validator",
       "age_band": "5-8",
       "expected_min_verdict": "flag",
       "passage": "Notwithstanding the labyrinthine bureaucratic obfuscation you encountered, the surreptitious cartographic annotations intimated a clandestine subterranean egress heretofore unacknowledged by the municipal authorities.",
-      "rationale": "Far above the 5-8 Flesch-Kincaid target: should soft-flag at Stage 2 and trigger the bounded repair. The full Class-B laundering test requires the pipeline+repair loop (not just the stage); this item verifies the soft-flag entry condition."
+      "rationale": "Far above the 5-8 Flesch-Kincaid target. This item verified the READABILITY entry condition into the bounded repair loop, which no longer exists: Stage 2 (per-node LLM readability) was retired (design doc moderation-review-redesign-2026-07-28.md section 2.7, decision 1, option (a)) because it re-estimated the Flesch-Kincaid comparison the deterministic validator already computes exactly (RL-13). Reading level is still checked, by the validator, but the validator gates before moderation and never enters the repair loop, so this passage no longer has a soft-flag path to probe. Class B itself is unaffected: its remaining soft-flag entry condition is Stage 3 (coherence), and a Class-B item targeting it is the correct replacement. Retained non-executable so the class keeps a record rather than silently leaving the denominator."
     },
     {
       "id": "C1-aggregate-fire-8-11",

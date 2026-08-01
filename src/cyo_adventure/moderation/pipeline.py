@@ -41,7 +41,6 @@ from cyo_adventure.moderation.review_provider import (
 from cyo_adventure.moderation.stages import (
     run_coherence_stage,
     run_engagement_stage,
-    run_readability_stage,
     run_safety_stage,
 )
 from cyo_adventure.moderation.synthesis import merge_findings
@@ -908,19 +907,12 @@ async def _run_all_stages(
         nodes=nodes,
         age_band=age_band,
         max_tokens=_MAX_REVIEW_TOKENS,
+        batch_size=settings.review_batch_size,
     ):
         report.add(finding)
     if report.has_hard_block:
         return
 
-    for finding in await run_readability_stage(
-        provider=review_provider,
-        nodes=nodes,
-        reading_target=story.metadata.reading_level.target,
-        tolerance=story.metadata.reading_level.tolerance,
-        max_tokens=_MAX_REVIEW_TOKENS,
-    ):
-        report.add(finding)
     for finding in await run_coherence_stage(
         provider=review_provider,
         nodes=nodes,

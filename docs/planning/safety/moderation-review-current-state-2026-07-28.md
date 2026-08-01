@@ -55,6 +55,16 @@ after draft persistence and drives every story to `submit` (in_review) or
 | 3: LLM coherence | `stages.py::run_coherence_stage` | whole story | FLAG / PASS | soft |
 | 4: LLM engagement | `stages.py::run_engagement_stage` | whole story | ADVISORY / PASS | advisory |
 
+> **Superseded row, kept deliberately.** Stage 2 (LLM readability) was retired by
+> Stage B2 of this redesign track; `run_readability_stage` no longer exists. The
+> row stays because this document is the dated evidence base for *why* the
+> redesign happened, and Stage 2's per-node FLAGs were part of the flood being
+> measured. Read the table as the 2026-07-28 snapshot it says it is, not as the
+> current pipeline; for that, see the Stage 1/3/4 set in
+> `docs/architecture/diagrams/component-moderation.puml`. Reading level is still
+> checked, by the deterministic validator gate (RL-13), which runs before
+> moderation and never enters the repair loop.
+
 Stage 0 also emits two whole-story, unscored findings that are easy to miss
 because they are not per-node content verdicts: `classifier_degraded`
 (ADVISORY, `classifiers.py:106-116`, emitted when a classifier fails or is
