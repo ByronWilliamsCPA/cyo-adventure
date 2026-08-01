@@ -84,7 +84,8 @@ def _profile(age_band: str = "8-11", cap: float = 99.0) -> ChildProfile:
 
 
 def test_brief_from_request_uses_band_budget_and_generic_protagonist() -> None:
-    """The brief inherits band node/ending budgets and a generic protagonist."""
+    """The brief targets the middle of the band's node envelope (W2.2 unforce)
+    with the ending count scaled to match, and a generic protagonist."""
     request = StoryRequest(
         family_id=uuid.uuid4(),
         profile_id=uuid.uuid4(),
@@ -99,8 +100,11 @@ def test_brief_from_request_uses_band_budget_and_generic_protagonist() -> None:
     assert brief.age_band == AgeBand.BAND_8_11
     assert brief.length == Length.SHORT
     assert brief.narrative_style == NarrativeStyle.PROSE
-    assert brief.target_node_count == 15  # band_profile 8-11 min_nodes
-    assert brief.ending_count == 3  # band_profile 8-11 min_endings
+    # band_profile 8-11 is min_nodes=15, max_nodes=30; round(midpoint) == 22.
+    assert brief.target_node_count == 22
+    # breadth_scaled_floors(22, "prose") == ceil(22 * 0.15) == 4, above the
+    # band's absolute min_endings floor of 3.
+    assert brief.ending_count == 4
     assert brief.protagonist.name == "Explorer"  # never a real child name
     assert brief.tier == 1
 

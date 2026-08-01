@@ -18,6 +18,13 @@ since ``ConceptBrief`` has no structured per-flag cap field of its own. The
 deterministic validation gate (``validator/policy.py``) still enforces only
 the band ceiling unconditionally; this is guidance to the generator, not a
 second enforcement point.
+
+W2.2 unforce (design review finding 2.5): tone is derived from the request's
+own text (``story_requests/tone.py::derive_tone``, D5/D18) instead of the
+former hardcoded ``"gentle"``, and the structural target is the middle of the
+band's node envelope with the ending count scaled to match, instead of the
+band floor. ``tier`` stays fixed at 1 and ``structure_pattern`` stays
+``BRANCH_AND_BOTTLENECK``; both are out of this change's scope.
 """
 
 from __future__ import annotations
@@ -30,6 +37,7 @@ from cyo_adventure.generation.concept import (
     Protagonist,
     StructurePattern,
 )
+from cyo_adventure.story_requests.tone import derive_tone
 from cyo_adventure.storybook.models import (
     AgeBand,
     ContentFlagLevel,
@@ -37,7 +45,7 @@ from cyo_adventure.storybook.models import (
     NarrativeStyle,
     level_rank,
 )
-from cyo_adventure.validator.band_profile import profile_for
+from cyo_adventure.validator.band_profile import breadth_scaled_floors, profile_for
 
 if TYPE_CHECKING:
     from cyo_adventure.db.models import ChildProfile, StoryRequest
@@ -175,14 +183,6 @@ def brief_from_request(
     # #VERIFY: test_brief_from_request_band_comes_from_request_not_profile.
     age_band = AgeBand(request.age_band)
     band = profile_for(request.age_band)
-    node_count = band.min_nodes if band is not None else _FALLBACK_NODES
-    ending_count = band.min_endings if band is not None else _FALLBACK_ENDINGS
-    reading_target = (
-        profile.reading_level_cap
-        if profile is not None and profile.reading_level_cap < _READING_CAP_SENTINEL
-        else _BAND_FK_TARGET[age_band]
-    )
-    content_nogo, content_flag_constraints = _content_controls(profile, age_band)
     # #ASSUME: data integrity: the ORM column default ("prose") only applies
     # at flush/INSERT time, not at Python object construction, so an
     # in-memory request built without an explicit narrative_style (the common
@@ -193,6 +193,28 @@ def brief_from_request(
     # the ORM column is only true post-flush, so the value is cast to
     # ``str | None`` here to match the real pre-flush runtime shape.
     narrative_style_value = cast("str | None", request.narrative_style)
+    narrative_style_str = narrative_style_value or NarrativeStyle.PROSE.value
+    # W2.2 unforce (design review finding 2.5): target the middle of the
+    # band's node envelope rather than its floor (band.min_nodes), and scale
+    # the ending count with it via the same node-count-proportional formula
+    # the validator itself uses for a scale-classified story
+    # (band_profile.breadth_scaled_floors, ADR-011 section 6: endings are
+    # reconvergent leaves scaling with node count). ``max`` with the band's
+    # absolute floor keeps a small band (e.g. 3-5) from ever requesting fewer
+    # endings than PL-17 would accept.
+    if band is not None:
+        node_count = round((band.min_nodes + band.max_nodes) / 2)
+        scaled_min_endings, _ = breadth_scaled_floors(node_count, narrative_style_str)
+        ending_count = max(band.min_endings, scaled_min_endings)
+    else:
+        node_count = _FALLBACK_NODES
+        ending_count = _FALLBACK_ENDINGS
+    reading_target = (
+        profile.reading_level_cap
+        if profile is not None and profile.reading_level_cap < _READING_CAP_SENTINEL
+        else _BAND_FK_TARGET[age_band]
+    )
+    content_nogo, content_flag_constraints = _content_controls(profile, age_band)
     return ConceptBrief(
         premise=request.request_text,
         protagonist=Protagonist(
@@ -203,7 +225,7 @@ def brief_from_request(
         age_band=age_band,
         reading_level_target=reading_target,
         tier=1,
-        tone="gentle",
+        tone=derive_tone(request.request_text, age_band),
         target_node_count=node_count,
         ending_count=ending_count,
         structure_pattern=StructurePattern.BRANCH_AND_BOTTLENECK,
