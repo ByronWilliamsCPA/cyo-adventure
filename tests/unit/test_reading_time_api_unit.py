@@ -15,6 +15,8 @@ import pytest
 from cyo_adventure.api.deps import Principal
 from cyo_adventure.api.reading_time import (
     _MAX_SINGLE_FLUSH_SECONDS,
+    _MAX_UTC_OFFSET_SECONDS,
+    _ONE_DAY_SECONDS,
     _clamp_seconds_delta,
     _elapsed_ceiling_seconds,
     _require_child_profile,
@@ -150,10 +152,39 @@ class TestClamp:
         ceiling = _elapsed_ceiling_seconds(_TODAY, _NOW, last_updated)
         assert ceiling == pytest.approx(30.0)
 
-    def test_new_bucket_today_bounds_by_time_since_midnight(self) -> None:
+    def test_new_bucket_today_bounds_by_time_since_earliest_local_midnight(
+        self,
+    ) -> None:
+        # body.date is a READER-LOCAL date, so the day's earliest possible
+        # start is its UTC midnight offset by the largest positive UTC offset.
         ceiling = _elapsed_ceiling_seconds(_TODAY, _NOW, None)
-        expected = _NOW - datetime.combine(_TODAY, datetime.min.time(), tzinfo=UTC)
+        midnight = datetime.combine(_TODAY, datetime.min.time(), tzinfo=UTC)
+        expected = _NOW - (midnight - timedelta(seconds=_MAX_UTC_OFFSET_SECONDS))
         assert ceiling == pytest.approx(expected.total_seconds())
+
+    def test_first_flush_for_a_reader_ahead_of_utc_is_not_clamped_to_zero(
+        self,
+    ) -> None:
+        # 22:00 UTC: a reader in UTC+9 is already on the NEXT local date, so
+        # body.date's bare UTC midnight is two hours in the FUTURE. That used
+        # to zero the ceiling and clamp a real 30-minute session down to the
+        # 120s grace margin, while the client marked all 1800s as synced.
+        now = datetime(2026, 1, 15, 22, 0, 0, tzinfo=UTC)
+        reader_local_date = date(2026, 1, 16)
+        applied = _clamp_seconds_delta(
+            1800,
+            activity_date=reader_local_date,
+            now=now,
+            last_updated_at=None,
+        )
+        assert applied == 1800
+
+    def test_ceiling_is_still_bounded_for_a_future_local_date(self) -> None:
+        # The widened reference must not become a blank cheque: a first flush
+        # for the allowed one-day-future date is still bounded well below a
+        # full day of claimed reading.
+        ceiling = _elapsed_ceiling_seconds(_TODAY + timedelta(days=1), _NOW, None)
+        assert 0.0 < ceiling < float(_ONE_DAY_SECONDS)
 
     def test_new_bucket_past_day_bounds_by_a_full_day(self) -> None:
         ceiling = _elapsed_ceiling_seconds(_TODAY - timedelta(days=5), _NOW, None)
@@ -211,7 +242,31 @@ class TestFlushReadingTime:
             _body(seconds_delta=45), _child_principal(), session
         )
         assert result.active_seconds == 45
+        assert result.settled_seconds == 45
         assert len(session.added) == 1
+
+    async def test_clamped_flush_settles_only_what_it_applied(self) -> None:
+        """The response must report the APPLIED seconds, not the requested
+        ones: the client advances its synced baseline by settled_seconds, so
+        over-reporting here is what silently deletes the clamped remainder.
+        """
+        profile_id = uuid.uuid4()
+        existing = ReadingActivityDay(
+            child_profile_id=profile_id,
+            activity_date=_TODAY,
+            active_seconds=100,
+            last_flush_id="prior-flush",
+        )
+        existing.updated_at = _NOW - timedelta(seconds=10)
+        session = _FakeSession(existing=existing)
+
+        result = await flush_reading_time(
+            _body(seconds_delta=3600, flush_id="new-flush"),
+            _child_principal(profile_id),
+            session,
+        )
+        assert result.settled_seconds < 3600
+        assert result.settled_seconds == result.active_seconds - 100
 
     async def test_paused_profile_flush_is_discarded(self) -> None:
         """The guardian privacy toggle holds server-side, not just in the
@@ -225,6 +280,9 @@ class TestFlushReadingTime:
             _body(seconds_delta=45), _child_principal(), session
         )
         assert result.active_seconds == 0
+        # Settled in full so the client stops retrying: the seconds are
+        # intentionally dropped by policy, not lost to a transient failure.
+        assert result.settled_seconds == 45
         assert session.added == []
         assert session.flush_count == 0
 

@@ -414,6 +414,13 @@ class ReadingActivityDayView(BaseModel):
     activity_date: date
     active_seconds: int
     updated_at: datetime
+    # The portion of THIS flush's seconds_delta the server has taken
+    # responsibility for, either by recording it or by discarding it under the
+    # guardian pause policy. The client advances its synced baseline by exactly
+    # this, so a clamped flush leaves the unsettled remainder to be retried
+    # later rather than being marked synced and lost. Distinct from
+    # active_seconds, which is the day's running total across every device.
+    settled_seconds: int = 0
 
 
 class SeriesNextBook(BaseModel):

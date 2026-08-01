@@ -28,6 +28,13 @@ export interface ReadingTimeFlushResult {
   activity_date: string
   active_seconds: number
   updated_at: string
+  /**
+   * Seconds of THIS flush's delta the server took responsibility for, by
+   * recording them or by discarding them under the guardian pause policy.
+   * Optional so a client running against a server that predates the field
+   * keeps its old optimistic behaviour instead of retrying forever.
+   */
+  settled_seconds?: number
 }
 
 /** The network port this module depends on (a hand-typed adapter over axios;
@@ -150,8 +157,9 @@ export async function flushReadingTimeBucket(
     working = { ...bucket, pending: attempt }
     await putReadingTimeBucket(working)
   }
+  let result: ReadingTimeFlushResult
   try {
-    await api.flush(working.date, attempt.deltaSeconds, attempt.flushId, opts.deviceId)
+    result = await api.flush(working.date, attempt.deltaSeconds, attempt.flushId, opts.deviceId)
   } catch (error) {
     if (error instanceof OfflineError) {
       // Still offline: leave `pending` exactly as stored for the next
@@ -173,9 +181,23 @@ export async function flushReadingTimeBucket(
     await putReadingTimeBucket({ ...working, pending: null })
     return
   }
+  // #CRITICAL: data-integrity: advance the baseline by what the SERVER settled,
+  // never by the local snapshot. `POST /v1/me/reading-time` clamps a delta to a
+  // plausibility ceiling (api/reading_time.py::_clamp_seconds_delta), so
+  // assuming the full delta landed marked clamped-away seconds as synced and
+  // deleted them: `accrueReadingTime` only ever grows `seconds`, so nothing
+  // else would ever re-send them. Anything unsettled stays above the baseline
+  // and rides along in the next flush's delta, which succeeds once the
+  // server-side ceiling has grown.
+  // #VERIFY: offline/readingTimeSync.test.ts "a clamped flush leaves the
+  // unsettled remainder to be retried".
+  const settled = Math.max(
+    0,
+    Math.min(attempt.deltaSeconds, result.settled_seconds ?? attempt.deltaSeconds)
+  )
   await putReadingTimeBucket({
     ...working,
-    syncedSeconds: attempt.snapshotSeconds,
+    syncedSeconds: working.syncedSeconds + settled,
     pending: null,
   })
 }

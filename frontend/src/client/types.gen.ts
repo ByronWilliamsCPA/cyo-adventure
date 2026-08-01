@@ -3295,6 +3295,10 @@ export type ReadingActivityDayView = {
      * Updated At
      */
     updated_at: string;
+    /**
+     * Settled Seconds
+     */
+    settled_seconds?: number;
 };
 
 /**

@@ -62,6 +62,19 @@ _MAX_FUTURE_DAYS = 1
 
 _ONE_DAY_SECONDS = 24 * 60 * 60
 
+# #CRITICAL: timing-dependencies: ``body.date`` is the READER-LOCAL date
+# (frontend/src/reader/useReadingTimeAccumulator.ts::readerLocalDate uses
+# getFullYear/getMonth/getDate), not a UTC date. Treating its UTC midnight as
+# the start of that day makes the reference INSTANT sit in the future for every
+# reader east of UTC once their local day has rolled over, so the elapsed
+# ceiling collapses to 0 and an honest session is clamped to the grace margin
+# alone. The earliest UTC instant at which a given local date can begin
+# anywhere on Earth is its UTC midnight minus the largest positive offset in
+# use (UTC+14, Kiribati/Line Islands), so that is the only sound lower bound.
+# #VERIFY: tests/unit/test_reading_time_api_unit.py::
+# test_first_flush_for_a_reader_ahead_of_utc_is_not_clamped_to_zero.
+_MAX_UTC_OFFSET_SECONDS = 14 * 60 * 60
+
 
 def _require_child_profile(principal: Principal) -> uuid.UUID:
     """Return the caller's own profile id, rejecting a non-child principal.
@@ -135,8 +148,13 @@ def _elapsed_ceiling_seconds(
         return float(_ONE_DAY_SECONDS)
     else:
         # First flush ever for today (or the allowed one-day-future slack):
-        # bound by wall time since that day's UTC midnight.
-        reference = datetime.combine(activity_date, time.min, tzinfo=UTC)
+        # bound by wall time since the earliest instant that reader-local date
+        # can have begun anywhere on Earth. See _MAX_UTC_OFFSET_SECONDS: using
+        # bare UTC midnight here zeroed the ceiling for every reader ahead of
+        # UTC after their local midnight.
+        reference = datetime.combine(activity_date, time.min, tzinfo=UTC) - timedelta(
+            seconds=_MAX_UTC_OFFSET_SECONDS
+        )
     return max(0.0, (now - reference).total_seconds())
 
 
@@ -166,12 +184,22 @@ def _clamp_seconds_delta(
     )
 
 
-def _to_view(row: ReadingActivityDay) -> ReadingActivityDayView:
-    """Build the wire view of a reading-activity-day row."""
+def _to_view(row: ReadingActivityDay, *, settled: int) -> ReadingActivityDayView:
+    """Build the wire view of a reading-activity-day row.
+
+    Args:
+        row: The bucket row to render.
+        settled: Seconds of the current flush the server has taken
+            responsibility for; see ``ReadingActivityDayView.settled_seconds``.
+
+    Returns:
+        ReadingActivityDayView: The wire view.
+    """
     return ReadingActivityDayView(
         activity_date=row.activity_date,
         active_seconds=row.active_seconds,
         updated_at=row.updated_at,
+        settled_seconds=settled,
     )
 
 
@@ -210,10 +238,16 @@ async def flush_reading_time(
     row = await session.get(ReadingActivityDay, (profile_id, body.date))
     if profile is not None and profile.time_capture_paused:
         _logger.info("reading_time_flush_discarded_paused", profile_id=str(profile_id))
+        # Settled in full: the seconds are intentionally dropped by policy, so
+        # the client must advance its baseline past them rather than retrying
+        # forever against a toggle that will keep discarding them.
         if row is not None:
-            return _to_view(row)
+            return _to_view(row, settled=body.seconds_delta)
         return ReadingActivityDayView(
-            activity_date=body.date, active_seconds=0, updated_at=now
+            activity_date=body.date,
+            active_seconds=0,
+            updated_at=now,
+            settled_seconds=body.seconds_delta,
         )
     # #ASSUME: concurrency: single-slot idempotency, matching
     # db/models.py::ReadingActivityDay's own #ASSUME -- a replay of the LAST
@@ -222,7 +256,9 @@ async def flush_reading_time(
     # #VERIFY: tests/unit/test_reading_time_api_unit.py::
     # test_replayed_flush_id_is_a_noop.
     if row is not None and row.last_flush_id == body.flush_id:
-        return _to_view(row)
+        # A replay of the last-applied flush: those seconds are already banked,
+        # so from the client's perspective the whole delta is settled.
+        return _to_view(row, settled=body.seconds_delta)
 
     applied = _clamp_seconds_delta(
         body.seconds_delta,
@@ -251,4 +287,4 @@ async def flush_reading_time(
         row.last_flush_id = body.flush_id
     await session.flush()
     await session.refresh(row, ["updated_at", "active_seconds"])
-    return _to_view(row)
+    return _to_view(row, settled=applied)

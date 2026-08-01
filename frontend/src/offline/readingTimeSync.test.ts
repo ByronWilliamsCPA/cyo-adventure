@@ -101,6 +101,50 @@ describe('flushReadingTimeBucket', () => {
     })
   })
 
+  it('a clamped flush leaves the unsettled remainder to be retried', async () => {
+    // The server clamps a delta to a plausibility ceiling. Marking the whole
+    // delta synced would delete the clamped seconds outright, because
+    // accrueReadingTime only ever grows `seconds` and nothing re-sends them.
+    const flush = vi.fn().mockResolvedValue({
+      activity_date: DATE,
+      active_seconds: 120,
+      updated_at: 't',
+      settled_seconds: 120,
+    })
+    await accrueReadingTime(PROFILE_ID, DATE, 1800)
+    const bucket = await getReadingTimeBucket(PROFILE_ID, DATE)
+    await flushReadingTimeBucket(makeApi(flush), bucket!, { newId: () => 'flush-1' })
+
+    const after = await getReadingTimeBucket(PROFILE_ID, DATE)
+    expect(after?.syncedSeconds).toBe(120)
+    expect(after?.seconds).toBe(1800)
+    expect(after?.pending).toBeNull()
+
+    // The next flush picks the remainder back up rather than dropping it.
+    const retry = vi.fn().mockResolvedValue({
+      activity_date: DATE,
+      active_seconds: 1800,
+      updated_at: 't',
+      settled_seconds: 1680,
+    })
+    await flushReadingTimeBucket(makeApi(retry), after!, { newId: () => 'flush-2' })
+    expect(retry).toHaveBeenCalledWith(DATE, 1680, 'flush-2', undefined)
+    expect((await getReadingTimeBucket(PROFILE_ID, DATE))?.syncedSeconds).toBe(1800)
+  })
+
+  it('never advances the baseline past a nonsense settled_seconds', async () => {
+    const flush = vi.fn().mockResolvedValue({
+      activity_date: DATE,
+      active_seconds: 30,
+      updated_at: 't',
+      settled_seconds: 999_999,
+    })
+    await accrueReadingTime(PROFILE_ID, DATE, 30)
+    const bucket = await getReadingTimeBucket(PROFILE_ID, DATE)
+    await flushReadingTimeBucket(makeApi(flush), bucket!, { newId: () => 'flush-1' })
+    expect((await getReadingTimeBucket(PROFILE_ID, DATE))?.syncedSeconds).toBe(30)
+  })
+
   it('a pending attempt survives across separate flush calls with the same flush_id and delta', async () => {
     const flush = vi.fn().mockRejectedValue(new OfflineError())
     await accrueReadingTime(PROFILE_ID, DATE, 20)
