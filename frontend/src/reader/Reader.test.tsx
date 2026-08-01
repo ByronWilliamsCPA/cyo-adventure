@@ -40,7 +40,9 @@ const lantern = (
 // stories independently proven correct at the engine layer.
 const stopTracesPath = path.resolve(here, '../../../schema/conformance/stop_traces.json')
 const stopCases = (
-  JSON.parse(readFileSync(stopTracesPath, 'utf-8')) as { cases: { name: string; story: Storybook }[] }
+  JSON.parse(readFileSync(stopTracesPath, 'utf-8')) as {
+    cases: { name: string; story: Storybook }[]
+  }
 ).cases
 function stopStory(name: string): Storybook {
   const found = stopCases.find((c) => c.name === name)
@@ -1036,7 +1038,7 @@ describe('Reader read-aloud (K7)', () => {
 })
 
 describe('Reader stop-flow rendering (ADR-026, W1.1)', () => {
-  it('keeps exactly today\'s one-node-per-page behavior when no band is known (default)', () => {
+  it("keeps exactly today's one-node-per-page behavior when no band is known (default)", () => {
     render(
       <MemoryRouter>
         <Reader story={flowToBranchStory} profileId="p1" />
@@ -1093,7 +1095,7 @@ describe('Reader stop-flow rendering (ADR-026, W1.1)', () => {
     expect(screen.getByTestId('choice-c_left')).toBeTruthy()
   })
 
-  it('does not double-apply a flowed run under StrictMode\'s double-invoked mount effect', () => {
+  it("does not double-apply a flowed run under StrictMode's double-invoked mount effect", () => {
     vi.mocked(choose).mockClear()
     render(
       <StrictModeWrapper>
@@ -1153,7 +1155,7 @@ describe('Reader stop-flow rendering (ADR-026, W1.1)', () => {
     expect(screen.getByTestId('choice-c_to_p')).toBeTruthy()
   })
 
-  it('go back at a flowed band rewinds the whole stop, landing back on the previous stop\'s own choice, not mid-flow', () => {
+  it("go back at a flowed band rewinds the whole stop, landing back on the previous stop's own choice, not mid-flow", () => {
     render(
       <MemoryRouter>
         <Reader story={flowToBranchStory} profileId="p1" ageBand="8-11" />
@@ -1174,7 +1176,7 @@ describe('Reader stop-flow rendering (ADR-026, W1.1)', () => {
     expect(screen.getByTestId('choice-c_right')).toBeTruthy()
   })
 
-  it('go back from a multi-node stop lands on the PREVIOUS stop\'s own choice, not one node into it', () => {
+  it("go back from a multi-node stop lands on the PREVIOUS stop's own choice, not one node into it", () => {
     render(
       <MemoryRouter>
         <Reader story={backByStopStory} profileId="p1" ageBand="8-11" />

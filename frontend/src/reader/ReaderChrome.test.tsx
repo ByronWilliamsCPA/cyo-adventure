@@ -76,10 +76,7 @@ describe('ReaderChrome', () => {
     it('renders an obvious, unpressed toggle when not speaking', () => {
       const onToggle = vi.fn()
       render(
-        <ReaderChrome
-          position={{ label: 'Page 1' }}
-          readAloud={{ speaking: false, onToggle }}
-        />
+        <ReaderChrome position={{ label: 'Page 1' }} readAloud={{ speaking: false, onToggle }} />
       )
       const button = screen.getByRole('button', { name: 'Read this page aloud' })
       // The unpressed state is fully observable: aria-pressed=false plus the

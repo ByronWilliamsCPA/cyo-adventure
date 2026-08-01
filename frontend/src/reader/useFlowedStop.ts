@@ -110,7 +110,11 @@ export function useFlowedStop(
         // visible choice, or a Go back landing. composeStop's own
         // precondition (only ever called on a genuine origin) holds here by
         // construction.
-        setTracked({ forReading: reading, stop: composeStop(story, reading), originReading: reading })
+        setTracked({
+          forReading: reading,
+          stop: composeStop(story, reading),
+          originReading: reading,
+        })
       }
     }
   } else if (tracked !== null) {
@@ -118,7 +122,11 @@ export function useFlowedStop(
   }
 
   const stop = flowed ? (tracked?.forReading === reading ? tracked.stop : null) : null
-  const originReading = flowed ? (tracked?.forReading === reading ? tracked.originReading : null) : null
+  const originReading = flowed
+    ? tracked?.forReading === reading
+      ? tracked.originReading
+      : null
+    : null
 
   // The one real side effect: silently walk the machine through the stop's
   // single-choice hops via the SAME public CHOOSE event a tap would send

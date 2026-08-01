@@ -84,8 +84,7 @@ export function EndingsProgress({
   // (it is an effect dependency), re-evaluating this guard at that point.
   // #VERIFY: EndingsProgress.test.tsx "does not fetch while the completion
   // outcome is pending" / "fetches when the outcome is unavailable".
-  const shouldFetch =
-    completionOutcome === undefined || completionOutcome.status === 'unavailable'
+  const shouldFetch = completionOutcome === undefined || completionOutcome.status === 'unavailable'
 
   useEffect(() => {
     if (!shouldFetch) return
