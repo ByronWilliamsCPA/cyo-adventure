@@ -44,6 +44,7 @@ from cyo_adventure.api import (
     reading,
     reading_history,
     recommendations,
+    remoderate,
     rescreen,
     story_requests,
 )
@@ -294,6 +295,13 @@ _OPENAPI_TAGS: list[dict[str, str]] = [
         "description": "Admin policy re-screen of published storybook versions.",
     },
     {
+        "name": "remoderate",
+        "description": (
+            "Admin re-run of the full moderation pipeline over one published "
+            "storybook version."
+        ),
+    },
+    {
         "name": "audit",
         "description": "Admin-only audit reads over the append-only pipeline event log.",
     },
@@ -508,6 +516,7 @@ def create_app() -> FastAPI:
     app.include_router(moderation_dashboard.router)
     app.include_router(audit.router)
     app.include_router(rescreen.router)
+    app.include_router(remoderate.router)
     app.include_router(provider_allowlist.router)
     app.include_router(me.router)
     app.include_router(story_requests.router)

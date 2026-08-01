@@ -346,6 +346,7 @@ known-first-party = ["cyo_adventure"]
 "**/api/onboarding.py" = ["TC001"]
 "**/api/notifications.py" = ["TC001"]
 "**/api/rescreen.py" = ["TC001"]
+"**/api/remoderate.py" = ["TC001"]
 # provider_allowlist.py imports Context alone (TC001, same reasoning as above)
 # and types its path params directly as uuid.UUID (TC003): with `from __future__
 # import annotations`, FastAPI resolves that annotation string via

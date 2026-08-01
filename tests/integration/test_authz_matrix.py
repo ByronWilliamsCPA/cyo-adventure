@@ -560,6 +560,28 @@ _ROUTE_SPECS: list[RouteSpec] = [
         frozenset({Role.ADMIN}),
         json_body=lambda _seed: {},
     ),
+    # -- remoderate.py: admin-only (_require_admin) -------------------------
+    # #CRITICAL: security: this route re-runs the FULL moderation pipeline
+    # (real reviewer calls) synchronously on a PUBLISHED book, and the seeded
+    # storybook IS published (tests/integration/conftest.py, status=
+    # "published"). Handing it seed.storybook_id would make the admin leg of
+    # the role matrix actually moderate a book: slow, network-touching, and
+    # mutating the shared fixture row. A deliberately unknown id keeps the
+    # authorization assertion intact while making the pipeline unreachable,
+    # because api/remoderate.py::trigger_remoderate calls _require_admin
+    # BEFORE any query: a non-admin is rejected 403 at the gate, and an admin
+    # falls through to a 404 that never reaches run_moderation_pipeline.
+    # #VERIFY: if this route ever stops gating before the lookup, the admin
+    # leg starts running a real pipeline here; keep the gate-first ordering.
+    RouteSpec(
+        "POST",
+        "/api/v1/admin/remoderate/{storybook_id}/{version}",
+        frozenset({Role.ADMIN}),
+        path_params=lambda _seed: {
+            "storybook_id": "authz-matrix-no-such-storybook",
+            "version": "1",
+        },
+    ),
     RouteSpec("GET", "/api/v1/admin/moderation/noise-floor", frozenset({Role.ADMIN})),
     RouteSpec(
         "PUT",
