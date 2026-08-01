@@ -228,16 +228,31 @@ class TestBookwormAndShelfHero:
         facts = _compute(completions=self._five_books()[:4])
         assert "bookworm" not in _badge_ids(facts)
 
-    def test_shelf_hero_earns_at_ten_distinct_books(self) -> None:
-        completions = [
+    def _n_books(self, count: int) -> list[Completion]:
+        return [
             _completion(
                 f"s{i}", "e1", found_at=datetime(2026, 1, (i % 28) + 1, tzinfo=UTC)
             )
-            for i in range(10)
+            for i in range(count)
         ]
-        facts = _compute(completions=completions)
+
+    def test_shelf_hero_earns_at_ten_distinct_books(self) -> None:
+        facts = _compute(completions=self._n_books(10))
         assert "bookworm" in _badge_ids(facts)
         assert "shelf_hero" in _badge_ids(facts)
+
+    def test_shelf_hero_not_earned_with_nine_books(self) -> None:
+        """The N-1 boundary, which ``bookworm`` has and this badge did not.
+
+        Without it, ``_badge_shelf_hero``'s threshold comparison is pinned
+        from one side only: an off-by-one that awarded the badge early (``>=
+        _SHELF_HERO_THRESHOLD - 1``, or a ``times[n]`` index slip) leaves the
+        at-ten test green, because ten books still earn it. A child would get
+        the "finished 10 different books" badge after nine.
+        """
+        facts = _compute(completions=self._n_books(9))
+        assert "bookworm" in _badge_ids(facts)
+        assert "shelf_hero" not in _badge_ids(facts)
 
     def test_totals_books_finished_counts_distinct_storybook_ids(self) -> None:
         facts = _compute(

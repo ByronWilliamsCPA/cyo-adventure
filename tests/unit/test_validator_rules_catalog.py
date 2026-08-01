@@ -34,7 +34,15 @@ _CATALOG = _REPO_ROOT / "docs" / "planning" / "validator-rules.md"
 
 # The rule-id grammar shared by every family. Bounded to the families the
 # catalog actually governs, so an unrelated token like "UTF-8" cannot match.
-_RULE_ID_RE = re.compile(r"\b(?:L1|L2|PL|RL|SAFE|SR)-\d+\b")
+#
+# CG joined this list on 2026-08-01, having been outside it since the family
+# landed. Its absence was not a narrower scope, it was the same drift this
+# module exists to stop: four enforced ids, documented nowhere, invisible to
+# the only test that checks for exactly that. The family being inert in
+# production (``enforce_grammar`` defaults False, UW-C24) made it worse rather
+# than harmless, because the day that flag flips is the day four undocumented
+# rules start reporting.
+_RULE_ID_RE = re.compile(r"\b(?:CG|L1|L2|PL|RL|SAFE|SR)-\d+\b")
 
 # Families the catalog delegates elsewhere rather than defining inline. PL-19,
 # PL-20 and PL-21 are specified in ADR-011 and the catalog says so explicitly;

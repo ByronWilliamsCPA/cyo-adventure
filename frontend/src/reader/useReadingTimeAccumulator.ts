@@ -63,8 +63,8 @@ export const FLUSH_INTERVAL_MS = 30_000
  * #ASSUME: data integrity: matches offline/db.ts::ReadingTimeDayBucket's own
  * documented assumption; see that type for the rationale and the accepted
  * imprecision at a local-midnight or DST boundary.
- * #VERIFY: useReadingTimeAccumulator.test.ts "buckets by the injected clock's
- * local date". */
+ * #VERIFY: useReadingTimeAccumulator.test.ts "formats the injected clock as
+ * YYYY-MM-DD in local time" and "zero-pads single-digit month and day". */
 export function readerLocalDate(now: Date): string {
   const year = now.getFullYear()
   const month = String(now.getMonth() + 1).padStart(2, '0')

@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
     from datetime import datetime
 
 
@@ -112,13 +113,35 @@ class BookFacts:
             book (``None`` for a standalone book).
         series_membership: ``series_id -> every storybook_id in that
             series`` (not only the ones this profile has touched).
+
+    Every field is typed ``Mapping``, not ``dict``. ``frozen=True`` stops a
+    caller rebinding ``facts.book_titles``, but it does nothing about
+    ``facts.book_titles["s1"] = "..."``, so a ``dict`` annotation on a frozen
+    dataclass advertises an immutability the class does not have. ``Mapping``
+    is the honest type and costs nothing: every consumer in ``badges.py``
+    already declares its own parameters as ``Mapping`` and only reads
+    (``.get``/``[]``/iteration), and ``api/progress.py`` still builds plain
+    ``dict``s to pass in, since a ``dict`` IS a ``Mapping``. This buys real
+    checking rather than a comment: mutating through one of these fields is
+    now a BasedPyright error at the mutation site.
     """
 
-    ending_valence: dict[tuple[str, int, str], str] = field(default_factory=dict)
-    ending_total_by_book: dict[str, int] = field(default_factory=dict)
-    book_titles: dict[str, str] = field(default_factory=dict)
-    series_by_book: dict[str, str | None] = field(default_factory=dict)
-    series_membership: dict[str, frozenset[str]] = field(default_factory=dict)
+    # Each default_factory is the PARAMETERIZED dict, not a bare ``dict``. A
+    # bare factory is inferred from the declared type, and ``Mapping`` gives it
+    # nothing concrete to infer, so BasedPyright reports each default as
+    # ``dict[Unknown, Unknown]``. Spelling the factory out keeps this module at
+    # zero warnings; ``dict[K, V]()`` builds an ordinary empty dict at runtime.
+    ending_valence: Mapping[tuple[str, int, str], str] = field(
+        default_factory=dict[tuple[str, int, str], str]
+    )
+    ending_total_by_book: Mapping[str, int] = field(default_factory=dict[str, int])
+    book_titles: Mapping[str, str] = field(default_factory=dict[str, str])
+    series_by_book: Mapping[str, str | None] = field(
+        default_factory=dict[str, "str | None"]
+    )
+    series_membership: Mapping[str, frozenset[str]] = field(
+        default_factory=dict[str, frozenset[str]]
+    )
 
 
 @dataclass(frozen=True, slots=True)

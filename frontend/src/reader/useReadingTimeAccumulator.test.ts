@@ -208,6 +208,103 @@ describe('useReadingTimeAccumulator', () => {
     unmount()
   })
 
+  // The hook's #CRITICAL block names this test by name. It did not exist:
+  // "flushes once on unmount" proves the final flush fires, which is the
+  // opposite concern (that something still HAPPENS at unmount), and would stay
+  // green with the interval leaking. A leaked interval is the failure the
+  // #CRITICAL actually describes: a remount on a route change would leave the
+  // orphaned timer crediting seconds against whichever bucket the new mount
+  // owns, silently double-counting a child's reading time forever.
+  it('clears its timer and listeners on unmount', () => {
+    const clock = new Date(2026, 0, 1, 10, 0, 0)
+    const { unmount } = renderHook(() =>
+      useReadingTimeAccumulator({ profileId: PROFILE_ID, now: () => clock, api: DUMMY_API })
+    )
+    act(() => {
+      vi.advanceTimersByTime(TICK_INTERVAL_MS)
+    })
+    expect(accrueMock).toHaveBeenCalledTimes(1)
+
+    act(() => {
+      unmount()
+    })
+    accrueMock.mockClear()
+    flushMock.mockClear()
+
+    // The interval is gone: no further wall time can credit anything.
+    act(() => {
+      vi.advanceTimersByTime(TICK_INTERVAL_MS * 10)
+    })
+    expect(accrueMock).not.toHaveBeenCalled()
+
+    // The document-level visibilitychange listener is gone too. This one is
+    // the leak that outlives the component: it is attached to `document`, not
+    // to anything React unmounts, so an unremoved handler keeps flushing for
+    // a profile the reader has already left.
+    setVisibility('hidden')
+    act(() => {
+      document.dispatchEvent(new Event('visibilitychange'))
+    })
+    expect(flushMock).not.toHaveBeenCalled()
+  })
+
+  // The containerRef listener effect had no coverage at all. Reader.tsx wires
+  // BOTH interaction paths (a `shellRef` container plus explicit
+  // recordInteraction() calls on choose/go-back), and only the explicit one
+  // was tested. The container listeners are the broader of the two by
+  // intent: per Reader's own comment they are what covers scrolling and every
+  // in-shell control (text-size, theme) that the explicit calls do not
+  // instrument, so a silent break there idles out exactly the quiet reader
+  // who is scrolling a long passage rather than tapping.
+  it('treats a pointerdown inside the container as interaction', () => {
+    let elapsedMs = 0
+    const start = new Date(2026, 0, 1, 10, 0, 0).getTime()
+    const clock = () => new Date(start + elapsedMs)
+    const el = document.createElement('div')
+    const containerRef = { current: el }
+    const { unmount } = renderHook(() =>
+      useReadingTimeAccumulator({ profileId: PROFILE_ID, now: clock, containerRef })
+    )
+    const almostIdleTicks = Math.floor(IDLE_WINDOW_MS / TICK_INTERVAL_MS) - 1
+    const advance = (ticks: number) => {
+      for (let i = 0; i < ticks; i += 1) {
+        elapsedMs += TICK_INTERVAL_MS
+        act(() => {
+          vi.advanceTimersByTime(TICK_INTERVAL_MS)
+        })
+      }
+    }
+    advance(almostIdleTicks)
+    act(() => {
+      el.dispatchEvent(new Event('pointerdown'))
+    })
+    accrueMock.mockClear()
+    // Past what would have been the idle cutoff had the tap not reset it.
+    advance(almostIdleTicks)
+    expect(accrueMock.mock.calls.length).toBe(almostIdleTicks)
+    unmount()
+  })
+
+  it('stops treating container events as interaction once unmounted', () => {
+    const el = document.createElement('div')
+    const removeSpy = vi.spyOn(el, 'removeEventListener')
+    const containerRef = { current: el }
+    const clock = new Date(2026, 0, 1, 10, 0, 0)
+    const { unmount } = renderHook(() =>
+      useReadingTimeAccumulator({ profileId: PROFILE_ID, now: () => clock, containerRef })
+    )
+    act(() => {
+      unmount()
+    })
+    // All three are removed. Asserting the set, not just a count, because the
+    // add and remove calls pass different option objects ('pointerdown' and
+    // 'scroll' are added `{ passive: true }`), and a mismatched pair is a
+    // real leak that a bare call count would not catch.
+    const removed = removeSpy.mock.calls.map((call) => call[0])
+    expect(removed.sort()).toEqual(['keydown', 'pointerdown', 'scroll'])
+    removeSpy.mockRestore()
+  })
+
   it('never accrues or flushes when never mounted with an api (accrual still local-only, no throw)', () => {
     const clock = new Date(2026, 0, 1, 10, 0, 0)
     const { unmount } = renderHook(() =>
