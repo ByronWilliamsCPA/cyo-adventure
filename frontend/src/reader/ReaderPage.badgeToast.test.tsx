@@ -45,7 +45,7 @@ function okApi(): SyncApi {
   }
 }
 
-function progressWithBadges(badgeIds: string[]): ProgressSummary {
+function progressWithBadges(badgeIds: string[], badgesEnabled = true): ProgressSummary {
   return {
     badges: badgeIds.map((id) => ({ id, name: id, description: `earned ${id}`, earned_at: 't' })),
     books: [],
@@ -55,7 +55,7 @@ function progressWithBadges(badgeIds: string[]): ProgressSummary {
     settings: {
       ring_enabled: true,
       ring_goal_days: 3,
-      badges_enabled: true,
+      badges_enabled: badgesEnabled,
       time_capture_paused: false,
     },
   }
@@ -125,6 +125,28 @@ describe('ReaderPage badge-unlock toast (W3.2)', () => {
 
     await waitFor(() => expect(getMock).toHaveBeenCalled())
     expect(screen.queryByTestId('badge-unlock-toast')).toBeNull()
+  })
+
+  it('suppresses the toast when badges_enabled is off, even if the mount-time settings fetch never resolved', async () => {
+    // The G19 gate's fail-open window: `badgesEnabledRef` defaults to true and
+    // is read before any await, so a child who reaches an ending before the
+    // mount fetch resolves would pass it. Here that fetch NEVER resolves, so
+    // only the post-completion re-check can suppress the toast.
+    getMock.mockImplementation((url: string) => {
+      if (url !== '/v1/me/progress') return Promise.reject(new Error(`unexpected GET ${url}`))
+      const calls = getMock.mock.calls.filter((c) => c[0] === '/v1/me/progress').length
+      if (calls === 1) return new Promise(() => {}) // mount fetch: still in flight
+      if (calls === 2) return Promise.resolve({ data: progressWithBadges([], false) })
+      return Promise.resolve({ data: progressWithBadges(['first_ending'], false) })
+    })
+
+    await reachEnding('p_badge_off')
+
+    await waitFor(() => expect(getMock.mock.calls.length).toBeGreaterThanOrEqual(3))
+    expect(screen.queryByTestId('badge-unlock-toast')).toBeNull()
+    // The badge must NOT be consumed: a paused celebration is one the guardian
+    // can turn back on, and marking it seen here would burn it permanently.
+    expect(await isBadgeSeen('p_badge_off', 'first_ending')).toBe(false)
   })
 
   it('does not toast when the badge set is unchanged by this completion', async () => {

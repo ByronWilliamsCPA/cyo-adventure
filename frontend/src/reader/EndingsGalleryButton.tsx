@@ -29,6 +29,10 @@ export function EndingsGalleryButton({
   const [open, setOpen] = useState(false)
   const [book, setBook] = useState<BookProgressCard | null>(null)
   const [loading, setLoading] = useState(false)
+  // Distinguishes "loaded, nothing collected yet" from "could not load at
+  // all". Both leave `book` null, but only the first should show the
+  // gallery's "Keep reading" copy; see the `unavailable` prop's own note.
+  const [failed, setFailed] = useState(false)
 
   // The modal opens only once the fetch settles: rendering it mid-flight
   // with zero endings would flash the gallery's "keep reading" empty-state
@@ -36,20 +40,29 @@ export function EndingsGalleryButton({
   // button disables while loading so a double-tap cannot stack fetches.
   const handleOpen = () => {
     setLoading(true)
+    setFailed(false)
     api
       .getProgress()
       .then((progress) => {
         setBook(progress.books.find((b) => b.storybook_id === storybookId) ?? null)
       })
       .catch((error: unknown) => {
-        // Best-effort, decorative surface: a failed fetch just shows the
-        // empty-gallery state, never an error the child has to dismiss.
+        // Best-effort, decorative surface: never an error the child has to
+        // dismiss. But it must not be reported as an EMPTY collection either.
+        // #ASSUME: external-resources: `/v1/me/progress` is child-principal
+        // only, so a guardian previewing as their child gets a 403 here, and
+        // a real child gets a transient failure on a slow network. Reporting
+        // either as "no endings found yet" tells a child who just finished
+        // the book that they have collected nothing.
+        // #VERIFY: EndingsGalleryButton.test.tsx "shows a could-not-load
+        // message rather than the empty state when the progress fetch fails".
         console.error('[reader] endings gallery fetch failed', {
           profileId,
           storybookId,
           error,
         })
         setBook(null)
+        setFailed(true)
       })
       .finally(() => {
         setLoading(false)
@@ -75,6 +88,7 @@ export function EndingsGalleryButton({
           bookTitle={bookTitle}
           totalEndings={book?.total_endings ?? 0}
           foundEndings={book?.found_endings ?? []}
+          unavailable={failed}
         />
       ) : null}
     </>

@@ -74,7 +74,7 @@ describe('EndingsGalleryButton', () => {
     await waitFor(() => expect(button).not.toBeDisabled())
   })
 
-  it('opens with the empty state and logs profile context when the fetch fails', async () => {
+  it('shows a could-not-load message rather than the empty state when the progress fetch fails', async () => {
     const user = userEvent.setup()
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     // Pre-attach a catch so the intentionally rejected promise never trips
@@ -85,7 +85,11 @@ describe('EndingsGalleryButton', () => {
     const api = apiWith(rejection)
     render(<EndingsGalleryButton profileId="p1" storybookId="s1" bookTitle="Book" api={api} />)
     await user.click(screen.getByTestId('open-endings-gallery'))
-    expect(await screen.findByText(/Keep reading/)).toBeInTheDocument()
+    expect(await screen.findByTestId('endings-gallery-unavailable')).toBeInTheDocument()
+    // The distinction is the point: a 403 (guardian previewing as child) or a
+    // dropped network call must never be reported to a child who just
+    // finished the book as "you have not found any endings yet".
+    expect(screen.queryByText(/Keep reading/)).toBeNull()
     expect(consoleError).toHaveBeenCalledWith(
       '[reader] endings gallery fetch failed',
       expect.objectContaining({ profileId: 'p1', storybookId: 's1' })

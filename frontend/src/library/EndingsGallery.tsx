@@ -35,6 +35,20 @@ export interface EndingsGalleryProps {
   bookTitle: string
   totalEndings: number
   foundEndings: FoundEndingCard[]
+  /**
+   * The caller could not load this book's collection state at all, as
+   * distinct from loading it and finding nothing collected yet. Renders a
+   * "could not load" line instead of the empty-state copy.
+   *
+   * #ASSUME: data-integrity: without this, a failed fetch is indistinguishable
+   * from a genuinely empty collection, because both arrive here as
+   * `foundEndings: []`. `/v1/me/progress` is child-principal-only, so a
+   * guardian previewing as their child gets a 403 and would otherwise read
+   * "Keep reading to start finding endings!" on a book they just finished.
+   * #VERIFY: EndingsGalleryButton.test.tsx "shows a could-not-load message
+   * rather than the empty state when the progress fetch fails".
+   */
+  unavailable?: boolean
 }
 
 export function EndingsGallery({
@@ -43,6 +57,7 @@ export function EndingsGallery({
   bookTitle,
   totalEndings,
   foundEndings,
+  unavailable = false,
 }: EndingsGalleryProps) {
   if (!open) return null
   const large = isLargeEndingCatalog(totalEndings)
@@ -59,42 +74,52 @@ export function EndingsGallery({
       }
     >
       <div className="endings-gallery">
-        {large ? (
-          <p className="endings-gallery__milestone">{milestoneBadgeText(foundEndings.length)}</p>
-        ) : null}
-        <ul className="endings-gallery__grid">
-          {foundEndings.map((ending) => (
-            <li
-              key={ending.ending_id}
-              className="endings-gallery__card endings-gallery__card--found"
-            >
-              <span className="endings-gallery__icon" aria-hidden="true">
-                {endingIcon(ending.valence)}
-              </span>
-              <span className="endings-gallery__card-title">{ending.title}</span>
-            </li>
-          ))}
-          {/* Silhouette placeholders only below the large-M threshold: a huge
-              catalog gets the milestone line above instead of a wall of
-              gray tiles. */}
-          {!large
-            ? Array.from({ length: hiddenCount }, (_, index) => (
+        {unavailable ? (
+          <p className="endings-gallery__empty" data-testid="endings-gallery-unavailable">
+            We could not load your endings right now. Try again in a bit!
+          </p>
+        ) : (
+          <>
+            {large ? (
+              <p className="endings-gallery__milestone">
+                {milestoneBadgeText(foundEndings.length)}
+              </p>
+            ) : null}
+            <ul className="endings-gallery__grid">
+              {foundEndings.map((ending) => (
                 <li
-                  key={`hidden-${index}`}
-                  className="endings-gallery__card endings-gallery__card--hidden"
-                  aria-label="Still hidden"
+                  key={ending.ending_id}
+                  className="endings-gallery__card endings-gallery__card--found"
                 >
                   <span className="endings-gallery__icon" aria-hidden="true">
-                    ?
+                    {endingIcon(ending.valence)}
                   </span>
-                  <span className="endings-gallery__card-title">Still hidden</span>
+                  <span className="endings-gallery__card-title">{ending.title}</span>
                 </li>
-              ))
-            : null}
-        </ul>
-        {foundEndings.length === 0 ? (
-          <p className="endings-gallery__empty">Keep reading to start finding endings!</p>
-        ) : null}
+              ))}
+              {/* Silhouette placeholders only below the large-M threshold: a huge
+              catalog gets the milestone line above instead of a wall of
+              gray tiles. */}
+              {!large
+                ? Array.from({ length: hiddenCount }, (_, index) => (
+                    <li
+                      key={`hidden-${index}`}
+                      className="endings-gallery__card endings-gallery__card--hidden"
+                      aria-label="Still hidden"
+                    >
+                      <span className="endings-gallery__icon" aria-hidden="true">
+                        ?
+                      </span>
+                      <span className="endings-gallery__card-title">Still hidden</span>
+                    </li>
+                  ))
+                : null}
+            </ul>
+            {foundEndings.length === 0 ? (
+              <p className="endings-gallery__empty">Keep reading to start finding endings!</p>
+            ) : null}
+          </>
+        )}
       </div>
     </Dialog>
   )

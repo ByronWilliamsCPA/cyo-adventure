@@ -224,11 +224,29 @@ export function ReaderPage({
   const checkForNewBadge = useCallback(
     async (badgesBefore: Promise<Set<string>>) => {
       try {
+        // Cheap early-out only: skips the fetch when the setting is already
+        // known to be off. It is NOT the gate, because the ref defaults true
+        // and is read before any await, so a child who reaches an ending
+        // before the mount-time settings fetch resolves would pass it.
         if (!badgesEnabledRef.current) return
         const before = await badgesBefore
         const after = await progressApi.getProgress()
         const candidate = after.badges.find((badge) => !before.has(badge.id))
         if (candidate === undefined) return
+        // #CRITICAL: security: the authoritative gate, read from the response
+        // we just awaited rather than from the pre-await ref. It must stay
+        // ahead of markBadgeSeen: that write consumes the badge's one toast
+        // on this device, so suppressing AFTER marking would silently burn a
+        // celebration the guardian merely paused. G19 is a guardian control
+        // over what their child sees, so failing open on an unresolved fetch
+        // is not acceptable here even though the ring/capture paths above
+        // deliberately fail open for accrual.
+        // #VERIFY: ReaderPage.test.tsx "suppresses the badge toast when
+        // badges_enabled turns false after the ending is reached".
+        if (!after.settings.badges_enabled) {
+          badgesEnabledRef.current = false
+          return
+        }
         if (await isBadgeSeen(profileId, candidate.id)) return
         await markBadgeSeen(profileId, candidate.id)
         setNewlyEarnedBadge(candidate)
