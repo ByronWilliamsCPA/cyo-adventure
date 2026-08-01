@@ -37,6 +37,29 @@ export interface ReadingTimeFlushResult {
   settled_seconds?: number
 }
 
+/**
+ * Raised for an HTTP failure that the SAME (flush_id, delta) may still succeed
+ * under, and which the server may already have committed: 5xx and 429.
+ *
+ * #CRITICAL: data-integrity: a gateway timeout is exactly the case where the
+ * write may have landed even though the response did not. Treating it like a
+ * 4xx would drop `pending`, and the next flush would mint a NEW flush_id for
+ * the same seconds, which the server's single-slot `last_flush_id` dedupe
+ * cannot recognise, double-counting the range. Keeping the attempt pending is
+ * what makes the idempotency key do its job.
+ * #VERIFY: offline/readingTimeSync.test.ts "a 5xx keeps the attempt pending
+ * for a verbatim retry".
+ */
+export class RetryableFlushError extends Error {
+  readonly status: number
+
+  constructor(status: number) {
+    super(`flush failed with a retryable status ${status}`)
+    this.name = 'RetryableFlushError'
+    this.status = status
+  }
+}
+
 /** The network port this module depends on (a hand-typed adapter over axios;
  * `POST /v1/me/reading-time` has not yet been regenerated into
  * `src/client/` with this shape -- see `makeReadingTimeApi`'s own note). */
@@ -75,6 +98,14 @@ export function makeReadingTimeApi(api: AxiosInstance): ReadingTimeApi {
         // as itself.
         if (isAxiosError(error) && !error.response) {
           throw new OfflineError()
+        }
+        // A 5xx or 429 carries a response, so it is not "offline", but it is
+        // also not a permanent rejection: the write may have committed before
+        // the failure. Signal it distinctly so the caller retries verbatim
+        // under the same flush_id rather than minting a new one.
+        const status = isAxiosError(error) ? error.response?.status : undefined
+        if (status !== undefined && (status >= 500 || status === 429)) {
+          throw new RetryableFlushError(status)
         }
         throw error
       }
@@ -161,12 +192,14 @@ export async function flushReadingTimeBucket(
   try {
     result = await api.flush(working.date, attempt.deltaSeconds, attempt.flushId, opts.deviceId)
   } catch (error) {
-    if (error instanceof OfflineError) {
-      // Still offline: leave `pending` exactly as stored for the next
-      // opportunistic attempt to retry verbatim.
+    if (error instanceof OfflineError || error instanceof RetryableFlushError) {
+      // Still offline, or the server failed in a way that may have committed
+      // anyway: leave `pending` exactly as stored so the next opportunistic
+      // attempt retries verbatim under the same flush_id, which is the only
+      // thing that lets the server dedupe it.
       return
     }
-    // Non-offline failure (auth/validation/server): this specific attempt
+    // Permanent (4xx) failure (auth/validation): this specific attempt
     // cannot succeed by retrying it verbatim. Drop `pending` (NOT
     // `syncedSeconds`, which stays at its last-acknowledged value) so the
     // next flush call recomputes a fresh delta spanning this failed range
@@ -216,6 +249,20 @@ export async function flushAllReadingTime(
   const buckets = await listReadingTimeBuckets(profileId)
   for (const bucket of buckets) {
     if (bucket.pending === null && bucket.seconds <= bucket.syncedSeconds) continue
-    await flushReadingTimeBucket(api, bucket, opts)
+    // #CRITICAL: data-integrity: the per-bucket isolation this function
+    // promises has to be enforced HERE. flushReadingTimeBucket's own
+    // putReadingTimeBucket calls sit outside its try, so an IndexedDB failure
+    // on one day would propagate and strand every later day's seconds.
+    // #VERIFY: offline/readingTimeSync.test.ts "one bucket's local-write
+    // failure does not strand the remaining days".
+    try {
+      await flushReadingTimeBucket(api, bucket, opts)
+    } catch (error) {
+      console.error('[reading-time] bucket flush threw', {
+        profileId,
+        date: bucket.date,
+        error,
+      })
+    }
   }
 }

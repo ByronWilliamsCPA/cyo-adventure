@@ -9,11 +9,34 @@ import {
   flushAllReadingTime,
   flushReadingTimeBucket,
   type ReadingTimeApi,
+  RetryableFlushError,
 } from './readingTimeSync'
 import { OfflineError } from './sync'
 
 const PROFILE_ID = 'profile-1'
 const DATE = '2026-01-01'
+
+/**
+ * `failFor.date` makes that bucket's IndexedDB write fail, simulating a
+ * local-storage failure. Declared via vi.hoisted because vi.mock factories are
+ * hoisted above ordinary module-scope declarations. Only the reading-time put
+ * is wrapped; every other export of './db' passes straight through to the real
+ * fake-indexeddb-backed implementation the rest of this file relies on.
+ */
+const failFor = vi.hoisted(() => ({ date: null as string | null }))
+
+vi.mock('./db', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./db')>()
+  return {
+    ...actual,
+    putReadingTimeBucket: async (bucket: Parameters<typeof actual.putReadingTimeBucket>[0]) => {
+      if (failFor.date !== null && bucket.date === failFor.date) {
+        throw new TypeError('IndexedDB is unavailable')
+      }
+      return actual.putReadingTimeBucket(bucket)
+    },
+  }
+})
 
 function makeApi(impl: ReadingTimeApi['flush']): ReadingTimeApi {
   return { flush: impl }
@@ -22,6 +45,7 @@ function makeApi(impl: ReadingTimeApi['flush']): ReadingTimeApi {
 beforeEach(() => {
   globalThis.indexedDB = new IDBFactory()
   _resetDbHandle()
+  failFor.date = null
 })
 
 afterEach(() => {
@@ -186,6 +210,27 @@ describe('flushReadingTimeBucket', () => {
     expect(flushOk).toHaveBeenCalledWith(DATE, 25, 'flush-c', undefined)
   })
 
+  it('a 5xx keeps the attempt pending for a verbatim retry', async () => {
+    // A gateway timeout may have committed server-side. Dropping `pending`
+    // would mint a NEW flush_id for the same seconds, which the server's
+    // single-slot dedupe cannot catch, double-counting the range.
+    const flush = vi.fn().mockRejectedValue(new RetryableFlushError(504))
+    await accrueReadingTime(PROFILE_ID, DATE, 20)
+    let bucket = await getReadingTimeBucket(PROFILE_ID, DATE)
+    await flushReadingTimeBucket(makeApi(flush), bucket!, { newId: () => 'flush-a' })
+
+    bucket = await getReadingTimeBucket(PROFILE_ID, DATE)
+    expect(bucket?.pending).toEqual({
+      flushId: 'flush-a',
+      deltaSeconds: 20,
+      snapshotSeconds: 20,
+    })
+    expect(bucket?.syncedSeconds).toBe(0)
+
+    await flushReadingTimeBucket(makeApi(flush), bucket!, { newId: () => 'flush-b' })
+    expect(flush).toHaveBeenLastCalledWith(DATE, 20, 'flush-a', undefined)
+  })
+
   it('forwards deviceId when provided', async () => {
     const flush = vi
       .fn()
@@ -218,6 +263,27 @@ describe('flushAllReadingTime', () => {
     expect(flush).toHaveBeenCalledTimes(2)
     const dates: string[] = flush.mock.calls.map((call: unknown[]) => call[0] as string)
     expect(dates.sort()).toEqual(['2026-01-01', '2026-01-02'])
+  })
+
+  it("one bucket's local-write failure does not strand the remaining days", async () => {
+    // flushReadingTimeBucket writes `pending` to IndexedDB BEFORE its try
+    // block, so a local write failure escapes the function entirely. The
+    // documented "one bucket's failure never stops the others" contract has to
+    // hold anyway, which means flushAllReadingTime must contain it.
+    await accrueReadingTime(PROFILE_ID, '2026-01-01', 10)
+    await accrueReadingTime(PROFILE_ID, '2026-01-02', 20)
+    await accrueReadingTime(PROFILE_ID, '2026-01-03', 30)
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    failFor.date = '2026-01-01'
+
+    const flush = vi.fn((date: string) =>
+      Promise.resolve({ activity_date: date, active_seconds: 0, updated_at: 't' })
+    )
+    await flushAllReadingTime(makeApi(flush), PROFILE_ID)
+
+    // The failing day never reached the network, but both later days did.
+    const dates: string[] = flush.mock.calls.map((call: unknown[]) => call[0] as string)
+    expect(dates.sort()).toEqual(['2026-01-02', '2026-01-03'])
   })
 
   it("never touches a different profile's buckets", async () => {
