@@ -31,6 +31,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal
 
+from cyo_adventure.core.exceptions import BusinessLogicError
 from cyo_adventure.storybook.evaluator import evaluate
 
 if TYPE_CHECKING:
@@ -58,7 +59,14 @@ TerminalReason = Literal["branch", "ending", "dead_end", "loop"]
 """
 
 
-@dataclass(slots=True)
+# frozen: this module's header calls itself pure, and a Stop is the pure
+# result of that composition; a caller that rewrote terminal_reason or swapped
+# state would silently desync from node_ids without the conformance corpus
+# noticing (it only checks freshly composed stops). Mirrored on the
+# TypeScript side by `readonly` fields on the Stop interface. Neither form
+# deep-freezes node_ids/state, which is the same shallow guarantee on both
+# sides rather than an asymmetry.
+@dataclass(frozen=True, slots=True)
 class Stop:
     """A rendered stop: one or more flowed node bodies ending in a real choice.
 
@@ -114,16 +122,38 @@ def compose_stop(story: Storybook, engine: StoryEngine, state: ReadingState) -> 
             ``state`` itself when the stop is length 1 (already at a branch,
             an ending, or a dead end).
 
+    Note the arity difference from ``frontend/src/player/stops.ts::
+    composeStop``, which takes ``(story, state)``: that is a consequence of the
+    two engines' shapes, not a divergence in behaviour. ``StoryEngine`` is a
+    class holding per-story state, so the instance must be passed in; the
+    TypeScript engine exposes ``choose()`` as a free function this module
+    imports directly. Both delegate every transition to the engine identically.
+
     Returns:
         Stop: The composed stop, terminating at a branch, an ending, or a
             dead-end/loop guard.
+
+    Raises:
+        BusinessLogicError: If ``state.current_node`` names a node the story
+            does not contain (a stale state saved against an older version).
     """
     nodes: dict[str, Node] = {node.id: node for node in story.nodes}
     node_ids = [state.current_node]
     seen = {state.current_node}
     current = state
     while True:
-        node = nodes[current.current_node]
+        node = nodes.get(current.current_node)
+        # Mirror engine.py::_node (and stops.ts's own guard): a dangling node
+        # id is an error, not a silent stop, so a corrupt or STALE state fails
+        # loudly and legibly. Reachable in production: a reading state saved
+        # against an older story version can name a node a newer version
+        # removed, and only the FIRST lookup here is unvalidated (every later
+        # one comes back from engine.choose, which validates its own). A bare
+        # ``nodes[...]`` raised KeyError('n_gone') with no story context,
+        # against this package's "always raise from core/exceptions.py" rule.
+        if node is None:
+            msg = f"node '{current.current_node}' does not exist in the story"
+            raise BusinessLogicError(msg)
         if node.is_ending:
             return Stop(node_ids[0], node_ids, current, "ending")
         choices = node.choices

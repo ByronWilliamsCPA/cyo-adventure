@@ -16,11 +16,13 @@ itself and ``stops.test.ts`` for its conformance check.
 from __future__ import annotations
 
 import json
+from dataclasses import FrozenInstanceError, replace
 from pathlib import Path
 from typing import Any
 
 import pytest
 
+from cyo_adventure.core.exceptions import BusinessLogicError
 from cyo_adventure.player import StoryEngine
 from cyo_adventure.player.stops import Stop, compose_stop
 from cyo_adventure.storybook.models import Storybook
@@ -88,6 +90,44 @@ def test_stop_trace_back_check_previous_stop_composes(case: dict[str, Any]) -> N
     back_check = case["back_check"]
     stop = _compose(story, engine, back_check["prefix_choices"])
     _assert_matches(story, engine, stop, back_check["expected"])
+
+
+@pytest.mark.unit
+def test_dangling_current_node_raises_a_named_error_not_a_bare_keyerror() -> None:
+    """A state pointing at a missing node fails loudly, matching stops.ts.
+
+    Reachable in production: a reading state saved against an older story
+    version can name a node a newer version removed. The TypeScript mirror has
+    always thrown a message naming the node; the Python side reached the same
+    condition through a bare dict subscript, so it surfaced as
+    ``KeyError('n_gone')`` with no story context, against this package's
+    "always raise from core/exceptions.py" rule.
+    """
+    case = _load_cases()[0]
+    story = Storybook.model_validate(case["story"])
+    engine = StoryEngine(story)
+    stale = replace(engine.start(), current_node="n_removed_in_a_later_version")
+
+    with pytest.raises(BusinessLogicError, match="n_removed_in_a_later_version"):
+        compose_stop(story, engine, stale)
+
+
+@pytest.mark.unit
+def test_a_composed_stop_cannot_be_rewritten_after_the_fact() -> None:
+    """``Stop`` is frozen, mirroring the ``readonly`` fields on the TS side.
+
+    The conformance corpus only ever inspects freshly composed stops, so a
+    caller that reassigned ``terminal_reason`` (or swapped ``state``) would
+    desync it from ``node_ids`` with nothing to catch the drift. Pinning the
+    immutability here is what keeps the two implementations' claims honest.
+    """
+    case = _load_cases()[0]
+    story = Storybook.model_validate(case["story"])
+    engine = StoryEngine(story)
+    stop = _compose(story, engine, case["prefix_choices"])
+
+    with pytest.raises(FrozenInstanceError):
+        stop.terminal_reason = "ending"  # pyright: ignore[reportAttributeAccessIssue]
 
 
 @pytest.mark.unit

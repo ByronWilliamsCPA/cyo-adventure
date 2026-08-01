@@ -51,10 +51,16 @@ export type StopTerminalReason = 'branch' | 'ending' | 'dead_end' | 'loop'
  * `back()` repeatedly rather than reimplementing replay.
  */
 export interface Stop {
-  originNode: string
-  nodeIds: string[]
-  state: ReadingState
-  terminalReason: StopTerminalReason
+  // readonly: a Stop is the pure result of composition, and a caller that
+  // rewrote terminalReason or swapped state would silently desync from
+  // nodeIds without the shared conformance corpus noticing (it only checks
+  // freshly composed stops). Mirrors `@dataclass(frozen=True)` on the Python
+  // Stop; like that decorator, this does not deep-freeze nodeIds or state, so
+  // the guarantee is the same shallow one on both sides.
+  readonly originNode: string
+  readonly nodeIds: string[]
+  readonly state: ReadingState
+  readonly terminalReason: StopTerminalReason
 }
 
 function nodeIndex(story: Storybook): Map<string, StoryNode> {
@@ -79,6 +85,13 @@ function nodeIndex(story: Storybook): Map<string, StoryNode> {
  *   dead end).
  * @returns The composed stop, terminating at a branch, an ending, or a
  *   dead-end/loop guard.
+ *
+ * Note the arity difference from `player/stops.py::compose_stop`, which takes
+ * `(story, engine, state)`: that is a consequence of the two engines' shapes,
+ * not a divergence in behaviour. `StoryEngine` is a Python class holding
+ * per-story state, so the instance must be passed in; `engine.ts` exposes
+ * `choose()` as a free function this module imports directly. Both delegate
+ * every transition to the engine identically.
  */
 export function composeStop(story: Storybook, state: ReadingState): Stop {
   const nodes = nodeIndex(story)
