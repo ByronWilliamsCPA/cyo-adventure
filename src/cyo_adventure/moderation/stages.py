@@ -11,7 +11,7 @@ decision 1, option (a)): it re-estimated the same Flesch-Kincaid comparison
 the validator computes exactly (RL-13), and any single flag triggered a full
 auto-repair plus re-moderation cycle for a signal that never gated anything.
 Stage 4's prompt now carries a one-line holistic readability note instead
-(section 2.7a), so a story-wide vocabulary pattern still has an LLM channel
+(same option (a)), so a story-wide vocabulary pattern still has an LLM channel
 at 1/N of the retired stage's cost. ``Source.LLM_READABILITY`` and the
 ``"reading_level"`` category remain valid on OLD persisted reports; readers
 must keep tolerating them (design doc 2.1's additive-safe contract), even
@@ -116,6 +116,12 @@ _SAFETY_SYSTEM_BATCH = (
     + _UNTRUSTED_SUFFIX
 )
 
+# Output-token ceiling for a single batched safety call. The batch budget scales
+# with node count, but the product must stay inside what review models actually
+# accept; 8192 leaves room for a full per-node verdict object across a realistic
+# batch while staying under the common output cap.
+_MAX_BATCH_REVIEW_TOKENS = 8192
+
 _COHERENCE_SYSTEM = (
     "You are a story-consistency reviewer for a children's choose-your-own-adventure "
     "app. You will receive all story nodes. Judge whether there are severe "
@@ -128,7 +134,8 @@ _COHERENCE_SYSTEM = (
     + _UNTRUSTED_SUFFIX
 )
 
-# The one-line readability note (design doc 2.7a): Stage 2's retired
+# The one-line readability note (design doc section 2.7, option (a)):
+# Stage 2's retired
 # per-node LLM readability pass is replaced by the validator's deterministic
 # RL-13 finding for per-node accuracy, plus this note so a STORY-WIDE
 # vocabulary pattern (rare words, overlong sentences, throughout rather than
@@ -186,6 +193,54 @@ def _sanitize_delimited(prose: str) -> str:
     return _UNTRUSTED_TAG_RE.sub(lambda m: "&lt;" + m.group(0)[1:], prose)
 
 
+# #CRITICAL: security: in the BATCH prompt the node id is written as a "[id]"
+# label OUTSIDE the <untrusted_passage> delimiters, i.e. in the region the
+# reviewer reads as framing rather than as story content. Node ids are not a
+# closed vocabulary: storybook/models.py declares `id: str = Field(min_length=1)`
+# with no charset pattern (unlike Variable.name/Effect.var, which do carry
+# ^[a-z][a-z0-9_ ]*$), so an imported or generated story can carry an id holding
+# a newline plus attacker-chosen text and inject instructions into the trusted
+# region of every batch prompt that node appears in. Sanitizing the label closes
+# that seam. A pathological id no longer round-trips, so the batch fails id
+# matching and falls back to the per-node fail-safe path, which is the correct
+# outcome: an unattributable batch must never be scored.
+# #VERIFY: test_batch_prompt_sanitizes_node_id_label.
+_LABEL_UNSAFE_RE = re.compile(r"[\r\n\t\x00-\x1f\x7f\[\]]")
+
+
+def _log_excerpt(raw: object) -> str:
+    """Return a short, log-safe excerpt of a provider response of any shape.
+
+    Args:
+        raw: The provider's response. Declared ``str``, but a degraded provider
+            can hand back ``None`` or another type, which is exactly the case
+            the parse handlers below run for.
+
+    Returns:
+        At most 200 characters of ``raw``'s string form.
+
+    A parse-failure handler is the one place that must not assume its input's
+    shape: ``raw[:200]`` raises TypeError on a non-str, so the fail-safe log
+    line would itself throw and convert a handled degradation into an
+    unhandled crash, defeating the fail-safe it was added to record.
+    """
+    return str(raw)[:200]
+
+
+def _sanitize_label(node_id: str) -> str:
+    """Neutralize a node id for use as a bare ``[id]`` label in a batch prompt.
+
+    Args:
+        node_id: The node's declared id, which carries no charset constraint.
+
+    Returns:
+        ``node_id`` with delimiter tokens escaped and every control character,
+        newline, and square bracket replaced by ``_``, so it cannot terminate
+        its own label or open a new instruction line.
+    """
+    return _LABEL_UNSAFE_RE.sub("_", _sanitize_delimited(node_id))
+
+
 # ---------------------------------------------------------------------------
 # Shared verdict parser
 # ---------------------------------------------------------------------------
@@ -225,10 +280,10 @@ def _parse_verdict(raw: str, *, fail_safe: Verdict) -> tuple[Verdict, str, bool]
         verdict = mapping.get(str(payload.get("verdict", "")).lower())
         reason = str(payload.get("reason", ""))
     except (json.JSONDecodeError, AttributeError, TypeError):
-        _logger.warning("verdict_parse_failed", raw=raw[:200])
+        _logger.warning("verdict_parse_failed", raw=_log_excerpt(raw))
         return fail_safe, "verdict parse failed; defaulted to fail-safe", True
     if verdict is None:
-        _logger.warning("verdict_unknown", raw=raw[:200])
+        _logger.warning("verdict_unknown", raw=_log_excerpt(raw))
         return fail_safe, "unknown verdict; defaulted to fail-safe", True
     return verdict, reason, False
 
@@ -258,9 +313,11 @@ def _degrade_concern(raw: object) -> str:
     this degradation must happen before a ``Finding`` is built, not inside
     it. An unrecognized or absent concern degrades to ``"other"`` rather
     than raising, since a malformed reviewer response must still produce a
-    reviewable finding.
+    reviewable finding. Surrounding whitespace is stripped first: a reviewer
+    that returns ``" cruelty "`` means the taxonomy term, and degrading that
+    to ``"other"`` would discard a correct classification over formatting.
     """
-    value = str(raw).lower() if raw is not None else ""
+    value = str(raw).strip().lower() if raw is not None else ""
     return value if value in _CONTENT_CONCERNS else "other"
 
 
@@ -271,9 +328,9 @@ def _degrade_severity(raw: object) -> FindingSeverity:
     # HIGH (not a middling default) so a human reviewer is never under-warned
     # by a malformed reviewer response.
     # #VERIFY: tests/unit/test_moderation_stages.py::
-    # test_unknown_severity_degrades_to_high.
+    # test_safety_stage_unknown_severity_degrades_to_high.
     """
-    value = str(raw).lower() if raw is not None else ""
+    value = str(raw).strip().lower() if raw is not None else ""
     return _SEVERITY_BY_VALUE.get(value, FindingSeverity.HIGH)
 
 
@@ -327,7 +384,7 @@ def _parse_structured_verdict(
             raise TypeError(msg)  # noqa: TRY301
         payload = cast("dict[str, object]", parsed)
     except (json.JSONDecodeError, AttributeError, TypeError):
-        _logger.warning("verdict_parse_failed", raw=raw[:200])
+        _logger.warning("verdict_parse_failed", raw=_log_excerpt(raw))
         return (
             fail_safe,
             "other",
@@ -338,29 +395,43 @@ def _parse_structured_verdict(
     return _structured_verdict_from_payload(payload, fail_safe=fail_safe)
 
 
-def _parse_batch_verdicts(
-    raw: str, expected_ids: Sequence[str]
-) -> dict[str, dict[str, object]] | None:
-    """Parse a batch response into per-node verdict payloads.
+def _decode_verdict_array(raw: str) -> list[object] | None:
+    """Decode a batch response into a JSON array, or ``None`` if it is not one.
 
-    Returns ``None`` (batch fallback, design doc section 2.3) whenever the
-    response is not a JSON array, contains a non-object entry, an entry
-    missing a string ``node_id``, or the set of node ids in the response
-    does not exactly match ``expected_ids``. A batch that partially matches
-    is treated the same as one that does not match at all: per-node
-    attribution must be unambiguous, so a batch that cannot be fully
-    attributed falls back as a whole rather than silently reviewing a
-    subset.
+    Transport-level shape only; nothing here inspects a verdict's contents.
+    Every ``None`` return is a batch fallback (design doc section 2.3).
     """
     try:
         parsed: object = json.loads(raw)  # pyright: ignore[reportAny]
-    except json.JSONDecodeError:
-        _logger.warning("batch_verdict_parse_failed", raw=raw[:200])
+    # #CRITICAL: data-integrity: mirrors the single-node parser's exception set
+    # exactly. json.loads raises TypeError, not JSONDecodeError, when a provider
+    # hands back a non-str (None from a truncated or errored completion). Catching
+    # only JSONDecodeError here would let that escape run_safety_stage and abort
+    # the whole moderation run instead of failing the batch safe to FLAG, turning
+    # a degraded reviewer into a pipeline crash.
+    # #VERIFY: test_batch_non_string_response_falls_back_rather_than_raising.
+    except (json.JSONDecodeError, AttributeError, TypeError):
+        # _log_excerpt, not raw[:200]: this is the one branch reachable with a
+        # non-str raw, and slicing None raises inside the handler.
+        _logger.warning("batch_verdict_parse_failed", raw=_log_excerpt(raw))
         return None
     if not isinstance(parsed, list):
+        # Past the decode, raw is provably a str, so plain slicing is safe here
+        # and in _index_verdicts_by_node_id below.
         _logger.warning("batch_verdict_not_array", raw=raw[:200])
         return None
-    items = cast("list[object]", parsed)
+    return cast("list[object]", parsed)
+
+
+def _index_verdicts_by_node_id(
+    items: list[object], raw: str
+) -> dict[str, dict[str, object]] | None:
+    """Index decoded verdict entries by ``node_id``.
+
+    Returns ``None`` if attribution is ambiguous for any entry: a non-object
+    entry, an entry missing a string ``node_id``, or a repeated ``node_id``.
+    ``raw`` is carried only to log the offending response.
+    """
     by_node_id: dict[str, dict[str, object]] = {}
     for item in items:
         if not isinstance(item, dict):
@@ -371,7 +442,42 @@ def _parse_batch_verdicts(
         if not isinstance(node_id, str):
             _logger.warning("batch_verdict_item_missing_node_id", raw=raw[:200])
             return None
+        # #CRITICAL: security: a repeated node_id must fail the batch, not
+        # overwrite. The caller's set-equality check cannot see a duplicate that
+        # still covers every expected id, so a response like
+        # [A:block, B:pass, C:pass, A:pass] would pass that check while the
+        # second A silently discarded the BLOCK on the first. Last-write-wins is
+        # never an acceptable tie-break for a safety verdict; an ambiguous batch
+        # falls back to the per-node fail-safe path like any other malformed one.
+        # #VERIFY: test_batch_duplicate_node_id_falls_back_instead_of_overwriting.
+        if node_id in by_node_id:
+            _logger.warning(
+                "batch_verdict_duplicate_node_id", node_id=node_id, raw=raw[:200]
+            )
+            return None
         by_node_id[node_id] = payload
+    return by_node_id
+
+
+def _parse_batch_verdicts(
+    raw: str, expected_ids: Sequence[str]
+) -> dict[str, dict[str, object]] | None:
+    """Parse a batch response into per-node verdict payloads.
+
+    Three checks in order: the response decodes to a JSON array, every entry
+    attributes unambiguously to a node id, and that id set exactly matches
+    ``expected_ids``. Any failure returns ``None`` (batch fallback, design doc
+    section 2.3). A batch that partially matches is treated the same as one
+    that does not match at all: per-node attribution must be unambiguous, so a
+    batch that cannot be fully attributed falls back as a whole rather than
+    silently reviewing a subset.
+    """
+    items = _decode_verdict_array(raw)
+    if items is None:
+        return None
+    by_node_id = _index_verdicts_by_node_id(items, raw)
+    if by_node_id is None:
+        return None
     if set(by_node_id) != set(expected_ids):
         _logger.warning(
             "batch_verdict_node_id_mismatch",
@@ -390,6 +496,42 @@ def _chunks(nodes: Sequence[tuple[str, str]], size: int) -> list[list[tuple[str,
 # ---------------------------------------------------------------------------
 # Stage 1: safety (chunked, hard gate)
 # ---------------------------------------------------------------------------
+
+
+def _safety_finding(
+    *,
+    node_id: str,
+    verdict: Verdict,
+    concern: str,
+    severity: FindingSeverity,
+    reason: str,
+) -> Finding:
+    """Build the per-node Stage-1 content finding.
+
+    Shared by the single-node and batched paths so the two cannot drift.
+    That is a correctness constraint, not just deduplication: the contract
+    for ``review_batch_size`` is that batch size changes how many nodes ride
+    in one prompt and nothing else about what gets emitted, so a field added
+    to one path and forgotten on the other would make a finding's shape
+    depend on a performance knob. Routing keys off ``verdict`` downstream and
+    the ranker reads ``concern``/``severity``, so such a divergence would be
+    silent until it changed what a human approver saw.
+
+    Note this is deliberately NOT used for the fail-safe structural finding
+    below: that one describes the reviewer, not a passage, and carries the
+    different field set (``structural``, ``node_ids``) that keeps it out of
+    the per-node fan-out in ``api/review_surface.py``.
+    """
+    return Finding(
+        stage=1,
+        source=Source.LLM_SAFETY,
+        category="safety",
+        node_id=node_id,
+        verdict=verdict,
+        message=reason,
+        concern=concern,
+        severity=severity,
+    )
 
 
 async def run_safety_stage(
@@ -411,7 +553,11 @@ async def run_safety_stage(
             A chunk of exactly one node uses the single-node prompt and
             parser unchanged, so ``batch_size=1`` is byte-identical to the
             pre-chunking behavior; larger chunks use the batch prompt and
-            array parser.
+            array parser. The equivalence is pinned against the batch
+            variants it must not become (system prompt, prompt text, and
+            unscaled token budget) by
+            ``tests/unit/test_moderation_stages.py::
+            test_safety_stage_batch_size_one_matches_unbatched_behavior``.
 
     Returns:
         One finding per node that produced a genuine verdict, plus (per
@@ -451,21 +597,19 @@ async def run_safety_stage(
                 fail_safe_node_ids.append(node_id)
                 continue
             findings.append(
-                Finding(
-                    stage=1,
-                    source=Source.LLM_SAFETY,
-                    category="safety",
+                _safety_finding(
                     node_id=node_id,
                     verdict=verdict,
-                    message=reason,
                     concern=concern,
                     severity=severity,
+                    reason=reason,
                 )
             )
             continue
 
         node_lines = "\n".join(
-            f"[{nid}] <untrusted_passage>\n{_sanitize_delimited(prose)}"
+            f"[{_sanitize_label(nid)}] <untrusted_passage>\n"
+            f"{_sanitize_delimited(prose)}"
             f"\n</untrusted_passage>"
             for nid, prose in batch
         )
@@ -473,7 +617,15 @@ async def run_safety_stage(
         raw = await provider.complete(
             system=_SAFETY_SYSTEM_BATCH,
             prompt=prompt,
-            max_tokens=max_tokens * len(batch),
+            # #ASSUME: external-resources: the per-node budget scales with batch
+            # size but must stay inside what a review model will actually accept.
+            # At the configured ceiling (review_batch_size=50) an unbounded
+            # product asks for 50 * 1024 = 51,200 output tokens, past the output
+            # limit of most review models, so the provider rejects the call
+            # outright instead of returning something the parser can fail safe
+            # on. Clamping keeps an oversized batch on the fail-safe path.
+            # #VERIFY: test_batch_max_tokens_is_clamped_for_large_batches.
+            max_tokens=min(max_tokens * len(batch), _MAX_BATCH_REVIEW_TOKENS),
         )
         by_node_id = _parse_batch_verdicts(raw, [nid for nid, _ in batch])
         if by_node_id is None:
@@ -489,15 +641,12 @@ async def run_safety_stage(
                 fail_safe_node_ids.append(node_id)
                 continue
             findings.append(
-                Finding(
-                    stage=1,
-                    source=Source.LLM_SAFETY,
-                    category="safety",
+                _safety_finding(
                     node_id=node_id,
                     verdict=verdict,
-                    message=reason,
                     concern=concern,
                     severity=severity,
+                    reason=reason,
                 )
             )
     if fail_safe_node_ids:

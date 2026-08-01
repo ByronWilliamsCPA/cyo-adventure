@@ -373,10 +373,10 @@ known-first-party = ["cyo_adventure"]
 # config object at these call sites.
 "**/generation/orchestrator.py" = ["PLR0913"]
 
-# The moderation readability stage carries provider, nodes, reading_target,
-# tolerance, and max_tokens; all are mandatory and keyword-only, with no
-# sensible default for any of them, so a config object would obscure the
-# contract rather than clarify it.
+# The moderation safety stage carries provider, nodes, age_band, max_tokens,
+# and batch_size (5 against a max-args of 4); all are keyword-only and all but
+# batch_size are mandatory with no sensible default, so a config object would
+# obscure the contract rather than clarify it.
 "**/moderation/stages.py" = ["PLR0913"]
 
 # The repair pass carries blob, report, generation_provider, pii, and max_tokens;

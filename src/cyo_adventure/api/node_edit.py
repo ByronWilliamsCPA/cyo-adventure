@@ -28,11 +28,12 @@ runs at generation time -- Stage 0 classifiers (``moderation.classifiers.
 run_classifiers``) and Stage 1 safety (``moderation.stages.run_safety_stage``)
 -- scoped to just this node, via the same ``build_review_provider`` +
 ``PiiGuardedProvider`` seam the pipeline uses, so unit tests double the same
-boundary (MockProvider / httpx.MockTransport). Stage 2-4 (readability/
-coherence/engagement) are NOT re-run here: readability already gets an
-advisory re-check via the gate's RL-13, and coherence/engagement are
-whole-story checks a single node's re-review cannot honestly stand in for;
-re-running the full four-stage pipeline synchronously inside an HTTP request
+boundary (MockProvider / httpx.MockTransport). Stage 3-4 (coherence/
+engagement) are NOT re-run here: they are whole-story checks a single node's
+re-review cannot honestly stand in for. (Stage 2, per-node LLM readability,
+is no longer a stage at all: it was retired in favour of the gate's
+deterministic RL-13, which this endpoint already re-runs.) Re-running the
+full pipeline synchronously inside an HTTP request
 would also break this codebase's established pattern of doing all LLM
 generation work in the background RQ worker (generation/worker.py), never
 inline in a request handler. This is the documented "smallest honest
@@ -44,7 +45,7 @@ findings are surfaced on the refreshed review surface for a human to weigh,
 exactly like the generation-time report; only the deterministic gate blocks
 the write outright. The refreshed findings for this node id replace its prior
 per-node Stage-0/Stage-1 findings; every other node's findings, and the
-whole-story Stage 2-4 findings, are carried over unchanged.
+whole-story Stage 3-4 findings, are carried over unchanged.
 
 No forced state transition. This endpoint never changes ``storybook.status``.
 Because ``publishing.service.approve`` is the SOLE publish path, always reads
@@ -129,8 +130,11 @@ _MAX_REVIEW_TOKENS = 1024
 
 # Sources whose per-node findings this endpoint fully refreshes for the edited
 # node (Stage 0 classifiers + Stage 1 safety, both hard-gating and per-node).
-# Stage 2-4 sources are never in this set: their findings for OTHER nodes (or
-# the whole story) must survive an edit untouched.
+# Stage 3-4 sources are never in this set: their findings for OTHER nodes (or
+# the whole story) must survive an edit untouched. Neither is the retired
+# Stage 2's Source.LLM_READABILITY, which no stage produces anymore but which
+# old persisted reports still carry and must keep carrying (stages.py's
+# additive-safe contract, design doc 2.1).
 _REFRESHED_SOURCES = frozenset({Source.OPENAI, Source.PERSPECTIVE, Source.LLM_SAFETY})
 
 
@@ -382,7 +386,7 @@ def _merge_moderation_report(
         mapping: this node's stale findings are withdrawn (see
         ``_without_edited_node``, which drops a finding scoped to this node
         alone and narrows a merged finding that also covers others), every
-        other finding (other nodes' per-node findings, whole-story Stage 2-4
+        other finding (other nodes' per-node findings, whole-story Stage 3-4
         findings) is carried over verbatim, and the fresh non-PASS findings
         are appended. The stored report's ``aggregate`` block, if present, is
         carried over verbatim (never recomputed here) and omitted entirely

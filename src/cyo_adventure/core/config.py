@@ -592,7 +592,11 @@ class Settings(BaseSettings):
     # redesign-2026-07-28.md, section 2.2 item 2). Production target is
     # ~10-20 nodes/call; default 1 makes every chunk a single-node call,
     # which is byte-identical to the pre-chunking behavior the stage always
-    # had. Raising the default is gated on an owner-run recall comparison
+    # had (pinned by tests/unit/test_moderation_stages.py::
+    # test_safety_stage_batch_size_one_matches_unbatched_behavior, which
+    # asserts the single-node system prompt, prompt text, and unscaled token
+    # budget rather than comparing two runs of the same branch).
+    # Raising the default is gated on an owner-run recall comparison
     # between batch sizes over the adversarial corpus
     # (tests/llm_eval/test_adversarial_safety_eval.py), not on this knob
     # existing; B2 ships the knob at 1 and leaves the comparison to the

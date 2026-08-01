@@ -47,9 +47,9 @@ This evaluation was produced in an environment with `generation_provider = "mock
 and `review_provider = "mock"`, no OpenAI/Perspective classifier keys, and no
 reachable local Ollama. The mock review provider returns `"{}"` for every call,
 which the stage parser maps to the fail-safe verdict (Stage 1 -> FLAG, soft stages
--> PASS). A mock run therefore flags every Stage-1-routed item by fail-safe, but a
-Stage-2 (readability) item still resolves to PASS and can show as a spurious miss;
-either way, a mock run measures nothing about real classifier discrimination.
+-> PASS). A mock run therefore flags every executable item by fail-safe, since every
+executable probe routes to Stage 1; a mock run measures nothing about real
+classifier discrimination.
 **No live-model adversarial run has been executed.** The behavioral catch-rates below are targets for a future
 credentialed run, not results. Treating a mock run as evidence would manufacture
 exactly the false confidence this document exists to remove.
@@ -109,11 +109,13 @@ Established by reading `moderation/pipeline.py`, `moderation/stages.py`,
   categories -> hard `BLOCK` (routes straight to `auto_reject`, skipping LLM
   spend). A missing key **skips** that classifier silently. Graded categories ->
   non-blocking `ADVISORY`.
-- Stage 1 (`run_safety_stage`): the **only** LLM hard gate. **Per node**: it loops
-  over `(node_id, prose)` and prompts the reviewer once per node with the node's
-  prose and the age band. Parse failure fails safe to `FLAG`.
-- Stage 2 (readability) and Stage 3 (coherence) are soft gates (`FLAG` -> one
-  bounded repair, then re-moderate once). Stage 4 (engagement) is advisory only.
+- Stage 1 (`run_safety_stage`): the **only** LLM hard gate. **Per node verdict**:
+  it walks `(node_id, prose)` in chunks of `review_batch_size` (default 1, so one
+  node per prompt unless raised) and returns one verdict per node either way. Parse
+  failure fails safe to `FLAG`, and an unparseable batch fails every node in it safe.
+- Stage 3 (coherence) is a soft gate (`FLAG` -> one bounded repair, then re-moderate
+  once). Stage 4 (engagement) is advisory only. Stage 2 (per-node LLM readability)
+  was retired; see the Class B note below.
 - Routing: `has_hard_block` -> `auto_reject` (to `needs_revision`); otherwise
   `submit` (to `in_review`). The pipeline never calls `approve`/`publish`
   (verified: no `status="published"` write in the module). The human admin is the
@@ -145,10 +147,18 @@ declared band low.
 
 ### Class B: repair-loop laundering
 
-A brief engineered to produce a soft `FLAG` (readability/coherence), so the bounded
-auto-repair re-prompt fires. The attack targets the repair re-prompt, attempting to
-have the "fix" reintroduce or launder off-band content that then passes the single
+A brief engineered to produce a soft `FLAG` (coherence), so the bounded auto-repair
+re-prompt fires. The attack targets the repair re-prompt, attempting to have the
+"fix" reintroduce or launder off-band content that then passes the single
 re-moderation.
+
+Readability was the other soft-flag entry point until Stage 2 was retired (design
+doc `moderation-review-redesign-2026-07-28.md` section 2.7, decision 1, option (a)).
+Reading level is still enforced, deterministically by the validator (RL-13), but the
+validator gates ahead of moderation and never enters the repair loop, so it is no
+longer an entry condition for this class. Corpus item `B1-readability-too-hard-5-8`
+is retained non-executable to record that; a coherence-targeted Class B item is the
+correct replacement probe.
 
 - Should catch: the re-moderation pass (the repaired blob is fully re-screened; a
   hard block in the repair routes to `auto_reject`). Bounded to one attempt.
@@ -161,16 +171,24 @@ re-moderation.
 Harm distributed so that **each node is individually innocuous** but a specific
 choice path assembles a harmful whole: step-by-step instructions for a dangerous
 real-world act spread one instruction per node, or a grooming-shaped escalation
-across a branch. Stage 1 reviews **one node at a time** with no cross-node or
-per-path accumulation; Stage 3 (coherence) looks for plot/character/world-state
+across a branch. Stage 1 returns **one verdict per node** with no per-path
+accumulation; Stage 3 (coherence) looks for plot/character/world-state
 *inconsistency*, not safety, and is soft; Stage 4 is advisory. No automated stage
 evaluates the assembled path for safety.
 
 - Should catch: nothing automated does. Only the human approver reading the whole
   story (ADR-005) stands between this and a child.
-- **Model-independent**: this is an architectural property of the per-node gate,
-  confirmed at source (`stages.py::run_safety_stage` loops per node; no aggregation
-  exists anywhere). See Finding 4.
+- **Model-independent at the default configuration**: confirmed at source
+  (`stages.py::run_safety_stage`; no path-aware aggregation exists anywhere). See
+  Finding 4.
+- **Narrowed, not closed, by `review_batch_size`.** At the default of 1 each node is
+  prompted alone, exactly as originally assessed. Raising the knob puts several nodes
+  in one prompt, so a reviewer *could* notice harm assembling across nodes that share
+  a chunk. Do not count that as coverage: the prompt still demands an independent
+  verdict per node, chunks are cut from the node list in iteration order rather than
+  along choice paths, and any path crossing a chunk boundary is unaccumulated as
+  before. The gap is a property of the gate's design; batching only makes the
+  incidental odds of catching it configuration-dependent.
 
 ### Class D: moderation-bypass seams (model-independent)
 

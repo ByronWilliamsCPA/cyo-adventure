@@ -835,6 +835,91 @@ def test_content_summary_flagged_count_counts_every_merged_node() -> None:
     assert summary.flagged_count == 3
 
 
+def _reviewer_outage_report() -> dict[str, object]:
+    """A Stage-1 fail-safe structural finding covering all three nodes.
+
+    Shaped exactly as ``stages.py::run_safety_stage`` emits it when the review
+    model is unreachable or returns unparseable output: one collapsed finding
+    naming every affected node in ``node_ids``, with ``structural`` set.
+    """
+    return {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "pipeline",
+                "category": "pipeline",
+                "node_id": "n_start",
+                "verdict": "flag",
+                "score": None,
+                "message": (
+                    "reviewer unavailable or unparseable on 3 node(s); "
+                    "defaulted to fail-safe"
+                ),
+                "severity": "high",
+                "structural": True,
+                "concern": "reviewer_unavailable",
+                "node_ids": ["n_start", "n_fork", "n_end"],
+            }
+        ],
+        "summary": {
+            "count": 1,
+            "hard_block": False,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+
+
+@pytest.mark.unit
+def test_structural_finding_with_node_ids_stays_story_level() -> None:
+    """A reviewer outage is one story-level notice, never N passage rows.
+
+    Stage A (8ca8d1b3) collapsed N per-node fail-safe findings into a single
+    structural finding to stop an outage flooding the approver's queue. Stage
+    B2 populated node_ids on that finding for ranking; routing it through the
+    per-node fan-out on the strength of those ids would undo Stage A and put
+    the identical notice back on every node.
+    """
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_merged_blob(),
+        moderation_report=_reviewer_outage_report(),
+    )
+    assert view.flagged_passages == []
+    assert len(view.story_level_findings) == 1
+    surfaced = view.story_level_findings[0]
+    assert surfaced.structural is True
+    # node_ids must SURVIVE on the view: the admin detail panel and the
+    # ranking stage both read it. Only the routing is guarded, not the data.
+    assert surfaced.node_ids == ["n_start", "n_fork", "n_end"]
+
+
+@pytest.mark.unit
+def test_structural_finding_reaches_the_guardian_content_summary() -> None:
+    """The outage notice must appear in findings, not just inflate the count.
+
+    build_content_summary derives ``findings`` solely from
+    story_level_findings while ``flagged_count`` counts passages too. A
+    structural finding routed into the fan-out therefore lands in the worst
+    possible place: it raises the guardian's "N flagged" badge to 3 while the
+    sentence explaining WHY is absent from the list under it.
+    """
+    summary = build_content_summary(
+        storybook_id="s1",
+        version=1,
+        blob=_merged_blob(),
+        moderation_report=_reviewer_outage_report(),
+        age_band="6-8",
+        policy=_DEFAULT_POLICY,
+    )
+    assert summary.flagged_count == 1
+    assert len(summary.findings) == 1
+    assert "reviewer unavailable" in summary.findings[0].message
+
+
 @pytest.mark.unit
 def test_merged_finding_with_null_node_ids_stays_story_level() -> None:
     """A whole-story merged finding has no nodes to fan out to."""
