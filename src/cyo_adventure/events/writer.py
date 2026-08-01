@@ -107,6 +107,14 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     # only the connected family's id, since a revoke has no slot-count of
     # its own to audit.
     EventType.RING2_CONSENT_REVOKED: frozenset({"connected_family_id"}),
+    # Moderation review redesign: the fresh report's overall gating verdict,
+    # a PII-free per-verdict count mapping (mirrors MODERATION_COMPLETED's
+    # own "counts" key), and the prior stored report's reviewer_independent
+    # marker (whether the version being re-moderated was previously
+    # mock-moderated), never finding messages or story prose.
+    EventType.STORYBOOK_REMODERATED: frozenset(
+        {"overall_verdict", "counts", "prior_reviewer_independent"}
+    ),
 }
 
 

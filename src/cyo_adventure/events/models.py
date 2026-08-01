@@ -115,6 +115,18 @@ class EventType(StrEnum):
     # guardian revokes previously granted ring-2 sharing with one connected
     # family. The payload carries only the connected family's id.
     RING2_CONSENT_REVOKED = "ring2_consent_revoked"
+    # Moderation review redesign (design doc section 4, item 1): an admin
+    # re-runs the full moderation pipeline over an already-published
+    # storybook version (api/remoderate.py). Distinct from
+    # MODERATION_COMPLETED, which the pipeline itself never emits for a
+    # published book: the pipeline's terminal submit/auto_reject call always
+    # raises StateTransitionError from "published" (no legal hop), so
+    # api/remoderate.py catches that and writes this event as the sole
+    # durable record instead. The book's status is never changed (ADR-005:
+    # the published book stays published; a fresh report supersedes a
+    # mock-moderated one through ordinary review channels, never an
+    # auto-unpublish).
+    STORYBOOK_REMODERATED = "storybook_remoderated"
 
 
 SYSTEM_ACTOR_ROLE = "system"

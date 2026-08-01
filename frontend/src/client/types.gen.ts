@@ -3183,6 +3183,48 @@ export type RecommendationsView = {
 };
 
 /**
+ * RemoderateResultView
+ *
+ * A re-moderation call's outcome, on the wire.
+ */
+export type RemoderateResultView = {
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Overall Verdict
+     */
+    overall_verdict: string;
+    /**
+     * Verdict Counts
+     */
+    verdict_counts: {
+        [key: string]: number;
+    };
+    /**
+     * Structural Count
+     */
+    structural_count: number;
+    /**
+     * Duration Seconds
+     */
+    duration_seconds: number;
+    /**
+     * Prior Reviewer Independent
+     */
+    prior_reviewer_independent: boolean | null;
+};
+
+/**
  * RequestInterpretationView
  *
  * The per-request K19 reflection object, as returned on the request view.
@@ -6341,6 +6383,40 @@ export type TriggerRescreenApiV1AdminRescreenPostResponses = {
 };
 
 export type TriggerRescreenApiV1AdminRescreenPostResponse = TriggerRescreenApiV1AdminRescreenPostResponses[keyof TriggerRescreenApiV1AdminRescreenPostResponses];
+
+export type TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostData = {
+    body?: never;
+    path: {
+        /**
+         * Storybook Id
+         */
+        storybook_id: string;
+        /**
+         * Version
+         */
+        version: number;
+    };
+    query?: never;
+    url: '/api/v1/admin/remoderate/{storybook_id}/{version}';
+};
+
+export type TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostError = TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostErrors[keyof TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostErrors];
+
+export type TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: RemoderateResultView;
+};
+
+export type TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostResponse = TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostResponses[keyof TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostResponses];
 
 export type ListAllowlistApiV1AdminProviderAllowlistGetData = {
     body?: never;
