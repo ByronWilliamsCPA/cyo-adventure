@@ -14,10 +14,18 @@
  */
 
 import { Dialog } from '@ds/components/Dialog'
+import type { Valence } from '../client'
 import type { FoundEndingCard } from '../kid/progressApi'
 import { isLargeEndingCatalog, milestoneBadgeText } from '../reader/endingsFraming'
 
-const VALENCE_ICON: Record<string, string> = {
+// Keyed by the GENERATED `Valence` union, not `string`. The backend now
+// declares FoundEndingView.valence as that closed enum, so a member added
+// there (and picked up by the next client regeneration) fails typecheck here
+// until this table gains an icon, rather than silently falling through to the
+// diamond for every ending of the new kind. The runtime fallback below stays
+// regardless: this record types the CONTRACT, and progressApi deliberately
+// does not validate the string that actually arrives.
+const VALENCE_ICON: Record<Valence, string> = {
   positive: '★', // filled star
   neutral: '◆', // diamond
   // A negative-valence ending is framed kindly, never as a loss (K14): the
@@ -26,7 +34,14 @@ const VALENCE_ICON: Record<string, string> = {
 }
 
 function endingIcon(valence: string): string {
-  return VALENCE_ICON[valence] ?? VALENCE_ICON.neutral
+  // #EDGE: data integrity: `valence` is untyped wire data here (progressApi's
+  // FoundEndingCard widens it to `string` on purpose, matching how that
+  // adapter degrades every other malformed field rather than throwing), so
+  // the lookup can still miss. Falling back to the neutral diamond keeps a
+  // corrupt ending as a real, readable card instead of a blank icon slot.
+  // #VERIFY: EndingsGallery.test.tsx "falls back to the neutral icon for an
+  // unrecognized valence".
+  return VALENCE_ICON[valence as Valence] ?? VALENCE_ICON.neutral
 }
 
 export interface EndingsGalleryProps {

@@ -15,12 +15,16 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any, cast
+from unittest.mock import patch
 
 import pytest
+from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy.dialects import postgresql
 
+from cyo_adventure.api import reading as reading_module
 from cyo_adventure.api.deps import Principal, RequestContext
 from cyo_adventure.api.reading import (
+    _completion_recorded_view,
     _conflict,
     _parse_uuid,
     _version_ending_ids,
@@ -30,7 +34,11 @@ from cyo_adventure.api.reading import (
     put_reading_state,
     record_completion,
 )
-from cyo_adventure.api.schemas import CompletionBody, ReadingStateBody
+from cyo_adventure.api.schemas import (
+    CompletionBody,
+    CompletionRecordedView,
+    ReadingStateBody,
+)
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     ResourceNotFoundError,
@@ -1373,3 +1381,113 @@ class TestGetSeriesNext:
         assert "{~" not in result.next.title
         assert "~}" not in result.next.title
         assert "Explorer" in result.next.title
+
+
+@pytest.mark.unit
+class TestCompletionRecordedViewInvariants:
+    """``CompletionRecordedView`` rejects a tally the ending screen cannot render.
+
+    The response carries "you found N of M endings" and a "this one was NEW!"
+    flag straight to a child's ending screen, so an incoherent pair is not a
+    cosmetic problem: "you found 9 of 3!" is nonsense, and a celebration over
+    a zero tally contradicts itself. Both were representable before this
+    change, and the type is the only place either can be ruled out once and
+    for every construction site.
+    """
+
+    @staticmethod
+    def _kwargs(**overrides: object) -> dict[str, object]:
+        base: dict[str, object] = {
+            "child_profile_id": str(uuid.uuid4()),
+            "storybook_id": "story-a",
+            "version": 1,
+            "ending_id": "e1",
+            "found_at": datetime(2026, 1, 1, tzinfo=UTC),
+            "is_new": True,
+            "found": 1,
+            "total": 3,
+        }
+        base.update(overrides)
+        return base
+
+    def test_a_coherent_tally_is_accepted(self) -> None:
+        # The guard rail: a validator that rejected everything would satisfy
+        # both negative cases below while breaking every real completion.
+        view = CompletionRecordedView(**self._kwargs())  # pyright: ignore[reportAny]
+        assert view.found == 1
+        assert view.total == 3
+
+    def test_found_may_equal_total(self) -> None:
+        # The boundary is inclusive: finding the last ending is the single
+        # most important response this endpoint returns (it is what unlocks
+        # the "found them all" celebration), so an off-by-one in the
+        # comparison must fail a test rather than a child's last ending.
+        view = CompletionRecordedView(**self._kwargs(found=3, total=3))  # pyright: ignore[reportAny]
+        assert view.found == view.total
+
+    def test_found_above_total_is_rejected(self) -> None:
+        with pytest.raises(PydanticValidationError, match="cannot exceed"):
+            CompletionRecordedView(**self._kwargs(found=9, total=3))  # pyright: ignore[reportAny]
+
+    def test_a_new_find_with_a_zero_tally_is_rejected(self) -> None:
+        # Structurally unreachable through the route: record_completion
+        # flushes the insert before counting, precisely so the new row is
+        # visible to the count query. That flush is what this invariant
+        # protects; drop it and the count runs blind, which this catches at
+        # the type rather than in a child-facing "0 endings found" celebration.
+        with pytest.raises(PydanticValidationError, match="a new find must be counted"):
+            CompletionRecordedView(**self._kwargs(is_new=True, found=0, total=3))  # pyright: ignore[reportAny]
+
+    def test_a_repeat_visit_with_a_zero_tally_is_still_rejected_only_by_found(
+        self,
+    ) -> None:
+        # is_new=False with found=0 is merely impossible-in-practice, not
+        # self-contradictory (nothing claims a find happened), so the
+        # validator deliberately does NOT reject it. Pinned so a later
+        # "tighten it further" change is a considered decision, not a silent
+        # 500 on a shape the route could theoretically produce.
+        view = CompletionRecordedView(**self._kwargs(is_new=False, found=0, total=3))  # pyright: ignore[reportAny]
+        assert view.is_new is False
+
+
+@pytest.mark.unit
+class TestCompletionRecordedViewBoundary:
+    """``_completion_recorded_view`` degrades rather than 500s on a bad total."""
+
+    @staticmethod
+    def _row() -> Completion:
+        row = Completion(
+            child_profile_id=uuid.uuid4(),
+            storybook_id="story-a",
+            version=1,
+            ending_id="e1",
+        )
+        row.found_at = datetime(2026, 1, 1, tzinfo=UTC)
+        return row
+
+    def test_recorded_view_widens_an_understated_ending_total(self) -> None:
+        """The row is already committed when this view is built.
+
+        Letting the model's own invariant raise here would hand a child an
+        error screen for an ending the server DID record. The only cause is a
+        pinned version whose ``metadata.ending_count`` understates its real
+        endings, so widening the total to what was actually counted is both
+        the truthful number and the one that keeps the screen readable.
+        """
+        with patch.object(reading_module, "_logger") as logger:
+            view = _completion_recorded_view(self._row(), is_new=True, found=4, total=2)
+        assert view.found == 4
+        assert view.total == 4
+        logger.warning.assert_called_once_with(
+            "completion_ending_total_understated",
+            storybook_id="story-a",
+            version=1,
+            declared_total=2,
+            distinct_found=4,
+        )
+
+    def test_a_correct_total_is_left_alone_and_logs_nothing(self) -> None:
+        with patch.object(reading_module, "_logger") as logger:
+            view = _completion_recorded_view(self._row(), is_new=True, found=2, total=5)
+        assert view.total == 5
+        logger.warning.assert_not_called()

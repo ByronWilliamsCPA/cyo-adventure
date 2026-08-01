@@ -42,6 +42,8 @@ from cyo_adventure.api.schemas import (
 from cyo_adventure.api.sentinel_log import strip_and_log
 from cyo_adventure.core.exceptions import AuthorizationError
 from cyo_adventure.db.models import (
+    RING_GOAL_DAYS_MAX,
+    RING_GOAL_DAYS_MIN,
     ChildProfile,
     Completion,
     Rating,
@@ -53,7 +55,7 @@ from cyo_adventure.db.models import (
 from cyo_adventure.progress.badges import compute_progress
 from cyo_adventure.progress.blob import book_title, ending_count, ending_valence_map
 from cyo_adventure.progress.models import BookFacts
-from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.storybook.models import AgeBand, Valence
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -121,7 +123,10 @@ _RING_DEFAULT_GOAL_DAYS: dict[str, int] = {
 # and the DB CHECK (ck_child_profile_ring_goal_days_range): a row written
 # before any of those bounds existed, or restored from a backup taken between
 # them, still resolves to a safe value here.
-_RING_GOAL_DAYS_MAX = 6
+#
+# Imported rather than re-typed: db/models.py owns the pair, the DB CHECK is
+# built from it, and api/schemas.py's RingGoalDays alias bounds the wire
+# contract with it. Three enforcement points, one definition.
 
 # The band an unrecognized (or unavailable) age_band string resolves to. Tied
 # to the enum rather than a bare "3-5" literal so a future band rename cannot
@@ -170,7 +175,49 @@ def _resolve_ring_settings(
     goal_days = (
         _RING_DEFAULT_GOAL_DAYS[band] if ring_goal_days is None else ring_goal_days
     )
-    return enabled, min(goal_days, _RING_GOAL_DAYS_MAX)
+    # Clamped at BOTH ends, not just the cap. ``ResolvedGamificationSettingsView``
+    # now declares ``RingGoalDays`` (ge=1, le=6), so a stored 0 or a negative,
+    # which is exactly what a row written before the CHECK constraint existed
+    # can hold, would fail response validation and 500 the whole progress read
+    # rather than degrade. A floor also keeps the ring's own arithmetic sane:
+    # the frontend divides by the goal to size ``strokeDashoffset``.
+    return enabled, min(max(goal_days, RING_GOAL_DAYS_MIN), RING_GOAL_DAYS_MAX)
+
+
+def _coerce_valence(raw: str, ending_id: str, storybook_id: str) -> Valence:
+    """Map a blob's raw valence string onto the ``Valence`` enum.
+
+    # #ASSUME: data integrity: every published version passed the validator,
+    # whose Storybook schema constrains ``ending.valence`` to this enum, so an
+    # unrecognized string means the stored blob predates or bypassed that gate
+    # (a hand-edited row, a restored backup). ``FoundEndingView.valence`` is a
+    # closed enum on the wire, so an unrecognized value would otherwise fail
+    # response validation and 500 the entire gallery for one bad ending.
+    # Degrading to NEUTRAL keeps the other endings readable and logs loudly
+    # enough to find the row; NEUTRAL specifically because it is the valence
+    # that makes no claim, so a corrupt ending is never miscoloured as a
+    # triumph or a loss to a child.
+    # #VERIFY: tests/unit/test_progress_api_unit.py::
+    # test_unknown_ending_valence_degrades_to_neutral.
+
+    Args:
+        raw: The valence string as stored in the version blob.
+        ending_id: The ending the value came from, for the log line.
+        storybook_id: The book the ending belongs to, for the log line.
+
+    Returns:
+        Valence: The matching member, or ``Valence.NEUTRAL`` if unrecognized.
+    """
+    try:
+        return Valence(raw)
+    except ValueError:
+        _logger.warning(
+            "progress_unknown_ending_valence",
+            storybook_id=storybook_id,
+            ending_id=ending_id,
+            raw_valence=raw,
+        )
+        return Valence.NEUTRAL
 
 
 def _week_start(today: date) -> date:
@@ -574,7 +621,11 @@ def _build_found_endings(
         )
         if key not in cards:
             cards[key] = FoundEndingView(
-                ending_id=completion.ending_id, title=title, valence=valence
+                ending_id=completion.ending_id,
+                title=title,
+                valence=_coerce_valence(
+                    valence, completion.ending_id, completion.storybook_id
+                ),
             )
             earliest_found_at[key] = completion.found_at
         elif completion.found_at < earliest_found_at[key]:

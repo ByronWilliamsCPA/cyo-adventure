@@ -22,6 +22,7 @@ from pydantic import (
     model_validator,
 )
 
+from cyo_adventure.db.models import RING_GOAL_DAYS_MAX, RING_GOAL_DAYS_MIN
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
 from cyo_adventure.storybook.evaluator import VarState
@@ -31,7 +32,21 @@ from cyo_adventure.storybook.models import (
     ContentFlags,
     Length,
     NarrativeStyle,
+    Valence,
 )
+
+# W3.4: the selectable weekly-ring goal, bounded once. The cap exists so one
+# guaranteed free day always survives a guardian's most aggressive setting
+# (gamification-recommendation-2026-08-01.md, "Plan defaults" item 4).
+#
+# One alias, four uses: the two WRITE bodies below (create and update) and the
+# two READ views (the guardian's raw ProfileView and the kid's resolved
+# ProgressView.settings). The read paths previously declared a bare ``int``, so
+# the OpenAPI schema, and therefore the generated frontend client, described a
+# number the server can never actually emit as unbounded. The DB CHECK in
+# ``db/models.py`` is built from these same two constants, so the SQL bound and
+# the API bound cannot drift.
+RingGoalDays = Annotated[int, Field(ge=RING_GOAL_DAYS_MIN, le=RING_GOAL_DAYS_MAX)]
 
 # ---------------------------------------------------------------------------
 # Reading-state resource bounds (audit Finding 8)
@@ -227,6 +242,39 @@ class CompletionRecordedView(CompletionView):
     found: int
     total: int
 
+    @model_validator(mode="after")
+    def _check_tally_is_possible(self) -> CompletionRecordedView:
+        """Reject tallies the ending screen cannot render coherently.
+
+        # #ASSUME: data integrity: ``found`` counts DISTINCT endings this
+        # profile has reached in this book and ``total`` is the pinned
+        # version's declared ending count, so ``found > total`` means the
+        # projection and the blob disagree (a version pinned backwards, a
+        # stale metadata.ending_count) and ``is_new and found == 0`` is
+        # self-contradictory: the call that just recorded a new ending must
+        # count at least that one. Both would render as a nonsense "you found
+        # 9 of 3!" or a celebration over an empty tally.
+        # #VERIFY: tests/unit/test_completions_api.py::
+        # TestCompletionRecordedViewInvariants.
+
+        Returns:
+            CompletionRecordedView: This instance when the tally is coherent.
+
+        Raises:
+            ValueError: If ``found`` exceeds ``total``, or a new find is
+                reported with a zero tally.
+        """
+        if self.found > self.total:
+            msg = (
+                f"found ({self.found}) cannot exceed the book's declared "
+                f"ending total ({self.total})"
+            )
+            raise ValueError(msg)
+        if self.is_new and self.found == 0:
+            msg = "is_new is True but found is 0; a new find must be counted"
+            raise ValueError(msg)
+        return self
+
 
 class CompletionListView(BaseModel):
     """A profile's recorded completions (COPPA 312.6(a) / GDPR Article 15 read path)."""
@@ -320,7 +368,12 @@ class FoundEndingView(BaseModel):
 
     ending_id: str
     title: str
-    valence: str
+    # The closed set, not a bare str. A blob's stored valence string is coerced
+    # to this enum at the boundary in ``api/progress.py`` (unknown -> NEUTRAL,
+    # logged), so a corrupt blob still degrades rather than 500ing, while the
+    # generated client gets a union it can exhaustively switch on instead of a
+    # string that renders as a blank or literal "undefined" label to a child.
+    valence: Valence
 
 
 class BookProgressView(BaseModel):
@@ -335,7 +388,12 @@ class BookProgressView(BaseModel):
     # W3.2: every distinct ending this profile has found in this book, oldest
     # find first, card-ready for the gallery. See FoundEndingView's docstring
     # for why unfound endings carry no identity here.
-    found_endings: list[FoundEndingView] = Field(default_factory=list)
+    #
+    # Required with no default: the server always supplies the list (empty when
+    # nothing is found yet), and the empty list is the meaningful value, so an
+    # implicit default would hide a construction-site omission behind a state
+    # the gallery renders as "all silhouettes" rather than surfacing it.
+    found_endings: list[FoundEndingView]
 
 
 class ProgressTotalsView(BaseModel):
@@ -357,7 +415,14 @@ class ResolvedGamificationSettingsView(BaseModel):
     """
 
     ring_enabled: bool
-    ring_goal_days: int
+    # Bounded here as well as on the write paths: this value is server-RESOLVED
+    # (band default or stored override, then clamped by
+    # ``api/progress.py::_resolve_ring_settings``), so an out-of-range number
+    # reaching a client would mean the resolver, not the caller, was wrong. The
+    # generated frontend client now carries the same bound rather than a bare
+    # number, which is what let ``strokeDashoffset`` be computed from an
+    # unvalidated value in the first place.
+    ring_goal_days: RingGoalDays
     badges_enabled: bool
     time_capture_paused: bool
 
@@ -376,8 +441,14 @@ class ProgressView(BaseModel):
     badges: list[EarnedBadgeView]
     books: list[BookProgressView]
     totals: ProgressTotalsView
-    days_read_this_week: int = 0
-    lifetime_days_read: int = 0
+    # Required, not defaulted. Both are computed unconditionally by
+    # ``api/progress.py::_reading_day_totals`` on every call, so a default only
+    # ever fires when a hand-built instance forgets them, which is precisely
+    # when a silent 0 is worst: a zeroed weekly ring reads to a child as "you
+    # have not read this week". Required here also makes them non-optional in
+    # the generated client, retiring the `?? 0` at each consumer.
+    days_read_this_week: int = Field(ge=0)
+    lifetime_days_read: int = Field(ge=0)
     settings: ResolvedGamificationSettingsView
 
 
@@ -1365,7 +1436,7 @@ class ProfileView(BaseModel):
     # kid-facing resolved value (what actually renders) comes from
     # ``GET /me/progress``'s ``settings`` field instead.
     ring_enabled: bool | None
-    ring_goal_days: int | None
+    ring_goal_days: RingGoalDays | None
     badges_enabled: bool
     time_capture_paused: bool
     created_at: datetime
@@ -1427,7 +1498,7 @@ class ProfileCreateBody(BaseModel):
     # a non-default ring state sets it via a follow-up PATCH, same as every
     # other optional G2/G3 field on create.
     ring_enabled: bool | None = None
-    ring_goal_days: Annotated[int, Field(ge=1, le=6)] | None = None
+    ring_goal_days: RingGoalDays | None = None
     badges_enabled: bool = True
     time_capture_paused: bool = False
 
@@ -1479,7 +1550,7 @@ class ProfileUpdateBody(BaseModel):
     # follow the non-null-applies contract (no legitimate "clear" state --
     # they always have a concrete, non-band-dependent default).
     ring_enabled: bool | None = None
-    ring_goal_days: Annotated[int, Field(ge=1, le=6)] | None = None
+    ring_goal_days: RingGoalDays | None = None
     badges_enabled: bool | None = None
     time_capture_paused: bool | None = None
 

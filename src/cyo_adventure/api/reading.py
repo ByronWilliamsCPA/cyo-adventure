@@ -813,6 +813,28 @@ def _completion_recorded_view(
     Returns:
         CompletionRecordedView: The assembled response.
     """
+    # #EDGE: data integrity: CompletionRecordedView now REJECTS an incoherent
+    # tally (found > total, or a new find with a zero count), which is the
+    # right contract for a consumer but the wrong failure mode here: the row
+    # is already committed by the time this view is built, so letting response
+    # validation raise would hand a child an error screen for an ending the
+    # server did in fact record. The only way found can exceed total is a
+    # pinned version whose metadata.ending_count understates its real endings
+    # (validator L1-7 makes that unreachable for anything published through
+    # the gate; a hand-edited or restored row is not). Widen total to the
+    # count actually observed and log, so the ending screen reads "3 of 3"
+    # rather than "3 of 2" and the bad version is findable.
+    # #VERIFY: tests/unit/test_completions_api.py::
+    # test_recorded_view_widens_a_understated_ending_total.
+    if found > total:
+        _logger.warning(
+            "completion_ending_total_understated",
+            storybook_id=row.storybook_id,
+            version=row.version,
+            declared_total=total,
+            distinct_found=found,
+        )
+        total = found
     return CompletionRecordedView(
         child_profile_id=str(row.child_profile_id),
         storybook_id=row.storybook_id,

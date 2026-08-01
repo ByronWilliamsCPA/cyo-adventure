@@ -594,7 +594,7 @@ export type BookProgressView = {
     /**
      * Found Endings
      */
-    found_endings?: Array<FoundEndingView>;
+    found_endings: Array<FoundEndingView>;
 };
 
 /**
@@ -1722,10 +1722,7 @@ export type FoundEndingView = {
      * Title
      */
     title: string;
-    /**
-     * Valence
-     */
-    valence: string;
+    valence: Valence;
 };
 
 /**
@@ -3097,11 +3094,11 @@ export type ProgressView = {
     /**
      * Days Read This Week
      */
-    days_read_this_week?: number;
+    days_read_this_week: number;
     /**
      * Lifetime Days Read
      */
-    lifetime_days_read?: number;
+    lifetime_days_read: number;
     settings: ResolvedGamificationSettingsView;
 };
 
@@ -4650,6 +4647,13 @@ export type UserView = {
      */
     created_at: string;
 };
+
+/**
+ * Valence
+ *
+ * How an ending feels, independent of what mechanically happened.
+ */
+export type Valence = 'positive' | 'neutral' | 'negative';
 
 /**
  * ValidateResponse

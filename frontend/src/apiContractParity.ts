@@ -165,9 +165,15 @@ export type ContractParityAssertions = [
   Expect<BackendAcceptedBy<ReviewSurface, GenReviewSurfaceView>>,
   Expect<BackendAcceptedBy<ProfileView, GenProfileView>>,
   Expect<BackendAcceptedBy<ProfileStoryStatus, GenProfileStoryStatusView>>,
-  // `books` is compared on its own line rather than through the parent: the
-  // Required<> normalization above is shallow, and BookProgressView's
-  // `found_endings` carries the same optional-with-default artifact.
+  // `books` is compared on its own line rather than through the parent
+  // because Required<> is shallow and would not reach into the array element.
+  // The Required<> wrappers themselves are now belt-and-braces on this pair:
+  // `days_read_this_week`, `lifetime_days_read` and `found_endings` were made
+  // REQUIRED backend-side precisely so hey-api stops marking them optional,
+  // which is what forced the normalization here (and a `?? 0` at each
+  // consumer) in the first place. Kept rather than deleted so a future field
+  // that legitimately carries a default does not silently reintroduce the
+  // artifact as a hard failure in an unrelated PR.
   Expect<
     BackendAcceptedBy<
       Required<Omit<ProgressSummary, 'books'>>,

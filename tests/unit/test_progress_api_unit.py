@@ -33,6 +33,7 @@ from cyo_adventure.db.models import (
     Storybook,
     StorybookVersion,
 )
+from cyo_adventure.storybook.models import Valence
 from cyo_adventure.storybook.sentinels import wrap
 
 _T1 = datetime(2026, 1, 1, tzinfo=UTC)
@@ -275,6 +276,21 @@ class TestResolveRingSettings:
         )
         assert goal == 6
 
+    @pytest.mark.parametrize("stored", [0, -3])
+    def test_goal_below_one_is_clamped_up(self, stored: int) -> None:
+        """The floor matters more than the cap now that the view is bounded.
+
+        ``ResolvedGamificationSettingsView.ring_goal_days`` declares
+        ``ge=1``, so a 0 stored before the CHECK constraint existed would
+        fail response validation and 500 the whole progress read rather than
+        degrade one number. A 0 goal is also the one value the frontend's
+        ring arithmetic divides by.
+        """
+        _enabled, goal = _resolve_ring_settings(
+            "8-11", ring_enabled=True, ring_goal_days=stored
+        )
+        assert goal == 1
+
     def test_unknown_age_band_falls_back_to_the_youngest_bands_defaults(self) -> None:
         """An unrecognized band must resolve DOWN, not up.
 
@@ -400,6 +416,83 @@ def test_found_ending_title_strips_sentinels() -> None:
     title = found_endings_by_book["story-a"][0].title
     assert "{~" not in title
     assert "Explorer" in title
+
+
+@pytest.mark.unit
+class TestEndingValenceCoercion:
+    """``FoundEndingView.valence`` is a closed enum; the blob is not.
+
+    ``progress/blob.py::ending_valence_map`` returns whatever string a stored
+    node happens to carry, and the enum on the wire means an unrecognized one
+    would fail response validation and 500 the ENTIRE gallery, not just the
+    one card, since every book is serialized in the same response. These pin
+    that a bad value degrades to the valence that makes no claim.
+    """
+
+    @staticmethod
+    def _version(valence: str) -> StorybookVersion:
+        return StorybookVersion(
+            storybook_id="story-a",
+            version=1,
+            blob={
+                "nodes": [
+                    {
+                        "id": "n1",
+                        "is_ending": True,
+                        "ending": {
+                            "id": "e1",
+                            "valence": valence,
+                            "kind": "success",
+                            "title": "An Ending",
+                        },
+                    }
+                ],
+            },
+        )
+
+    @staticmethod
+    def _completion() -> Completion:
+        completion = Completion(
+            child_profile_id=uuid.uuid4(),
+            storybook_id="story-a",
+            version=1,
+            ending_id="e1",
+        )
+        completion.found_at = _T1
+        return completion
+
+    def test_a_known_valence_survives_as_itself(self) -> None:
+        # The guard rail: proving the unknown case degrades is only meaningful
+        # if the ordinary case is NOT degraded, since NEUTRAL is itself a
+        # legitimate stored value.
+        by_book = _build_found_endings(
+            [self._completion()], {("story-a", 1): self._version("positive")}
+        )
+        assert by_book["story-a"][0].valence is Valence.POSITIVE
+
+    def test_unknown_ending_valence_degrades_to_neutral(self) -> None:
+        with patch.object(progress_module, "_logger") as logger:
+            by_book = _build_found_endings(
+                [self._completion()],
+                {("story-a", 1): self._version("catastrophic")},
+            )
+        assert by_book["story-a"][0].valence is Valence.NEUTRAL
+        logger.warning.assert_called_once_with(
+            "progress_unknown_ending_valence",
+            storybook_id="story-a",
+            ending_id="e1",
+            raw_valence="catastrophic",
+        )
+
+    def test_the_degrade_never_silently_reclassifies_a_negative_ending(self) -> None:
+        # NEUTRAL, not POSITIVE, is the point: a corrupt row must not be
+        # rendered to a child as a triumph. Asserted separately from the
+        # degrade test so a future change to the fallback constant fails on a
+        # test whose name says why the constant matters.
+        by_book = _build_found_endings(
+            [self._completion()], {("story-a", 1): self._version("very-bad")}
+        )
+        assert by_book["story-a"][0].valence is not Valence.POSITIVE
 
 
 @pytest.mark.unit

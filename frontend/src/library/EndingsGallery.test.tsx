@@ -104,4 +104,27 @@ describe('EndingsGallery', () => {
     expect(screen.getByText('A Brave Turn')).toBeInTheDocument()
     expect(screen.queryByText(/fail|lost|sad|bad/i)).toBeNull()
   })
+
+  it('falls back to the neutral icon for an unrecognized valence', () => {
+    // The backend now declares this field as a closed enum and coerces an
+    // unknown blob value to `neutral` before it ever ships, so this is the
+    // second line of defense, for a response this client did not get from
+    // that code path (a stale cached payload, a hand-rolled mock). What must
+    // not happen is a card with a blank icon slot next to a real title: the
+    // gallery is a collection screen, and a hole in the grid reads to a child
+    // as a broken card rather than a neutral one.
+    render(
+      <EndingsGallery
+        open
+        onClose={vi.fn()}
+        bookTitle="A Book"
+        totalEndings={2}
+        foundEndings={[{ ending_id: 'e4', title: 'An Odd Turn', valence: 'catastrophic' }]}
+      />
+    )
+    const card = screen.getByText('An Odd Turn').closest('li')
+    expect(card).not.toBeNull()
+    // The diamond, the same glyph a genuinely neutral ending gets.
+    expect(card?.textContent).toContain('◆')
+  })
 })

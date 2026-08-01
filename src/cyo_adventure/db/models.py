@@ -72,6 +72,16 @@ _ONDELETE_SET_NULL = "SET NULL"
 CATALOG_FAMILY_ID = uuid.UUID("0ca7a109-0000-4000-8000-000000000000")
 CATALOG_FAMILY_NAME = "Catalog (system)"
 
+# W3.4: the selectable range for ChildProfile.ring_goal_days, named once so the
+# CHECK constraint below and the Pydantic bound in api/schemas.py (which imports
+# these) state the same numbers rather than four hand-written copies. The cap
+# guarantees one free day a week survives a guardian's most aggressive setting
+# (gamification-recommendation-2026-08-01.md, "Plan defaults" item 4); NULL
+# still means "no override, follow the P-A band default" and is unconstrained
+# by either bound.
+RING_GOAL_DAYS_MIN = 1
+RING_GOAL_DAYS_MAX = 6
+
 # The five storybook lifecycle states, named once for the CHECK constraint.
 _STORYBOOK_STATUS_VALUES = (
     "'draft', 'in_review', 'needs_revision', 'published', 'archived'"
@@ -505,9 +515,12 @@ class ChildProfile(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         # supabase/migrations/20260801050000_add_child_profile_gamification_settings.sql;
         # NULL (band default) is always allowed, a non-null goal must sit in
         # the selectable range the gamification recommendation's "Plan
-        # defaults" item 4 fixes (max 6, one guaranteed free day).
+        # defaults" item 4 fixes (max 6, one guaranteed free day). Built from
+        # the constants above rather than spelled out, so this bound and the
+        # Pydantic one in api/schemas.py (which imports them) cannot drift.
         CheckConstraint(
-            "ring_goal_days IS NULL OR ring_goal_days BETWEEN 1 AND 6",
+            "ring_goal_days IS NULL OR ring_goal_days BETWEEN "
+            f"{RING_GOAL_DAYS_MIN} AND {RING_GOAL_DAYS_MAX}",
             name="ck_child_profile_ring_goal_days_range",
         ),
         # Phase 4c: backs purge_stale_deactivated_profile_activity's WHERE
