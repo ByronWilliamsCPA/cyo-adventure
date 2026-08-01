@@ -2721,6 +2721,47 @@ export type ProfileListView = {
 };
 
 /**
+ * ProfileStoryStatusListView
+ *
+ * Bulk "new story ready" status for every profile the caller may list.
+ *
+ * One entry per profile ``api/profiles.py::_listable_profiles`` returns for
+ * the calling principal, in the same order; a profile the principal cannot
+ * list never appears here either (see ``GET /profiles/story-status``).
+ */
+export type ProfileStoryStatusListView = {
+    /**
+     * Statuses
+     */
+    statuses: Array<ProfileStoryStatusView>;
+};
+
+/**
+ * ProfileStoryStatusView
+ *
+ * One profile's "new story ready" pill status (W1.4, design review 4.1).
+ *
+ * Deliberately boolean-only: this view is served to a pre-child-session
+ * picker principal (a device grant, or a guardian who has not yet handed
+ * the device to a specific child), which may legitimately list every
+ * profile in the family (``api/profiles.py::_listable_profiles``) but must
+ * never learn a SIBLING profile's book titles or shelf counts from the
+ * picker screen. ``has_new_story`` is the only signal; no
+ * ``storybook_id``/``title``/``count`` field is ever added here (see the
+ * endpoint docstring for the "new" definition).
+ */
+export type ProfileStoryStatusView = {
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Has New Story
+     */
+    has_new_story: boolean;
+};
+
+/**
  * ProfileUpdateBody
  *
  * A guardian's partial update to a child profile.
@@ -5140,6 +5181,39 @@ export type CreateProfileApiV1ProfilesPostResponses = {
 };
 
 export type CreateProfileApiV1ProfilesPostResponse = CreateProfileApiV1ProfilesPostResponses[keyof CreateProfileApiV1ProfilesPostResponses];
+
+export type ListProfileStoryStatusApiV1ProfilesStoryStatusGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/profiles/story-status';
+};
+
+export type ListProfileStoryStatusApiV1ProfilesStoryStatusGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListProfileStoryStatusApiV1ProfilesStoryStatusGetError = ListProfileStoryStatusApiV1ProfilesStoryStatusGetErrors[keyof ListProfileStoryStatusApiV1ProfilesStoryStatusGetErrors];
+
+export type ListProfileStoryStatusApiV1ProfilesStoryStatusGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: ProfileStoryStatusListView;
+};
+
+export type ListProfileStoryStatusApiV1ProfilesStoryStatusGetResponse = ListProfileStoryStatusApiV1ProfilesStoryStatusGetResponses[keyof ListProfileStoryStatusApiV1ProfilesStoryStatusGetResponses];
 
 export type DeleteProfileApiV1ProfilesProfileIdDeleteData = {
     body?: never;

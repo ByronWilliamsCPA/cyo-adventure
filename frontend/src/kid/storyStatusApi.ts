@@ -39,7 +39,15 @@ export function makeStoryStatusApi(api: AxiosInstance): StoryStatusApi {
       const res = await api.get<{ statuses: ProfileStoryStatus[] }>(
         '/v1/profiles/story-status'
       )
-      return res.data.statuses
+      // #ASSUME: data-integrity: a malformed/missing `statuses` array (a
+      // stale mock in a test, or a future backend contract change) degrades
+      // to "no pills" here rather than throwing, so a shape mismatch on this
+      // purely decorative signal can never surface as an error to the
+      // picker (ProfilePickerPage.tsx's caller already treats any rejection
+      // the same way; this just widens that same posture to a malformed
+      // 200).
+      // #VERIFY: storyStatusApi.test.ts::"tolerates a missing statuses array".
+      return Array.isArray(res.data.statuses) ? res.data.statuses : []
     },
   }
 }

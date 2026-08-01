@@ -308,11 +308,30 @@ export function RequestStory({
                   {'”'}
                 </span>
               ) : null
+              // W1.4 (K19 reflect-back, design review 4.1): a short "we heard
+              // you" line under a pending or approved request only -- a
+              // declined/blocked row already gets its own honest STATUS_COPY
+              // line ("Not this time...", "Let's try a different idea!"),
+              // and layering a generic "We could not build this wish yet"
+              // reflection on top of that would read as confusing, not warm.
+              // req.kidSummary is a single pre-rendered, echo-safe sentence
+              // (see storyRequestApi.ts::KidStoryRequest.kidSummary's own doc
+              // for why this field, not the per-element list, was chosen);
+              // null for a request with no stored interpretation (pre-WS-7),
+              // so the line is simply omitted rather than showing "We heard:"
+              // with nothing after it.
+              const heard =
+                (req.status === 'pending' || req.status === 'approved') && req.kidSummary ? (
+                  <span className="request-story__item-status">
+                    We heard you: {req.kidSummary}
+                  </span>
+                ) : null
               if (req.status !== 'approved') {
                 return (
                   <li key={req.id} data-status={req.status} className="request-story__item">
                     {ideaSpan}
                     <span className="request-story__item-status">{STATUS_COPY[req.status]}</span>
+                    {heard}
                   </li>
                 )
               }
@@ -339,6 +358,7 @@ export function RequestStory({
                       Your story is being written…
                     </span>
                   )}
+                  {heard}
                 </li>
               )
             })}

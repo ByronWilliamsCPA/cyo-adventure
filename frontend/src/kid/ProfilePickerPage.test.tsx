@@ -284,6 +284,113 @@ describe('ProfilePickerPage', () => {
   })
 })
 
+describe('ProfilePickerPage story-status pill (W1.4)', () => {
+  const TWO_PROFILES = {
+    profiles: [
+      {
+        id: 'p1',
+        display_name: 'Reader A',
+        age_band: '10-13',
+        reading_level_cap: 99,
+        avatar: 'fox',
+        tts_enabled: false,
+        created_at: '2026-07-02T00:00:00Z',
+      },
+      {
+        id: 'p2',
+        display_name: 'Nova',
+        age_band: '5-8',
+        reading_level_cap: 99,
+        avatar: null,
+        tts_enabled: false,
+        created_at: '2026-07-02T00:00:00Z',
+      },
+    ],
+  }
+
+  function mockGetByUrl(handlers: {
+    profiles?: unknown
+    storyStatus?: unknown
+    storyStatusRejects?: boolean
+  }) {
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('story-status')) {
+        if (handlers.storyStatusRejects) return Promise.reject(new Error('boom'))
+        return Promise.resolve({ data: handlers.storyStatus })
+      }
+      return Promise.resolve({ data: handlers.profiles })
+    })
+  }
+
+  it('shows a "new story!" pill only on the profile the bulk endpoint flags', async () => {
+    mockGetByUrl({
+      profiles: TWO_PROFILES,
+      storyStatus: {
+        statuses: [
+          { profile_id: 'p1', has_new_story: true },
+          { profile_id: 'p2', has_new_story: false },
+        ],
+      },
+    })
+    renderPicker()
+
+    const flagged = await screen.findByRole('link', { name: /Reader A has a new story/i })
+    expect(flagged).toHaveTextContent('new story!')
+    const unflagged = screen.getByRole('link', { name: /Nova/i })
+    expect(unflagged).not.toHaveAccessibleName(/new story/i)
+    expect(unflagged).not.toHaveTextContent('new story!')
+  })
+
+  it('shows no pill when the bulk endpoint reports nothing new', async () => {
+    mockGetByUrl({
+      profiles: ONE_PROFILE,
+      storyStatus: { statuses: [{ profile_id: 'p1', has_new_story: false }] },
+    })
+    renderPicker()
+
+    const tile = await screen.findByRole('link', { name: /Reader A/ })
+    expect(tile).not.toHaveTextContent('new story!')
+  })
+
+  it('degrades silently (no pill, no error screen) when the status fetch fails', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    mockGetByUrl({ profiles: ONE_PROFILE, storyStatusRejects: true })
+    renderPicker()
+
+    const tile = await screen.findByRole('link', { name: /Reader A/ })
+    expect(tile).not.toHaveTextContent('new story!')
+    await waitFor(() =>
+      expect(errorSpy).toHaveBeenCalledWith('story status fetch failed', 'boom')
+    )
+    errorSpy.mockRestore()
+  })
+
+  it('combines the PIN and new-story hints in the accessible name', async () => {
+    mockGetByUrl({
+      profiles: {
+        profiles: [
+          {
+            id: 'p1',
+            display_name: 'Reader A',
+            age_band: '10-13',
+            reading_level_cap: 99,
+            avatar: 'fox',
+            tts_enabled: false,
+            created_at: '2026-07-02T00:00:00Z',
+            has_pin: true,
+          },
+        ],
+      },
+      storyStatus: { statuses: [{ profile_id: 'p1', has_new_story: true }] },
+    })
+    renderPicker()
+
+    expect(
+      await screen.findByRole('link', { name: /Reader A needs a PIN and has a new story/i })
+    ).toBeInTheDocument()
+  })
+})
+
 describe('ProfilePickerPage child session mint (G1 / P6-04)', () => {
   it('mints and stores a child session before navigating to the library', async () => {
     const user = userEvent.setup()

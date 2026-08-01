@@ -193,6 +193,80 @@ describe('RequestStory', () => {
     })
   })
 
+  describe('W1.4: K19 reflect-back', () => {
+    it('shows the "We heard you" line for a pending request with an interpretation', async () => {
+      mockGet.mockResolvedValue({
+        data: {
+          requests: [
+            {
+              id: 'req1',
+              status: 'pending',
+              interpretation: { kid_summary: 'We built in 1 of your ideas.' },
+            },
+          ],
+        },
+      })
+      render(<RequestStory profileId="p1" />)
+      expect(
+        await screen.findByText(/we heard you: we built in 1 of your ideas\./i)
+      ).toBeInTheDocument()
+    })
+
+    it('shows the reflect-back line for an approved request too', async () => {
+      mockGet.mockResolvedValue({
+        data: {
+          requests: [
+            {
+              id: 'req1',
+              status: 'approved',
+              resulting_storybook_id: null,
+              interpretation: { kid_summary: 'We are getting your adventure ready!' },
+            },
+          ],
+        },
+      })
+      render(<RequestStory profileId="p1" />)
+      expect(
+        await screen.findByText(/we heard you: we are getting your adventure ready!/i)
+      ).toBeInTheDocument()
+      // Still shows the generating copy alongside it; the reflect-back line
+      // is additive, never a replacement for the honest status line.
+      expect(screen.getByText(/your story is being written/i)).toBeInTheDocument()
+    })
+
+    it('omits the line entirely when there is no stored interpretation', async () => {
+      mockGet.mockResolvedValue({
+        data: { requests: [{ id: 'req1', status: 'pending' }] },
+      })
+      render(<RequestStory profileId="p1" />)
+      await screen.findByText(/waiting for a grown-up to say yes/i)
+      expect(screen.queryByText(/we heard you/i)).not.toBeInTheDocument()
+    })
+
+    it('never shows the reflect-back line on a declined or blocked request', async () => {
+      mockGet.mockResolvedValue({
+        data: {
+          requests: [
+            {
+              id: 'req1',
+              status: 'declined',
+              interpretation: { kid_summary: 'We could not build this wish yet.' },
+            },
+            {
+              id: 'req2',
+              status: 'blocked',
+              interpretation: { kid_summary: 'We could not build this wish yet.' },
+            },
+          ],
+        },
+      })
+      render(<RequestStory profileId="p1" />)
+      await screen.findByText(/not this time\. try another idea!/i)
+      expect(screen.getByText(/let's try a different idea!/i)).toBeInTheDocument()
+      expect(screen.queryByText(/we heard you/i)).not.toBeInTheDocument()
+    })
+  })
+
   it('shows a friendly error and keeps the form open when create fails', async () => {
     mockPost.mockRejectedValue(new Error('network exploded'))
 
