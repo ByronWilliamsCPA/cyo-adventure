@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, TypeVar
 
 from fastapi import APIRouter
@@ -26,6 +27,7 @@ from sqlalchemy import select, tuple_
 from cyo_adventure.api.deps import CurrentPrincipal, DbSession, authorize_profile
 from cyo_adventure.api.schemas import (
     ChildEngagementItem,
+    DailyMinutesView,
     FamilyReadingSummaryView,
     ReadingHistoryItem,
     ReadingHistoryView,
@@ -35,6 +37,7 @@ from cyo_adventure.core.exceptions import AuthorizationError, ValidationError
 from cyo_adventure.db.models import (
     ChildProfile,
     Completion,
+    ReadingActivityDay,
     ReadingState,
     Storybook,
     StorybookVersion,
@@ -43,7 +46,7 @@ from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
-    from datetime import datetime
+    from datetime import date
 
 _logger = get_logger(__name__)
 
@@ -66,6 +69,68 @@ def _bump(acc: dict[_KeyT, datetime], key: _KeyT, value: datetime) -> None:
     current = acc.get(key)
     if current is None or value > current:
         acc[key] = value
+
+
+# W3.3 (gamification-recommendation-2026-08-01.md section 2.4): the rolling
+# window width for the guardian minutes/day breakdown, and the ISO weekday
+# arithmetic for "this week" (Monday-Sunday, matching the weekly ring's own
+# "the week refills every Monday" framing in the same recommendation section
+# 2.3, even though the ring itself is a later wave (W3.4)).
+_ROLLING_WINDOW_DAYS = 7
+
+
+def _week_start(today: date) -> date:
+    """Return the Monday that starts ``today``'s ISO week."""
+    return today - timedelta(days=today.weekday())
+
+
+def _daily_minutes(
+    seconds_by_date: Mapping[date, int], today: date
+) -> list[DailyMinutesView]:
+    """Return one entry per day in the rolling window, oldest first.
+
+    Args:
+        seconds_by_date: This profile's ``activity_date -> active_seconds``
+            rows already loaded for the window.
+        today: The server's current UTC date (the window's last day).
+
+    Returns:
+        list[DailyMinutesView]: Exactly ``_ROLLING_WINDOW_DAYS`` entries,
+        oldest to newest; a day with no row reports 0 minutes rather than
+        being omitted, so the client always renders a full week.
+    """
+    return [
+        DailyMinutesView(
+            activity_date=day,
+            minutes=seconds_by_date.get(day, 0) // 60,
+        )
+        for day in (
+            today - timedelta(days=offset)
+            for offset in range(_ROLLING_WINDOW_DAYS - 1, -1, -1)
+        )
+    ]
+
+
+def _days_read_this_week(
+    seconds_by_date: Mapping[date, int], week_start: date, today: date
+) -> int:
+    """Return the count of this-ISO-week days with any active reading time.
+
+    Args:
+        seconds_by_date: This profile's ``activity_date -> active_seconds``
+            rows already loaded for the window.
+        week_start: The Monday starting the current ISO week.
+        today: The server's current UTC date.
+
+    Returns:
+        int: Days between ``week_start`` and ``today`` (inclusive) with
+        ``active_seconds > 0``.
+    """
+    return sum(
+        1
+        for day, seconds in seconds_by_date.items()
+        if week_start <= day <= today and seconds > 0
+    )
 
 
 def _parse_profile_id(raw: str) -> uuid.UUID:
@@ -398,6 +463,12 @@ async def get_family_reading_summary(
 ) -> FamilyReadingSummaryView:
     """Return per-child engagement signals for the caller's own family (G9).
 
+    W3.3 (gamification-recommendation-2026-08-01.md section 2.4) extends this
+    with ``minutes_last_7_days`` (a rolling 7-calendar-day breakdown, oldest
+    first, zero-filled for a day with no reading) and
+    ``days_read_this_week`` (count of ISO-week days, Monday start, with any
+    active reading time), both derived from ``reading_activity_day``.
+
     Args:
         principal: The authenticated principal.
         session: The request session.
@@ -430,11 +501,15 @@ async def get_family_reading_summary(
         return FamilyReadingSummaryView(children=[])
 
     profile_ids = [p.id for p in profiles]
-    # #ASSUME: external resources: two bulk queries (states, completions)
-    # scoped to the whole family's profile ids cover every child in one
-    # round-trip each, regardless of family size (no N+1 per child).
+    today = datetime.now(UTC).date()
+    week_start = _week_start(today)
+    window_start = min(today - timedelta(days=_ROLLING_WINDOW_DAYS - 1), week_start)
+    # #ASSUME: external resources: three bulk queries (states, completions,
+    # reading-activity-days) scoped to the whole family's profile ids cover
+    # every child in one round-trip each, regardless of family size (no N+1
+    # per child).
     # #VERIFY: tests/unit/test_reading_history_api_unit.py asserts exactly
-    # three session.scalars() calls (profiles, states, completions).
+    # four session.scalars() calls (profiles, states, completions, activity).
     state_rows = list(
         await session.scalars(
             select(ReadingState).where(ReadingState.child_profile_id.in_(profile_ids))
@@ -443,6 +518,14 @@ async def get_family_reading_summary(
     completion_rows = list(
         await session.scalars(
             select(Completion).where(Completion.child_profile_id.in_(profile_ids))
+        )
+    )
+    activity_rows = list(
+        await session.scalars(
+            select(ReadingActivityDay).where(
+                ReadingActivityDay.child_profile_id.in_(profile_ids),
+                ReadingActivityDay.activity_date >= window_start,
+            )
         )
     )
 
@@ -466,6 +549,12 @@ async def get_family_reading_summary(
         )
         _bump(activity, completion.child_profile_id, completion.found_at)
 
+    seconds_by_profile: dict[uuid.UUID, dict[date, int]] = {}
+    for row in activity_rows:
+        seconds_by_profile.setdefault(row.child_profile_id, {})[
+            row.activity_date
+        ] = row.active_seconds
+
     children = [
         ChildEngagementItem(
             profile_id=str(profile.id),
@@ -474,6 +563,12 @@ async def get_family_reading_summary(
             books_finished=len(finished.get(profile.id, set())),
             total_endings_found=endings_found.get(profile.id, 0),
             last_activity_at=activity.get(profile.id),
+            minutes_last_7_days=_daily_minutes(
+                seconds_by_profile.get(profile.id, {}), today
+            ),
+            days_read_this_week=_days_read_this_week(
+                seconds_by_profile.get(profile.id, {}), week_start, today
+            ),
         )
         for profile in profiles
     ]

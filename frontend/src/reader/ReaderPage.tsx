@@ -71,6 +71,14 @@ export interface ReaderPageProps {
    * "no fetch, no resolver input" the structural default rather than a branch.
    */
   fetchPersonalizationValues?: (storybookId: string) => Promise<ValuesPayload | null>
+  /**
+   * The reading profile's `age_band` (ADR-026 decision 6), forwarded
+   * straight to the Reader (see its own doc for the exact band list and the
+   * "unknown means page-per-node" default). Resolved in `ReaderRoute` via a
+   * best-effort profile lookup; omitted here has the identical effect as an
+   * explicit `undefined`.
+   */
+  ageBand?: string
 }
 
 type FetchServerState = (profileId: string, storybookId: string) => Promise<ReadingState | null>
@@ -143,6 +151,7 @@ export function ReaderPage({
   fetchReadingHistory,
   submitFlag,
   fetchPersonalizationValues,
+  ageBand,
 }: ReaderPageProps) {
   const [pageState, setPageState] = useState<PageState>({ phase: 'loading' })
   // ADR-023 P6: resolved independently of the story load, so a slow or failing
@@ -624,6 +633,7 @@ export function ReaderPage({
         completionOutcome={completionOutcome}
         submitFlag={submitFlag}
         personalization={personalization}
+        ageBand={ageBand}
       />
     </>
   )

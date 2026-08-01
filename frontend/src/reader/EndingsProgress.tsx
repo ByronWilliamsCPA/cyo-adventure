@@ -14,6 +14,29 @@ import { useEffect, useState } from 'react'
 
 import type { CompletionOutcome } from '../api/readerApi'
 import type { ReadingHistoryItem } from '../client/types.gen'
+import { allEndingsFoundLine, isLargeEndingCatalog, milestoneLine } from './endingsFraming'
+
+/**
+ * The tracker line for a known (found, total) pair (W1.3, AL-028). Shared by
+ * both render paths below (the W0.3 completion-response path and the
+ * fetchReadingHistory fallback) so the three states -- all found, milestone,
+ * ordinary "N of M" -- are computed identically regardless of which data
+ * source answered. `isNew` is only meaningful for the completion-response
+ * path (the fallback lookup carries no first-find/repeat-visit signal), so
+ * the fallback call site always passes `false`, which only affects the
+ * below-threshold branch's wording.
+ */
+function trackerText(found: number, total: number, isNew: boolean): string {
+  if (found >= total) {
+    return allEndingsFoundLine(total)
+  }
+  if (isLargeEndingCatalog(total)) {
+    return milestoneLine(found, isNew)
+  }
+  return isNew
+    ? `You found a NEW ending! ${found} of ${total} found so far.`
+    : `You found ending ${found} of ${total}! Read again to find more.`
+}
 
 export interface EndingsProgressProps {
   profileId: string
@@ -95,9 +118,7 @@ export function EndingsProgress({
     if (total <= 1) return null
     return (
       <p className="reader-ending__endings-tracker" data-testid="endings-tracker">
-        {is_new
-          ? `You found a NEW ending! ${found} of ${total} found so far.`
-          : `You found ending ${found} of ${total}! Read again to find more.`}
+        {trackerText(found, total, is_new)}
       </p>
     )
   }
@@ -105,7 +126,7 @@ export function EndingsProgress({
   if (!item || item.total_endings <= 1) return null
   return (
     <p className="reader-ending__endings-tracker" data-testid="endings-tracker">
-      You found ending {item.endings_found} of {item.total_endings}! Read again to find more.
+      {trackerText(item.endings_found, item.total_endings, false)}
     </p>
   )
 }

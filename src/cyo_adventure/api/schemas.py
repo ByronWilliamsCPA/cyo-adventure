@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 import re
 import unicodedata
-from datetime import datetime
+from datetime import date, datetime
 from typing import Annotated, Literal, get_args
 
 from pydantic import (
@@ -259,12 +259,29 @@ class ReadingHistoryView(BaseModel):
     books: list[ReadingHistoryItem]
 
 
+class DailyMinutesView(BaseModel):
+    """Active reading minutes for one calendar day (W3.3, guardian-only).
+
+    Derived from ``reading_activity_day.active_seconds // 60``. Guardian-only
+    by construction: this type is nested only in ``ChildEngagementItem``,
+    which ``get_family_reading_summary`` (guardian/admin-only) is the sole
+    producer of. Kids see days, never minutes (gamification recommendation
+    section 2.4, P4): no kid-facing surface serves this type.
+    """
+
+    activity_date: date
+    minutes: int
+
+
 class ChildEngagementItem(BaseModel):
     """One child's engagement signals for a guardian's family reading summary.
 
     Deliberately signals-only (G9's privacy model: signals, not surveillance):
     no story title, node, or choice content is carried here, only counts and
     ids already visible to the guardian elsewhere (the library listing).
+    ``minutes_last_7_days``/``days_read_this_week`` (W3.3) extend that same
+    signals-only posture to active reading time: day-grain counts and minute
+    totals only, never a session-level or sub-day breakdown.
     """
 
     profile_id: str
@@ -273,12 +290,84 @@ class ChildEngagementItem(BaseModel):
     books_finished: int
     total_endings_found: int
     last_activity_at: datetime | None
+    minutes_last_7_days: list[DailyMinutesView] = Field(default_factory=list)
+    days_read_this_week: int = 0
 
 
 class FamilyReadingSummaryView(BaseModel):
     """Per-child engagement summary for the caller's own family (G9)."""
 
     children: list[ChildEngagementItem]
+
+
+class EarnedBadgeView(BaseModel):
+    """One badge a profile has earned (W3.1, gamification recommendation 2.2)."""
+
+    id: str
+    name: str
+    description: str
+    earned_at: datetime
+
+
+class BookProgressView(BaseModel):
+    """One book's collection state for a profile (W3.1, the Endings Gallery)."""
+
+    storybook_id: str
+    title: str
+    endings_found: int
+    total_endings: int
+    finished: bool
+    every_path_walked: bool
+
+
+class ProgressTotalsView(BaseModel):
+    """Lifetime totals across every book a profile has touched (W3.1)."""
+
+    books_finished: int
+    endings_found: int
+
+
+class ProgressView(BaseModel):
+    """``GET /me/progress`` response: badges, collection state, totals (W3.1)."""
+
+    badges: list[EarnedBadgeView]
+    books: list[BookProgressView]
+    totals: ProgressTotalsView
+
+
+# Loose upper bound on a single reading-time flush's seconds_delta: one full
+# day. The real business-rule clamp (elapsed-time-since-last-write plus a
+# grace margin, capped at a much tighter 6 hours) runs in
+# api/reading_time.py; this Pydantic bound only guards against a malformed or
+# hostile payload carrying an absurd integer before it ever reaches that
+# logic (a resource-exhaustion/garbage-input guard, not the sanity clamp
+# itself).
+_READING_TIME_FLUSH_MAX_SECONDS = 86_400
+
+
+class ReadingTimeFlushBody(BaseModel):
+    """A client-side active-reading-time flush for one day bucket (W3.3).
+
+    ``device_id`` is accepted for parity with the reading-state sync
+    contract and future per-device analytics, but is not currently persisted
+    (the recommendation's data-model sketch, section 5, carries no
+    device_id column); see ``db/models.py::ReadingActivityDay``.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    date: date
+    seconds_delta: int = Field(ge=0, le=_READING_TIME_FLUSH_MAX_SECONDS)
+    flush_id: str = Field(min_length=1, max_length=64)
+    device_id: str | None = Field(default=None, max_length=64)
+
+
+class ReadingActivityDayView(BaseModel):
+    """A profile's active-reading-seconds bucket for one day (W3.3)."""
+
+    activity_date: date
+    active_seconds: int
+    updated_at: datetime
 
 
 class SeriesNextBook(BaseModel):

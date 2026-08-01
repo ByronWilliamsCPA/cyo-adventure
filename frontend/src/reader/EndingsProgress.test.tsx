@@ -115,6 +115,31 @@ describe('EndingsProgress (K6, ending screen)', () => {
     ).toBeInTheDocument()
   })
 
+  it('shows milestone framing (no denominator) above the threshold via the fallback lookup', async () => {
+    const fetchReadingHistory = vi
+      .fn()
+      .mockResolvedValue([historyRow({ endings_found: 3, total_endings: 232 })])
+    render(
+      <EndingsProgress profileId="p1" storybookId="s1" fetchReadingHistory={fetchReadingHistory} />
+    )
+    expect(
+      await screen.findByText("You've found 3 endings so far. Lots more to find.")
+    ).toBeInTheDocument()
+    expect(screen.queryByText(/of 232/)).toBeNull()
+  })
+
+  it('shows the all-found celebration via the fallback lookup', async () => {
+    const fetchReadingHistory = vi
+      .fn()
+      .mockResolvedValue([historyRow({ endings_found: 7, total_endings: 7 })])
+    render(
+      <EndingsProgress profileId="p1" storybookId="s1" fetchReadingHistory={fetchReadingHistory} />
+    )
+    expect(
+      await screen.findByText('You found them ALL! All 7 endings are yours.')
+    ).toBeInTheDocument()
+  })
+
   it('re-fetches when the storybookId changes', async () => {
     const fetchReadingHistory = vi
       .fn()
@@ -209,6 +234,52 @@ describe('EndingsProgress completionOutcome (W0.3)', () => {
       await screen.findByText('You found ending 2 of 4! Read again to find more.')
     ).toBeInTheDocument()
     expect(fetchReadingHistory).toHaveBeenCalledWith('p1')
+  })
+
+  it('shows the all-found celebration when this completion reaches every ending (W1.3a)', async () => {
+    const fetchReadingHistory = vi.fn().mockResolvedValue([])
+    render(
+      <EndingsProgress
+        profileId="p1"
+        storybookId="s1"
+        fetchReadingHistory={fetchReadingHistory}
+        completionOutcome={{ status: 'ready', result: { is_new: true, found: 4, total: 4 } }}
+      />
+    )
+    expect(
+      await screen.findByText('You found them ALL! All 4 endings are yours.')
+    ).toBeInTheDocument()
+  })
+
+  it('shows milestone framing (no denominator) above the shared threshold for a NEW find (AL-028)', async () => {
+    const fetchReadingHistory = vi.fn().mockResolvedValue([])
+    render(
+      <EndingsProgress
+        profileId="p1"
+        storybookId="s1"
+        fetchReadingHistory={fetchReadingHistory}
+        completionOutcome={{ status: 'ready', result: { is_new: true, found: 3, total: 232 } }}
+      />
+    )
+    expect(
+      await screen.findByText("You found a NEW ending! That's 3 endings so far. Lots more to find.")
+    ).toBeInTheDocument()
+    expect(screen.queryByText(/of 232/)).toBeNull()
+  })
+
+  it('shows milestone framing for a repeat visit above the shared threshold', async () => {
+    const fetchReadingHistory = vi.fn().mockResolvedValue([])
+    render(
+      <EndingsProgress
+        profileId="p1"
+        storybookId="s1"
+        fetchReadingHistory={fetchReadingHistory}
+        completionOutcome={{ status: 'ready', result: { is_new: false, found: 5, total: 232 } }}
+      />
+    )
+    expect(
+      await screen.findByText("You've found 5 endings so far. Lots more to find.")
+    ).toBeInTheDocument()
   })
 
   it('re-fetches once the outcome transitions from pending to unavailable', async () => {

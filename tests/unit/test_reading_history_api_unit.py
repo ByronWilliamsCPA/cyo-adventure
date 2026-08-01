@@ -15,7 +15,7 @@ fixed (no-N+1) query count.
 from __future__ import annotations
 
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -32,6 +32,7 @@ from cyo_adventure.core.exceptions import AuthorizationError, ValidationError
 from cyo_adventure.db.models import (
     ChildProfile,
     Completion,
+    ReadingActivityDay,
     ReadingState,
     Storybook,
     StorybookVersion,
@@ -637,7 +638,7 @@ async def test_family_summary_empty_family_short_circuits() -> None:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_family_summary_aggregates_per_child_with_three_queries() -> None:
+async def test_family_summary_aggregates_per_child_with_four_queries() -> None:
     family_id = uuid.uuid4()
     child_a = ChildProfile(family_id=family_id, display_name="Reader A", age_band="6-8")
     child_a.id = uuid.uuid4()
@@ -657,13 +658,14 @@ async def test_family_summary_aggregates_per_child_with_three_queries() -> None:
             [child_a, child_b],
             [state_a, state_b],
             [completion_a],
+            [],
         ]
     )
     principal = _guardian_principal(family_id)
 
     result = await get_family_reading_summary(principal, session)
 
-    assert len(session.scalars_calls) == 3
+    assert len(session.scalars_calls) == 4
     by_id = {c.profile_id: c for c in result.children}
     a = by_id[str(child_a.id)]
     assert a.display_name == "Reader A"
@@ -671,12 +673,48 @@ async def test_family_summary_aggregates_per_child_with_three_queries() -> None:
     assert a.books_finished == 1
     assert a.total_endings_found == 1
     assert a.last_activity_at == _T2
+    # No reading_activity_day rows seeded: zero-filled week, no days read.
+    assert len(a.minutes_last_7_days) == 7
+    assert all(day.minutes == 0 for day in a.minutes_last_7_days)
+    assert a.days_read_this_week == 0
 
     b = by_id[str(child_b.id)]
     assert b.books_started == 1
     assert b.books_finished == 0
     assert b.total_endings_found == 0
     assert b.last_activity_at == _T3
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_family_summary_reports_minutes_and_days_read_this_week() -> None:
+    """reading_activity_day rows feed minutes_last_7_days/days_read_this_week."""
+    family_id = uuid.uuid4()
+    child = ChildProfile(family_id=family_id, display_name="Reader A", age_band="6-8")
+    child.id = uuid.uuid4()
+    child.created_at = _T1
+
+    today = datetime.now(UTC).date()
+    row_today = ReadingActivityDay(
+        child_profile_id=child.id, activity_date=today, active_seconds=1800
+    )
+    row_yesterday = ReadingActivityDay(
+        child_profile_id=child.id,
+        activity_date=today - timedelta(days=1),
+        active_seconds=600,
+    )
+
+    session = _FakeSession([[child], [], [], [row_today, row_yesterday]])
+    principal = _guardian_principal(family_id)
+
+    result = await get_family_reading_summary(principal, session)
+
+    reader = result.children[0]
+    assert reader.days_read_this_week >= 1
+    by_date = {day.activity_date: day.minutes for day in reader.minutes_last_7_days}
+    assert by_date[today] == 30
+    assert by_date[today - timedelta(days=1)] == 10
+    assert len(reader.minutes_last_7_days) == 7
 
 
 @pytest.mark.unit

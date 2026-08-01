@@ -39,10 +39,12 @@ from cyo_adventure.api import (
     onboarding,
     personalization,
     profiles,
+    progress,
     provider_allowlist,
     ratings,
     reading,
     reading_history,
+    reading_time,
     recommendations,
     remoderate,
     rescreen,
@@ -530,6 +532,8 @@ def create_app() -> FastAPI:
     app.include_router(family_connections.router)
     app.include_router(recommendations.router)
     app.include_router(personalization.router)
+    app.include_router(progress.router)
+    app.include_router(reading_time.router)
     return app
 
 

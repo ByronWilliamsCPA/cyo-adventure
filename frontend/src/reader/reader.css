@@ -38,10 +38,23 @@
   }
 }
 
-/* The progress bar takes the remaining row width, but keeps a sane floor so it
-   never collapses to nothing when the controls wrap onto their own line. */
+/* The progress bar (ended screen only, W1.2/AL-029) takes the remaining row
+   width, but keeps a sane floor so it never collapses to nothing when the
+   controls wrap onto their own line. */
 .reader-chrome .cyo-progress {
   flex: 1 1 12rem;
+}
+
+/* W1.2/AL-029: the plain "Page N" position readout shown in place of a
+   percent bar for as long as the story is in progress. No fill, no motion:
+   just legible text, so it needs no reduce-motion twin. */
+.reader-chrome__position {
+  flex: 1 1 8rem;
+  margin: 0;
+  color: var(--color-ink-secondary, var(--color-ink));
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold, 600);
+  font-size: var(--text-sm);
 }
 
 /* UX-K2: A / A+ / A++ text-size picker in the reader top bar. */

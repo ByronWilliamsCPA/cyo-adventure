@@ -19,9 +19,41 @@
  * machine already exposes, once per single-choice hop composeStop found,
  * silently and synchronously, so the real reading state ends up identical
  * to what a human tapping through each hop one at a time would have
- * produced. Fired from a layout effect (not a plain effect) so React commits
- * the fully-advanced state before the browser ever paints the un-flowed
- * origin node; a child never sees a flash of "Continue".
+ * produced.
+ *
+ * Two distinct mechanisms are at work, each used for what it is actually
+ * for:
+ * 1. Which stop is on screen is DERIVED state (a pure function of `reading`
+ *    and `flowed`), so it is computed and stored via React's own sanctioned
+ *    "adjusting state when a prop changes" pattern (a conditional
+ *    `setState` call during the render body itself, not inside an effect;
+ *    see https://react.dev/learn/you-might-not-need-an-effect#adjusting-
+ *    -some-state-when-a-prop-changes) rather than a `useEffect`. This keeps
+ *    it out of `useEffect`/`useLayoutEffect` entirely (no
+ *    render-then-effect-then-rerender waterfall, and no
+ *    `react-hooks/set-state-in-effect` violation), and it is naturally
+ *    idempotent under StrictMode's double-render (composeStop is pure).
+ * 2. Firing the silent CHOOSE batch is a genuine SIDE EFFECT against an
+ *    external system (the XState actor) and belongs in a
+ *    `useLayoutEffect`, fired before the browser ever paints the un-flowed
+ *    origin node so a child never sees a flash of "Continue". This is the
+ *    part StrictMode's double-invoked mount effect can fire twice, so it is
+ *    the part guarded against that (by stop object identity, below).
+ *
+ * #ASSUME: data-integrity: recognising "this `reading` change was our own
+ * silent advance completing" (rather than a genuinely new stop) is done
+ * structurally: `reading.current_node === tracked.stop.state.current_node`.
+ * This is unambiguous for every topology this integration composes
+ * (composeStop already guards single-choice loops within one stop), except
+ * a pathological branch node whose OWN choice targets itself, which the
+ * schema does not forbid. In that one case a genuinely new transition could
+ * be mistaken for the advance completing, and the choice list would keep
+ * showing the pre-transition state's visible choices until the next render.
+ * Accepted: no fixture in the corpus exercises a self-targeting branch
+ * choice, and the failure mode is a stale choice-visibility computation,
+ * not a stuck or duplicated read.
+ * #VERIFY: Reader.test.tsx "does not double-apply a flowed run under
+ * StrictMode's double-invoked mount effect".
  */
 
 import { useLayoutEffect, useRef, useState } from 'react'
@@ -32,16 +64,25 @@ import type { ReadingState, Storybook } from '../player/types'
 
 export interface FlowedStopResult {
   /** The composed stop currently on screen, or null at page bands (3-5/5-8)
-   * and whenever `reading` is not itself a genuine stop origin yet (the very
-   * first render before this hook's own layout effect has run once). */
+   * and on the very first render before this hook has synced at all. */
   stop: Stop | null
-  /** The reading state the CURRENTLY DISPLAYED stop was composed from (its
-   * origin, before this hook's own silent advance). Distinct from the live
-   * `reading` passed in: by the time a multi-node stop has finished
-   * advancing, the live reading state has moved on to the stop's terminal,
-   * so a caller that needs "was this the very first page of the read"
+  /** The reading state the CURRENTLY DISPLAYED stop was actually composed
+   * from (its true origin), pinned even after the live `reading` has moved
+   * on to the stop's terminal. Distinct from the live `reading` passed in:
+   * a caller that needs "was this the very first page of the read"
    * (Reader.tsx's dedication overlay) must ask this, not the live state. */
   originReading: ReadingState | null
+}
+
+interface Tracked {
+  /** The `reading` value this hook has already accounted for -- either the
+   * value `composeStop` was called on, or (once the silent advance below
+   * lands) whatever later `reading` matches the stop's terminal. Comparing
+   * against this is what makes "has anything changed" an identity check
+   * instead of a recompute. */
+  forReading: ReadingState
+  stop: Stop
+  originReading: ReadingState
 }
 
 export function useFlowedStop(
@@ -50,48 +91,57 @@ export function useFlowedStop(
   send: (event: ReaderEvent) => void,
   flowed: boolean
 ): FlowedStopResult {
-  const [result, setResult] = useState<FlowedStopResult>({ stop: null, originReading: null })
+  const [tracked, setTracked] = useState<Tracked | null>(null)
 
-  // Guards two hazards, both about telling a REAL new stop origin apart from
-  // a `reading` value this hook produced itself:
+  // Derived-state sync, not an effect (see module doc, point 1). Runs at
+  // most twice per real change: once to notice `reading` moved, once
+  // (React's own immediate re-render after a render-phase `setState`) to
+  // settle on the new value.
+  if (flowed) {
+    if (tracked === null || tracked.forReading !== reading) {
+      if (tracked !== null && reading.current_node === tracked.stop.state.current_node) {
+        // Our own silent advance (the layout effect below) landed exactly
+        // where this stop's composition already said it would end: still
+        // the SAME stop, just the real engine catching up. Keep it, only
+        // stop re-checking against the now-stale `forReading`.
+        setTracked({ ...tracked, forReading: reading })
+      } else {
+        // A genuine new stop origin: a fresh read, RESTART, a real tap on a
+        // visible choice, or a Go back landing. composeStop's own
+        // precondition (only ever called on a genuine origin) holds here by
+        // construction.
+        setTracked({ forReading: reading, stop: composeStop(story, reading), originReading: reading })
+      }
+    }
+  } else if (tracked !== null) {
+    setTracked(null)
+  }
+
+  const stop = flowed ? (tracked?.forReading === reading ? tracked.stop : null) : null
+  const originReading = flowed ? (tracked?.forReading === reading ? tracked.originReading : null) : null
+
+  // The one real side effect: silently walk the machine through the stop's
+  // single-choice hops via the SAME public CHOOSE event a tap would send
+  // (see module doc, point 2).
   // #CRITICAL: timing dependencies: <StrictMode> (main.tsx) double-invokes a
-  // mount-time layout effect. Re-running the CHOOSE batch on that second,
-  // synthetic invocation would silently walk the engine two hops further
-  // than the child ever saw, applying a flowed node's effects twice.
-  // #VERIFY: Reader.test.tsx "does not double-apply a flowed run's effects
-  // under StrictMode's double-invoked mount effect".
-  const lastSeenReadingRef = useRef<ReadingState | null>(null)
-  // #CRITICAL: timing dependencies: the CHOOSE batch below changes `reading`,
-  // which re-runs this same effect; that re-run must be recognised as "our
-  // own advance completing", not as a second genuine stop to compose (which
-  // would violate composeStop's documented precondition: it must only ever
-  // be called on a genuine stop origin, never on a mid-flow state).
-  // #VERIFY: Reader.test.tsx "flows a single-choice run into one stop
-  // without ever rendering a mid-flow Continue state".
-  const advancingRef = useRef(false)
-
+  // mount-time layout effect. Without `advancedForRef`, the second, synthetic
+  // invocation would re-fire the CHOOSE batch for the SAME stop, silently
+  // walking the engine an extra hop or two further than the child ever saw
+  // and double-applying a flowed node's effects.
+  // #VERIFY: Reader.test.tsx "does not double-apply a flowed run under
+  // StrictMode's double-invoked mount effect".
+  const advancedForRef = useRef<Stop | null>(null)
   useLayoutEffect(() => {
-    if (!flowed) {
-      setResult({ stop: null, originReading: null })
+    if (!stop || advancedForRef.current === stop) {
       return
     }
-    if (lastSeenReadingRef.current === reading) {
-      return
-    }
-    lastSeenReadingRef.current = reading
-    if (advancingRef.current) {
-      advancingRef.current = false
-      return
-    }
-    const stop = composeStop(story, reading)
-    setResult({ stop, originReading: reading })
-    if (stop.state.current_node === reading.current_node) {
+    advancedForRef.current = stop
+    if (stop.state.current_node === stop.originNode) {
       // Already a branch, an ending, or a dead-end/loop guard: nothing to
       // silently walk through.
       return
     }
     const nodesById = new Map(story.nodes.map((node) => [node.id, node]))
-    advancingRef.current = true
     for (let i = 0; i < stop.nodeIds.length - 1; i += 1) {
       const hop = nodesById.get(stop.nodeIds[i])
       const choiceId = hop?.choices[0]?.id
@@ -103,7 +153,7 @@ export function useFlowedStop(
       if (choiceId === undefined) break
       send({ type: 'CHOOSE', choiceId })
     }
-  }, [story, reading, flowed, send])
+  }, [stop, story, send])
 
-  return flowed ? result : { stop: null, originReading: null }
+  return { stop, originReading }
 }

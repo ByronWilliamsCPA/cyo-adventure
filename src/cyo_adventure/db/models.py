@@ -14,10 +14,11 @@ migrations simple and avoids enum-type churn.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 
 from sqlalchemy import (
     CheckConstraint,
+    Date,
     DateTime,
     ForeignKey,
     ForeignKeyConstraint,
@@ -1215,6 +1216,55 @@ class StorybookAssignment(CreatedAtMixin, Base):
     )
     assigned_by: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_USER, ondelete=_ONDELETE_SET_NULL), default=None
+    )
+
+
+class ReadingActivityDay(Base):
+    """A child's active-reading-seconds bucket for one calendar day (W3.3).
+
+    Day-grain by design (S10 posture; gamification-recommendation-2026-08-01.md
+    section 2.4/5): no session rows and no timestamp finer than a day ever
+    reaches the server. ``active_seconds`` accumulates a client-measured,
+    idle-gated, visibility-gated active-reading total via idempotent
+    ``POST /me/reading-time`` flushes (``api/reading_time.py``); the server
+    additively clamps each flush rather than trusting it verbatim (see that
+    module for the clamp).
+
+    ``last_flush_id`` is a deliberate addition beyond the recommendation's
+    literal data-model sketch (section 5 lists only child_profile_id,
+    activity_date, active_seconds, updated_at): the kid-appeal-implementation-
+    plan.md W3.3 task explicitly authorizes "a simple per-(profile, date)
+    last_flush_id column" as an acceptable idempotency strategy, mirroring
+    ``ReadingState.last_event_id``.
+
+    #ASSUME: concurrency: single-slot idempotency (the LAST applied flush id
+    only, not a set of every id ever seen) assumes the client single-flights
+    retries of one flush before starting the next, exactly like
+    ReadingState.last_event_id. Two flushes for the same (profile, date) racing
+    from different devices/tabs could double-count; acceptable here because
+    this is a literacy signal, not a billing ledger (recommendation section
+    2.4), and the day-level clamp in api/reading_time.py bounds the damage.
+    #VERIFY: tests/unit/test_reading_time_api_unit.py covers replay dedup.
+    """
+
+    __tablename__ = "reading_activity_day"
+    __table_args__ = (
+        CheckConstraint(
+            "active_seconds >= 0", name="ck_reading_activity_day_active_seconds"
+        ),
+    )
+
+    # #CRITICAL: data-integrity: CASCADE (Phase 3a): reading-time accrual is
+    # child-linked behavioral data, purged with the profile.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
+    child_profile_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_CHILD_PROFILE, ondelete="CASCADE"), primary_key=True
+    )
+    activity_date: Mapped[date] = mapped_column(Date, primary_key=True)
+    active_seconds: Mapped[int] = mapped_column(default=0, server_default=text("0"))
+    last_flush_id: Mapped[str | None] = mapped_column(String(64), default=None)
+    updated_at: Mapped[datetime] = mapped_column(
+        _TS, server_default=func.now(), onupdate=func.now()
     )
 
 
