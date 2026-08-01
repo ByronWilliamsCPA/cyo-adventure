@@ -1018,6 +1018,11 @@ export type ContentFlags = {
  * admin-visible finding that spans several nodes collapses into one
  * guardian row whose ``node_count`` sums that coverage, never a passage
  * list. See ``review_surface.py::_content_summary_findings``.
+ *
+ * ``validator_notes`` (Stage B3 follow-up, design doc 2.7 option (a)) is
+ * the guardian-side validator projection: additive, defaults to ``[]`` so
+ * an older backend response or a report predating validator persistence
+ * still projects a valid summary. See ``review_surface.py::_validator_notes``.
  */
 export type ContentSummaryView = {
     /**
@@ -1041,6 +1046,10 @@ export type ContentSummaryView = {
      * Findings
      */
     findings: Array<GuardianFinding>;
+    /**
+     * Validator Notes
+     */
+    validator_notes?: Array<GuardianValidatorNote>;
 };
 
 /**
@@ -1804,6 +1813,35 @@ export type GuardianInviteBody = {
      * Email
      */
     email: string;
+};
+
+/**
+ * GuardianValidatorNote
+ *
+ * A story-level, node-id-free count of one validator rule's findings.
+ *
+ * Design doc 2.7 option (a) closes the gap: RL-13 (advisory reading level)
+ * and PL-19 (words-per-node) must be visible on BOTH the admin review
+ * surface (``ValidatorFindingView``, per-finding with a node id) and the
+ * guardian content summary (this type). The guardian view is story-level
+ * only (design doc 2.6), so this drops node_id and the per-node message
+ * entirely and keeps only an aggregate ``count`` per (rule_id, severity):
+ * the guardian sees e.g. "RL-13 warning x12", never which node or what the
+ * per-node message said (a per-node PL-19 message embeds node context).
+ */
+export type GuardianValidatorNote = {
+    /**
+     * Rule Id
+     */
+    rule_id: string;
+    /**
+     * Severity
+     */
+    severity: string;
+    /**
+     * Count
+     */
+    count: number;
 };
 
 /**

@@ -29,6 +29,19 @@ export interface ContentFinding {
   node_count?: number
 }
 
+/**
+ * A story-level, node-id-free count of one validator rule's findings
+ * (Stage B3 follow-up, design doc 2.7 option (a)). Mirrors
+ * GuardianValidatorNote in src/cyo_adventure/api/schemas.py: rule_id and
+ * severity are the validator's own vocabulary (RL-13/PL-19, warning/error),
+ * count is an aggregate occurrence total, never a node id or per-node message.
+ */
+export interface GuardianValidatorNote {
+  rule_id: string
+  severity: string
+  count: number
+}
+
 export interface ContentSummary {
   storybook_id: string
   version: number
@@ -36,6 +49,9 @@ export interface ContentSummary {
   summary: ReviewSummary | null
   flagged_count: number
   findings: ContentFinding[]
+  // Additive (Stage B3 follow-up, design doc 2.7 option (a)): defaults to []
+  // server-side, so a pre-validator-persistence response still decodes.
+  validator_notes?: GuardianValidatorNote[]
 }
 
 export interface GuardianBookItem {

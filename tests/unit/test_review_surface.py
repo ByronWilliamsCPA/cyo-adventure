@@ -1271,3 +1271,139 @@ def test_validator_findings_absent_report_is_empty() -> None:
         validation_report=None,
     )
     assert view.validator_findings == []
+
+
+# Guardian validator notes (Stage B3 follow-up, design doc 2.7 option (a)):
+# a story-level, node-id-free RL-13/PL-19 aggregate on ContentSummaryView.
+
+
+def _validation_report_two_rl13_one_pl19() -> dict[str, object]:
+    return {
+        "ok": False,
+        "findings": [
+            {
+                "rule_id": "RL-13",
+                "severity": "warning",
+                "story_id": "s1",
+                "node_id": "n_start",
+                "choice_id": None,
+                "message": "RL-13 level: node 'n_start' FK grade too high",
+            },
+            {
+                "rule_id": "RL-13",
+                "severity": "warning",
+                "story_id": "s1",
+                "node_id": "n_end",
+                "choice_id": None,
+                "message": "RL-13 level: node 'n_end' FK grade too high",
+            },
+            {
+                "rule_id": "PL-19",
+                "severity": "error",
+                "story_id": "s1",
+                "node_id": "n_start",
+                "choice_id": None,
+                "message": "PL-19 words: node 'n_start' over budget",
+            },
+        ],
+    }
+
+
+@pytest.mark.unit
+def test_content_summary_validator_notes_aggregate_by_rule_and_severity() -> None:
+    """Two RL-13 warnings plus one PL-19 error collapse to two counted rows."""
+    summary = build_content_summary(
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=None,
+        age_band="",
+        policy=_DEFAULT_POLICY,
+        validation_report=_validation_report_two_rl13_one_pl19(),
+    )
+    assert len(summary.validator_notes) == 2
+    by_rule = {note.rule_id: note for note in summary.validator_notes}
+    assert by_rule["RL-13"].severity == "warning"
+    assert by_rule["RL-13"].count == 2
+    assert by_rule["PL-19"].severity == "error"
+    assert by_rule["PL-19"].count == 1
+
+
+@pytest.mark.unit
+def test_content_summary_validator_notes_absent_report_is_empty() -> None:
+    """No validation_report at all (the default) yields an empty aggregate."""
+    summary = build_content_summary(
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=None,
+        age_band="",
+        policy=_DEFAULT_POLICY,
+    )
+    assert summary.validator_notes == []
+
+
+@pytest.mark.unit
+def test_content_summary_validator_notes_malformed_report_degrades_to_empty() -> None:
+    """A malformed validation_report degrades to omission, not an error.
+
+    Mirrors ``_validator_findings``'s tolerant parsing: ``validation_report``
+    is a read-only annex, so a bad shape must not fail the whole guardian
+    summary the way a corrupt moderation_report does.
+    """
+    summary = build_content_summary(
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=None,
+        age_band="",
+        policy=_DEFAULT_POLICY,
+        validation_report={"findings": "not-a-list"},
+    )
+    assert summary.validator_notes == []
+
+
+def _assert_no_node_identifiers(value: object) -> None:
+    """Recursively assert no node-identifying key/marker appears in a dumped payload.
+
+    Walks a ``model_dump()``-style structure (nested dicts/lists/scalars) and
+    fails if any dict key is ``node_id`` or ``node_ids``, which is the
+    concrete, non-heuristic form of "the serialized guardian payload contains
+    no node identifiers."
+    """
+    if isinstance(value, dict):
+        for key, nested in value.items():
+            assert key not in {"node_id", "node_ids"}, (
+                f"node identifier key {key!r} leaked into guardian payload"
+            )
+            _assert_no_node_identifiers(nested)
+    elif isinstance(value, list):
+        for item in value:
+            _assert_no_node_identifiers(item)
+
+
+@pytest.mark.unit
+def test_content_summary_validator_notes_carry_no_node_identifiers() -> None:
+    """The serialized ContentSummaryView never leaks a node id via validator_notes.
+
+    Design doc 2.6/2.7(a): the guardian view is story-level only. Checks both
+    the typed model (no ``node_id``/``message`` attribute on the note, mirroring
+    ``test_content_summary_merges_fanned_finding_into_one_row_with_node_count``'s
+    ``not hasattr`` pattern) and the fully serialized payload.
+    """
+    summary = build_content_summary(
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=None,
+        age_band="",
+        policy=_DEFAULT_POLICY,
+        validation_report=_validation_report_two_rl13_one_pl19(),
+    )
+    assert len(summary.validator_notes) > 0
+    for note in summary.validator_notes:
+        assert not hasattr(note, "node_id")
+        assert not hasattr(note, "node_ids")
+        assert not hasattr(note, "message")
+    _assert_no_node_identifiers(summary.model_dump())
+    _assert_no_node_identifiers(summary.model_dump(mode="json"))

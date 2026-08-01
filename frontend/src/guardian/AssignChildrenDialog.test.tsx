@@ -191,6 +191,37 @@ describe('AssignChildrenDialog', () => {
     expect(screen.queryByText(/n_gate|n_vault|n_hallway/)).not.toBeInTheDocument()
   })
 
+  it('renders the Stage B3 follow-up validator notes as plain-text counts without leaking node ids', async () => {
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/content-summary')) {
+        return Promise.resolve({
+          data: {
+            ...CONTENT_SUMMARY,
+            validator_notes: [
+              { rule_id: 'RL-13', severity: 'warning', count: 12 },
+              { rule_id: 'PL-19', severity: 'error', count: 1 },
+            ],
+          },
+        })
+      }
+      if (url.includes('/versions/')) return Promise.resolve({ data: STORY_BLOB })
+      if (url.includes('/assignments'))
+        return Promise.resolve({ data: { storybook_id: 's1', profile_ids: ['p1'] } })
+      return Promise.resolve({ data: PROFILES })
+    })
+    render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
+    expect(await screen.findByText('RL-13 warning x12')).toBeInTheDocument()
+    expect(screen.getByText('PL-19 error x1')).toBeInTheDocument()
+    // The guardian surface must never leak a node id, here or anywhere else.
+    expect(screen.queryByText(/n_gate|n_vault|n_hallway/)).not.toBeInTheDocument()
+  })
+
+  it('omits the validator-notes list when validator_notes is absent or empty', async () => {
+    render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
+    await screen.findByText('2 flagged')
+    expect(screen.queryByText(/warning x|error x/)).not.toBeInTheDocument()
+  })
+
   it('still renders the assign list and a review-unavailable notice when the content summary fails', async () => {
     mockGet.mockImplementation((url: string) => {
       if (url.includes('/content-summary')) return Promise.reject(new Error('down'))

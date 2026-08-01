@@ -108,6 +108,10 @@ def test_build_content_summary_succeeds_on_legacy_report() -> None:
         assert finding.concern is None
         assert finding.severity is None
         assert finding.node_count >= 0
+    # Stage B3 follow-up (design doc 2.7 option (a)): no validation_report was
+    # passed (this call predates validator persistence), so validator_notes
+    # degrades to an empty aggregate rather than raising or fabricating rows.
+    assert summary.validator_notes == []
 
 
 @pytest.mark.unit

@@ -87,6 +87,20 @@ function ContentSummarySection({ summary }: { summary: ContentSummary }) {
           ))}
         </ul>
       ) : null}
+      {/* Stage B3 follow-up (design doc 2.7 option (a)): a story-level,
+          node-id-free RL-13/PL-19 aggregate. Plain text, one line per note;
+          no severity pill or FlagBadge (deliberately lighter weight than the
+          findings list above, since these are advisory validator counts, not
+          moderation findings). */}
+      {summary.validator_notes && summary.validator_notes.length > 0 ? (
+        <ul className="assign__validator-notes cyo-text-muted">
+          {summary.validator_notes.map((note) => (
+            <li key={`${note.rule_id}-${note.severity}`}>
+              {note.rule_id} {note.severity} x{note.count}
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </div>
   )
 }

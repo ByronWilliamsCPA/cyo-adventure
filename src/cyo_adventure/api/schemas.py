@@ -1577,6 +1577,24 @@ class GuardianFinding(BaseModel):
     node_count: int = Field(default=0, ge=0)
 
 
+class GuardianValidatorNote(BaseModel):
+    """A story-level, node-id-free count of one validator rule's findings.
+
+    Design doc 2.7 option (a) closes the gap: RL-13 (advisory reading level)
+    and PL-19 (words-per-node) must be visible on BOTH the admin review
+    surface (``ValidatorFindingView``, per-finding with a node id) and the
+    guardian content summary (this type). The guardian view is story-level
+    only (design doc 2.6), so this drops node_id and the per-node message
+    entirely and keeps only an aggregate ``count`` per (rule_id, severity):
+    the guardian sees e.g. "RL-13 warning x12", never which node or what the
+    per-node message said (a per-node PL-19 message embeds node context).
+    """
+
+    rule_id: str
+    severity: str
+    count: int = Field(ge=1)
+
+
 class ContentSummaryView(BaseModel):
     """The guardian-facing content review summary for a published story.
 
@@ -1588,6 +1606,11 @@ class ContentSummaryView(BaseModel):
     admin-visible finding that spans several nodes collapses into one
     guardian row whose ``node_count`` sums that coverage, never a passage
     list. See ``review_surface.py::_content_summary_findings``.
+
+    ``validator_notes`` (Stage B3 follow-up, design doc 2.7 option (a)) is
+    the guardian-side validator projection: additive, defaults to ``[]`` so
+    an older backend response or a report predating validator persistence
+    still projects a valid summary. See ``review_surface.py::_validator_notes``.
     """
 
     storybook_id: str
@@ -1596,6 +1619,7 @@ class ContentSummaryView(BaseModel):
     summary: ReviewSummary | None
     flagged_count: int = Field(ge=0)
     findings: list[GuardianFinding]
+    validator_notes: list[GuardianValidatorNote] = Field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------

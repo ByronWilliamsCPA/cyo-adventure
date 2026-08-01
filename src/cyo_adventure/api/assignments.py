@@ -216,8 +216,10 @@ async def get_content_summary(storybook_id: str, ctx: Context) -> ContentSummary
 
     Guardians see this in the assign flow so they know what a book was flagged
     for before granting it to a child. It carries the gating summary, the total
-    flagged count, and story-level findings only; per-node flagged passages are
-    withheld (the admin review surface owns those).
+    flagged count, story-level findings, and a story-level validator note
+    aggregate (design doc 2.7 option (a): RL-13/PL-19 counts, no node ids);
+    per-node flagged passages are withheld (the admin review surface owns
+    those).
 
     Args:
         storybook_id: The published story to summarize.
@@ -242,6 +244,7 @@ async def get_content_summary(storybook_id: str, ctx: Context) -> ContentSummary
         moderation_report=version_row.moderation_report,
         age_band=_book_age_band(version_row.blob),
         policy=policy,
+        validation_report=version_row.validation_report,
     )
 
 
@@ -568,6 +571,7 @@ def _guardian_book_item(
             moderation_report=version_row.moderation_report,
             age_band=_book_age_band(version_row.blob),
             policy=policy,
+            validation_report=version_row.validation_report,
         )
         screened = summary.screened
         flagged_count = summary.flagged_count

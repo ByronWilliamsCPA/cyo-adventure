@@ -16,6 +16,7 @@ from cyo_adventure.api.schemas import (
     FindingView,
     FlaggedPassage,
     GuardianFinding,
+    GuardianValidatorNote,
     ReviewQueueItem,
     ReviewSummary,
     ReviewSurfaceView,
@@ -599,6 +600,7 @@ def build_content_summary(
     moderation_report: dict[str, object] | None,
     age_band: str,
     policy: ThresholdPolicy,
+    validation_report: dict[str, object] | None = None,
 ) -> ContentSummaryView:
     """Build the redacted guardian content summary for a published story version.
 
@@ -621,11 +623,19 @@ def build_content_summary(
         moderation_report: The stored report, or ``None`` if unmoderated.
         age_band: The story's age band, used to resolve the surfacing threshold.
         policy: The resolved threshold policy (code default plus DB overrides).
+        validation_report: The story's stored ``validation_report`` (design
+            doc 2.7 option (a)), or ``None`` when the caller has none to pass.
+            Forwarded to ``build_review_surface`` unchanged so RL-13/PL-19
+            projection uses the exact same allowlist and tolerant parsing as
+            the admin surface (``_validator_findings``); this function only
+            aggregates that already-parsed list, it never re-parses the raw
+            report. See ``_validator_notes``.
 
     Returns:
-        ContentSummaryView: Screened flag, gating summary, flagged count, and
-            the merged concern list (category, concern, severity, verdict,
-            message, node_count) that meets the age-band threshold.
+        ContentSummaryView: Screened flag, gating summary, flagged count, the
+            merged concern list (category, concern, severity, verdict,
+            message, node_count) that meets the age-band threshold, and the
+            story-level, node-id-free ``validator_notes`` aggregate.
 
     Raises:
         ValidationError: If the stored moderation report is corrupt at rest
@@ -637,6 +647,7 @@ def build_content_summary(
         version=version,
         blob=blob,
         moderation_report=moderation_report,
+        validation_report=validation_report,
     )
 
     def _surfaces(category: str, verdict: Verdict, score: float | None) -> bool:
@@ -652,7 +663,44 @@ def build_content_summary(
         summary=surface.summary,
         flagged_count=flagged_count,
         findings=findings,
+        validator_notes=_validator_notes(surface.validator_findings),
     )
+
+
+def _validator_notes(
+    validator_findings: list[ValidatorFindingView],
+) -> list[GuardianValidatorNote]:
+    """Aggregate admin-surface validator findings into guardian-safe note counts.
+
+    Design doc 2.7 option (a): the guardian sees "RL-13 warning x12", never a
+    node id or a per-node message (a per-node PL-19 message embeds node
+    context, which would violate the story-level-only rule, design doc 2.6,
+    even without a literal node id string). Groups ``validator_findings`` (the
+    already allowlist-filtered, tolerantly-parsed output of
+    ``_validator_findings``, reused here rather than re-parsed) by
+    ``(rule_id, severity)``, preserving first-seen order for a deterministic,
+    stable row order.
+
+    Args:
+        validator_findings: The admin surface's parsed validator findings
+            (``build_review_surface``'s ``validator_findings``).
+
+    Returns:
+        list[GuardianValidatorNote]: One row per distinct (rule_id, severity)
+            pair, each carrying the total occurrence count.
+    """
+    counts: dict[tuple[str, str], int] = {}
+    order: list[tuple[str, str]] = []
+    for finding in validator_findings:
+        key = (finding.rule_id, finding.severity)
+        if key not in counts:
+            counts[key] = 0
+            order.append(key)
+        counts[key] += 1
+    return [
+        GuardianValidatorNote(rule_id=key[0], severity=key[1], count=counts[key])
+        for key in order
+    ]
 
 
 def _guardian_group_key(
