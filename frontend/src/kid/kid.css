@@ -438,3 +438,132 @@
 [data-reduce-motion='true'] .picker-tile--picking {
   animation: none;
 }
+
+/* Weekly ring + badges button (W3.4/W3.2): sit between the profile identity
+   and "Switch reader" in the shell header, per the recommendation's "small,
+   in the shell header" placement. Never rendered with an off/empty state --
+   the caller (KidNav) mounts these only when their resolved settings say on,
+   so there is no "disabled" look to style here (K14). */
+.kid-nav__gamification {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  flex-shrink: 0;
+}
+
+.weekly-ring {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+.weekly-ring svg circle {
+  transition: stroke-dashoffset 0.4s ease;
+}
+
+.weekly-ring__days {
+  position: absolute;
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--weight-bold, 700);
+  color: var(--color-ink, #2c1a0e);
+}
+
+.weekly-ring--celebrate svg {
+  animation: weekly-ring-pop 0.6s ease;
+}
+
+@keyframes weekly-ring-pop {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.25);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .weekly-ring--celebrate svg {
+    animation: none;
+  }
+}
+
+[data-reduce-motion='true'] .weekly-ring--celebrate svg {
+  animation: none;
+}
+
+.kid-nav__badges-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  border-radius: var(--radius-full, 9999px);
+  border: 2px solid var(--color-parchment-deeper, #e0d5b8);
+  background: var(--color-parchment, #f8f3e8);
+  color: var(--color-ink, #2c1a0e);
+  font-family: var(--font-sans, 'Segoe UI', sans-serif);
+  font-weight: var(--weight-bold, 700);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.kid-nav__badges-button:focus-visible,
+.kid-nav__badges-button:hover {
+  border-color: var(--color-amber, #e07f2e);
+  background: var(--color-amber-subtle, #fdf3e6);
+}
+
+/* Badge case (W3.2): earned badges in color, unearned as muted silhouettes
+   with their kid-readable hint always visible (never hidden, unlike an
+   unfound ending's title -- a badge's name is not a spoiler). */
+.badge-case__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--space-3, 0.75rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.badge-case__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-3, 0.75rem);
+  border-radius: var(--radius-lg, 0.75rem);
+  border: 2px solid var(--color-parchment-deeper, #e0d5b8);
+  background: var(--color-parchment, #f8f3e8);
+  text-align: center;
+}
+
+.badge-case__card--earned {
+  border-color: var(--color-amber, #e07f2e);
+  background: var(--color-amber-subtle, #fdf3e6);
+}
+
+.badge-case__card--locked {
+  opacity: 0.6;
+  filter: grayscale(1);
+}
+
+.badge-case__icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.badge-case__name {
+  font-weight: var(--weight-bold, 700);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.badge-case__hint {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--color-ink-secondary, #5a3e28);
+}

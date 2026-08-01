@@ -131,12 +131,22 @@ export function useReadingTimeAccumulator({
   // Mirrors the latest prop values into refs so the interval callback (set up
   // once per mount, not re-created every render) always reads the current
   // values instead of a stale closure over the render that started it.
+  // Written from an effect (not during render itself): mutating a ref's
+  // `.current` while rendering is a react-hooks/refs violation, even though
+  // these refs are otherwise only ever read from an async timer/event
+  // callback, never during render.
   const pausedRef = useRef(paused)
-  pausedRef.current = paused
   const readAloudRef = useRef(isReadAloudPlaying)
-  readAloudRef.current = isReadAloudPlaying
   const apiRef = useRef(api)
-  apiRef.current = api
+  useEffect(() => {
+    pausedRef.current = paused
+  }, [paused])
+  useEffect(() => {
+    readAloudRef.current = isReadAloudPlaying
+  }, [isReadAloudPlaying])
+  useEffect(() => {
+    apiRef.current = api
+  }, [api])
 
   const recordInteraction = useCallback(() => {
     lastInteractionAtRef.current = now().getTime()
@@ -158,12 +168,6 @@ export function useReadingTimeAccumulator({
       el.removeEventListener('keydown', handler)
       el.removeEventListener('scroll', handler)
     }
-    // containerRef.current is read at effect-run time deliberately (a ref
-    // object's identity is stable across renders, so this effect intentionally
-    // does not re-run on every render just because the ref object exists;
-    // callers passing a ref that starts null and is filled on the same mount
-    // should prefer a callback ref if precise re-attachment is needed).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerRef, recordInteraction])
 
   const attemptFlush = useCallback(() => {

@@ -22,6 +22,50 @@ import { ageBandLabel } from './storyRequestOptions'
 const BANNED_THEMES_MAX = 20
 const BANNED_THEME_MAX_LENGTH = 40
 
+// W3.4 (gamification-recommendation-2026-08-01.md section 4): the
+// selectable goal caps at 6 at every band (one guaranteed free day).
+const RING_GOAL_DAYS_MAX = 6
+
+/**
+ * W3.4 gamification settings, hand-typed as a local extension of
+ * `ProfileView`/`ProfileCreateBody` (both from `profiles/profilesApi.ts`)
+ * rather than added to that file directly: this change's touch scope is
+ * `guardian/ProfileFormDialog.tsx` only, and `profilesApi.ts`'s own
+ * `create`/`update` functions pass their `body` argument straight through to
+ * axios (`api.post('/v1/profiles', body)`) with no field allowlist, so
+ * these extra keys reach the wire correctly even though the imported
+ * `ProfileCreateBody`/`ProfileUpdateBody` types do not declare them yet.
+ * Regenerating/widening those hand types is the follow-up (noted at every
+ * call site below); nothing here should need to change once that lands,
+ * only the cast.
+ *
+ * Mirrors `api/schemas.py`: `ring_enabled`/`ring_goal_days` are the RAW
+ * nullable stored values (null = "no override, follow the P-A band
+ * default"); `badges_enabled`/`time_capture_paused` always carry a concrete
+ * value.
+ */
+interface ProfileGamificationFields {
+  ring_enabled?: boolean | null
+  ring_goal_days?: number | null
+  badges_enabled?: boolean
+  time_capture_paused?: boolean
+}
+
+/** The three states the ring-enabled control can be in; `'default'` is the
+ * nullable "no override" state, distinct from an explicit on/off so a
+ * guardian can deliberately revert to the band default later. */
+type RingChoice = 'default' | 'on' | 'off'
+
+function ringChoiceFrom(value: boolean | null | undefined): RingChoice {
+  if (value === true) return 'on'
+  if (value === false) return 'off'
+  return 'default'
+}
+
+function ringChoiceToValue(choice: RingChoice): boolean | null {
+  return choice === 'default' ? null : choice === 'on'
+}
+
 const CONTENT_FLAG_LABELS: Record<'violence' | 'scariness' | 'peril', string> = {
   violence: 'Violence',
   scariness: 'Scariness',
@@ -99,6 +143,12 @@ type PinChoice = 'keep' | 'set' | 'clear'
  */
 export function ProfileFormDialog(props: ProfileFormDialogProps) {
   const { title, initial, onClose, envelopeInfo } = props
+  // See ProfileGamificationFields' doc above for why this widened type
+  // annotation, rather than a profilesApi.ts type change, is this change's
+  // touch-scoped answer. A plain annotation (not an `as` assertion): the
+  // fields are all optional, so `initial` already satisfies this wider type
+  // structurally.
+  const initialGamification: (ProfileView & ProfileGamificationFields) | undefined = initial
   const [displayName, setDisplayName] = useState(initial?.display_name ?? '')
   const [ageBand, setAgeBand] = useState(initial?.age_band ?? '5-8')
   const [cap, setCap] = useState(String(initial?.reading_level_cap ?? 99))
@@ -123,6 +173,20 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
   )
   const [bannedThemes, setBannedThemes] = useState<string[]>(initial?.banned_themes ?? [])
   const [themeInput, setThemeInput] = useState('')
+  // W3.4 gamification settings. `ringChoice` seeds to 'default' (no stored
+  // override) for a fresh create, matching ring_enabled/ring_goal_days'
+  // omitted-on-create semantics (see ProfileCreateBody's own field doc in
+  // api/schemas.py).
+  const [ringChoice, setRingChoice] = useState<RingChoice>(
+    ringChoiceFrom(initialGamification?.ring_enabled)
+  )
+  const [ringGoalText, setRingGoalText] = useState(
+    initialGamification?.ring_goal_days != null ? String(initialGamification.ring_goal_days) : ''
+  )
+  const [badgesEnabled, setBadgesEnabled] = useState(initialGamification?.badges_enabled ?? true)
+  const [timeCapturePaused, setTimeCapturePaused] = useState(
+    initialGamification?.time_capture_paused ?? false
+  )
   // ADR-015 G3 "Story requests" section. Seeded from envelopeInfo (not
   // `initial`, which cannot carry these fields -- see the prop's doc); a
   // fresh create or a missing envelopeInfo seeds off/no-limit.
@@ -187,7 +251,19 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
       const envelopeValue = trimmedEnvelope === '' ? null : Number(trimmedEnvelope)
       const envelopeTouched =
         autoApprove !== initialAutoApprove || envelopeValue !== initialEnvelope
-      const base: ProfileFormCreateBody = {
+      const ringGoalTrimmed = ringGoalText.trim()
+      // W3.4: sent unconditionally (unlike the G3 envelope fields above,
+      // which gate on "touched" because the backend does not accept them
+      // yet) -- these fields ARE live server-side, and always reflecting
+      // the current control state keeps a resave idempotent: an untouched
+      // control just resends the value it was seeded with.
+      const gamification: ProfileGamificationFields = {
+        ring_enabled: ringChoiceToValue(ringChoice),
+        ring_goal_days: ringGoalTrimmed === '' ? null : Number(ringGoalTrimmed),
+        badges_enabled: badgesEnabled,
+        time_capture_paused: timeCapturePaused,
+      }
+      const base: ProfileFormCreateBody & ProfileGamificationFields = {
         display_name: displayName,
         age_band: ageBand,
         reading_level_cap: Number(cap),
@@ -196,6 +272,7 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
         reduce_motion: reduceMotion,
         content_flag_caps: contentFlagCaps,
         banned_themes: bannedThemes,
+        ...gamification,
         ...(envelopeTouched
           ? { request_auto_approve: autoApprove, monthly_request_envelope: envelopeValue }
           : {}),
@@ -205,7 +282,7 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
       if (props.initial === undefined) {
         await props.onSubmit(base)
       } else {
-        const body: ProfileFormEditBody = { ...base }
+        const body: ProfileFormEditBody & ProfileGamificationFields = { ...base }
         // Include `pin` only for an actual mutation: a string sets/changes,
         // an explicit null removes, and omitting it keeps whatever is stored.
         if (pinChoice === 'set') body.pin = pinValue
@@ -245,7 +322,14 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
   const envelopeInvalid =
     envelopeTrimmed !== '' &&
     (!Number.isFinite(envelopeNum) || !Number.isInteger(envelopeNum) || envelopeNum < 0)
-  const valid = !nameMissing && !capInvalid && pinValid && !envelopeInvalid
+  // W3.4: mirrors the backend CHECK/Field bound (1-6); blank is always valid
+  // (it means "use the band default").
+  const ringGoalTrimmed = ringGoalText.trim()
+  const ringGoalNum = Number(ringGoalTrimmed)
+  const ringGoalInvalid =
+    ringGoalTrimmed !== '' &&
+    (!Number.isInteger(ringGoalNum) || ringGoalNum < 1 || ringGoalNum > RING_GOAL_DAYS_MAX)
+  const valid = !nameMissing && !capInvalid && pinValid && !envelopeInvalid && !ringGoalInvalid
 
   // Names what still blocks Save while it is disabled for missing/invalid
   // inputs (null while saving or once everything is filled). Derived from
@@ -255,6 +339,7 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
   if (capInvalid) missingInputs.push('a reading level from 0 to 99')
   if (!pinValid) missingInputs.push('a 4-8 digit PIN')
   if (envelopeInvalid) missingInputs.push('a monthly auto-approve limit of 0 or more, or blank')
+  if (ringGoalInvalid) missingInputs.push(`a reading-days goal from 1 to ${RING_GOAL_DAYS_MAX}, or blank`)
   const saveHint =
     !saving && missingInputs.length > 0 ? `Enter ${missingInputs.join(' and ')} to save.` : null
 
@@ -372,6 +457,82 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
           Turns off bouncy/playful motion in this child&apos;s library and reader, matching a
           device&apos;s own reduced-motion setting.
         </p>
+        {/* W3.4 gamification settings (gamification-recommendation-2026-08-01.md
+            section 4). Nothing here is punitive (K14): every control is a
+            visibility/pause toggle, never a loss state, and re-enabling
+            restores everything with nothing lost. */}
+        <fieldset className="profile-form__gamification">
+          <legend>Reading rewards</legend>
+          <label className="cyo-field">
+            Weekly reading-days ring
+            <select
+              className="cyo-field__control"
+              value={ringChoice}
+              onChange={(e) => setRingChoice(e.target.value as RingChoice)}
+              aria-describedby="ring-help"
+            >
+              <option value="default">Use the age band&apos;s default</option>
+              <option value="on">On</option>
+              <option value="off">Off</option>
+            </select>
+          </label>
+          <p id="ring-help" className="profile-form__hint">
+            A small ring in {displayName.trim() || 'this child'}&apos;s library showing how many
+            days they read this week. Off removes it entirely; it never shows a missed day, only
+            days read.
+          </p>
+          <label className="cyo-field">
+            Weekly goal (days)
+            <input
+              type="number"
+              min="1"
+              max={RING_GOAL_DAYS_MAX}
+              step="1"
+              className="cyo-field__control"
+              value={ringGoalText}
+              onChange={(e) => setRingGoalText(e.target.value)}
+              placeholder="Age band default"
+              aria-describedby="ring-goal-help"
+            />
+          </label>
+          <p id="ring-goal-help" className="profile-form__hint">
+            Leave blank to use the age band&apos;s default. Capped at {RING_GOAL_DAYS_MAX} days so
+            there is always at least one free day.
+            {/* #ASSUME: data integrity: teens (13-16/16+) are speced to
+                self-set their own goal within this guardian-set ceiling
+                (design review P-A); a kid-side goal control does not exist
+                yet, so this number IS the effective goal for every band,
+                including teens, until that ships. #VERIFY: none yet;
+                intentional v1 deferral (see api/progress.py's matching
+                note). */}
+          </p>
+          <label className="cyo-field cyo-field--checkbox">
+            <input
+              type="checkbox"
+              checked={badgesEnabled}
+              onChange={(e) => setBadgesEnabled(e.target.checked)}
+              aria-describedby="badges-help"
+            />
+            Badges
+          </label>
+          <p id="badges-help" className="profile-form__hint">
+            Off hides the badge case and stops new-badge celebrations; badges still quietly earn
+            in the background, so turning this back on restores everything at once.
+          </p>
+          <label className="cyo-field cyo-field--checkbox">
+            <input
+              type="checkbox"
+              checked={timeCapturePaused}
+              onChange={(e) => setTimeCapturePaused(e.target.checked)}
+              aria-describedby="time-capture-help"
+            />
+            Pause reading-time tracking
+          </label>
+          <p id="time-capture-help" className="profile-form__hint">
+            When on, we stop recording how many minutes {displayName.trim() || 'this child'}{' '}
+            reads. The weekly ring and reading summary keep working from days already recorded.
+          </p>
+        </fieldset>
         <fieldset className="profile-form__budget">
           <legend>Story requests</legend>
           <label className="cyo-field cyo-field--checkbox">

@@ -7,7 +7,7 @@
  * with it; that is what makes sequential saves and 409 detection work.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
 import { Button } from '@ds/components/Button'
@@ -24,8 +24,18 @@ import {
   type SubmitFlagParams,
 } from '../api/readerApi'
 import type { KidFlagCreatedView, ReadingHistoryItem } from '../client/types.gen'
+import { useApi } from '../hooks/useApi'
+import { makeProgressApi, type EarnedBadgeCard } from '../kid/progressApi'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
-import { cacheStorybook, getCachedStorybook, getReadingState, putReadingState } from '../offline/db'
+import {
+  cacheStorybook,
+  getCachedStorybook,
+  getReadingState,
+  isBadgeSeen,
+  markBadgeSeen,
+  putReadingState,
+} from '../offline/db'
+import { makeReadingTimeApi } from '../offline/readingTimeSync'
 import {
   LocalWriteError,
   OfflineError,
@@ -154,6 +164,73 @@ export function ReaderPage({
   ageBand,
 }: ReaderPageProps) {
   const [pageState, setPageState] = useState<PageState>({ phase: 'loading' })
+
+  // W3.3/W3.2: this page builds its own network ports for reading-time
+  // capture and progress off the shared axios instance, rather than adding
+  // parameters ReaderRoute would have to thread through (this change's touch
+  // scope does not extend to ReaderRoute.tsx). Both hand-typed (see each
+  // module's own note on why): the routes landed the same day as this
+  // change and the generated client has not been regenerated for their
+  // exact wire shapes yet.
+  const rawApi = useApi()
+  const readingTimeApi = useMemo(() => makeReadingTimeApi(rawApi), [rawApi])
+  const progressApi = useMemo(() => makeProgressApi(rawApi), [rawApi])
+
+  // Guardian per-profile "pause time capture" toggle (W3.4), resolved
+  // best-effort on mount. Starts false (capture on) so a slow or failing
+  // settings fetch never silently stops a session's reading time from
+  // accruing; it only ever turns capture OFF once the real setting is known.
+  const [timeCapturePaused, setTimeCapturePaused] = useState(false)
+  useEffect(() => {
+    let cancelled = false
+    progressApi
+      .getProgress()
+      .then((progress) => {
+        if (!cancelled) setTimeCapturePaused(progress.settings.time_capture_paused)
+      })
+      .catch((error: unknown) => {
+        // Best-effort: a failed settings fetch must never block reading;
+        // capture simply stays on (the safe default -- see above).
+        console.error('[reader] progress settings fetch failed', { profileId, error })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [progressApi, profileId])
+
+  // W3.2: badge-unlock toast state. `checkForNewBadge` (wired into
+  // handleComplete below) is the sole writer; IndexedDB `badge_seen` is the
+  // durable per-device dedupe so a badge earned on a DIFFERENT device (whose
+  // "seen" state this device never wrote) can still toast here once, but
+  // never toasts twice on this same device even across a remount.
+  // #ASSUME: data-integrity: badge seen-state is intentionally per-device,
+  // not synced (gamification recommendation section 5: "badge seen-state
+  // lives client-side in IndexedDB, avoiding a table"), so a family reading
+  // the same profile across two devices could see the same badge toast once
+  // per device rather than exactly once ever. Accepted: a badge is a
+  // celebration, not a scarce resource, and a repeat toast on a second
+  // device is a much kinder failure mode than a missed one.
+  // #VERIFY: ReaderPage.test.tsx badge-toast tests.
+  const [newlyEarnedBadge, setNewlyEarnedBadge] = useState<EarnedBadgeCard | null>(null)
+  const checkForNewBadge = useCallback(
+    async (badgesBefore: Promise<Set<string>>) => {
+      try {
+        const before = await badgesBefore
+        const after = await progressApi.getProgress()
+        const candidate = after.badges.find((badge) => !before.has(badge.id))
+        if (candidate === undefined) return
+        if (await isBadgeSeen(profileId, candidate.id)) return
+        await markBadgeSeen(profileId, candidate.id)
+        setNewlyEarnedBadge(candidate)
+      } catch (error) {
+        // Best-effort, purely celebratory: a failed check just means no
+        // toast this time, never an error surfaced to the child.
+        console.error('[reader] badge check failed', { profileId, error })
+      }
+    },
+    [progressApi, profileId]
+  )
+
   // ADR-023 P6: resolved independently of the story load, so a slow or failing
   // values fetch can never delay or fail the story itself. Starts null (generic)
   // and upgrades once resolved, which is safe because the resolver is total and
@@ -504,6 +581,16 @@ export function ReaderPage({
       // #VERIFY: ReaderPage.test.tsx "resets the completion outcome to
       // pending for each newly reached ending".
       setCompletionOutcome({ status: 'pending' })
+      // W3.2: snapshot the badge set BEFORE this completion's POST, so the
+      // toast can diff "what's new" rather than guessing from a single
+      // post-completion read (which cannot distinguish a badge earned by
+      // THIS completion from one earned earlier that this device simply
+      // never toasted). Started in parallel with the completion POST, not
+      // awaited here, so it never delays the ending-screen tracker.
+      const badgesBefore = progressApi
+        .getProgress()
+        .then((progress) => new Set(progress.badges.map((badge) => badge.id)))
+        .catch(() => new Set<string>())
       void recordCompletion({
         profile_id: profileId,
         storybook_id: storybookId,
@@ -512,6 +599,7 @@ export function ReaderPage({
       })
         .then((result) => {
           setCompletionOutcome({ status: 'ready', result })
+          void checkForNewBadge(badgesBefore)
         })
         .catch((error: unknown) => {
           // #EDGE: external-resources: completion recording is best-effort. A
@@ -533,7 +621,7 @@ export function ReaderPage({
           setCompletionOutcome({ status: 'unavailable' })
         })
     },
-    [recordCompletion, profileId, storybookId, version]
+    [recordCompletion, profileId, storybookId, version, progressApi, checkForNewBadge]
   )
 
   if (pageState.phase === 'loading') {
@@ -634,6 +722,11 @@ export function ReaderPage({
         submitFlag={submitFlag}
         personalization={personalization}
         ageBand={ageBand}
+        readingTimeApi={readingTimeApi}
+        timeCapturePaused={timeCapturePaused}
+        progressApi={progressApi}
+        newlyEarnedBadge={newlyEarnedBadge}
+        onDismissBadgeToast={() => setNewlyEarnedBadge(null)}
       />
     </>
   )

@@ -39,6 +39,7 @@ from cyo_adventure.api.schemas import (
     ResolvedGamificationSettingsView,
     error_responses,
 )
+from cyo_adventure.api.sentinel_log import strip_and_log
 from cyo_adventure.core.exceptions import AuthorizationError
 from cyo_adventure.db.models import (
     ChildProfile,
@@ -489,10 +490,22 @@ def _build_found_endings(
             continue
         titles = _ending_titles_map(version_row.blob)
         valences = ending_valence_map(version_row.blob)
-        title = titles.get(completion.ending_id)
+        raw_title = titles.get(completion.ending_id)
         valence = valences.get(completion.ending_id)
-        if title is None or valence is None:
+        if raw_title is None or valence is None:
             continue
+        # #CRITICAL: security: an ending title is blob-projected, kid-facing
+        # text (ADR-023 P3), exactly like book_title() above; a raw
+        # personalization sentinel must never reach the gallery.
+        # #VERIFY: tests/unit/test_progress_api_unit.py::
+        # test_found_ending_title_strips_sentinels;
+        # tests/unit/test_title_strip_registry.py's FoundEndingView row.
+        title = strip_and_log(
+            raw_title,
+            at="progress_found_ending.title",
+            storybook_id=completion.storybook_id,
+            version=completion.version,
+        )
         if key not in cards:
             cards[key] = FoundEndingView(
                 ending_id=completion.ending_id, title=title, valence=valence

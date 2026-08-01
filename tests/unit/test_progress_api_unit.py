@@ -13,6 +13,7 @@ import pytest
 
 from cyo_adventure.api.deps import Principal
 from cyo_adventure.api.progress import (
+    _build_found_endings,
     _reading_day_totals,
     _require_child_profile,
     _resolve_ring_settings,
@@ -27,6 +28,7 @@ from cyo_adventure.db.models import (
     Storybook,
     StorybookVersion,
 )
+from cyo_adventure.storybook.sentinels import wrap
 
 _T1 = datetime(2026, 1, 1, tzinfo=UTC)
 
@@ -286,3 +288,44 @@ class TestReadingDayTotals:
         days_this_week, lifetime_days = _reading_day_totals(rows, date(2026, 1, 1))
         assert days_this_week == 0
         assert lifetime_days == 1
+
+
+@pytest.mark.unit
+def test_found_ending_title_strips_sentinels() -> None:
+    """Referenced by name from tests/unit/test_title_strip_registry.py's
+    ENFORCED mapping (``FoundEndingView.title``); kept as a bare top-level
+    function so that registry's plain-text ``def <name>(`` scan finds it.
+    """
+    token = wrap("HERO", "Explorer")
+    profile_id = uuid.uuid4()
+    completion = Completion(
+        child_profile_id=profile_id,
+        storybook_id="story-a",
+        version=1,
+        ending_id="e1",
+    )
+    completion.found_at = _T1
+    version = StorybookVersion(
+        storybook_id="story-a",
+        version=1,
+        blob={
+            "nodes": [
+                {
+                    "id": "n1",
+                    "is_ending": True,
+                    "ending": {
+                        "id": "e1",
+                        "valence": "positive",
+                        "kind": "success",
+                        "title": f"{token} Wins!",
+                    },
+                }
+            ],
+        },
+    )
+    found_endings_by_book = _build_found_endings(
+        [completion], {("story-a", 1): version}
+    )
+    title = found_endings_by_book["story-a"][0].title
+    assert "{~" not in title
+    assert "Explorer" in title

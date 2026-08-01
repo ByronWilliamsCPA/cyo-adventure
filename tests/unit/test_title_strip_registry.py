@@ -69,6 +69,7 @@ DECIDED: dict[tuple[str, str], str] = {
     ("LibraryItem", "title"): _STRIP,
     ("ReadingHistoryItem", "title"): _STRIP,
     ("BookProgressView", "title"): _STRIP,
+    ("FoundEndingView", "title"): _STRIP,
     ("RecommendationItem", "title"): _STRIP,
     ("NotificationView", "title"): _STRIP,
     ("NotificationView", "body"): _STRIP,
@@ -113,6 +114,11 @@ ENFORCED: dict[tuple[str, str], tuple[str, str, str]] = {
         "cyo_adventure.progress.blob",
         "book_title",
         "tests/unit/test_progress_blob.py::test_book_title_strips_sentinels",
+    ),
+    ("FoundEndingView", "title"): (
+        "cyo_adventure.api.progress",
+        "_build_found_endings",
+        "tests/unit/test_progress_api_unit.py::test_found_ending_title_strips_sentinels",
     ),
     ("RecommendationItem", "title"): (
         "cyo_adventure.api.recommendations",

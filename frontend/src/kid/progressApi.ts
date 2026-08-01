@@ -63,13 +63,22 @@ export interface ProgressSummary {
   settings: ResolvedGamificationSettings
 }
 
-// The inert fallback the backend itself falls back to when a profile row is
-// (transiently) missing; mirrored here purely as a client-side degrade for a
-// malformed/absent response, never invented as a NEW default policy.
+// #ASSUME: data integrity: unlike the backend's own inert fallback (which
+// resolves a genuinely missing profile row to the P-A "on" default, since it
+// must always answer with SOME concrete value), a CLIENT-SIDE fetch failure
+// means this device simply does not know the real resolved settings yet.
+// Failing closed (everything off/hidden) is the safe direction: showing a
+// ring or badge case for a profile whose real band default is OFF (3-5)
+// would be a visible K14/P-A violation, while hiding a ring that should be
+// on is merely a missed decoration for one visit. ring_goal_days keeps a
+// plausible value only because it is inert whenever ring_enabled is false.
+// #VERIFY: kid/progressApi.test.ts "tolerates a malformed response";
+// kid/KidNav.test.tsx "never shows the ring or badge case when the progress
+// fetch fails".
 const FALLBACK_SETTINGS: ResolvedGamificationSettings = {
-  ring_enabled: true,
+  ring_enabled: false,
   ring_goal_days: 3,
-  badges_enabled: true,
+  badges_enabled: false,
   time_capture_paused: false,
 }
 

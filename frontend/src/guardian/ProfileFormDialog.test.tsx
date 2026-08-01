@@ -616,4 +616,101 @@ describe('ProfileFormDialog ADR-015 G3 "Story requests" section', () => {
     await user.type(envelopeInput(), '4')
     expect(screen.getByRole('button', { name: /save/i })).toBeEnabled()
   })
+
+  describe('W3.4 gamification settings', () => {
+    it('seeds the ring control to "Use the age band\'s default" on a fresh create', () => {
+      render(<ProfileFormDialog title="Add child" onSubmit={vi.fn()} onClose={vi.fn()} />)
+      expect(screen.getByLabelText(/weekly reading-days ring/i)).toHaveValue('default')
+    })
+
+    it('seeds the ring control from the stored explicit value on edit', () => {
+      const profile = {
+        ...existingProfile(false),
+        ring_enabled: true,
+        ring_goal_days: 5,
+        badges_enabled: false,
+        time_capture_paused: true,
+      }
+      render(
+        <ProfileFormDialog title="Edit Robin" initial={profile} onSubmit={vi.fn()} onClose={vi.fn()} />
+      )
+      expect(screen.getByLabelText(/weekly reading-days ring/i)).toHaveValue('on')
+      expect(screen.getByLabelText(/weekly goal/i)).toHaveValue(5)
+      expect(screen.getByLabelText(/^badges$/i)).not.toBeChecked()
+      expect(screen.getByLabelText(/pause reading-time tracking/i)).toBeChecked()
+    })
+
+    it('defaults badges on and time-capture-paused off on a fresh create', () => {
+      render(<ProfileFormDialog title="Add child" onSubmit={vi.fn()} onClose={vi.fn()} />)
+      expect(screen.getByLabelText(/^badges$/i)).toBeChecked()
+      expect(screen.getByLabelText(/pause reading-time tracking/i)).not.toBeChecked()
+    })
+
+    it('submits ring_enabled=null when left at the band default', async () => {
+      const user = userEvent.setup()
+      const onSubmit = vi.fn().mockResolvedValue(undefined)
+      render(<ProfileFormDialog title="Add child" onSubmit={onSubmit} onClose={vi.fn()} />)
+      await user.type(screen.getByLabelText(/name/i), 'Robin')
+      await user.click(screen.getByRole('button', { name: /save/i }))
+      await waitFor(() => expect(onSubmit).toHaveBeenCalled())
+      const body = onSubmit.mock.calls[0][0] as Record<string, unknown>
+      expect(body.ring_enabled).toBeNull()
+      expect(body.ring_goal_days).toBeNull()
+      expect(body.badges_enabled).toBe(true)
+      expect(body.time_capture_paused).toBe(false)
+    })
+
+    it('submits an explicit ring choice and goal', async () => {
+      const user = userEvent.setup()
+      const onSubmit = vi.fn().mockResolvedValue(undefined)
+      render(<ProfileFormDialog title="Add child" onSubmit={onSubmit} onClose={vi.fn()} />)
+      await user.type(screen.getByLabelText(/name/i), 'Robin')
+      await user.selectOptions(screen.getByLabelText(/weekly reading-days ring/i), 'on')
+      await user.type(screen.getByLabelText(/weekly goal/i), '4')
+      await user.click(screen.getByLabelText(/^badges$/i))
+      await user.click(screen.getByRole('button', { name: /save/i }))
+      await waitFor(() => expect(onSubmit).toHaveBeenCalled())
+      const body = onSubmit.mock.calls[0][0] as Record<string, unknown>
+      expect(body.ring_enabled).toBe(true)
+      expect(body.ring_goal_days).toBe(4)
+      expect(body.badges_enabled).toBe(false)
+    })
+
+    it('clears an explicit ring choice back to the band default via "Use the age band\'s default"', async () => {
+      const user = userEvent.setup()
+      const onSubmit = vi.fn().mockResolvedValue(undefined)
+      const profile = { ...existingProfile(false), ring_enabled: true, ring_goal_days: 5 }
+      render(
+        <ProfileFormDialog title="Edit Robin" initial={profile} onSubmit={onSubmit} onClose={vi.fn()} />
+      )
+      await user.selectOptions(screen.getByLabelText(/weekly reading-days ring/i), 'default')
+      await user.clear(screen.getByLabelText(/weekly goal/i))
+      await user.click(screen.getByRole('button', { name: /save/i }))
+      await waitFor(() => expect(onSubmit).toHaveBeenCalled())
+      const body = onSubmit.mock.calls[0][0] as Record<string, unknown>
+      expect(body.ring_enabled).toBeNull()
+      expect(body.ring_goal_days).toBeNull()
+    })
+
+    it('disables Save when the weekly goal is above the max of 6', async () => {
+      const user = userEvent.setup()
+      render(<ProfileFormDialog title="Add child" onSubmit={vi.fn()} onClose={vi.fn()} />)
+      await user.type(screen.getByLabelText(/name/i), 'Robin')
+      await user.type(screen.getByLabelText(/weekly goal/i), '7')
+      expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
+    })
+
+    it('disables Save when the weekly goal is below 1', async () => {
+      const user = userEvent.setup()
+      render(<ProfileFormDialog title="Add child" onSubmit={vi.fn()} onClose={vi.fn()} />)
+      await user.type(screen.getByLabelText(/name/i), 'Robin')
+      await user.type(screen.getByLabelText(/weekly goal/i), '0')
+      expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
+    })
+
+    it('never renders any punitive or streak-loss copy (K14)', () => {
+      render(<ProfileFormDialog title="Add child" onSubmit={vi.fn()} onClose={vi.fn()} />)
+      expect(screen.queryByText(/streak|miss a day|lose|reset|lost/i)).toBeNull()
+    })
+  })
 })

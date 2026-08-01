@@ -12,6 +12,7 @@ import { useEffect } from 'react'
 
 import { Mascot } from '../kid/Mascot'
 import type { EarnedBadgeCard } from '../kid/progressApi'
+import './badgeUnlockToast.css'
 
 export interface BadgeUnlockToastProps {
   badge: EarnedBadgeCard

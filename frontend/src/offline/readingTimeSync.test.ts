@@ -172,7 +172,7 @@ describe('flushAllReadingTime', () => {
       .mockResolvedValue({ activity_date: '2026-01-01', active_seconds: 0, updated_at: 't' })
     await flushAllReadingTime(makeApi(flush), PROFILE_ID)
     expect(flush).toHaveBeenCalledTimes(2)
-    const dates = flush.mock.calls.map((call) => call[0])
+    const dates: string[] = flush.mock.calls.map((call: unknown[]) => call[0] as string)
     expect(dates.sort()).toEqual(['2026-01-01', '2026-01-02'])
   })
 

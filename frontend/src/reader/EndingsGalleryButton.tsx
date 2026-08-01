@@ -10,6 +10,7 @@
 import { useState } from 'react'
 
 import { EndingsGallery } from '../library/EndingsGallery'
+import '../library/library.css'
 import type { BookProgressCard, ProgressApi } from '../kid/progressApi'
 
 export interface EndingsGalleryButtonProps {

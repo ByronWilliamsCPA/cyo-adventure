@@ -190,8 +190,18 @@ describe('LibraryPage', () => {
   })
 
   it('shows an error state with retry on fetch failure', async () => {
-    mockGet.mockRejectedValueOnce(new Error('boom'))
-    mockGet.mockResolvedValueOnce({ data: { stories: [IN_PROGRESS] } })
+    // W3.2 added a second, parallel GET (progress) fired from its own
+    // mount effect; route by URL so the Once-queue below applies to the
+    // LIBRARY LIST call specifically (the one the retry button drives),
+    // not whichever endpoint's effect happens to fire first.
+    let libraryCall = 0
+    mockGet.mockImplementation((url: string) => {
+      if (url !== '/v1/library') return Promise.resolve({ data: {} })
+      libraryCall += 1
+      return libraryCall === 1
+        ? Promise.reject(new Error('boom'))
+        : Promise.resolve({ data: { stories: [IN_PROGRESS] } })
+    })
     renderLibrary()
     const retry = await screen.findByRole('button', { name: /try again/i })
     fireEvent.click(retry)
@@ -389,7 +399,10 @@ describe('LibraryPage', () => {
     resolveList({ data: { stories: [] } })
 
     await new Promise((resolve) => setTimeout(resolve, 0))
-    expect(mockGet).toHaveBeenCalledTimes(1)
+    // 2, not 1: W3.2's progress fetch fires from its own parallel mount
+    // effect alongside the library list call; the point of this test (no
+    // state write survives unmount) is unaffected by which endpoints fired.
+    expect(mockGet).toHaveBeenCalledTimes(2)
     expect(document.body.textContent).toBe('')
   })
 

@@ -5,12 +5,14 @@ import { EmptyState } from '@ds/components/EmptyState'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
+import { EMPTY_PROGRESS, makeProgressApi, type ProgressSummary } from '../kid/progressApi'
 import { Mascot } from '../kid/Mascot'
 import { consumeDownloadRefusal, OFFLINE_BUDGET_FULL_MESSAGE } from '../offline/downloadBudget'
 import { reconcileOfflineCache } from '../offline/revocation'
 import { GUARDIAN_LOGIN_PATH, KID_PICKER_PATH } from '../routes'
 import { cacheLibraryList, getCachedLibraryList, getCachedStorybook } from '../offline/db'
 import { BookCard } from './BookCard'
+import { EndingsGallery } from './EndingsGallery'
 import { makeLibraryApi, type LibraryItemView, type ReadingHistoryItem } from './libraryApi'
 import { pickHero } from './pickHero'
 import { makeRecommendationsApi, type RecommendationItem } from './recommendationsApi'
@@ -85,7 +87,31 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   const api = useApi()
   const libraryApi = useMemo(() => makeLibraryApi(api), [api])
   const recommendationsApi = useMemo(() => makeRecommendationsApi(api), [api])
+  const progressApi = useMemo(() => makeProgressApi(api), [api])
   const [state, setState] = useState<LibraryState>({ status: 'loading' })
+  // W3.2: the Endings Gallery / "Every path walked!" data source, fetched
+  // independently of the shelf (best-effort, like history/recommendations):
+  // a failed or slow fetch degrades to no ribbon and no gallery button,
+  // never an error state for the shelf itself.
+  const [progress, setProgress] = useState<ProgressSummary>(EMPTY_PROGRESS)
+  useEffect(() => {
+    if (!profileId) return undefined
+    let cancelled = false
+    progressApi
+      .getProgress()
+      .then((result) => {
+        if (!cancelled) setProgress(result)
+      })
+      .catch((err: unknown) => {
+        logApiError('progress fetch failed', err)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [progressApi, profileId])
+  // The Endings Gallery modal: at most one open at a time, keyed by the
+  // storybook id it is showing. `null` means closed.
+  const [galleryStorybookId, setGalleryStorybookId] = useState<string | null>(null)
   // W4.3: a story download refused during a PAST reader session (offline
   // storage budget, D20) surfaces here, once, the next time this profile's
   // shelf loads. LibraryPage is the reachable kid-facing surface for this:
@@ -421,6 +447,16 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   // `items` is simply never looked up and never rendered.
   const recommendationsByBook = summarizeRecommendations(recommendations)
   const recommendationFor = (item: LibraryItemView) => recommendationsByBook.get(item.id)
+  // W3.2: keyed by storybook id, same shape as historyByBook above. A book
+  // with no row (progress fetch still loading, failed, or genuinely no
+  // completion yet) simply gets no ribbon and no gallery button.
+  const progressByBook = new Map(progress.books.map((book) => [book.storybook_id, book]))
+  const everyPathWalkedFor = (item: LibraryItemView): boolean =>
+    progressByBook.get(item.id)?.every_path_walked ?? false
+  const galleryBook = galleryStorybookId ? progressByBook.get(galleryStorybookId) : undefined
+  const galleryItem = galleryStorybookId
+    ? items.find((item) => item.id === galleryStorybookId)
+    : undefined
   if (items.length === 0) {
     return (
       <div className="library">
@@ -476,6 +512,8 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
             ratable={!offline}
             endings={endingsFor(hero)}
             recommendation={recommendationFor(hero)}
+            everyPathWalked={everyPathWalkedFor(hero)}
+            onOpenGallery={setGalleryStorybookId}
           />
         </section>
       ) : null}
@@ -500,6 +538,8 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
                   ratable={!offline}
                   endings={endingsFor(item)}
                   recommendation={recommendationFor(item)}
+                  everyPathWalked={everyPathWalkedFor(item)}
+                  onOpenGallery={setGalleryStorybookId}
                 />
               </li>
             ))}
@@ -544,6 +584,15 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
             openSignal={requestOpenSignal}
           />
         </div>
+      ) : null}
+      {galleryStorybookId ? (
+        <EndingsGallery
+          open
+          onClose={() => setGalleryStorybookId(null)}
+          bookTitle={galleryItem?.title ?? ''}
+          totalEndings={galleryBook?.total_endings ?? 0}
+          foundEndings={galleryBook?.found_endings ?? []}
+        />
       ) : null}
     </div>
   )

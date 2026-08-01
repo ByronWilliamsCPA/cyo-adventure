@@ -591,6 +591,10 @@ export type BookProgressView = {
      * Every Path Walked
      */
     every_path_walked: boolean;
+    /**
+     * Found Endings
+     */
+    found_endings?: Array<FoundEndingView>;
 };
 
 /**
@@ -1700,6 +1704,31 @@ export type FlaggedPassage = {
 };
 
 /**
+ * FoundEndingView
+ *
+ * One found ending, card-ready for the Endings Gallery (W3.2).
+ *
+ * Deliberately carries no data for an UNFOUND ending: the gallery renders
+ * those as generic "still hidden" silhouette placeholders (count only,
+ * ``total_endings - len(found_endings)``), never a real title or id, so a
+ * child can never learn what an ending is called before finding it.
+ */
+export type FoundEndingView = {
+    /**
+     * Ending Id
+     */
+    ending_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Valence
+     */
+    valence: string;
+};
+
+/**
  * GenerationEnqueuedResponse
  *
  * Response returned after a generation job is created and enqueued.
@@ -2795,6 +2824,22 @@ export type ProfileCreateBody = {
      * Monthly Request Envelope
      */
     monthly_request_envelope?: number | null;
+    /**
+     * Ring Enabled
+     */
+    ring_enabled?: boolean | null;
+    /**
+     * Ring Goal Days
+     */
+    ring_goal_days?: number | null;
+    /**
+     * Badges Enabled
+     */
+    badges_enabled?: boolean;
+    /**
+     * Time Capture Paused
+     */
+    time_capture_paused?: boolean;
 };
 
 /**
@@ -2910,6 +2955,22 @@ export type ProfileUpdateBody = {
      * Processing Restricted
      */
     processing_restricted?: boolean | null;
+    /**
+     * Ring Enabled
+     */
+    ring_enabled?: boolean | null;
+    /**
+     * Ring Goal Days
+     */
+    ring_goal_days?: number | null;
+    /**
+     * Badges Enabled
+     */
+    badges_enabled?: boolean | null;
+    /**
+     * Time Capture Paused
+     */
+    time_capture_paused?: boolean | null;
 };
 
 /**
@@ -2974,6 +3035,22 @@ export type ProfileView = {
      */
     processing_restricted: boolean;
     /**
+     * Ring Enabled
+     */
+    ring_enabled: boolean | null;
+    /**
+     * Ring Goal Days
+     */
+    ring_goal_days: number | null;
+    /**
+     * Badges Enabled
+     */
+    badges_enabled: boolean;
+    /**
+     * Time Capture Paused
+     */
+    time_capture_paused: boolean;
+    /**
      * Created At
      */
     created_at: string;
@@ -2999,6 +3076,13 @@ export type ProgressTotalsView = {
  * ProgressView
  *
  * ``GET /me/progress`` response: badges, collection state, totals (W3.1).
+ *
+ * ``days_read_this_week``/``lifetime_days_read`` (W3.4) feed the weekly
+ * ring and badge 12 ("Forty Days of Stories"): counts only, computed from
+ * ``reading_activity_day``, matching the guardian summary's own
+ * ISO-week-Monday-start definition in ``api/reading_history.py``. The kid
+ * client shows days, never minutes (gamification recommendation P4);
+ * minutes exist only on the guardian-facing reading summary.
  */
 export type ProgressView = {
     /**
@@ -3010,6 +3094,15 @@ export type ProgressView = {
      */
     books: Array<BookProgressView>;
     totals: ProgressTotalsView;
+    /**
+     * Days Read This Week
+     */
+    days_read_this_week?: number;
+    /**
+     * Lifetime Days Read
+     */
+    lifetime_days_read?: number;
+    settings: ResolvedGamificationSettingsView;
 };
 
 /**
@@ -3578,6 +3671,37 @@ export type RescreenSummaryView = {
      * Results
      */
     results: Array<BookVerdictView>;
+};
+
+/**
+ * ResolvedGamificationSettingsView
+ *
+ * A profile's gamification settings, resolved to concrete values (W3.4).
+ *
+ * Resolution (nullable stored column -> concrete value per the P-A band
+ * table) happens once, server-side, in
+ * ``api/progress.py::_resolve_ring_settings`` -- the kid client renders
+ * directly from this view and never re-implements the band-default table
+ * itself. See ``ChildProfile.ring_enabled``/``ring_goal_days`` for the raw,
+ * guardian-editable stored values.
+ */
+export type ResolvedGamificationSettingsView = {
+    /**
+     * Ring Enabled
+     */
+    ring_enabled: boolean;
+    /**
+     * Ring Goal Days
+     */
+    ring_goal_days: number;
+    /**
+     * Badges Enabled
+     */
+    badges_enabled: boolean;
+    /**
+     * Time Capture Paused
+     */
+    time_capture_paused: boolean;
 };
 
 /**

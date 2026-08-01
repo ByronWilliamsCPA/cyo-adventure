@@ -1,0 +1,61 @@
+/*
+ * Badge-unlock toast (W3.2): a small, celebratory, self-dismissing banner on
+ * the ending screen. Deliberately its own stylesheet, not reader.css: this
+ * change's touch scope excludes reader.css's chrome rules, and this toast is
+ * unrelated to the reader chrome (ReaderChrome.tsx) another agent owns.
+ */
+
+.badge-unlock-toast {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  margin: var(--space-3, 0.75rem) 0;
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  border-radius: var(--radius-lg, 0.75rem);
+  border: 2px solid var(--color-amber, #e07f2e);
+  background: var(--color-amber-subtle, #fdf3e6);
+  max-width: 28rem;
+}
+
+.badge-unlock-toast__mascot {
+  flex-shrink: 0;
+}
+
+.badge-unlock-toast__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.badge-unlock-toast__title {
+  margin: 0;
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--weight-bold, 700);
+  color: var(--color-amber-deep, #c17b2a);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.badge-unlock-toast__name {
+  margin: 2px 0 0;
+  font-size: var(--text-base, 1rem);
+  font-weight: var(--weight-bold, 700);
+  color: var(--color-ink, #2c1a0e);
+}
+
+.badge-unlock-toast__description {
+  margin: 2px 0 0;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.badge-unlock-toast__close {
+  flex-shrink: 0;
+  min-width: 32px;
+  min-height: 32px;
+  border: none;
+  background: none;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--color-ink-secondary, #5a3e28);
+  cursor: pointer;
+}
