@@ -390,6 +390,44 @@ class TestModerationReviewSettings:
         assert "OPENAI_API_KEY" in str(excinfo.value)
 
 
+class TestReviewBatchSize:
+    """Tests for review_batch_size (design doc 2.2 item 2, Stage B2)."""
+
+    @pytest.mark.unit
+    def test_review_batch_size_defaults_to_one(self) -> None:
+        """The default is 1: every chunk is a single node, matching the
+        pre-chunking Stage-1 behavior exactly."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().review_batch_size == 1
+
+    @pytest.mark.unit
+    def test_review_batch_size_reads_from_env(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("CYO_ADVENTURE_REVIEW_BATCH_SIZE", "10")
+        assert Settings().review_batch_size == 10
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("value", [0, 51], ids=["below_min", "above_max"])
+    def test_review_batch_size_out_of_bounds_raises(self, value: int) -> None:
+        from pydantic import ValidationError as PydanticValidationError
+
+        from cyo_adventure.core.config import Settings
+
+        with pytest.raises(PydanticValidationError):
+            Settings(review_batch_size=value)
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("value", [1, 50], ids=["lower_bound", "upper_bound"])
+    def test_review_batch_size_at_boundary_does_not_raise(self, value: int) -> None:
+        from cyo_adventure.core.config import Settings
+
+        assert Settings(review_batch_size=value).review_batch_size == value
+
+
 class TestValidatorRequireRealReviewerOutsideLocal:
     """Tests for the _require_real_reviewer_outside_local model_validator.
 
