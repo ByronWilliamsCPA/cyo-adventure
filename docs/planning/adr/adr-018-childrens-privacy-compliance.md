@@ -21,6 +21,9 @@ tags:
 > are closed with legal counsel; this matches the privacy model's standing note that these
 > documents are design references, not legal advice.
 > **Date**: 2026-07-16
+> **Amended**: 2026-08-01 (amended-COPPA-rule compliance date has passed; new D5 on
+> AI-training consent segregation; D4 gains the written Information Security Program and a
+> Safe Harbor evaluation; biometric non-ingestion recorded as a boundary)
 > **Relates to**: [ADR-008](./adr-008-public-app-store-launch.md) (Kids Category posture,
 > part 5), [ADR-009](./adr-009-supabase-platform.md) (processor, DPA), [ADR-016](./adr-016-recommendation-sharing-social-boundary.md)
 > (contact boundary), [ADR-017](./adr-017-ai-cover-art.md) (image-leg counterparties),
@@ -30,10 +33,12 @@ tags:
 
 One record for the compliance architecture of a child-directed app: what is already
 decided (guardian-only identities, no kid-context SDKs, parental gate, deletion with
-Apple revocation, data classification and retention, named processor list), and the three
-choices still open that carry the legal risk: the verifiable-parental-consent mechanism,
-the audience classification, and the launch geography (US-only first vs EU/UK in scope,
-which decides whether GDPR-K and the UK AADC bind at launch).
+Apple revocation, data classification and retention, named processor list, no biometric
+ingestion), and the open choices that carry the legal risk: the
+verifiable-parental-consent mechanism, the audience classification, the launch geography
+(US-only first vs EU/UK in scope, which decides whether GDPR-K and the UK AADC bind at
+launch), the public artifacts, and, since the amended COPPA Rule passed its 2026-04-22
+compliance date, whether any training corpus may ever contain child-originated data (D5).
 
 ## Context
 
@@ -45,6 +50,20 @@ classification and provider-counterparty list, and Phase 7 holds the tasks. Noth
 records the *choices* compliance forces, so they cannot be checked off or contested. The
 register maps this territory to S10 (privacy architecture), G11 (plain-language trust
 surface), G12 (export and deletion), K14 (safe room), and A14 (compliance ops).
+
+**Amended 2026-08-01: the amended COPPA Rule is now current law, not an upcoming change.**
+The FTC's 2025 amendments to the COPPA Rule (Federal Register doc. 2025-05904, published
+2025-04-22, effective 2025-06-23) carried a full-compliance date of 2026-04-22, which has
+passed. Nothing changes for the internal tier, but the Track 2 launch gate (ADR-008) must
+verify against the amended rule text, not the 2013 rule this ADR was originally drafted
+against. The amendments relevant here: biometric identifiers (facial templates,
+voiceprints) join the definition of personal information with no temporary-use exception;
+using or disclosing children's personal information to train AI models requires its own
+separate, unbundled verifiable parental consent (new D5 below); operators must maintain a
+written Information Security Program and a published written data-retention policy with
+hard deletion timelines (folded into D4 below). Dates and rule text above should be
+re-confirmed against the Federal Register during the counsel review that closes this ADR;
+they entered this document from secondary sources.
 
 ## Already decided (consolidated; sources binding)
 
@@ -112,6 +131,17 @@ surface), G12 (export and deletion), K14 (safe room), and A14 (compliance ops).
      only from story metadata and no child PII reaches the image provider (ADR-017).
 7. **Contact boundary**: no messaging, no discovery, cross-family flows only through
    dual-guardian-consented connections (ADR-016).
+8. **No biometric ingestion (recorded 2026-08-01; pending owner confirmation like the
+   rest of this list).** The amended COPPA Rule adds biometric identifiers, facial
+   templates and voiceprints included, to personal information, and the FTC declined to
+   allow even temporary security or age-verification use without prior VPC. The app is
+   out of this category entirely today: avatars are preset-only (no photo upload), and
+   there is no voice input anywhere. This is recorded as a compliance boundary rather
+   than a backlog gap: photo-derived avatars, photo personalization, and voice dictation
+   are excluded features, and a future proposal to add any of them is a revision of this
+   ADR (it would trigger maximum-protocol VPC for biometric data), not a product ticket.
+   Competitors compete on photo-personalized avatars, so this temptation will recur; the
+   boundary exists so it is contested here, deliberately, instead of in a sprint.
 
 ## Open decisions (the reason this ADR exists; close with counsel before Accepted)
 
@@ -192,7 +222,56 @@ data classification, a data-retention schedule, and a breach/incident-response p
 (feeds register A5/A14). Decision needed: owner sign-off that these are Phase 7
 deliverables with P7-08 as the checkpoint, and who drafts the notice.
 
-## Consequences
+**Amended 2026-08-01, two additions.**
+
+- **Two artifacts above are now rule requirements, not best practice.** The amended COPPA
+  Rule mandates (a) a *written* Information Security Program: annual risk assessment, a
+  vulnerability-testing cadence, vendor due diligence over the processors in this ADR's
+  counterparty list, and a designated compliance owner; and (b) a *published* written
+  data-retention policy naming the business need and a hard deletion timeline for each
+  class of children's data (the privacy model's data classification is the direct input).
+  Both join the D4 deliverable list by name so P7-08 can check them off individually. The
+  existing security tooling (scanner suite, dependency scanning, container scanning) is
+  most of the WISP's substance; what is missing is the written program document that names
+  it, its cadence, and its owner.
+- **Evaluate COPPA Safe Harbor membership (PRIVO, kidSAFE, ESRB Privacy Certified) as an
+  explicit Track 2 task.** A Safe Harbor program would answer D1's flagged highest-risk
+  question (whether the signature-capture flow satisfies 312.5(b)(2)(i)) with a
+  presumption-of-compliance posture and ongoing external audit, instead of a one-off
+  counsel opinion, at the cost of a recurring fee and an added vendor. Decision needed:
+  whether this evaluation happens before or alongside the counsel review of D1, since a
+  yes here changes what D1's counsel question is worth.
+
+### D5: AI-training use of children's data (consent segregation; added 2026-08-01)
+
+The amended COPPA Rule treats using or disclosing a child's personal information to train
+or develop AI models as non-integral to the service: it requires its own separate, opt-in
+verifiable parental consent, unbundled from the core-service consent, and refusing it
+cannot cost the child access to the core service.
+
+This intersects one live plan directly: the proposed self-labeled moderation corpus (human
+review decisions collected as future fine-tuning and evaluation data for the moderation
+reviewer, the Gate 3/4 follow-on from the 2026-08-01 datasets research). Whether the
+obligation triggers depends entirely on what the corpus contains.
+
+**Working position (2026-08-01, pending owner confirmation):** build any training or
+evaluation corpus exclusively from adult-originated and pipeline-originated material:
+reviewer decisions, moderation findings, and generated prose that has passed the PII gate
+(`generation/pii.py`). Child-originated data, child-typed wish text from intake, and child
+behavioral signals (flags, ratings, reading state) are excluded from every training set.
+Under this constraint no child personal information is used for AI training and the
+segregated-consent obligation never triggers; the constraint costs nothing today because
+no planned corpus needs child-originated data.
+
+**Escape hatch, priced now while the D1 flow is fresh:** if child-originated data is ever
+wanted in a training set, the D1 consent flow gains a separate opt-in toggle first, before
+any such data is collected for that purpose: a `policy_version` bump plus an independent,
+default-off checkbox whose refusal has no effect on service access. That is a small change
+against the existing `POST /v1/onboarding` consent payload and `GuardianConsentPage.tsx`,
+but it must precede collection, not follow it.
+
+Decision needed: owner confirms the corpus constraint as the default, or opts to build the
+segregated-consent toggle now.
 
 - ✅ Compliance stops being folklore spread over four documents; Phase 7 becomes the
   implementation of this ADR and P7-08 its checklist.
@@ -205,7 +284,10 @@ deliverables with P7-08 as the checkpoint, and who drafts the notice.
 
 ## Validation
 
-- [ ] D1-D4 closed with counsel; status flipped to Accepted with the choices recorded.
+- [ ] D1-D5 closed with counsel; status flipped to Accepted with the choices recorded.
+- [ ] Amended-rule facts (dates, biometric definition, AI-training consent, WISP and
+      retention-policy mandates) re-confirmed against the Federal Register text during
+      counsel review; they entered this ADR from secondary sources.
 - [ ] P7-08 checklist maps one-to-one to the "already decided" list and the closed
       decisions.
 - [ ] Deletion E2E (family erasure incl. Apple revocation) and the kid-context SDK audit
