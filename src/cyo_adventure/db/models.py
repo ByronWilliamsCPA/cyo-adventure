@@ -1245,6 +1245,15 @@ class ReadingActivityDay(Base):
     this is a literacy signal, not a billing ledger (recommendation section
     2.4), and the day-level clamp in api/reading_time.py bounds the damage.
     #VERIFY: tests/unit/test_reading_time_api_unit.py covers replay dedup.
+
+    Retention: the kid-appeal-implementation-plan.md "Plan defaults" section
+    (item 2) adopts a 12-month retention default for day-grain rows, after
+    which detail rolls into a running total (lifetime days-read survives) --
+    to be entered into the ADR-018 counsel bundle and the privacy model's
+    data classification. Enforcing that rollover (a scheduled purge/aggregate
+    job) is explicitly OUT OF SCOPE for this change; this docstring and the
+    plan document the decision, no code here implements it yet. Do not infer
+    a retention job exists from this table's presence.
     """
 
     __tablename__ = "reading_activity_day"

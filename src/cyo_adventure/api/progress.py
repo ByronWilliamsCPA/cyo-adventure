@@ -46,12 +46,12 @@ from cyo_adventure.db.models import (
 )
 from cyo_adventure.progress.badges import compute_progress
 from cyo_adventure.progress.blob import book_title, ending_count, ending_valence_map
-from cyo_adventure.progress.models import ProgressFacts
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
     from cyo_adventure.api.deps import Principal
+    from cyo_adventure.progress.models import ProgressFacts
 
 router = APIRouter(prefix="/api/v1", tags=["progress"], responses=error_responses(401))
 
@@ -121,6 +121,102 @@ async def get_my_progress(principal: CurrentPrincipal, session: DbSession) -> Pr
     return _to_view(facts)
 
 
+async def _load_touched_books(
+    session: AsyncSession, completions: list[Completion]
+) -> dict[str, Storybook]:
+    """Bulk-load every ``Storybook`` a profile's completions reference."""
+    book_ids = {completion.storybook_id for completion in completions}
+    if not book_ids:
+        return {}
+    return {
+        book.id: book
+        for book in await session.scalars(
+            select(Storybook).where(Storybook.id.in_(book_ids))
+        )
+    }
+
+
+async def _load_versions(
+    session: AsyncSession, completions: list[Completion], books: dict[str, Storybook]
+) -> dict[tuple[str, int], StorybookVersion]:
+    """Bulk-load every played version plus each book's current published one.
+
+    The played versions feed badge 7's valence lookup (a completion's own
+    version, not necessarily the current one); the current published
+    versions feed the collection-state totals/titles (mirrors
+    ``reading_history.py``).
+    """
+    version_keys: set[tuple[str, int]] = {
+        (completion.storybook_id, completion.version) for completion in completions
+    }
+    for book in books.values():
+        if book.current_published_version is not None:
+            version_keys.add((book.id, book.current_published_version))
+    if not version_keys:
+        return {}
+    version_rows = await session.scalars(
+        select(StorybookVersion).where(
+            tuple_(StorybookVersion.storybook_id, StorybookVersion.version).in_(
+                version_keys
+            )
+        )
+    )
+    return {(row.storybook_id, row.version): row for row in version_rows}
+
+
+def _build_ending_valence(
+    versions: dict[tuple[str, int], StorybookVersion],
+) -> dict[tuple[str, int, str], str]:
+    """Flatten every played version's blob into (book, version, ending) valence."""
+    ending_valence: dict[tuple[str, int, str], str] = {}
+    for (storybook_id, version), row in versions.items():
+        for ending_id, valence in ending_valence_map(row.blob).items():
+            ending_valence[(storybook_id, version, ending_id)] = valence
+    return ending_valence
+
+
+def _build_current_version_facts(
+    books: dict[str, Storybook], versions: dict[tuple[str, int], StorybookVersion]
+) -> tuple[dict[str, int], dict[str, str]]:
+    """Return (ending_total_by_book, book_titles) from each book's pinned version."""
+    ending_total_by_book: dict[str, int] = {}
+    book_titles: dict[str, str] = {}
+    for book_id, book in books.items():
+        pinned_version = book.current_published_version
+        if pinned_version is None:
+            continue
+        pinned_row = versions.get((book_id, pinned_version))
+        if pinned_row is None:
+            continue
+        ending_total_by_book[book_id] = ending_count(
+            pinned_row.blob, book_id, pinned_version
+        )
+        book_titles[book_id] = book_title(pinned_row.blob, book_id, pinned_version)
+    return ending_total_by_book, book_titles
+
+
+async def _load_series_membership(
+    session: AsyncSession, books: dict[str, Storybook]
+) -> dict[str, frozenset[str]]:
+    """Return ``series_id -> every storybook_id in that series`` (badge 11).
+
+    Loads the FULL series roster, not only the books this profile has
+    touched, since "finished every book in the series" must be checked
+    against every book that exists in it.
+    """
+    series_ids = {book.series_id for book in books.values() if book.series_id is not None}
+    if not series_ids:
+        return {}
+    series_rows = await session.scalars(
+        select(Storybook).where(Storybook.series_id.in_(series_ids))
+    )
+    grouped: dict[str, set[str]] = {}
+    for row in series_rows:
+        if row.series_id is not None:
+            grouped.setdefault(str(row.series_id), set()).add(row.id)
+    return {sid: frozenset(ids) for sid, ids in grouped.items()}
+
+
 async def _build_progress_facts(
     session: AsyncSession,
     completions: list[Completion],
@@ -134,72 +230,11 @@ async def _build_progress_facts(
     # blobs), mirroring reading_history.py::get_reading_history.
     # #VERIFY: tests/unit/test_progress_api_unit.py asserts the query count.
     """
-    book_ids = {completion.storybook_id for completion in completions}
-    books: dict[str, Storybook] = {}
-    if book_ids:
-        books = {
-            book.id: book
-            for book in await session.scalars(
-                select(Storybook).where(Storybook.id.in_(book_ids))
-            )
-        }
-
-    version_keys: set[tuple[str, int]] = {
-        (completion.storybook_id, completion.version) for completion in completions
-    }
-    for book in books.values():
-        if book.current_published_version is not None:
-            version_keys.add((book.id, book.current_published_version))
-
-    versions: dict[tuple[str, int], StorybookVersion] = {}
-    if version_keys:
-        version_rows = await session.scalars(
-            select(StorybookVersion).where(
-                tuple_(StorybookVersion.storybook_id, StorybookVersion.version).in_(
-                    version_keys
-                )
-            )
-        )
-        versions = {(row.storybook_id, row.version): row for row in version_rows}
-
-    ending_valence: dict[tuple[str, int, str], str] = {}
-    for (storybook_id, version), row in versions.items():
-        for eid, valence in ending_valence_map(row.blob).items():
-            ending_valence[(storybook_id, version, eid)] = valence
-
-    ending_total_by_book: dict[str, int] = {}
-    book_titles: dict[str, str] = {}
-    for book_id, book in books.items():
-        pinned_version = book.current_published_version
-        pinned_row = (
-            versions.get((book_id, pinned_version))
-            if pinned_version is not None
-            else None
-        )
-        if pinned_row is not None and pinned_version is not None:
-            ending_total_by_book[book_id] = ending_count(
-                pinned_row.blob, book_id, pinned_version
-            )
-            book_titles[book_id] = book_title(pinned_row.blob, book_id, pinned_version)
-
-    series_ids = {
-        str(book.series_id) for book in books.values() if book.series_id is not None
-    }
-    series_membership: dict[str, frozenset[str]] = {}
-    if series_ids:
-        series_rows = list(
-            await session.scalars(
-                select(Storybook).where(
-                    Storybook.series_id.in_({uuid.UUID(sid) for sid in series_ids})
-                )
-            )
-        )
-        grouped: dict[str, set[str]] = {}
-        for row in series_rows:
-            if row.series_id is not None:
-                grouped.setdefault(str(row.series_id), set()).add(row.id)
-        series_membership = {sid: frozenset(ids) for sid, ids in grouped.items()}
-
+    books = await _load_touched_books(session, completions)
+    versions = await _load_versions(session, completions, books)
+    ending_valence = _build_ending_valence(versions)
+    ending_total_by_book, book_titles = _build_current_version_facts(books, versions)
+    series_membership = await _load_series_membership(session, books)
     series_by_book = {
         book_id: (str(book.series_id) if book.series_id is not None else None)
         for book_id, book in books.items()

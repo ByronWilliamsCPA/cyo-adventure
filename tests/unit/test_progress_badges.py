@@ -10,12 +10,15 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
 import pytest
 
 from cyo_adventure.db.models import Completion, Rating, StoryRequest
 from cyo_adventure.progress.badges import BADGE_CATALOG, compute_progress
-from cyo_adventure.progress.models import ProgressFacts
+
+if TYPE_CHECKING:
+    from cyo_adventure.progress.models import ProgressFacts
 
 _T1 = datetime(2026, 1, 1, tzinfo=UTC)
 _T2 = datetime(2026, 1, 2, tzinfo=UTC)
@@ -105,7 +108,7 @@ class TestCatalog:
         """Badges 9 (Wish Come True) and 12 (Forty Days) are extension points."""
         assert "wish_come_true" not in BADGE_CATALOG
         assert "forty_days_of_stories" not in BADGE_CATALOG
-        assert len(BADGE_CATALOG) == 10  # noqa: PLR2004
+        assert len(BADGE_CATALOG) == 10
 
 
 @pytest.mark.unit
@@ -241,7 +244,7 @@ class TestBookwormAndShelfHero:
                 _completion("s2", "e1", found_at=_T3),
             ]
         )
-        assert facts.totals.books_finished == 2  # noqa: PLR2004
+        assert facts.totals.books_finished == 2
 
 
 @pytest.mark.unit
@@ -255,7 +258,7 @@ class TestEndingCollector:
         ]
         facts = _compute(completions=completions)
         assert "ending_collector" in _badge_ids(facts)
-        assert facts.totals.endings_found == 25  # noqa: PLR2004
+        assert facts.totals.endings_found == 25
 
     def test_not_earned_at_twenty_four(self) -> None:
         completions = [
@@ -409,8 +412,8 @@ class TestBookStates:
         )
         book = facts.books[0]
         assert book.storybook_id == "s1"
-        assert book.endings_found == 2  # noqa: PLR2004
-        assert book.total_endings == 3  # noqa: PLR2004
+        assert book.endings_found == 2
+        assert book.total_endings == 3
         assert book.finished is True
         assert book.every_path_walked is False
 

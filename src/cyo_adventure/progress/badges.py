@@ -146,7 +146,7 @@ def _badge_path_not_taken(completions: Sequence[Completion]) -> datetime | None:
     ).items():
         by_book.setdefault(storybook_id, []).append(found_at)
     earn_times = [
-        sorted(times)[1] for times in by_book.values() if len(times) >= 2  # noqa: PLR2004
+        sorted(times)[1] for times in by_book.values() if len(times) >= 2
     ]
     return min(earn_times) if earn_times else None
 

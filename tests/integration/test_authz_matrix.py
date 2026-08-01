@@ -67,6 +67,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -241,6 +242,14 @@ def _flag_body(seed: Seed) -> dict[str, Any]:
 
 def _flag_resolve_body(_seed: Seed) -> dict[str, Any]:
     return {"resolution": "dismissed"}
+
+
+def _reading_time_body(_seed: Seed) -> dict[str, Any]:
+    return {
+        "date": datetime.now(tz=UTC).date().isoformat(),
+        "seconds_delta": 30,
+        "flush_id": str(uuid.uuid4()),
+    }
 
 
 def _reading_state_body(seed: Seed) -> dict[str, Any]:
@@ -678,6 +687,16 @@ _ROUTE_SPECS: list[RouteSpec] = [
         "/api/v1/me/family/invite-guardian",
         frozenset({Role.GUARDIAN}),
         json_body=_guardian_invite_body,
+    ),
+    # -- progress.py: W3.1, child-only ("me", no path param; see that
+    # module's docstring for why no guardian/admin variant exists yet) ------
+    RouteSpec("GET", "/api/v1/me/progress", frozenset({Role.CHILD})),
+    # -- reading_time.py: W3.3, child-only, same "me" shape as progress.py --
+    RouteSpec(
+        "POST",
+        "/api/v1/me/reading-time",
+        frozenset({Role.CHILD}),
+        json_body=_reading_time_body,
     ),
     # -- profiles.py ---------------------------------------------------------
     RouteSpec("GET", "/api/v1/profiles", ALL_ROLES),

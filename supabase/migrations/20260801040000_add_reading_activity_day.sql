@@ -13,6 +13,15 @@
 -- authorizes ("a simple per-(profile, date) last_flush_id column on the row is
 -- acceptable" for idempotency), mirroring reading_state.last_event_id.
 --
+-- Retention: the plan's "Plan defaults" item 2 adopts a 12-month retention
+-- default for these day-grain rows (detail rolls into a running total after
+-- that window; lifetime days-read survives), to be entered into the ADR-018
+-- counsel bundle and the privacy model's data classification. Enforcing that
+-- rollover (a scheduled purge/aggregate job, mirroring
+-- 20260720150000_add_retention_purge_jobs.sql's pattern for other retained
+-- data) is explicitly OUT OF SCOPE for this migration; only the table and its
+-- cascade/RLS exist here.
+--
 -- Table and REFERENCES targets are schema-qualified ("public".*): see
 -- 20260729000000_add_child_profile_personalization.sql's header comment for
 -- why (the baseline migration empties search_path for the rest of the
