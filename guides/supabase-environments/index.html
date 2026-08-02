@@ -821,6 +821,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="4. Promotion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#repairing-an-out-of-order-divergence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repairing an out-of-order divergence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2892,6 +2909,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="4. Promotion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#repairing-an-out-of-order-divergence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repairing an out-of-order divergence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3071,6 +3105,73 @@ merge.</p>
    which requires an approving reviewer before the job runs; this is the human gate between a
    rehearsed migration and the live database.</li>
 </ol>
+<h3 id="repairing-an-out-of-order-divergence">Repairing an out-of-order divergence<a class="headerlink" href="#repairing-an-out-of-order-divergence" title="Permanent link">&para;</a></h3>
+<p><code>supabase db push</code> refuses to apply a migration whose filename timestamp sorts <strong>before</strong> the
+last one already applied remotely, and reports:</p>
+<div class="language-text highlight"><pre><span></span><code>Found local migration files to be inserted before the last migration on remote database.
+Rerun the command with --include-all flag to apply these migrations:
+  supabase/migrations/&lt;file&gt;.sql
+</code></pre></div>
+<p><strong>Staging hits this and production usually does not</strong>, structurally rather than by accident.
+Staging auto-deploys on every merge touching migrations, so it can apply a later-numbered
+migration before an earlier-numbered one is merged; a PR that renumbers a migration during a
+merge with <code>main</code> then lands "in the past". Production deploys by manual dispatch in ordered
+batches, so it usually sees both files in one run and applies them in order. That is a property
+of the dispatch cadence, not a guarantee: a production dispatch that lands between the two merges
+is exposed the same way. Staging can therefore be red while production is green on the identical
+migration set, which is a divergence in <em>applied history</em>, not a defect in the SQL.</p>
+<p>To repair, dispatch <strong>Deploy Supabase Migrations (staging)</strong> with the <code>include_all</code> input set to
+<code>true</code>. It runs <code>supabase db push --include-all</code> for that one run; every automatic deploy keeps
+the ordering guard. The workflow serializes runs through the <code>supabase-staging-migrations</code>
+concurrency group, so a repair dispatch queues behind an in-flight automatic deploy instead of
+racing it for the same history table. Note that the <code>staging</code> GitHub Environment carries no
+reviewer protection rule, so the dispatch gate is repository write access, not a second pair of
+eyes: the checks below are the only thing standing between a dispatch and applied history.</p>
+<p><strong>Read the remote state first.</strong> Do not infer what staging has applied from which workflow runs
+are green; a run can fail after applying some migrations, and the last <em>successful</em> run is what
+bounds applied history. Two commands give the ground truth:</p>
+<div class="language-text highlight"><pre><span></span><code>supabase migration list
+</code></pre></div>
+<p>shows which timestamps the remote history table records, and for the constraint family below:</p>
+<div class="language-text highlight"><pre><span></span><code>select pg_get_constraintdef(oid)
+from pg_constraint
+where conname = &#39;ck_pipeline_event_event_type&#39;;
+</code></pre></div>
+<p>shows which values the remote constraint currently allows.</p>
+<p><strong>Check before you dispatch.</strong> <code>--include-all</code> is not unconditionally safe. A migration that
+replaces a CHECK constraint with an absolute cumulative list (the <code>ck_pipeline_event_event_type</code>
+family; see the <code>#CRITICAL</code> header in
+<code>20260729050000_add_storybook_archived_to_pipeline_event.sql</code>) can drop values that are already
+in the remote constraint, because each file's idempotency guard only tests for its <strong>own</strong> new
+value. The danger condition is precise: an absolute-list migration runs <strong>after</strong> another
+absolute-list migration for the same constraint is already in remote history, and does not carry
+that other file's values. For every file named in the CLI output, confirm one of:</p>
+<ul>
+<li>its idempotency guard is already satisfied against the remote schema, so it is a true no-op
+  and only the history row gets recorded; or</li>
+<li>it is genuinely order-independent (an additive column or index, no absolute list); or</li>
+<li>every absolute-list migration for that constraint is itself in the pending set, and the
+  last-sorting one carries the full cumulative list. <code>--include-all</code> applies the whole pending
+  set in filename order, so a later file restating the complete list overwrites any intermediate
+  narrowing. Verify by diffing that file's list against the query output above plus every value
+  the pending files add; do not assume it, since a pending file that sorts last but restates only
+  a partial list fails this criterion.</li>
+</ul>
+<p>If none holds, fix the ordering by writing a <strong>new</strong> migration that restates the correct
+cumulative state. Never renumber or edit a migration that has already been applied anywhere:
+history is forward-only per ADR-012 and there is no down script.</p>
+<p><strong>Close the history gap afterwards.</strong> A corrective migration fixes the <em>schema</em> but leaves the
+skipped file permanently absent from the remote history table, so every later <code>db push</code>
+re-proposes it and hits the same ordering guard. Retire it with the metadata-only write already
+used in section 5, once the corrective migration has landed and the query above confirms the
+schema is correct:</p>
+<div class="language-text highlight"><pre><span></span><code>supabase migration repair --status applied &lt;skipped-timestamp&gt;
+</code></pre></div>
+<p><code>repair</code> writes a history row without executing that file's SQL, so it is correct only when the
+schema state the file would have produced is already present; running it earlier records a lie.
+Both <code>--include-all</code> and <code>repair</code> are one-off repair tools. A normal deploy needs neither, and
+reaching for <code>--include-all</code> on successive pushes means the ordering guard is being routed around
+rather than the divergence being fixed.</p>
 <h2 id="5-one-time-setup-gate-a-gate-b-checklist">5. One-time setup (Gate A / Gate B checklist)<a class="headerlink" href="#5-one-time-setup-gate-a-gate-b-checklist" title="Permanent link">&para;</a></h2>
 <p>These steps run once, with the user present, before the pipeline can move schema anywhere
 but the local stack:</p>
@@ -3133,7 +3234,7 @@ but the local stack:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 11, 2026 11:00:23 UTC">July 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 04:47:00 UTC">August 2, 2026</span>
   </span>
 
     
