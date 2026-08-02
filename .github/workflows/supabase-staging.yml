@@ -8,10 +8,29 @@ on:
     branches: [main]
     paths:
       - "supabase/migrations/**"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      include_all:
+        description: >-
+          Repair run: also apply migrations that sort BEFORE the last one
+          already applied. Leave false for normal deploys.
+        type: boolean
+        default: false
 
 permissions:
   contents: read
+
+# #CRITICAL: concurrency: only one `supabase db push` may touch the staging
+# migration history at a time. A human repair dispatch can otherwise overlap an
+# automatic push-triggered deploy and interleave writes to
+# supabase_migrations.schema_migrations. cancel-in-progress stays false: an
+# aborted migration run leaves partially-applied schema, which is worse than a
+# queued one.
+# #VERIFY: keep this group name in sync with the runbook section "Repairing an
+# out-of-order divergence" in docs/guides/supabase-environments.md.
+concurrency:
+  group: supabase-staging-migrations
+  cancel-in-progress: false
 
 jobs:
   deploy-staging:
@@ -40,5 +59,45 @@ jobs:
       - name: Link staging project
         run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
 
+      # `supabase db push` refuses a migration whose filename timestamp sorts
+      # BEFORE the last one already applied remotely, because inserting into
+      # applied history is how two environments silently diverge. That guard is
+      # correct and stays on for every automatic deploy; INCLUDE_ALL is the
+      # documented escape hatch for repairing a divergence that already
+      # happened, and it is reachable only by a human dispatching the workflow.
+      #
+      # Staging is the environment that hits this, and structurally so: it
+      # auto-deploys on every merge touching migrations, so it can apply a
+      # LATER migration before an earlier-numbered one is merged. Production
+      # deploys by manual dispatch in ordered batches, so it usually sees both
+      # files in one run and applies them in order. That is a property of the
+      # dispatch cadence, not a guarantee. It is why staging can be red while
+      # production is green on the identical migration set.
+      #
+      # #CRITICAL: data integrity: --include-all is NOT unconditionally safe. A
+      # migration that replaces a CHECK constraint with an ABSOLUTE cumulative
+      # list (see 20260729050000's #CRITICAL header) can drop values that are
+      # already in the remote constraint, because each file's idempotency guard
+      # only tests for its OWN new value. The danger condition is an
+      # absolute-list migration that runs AFTER another absolute-list migration
+      # for the same constraint is already in remote history, without carrying
+      # that other file's values.
+      # #VERIFY: before dispatching with include_all, read the REMOTE state
+      # (`supabase migration list` plus a pg_get_constraintdef query), then walk
+      # the three criteria in the "Repairing an out-of-order divergence" section
+      # of docs/guides/supabase-environments.md. Do not infer the applied state
+      # from which workflow runs are green, and do not dispatch on the
+      # assumption the listed files are safe.
       - name: Push migrations
-        run: supabase db push
+        env:
+          # Via env, not inlined into the command: a workflow_dispatch input is
+          # attacker-influenced in the general case, and the boolean type is not
+          # a substitute for keeping it out of the shell's parse.
+          INCLUDE_ALL: ${{ inputs.include_all }}
+        run: |
+          if [ "${INCLUDE_ALL}" = "true" ]; then
+            echo "::warning::Repair run: applying out-of-order migrations with --include-all."
+            supabase db push --include-all
+          else
+            supabase db push
+          fi
