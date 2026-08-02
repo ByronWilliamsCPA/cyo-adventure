@@ -8,7 +8,14 @@ on:
     branches: [main]
     paths:
       - "supabase/migrations/**"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      include_all:
+        description: >-
+          Repair run: also apply migrations that sort BEFORE the last one
+          already applied. Leave false for normal deploys.
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -40,5 +47,39 @@ jobs:
       - name: Link staging project
         run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
 
+      # `supabase db push` refuses a migration whose filename timestamp sorts
+      # BEFORE the last one already applied remotely, because inserting into
+      # applied history is how two environments silently diverge. That guard is
+      # correct and stays on for every automatic deploy; INCLUDE_ALL is the
+      # documented escape hatch for repairing a divergence that already
+      # happened, and it is reachable only by a human dispatching the workflow.
+      #
+      # Staging is the environment that hits this, and structurally so: it
+      # auto-deploys on every merge touching migrations, so it can apply a
+      # LATER migration before an earlier-numbered one is merged. Production
+      # deploys by manual dispatch in ordered batches and does not see the
+      # inversion. That is why staging can be red while production is green on
+      # the identical migration set.
+      #
+      # #CRITICAL: data integrity: --include-all is NOT unconditionally safe. A
+      # migration that replaces a CHECK constraint with an ABSOLUTE cumulative
+      # list (see 20260729050000's #CRITICAL header) applied out of order will
+      # drop values that a later, already-applied migration added, and each
+      # file's idempotency guard only tests for its OWN new value. Before
+      # dispatching with include_all, confirm every listed file is either a
+      # no-op against the current remote schema or genuinely order-independent.
+      # #VERIFY: read the files named in the "Rerun the command with
+      # --include-all" output; do not dispatch on the assumption they are safe.
       - name: Push migrations
-        run: supabase db push
+        env:
+          # Via env, not inlined into the command: a workflow_dispatch input is
+          # attacker-influenced in the general case, and the boolean type is not
+          # a substitute for keeping it out of the shell's parse.
+          INCLUDE_ALL: ${{ inputs.include_all }}
+        run: |
+          if [ "${INCLUDE_ALL}" = "true" ]; then
+            echo "::warning::Repair run: applying out-of-order migrations with --include-all."
+            supabase db push --include-all
+          else
+            supabase db push
+          fi

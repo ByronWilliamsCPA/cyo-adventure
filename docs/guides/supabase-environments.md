@@ -119,6 +119,41 @@ Promotion is a one-way ratchet: local, then staging, then production, in that or
    which requires an approving reviewer before the job runs; this is the human gate between a
    rehearsed migration and the live database.
 
+### Repairing an out-of-order divergence
+
+`supabase db push` refuses to apply a migration whose filename timestamp sorts **before** the
+last one already applied remotely, and reports:
+
+    Found local migration files to be inserted before the last migration on remote database.
+    Rerun the command with --include-all flag to apply these migrations:
+      supabase/migrations/<file>.sql
+
+**Staging hits this and production generally does not**, structurally rather than by accident.
+Staging auto-deploys on every merge touching migrations, so it can apply a later-numbered
+migration before an earlier-numbered one is merged; a PR that renumbers a migration during a
+merge with `main` then lands "in the past". Production deploys by manual dispatch in ordered
+batches and never sees the inversion. Staging can therefore be red while production is green on
+the identical migration set, which is a divergence in *applied history*, not a defect in the SQL.
+
+To repair, dispatch **Deploy Supabase Migrations (staging)** with the `include_all` input set to
+`true`. It runs `supabase db push --include-all` for that one run; every automatic deploy keeps
+the ordering guard.
+
+**Check before you dispatch.** `--include-all` is not unconditionally safe. A migration that
+replaces a CHECK constraint with an absolute cumulative list (the `ck_pipeline_event_event_type`
+family; see the `#CRITICAL` header in
+`20260729050000_add_storybook_archived_to_pipeline_event.sql`) applied out of order will drop
+values a later, already-applied migration added, because each file's idempotency guard only
+tests for its **own** new value. For every file named in the CLI output, confirm one of:
+
+- its idempotency guard is already satisfied against the remote schema, so it is a true no-op
+  and only the history row gets recorded; or
+- it is genuinely order-independent (an additive column or index, no absolute list).
+
+If neither holds, fix the ordering by writing a **new** migration that restates the correct
+cumulative state. Never renumber or edit a migration that has already been applied anywhere:
+history is forward-only per ADR-012 and there is no down script.
+
 ## 5. One-time setup (Gate A / Gate B checklist)
 
 These steps run once, with the user present, before the pipeline can move schema anywhere
