@@ -43,21 +43,28 @@ critical path, owner gates, and capacity rules. This document is the per-deliver
 5. ADR-011 (scale framework), ADR-019 (theme contracts), ADR-020 (mutation/catalog growth), ADR-026
    (rendered stops). Skim the rest of `docs/planning/adr/`.
 6. [research/README.md](research/README.md): which constants are evidence-backed vs designer priors.
+7. [capability-register.md](capability-register.md): the persona capability contract. This program
+   serves K3 (structural and state/consequence story variety) among others; any SQ item that changes
+   a reader- or guardian-facing capability cites the register ID(s) it serves in its PR, per the
+   register's contract.
 
 ### 0.2 Environment
 
 ```bash
 uv sync --all-extras && uv run pre-commit install     # backend
 (cd frontend && npm install)                          # frontend (only some briefs touch it)
-uv run pytest -x -q                                   # should pass before you start
+uv run pytest --cov=src --cov-fail-under=80           # the coverage floor is part of done, not extra
 uv run ruff check . && uv run basedpyright src/       # both must stay clean
+uv run bandit -c pyproject.toml -r src                # security scan, required before commit
+pre-commit run --all-files                            # hooks must pass locally, not only on push
+uv run mkdocs build                                   # strict; required for any docs/ change
 ```
 
-Docs are strict: `uv run mkdocs build` must pass for any planning-doc change.
+Every command above maps to a definition-of-done requirement in 0.4; none is optional.
 
 ### 0.3 Non-negotiable conventions (enforced by hooks/CI, will block you)
 
-- Feature branches per item (`feat/sq-07-selection-rebalance` style); never commit to `main`.
+- Feature branches per item (`feat/sq-07-selection-rebalance` style); never work directly on `main` or `develop`.
 - Conventional Commits; signed commits (`git commit -S`); no em-dash characters anywhere.
 - RAD tags (`#CRITICAL` / `#ASSUME` / `#EDGE` with `#VERIFY`) on assumptions in the mandatory
   categories (timing, external resources, data integrity, concurrency, security).
@@ -118,7 +125,7 @@ a request landing on an oversized skeleton burns ~4 repair rounds and fails dete
 1. New pure function `generation/feasibility.py::estimate_fill_tokens(skeleton) -> int`: sum of FILL
    `words=` targets converted to tokens (calibrate the words-to-tokens factor by regressing the
    committed fills in `out/`, 25 files: 23 top-level plus 2 pilot re-themes, against their actual
-   token counts; commit the factor with its derivation as a module constant with an `#ASSUME` tag)
+   token counts; commit the factor with its derivation as a module constant carrying a paired `#ASSUME`/`#VERIFY`: the `#ASSUME` states the factor, the `#VERIFY` names the committed regression evidence it came from)
    plus measured JSON scaffolding overhead per node. The infeasible-set size is factor-sensitive
    (plausible uncalibrated estimates give 16-29 of 58), which is exactly why the calibration comes
    first.
@@ -161,6 +168,11 @@ fill exists anywhere today; this brief creates the first one.
 3. Stage-1 fidelity and word-count checks run per chunk; the repair budget is shared across chunks.
 4. Reassembly asserts `skeleton.has_unfilled_directives(...) is False` and runs the existing
    whole-book gate unchanged.
+5. Route-awareness handover (the SQ-02 interplay, made explicit after PR review): landing this brief
+   flips the SQ-02 selector's feasibility input from the whole-story cap to the per-chunk cap, so
+   previously infeasible skeletons re-enter automated selection; the estimator is retained for chunk
+   sizing and pool logging. An end-to-end test covers candidate selection of a previously infeasible
+   skeleton through its successful act-scoped fill.
 
 **Tests.** Unit: chunker respects token cap and covers every node exactly once, on the largest
 production skeleton (`the-tenfold-siege`, 677 nodes). Integration (mock provider): a previously
@@ -254,7 +266,7 @@ attraction `weight *= (1 + theme_overlap)` up to 2x (`_theme_overlap_bonus`,
    `recent_skeleton_usage` (the storybook row already carries the requesting profile through the
    request join; verify the join path in `db/models.py` and document it); selection prefers
    per-profile counts, falls back to family when the profile has fewer than K (propose 5) rows.
-   `#ASSUME: data-integrity` note on the fallback. Privacy: internal-use only, no new surface;
+   Paired `#ASSUME: data-integrity`/`#VERIFY` on the fallback (the `#VERIFY` points at the join-path test that proves per-profile rows resolve). Privacy: internal-use only, no new surface;
    confirm classification per the plan's risk note before merging.
 (c) **Distinct-storybook counting**: count distinct `storybook_id`, not version rows, in the recency
    window (kills the retry-pollution loop); keep the window at 20 storybooks.
@@ -326,9 +338,17 @@ brass-lantern chain; in-cell audit passes with an empty allowlist.
 reports net new trees per month. Analysis section 5: ECS is maximized by uniform rotation; RAR is
 family-windowed; net-new-trees counts TAU_CELL-distinct merges.
 
-**Change.** (1) New report in the WS-0 harness: per-theme-cohort concentration = for each canonical
-theme tag, the population share of the modal `(skeleton_slug)` across families' first matching
-requests (no premise text, tags only). (2) Docstring caveats on ECS/RAR/net-new-trees stating what
+**Change.** (1) New report in the WS-0 harness: per-theme-cohort concentration, defined exactly so
+two implementations cannot diverge. For each canonical tag `t` in the similarity vocabulary: the
+cohort is the set of families having at least one request whose `similarity_signature` contains `t`;
+each family contributes exactly its FIRST such request (by `created_at`); the denominator `N_t` is
+the cohort size; the share is `max over slugs s of (families whose contributed request drew s) /
+N_t`. A request whose signature contains multiple tags contributes to each tag's cohort. Cohorts
+with `N_t` below a privacy floor (propose 3) are suppressed from the report, listed only as
+suppressed. Ties for the modal slug are not broken arbitrarily: all tied slugs are reported with a
+tie flag. Tags with an empty cohort report `N_t = 0`, no share. No premise text anywhere, tags and
+slugs only. The unit-test fixture covers a multi-tag request, a tied mode, an empty cohort, and the
+suppression floor. (2) Docstring caveats on ECS/RAR/net-new-trees stating what
 each cannot see, with a pointer to analysis section 5 (docstrings are load-bearing here; the WS-0
 report template prints them). (3) When SQ-15 lands: add experience-weighted ECS (entropy over
 experience-metric clusters instead of slugs) beside, not replacing, slug ECS.
@@ -406,7 +426,7 @@ SQ-13/SQ-14.**
 ### SQ-13: Combined A20 + variants rollout
 
 **Status quo.** 14 skeletons / 4,305 FILL nodes unslotted (UW-G01, distribution extremely uneven:
-677/550/550 at the top; the smallest UNSLOTTED skeletons are 105 and 32 nodes; the 25- and 11-node MVP seeds are the two already-delivered A20 slices, not backlog); 47 contracts exist. Scope correction from PR review: the rollout covers ALL production skeletons, not only the unslotted 14; the 47 already-contracted skeletons get a variants-only pass, and every per-skeleton pass backfills subject-axis metadata.themes tags. The A20 toolchain is proven:
+677/550/550 at the top; the smallest UNSLOTTED skeletons are 105 and 32 nodes; the 25- and 11-node MVP seeds are the two already-delivered A20 slices, not backlog); 47 contracts exist. Scope correction from PR review: the rollout covers the 58 production-eligible skeletons, not only the unslotted set; the 13 unslotted PRODUCTION skeletons get the combined pass (the 14th no-contract file is the MVP seed `the-sunken-signal`, excluded with the test-tier scaffolds), the 45 production already-contracted skeletons get a variants-only pass, and every per-skeleton pass backfills subject-axis values into the skeleton's existing `metadata.themes` list (a real field on all 61 skeletons; the 9-of-22 gap is subject VALUES missing from it, not a missing field). The A20 toolchain is proven:
 `scripts/parameterize_skeleton.py` applies a slotting plan with fingerprint unchanged;
 `scripts/check_theme_contract.py` runs seven acceptance checks; two authoring conventions are
 recorded in plan v2's A20 correction (article inside the slot value, never sentence-initial; whole
@@ -569,8 +589,14 @@ mass (eta-squared 0.636). ADR-011 sanctions "few wins, many fails" without numbe
 SQ-09(b)'s restructure): re-map endings via the M2 operator where possible (it exists precisely for
 valence-class-preserving remixes; note its self-declared metric blindness means judgment is by SQ-15
 outcome entropy, not structural distance) and hand-edit where the target mix crosses valence classes
-(then it is an authoring change through the full gate). Target: within each cell, the three trees
-differ visibly in win count, fail-kind mix, and setback-vs-death balance, inside PL-15/16/24.
+(then it is an authoring change through the full gate). Acceptance is measured, not eyeballed
+(tightened after PR review): before remixing a cell, pre-register in that cell's authoring plan the
+per-tree target table (win count, ending-kind histogram, setback:death:capture ratio) and a floor on
+the minimum pairwise outcome-mix distance between the cell's trees (L1 over the normalized
+ending-kind histogram, computed by SQ-15's `outcome_entropy` module; the floor is set against the
+current catalog's measured near-zero baseline and committed with the plan). Evidence is a committed
+per-cell report of actual vs target per-tree counts plus the pairwise distances. PL-15/16/24 remain
+validity rails, not the diversity proof.
 
 **Size M-L per cell. Depends: SQ-15 (judge), pairs with SQ-09(b).**
 
