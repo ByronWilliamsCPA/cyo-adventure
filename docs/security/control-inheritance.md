@@ -152,6 +152,26 @@ client address once a proxy is inserted.
    Pulls (mTLS)**, adopted 2026-08-02 because mTLS is already established practice in this
    environment; it is hostname-precise, does not go stale when Cloudflare adds ranges, and is not
    defeated by learning the origin IP.
+
+   The existing pattern transplants directly. `homelab-infra`
+   `services/traefik/dynamic/tls.yml:69-75` defines an `internal-mtls` TLSOption
+   (`clientAuthType: RequireAndVerifyClientCert` over `caFiles: /certs/internal-ca.crt`), applied
+   per-router rather than globally, which is exactly the granularity needed here. The VPS Traefik
+   already runs a `file:` provider (`services/pangolin/vps/config/traefik/traefik_config.yml:54-55`),
+   so a new TLSOption drops in without restructuring.
+
+   Two qualifications:
+
+   - **Different instance, different CA.** `internal-mtls` lives on the homelab Traefik, on the
+     `websecure-internal` entrypoint, authenticating device certificates issued by step-ca.
+     Origin pulls must be enforced on the **VPS** Traefik against **Cloudflare's** origin-pull CA.
+     Do not merge the two CA pools into one TLSOption: a shared pool would let any homelab device
+     certificate satisfy the CYO router, and any Cloudflare-issued origin-pull certificate satisfy
+     internal mTLS. Define a separate, dedicated TLSOption.
+   - **Use per-hostname origin pull certificates, not zone-level.** Zone-level Authenticated
+     Origin Pulls validate against a certificate Cloudflare shares across all customers, so it
+     proves only "arrived via Cloudflare," not "arrived via this zone." A customer-supplied
+     per-hostname certificate is what makes the control actually bind to this account.
 3. Widen or replace `--forwarded-allow-ips=172.16.0.0/12` (`Dockerfile:148`) so the backend
    recovers the guardian's address. Safe only after step 2, otherwise the header is
    attacker-supplied.
