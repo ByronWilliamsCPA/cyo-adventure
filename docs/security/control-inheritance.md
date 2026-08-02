@@ -190,6 +190,22 @@ client address once a proxy is inserted.
      (`services/cert-enroll/scripts/renew-cert.sh`) pushes certificates to devices; Cloudflare
      requires an API upload instead, so short step-ca defaults would cause a recurring outage.
      Automating the Cloudflare-side upload is a follow-up, not a prerequisite.
+
+   Evaluated and rejected for A9, 2026-08-02: **Cloudflare Client Certificates**
+   (`developers.cloudflare.com/ssl/client-certificates/`). That product secures the
+   client-to-edge leg, where a connecting client presents a certificate and Cloudflare verifies
+   it at the edge via mTLS rules (`cf.tls_client_auth.cert_verified`). A9 is a bypass of the edge
+   entirely, so a control enforced at the edge cannot see the traffic it would need to reject.
+   Adopting it would make A9 more urgent rather than less, because edge-enforced access control
+   fails open for anyone reaching the origin directly.
+
+   Its certificates should also not be repurposed as the origin-pull certificate. Cloudflare
+   validates them "against CAs set at the account level," which describes where the validation
+   list is configured, not that the issuing root is cryptographically unique per account. If
+   account scoping is enforced in Cloudflare's validation logic rather than in the chain, then
+   trusting that root at the origin would accept client certificates issued to any Cloudflare
+   customer, which is the same union problem as ZeroSSL. Unverified either way, and step-ca has
+   no such ambiguity.
 3. Widen or replace `--forwarded-allow-ips=172.16.0.0/12` (`Dockerfile:148`) so the backend
    recovers the guardian's address. Safe only after step 2, otherwise the header is
    attacker-supplied.
