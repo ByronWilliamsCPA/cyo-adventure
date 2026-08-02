@@ -501,12 +501,12 @@ against fresh evidence.
 
 | Field | Value |
 |-------|-------|
-| **CVE ID** | CVE-2026-63879 (no fix), CVE-2026-64530 and CVE-2026-64531 (both fixed in 6.12.100-1) |
+| **CVE ID** | CVE-2026-63879 (no fix on the trixie track), CVE-2026-64530 and CVE-2026-64531 (**both RESOLVED 2026-08-02**) |
 | **Package** | linux-libc-dev (Debian binary package from the `linux` kernel source package) |
-| **Affected Version** | 6.12.96-1+dhi0 (Debian 13 "trixie", DHI mirror build) |
-| **Fixed Version** | Mixed, and this is the first `linux-libc-dev` entry here that is not uniformly "no fix": Trivy reports 6.12.100-1 for CVE-2026-64530 and CVE-2026-64531, and an empty Fixed Version with status `affected` for CVE-2026-63879 |
-| **Severity** | High (all 3, per Trivy/Aqua feed; `Total: 3 (HIGH: 3, CRITICAL: 0)`) |
-| **CVSS Score** | Not yet assigned in the scan output for any of the three as of 2026-08-01 |
+| **Affected Version** | 6.12.96-1+dhi0 at discovery; base advanced to 6.12.100-1+dhi0 on 2026-08-02 via PR #547 (Debian 13 "trixie", DHI mirror build) |
+| **Fixed Version** | Mixed, and this is the first `linux-libc-dev` entry here that is not uniformly "no fix". CVE-2026-64530 and CVE-2026-64531 are fixed in 6.12.100-1 (Debian tracker: `trixie-security` = `fixed`, DSA-6405-1) and no longer appear in scan output. CVE-2026-63879 has no fix on this track: `trixie` (6.12.94-1) and `trixie-security` (6.12.100-1) both record `vulnerable`; the fix is sid-only (7.0.12-1) |
+| **Severity** | High (all 3, per Trivy/Aqua feed). At discovery `Total: 3 (HIGH: 3, CRITICAL: 0)`; as of 2026-08-02 `Total: 1 (HIGH: 1, CRITICAL: 0)` |
+| **CVSS Score** | Not yet assigned in the scan output for any of the three as of 2026-08-02 |
 | **Discovered** | 2026-08-01 |
 | **Reassessment Due** | 2026-09-30 |
 | **Blocking Release** | No |
@@ -552,22 +552,63 @@ repository and unaffected by anything shipped in the image. CVE-2026-63879
 targets AMD GPU hardware this deployment does not use at all. Exposure through
 the application surface is negligible.
 
+### Status update (2026-08-02): two of three resolved
+
+The base image advanced from 6.12.96-1+dhi0 to 6.12.100-1+dhi0 in
+[PR #547](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/547), a Renovate
+digest bump of `ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13`. That is exactly the
+action this entry's remediation plan called for, and it arrived on its own rather than
+by request, so the plan is recorded as satisfied rather than executed.
+
+**Measured effect**, comparing the Container Security run on `main` at `ea3970c8`
+against the run on PR #547 (workflow run 30733734393):
+
+| Scan                 | linux-libc-dev  | Trivy result                      |
+|----------------------|-----------------|-----------------------------------|
+| `main` @ `ea3970c8`  | 6.12.96-1+dhi0  | `Total: 3 (HIGH: 3, CRITICAL: 0)` |
+| PR #547 @ `c296e63c` | 6.12.100-1+dhi0 | `Total: 1 (HIGH: 1, CRITICAL: 0)` |
+
+CVE-2026-64530 and CVE-2026-64531 cleared outright and are recorded in
+[Resolved Entries](#resolved-entries). CVE-2026-63879 remains, reported with an empty
+Fixed Version and status `affected`, and is now carried in `.trivyignore` under its own
+`6.12.100-1+dhi0` block.
+
+**Independent Debian verification** (2026-08-02), which this entry previously flagged as
+the outstanding gap in its evidence base:
+
+| CVE            | `trixie`               | `trixie-security`                  | sid              |
+|----------------|------------------------|------------------------------------|------------------|
+| CVE-2026-63879 | vulnerable (6.12.94-1) | **vulnerable** (6.12.100-1)        | fixed (7.0.12-1) |
+| CVE-2026-64530 | vulnerable (6.12.94-1) | **fixed** (6.12.100-1, DSA-6405-1) | fixed (7.1.5-1)  |
+| CVE-2026-64531 | vulnerable (6.12.94-1) | **fixed** (6.12.100-1, DSA-6405-1) | fixed (7.1.5-1)  |
+
+This closes the caveat recorded under "Why Not Fixed Yet" below: 6.12.100-1 was in fact
+reachable on this release track, via `trixie-security` rather than `trixie`. It also
+establishes that CVE-2026-63879's fix is sid-only and therefore genuinely unreachable
+for this base image, which is the condition the `.trivyignore` policy requires before an
+entry may be accepted there.
+
 ### Remediation Plan
 
-- [ ] Confirm each CVE's status on the [Debian security tracker](https://security-tracker.debian.org/tracker/source-package/linux)
-  for the `trixie` and `trixie-security` tracks. Unlike the entries above, the
-  Fixed Version recorded here comes from Trivy's feed and has **not** yet been
-  independently verified against Debian; do that before treating 6.12.100-1 as
-  reachable on this release track.
-- [ ] Once `linux-libc-dev >= 6.12.100-1` reaches the trixie track, request a
+- [x] Confirm each CVE's status on the [Debian security tracker](https://security-tracker.debian.org/tracker/source-package/linux)
+  for the `trixie` and `trixie-security` tracks. **Done 2026-08-02**; results in the
+  status update above. The Trivy feed's Fixed Version was corroborated for
+  CVE-2026-64530 and CVE-2026-64531 and refined for CVE-2026-63879, whose fix exists
+  only in sid.
+- [x] Once `linux-libc-dev >= 6.12.100-1` reaches the trixie track, request a
   base-image digest refresh from the `ByronWilliamsCPA/container-images` mirror
-  pipeline.
-- [ ] Re-run the Container Security scan to confirm CVE-2026-64530 and
-  CVE-2026-64531 have cleared.
+  pipeline. **Satisfied 2026-08-02** by the Renovate digest bump in PR #547; no manual
+  request was needed.
+- [x] Re-run the Container Security scan to confirm CVE-2026-64530 and
+  CVE-2026-64531 have cleared. **Confirmed 2026-08-02**, workflow run 30733734393.
 - [ ] Close [issue #505](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/505)
-  if its seven CVEs remain absent from scan output.
-- [ ] Tracked in [issue #535](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/535)
-- [ ] Reassess by 2026-09-30
+  if its seven CVEs remain absent from scan output. The condition is now met (the
+  2026-08-02 run's only finding is CVE-2026-63879), but the issue is still open; closing
+  it is a follow-up.
+- [ ] Narrow [issue #535](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/535)
+  to CVE-2026-63879 only, now that the other two are resolved.
+- [ ] Reassess CVE-2026-63879 by 2026-09-30, checking whether the sid fix (7.0.12-1) has
+  been backported to `trixie-security`.
 
 ### Why Not Fixed Yet
 
@@ -612,6 +653,8 @@ closes the release until the entry is reassessed against fresh evidence.
 | PYSEC-2026-89    | markdown       | 2026-07-29    | Not affected; 3.10.2 carries the 3.8.1 fix. See below. |
 | CVE-2026-53399   | linux-libc-dev | 2026-07-30    | Fixed by base 6.12.96-1+dhi0. See entry above.         |
 | CVE-2026-64600   | linux-libc-dev | 2026-07-30    | Fixed by base 6.12.96-1+dhi0. See entry above.         |
+| CVE-2026-64530   | linux-libc-dev | 2026-08-02    | Fixed by base 6.12.100-1+dhi0 (DSA-6405-1). See above. |
+| CVE-2026-64531   | linux-libc-dev | 2026-08-02    | Fixed by base 6.12.100-1+dhi0 (DSA-6405-1). See above. |
 
 Aliases: PYSEC-2022-42969 is CVE-2022-42969 and GHSA-w596-4wvx-j9j6 (duplicate OSV record
 PYSEC-2022-43183); PYSEC-2026-89 is CVE-2025-69534 and GHSA-5wmx-573v-2qwq.

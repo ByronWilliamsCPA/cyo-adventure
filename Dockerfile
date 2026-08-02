@@ -78,7 +78,7 @@ RUN uv sync --frozen --no-dev --extra api
 # =============================================================================
 # DHI hardened Python image: ~95% CVE reduction vs python:3.14-slim, ships 150
 # CA certs, no shell. Mirror syncs weekly from dhi.io/python:3.14-debian13.
-FROM ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13@sha256:2599dec7d25bdd97f25ca8b59b0db964ba2f9c98fda1667ab991584e7494127c
+FROM ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13@sha256:f4a77e21fb25b71ccb183a25a53a1e87db2a3c11b422941b25708c2b5f3b1b13
 
 # Metadata labels (OCI standard)
 LABEL org.opencontainers.image.title="CYO Adventure"
