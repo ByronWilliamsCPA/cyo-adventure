@@ -566,10 +566,17 @@ async def require_principal(
     # request input) on the same session the route will use, so the Tier 1
     # family_scoped policies enforce per-family isolation post-cutover. Every
     # principal branch above (guardian, admin, child, device) carries a
-    # family_id, so this one choke point covers them all; the guardian/admin
-    # user row was read just above as cyo_api under the Tier 2 blanket "user"
-    # policy, before any context is set, so there is no chicken-and-egg. A
-    # no-op pre-cutover (owner bypasses RLS); load-bearing and fail-closed after.
+    # family_id, so this one choke point covers them all. Two of the three
+    # branches resolve without needing the context this sets: guardian/admin read
+    # the "user" row just above under the Tier 2 blanket policy, and child does
+    # no database read at all. The device branch is the exception: it reads a
+    # Tier 1 table, so _device_principal applies this same context itself from
+    # its verified claim first, and this call re-applies identical values. Do not
+    # "optimize" that earlier call away; without it the device lookup matches
+    # zero rows, which is what broke staging from the 2026-07-18 cutover until
+    # 2026-08-02. A no-op pre-cutover (owner bypasses RLS); load-bearing and
+    # fail-closed after, which is why staging caught this and the
+    # owner-connected tiers did not.
     # #VERIFY: tests/integration/test_rls_tier1_enforcement.py.
     await apply_family_rls_context(
         session, family_id=principal.family_id, is_admin=principal.is_admin
@@ -630,6 +637,11 @@ async def _device_principal(session: AsyncSession, token: str) -> Principal:
     endpoint (the child-session mint, the profiles listing, and any future
     one) inherits the check and no handler can forget it.
 
+    Because ``device_grant`` is an ADR-022 Tier 1 family_scoped table, that read
+    is the one authentication lookup that must establish its own RLS context
+    first, from the verified token's ``family_id`` claim. See the inline note
+    below.
+
     Args:
         session: The request database session, used for the revocation lookup.
         token: The raw bearer token, already routed here by its device
@@ -656,6 +668,40 @@ async def _device_principal(session: AsyncSession, token: str) -> Principal:
     # is bounded by the 90-day TTL (ADR-014, "Negative / risks").
     # #VERIFY: test_device_grants.py asserts a revoked grant yields 401 on the
     # child-session mint and the profiles listing, and an unknown jti yields 401.
+    #
+    # #CRITICAL: security: this read MUST go through auth_lookup_device_grant,
+    # never a plain select(DeviceGrant). device_grant is an ADR-022 Tier 1
+    # family_scoped table, and this is the one pre-principal read of such a
+    # table: apply_family_rls_context cannot have run yet, because the principal
+    # it derives app.family_id from is the thing being resolved. A direct select
+    # therefore runs with app.family_id unset, matches zero rows fail-closed,
+    # and every device request is rejected as unverifiable. The SECURITY DEFINER
+    # function (20260802000000) is the narrow, audited bypass: exact-match on
+    # the unguessable jti, returning revoked_at alone, EXECUTE granted only to
+    # cyo_api. Do not "simplify" this back to the ORM.
+    # #VERIFY: tests/integration/test_rls_tier1_enforcement.py runs this lookup
+    # as cyo_api with no RLS context and asserts the function finds the row
+    # while a direct device_grant select for the same row still returns nothing.
+    #
+    # #CRITICAL: security: the RLS context MUST be established here, before the
+    # lookup, not only at the end of require_principal. device_grant is an
+    # ADR-022 Tier 1 family_scoped table and this is the ONLY pre-principal read
+    # of one; its policy predicate
+    # (family_id::text = current_setting('app.family_id', true)) is unsatisfiable
+    # while the GUC is unset, so the query below would match zero rows and EVERY
+    # device request would be rejected as unverifiable. That is exactly what
+    # staging did from the 2026-07-18 Tier 1 cutover until 2026-08-02; the
+    # owner-connected tiers (local, e2e-real-*) never reproduced it because RLS
+    # does not apply to a table's owner.
+    # Scoping to the SIGNED family_id claim is not a bypass. The token's
+    # signature, audience, issuer and expiry are already verified above, and a
+    # narrower context can only HIDE rows, never reveal extra ones: it makes the
+    # database itself enforce that the grant row belongs to the family the token
+    # claims, a binding the jti-only lookup never checked.
+    # #VERIFY: tests/integration/test_rls_tier1_enforcement.py asserts, as
+    # cyo_api, that this lookup finds its row under claim-derived context and
+    # finds nothing under no context or another family's context.
+    await apply_family_rls_context(session, family_id=claims.family_id, is_admin=False)
     grant = await session.scalar(
         select(DeviceGrant).where(DeviceGrant.jti == claims.jti)
     )
