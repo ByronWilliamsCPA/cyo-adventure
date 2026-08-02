@@ -575,15 +575,48 @@ different question.
 
 ## Remaining prerequisites
 
-1. **Register the `SQ-*` namespace in `plan-manifest.toml`.** No such namespace exists on main, so
-   `scripts/check_work_linkage.py` cannot see any of these rows.
-2. **Reconcile numbering against the roughly 24 `SQ-*` items already drafted elsewhere.** The
-   `O-nn` identifiers are provisional to avoid claiming IDs that may already be taken.
+1. **Make this register a namespace `scripts/check_work_linkage.py` can see.** This is the item
+   that decides whether the rows below are audited or merely written down, and it is the only
+   mechanism in the repo that enforces the contract at the top of this file.
+
+   The obstacle is not a missing manifest entry. `plan-manifest.toml` contains `[phases]`,
+   `[rungs]`, and `[status_vocabulary]`, and those are the only sections the checker reads from it.
+   There is no namespace registry. All four existing namespaces (`UW-[A-M]NN`, the debt register's
+   `C/GS/U/T/P/SL` shapes, the capability register's `[KGAS]NN`, and `AL-NNN`) are hardcoded in the
+   checker as a path constant plus row and citation regexes.
+
+   Two routes. Hardcode a fifth namespace, matching precedent and repeating the work for the sixth;
+   or add a `[namespaces]` table to the manifest declaring prefix, register path, and linkage rule,
+   and make the checker data-driven. **The second is preferred**, on the manifest's own stated
+   rationale for existing: it was created so the phase vocabulary would be "read from the manifest
+   rather than hardcoding it", after the duplication between a Python frozenset and a roadmap scrape
+   proved unmaintainable. The four namespaces are in that same pre-manifest state today. The
+   `SQ-*` story-structure track is blocked behind the identical obstacle and clears with the same
+   change; note that `story-structure-improvement-plan.md` section 11 still attributes the block to
+   the manifest not existing on main, which stopped being true at `fc36b51a`.
+
+2. **Rename `O-nn` to `SEC-nnn` when the namespace lands.** The identifiers are provisional. `O-01`
+   reads as a zero and the letter carries no meaning. `SQ-*` was previously suspected of colliding
+   with these; it does not, being an unrelated story-structure track.
 3. **Confirm no ASVS 5.0.x patch has shipped since 5.0.0.**
 4. **Confirm AISVS C8 applicability**: whether `diversity/` uses embeddings or only structural and
    lexical similarity.
-5. **Counsel scoping decision** on UK OSA and DSA Art. 28.
-6. **Decide the row budget.** Seventy-eight items with sixty-six active is above the ceiling for
-   one maintainer. Trimming is the maintainer's call.
+5. **Counsel scoping decision on UK OSA only.** DSA Art. 28 is resolved above.
+6. ~~Decide the row budget.~~ **Decided 2026-08-02: 81 rows accepted, no trimming.** Recorded
+   because a budget silently exceeded is indistinguishable from one never considered.
 7. **Promote the spine.** `assurance-spine.md` is written to be lifted into `~/.claude/standards/`
    so other projects instantiate it rather than rediscovering it.
+
+## Initial-build commitments
+
+Approved 2026-08-02. These are the only rows promoted out of the general register into
+pre-launch build work, because each is cheap now and requires a re-consent or backfill campaign
+once real accounts exist.
+
+| Row | Commitment | Why it cannot wait |
+|---|---|---|
+| O-117 | Country of residence captured at signup, queryable per account | Answers the DSA Art. 2(1) and GDPR Art. 3(2) targeting tests and lets the UK and EU be excluded by design. For the UK specifically the gate is necessary but not sufficient: OSA s.4 also finds links through capability-plus-material-risk, so the gate holds only in combination with the O-118 structures |
+| O-119 | Guardian adulthood attestation with timestamp | Every age regime reachable at R2 attaches its duty to the adult account; today only kid profiles carry age data. Scope is deliberately **attestation, not verification**: DSA Art. 28(3) forecloses an obligation to collect additional personal data to detect minors, and the app-store age signals at O-098 supersede this at R2 |
+
+The country field is itself personal data and inherits the minimization, retention, and access
+duties in SP-12.
