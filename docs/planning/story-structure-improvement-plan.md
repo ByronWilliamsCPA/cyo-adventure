@@ -89,7 +89,8 @@ flowchart LR
 
 ### 1.2 Parallel lanes (suggested team split)
 
-Three engineering lanes plus an authoring lane run concurrently without stepping on each other's
+Five lanes (A through E in the table below: four engineering-leaning, plus Lane E for growth and
+content, which is authoring- and ops-heavy) run concurrently without stepping on each other's
 files; the owner reviews everything (section 7). Items within a lane are ordered; lanes are
 independent except where the critical path says otherwise.
 
@@ -128,7 +129,7 @@ idle machinery.
 
 | ID | Deliverable | Evidence / register | Effort | Acceptance |
 | --- | --- | --- | --- | --- |
-| SQ-01 | **Ship the inventory.** Run `generation/import_catalog.py` for the 23 authored books, drive them through the re-moderation sweep (#529/#537) and per-story `publishing/catalog_publish.py`. Owner gate G1 decides the publish list and order. | Analysis 2.6; UW-G14; catalog-first-inventory-gap.md | S (process) + review time | A kid profile's library lists catalog books in every offered band; `visibility='catalog'` rows exist; UW-G14 closed with Ref |
+| SQ-01 | **Ship the inventory.** Run `generation/import_catalog.py` for the 23 authored books, drive them through the re-moderation sweep (#529/#537) and per-story `publishing/catalog_publish.py`. Owner gate G1 decides the publish list and order. | Analysis 2.6; UW-G14; catalog-first-inventory-gap.md | S (process) + review time | A kid profile's library lists catalog books in every offered band that has approved content; `visibility='catalog'` rows exist; UW-G14 closed with Ref |
 | SQ-02 | **Fill-feasibility predicate in selection.** Estimate per-skeleton token demand (sum of `words=` targets plus JSON overhead, calibrated against the 26 committed fills); exclude infeasible candidates from automated-path selection with a logged reason; a cell whose feasible pool is empty 422s with a distinct reason code instead of burning the repair budget. | Analysis 2.6, 5; AL-046; UW-C07 | S-M | No automated job targets an infeasible skeleton (test); the doomed-request path is a fast 422; feasible-pool size is logged per request |
 | SQ-03 | **Act-scoped fill loop.** Chunk the fill by act/subtree with a stable shared context, per AL-046's proposal; each chunk re-states the differentiation directive and variation axis (which also makes SQ-05's repair threading uniform). | Analysis 2.6, 2.7; AL-046 | M-L | The largest production skeleton fills end to end on the automated path; per-chunk fidelity checks pass; one committed fill of a previously infeasible skeleton |
 | SQ-04 | **Skill-path parity.** `.claude/skills/cyo-author/` reads the persisted differentiation level, prior-title context, and variation axis; `generation/import_story.py` records them; the skill's compliance report shows which axis was applied. | Analysis 2.7; no register row (new) | S-M | A skill-authored fill's report names its axis; grep shows import_story consuming the metadata; parity test comparing worker and skill prompt contexts |
@@ -143,7 +144,7 @@ Phase 0 and can interleave.
 | ID | Deliverable | Evidence / register | Effort | Acceptance |
 | --- | --- | --- | --- | --- |
 | SQ-07 | **Selection rebalance.** (a) Cap the W2.2 theme-overlap attraction bonus (owner gate G2 picks the cap; default proposal 1.3x) so it cannot dominate a 3-tree cell cross-family; (b) add per-profile history scoping with family fallback; (c) count distinct storybooks, not version rows, in the recency window; (d) de-weight candidates by `structural_distance` and valence-histogram proximity to the reader's recent trees. The `1/(1+x)` novelty floor is preserved throughout (decision C-4). | Analysis 4 items 2-3, 5; plan v2 deferred row (per-profile) | M | Monte Carlo over the shipped selector: cross-family first-request concentration on a themed tree drops from ~1/2 toward ~1/3; per-profile repeat rate measured and reported; all existing selection tests pass |
-| SQ-08 | **Flywheel trigger respec.** Count distinct *families*, not request ids; treat an empty/unknown theme signature as conservative (counts toward saturation) rather than dissimilar; verify LEAF/CATALOG are reachable for out-of-vocabulary themes in a multi-child window simulation. | Analysis 5 (dark sensor); flywheel/trigger.py | S-M | Simulation: an unusual-theme family reaches CATALOG within N similar requests; a single prolific family alone cannot trigger (test); trigger docstring updated |
+| SQ-08 | **Flywheel trigger respec.** Count distinct *families*, not request ids. Contract: the `CELL_SATURATED` payload stays closed-enum-only (it carries no family field today); family scope reaches the trigger via a request-to-family join at read time on the event's `entity_id` (the request id), per the implementation brief. Also: treat an empty/unknown theme signature as conservative (counts toward saturation) rather than dissimilar; verify LEAF/CATALOG are reachable for out-of-vocabulary themes in a multi-child window simulation. | Analysis 5 (dark sensor); flywheel/trigger.py | S-M | End-to-end test from saturation emission through distinct-family counting (two requests from one family collapse to one); an unusual-theme family reaches CATALOG within N similar requests (simulation); a single prolific family alone cannot trigger (test); trigger docstring updated |
 | SQ-09 | **Clone labeling and resolution.** (a) Add within-run WL-hash isomorphism to `diversity/incell.py` (proof labeling; never compare against stored hashes, networkx v3.5 changed them); (b) execute A9 item 2: restructure `the-sunken-temple` past `TAU_CELL` (the 35-ending remix design in the register), emptying the allowlist. | Analysis 2.4, 4 item 5; UW-G03 | S (a) + L (b) | Audit output labels the pair ISOMORPHIC until fixed; after (b), allowlist empty and the audit passes clean; SR-9 still passes on the brass-lantern chain |
 | SQ-10 | **Metrics honesty.** Add a per-theme-cohort concentration report (which (tree, theme) pairs dominate across families); annotate ECS and net-new-trees dashboards with their known failure modes; flywheel headline metric gains a perceived-distinctness condition once SQ-15 lands. | Analysis 5 (metrics reward the failure mode) | S-M | The WS-0 report shows cohort concentration; dashboard docstrings state what each metric cannot see |
 
@@ -165,7 +166,7 @@ its schedule.
 
 | ID | Deliverable | Evidence / register | Effort | Acceptance |
 | --- | --- | --- | --- | --- |
-| SQ-15 | **Per-path experience metrics** in `structure_features`: decision cadence over rendered stops (post-ADR-026 the stop, not the node, is the experience unit), corridor ratio, outcome-mix entropy over sampled walks, median-walk depth, agency density (share of decisions whose options reach different endings). Wire into SQ-07's de-weighting and the flywheel ranking key. | Analysis 6.3; plan v2 walker (validated, 0 divergences / 1,800 walks) | M | Metrics computed for all 61 skeletons and committed as a baseline; selection and ranking consume at least two of them; unit tests pin the walker lockstep property |
+| SQ-15 | **Per-path experience metrics** in `structure_features`: decision cadence over rendered stops (post-ADR-026 the stop, not the node, is the experience unit), corridor ratio, outcome-mix entropy over sampled walks, median-walk depth, agency density (share of decision stops whose options reach different ending valences; single definition, shared with the implementation brief and the metric tests). Wire into SQ-07's de-weighting and the flywheel ranking key. | Analysis 6.3; plan v2 walker (validated, 0 divergences / 1,800 walks) | M | Metrics computed for all 61 skeletons and committed as a baseline; selection and ranking consume at least two of them; unit tests pin the walker lockstep property |
 | SQ-16 | **Stop-based ADR-011 section 10 compliance measurement.** Implement the real stop-level rule as a *report* first (UW-C23: nothing computes stop adjacency in the validator today), measure the catalog, and only then decide gating. Never re-use the node-level D1 figure (AL-076's unit lesson). | UW-C23, UW-C24; analysis 3 | M | Compliance table per skeleton committed; gating decision recorded with the measurement attached |
 | SQ-17 | **D11 amendment: replacement floor.** A grandfathered skeleton leaves selection for a cell only when at least 2 grammar-compliant trees exist there. One-paragraph amendment to the design-review decision plus a selection-filter test. | Analysis 5 (pool-of-1 trough) | S | Amendment recorded; simulation shows no cell's feasible pool drops below 2 during transition |
 | SQ-18 | **A13b ending-screen affordance + engagement rollup.** Deliver "Try a different way" (ADR-024-authorized, 3-hop walk to the last real pick, fallback one step); add a skeleton-level rollup to engagement telemetry so per-stop signals aggregate across fills of a tree. | Plan v2 A13b; analysis 3, 5 (telemetry blind to the armature) | M | A13b behind the existing reader flag with its designed availability rule; rollup query joins version.skeleton_slug; both tested |
@@ -226,16 +227,20 @@ shifts from authoring hours to **owner review bandwidth**, and the rules below p
 Falsifiable, split by what can be measured now vs what needs serving history. No numeric targets are
 asserted where no calibration data exists (WS-0 method rule); first measurements set the baseline.
 
-**Pre-launch (measurable on this branch or immediately after SQ-01):**
+**Pre-launch, grouped by the deliverable that makes each measurable** (SQ-01 is not the exit
+criterion for the later-phase measures; each group becomes available when its named deliverable
+lands):
 
-- Feasible-pool coverage: share of offered cells whose automated-path feasible pool is >= 2 (SQ-02;
-  baseline today: unknown, measured first).
-- Paired-fill distance: masked unigram/bigram distance between same-tree fills with different beat
-  variants vs same variant (SQ-12's pre-registered margin).
-- Axis behavior: axis-repeat rate on consecutive same-family requests; re-run axis variation (SQ-05).
-- Selection concentration: Monte Carlo cross-family first-request probability of the themed tree in a
-  3-tree cell (SQ-07; baseline ~1/2, direction: toward 1/3).
-- Catalog reachability: count of published catalog books per band (SQ-01; baseline 0).
+- Available immediately or with SQ-01: catalog reachability, count of published catalog books per
+  band (baseline 0).
+- Available with SQ-02: feasible-pool coverage, share of offered cells whose automated-path feasible
+  pool is >= 2 (baseline today unknown, measured first).
+- Available with SQ-05: axis behavior, axis-repeat rate on consecutive same-family requests and
+  re-run axis variation.
+- Available with SQ-07: selection concentration, Monte Carlo cross-family first-request probability
+  of the themed tree in a 3-tree cell (baseline ~1/2, direction: toward 1/3).
+- Available with SQ-11 + SQ-12: paired-fill distance, masked unigram/bigram distance between
+  same-tree fills with different beat variants vs same variant (the pilot's pre-registered margin).
 
 **Post-launch (need real families):**
 

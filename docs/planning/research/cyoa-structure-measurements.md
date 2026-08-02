@@ -35,7 +35,8 @@ Sam Kabo Ashwell, "Standard Patterns in Choice-Based Games," *These Heterogenous
 Framed as "a non-exhaustive look" derived from his 2011-2012 per-book "CYOA Structures" analyses; the
 patterns "aren't discrete categories."
 
-Ashwell defines **eight named patterns plus three named variants**, not six:
+Ashwell defines **eight named patterns plus three variant groups** (deadly/friendly gauntlets,
+invisible bottlenecks, spoke-and-hub), not six patterns:
 
 1. **Time Cave**: heavily branching, choices of roughly equal significance, little or no re-merging,
    no state, "many, many endings"; short playthroughs, broad rather than long, strong replay.
@@ -187,7 +188,7 @@ playthrough* (~2-3k); ADR-011's current phrasing conflates them.
 
 | Constant / claim | Verdict |
 | --- | --- |
-| "Ashwell vocabulary" of six topologies | Supported with caveat: Ashwell defines 8 patterns + 3 variants; six is a deliberate subset (quest merged, floating_modules deferred, spoke-and-hub implicit). Record the mapping (section 1). |
+| "Ashwell vocabulary" of six topologies | Supported with caveat: Ashwell defines 8 patterns + 3 variant groups; six is a deliberate subset (quest merged, floating_modules deferred, spoke-and-hub implicit). Record the mapping (section 1). |
 | ~90-120 page-nodes | Supported (JHM Table 4). |
 | Median ~20 endings (11-42) | Supported, exact (JHM Table 4). |
 | Max indegree 1.5, essentially a tree | Supported (mean of per-book maxima; majority of books tree-structured). |

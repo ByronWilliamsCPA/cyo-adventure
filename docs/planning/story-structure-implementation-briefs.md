@@ -48,7 +48,7 @@ critical path, owner gates, and capacity rules. This document is the per-deliver
 
 ```bash
 uv sync --all-extras && uv run pre-commit install     # backend
-cd frontend && npm install                            # frontend (only some briefs touch it)
+(cd frontend && npm install)                          # frontend (only some briefs touch it)
 uv run pytest -x -q                                   # should pass before you start
 uv run ruff check . && uv run basedpyright src/       # both must stay clean
 ```
@@ -142,8 +142,13 @@ hand (`.claude/skills/cyo-author/SKILL.md` step 4) and is the existence proof.
 **Change.**
 1. Chunker: partition the node set into acts by graph structure (dominator-tree segments or the
    act-hub boundaries the beats already imply; the walker in `diversity/` has the traversal
-   utilities). Each chunk must be closed under "nodes whose prose references the same scene"; the
-   simple version is BFS layers capped by estimated tokens per chunk (SQ-02's estimator).
+   utilities). Scene closure is an enforced invariant, not a preference: nodes sharing a scene (a
+   flowed single-choice run plus its terminal decision, per ADR-026 stop composition) must land in
+   one chunk, so the chunk boundary search operates over scene units, not raw nodes. A single scene
+   whose estimated tokens exceed the per-chunk cap is NOT silently split: the chunker raises a
+   distinct, actionable error naming the scene's node ids (an authoring problem, not a runtime one;
+   no production skeleton currently contains such a scene, and the error keeps it that way). Tests
+   must cover exactly this case with a synthetic oversized scene.
 2. Per-chunk prompt: shared stable system block (unchanged, cache-friendly) + prior-chunk summaries
    (titles and one-line outcomes only, not full prose) + this chunk's nodes. The differentiation
    directive and variation axis are restated per chunk (this is what makes SQ-05(b) uniform).
@@ -175,8 +180,12 @@ current inventory) bypass every lever.
    (`generation/prompts.py::build_differentiation_directive`) and the axis instruction
    (`generation/variation.py`) into the authoring context before the fill begins, with the same
    trusted-block placement rule the worker uses (outside the `UNTRUSTED_USER_INPUT` fence).
-3. Parity test: a fixture asserting the set of context blocks the worker builds and the set the
-   skill instructs are the same (grep-level is acceptable; the point is drift detection).
+3. Parity test, semantic rather than textual: extract the worker's context assembly into (or wrap
+   it with) a shared helper both paths call, then assert structurally in a fixture that (a) the
+   differentiation directive and axis VALUES match between the worker-built and skill-instructed
+   contexts, (b) both trusted blocks sit outside the `UNTRUSTED_USER_INPUT` fence, and (c) the
+   required block ordering is preserved. A grep-level check cannot prove any of these three
+   properties and is not sufficient; this is a safety-fence test, not a drift detector.
 
 **Tests.** As above; plus the compliance-report template gains an "axis applied" field.
 
@@ -264,9 +273,15 @@ story in the window and one has two; an empty/unknown theme signature scores sim
 out-of-vocabulary themes never escalate (analysis section 5, dark sensor).
 
 **Change.**
-1. `trigger.py`: count distinct *families* (the saturation event payload carries family scope;
-   verify the event row fields in `events/models.py` and add `family_id` hashing if absent, enum-only
-   payload rule preserved) with `DEFAULT_MIN_DISTINCT_FAMILIES = 2`.
+1. `trigger.py`: count distinct *families* with `DEFAULT_MIN_DISTINCT_FAMILIES = 2`. Contract
+   decision, stated so the enum-only payload rule survives: the `CELL_SATURATED` payload today
+   carries only `age_band`/`length`/`style`/`level`, and the trigger counts distinct request
+   anchors from `entity_id`. Family scope reaches the trigger via a **request-to-family join at
+   read time** (the event's `entity_id` is the request id; join to the request row's `family_id`
+   when scanning), NOT by adding `family_id` to the event payload, which would put an identifier in
+   a payload that is deliberately closed-enum-only. The trigger's reader half re-validates as today
+   and drops rows whose request no longer resolves. An end-to-end test covers emission through
+   distinct-family counting, including two requests from one family collapsing to one.
 2. `query.py`: unknown-signature conservatism. An empty request signature currently returns
    containment 0.0 everywhere (correct for the WS-0 "never registers as similar" intent on the
    *guard* side, wrong on the *saturation* side). Split the read: saturation accounting treats an
@@ -331,9 +346,15 @@ tokens, gate not blocked); the fidelity review targets the beat text.
 1. **Storage**: variants live beside the primary beat. Proposal: extend the directive grammar to
    `beats='...' alt1='...' alt2='...'` OR a sidecar `<slug>.variants.json` keyed by node id. Prefer
    the sidecar: the directive regex, `structure_fingerprint`'s strip logic, binding's
-   reconstruction, and every existing parser stay byte-compatible, and `is_sidecar` already excludes
-   sidecars from catalog scans. The fingerprint must NOT change when variants are added (variants
-   are leaf content; assert this in tests).
+   reconstruction, and every existing parser stay byte-compatible. Wiring the sidecar in is real
+   work the ADR must spec, not a free ride: `SIDECAR_SUFFIXES` in `generation/skeleton.py` lists
+   only `.contract.json` and `.lineage.json`, so `.variants.json` must be added to `is_sidecar()`
+   or catalog scans will load it as a skeleton; `import_catalog`/`import_story` and promotion copy
+   only the filled blob today, so the issued variant set (or its selection key) must be persisted
+   with the published version for reproducibility; and `render_bound_skeleton` must substitute
+   slots into the issued variant during reconstruction. A round-trip test proves the selected
+   variant's text appears in the filled output while the fingerprint is unchanged (variants are
+   leaf content; the fingerprint must NOT change when variants are added).
 2. **Outcome contract**: a variant must preserve the node's successor set, choice semantics, ending
    kind/valence, and any effect/condition semantics. The contract is checked structurally for free
    (variants cannot touch graph fields, only the beat string) plus a human review rule for semantic
@@ -360,11 +381,18 @@ A20-complete skeletons with passing contracts; the D4 pilot run record
 evidence.
 
 **Change.** Author 2-3 variants per node for both skeletons under SQ-11's rules (two authoring
-configurations). Pre-register the experiment in the run record BEFORE generating: paired fills on the
-same skeleton and same theme, (i) same variant set, (ii) different variant sets; success margin
-proposed as: median masked `d_uni` for (ii) exceeds (i) by >= 0.10 with no RL-13 band regression, on
->= 6 fill pairs per skeleton. Record hours spent per node (feeds the capacity model). Commit the
-report; the margin met or the program-stop decision recorded either way.
+configurations for the VARIANT AUTHORING; the generation arms below hold everything else fixed).
+Pre-register the experiment in the run record BEFORE generating, including the controls that isolate
+the variant effect: both arms use the identical provider, model, prompt template, exemplar
+configuration, and where the provider supports it, generation seed; the analysis sample (number of
+pairs, pairing rule) is fixed in advance. Arms: (i) paired fills on the same skeleton and theme with
+the SAME variant set, (ii) with DIFFERENT variant sets; arm (i) is the provider-noise baseline, so
+the measured effect is (ii) minus (i), not (ii) alone. Pre-registered decision rule: median masked
+`d_uni` for (ii) exceeds (i) by >= 0.10 on >= 6 fill pairs per skeleton, evaluated as a paired
+comparison per pair (report the per-pair deltas, not only the medians); RL-13 non-regression means
+no fill in either arm moves outside its band's reading-level envelope, checked with the existing
+RL-13 gate before any distance analysis. Record hours spent per node (feeds the capacity model).
+Commit the report; the margin met or the program-stop decision recorded either way.
 
 **Size M. Depends: SQ-11. Gate: none (G3 already accepted the ADR); the pilot IS the gate for
 SQ-13/SQ-14.**

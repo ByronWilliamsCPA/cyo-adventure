@@ -101,7 +101,8 @@ reconciliation), but two problems undermine the translation:
   branch commits a rebuilt, citable research base under [research/](research/README.md). The rebuild traced
   "JHM 2019" to a real, open-access paper (Adams, Beckelhymer and Marr, *Journal of Humanistic
   Mathematics* 9(2), 2019, DOI 10.5642/jhummath.201902.05) and verified all four quoted constants
-  against it; three hold exactly, and "~5 decisions/playthrough" is derived rather than stated by the
+  against it: the endings median holds exactly, the page-node range and max-indegree figure are
+  supported as fair glosses, and "~5 decisions/playthrough" is derived rather than stated by the
   paper. Two other constants (words/node ~100-150, total words ~8-15k) remain unverifiable from any
   indexed source and stay designer priors.
 - **What survived translation is the countable part.** Node budgets, ending fractions, words per node,
@@ -408,6 +409,9 @@ interactions:
 > acceptance criteria, capacity model, and owner gates, in
 > [story-structure-improvement-plan.md](story-structure-improvement-plan.md).
 
+<!-- markdownlint-disable MD029 -- the item numbers deliberately continue 1..17 across the
+     subsection boundaries below, because later text cross-references specific plan items -->
+
 Re-sequenced after review. The ordering principle: first make the *deployed* system match the analyzed
 one (6.0), then make the built machinery bite where it can (6.1), then lift the ceiling (6.2), then
 measure what matters (6.3), then grow (6.4). Nothing here relaxes the safety gate; the frozen safety
@@ -501,6 +505,8 @@ object is the ADR-011 constraint grammar, not the graphs.
     2019, DOI 10.5642/jhummath.201902.05), mark the decisions-per-playthrough constant as derived,
     label the literature-silent constants (words/node, cadence, endings floors) as designer priors
     calibrated by telemetry, and record the Ashwell eight-pattern-to-six-topology mapping explicitly.
+
+<!-- markdownlint-enable MD029 -->
 
 ## 7. What not to do
 

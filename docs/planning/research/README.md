@@ -27,9 +27,11 @@ branch `claude/story-structure-diversity-ba8swy`, as part of the story-structure
 Key outcome of the rebuild: the "JHM 2019" citation is real and verified. Full citation:
 Adams, Beckelhymer and Marr, "Choose Your Own Adventure: An Analysis of Interactive Gamebooks Using
 Graph Theory," *Journal of Humanistic Mathematics* 9(2), 2019, DOI 10.5642/jhummath.201902.05
-(open access). Three of the four ADR-011 constants quoted from it hold exactly; the fourth
-(~5 decisions/playthrough) is derived, not stated. Two ADR-011 constants (words/node, total words)
-remain unverifiable from any indexed source and are labeled designer priors.
+(open access). Per-constant verdicts against the paper's Table 4: the endings median (20, range
+11-42) holds exactly; the ~90-120 page-node range and the max-indegree 1.5 are supported as fair
+glosses of the paper's distributions; ~5 decisions/playthrough is derived from the paper's figures,
+not stated by it. Two further ADR-011 constants (words/node, total words) remain unverifiable from
+any indexed source and are labeled designer priors.
 
 ## Notes in this directory
 
