@@ -172,6 +172,24 @@ client address once a proxy is inserted.
      Origin Pulls validate against a certificate Cloudflare shares across all customers, so it
      proves only "arrived via Cloudflare," not "arrived via this zone." A customer-supplied
      per-hostname certificate is what makes the control actually bind to this account.
+
+   Issuing CA decision, 2026-08-02: **step-ca**. The origin-pull certificate is a client
+   certificate in a private trust relationship between Cloudflare and the origin, never validated
+   by a browser, so public trust adds nothing. `clientAuthType: RequireAndVerifyClientCert`
+   verifies only that the chain reaches an anchor in `caFiles`, and Traefik has no built-in
+   subject or SAN filter for client certificates, so the strength of the control equals the
+   issuance surface of the trusted CA.
+
+   - ZeroSSL is rejected: trusting a public CA root means every certificate that CA has ever
+     issued authenticates to the origin.
+   - Cloudflare's own CA is the rejected zone-level option above.
+   - step-ca must be issued under a **separate root or dedicated intermediate**, not the one at
+     `services/traefik/dynamic/tls.yml:74`. Sharing an anchor would let every homelab device
+     certificate satisfy the CYO edge router.
+   - Lifetime: issue long-lived and diarise rotation. Existing renewal tooling
+     (`services/cert-enroll/scripts/renew-cert.sh`) pushes certificates to devices; Cloudflare
+     requires an API upload instead, so short step-ca defaults would cause a recurring outage.
+     Automating the Cloudflare-side upload is a follow-up, not a prerequisite.
 3. Widen or replace `--forwarded-allow-ips=172.16.0.0/12` (`Dockerfile:148`) so the backend
    recovers the guardian's address. Safe only after step 2, otherwise the header is
    attacker-supplied.
