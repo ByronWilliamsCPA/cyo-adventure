@@ -265,8 +265,20 @@ substantially the same work under different headings. Do not triple-book.
 ## Cluster D: untracked GitHub issues
 
 roadmap.md lines 197-199 assert that open issues "remain accurately tracked" in the debt register.
-That claim is false: the register cites 9 issue numbers, 6 still open, against 33 open issues. The
-19 below appear in no planning document by number or description.
+That claim is false: the debt register cites 9 issue numbers, 6 still open, against 39 open issues
+as of 2026-08-02. The 30 issues below appear in no other planning document by number or by
+description, so this cluster is their only phase home. `scripts/check_work_linkage.py
+--check-issue-orphans` enforces the other half of the rule: every open issue must be either cited
+under `docs/planning/` or carry the `unplanned` label. This table and that label are jointly the
+closed set, which is why an issue that is genuinely not project work (a bot-maintained dashboard)
+gets the label rather than a fabricated row here.
+
+This flag needs network access to the GitHub API, so it is not universally enforced: the CI
+workflow (`.github/workflows/planning-linkage.yml`) runs `check_work_linkage.py` with both
+`--check-issues` and `--check-issue-orphans`, but the local pre-commit hook
+(`.pre-commit-config.yaml`) invokes the script with no flags at all, so it stays offline and never
+resolves an issue orphan. A green pre-commit run therefore proves nothing about issue-orphan
+compliance; only the CI workflow gate does.
 
 | ID | Issues | Theme | Phase | Status |
 |----|--------|-------|-------|--------|
@@ -286,6 +298,11 @@ That claim is false: the register cites 9 issue numbers, 6 still open, against 3
 | UW-D14 | #187, #172 | Promote api-tests to a required gate; Codecov Bundle Analysis blocked on Vite 8. Named in the capability register only. | CI hygiene | unscheduled |
 | UW-D15 | #453 | Family-scoped `ADMIN_ACTOR_ROLE` hardcodes audit dual-role owners as cross-family admins | 5 | unscheduled |
 | UW-D16 | #74 | Guardian console "Still processing" is inert for admins. Canonical with debt `U2`. | 4b | unscheduled |
+| UW-D17 | #71 | App-wide rate-limit **policy** for polling endpoints. The mechanism already exists: `middleware/security.py::RateLimitMiddleware` applies one Redis-backed per-client-IP limit across every route. Check whether polling routes (reading state, generation status, notifications) need their own tier rather than sharing the global bucket, and close the issue if the single tier is the intended policy. | 5 | verify |
+| UW-D18 | #535 | 3 linux-libc-dev kernel-header CVEs in the production base image, 2 of them fixable by a base-image refresh. Also needs a `docs/known-vulnerabilities.md` entry per the unfixed-CVE rule; no entry may age past 60 days without reassessment. | 5 | unscheduled |
+| UW-D19 | #505 | 7 unfixed linux-libc-dev kernel-header CVEs with no Debian trixie fix published. Blocked on an upstream trixie kernel-header release; nothing in this repo can close it. Re-triage quarterly, because the OpenSSF release gate blocks a release on any vulnerability older than 60 days regardless of reassessment status. | 5 | blocked |
+| UW-D20 | #542 | Stage-1 reviewer passes prompt-injection corpus items E2/E3 at **every** batch size, so the injection gap is not a batch-tuning artifact and the PR #541 batch-size default cannot close it. From the moderation review redesign track. | 5 | unscheduled |
+| UW-D21 | #552 | `renovate.json` package rules that never fire. Another silent-gate failure: a rule matching nothing is indistinguishable from a rule with nothing to match, so the config looks configured while the dependency class it names goes ungoverned. | CI hygiene | unscheduled |
 
 ## Cluster E: security and safety hardening
 
@@ -476,7 +493,7 @@ complete; each is filed as a GitHub issue.
 |----|------|-------|--------|
 | UW-L01 | `machine.ts:108` wires `RESTART` to `start(story)`, the new-reader entry point, so a restart on a continuation read reseeds `var_state` from the book's declared initials and returns to `story.start_node`, discarding both carried series state and the continuation entry node. Root cause: the machine context keeps only `{story, reading, error}`, dropping the `entryNode`/`varState` pair that `ReaderPage.tsx:246` passed to `startContinuation`, so `reset` cannot reproduce a continuation even in principle. Canonical across ADR-024's deferred defect, debt `SL10`, diversity `B4`, and s5-handoff `B4`. | [#460](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/460) | unscheduled |
 | UW-L02 | `api/deps.py:208-228` commits in the teardown half of a yield-dependency, which FastAPI runs after the response is sent. Documented at `docs/api/README.md:88-95` as follow-up work; mitigated only by an 1100 ms newman delay that also serves as rate-limit spacing, so it cannot be tuned for the race alone. | [#461](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/461) | unscheduled |
-| UW-L03 | `Settings.rate_limit_redis_cooldown_seconds` (`core/config.py:342`, carries a `#CRITICAL: timing` tag and has unit-test coverage) is never threaded into `RateLimitMiddleware`: `middleware/security.py:916-937`'s `add_security_middleware` does not pass it, so the middleware falls back to a hardcoded `5.0`. Setting `CYO_ADVENTURE_RATE_LIMIT_REDIS_COOLDOWN_SECONDS` in any deployed environment therefore has zero effect, and the tests pass because they exercise the setting rather than the wiring. The sibling `rate_limit_redis_timeout_seconds` IS correctly wired (`api/health.py:215-216`), which is why the pattern looks right at a glance. The `#VERIFY` test (`tests/unit/test_security.py:655`) constructs `RateLimitMiddleware` directly with the parameter, so it proves the circuit breaker honours it and says nothing about whether the app supplies it. Found by the 2026-07-31 vulture calibration. | [#516](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/516) | unscheduled |
+| UW-L03 | `Settings.rate_limit_redis_cooldown_seconds` (`core/config.py:342`, carries a `#CRITICAL: timing` tag and has unit-test coverage) was never threaded into `RateLimitMiddleware`, so the middleware fell back to a hardcoded `5.0` and `CYO_ADVENTURE_RATE_LIMIT_REDIS_COOLDOWN_SECONDS` had zero effect in any deployed environment. Found by the 2026-07-31 vulture calibration. Fixed 2026-07-31 in commit `bb42b308` (PR #520, "wire the rate-limit Redis knobs and close the UW-F22 dead-symbol findings"): `middleware/security.py:933` now passes `_settings.rate_limit_redis_cooldown_seconds` into the middleware config, alongside the sibling `rate_limit_redis_timeout_seconds` wiring that was already correct. | [#516](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/516) | done |
 
 ## Cluster M: external and owner-gated
 
