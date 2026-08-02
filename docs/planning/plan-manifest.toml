@@ -69,7 +69,7 @@ result = "no status pair changed; nine of fourteen phases had incorrect gap list
 # code moves and a citation that still resolves can silently point at the wrong symbol.
 # #VERIFY: scripts/check_work_linkage.py checks structure, not locators. Before trusting a
 # locator after main has moved, re-resolve it by SYMBOL (grep the marker text), not by line.
-locator_basis = "resolved against main at v0.59.0 on 2026-08-02; all 31 path:line refs in range"
+locator_basis = "resolved against main at v0.59.0 on 2026-08-02; all 36 path:line refs in range"
 
 # ---------------------------------------------------------------------------------------
 # Status vocabulary
@@ -243,14 +243,22 @@ shipped = "yes"
 usable = "partial"
 summary = "Notification feed, guardian engagement visibility, kid-facing generation status, budget consent. Push channel closed 2026-07-29 via authenticated SSE."
 validated = "2026-08-01"
-# The SSE endpoint (api/notifications.py:349) resolves the principal via require_principal and
-# applies the guardian role check before streaming any byte, so the push channel is genuinely
+# The SSE endpoint (api/notifications.py:351-419) resolves the principal via require_principal
+# and applies the guardian role check before streaming any byte, so the push channel is genuinely
 # authenticated. Budget consent is server-enforced, not a UI checkbox:
-# story_requests/service.py:250 enforce_family_quota returns a 409.
+# story_requests/service.py:251 enforce_family_quota returns a 409.
 gaps = [
   "No server-scheduled digest job, which is why capability S9 stays partial. Narrower than it reads: pg_cron is already deployed and running six scheduled jobs across three migrations (all retention and purge), so the scheduling substrate exists and only the digest job itself was never written.",
-  "The kid-facing \"it's on your shelf\" indicator is a client-side title-substring guess, not a server-reported status. There is no backend field linking a story request to the storybook it produced; a request's status stays 'approved' forever. Self-documented at frontend/src/library/RequestStory.tsx:26-42 and deliberately biased to under-report rather than falsely claim a still-generating story is finished.",
 ]
+# CLOSED since this phase's 2026-08-01 validation, retained here so the closure is auditable:
+#   - "Kid-facing 'it's on your shelf' indicator is a client-side title-substring guess" is
+#     CLOSED. resulting_storybook_id (db/models.py:1601) now links a request to the storybook
+#     it produced, added and backfilled by supabase/migrations/20260801000000_* and
+#     20260801060000_*, projected by api/story_requests.py:329-331, and landed in commit
+#     36b32bca (PR #532), an ancestor of this branch. frontend/src/library/RequestStory.tsx:26-42
+#     documents isPublishedToShelf(), which now requires the backend field AND profile-library
+#     membership and explicitly says it "replaces the retired isLikelyPublished substring-match
+#     guess".
 
 [phases."4d"]
 name = "Connections"

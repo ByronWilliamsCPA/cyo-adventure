@@ -273,6 +273,13 @@ under `docs/planning/` or carry the `unplanned` label. This table and that label
 closed set, which is why an issue that is genuinely not project work (a bot-maintained dashboard)
 gets the label rather than a fabricated row here.
 
+This flag needs network access to the GitHub API, so it is not universally enforced: the CI
+workflow (`.github/workflows/planning-linkage.yml`) runs `check_work_linkage.py` with both
+`--check-issues` and `--check-issue-orphans`, but the local pre-commit hook
+(`.pre-commit-config.yaml`) invokes the script with no flags at all, so it stays offline and never
+resolves an issue orphan. A green pre-commit run therefore proves nothing about issue-orphan
+compliance; only the CI workflow gate does.
+
 | ID | Issues | Theme | Phase | Status |
 |----|--------|-------|-------|--------|
 | UW-D01 | #249, #250, #251, #253, #254 | Device-auth and principal hardening (existence oracle, type invariants, token audiences, double-revoke, shared secret helper) | 5 | unscheduled |
@@ -486,7 +493,7 @@ complete; each is filed as a GitHub issue.
 |----|------|-------|--------|
 | UW-L01 | `machine.ts:108` wires `RESTART` to `start(story)`, the new-reader entry point, so a restart on a continuation read reseeds `var_state` from the book's declared initials and returns to `story.start_node`, discarding both carried series state and the continuation entry node. Root cause: the machine context keeps only `{story, reading, error}`, dropping the `entryNode`/`varState` pair that `ReaderPage.tsx:246` passed to `startContinuation`, so `reset` cannot reproduce a continuation even in principle. Canonical across ADR-024's deferred defect, debt `SL10`, diversity `B4`, and s5-handoff `B4`. | [#460](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/460) | unscheduled |
 | UW-L02 | `api/deps.py:208-228` commits in the teardown half of a yield-dependency, which FastAPI runs after the response is sent. Documented at `docs/api/README.md:88-95` as follow-up work; mitigated only by an 1100 ms newman delay that also serves as rate-limit spacing, so it cannot be tuned for the race alone. | [#461](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/461) | unscheduled |
-| UW-L03 | `Settings.rate_limit_redis_cooldown_seconds` (`core/config.py:342`, carries a `#CRITICAL: timing` tag and has unit-test coverage) is never threaded into `RateLimitMiddleware`: `middleware/security.py:916-937`'s `add_security_middleware` does not pass it, so the middleware falls back to a hardcoded `5.0`. Setting `CYO_ADVENTURE_RATE_LIMIT_REDIS_COOLDOWN_SECONDS` in any deployed environment therefore has zero effect, and the tests pass because they exercise the setting rather than the wiring. The sibling `rate_limit_redis_timeout_seconds` IS correctly wired (`api/health.py:215-216`), which is why the pattern looks right at a glance. The `#VERIFY` test (`tests/unit/test_security.py:655`) constructs `RateLimitMiddleware` directly with the parameter, so it proves the circuit breaker honours it and says nothing about whether the app supplies it. Found by the 2026-07-31 vulture calibration. | [#516](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/516) | unscheduled |
+| UW-L03 | `Settings.rate_limit_redis_cooldown_seconds` (`core/config.py:342`, carries a `#CRITICAL: timing` tag and has unit-test coverage) was never threaded into `RateLimitMiddleware`, so the middleware fell back to a hardcoded `5.0` and `CYO_ADVENTURE_RATE_LIMIT_REDIS_COOLDOWN_SECONDS` had zero effect in any deployed environment. Found by the 2026-07-31 vulture calibration. Fixed 2026-07-31 in commit `bb42b308` (PR #520, "wire the rate-limit Redis knobs and close the UW-F22 dead-symbol findings"): `middleware/security.py:933` now passes `_settings.rate_limit_redis_cooldown_seconds` into the middleware config, alongside the sibling `rate_limit_redis_timeout_seconds` wiring that was already correct. | [#516](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/516) | done |
 
 ## Cluster M: external and owner-gated
 
