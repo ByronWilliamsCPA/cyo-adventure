@@ -59,6 +59,17 @@ updated = "2026-08-01"
 last_validated = "2026-08-01"
 method = "eleven parallel code-only agents, planning docs excluded from their evidence universe"
 result = "no status pair changed; nine of fourteen phases had incorrect gap lists"
+# Re-anchored 2026-08-02 onto a main that had advanced eight commits (through the
+# v0.59.0 release) since the validation base. Five files carrying gap-list locators had
+# changed; the three affected gap claims (Phase 2b generation_provider validator, Phase 3
+# send-back persistence, Phase 4d erasure-cascade test) were re-checked and all three are
+# still open. Four line numbers had drifted and were corrected.
+#
+# #ASSUME: data integrity: a path:line locator here is only as fresh as last_validated;
+# code moves and a citation that still resolves can silently point at the wrong symbol.
+# #VERIFY: scripts/check_work_linkage.py checks structure, not locators. Before trusting a
+# locator after main has moved, re-resolve it by SYMBOL (grep the marker text), not by line.
+locator_basis = "resolved against main at v0.59.0 on 2026-08-02; all 31 path:line refs in range"
 
 # ---------------------------------------------------------------------------------------
 # Status vocabulary
@@ -141,7 +152,7 @@ validated = "2026-08-01"
 # Confirmed on code: backend and frontend player engines agree, and shared conformance
 # fixtures (schema/conformance/*.json) are wired into both test suites.
 gaps = [
-  "No drift gate on schema/storybook.schema.json. validator/gate.py:179 carries a live #VERIFY asking that schema_export.build_schema() stay in sync with the committed schema, but no CI job, pre-commit hook, nox session or script re-exports and diffs it. The OpenAPI contract job protects the frontend contract; nothing protects the story contract.",
+  "No drift gate on schema/storybook.schema.json. validator/gate.py:200 carries a live #VERIFY asking that schema_export.build_schema() stay in sync with the committed schema, but no CI job, pre-commit hook, nox session or script re-exports and diffs it. The OpenAPI contract job protects the frontend contract; nothing protects the story contract.",
 ]
 
 [phases."2"]
@@ -152,7 +163,7 @@ usable = "yes"
 summary = "Layer-2 walk, orchestrator, RQ worker, policy gate."
 validated = "2026-08-01"
 # Confirmed on code, including the property that matters most: the gate has a genuine FAIL
-# path rather than always passing. validator/gate.py:140-143 computes blocked, and
+# path rather than always passing. validator/gate.py:161-164 computes blocked, and
 # tests/unit/test_gate.py exercises L1 failure, L2 failure, policy violation and
 # defensive-parse failure all setting it. The RQ worker is a real process entry point
 # (generation/worker_main.py:70) wired as a docker-compose service.
@@ -191,7 +202,7 @@ validated = "2026-08-01"
 #
 # This phase previously claimed gaps = []. That was wrong.
 gaps = [
-  "The send-back reason is never persisted. publishing/service.py:434-451 logs it and stops; events/writer.py:36 sets EventType.SENT_BACK to an empty payload allowlist (correctly, under the PII-free payload contract, since a free-text reason can name a child), and no send_back_reason column exists in db/models.py or any migration. The code names its own deferral: \"the reason is logged (not persisted) in slice 1; slice 2 stores it on the moderation report\". Slice 2 was never built, so a guardian's stated reason is gone from the product by the next page load.",
+  "The send-back reason is never persisted. publishing/service.py:501-510 logs it and stops; events/writer.py:36 sets EventType.SENT_BACK to an empty payload allowlist (correctly, under the PII-free payload contract, since a free-text reason can name a child), and no send_back_reason column exists in db/models.py or any migration. The code names its own deferral: \"the reason is logged (not persisted) in slice 1; slice 2 stores it on the moderation report\". Slice 2 was never built, so a guardian's stated reason is gone from the product by the next page load.",
   "ACCEPTED BY DECISION, not a defect: a dual-role guardian+admin can approve, publish and send back their own family's story with no second reviewer. This four-eyes collapse was ratified in the persona expectation audit for a guardian acting on their own family, and is exercised deliberately by tests/integration/test_pipeline_event_instrumentation.py::test_dual_role_same_family_*. Recorded here so future audits stop rediscovering it as a finding.",
 ]
 
@@ -260,7 +271,7 @@ validated = "2026-08-01"
 # deletion tombstones attached ring-2 disclosure consents so revoked evidence cannot
 # misreport as active. What holds this phase at partial is test coverage, not function.
 gaps = [
-  "The erasure cascade is asserted but untested. db/models.py:744-747 tags FamilyConnection with #CRITICAL data-integrity CASCADE on both sides and points #VERIFY at tests/integration/test_deletion_drill.py, but that file creates a FamilyConnection only inside an EXPORT test (:464) and its family-deletion test (:255) creates none; the module docstring says so at :62. The migration is correct; nothing proves the cascade fires. One test closes this.",
+  "The erasure cascade is asserted but untested. db/models.py:786-789 tags FamilyConnection with #CRITICAL data-integrity CASCADE on both sides and points #VERIFY at tests/integration/test_deletion_drill.py, but that file creates a FamilyConnection only inside an EXPORT test (:465) and its family-deletion test (:273) creates none; the module docstring says so at :63. The migration is correct; nothing proves the cascade fires. One test closes this.",
   "No integration test drives the ring-2 dual-consent logic over the real HTTP and DB stack. The 11 consent tests and 17 recommendation tests are fake-session unit tests; test_authz_matrix.py hits the recommendations route over HTTP but only for role-gate shape. No e2e test touches connections or recommendations at all.",
 ]
 
