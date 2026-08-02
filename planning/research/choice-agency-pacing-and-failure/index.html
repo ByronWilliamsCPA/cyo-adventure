@@ -6,13 +6,13 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Sequenced implementation plan for the story-diversity work specified in story-diversity-plan-v2.md. Seven slices ordered by dependency and by what is cheapest now, with per-slice verification, rule-ID reservations that keep the work independent of open PR #416, and the three handoff points into the remaining personalization phases (P3 to P9).">
+        <meta name="description" content="Committed, citable academic research base for the ADR-011 constants: choice design and perceived agency, children's interactive e-book evidence, reading-rate norms by age, failure and persistence by age, and branching-structure/replay research. Rebuilt 2026-08-02 to replace the never-committed docs/planning/research/ originals.">
       
       
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/story-diversity-implementation-plan/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/research/choice-agency-pacing-and-failure/">
       
       
       
@@ -20,19 +20,19 @@
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Story Diversity Implementation Plan - CYO Adventure</title>
+        <title>Research Notes: Choice Agency, Pacing, Reading Rates, and Fail States by Age - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#superseded-for-scheduling-2026-08-02" class="md-skip">
+        <a href="#research-notes-choice-agency-pacing-reading-rates-and-fail-states-by-age" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Story Diversity Implementation Plan
+              Research Notes: Choice Agency, Pacing, Reading Rates, and Fail States by Age
             
           </span>
         </div>
@@ -235,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -256,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../guides/overview/" class="md-tabs__link">
+        <a href="../../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -278,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../api-reference/" class="md-tabs__link">
+        <a href="../../../api-reference/" class="md-tabs__link">
           
   
   
@@ -300,7 +300,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../operations/runbook/" class="md-tabs__link">
+        <a href="../../../operations/runbook/" class="md-tabs__link">
           
   
   
@@ -322,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../architecture/" class="md-tabs__link">
+        <a href="../../../architecture/" class="md-tabs__link">
           
   
   
@@ -344,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../development/architecture/" class="md-tabs__link">
+        <a href="../../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -366,7 +366,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../project/roadmap/" class="md-tabs__link">
+        <a href="../../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -388,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../" class="md-tabs__link">
+        <a href="../../" class="md-tabs__link">
           
   
   
@@ -410,7 +410,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -432,7 +432,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../ADRs/" class="md-tabs__link">
+        <a href="../../../ADRs/" class="md-tabs__link">
           
   
   
@@ -468,7 +468,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -498,7 +498,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -596,7 +596,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/overview/" class="md-nav__link">
+      <a href="../../../guides/overview/" class="md-nav__link">
         
   
   
@@ -631,7 +631,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/configuration/" class="md-nav__link">
+      <a href="../../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -666,7 +666,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/usage/" class="md-nav__link">
+      <a href="../../../guides/usage/" class="md-nav__link">
         
   
   
@@ -701,7 +701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/supabase-environments/" class="md-nav__link">
+      <a href="../../../guides/supabase-environments/" class="md-nav__link">
         
   
   
@@ -801,7 +801,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api-reference/" class="md-nav__link">
+      <a href="../../../api-reference/" class="md-nav__link">
         
   
   
@@ -903,7 +903,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../operations/runbook/" class="md-nav__link">
+      <a href="../../../operations/runbook/" class="md-nav__link">
         
   
   
@@ -938,7 +938,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../operations/authoring-guide/" class="md-nav__link">
+      <a href="../../../operations/authoring-guide/" class="md-nav__link">
         
   
   
@@ -1017,7 +1017,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../architecture/" class="md-nav__link ">
+            <a href="../../../architecture/" class="md-nav__link ">
               
   
   
@@ -1068,7 +1068,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/user-journeys/" class="md-nav__link">
+      <a href="../../../architecture/user-journeys/" class="md-nav__link">
         
   
   
@@ -1103,7 +1103,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/system-overview/" class="md-nav__link">
+      <a href="../../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -1138,7 +1138,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -1173,7 +1173,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -1208,7 +1208,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/data-model/" class="md-nav__link">
+      <a href="../../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1243,7 +1243,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/deployment/" class="md-nav__link">
+      <a href="../../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1318,7 +1318,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../api/" class="md-nav__link ">
+            <a href="../../../api/" class="md-nav__link ">
               
   
   
@@ -1367,7 +1367,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/architecture/" class="md-nav__link">
+      <a href="../../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1402,7 +1402,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/testing/" class="md-nav__link">
+      <a href="../../../development/testing/" class="md-nav__link">
         
   
   
@@ -1439,7 +1439,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/code-quality/" class="md-nav__link">
+      <a href="../../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1474,7 +1474,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/contributing/" class="md-nav__link">
+      <a href="../../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1578,7 +1578,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/roadmap/" class="md-nav__link">
+      <a href="../../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1613,7 +1613,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/changelog/" class="md-nav__link">
+      <a href="../../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1648,7 +1648,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/license/" class="md-nav__link">
+      <a href="../../../project/license/" class="md-nav__link">
         
   
   
@@ -1725,7 +1725,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../" class="md-nav__link ">
               
   
   
@@ -1776,7 +1776,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project-vision/" class="md-nav__link">
+      <a href="../../project-vision/" class="md-nav__link">
         
   
   
@@ -1811,7 +1811,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tech-spec/" class="md-nav__link">
+      <a href="../../tech-spec/" class="md-nav__link">
         
   
   
@@ -1846,7 +1846,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PROJECT-PLAN/" class="md-nav__link">
+      <a href="../../PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -1881,7 +1881,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../roadmap/" class="md-nav__link">
+      <a href="../../roadmap/" class="md-nav__link">
         
   
   
@@ -1963,7 +1963,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../adr/" class="md-nav__link ">
+            <a href="../../adr/" class="md-nav__link ">
               
   
   
@@ -2014,7 +2014,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -2049,7 +2049,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+      <a href="../../adr/adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -2084,7 +2084,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -2119,7 +2119,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -2154,7 +2154,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -2189,7 +2189,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2224,7 +2224,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+      <a href="../../adr/adr-007-raw-output-retention/" class="md-nav__link">
         
   
   
@@ -2259,7 +2259,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+      <a href="../../adr/adr-008-public-app-store-launch/" class="md-nav__link">
         
   
   
@@ -2294,7 +2294,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+      <a href="../../adr/adr-009-supabase-platform/" class="md-nav__link">
         
   
   
@@ -2329,7 +2329,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+      <a href="../../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
         
   
   
@@ -2364,7 +2364,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+      <a href="../../adr/adr-011-story-scale-framework/" class="md-nav__link">
         
   
   
@@ -2476,7 +2476,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -2511,7 +2511,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -2546,7 +2546,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -2615,7 +2615,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../ADRs/" class="md-nav__link ">
+            <a href="../../../ADRs/" class="md-nav__link ">
               
   
   
@@ -2666,7 +2666,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -2718,6 +2718,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2726,33 +2728,55 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#superseded-for-scheduling-2026-08-02" class="md-nav__link">
+  <a href="#1-choice-design-and-agency" class="md-nav__link">
     <span class="md-ellipsis">
       
-        SUPERSEDED for scheduling (2026-08-02)
+        1. Choice design and agency
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Choice design and agency">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-choice-poetics-framework-weak-to-moderate-theory-plus-small-generator-experiments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The choice poetics framework (WEAK to MODERATE: theory plus small generator experiments)
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#0-sequencing-decision-and-what-it-settles" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#12-agency-is-perceived-not-mechanical-moderate-convergent-across-6-independent-studies" class="md-nav__link">
     <span class="md-ellipsis">
       
-        0. Sequencing decision, and what it settles
+        1.2 Agency is perceived, not mechanical (MODERATE: convergent across ~6 independent studies)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="0. Sequencing decision, and what it settles">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
-  <a href="#handoff-into-personalization-p3-to-p9" class="md-nav__link">
+  <a href="#13-rewind-and-backtracking-moderate" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Handoff into personalization P3 to P9
+        1.3 Rewind and backtracking (MODERATE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-choice-frequency-and-density-the-literature-is-nearly-silent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Choice frequency and density: the literature is nearly SILENT
       
     </span>
   </a>
@@ -2765,44 +2789,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-corrections-this-plan-applies-to-plan-v2" class="md-nav__link">
+  <a href="#2-interactive-and-enhanced-e-books-for-children-ages-2-8" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Corrections this plan applies to plan v2
+        2. Interactive and enhanced e-books for children (ages ~2-8)
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-slice-order" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Slice order
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-slice-detail" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Slice detail
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. Slice detail">
+    <nav class="md-nav" aria-label="2. Interactive and enhanced e-books for children (ages ~2-8)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#s0-unblock-docs-and-decisions-only-no-source" class="md-nav__link">
+  <a href="#21-meta-analytic-core-strong" class="md-nav__link">
     <span class="md-ellipsis">
       
-        S0: unblock (docs and decisions only, no source)
+        2.1 Meta-analytic core (STRONG)
       
     </span>
   </a>
@@ -2810,65 +2812,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#s1-gates-while-enforcement-is-free" class="md-nav__link">
+  <a href="#22-silence" class="md-nav__link">
     <span class="md-ellipsis">
       
-        S1: gates while enforcement is free
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#s2-similarity-signal-correctness-parallel-to-s1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        S2: similarity signal correctness (parallel to S1)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#s3-generation-variety" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        S3: generation variety
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#s4-catalog" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        S4: catalog
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#s5-reader-ux-last-because-it-needs-evidence-this-plan-cannot-produce" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        S5: reader UX (last, because it needs evidence this plan cannot produce)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#s6-close-out" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        S6: close out
+        2.2 Silence
       
     </span>
   </a>
@@ -2881,38 +2828,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-rule-id-reservations" class="md-nav__link">
+  <a href="#3-reading-rate-norms-vs-the-per-band-wpm-constants" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Rule-ID reservations
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="4. Rule-ID reservations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#41-when-416-does-merge-its-three-conflicts-and-their-resolution" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.1 When #416 does merge: its three conflicts and their resolution
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-explicitly-not-in-this-plan" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Explicitly not in this plan
+        3. Reading-rate norms vs the per-band WPM constants
       
     </span>
   </a>
@@ -2920,10 +2839,54 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-working-agreements" class="md-nav__link">
+  <a href="#4-fail-states-frustration-and-persistence-by-age" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Working agreements
+        4. Fail states, frustration, and persistence by age
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-branching-structure-replay-and-choice-counts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Branching structure, replay, and choice counts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-implications-for-adr-011-constants-consolidated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Implications for ADR-011 constants (consolidated)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-master-gap-list-silences-kept-as-deliverables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Master gap list (silences, kept as deliverables)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#full-source-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full source list
       
     </span>
   </a>
@@ -2950,414 +2913,305 @@
   
 
 
-  <h1>Story Diversity Implementation Plan</h1>
-
-<blockquote>
-<h2 id="superseded-for-scheduling-2026-08-02">SUPERSEDED for scheduling (2026-08-02)<a class="headerlink" href="#superseded-for-scheduling-2026-08-02" title="Permanent link">&para;</a></h2>
-<p><strong>Do not start work from this document's slice order.</strong> This plan's entire function is sequencing, and
-sequencing of the still-open diversity work has moved to
-<a href="../story-structure-improvement-plan/">story-structure-improvement-plan.md</a> (the <code>SQ-*</code> namespace; its
-section 11 carries the SQ-to-register map). Slices whose work already landed keep their record here.</p>
-<p><strong>Two things here remain binding and are NOT superseded</strong>: section 4's rule-ID reservations (they exist
-to keep rule IDs collision-free against open PR #416, a constraint the SQ plan does not restate), and
-section 4.1's conflict resolutions for when #416 merges. Consult them before minting any new rule ID.</p>
-<p><strong>Specification</strong>: <a href="../story-diversity-plan-v2/">story-diversity-plan-v2.md</a>. That document says <em>what</em> and
-<em>why</em>; this one said <em>in what order</em> and <em>how it is verified</em>. Where the two disagree, plan v2 governs the
-intent and this plan is corrected.</p>
-</blockquote>
-<hr />
-<h2 id="0-sequencing-decision-and-what-it-settles">0. Sequencing decision, and what it settles<a class="headerlink" href="#0-sequencing-decision-and-what-it-settles" title="Permanent link">&para;</a></h2>
-<p><strong>Owner decision (2026-07-26): complete this work before the remaining phases of PR #417/#418
-(personalization P3 to P9). PR #416 waits.</strong> Three consequences follow, and each removes an
-open question this plan would otherwise have to carry.</p>
-<p><strong>PR #416 is not a dependency.</strong> It stays open and unmerged, so <code>main</code> remains at <code>SR-7</code>, <code>PL-22</code>, <code>L2-13</code>. This
-plan therefore reserves the IDs #416 has already implemented and tested rather than claiming them (section 4), so
-neither workstream has to renumber when #416 eventually lands. One consequence to accept deliberately: <code>main</code>
-will carry <code>SR-9</code> with a gap at <code>SR-8</code> until #416 merges. That is recorded in <code>validator-rules.md</code> as a
-reservation, which is cheaper than the alternative of forcing a green, tested PR to renumber.</p>
-<p><strong>A8 no longer waits on #416's recalibrated baseline.</strong> That was listed as a dependency because #416's follow-up
-push was to re-derive the mutation floors. It is not needed: the threshold decision is closed on measurement
-against the <strong>committed</strong> catalog (section 1), and ADR-020's amendment already fixed <code>TAU_CELL</code> at 0.05.</p>
-<p><strong>Landing A8 first means it gates #416's story push, which is the correct order.</strong> #416's AL-014/AL-044 report two
-withheld books at <code>structural_distance</code> 0.0139 against the 0.05 floor. Those books are not in <code>skeletons/</code> yet, so
-they are absent from this plan's 67-pair measurement; both facts are true over different corpora. When #416's
-story artifacts arrive they will fail A8, which is exactly what the gate is for. Building A8 now is what makes
-that catch happen rather than discovering it after import.</p>
-<h3 id="handoff-into-personalization-p3-to-p9">Handoff into personalization P3 to P9<a class="headerlink" href="#handoff-into-personalization-p3-to-p9" title="Permanent link">&para;</a></h3>
-<p>Three items here are preconditions for that work, not merely adjacent to it. Stating them so the boundary is
-explicit:</p>
-<table>
-<thead>
-<tr>
-<th>This plan's item</th>
-<th>Blocks</th>
-<th>Why</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>A19</strong> (ATG strips sentinels)</td>
-<td>Any <code>.contract.json</code> declaring a <code>personalizable</code> slot</td>
-<td>The moment a fill carries a sentinel, the ATG's masked leaf distance is deflated and biases toward false FAIL. Dormant only while zero contracts opt in</td>
-</tr>
-<tr>
-<td><strong>A20</strong> (backfill 16 contracts)</td>
-<td>P6 / P9 becoming user-visible</td>
-<td>A skeleton with no contract has no slots, so personalization cannot reach it. Shipping the toggle before A20 gives teen readers a feature inert on 43% of their catalog</td>
-</tr>
-<tr>
-<td><strong>A11</strong> (request-page copy, ADR-023 section 4)</td>
-<td>P9 (the child-facing control)</td>
-<td>ADR-023 makes the rewording a precondition on G18's flag, because the current Route A sentence becomes false under opt-in</td>
-</tr>
-</tbody>
-</table>
-<p>Nothing else in P3 to P9 depends on this plan, and this plan takes no dependency on them.</p>
-<hr />
-<h2 id="1-corrections-this-plan-applies-to-plan-v2">1. Corrections this plan applies to plan v2<a class="headerlink" href="#1-corrections-this-plan-applies-to-plan-v2" title="Permanent link">&para;</a></h2>
-<p>Measured while sequencing. Each is applied in plan v2 as well; recorded here because each changed the plan.</p>
-<table>
-<thead>
-<tr>
-<th>Finding</th>
-<th>Effect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>A14's fix list is 5 nodes across 4 skeletons.</strong> Two earlier figures in this row's history were both wrong because both came from a static direct-terminal scan: 37 was the unscoped count, then 1 was the band-scoped count. The rule as A14 specifies it follows single-choice corridors over the reachable configuration space, which is deliberately broader. Running the implemented rule: <code>the-quiet-harbor-protocol</code> <code>b_lo_final</code>, <code>the-cinder-bazaar</code> <code>bg_hi_final</code> and <code>bg_lo_final</code>, <code>the-serpent-vaults</code> <code>c22_gate</code>, <code>the-sunken-signal</code> <code>n_ascent</code>. All five inspected and genuine. <code>the-sunken-signal</code> was invisible even to the corrected static scan because it is MVP tier and excluded from <code>_production_candidates</code>, though <code>load_skeleton</code> validates it</td>
-<td>The rule still lands blocking at S effort, but the four skeletons are strict-xfail quarantined and their content fixes move to S4. Also refutes plan v2 section 6.2's claim that no skeleton gates its survivable option away: <code>c22_gate</code> does exactly that</td>
-</tr>
-<tr>
-<td><del><strong>A14's fix list is 1 node, not 37.</strong></del> (superseded by the row above) All 37 all-negative-valence decisions sit at <strong>13-16 (4) and 16+ (33)</strong>, zero at 8-11 or 10-13. A14 applies the negative-valence reading only at 8-11/10-13, so there it is preventive with nothing to fix; the <code>death</code>/<code>capture</code> reading at 13-16/16+ catches exactly <strong>1</strong> (<code>the-quiet-harbor-protocol</code>)</td>
-<td>A14 drops M to S, lands blocking on day one, and the "fix 37 nodes" work item disappears</td>
-</tr>
-<tr>
-<td><strong>A8 at <code>TAU_CELL</code> = 0.05 fails exactly 1 of 67 in-cell pairs</strong> (the known clone at 0.00095; next-lowest 0.09123, median 0.3956)</td>
-<td>A8 lands blocking immediately, no advisory-then-flip phase, no calibration risk</td>
-</tr>
-<tr>
-<td><strong>A <code>TAU_STRUCT</code> gate is rejected</strong>: it would fail 17 of 67 pairs (25%) across 12 of 18 populated cells, and ADR-020's amendment already made <code>TAU_STRUCT</code> documentation-only</td>
-<td>Closes the open threshold decision in plan v2 section 6</td>
-</tr>
-<tr>
-<td><strong>My first pair count was inflated by duplicates.</strong> I originally reported 100 pairs across 28 cells. <code>skeleton_matches_cell</code> treats narrative style as meaningful only at <code>13-16</code> and <code>16+</code>, so below those bands both styles return the same candidate list and every lower-band pair was measured twice. The 28-cell figure also contradicted this plan's own established "15 of 18 non-empty cells" and should have been caught then</td>
-<td>Deduplicated in <code>diversity/incell.py</code> and pinned by a test. Corrected counts: <strong>67</strong> pairs across <strong>18</strong> cells. Every conclusion survives: <code>TAU_CELL</code> still flags exactly 1</td>
-</tr>
-<tr>
-<td><strong>B2 is a blocker, not a parallel docs chore.</strong> <code>runtime-semantics.md</code> section 6 forbids a back button and requires "a revision to this document and an ADR" for any Phase-1 implementation. A12 enables that button in more states and A13b extends it to multi-hop</td>
-<td>B2 moves ahead of A12, A13b and A18 instead of alongside them</td>
-</tr>
-<tr>
-<td><strong>A12 is not a bug fix, and is deferred.</strong> Found while writing B2's ADR. A continuation read's replay origin is retained nowhere: not on <code>ReadingState</code>, not on <code>Completion</code>, and only transiently in router state that <code>series.ts</code> documents as untrusted. Enabling it needs new durable state, a schema/API/OpenAPI change, and server-side validation of that state, because a replay origin is a state-restoration input</td>
-<td>A12 leaves S5 and is reclassified L, deferred. ADR-024 Decision 6 records it as unauthorized with the bar any future decision must meet</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="2-slice-order">2. Slice order<a class="headerlink" href="#2-slice-order" title="Permanent link">&para;</a></h2>
-<p>Seven slices. The rule is: unblock cheaply first, then land gates while the violating set is one node and one
-pair, then fix code correctness, then author content, then touch the reader UI last because it is the only part
-needing evidence this plan cannot generate on its own.</p>
-<table>
-<thead>
-<tr>
-<th>Slice</th>
-<th>Contents</th>
-<th>Gate to start</th>
-<th>Effort</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>S0</strong> Unblock</td>
-<td>B2, A16, B6, plan v2 corrections, PR #415 body</td>
-<td>none</td>
-<td>~1 day</td>
-</tr>
-<tr>
-<td><strong>S1</strong> Gates while free</td>
-<td>A19, A8, A14, B3, B5, B1</td>
-<td>S0 (B2 not required)</td>
-<td>~3-4 days</td>
-</tr>
-<tr>
-<td><strong>S2</strong> Similarity signal</td>
-<td>A1, A2, A3, A4, A5</td>
-<td>none (parallel to S1)</td>
-<td>~3 days</td>
-</tr>
-<tr>
-<td><strong>S3</strong> Generation variety</td>
-<td>A6, A7</td>
-<td>S2 (A6 consumes the signal)</td>
-<td>~2-3 days</td>
-</tr>
-<tr>
-<td><strong>S4</strong> Catalog</td>
-<td>A9, A20</td>
-<td>S1 (A8 defines the failure; A16 written)</td>
-<td>~4-5 days</td>
-</tr>
-<tr>
-<td><strong>S5</strong> Reader UX</td>
-<td>naive-ux session, A11, A12, A13b, A18, B4</td>
-<td>S0 (B2's ADR) + UX session</td>
-<td>~4 days</td>
-</tr>
-<tr>
-<td><strong>S6</strong> Close out</td>
-<td>validator-rules.md, capability-register, lessons log</td>
-<td>S1-S5</td>
-<td>~1 day</td>
-</tr>
-</tbody>
-</table>
-<p>S1 and S2 are independent and can run in parallel; everything else is ordered.</p>
-<hr />
-<h2 id="3-slice-detail">3. Slice detail<a class="headerlink" href="#3-slice-detail" title="Permanent link">&para;</a></h2>
-<h3 id="s0-unblock-docs-and-decisions-only-no-source">S0: unblock (docs and decisions only, no source)<a class="headerlink" href="#s0-unblock-docs-and-decisions-only-no-source" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>B2</strong>: file the <code>runtime-semantics.md</code> section 6 revision plus a backtracking ADR. The ADR must cover what
-   ships today (single-step replay-based Go back, <code>Reader.tsx:210</code>) <strong>and</strong> what A13b adds (bounded multi-hop to
-   the nearest branching ancestor), so A13b does not require a second amendment. Record why path replay rather
-   than snapshots, which section 6's own rationale already argues and four corpus sources independently support.</li>
-<li><strong>A16</strong>: write the rule that a non-final series book is never retired before its replacement ships in the same
-   release, with the fallback of re-cutting book 1 to <code>is_final</code>. Costs nothing now and binds A9 in S4.</li>
-<li><strong>B6</strong>: the single ADR-016 amendment, covering ring-2 <strong>attribution</strong> granularity (this plan) and ring-2
-   <strong>personalization</strong> granularity (ADR-023 section 3) in one edit. ADR-016 already carries the proposed addendum
-   naming both; this replaces it with the real sentence. Do not write one half.</li>
-<li>Apply the section 1 corrections to plan v2 (done) and update <strong>PR #415's body</strong>, which still advertises
-   "eighteen deliverables", <code>SR-8</code>, and "<code>PL-23</code> is free". That body is the handoff artifact for the other
-   workstreams, so a stale rule ID there actively misdirects them into the collision.</li>
-</ol>
-<p><em>Verification</em>: <code>markdownlint</code>, the no-em-dash hook, and a link check on the new ADR. No tests.</p>
-<h3 id="s1-gates-while-enforcement-is-free">S1: gates while enforcement is free<a class="headerlink" href="#s1-gates-while-enforcement-is-free" title="Permanent link">&para;</a></h3>
-<p>Order within the slice matters only for A19, which should land first so no personalizable slot can be declared
-ahead of it.</p>
-<ol>
-<li><strong>A19</strong> (S): call <code>strip_sentinels</code> at the ATG's tokenising boundary in <code>diversity/leaf.py</code>. Regression test:
-   a sentinel-bearing fill and its stripped equivalent produce identical <code>content_tokens</code>, masked token sets, and
-   leaf distance. <code>diversity/leaf.py</code> is untouched by both #416 and #418, so this is conflict-free.</li>
-<li><strong>A8</strong> (S): in-cell clone audit in CI, using <code>structural_distance</code> against the <strong>loaded</strong> <code>TAU_CELL</code> from
-   <code>ws5_floor_baseline.json</code>, never a literal. Hook into the existing <code>diversity</code> job in <code>ci.yml:512</code>, which
-   already runs pure-Python diversity checks over committed fixtures. Land <strong>blocking</strong>; the one expected failure
-   is the clone pair, which S4 fixes. Until then, quarantine that single pair with a strict xfail-equivalent
-   allowlist that names it and fails if the list is not shrinking, following #416's pattern.</li>
-<li><strong>A14</strong> (S): <code>L2-14</code> in <code>validator/layer2.py</code>. Stated over the <strong>reader-visible decision unit</strong>: no reachable
-   branching node may have every downstream path reach a forbidden terminal without an intervening visible choice.
-   Band-scoped: negative-valence at 8-11 and 10-13, <code>death</code>/<code>capture</code> at 13-16 and 16+. This also closes the 776
-   single-choice fatal corridors, which the node-scoped reading missed. One fix
-   (<code>the-quiet-harbor-protocol</code>). <code>L2-9</code> already blocks zero-visible-choice configurations, so the gated case is
-   covered and the <code>L2-12</code> 100,000-configuration cap is not newly constrained.</li>
-<li><strong>B3</strong> (M): <code>SR-9</code> in <code>validator/series.py</code>. For <code>carries_state=true</code>, every satisfying-ending state of book N
-   must be an admissible entry state for book N+1. Note <code>series.py:210-213</code> checks ending <strong>existence</strong>, not
-   reachability, so this is genuinely uncovered. Before building, confirm against #416's <code>SR-8</code> (carried-variable
-   <em>declaration</em> integrity, a static comparison) that the two do not collapse into one rule; if #416's AL-038
-   read-time carry audit is taken up there, B3 folds in and closes as duplicate.</li>
-<li><strong>B5</strong> (S): escalate <code>series-stress-test-findings.md</code> F3 from guidance to a gate-detectable defect. <code>SR-9</code>
-   should be what detects it, so build after B3.</li>
-<li><strong>B1</strong> (M): validate <code>save_slots</code> in <code>validate_reading_state</code> (<code>reading.py:168-175</code>) or remove it from the PUT
-   body. It is the only reading-state field omitted, which defeats the <code>#CRITICAL</code> anti-forgery intent two lines
-   above. Inert today; a forged slot becomes a state-restoration input the moment anything restores from one.</li>
-</ol>
-<p><em>Verification</em>: <code>uv run pytest</code>, <code>ruff check</code>, <code>basedpyright src/</code>, plus a full-catalog gate run showing exactly
-the expected failure set (1 for A14, 1 pair for A8, 0 new for A19).</p>
-<blockquote>
-<p><strong>Correction to A8's commit message (2026-07-26).</strong> That message said "yamllint is unchanged on <code>ci.yml</code> (no
-long lines added)". The parenthetical is true and was verified, but the sentence reads as though the check
-passes, and it does not: the hook runs <code>yamllint --strict</code>, so warnings fail it, and <code>ci.yml</code> carries three
-pre-existing warnings (line 10 <code>on:</code> read as a truthy value, and long lines at 110 and 501). Verified precisely:
-the finding set is <strong>byte-identical</strong> before and after the A8 edit, and the edit's longest added line is 79
-characters, so nothing here was introduced by this work. Left unfixed deliberately rather than silently: the
-<code>on:</code> warning is the well-known GitHub Actions false positive whose fix changes a workflow key, and
-<code>.pre-commit-config.yaml</code>'s own comment records this hook as deferred to pre-push precisely to avoid "gating
-every commit on <code>--strict</code> warnings across the generated workflow files". Fixing it is a separate, non-diversity
-change and should not ride along here.</p>
-</blockquote>
-<h3 id="s2-similarity-signal-correctness-parallel-to-s1">S2: similarity signal correctness (parallel to S1)<a class="headerlink" href="#s2-similarity-signal-correctness-parallel-to-s1" title="Permanent link">&para;</a></h3>
-<p>Pure code correctness, independent of catalog scale. Order is fixed: A1 and A2 change the vocabulary and the
-measure, so A5 must re-derive <code>tau_theme</code> after both.</p>
-<ol>
-<li><strong>A1</strong> (M): two vocabularies. Freeze <code>_THEME_TAG_MAP</code> as the <strong>echo</strong> vocabulary, since that map <em>is</em> what a
-   child sees; add a separate <strong>similarity</strong> vocabulary and normalise the stored side's raw <code>metadata.themes</code> into
-   it instead of passing them through verbatim (<code>normalize.py:544</code>).</li>
-<li><strong>A2</strong> (S): a containment measure for request-versus-story, in a <strong>new</strong> function. Leave <code>jaccard_similarity</code>
-   and its documented empty-set semantics alone (<code>normalize.py:470-482</code> records "must never register as similar to
-   anything" as a deliberate WS-0 decision). This is what fixes the 0.333-versus-0.35 asymmetry.</li>
-<li><strong>A3</strong> (S): saturation ceiling guard. A2 pushes toward "similar", and with 3-tree cells
-   <code>cell_theme_saturation</code> pins at 1.0 after three reads, which would make <code>_blended_weight</code> rank-equivalent to
-   recency alone. Add an upper bound on the escalation-trigger-rate metric plus a regression test pinning
-   saturation behaviour.</li>
-<li><strong>A4</strong> (S): a committed premise panel (pets, sports, family, school, music, invention, weather, food,
-   siblings) paired with catalog themes. Publish measured coverage; assert no target in advance.</li>
-<li><strong>A5</strong> (S): re-derive <code>tau_theme</code> on the A4 panel and record the value with its basis.</li>
-</ol>
-<p><em>Verification</em>: the existing <code>diversity</code> CI job plus new unit tests. A3's regression test is the one that must
-fail before its fix.</p>
-<h3 id="s3-generation-variety">S3: generation variety<a class="headerlink" href="#s3-generation-variety" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>A6</strong> (M): thread <code>DifferentiationLevel</code> and prior-fill context into <code>fill_skeleton</code> and <code>fill.md</code>. Pass prior
-   fills' <strong>published titles and settings</strong> only, never prior premises, so one child's request text cannot enter a
-   sibling's generation prompt. Fence at reuse.</li>
-<li><strong>A7</strong> (S): a variation-axis library (narrative distance, tonal register, sensory emphasis, pacing, whose
-   viewpoint the scene favours), one axis drawn per request. Varies the dimension rather than sampling noise, so
-   it does not trade against reading-level stability.</li>
-</ol>
-<p><em>Verification</em>: <code>RL-13</code> must not regress, since A7 changes prose character. Run the reading-level suite over
-regenerated fills before and after.</p>
-<h3 id="s4-catalog">S4: catalog<a class="headerlink" href="#s4-catalog" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>A9</strong> (M): resolve the clone pair under the disposition principle, fix-or-replace, no series exemption. Bound
-   by A16: these are brass-lantern books 1 and 2, so "retire one" is unavailable; the replacement must accept book
-   1's carried state, which <code>SR-9</code> now gates. Shrink A8's allowlist to empty in the same change.</li>
-<li><strong>A20</strong> (M): backfill the 16 missing theme contracts, ordered <code>13-16</code> (6), <code>16+</code> (5), <code>10-13</code> (4), <code>3-5</code> (1).
-   Write the clone pair's contracts <strong>after</strong> A9 settles, or the work is done twice. Declaring any slot
-   <code>personalizable</code> requires A19 first, and is P3-to-P9 work rather than this plan's.</li>
-</ol>
-<p><em>Verification</em>: <code>check_skeleton</code> on every touched skeleton, the promotion gate, and A8 green with an empty
-allowlist. Note #416's AL-014 warns that no hand-authored skeleton currently passes the promotion gate because
-<code>check_promotion_bundle.py</code> requires a lineage sidecar unconditionally; if A20's contracts trip that, the fix
-belongs to #416 and A20 should not work around it silently.</p>
-<h3 id="s5-reader-ux-last-because-it-needs-evidence-this-plan-cannot-produce">S5: reader UX (last, because it needs evidence this plan cannot produce)<a class="headerlink" href="#s5-reader-ux-last-because-it-needs-evidence-this-plan-cannot-produce" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>Run a <code>naive-ux-check</code> session</strong> with the current child test readers, on the three questions section 0 of
-   plan v2 names: does a 3-hop rewind read as "the app took my turn" (A13b), is the lower back-chevron confusable
-   with the one that exits the book (A18), does a hero-name field with a shuffle land as a toy or a restriction
-   (A11). These are empirical and currently answerable; do not build A11, A13b or A18 first.</li>
-<li><strong>A11</strong> (M): request-page copy. Adopt ADR-023 section 4's wording verbatim rather than drafting an alternative.
-   Drop the fixed-structure statement and the unnameable forbidden-theme warning from the kid surface; add "A
-   grown-up reads your idea first. Then it takes a little while to write your book." Shuffle is display-only among
-   generic names. Serve the guardian set off <code>ReasonCode</code> / <code>band_profile</code> / <code>content_nogo</code>; the kid response
-   still omits <code>content_nogo</code> values entirely.</li>
-<li><strong>A12 is removed from this slice and deferred.</strong> S0 established it is not a bug fix: a continuation read's
-   replay origin is not retained anywhere (see plan v2 A12 and ADR-024 Decision 6), so enabling it needs new
-   durable state plus a schema, API and OpenAPI change, and that state is a state-restoration input that must be
-   server-validated or it becomes a second <code>save_slots</code>. It needs its own decision, and A13b does not wait on it.</li>
-<li><strong>A13b</strong> (M): a second, separately labelled ending-screen affordance, "Try a different way", walking up to 3
-   hops to the last node offering a real pick and falling back to one step when there is none. Availability stays
-   today's <code>path.length &gt; 1</code> and replayable, <strong>never</strong> "an untaken choice exists within 3 hops", which would hide
-   the button at the 88 preserved climaxes. Leave the in-story one-step Go back untouched (A13a).</li>
-<li><strong>A18</strong> (S): give the story-level control a circular-arrow glyph distinct from the top-bar Leave chevron, and
-   make the ending-screen affordance primary weight rather than ghost.</li>
-<li><strong>B4</strong> (S): <code>machine.ts:108</code> resets to the start node with declared initials, fabricating <code>has_lantern=true</code>
-   and <code>vigor=5</code> a continuation reader never earned while discarding carried state.</li>
-</ol>
-<p><em>Verification</em>: <code>npm run lint</code>, <code>npm run typecheck</code>, <code>npm run test:run</code>, plus the Playwright mocked tier. A13b
-needs a test at an ending reached through a single-choice corridor, since that is the 58-of-73 case.</p>
-<h3 id="s6-close-out">S6: close out<a class="headerlink" href="#s6-close-out" title="Permanent link">&para;</a></h3>
-<p>Update <code>validator-rules.md</code> (the catalog is lockstep-tested, so this is not optional), <code>capability-register.md</code>
-(K19's copy dependency, and A11's delivered state), and append to <code>authoring-lessons-log.md</code> if #416 has merged by
-then. Confirm no <code>PL-23</code>/<code>PL-24</code>/<code>SR-8</code> reference crept in.</p>
-<blockquote>
-<p><strong>S6 DELIVERED 2026-07-26, with two corrections to this paragraph.</strong></p>
-<p><strong>First: "the catalog is lockstep-tested" was false.</strong> No test existed. The only reference to
-<code>validator-rules.md</code> anywhere in the suite was a docstring line in <code>test_fixtures_validate.py</code>. That is precisely
-how the drift below was able to accumulate unnoticed, so the durable fix is not the doc edit but the missing test:
-<code>tests/unit/test_validator_rules_catalog.py</code> now asserts both directions, and a rule id can no longer be enforced
-in <code>validator/</code> while absent from the catalog.</p>
-<p><strong>Second: the gap was far larger than L2-14 and SR-9.</strong> Measured, the catalog was missing <strong>L2-13, L2-14, and the
-entire SR family (SR-1 through SR-7 and SR-9), eight rules and one whole family</strong>, all enforced in code. The SR
-family is blocking at publish (<code>publishing/service.py</code> raises <code>BusinessLogicError(rule="series_validation")</code>), so
-the catalog was silent about a gate that can refuse a book. All are now catalogued, in a new <strong>Series</strong> section,
-with SR's out-of-<code>run_gate</code> position stated in the Pass/Fail table and the rule-application order. Catalog bumped
-to v1.3.</p>
-<p>Two other findings fell out of writing the test. <strong><code>L2-8</code> is catalogued but no code emits it</strong>: its named failure
-is unreachable rather than unimplemented, because <code>run_gate</code> early-returns on any L1 error, L1-6 already validates
-condition operators and types, and <code>validator/walk.py</code> has no raise path. Its row now carries <strong>NO ID EMITTED</strong>
-with that reasoning, and the test accepts that shape alongside <strong>RESERVED</strong>. And the register's <code>A11</code> collides
-with this plan's <code>A11</code>: the register's is corpus quality tooling (now part-delivered, still 🟡 because
-corpus-level <em>reading-level</em> drift tooling does not exist), while K19's copy dependency names <em>this plan's</em> A11,
-a <code>RequestStory.tsx</code> change that is unstarted. Both are now disambiguated in the register, and the copy dependency
-is recorded as still open.</p>
-<p><code>PL-23</code>/<code>PL-24</code> confirmed absent from code and catalog. <code>SR-8</code> appears only as an explicitly RESERVED row naming
-PR #416 as its holder. <code>authoring-lessons-log.md</code> is <strong>correctly not created</strong>: #416 has not merged, so its
-precondition is unmet.</p>
-</blockquote>
-<hr />
-<h2 id="4-rule-id-reservations">4. Rule-ID reservations<a class="headerlink" href="#4-rule-id-reservations" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>Owner</th>
-<th>State</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>L2-14</code></td>
-<td>this plan (A14)</td>
-<td>Free on <code>main</code> and not claimed by #416, whose "adds L2-13" is a catalog entry for a rule already in <code>layer2.py</code>. Claim it</td>
-</tr>
-<tr>
-<td><code>SR-8</code></td>
-<td><strong>PR #416</strong></td>
-<td>Implemented, tested, catalogued there. <strong>Do not use.</strong> Reserve</td>
-</tr>
-<tr>
-<td><code>SR-9</code></td>
-<td>this plan (B3)</td>
-<td>Claim, accepting a documented gap at <code>SR-8</code> until #416 merges</td>
-</tr>
-<tr>
-<td><code>PL-23</code>, <code>PL-24</code></td>
-<td><strong>PR #416</strong></td>
-<td>Implemented there (clock advisory, ending-mix shape). <strong>Do not use.</strong> Reserve</td>
-</tr>
-<tr>
-<td><code>PL-25</code></td>
-<td>this plan</td>
-<td>Reserved only if a fail-depth floor is ever built. Plan v2 argues it probably is not needed once A13 lands</td>
-</tr>
-</tbody>
-</table>
-<p>Re-verify against #416's branch immediately before claiming any of these, per plan v2's amended method rule 5:
-<code>main</code> alone is not a sufficient basis.</p>
-<h3 id="41-when-416-does-merge-its-three-conflicts-and-their-resolution">4.1 When #416 does merge: its three conflicts and their resolution<a class="headerlink" href="#41-when-416-does-merge-its-three-conflicts-and-their-resolution" title="Permanent link">&para;</a></h3>
-<p>Measured 2026-07-26. #416 is behind <code>main</code> and GitHub refuses its branch update with
-<code>422 merge conflict between base and head</code>. All three conflicts are <strong>complementary, not competing</strong>, and the
-resolution was worked and verified before #416 was deferred. Recorded so it is not re-derived:</p>
-<ol>
-<li><strong><code>src/cyo_adventure/validator/reading_level.py</code></strong> (the substantive one, and the same RL-13 loop A19 concerns).
-   <code>main</code> (#418) sets <code>body = strip_sentinels(node.body)</code>; #416 sets <code>body = node.body</code> and adds
-   <code>if _FILL_MARKER in body: continue</code>. <strong>Keep both</strong>, stripping first and then checking the marker. Safe in that
-   order because <code>SENTINEL_RE</code> excludes <code>&lt;</code> and <code>&gt;</code> from its value charclass, so a <code>&lt;&lt;FILL ...&gt;&gt;</code> can never sit
-   inside a sentinel and stripping can neither create nor destroy a marker.</li>
-<li><strong><code>tests/unit/test_reading_level.py</code></strong>: purely additive on both sides (#416 adds one function, #418 adds a
-   two-test class). <strong>Keep both.</strong> Verified: 15 pass together, which is the direct proof that resolution 1 is right.</li>
-<li><strong><code>docs/planning/capability-register.md</code></strong>: #416 never touched S10 or S11, so the conflict there is adjacency
-   only and <strong><code>main</code>'s versions win outright</strong>. The one real overlap is <strong>S12</strong>, where both sides added different
-   notes (#416's aggregate-substrate design, #418's ADR-023 ring-3 forward-binding constraint). <strong>Keep both</strong>, with
-   a sentence boundary at the splice.</li>
-</ol>
-<p><code>ruff check</code> and <code>ruff format --check</code> were clean on the result. This resolution belongs to whoever merges #416; it
-is not work this plan performs.</p>
-<hr />
-<h2 id="5-explicitly-not-in-this-plan">5. Explicitly not in this plan<a class="headerlink" href="#5-explicitly-not-in-this-plan" title="Permanent link">&para;</a></h2>
-<p>Unchanged from plan v2 sections 2 and 5, restated so scope does not drift:</p>
+<h1 id="research-notes-choice-agency-pacing-reading-rates-and-fail-states-by-age">Research Notes: Choice Agency, Pacing, Reading Rates, and Fail States by Age<a class="headerlink" href="#research-notes-choice-agency-pacing-reading-rates-and-fail-states-by-age" title="Permanent link">&para;</a></h1>
+<p>Companion note: <a href="../cyoa-structure-measurements/">cyoa-structure-measurements.md</a> covers the structural
+side (the Ashwell taxonomy and published CYOA/gamebook measurements). This note covers the human side.
+See the README in this directory for provenance and the relationship to ADR-011's original citations.</p>
+<h2 id="1-choice-design-and-agency">1. Choice design and agency<a class="headerlink" href="#1-choice-design-and-agency" title="Permanent link">&para;</a></h2>
+<h3 id="11-the-choice-poetics-framework-weak-to-moderate-theory-plus-small-generator-experiments">1.1 The choice poetics framework (WEAK to MODERATE: theory plus small generator experiments)<a class="headerlink" href="#11-the-choice-poetics-framework-weak-to-moderate-theory-plus-small-generator-experiments" title="Permanent link">&para;</a></h3>
+<p>Mawhorter, Mateas, Wardrip-Fruin and Jhala formalize a choice as framing + options + outcomes evaluated
+against player goals (<a href="http://www.fdg2014.org/papers/fdg2014_paper_19.pdf">Towards a Theory of Choice Poetics, FDG 2014</a>),
+operationalized in the Dunyazad generator (<a href="https://computationalcreativity.net/iccc2015/proceedings/13_4Mateas.pdf">ICCC 2015</a>)
+and matured in <a href="https://eis.ucsc.edu/papers/ChoicePoeticsByExample.pdf">Choice Poetics by Example</a>
+(Arts 7(3):47, 2018, DOI 10.3390/arts7030047). Named idioms: obvious choice, relaxed choice, dilemma,
+flavor choice, dead-end option, false choice, unchoice. Key claim: flavor choices are legitimate when
+the reader can tell expression is the point; they poison trust only when dressed up as consequential.
+Not child-tested; no age-differentiated version exists.</p>
+<h3 id="12-agency-is-perceived-not-mechanical-moderate-convergent-across-6-independent-studies">1.2 Agency is perceived, not mechanical (MODERATE: convergent across ~6 independent studies)<a class="headerlink" href="#12-agency-is-perceived-not-mechanical-moderate-convergent-across-6-independent-studies" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>A10</strong> (empty teen <code>short</code> cells), <strong>A15</strong> (retire without deleting progress), <strong>A17</strong> (tombstone card):
-  triggered, not scheduled. Their triggers are in plan v2 section 0.</li>
-<li>All eight deferred items behind named prerequisites, including reading telemetry, the outcome-mix floor keyed on
-  fail-kind mix, challenge mode, alternate beat phrasings, per-reader scoping, and the guardian visibility
-  ceiling.</li>
-<li>A fail-depth floor, an open-vocabulary similarity signature, a per-topology outcome floor, and any
-  snapshot-based restart mechanism. Each is refuted or deferred with reasoning in plan v2 section 2.</li>
+<li><a href="https://eis.ucsc.edu/papers/nwf-C7-digra09-agency.pdf">Agency Reconsidered</a> (Wardrip-Fruin, Mateas,
+  Dow and Sali, DiGRA 2009, DOI 10.26503/dl.v2009i1.369): agency arises when the actions players desire
+  are among those they can take; it is a designed alignment, not raw freedom or branch count.</li>
+<li><a href="https://link.springer.com/chapter/10.1007/978-3-642-34851-8_11">Achieving the Illusion of Agency</a>
+  (Fendt et al., ICIDS 2012, DOI 10.1007/978-3-642-34851-8_11): a non-branching story whose choices
+  were followed only by explicit textual acknowledgment sustained perceived agency comparable to real
+  branching. Acknowledgment feedback, not structural divergence, carries much of perceived agency.</li>
+<li>Cardona-Rivera et al., Foreseeing Meaningful Choices (AIIDE 2014, n=88): players report higher agency
+  when options are foreseen to lead to situationally different states; options differing only in
+  non-situational flavor produced lower agency. The boundary condition on Fendt: anticipated difference
+  at the moment of choosing matters even if the eventual difference is modest.</li>
+<li>Iten, Steinemann and Opwis (CHI 2018): choices feel meaningful when moral, social, and consequential;
+  meaningful choices increased appreciation and narrative engagement more than raw enjoyment.</li>
+<li><a href="https://link.springer.com/chapter/10.1007/978-3-030-04028-4_23">Kway and Mitchell</a> (ICIDS 2018,
+  qualitative): perceived agency from expressing the character within constraints plus the system
+  visibly recognizing that expression, even with no lasting consequences.</li>
+<li><a href="https://onlinelibrary.wiley.com/ai/10.1111/jcom.12093">Green and Jenkins</a> (J. Communication 2014,
+  DOI 10.1111/jcom.12093): interactive narratives reliably produce stronger felt responsibility for
+  outcomes than linear ones; each decision point spawns counterfactual thinking that amplifies emotion,
+  especially after negative outcomes.</li>
+<li>Failure mode: players lose interest when choices are exposed as cosmetic (Cao 2025 survey; the
+  Bandersnatch case study, H. Zhang 2023; Kuo, Hiler and Lutz 2016, DOI 10.1002/cb.1620). WEAK
+  individually, convergent as a set.</li>
 </ul>
-<hr />
-<h2 id="6-working-agreements">6. Working agreements<a class="headerlink" href="#6-working-agreements" title="Permanent link">&para;</a></h2>
+<h3 id="13-rewind-and-backtracking-moderate">1.3 Rewind and backtracking (MODERATE)<a class="headerlink" href="#13-rewind-and-backtracking-moderate" title="Permanent link">&para;</a></h3>
+<p>Kleinman's line (<a href="https://link.springer.com/chapter/10.1007/978-3-319-48279-8_32">ICIDS 2016</a>;
+<a href="https://dl.acm.org/doi/10.1145/3235765.3235773">FDG 2018, DOI 10.1145/3235765.3235773</a>;
+Entertainment Computing 2020, ScienceDirect PII S1875952117301167; cited text-only because Elsevier
+rejects non-browser link checks)
+taxonomizes rewind (Restricted / Unrestricted / External) and finds rewind-as-mechanic can support
+rather than destroy narrative experience; empirical data remain thin. Companion:
+<a href="https://link.springer.com/chapter/10.1007/978-3-030-62516-0_15">Mitchell, ICIDS 2020</a> on repeat
+experience and resistance to closure. The app's one-step Go back and the A13b ending-screen affordance
+are both inside the well-precedented Restricted Rewind class.</p>
+<h3 id="14-choice-frequency-and-density-the-literature-is-nearly-silent">1.4 Choice frequency and density: the literature is nearly SILENT<a class="headerlink" href="#14-choice-frequency-and-density-the-literature-is-nearly-silent" title="Permanent link">&para;</a></h3>
+<p>The only direct experiment found:
+<a href="https://www.tandfonline.com/doi/abs/10.1080/10447318.2014.986639">Moser and Fang</a> (IJHCI 2015,
+DOI 10.1080/10447318.2014.986639): branching structure and more salient decision points each improved
+enjoyment and engagement. Adults, single game, viewing-based. No academic source prescribes choices
+per minute, per N words, or tap pacing for any age group, and none exists for child readers.
+Anything the app codifies here is an engineering judgment anchored on proxies and must be tagged so.</p>
+<h2 id="2-interactive-and-enhanced-e-books-for-children-ages-2-8">2. Interactive and enhanced e-books for children (ages ~2-8)<a class="headerlink" href="#2-interactive-and-enhanced-e-books-for-children-ages-2-8" title="Permanent link">&para;</a></h2>
+<h3 id="21-meta-analytic-core-strong">2.1 Meta-analytic core (STRONG)<a class="headerlink" href="#21-meta-analytic-core-strong" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Takacs, Swart and Bus (Review of Educational Research 2015, DOI 10.3102/0034654314566989; 43 studies,
+  n=2,147): story-congruent multimedia helps comprehension (g+ 0.17) and vocabulary (g+ 0.20);
+  interactive elements (hotspots, games, dictionaries) distract, and are detrimental for disadvantaged
+  children.</li>
+<li>Furenes, Kucirkova and Bus (RER 2021, DOI 10.3102/0034654321998074; 39 studies, n=1,812, ages 1-8):
+  digitization alone lowers comprehension vs paper; with story-congruent enhancements digital wins;
+  adult mediation of print beats unmediated enhanced digital.</li>
+<li>Bus et al. (Early Education and Development 2025; 20 articles, n=1,978, ages 2-8): interactive
+  features' average comprehension effect near zero; mini-games negative; reader-performed actions
+  mirroring the protagonist's actions positive; hotspots and inserted questions ineffective, "likely
+  because both introduce pauses that disrupt the natural flow of story processing."</li>
+<li>Savva, Higgins and Beckmann (JCAL 2021; n=2,317, ages 3-8): e-books vs print g 0.25 for
+  language/literacy overall, vocabulary 0.40, no significant difference for story comprehension.</li>
+</ul>
+<p>Nuance (MODERATE): Yeari, Hadad and Korat 2023 (n=72 kindergarteners) varied interruption frequency of
+story-relevant interactions and found no impairment; the poison is irrelevance, not interruption per
+se. Walker et al. 2017: meaning-highlighting interactions produced large benefits for dual-language
+learners.</p>
+<h3 id="22-silence">2.2 Silence<a class="headerlink" href="#22-silence" title="Permanent link">&para;</a></h3>
+<p>No study manipulates narrative branching choices as the interactive feature in children's e-books.
+Whether a plot choice behaves like a distracting hotspot or a story-congruent action for a 4- or
+6-year-old is empirically open. Safest reading: a choice that mirrors the protagonist's dilemma sits on
+the beneficial side of the Bus 2025 split; decorative tappables do not.</p>
+<h2 id="3-reading-rate-norms-vs-the-per-band-wpm-constants">3. Reading-rate norms vs the per-band WPM constants<a class="headerlink" href="#3-reading-rate-norms-vs-the-per-band-wpm-constants" title="Permanent link">&para;</a></h2>
+<p>Anchors (STRONG):</p>
+<ul>
+<li>Oral reading fluency, grades 1-6: Hasbrouck and Tindal 2017
+  (<a href="https://files.eric.ed.gov/fulltext/ED594994.pdf">ERIC ED594994</a>); 50<sup>th</sup>-percentile spring WCPM:
+  G1 60, G2 100, G3 112, G4 133, G5 146, G6 146.</li>
+<li>Adult silent reading: Brysbaert 2019 meta-analysis (JML, DOI 10.1016/j.jml.2019.104047; 190 studies,
+  n=18,573): 238 wpm non-fiction, 260 fiction (normal range roughly 175-320); adult oral 183 wpm.</li>
+<li>Children's silent reading: Taylor 1965 norms (G1 80 ... G4 158 ... G12 250), with
+  <a href="https://ila.onlinelibrary.wiley.com/doi/full/10.1002/rrq.137">Spichtig et al. 2016</a>
+  (RRQ, DOI 10.1002/rrq.137) showing today's growth curve is shallower with a grade 6-8 plateau, so
+  Taylor's upper-grade numbers overestimate the modern median child.</li>
+</ul>
+<p>Audit of <code>_READING_PACE_WPM</code> (<code>validator/band_profile.py</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Band</th>
+<th>App wpm</th>
+<th>Anchor</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3-5 (read-aloud)</td>
+<td>100</td>
+<td>adult oral 183 wpm; no norm for picture-book read-aloud with dwell</td>
+<td>Plausible, unanchored; label as assumption</td>
+</tr>
+<tr>
+<td>5-8</td>
+<td>90</td>
+<td>ORF G1-2 60-100; Taylor G2 115</td>
+<td>Well placed, conservative</td>
+</tr>
+<tr>
+<td>8-11</td>
+<td>120</td>
+<td>ORF G3-5 112-146; Taylor G3-4 138-158</td>
+<td>Slightly conservative; headroom to ~130-135</td>
+</tr>
+<tr>
+<td>10-13</td>
+<td>150</td>
+<td>ORF G6 146; Taylor G5-7 discounted per Spichtig</td>
+<td>Reasonable</td>
+</tr>
+<tr>
+<td>13-16</td>
+<td>190</td>
+<td>Taylor G8-10 204-224 minus plateau</td>
+<td>Reasonable</td>
+</tr>
+<tr>
+<td>16+</td>
+<td>220</td>
+<td>adult fiction 260, range 200-320</td>
+<td>Conservative by 10-15%, sensible margin</td>
+</tr>
+</tbody>
+</table>
+<p>Caveat: all norms are for continuous passages. None includes decision-point dwell time; per-node time
+estimates should treat choice deliberation as a separate additive term (no literature quantifies child
+choice-dwell time).</p>
+<h2 id="4-fail-states-frustration-and-persistence-by-age">4. Fail states, frustration, and persistence by age<a class="headerlink" href="#4-fail-states-frustration-and-persistence-by-age" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Smiley and Dweck 1994 (Child Development): even 4-5-year-olds show helpless responses to failure;
+  learning-goal orientation protects persistence. Foundational, replicated tradition.</li>
+<li>Leonard et al. 2021 (Developmental Psychology; 3 preregistered experiments, n=319, ages 4-6, STRONG):
+  children persist when they perceive performance improving; flat/no-progress feedback demotivates.
+  Design translation: visible progress across retries buys retry tolerance in young children.</li>
+<li>Chase 2001 (n=289, ages 8-14): high-self-efficacy children attribute failure to effort and persist;
+  low-self-efficacy children attribute to ability and disengage.</li>
+<li>Fear-content curve (Weems and Costa 2005, JAACAP,
+  <a href="https://pubmed.ncbi.nlm.nih.gov/15968234/">PMID 15968234</a>): separation fears dominate ~6-9, death
+  and danger fears peak ~10-13, social-evaluation and failure fears dominate 14-17. Preschoolers are
+  frightened by perceptually scary imagery even when narratively benign (Cantor's fright-reaction
+  program).</li>
+<li>Games scholarship: failure engages when framed as the player's responsibility and recoverable (Juul,
+  <a href="https://jesperjuul.net/text/fearoffailing/">Fear of Failing</a>); low-stakes multiple-chance settings
+  reduce frustration (Shokeen et al., CHI PLAY 2020). WEAK to MODERATE.</li>
+</ul>
+<p>Silence: no study measures retry tolerance or fail-ending acceptance in branching stories for
+children, at any age. There is no empirical basis for a specific "no death endings under age X" line;
+the per-band <code>forbidden_ending_kinds</code> policy is directionally supported (preschool helplessness
+vulnerability; death salience peaking 10-13) but cannot be fine-tuned from literature.</p>
+<h2 id="5-branching-structure-replay-and-choice-counts">5. Branching structure, replay, and choice counts<a class="headerlink" href="#5-branching-structure-replay-and-choice-counts" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Moser and Fang 2015 (above) is the lone controlled structure experiment: branching plus more salient
+  decisions improved engagement (adults).</li>
+<li>Gamito et al. 2021 (n=64): showing post-ending feedback about unchosen paths increased replay intent
+  via curiosity without remorse. Convergent with Detroit: Become Human's post-chapter flowcharts
+  (Lagrange, DiGRA 2023; Nash et al. 2025, RRQ, DOI 10.1002/rrq.70079). The best-evidenced replay
+  lever found; candidate for 8-11+ (for 3-8, meta-UI layers have no support, per section 2).</li>
+<li>Choice overload by age: preschoolers overload when cognitive resources are low (Schupak et al. 2019;
+  fourth graders were more satisfied with MORE options); large arrays dilute preference in preschoolers
+  (Miller et al. 2017); adult meta-analyses find overload only under moderators (Scheibehenne et al.
+  2010; Chernev et al. 2015). Net: 2-3 options for 3-5/5-8/8-11; 3-4 permissible from 10-13 up.</li>
+<li>No academic study quantifies ending count, branching factor, or graph shape vs engagement or replay,
+  and none involves children. The <code>min_endings</code> floors and endings-fraction heuristics (~15% prose,
+  ~25% gamebook) are designer priors and should be labeled as such.</li>
+</ul>
+<h2 id="6-implications-for-adr-011-constants-consolidated">6. Implications for ADR-011 constants (consolidated)<a class="headerlink" href="#6-implications-for-adr-011-constants-consolidated" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Verdict from evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Per-band wpm (100/90/120/150/190/220)</td>
+<td>Keep. Defensible against Hasbrouck-Tindal 2017, Taylor 1965, Spichtig 2016, Brysbaert 2019. Label 3-5's 100 as an untested read-aloud assumption. Add a choice-dwell term to time estimates.</td>
+</tr>
+<tr>
+<td>Choices per decision (2-3; 3-4 teen)</td>
+<td>Design recommendation consistent with the evidence, not a measured threshold: the specific 2-3 / 3-4 numbers and the 10-13 switchover are designer priors. Direction supported: fewer options for young bands (overload + flow disruption), more tolerated and preferred from ~4<sup>th</sup> grade. Each added option must read as situationally distinct (Cardona-Rivera).</td>
+</tr>
+<tr>
+<td>Choice cadence per band</td>
+<td>No direct evidence anywhere. ADR-011 section 10 cadence is a designer prior. Adult evidence mildly favors more salient decisions for 10-13+; child e-book evidence favors fewer, story-integral stops at 3-8.</td>
+</tr>
+<tr>
+<td>Flavor/consequential mix</td>
+<td>Flavor-heavy is acceptable IF every choice is acknowledged in the very next text and looks situationally distinct when offered; the emotionally loaded choices should be moral/social/consequential; never frame flavor with high stakes (false-choice trust poisoning).</td>
+</tr>
+<tr>
+<td>Fail-state policy per band</td>
+<td>Directionally supported: 3-5/5-8 setbacks-only with visible retry progress and learning-goal framing; 8-11 recoverable failure, short distance back to the last choice; 10-13+ death/danger developmentally salient rather than harmful; 13-16/16+ full gamebook economics. Numbers are priors, not findings.</td>
+</tr>
+<tr>
+<td>Endings floors / fractions</td>
+<td>No literature anchor. Designer priors; direction (more endings with age, gamebook density for teens) is consistent with the rest of the evidence.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-master-gap-list-silences-kept-as-deliverables">7. Master gap list (silences, kept as deliverables)<a class="headerlink" href="#7-master-gap-list-silences-kept-as-deliverables" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>One slice, one branch, one PR</strong>, off <code>claude/story-diversity-analysis-4hdbdw</code> or off <code>main</code> as each slice
-   lands. Do not accumulate all seven into one review.</li>
-<li><strong>Every new threshold is calibrated against the committed corpus before it ships</strong>, and if it flags an entire
-   class the threshold is suspect, not the class. This is #416's AL-051 and it already changed two decisions in
-   this plan (A8's <code>TAU_STRUCT</code> rejection, A14's band scoping).</li>
-<li><strong>Signed commits, Conventional Commits, no em-dashes.</strong> RAD tags on anything touching timing, external
-   resources, data integrity, concurrency, security, or the safety gate.</li>
-<li><strong>A gate lands with its expected failure set stated up front.</strong> "0 new failures" is a claim to verify, not an
-   assumption.</li>
+<li>No research on choice cadence or tap pacing for any population; none for children.</li>
+<li>No research on children's tolerance for flavor vs consequential choices at any age.</li>
+<li>No screen-length or words-per-node norms by age for interactive readers.</li>
+<li>No study of branching choices as an e-book feature (meta-analyses cover hotspots/games/dictionaries).</li>
+<li>No quantification of ending count, branching factor, or graph shape vs engagement or replay.</li>
+<li>No empirical basis for age-gating death/fail endings in stories (only adjacent literatures).</li>
+<li>No measurement of decision-dwell time in child readers.</li>
 </ol>
+<p>These gaps mean the app's own reading telemetry (deferred behind the privacy review, see the
+unscheduled-work register) is the only realistic path to calibrating cadence and dwell constants.</p>
+<h2 id="full-source-list">Full source list<a class="headerlink" href="#full-source-list" title="Permanent link">&para;</a></h2>
+<p>Locator policy (tightened after PR review, per the README standing rule): every entry carries a DOI,
+a stable URL, or an aggregator link recorded during the research pass; entries whose aggregator link
+did not survive verification are explicitly flagged rather than guessed. DOIs resolve via
+<code>https://doi.org/&lt;doi&gt;</code>. Aggregator links below are Consensus paper pages captured 2026-08-02.</p>
+<p>Choice/agency: Mawhorter et al. FDG 2014
+(<a href="http://www.fdg2014.org/papers/fdg2014_paper_19.pdf">http://www.fdg2014.org/papers/fdg2014_paper_19.pdf</a>), ICCC 2015
+(<a href="https://computationalcreativity.net/iccc2015/proceedings/13_4Mateas.pdf">https://computationalcreativity.net/iccc2015/proceedings/13_4Mateas.pdf</a>), Arts 2018
+(DOI 10.3390/arts7030047); Wardrip-Fruin et al. DiGRA 2009 (DOI 10.26503/dl.v2009i1.369,
+<a href="https://eis.ucsc.edu/papers/nwf-C7-digra09-agency.pdf">https://eis.ucsc.edu/papers/nwf-C7-digra09-agency.pdf</a>); Fendt et al. ICIDS 2012
+(DOI 10.1007/978-3-642-34851-8_11); Cardona-Rivera et al. AIIDE 2014
+(<a href="https://consensus.app/papers/details/5ded2c308cf352a1b28492494a748dd3/">https://consensus.app/papers/details/5ded2c308cf352a1b28492494a748dd3/</a>); Iten et al. CHI 2018
+(<a href="https://consensus.app/papers/details/116cb26e5aae5940ae5e75eed6ef3d91/">https://consensus.app/papers/details/116cb26e5aae5940ae5e75eed6ef3d91/</a>); Kway and Mitchell ICIDS
+2018 (DOI 10.1007/978-3-030-04028-4_23); Carstensdottir et al. CHI 2021
+(<a href="https://consensus.app/papers/details/2022b2aea82f5812ad36413d77838dd7/">https://consensus.app/papers/details/2022b2aea82f5812ad36413d77838dd7/</a>); Green and Jenkins 2014
+(DOI 10.1111/jcom.12093); Kuo et al. 2016 (DOI 10.1002/cb.1620); Cao 2025
+(<a href="https://consensus.app/papers/details/41b0a509bfd65a2a9e84c03dc681a963/">https://consensus.app/papers/details/41b0a509bfd65a2a9e84c03dc681a963/</a>); H. Zhang 2023
+(<a href="https://consensus.app/papers/details/8eaf417ef9bf5c16bc6a1afa059b1935/">https://consensus.app/papers/details/8eaf417ef9bf5c16bc6a1afa059b1935/</a>); Kleinman et al. 2016
+(DOI 10.1007/978-3-319-48279-8_32), 2018 (DOI 10.1145/3235765.3235773), 2020 (Entertainment
+Computing, ScienceDirect PII S1875952117301167, text-only per the link-gate note in section 1.3);
+Mitchell ICIDS 2020 (DOI 10.1007/978-3-030-62516-0_15); Moser and Fang 2015
+(DOI 10.1080/10447318.2014.986639); Hwang et al. 2025
+(<a href="https://consensus.app/papers/details/44d9249b2ab65478badebc8e8b95a329/">https://consensus.app/papers/details/44d9249b2ab65478badebc8e8b95a329/</a>).</p>
+<p>Children's e-books: Takacs, Swart and Bus 2015 (DOI 10.3102/0034654314566989); Furenes, Kucirkova and
+Bus 2021 (DOI 10.3102/0034654321998074); Bus et al. 2025
+(<a href="https://consensus.app/papers/details/9e26ba2de6e65e8fbb6862bc84f3fda9/">https://consensus.app/papers/details/9e26ba2de6e65e8fbb6862bc84f3fda9/</a>); Bus, Takacs and Kegel
+2015 (DOI 10.1016/j.dr.2014.12.004); Savva et al. 2021 (JCAL; the pass's aggregator id did not
+survive verification, flagged per the locator policy); Yeari et al. 2023
+(<a href="https://consensus.app/papers/details/e8cae4d0ed165be79dd5d82928fac116/">https://consensus.app/papers/details/e8cae4d0ed165be79dd5d82928fac116/</a>); Walker et al. 2017
+(<a href="https://consensus.app/papers/details/2f9a70ac67ef5a5c8350988635940dfb/">https://consensus.app/papers/details/2f9a70ac67ef5a5c8350988635940dfb/</a>); Korat et al. 2021
+(<a href="https://consensus.app/papers/details/eb892acaa882588698a9084876c2189d/">https://consensus.app/papers/details/eb892acaa882588698a9084876c2189d/</a>).</p>
+<p>Reading rates: Hasbrouck and Tindal 2017 (ERIC ED594994,
+<a href="https://files.eric.ed.gov/fulltext/ED594994.pdf">https://files.eric.ed.gov/fulltext/ED594994.pdf</a>); Brysbaert 2019 (DOI 10.1016/j.jml.2019.104047);
+Spichtig et al. 2016 (DOI 10.1002/rrq.137); Taylor 1965 norms via Hiebert, Samuels and Rasinski
+(<a href="https://textproject.org/wp-content/uploads/2022/07/Hiebert-samuels-rasinski_Comprehension-based-silent-reading-rates.pdf">https://textproject.org/wp-content/uploads/2022/07/Hiebert-samuels-rasinski_Comprehension-based-silent-reading-rates.pdf</a>);
+Ciuffo et al. 2017 (<a href="https://consensus.app/papers/details/7ed13f9856645c11a5bbeade4d26af20/">https://consensus.app/papers/details/7ed13f9856645c11a5bbeade4d26af20/</a>);
+Chen et al. 2025 (<a href="https://consensus.app/papers/details/45d2dfcaece05cb78a2c6b63a60bb34f/">https://consensus.app/papers/details/45d2dfcaece05cb78a2c6b63a60bb34f/</a>).</p>
+<p>Failure/persistence: Smiley and Dweck 1994
+(<a href="https://consensus.app/papers/details/4004ab65bf1f5c72a9e110b1c261dcda/">https://consensus.app/papers/details/4004ab65bf1f5c72a9e110b1c261dcda/</a>); Leonard et al. 2021
+(<a href="https://consensus.app/papers/details/79ab55da2a2d544481764e05ecc16ece/">https://consensus.app/papers/details/79ab55da2a2d544481764e05ecc16ece/</a>); Chase 2001
+(<a href="https://consensus.app/papers/details/7161d518ec6f530ea0b5bd862ca7a4d8/">https://consensus.app/papers/details/7161d518ec6f530ea0b5bd862ca7a4d8/</a>); Bennett 2018
+(<a href="https://consensus.app/papers/details/6bd631d07d9c5bfb80ad3bcf8adeacac/">https://consensus.app/papers/details/6bd631d07d9c5bfb80ad3bcf8adeacac/</a>); Huang et al. 2017
+(<a href="https://consensus.app/papers/details/2d4c8bbb8a435c33bc1085e4f75f0ee7/">https://consensus.app/papers/details/2d4c8bbb8a435c33bc1085e4f75f0ee7/</a>); Gilmore et al. 2003
+(<a href="https://consensus.app/papers/details/67dd89caa2d1528a80df99915bebb99c/">https://consensus.app/papers/details/67dd89caa2d1528a80df99915bebb99c/</a>); Wang et al. 2026
+(<a href="https://consensus.app/papers/details/8f6f00e530385e71bf9e332ed5fcb9a0/">https://consensus.app/papers/details/8f6f00e530385e71bf9e332ed5fcb9a0/</a>); Yavorska-Vietrova 2021
+(<a href="https://consensus.app/papers/details/f74a80791d215c0d8fbb26e97a9bf1b4/">https://consensus.app/papers/details/f74a80791d215c0d8fbb26e97a9bf1b4/</a>); Weems and Costa 2005
+(PMID 15968234, <a href="https://pubmed.ncbi.nlm.nih.gov/15968234/">https://pubmed.ncbi.nlm.nih.gov/15968234/</a>); Sayfan and Lagattuta 2008
+(DOI 10.1111/j.1467-8624.2008.01161.x); Cantor via Ed Week 1996
+(<a href="https://www.edweek.org/education/what-scares-children/1996/04">https://www.edweek.org/education/what-scares-children/1996/04</a>); Juul, Fear of Failing
+(<a href="https://jesperjuul.net/text/fearoffailing/">https://jesperjuul.net/text/fearoffailing/</a>); Shokeen et al. 2020 (CHI PLAY,
+DOI 10.1145/3383668.3419901).</p>
+<p>Branching/replay/choice count: Gamito et al. 2021
+(<a href="https://consensus.app/papers/details/37d80537fce358b19456c5c8759660ec/">https://consensus.app/papers/details/37d80537fce358b19456c5c8759660ec/</a>); Lagrange DiGRA 2023
+(<a href="https://consensus.app/papers/details/379ce2cb32dc5a24b253a71b2d598f72/">https://consensus.app/papers/details/379ce2cb32dc5a24b253a71b2d598f72/</a>); Nash et al. 2025
+(DOI 10.1002/rrq.70079); Yong et al. 2023
+(<a href="https://consensus.app/papers/details/5463ca5240ed5014a5d250a76b8459d7/">https://consensus.app/papers/details/5463ca5240ed5014a5d250a76b8459d7/</a>); Carstensdottir et al.
+FDG 2019 (<a href="https://consensus.app/papers/details/a45fd572375f50a6a99cbe38dd1ec11f/">https://consensus.app/papers/details/a45fd572375f50a6a99cbe38dd1ec11f/</a>); Breien and
+Wasson 2020 (DOI 10.1111/bjet.13004); Mishra et al. 2025 (WhatIF; the pass's aggregator id did not
+survive verification, flagged per the locator policy); Ashwell 2015 (gray literature, see the
+structure note); Schupak et al. 2019
+(<a href="https://consensus.app/papers/details/c683bb9e48875a3eade8e43918b99902/">https://consensus.app/papers/details/c683bb9e48875a3eade8e43918b99902/</a>); Castelo et al. 2023
+(<a href="https://consensus.app/papers/details/759bf175f6465c93950c3fca51bff2bb/">https://consensus.app/papers/details/759bf175f6465c93950c3fca51bff2bb/</a>); Miller et al. 2017
+(<a href="https://consensus.app/papers/details/e968316b88b25983900de321715b327c/">https://consensus.app/papers/details/e968316b88b25983900de321715b327c/</a>); Tiger et al. 2006
+(<a href="https://consensus.app/papers/details/e2ba74a5d7505ec482266cf0065a33f5/">https://consensus.app/papers/details/e2ba74a5d7505ec482266cf0065a33f5/</a>); Scheibehenne et al. 2010
+(<a href="https://consensus.app/papers/details/2930f189fab95d3495ebbfedb94f142b/">https://consensus.app/papers/details/2930f189fab95d3495ebbfedb94f142b/</a>); Chernev et al. 2015
+(<a href="https://consensus.app/papers/details/c7be5e074f57554893b5ee8df581e539/">https://consensus.app/papers/details/c7be5e074f57554893b5ee8df581e539/</a>).</p>
 
 
 
@@ -3390,7 +3244,7 @@ is not work this plan performs.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 27, 2026 04:06:26 UTC">July 27, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 18:08:08 UTC">August 2, 2026</span>
   </span>
 
     
@@ -3467,10 +3321,10 @@ is not work this plan performs.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

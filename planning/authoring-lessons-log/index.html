@@ -3660,6 +3660,16 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>applied</td>
 <td><code>scripts/audit_ending_valence.py</code> emits PROBLEM rows and exit code 2; <code>tests/unit/test_audit_ending_valence.py</code> (7 cases) proves each, verified by reverting the valence check</td>
 </tr>
+<tr>
+<td>AL-079</td>
+<td>2026-08-02</td>
+<td>Research-base rebuild, <code>docs/planning/research/</code> (story-structure diversity analysis)</td>
+<td>process</td>
+<td>ADR-011 cited its empirical basis as "JHM 2019" plus <code>docs/planning/research/</code>, but the acronym was never expanded, no DOI or URL was recorded, and the research directory was never committed. The mechanism of the loss was then found during the rebuild: <code>.gitignore</code> listed <code>docs/planning/research/</code> under "Local research scratch docs (not source-controlled)", so the ADR cited a directory the repo was configured to never track, and no reviewer could notice the notes missing from a PR that could not contain them. Recovering the source took a dedicated external research pass and succeeded only because the acronym happened to match a real journal (Adams, Beckelhymer and Marr, Journal of Humanistic Mathematics 9(2), 2019, DOI 10.5642/jhummath.201902.05); until then every structural constant was untraceable folklore, and AL-076 had already shown one constant carried an invented citation. Verification found one quoted constant (decisions per playthrough) is derived rather than stated by the paper, and two (words/node, total words) are unverifiable from any indexed source.</td>
+<td>ADR citations must carry full bibliographic data with URL or DOI, and the research notes an ADR cites must be committed in the same PR as the ADR change that cites them (now a standing rule in <code>docs/planning/research/README.md</code>). Fold the corrected citation and the derived/prior labels into the UW-G17 ADR-011 amendment.</td>
+<td>open</td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -3699,7 +3709,7 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 18:08:08 UTC">August 2, 2026</span>
   </span>
 
     

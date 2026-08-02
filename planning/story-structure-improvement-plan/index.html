@@ -6,13 +6,13 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Sequenced implementation plan for the story-diversity work specified in story-diversity-plan-v2.md. Seven slices ordered by dependency and by what is cheapest now, with per-slice verification, rule-ID reservations that keep the work independent of open PR #416, and the three handoff points into the remaining personalization phases (P3 to P9).">
+        <meta name="description" content="The execution plan for the seven root causes and compounding loop identified in story-structure-diversity-critical-analysis.md. Five stages, 24 deliverables with IDs, dependencies, acceptance criteria, a single-owner capacity model, six owner decision gates, and falsifiable success measures split pre-launch vs post-launch.">
       
       
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/story-diversity-implementation-plan/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/story-structure-improvement-plan/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Story Diversity Implementation Plan - CYO Adventure</title>
+        <title>Story Structure and Diversity Improvement Plan - CYO Adventure</title>
       
     
     
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#superseded-for-scheduling-2026-08-02" class="md-skip">
+        <a href="#story-structure-and-diversity-improvement-plan" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Story Diversity Implementation Plan
+              Story Structure and Diversity Improvement Plan
             
           </span>
         </div>
@@ -2718,6 +2718,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2726,10 +2728,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#superseded-for-scheduling-2026-08-02" class="md-nav__link">
+  <a href="#0-objective-and-non-goals" class="md-nav__link">
     <span class="md-ellipsis">
       
-        SUPERSEDED for scheduling (2026-08-02)
+        0. Objective and non-goals
       
     </span>
   </a>
@@ -2737,22 +2739,44 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#0-sequencing-decision-and-what-it-settles" class="md-nav__link">
+  <a href="#1-shape-of-the-plan-critical-path-and-parallel-lanes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        0. Sequencing decision, and what it settles
+        1. Shape of the plan: critical path and parallel lanes
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="0. Sequencing decision, and what it settles">
+    <nav class="md-nav" aria-label="1. Shape of the plan: critical path and parallel lanes">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#handoff-into-personalization-p3-to-p9" class="md-nav__link">
+  <a href="#11-critical-path" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Handoff into personalization P3 to P9
+        1.1 Critical path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-parallel-lanes-suggested-team-split" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Parallel lanes (suggested team split)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-hard-sequencing-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Hard sequencing constraints
       
     </span>
   </a>
@@ -2765,10 +2789,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-corrections-this-plan-applies-to-plan-v2" class="md-nav__link">
+  <a href="#2-stage-0-close-the-deployment-gap" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Corrections this plan applies to plan v2
+        2. Stage 0: close the deployment gap
       
     </span>
   </a>
@@ -2776,10 +2800,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-slice-order" class="md-nav__link">
+  <a href="#3-stage-1-signals-and-selection-correctness" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Slice order
+        3. Stage 1: signals and selection correctness
       
     </span>
   </a>
@@ -2787,132 +2811,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-slice-detail" class="md-nav__link">
+  <a href="#4-stage-2-lift-the-armature-ceiling-the-decisive-bet" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Slice detail
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. Slice detail">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#s0-unblock-docs-and-decisions-only-no-source" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        S0: unblock (docs and decisions only, no source)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#s1-gates-while-enforcement-is-free" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        S1: gates while enforcement is free
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#s2-similarity-signal-correctness-parallel-to-s1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        S2: similarity signal correctness (parallel to S1)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#s3-generation-variety" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        S3: generation variety
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#s4-catalog" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        S4: catalog
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#s5-reader-ux-last-because-it-needs-evidence-this-plan-cannot-produce" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        S5: reader UX (last, because it needs evidence this plan cannot produce)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#s6-close-out" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        S6: close out
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-rule-id-reservations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Rule-ID reservations
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="4. Rule-ID reservations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#41-when-416-does-merge-its-three-conflicts-and-their-resolution" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.1 When #416 does merge: its three conflicts and their resolution
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-explicitly-not-in-this-plan" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Explicitly not in this plan
+        4. Stage 2: lift the armature ceiling (the decisive bet)
       
     </span>
   </a>
@@ -2920,10 +2822,76 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-working-agreements" class="md-nav__link">
+  <a href="#5-stage-3-measure-the-experience" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Working agreements
+        5. Stage 3: measure the experience
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-stage-4-grow-the-structure-space-demand-driven-last" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Stage 4: grow the structure space (demand-driven, last)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-capacity-model-implementation-team-owner-as-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Capacity model (implementation team + owner as gate)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-owner-decision-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Owner decision gates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-success-measures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Success measures
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-risks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Risks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-relationship-to-existing-planning-and-the-sq-to-register-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Relationship to existing planning, and the SQ-to-register map
       
     </span>
   </a>
@@ -2950,414 +2918,635 @@
   
 
 
-  <h1>Story Diversity Implementation Plan</h1>
-
+<h1 id="story-structure-and-diversity-improvement-plan">Story Structure and Diversity Improvement Plan<a class="headerlink" href="#story-structure-and-diversity-improvement-plan" title="Permanent link">&para;</a></h1>
 <blockquote>
-<h2 id="superseded-for-scheduling-2026-08-02">SUPERSEDED for scheduling (2026-08-02)<a class="headerlink" href="#superseded-for-scheduling-2026-08-02" title="Permanent link">&para;</a></h2>
-<p><strong>Do not start work from this document's slice order.</strong> This plan's entire function is sequencing, and
-sequencing of the still-open diversity work has moved to
-<a href="../story-structure-improvement-plan/">story-structure-improvement-plan.md</a> (the <code>SQ-*</code> namespace; its
-section 11 carries the SQ-to-register map). Slices whose work already landed keep their record here.</p>
-<p><strong>Two things here remain binding and are NOT superseded</strong>: section 4's rule-ID reservations (they exist
-to keep rule IDs collision-free against open PR #416, a constraint the SQ plan does not restate), and
-section 4.1's conflict resolutions for when #416 merges. Consult them before minting any new rule ID.</p>
-<p><strong>Specification</strong>: <a href="../story-diversity-plan-v2/">story-diversity-plan-v2.md</a>. That document says <em>what</em> and
-<em>why</em>; this one said <em>in what order</em> and <em>how it is verified</em>. Where the two disagree, plan v2 governs the
-intent and this plan is corrected.</p>
+<p><strong>For the implementation team</strong>: per-deliverable implementation briefs, with file/function anchors,
+current behavior, change specifications, test plans, and the onboarding reading list, are in
+<a href="../story-structure-implementation-briefs/">story-structure-implementation-briefs.md</a>. Read the
+briefs' section 0 before writing any code.</p>
 </blockquote>
-<hr />
-<h2 id="0-sequencing-decision-and-what-it-settles">0. Sequencing decision, and what it settles<a class="headerlink" href="#0-sequencing-decision-and-what-it-settles" title="Permanent link">&para;</a></h2>
-<p><strong>Owner decision (2026-07-26): complete this work before the remaining phases of PR #417/#418
-(personalization P3 to P9). PR #416 waits.</strong> Three consequences follow, and each removes an
-open question this plan would otherwise have to carry.</p>
-<p><strong>PR #416 is not a dependency.</strong> It stays open and unmerged, so <code>main</code> remains at <code>SR-7</code>, <code>PL-22</code>, <code>L2-13</code>. This
-plan therefore reserves the IDs #416 has already implemented and tested rather than claiming them (section 4), so
-neither workstream has to renumber when #416 eventually lands. One consequence to accept deliberately: <code>main</code>
-will carry <code>SR-9</code> with a gap at <code>SR-8</code> until #416 merges. That is recorded in <code>validator-rules.md</code> as a
-reservation, which is cheaper than the alternative of forcing a green, tested PR to renumber.</p>
-<p><strong>A8 no longer waits on #416's recalibrated baseline.</strong> That was listed as a dependency because #416's follow-up
-push was to re-derive the mutation floors. It is not needed: the threshold decision is closed on measurement
-against the <strong>committed</strong> catalog (section 1), and ADR-020's amendment already fixed <code>TAU_CELL</code> at 0.05.</p>
-<p><strong>Landing A8 first means it gates #416's story push, which is the correct order.</strong> #416's AL-014/AL-044 report two
-withheld books at <code>structural_distance</code> 0.0139 against the 0.05 floor. Those books are not in <code>skeletons/</code> yet, so
-they are absent from this plan's 67-pair measurement; both facts are true over different corpora. When #416's
-story artifacts arrive they will fail A8, which is exactly what the gate is for. Building A8 now is what makes
-that catch happen rather than discovering it after import.</p>
-<h3 id="handoff-into-personalization-p3-to-p9">Handoff into personalization P3 to P9<a class="headerlink" href="#handoff-into-personalization-p3-to-p9" title="Permanent link">&para;</a></h3>
-<p>Three items here are preconditions for that work, not merely adjacent to it. Stating them so the boundary is
-explicit:</p>
+<h2 id="0-objective-and-non-goals">0. Objective and non-goals<a class="headerlink" href="#0-objective-and-non-goals" title="Permanent link">&para;</a></h2>
+<p><strong>Objective</strong>: a reader's next story should feel like a new adventure, and the system should be able
+to tell when it will not. Concretely: raise experience-level distinctness between any two stories a
+reader encounters (not graph-level metric distance), on the paths readers actually use.</p>
+<p><strong>Non-goals</strong>, restated from the analysis so they cannot creep back in:</p>
+<ul>
+<li>No relaxation of the safety gate or the determinism architecture. Every deliverable operates inside
+  the ADR-011 constraint grammar.</li>
+<li>No bulk catalog growth ahead of the demand sensor and distinctness measures (analysis section 7).</li>
+<li>No sampling-temperature lever (trades against RL-13; the variation axes are the instrument).</li>
+<li>No new diversity metric may become a target without a falsification path (WS-0 method rule: measure
+  first, no targets asserted in advance of calibration data).</li>
+<li><strong>Deliberately unchanged rails, recorded so their absence from the deliverables is a decision and
+  not an oversight</strong>: PL-20 (min-complete floors) and PL-21 (the offered-cell matrix) are load-bearing
+  safety and scale rails; the envelope-convergence remedy is variance <em>within</em> the rails (SQ-19's
+  PL-17 reshape, SQ-21's outcome economies, SQ-16's grammar measurement), not loosening them. PL-19
+  word budgets stay as-is pending SQ-16's stop-based measurement. The topology checker's three-class
+  collapse (analysis 2.3) gets no checker change: the selection-relevant signal is deliberately moved
+  to SQ-15's experience metrics instead of expanding a label vocabulary nothing verifies.</li>
+</ul>
+<p><strong>Method rules inherited from plan v2</strong>: every claim of "delivered" carries a Ref; a deliverable that
+changes a supervisor-ruled contract says so; effort is S (hours to a day), M (days), L (a week plus or
+a program).</p>
+<h2 id="1-shape-of-the-plan-critical-path-and-parallel-lanes">1. Shape of the plan: critical path and parallel lanes<a class="headerlink" href="#1-shape-of-the-plan-critical-path-and-parallel-lanes" title="Permanent link">&para;</a></h2>
+<p>Five stages ordered by the loop analysis (analysis section 5): the deployed system first, then the
+signals, then the ceiling, then the measures, then growth.</p>
+<h3 id="11-critical-path">1.1 Critical path<a class="headerlink" href="#11-critical-path" title="Permanent link">&para;</a></h3>
+<p>The plan's core outcome (experience-distinct stories on repeated trees, enforced) runs through the
+beat-variant program, and the ATG blocking flip is <strong>scoped, not global</strong>: the guard flips to
+blocking per skeleton as that skeleton's variant slice lands, and globally only once the rollout
+covers the production cells. So the value-critical chain is:</p>
+<p><strong>SQ-11 (ADR) -&gt; G3 (accept) -&gt; SQ-12 (pilot, falsification gate) -&gt; SQ-13 (per-skeleton rollout) -&gt;
+SQ-14 (ATG blocking, scoped per SQ-13 coverage, gate G4)</strong>, with <strong>SQ-03 (act-scoped fill)</strong> joining
+as a prerequisite for SQ-13's large-tree slices. SQ-12 alone never justifies a global flip; that
+would leave the un-varianted majority of the catalog under a blocking guard with frozen beats, which
+is exactly the constraint-conflict failure item 1 of section 1.3 forbids.</p>
+<p>Two chains, named precisely so the diagram, the prose, and the briefs' <code>Depends:</code> lines agree:</p>
+<ul>
+<li><strong>Value-critical chain</strong> (what delivers the objective): SQ-11 -&gt; G3 -&gt; SQ-12 -&gt; SQ-13 -&gt; SQ-14.</li>
+<li><strong>Longest dependency chain</strong> (what determines the schedule's tail): SQ-02 -&gt; SQ-03 -&gt; SQ-13 -&gt;
+  SQ-20 -&gt; SQ-23. This is why SQ-02 starts in week one and SQ-03 immediately after it, even though
+  growth itself is deliberately last.</li>
+</ul>
+<p>Start SQ-11 and SQ-02 immediately after PR review; SQ-03 follows SQ-02 within the first week.</p>
+<pre class="mermaid"><code>flowchart LR
+  subgraph critical["Value-critical chain"]
+    SQ11["SQ-11 ADR"] --&gt; G3{"G3"} --&gt; SQ12["SQ-12 pilot"]
+    SQ12 --&gt; SQ13["SQ-13 rollout"]
+    SQ13 --&gt; SQ14["SQ-14 ATG blocking&lt;br/&gt;(scoped per coverage)"]
+    SQ03["SQ-03 act-scoped fill"] --&gt; SQ13
+  end
+  SQ02["SQ-02 feasibility"] --&gt; SQ03
+  SQ07["SQ-07 selection"] -.SQ-07b plumbing.-&gt; SQ14
+  SQ08["SQ-08 trigger"] --&gt; SQ20["SQ-20 flywheel run"]
+  SQ15["SQ-15 experience metrics"] --&gt; SQ20
+  SQ15 --&gt; SQ19["SQ-19 path-length"]
+  SQ15 --&gt; SQ16["SQ-16 stop grammar"]
+  SQ13 --&gt; SQ20
+  SQ20 --&gt; SQ23["SQ-23 expansion"]</code></pre>
+<h3 id="12-parallel-lanes-suggested-team-split">1.2 Parallel lanes (suggested team split)<a class="headerlink" href="#12-parallel-lanes-suggested-team-split" title="Permanent link">&para;</a></h3>
+<p>Five lanes (A through E in the table below: four engineering-leaning, plus Lane E for growth and
+content, which is authoring- and ops-heavy) run concurrently without stepping on each other's
+files; the owner reviews everything (section 7). Items within a lane are ordered; lanes are
+independent except where the critical path says otherwise.</p>
 <table>
 <thead>
 <tr>
-<th>This plan's item</th>
-<th>Blocks</th>
-<th>Why</th>
+<th>Lane</th>
+<th>Items in order</th>
+<th>Skills</th>
+<th>Notes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>A19</strong> (ATG strips sentinels)</td>
-<td>Any <code>.contract.json</code> declaring a <code>personalizable</code> slot</td>
-<td>The moment a fill carries a sentinel, the ATG's masked leaf distance is deflated and biases toward false FAIL. Dormant only while zero contracts opt in</td>
+<td><strong>A: Pipeline</strong> (critical-path support)</td>
+<td>SQ-05, SQ-02, SQ-03, SQ-04, SQ-06</td>
+<td>Backend, prompts</td>
+<td>SQ-05 first (cheapest real gain); SQ-03 is the long pole</td>
 </tr>
 <tr>
-<td><strong>A20</strong> (backfill 16 contracts)</td>
-<td>P6 / P9 becoming user-visible</td>
-<td>A skeleton with no contract has no slots, so personalization cannot reach it. Shipping the toggle before A20 gives teen readers a feature inert on 43% of their catalog</td>
+<td><strong>B: Signals and selection</strong></td>
+<td>SQ-07, SQ-08, SQ-10 items 1-2, SQ-09(a)</td>
+<td>Backend, simulation</td>
+<td>All independent of Lane A; SQ-07(b) plumbing is a prerequisite for SQ-14 later; SQ-10 item 3 is delivered with SQ-15</td>
 </tr>
 <tr>
-<td><strong>A11</strong> (request-page copy, ADR-023 section 4)</td>
-<td>P9 (the child-facing control)</td>
-<td>ADR-023 makes the rewording a precondition on G18's flag, because the current Route A sentence becomes false under opt-in</td>
+<td><strong>C: Beat variants</strong> (value-critical chain)</td>
+<td>SQ-11, SQ-12, SQ-13, SQ-14</td>
+<td>Design + authoring + backend</td>
+<td>SQ-11 starts day one; SQ-12 starts only after G3 accepts the ADR; SQ-13 consumes Lane A's SQ-03 for large trees</td>
+</tr>
+<tr>
+<td><strong>D: Measurement and reader</strong></td>
+<td>SQ-15, SQ-16, SQ-18, SQ-17, SQ-19</td>
+<td>Backend + frontend</td>
+<td>SQ-18 is the natural frontend-heavy item; SQ-15 feeds Lanes B and E</td>
+</tr>
+<tr>
+<td><strong>E: Growth and content</strong></td>
+<td>SQ-01 (runbook, week one), SQ-09(b), SQ-21, SQ-20, then SQ-22/SQ-23 decisions</td>
+<td>Authoring + ops</td>
+<td>SQ-01 is the single highest-impact week-one item in the whole plan; SQ-09(b)/SQ-21 are authoring-heavy and pair together</td>
+</tr>
+<tr>
+<td>Cross-cutting</td>
+<td>SQ-24</td>
+<td>Docs</td>
+<td>Any time; closes UW-C25/UW-G17</td>
 </tr>
 </tbody>
 </table>
-<p>Nothing else in P3 to P9 depends on this plan, and this plan takes no dependency on them.</p>
-<hr />
-<h2 id="1-corrections-this-plan-applies-to-plan-v2">1. Corrections this plan applies to plan v2<a class="headerlink" href="#1-corrections-this-plan-applies-to-plan-v2" title="Permanent link">&para;</a></h2>
-<p>Measured while sequencing. Each is applied in plan v2 as well; recorded here because each changed the plan.</p>
-<table>
-<thead>
-<tr>
-<th>Finding</th>
-<th>Effect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>A14's fix list is 5 nodes across 4 skeletons.</strong> Two earlier figures in this row's history were both wrong because both came from a static direct-terminal scan: 37 was the unscoped count, then 1 was the band-scoped count. The rule as A14 specifies it follows single-choice corridors over the reachable configuration space, which is deliberately broader. Running the implemented rule: <code>the-quiet-harbor-protocol</code> <code>b_lo_final</code>, <code>the-cinder-bazaar</code> <code>bg_hi_final</code> and <code>bg_lo_final</code>, <code>the-serpent-vaults</code> <code>c22_gate</code>, <code>the-sunken-signal</code> <code>n_ascent</code>. All five inspected and genuine. <code>the-sunken-signal</code> was invisible even to the corrected static scan because it is MVP tier and excluded from <code>_production_candidates</code>, though <code>load_skeleton</code> validates it</td>
-<td>The rule still lands blocking at S effort, but the four skeletons are strict-xfail quarantined and their content fixes move to S4. Also refutes plan v2 section 6.2's claim that no skeleton gates its survivable option away: <code>c22_gate</code> does exactly that</td>
-</tr>
-<tr>
-<td><del><strong>A14's fix list is 1 node, not 37.</strong></del> (superseded by the row above) All 37 all-negative-valence decisions sit at <strong>13-16 (4) and 16+ (33)</strong>, zero at 8-11 or 10-13. A14 applies the negative-valence reading only at 8-11/10-13, so there it is preventive with nothing to fix; the <code>death</code>/<code>capture</code> reading at 13-16/16+ catches exactly <strong>1</strong> (<code>the-quiet-harbor-protocol</code>)</td>
-<td>A14 drops M to S, lands blocking on day one, and the "fix 37 nodes" work item disappears</td>
-</tr>
-<tr>
-<td><strong>A8 at <code>TAU_CELL</code> = 0.05 fails exactly 1 of 67 in-cell pairs</strong> (the known clone at 0.00095; next-lowest 0.09123, median 0.3956)</td>
-<td>A8 lands blocking immediately, no advisory-then-flip phase, no calibration risk</td>
-</tr>
-<tr>
-<td><strong>A <code>TAU_STRUCT</code> gate is rejected</strong>: it would fail 17 of 67 pairs (25%) across 12 of 18 populated cells, and ADR-020's amendment already made <code>TAU_STRUCT</code> documentation-only</td>
-<td>Closes the open threshold decision in plan v2 section 6</td>
-</tr>
-<tr>
-<td><strong>My first pair count was inflated by duplicates.</strong> I originally reported 100 pairs across 28 cells. <code>skeleton_matches_cell</code> treats narrative style as meaningful only at <code>13-16</code> and <code>16+</code>, so below those bands both styles return the same candidate list and every lower-band pair was measured twice. The 28-cell figure also contradicted this plan's own established "15 of 18 non-empty cells" and should have been caught then</td>
-<td>Deduplicated in <code>diversity/incell.py</code> and pinned by a test. Corrected counts: <strong>67</strong> pairs across <strong>18</strong> cells. Every conclusion survives: <code>TAU_CELL</code> still flags exactly 1</td>
-</tr>
-<tr>
-<td><strong>B2 is a blocker, not a parallel docs chore.</strong> <code>runtime-semantics.md</code> section 6 forbids a back button and requires "a revision to this document and an ADR" for any Phase-1 implementation. A12 enables that button in more states and A13b extends it to multi-hop</td>
-<td>B2 moves ahead of A12, A13b and A18 instead of alongside them</td>
-</tr>
-<tr>
-<td><strong>A12 is not a bug fix, and is deferred.</strong> Found while writing B2's ADR. A continuation read's replay origin is retained nowhere: not on <code>ReadingState</code>, not on <code>Completion</code>, and only transiently in router state that <code>series.ts</code> documents as untrusted. Enabling it needs new durable state, a schema/API/OpenAPI change, and server-side validation of that state, because a replay origin is a state-restoration input</td>
-<td>A12 leaves S5 and is reclassified L, deferred. ADR-024 Decision 6 records it as unauthorized with the bar any future decision must meet</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="2-slice-order">2. Slice order<a class="headerlink" href="#2-slice-order" title="Permanent link">&para;</a></h2>
-<p>Seven slices. The rule is: unblock cheaply first, then land gates while the violating set is one node and one
-pair, then fix code correctness, then author content, then touch the reader UI last because it is the only part
-needing evidence this plan cannot generate on its own.</p>
-<table>
-<thead>
-<tr>
-<th>Slice</th>
-<th>Contents</th>
-<th>Gate to start</th>
-<th>Effort</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>S0</strong> Unblock</td>
-<td>B2, A16, B6, plan v2 corrections, PR #415 body</td>
-<td>none</td>
-<td>~1 day</td>
-</tr>
-<tr>
-<td><strong>S1</strong> Gates while free</td>
-<td>A19, A8, A14, B3, B5, B1</td>
-<td>S0 (B2 not required)</td>
-<td>~3-4 days</td>
-</tr>
-<tr>
-<td><strong>S2</strong> Similarity signal</td>
-<td>A1, A2, A3, A4, A5</td>
-<td>none (parallel to S1)</td>
-<td>~3 days</td>
-</tr>
-<tr>
-<td><strong>S3</strong> Generation variety</td>
-<td>A6, A7</td>
-<td>S2 (A6 consumes the signal)</td>
-<td>~2-3 days</td>
-</tr>
-<tr>
-<td><strong>S4</strong> Catalog</td>
-<td>A9, A20</td>
-<td>S1 (A8 defines the failure; A16 written)</td>
-<td>~4-5 days</td>
-</tr>
-<tr>
-<td><strong>S5</strong> Reader UX</td>
-<td>naive-ux session, A11, A12, A13b, A18, B4</td>
-<td>S0 (B2's ADR) + UX session</td>
-<td>~4 days</td>
-</tr>
-<tr>
-<td><strong>S6</strong> Close out</td>
-<td>validator-rules.md, capability-register, lessons log</td>
-<td>S1-S5</td>
-<td>~1 day</td>
-</tr>
-</tbody>
-</table>
-<p>S1 and S2 are independent and can run in parallel; everything else is ordered.</p>
-<hr />
-<h2 id="3-slice-detail">3. Slice detail<a class="headerlink" href="#3-slice-detail" title="Permanent link">&para;</a></h2>
-<h3 id="s0-unblock-docs-and-decisions-only-no-source">S0: unblock (docs and decisions only, no source)<a class="headerlink" href="#s0-unblock-docs-and-decisions-only-no-source" title="Permanent link">&para;</a></h3>
+<p>Minimum viable staffing: two engineers (Lanes A+C and B+D merged) plus the owner on gates, review,
+and the authoring-heavy slices. With three engineers, split as tabled. SQ-01 is lane-independent and
+should happen in week one regardless of staffing.</p>
+<h3 id="13-hard-sequencing-constraints">1.3 Hard sequencing constraints<a class="headerlink" href="#13-hard-sequencing-constraints" title="Permanent link">&para;</a></h3>
+<p>From the review (violating these re-creates the loop):</p>
 <ol>
-<li><strong>B2</strong>: file the <code>runtime-semantics.md</code> section 6 revision plus a backtracking ADR. The ADR must cover what
-   ships today (single-step replay-based Go back, <code>Reader.tsx:210</code>) <strong>and</strong> what A13b adds (bounded multi-hop to
-   the nearest branching ancestor), so A13b does not require a second amendment. Record why path replay rather
-   than snapshots, which section 6's own rationale already argues and four corpus sources independently support.</li>
-<li><strong>A16</strong>: write the rule that a non-final series book is never retired before its replacement ships in the same
-   release, with the fallback of re-cutting book 1 to <code>is_final</code>. Costs nothing now and binds A9 in S4.</li>
-<li><strong>B6</strong>: the single ADR-016 amendment, covering ring-2 <strong>attribution</strong> granularity (this plan) and ring-2
-   <strong>personalization</strong> granularity (ADR-023 section 3) in one edit. ADR-016 already carries the proposed addendum
-   naming both; this replaces it with the real sentence. Do not write one half.</li>
-<li>Apply the section 1 corrections to plan v2 (done) and update <strong>PR #415's body</strong>, which still advertises
-   "eighteen deliverables", <code>SR-8</code>, and "<code>PL-23</code> is free". That body is the handoff artifact for the other
-   workstreams, so a stale rule ID there actively misdirects them into the collision.</li>
+<li><strong>SQ-14 (ATG blocking) is scoped to variant coverage: per skeleton after that skeleton's SQ-13
+   slice, global only after the rollout covers production cells, and never before SQ-12 proves
+   variants work.</strong> Blocking a guard over frozen beats creates an unsatisfiable constraint set
+   (directive says differentiate, contract says depict the same scene) and yields retry loops;
+   scoping is what makes the flip incremental instead of a cliff.</li>
+<li><strong>SQ-17 (D11 replacement) requires the two-compliant-trees floor</strong> or each cell transitions
+   through a scheduled pool-of-1 trough at the 4-merges/month promotion rate.</li>
+<li><strong>SQ-20/SQ-23 (growth) after SQ-08 (trigger respec) and SQ-15 (experience metrics)</strong>, so growth is
+   aimed by a sensor that works and judged by a measure that correlates with experience.</li>
+<li><strong>Every catalog-growth merge adds its slotting-plus-variant obligation to the Stage 2 schedule at
+   promotion time</strong> (capacity rule, section 7). No silent debt.</li>
 </ol>
-<p><em>Verification</em>: <code>markdownlint</code>, the no-em-dash hook, and a link check on the new ADR. No tests.</p>
-<h3 id="s1-gates-while-enforcement-is-free">S1: gates while enforcement is free<a class="headerlink" href="#s1-gates-while-enforcement-is-free" title="Permanent link">&para;</a></h3>
-<p>Order within the slice matters only for A19, which should land first so no personalizable slot can be declared
-ahead of it.</p>
-<ol>
-<li><strong>A19</strong> (S): call <code>strip_sentinels</code> at the ATG's tokenising boundary in <code>diversity/leaf.py</code>. Regression test:
-   a sentinel-bearing fill and its stripped equivalent produce identical <code>content_tokens</code>, masked token sets, and
-   leaf distance. <code>diversity/leaf.py</code> is untouched by both #416 and #418, so this is conflict-free.</li>
-<li><strong>A8</strong> (S): in-cell clone audit in CI, using <code>structural_distance</code> against the <strong>loaded</strong> <code>TAU_CELL</code> from
-   <code>ws5_floor_baseline.json</code>, never a literal. Hook into the existing <code>diversity</code> job in <code>ci.yml:512</code>, which
-   already runs pure-Python diversity checks over committed fixtures. Land <strong>blocking</strong>; the one expected failure
-   is the clone pair, which S4 fixes. Until then, quarantine that single pair with a strict xfail-equivalent
-   allowlist that names it and fails if the list is not shrinking, following #416's pattern.</li>
-<li><strong>A14</strong> (S): <code>L2-14</code> in <code>validator/layer2.py</code>. Stated over the <strong>reader-visible decision unit</strong>: no reachable
-   branching node may have every downstream path reach a forbidden terminal without an intervening visible choice.
-   Band-scoped: negative-valence at 8-11 and 10-13, <code>death</code>/<code>capture</code> at 13-16 and 16+. This also closes the 776
-   single-choice fatal corridors, which the node-scoped reading missed. One fix
-   (<code>the-quiet-harbor-protocol</code>). <code>L2-9</code> already blocks zero-visible-choice configurations, so the gated case is
-   covered and the <code>L2-12</code> 100,000-configuration cap is not newly constrained.</li>
-<li><strong>B3</strong> (M): <code>SR-9</code> in <code>validator/series.py</code>. For <code>carries_state=true</code>, every satisfying-ending state of book N
-   must be an admissible entry state for book N+1. Note <code>series.py:210-213</code> checks ending <strong>existence</strong>, not
-   reachability, so this is genuinely uncovered. Before building, confirm against #416's <code>SR-8</code> (carried-variable
-   <em>declaration</em> integrity, a static comparison) that the two do not collapse into one rule; if #416's AL-038
-   read-time carry audit is taken up there, B3 folds in and closes as duplicate.</li>
-<li><strong>B5</strong> (S): escalate <code>series-stress-test-findings.md</code> F3 from guidance to a gate-detectable defect. <code>SR-9</code>
-   should be what detects it, so build after B3.</li>
-<li><strong>B1</strong> (M): validate <code>save_slots</code> in <code>validate_reading_state</code> (<code>reading.py:168-175</code>) or remove it from the PUT
-   body. It is the only reading-state field omitted, which defeats the <code>#CRITICAL</code> anti-forgery intent two lines
-   above. Inert today; a forged slot becomes a state-restoration input the moment anything restores from one.</li>
-</ol>
-<p><em>Verification</em>: <code>uv run pytest</code>, <code>ruff check</code>, <code>basedpyright src/</code>, plus a full-catalog gate run showing exactly
-the expected failure set (1 for A14, 1 pair for A8, 0 new for A19).</p>
-<blockquote>
-<p><strong>Correction to A8's commit message (2026-07-26).</strong> That message said "yamllint is unchanged on <code>ci.yml</code> (no
-long lines added)". The parenthetical is true and was verified, but the sentence reads as though the check
-passes, and it does not: the hook runs <code>yamllint --strict</code>, so warnings fail it, and <code>ci.yml</code> carries three
-pre-existing warnings (line 10 <code>on:</code> read as a truthy value, and long lines at 110 and 501). Verified precisely:
-the finding set is <strong>byte-identical</strong> before and after the A8 edit, and the edit's longest added line is 79
-characters, so nothing here was introduced by this work. Left unfixed deliberately rather than silently: the
-<code>on:</code> warning is the well-known GitHub Actions false positive whose fix changes a workflow key, and
-<code>.pre-commit-config.yaml</code>'s own comment records this hook as deferred to pre-push precisely to avoid "gating
-every commit on <code>--strict</code> warnings across the generated workflow files". Fixing it is a separate, non-diversity
-change and should not ride along here.</p>
-</blockquote>
-<h3 id="s2-similarity-signal-correctness-parallel-to-s1">S2: similarity signal correctness (parallel to S1)<a class="headerlink" href="#s2-similarity-signal-correctness-parallel-to-s1" title="Permanent link">&para;</a></h3>
-<p>Pure code correctness, independent of catalog scale. Order is fixed: A1 and A2 change the vocabulary and the
-measure, so A5 must re-derive <code>tau_theme</code> after both.</p>
-<ol>
-<li><strong>A1</strong> (M): two vocabularies. Freeze <code>_THEME_TAG_MAP</code> as the <strong>echo</strong> vocabulary, since that map <em>is</em> what a
-   child sees; add a separate <strong>similarity</strong> vocabulary and normalise the stored side's raw <code>metadata.themes</code> into
-   it instead of passing them through verbatim (<code>normalize.py:544</code>).</li>
-<li><strong>A2</strong> (S): a containment measure for request-versus-story, in a <strong>new</strong> function. Leave <code>jaccard_similarity</code>
-   and its documented empty-set semantics alone (<code>normalize.py:470-482</code> records "must never register as similar to
-   anything" as a deliberate WS-0 decision). This is what fixes the 0.333-versus-0.35 asymmetry.</li>
-<li><strong>A3</strong> (S): saturation ceiling guard. A2 pushes toward "similar", and with 3-tree cells
-   <code>cell_theme_saturation</code> pins at 1.0 after three reads, which would make <code>_blended_weight</code> rank-equivalent to
-   recency alone. Add an upper bound on the escalation-trigger-rate metric plus a regression test pinning
-   saturation behaviour.</li>
-<li><strong>A4</strong> (S): a committed premise panel (pets, sports, family, school, music, invention, weather, food,
-   siblings) paired with catalog themes. Publish measured coverage; assert no target in advance.</li>
-<li><strong>A5</strong> (S): re-derive <code>tau_theme</code> on the A4 panel and record the value with its basis.</li>
-</ol>
-<p><em>Verification</em>: the existing <code>diversity</code> CI job plus new unit tests. A3's regression test is the one that must
-fail before its fix.</p>
-<h3 id="s3-generation-variety">S3: generation variety<a class="headerlink" href="#s3-generation-variety" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>A6</strong> (M): thread <code>DifferentiationLevel</code> and prior-fill context into <code>fill_skeleton</code> and <code>fill.md</code>. Pass prior
-   fills' <strong>published titles and settings</strong> only, never prior premises, so one child's request text cannot enter a
-   sibling's generation prompt. Fence at reuse.</li>
-<li><strong>A7</strong> (S): a variation-axis library (narrative distance, tonal register, sensory emphasis, pacing, whose
-   viewpoint the scene favours), one axis drawn per request. Varies the dimension rather than sampling noise, so
-   it does not trade against reading-level stability.</li>
-</ol>
-<p><em>Verification</em>: <code>RL-13</code> must not regress, since A7 changes prose character. Run the reading-level suite over
-regenerated fills before and after.</p>
-<h3 id="s4-catalog">S4: catalog<a class="headerlink" href="#s4-catalog" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>A9</strong> (M): resolve the clone pair under the disposition principle, fix-or-replace, no series exemption. Bound
-   by A16: these are brass-lantern books 1 and 2, so "retire one" is unavailable; the replacement must accept book
-   1's carried state, which <code>SR-9</code> now gates. Shrink A8's allowlist to empty in the same change.</li>
-<li><strong>A20</strong> (M): backfill the 16 missing theme contracts, ordered <code>13-16</code> (6), <code>16+</code> (5), <code>10-13</code> (4), <code>3-5</code> (1).
-   Write the clone pair's contracts <strong>after</strong> A9 settles, or the work is done twice. Declaring any slot
-   <code>personalizable</code> requires A19 first, and is P3-to-P9 work rather than this plan's.</li>
-</ol>
-<p><em>Verification</em>: <code>check_skeleton</code> on every touched skeleton, the promotion gate, and A8 green with an empty
-allowlist. Note #416's AL-014 warns that no hand-authored skeleton currently passes the promotion gate because
-<code>check_promotion_bundle.py</code> requires a lineage sidecar unconditionally; if A20's contracts trip that, the fix
-belongs to #416 and A20 should not work around it silently.</p>
-<h3 id="s5-reader-ux-last-because-it-needs-evidence-this-plan-cannot-produce">S5: reader UX (last, because it needs evidence this plan cannot produce)<a class="headerlink" href="#s5-reader-ux-last-because-it-needs-evidence-this-plan-cannot-produce" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>Run a <code>naive-ux-check</code> session</strong> with the current child test readers, on the three questions section 0 of
-   plan v2 names: does a 3-hop rewind read as "the app took my turn" (A13b), is the lower back-chevron confusable
-   with the one that exits the book (A18), does a hero-name field with a shuffle land as a toy or a restriction
-   (A11). These are empirical and currently answerable; do not build A11, A13b or A18 first.</li>
-<li><strong>A11</strong> (M): request-page copy. Adopt ADR-023 section 4's wording verbatim rather than drafting an alternative.
-   Drop the fixed-structure statement and the unnameable forbidden-theme warning from the kid surface; add "A
-   grown-up reads your idea first. Then it takes a little while to write your book." Shuffle is display-only among
-   generic names. Serve the guardian set off <code>ReasonCode</code> / <code>band_profile</code> / <code>content_nogo</code>; the kid response
-   still omits <code>content_nogo</code> values entirely.</li>
-<li><strong>A12 is removed from this slice and deferred.</strong> S0 established it is not a bug fix: a continuation read's
-   replay origin is not retained anywhere (see plan v2 A12 and ADR-024 Decision 6), so enabling it needs new
-   durable state plus a schema, API and OpenAPI change, and that state is a state-restoration input that must be
-   server-validated or it becomes a second <code>save_slots</code>. It needs its own decision, and A13b does not wait on it.</li>
-<li><strong>A13b</strong> (M): a second, separately labelled ending-screen affordance, "Try a different way", walking up to 3
-   hops to the last node offering a real pick and falling back to one step when there is none. Availability stays
-   today's <code>path.length &gt; 1</code> and replayable, <strong>never</strong> "an untaken choice exists within 3 hops", which would hide
-   the button at the 88 preserved climaxes. Leave the in-story one-step Go back untouched (A13a).</li>
-<li><strong>A18</strong> (S): give the story-level control a circular-arrow glyph distinct from the top-bar Leave chevron, and
-   make the ending-screen affordance primary weight rather than ghost.</li>
-<li><strong>B4</strong> (S): <code>machine.ts:108</code> resets to the start node with declared initials, fabricating <code>has_lantern=true</code>
-   and <code>vigor=5</code> a continuation reader never earned while discarding carried state.</li>
-</ol>
-<p><em>Verification</em>: <code>npm run lint</code>, <code>npm run typecheck</code>, <code>npm run test:run</code>, plus the Playwright mocked tier. A13b
-needs a test at an ending reached through a single-choice corridor, since that is the 58-of-73 case.</p>
-<h3 id="s6-close-out">S6: close out<a class="headerlink" href="#s6-close-out" title="Permanent link">&para;</a></h3>
-<p>Update <code>validator-rules.md</code> (the catalog is lockstep-tested, so this is not optional), <code>capability-register.md</code>
-(K19's copy dependency, and A11's delivered state), and append to <code>authoring-lessons-log.md</code> if #416 has merged by
-then. Confirm no <code>PL-23</code>/<code>PL-24</code>/<code>SR-8</code> reference crept in.</p>
-<blockquote>
-<p><strong>S6 DELIVERED 2026-07-26, with two corrections to this paragraph.</strong></p>
-<p><strong>First: "the catalog is lockstep-tested" was false.</strong> No test existed. The only reference to
-<code>validator-rules.md</code> anywhere in the suite was a docstring line in <code>test_fixtures_validate.py</code>. That is precisely
-how the drift below was able to accumulate unnoticed, so the durable fix is not the doc edit but the missing test:
-<code>tests/unit/test_validator_rules_catalog.py</code> now asserts both directions, and a rule id can no longer be enforced
-in <code>validator/</code> while absent from the catalog.</p>
-<p><strong>Second: the gap was far larger than L2-14 and SR-9.</strong> Measured, the catalog was missing <strong>L2-13, L2-14, and the
-entire SR family (SR-1 through SR-7 and SR-9), eight rules and one whole family</strong>, all enforced in code. The SR
-family is blocking at publish (<code>publishing/service.py</code> raises <code>BusinessLogicError(rule="series_validation")</code>), so
-the catalog was silent about a gate that can refuse a book. All are now catalogued, in a new <strong>Series</strong> section,
-with SR's out-of-<code>run_gate</code> position stated in the Pass/Fail table and the rule-application order. Catalog bumped
-to v1.3.</p>
-<p>Two other findings fell out of writing the test. <strong><code>L2-8</code> is catalogued but no code emits it</strong>: its named failure
-is unreachable rather than unimplemented, because <code>run_gate</code> early-returns on any L1 error, L1-6 already validates
-condition operators and types, and <code>validator/walk.py</code> has no raise path. Its row now carries <strong>NO ID EMITTED</strong>
-with that reasoning, and the test accepts that shape alongside <strong>RESERVED</strong>. And the register's <code>A11</code> collides
-with this plan's <code>A11</code>: the register's is corpus quality tooling (now part-delivered, still 🟡 because
-corpus-level <em>reading-level</em> drift tooling does not exist), while K19's copy dependency names <em>this plan's</em> A11,
-a <code>RequestStory.tsx</code> change that is unstarted. Both are now disambiguated in the register, and the copy dependency
-is recorded as still open.</p>
-<p><code>PL-23</code>/<code>PL-24</code> confirmed absent from code and catalog. <code>SR-8</code> appears only as an explicitly RESERVED row naming
-PR #416 as its holder. <code>authoring-lessons-log.md</code> is <strong>correctly not created</strong>: #416 has not merged, so its
-precondition is unmet.</p>
-</blockquote>
-<hr />
-<h2 id="4-rule-id-reservations">4. Rule-ID reservations<a class="headerlink" href="#4-rule-id-reservations" title="Permanent link">&para;</a></h2>
+<h2 id="2-stage-0-close-the-deployment-gap">2. Stage 0: close the deployment gap<a class="headerlink" href="#2-stage-0-close-the-deployment-gap" title="Permanent link">&para;</a></h2>
+<p>The analysis's largest correction: as deployed, a child can reach zero catalog books and the
+automated fill cannot render a large, method-dependent fraction of the skeletons (16-29 of 58 under
+plausible token estimates; SQ-02's calibrated estimator settles the exact set). Until this stage
+lands, catalog-diversity work is idle machinery.</p>
 <table>
 <thead>
 <tr>
 <th>ID</th>
-<th>Owner</th>
-<th>State</th>
+<th>Deliverable</th>
+<th>Evidence / register</th>
+<th>Effort</th>
+<th>Acceptance</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>L2-14</code></td>
-<td>this plan (A14)</td>
-<td>Free on <code>main</code> and not claimed by #416, whose "adds L2-13" is a catalog entry for a rule already in <code>layer2.py</code>. Claim it</td>
+<td>SQ-01</td>
+<td><strong>Ship the inventory.</strong> Run <code>generation/import_catalog.py</code> for the 23 authored books, drive them through the re-moderation sweep (#529/#537) and per-story <code>publishing/catalog_publish.py</code>. Owner gate G1 decides the publish list and order.</td>
+<td>Analysis 2.6; UW-G14; catalog-first-inventory-gap.md</td>
+<td>S (process) + review time</td>
+<td>A kid profile's library lists catalog books in every offered band that has approved content; <code>visibility='catalog'</code> rows exist; UW-G14 closed with Ref</td>
 </tr>
 <tr>
-<td><code>SR-8</code></td>
-<td><strong>PR #416</strong></td>
-<td>Implemented, tested, catalogued there. <strong>Do not use.</strong> Reserve</td>
+<td>SQ-02</td>
+<td><strong>Fill-feasibility predicate in selection.</strong> Estimate per-skeleton token demand (sum of <code>words=</code> targets plus JSON overhead, calibrated against the 26 committed fills); exclude infeasible candidates from automated-path selection with a logged reason; a cell whose feasible pool is empty 422s with a distinct reason code instead of burning the repair budget.</td>
+<td>Analysis 2.6, 5; AL-046; UW-C07</td>
+<td>S-M</td>
+<td>No automated job targets an infeasible skeleton (test); the doomed-request path is a fast 422; feasible-pool size is logged per request</td>
 </tr>
 <tr>
-<td><code>SR-9</code></td>
-<td>this plan (B3)</td>
-<td>Claim, accepting a documented gap at <code>SR-8</code> until #416 merges</td>
+<td>SQ-03</td>
+<td><strong>Act-scoped fill loop.</strong> Chunk the fill by act/subtree with a stable shared context, per AL-046's proposal; each chunk re-states the differentiation directive and variation axis (which also makes SQ-05's repair threading uniform). Landing SQ-03 also flips SQ-02's selector input from the whole-story cap to the per-chunk cap, so previously infeasible skeletons re-enter selection; the estimator survives for chunk sizing and logging.</td>
+<td>Analysis 2.6, 2.7; AL-046</td>
+<td>M-L</td>
+<td>The largest production skeleton fills end to end on the automated path; per-chunk fidelity checks pass; one committed fill of a previously infeasible skeleton; an end-to-end test from candidate selection (previously infeasible skeleton now selectable) through successful act-scoped fill</td>
 </tr>
 <tr>
-<td><code>PL-23</code>, <code>PL-24</code></td>
-<td><strong>PR #416</strong></td>
-<td>Implemented there (clock advisory, ending-mix shape). <strong>Do not use.</strong> Reserve</td>
+<td>SQ-04</td>
+<td><strong>Skill-path parity.</strong> <code>.claude/skills/cyo-author/</code> reads the persisted differentiation level, prior-title context, and variation axis; <code>generation/import_story.py</code> records them; the skill's compliance report shows which axis was applied.</td>
+<td>Analysis 2.7; no register row (new)</td>
+<td>S-M</td>
+<td>A skill-authored fill's report names its axis; grep shows import_story consuming the metadata; parity test comparing worker and skill prompt contexts</td>
 </tr>
 <tr>
-<td><code>PL-25</code></td>
-<td>this plan</td>
-<td>Reserved only if a fail-depth floor is ever built. Plan v2 argues it probably is not needed once A13 lands</td>
+<td>SQ-05</td>
+<td><strong>Wiring fixes (two small, high-leverage).</strong> (a) <code>select_axis</code>: pass the family's recent axis keys as <code>exclude=</code>, seed per job id so re-runs vary; (b) thread the variation axis and differentiation directive into all three repair prompts (structural, fidelity, moderation soft-gate).</td>
+<td>Analysis 2.7, 5; no register row (new)</td>
+<td>S</td>
+<td>Re-run of a rejected fill draws a different axis (test); repair prompt fixtures contain the directive block; axis-repeat rate on consecutive family requests drops below 1/15 baseline</td>
+</tr>
+<tr>
+<td>SQ-06</td>
+<td><strong>Cover-art style variation.</strong> Parameterize the fixed style clause in <code>covers/prompt.py</code> by band and tone (teen gamebooks stop getting "warm, whimsical" covers).</td>
+<td>Analysis 2.7</td>
+<td>S</td>
+<td>At least 3 distinct style clauses exercised across bands; safety clause behavior unchanged (test)</td>
 </tr>
 </tbody>
 </table>
-<p>Re-verify against #416's branch immediately before claiming any of these, per plan v2's amended method rule 5:
-<code>main</code> alone is not a sufficient basis.</p>
-<h3 id="41-when-416-does-merge-its-three-conflicts-and-their-resolution">4.1 When #416 does merge: its three conflicts and their resolution<a class="headerlink" href="#41-when-416-does-merge-its-three-conflicts-and-their-resolution" title="Permanent link">&para;</a></h3>
-<p>Measured 2026-07-26. #416 is behind <code>main</code> and GitHub refuses its branch update with
-<code>422 merge conflict between base and head</code>. All three conflicts are <strong>complementary, not competing</strong>, and the
-resolution was worked and verified before #416 was deferred. Recorded so it is not re-derived:</p>
-<ol>
-<li><strong><code>src/cyo_adventure/validator/reading_level.py</code></strong> (the substantive one, and the same RL-13 loop A19 concerns).
-   <code>main</code> (#418) sets <code>body = strip_sentinels(node.body)</code>; #416 sets <code>body = node.body</code> and adds
-   <code>if _FILL_MARKER in body: continue</code>. <strong>Keep both</strong>, stripping first and then checking the marker. Safe in that
-   order because <code>SENTINEL_RE</code> excludes <code>&lt;</code> and <code>&gt;</code> from its value charclass, so a <code>&lt;&lt;FILL ...&gt;&gt;</code> can never sit
-   inside a sentinel and stripping can neither create nor destroy a marker.</li>
-<li><strong><code>tests/unit/test_reading_level.py</code></strong>: purely additive on both sides (#416 adds one function, #418 adds a
-   two-test class). <strong>Keep both.</strong> Verified: 15 pass together, which is the direct proof that resolution 1 is right.</li>
-<li><strong><code>docs/planning/capability-register.md</code></strong>: #416 never touched S10 or S11, so the conflict there is adjacency
-   only and <strong><code>main</code>'s versions win outright</strong>. The one real overlap is <strong>S12</strong>, where both sides added different
-   notes (#416's aggregate-substrate design, #418's ADR-023 ring-3 forward-binding constraint). <strong>Keep both</strong>, with
-   a sentence boundary at the splice.</li>
-</ol>
-<p><code>ruff check</code> and <code>ruff format --check</code> were clean on the result. This resolution belongs to whoever merges #416; it
-is not work this plan performs.</p>
-<hr />
-<h2 id="5-explicitly-not-in-this-plan">5. Explicitly not in this plan<a class="headerlink" href="#5-explicitly-not-in-this-plan" title="Permanent link">&para;</a></h2>
-<p>Unchanged from plan v2 sections 2 and 5, restated so scope does not drift:</p>
+<h2 id="3-stage-1-signals-and-selection-correctness">3. Stage 1: signals and selection correctness<a class="headerlink" href="#3-stage-1-signals-and-selection-correctness" title="Permanent link">&para;</a></h2>
+<p>Make the family-scoped, slug-keyed machinery see readers and structures. All items are independent of
+Stage 0 and can interleave.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Deliverable</th>
+<th>Evidence / register</th>
+<th>Effort</th>
+<th>Acceptance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SQ-07</td>
+<td><strong>Selection rebalance.</strong> (a) Cap the W2.2 theme-overlap attraction bonus (owner gate G2 picks the cap; default proposal 1.3x) so it cannot dominate a 3-tree cell cross-family; (b) add per-profile history scoping with family fallback; &copy; count distinct storybooks, not version rows, in the recency window; (d) de-weight candidates by <code>structural_distance</code> and valence-histogram proximity to the reader's recent trees. The <code>1/(1+x)</code> novelty floor is preserved throughout (decision C-4).</td>
+<td>Analysis 4 items 2-3, 5; plan v2 deferred row (per-profile)</td>
+<td>M</td>
+<td>Monte Carlo over the shipped selector: cross-family first-request concentration on a themed tree drops from ~&frac12; toward ~&#8531;; per-profile repeat rate measured and reported; all existing selection tests pass</td>
+</tr>
+<tr>
+<td>SQ-08</td>
+<td><strong>Flywheel trigger respec.</strong> Count distinct <em>families</em>, not request ids. Contract: the <code>CELL_SATURATED</code> payload stays closed-enum-only (it carries no family field today); family scope reaches the trigger via a request-to-family join at read time on the event's <code>entity_id</code> (the request id), per the implementation brief. Also: treat an empty/unknown theme signature as conservative (counts toward saturation) rather than dissimilar; verify LEAF/CATALOG are reachable for out-of-vocabulary themes in a multi-child window simulation.</td>
+<td>Analysis 5 (dark sensor); flywheel/trigger.py</td>
+<td>S-M</td>
+<td>End-to-end test from saturation emission through distinct-family counting (two requests from one family collapse to one); an unusual-theme family reaches CATALOG within N similar requests (simulation); a single prolific family alone cannot trigger (test); trigger docstring updated</td>
+</tr>
+<tr>
+<td>SQ-09</td>
+<td><strong>Clone labeling and resolution.</strong> (a) Add within-run WL-hash isomorphism to <code>diversity/incell.py</code> (proof labeling; never compare against stored hashes, networkx v3.5 changed them); (b) execute A9 item 2: restructure <code>the-sunken-temple</code> past <code>TAU_CELL</code> (the 35-ending remix design in the register), emptying the allowlist.</td>
+<td>Analysis 2.4, 4 item 5; UW-G03</td>
+<td>S (a) + L (b)</td>
+<td>Audit output labels the pair ISOMORPHIC until fixed; after (b), allowlist empty and the audit passes clean; SR-9 still passes on the brass-lantern chain</td>
+</tr>
+<tr>
+<td>SQ-10</td>
+<td><strong>Metrics honesty.</strong> Items 1-2 (Stage 1): a per-theme-cohort concentration report (which (tree, theme) pairs dominate across families) and dashboard annotations for ECS and net-new-trees stating their known failure modes. Item 3 is explicitly a Stage 3 follow-on delivered with SQ-15 (the flywheel headline metric gains a perceived-distinctness condition); SQ-10 closes at Stage 1 on items 1-2.</td>
+<td>Analysis 5 (metrics reward the failure mode)</td>
+<td>S-M</td>
+<td>The WS-0 report shows cohort concentration; dashboard docstrings state what each metric cannot see</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-stage-2-lift-the-armature-ceiling-the-decisive-bet">4. Stage 2: lift the armature ceiling (the decisive bet)<a class="headerlink" href="#4-stage-2-lift-the-armature-ceiling-the-decisive-bet" title="Permanent link">&para;</a></h2>
+<p>The frozen beat armature is the mechanism of "themes swapped in" (analysis 2.5), and beat variants
+are the only lever that changes the scene a reader gets on a repeated tree. This phase is a program,
+not a task, and it carries the plan's largest authoring cost; the capacity model in section 7 governs
+its schedule.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Deliverable</th>
+<th>Evidence / register</th>
+<th>Effort</th>
+<th>Acceptance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SQ-11</td>
+<td><strong>Alternate-beats design doc and ADR.</strong> Outcome contract per node (same successor state, same choice semantics, same ending kind/valence); 2-3 authored variants per node; per-fill variant-set selection (deterministic, seeded per job); the issued variant becomes the fidelity target; variants change no graph edge, so L1/L2 costs are zero by construction. Two review-mandated requirements: variants are authored under deliberately varied model/prompt/exemplar settings (anti-monoculture), and the ADR includes the capacity model. Owner gate G3 accepts the ADR.</td>
+<td>Analysis 2.5, 5, 6.2; UW-G12 (unblocks it)</td>
+<td>M (doc)</td>
+<td>ADR accepted; schema change for variant storage reviewed against <code>storybook/models.py</code> and <code>slotted_surfaces.py</code>; fidelity gate design names the issued variant as its target</td>
+</tr>
+<tr>
+<td>SQ-12</td>
+<td><strong>Pilot on the two slotted MVP skeletons</strong> (<code>the-lost-mitten</code>, <code>the-clocktower-cipher</code>, already A20-complete). Author 2-3 variants per node; generate paired fills (same tree, same theme, different variant vs same variant); measure masked unigram/bigram distance and RL-13. Falsifiable: the experiment defines success as a measured, pre-registered margin on ATG distance with no RL-13 regression; if variants do not move the distance, the program stops and the plan reverts to catalog growth as the primary lever.</td>
+<td>Analysis 6.2; WS-0 method</td>
+<td>M</td>
+<td>Paired-fill report committed under research/ or evidence/; margin met or program decision recorded either way</td>
+</tr>
+<tr>
+<td>SQ-13</td>
+<td><strong>Variants rollout across all 58 production-eligible skeletons, per skeleton.</strong> The backlog covers the whole production catalog, because the objective is distinctness between any two stories a reader encounters: the <strong>13 unslotted production skeletons</strong> get a combined slotting-plus-variants pass (the 14<sup>th</sup> no-contract file is the MVP seed <code>the-sunken-signal</code>, excluded with the other test-tier scaffolds), and the <strong>45 already-contracted production skeletons</strong> get a variants-only pass (the other 2 contracts belong to the delivered MVP pilots). Each pass also backfills subject-axis values into the skeleton's existing <code>metadata.themes</code> list, closing the 9-of-22 subject-tag gap. Priority order: most-requested cells first (from request history once SQ-01 ships serving data), small trees before the 300-node teens. Each skeleton is its own schedulable slice with its own Ref.</td>
+<td>UW-G01; analysis 6.2 items 6 and 11</td>
+<td>L (program)</td>
+<td>Per-skeleton: contract passes <code>scripts/check_theme_contract.py</code>, variants pass the SQ-11 gate, structural fingerprint unchanged; rollout tracker table appended to this plan</td>
+</tr>
+<tr>
+<td>SQ-14</td>
+<td><strong>ATG contract revision, calibration, and SCOPED blocking.</strong> After SQ-12 proves variants: revise the supervisor-ruled fail-open contract in <code>moderation/leaf_diversity.py</code> (this is a ruling change and says so), calibrate <code>_BAND_THRESHOLDS</code> from pilot panel data, compare against the k most recent same-tree fills (k=3) scoped per profile with family fallback. Blocking is per skeleton, gated on that skeleton's SQ-13 variant slice having landed (a skeleton with frozen beats stays advisory); global blocking is declared only when SQ-13 covers the production cells. Owner gate G4 makes the ruling.</td>
+<td>Analysis 4 item 1, 5; UW-G04</td>
+<td>M</td>
+<td>Thresholds committed with their derivation; a deliberately templated fill on a varianted skeleton FAILs and blocks in test; a fill on an un-varianted skeleton stays advisory (test); fail-open paths enumerated and each justified or closed</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-stage-3-measure-the-experience">5. Stage 3: measure the experience<a class="headerlink" href="#5-stage-3-measure-the-experience" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Deliverable</th>
+<th>Evidence / register</th>
+<th>Effort</th>
+<th>Acceptance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SQ-15</td>
+<td><strong>Per-path experience metrics</strong> in <code>structure_features</code>: decision cadence over rendered stops (post-ADR-026 the stop, not the node, is the experience unit), corridor ratio, outcome-mix entropy over sampled walks, median-walk depth, agency density (share of decision stops whose options reach different ending valences; single definition, shared with the implementation brief and the metric tests). Wire into SQ-07's de-weighting and the flywheel ranking key.</td>
+<td>Analysis 6.3; plan v2 walker (validated, 0 divergences / 1,800 walks)</td>
+<td>M</td>
+<td>Metrics computed for all 61 skeletons and committed as a baseline; selection and ranking consume at least two of them; unit tests pin the walker lockstep property</td>
+</tr>
+<tr>
+<td>SQ-16</td>
+<td><strong>Stop-based ADR-011 section 10 compliance measurement.</strong> Implement the real stop-level rule as a <em>report</em> first (UW-C23: nothing computes stop adjacency in the validator today), measure the catalog, and only then decide gating. Never re-use the node-level D1 figure (AL-076's unit lesson).</td>
+<td>UW-C23, UW-C24; analysis 3</td>
+<td>M</td>
+<td>Compliance table per skeleton committed; gating decision recorded with the measurement attached</td>
+</tr>
+<tr>
+<td>SQ-17</td>
+<td><strong>D11 amendment: replacement floor.</strong> A grandfathered skeleton leaves selection for a cell only when at least 2 grammar-compliant trees exist there. One-paragraph amendment to the design-review decision plus a selection-filter test.</td>
+<td>Analysis 5 (pool-of-1 trough)</td>
+<td>S</td>
+<td>Amendment recorded; simulation shows no cell's feasible pool drops below 2 during transition</td>
+</tr>
+<tr>
+<td>SQ-18</td>
+<td><strong>A13b ending-screen affordance + engagement rollup.</strong> (a) Deliver "Try a different way" (ADR-024-authorized, 3-hop walk to the last real pick, fallback one step). (b) <em>Conditional</em>: add a skeleton-level rollup to engagement telemetry so per-stop signals aggregate across fills of a tree. <code>node_engagement</code> does not exist in <code>src/</code> or <code>supabase/migrations/</code>; it is proposed in reader-path-engagement-design.md (<code>status: proposed</code>), so (b) cannot start until that design is ratified and shipped, which no deliverable here schedules.</td>
+<td>Plan v2 A13b; analysis 3, 5 (telemetry blind to the armature)</td>
+<td>M ((a) alone: S-M)</td>
+<td>(a) A13b behind the existing reader flag with its designed availability rule, tested. (b) if and only if the telemetry ships: rollup query joins <code>storybook_version.skeleton_slug</code>, tested</td>
+</tr>
+<tr>
+<td>SQ-19</td>
+<td><strong>Path-length honesty.</strong> AL-027's median-uniform-walk advisory per cell; UW-M06's PL-17 gamebook floor reshape so the endings floor stops rewarding terminating-leaf breadth.</td>
+<td>AL-027; UW-M06</td>
+<td>M</td>
+<td>Advisory emits for the known worst offenders; floor reshape lands as a validator change with a catalog impact report (no whole-class failure, per AL-051)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-stage-4-grow-the-structure-space-demand-driven-last">6. Stage 4: grow the structure space (demand-driven, last)<a class="headerlink" href="#6-stage-4-grow-the-structure-space-demand-driven-last" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Deliverable</th>
+<th>Evidence / register</th>
+<th>Effort</th>
+<th>Acceptance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SQ-20</td>
+<td><strong>One manually targeted flywheel run, end to end.</strong> Pick one Tier-1 cell (AL-049 rules out state-heavy gamebook parents until the operator termination fix); run T1/T3 chains; take one mutant through reguide, gate, human PR, and merge. Purpose: retire integration risk and produce the first non-hand-authored tree; judged by SQ-15 metrics, not only TAU_CELL.</td>
+<td>Analysis 2.4, 6.4; ADR-020; AL-049</td>
+<td>M-L</td>
+<td>One merged promotion PR with lineage record <code>origin: mutation</code>; SQ-15 distinctness report attached; AL-049 fix or explicit Tier-1 scoping recorded</td>
+</tr>
+<tr>
+<td>SQ-21</td>
+<td><strong>Outcome-economy spread per gamebook cell.</strong> Author deliberate win/fail-mix variation across each gamebook cell's trees (e.g. 2-win gauntlet, 5-6-win graded-setback tree, capture-dominant survival shape), keyed on the fail-kind mix (the one variable that keys satisfying-path mass, eta-squared 0.636). Pairs naturally with SQ-09(b)'s remix.</td>
+<td>Analysis 2.2, 6.4</td>
+<td>M-L</td>
+<td>Per-cell outcome-mix variance is nonzero (measured); PL-15/16/24 pass; gamification's endings gallery no longer renders a wall of identical death cards in the pilot cell</td>
+</tr>
+<tr>
+<td>SQ-22</td>
+<td><strong>Pathfinder Phase 0 go/no-go.</strong> Owner gate G5, with the legal review hard gate as specified. If go: one pilot skeleton in a 13-16 gamebook cell per the exploration doc's phased path.</td>
+<td>pathfinder-structure-exploration.md; analysis 6.4</td>
+<td>Decision + L if go</td>
+<td>Decision recorded in the exploration doc; if go, pilot passes the unchanged gate</td>
+</tr>
+<tr>
+<td>SQ-23</td>
+<td><strong>Demand-driven cell expansion.</strong> Wave-5-style authoring only for cells the respecified sensor (SQ-08) actually flags, judged by SQ-15, scheduled under the capacity rule. Explicitly not started before SQ-08 and SQ-15.</td>
+<td>Analysis 7; UW-G13</td>
+<td>L (per cell)</td>
+<td>Each expansion cites its triggering saturation evidence</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cross-cutting: SQ-24, the ADR-011 amendment</strong> (UW-G17 + UW-C25): adopt the verified JHM citation
+(Adams, Beckelhymer and Marr 2019, DOI 10.5642/jhummath.201902.05), mark decisions-per-playthrough as
+derived, label words/node and total-words as designer priors, record the Ashwell
+eight-pattern-to-six-topology mapping, and resolve the five reconciliation actions including
+reconvergence targets. Effort S-M; unblocked now that <a href="../research/">research/</a> exists.</p>
+<h2 id="7-capacity-model-implementation-team-owner-as-gate">7. Capacity model (implementation team + owner as gate)<a class="headerlink" href="#7-capacity-model-implementation-team-owner-as-gate" title="Permanent link">&para;</a></h2>
+<p>The plan assumes an implementation team executes the briefs while the owner remains the human
+approval gate that ADR-005 and the flywheel's S7 rule require: the owner reviews every PR, adjudicates
+every gate G1-G6, and personally approves any content that could reach a child (published books,
+restructured series books, promoted mutants, authored variants). The binding constraint therefore
+shifts from authoring hours to <strong>owner review bandwidth</strong>, and the rules below protect it:</p>
 <ul>
-<li><strong>A10</strong> (empty teen <code>short</code> cells), <strong>A15</strong> (retire without deleting progress), <strong>A17</strong> (tombstone card):
-  triggered, not scheduled. Their triggers are in plan v2 section 0.</li>
-<li>All eight deferred items behind named prerequisites, including reading telemetry, the outcome-mix floor keyed on
-  fail-kind mix, challenge mode, alternate beat phrasings, per-reader scoping, and the guardian visibility
-  ceiling.</li>
-<li>A fail-depth floor, an open-vocabulary similarity signature, a per-topology outcome floor, and any
-  snapshot-based restart mechanism. Each is refuted or deferred with reasoning in plan v2 section 2.</li>
+<li><strong>The team never merges content-bearing changes without the owner</strong>: skeleton edits, beat variants,
+  ending remixes, and publish promotions are owner-reviewed by name, not by rubber stamp. Pure-code
+  changes (selection weights, metrics, wiring) follow normal PR review.</li>
+<li><strong>Two concurrent content programs maximum</strong> (SQ-13 rollout plus one of SQ-09(b)/SQ-21). Code lanes
+  A/B/D are not capped.</li>
+<li><strong>Per-skeleton Stage 2 cost is measured, not assumed</strong>: the pilot (SQ-12) records hours for an
+  11-node and a 25-node skeleton; the 100-250-node prose skeletons are estimated from that measurement
+  before scheduling; the 300-680-node teen books are scheduled last and only with the act-scoped fill
+  (SQ-03) landed.</li>
+<li><strong>Growth pays its own debt</strong>: any merged promotion (SQ-20/SQ-23) or new skeleton immediately appends
+  its slotting-plus-variant slice to the SQ-13 backlog table. A tree with unpaid debt is not counted
+  as catalog growth in any report (extends SQ-10).</li>
+<li><strong>Variant anti-monoculture costs extra by design</strong>: SQ-11's model/prompt-variation policy means
+  variant authoring cannot be one batch run; the schedule reflects at least two distinct authoring
+  configurations per skeleton.</li>
+<li><strong>The volume is stated, not implied.</strong> Full SQ-13 coverage at 1-2 additional variants per node over
+  the ~11,400 production FILL nodes is on the order of 11,000-23,000 authored variant beats, every
+  one owner-reviewed. That number is why the rollout is serving-priority-ordered, why ending nodes
+  and climaxes come first within each skeleton (highest perceived-repeat load per authored beat), and
+  why this plan deliberately asserts <strong>no calendar durations or end dates</strong>: the pilot (SQ-12)
+  measures per-node cost first, and dates are derived from that measurement, not asserted ahead of
+  it. Partial coverage is a legitimate steady state; the scoped SQ-14 flip means every completed
+  skeleton delivers its value immediately.</li>
 </ul>
-<hr />
-<h2 id="6-working-agreements">6. Working agreements<a class="headerlink" href="#6-working-agreements" title="Permanent link">&para;</a></h2>
-<ol>
-<li><strong>One slice, one branch, one PR</strong>, off <code>claude/story-diversity-analysis-4hdbdw</code> or off <code>main</code> as each slice
-   lands. Do not accumulate all seven into one review.</li>
-<li><strong>Every new threshold is calibrated against the committed corpus before it ships</strong>, and if it flags an entire
-   class the threshold is suspect, not the class. This is #416's AL-051 and it already changed two decisions in
-   this plan (A8's <code>TAU_STRUCT</code> rejection, A14's band scoping).</li>
-<li><strong>Signed commits, Conventional Commits, no em-dashes.</strong> RAD tags on anything touching timing, external
-   resources, data integrity, concurrency, security, or the safety gate.</li>
-<li><strong>A gate lands with its expected failure set stated up front.</strong> "0 new failures" is a claim to verify, not an
-   assumption.</li>
-</ol>
+<h2 id="8-owner-decision-gates">8. Owner decision gates<a class="headerlink" href="#8-owner-decision-gates" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Gate</th>
+<th>Decision</th>
+<th>Blocks</th>
+<th>Default proposal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1</td>
+<td>Publish list and order for the 23 authored books</td>
+<td>SQ-01</td>
+<td>Publish all books that pass the #529 re-moderation sweep, kid bands first. Stated cost, accepted consciously: this ships the single-voice, no-diversity-machinery inventory as-is (analysis 2.7), on the judgment that a reachable catalog beats an empty one; the SQ-13 variant passes are the remedy, and G1 may hold back specific look-alike pairs. Re-authoring the inventory through the parity-fixed path (SQ-04) first is the alternative, at much higher cost</td>
+</tr>
+<tr>
+<td>G2</td>
+<td>Theme-overlap bonus cap value</td>
+<td>SQ-07(a)</td>
+<td>1.3x as an initial engineering BOUND, not a calibrated value (the no-uncalibrated-targets rule applies to success metrics; this is a safety cap on a known concentrator). SQ-10's cohort-concentration report calibrates it after one month of serving</td>
+</tr>
+<tr>
+<td>G3</td>
+<td>Alternate-beats ADR acceptance (the ADR is SQ-11's deliverable; G3 follows it)</td>
+<td>SQ-12, SQ-13, SQ-14</td>
+<td>Accept with the pilot as the falsification gate</td>
+</tr>
+<tr>
+<td>G3b</td>
+<td>Pilot-falsification exit (fires only if SQ-12 misses its pre-registered margin)</td>
+<td>SQ-13, SQ-14 vs the pivot</td>
+<td>Owner decides on the SQ-12 run record: stop the variant program, promote SQ-15 into Stage 2's slot, and re-center on Stage 4 growth judged by experience metrics</td>
+</tr>
+<tr>
+<td>G4</td>
+<td>ATG contract ruling (fail-open advisory to scoped blocking)</td>
+<td>SQ-14 flip</td>
+<td>Per-skeleton blocking gated on SQ-13 coverage, one bounded repair as remediation; global only when rollout covers production cells</td>
+</tr>
+<tr>
+<td>G5</td>
+<td>Pathfinder Phase 0 go/no-go (+ legal review; owner of both: repository owner; legal review completes before any Phase 0 work starts)</td>
+<td>SQ-22</td>
+<td>Defer to the Stage 4 boundary. Note: teen engagement data would inform this, but no scheduled deliverable produces it (reading telemetry is deferred behind the privacy review), so absent data the decision is product judgment, stated as such</td>
+</tr>
+<tr>
+<td>G6</td>
+<td>ADR-011 amendment scope (SQ-24)</td>
+<td>SQ-24</td>
+<td>Full scope per UW-G17 plus UW-C25</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9-success-measures">9. Success measures<a class="headerlink" href="#9-success-measures" title="Permanent link">&para;</a></h2>
+<p>Split by what can be measured now vs what needs serving history. Precision about the word
+"falsifiable": exactly one measure carries a pre-registered pass/fail threshold today (SQ-12's
+paired-fill margin), because it is the only one with a controlled experiment behind it. Every other
+measure is a <em>baselined direction</em>: the first measurement sets the baseline, the stated direction is
+the claim, and thresholds are added only after calibration data exists (WS-0 method rule). A measure
+moving the wrong way against its baseline is the falsification event for these.</p>
+<p><strong>Pre-launch, grouped by the deliverable that makes each measurable</strong> (SQ-01 is not the exit
+criterion for the later-phase measures; each group becomes available when its named deliverable
+lands):</p>
+<ul>
+<li>Available immediately or with SQ-01: catalog reachability, count of published catalog books per
+  band (baseline 0).</li>
+<li>Available with SQ-02: feasible-pool coverage, share of offered cells whose automated-path feasible
+  pool is &gt;= 2 (baseline today unknown, measured first).</li>
+<li>Available with SQ-05: axis behavior, axis-repeat rate on consecutive same-family requests and
+  re-run axis variation.</li>
+<li>Available with SQ-07: selection concentration, Monte Carlo cross-family first-request probability
+  of the themed tree in a 3-tree cell (baseline ~&frac12;, direction: toward &#8531;).</li>
+<li>Available with SQ-11 + SQ-12: paired-fill distance, masked unigram/bigram distance between
+  same-tree fills with different beat variants vs same variant (the pilot's pre-registered margin).</li>
+</ul>
+<p><strong>Post-launch (need real families):</strong></p>
+<ul>
+<li>Per-profile repeat-adventure rate over per-profile windows (not the family-window version).</li>
+<li>Per-theme-cohort concentration across families (SQ-10).</li>
+<li>Saturation events originating from multi-child and out-of-vocabulary-theme families (today
+  structurally zero; any nonzero count proves the sensor respec).</li>
+<li>Skeleton-level stop-abandonment rollup: whether "everyone stops at the same corridor" is now
+  attributable to shared beats (SQ-18).</li>
+</ul>
+<h2 id="10-risks">10. Risks<a class="headerlink" href="#10-risks" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Capacity is the binding constraint.</strong> Stage 2 is an authoring-heavy program whose content
+  approvals all route through the single owner-reviewer; the mitigation is the
+  section 7 rules and the per-skeleton measurement before scheduling, not optimism.</li>
+<li><strong>Variant monoculture</strong>: variants authored by one model in one batch would inherit the correlation
+  they exist to break; SQ-11's policy is the mitigation and SQ-12's paired measurement is the check.</li>
+<li><strong>Blocking-gate whiplash</strong>: flipping the ATG early recreates the retry-loop failure; the G4 gate is
+  explicitly sequenced behind the pilot.</li>
+<li><strong>Privacy</strong>: per-profile scoping (SQ-07, SQ-14) uses child-linked reading history internally; it
+  adds no new external surface, but the children's-privacy ADR owner should confirm the internal-use
+  classification before SQ-07(b) lands.</li>
+<li><strong>Gamification collision</strong>: endings-gallery mechanics ship into today's negative-ending monoculture;
+  SQ-21's pilot cell should precede or accompany the gamification rollout in teen gamebook cells.</li>
+<li><strong>Pilot falsification</strong>: if SQ-12 shows variants do not move perceived distance, the plan's center
+  of gravity moves to Stage 4 (more trees) with SQ-15 as the distinctness judge; that outcome is a
+  legitimate exit, recorded, not a failure of the plan.</li>
+</ul>
+<h2 id="11-relationship-to-existing-planning-and-the-sq-to-register-map">11. Relationship to existing planning, and the SQ-to-register map<a class="headerlink" href="#11-relationship-to-existing-planning-and-the-sq-to-register-map" title="Permanent link">&para;</a></h2>
+<p><strong>Supersession, stated per the repo convention.</strong> This plan takes over the <em>scheduling</em> function for
+the still-open diversity work; <a href="../story-diversity-plan-v2/">story-diversity-plan-v2.md</a> remains
+<code>active</code> as the record of the delivered A/B deliverables and their evidence, and carries a pointer
+banner to this plan for its open items.
+<a href="../story-diversity-implementation-plan/">story-diversity-implementation-plan.md</a>, whose only function
+was sequencing plan v2, is marked <code>superseded</code> for scheduling in this PR, with one carve-out stated
+in its banner: its section 4 rule-ID reservations against open PR #416 remain binding, because this
+plan does not restate them. The measurement records
+(<a href="../story-diversity-analysis/">story-diversity-analysis.md</a> and its errata) are not superseded; the
+new <a href="../story-structure-diversity-critical-analysis/">analysis</a> extends them and says so in its
+section 8. This plan does not modify register rows; each flips with a Ref when its deliverable lands,
+and if an SQ item is ever dropped from this schedule while still worth doing, it must be registered
+as a UW row before removal.</p>
+<p><strong>Complete SQ-to-register map.</strong> The <code>SQ-*</code> namespace is invisible to
+<code>scripts/check_work_linkage.py</code> today, so this table is the audit surface. That is an interim state,
+not the intended one: <code>docs/planning/plan-manifest.toml</code> does not exist on <code>main</code> yet (it lands with
+the plan-manifest status-model work), so <code>SQ-*</code> cannot be registered as a machine-checkable namespace
+from this PR. <strong>Follow-up</strong>: register <code>SQ-*</code> in <code>plan-manifest.toml</code> when that file lands, and drop
+this table's audit role at that point. Until then, a change to the table below is a change to the
+only linkage record that exists.</p>
+<table>
+<thead>
+<tr>
+<th>SQ</th>
+<th>Register / source</th>
+<th>SQ</th>
+<th>Register / source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SQ-01</td>
+<td>UW-G14</td>
+<td>SQ-13</td>
+<td>UW-G01 (+ UW-G12 variants half)</td>
+</tr>
+<tr>
+<td>SQ-02</td>
+<td>UW-C07 (AL-046 half)</td>
+<td>SQ-14</td>
+<td>UW-G04</td>
+</tr>
+<tr>
+<td>SQ-03</td>
+<td>UW-C07 (AL-046 half)</td>
+<td>SQ-15</td>
+<td>new (analysis 6.3 item 12)</td>
+</tr>
+<tr>
+<td>SQ-04</td>
+<td>new (analysis 2.7)</td>
+<td>SQ-16</td>
+<td>UW-C23, UW-C24</td>
+</tr>
+<tr>
+<td>SQ-05</td>
+<td>new (analysis 2.7, 5)</td>
+<td>SQ-17</td>
+<td>new (analysis 5, D11 amendment)</td>
+</tr>
+<tr>
+<td>SQ-06</td>
+<td>new (analysis 2.7)</td>
+<td>SQ-18</td>
+<td>plan-v2 A13b + A18 (unregistered rows)</td>
+</tr>
+<tr>
+<td>SQ-07</td>
+<td>plan-v2 deferred (per-profile)</td>
+<td>SQ-19</td>
+<td>UW-M06 + AL-027 (open)</td>
+</tr>
+<tr>
+<td>SQ-08</td>
+<td>new (analysis 5, dark sensor)</td>
+<td>SQ-20</td>
+<td>UW-G09 adjacent; AL-049 (open)</td>
+</tr>
+<tr>
+<td>SQ-09</td>
+<td>UW-G03 (b); new (a)</td>
+<td>SQ-21</td>
+<td>new (analysis 6.4 item 16)</td>
+</tr>
+<tr>
+<td>SQ-10</td>
+<td>new (analysis 5, metrics)</td>
+<td>SQ-22</td>
+<td>pathfinder doc Phase 0 (decision)</td>
+</tr>
+<tr>
+<td>SQ-11</td>
+<td>UW-G12 (unblocks it)</td>
+<td>SQ-23</td>
+<td>UW-G13</td>
+</tr>
+<tr>
+<td>SQ-12</td>
+<td>UW-G12 (pilot half)</td>
+<td>SQ-24</td>
+<td>UW-G17, UW-C25</td>
+</tr>
+</tbody>
+</table>
+<p>"new" means the item originates in the reviewed analysis rather than a register row; it is scheduled
+work from inception, which is why no UW row is minted for it. The rebuilt research base
+(<a href="../research/">research/README.md</a>) grounds SQ-24 and the constants this plan treats as
+designer priors. Terminology note: this plan's internal Stage 0-4 grouping is deliberately not called
+"Phase" to avoid colliding with the register's closed phase vocabulary, whose source of truth is
+<code>roadmap.md</code>.</p>
 
 
 
@@ -3390,7 +3579,7 @@ is not work this plan performs.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 27, 2026 04:06:26 UTC">July 27, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 18:08:08 UTC">August 2, 2026</span>
   </span>
 
     
