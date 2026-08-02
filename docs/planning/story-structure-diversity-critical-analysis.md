@@ -404,6 +404,10 @@ interactions:
 
 ## 6. What to do
 
+> **Execution plan**: this section's program is scheduled, with deliverable IDs, dependencies,
+> acceptance criteria, capacity model, and owner gates, in
+> [story-structure-improvement-plan.md](story-structure-improvement-plan.md).
+
 Re-sequenced after review. The ordering principle: first make the *deployed* system match the analyzed
 one (6.0), then make the built machinery bite where it can (6.1), then lift the ceiling (6.2), then
 measure what matters (6.3), then grow (6.4). Nothing here relaxes the safety gate; the frozen safety
