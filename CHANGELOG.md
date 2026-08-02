@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.59.0] - 2026-08-02
+
+### Features
+
+- **kid**: Kid-appeal design decisions, rendered-stop reader, engagement v1, content and media
+  groundwork ([#532](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/532),
+  [`36b32bc`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/36b32bca929e51717fc8ea89a4aeb8d78fb14b42))
+
+- **moderation**: Gate 3 batch recall sweep + default review_batch_size=8
+  ([#541](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/541),
+  [`ae5a981`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/ae5a981b2877bb0c7718d1b4d2251ec081294cb1))
+
+
 ## [0.58.0] - 2026-08-01
 
 ### Bug Fixes
@@ -2994,6 +3007,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.59.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.58.0...v0.59.0
 [0.58.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.57.0...v0.58.0
 [0.57.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.56.0...v0.57.0
 [0.56.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.55.2...v0.56.0
