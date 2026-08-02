@@ -31,6 +31,11 @@ source: "story-diversity-analysis.md (measurements, as corrected); story-diversi
 > [story-diversity-execution-plan.md](story-diversity-execution-plan.md), both superseded.
 > [story-diversity-analysis.md](story-diversity-analysis.md) remains the measurement record;
 > [story-diversity-review-errata.md](story-diversity-review-errata.md) records what was refuted and why.
+>
+> **Scheduling handover (2026-08-02).** This document remains `active` as the record of the delivered
+> A/B deliverables and their evidence. Scheduling of the still-open and deferred items has moved to
+> [story-structure-improvement-plan.md](story-structure-improvement-plan.md) (SQ namespace; see its
+> section 11 for the SQ-to-register map). Do not add new scheduled work here.
 
 ---
 
@@ -152,6 +157,8 @@ whether a book with their own name in it feels new.
 > unowned leaks. **The case-sensitivity decision paid for itself immediately**: `the-midnight-frequency`'s harbor-office
 > beat opens "The harbor office: kettle, charts", and a casefolding scan would have reported the appliance as a leak
 > of the librarian `Ms. Kettle`.
+
+<!-- separates two distinct correction notes; without it markdownlint reads them as one blockquote (MD028) -->
 
 > **A9 correction (2026-07-26, on investigating it): "clone pair" was wrong, and A9 is two items whose efficient
 > routes point in opposite directions.** Measured: **every `structure_features` field of the two books is identical**
