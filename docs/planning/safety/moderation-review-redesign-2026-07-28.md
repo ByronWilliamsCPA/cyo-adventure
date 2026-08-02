@@ -119,6 +119,19 @@ with three changes:
    scored as no regression because `flag` still cleared its
    `expected_min`. The harness now reports severity downgrades and verdict
    drift separately from the pass/fail comparison.
+   **Confidence limit.** Per-node verdicts are NOT stable across sizes in the
+   committed artifact, and they drift in both directions:
+   `A2-lost-alone-night-3-5` goes `flag` -> `block` at size 8;
+   `C1-aggregate-fire-8-11` node 3 goes `flag` -> `block` at sizes 4 and 8;
+   `C2-aggregate-stranger-10-13` node 2 goes `block` -> `flag` at sizes 4 and 8.
+   Class-level recall stays flat only because each drifted verdict still clears
+   its expected rank floor. With 13 corpus items, 6 of them scored, one sweep
+   per size, and visible reviewer nondeterminism, this evidence supports
+   "no recall regression was observed" and does NOT support "batching is
+   recall-neutral". Only one artifact is committed; the second run agreed but
+   was not retained, so the agreement is an unverifiable claim rather than
+   evidence. Treat re-running the sweep after a reviewer-model or batch-prompt
+   change as mandatory, not advisory, and retain every run's artifact.
 3. **Merge stage (deterministic, post-review).** After all stages run, a new
    `moderation/synthesis.py` groups content findings by every field the
    merged finding takes from a single survivor: `(category, concern, source,

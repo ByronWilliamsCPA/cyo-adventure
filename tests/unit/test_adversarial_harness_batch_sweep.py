@@ -357,8 +357,10 @@ class TestRunSweep:
         )
         payload = _sweep_to_json(sweep)
         assert payload["baseline_batch_size"] == 1
-        sizes = payload["sizes"]
-        assert isinstance(sizes, list)
+        # cast, not isinstance: isinstance(x, list) narrows the container but
+        # not its element type, so indexing stays partially-unknown in strict
+        # mode. _sweep_to_json's return is dict[str, object] by declaration.
+        sizes = cast("list[dict[str, object]]", payload["sizes"])
         assert sizes[0]["batch_size"] == 1
         assert sizes[0]["call_count"] == 1
 
