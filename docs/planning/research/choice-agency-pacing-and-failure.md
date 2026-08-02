@@ -212,30 +212,73 @@ unscheduled-work register) is the only realistic path to calibrating cadence and
 
 ## Full source list
 
-Choice/agency: Mawhorter et al. FDG 2014, ICCC 2015, Arts 2018 (DOI 10.3390/arts7030047);
-Wardrip-Fruin et al. DiGRA 2009 (DOI 10.26503/dl.v2009i1.369); Fendt et al. ICIDS 2012
-(DOI 10.1007/978-3-642-34851-8_11); Cardona-Rivera et al. AIIDE 2014; Iten et al. CHI 2018;
-Kway and Mitchell ICIDS 2018; Carstensdottir et al. CHI 2021; Green and Jenkins 2014
-(DOI 10.1111/jcom.12093); Kuo et al. 2016 (DOI 10.1002/cb.1620); Cao 2025; H. Zhang 2023;
-Kleinman et al. 2016/2018/2020 (DOI 10.1145/3235765.3235773); Mitchell ICIDS 2020; Moser and Fang 2015
-(DOI 10.1080/10447318.2014.986639); Hwang et al. 2025.
+Locator policy (tightened after PR review, per the README standing rule): every entry carries a DOI,
+a stable URL, or an aggregator link recorded during the research pass; entries whose aggregator link
+did not survive verification are explicitly flagged rather than guessed. DOIs resolve via
+`https://doi.org/<doi>`. Aggregator links below are Consensus paper pages captured 2026-08-02.
+
+Choice/agency: Mawhorter et al. FDG 2014
+(<http://www.fdg2014.org/papers/fdg2014_paper_19.pdf>), ICCC 2015
+(<https://computationalcreativity.net/iccc2015/proceedings/13_4Mateas.pdf>), Arts 2018
+(DOI 10.3390/arts7030047); Wardrip-Fruin et al. DiGRA 2009 (DOI 10.26503/dl.v2009i1.369,
+<https://eis.ucsc.edu/papers/nwf-C7-digra09-agency.pdf>); Fendt et al. ICIDS 2012
+(DOI 10.1007/978-3-642-34851-8_11); Cardona-Rivera et al. AIIDE 2014
+(<https://consensus.app/papers/details/5ded2c308cf352a1b28492494a748dd3/>); Iten et al. CHI 2018
+(<https://consensus.app/papers/details/116cb26e5aae5940ae5e75eed6ef3d91/>); Kway and Mitchell ICIDS
+2018 (DOI 10.1007/978-3-030-04028-4_23); Carstensdottir et al. CHI 2021
+(<https://consensus.app/papers/details/2022b2aea82f5812ad36413d77838dd7/>); Green and Jenkins 2014
+(DOI 10.1111/jcom.12093); Kuo et al. 2016 (DOI 10.1002/cb.1620); Cao 2025
+(<https://consensus.app/papers/details/41b0a509bfd65a2a9e84c03dc681a963/>); H. Zhang 2023
+(<https://consensus.app/papers/details/8eaf417ef9bf5c16bc6a1afa059b1935/>); Kleinman et al. 2016
+(DOI 10.1007/978-3-319-48279-8_32), 2018 (DOI 10.1145/3235765.3235773), 2020 (Entertainment
+Computing, ScienceDirect PII S1875952117301167, text-only per the link-gate note in section 1.3);
+Mitchell ICIDS 2020 (DOI 10.1007/978-3-030-62516-0_15); Moser and Fang 2015
+(DOI 10.1080/10447318.2014.986639); Hwang et al. 2025
+(<https://consensus.app/papers/details/44d9249b2ab65478badebc8e8b95a329/>).
 
 Children's e-books: Takacs, Swart and Bus 2015 (DOI 10.3102/0034654314566989); Furenes, Kucirkova and
-Bus 2021 (DOI 10.3102/0034654321998074); Bus et al. 2025; Bus, Takacs and Kegel 2015
-(DOI 10.1016/j.dr.2014.12.004); Savva et al. 2021; Yeari et al. 2023; Walker et al. 2017;
-Korat et al. 2021.
+Bus 2021 (DOI 10.3102/0034654321998074); Bus et al. 2025
+(<https://consensus.app/papers/details/9e26ba2de6e65e8fbb6862bc84f3fda9/>); Bus, Takacs and Kegel
+2015 (DOI 10.1016/j.dr.2014.12.004); Savva et al. 2021 (JCAL; the pass's aggregator id did not
+survive verification, flagged per the locator policy); Yeari et al. 2023
+(<https://consensus.app/papers/details/e8cae4d0ed165be79dd5d82928fac116/>); Walker et al. 2017
+(<https://consensus.app/papers/details/2f9a70ac67ef5a5c8350988635940dfb/>); Korat et al. 2021
+(<https://consensus.app/papers/details/eb892acaa882588698a9084876c2189d/>).
 
-Reading rates: Hasbrouck and Tindal 2017 (ERIC ED594994); Brysbaert 2019
-(DOI 10.1016/j.jml.2019.104047); Spichtig et al. 2016 (DOI 10.1002/rrq.137); Taylor 1965 norms via
-Hiebert, Samuels and Rasinski (textproject.org); Ciuffo et al. 2017; Chen et al. 2025.
+Reading rates: Hasbrouck and Tindal 2017 (ERIC ED594994,
+<https://files.eric.ed.gov/fulltext/ED594994.pdf>); Brysbaert 2019 (DOI 10.1016/j.jml.2019.104047);
+Spichtig et al. 2016 (DOI 10.1002/rrq.137); Taylor 1965 norms via Hiebert, Samuels and Rasinski
+(<https://textproject.org/wp-content/uploads/2022/07/Hiebert-samuels-rasinski_Comprehension-based-silent-reading-rates.pdf>);
+Ciuffo et al. 2017 (<https://consensus.app/papers/details/7ed13f9856645c11a5bbeade4d26af20/>);
+Chen et al. 2025 (<https://consensus.app/papers/details/45d2dfcaece05cb78a2c6b63a60bb34f/>).
 
-Failure/persistence: Smiley and Dweck 1994; Leonard et al. 2021; Chase 2001; Bennett 2018;
-Huang et al. 2017; Gilmore et al. 2003; Weems and Costa 2005 (PMID 15968234); Sayfan and Lagattuta
-2008 (DOI 10.1111/j.1467-8624.2008.01161.x); Cantor via Ed Week 1996; Juul, Fear of Failing;
-Shokeen et al. 2020.
+Failure/persistence: Smiley and Dweck 1994
+(<https://consensus.app/papers/details/4004ab65bf1f5c72a9e110b1c261dcda/>); Leonard et al. 2021
+(<https://consensus.app/papers/details/79ab55da2a2d544481764e05ecc16ece/>); Chase 2001
+(<https://consensus.app/papers/details/7161d518ec6f530ea0b5bd862ca7a4d8/>); Bennett 2018
+(<https://consensus.app/papers/details/6bd631d07d9c5bfb80ad3bcf8adeacac/>); Huang et al. 2017
+(<https://consensus.app/papers/details/2d4c8bbb8a435c33bc1085e4f75f0ee7/>); Gilmore et al. 2003
+(<https://consensus.app/papers/details/67dd89caa2d1528a80df99915bebb99c/>); Wang et al. 2026
+(<https://consensus.app/papers/details/8f6f00e530385e71bf9e332ed5fcb9a0/>); Yavorska-Vietrova 2021
+(<https://consensus.app/papers/details/f74a80791d215c0d8fbb26e97a9bf1b4/>); Weems and Costa 2005
+(PMID 15968234, <https://pubmed.ncbi.nlm.nih.gov/15968234/>); Sayfan and Lagattuta 2008
+(DOI 10.1111/j.1467-8624.2008.01161.x); Cantor via Ed Week 1996
+(<https://www.edweek.org/education/what-scares-children/1996/04>); Juul, Fear of Failing
+(<https://jesperjuul.net/text/fearoffailing/>); Shokeen et al. 2020 (CHI PLAY,
+DOI 10.1145/3383668.3419901).
 
-Branching/replay/choice count: Gamito et al. 2021; Lagrange DiGRA 2023; Nash et al. 2025
-(DOI 10.1002/rrq.70079); Yong et al. 2023; Carstensdottir et al. FDG 2019; Breien and Wasson 2020
-(DOI 10.1111/bjet.13004); Mishra et al. 2025; Ashwell 2015 (gray literature, see the structure note);
-Schupak et al. 2019; Castelo et al. 2023; Miller et al. 2017; Tiger et al. 2006; Scheibehenne et al.
-2010; Chernev et al. 2015.
+Branching/replay/choice count: Gamito et al. 2021
+(<https://consensus.app/papers/details/37d80537fce358b19456c5c8759660ec/>); Lagrange DiGRA 2023
+(<https://consensus.app/papers/details/379ce2cb32dc5a24b253a71b2d598f72/>); Nash et al. 2025
+(DOI 10.1002/rrq.70079); Yong et al. 2023
+(<https://consensus.app/papers/details/5463ca5240ed5014a5d250a76b8459d7/>); Carstensdottir et al.
+FDG 2019 (<https://consensus.app/papers/details/a45fd572375f50a6a99cbe38dd1ec11f/>); Breien and
+Wasson 2020 (DOI 10.1111/bjet.13004); Mishra et al. 2025 (WhatIF; the pass's aggregator id did not
+survive verification, flagged per the locator policy); Ashwell 2015 (gray literature, see the
+structure note); Schupak et al. 2019
+(<https://consensus.app/papers/details/c683bb9e48875a3eade8e43918b99902/>); Castelo et al. 2023
+(<https://consensus.app/papers/details/759bf175f6465c93950c3fca51bff2bb/>); Miller et al. 2017
+(<https://consensus.app/papers/details/e968316b88b25983900de321715b327c/>); Tiger et al. 2006
+(<https://consensus.app/papers/details/e2ba74a5d7505ec482266cf0065a33f5/>); Scheibehenne et al. 2010
+(<https://consensus.app/papers/details/2930f189fab95d3495ebbfedb94f142b/>); Chernev et al. 2015
+(<https://consensus.app/papers/details/c7be5e074f57554893b5ee8df581e539/>).

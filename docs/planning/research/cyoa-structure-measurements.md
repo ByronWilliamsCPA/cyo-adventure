@@ -61,11 +61,12 @@ invisible bottlenecks, spoke-and-hub), not six patterns:
 8. **Loop and Grow**: a central thread looping to the same point with state unlocking new options.
    Variant: **Spoke and Hub** (branches all originating from and returning to a central node).
 
-Academic corroboration: Millard, "Strange Patterns" (University of Southampton eprint,
-<https://eprints.soton.ac.uk/458014/1/Strange_Patterns.pdf>) treats Ashwell as the canonical
-eight-pattern macro taxonomy; Analog Game Studies' gamebook framework (2023,
-<https://analoggamestudies.org/2023/09/studying-gamebooks-a-framework-for-analysis/>) quotes the
-quest/map definitions when analyzing gamebooks.
+Corroboration note (corrected after PR review): two secondary citations originally offered here did
+not survive verification and are withdrawn. The Analog Game Studies 2023 gamebook framework was
+independently checked and does not cite Ashwell or use his pattern names; the Millard "Strange
+Patterns" eprint could not be re-fetched for a page-cited quote (auth-walled). The taxonomy above
+therefore rests on the fetched primary source alone, which is sufficient: the post itself is the
+canonical statement.
 
 ### Mapping to the project's `Topology` enum (record of deltas)
 
@@ -90,6 +91,12 @@ ADR-011's "JHM 2019" is the *Journal of Humanistic Mathematics*:
 > pp. 44-59. DOI 10.5642/jhummath.201902.05. Open access:
 > <https://scholarship.claremont.edu/jhm/vol9/iss2/5>. Companion digraph collection (all 40 book
 > graphs): <https://www.alisonmarr.com/cyoa.html>.
+
+Reproducibility note (added after PR review): the PDF was downloaded and read in full on
+2026-08-02, but the host has since returned 403 to automated access from at least one reviewer
+environment, so the MEASURED tag here cannot currently be re-derived by script. The DOI resolves;
+library or browser access works; and the paper is CC-licensed, so archiving a copy under
+`docs/planning/research/evidence/` is the recommended follow-up (owner action, license permits it).
 
 Method: 40 books (Chooseco's "Whole Enchilada" boxed set, explicitly ages 9-12) hand-converted to
 digraphs (nodes = pages, arcs = commands); 24 structural properties computed.
@@ -143,7 +150,10 @@ supported by both.
   per-book stats for classic CYOA #1-23: endings 14-44; distinct acyclic paths 20 to 47,358 (the
   outlier has 7 cycles); longest paths 14-42 pages; average path 7.4-17.6 pages; most books 0-1
   cycles; a random-play "difficulty" score 1.18-3.34. Consistent with JHM 2019 where they overlap.
-- **Lone Wolf #1, Flight from the Dark (Dever 1984), measured for this note** from Project Aon's
+- **Lone Wolf #1, Flight from the Dark (Dever 1984), measured for this note** (method, stated per
+  the PR review: crawled 2026-08-02, sections 1-350 from Project Aon's licensed XHTML; word counts
+  are whitespace tokens including section headings and choice-instruction text; re-derivable by
+  re-crawling those pages; ending count independently matches gamebooks.org) from Project Aon's
   licensed full text (<https://www.projectaon.org/en/xhtml/lw/01fftd/>, 350 sections crawled):
   350 nodes; outdegree distribution 0:17, 1:157, 2:135, 3:36, 4:5 (50% of sections offer a real
   choice, 2-4 way); **17 endings, 16 failures and 1 victory**; 29,624 words total, mean 84.6
@@ -216,9 +226,9 @@ playthrough* (~2-3k); ADR-011's current phrasing conflates them.
 10. World of Fighting Fantasy, Fighting Fantasy SVGs:
     <http://worldoffightingfantasy.blogspot.com/2013/11/fighting-fantasy-svgs.html>
 11. Wikipedia, Choose Your Own Adventure: <https://en.wikipedia.org/wiki/Choose_Your_Own_Adventure>
-12. Millard, Strange Patterns: <https://eprints.soton.ac.uk/458014/1/Strange_Patterns.pdf>
-13. Analog Game Studies 2023, Studying Gamebooks:
-    <https://analoggamestudies.org/2023/09/studying-gamebooks-a-framework-for-analysis/>
+12. (withdrawn after PR review) Millard, Strange Patterns: auth-walled, no page-cited quote obtainable
+13. (withdrawn after PR review) Analog Game Studies 2023, Studying Gamebooks: independently
+    verified NOT to cite Ashwell or use his pattern names
 14. davidnunez.com on UFO 54-40: <https://davidnunez.com/choose-your-own-adventure>
 15. readinglength.com, The Cave of Time estimate: <https://www.readinglength.com/work/W1MTmXI>
 16. Unretrieved leads, kept honestly: r/gamebooks deadliest-FF table and optimal-FF-walkthrough blog

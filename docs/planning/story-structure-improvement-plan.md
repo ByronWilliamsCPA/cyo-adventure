@@ -2,7 +2,7 @@
 schema_type: planning
 title: "Story Structure and Diversity Improvement Plan"
 description: "The execution plan for the seven root causes and compounding loop identified in
-  story-structure-diversity-critical-analysis.md. Five phases, 24 deliverables with IDs, dependencies,
+  story-structure-diversity-critical-analysis.md. Five stages, 24 deliverables with IDs, dependencies,
   acceptance criteria, a single-owner capacity model, six owner decision gates, and falsifiable
   success measures split pre-launch vs post-launch."
 tags:
@@ -46,6 +46,13 @@ reader encounters (not graph-level metric distance), on the paths readers actual
 - No sampling-temperature lever (trades against RL-13; the variation axes are the instrument).
 - No new diversity metric may become a target without a falsification path (WS-0 method rule: measure
   first, no targets asserted in advance of calibration data).
+- **Deliberately unchanged rails, recorded so their absence from the deliverables is a decision and
+  not an oversight**: PL-20 (min-complete floors) and PL-21 (the offered-cell matrix) are load-bearing
+  safety and scale rails; the envelope-convergence remedy is variance *within* the rails (SQ-19's
+  PL-17 reshape, SQ-21's outcome economies, SQ-16's grammar measurement), not loosening them. PL-19
+  word budgets stay as-is pending SQ-16's stop-based measurement. The topology checker's three-class
+  collapse (analysis 2.3) gets no checker change: the selection-relevant signal is deliberately moved
+  to SQ-15's experience metrics instead of expanding a label vocabulary nothing verifies.
 
 **Method rules inherited from plan v2**: every claim of "delivered" carries a Ref; a deliverable that
 changes a supervisor-ruled contract says so; effort is S (hours to a day), M (days), L (a week plus or
@@ -53,37 +60,46 @@ a program).
 
 ## 1. Shape of the plan: critical path and parallel lanes
 
-Five phases ordered by the loop analysis (analysis section 5): the deployed system first, then the
+Five stages ordered by the loop analysis (analysis section 5): the deployed system first, then the
 signals, then the ceiling, then the measures, then growth.
 
 ### 1.1 Critical path
 
-The plan's core outcome (experience-distinct stories on repeated trees, enforced) has one long
-dependency chain, and it runs through the beat-variant program:
+The plan's core outcome (experience-distinct stories on repeated trees, enforced) runs through the
+beat-variant program, and the ATG blocking flip is **scoped, not global**: the guard flips to
+blocking per skeleton as that skeleton's variant slice lands, and globally only once the rollout
+covers the production cells. So the value-critical chain is:
 
-**G3 -> SQ-11 (ADR) -> SQ-12 (pilot, falsification gate) -> SQ-13 (per-skeleton rollout) -> SQ-14
-(ATG blocking, gate G4)**, with **SQ-03 (act-scoped fill)** joining as a prerequisite for SQ-13's
-large-tree slices. Everything else is off the critical path and exists to be parallelized around it.
-Start SQ-11 immediately after PR review; start SQ-03 in the same week, because it has the longest
-lead time of the Phase 0 items and gates the back half of SQ-13.
+**SQ-11 (ADR) -> G3 (accept) -> SQ-12 (pilot, falsification gate) -> SQ-13 (per-skeleton rollout) ->
+SQ-14 (ATG blocking, scoped per SQ-13 coverage, gate G4)**, with **SQ-03 (act-scoped fill)** joining
+as a prerequisite for SQ-13's large-tree slices. SQ-12 alone never justifies a global flip; that
+would leave the un-varianted majority of the catalog under a blocking guard with frozen beats, which
+is exactly the constraint-conflict failure item 1 of section 1.3 forbids.
 
-The secondary chain for Phase 4: **SQ-08 + SQ-15 -> SQ-20 -> SQ-23**, deliberately behind the
-primary chain.
+Two chains, named precisely so the diagram, the prose, and the briefs' `Depends:` lines agree:
+
+- **Value-critical chain** (what delivers the objective): SQ-11 -> G3 -> SQ-12 -> SQ-13 -> SQ-14.
+- **Longest dependency chain** (what determines the schedule's tail): SQ-02 -> SQ-03 -> SQ-13 ->
+  SQ-20 -> SQ-23. This is why SQ-02 starts in week one and SQ-03 immediately after it, even though
+  growth itself is deliberately last.
+
+Start SQ-11 and SQ-02 immediately after PR review; SQ-03 follows SQ-02 within the first week.
 
 ```mermaid
 flowchart LR
-  subgraph critical["Critical path"]
-    SQ11["SQ-11 ADR"] --> SQ12["SQ-12 pilot"]
+  subgraph critical["Value-critical chain"]
+    SQ11["SQ-11 ADR"] --> G3{"G3"} --> SQ12["SQ-12 pilot"]
     SQ12 --> SQ13["SQ-13 rollout"]
-    SQ12 --> SQ14["SQ-14 ATG blocking"]
+    SQ13 --> SQ14["SQ-14 ATG blocking<br/>(scoped per coverage)"]
     SQ03["SQ-03 act-scoped fill"] --> SQ13
   end
   SQ02["SQ-02 feasibility"] --> SQ03
-  SQ07["SQ-07 selection"] -.plumbing.-> SQ14
+  SQ07["SQ-07 selection"] -.SQ-07b plumbing.-> SQ14
   SQ08["SQ-08 trigger"] --> SQ20["SQ-20 flywheel run"]
   SQ15["SQ-15 experience metrics"] --> SQ20
   SQ15 --> SQ19["SQ-19 path-length"]
   SQ15 --> SQ16["SQ-16 stop grammar"]
+  SQ13 --> SQ20
   SQ20 --> SQ23["SQ-23 expansion"]
 ```
 
@@ -97,8 +113,8 @@ independent except where the critical path says otherwise.
 | Lane | Items in order | Skills | Notes |
 | --- | --- | --- | --- |
 | **A: Pipeline** (critical-path support) | SQ-05, SQ-02, SQ-03, SQ-04, SQ-06 | Backend, prompts | SQ-05 first (cheapest real gain); SQ-03 is the long pole |
-| **B: Signals and selection** | SQ-07, SQ-08, SQ-10, SQ-09(a) | Backend, simulation | All independent of Lane A; SQ-07(2) plumbing is a prerequisite for SQ-14 later |
-| **C: Beat variants** (critical path) | SQ-11, SQ-12, SQ-13, SQ-14 | Design + authoring + backend | SQ-11/SQ-12 can start day one; SQ-13 consumes Lane A's SQ-03 for large trees |
+| **B: Signals and selection** | SQ-07, SQ-08, SQ-10 items 1-2, SQ-09(a) | Backend, simulation | All independent of Lane A; SQ-07(b) plumbing is a prerequisite for SQ-14 later; SQ-10 item 3 is delivered with SQ-15 |
+| **C: Beat variants** (value-critical chain) | SQ-11, SQ-12, SQ-13, SQ-14 | Design + authoring + backend | SQ-11 starts day one; SQ-12 starts only after G3 accepts the ADR; SQ-13 consumes Lane A's SQ-03 for large trees |
 | **D: Measurement and reader** | SQ-15, SQ-16, SQ-18, SQ-17, SQ-19 | Backend + frontend | SQ-18 is the natural frontend-heavy item; SQ-15 feeds Lanes B and E |
 | **E: Growth and content** | SQ-01 (runbook, week one), SQ-09(b), SQ-21, SQ-20, then SQ-22/SQ-23 decisions | Authoring + ops | SQ-01 is the single highest-impact week-one item in the whole plan; SQ-09(b)/SQ-21 are authoring-heavy and pair together |
 | Cross-cutting | SQ-24 | Docs | Any time; closes UW-C25/UW-G17 |
@@ -111,21 +127,24 @@ should happen in week one regardless of staffing.
 
 From the review (violating these re-creates the loop):
 
-1. **SQ-14 (ATG blocking) strictly after SQ-12 (beat-variant pilot proves variants work).** Blocking
-   the guard while beats are frozen creates an unsatisfiable constraint set (directive says
-   differentiate, contract says depict the same scene) and yields retry loops.
+1. **SQ-14 (ATG blocking) is scoped to variant coverage: per skeleton after that skeleton's SQ-13
+   slice, global only after the rollout covers production cells, and never before SQ-12 proves
+   variants work.** Blocking a guard over frozen beats creates an unsatisfiable constraint set
+   (directive says differentiate, contract says depict the same scene) and yields retry loops;
+   scoping is what makes the flip incremental instead of a cliff.
 2. **SQ-17 (D11 replacement) requires the two-compliant-trees floor** or each cell transitions
    through a scheduled pool-of-1 trough at the 4-merges/month promotion rate.
 3. **SQ-20/SQ-23 (growth) after SQ-08 (trigger respec) and SQ-15 (experience metrics)**, so growth is
    aimed by a sensor that works and judged by a measure that correlates with experience.
-4. **Every catalog-growth merge adds its slotting-plus-variant obligation to the Phase 2 schedule at
+4. **Every catalog-growth merge adds its slotting-plus-variant obligation to the Stage 2 schedule at
    promotion time** (capacity rule, section 7). No silent debt.
 
-## 2. Phase 0: close the deployment gap
+## 2. Stage 0: close the deployment gap
 
 The analysis's largest correction: as deployed, a child can reach zero catalog books and the
-automated fill can render only ~20 of 58 skeletons. Until this phase lands, catalog-diversity work is
-idle machinery.
+automated fill cannot render a large, method-dependent fraction of the skeletons (16-29 of 58 under
+plausible token estimates; SQ-02's calibrated estimator settles the exact set). Until this stage
+lands, catalog-diversity work is idle machinery.
 
 | ID | Deliverable | Evidence / register | Effort | Acceptance |
 | --- | --- | --- | --- | --- |
@@ -136,19 +155,19 @@ idle machinery.
 | SQ-05 | **Wiring fixes (two small, high-leverage).** (a) `select_axis`: pass the family's recent axis keys as `exclude=`, seed per job id so re-runs vary; (b) thread the variation axis and differentiation directive into all three repair prompts (structural, fidelity, moderation soft-gate). | Analysis 2.7, 5; no register row (new) | S | Re-run of a rejected fill draws a different axis (test); repair prompt fixtures contain the directive block; axis-repeat rate on consecutive family requests drops below 1/15 baseline |
 | SQ-06 | **Cover-art style variation.** Parameterize the fixed style clause in `covers/prompt.py` by band and tone (teen gamebooks stop getting "warm, whimsical" covers). | Analysis 2.7 | S | At least 3 distinct style clauses exercised across bands; safety clause behavior unchanged (test) |
 
-## 3. Phase 1: signals and selection correctness
+## 3. Stage 1: signals and selection correctness
 
 Make the family-scoped, slug-keyed machinery see readers and structures. All items are independent of
-Phase 0 and can interleave.
+Stage 0 and can interleave.
 
 | ID | Deliverable | Evidence / register | Effort | Acceptance |
 | --- | --- | --- | --- | --- |
 | SQ-07 | **Selection rebalance.** (a) Cap the W2.2 theme-overlap attraction bonus (owner gate G2 picks the cap; default proposal 1.3x) so it cannot dominate a 3-tree cell cross-family; (b) add per-profile history scoping with family fallback; (c) count distinct storybooks, not version rows, in the recency window; (d) de-weight candidates by `structural_distance` and valence-histogram proximity to the reader's recent trees. The `1/(1+x)` novelty floor is preserved throughout (decision C-4). | Analysis 4 items 2-3, 5; plan v2 deferred row (per-profile) | M | Monte Carlo over the shipped selector: cross-family first-request concentration on a themed tree drops from ~1/2 toward ~1/3; per-profile repeat rate measured and reported; all existing selection tests pass |
 | SQ-08 | **Flywheel trigger respec.** Count distinct *families*, not request ids. Contract: the `CELL_SATURATED` payload stays closed-enum-only (it carries no family field today); family scope reaches the trigger via a request-to-family join at read time on the event's `entity_id` (the request id), per the implementation brief. Also: treat an empty/unknown theme signature as conservative (counts toward saturation) rather than dissimilar; verify LEAF/CATALOG are reachable for out-of-vocabulary themes in a multi-child window simulation. | Analysis 5 (dark sensor); flywheel/trigger.py | S-M | End-to-end test from saturation emission through distinct-family counting (two requests from one family collapse to one); an unusual-theme family reaches CATALOG within N similar requests (simulation); a single prolific family alone cannot trigger (test); trigger docstring updated |
 | SQ-09 | **Clone labeling and resolution.** (a) Add within-run WL-hash isomorphism to `diversity/incell.py` (proof labeling; never compare against stored hashes, networkx v3.5 changed them); (b) execute A9 item 2: restructure `the-sunken-temple` past `TAU_CELL` (the 35-ending remix design in the register), emptying the allowlist. | Analysis 2.4, 4 item 5; UW-G03 | S (a) + L (b) | Audit output labels the pair ISOMORPHIC until fixed; after (b), allowlist empty and the audit passes clean; SR-9 still passes on the brass-lantern chain |
-| SQ-10 | **Metrics honesty.** Add a per-theme-cohort concentration report (which (tree, theme) pairs dominate across families); annotate ECS and net-new-trees dashboards with their known failure modes; flywheel headline metric gains a perceived-distinctness condition once SQ-15 lands. | Analysis 5 (metrics reward the failure mode) | S-M | The WS-0 report shows cohort concentration; dashboard docstrings state what each metric cannot see |
+| SQ-10 | **Metrics honesty.** Items 1-2 (Stage 1): a per-theme-cohort concentration report (which (tree, theme) pairs dominate across families) and dashboard annotations for ECS and net-new-trees stating their known failure modes. Item 3 is explicitly a Stage 3 follow-on delivered with SQ-15 (the flywheel headline metric gains a perceived-distinctness condition); SQ-10 closes at Stage 1 on items 1-2. | Analysis 5 (metrics reward the failure mode) | S-M | The WS-0 report shows cohort concentration; dashboard docstrings state what each metric cannot see |
 
-## 4. Phase 2: lift the armature ceiling (the decisive bet)
+## 4. Stage 2: lift the armature ceiling (the decisive bet)
 
 The frozen beat armature is the mechanism of "themes swapped in" (analysis 2.5), and beat variants
 are the only lever that changes the scene a reader gets on a repeated tree. This phase is a program,
@@ -159,10 +178,10 @@ its schedule.
 | --- | --- | --- | --- | --- |
 | SQ-11 | **Alternate-beats design doc and ADR.** Outcome contract per node (same successor state, same choice semantics, same ending kind/valence); 2-3 authored variants per node; per-fill variant-set selection (deterministic, seeded per job); the issued variant becomes the fidelity target; variants change no graph edge, so L1/L2 costs are zero by construction. Two review-mandated requirements: variants are authored under deliberately varied model/prompt/exemplar settings (anti-monoculture), and the ADR includes the capacity model. Owner gate G3 accepts the ADR. | Analysis 2.5, 5, 6.2; UW-G12 (unblocks it) | M (doc) | ADR accepted; schema change for variant storage reviewed against `storybook/models.py` and `slotted_surfaces.py`; fidelity gate design names the issued variant as its target |
 | SQ-12 | **Pilot on the two slotted MVP skeletons** (`the-lost-mitten`, `the-clocktower-cipher`, already A20-complete). Author 2-3 variants per node; generate paired fills (same tree, same theme, different variant vs same variant); measure masked unigram/bigram distance and RL-13. Falsifiable: the experiment defines success as a measured, pre-registered margin on ATG distance with no RL-13 regression; if variants do not move the distance, the program stops and the plan reverts to catalog growth as the primary lever. | Analysis 6.2; WS-0 method | M | Paired-fill report committed under research/ or evidence/; margin met or program decision recorded either way |
-| SQ-13 | **Combined A20 + variants rollout, per skeleton.** One pass per skeleton does slotting (A20) and variants (SQ-11) together. Priority order: most-requested cells first (from request history once SQ-01 ships serving data), small trees before the 300-node teens. The 14 unslotted skeletons and 4,305 nodes (UW-G01) are the backlog; each is its own schedulable slice with its own Ref. | UW-G01; analysis 6.2 | L (program) | Per-skeleton: contract passes `scripts/check_theme_contract.py`, variants pass the SQ-11 gate, structural fingerprint unchanged; rollout tracker table appended to this plan |
-| SQ-14 | **ATG contract revision, calibration, and blocking.** After SQ-12 proves variants: revise the supervisor-ruled fail-open contract in `moderation/leaf_diversity.py` (this is a ruling change and says so), calibrate `_BAND_THRESHOLDS` from pilot panel data, compare against the k most recent same-tree fills (k=3) scoped per profile with family fallback, then flip to blocking with the one bounded repair as the remediation path. Owner gate G4 makes the ruling. | Analysis 4 item 1, 5; UW-G04 | M | Thresholds committed with their derivation; a deliberately templated fill FAILs and blocks in test; fail-open paths enumerated and each justified or closed |
+| SQ-13 | **Variants rollout across ALL production skeletons, per skeleton.** The backlog covers the whole production catalog, because the objective is distinctness between any two stories a reader encounters: the 14 unslotted skeletons (4,305 nodes, UW-G01) get a combined slotting-plus-variants pass; the 47 already-contracted skeletons get a variants-only pass, and each per-skeleton pass also backfills subject-axis `metadata.themes` tags (closing the 9-of-22 subject-tag gap). Priority order: most-requested cells first (from request history once SQ-01 ships serving data), small trees before the 300-node teens. Each skeleton is its own schedulable slice with its own Ref. | UW-G01; analysis 6.2 items 6 and 11 | L (program) | Per-skeleton: contract passes `scripts/check_theme_contract.py`, variants pass the SQ-11 gate, structural fingerprint unchanged; rollout tracker table appended to this plan |
+| SQ-14 | **ATG contract revision, calibration, and SCOPED blocking.** After SQ-12 proves variants: revise the supervisor-ruled fail-open contract in `moderation/leaf_diversity.py` (this is a ruling change and says so), calibrate `_BAND_THRESHOLDS` from pilot panel data, compare against the k most recent same-tree fills (k=3) scoped per profile with family fallback. Blocking is per skeleton, gated on that skeleton's SQ-13 variant slice having landed (a skeleton with frozen beats stays advisory); global blocking is declared only when SQ-13 covers the production cells. Owner gate G4 makes the ruling. | Analysis 4 item 1, 5; UW-G04 | M | Thresholds committed with their derivation; a deliberately templated fill on a varianted skeleton FAILs and blocks in test; a fill on an un-varianted skeleton stays advisory (test); fail-open paths enumerated and each justified or closed |
 
-## 5. Phase 3: measure the experience
+## 5. Stage 3: measure the experience
 
 | ID | Deliverable | Evidence / register | Effort | Acceptance |
 | --- | --- | --- | --- | --- |
@@ -172,7 +191,7 @@ its schedule.
 | SQ-18 | **A13b ending-screen affordance + engagement rollup.** Deliver "Try a different way" (ADR-024-authorized, 3-hop walk to the last real pick, fallback one step); add a skeleton-level rollup to engagement telemetry so per-stop signals aggregate across fills of a tree. | Plan v2 A13b; analysis 3, 5 (telemetry blind to the armature) | M | A13b behind the existing reader flag with its designed availability rule; rollup query joins version.skeleton_slug; both tested |
 | SQ-19 | **Path-length honesty.** AL-027's median-uniform-walk advisory per cell; UW-M06's PL-17 gamebook floor reshape so the endings floor stops rewarding terminating-leaf breadth. | AL-027; UW-M06 | M | Advisory emits for the known worst offenders; floor reshape lands as a validator change with a catalog impact report (no whole-class failure, per AL-051) |
 
-## 6. Phase 4: grow the structure space (demand-driven, last)
+## 6. Stage 4: grow the structure space (demand-driven, last)
 
 | ID | Deliverable | Evidence / register | Effort | Acceptance |
 | --- | --- | --- | --- | --- |
@@ -200,7 +219,7 @@ shifts from authoring hours to **owner review bandwidth**, and the rules below p
   changes (selection weights, metrics, wiring) follow normal PR review.
 - **Two concurrent content programs maximum** (SQ-13 rollout plus one of SQ-09(b)/SQ-21). Code lanes
   A/B/D are not capped.
-- **Per-skeleton Phase 2 cost is measured, not assumed**: the pilot (SQ-12) records hours for an
+- **Per-skeleton Stage 2 cost is measured, not assumed**: the pilot (SQ-12) records hours for an
   11-node and a 25-node skeleton; the 100-250-node prose skeletons are estimated from that measurement
   before scheduling; the 300-680-node teen books are scheduled last and only with the act-scoped fill
   (SQ-03) landed.
@@ -210,22 +229,35 @@ shifts from authoring hours to **owner review bandwidth**, and the rules below p
 - **Variant anti-monoculture costs extra by design**: SQ-11's model/prompt-variation policy means
   variant authoring cannot be one batch run; the schedule reflects at least two distinct authoring
   configurations per skeleton.
+- **The volume is stated, not implied.** Full SQ-13 coverage at 1-2 additional variants per node over
+  the ~11,400 production FILL nodes is on the order of 11,000-23,000 authored variant beats, every
+  one owner-reviewed. That number is why the rollout is serving-priority-ordered, why ending nodes
+  and climaxes come first within each skeleton (highest perceived-repeat load per authored beat), and
+  why this plan deliberately asserts **no calendar durations or end dates**: the pilot (SQ-12)
+  measures per-node cost first, and dates are derived from that measurement, not asserted ahead of
+  it. Partial coverage is a legitimate steady state; the scoped SQ-14 flip means every completed
+  skeleton delivers its value immediately.
 
 ## 8. Owner decision gates
 
 | Gate | Decision | Blocks | Default proposal |
 | --- | --- | --- | --- |
-| G1 | Publish list and order for the 23 authored books | SQ-01 | Publish all books that pass the #529 re-moderation sweep, kid bands first |
-| G2 | Theme-overlap bonus cap value | SQ-07(a) | 1.3x, re-measured after one month of serving |
-| G3 | Alternate-beats ADR acceptance | SQ-12, SQ-13, SQ-14 | Accept with the pilot as the falsification gate |
-| G4 | ATG contract ruling (fail-open advisory to blocking) | SQ-14 flip | Blocking after calibration, one bounded repair as remediation |
-| G5 | Pathfinder Phase 0 go/no-go (+ legal review) | SQ-22 | Defer until after SQ-21 unless teen engagement data argues otherwise |
+| G1 | Publish list and order for the 23 authored books | SQ-01 | Publish all books that pass the #529 re-moderation sweep, kid bands first. Stated cost, accepted consciously: this ships the single-voice, no-diversity-machinery inventory as-is (analysis 2.7), on the judgment that a reachable catalog beats an empty one; the SQ-13 variant passes are the remedy, and G1 may hold back specific look-alike pairs. Re-authoring the inventory through the parity-fixed path (SQ-04) first is the alternative, at much higher cost |
+| G2 | Theme-overlap bonus cap value | SQ-07(a) | 1.3x as an initial engineering BOUND, not a calibrated value (the no-uncalibrated-targets rule applies to success metrics; this is a safety cap on a known concentrator). SQ-10's cohort-concentration report calibrates it after one month of serving |
+| G3 | Alternate-beats ADR acceptance (the ADR is SQ-11's deliverable; G3 follows it) | SQ-12, SQ-13, SQ-14 | Accept with the pilot as the falsification gate |
+| G3b | Pilot-falsification exit (fires only if SQ-12 misses its pre-registered margin) | SQ-13, SQ-14 vs the pivot | Owner decides on the SQ-12 run record: stop the variant program, promote SQ-15 into Stage 2's slot, and re-center on Stage 4 growth judged by experience metrics |
+| G4 | ATG contract ruling (fail-open advisory to scoped blocking) | SQ-14 flip | Per-skeleton blocking gated on SQ-13 coverage, one bounded repair as remediation; global only when rollout covers production cells |
+| G5 | Pathfinder Phase 0 go/no-go (+ legal review; owner of both: repository owner; legal review completes before any Phase 0 work starts) | SQ-22 | Defer to the Stage 4 boundary. Note: teen engagement data would inform this, but no scheduled deliverable produces it (reading telemetry is deferred behind the privacy review), so absent data the decision is product judgment, stated as such |
 | G6 | ADR-011 amendment scope (SQ-24) | SQ-24 | Full scope per UW-G17 plus UW-C25 |
 
 ## 9. Success measures
 
-Falsifiable, split by what can be measured now vs what needs serving history. No numeric targets are
-asserted where no calibration data exists (WS-0 method rule); first measurements set the baseline.
+Split by what can be measured now vs what needs serving history. Precision about the word
+"falsifiable": exactly one measure carries a pre-registered pass/fail threshold today (SQ-12's
+paired-fill margin), because it is the only one with a controlled experiment behind it. Every other
+measure is a *baselined direction*: the first measurement sets the baseline, the stated direction is
+the claim, and thresholds are added only after calibration data exists (WS-0 method rule). A measure
+moving the wrong way against its baseline is the falsification event for these.
 
 **Pre-launch, grouped by the deliverable that makes each measurable** (SQ-01 is not the exit
 criterion for the later-phase measures; each group becomes available when its named deliverable
@@ -253,7 +285,8 @@ lands):
 
 ## 10. Risks
 
-- **Capacity is the binding constraint.** Phase 2 is a program on one person; the mitigation is the
+- **Capacity is the binding constraint.** Stage 2 is an authoring-heavy program whose content
+  approvals all route through the single owner-reviewer; the mitigation is the
   section 7 rules and the per-skeleton measurement before scheduling, not optimism.
 - **Variant monoculture**: variants authored by one model in one batch would inherit the correlation
   they exist to break; SQ-11's policy is the mitigation and SQ-12's paired measurement is the check.
@@ -265,16 +298,42 @@ lands):
 - **Gamification collision**: endings-gallery mechanics ship into today's negative-ending monoculture;
   SQ-21's pilot cell should precede or accompany the gamification rollout in teen gamebook cells.
 - **Pilot falsification**: if SQ-12 shows variants do not move perceived distance, the plan's center
-  of gravity moves to Phase 4 (more trees) with SQ-15 as the distinctness judge; that outcome is a
+  of gravity moves to Stage 4 (more trees) with SQ-15 as the distinctness judge; that outcome is a
   legitimate exit, recorded, not a failure of the plan.
 
-## 11. Relationship to existing planning
+## 11. Relationship to existing planning, and the SQ-to-register map
 
-This plan schedules work the register already holds (UW-G01, G03, G04, G12, G13, G14, G17, C07, C23,
-C24, C25, M06) plus the review-added items (SQ-04, SQ-05, SQ-06, SQ-08, SQ-10, SQ-16, SQ-17). It does
-not modify register rows; each row flips with a Ref when its deliverable lands. The analysis of record
-is [story-structure-diversity-critical-analysis.md](story-structure-diversity-critical-analysis.md);
-the delivered diversity baseline it builds on is
-[story-diversity-plan-v2.md](story-diversity-plan-v2.md). The rebuilt research base
+**Supersession, stated per the repo convention.** This plan takes over the *scheduling* function for
+the still-open diversity work; [story-diversity-plan-v2.md](story-diversity-plan-v2.md) remains
+`active` as the record of the delivered A/B deliverables and their evidence, and carries a pointer
+banner to this plan for its open items. The measurement records
+([story-diversity-analysis.md](story-diversity-analysis.md) and its errata) are not superseded; the
+new [analysis](story-structure-diversity-critical-analysis.md) extends them and says so in its
+section 8. This plan does not modify register rows; each flips with a Ref when its deliverable lands,
+and if an SQ item is ever dropped from this schedule while still worth doing, it must be registered
+as a UW row before removal.
+
+**Complete SQ-to-register map** (the `SQ-*` namespace is otherwise invisible to
+`scripts/check_work_linkage.py`, so this table is the audit surface):
+
+| SQ | Register / source | SQ | Register / source |
+| --- | --- | --- | --- |
+| SQ-01 | UW-G14 | SQ-13 | UW-G01 (+ UW-G12 variants half) |
+| SQ-02 | UW-C07 (AL-046 half) | SQ-14 | UW-G04 |
+| SQ-03 | UW-C07 (AL-046 half) | SQ-15 | new (analysis 6.3 item 12) |
+| SQ-04 | new (analysis 2.7) | SQ-16 | UW-C23, UW-C24 |
+| SQ-05 | new (analysis 2.7, 5) | SQ-17 | new (analysis 5, D11 amendment) |
+| SQ-06 | new (analysis 2.7) | SQ-18 | plan-v2 A13b + A18 (unregistered rows) |
+| SQ-07 | plan-v2 deferred (per-profile) | SQ-19 | UW-M06 + AL-027 (open) |
+| SQ-08 | new (analysis 5, dark sensor) | SQ-20 | UW-G09 adjacent; AL-049 (open) |
+| SQ-09 | UW-G03 (b); new (a) | SQ-21 | new (analysis 6.4 item 16) |
+| SQ-10 | new (analysis 5, metrics) | SQ-22 | pathfinder doc Phase 0 (decision) |
+| SQ-11 | UW-G12 (unblocks it) | SQ-23 | UW-G13 |
+| SQ-12 | UW-G12 (pilot half) | SQ-24 | UW-G17, UW-C25 |
+
+"new" means the item originates in the reviewed analysis rather than a register row; it is scheduled
+work from inception, which is why no UW row is minted for it. The rebuilt research base
 ([research/README.md](research/README.md)) grounds SQ-24 and the constants this plan treats as
-designer priors.
+designer priors. Terminology note: this plan's internal Stage 0-4 grouping is deliberately not called
+"Phase" to avoid colliding with the register's closed phase vocabulary, whose source of truth is
+`roadmap.md`.

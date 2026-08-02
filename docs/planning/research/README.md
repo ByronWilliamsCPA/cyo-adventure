@@ -47,8 +47,13 @@ any indexed source and are labeled designer priors.
 
 ## Standing rules for this directory
 
-- Every claim carries its source with URL or DOI and an evidence tag: MEASURED (fetched primary
-  source or computed from one), REPORTED (secondhand), UNVERIFIABLE.
+- Every claim carries its source with URL or DOI.
+- Two tagging schemes are in deliberate use, one per note, because they answer different questions:
+  the structure note tags **provenance** (MEASURED: fetched primary source or computed from one;
+  REPORTED: secondhand; UNVERIFIABLE: not traceable), while the academic note grades **evidence
+  strength** (STRONG: meta-analysis, replicated, or preregistered; MODERATE: well-cited or
+  convergent studies; WEAK: single small study, theory piece, or gray literature). A note states
+  which scheme it uses in its frontmatter or opening.
 - A constant the literature cannot anchor is labeled a designer prior, and its calibration path
   (usually our own reading telemetry) is named.
 - Research notes cited by an ADR are committed in the same PR as the ADR change that cites them.

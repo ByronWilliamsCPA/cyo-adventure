@@ -62,8 +62,8 @@ under-deliver:
 5. The beat armature is frozen: every fill of a skeleton renders the same scenes forever; themes are
    paint on a fixed mural (section 2.5). This is the direct mechanism behind "swapped in themes."
 6. What a child can actually reach today is a tiny, small-tree subset of the catalog: the authored
-   inventory was never imported, and the automated fill can only render roughly a third of the
-   skeletons (section 2.6).
+   inventory was never imported, and the automated fill cannot render a large, method-dependent
+   fraction of the skeletons, including every large gamebook (section 2.6).
 7. The entire served-or-committed inventory was produced by authoring paths that bypass every
    diversity lever the July workstream built, by a single author-reviewer using one model per band
    (section 2.7).
@@ -106,7 +106,8 @@ reconciliation), but two problems undermine the translation:
   paper. Two other constants (words/node ~100-150, total words ~8-15k) remain unverifiable from any
   indexed source and stay designer priors.
 - **What survived translation is the countable part.** Node budgets, ending fractions, words per node,
-  and decisions per path became enforced tables (`validator/band_profile.py:159-178`,
+  and decisions per path became enforced tables (`validator/band_profile.py:159-178` for the node
+  budgets and `:358` for the breadth-scaled ending floors,
   `validator/policy.py`). What did not survive is everything the research said about *why* those books
   worked: pacing, placement of consequence, the feel of a decision mattering. The corpus drifted from
   the source on the one flow metric that was re-checked: mean per-skeleton maximum indegree is 7.79
@@ -201,9 +202,11 @@ the slot values and the prose change, the scene does not.
 
 The enforcement mechanics are subtler than "a blocking gate," and worth stating precisely. The
 beat-depiction check is the *soft* half of Stage 1: an LLM review judged by default by the same model
-that wrote the fill, fail-open on transport errors, with one retry and then a downgrade to human
-review rather than rejection (`generation/fidelity_gate.py`, `moderation/fidelity_review.py`,
-`generation/worker.py`). The hard-blocking Stage 1 checks (structure preserved, word-count tolerance)
+that wrote the fill, fail-open specifically on malformed responses (a non-string response or a JSON
+decode failure; an uncaught transport error propagates), with a bounded repair budget (`max_repairs`,
+default 3, shared between fidelity and structural repair) and then a downgrade to human review
+rather than rejection (`generation/fidelity_gate.py`, `moderation/fidelity_review.py`,
+`generation/worker.py`, `generation/orchestrator.py`). The hard-blocking Stage 1 checks (structure preserved, word-count tolerance)
 do not measure beat depiction at all. What actually freezes the scene is the combination of the prompt
 contract ("MUST depict this exact beat"), the flag-to-repair loop that rewrites flagged nodes without
 the differentiation context (section 2.7), and the absence of any variant to render. Push the fill
@@ -226,8 +229,12 @@ what a child can actually receive far below the 61-skeleton catalog:
   only books generated on demand for their own family.
 - **The automated fill can only render the small end of the catalog.** The fill is one completion of
   the whole Storybook capped at 32k output tokens (`generation/orchestrator.py`, `_MAX_TOKENS_PROSE`),
-  with no chunking. Roughly **38 of 58 production-eligible skeletons are infeasible under the cap**
-  (measured this session; consistent with AL-046's "13 of the 26 committed fills already exceed it").
+  with no chunking. The infeasible-skeleton count is method-dependent because it turns on the assumed
+  words-to-tokens factor and per-node JSON overhead: plausible estimates put **between 16 and 29 of
+  58 production-eligible skeletons over the cap** (1.3x factor with no overhead gives 16; 1.5x plus
+  30 tokens/node gives 29), and the ground truth from actual fills is AL-046's "13 of the 26
+  committed fills already exceed it". SQ-02's calibrated estimator settles the exact set; every
+  method agrees the large gamebooks are out of reach.
   Selection has no feasibility predicate, so a large-cell request burns its repair budget and fails
   deterministically. The books that carry most of the catalog's structural range (long gamebooks,
   stateful books) cannot reach a child through the automated path at all.
@@ -394,9 +401,10 @@ interactions:
 - **The health metrics reward the failure mode.** Effective catalog size is entropy over slugs, which
   the uniform-rotation steady state maximizes at exactly the moment experience is most repetitive; the
   flywheel's headline metric ("net new trees per month") counts TAU_CELL-clearing merges, so four
-  metric-distinct, experience-identical trees per month reads as full-budget success; and engagement
-  telemetry keys per book, so "everyone stops at the same corridor" will never be attributed to the
-  shared frozen beat that causes it in every fill of a tree.
+  metric-distinct, experience-identical trees per month reads as full-budget success; and the
+  engagement-telemetry design (reader-path-engagement-design.md, status proposed, not yet built)
+  keys per book, so as designed, "everyone stops at the same corridor" would never be attributed to
+  the shared frozen beat that causes it in every fill of a tree.
 - **Growth and deepening compete for one person's capacity.** A20 slotting (4,305 nodes remaining),
   beat variants, Wave 5 (36 skeletons), and every flywheel promotion all draw on the same single
   author-reviewer, and each merged tree adds ~300 nodes of slotting-plus-variant obligation. Growth

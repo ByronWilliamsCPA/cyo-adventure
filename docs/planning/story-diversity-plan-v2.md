@@ -31,6 +31,11 @@ source: "story-diversity-analysis.md (measurements, as corrected); story-diversi
 > [story-diversity-execution-plan.md](story-diversity-execution-plan.md), both superseded.
 > [story-diversity-analysis.md](story-diversity-analysis.md) remains the measurement record;
 > [story-diversity-review-errata.md](story-diversity-review-errata.md) records what was refuted and why.
+>
+> **Scheduling handover (2026-08-02).** This document remains `active` as the record of the delivered
+> A/B deliverables and their evidence. Scheduling of the still-open and deferred items has moved to
+> [story-structure-improvement-plan.md](story-structure-improvement-plan.md) (SQ namespace; see its
+> section 11 for the SQ-to-register map). Do not add new scheduled work here.
 
 ---
 

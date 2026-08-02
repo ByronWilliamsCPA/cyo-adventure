@@ -26,7 +26,7 @@ source: "story-structure-improvement-plan.md (the schedule and gates); story-str
 
 # Story Structure Improvement: Implementation Briefs
 
-Read [story-structure-improvement-plan.md](story-structure-improvement-plan.md) first for the phases,
+Read [story-structure-improvement-plan.md](story-structure-improvement-plan.md) first for the stages,
 critical path, owner gates, and capacity rules. This document is the per-deliverable detail.
 
 ## 0. Team onboarding (read this before writing code)
@@ -80,14 +80,14 @@ row(s) updated with a Ref when the brief closes one; lessons appended if any qua
 
 ---
 
-## Phase 0 briefs
+## Stage 0 briefs
 
 ### SQ-01: Ship the inventory
 
 **Status quo.** 23 validator-passed filled books (plus 2 pilot re-themes) sit in `out/*.filled.json`,
 listed in [draft-stories-manifest.md](draft-stories-manifest.md). Import tooling is built and idle:
 `src/cyo_adventure/generation/import_catalog.py` (async `import_catalog(...)` with an argparse CLI,
-imports under `CATALOG_FAMILY_ID` and leaves stories at `in_review`) and
+imports under `CATALOG_FAMILY_ID` and leaves stories at `in_review` or `needs_revision`) and
 `src/cyo_adventure/publishing/catalog_publish.py::promote_catalog_story` (per-story admin promotion to
 `visibility='catalog'`). Imported books are re-moderated, not trusted (#529/#537 landed the admin
 re-moderation entry point and catalog sweep script). [catalog-first-inventory-gap.md](catalog-first-inventory-gap.md)
@@ -116,12 +116,16 @@ a request landing on an oversized skeleton burns ~4 repair rounds and fails dete
 
 **Change.**
 1. New pure function `generation/feasibility.py::estimate_fill_tokens(skeleton) -> int`: sum of FILL
-   `words=` targets converted to tokens (calibrate the words-to-tokens factor by regressing the 26
-   committed fills in `out/` against their actual token counts; commit the factor with its derivation
-   as a module constant with an `#ASSUME` tag) plus measured JSON scaffolding overhead per node.
+   `words=` targets converted to tokens (calibrate the words-to-tokens factor by regressing the
+   committed fills in `out/`, 25 files: 23 top-level plus 2 pilot re-themes, against their actual
+   token counts; commit the factor with its derivation as a module constant with an `#ASSUME` tag)
+   plus measured JSON scaffolding overhead per node. The infeasible-set size is factor-sensitive
+   (plausible uncalibrated estimates give 16-29 of 58), which is exactly why the calibration comes
+   first.
 2. `candidates_for_cell` gains an optional `max_fill_tokens` filter (default from settings, wired to
    `_MAX_TOKENS_PROSE`); infeasible candidates are excluded on the automated path only (admin
-   override and the skill path are unaffected; the skill fills in chunks by hand).
+   override and the skill path are unaffected: the skill authors interactively across many model
+   turns and is not subject to the one-shot output cap).
 3. Empty-after-filter cells raise the existing 422 with a new distinct reason string so the guardian
    surface can say "this length is temporarily unavailable" rather than a generic failure.
 4. Log the feasible-pool size per request (structured, no premise text).
@@ -135,9 +139,11 @@ input changes from one-shot to per-chunk; keep the cap a parameter, not a consta
 ### SQ-03: Act-scoped fill loop
 
 **Status quo.** `generation/orchestrator.py::fill_skeleton` renders the whole storybook in one
-completion (`_run_one_stage`), which caps renderable skeletons (~38 of 58 infeasible) and gives late
-nodes degraded prose. AL-046 proposed act-scoped chunking. The skill path already fills chunk-wise by
-hand (`.claude/skills/cyo-author/SKILL.md` step 4) and is the existence proof.
+completion (`_run_one_stage`), which caps renderable skeletons (16-29 of 58 infeasible, method-dependent; see SQ-02) and gives late
+nodes degraded prose. AL-046 proposed act-scoped chunking and is the load-bearing precedent for this
+brief. Correction from PR review: the skill path is NOT an existence proof of chunked filling; its
+SKILL.md step 4 explicitly instructs a single-pass fill with a stable cached preamble. No chunked
+fill exists anywhere today; this brief creates the first one.
 
 **Change.**
 1. Chunker: partition the node set into acts by graph structure (dominator-tree segments or the
@@ -162,7 +168,7 @@ infeasible skeleton fills end to end; fidelity violations in chunk N do not re-r
 Live acceptance (owner-run, like the D4 pilot): one real fill of a previously infeasible skeleton,
 recorded as a run record doc.
 
-**Size M-L. Depends: SQ-02 (estimator). This is the deepest Phase 0 item; start it early.**
+**Size M-L. Depends: SQ-02 (estimator). This is the deepest Stage 0 item; start it early.**
 
 ### SQ-04: Skill-path parity
 
@@ -228,7 +234,7 @@ prompt per band.
 
 ---
 
-## Phase 1 briefs
+## Stage 1 briefs
 
 ### SQ-07: Selection rebalance
 
@@ -240,19 +246,19 @@ attraction `weight *= (1 + theme_overlap)` up to 2x (`_theme_overlap_bonus`,
 `diversity/history.py::load_family_history` mirrors the window. No `profile_id` exists in
 `diversity/`. `structure_features` is computed and unused by selection.
 
-**Change**, in four separable commits:
-1. **Cap the attraction bonus** (gate G2, default 1.3x): change the multiplier to
+**Change**, in four separable commits, lettered (a)-(d) to match the plan's references:
+(a) **Cap the attraction bonus** (gate G2, default 1.3x): change the multiplier to
    `(1 + min(theme_overlap, CAP - 1))`, constant with rationale; add the cross-family Monte Carlo
    from the plan's acceptance as a committed simulation test.
-2. **Per-profile scoping**: add optional `profile_id` to `load_family_history` /
+(b) **Per-profile scoping**: add optional `profile_id` to `load_family_history` /
    `recent_skeleton_usage` (the storybook row already carries the requesting profile through the
    request join; verify the join path in `db/models.py` and document it); selection prefers
    per-profile counts, falls back to family when the profile has fewer than K (propose 5) rows.
    `#ASSUME: data-integrity` note on the fallback. Privacy: internal-use only, no new surface;
    confirm classification per the plan's risk note before merging.
-3. **Distinct-storybook counting**: count distinct `storybook_id`, not version rows, in the recency
+(c) **Distinct-storybook counting**: count distinct `storybook_id`, not version rows, in the recency
    window (kills the retry-pollution loop); keep the window at 20 storybooks.
-4. **Structural de-weighting**: extend `_blended_weight` with a proximity term: for each candidate,
+(d) **Structural de-weighting**: extend `_blended_weight` with a proximity term: for each candidate,
    `sim = max over reader's last M trees of (1 - structural_distance)`; fold in as
    `1/(1+recent+3*similar+w_s*sim)` with `w_s` starting at 1 (documented, re-derivable). When SQ-15
    lands, the distance input switches to the experience-metric distance; keep the term's input a
@@ -297,7 +303,7 @@ out-of-vocabulary themes never escalate (analysis section 5, dark sensor).
 
 **Status quo.** `diversity/incell.py` audits in-cell pairs against `TAU_CELL` from
 `docs/planning/ws5_floor_baseline.json`; `ALLOWLIST` holds exactly the
-`the-harrowstone-keep`/`the-sunken-temple` pair (graph-isomorphic, distance 0.00095); stale allowlist
+`the-harrowstone-keep`/`the-sunken-temple` pair (graph-isomorphic; measured distance 0.000469 in `ws5_floor_baseline.json`, while an earlier doc and the incell docstring carry 0.00095: either way about two orders under the floor, and the discrepancy is worth fixing in passing); stale allowlist
 entries fail the gate, so the list can only shrink. A9 item 2 (restructure book 2 past the floor,
 including the 35-ending remix, 5 variables, 20 conditions, 75 effects) is specified in UW-G03.
 
@@ -306,7 +312,7 @@ changed directed hashes, so never persist hashes) to the audit's report line: la
 ISOMORPHIC vs NEAR. Size S. (b) Execute the UW-G03 restructure as an authoring task: this is a
 content change to a series book, so `SR-9` (series continuity) must pass with book 1's carried
 states, and the ending remix must hold PL-15/16/17/24. Follow the cyo-author skill (with SQ-04
-parity landed). Size L; the one Phase 1 item that is authoring, not code.
+parity landed). Size L; the one Stage 1 item that is authoring, not code.
 
 **Tests.** (a) unit with a renamed-clone fixture. (b) full gate + `validate_series` green on the
 brass-lantern chain; in-cell audit passes with an empty allowlist.
@@ -333,7 +339,7 @@ experience-metric clusters instead of slugs) beside, not replacing, slug ECS.
 
 ---
 
-## Phase 2 briefs
+## Stage 2 briefs
 
 ### SQ-11: Alternate-beats ADR
 
@@ -400,7 +406,7 @@ SQ-13/SQ-14.**
 ### SQ-13: Combined A20 + variants rollout
 
 **Status quo.** 14 skeletons / 4,305 FILL nodes unslotted (UW-G01, distribution extremely uneven:
-677/550/550 at the top, 105/32/25/11 at the bottom); 47 contracts exist. The A20 toolchain is proven:
+677/550/550 at the top; the smallest UNSLOTTED skeletons are 105 and 32 nodes; the 25- and 11-node MVP seeds are the two already-delivered A20 slices, not backlog); 47 contracts exist. Scope correction from PR review: the rollout covers ALL production skeletons, not only the unslotted 14; the 47 already-contracted skeletons get a variants-only pass, and every per-skeleton pass backfills subject-axis metadata.themes tags. The A20 toolchain is proven:
 `scripts/parameterize_skeleton.py` applies a slotting plan with fingerprint unchanged;
 `scripts/check_theme_contract.py` runs seven acceptance checks; two authoring conventions are
 recorded in plan v2's A20 correction (article inside the slot value, never sentence-initial; whole
@@ -429,7 +435,7 @@ fingerprint drift). Findings ride the one bounded repair in `moderation/repair.p
    both a "genuinely different" and a "same-variant" distribution per band it covers; extend the
    panel to uncovered bands with the SQ-13 rollout's first fills).
 2. Partner selection: k=3 most recent same-tree fills, minimum distance is the verdict input;
-   per-profile scope with family fallback (shares SQ-07(2)'s history plumbing).
+   per-profile scope with family fallback (shares SQ-07(b)'s history plumbing).
 3. Contract revision (gate G4): FAIL becomes blocking on the automated path with the bounded repair
    as remediation and `needs_review` (human) as the terminal fallback; every fail-open path is
    enumerated in the module docstring and either justified (fresh_generation has no partner: stays
@@ -438,11 +444,11 @@ fingerprint drift). Findings ride the one bounded repair in `moderation/repair.p
 **Tests.** A deliberately templated fill (noun-swap fixture) FAILs and blocks; a variant-differing
 fill PASSes; each fail-open path has an explicit test asserting its documented behavior.
 
-**Size M. Depends: SQ-12 (hard), SQ-07(2) (plumbing). Gate G4.**
+**Size M. Depends: SQ-12 (hard); SQ-07(b) (plumbing); per-skeleton blocking additionally gated on that skeleton's SQ-13 slice, with global blocking only after SQ-13 covers the production cells (see plan section 1.1). Gate G4.**
 
 ---
 
-## Phase 3 briefs
+## Stage 3 briefs
 
 ### SQ-15: Per-path experience metrics
 
@@ -507,7 +513,7 @@ built. Engagement telemetry (`node_engagement`, reader-path-engagement-design.md
 **Change.** (a) Implement A13b in `frontend/src/player/` + `Reader.tsx` per the A13b row's exact
 semantics (the row text is the spec; respect its two MUST NOTs: availability must not become
 "untaken choice exists within 3 hops", and the walk stops at the first branching ancestor). Apply
-SQ-18's glyph differentiation from A18 while in the file. (b) Backend: a rollup query/view joining
+A18's glyph differentiation while in the file. (b) Backend: a rollup query/view joining
 `storybook_version.skeleton_slug` so per-stop signals aggregate across fills of a tree; expose in
 the WS-0 report, not a new API. If any API shape changes: regenerate the frontend client (0.3).
 
@@ -533,7 +539,7 @@ with catalog impact reports committed.
 
 ---
 
-## Phase 4 briefs
+## Stage 4 briefs
 
 ### SQ-20: Targeted flywheel run
 
@@ -572,7 +578,7 @@ differ visibly in win count, fail-kind mix, and setback-vs-death balance, inside
 
 No implementation until gate G5. The decision package is already written
 ([pathfinder-structure-exploration.md](pathfinder-structure-exploration.md) section 8); the team's
-only task is to keep it out of scope until the owner and legal gates clear. If go: Phase 1 pilot per
+only task is to keep it out of scope until the owner and legal gates clear. If go: Stage 1 pilot per
 that document, one 13-16 gamebook skeleton, unchanged validator.
 
 ### SQ-23: Demand-driven expansion
@@ -580,6 +586,8 @@ that document, one 13-16 gamebook skeleton, unchanged validator.
 No implementation until the SQ-08 sensor flags a cell post-launch. When it does: Wave-5-style design
 (deliberately varied designer configurations per SQ-11's anti-monoculture policy), judged by SQ-15,
 scheduled under the capacity rule. Each expansion PR cites its triggering saturation evidence.
+
+## Cross-cutting brief
 
 ### SQ-24: ADR-011 amendment
 
