@@ -3225,6 +3225,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#status-update-2026-08-02-two-of-three-resolved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status update (2026-08-02): two of three resolved
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#remediation-plan_6" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3988,7 +3999,7 @@ against fresh evidence.</p>
 <tbody>
 <tr>
 <td><strong>CVE ID</strong></td>
-<td>CVE-2026-63879 (no fix), CVE-2026-64530 and CVE-2026-64531 (both fixed in 6.12.100-1)</td>
+<td>CVE-2026-63879 (no fix on the trixie track), CVE-2026-64530 and CVE-2026-64531 (<strong>both RESOLVED 2026-08-02</strong>)</td>
 </tr>
 <tr>
 <td><strong>Package</strong></td>
@@ -3996,19 +4007,19 @@ against fresh evidence.</p>
 </tr>
 <tr>
 <td><strong>Affected Version</strong></td>
-<td>6.12.96-1+dhi0 (Debian 13 "trixie", DHI mirror build)</td>
+<td>6.12.96-1+dhi0 at discovery; base advanced to 6.12.100-1+dhi0 on 2026-08-02 via PR #547 (Debian 13 "trixie", DHI mirror build)</td>
 </tr>
 <tr>
 <td><strong>Fixed Version</strong></td>
-<td>Mixed, and this is the first <code>linux-libc-dev</code> entry here that is not uniformly "no fix": Trivy reports 6.12.100-1 for CVE-2026-64530 and CVE-2026-64531, and an empty Fixed Version with status <code>affected</code> for CVE-2026-63879</td>
+<td>Mixed, and this is the first <code>linux-libc-dev</code> entry here that is not uniformly "no fix". CVE-2026-64530 and CVE-2026-64531 are fixed in 6.12.100-1 (Debian tracker: <code>trixie-security</code> = <code>fixed</code>, DSA-6405-1) and no longer appear in scan output. CVE-2026-63879 has no fix on this track: <code>trixie</code> (6.12.94-1) and <code>trixie-security</code> (6.12.100-1) both record <code>vulnerable</code>; the fix is sid-only (7.0.12-1)</td>
 </tr>
 <tr>
 <td><strong>Severity</strong></td>
-<td>High (all 3, per Trivy/Aqua feed; <code>Total: 3 (HIGH: 3, CRITICAL: 0)</code>)</td>
+<td>High (all 3, per Trivy/Aqua feed). At discovery <code>Total: 3 (HIGH: 3, CRITICAL: 0)</code>; as of 2026-08-02 <code>Total: 1 (HIGH: 1, CRITICAL: 0)</code></td>
 </tr>
 <tr>
 <td><strong>CVSS Score</strong></td>
-<td>Not yet assigned in the scan output for any of the three as of 2026-08-01</td>
+<td>Not yet assigned in the scan output for any of the three as of 2026-08-02</td>
 </tr>
 <tr>
 <td><strong>Discovered</strong></td>
@@ -4058,22 +4069,97 @@ affected kernel, the remediation is host kernel patching, which is outside this
 repository and unaffected by anything shipped in the image. CVE-2026-63879
 targets AMD GPU hardware this deployment does not use at all. Exposure through
 the application surface is negligible.</p>
+<h3 id="status-update-2026-08-02-two-of-three-resolved">Status update (2026-08-02): two of three resolved<a class="headerlink" href="#status-update-2026-08-02-two-of-three-resolved" title="Permanent link">&para;</a></h3>
+<p>The base image advanced from 6.12.96-1+dhi0 to 6.12.100-1+dhi0 in
+<a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/547">PR #547</a>, a Renovate
+digest bump of <code>ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13</code>. That is exactly the
+action this entry's remediation plan called for, and it arrived on its own rather than
+by request, so the plan is recorded as satisfied rather than executed.</p>
+<p><strong>Measured effect</strong>, comparing the Container Security run on <code>main</code> at <code>ea3970c8</code>
+against the run on PR #547 (workflow run 30733734393):</p>
+<table>
+<thead>
+<tr>
+<th>Scan</th>
+<th>linux-libc-dev</th>
+<th>Trivy result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>main</code> @ <code>ea3970c8</code></td>
+<td>6.12.96-1+dhi0</td>
+<td><code>Total: 3 (HIGH: 3, CRITICAL: 0)</code></td>
+</tr>
+<tr>
+<td>PR #547 @ <code>c296e63c</code></td>
+<td>6.12.100-1+dhi0</td>
+<td><code>Total: 1 (HIGH: 1, CRITICAL: 0)</code></td>
+</tr>
+</tbody>
+</table>
+<p>CVE-2026-64530 and CVE-2026-64531 cleared outright and are recorded in
+<a href="#resolved-entries">Resolved Entries</a>. CVE-2026-63879 remains, reported with an empty
+Fixed Version and status <code>affected</code>, and is now carried in <code>.trivyignore</code> under its own
+<code>6.12.100-1+dhi0</code> block.</p>
+<p><strong>Independent Debian verification</strong> (2026-08-02), which this entry previously flagged as
+the outstanding gap in its evidence base:</p>
+<table>
+<thead>
+<tr>
+<th>CVE</th>
+<th><code>trixie</code></th>
+<th><code>trixie-security</code></th>
+<th>sid</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CVE-2026-63879</td>
+<td>vulnerable (6.12.94-1)</td>
+<td><strong>vulnerable</strong> (6.12.100-1)</td>
+<td>fixed (7.0.12-1)</td>
+</tr>
+<tr>
+<td>CVE-2026-64530</td>
+<td>vulnerable (6.12.94-1)</td>
+<td><strong>fixed</strong> (6.12.100-1, DSA-6405-1)</td>
+<td>fixed (7.1.5-1)</td>
+</tr>
+<tr>
+<td>CVE-2026-64531</td>
+<td>vulnerable (6.12.94-1)</td>
+<td><strong>fixed</strong> (6.12.100-1, DSA-6405-1)</td>
+<td>fixed (7.1.5-1)</td>
+</tr>
+</tbody>
+</table>
+<p>This closes the caveat recorded under "Why Not Fixed Yet" below: 6.12.100-1 was in fact
+reachable on this release track, via <code>trixie-security</code> rather than <code>trixie</code>. It also
+establishes that CVE-2026-63879's fix is sid-only and therefore genuinely unreachable
+for this base image, which is the condition the <code>.trivyignore</code> policy requires before an
+entry may be accepted there.</p>
 <h3 id="remediation-plan_6">Remediation Plan<a class="headerlink" href="#remediation-plan_6" title="Permanent link">&para;</a></h3>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Confirm each CVE's status on the <a href="https://security-tracker.debian.org/tracker/source-package/linux">Debian security tracker</a>
-  for the <code>trixie</code> and <code>trixie-security</code> tracks. Unlike the entries above, the
-  Fixed Version recorded here comes from Trivy's feed and has <strong>not</strong> yet been
-  independently verified against Debian; do that before treating 6.12.100-1 as
-  reachable on this release track.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Once <code>linux-libc-dev &gt;= 6.12.100-1</code> reaches the trixie track, request a
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Confirm each CVE's status on the <a href="https://security-tracker.debian.org/tracker/source-package/linux">Debian security tracker</a>
+  for the <code>trixie</code> and <code>trixie-security</code> tracks. <strong>Done 2026-08-02</strong>; results in the
+  status update above. The Trivy feed's Fixed Version was corroborated for
+  CVE-2026-64530 and CVE-2026-64531 and refined for CVE-2026-63879, whose fix exists
+  only in sid.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Once <code>linux-libc-dev &gt;= 6.12.100-1</code> reaches the trixie track, request a
   base-image digest refresh from the <code>ByronWilliamsCPA/container-images</code> mirror
-  pipeline.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Re-run the Container Security scan to confirm CVE-2026-64530 and
-  CVE-2026-64531 have cleared.</li>
+  pipeline. <strong>Satisfied 2026-08-02</strong> by the Renovate digest bump in PR #547; no manual
+  request was needed.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Re-run the Container Security scan to confirm CVE-2026-64530 and
+  CVE-2026-64531 have cleared. <strong>Confirmed 2026-08-02</strong>, workflow run 30733734393.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Close <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/505">issue #505</a>
-  if its seven CVEs remain absent from scan output.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Tracked in <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/535">issue #535</a></li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Reassess by 2026-09-30</li>
+  if its seven CVEs remain absent from scan output. The condition is now met (the
+  2026-08-02 run's only finding is CVE-2026-63879), but the issue is still open; closing
+  it is a follow-up.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Narrow <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/535">issue #535</a>
+  to CVE-2026-63879 only, now that the other two are resolved.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Reassess CVE-2026-63879 by 2026-09-30, checking whether the sid fix (7.0.12-1) has
+  been backported to <code>trixie-security</code>.</li>
 </ul>
 <h3 id="why-not-fixed-yet_6">Why Not Fixed Yet<a class="headerlink" href="#why-not-fixed-yet_6" title="Permanent link">&para;</a></h3>
 <p>For CVE-2026-63879, Trivy reports no fix. For the other two a fix exists
@@ -4141,6 +4227,18 @@ closes the release until the entry is reassessed against fresh evidence.</p>
 <td>linux-libc-dev</td>
 <td>2026-07-30</td>
 <td>Fixed by base 6.12.96-1+dhi0. See entry above.</td>
+</tr>
+<tr>
+<td>CVE-2026-64530</td>
+<td>linux-libc-dev</td>
+<td>2026-08-02</td>
+<td>Fixed by base 6.12.100-1+dhi0 (DSA-6405-1). See above.</td>
+</tr>
+<tr>
+<td>CVE-2026-64531</td>
+<td>linux-libc-dev</td>
+<td>2026-08-02</td>
+<td>Fixed by base 6.12.100-1+dhi0 (DSA-6405-1). See above.</td>
 </tr>
 </tbody>
 </table>
@@ -4311,7 +4409,7 @@ re-verified rather than carried forward:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 1, 2026 18:23:21 UTC">August 1, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 15:53:14 UTC">August 2, 2026</span>
   </span>
 
     
