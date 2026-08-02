@@ -538,7 +538,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_sv",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Cornered by {B_GATE}"
       }
@@ -1168,7 +1168,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_key",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Turned Around at {KC_GATE}"
       }
@@ -2207,7 +2207,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_dawn",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Caught by {DAWN_CLEANER}"
       }

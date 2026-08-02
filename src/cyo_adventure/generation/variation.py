@@ -145,6 +145,43 @@ VARIATION_AXES: tuple[VariationAxis, ...] = (
             "fill in where they are as they go."
         ),
     ),
+    VariationAxis(
+        key="running_joke",
+        label="humor: a gentle running joke",
+        instruction=(
+            "Plant one small, harmless running joke early (a recurring word, a "
+            "character's habit, a prop that keeps misbehaving) and pay it off, "
+            "changed, at least once more before the story ends. Let comic timing "
+            "breathe: a short beat before the punchline lands."
+        ),
+    ),
+    VariationAxis(
+        key="awestruck_wonder",
+        label="tonal register: awestruck wonder",
+        instruction=(
+            "Frame each new discovery as genuinely wondrous. Let the protagonist "
+            "pause and marvel before acting, so the reader feels the size of the "
+            "thing found, not just its function in the plot."
+        ),
+    ),
+    VariationAxis(
+        key="playful_figurative",
+        label="prose style: playful figurative language",
+        instruction=(
+            "Reach for a fresh, playful comparison wherever description would "
+            "otherwise be plain. Similes and small invented turns of phrase, "
+            "sized to the band, are welcome over flat, literal statement."
+        ),
+    ),
+    VariationAxis(
+        key="mischievous_narrator",
+        label="narrator warmth: mischievous",
+        instruction=(
+            "Let the narrating voice enjoy itself: a light, mischievous warmth "
+            "toward the protagonist's scrapes, never mocking, that treats a "
+            "mistake as a good story rather than a failure."
+        ),
+    ),
 )
 
 _AXES_BY_KEY: dict[str, VariationAxis] = {axis.key: axis for axis in VARIATION_AXES}

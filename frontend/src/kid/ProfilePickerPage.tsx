@@ -15,6 +15,7 @@ import { GUARDIAN_LOGIN_PATH } from '../routes'
 import { makeChildSessionApi } from './childSessionApi'
 import { Mascot } from './Mascot'
 import { setReadAloudPreference } from './readAloudPreference'
+import { makeStoryStatusApi } from './storyStatusApi'
 
 // `unauthenticated` is the stable, expected no-grown-up-signed-in gate, not a
 // flaky fetch. `forbidden` is defensive: GET /v1/profiles does not authorize
@@ -61,19 +62,37 @@ function isPinMismatch(error: unknown): boolean {
 
 /**
  * Kid-surface entry point (wireframe 4.1): a 2-column avatar grid; picking a
- * profile lands the child in their own library. The book-status pill
- * (wireframe 4.1) is deferred: a child principal cannot read sibling
- * profiles' libraries (authorize_profile), so the pill needs a bulk status
- * endpoint; tracked for C4a-6. The "Add Child" tile routes to the auth-gated
- * guardian surface, so kids cannot create profiles.
+ * profile lands the child in their own library. The "Add Child" tile routes
+ * to the auth-gated guardian surface, so kids cannot create profiles.
+ *
+ * W1.4 (design review 4.1): each tile carries a small "new story!" pill when
+ * ``GET /v1/profiles/story-status`` (the bulk status endpoint this deferred
+ * comment used to ask for; see ``api/profiles.py::list_profile_story_status``)
+ * reports a recent assignment for that profile. Boolean-only by design: a
+ * picker-stage principal (a device grant, or a guardian who has not yet
+ * handed the device to a specific child) still cannot read a sibling
+ * profile's library (``authorize_profile``), so the pill never carries a
+ * title or count, only "something new happened".
  */
 export function ProfilePickerPage() {
   const api = useApi()
   const profilesApi = useMemo(() => makeProfilesApi(api), [api])
   const childSessionApi = useMemo(() => makeChildSessionApi(api), [api])
+  const storyStatusApi = useMemo(() => makeStoryStatusApi(api), [api])
   const navigate = useNavigate()
   const [state, setState] = useState<PickerState>({ status: 'loading' })
   const [reloadKey, setReloadKey] = useState(0)
+  // W1.4: profile ids with a recent (unread) assignment, per
+  // GET /v1/profiles/story-status. Starts empty (no pill) rather than
+  // undefined/loading: the pill is a nice-to-have signal layered on top of
+  // the picker's core job (picking a profile), never something worth a
+  // loading state or a retry affordance of its own.
+  // #ASSUME: external-resources: this fetch can fail (network blip, backend
+  // unavailable) independently of the profiles list itself succeeding.
+  // #VERIFY: a failure here degrades silently to "no pills shown" (see the
+  // effect below), matching RequestStory.tsx's own background-refresh
+  // posture, rather than surfacing a scary error for a decorative signal.
+  const [newStoryProfileIds, setNewStoryProfileIds] = useState<ReadonlySet<string>>(new Set())
   // UX-K8: which pin-less tile is mid-mint, so the tap has visible feedback
   // (tile pulse + "Opening your books…") instead of a dead second on a slow
   // connection. Latched like pickInFlightRef: every pick path ends in
@@ -252,6 +271,35 @@ export function ProfilePickerPage() {
     }
   }, [profilesApi, reloadKey])
 
+  // W1.4: fetch the pill status only once the picker has something to show a
+  // pill on; a separate effect (rather than folded into the load() above) so
+  // a story-status failure can never turn a successful profile load into an
+  // error screen for the child.
+  useEffect(() => {
+    if (state.status !== 'ready') return
+    let cancelled = false
+    async function loadStoryStatus() {
+      try {
+        const statuses = await storyStatusApi.list()
+        if (!cancelled) {
+          setNewStoryProfileIds(
+            new Set(statuses.filter((s) => s.has_new_story).map((s) => s.profile_id))
+          )
+        }
+      } catch (err) {
+        // Redacted shape only, never the raw axios error; see logApiError.
+        // No error state, no retry: the picker's core job (picking a
+        // profile) already succeeded, so a lost pill is silent, matching
+        // RequestStory.tsx's own background-refresh posture.
+        logApiError('story status fetch failed', err)
+      }
+    }
+    void loadStoryStatus()
+    return () => {
+      cancelled = true
+    }
+  }, [state.status, storyStatusApi])
+
   if (state.status === 'loading') {
     return <LoadingStatus className="picker-loading">Loading profiles…</LoadingStatus>
   }
@@ -429,6 +477,16 @@ export function ProfilePickerPage() {
         {state.profiles.map((profile) => {
           const picking = pickingId === profile.id
           const waiting = pickingId !== null && !picking
+          // W1.4: the pill is announced too, not just shown, so a screen-reader
+          // child hears about a new story the same way a sighted child sees
+          // it. "needs a PIN" keeps its exact original wording (unchanged
+          // regression surface for ProfilePickerPage.test.tsx) when it is the
+          // only hint; a new-story hint appends onto it, never replaces it.
+          const hasNewStory = newStoryProfileIds.has(profile.id)
+          const ariaLabelParts = [
+            ...(profile.has_pin ? ['needs a PIN'] : []),
+            ...(hasNewStory ? ['has a new story'] : []),
+          ]
           return (
             <li key={profile.id}>
               <Link
@@ -445,8 +503,12 @@ export function ProfilePickerPage() {
                 // label starts with the visible name so voice-control users
                 // can still say the name they see; PIN-less tiles keep their
                 // contents-derived name (AvatarCircle is aria-hidden, so that
-                // is just the display name).
-                aria-label={profile.has_pin ? `${profile.display_name} needs a PIN` : undefined}
+                // is just the display name), UNLESS a pill is also showing.
+                aria-label={
+                  ariaLabelParts.length > 0
+                    ? `${profile.display_name} ${ariaLabelParts.join(' and ')}`
+                    : undefined
+                }
                 // A profile pick must mint a child session BEFORE navigating
                 // (see pickProfile above), so the default immediate Link
                 // navigation is suppressed in favor of the async flow; `to`
@@ -473,6 +535,16 @@ export function ProfilePickerPage() {
               >
                 <AvatarCircle avatar={profile.avatar} name={profile.display_name} />
                 <span className="picker-tile__name">{profile.display_name}</span>
+                {/* W1.4: small, warm, non-numeric pill (design review 4.1) --
+                  never a count, never a title, just "something arrived".
+                  Decorative (aria-hidden); the aria-label above carries the
+                  "new story!" hint for assistive tech, mirroring the PIN
+                  padlock's own split between visible glyph and accessible name. */}
+                {hasNewStory ? (
+                  <span className="picker-tile__new-pill" aria-hidden="true">
+                    new story!
+                  </span>
+                ) : null}
                 {/* UX-K8: visible mint feedback; decorative because the live
                   region above already carries the announcement. */}
                 {picking ? (

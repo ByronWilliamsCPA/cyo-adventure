@@ -49,6 +49,16 @@ export interface BookCardProps {
    * offline suppression of the request affordances.
    */
   ratable?: boolean
+  /** W3.2: true once every declared ending in this book has been found
+   * (`BookProgressCard.every_path_walked` from `GET /me/progress`).
+   * Outranks the plain "Finished!" ribbon with its own warmer state. Absent
+   * (undefined/false) whenever the profile's progress fetch is still
+   * loading, failed, or this book has not been fully explored. */
+  everyPathWalked?: boolean
+  /** W3.2: opens the Endings Gallery for this book. Omitted entirely (no
+   * button rendered) when the caller has no gallery wired yet, mirroring
+   * `onContinue`'s own optional pattern. */
+  onOpenGallery?: (storybookId: string) => void
 }
 
 export function BookCard({
@@ -62,6 +72,8 @@ export function BookCard({
   endings,
   recommendation,
   ratable = true,
+  everyPathWalked = false,
+  onOpenGallery,
 }: BookCardProps) {
   const readTo = `/read/${profileId}/${item.id}/${item.version}`
   // ADR-023 Task D8 (closes Stage C open question 2): thread the library's
@@ -111,16 +123,25 @@ export function BookCard({
           // A finished book fills the bar and reads "Finished!" instead of a
           // misleading "N of M pages explored" that under-reports a branching
           // story (a branch touches only a fraction of all nodes) (UX-K5).
-          value={item.progress?.completed ? 100 : pct}
+          // W3.2: "Every path walked!" outranks the plain "Finished!" once
+          // every declared ending has been found.
+          value={item.progress?.completed || everyPathWalked ? 100 : pct}
           label={
-            item.progress?.completed
-              ? 'Finished!'
-              : item.progress
-                ? `${item.progress.nodes_visited} pages explored`
-                : 'Not started'
+            everyPathWalked
+              ? 'Every path walked!'
+              : item.progress?.completed
+                ? 'Finished!'
+                : item.progress
+                  ? `${item.progress.nodes_visited} pages explored`
+                  : 'Not started'
           }
           showLabel
         />
+      ) : everyPathWalked ? (
+        <div className="book-card__every-path">
+          <ProgressBar value={100} />
+          <span className="book-card__every-path-label">Every path walked!</span>
+        </div>
       ) : item.progress?.completed ? (
         <div className="book-card__finished">
           <ProgressBar value={100} />
@@ -158,6 +179,20 @@ export function BookCard({
           nothing to track yet. */}
       {(started || (endings && endings.found > 0)) && endings ? (
         <EndingsBadge found={endings.found} total={endings.total} />
+      ) : null}
+      {/* W3.2: the Endings Gallery entry point. Only offered once there is
+          something to show (mirrors the endings badge's own started/found
+          gate above); omitted entirely when the caller has no gallery
+          wired (onOpenGallery undefined). */}
+      {onOpenGallery && (started || (endings && endings.found > 0)) && endings ? (
+        <button
+          type="button"
+          className="book-card__gallery-button"
+          data-testid="open-endings-gallery"
+          onClick={() => onOpenGallery(item.id)}
+        >
+          See your endings
+        </button>
       ) : null}
       {recommendation ? <RecommendationChip summary={recommendation} /> : null}
       {readOnly || !ratable ? null : (

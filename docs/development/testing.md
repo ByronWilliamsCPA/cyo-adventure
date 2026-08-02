@@ -60,15 +60,18 @@ tests/
 ```python
 import pytest
 
+
 @pytest.mark.unit
 def test_unit_example():
     """Unit test example."""
     pass
 
+
 @pytest.mark.integration
 def test_integration_example():
     """Integration test example."""
     pass
+
 
 @pytest.mark.slow
 def test_slow_example():

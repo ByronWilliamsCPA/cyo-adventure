@@ -562,6 +562,42 @@ export type AuthoringPlanResponse = {
 };
 
 /**
+ * BookProgressView
+ *
+ * One book's collection state for a profile (W3.1, the Endings Gallery).
+ */
+export type BookProgressView = {
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Endings Found
+     */
+    endings_found: number;
+    /**
+     * Total Endings
+     */
+    total_endings: number;
+    /**
+     * Finished
+     */
+    finished: boolean;
+    /**
+     * Every Path Walked
+     */
+    every_path_walked: boolean;
+    /**
+     * Found Endings
+     */
+    found_endings: Array<FoundEndingView>;
+};
+
+/**
  * BookVerdictView
  *
  * One published storybook's re-screen outcome, on the wire.
@@ -637,6 +673,9 @@ export type CategoryInsightView = {
  * Deliberately signals-only (G9's privacy model: signals, not surveillance):
  * no story title, node, or choice content is carried here, only counts and
  * ids already visible to the guardian elsewhere (the library listing).
+ * ``minutes_last_7_days``/``days_read_this_week`` (W3.3) extend that same
+ * signals-only posture to active reading time: day-grain counts and minute
+ * totals only, never a session-level or sub-day breakdown.
  */
 export type ChildEngagementItem = {
     /**
@@ -663,6 +702,14 @@ export type ChildEngagementItem = {
      * Last Activity At
      */
     last_activity_at: string | null;
+    /**
+     * Minutes Last 7 Days
+     */
+    minutes_last_7_days?: Array<DailyMinutesView>;
+    /**
+     * Days Read This Week
+     */
+    days_read_this_week?: number;
 };
 
 /**
@@ -782,6 +829,54 @@ export type CompletionListView = {
      * Completions
      */
     completions: Array<CompletionView>;
+};
+
+/**
+ * CompletionRecordedView
+ *
+ * The result of ``POST /completions``: the row plus the celebration signal.
+ *
+ * Design review 2026-08-01 section 3.4 / kid-appeal-implementation-plan.md
+ * W0.3: the previous response (bare ``CompletionView``) discarded whether
+ * this call's insert was new, so the frontend re-fetched reading-history in
+ * a race that could under-report the ending just reached. ``is_new``,
+ * ``found``, and ``total`` are computed fresh on every call, not cached, so
+ * the ending screen can render "you found a NEW ending!" versus a repeat
+ * visit directly from this response instead of a second, racing GET.
+ */
+export type CompletionRecordedView = {
+    /**
+     * Child Profile Id
+     */
+    child_profile_id: string;
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Ending Id
+     */
+    ending_id: string;
+    /**
+     * Found At
+     */
+    found_at: string;
+    /**
+     * Is New
+     */
+    is_new: boolean;
+    /**
+     * Found
+     */
+    found: number;
+    /**
+     * Total
+     */
+    total: number;
 };
 
 /**
@@ -1082,6 +1177,28 @@ export type CoverStatusView = {
 };
 
 /**
+ * DailyMinutesView
+ *
+ * Active reading minutes for one calendar day (W3.3, guardian-only).
+ *
+ * Derived from ``reading_activity_day.active_seconds // 60``. Guardian-only
+ * by construction: this type is nested only in ``ChildEngagementItem``,
+ * which ``get_family_reading_summary`` (guardian/admin-only) is the sole
+ * producer of. Kids see days, never minutes (gamification recommendation
+ * section 2.4, P4): no kid-facing surface serves this type.
+ */
+export type DailyMinutesView = {
+    /**
+     * Activity Date
+     */
+    activity_date: string;
+    /**
+     * Minutes
+     */
+    minutes: number;
+};
+
+/**
  * DeviceGrantCreateBody
  *
  * A guardian's (or admin's) request to mint a device grant.
@@ -1160,6 +1277,30 @@ export type DeviceGrantView = {
      * Authorized By
      */
     authorized_by: string;
+};
+
+/**
+ * EarnedBadgeView
+ *
+ * One badge a profile has earned (W3.1, gamification recommendation 2.2).
+ */
+export type EarnedBadgeView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Description
+     */
+    description: string;
+    /**
+     * Earned At
+     */
+    earned_at: string;
 };
 
 /**
@@ -1560,6 +1701,28 @@ export type FlaggedPassage = {
      * Findings
      */
     findings: Array<FindingView>;
+};
+
+/**
+ * FoundEndingView
+ *
+ * One found ending, card-ready for the Endings Gallery (W3.2).
+ *
+ * Deliberately carries no data for an UNFOUND ending: the gallery renders
+ * those as generic "still hidden" silhouette placeholders (count only,
+ * ``total_endings - len(found_endings)``), never a real title or id, so a
+ * child can never learn what an ending is called before finding it.
+ */
+export type FoundEndingView = {
+    /**
+     * Ending Id
+     */
+    ending_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    valence: Valence;
 };
 
 /**
@@ -2658,6 +2821,22 @@ export type ProfileCreateBody = {
      * Monthly Request Envelope
      */
     monthly_request_envelope?: number | null;
+    /**
+     * Ring Enabled
+     */
+    ring_enabled?: boolean | null;
+    /**
+     * Ring Goal Days
+     */
+    ring_goal_days?: number | null;
+    /**
+     * Badges Enabled
+     */
+    badges_enabled?: boolean;
+    /**
+     * Time Capture Paused
+     */
+    time_capture_paused?: boolean;
 };
 
 /**
@@ -2670,6 +2849,47 @@ export type ProfileListView = {
      * Profiles
      */
     profiles: Array<ProfileView>;
+};
+
+/**
+ * ProfileStoryStatusListView
+ *
+ * Bulk "new story ready" status for every profile the caller may list.
+ *
+ * One entry per profile ``api/profiles.py::_listable_profiles`` returns for
+ * the calling principal, in the same order; a profile the principal cannot
+ * list never appears here either (see ``GET /profiles/story-status``).
+ */
+export type ProfileStoryStatusListView = {
+    /**
+     * Statuses
+     */
+    statuses: Array<ProfileStoryStatusView>;
+};
+
+/**
+ * ProfileStoryStatusView
+ *
+ * One profile's "new story ready" pill status (W1.4, design review 4.1).
+ *
+ * Deliberately boolean-only: this view is served to a pre-child-session
+ * picker principal (a device grant, or a guardian who has not yet handed
+ * the device to a specific child), which may legitimately list every
+ * profile in the family (``api/profiles.py::_listable_profiles``) but must
+ * never learn a SIBLING profile's book titles or shelf counts from the
+ * picker screen. ``has_new_story`` is the only signal; no
+ * ``storybook_id``/``title``/``count`` field is ever added here (see the
+ * endpoint docstring for the "new" definition).
+ */
+export type ProfileStoryStatusView = {
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Has New Story
+     */
+    has_new_story: boolean;
 };
 
 /**
@@ -2732,6 +2952,22 @@ export type ProfileUpdateBody = {
      * Processing Restricted
      */
     processing_restricted?: boolean | null;
+    /**
+     * Ring Enabled
+     */
+    ring_enabled?: boolean | null;
+    /**
+     * Ring Goal Days
+     */
+    ring_goal_days?: number | null;
+    /**
+     * Badges Enabled
+     */
+    badges_enabled?: boolean | null;
+    /**
+     * Time Capture Paused
+     */
+    time_capture_paused?: boolean | null;
 };
 
 /**
@@ -2796,9 +3032,74 @@ export type ProfileView = {
      */
     processing_restricted: boolean;
     /**
+     * Ring Enabled
+     */
+    ring_enabled: boolean | null;
+    /**
+     * Ring Goal Days
+     */
+    ring_goal_days: number | null;
+    /**
+     * Badges Enabled
+     */
+    badges_enabled: boolean;
+    /**
+     * Time Capture Paused
+     */
+    time_capture_paused: boolean;
+    /**
      * Created At
      */
     created_at: string;
+};
+
+/**
+ * ProgressTotalsView
+ *
+ * Lifetime totals across every book a profile has touched (W3.1).
+ */
+export type ProgressTotalsView = {
+    /**
+     * Books Finished
+     */
+    books_finished: number;
+    /**
+     * Endings Found
+     */
+    endings_found: number;
+};
+
+/**
+ * ProgressView
+ *
+ * ``GET /me/progress`` response: badges, collection state, totals (W3.1).
+ *
+ * ``days_read_this_week``/``lifetime_days_read`` (W3.4) feed the weekly
+ * ring and badge 12 ("Forty Days of Stories"): counts only, computed from
+ * ``reading_activity_day``, matching the guardian summary's own
+ * ISO-week-Monday-start definition in ``api/reading_history.py``. The kid
+ * client shows days, never minutes (gamification recommendation P4);
+ * minutes exist only on the guardian-facing reading summary.
+ */
+export type ProgressView = {
+    /**
+     * Badges
+     */
+    badges: Array<EarnedBadgeView>;
+    /**
+     * Books
+     */
+    books: Array<BookProgressView>;
+    totals: ProgressTotalsView;
+    /**
+     * Days Read This Week
+     */
+    days_read_this_week: number;
+    /**
+     * Lifetime Days Read
+     */
+    lifetime_days_read: number;
+    settings: ResolvedGamificationSettingsView;
 };
 
 /**
@@ -2974,6 +3275,30 @@ export type ReadinessStatus = {
 };
 
 /**
+ * ReadingActivityDayView
+ *
+ * A profile's active-reading-seconds bucket for one day (W3.3).
+ */
+export type ReadingActivityDayView = {
+    /**
+     * Activity Date
+     */
+    activity_date: string;
+    /**
+     * Active Seconds
+     */
+    active_seconds: number;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+    /**
+     * Settled Seconds
+     */
+    settled_seconds?: number;
+};
+
+/**
  * ReadingHistoryItem
  *
  * One storybook's reading-history summary for a profile (register K6/G9).
@@ -3136,6 +3461,35 @@ export type ReadingStateView = {
      * Last Synced At
      */
     last_synced_at: string | null;
+};
+
+/**
+ * ReadingTimeFlushBody
+ *
+ * A client-side active-reading-time flush for one day bucket (W3.3).
+ *
+ * ``device_id`` is accepted for parity with the reading-state sync
+ * contract and future per-device analytics, but is not currently persisted
+ * (the recommendation's data-model sketch, section 5, carries no
+ * device_id column); see ``db/models.py::ReadingActivityDay``.
+ */
+export type ReadingTimeFlushBody = {
+    /**
+     * Date
+     */
+    date: string;
+    /**
+     * Seconds Delta
+     */
+    seconds_delta: number;
+    /**
+     * Flush Id
+     */
+    flush_id: string;
+    /**
+     * Device Id
+     */
+    device_id?: string | null;
 };
 
 /**
@@ -3318,6 +3672,37 @@ export type RescreenSummaryView = {
      * Results
      */
     results: Array<BookVerdictView>;
+};
+
+/**
+ * ResolvedGamificationSettingsView
+ *
+ * A profile's gamification settings, resolved to concrete values (W3.4).
+ *
+ * Resolution (nullable stored column -> concrete value per the P-A band
+ * table) happens once, server-side, in
+ * ``api/progress.py::_resolve_ring_settings`` -- the kid client renders
+ * directly from this view and never re-implements the band-default table
+ * itself. See ``ChildProfile.ring_enabled``/``ring_goal_days`` for the raw,
+ * guardian-editable stored values.
+ */
+export type ResolvedGamificationSettingsView = {
+    /**
+     * Ring Enabled
+     */
+    ring_enabled: boolean;
+    /**
+     * Ring Goal Days
+     */
+    ring_goal_days: number;
+    /**
+     * Badges Enabled
+     */
+    badges_enabled: boolean;
+    /**
+     * Time Capture Paused
+     */
+    time_capture_paused: boolean;
 };
 
 /**
@@ -3844,6 +4229,18 @@ export type StoryRequestListView = {
  * created before WS-7 shipped (no stored interpretation). For a blocked row it
  * is the generic, premise-free interpretation, safe to surface alongside
  * ``request_text=None`` (CR-1); ``_to_view`` does not redact it separately.
+ *
+ * ``resulting_storybook_id`` (W0.4) is the storybook this request produced,
+ * or ``None`` until publish. It is stamped exactly once, by
+ * ``publishing/service.py::approve()`` -- the sole path that sets
+ * ``storybook.status="published"`` -- so a non-``None`` value here always
+ * names a fully moderated, human-approved book; unlike ``status`` (which
+ * stays ``"approved"`` forever and never itself distinguishes "still
+ * generating" from "on the shelf"), this field is the honest signal the
+ * kid-facing request card needs. ``_to_view`` applies no further
+ * per-caller narrowing beyond the row projection every other field here
+ * gets (see its own #ASSUME for why exposing the bare id, even before the
+ * book is assigned to any profile, is safe).
  */
 export type StoryRequestView = {
     /**
@@ -3890,6 +4287,10 @@ export type StoryRequestView = {
      */
     anchor_storybook_id?: string | null;
     interpretation?: RequestInterpretationView | null;
+    /**
+     * Resulting Storybook Id
+     */
+    resulting_storybook_id?: string | null;
 };
 
 /**
@@ -4246,6 +4647,13 @@ export type UserView = {
      */
     created_at: string;
 };
+
+/**
+ * Valence
+ *
+ * How an ending feels, independent of what mechanically happened.
+ */
+export type Valence = 'positive' | 'neutral' | 'negative';
 
 /**
  * ValidateResponse
@@ -4659,7 +5067,7 @@ export type RecordCompletionApiV1CompletionsPostResponses = {
     /**
      * Successful Response
      */
-    200: CompletionView;
+    200: CompletionRecordedView;
 };
 
 export type RecordCompletionApiV1CompletionsPostResponse = RecordCompletionApiV1CompletionsPostResponses[keyof RecordCompletionApiV1CompletionsPostResponses];
@@ -5076,6 +5484,39 @@ export type CreateProfileApiV1ProfilesPostResponses = {
 };
 
 export type CreateProfileApiV1ProfilesPostResponse = CreateProfileApiV1ProfilesPostResponses[keyof CreateProfileApiV1ProfilesPostResponses];
+
+export type ListProfileStoryStatusApiV1ProfilesStoryStatusGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/profiles/story-status';
+};
+
+export type ListProfileStoryStatusApiV1ProfilesStoryStatusGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListProfileStoryStatusApiV1ProfilesStoryStatusGetError = ListProfileStoryStatusApiV1ProfilesStoryStatusGetErrors[keyof ListProfileStoryStatusApiV1ProfilesStoryStatusGetErrors];
+
+export type ListProfileStoryStatusApiV1ProfilesStoryStatusGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: ProfileStoryStatusListView;
+};
+
+export type ListProfileStoryStatusApiV1ProfilesStoryStatusGetResponse = ListProfileStoryStatusApiV1ProfilesStoryStatusGetResponses[keyof ListProfileStoryStatusApiV1ProfilesStoryStatusGetResponses];
 
 export type DeleteProfileApiV1ProfilesProfileIdDeleteData = {
     body?: never;
@@ -8169,3 +8610,69 @@ export type GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationVal
 };
 
 export type GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetResponse = GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetResponses[keyof GetPersonalizationValuesApiV1StorybooksStorybookIdPersonalizationValuesGetResponses];
+
+export type GetMyProgressApiV1MeProgressGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/progress';
+};
+
+export type GetMyProgressApiV1MeProgressGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetMyProgressApiV1MeProgressGetError = GetMyProgressApiV1MeProgressGetErrors[keyof GetMyProgressApiV1MeProgressGetErrors];
+
+export type GetMyProgressApiV1MeProgressGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: ProgressView;
+};
+
+export type GetMyProgressApiV1MeProgressGetResponse = GetMyProgressApiV1MeProgressGetResponses[keyof GetMyProgressApiV1MeProgressGetResponses];
+
+export type FlushReadingTimeApiV1MeReadingTimePostData = {
+    body: ReadingTimeFlushBody;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/reading-time';
+};
+
+export type FlushReadingTimeApiV1MeReadingTimePostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type FlushReadingTimeApiV1MeReadingTimePostError = FlushReadingTimeApiV1MeReadingTimePostErrors[keyof FlushReadingTimeApiV1MeReadingTimePostErrors];
+
+export type FlushReadingTimeApiV1MeReadingTimePostResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReadingActivityDayView;
+};
+
+export type FlushReadingTimeApiV1MeReadingTimePostResponse = FlushReadingTimeApiV1MeReadingTimePostResponses[keyof FlushReadingTimeApiV1MeReadingTimePostResponses];

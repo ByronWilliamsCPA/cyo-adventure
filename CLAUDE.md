@@ -301,6 +301,7 @@ For deployment on FIPS-enabled systems (Ubuntu LTS with fips-updates, government
 ```python
 # ✗ WRONG - Will fail on FIPS systems
 import hashlib
+
 h = hashlib.md5(data)
 
 # ✓ CORRECT - Non-security use is allowed
@@ -820,6 +821,7 @@ app.add_middleware(CorrelationMiddleware)
 # Add security middleware
 add_security_middleware(app)
 
+
 @app.get("/")
 async def root():
     # Access correlation ID anywhere in request context
@@ -873,6 +875,7 @@ from cyo_adventure.middleware.correlation import (
     generate_correlation_id,
 )
 
+
 def process_background_job(job_id: str):
     # Generate or use existing correlation ID
     set_correlation_id(generate_correlation_id())
@@ -909,6 +912,7 @@ Use Pydantic Settings for environment-based configuration:
 from pydantic_settings import BaseSettings
 from pydantic import Field
 
+
 class Settings(BaseSettings):
     project_name: str = "CYO Adventure"
     log_level: str = Field(default="INFO", env="LOG_LEVEL")
@@ -917,6 +921,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
+
 
 settings = Settings()
 ```

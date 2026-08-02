@@ -5,11 +5,19 @@ import { EmptyState } from '@ds/components/EmptyState'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
+import { EMPTY_PROGRESS, makeProgressApi, type ProgressSummary } from '../kid/progressApi'
 import { Mascot } from '../kid/Mascot'
+import {
+  consumeDownloadEviction,
+  consumeDownloadRefusal,
+  OFFLINE_BUDGET_FULL_MESSAGE,
+  OFFLINE_EVICTION_MESSAGE,
+} from '../offline/downloadBudget'
 import { reconcileOfflineCache } from '../offline/revocation'
 import { GUARDIAN_LOGIN_PATH, KID_PICKER_PATH } from '../routes'
 import { cacheLibraryList, getCachedLibraryList, getCachedStorybook } from '../offline/db'
 import { BookCard } from './BookCard'
+import { EndingsGallery } from './EndingsGallery'
 import { makeLibraryApi, type LibraryItemView, type ReadingHistoryItem } from './libraryApi'
 import { pickHero } from './pickHero'
 import { makeRecommendationsApi, type RecommendationItem } from './recommendationsApi'
@@ -84,7 +92,71 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   const api = useApi()
   const libraryApi = useMemo(() => makeLibraryApi(api), [api])
   const recommendationsApi = useMemo(() => makeRecommendationsApi(api), [api])
+  const progressApi = useMemo(() => makeProgressApi(api, profileId), [api, profileId])
   const [state, setState] = useState<LibraryState>({ status: 'loading' })
+  // W3.2: the Endings Gallery / "Every path walked!" data source, fetched
+  // independently of the shelf (best-effort, like history/recommendations):
+  // a failed or slow fetch degrades to no ribbon and no gallery button,
+  // never an error state for the shelf itself.
+  const [progress, setProgress] = useState<ProgressSummary>(EMPTY_PROGRESS)
+  // #ASSUME: data integrity: EMPTY_PROGRESS is indistinguishable from a real
+  // empty result, so the gallery needs to know WHY it has nothing. Without
+  // this, a failed fetch opens the modal on the empty-state copy ("Keep
+  // reading to start finding endings!"), and it does so in the one place the
+  // contradiction is visible on screen: the gallery BUTTON is gated on
+  // `endingsFor`, which reads reading HISTORY, a separate fetch. So a child
+  // whose card badge reads "3 of 5" can tap through to a modal telling them
+  // they have found none. `/v1/me/progress` is child-principal-only, so a
+  // guardian previewing as their child hits this every time via a 403.
+  // 'loading' shares the unavailable branch: the fetch starts on mount so a
+  // tap almost always lands after it settles, but "we could not load this
+  // yet" is the honest thing to say in the window where it has not.
+  // #VERIFY: LibraryPage.test.tsx "does not report an empty ending collection
+  // when the progress fetch failed".
+  const [progressLoad, setProgressLoad] = useState<{
+    profileId: string
+    status: 'ready' | 'failed'
+  } | null>(null)
+  // Stored WITH the profile it belongs to and derived during render, rather
+  // than reset to 'loading' inside the effect: that would be a synchronous
+  // setState in an effect body (react-hooks/set-state-in-effect). The derived
+  // form is also the more correct one, since it makes a settled result
+  // implicitly stale the moment the profile changes instead of relying on a
+  // reset to land first.
+  const progressStatus: 'loading' | 'ready' | 'failed' =
+    progressLoad !== null && progressLoad.profileId === profileId ? progressLoad.status : 'loading'
+  useEffect(() => {
+    if (!profileId) return undefined
+    let cancelled = false
+    progressApi
+      .getProgress()
+      .then((result) => {
+        if (cancelled) return
+        setProgress(result)
+        setProgressLoad({ profileId, status: 'ready' })
+      })
+      .catch((err: unknown) => {
+        logApiError('progress fetch failed', err)
+        if (!cancelled) setProgressLoad({ profileId, status: 'failed' })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [progressApi, profileId])
+  // The Endings Gallery modal: at most one open at a time, keyed by the
+  // storybook id it is showing. `null` means closed.
+  const [galleryStorybookId, setGalleryStorybookId] = useState<string | null>(null)
+  // W4.3: a story download refused during a PAST reader session (offline
+  // storage budget, D20) surfaces here, once, the next time this profile's
+  // shelf loads. LibraryPage is the reachable kid-facing surface for this:
+  // ReaderPage.tsx (the only place a download is actually initiated) is out
+  // of scope for this change, so it cannot show the refusal copy directly;
+  // see offline/downloadBudget.ts for the full flow.
+  const [budgetFull, setBudgetFull] = useState(false)
+  // Same flow, opposite outcome: a book WAS saved, and an older one was
+  // removed to make room. Reported separately because the refusal copy
+  // ("bookshelf is full") would be actively wrong here.
+  const [evicted, setEvicted] = useState(false)
   const [continueAnchor, setContinueAnchor] = useState<ContinueAnchor | null>(null)
   // Bumped by the shelf's "Ask for a new story" end-cap tile; RequestStory
   // opens on the bump and the effect below brings the form into view. A
@@ -253,6 +325,25 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
 
   useEffect(load, [load])
 
+  // W4.3: check once per mount, not per `load()` call, so a retry ("Try
+  // again") does not re-show a banner already consumed this page view.
+  // #ASSUME: timing dependencies: deferred through setTimeout(fn, 0) rather
+  // than calling setBudgetFull directly in the effect body; a direct call
+  // here would set state synchronously from inside the effect, which
+  // `react-hooks/set-state-in-effect` flags as a cascading-render risk (the
+  // established fix elsewhere in this codebase, e.g. guardian/BudgetBanner.tsx).
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (consumeDownloadRefusal()) {
+        setBudgetFull(true)
+      }
+      if (consumeDownloadEviction()) {
+        setEvicted(true)
+      }
+    }, 0)
+    return () => clearTimeout(timer)
+  }, [])
+
   // Offline-copy revocation (roadmap Phase 5, G8/A5): re-fetch on reconnect
   // too, not just on mount. A device can sit on this page through a
   // connectivity drop and recovery; the 'online' event re-runs `load()`,
@@ -397,6 +488,19 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   // `items` is simply never looked up and never rendered.
   const recommendationsByBook = summarizeRecommendations(recommendations)
   const recommendationFor = (item: LibraryItemView) => recommendationsByBook.get(item.id)
+  // W3.2: keyed by storybook id, same shape as historyByBook above. A book
+  // with no row (progress fetch still loading, failed, or genuinely no
+  // completion yet) gets no ribbon. It does NOT get "no gallery button": the
+  // button is gated on `endingsFor`, which comes from reading history, so it
+  // can be present while this map is empty. That gap is what `progressStatus`
+  // above exists to close.
+  const progressByBook = new Map(progress.books.map((book) => [book.storybook_id, book]))
+  const everyPathWalkedFor = (item: LibraryItemView): boolean =>
+    progressByBook.get(item.id)?.every_path_walked ?? false
+  const galleryBook = galleryStorybookId ? progressByBook.get(galleryStorybookId) : undefined
+  const galleryItem = galleryStorybookId
+    ? items.find((item) => item.id === galleryStorybookId)
+    : undefined
   if (items.length === 0) {
     return (
       <div className="library">
@@ -427,6 +531,16 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
           No internet. These books are ready to read.
         </p>
       ) : null}
+      {budgetFull ? (
+        <p className="library__offline-banner" role="status">
+          {OFFLINE_BUDGET_FULL_MESSAGE}
+        </p>
+      ) : null}
+      {evicted ? (
+        <p className="library__offline-banner" role="status">
+          {OFFLINE_EVICTION_MESSAGE}
+        </p>
+      ) : null}
       {hero ? (
         <section aria-label="Continue Reading">
           {/* A visible name for the hero spot (the section aria-label alone
@@ -447,6 +561,8 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
             ratable={!offline}
             endings={endingsFor(hero)}
             recommendation={recommendationFor(hero)}
+            everyPathWalked={everyPathWalkedFor(hero)}
+            onOpenGallery={setGalleryStorybookId}
           />
         </section>
       ) : null}
@@ -471,6 +587,8 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
                   ratable={!offline}
                   endings={endingsFor(item)}
                   recommendation={recommendationFor(item)}
+                  everyPathWalked={everyPathWalkedFor(item)}
+                  onOpenGallery={setGalleryStorybookId}
                 />
               </li>
             ))}
@@ -511,10 +629,20 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
             profileId={profileId}
             anchor={continueAnchor}
             onClearAnchor={clearContinueAnchor}
-            libraryTitles={items.map((item) => item.title)}
+            libraryIds={items.map((item) => item.id)}
             openSignal={requestOpenSignal}
           />
         </div>
+      ) : null}
+      {galleryStorybookId ? (
+        <EndingsGallery
+          open
+          onClose={() => setGalleryStorybookId(null)}
+          bookTitle={galleryItem?.title ?? ''}
+          totalEndings={galleryBook?.total_endings ?? 0}
+          foundEndings={galleryBook?.found_endings ?? []}
+          unavailable={progressStatus !== 'ready'}
+        />
       ) : null}
     </div>
   )

@@ -59,14 +59,14 @@ state n_riddle #D1C4E9
 n_riddle : rising · 75w
 state n_bless #D1C4E9
 n_bless : rising · 80w
-state e_berry_oops #FFCDD2
-e_berry_oops : setback (negative)
+state e_berry_oops #E0E0E0
+e_berry_oops : setback (neutral)
 e_berry_oops : "{A_MISHAP_TITLE}"
-state e_willow_oops #FFCDD2
-e_willow_oops : setback (negative)
+state e_willow_oops #E0E0E0
+e_willow_oops : setback (neutral)
 e_willow_oops : "{B_MISHAP_TITLE}"
-state e_reed_oops #FFCDD2
-e_reed_oops : setback (negative)
+state e_reed_oops #E0E0E0
+e_reed_oops : setback (neutral)
 e_reed_oops : "{C_MISHAP_TITLE}"
 state e_finale_pond #C8E6C9
 e_finale_pond : completion (positive)
@@ -151,7 +151,7 @@ legend right
   The Lantern Festival
   Band 5-8 · Tier 1 · ~6 min
   Topology: loop_and_grow
-  36 nodes · 10 endings (7+ / 0n / 3-)
+  36 nodes · 10 endings (7+ / 3n / 0-)
   Production-eligible
   Scale: short · prose
 endlegend

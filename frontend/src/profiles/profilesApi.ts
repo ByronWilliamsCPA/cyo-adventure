@@ -52,6 +52,15 @@ export interface ProfileView {
   /** G2: guardian-set theme exclusions for this child; always present
    *  (an empty array when none are set). */
   banned_themes: string[]
+  /**
+   * W3.4: the RAW stored gamification settings, always present on a
+   * ProfileView. `ring_enabled` / `ring_goal_days` are nullable here on
+   * purpose (null = no override); see ProfileGamificationFields.
+   */
+  ring_enabled: boolean | null
+  ring_goal_days: number | null
+  badges_enabled: boolean
+  time_capture_paused: boolean
   created_at: string
 }
 
@@ -59,21 +68,18 @@ export interface ProfileView {
  * ADR-015 G3 pre-authorization fields (ProfileFormDialog's "Story requests"
  * section).
  *
- * #CRITICAL: external-resources: at this writing, POST /v1/profiles and
- * PATCH /v1/profiles/{id} (api/schemas.py's ProfileCreateBody /
- * ProfileUpdateBody) do NOT declare these two fields, and both bodies use
- * `extra="forbid"` server-side -- sending them today 422s the WHOLE
- * request, not just these keys. The DB column and the read-only usage view
- * (`ChildEnvelopeUsageView`, surfaced only via GET /v1/families/me/budget)
- * exist, but the write path into a profile does not yet. ProfileFormDialog
- * only includes these keys in a create/update body when the guardian
- * actually changes this section from its seeded value (see its "touched"
- * gate), so an ordinary profile edit that never opens this section is
- * unaffected either way; a guardian who DOES use it will 422 until a
- * backend change adds these fields to ProfileCreateBody/ProfileUpdateBody
- * and applies them in create_profile/update_profile (api/profiles.py).
- * #VERIFY: profilesApi.test.ts pins the wire shape only; closing the gap
- * itself is backend work tracked outside this change.
+ * These ARE live server-side now: `ProfileCreateBody` / `ProfileUpdateBody`
+ * in `api/schemas.py` declare both, and `create_profile` / `update_profile`
+ * (`api/profiles.py`) apply them. An earlier version of this comment warned
+ * that sending them 422s the whole request; that gap has since closed, and
+ * `apiContractParity.ts` now proves it at compile time rather than leaving
+ * the claim to prose that can go stale again.
+ *
+ * ProfileFormDialog still sends these two keys only when the guardian
+ * changes the section from its seeded value, but for a different reason
+ * than the old 422 hazard: `monthly_request_envelope` carries PATCH's
+ * omitted-vs-explicit-null distinction, so resending an untouched control
+ * would turn a no-op edit into a deliberate write.
  */
 export interface ProfileEnvelopeFields {
   /** Whether this child's story requests skip the guardian's own click. */
@@ -86,7 +92,36 @@ export interface ProfileEnvelopeFields {
   monthly_request_envelope?: number | null
 }
 
-export interface ProfileCreateBody extends ProfileEnvelopeFields {
+/**
+ * W3.4 gamification settings (gamification-recommendation-2026-08-01.md
+ * section 4), as the guardian settings form edits them.
+ *
+ * `ring_enabled` / `ring_goal_days` are the RAW stored values: `null` means
+ * "no override, follow the P-A band default", which is a state distinct from
+ * an explicit off. The kid-facing RESOLVED values (band defaults already
+ * applied) are a different shape and come from `GET /me/progress` instead;
+ * see `kid/progressApi.ts`'s `ResolvedGamificationSettings`.
+ *
+ * #CRITICAL: data-integrity: these live here, on the shared adapter types,
+ * rather than as a local mirror in the component that happens to edit them.
+ * ProfileFormDialog spreads them into every create and edit body
+ * UNCONDITIONALLY, and both bodies are `extra="forbid"` server-side, so a
+ * single divergent field name 422s every profile save a guardian makes, not
+ * just the gamification section. Declared here they are covered by
+ * apiContractParity.ts, which turns that divergence into a `npm run
+ * typecheck` failure instead of a runtime 422 nobody sees until a guardian
+ * tries to rename their child.
+ * #VERIFY: apiContractParity.ts's ProfileCreateBody / ProfileUpdateBody
+ * `SendableTo` entries; profilesApi.test.ts pins the wire shape.
+ */
+export interface ProfileGamificationFields {
+  ring_enabled?: boolean | null
+  ring_goal_days?: number | null
+  badges_enabled?: boolean
+  time_capture_paused?: boolean
+}
+
+export interface ProfileCreateBody extends ProfileEnvelopeFields, ProfileGamificationFields {
   display_name: string
   age_band: AgeBandValue
   reading_level_cap?: number
@@ -104,7 +139,7 @@ export interface ProfileCreateBody extends ProfileEnvelopeFields {
  * unrepresentable from the UI. avatar, pin, content_flag_caps, and
  * banned_themes have real "clear via null" semantics.
  */
-export interface ProfileUpdateBody extends ProfileEnvelopeFields {
+export interface ProfileUpdateBody extends ProfileEnvelopeFields, ProfileGamificationFields {
   display_name?: string
   age_band?: AgeBandValue
   reading_level_cap?: number

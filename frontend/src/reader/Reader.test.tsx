@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { StrictMode, type ReactNode } from 'react'
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -32,6 +33,32 @@ const lantern = (
     traces: { story: Storybook }[]
   }
 ).traces[0].story
+
+// The same stop-composition conformance corpus stops.test.ts runs against
+// player/stops.ts directly: reusing it here (rather than hand-rolling
+// fixtures) means the Reader's ADR-026 integration is exercised against
+// stories independently proven correct at the engine layer.
+const stopTracesPath = path.resolve(here, '../../../schema/conformance/stop_traces.json')
+const stopCases = (
+  JSON.parse(readFileSync(stopTracesPath, 'utf-8')) as {
+    cases: { name: string; story: Storybook }[]
+  }
+).cases
+function stopStory(name: string): Storybook {
+  const found = stopCases.find((c) => c.name === name)
+  if (!found) throw new Error(`fixture missing: ${name}`)
+  return found.story
+}
+// n_start (1 choice) -> n_hall (1 choice) -> n_gallery (2 choices, branch).
+const flowToBranchStory = stopStory('flow_effects_in_order_to_branch')
+// n_gate (2 choices) -> n_vestibule (1 choice, condition-gated) -> n_treasure_room (ending).
+const flowToEndingStory = stopStory('condition_true_flows_through')
+// n_p (1 choice) <-> n_q (1 choice): a single-choice cycle inside one stop.
+const loopStory = stopStory('loop_back_ends_stop')
+// n_home (1 choice) -> n_yard (branch) is stop 1; choosing c_shed leads into
+// n_tool (1 choice) -> n_bench (branch), stop 2 -- two consecutive
+// MULTI-node flowed stops, for exercising a stop-to-stop go back.
+const backByStopStory = stopStory('back_by_stop_boundary')
 
 // A minimal fixture (same shape as endedStory/endedSeriesStory below) whose
 // body and ending title carry an ADR-023 sentinel, for the personalization
@@ -80,6 +107,18 @@ function valuesPayload(): ValuesPayload {
     sentinel_pattern: "\\{~([A-Z][A-Z0-9_]*):([^{}<>'~]+)~\\}",
     slot_bindings: { HERO: 'protagonist_first_name' },
   }
+}
+
+// Mirrors ReaderPage.test.tsx's own StrictMode wrapper: the app always mounts
+// under <StrictMode> (main.tsx), and mount-time effects double-invoke under
+// it in dev, exercising exactly the hazard useFlowedStop.ts's dedup guard
+// exists for.
+function StrictModeWrapper({ children }: { children: ReactNode }) {
+  return (
+    <StrictMode>
+      <MemoryRouter>{children}</MemoryRouter>
+    </StrictMode>
+  )
 }
 
 // A resumed-read reading state sitting on `nodeId`, with more than one entry
@@ -558,23 +597,26 @@ describe('Reader ending progress and celebration', () => {
     fireEvent.click(screen.getByTestId('choice-c_end'))
   }
 
-  it('shows a full progress bar with a finished label at an ending', () => {
+  it('shows a full, true progress bar with a finished label at an ending', () => {
     reachLanternEnding()
     const bar = screen.getByRole('progressbar')
-    // A finished story never looks unfinished, even though the all-nodes
-    // denominator means a single playthrough cannot visit every node.
+    // A finished story never looks unfinished, and this is the one moment
+    // the chrome shows a percent at all (W1.2/AL-029): the story is
+    // genuinely done, so 100% is finally an honest claim.
     expect(bar.getAttribute('aria-valuenow')).toBe('100')
     expect(bar.getAttribute('aria-label')).toBe('You finished this story!')
   })
 
-  it('keeps the progress bar partial before the ending', () => {
+  it('shows the plain "Page N" position pill, not a percent bar, before the ending (W1.2/AL-029)', () => {
     render(
       <MemoryRouter>
         <Reader story={lantern} profileId="p1" />
       </MemoryRouter>
     )
-    const bar = screen.getByRole('progressbar')
-    expect(bar.getAttribute('aria-valuenow')).not.toBe('100')
+    // No fabricated percent while reading: the corpus has no honest
+    // "distance to the end" figure for the path a child actually took.
+    expect(screen.queryByRole('progressbar')).toBeNull()
+    expect(screen.getByTestId('reader-position').textContent).toBe('Page 1')
   })
 
   it('celebrates a positive ending with the animated stars', () => {
@@ -978,5 +1020,216 @@ describe('Reader read-aloud (K7)', () => {
     expect(bodyUtterance.text).toContain('Explorer')
     expect(bodyUtterance.text).not.toContain('Maya')
     expect(bodyUtterance.text).not.toContain('{~HERO')
+  })
+
+  it('reads the whole flowed passage aloud, not just the first node (K7 + W1.1)', () => {
+    installSpeechSynthesis()
+    render(
+      <MemoryRouter>
+        <Reader story={flowToBranchStory} profileId="p1" ageBand="8-11" ttsEnabled />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByLabelText('Read this page aloud'))
+    const bodyUtterance = speakMock.mock.calls[0][0] as MockUtterance
+    expect(bodyUtterance.text).toContain('front door')
+    expect(bodyUtterance.text).toContain('long hall')
+    expect(bodyUtterance.text).toContain('two wings')
+  })
+})
+
+describe('Reader stop-flow rendering (ADR-026, W1.1)', () => {
+  it("keeps exactly today's one-node-per-page behavior when no band is known (default)", () => {
+    render(
+      <MemoryRouter>
+        <Reader story={flowToBranchStory} profileId="p1" />
+      </MemoryRouter>
+    )
+    // Only the FIRST node's body renders; n_hall/n_gallery prose is not on
+    // the page yet, and the single choice reads as an ordinary "Continue".
+    const body = screen.getByTestId('passage-body').textContent ?? ''
+    expect(body).toContain('front door')
+    expect(body).not.toContain('long hall')
+    expect(body).not.toContain('two wings')
+    expect(screen.getByTestId('choice-c_enter')).toBeTruthy()
+  })
+
+  it('flows consecutive single-choice nodes into one scrollable stop at 8-11', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={flowToBranchStory} profileId="p1" ageBand="8-11" />
+      </MemoryRouter>
+    )
+    // One passage block carries all three node bodies as distinct
+    // paragraphs (PassageText splits on blank lines): every node the stop
+    // flowed through is visible, not just the first.
+    const body = screen.getByTestId('passage-body').textContent ?? ''
+    expect(body).toContain('front door')
+    expect(body).toContain('long hall')
+    expect(body).toContain('two wings')
+    // The stop's own two choices render at the bottom; the single-choice
+    // "Continue" from n_start/n_hall never appears as its own button.
+    expect(screen.getByTestId('choice-c_left')).toBeTruthy()
+    expect(screen.getByTestId('choice-c_right')).toBeTruthy()
+    expect(screen.queryByTestId('choice-c_enter')).toBeNull()
+    expect(screen.queryByTestId('choice-c_walk')).toBeNull()
+  })
+
+  it.each(['10-13', '13-16', '16+'])('also flows at band %s', (band) => {
+    render(
+      <MemoryRouter>
+        <Reader story={flowToBranchStory} profileId="p1" ageBand={band} />
+      </MemoryRouter>
+    )
+    expect(screen.getByTestId('passage-body').textContent ?? '').toContain('two wings')
+    expect(screen.getByTestId('choice-c_left')).toBeTruthy()
+  })
+
+  it('never renders a mid-flow single-choice button at 8-11, even under StrictMode double-invoke', () => {
+    render(
+      <StrictModeWrapper>
+        <Reader story={flowToBranchStory} profileId="p1" ageBand="8-11" />
+      </StrictModeWrapper>
+    )
+    expect(screen.queryByTestId('choice-c_enter')).toBeNull()
+    expect(screen.queryByTestId('choice-c_walk')).toBeNull()
+    expect(screen.getByTestId('choice-c_left')).toBeTruthy()
+  })
+
+  it("does not double-apply a flowed run under StrictMode's double-invoked mount effect", () => {
+    vi.mocked(choose).mockClear()
+    render(
+      <StrictModeWrapper>
+        <Reader story={flowToBranchStory} profileId="p1" ageBand="8-11" />
+      </StrictModeWrapper>
+    )
+    // `choose()` is called twice by composeStop's own internal walk (a pure
+    // preview: n_start->n_hall, n_hall->n_gallery) plus twice more by the
+    // hook's silent CHOOSE batch that makes the real engine state catch up
+    // to match -- four calls total for one genuine stop. A StrictMode
+    // double-invoke without the hook's dedup guard would double that to
+    // eight, silently walking the engine twice as far as the child actually
+    // saw and double-applying n_hall's on_enter effect.
+    expect(vi.mocked(choose)).toHaveBeenCalledTimes(4)
+  })
+
+  it('flows all the way into an ending with no intermediate Continue screen', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={flowToEndingStory} profileId="p1" ageBand="10-13" />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c_take_key'))
+    // n_vestibule's single choice (condition true on has_key) flows straight
+    // through to the ending; the reader lands on the ending screen directly.
+    expect(screen.getByTestId('ending-screen')).toBeTruthy()
+    expect(screen.queryByTestId('choice-c_locked_door')).toBeNull()
+  })
+
+  it('stops at a dead end rather than auto-flowing a false-condition choice', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={flowToEndingStory} profileId="p1" ageBand="10-13" />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c_skip_key'))
+    // Without the key, n_vestibule's one choice is condition-gated false: the
+    // stop ends there with no visible choices, not stuck mid-flow either.
+    expect(screen.getByTestId('passage-body').textContent).toContain('locked door')
+    expect(screen.queryByRole('button', { name: /unlock/i })).toBeNull()
+  })
+
+  it('halts a single-choice loop at the repeat rather than hanging or auto-looping forever', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={loopStory} profileId="p1" ageBand="8-11" />
+      </MemoryRouter>
+    )
+    // The stop flows n_p -> n_q (both bodies render), then stops because
+    // n_q's only choice would revisit n_p, already in this stop. That choice
+    // (c_to_p) is still manually tappable -- the loop guard only stops
+    // AUTO-flow, per stops.ts's documented semantics -- it just never
+    // triggers on its own.
+    const body = screen.getByTestId('passage-body').textContent ?? ''
+    expect(body).toContain('marked Q')
+    expect(body).toContain('marked P')
+    expect(screen.getByTestId('choice-c_to_p')).toBeTruthy()
+  })
+
+  it("go back at a flowed band rewinds the whole stop, landing back on the previous stop's own choice, not mid-flow", () => {
+    render(
+      <MemoryRouter>
+        <Reader story={flowToBranchStory} profileId="p1" ageBand="8-11" />
+      </MemoryRouter>
+    )
+    // Page one: nothing precedes the very first stop.
+    expect(screen.queryByTestId('go-back')).toBeNull()
+    fireEvent.click(screen.getByTestId('choice-c_left'))
+    expect(screen.getByTestId('ending-screen')).toBeTruthy()
+    fireEvent.click(screen.getByTestId('go-back'))
+    // Lands back on n_gallery, the previous stop's own real choice point
+    // (ADR-026 decision 3): its full choice set is restored so the child can
+    // pick differently, and never anything mid-flow (e.g. n_hall alone with
+    // no choices to make).
+    const body = screen.getByTestId('passage-body').textContent ?? ''
+    expect(body).toContain('two wings')
+    expect(screen.getByTestId('choice-c_left')).toBeTruthy()
+    expect(screen.getByTestId('choice-c_right')).toBeTruthy()
+  })
+
+  it("go back from a multi-node stop lands on the PREVIOUS stop's own choice, not one node into it", () => {
+    render(
+      <MemoryRouter>
+        <Reader story={backByStopStory} profileId="p1" ageBand="8-11" />
+      </MemoryRouter>
+    )
+    // Stop 1: n_home flows into n_yard's branch.
+    let body = screen.getByTestId('passage-body').textContent ?? ''
+    expect(body).toContain('back door')
+    expect(body).toContain('shed and a garden')
+    expect(screen.getByTestId('choice-c_shed')).toBeTruthy()
+
+    fireEvent.click(screen.getByTestId('choice-c_shed'))
+
+    // Stop 2: n_tool flows into n_bench's branch.
+    body = screen.getByTestId('passage-body').textContent ?? ''
+    expect(body).toContain('full of tools')
+    expect(body).toContain('workbench')
+    expect(screen.getByTestId('choice-c_sit')).toBeTruthy()
+
+    fireEvent.click(screen.getByTestId('go-back'))
+
+    // Two BACK steps (stop 2 flowed two nodes) land exactly on n_yard, stop
+    // 1's own real choice point -- never mid-flow on n_tool alone (which has
+    // no choice of its own to offer, only a single silent hop).
+    body = screen.getByTestId('passage-body').textContent ?? ''
+    expect(body).toContain('shed and a garden')
+    expect(body).not.toContain('full of tools')
+    expect(screen.getByTestId('choice-c_shed')).toBeTruthy()
+    expect(screen.getByTestId('choice-c_garden')).toBeTruthy()
+  })
+
+  it('still shows the dedication overlay on page one at a flowed band whose start node flows into a branch', () => {
+    render(
+      <MemoryRouter>
+        <Reader
+          story={flowToBranchStory}
+          profileId="p1"
+          ageBand="8-11"
+          personalization={valuesPayload()}
+        />
+      </MemoryRouter>
+    )
+    expect(screen.getByTestId('dedication')).toBeTruthy()
+  })
+
+  it('shows a plain "Page N" position readout, counting stops not nodes, at a flowed band', () => {
+    render(
+      <MemoryRouter>
+        <Reader story={flowToBranchStory} profileId="p1" ageBand="8-11" />
+      </MemoryRouter>
+    )
+    // n_start+n_hall+n_gallery is one stop, so it is still page 1 even
+    // though three nodes' worth of prose is on screen.
+    expect(screen.getByTestId('reader-position').textContent).toBe('Page 1')
   })
 })

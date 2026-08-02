@@ -87,7 +87,15 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2, 0.5rem);
-  flex-shrink: 0;
+  /* Shrinkable, NOT flex-shrink: 0. The nav reserves 68px on the right for
+     the absolutely-positioned theme toggle, leaving ~236px of content box at
+     the 320px floor this app supports; the avatar, ring, "Badges" button and
+     this link cannot all fit in that. Something has to yield, and yielding
+     here (an ellipsized label beside a glyph that still reads as "switch")
+     costs less than a page that scrolls sideways. The wrap rule further down
+     means this only actually bites in the narrowest cases. */
+  flex-shrink: 1;
+  min-width: 0;
   min-height: 44px;
   padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
   border-radius: var(--radius-full, 9999px);
@@ -109,6 +117,41 @@
   .kid-nav__switch:hover {
     border-color: var(--color-amber, #e07f2e);
     background: var(--color-amber-subtle, #fdf3e6);
+  }
+}
+
+/* The glyph must never be what shrinks: an icon squeezed to 4px wide is worse
+   than a truncated word, and it is the part that survives truncation. */
+.kid-nav__switch svg {
+  flex-shrink: 0;
+}
+
+.kid-nav__switch-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Narrow phones: give the child's name and avatar their own row so the
+   gamification cluster and the switch link get the full width below it,
+   rather than competing with the avatar for ~236px. Without this the shrink
+   rules above still prevent overflow, but they do it by truncating "Switch
+   reader" down to a couple of letters, which a 6-year-old cannot read.
+   26rem covers the 320-390px range where the three clusters do not fit. */
+@media (max-width: 26rem) {
+  .kid-nav {
+    flex-wrap: wrap;
+    gap: var(--space-2, 0.5rem);
+    padding-left: var(--space-3, 0.75rem);
+  }
+
+  .kid-nav__who {
+    flex-basis: 100%;
+  }
+
+  .kid-nav__switch {
+    padding-left: var(--space-3, 0.75rem);
+    padding-right: var(--space-3, 0.75rem);
   }
 }
 
@@ -179,6 +222,63 @@
 
 .picker-tile__name {
   font-size: var(--text-lg, 1.25rem);
+}
+
+/* W1.4 (design review 4.1): "new story!" pill on a profile tile whose
+   picker-stage GET /profiles/story-status check found a recent assignment.
+   Warm, small, non-numeric by design (anti-leaderboard: the picker never
+   shows counts, per W3.2's own "profile picker stays number-free" rule) --
+   matches .book-card__new-badge's palette so a child meets the same "new"
+   signal on the shelf and on the picker. Sits in normal flow (unlike the
+   absolutely-positioned PIN padlock) so it never collides with that corner. */
+.picker-tile__new-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2, 0.5rem);
+  border-radius: var(--radius-full, 999px);
+  background: var(--color-amber-subtle, #fdf3e6);
+  /* amber-TEXT, not amber-deep: this is 0.75rem bold text, so it needs the
+     4.5:1 normal-text minimum. The token file records amber-deep at only
+     3.09:1 on parchment, which covers borders and large fills but not this. */
+  color: var(--color-amber-text, #87561d);
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--weight-bold, 700);
+  white-space: nowrap;
+  /* Two iterations (4.8s), not `infinite`. WCAG 2.2.2 (Pause, Stop, Hide)
+     applies to automatically-starting motion that runs longer than five
+     seconds, and this pill has no pause control: the OS query and the
+     [data-reduce-motion] twin below both still it, but the per-profile
+     attribute is never stamped on the picker route (no profile is chosen
+     yet), so a guardian who set reduce_motion for their child could not
+     actually stop it here. Stopping on its own before the five-second mark
+     removes the obligation instead of arguing about it, and the pulse has
+     already done its job of drawing the eye by then. */
+  animation: picker-pill-glow 2.4s var(--easing-default, ease-in-out) 2;
+}
+
+@keyframes picker-pill-glow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .picker-tile__new-pill {
+    animation: none;
+  }
+}
+
+/* Guardian-set per-profile reduce_motion twin (see the matching rule for
+   .picker-tile--picking below): the picker itself never carries
+   data-reduce-motion today (no profile is picked yet), but this keeps the
+   file aligned with the band-tokens.css contract if that ever changes. */
+[data-reduce-motion='true'] .picker-tile__new-pill {
+  animation: none;
 }
 
 /* P6-07: corner padlock on a PIN-locked profile tile, so the PIN prompt is
@@ -392,4 +492,176 @@
 
 [data-reduce-motion='true'] .picker-tile--picking {
   animation: none;
+}
+
+/* Weekly ring + badges button (W3.4/W3.2): sit between the profile identity
+   and "Switch reader" in the shell header, per the recommendation's "small,
+   in the shell header" placement. Never rendered with an off/empty state --
+   the caller (KidNav) mounts these only when their resolved settings say on,
+   so there is no "disabled" look to style here (K14). */
+.kid-nav__gamification {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  flex-shrink: 0;
+}
+
+.weekly-ring {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+.weekly-ring svg circle {
+  transition: stroke-dashoffset 0.4s ease;
+}
+
+.weekly-ring__days {
+  position: absolute;
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--weight-bold, 700);
+  color: var(--color-ink, #2c1a0e);
+}
+
+.weekly-ring--celebrate svg {
+  animation: weekly-ring-pop 0.6s ease;
+}
+
+@keyframes weekly-ring-pop {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.25);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Both reduce-motion paths still the ring's TRANSITION as well as its
+   celebrate animation. The transition is the easier one to forget, because
+   it is declared far from the keyframes and reads as decoration, but it is
+   the motion a child actually sees most: the sweep fires on every progress
+   change, whereas the pop fires once a week. Neutralising only the animation
+   left the ring still animating for exactly the readers who asked it not to. */
+@media (prefers-reduced-motion: reduce) {
+  .weekly-ring svg circle {
+    transition: none;
+  }
+
+  .weekly-ring--celebrate svg {
+    animation: none;
+  }
+}
+
+[data-reduce-motion='true'] .weekly-ring svg circle {
+  transition: none;
+}
+
+[data-reduce-motion='true'] .weekly-ring--celebrate svg {
+  animation: none;
+}
+
+.kid-nav__badges-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  border-radius: var(--radius-full, 9999px);
+  border: 2px solid var(--color-parchment-deeper, #e0d5b8);
+  background: var(--color-parchment, #f8f3e8);
+  color: var(--color-ink, #2c1a0e);
+  font-family: var(--font-sans, 'Segoe UI', sans-serif);
+  font-weight: var(--weight-bold, 700);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.kid-nav__badges-button:focus-visible,
+.kid-nav__badges-button:hover {
+  border-color: var(--color-amber, #e07f2e);
+  background: var(--color-amber-subtle, #fdf3e6);
+}
+
+/* Badge case (W3.2): earned badges in color, unearned as muted silhouettes
+   with their kid-readable hint always visible (never hidden, unlike an
+   unfound ending's title -- a badge's name is not a spoiler). */
+.badge-case__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--space-3, 0.75rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.badge-case__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-3, 0.75rem);
+  border-radius: var(--radius-lg, 0.75rem);
+  border: 2px solid var(--color-parchment-deeper, #e0d5b8);
+  background: var(--color-parchment, #f8f3e8);
+  text-align: center;
+}
+
+.badge-case__card--earned {
+  border-color: var(--color-amber, #e07f2e);
+  background: var(--color-amber-subtle, #fdf3e6);
+}
+
+/* Muted by SURFACE, not by opacity. `opacity: 0.6` on the whole card faded
+   its text along with everything else, compositing the hint down to 3.15:1
+   and the name to 4.28:1 against parchment, both under the 4.5:1 AA minimum.
+   A recessed background plus a dashed border reads as "not yet" just as
+   clearly while leaving the text at full strength (hint 7.81:1, name
+   13.34:1 on parchment-dark). The grayscale now applies only to the icon,
+   which is aria-hidden decoration and carries no contrast obligation. */
+.badge-case__card--locked {
+  border-style: dashed;
+  background: var(--color-parchment-dark, #ede6d0);
+}
+
+.badge-case__card--locked .badge-case__icon {
+  filter: grayscale(1);
+  opacity: 0.75;
+}
+
+.badge-case__icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.badge-case__name {
+  font-weight: var(--weight-bold, 700);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+/* The earned/locked word. Small and quiet, but never hidden: it is the only
+   non-colour carrier of the card's state. */
+.badge-case__state {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--weight-bold, 700);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.badge-case__card--earned .badge-case__state {
+  color: var(--color-amber-text, #87561d);
+}
+
+.badge-case__card--locked .badge-case__state {
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.badge-case__hint {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--color-ink-secondary, #5a3e28);
 }

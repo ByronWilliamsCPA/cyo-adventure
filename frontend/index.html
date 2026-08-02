@@ -10,8 +10,23 @@
     <meta name="apple-mobile-web-app-title" content="Adventure" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="A choose-your-own-adventure reading app for kids" />
-    <!-- Matches manifest theme_color (vite.config.ts). -->
-    <meta name="theme-color" content="#1d3557" />
+    <!-- W4.3: corrected from a leftover navy (#1d3557) to the parchment/amber
+         palette (design-system/src/tokens.css). Two scheme-scoped tags, not
+         one: a manifest's theme_color has no per-color-scheme variant (see
+         vite.config.ts, which carries only the light-mode value below), but
+         a <meta name="theme-color"> tag can use `media` and browsers that
+         support it pick whichever matches the OS's prefers-color-scheme.
+         This tracks the OS preference only, same as this app's OWN dark-mode
+         default (see the inline script below): there is no existing wiring
+         anywhere in this codebase that updates a theme-color meta tag from
+         the in-app light/dark ThemeToggle, so there is nothing further to
+         "keep consistent with" beyond mirroring that same OS-preference
+         source of truth. Light value matches vite.config.ts's manifest
+         theme_color (amber-deep); dark value is tokens.css's dark-palette
+         amber-deep, kept as the same brand accent rather than switching to
+         the dark background color. -->
+    <meta name="theme-color" content="#c17b2a" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#905c1f" media="(prefers-color-scheme: dark)" />
     <!-- Default before the theme script below runs (and the no-JS/no-storage
          fallback): native form controls follow the OS. Once data-theme is
          stamped, tokens.css's :root[data-theme] blocks pin color-scheme to

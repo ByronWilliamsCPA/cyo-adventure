@@ -1,66 +1,94 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ReaderChrome } from './ReaderChrome'
+import { playChoiceTapSound, playEndingChimeSound, playPageTurnSound } from './sounds'
+
+// W4.2: the mute toggle's playback path goes through sounds.ts's exported
+// functions; mocked here so these tests assert "did it decide to play",
+// not WebAudio mechanics (covered separately by sounds.test.ts against a
+// mocked AudioContext).
+vi.mock('./sounds', () => ({
+  playPageTurnSound: vi.fn(),
+  playChoiceTapSound: vi.fn(),
+  playEndingChimeSound: vi.fn(),
+}))
 
 function setOnLine(value: boolean) {
   Object.defineProperty(navigator, 'onLine', { configurable: true, value })
 }
 afterEach(() => setOnLine(true))
 
+beforeEach(() => {
+  localStorage.clear()
+  vi.mocked(playPageTurnSound).mockClear()
+  vi.mocked(playChoiceTapSound).mockClear()
+  vi.mocked(playEndingChimeSound).mockClear()
+})
+
 describe('ReaderChrome', () => {
-  it('shows no connection badge while online, just the progressbar', () => {
+  it('shows no connection badge while online, just the position pill', () => {
     setOnLine(true)
-    render(<ReaderChrome percent={40} label="2 of 5 pages explored" />)
+    render(<ReaderChrome position={{ label: 'Page 2' }} />)
     // Online is the unremarkable normal: no badge (and no jargon) renders.
     expect(screen.queryByText('Connected')).toBeNull()
     expect(screen.queryByRole('status')).toBeNull()
-    const bar = screen.getByRole('progressbar')
-    expect(bar.getAttribute('aria-valuenow')).toBe('40')
+    // W1.2/AL-029: no percent bar while reading, just the visible text pill.
+    expect(screen.queryByRole('progressbar')).toBeNull()
+    expect(screen.getByTestId('reader-position').textContent).toBe('Page 2')
   })
 
   it('shows a kid-readable "No internet" badge when the device is offline', () => {
     setOnLine(false)
-    render(<ReaderChrome percent={0} label="Not started" />)
+    render(<ReaderChrome position={{ label: 'Page 1' }} />)
     expect(screen.getByText('No internet')).toBeTruthy()
     expect(screen.queryByText('Offline')).toBeNull()
   })
 
-  it('hides the numeric label by default (the total is not reliable)', () => {
+  it('the position pill text is always visible (no hidden numeric label to withhold)', () => {
     setOnLine(true)
-    render(<ReaderChrome percent={40} label="2 of 5 pages explored" />)
-    expect(screen.queryByText('2 of 5 pages explored')).toBeNull()
-    // The bar is still there and still accessible via aria-label.
-    expect(screen.getByRole('progressbar').getAttribute('aria-label')).toBe('2 of 5 pages explored')
+    render(<ReaderChrome position={{ label: 'Page 2' }} />)
+    expect(screen.getByText('Page 2')).toBeInTheDocument()
   })
 
-  it('shows the numeric label when the caller vouches for it', () => {
+  it('shows a real, true 100% progress bar when the position is complete', () => {
     setOnLine(true)
-    render(<ReaderChrome percent={40} label="2 of 5 pages explored" showLabel />)
-    expect(screen.getByText('2 of 5 pages explored')).toBeTruthy()
+    render(<ReaderChrome position={{ label: 'You finished this story!', complete: true }} />)
+    const bar = screen.getByRole('progressbar')
+    expect(bar.getAttribute('aria-valuenow')).toBe('100')
+    expect(bar.getAttribute('aria-label')).toBe('You finished this story!')
+    // showLabel defaults to false: the ProgressBar's own numeric text stays
+    // hidden (aria-label still carries it), matching the pre-W1.2 chrome.
+    expect(screen.queryByText('You finished this story!')).toBeNull()
+  })
+
+  it('shows the complete bar numeric label when the caller vouches for it', () => {
+    setOnLine(true)
+    render(
+      <ReaderChrome position={{ label: 'You finished this story!', complete: true }} showLabel />
+    )
+    expect(screen.getByText('You finished this story!')).toBeTruthy()
   })
 
   it('renders the back slot when provided', () => {
     setOnLine(true)
     render(
-      <ReaderChrome
-        percent={40}
-        label="2 of 5 pages explored"
-        back={<button type="button">Leave</button>}
-      />
+      <ReaderChrome position={{ label: 'Page 1' }} back={<button type="button">Leave</button>} />
     )
     expect(screen.getByRole('button', { name: 'Leave' })).toBeTruthy()
   })
 
-  it('renders nothing extra when the back slot is omitted', () => {
+  it('renders nothing extra when the back slot is omitted (only the always-on sound toggle)', () => {
     setOnLine(true)
-    render(<ReaderChrome percent={40} label="2 of 5 pages explored" />)
-    expect(screen.queryByRole('button')).toBeNull()
+    render(<ReaderChrome position={{ label: 'Page 1' }} />)
+    // W4.2: the sound-effects mute toggle is always present, unlike back/
+    // readAloud/flag which are opt-in slots; this is the one button left.
+    expect(screen.getAllByRole('button')).toHaveLength(1)
+    expect(screen.queryByRole('button', { name: 'Leave' })).toBeNull()
   })
 
   describe('read-aloud toggle (K7)', () => {
     it('is not rendered when the readAloud prop is omitted', () => {
-      render(<ReaderChrome percent={40} label="2 of 5 pages explored" />)
-      expect(screen.queryByRole('button')).toBeNull()
+      render(<ReaderChrome position={{ label: 'Page 1' }} />)
       expect(screen.queryByLabelText('Read this page aloud')).toBeNull()
       expect(screen.queryByLabelText('Stop reading aloud')).toBeNull()
     })
@@ -68,11 +96,7 @@ describe('ReaderChrome', () => {
     it('renders an obvious, unpressed toggle when not speaking', () => {
       const onToggle = vi.fn()
       render(
-        <ReaderChrome
-          percent={40}
-          label="2 of 5 pages explored"
-          readAloud={{ speaking: false, onToggle }}
-        />
+        <ReaderChrome position={{ label: 'Page 1' }} readAloud={{ speaking: false, onToggle }} />
       )
       const button = screen.getByRole('button', { name: 'Read this page aloud' })
       // The unpressed state is fully observable: aria-pressed=false plus the
@@ -88,11 +112,7 @@ describe('ReaderChrome', () => {
     it('shows a visually and semantically distinct pressed state while speaking', () => {
       const onToggle = vi.fn()
       render(
-        <ReaderChrome
-          percent={40}
-          label="2 of 5 pages explored"
-          readAloud={{ speaking: true, onToggle }}
-        />
+        <ReaderChrome position={{ label: 'Page 1' }} readAloud={{ speaking: true, onToggle }} />
       )
       const button = screen.getByRole('button', { name: 'Stop reading aloud' })
       // The pressed state is fully observable: aria-pressed=true plus the
@@ -106,19 +126,124 @@ describe('ReaderChrome', () => {
 
   describe('flag slot (K15)', () => {
     it('is not rendered when the flag prop is omitted', () => {
-      render(<ReaderChrome percent={40} label="2 of 5 pages explored" />)
-      expect(screen.queryByRole('button')).toBeNull()
+      render(<ReaderChrome position={{ label: 'Page 1' }} />)
+      expect(screen.queryByRole('button', { name: 'Tell a grown-up' })).toBeNull()
     })
 
     it('renders the caller-supplied flag node', () => {
       render(
         <ReaderChrome
-          percent={40}
-          label="2 of 5 pages explored"
+          position={{ label: 'Page 1' }}
           flag={<button type="button">Tell a grown-up</button>}
         />
       )
       expect(screen.getByRole('button', { name: 'Tell a grown-up' })).toBeTruthy()
+    })
+  })
+
+  describe('sound-effects mute toggle (W4.2, D7)', () => {
+    // The mute default is resolved a tick after mount (deferred via
+    // setTimeout(fn, 0) to satisfy react-hooks/set-state-in-effect, see
+    // ReaderChrome.tsx); until it resolves the toggle stays in its
+    // fail-safe-silent "muted" state (`effectiveMuted` defaults `null` to
+    // `true`). Every test below that cares about the RESOLVED default (or
+    // that plays a sound, which requires the resolved default to be "on"
+    // first) uses `findByRole` to wait for it rather than `getByRole`.
+
+    it('defaults to sound ON when nothing is stored and there is no reduce-motion signal', async () => {
+      render(<ReaderChrome position={{ label: 'Page 1' }} />)
+      const button = await screen.findByRole('button', { name: 'Turn sound effects off' })
+      expect(button).toHaveAttribute('aria-pressed', 'true')
+    })
+
+    it('defaults to muted when a reduce_motion ancestor is present (plan default)', async () => {
+      render(
+        <div data-reduce-motion="true">
+          <ReaderChrome position={{ label: 'Page 1' }} />
+        </div>
+      )
+      const button = await screen.findByRole('button', { name: 'Turn sound effects on' })
+      expect(button).toHaveAttribute('aria-pressed', 'false')
+    })
+
+    it('tapping the toggle flips state and persists across a remount', async () => {
+      const { unmount } = render(<ReaderChrome position={{ label: 'Page 1' }} />)
+      const button = await screen.findByRole('button', { name: 'Turn sound effects off' })
+      fireEvent.click(button)
+      expect(screen.getByRole('button', { name: 'Turn sound effects on' })).toHaveAttribute(
+        'aria-pressed',
+        'false'
+      )
+      unmount()
+      // A fresh mount picks up the persisted choice instead of re-deriving
+      // the reduce-motion default.
+      render(<ReaderChrome position={{ label: 'Page 1' }} />)
+      expect(await screen.findByRole('button', { name: 'Turn sound effects on' })).toHaveAttribute(
+        'aria-pressed',
+        'false'
+      )
+    })
+
+    it('plays the choice-tap sound on a click that lands on Reader.tsx-style choice markup', async () => {
+      render(
+        <div>
+          <ReaderChrome position={{ label: 'Page 1' }} />
+          <button type="button" data-testid="choice-abc">
+            Open the door
+          </button>
+        </div>
+      )
+      // Wait for the default (sound ON) to resolve before the tap.
+      await screen.findByRole('button', { name: 'Turn sound effects off' })
+      fireEvent.click(screen.getByTestId('choice-abc'))
+      expect(playChoiceTapSound).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not play the choice-tap sound while muted', async () => {
+      render(
+        <div>
+          <ReaderChrome position={{ label: 'Page 1' }} />
+          <button type="button" data-testid="choice-abc">
+            Open the door
+          </button>
+        </div>
+      )
+      fireEvent.click(await screen.findByRole('button', { name: 'Turn sound effects off' }))
+      fireEvent.click(screen.getByTestId('choice-abc'))
+      expect(playChoiceTapSound).not.toHaveBeenCalled()
+    })
+
+    it('does not play the choice-tap sound for a click elsewhere in the document', async () => {
+      render(
+        <div>
+          <ReaderChrome position={{ label: 'Page 1' }} />
+          <button type="button">Not a choice</button>
+        </div>
+      )
+      await screen.findByRole('button', { name: 'Turn sound effects off' })
+      fireEvent.click(screen.getByRole('button', { name: 'Not a choice' }))
+      expect(playChoiceTapSound).not.toHaveBeenCalled()
+    })
+
+    it('plays the page-turn sound when the position label changes, not on the first render', async () => {
+      const { rerender } = render(<ReaderChrome position={{ label: 'Page 1' }} />)
+      await screen.findByRole('button', { name: 'Turn sound effects off' })
+      expect(playPageTurnSound).not.toHaveBeenCalled()
+      rerender(<ReaderChrome position={{ label: 'Page 2' }} />)
+      expect(playPageTurnSound).toHaveBeenCalledTimes(1)
+    })
+
+    it('plays the ending chime exactly once when the position becomes complete', async () => {
+      const { rerender } = render(<ReaderChrome position={{ label: 'Page 3' }} />)
+      await screen.findByRole('button', { name: 'Turn sound effects off' })
+      rerender(<ReaderChrome position={{ label: 'You finished this story!', complete: true }} />)
+      expect(playEndingChimeSound).toHaveBeenCalledTimes(1)
+      // Re-rendering while still complete (e.g. a font-size change) must not
+      // replay the chime.
+      rerender(
+        <ReaderChrome position={{ label: 'You finished this story!', complete: true }} showLabel />
+      )
+      expect(playEndingChimeSound).toHaveBeenCalledTimes(1)
     })
   })
 })

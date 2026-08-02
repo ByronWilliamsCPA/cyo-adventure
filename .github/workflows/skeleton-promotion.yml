@@ -7,6 +7,11 @@
 # lineage/hash validation. A hand-tampered or stale bundle cannot ride an
 # otherwise-green PR.
 #
+# "Every changed skeleton" is literal: no shell is filtered out of the prover's
+# argv. A hand-authored original (no mutation lineage sidecar) still faces
+# gate/cell/envelope and the theme contract; only the two parent-relative legs
+# are skipped for it, by the prover, which logs that it did.
+#
 # The skeleton-promotion LABEL must never be auto-merged (ADR-020 decision 4; the
 # release workflow's auto-merge precedent makes this a real hazard). The
 # no-auto-merge job fails a labeled PR that has auto-merge enabled, so no
@@ -85,14 +90,32 @@ jobs:
           # Only added/modified (not deleted) skeleton files are proved. Fail
           # closed: if the diff cannot resolve, the prover must not be skipped.
           git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- 'skeletons/**' \
-            > changed-skeletons.txt
+            > changed-all.txt
+          # EVERY changed shell is proved, with no exceptions decided here.
+          # Whether a shell has mutation lineage is the prover's business:
+          # check_promotion_bundle.py runs gate/cell/envelope and the theme
+          # contract unconditionally and skips only the parent-hash and
+          # anti-clone-floor legs for a hand-authored original, logging that it
+          # did. Deciding it at THIS layer instead silently dropped three
+          # checks rather than two, and because --diff-filter=AM includes added
+          # files, a brand-new hand-authored skeleton was skipped by
+          # construction. Only sidecars are dropped, and only because the
+          # prover reaches them through their shell.
+          : > changed-skeletons.txt
+          while IFS= read -r f; do
+            case "$f" in
+              *.contract.json|*.lineage.json) continue ;;
+              *.json) echo "$f" >> changed-skeletons.txt ;;
+            esac
+          done < changed-all.txt
           echo "count=$(wc -l < changed-skeletons.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
-          echo "Changed skeleton files:"; cat changed-skeletons.txt
+          echo "Changed skeleton shells to prove:"; cat changed-skeletons.txt
 
       - name: Re-prove changed skeletons from scratch
         if: ${{ steps.changed.outputs.count != '0' }}
         run: |
-          # The prover filters sidecars itself; passing the raw changed list is safe.
+          # The prover filters sidecars itself, and decides per shell which
+          # legs apply; passing the raw changed list is safe.
           # Read newline-delimited paths into an array so each is a single quoted
           # argument (no word-splitting on spaces, no glob expansion).
           mapfile -t changed_skeletons < changed-skeletons.txt

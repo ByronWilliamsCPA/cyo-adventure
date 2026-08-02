@@ -86,8 +86,12 @@ describe('KidShell route gating', () => {
     expect(await screen.findByText('Mia')).toBeInTheDocument()
     expect(document.querySelector('.kid-shell')).toHaveAttribute('data-age-band', '5-8')
     // KidShell and KidNav each run useKidProfile, but the in-flight request
-    // is shared, so the API sees a single GET /v1/profiles.
-    expect(mockGet).toHaveBeenCalledTimes(1)
+    // is shared, so the API sees a single GET /v1/profiles -- counted by URL
+    // (not raw call count) since W3.4 added KidNav's own independent
+    // GET /v1/me/progress fetch (the ring/badge case data source), which
+    // this test is not about and must not make it flaky.
+    const profilesCalls = mockGet.mock.calls.filter((call) => call[0] === '/v1/profiles')
+    expect(profilesCalls).toHaveLength(1)
   })
 
   it('does not render KidNav on the picker route (/kids)', () => {

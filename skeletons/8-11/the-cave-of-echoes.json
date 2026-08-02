@@ -130,7 +130,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_left_pool",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Turned Back at {A1_GATE}"
       }
@@ -269,7 +269,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_left_hum",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Turned Back at {A2_GATE}"
       }
@@ -397,7 +397,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_lake",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Turned Back at {B1_GATE}"
       }
@@ -524,7 +524,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_pool",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Turned Back at {B2_GATE}"
       }
@@ -680,7 +680,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_bat",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Turned Back at {C1_GATE}"
       }
@@ -779,7 +779,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_cache",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Turned Back at {C2_GATE}"
       }

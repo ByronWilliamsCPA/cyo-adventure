@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from cyo_adventure.api.deps import (
     Context,
@@ -26,6 +26,7 @@ from cyo_adventure.api.deps import (
 from cyo_adventure.api.schemas import (
     CompletionBody,
     CompletionListView,
+    CompletionRecordedView,
     CompletionView,
     ConflictView,
     ReadingStateBody,
@@ -616,8 +617,85 @@ def _version_ending_ids(blob: Mapping[str, object]) -> set[str]:
     return found
 
 
+def _completion_ending_count(
+    blob: Mapping[str, object], storybook_id: str, version: int
+) -> int:
+    """Return the version's declared ending count from blob metadata, or 0.
+
+    Mirrors ``reading_history.py::_ending_count``: duplicated rather than
+    imported so this module has no cross-router dependency, per this
+    package's small-helper-duplication convention.
+
+    # #ASSUME: data integrity: ``metadata.ending_count`` is enforced to equal
+    # the story's real ending count at validation time (validator/layer1.py
+    # L1-7), so a published version's value is trustworthy. A missing or
+    # malformed field degrades to 0 (never raises) so a malformed blob cannot
+    # 500 the completion POST a child is mid-celebration on.
+    # #VERIFY: a malformed value is logged, not silently swallowed.
+
+    Args:
+        blob: The pinned version's stored Storybook content blob.
+        storybook_id: The story id, for the warning log.
+        version: The version number, for the warning log.
+
+    Returns:
+        int: The declared ending count, or 0 if absent/malformed.
+    """
+    metadata = blob.get("metadata")
+    if not isinstance(metadata, dict):
+        return 0
+    count = metadata.get("ending_count")
+    if isinstance(count, int) and not isinstance(count, bool):
+        return count
+    if count is not None:
+        _logger.warning(
+            "completion_malformed_ending_count",
+            storybook_id=storybook_id,
+            version=version,
+        )
+    return 0
+
+
+async def _distinct_endings_found(
+    ctx: Context, profile_id: uuid.UUID, storybook_id: str, version: int
+) -> int:
+    """Count a profile's distinct completed endings for one book version.
+
+    # #CRITICAL: concurrency: read-after-write within the same request's own
+    # (not-yet-committed) transaction. ``record_completion`` flushes a new
+    # row before this query runs, so the just-recorded ending is always
+    # counted even though the transaction has not committed. A second,
+    # concurrent completion from another device is invisible here until that
+    # OTHER request commits; that request in turn counts its own flushed row.
+    # Neither request can under-report the ending it itself just recorded.
+    # #VERIFY: tests/integration/test_reading_state.py::
+    # test_completion_response_reports_is_new_and_counts and
+    # test_completion_repeat_reports_is_new_false.
+
+    Args:
+        ctx: The request context (session).
+        profile_id: The child profile.
+        storybook_id: The storybook id.
+        version: The version number.
+
+    Returns:
+        int: The number of distinct ending ids this profile has completed
+        for this (storybook, version).
+    """
+    count = await ctx.session.scalar(
+        select(func.count(func.distinct(Completion.ending_id))).where(
+            Completion.child_profile_id == profile_id,
+            Completion.storybook_id == storybook_id,
+            Completion.version == version,
+        )
+    )
+    return count or 0
+
+
 @router.post("/completions")
-async def record_completion(body: CompletionBody, ctx: Context) -> CompletionView:
+async def record_completion(
+    body: CompletionBody, ctx: Context
+) -> CompletionRecordedView:
     """Record that a child reached an ending of a story version.
 
     Args:
@@ -625,7 +703,12 @@ async def record_completion(body: CompletionBody, ctx: Context) -> CompletionVie
         ctx: The request context.
 
     Returns:
-        CompletionView: The recorded (or pre-existing) completion.
+        CompletionRecordedView: The recorded (or pre-existing) completion,
+        plus ``is_new`` (whether this call inserted the row rather than
+        hitting an existing one), ``found`` (this profile's distinct-ending
+        count for the book/version after this call), and ``total`` (the
+        version's declared ending count). See design review 2026-08-01
+        section 3.4 / kid-appeal-implementation-plan.md W0.3.
 
     Raises:
         ResourceNotFoundError: If the story or version does not exist.
@@ -667,16 +750,26 @@ async def record_completion(body: CompletionBody, ctx: Context) -> CompletionVie
         raise ValidationError(msg, field="ending_id", value=body.ending_id)
     key = (parsed, body.storybook_id, body.version, body.ending_id)
     existing = await ctx.session.get(Completion, key)
+    # #ASSUME: data integrity: `existing is None` is the only signal of
+    # "this call inserted the row" (the PK-get above is the sole dedupe path,
+    # no separate "was it created" flag exists on Completion itself).
+    # #VERIFY: test_completion_repeat_reports_is_new_false posts the same
+    # (profile, storybook, version, ending) twice and asserts is_new flips.
+    is_new = existing is None
     if existing is not None:
         row = existing
     else:
         row = _new_completion(ctx, parsed, body)
         # Flush so the DB server_default populates found_at, then read it back so
         # the response timestamp matches the persisted value rather than the app
-        # clock at request time.
+        # clock at request time. This flush is also what makes the
+        # just-inserted row visible to _distinct_endings_found's query below,
+        # which runs on the same (uncommitted) transaction.
         await ctx.session.flush()
         await ctx.session.refresh(row, ["found_at"])
-    return _completion_view(row)
+    found = await _distinct_endings_found(ctx, parsed, body.storybook_id, body.version)
+    total = _completion_ending_count(version_row.blob, body.storybook_id, body.version)
+    return _completion_recorded_view(row, is_new=is_new, found=found, total=total)
 
 
 def _new_completion(
@@ -694,13 +787,63 @@ def _new_completion(
 
 
 def _completion_view(row: Completion) -> CompletionView:
-    """Build the response view from a Completion row."""
+    """Build the plain response view (used by ``list_completions``) from a row."""
     return CompletionView(
         child_profile_id=str(row.child_profile_id),
         storybook_id=row.storybook_id,
         version=row.version,
         ending_id=row.ending_id,
         found_at=row.found_at,
+    )
+
+
+def _completion_recorded_view(
+    row: Completion, *, is_new: bool, found: int, total: int
+) -> CompletionRecordedView:
+    """Build the ``POST /completions`` response: the row plus the celebration signal.
+
+    Args:
+        row: The (new-or-existing) Completion row.
+        is_new: Whether this call's insert created the row (False on a
+            repeat completion of an already-found ending).
+        found: The profile's distinct-ending count for this book/version,
+            counted fresh after this call.
+        total: The book version's declared ending count.
+
+    Returns:
+        CompletionRecordedView: The assembled response.
+    """
+    # #EDGE: data integrity: CompletionRecordedView now REJECTS an incoherent
+    # tally (found > total, or a new find with a zero count), which is the
+    # right contract for a consumer but the wrong failure mode here: the row
+    # is already committed by the time this view is built, so letting response
+    # validation raise would hand a child an error screen for an ending the
+    # server did in fact record. The only way found can exceed total is a
+    # pinned version whose metadata.ending_count understates its real endings
+    # (validator L1-7 makes that unreachable for anything published through
+    # the gate; a hand-edited or restored row is not). Widen total to the
+    # count actually observed and log, so the ending screen reads "3 of 3"
+    # rather than "3 of 2" and the bad version is findable.
+    # #VERIFY: tests/unit/test_completions_api.py::
+    # test_recorded_view_widens_a_understated_ending_total.
+    if found > total:
+        _logger.warning(
+            "completion_ending_total_understated",
+            storybook_id=row.storybook_id,
+            version=row.version,
+            declared_total=total,
+            distinct_found=found,
+        )
+        total = found
+    return CompletionRecordedView(
+        child_profile_id=str(row.child_profile_id),
+        storybook_id=row.storybook_id,
+        version=row.version,
+        ending_id=row.ending_id,
+        found_at=row.found_at,
+        is_new=is_new,
+        found=found,
+        total=total,
     )
 
 

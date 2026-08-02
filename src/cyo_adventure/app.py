@@ -39,10 +39,12 @@ from cyo_adventure.api import (
     onboarding,
     personalization,
     profiles,
+    progress,
     provider_allowlist,
     ratings,
     reading,
     reading_history,
+    reading_time,
     recommendations,
     remoderate,
     rescreen,
@@ -237,6 +239,20 @@ _OPENAPI_TAGS: list[dict[str, str]] = [
     {
         "name": "reading-history",
         "description": "Reading-history reads for the kid and guardian surfaces.",
+    },
+    {
+        "name": "progress",
+        "description": (
+            "Kid-scoped badges, collection state, and lifetime totals "
+            "(gamification recommendation 2026-08-01, plan W3.1)."
+        ),
+    },
+    {
+        "name": "reading-time",
+        "description": (
+            "Idempotent, clamped active-reading-time flushes into the "
+            "day-grain reading_activity_day substrate (plan W3.3)."
+        ),
     },
     {
         "name": "recommendations",
@@ -530,6 +546,8 @@ def create_app() -> FastAPI:
     app.include_router(family_connections.router)
     app.include_router(recommendations.router)
     app.include_router(personalization.router)
+    app.include_router(progress.router)
+    app.include_router(reading_time.router)
     return app
 
 

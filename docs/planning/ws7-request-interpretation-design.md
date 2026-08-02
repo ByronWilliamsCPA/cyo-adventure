@@ -225,43 +225,56 @@ generation/db imports; the db write happens in the callers).
 
 ```python
 class ElementDisposition(StrEnum):
-    BUILT_IN = "built_in"        # bound into the story (slot or structural fit)
-    ADAPTED = "adapted"          # carried, but transformed to fit band/structure
-    SET_ASIDE = "set_aside"      # understood, deliberately not included
+    BUILT_IN = "built_in"  # bound into the story (slot or structural fit)
+    ADAPTED = "adapted"  # carried, but transformed to fit band/structure
+    SET_ASIDE = "set_aside"  # understood, deliberately not included
     CANNOT_CARRY = "cannot_carry"  # this tree (or any tree in the cell) cannot host it
 
+
 class ReasonCode(StrEnum):
-    BOUND_TO_SLOT = "bound_to_slot"          # placed via a validated slot binding
-    STORY_FIT = "story_fit"                  # matches the skeleton's fixed structure/themes
-    BAND_POLICY = "band_policy"              # forbid:<bundle> band floor / content ceiling
-    SAFETY_POLICY = "safety_policy"          # screening flag / fence_guard / charset
-    GUARDIAN_CONTROL = "guardian_control"    # G2 banned_themes / content-flag cap
-    STRUCTURE_FIXED = "structure_fixed"      # endings, topology, fail-states are not requestable
+    BOUND_TO_SLOT = "bound_to_slot"  # placed via a validated slot binding
+    STORY_FIT = "story_fit"  # matches the skeleton's fixed structure/themes
+    BAND_POLICY = "band_policy"  # forbid:<bundle> band floor / content ceiling
+    SAFETY_POLICY = "safety_policy"  # screening flag / fence_guard / charset
+    GUARDIAN_CONTROL = "guardian_control"  # G2 banned_themes / content-flag cap
+    STRUCTURE_FIXED = (
+        "structure_fixed"  # endings, topology, fail-states are not requestable
+    )
     NOT_THIS_STORY_KIND = "not_this_story_kind"  # no slot carries it; benign misfit
-    NO_CONFORMING_BINDING = "no_conforming_binding"  # bind failed after retries (whole-theme)
-    PERSONAL_DETAILS = "personal_details"    # PII in the request (name/email/phone/address);
-                                             # remove-personal-details message, NOT a theme reject
-    IDENTITY_PROTECTION = "identity_protection"  # self-naming request; Route A: disallowed by design
+    NO_CONFORMING_BINDING = (
+        "no_conforming_binding"  # bind failed after retries (whole-theme)
+    )
+    PERSONAL_DETAILS = (
+        "personal_details"  # PII in the request (name/email/phone/address);
+    )
+    # remove-personal-details message, NOT a theme reject
+    IDENTITY_PROTECTION = (
+        "identity_protection"  # self-naming request; Route A: disallowed by design
+    )
+
 
 class InterpretedElement(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    element: str | None          # echo-safe normalized phrase, or None when redacted (7.2)
+    element: str | None  # echo-safe normalized phrase, or None when redacted (7.2)
     disposition: ElementDisposition
     reason: ReasonCode
-    slot_id: str | None = None   # set only for BOUND_TO_SLOT
-    rule: str | None = None      # the SlotViolation.rule that decided a SET_ASIDE/CANNOT_CARRY
-    kid_text: str                # rendered, template-derived (3.3)
-    guardian_text: str           # rendered, template-derived, more specific
+    slot_id: str | None = None  # set only for BOUND_TO_SLOT
+    rule: str | None = (
+        None  # the SlotViolation.rule that decided a SET_ASIDE/CANNOT_CARRY
+    )
+    kid_text: str  # rendered, template-derived (3.3)
+    guardian_text: str  # rendered, template-derived, more specific
+
 
 class RequestInterpretation(BaseModel):
     model_config = ConfigDict(extra="forbid")
     interpretation_version: int = 1
-    layer: Literal["general", "refined"]     # section 4 vs section 5
+    layer: Literal["general", "refined"]  # section 4 vs section 5
     elements: list[InterpretedElement]
     kid_summary: str
     guardian_summary: str
-    skeleton_slug: str | None = None         # refined layer only
-    contract_version: int | None = None      # refined layer only
+    skeleton_slug: str | None = None  # refined layer only
+    contract_version: int | None = None  # refined layer only
     created_at: datetime
 ```
 

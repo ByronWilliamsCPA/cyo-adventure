@@ -130,7 +130,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_set_hollow",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Back to the {A1_DEADEND_FIND}"
       }
@@ -241,7 +241,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_set_swing",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Just an Empty {A2_DEADEND_FIND}"
       }
@@ -381,7 +381,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_set_shed",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "A Cobwebby Dead End"
       }
@@ -492,7 +492,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_set_rock",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Only a Line of {B2_DEADEND_FIND}"
       }
@@ -632,7 +632,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_set_bramble",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "The Lost {C1_DEADEND_FIND}"
       }
@@ -743,7 +743,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_set_bank",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "A Surprised {C2_DEADEND_FIND}"
       }

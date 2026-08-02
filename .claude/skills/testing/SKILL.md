@@ -87,6 +87,7 @@ def test_example():
 def sample_data():
     return {"key": "value"}
 
+
 def test_with_fixture(sample_data):
     assert sample_data["key"] == "value"
 ```

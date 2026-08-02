@@ -46,6 +46,11 @@ test.beforeEach(async ({ page, context }) => {
         version: 1,
         ending_id: 'e_treasure_found',
         found_at: new Date().toISOString(),
+        // W0.3: the real endpoint returns the celebration fields; without
+        // them the ready-path tracker renders undefined counts.
+        is_new: true,
+        found: 1,
+        total: 4,
       },
     })
   )
@@ -116,9 +121,9 @@ test('the reader chrome does not overflow at 320px with the offline badge shown'
   // Force the connection badge into the chrome (a realistic mobile combo).
   await context.setOffline(true)
   await expect(page.getByText('No internet')).toBeVisible()
-  const overflow = await page.locator('.reader-chrome').evaluate(
-    (el) => el.scrollWidth > el.clientWidth
-  )
+  const overflow = await page
+    .locator('.reader-chrome')
+    .evaluate((el) => el.scrollWidth > el.clientWidth)
   expect(overflow).toBe(false)
 })
 
@@ -162,6 +167,13 @@ test('records a completion when the story reaches an ending', async ({ page }) =
 test('shows the endings tracker on the ending screen once reading-history resolves (K6)', async ({
   page,
 }) => {
+  // This test's point is the reading-history FALLBACK path (W0.3 makes the
+  // completion POST the primary source), so fail the POST here to force the
+  // 'unavailable' outcome; the ready path is covered by the beforeEach mock
+  // in the other reader specs.
+  await page.route('**/api/v1/completions', (route) =>
+    route.fulfill({ status: 500, json: { error: 'boom' } })
+  )
   await page.route('**/api/v1/reading-history/**', (route) =>
     route.fulfill({
       json: {
@@ -190,9 +202,7 @@ test('shows the endings tracker on the ending screen once reading-history resolv
   )
 })
 
-test('Back to my books on the ending screen returns to the kid library (P-3)', async ({
-  page,
-}) => {
+test('Back to my books on the ending screen returns to the kid library (P-3)', async ({ page }) => {
   // KidShell/KidNav (mounted once /library/:profileId renders) fetches
   // profiles unconditionally, same as library.spec.ts's beforeEach; the
   // library shelf itself is empty here since only the navigation is under
@@ -212,9 +222,7 @@ test('Back to my books on the ending screen returns to the kid library (P-3)', a
   await expect(page).toHaveURL(/\/library\/child-a$/)
 })
 
-test('resumes from server state when the local cache is empty (cross-device)', async ({
-  page,
-}) => {
+test('resumes from server state when the local cache is empty (cross-device)', async ({ page }) => {
   const RESUMED_ROW = {
     current_node: 'n_cave_fork',
     var_state: { has_lantern: true },

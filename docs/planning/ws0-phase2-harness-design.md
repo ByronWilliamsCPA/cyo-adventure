@@ -418,12 +418,13 @@ dependencies, BasedPyright strict, 88 cols, Google docstrings.
 ```python
 """ECS, the PS pair score, and repeat-adventure rate (trend-only metrics)."""
 
-_PS_WEIGHT_LEAF: Final[float] = 0.50      # declared priors (WS-0 spec 2.8);
-_PS_WEIGHT_STRUCT: Final[float] = 0.30    # revisited only via the Phase 3
-_PS_WEIGHT_THEME: Final[float] = 0.20     # calibration PR (section 5.3)
+_PS_WEIGHT_LEAF: Final[float] = 0.50  # declared priors (WS-0 spec 2.8);
+_PS_WEIGHT_STRUCT: Final[float] = 0.30  # revisited only via the Phase 3
+_PS_WEIGHT_THEME: Final[float] = 0.20  # calibration PR (section 5.3)
 REPEAT_THRESHOLD: Final[float] = 0.70
 
 T = TypeVar("T")
+
 
 def effective_catalog_size(rows: Iterable[T], key: Callable[[T], str]) -> float:
     """Exponentiated Shannon entropy of the key-partition: exp(-sum p ln p).
@@ -434,13 +435,15 @@ def effective_catalog_size(rows: Iterable[T], key: Callable[[T], str]) -> float:
     the WS-2+ (tree, leaf-cluster) unit changes only the key function.
     """
 
+
 @dataclass(frozen=True, slots=True)
 class PairScore:
     leaf_similarity: float
     structural_similarity: float
     theme_similarity: float
-    perceived_similarity: float   # the weighted sum, in [0, 1]
-    same_tree: bool               # which leaf_similarity branch was taken
+    perceived_similarity: float  # the weighted sum, in [0, 1]
+    same_tree: bool  # which leaf_similarity branch was taken
+
 
 def pair_score(
     a: Storybook | Mapping[str, object],
@@ -463,8 +466,10 @@ def pair_score(
     PS = 0.50*leaf_sim + 0.30*struct_sim + 0.20*theme_sim
     """
 
+
 def perceived_similarity(a, b, *, brief_a=None, brief_b=None) -> float:
     """Convenience: pair_score(...).perceived_similarity."""
+
 
 def repeat_adventure_rate(
     stories: Sequence[Storybook | Mapping[str, object]],
@@ -493,12 +498,14 @@ the opposite reason (explainability over 90-word bodies).
 """distinct-n and self-BLEU-lite: floors checked after the fact, never
 optimization targets, never exposed to generation (WS-0 spec 2.6, 7.2)."""
 
+
 @dataclass(frozen=True, slots=True)
 class LexicalProfile:
     distinct_1: float
     distinct_2: float
     self_bleu_lite: float
     content_token_count: int
+
 
 def lexical_profile(
     story: Storybook | Mapping[str, object],
@@ -681,9 +688,9 @@ The package's import rule (never import `generation`) is preserved; the script i
 composition root and builds the provider itself via the existing seam:
 
 ```python
-provider = build_provider(settings)   # generation.provider; refuse if resolved
-                                      # provider is "mock" (clear error telling the
-                                      # operator to set GENERATION_PROVIDER etc.)
+provider = build_provider(settings)  # generation.provider; refuse if resolved
+# provider is "mock" (clear error telling the
+# operator to set GENERATION_PROVIDER etc.)
 ```
 
 Anthropic in production, Ollama for homelab-free runs, exactly the pipeline's own settings

@@ -27,14 +27,26 @@ describe('EndingsBadge', () => {
     expect(container.querySelectorAll('.endings-badge__dot--filled')).toHaveLength(3)
   })
 
-  it('skips the dot row past the display cap but still shows the text', () => {
+  it('drops the dot row AND the denominator past the shared milestone threshold (AL-028)', () => {
     const { container } = render(<EndingsBadge found={4} total={20} />)
-    expect(screen.getByText('4 of 20 endings found')).toBeInTheDocument()
+    expect(screen.getByText('4 endings found')).toBeInTheDocument()
+    expect(screen.queryByText(/of 20/)).toBeNull()
     expect(container.querySelector('.endings-badge__dots')).toBeNull()
+  })
+
+  it('uses singular framing for one found ending past the threshold', () => {
+    render(<EndingsBadge found={1} total={15} />)
+    expect(screen.getByText('1 ending found')).toBeInTheDocument()
   })
 
   it('the dot row is decorative (aria-hidden) so the text is the sole accessible name', () => {
     const { container } = render(<EndingsBadge found={1} total={2} />)
     expect(container.querySelector('.endings-badge__dots')).toHaveAttribute('aria-hidden', 'true')
+  })
+
+  it('keeps the "N of M" text and dots exactly at the shared threshold (10)', () => {
+    const { container } = render(<EndingsBadge found={3} total={10} />)
+    expect(screen.getByText('3 of 10 endings found')).toBeInTheDocument()
+    expect(container.querySelector('.endings-badge__dots')).not.toBeNull()
   })
 })

@@ -5,7 +5,8 @@ on branch==main, on not-promotable / not-fully-resolved, on a verify_bundle
 mismatch; a filesystem sandbox that never writes outside its worktree; the
 injected PR creator is called with draft+label and never merges/approves) and the
 CI-job fixtures for ``scripts/check_promotion_bundle.py`` (a valid bundle passes;
-a tampered shell, a stale parent, and a missing lineage each fail).
+a tampered shell and a stale parent each fail; a missing lineage sidecar skips
+the parent-relative legs alone and still faces the gate).
 
 The valid-bundle fixture builds a real gate-passing mutant shell with the WS-5
 engine and repoints its lineage parent at a distant in-cell catalog sibling, so
@@ -234,16 +235,39 @@ def test_prove_shell_stale_parent_fails(mutant: _MutantParts, tmp_path: Path) ->
     assert any("mismatch" in reason or "changed since" in reason for reason in reasons)
 
 
-def test_prove_shell_missing_lineage_fails(
+def test_hand_authored_shell_still_runs_the_non_lineage_checks(
     mutant: _MutantParts, tmp_path: Path
 ) -> None:
-    """A shell whose lineage sidecar is absent fails the prover."""
+    """No lineage sidecar skips the parent-relative legs ONLY, never the gate.
+
+    This replaces an assertion that a missing sidecar is itself a failure. It
+    is not: a hand-authored original has no mutation parent to re-prove, and
+    demanding one blocked legitimate metadata-only edits to the curated
+    catalog (AL-014/UW-C01). What must not follow is the shell escaping
+    proof entirely, which is exactly what happened when the CI job filtered
+    lineage-less shells out of the prover's argv instead.
+
+    Both directions are asserted, because only the pair distinguishes
+    "skipped two legs" from "skipped everything".
+    """
     bundle = tmp_path / mutant.slug
     _write_valid_bundle(bundle, mutant)
     (bundle / f"{mutant.slug}.lineage.json").unlink()
     shell = bundle / f"{mutant.slug}.json"
+
+    # Direction 1: a sound shell proves clean; the lineage legs are skipped,
+    # not failed.
+    assert cpb.prove_shell(shell, skeletons_root=_REAL_SKELETONS) == []
+
+    # Direction 2: break the gate on the same lineage-less shell. If the
+    # non-lineage checks were skipped along with the lineage ones, this would
+    # still come back clean.
+    doc = json.loads(shell.read_text(encoding="utf-8"))
+    doc["start_node"] = "n_does_not_exist"
+    shell.write_text(json.dumps(doc), encoding="utf-8")
+
     reasons = cpb.prove_shell(shell, skeletons_root=_REAL_SKELETONS)
-    assert any("missing lineage" in reason for reason in reasons)
+    assert any("check_skeleton" in reason for reason in reasons)
 
 
 def test_prove_shell_unreadable_shell_reports_only_the_read_failure(

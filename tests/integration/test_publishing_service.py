@@ -5,9 +5,18 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from sqlalchemy import delete, select
 
 from cyo_adventure.core.exceptions import BusinessLogicError, StateTransitionError
-from cyo_adventure.db.models import Family, Storybook, StorybookVersion, User
+from cyo_adventure.db.models import (
+    Concept,
+    Family,
+    GenerationJob,
+    Storybook,
+    StorybookVersion,
+    StoryRequest,
+    User,
+)
 from cyo_adventure.publishing import service as approval_service
 from tests.conftest import make_clean_moderation_report
 
@@ -68,6 +77,132 @@ async def test_approve_stamps_provenance_and_publishes(
         assert book.current_published_version == 1
         assert version_row.approved_by == guardian_id
         assert version_row.published_at is not None
+
+
+async def test_approve_stamps_resulting_storybook_id(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """approve() links the originating story_request to the published book (W0.4).
+
+    Full request -> concept -> job -> storybook chain, matching how
+    generation/worker.py and story_requests/service.py actually build it:
+    a StoryRequest with concept_id set, a GenerationJob carrying the same
+    concept_id plus the (storybook_id, version) the worker persisted.
+    """
+    async with sessions() as session:
+        book, guardian_id = await _make_story(
+            session,
+            status="in_review",
+            moderation_report=make_clean_moderation_report(),
+        )
+        concept = Concept(family_id=book.family_id, brief={"topic": "dragons"})
+        session.add(concept)
+        await session.flush()
+        request = StoryRequest(
+            family_id=book.family_id,
+            request_text="a dragon who loves pancakes",
+            age_band="5-8",
+            concept_id=concept.id,
+        )
+        session.add(request)
+        session.add(
+            GenerationJob(
+                concept_id=concept.id,
+                storybook_id=book.id,
+                version=1,
+                status="passed",
+            )
+        )
+        await session.flush()
+
+        principal = _principal(guardian_id, book.family_id)
+        await approval_service.approve(session, principal, book, 1)
+
+        assert request.resulting_storybook_id == book.id
+
+
+async def test_approve_without_generation_job_leaves_resulting_storybook_id_none(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """approve() no-ops the stamp when no GenerationJob matches the book.
+
+    A catalog-imported or hand-crafted storybook has no originating
+    GenerationJob row, so there is no concept_id (and therefore no request)
+    to resolve; publishing must still succeed.
+    """
+    async with sessions() as session:
+        book, guardian_id = await _make_story(
+            session,
+            status="in_review",
+            moderation_report=make_clean_moderation_report(),
+        )
+        principal = _principal(guardian_id, book.family_id)
+        version_row = await approval_service.approve(session, principal, book, 1)
+        assert book.status == "published"
+        assert version_row.approved_by == guardian_id
+
+
+async def test_story_request_survives_storybook_deletion_with_link_nulled(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """Deleting a storybook SET NULLs resulting_storybook_id, not the request row.
+
+    W0.4's FK mirrors every other nullable, non-owning reference on
+    story_request (profile_id, reviewed_by, concept_id, anchor_storybook_id):
+    the request is family-owned content that must survive its linked
+    storybook vanishing by any means, including a raw delete. No live
+    application code path deletes a Storybook row today (see the migration's
+    own header comment), so this exercises the schema-level guarantee
+    directly rather than through an admin endpoint.
+    """
+    async with sessions() as session:
+        book, guardian_id = await _make_story(
+            session,
+            status="in_review",
+            moderation_report=make_clean_moderation_report(),
+        )
+        concept = Concept(family_id=book.family_id, brief={"topic": "dragons"})
+        session.add(concept)
+        await session.flush()
+        request = StoryRequest(
+            family_id=book.family_id,
+            request_text="a dragon who loves pancakes",
+            age_band="5-8",
+            concept_id=concept.id,
+        )
+        session.add(request)
+        session.add(
+            GenerationJob(
+                concept_id=concept.id,
+                storybook_id=book.id,
+                version=1,
+                status="passed",
+            )
+        )
+        await session.flush()
+        principal = _principal(guardian_id, book.family_id)
+        await approval_service.approve(session, principal, book, 1)
+        assert request.resulting_storybook_id == book.id
+        request_id = request.id
+        await session.commit()
+
+    async with sessions() as session:
+        # StorybookVersion CASCADEs from Storybook (ondelete="CASCADE"); the
+        # version row must go first so the FK from storybook_version does not
+        # block the storybook delete under a database that enforces the
+        # constraint eagerly within the same statement ordering.
+        await session.execute(
+            delete(StorybookVersion).where(StorybookVersion.storybook_id == book.id)
+        )
+        await session.execute(delete(Storybook).where(Storybook.id == book.id))
+        await session.commit()
+
+    async with sessions() as session:
+        survivor = await session.scalar(
+            select(StoryRequest).where(StoryRequest.id == request_id)
+        )
+        assert survivor is not None
+        assert survivor.resulting_storybook_id is None
 
 
 async def test_approve_from_draft_raises(

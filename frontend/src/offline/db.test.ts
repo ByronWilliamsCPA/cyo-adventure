@@ -27,6 +27,7 @@ import type { DeviceGrant } from '../auth/deviceGrant'
 import type { ValuesPayload } from '../player/personalization'
 import type { ReadingState, Storybook } from '../player/types'
 import type { LibraryItemView } from '../library/libraryApi'
+import { consumeDownloadEviction, consumeDownloadRefusal } from './downloadBudget'
 import {
   _resetDbHandle,
   cacheLibraryList,
@@ -46,13 +47,18 @@ import {
   getDb,
   getDeviceGrantMirror,
   getReadingState,
+  getReadingTimeBucket,
+  isBadgeSeen,
   listCachedStorybookIds,
   listPersonalizationValues,
   listQueue,
   listReadingStateStorybookIds,
+  listReadingTimeBuckets,
+  markBadgeSeen,
   putDeviceGrantMirror,
   putProfileShelf,
   putReadingState,
+  putReadingTimeBucket,
   type PersonalizationValuesEntry,
   type QueuedWrite,
 } from './db'
@@ -110,6 +116,11 @@ beforeEach(() => {
   // Fresh in-memory IndexedDB per test.
   globalThis.indexedDB = new IDBFactory()
   _resetDbHandle()
+  // W4.3: cacheStorybook/getCachedStorybook now also touch localStorage
+  // (offline/downloadBudget.ts's recency map and refusal flag); reset it
+  // alongside IndexedDB so no test's recency history leaks into another's.
+  localStorage.clear()
+  Object.defineProperty(navigator, 'storage', { configurable: true, value: undefined })
 })
 
 describe('offline IndexedDB cache', () => {
@@ -399,5 +410,214 @@ describe('personalization values store', () => {
     // And the store the upgrade added works on the same database.
     await cachePersonalizationValues(story.id, valuesPayload)
     expect(await getCachedPersonalizationValues(story.id)).toEqual(valuesPayload)
+  })
+})
+
+describe('offline download budget enforcement (W4.3, D20)', () => {
+  const MB = 1024 * 1024
+
+  function mockStorageEstimate(usage: number): void {
+    Object.defineProperty(navigator, 'storage', {
+      configurable: true,
+      value: { estimate: vi.fn().mockResolvedValue({ usage, quota: 1024 * MB }) },
+    })
+  }
+
+  it('caches normally when storage.estimate is unsupported (fail open)', async () => {
+    await cacheStorybook(story)
+    expect((await getCachedStorybook(story.id, story.version))?.id).toBe(story.id)
+  })
+
+  it('caches normally under the 250MB soft cap', async () => {
+    mockStorageEstimate(50 * MB)
+    await cacheStorybook(story)
+    expect((await getCachedStorybook(story.id, story.version))?.id).toBe(story.id)
+  })
+
+  it('evicts the least-recently-opened other cached book once usage crosses the soft cap', async () => {
+    const other: Storybook = { ...story, id: 's_other' }
+    mockStorageEstimate(10 * MB)
+    await cacheStorybook(other)
+    // Reading it back marks it as "opened" (recency), then a second, newer
+    // book pushes projected usage over the 250MB soft cap.
+    expect(await getCachedStorybook('s_other', 1)).toBeDefined()
+
+    mockStorageEstimate(250 * MB)
+    await cacheStorybook(story)
+
+    expect(await getCachedStorybook(story.id, story.version)).toBeDefined()
+    expect(await getCachedStorybook('s_other', 1)).toBeUndefined()
+    // An eviction is a thing that happened TO the child's shelf, so it is
+    // reported, and never as the "bookshelf is full" refusal copy.
+    expect(consumeDownloadEviction()).toBe(true)
+    expect(consumeDownloadRefusal()).toBe(false)
+  })
+
+  it('refuses the write when a REQUIRED eviction fails, rather than caching past the hard cap', async () => {
+    const other: Storybook = { ...story, id: 's_other' }
+    mockStorageEstimate(10 * MB)
+    await cacheStorybook(other)
+    consumeDownloadEviction()
+
+    // Past the hard cap WITH a candidate, so the eviction is the only reason
+    // the write is allowed at all. Break the delete and the write must not
+    // proceed: caching here is exactly the over-budget state the gate exists
+    // to prevent, and it used to happen silently.
+    mockStorageEstimate(500 * MB - 10)
+    const deleteSpy = vi.spyOn(IDBObjectStore.prototype, 'delete').mockImplementation(() => {
+      throw new Error('delete failed')
+    })
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      await cacheStorybook(story)
+    } finally {
+      deleteSpy.mockRestore()
+    }
+
+    expect(await getCachedStorybook(story.id, story.version)).toBeUndefined()
+    expect(consumeDownloadRefusal()).toBe(true)
+    expect(consumeDownloadEviction()).toBe(false)
+    expect(consoleError).toHaveBeenCalledWith('[offline] eviction failed', expect.anything())
+    consoleError.mockRestore()
+  })
+
+  it('records a refusal and rethrows when the cache write itself fails', async () => {
+    // The real QuotaExceededError shape: the budget check passes (well under
+    // the cap) and the device is out of space anyway. This used to escape the
+    // try entirely and land in ReaderPage's best-effort catch, producing no
+    // book, no banner, and no log.
+    mockStorageEstimate(10 * MB)
+    const putSpy = vi.spyOn(IDBObjectStore.prototype, 'put').mockImplementation(() => {
+      throw new DOMException('quota exceeded', 'QuotaExceededError')
+    })
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      await expect(cacheStorybook(story)).rejects.toThrow(/quota/i)
+    } finally {
+      putSpy.mockRestore()
+    }
+    expect(consumeDownloadRefusal()).toBe(true)
+    expect(consoleError).toHaveBeenCalledWith(
+      '[offline] storybook cache write failed',
+      expect.anything()
+    )
+    consoleError.mockRestore()
+  })
+
+  it('refuses the download outright past the hard cap with nothing to evict, and records a refusal', async () => {
+    // Just under the 500MB hard cap: any real (non-zero-byte) story blob
+    // pushes projected usage over it, with nothing else cached to evict.
+    mockStorageEstimate(500 * MB - 10)
+    await cacheStorybook(story)
+    expect(await getCachedStorybook(story.id, story.version)).toBeUndefined()
+    expect(consumeDownloadRefusal()).toBe(true)
+  })
+
+  it('does not record a refusal for an ordinary successful cache', async () => {
+    mockStorageEstimate(10 * MB)
+    await cacheStorybook(story)
+    expect(consumeDownloadRefusal()).toBe(false)
+  })
+})
+
+describe('reading-time day buckets (W3.3)', () => {
+  beforeEach(() => {
+    _resetDbHandle()
+  })
+
+  it('round-trips a bucket keyed by profile and date', async () => {
+    await putReadingTimeBucket({
+      profileId: 'p_1',
+      date: '2026-01-01',
+      seconds: 90,
+      syncedSeconds: 0,
+      pending: null,
+    })
+    expect(await getReadingTimeBucket('p_1', '2026-01-01')).toEqual({
+      profileId: 'p_1',
+      date: '2026-01-01',
+      seconds: 90,
+      syncedSeconds: 0,
+      pending: null,
+    })
+  })
+
+  it('returns undefined for a profile/date with no bucket', async () => {
+    expect(await getReadingTimeBucket('p_1', '2026-01-01')).toBeUndefined()
+  })
+
+  it("lists only the requested profile's buckets", async () => {
+    await putReadingTimeBucket({
+      profileId: 'p_1',
+      date: '2026-01-01',
+      seconds: 10,
+      syncedSeconds: 0,
+      pending: null,
+    })
+    await putReadingTimeBucket({
+      profileId: 'p_1',
+      date: '2026-01-02',
+      seconds: 20,
+      syncedSeconds: 0,
+      pending: null,
+    })
+    await putReadingTimeBucket({
+      profileId: 'p_2',
+      date: '2026-01-01',
+      seconds: 99,
+      syncedSeconds: 0,
+      pending: null,
+    })
+    const rows = await listReadingTimeBuckets('p_1')
+    expect(rows.map((r) => r.date).sort()).toEqual(['2026-01-01', '2026-01-02'])
+  })
+
+  it('creates the reading_time_days and badge_seen stores when upgrading a v4 database to v5', async () => {
+    _resetDbHandle()
+    const legacy = await openDB(DB_NAME, 4, {
+      upgrade(db) {
+        db.createObjectStore('storybooks')
+        db.createObjectStore('reading_states')
+        db.createObjectStore('offline_queue', { keyPath: 'event_id' })
+        db.createObjectStore('device_grant')
+        db.createObjectStore('library_lists')
+        db.createObjectStore('profile_shelf')
+        db.createObjectStore('personalization_values')
+      },
+    })
+    await legacy.put('storybooks', story, `${story.id}@${story.version}`)
+    legacy.close()
+    _resetDbHandle()
+
+    await putReadingTimeBucket({
+      profileId: 'p_1',
+      date: '2026-01-01',
+      seconds: 5,
+      syncedSeconds: 0,
+      pending: null,
+    })
+    expect((await getReadingTimeBucket('p_1', '2026-01-01'))?.seconds).toBe(5)
+    // The pre-existing v4 store still works, undisturbed by the upgrade.
+    expect(await getCachedStorybook(story.id, story.version)).toEqual(story)
+  })
+})
+
+describe('badge seen-state (W3.2)', () => {
+  beforeEach(() => {
+    _resetDbHandle()
+  })
+
+  it('reports false for a never-seen badge', async () => {
+    expect(await isBadgeSeen('p_1', 'first_ending')).toBe(false)
+  })
+
+  it('reports true once a badge has been marked seen', async () => {
+    await markBadgeSeen('p_1', 'first_ending')
+    expect(await isBadgeSeen('p_1', 'first_ending')).toBe(true)
+  })
+
+  it('scopes seen-state per profile', async () => {
+    await markBadgeSeen('p_1', 'first_ending')
+    expect(await isBadgeSeen('p_2', 'first_ending')).toBe(false)
   })
 })

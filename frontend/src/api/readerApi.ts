@@ -137,6 +137,30 @@ export interface CompletionRequest {
 }
 
 /**
+ * The celebration-relevant fields of POST /v1/completions' response (mirrors
+ * CompletionRecordedView server-side; W0.3, design review 2026-08-01 section
+ * 3.4). Hand-typed narrowing of the regenerated client's
+ * `CompletionRecordedView` (`client/types.gen.ts`); retained for the
+ * celebration-relevant subset. Follow-up: assert parity in
+ * `apiContractParity.ts`.
+ */
+export interface CompletionResult {
+  is_new: boolean
+  found: number
+  total: number
+}
+
+/**
+ * The reader's knowledge of a just-reached ending's completion POST, as
+ * tracked by ReaderPage and consumed by EndingsProgress (W0.3). A
+ * discriminated union, not a nullable result, so "no answer yet" (racing the
+ * POST would under-report) and "the POST failed, use the fallback fetch" are
+ * distinguishable at the type level instead of collapsing to one falsy value.
+ */
+export type CompletionOutcome =
+  { status: 'pending' } | { status: 'ready'; result: CompletionResult } | { status: 'unavailable' }
+
+/**
  * Fetch the server's saved reading state for cross-device resume. Returns null
  * when the server has no state (HTTP 404) so the caller can start fresh; a
  * transport failure surfaces as OfflineError so the caller can degrade to local
@@ -167,16 +191,20 @@ export function makeFetchServerState(
 }
 
 /**
- * Record a story completion. Best-effort: the server dedupes on
- * (profile, storybook, version, ending), so a repeat post is a no-op row-wise.
+ * Record a story completion. The server dedupes on
+ * (profile, storybook, version, ending), so a repeat post is a no-op
+ * row-wise; the response's `is_new`/`found`/`total` (W0.3) still reflect the
+ * true post-call state either way, so the caller (ReaderPage) can render the
+ * ending screen's tracker directly from it instead of a second, racing GET.
  */
 // #ASSUME: data-integrity: the server dedupes completions on the (profile, storybook, version, ending) primary key, so a client retry after a dropped response cannot double-count.
 // #VERIFY: backend api/reading.py record_completion PK-dedupe; if the dedup key or window changes, revisit this fire-and-forget call.
 export function makeRecordCompletion(
   api: AxiosInstance
-): (body: CompletionRequest) => Promise<void> {
-  return async (body: CompletionRequest): Promise<void> => {
-    await api.post('/v1/completions', body)
+): (body: CompletionRequest) => Promise<CompletionResult> {
+  return async (body: CompletionRequest): Promise<CompletionResult> => {
+    const res = await api.post<CompletionResult>('/v1/completions', body)
+    return res.data
   }
 }
 

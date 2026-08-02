@@ -628,9 +628,7 @@ async def test_persist_and_moderate_embed_failure_rolls_back_and_fails_job(
             worker_mod,
             "embed_series_block",
             AsyncMock(
-                side_effect=ValidationError(
-                    "embed exploded", field="blob", value=None
-                )
+                side_effect=ValidationError("embed exploded", field="blob", value=None)
             ),
         )
 

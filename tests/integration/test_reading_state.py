@@ -185,6 +185,102 @@ async def test_completion_recorded(client: AsyncClient, seed: Seed) -> None:
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+async def test_completion_response_reports_is_new_and_counts(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A first-time completion reports is_new=True and the right found/total (W0.3).
+
+    The lantern fixture (03_tier2_lantern.json) declares `ending_count: 4`
+    in its metadata and has four ending nodes; this profile's first
+    completion should report found=1, total=4.
+    """
+    resp = await client.post(
+        "/api/v1/completions",
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": seed.storybook_id,
+            "version": seed.version,
+            "ending_id": "e_treasure_found",
+        },
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["is_new"] is True
+    assert body["found"] == 1
+    assert body["total"] == 4
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_completion_repeat_reports_is_new_false(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """Posting the same (profile, storybook, version, ending) twice: is_new flips.
+
+    The second post hits the existing PK row (no new insert) but `found`
+    still reports the same distinct-ending count, not an inflated one.
+    """
+    body_json = {
+        "profile_id": str(seed.child_profile_id),
+        "storybook_id": seed.storybook_id,
+        "version": seed.version,
+        "ending_id": "e_treasure_found",
+    }
+    first = await client.post(
+        "/api/v1/completions", json=body_json, headers=auth(seed.child_token)
+    )
+    assert first.status_code == 200, first.text
+    assert first.json()["is_new"] is True
+
+    second = await client.post(
+        "/api/v1/completions", json=body_json, headers=auth(seed.child_token)
+    )
+    assert second.status_code == 200, second.text
+    second_body = second.json()
+    assert second_body["is_new"] is False
+    assert second_body["found"] == 1
+    assert second_body["total"] == 4
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_completion_second_distinct_ending_increments_found(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A second, distinct ending for the same book raises found to 2, not is_new-gated."""
+    first = await client.post(
+        "/api/v1/completions",
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": seed.storybook_id,
+            "version": seed.version,
+            "ending_id": "e_treasure_found",
+        },
+        headers=auth(seed.child_token),
+    )
+    assert first.status_code == 200, first.text
+    assert first.json()["found"] == 1
+
+    second = await client.post(
+        "/api/v1/completions",
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": seed.storybook_id,
+            "version": seed.version,
+            "ending_id": "e_safe_exit",
+        },
+        headers=auth(seed.child_token),
+    )
+    assert second.status_code == 200, second.text
+    second_body = second.json()
+    assert second_body["is_new"] is True
+    assert second_body["found"] == 2
+    assert second_body["total"] == 4
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
 async def test_list_completions_returns_profile_completions(
     client: AsyncClient, seed: Seed
 ) -> None:

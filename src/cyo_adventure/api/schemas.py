@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 import re
 import unicodedata
-from datetime import datetime
+from datetime import date, datetime
 from typing import Annotated, Literal, get_args
 
 from pydantic import (
@@ -22,6 +22,7 @@ from pydantic import (
     model_validator,
 )
 
+from cyo_adventure.db.models import RING_GOAL_DAYS_MAX, RING_GOAL_DAYS_MIN
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
 from cyo_adventure.storybook.evaluator import VarState
@@ -31,7 +32,21 @@ from cyo_adventure.storybook.models import (
     ContentFlags,
     Length,
     NarrativeStyle,
+    Valence,
 )
+
+# W3.4: the selectable weekly-ring goal, bounded once. The cap exists so one
+# guaranteed free day always survives a guardian's most aggressive setting
+# (gamification-recommendation-2026-08-01.md, "Plan defaults" item 4).
+#
+# One alias, four uses: the two WRITE bodies below (create and update) and the
+# two READ views (the guardian's raw ProfileView and the kid's resolved
+# ProgressView.settings). The read paths previously declared a bare ``int``, so
+# the OpenAPI schema, and therefore the generated frontend client, described a
+# number the server can never actually emit as unbounded. The DB CHECK in
+# ``db/models.py`` is built from these same two constants, so the SQL bound and
+# the API bound cannot drift.
+RingGoalDays = Annotated[int, Field(ge=RING_GOAL_DAYS_MIN, le=RING_GOAL_DAYS_MAX)]
 
 # ---------------------------------------------------------------------------
 # Reading-state resource bounds (audit Finding 8)
@@ -211,6 +226,56 @@ class CompletionView(BaseModel):
     found_at: datetime
 
 
+class CompletionRecordedView(CompletionView):
+    """The result of ``POST /completions``: the row plus the celebration signal.
+
+    Design review 2026-08-01 section 3.4 / kid-appeal-implementation-plan.md
+    W0.3: the previous response (bare ``CompletionView``) discarded whether
+    this call's insert was new, so the frontend re-fetched reading-history in
+    a race that could under-report the ending just reached. ``is_new``,
+    ``found``, and ``total`` are computed fresh on every call, not cached, so
+    the ending screen can render "you found a NEW ending!" versus a repeat
+    visit directly from this response instead of a second, racing GET.
+    """
+
+    is_new: bool
+    found: int
+    total: int
+
+    @model_validator(mode="after")
+    def _check_tally_is_possible(self) -> CompletionRecordedView:
+        """Reject tallies the ending screen cannot render coherently.
+
+        # #ASSUME: data integrity: ``found`` counts DISTINCT endings this
+        # profile has reached in this book and ``total`` is the pinned
+        # version's declared ending count, so ``found > total`` means the
+        # projection and the blob disagree (a version pinned backwards, a
+        # stale metadata.ending_count) and ``is_new and found == 0`` is
+        # self-contradictory: the call that just recorded a new ending must
+        # count at least that one. Both would render as a nonsense "you found
+        # 9 of 3!" or a celebration over an empty tally.
+        # #VERIFY: tests/unit/test_completions_api.py::
+        # TestCompletionRecordedViewInvariants.
+
+        Returns:
+            CompletionRecordedView: This instance when the tally is coherent.
+
+        Raises:
+            ValueError: If ``found`` exceeds ``total``, or a new find is
+                reported with a zero tally.
+        """
+        if self.found > self.total:
+            msg = (
+                f"found ({self.found}) cannot exceed the book's declared "
+                f"ending total ({self.total})"
+            )
+            raise ValueError(msg)
+        if self.is_new and self.found == 0:
+            msg = "is_new is True but found is 0; a new find must be counted"
+            raise ValueError(msg)
+        return self
+
+
 class CompletionListView(BaseModel):
     """A profile's recorded completions (COPPA 312.6(a) / GDPR Article 15 read path)."""
 
@@ -242,12 +307,29 @@ class ReadingHistoryView(BaseModel):
     books: list[ReadingHistoryItem]
 
 
+class DailyMinutesView(BaseModel):
+    """Active reading minutes for one calendar day (W3.3, guardian-only).
+
+    Derived from ``reading_activity_day.active_seconds // 60``. Guardian-only
+    by construction: this type is nested only in ``ChildEngagementItem``,
+    which ``get_family_reading_summary`` (guardian/admin-only) is the sole
+    producer of. Kids see days, never minutes (gamification recommendation
+    section 2.4, P4): no kid-facing surface serves this type.
+    """
+
+    activity_date: date
+    minutes: int
+
+
 class ChildEngagementItem(BaseModel):
     """One child's engagement signals for a guardian's family reading summary.
 
     Deliberately signals-only (G9's privacy model: signals, not surveillance):
     no story title, node, or choice content is carried here, only counts and
     ids already visible to the guardian elsewhere (the library listing).
+    ``minutes_last_7_days``/``days_read_this_week`` (W3.3) extend that same
+    signals-only posture to active reading time: day-grain counts and minute
+    totals only, never a session-level or sub-day breakdown.
     """
 
     profile_id: str
@@ -256,12 +338,160 @@ class ChildEngagementItem(BaseModel):
     books_finished: int
     total_endings_found: int
     last_activity_at: datetime | None
+    minutes_last_7_days: list[DailyMinutesView] = Field(default_factory=list)
+    days_read_this_week: int = 0
 
 
 class FamilyReadingSummaryView(BaseModel):
     """Per-child engagement summary for the caller's own family (G9)."""
 
     children: list[ChildEngagementItem]
+
+
+class EarnedBadgeView(BaseModel):
+    """One badge a profile has earned (W3.1, gamification recommendation 2.2)."""
+
+    id: str
+    name: str
+    description: str
+    earned_at: datetime
+
+
+class FoundEndingView(BaseModel):
+    """One found ending, card-ready for the Endings Gallery (W3.2).
+
+    Deliberately carries no data for an UNFOUND ending: the gallery renders
+    those as generic "still hidden" silhouette placeholders (count only,
+    ``total_endings - len(found_endings)``), never a real title or id, so a
+    child can never learn what an ending is called before finding it.
+    """
+
+    ending_id: str
+    title: str
+    # The closed set, not a bare str. A blob's stored valence string is coerced
+    # to this enum at the boundary in ``api/progress.py`` (unknown -> NEUTRAL,
+    # logged), so a corrupt blob still degrades rather than 500ing, while the
+    # generated client gets a union it can exhaustively switch on instead of a
+    # string that renders as a blank or literal "undefined" label to a child.
+    valence: Valence
+
+
+class BookProgressView(BaseModel):
+    """One book's collection state for a profile (W3.1, the Endings Gallery)."""
+
+    storybook_id: str
+    title: str
+    endings_found: int
+    total_endings: int
+    finished: bool
+    every_path_walked: bool
+    # W3.2: every distinct ending this profile has found in this book, oldest
+    # find first, card-ready for the gallery. See FoundEndingView's docstring
+    # for why unfound endings carry no identity here.
+    #
+    # Required with no default: the server always supplies the list (empty when
+    # nothing is found yet), and the empty list is the meaningful value, so an
+    # implicit default would hide a construction-site omission behind a state
+    # the gallery renders as "all silhouettes" rather than surfacing it.
+    found_endings: list[FoundEndingView]
+
+
+class ProgressTotalsView(BaseModel):
+    """Lifetime totals across every book a profile has touched (W3.1)."""
+
+    books_finished: int
+    endings_found: int
+
+
+class ResolvedGamificationSettingsView(BaseModel):
+    """A profile's gamification settings, resolved to concrete values (W3.4).
+
+    Resolution (nullable stored column -> concrete value per the P-A band
+    table) happens once, server-side, in
+    ``api/progress.py::_resolve_ring_settings`` -- the kid client renders
+    directly from this view and never re-implements the band-default table
+    itself. See ``ChildProfile.ring_enabled``/``ring_goal_days`` for the raw,
+    guardian-editable stored values.
+    """
+
+    ring_enabled: bool
+    # Bounded here as well as on the write paths: this value is server-RESOLVED
+    # (band default or stored override, then clamped by
+    # ``api/progress.py::_resolve_ring_settings``), so an out-of-range number
+    # reaching a client would mean the resolver, not the caller, was wrong. The
+    # generated frontend client now carries the same bound rather than a bare
+    # number, which is what let ``strokeDashoffset`` be computed from an
+    # unvalidated value in the first place.
+    ring_goal_days: RingGoalDays
+    badges_enabled: bool
+    time_capture_paused: bool
+
+
+class ProgressView(BaseModel):
+    """``GET /me/progress`` response: badges, collection state, totals (W3.1).
+
+    ``days_read_this_week``/``lifetime_days_read`` (W3.4) feed the weekly
+    ring and badge 12 ("Forty Days of Stories"): counts only, computed from
+    ``reading_activity_day``, matching the guardian summary's own
+    ISO-week-Monday-start definition in ``api/reading_history.py``. The kid
+    client shows days, never minutes (gamification recommendation P4);
+    minutes exist only on the guardian-facing reading summary.
+    """
+
+    badges: list[EarnedBadgeView]
+    books: list[BookProgressView]
+    totals: ProgressTotalsView
+    # Required, not defaulted. Both are computed unconditionally by
+    # ``api/progress.py::_reading_day_totals`` on every call, so a default only
+    # ever fires when a hand-built instance forgets them, which is precisely
+    # when a silent 0 is worst: a zeroed weekly ring reads to a child as "you
+    # have not read this week". Required here also makes them non-optional in
+    # the generated client, retiring the `?? 0` at each consumer.
+    days_read_this_week: int = Field(ge=0)
+    lifetime_days_read: int = Field(ge=0)
+    settings: ResolvedGamificationSettingsView
+
+
+# Loose upper bound on a single reading-time flush's seconds_delta: one full
+# day. The real business-rule clamp (elapsed-time-since-last-write plus a
+# grace margin, capped at a much tighter 6 hours) runs in
+# api/reading_time.py; this Pydantic bound only guards against a malformed or
+# hostile payload carrying an absurd integer before it ever reaches that
+# logic (a resource-exhaustion/garbage-input guard, not the sanity clamp
+# itself).
+_READING_TIME_FLUSH_MAX_SECONDS = 86_400
+
+
+class ReadingTimeFlushBody(BaseModel):
+    """A client-side active-reading-time flush for one day bucket (W3.3).
+
+    ``device_id`` is accepted for parity with the reading-state sync
+    contract and future per-device analytics, but is not currently persisted
+    (the recommendation's data-model sketch, section 5, carries no
+    device_id column); see ``db/models.py::ReadingActivityDay``.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    date: date
+    seconds_delta: int = Field(ge=0, le=_READING_TIME_FLUSH_MAX_SECONDS)
+    flush_id: str = Field(min_length=1, max_length=64)
+    device_id: str | None = Field(default=None, max_length=64)
+
+
+class ReadingActivityDayView(BaseModel):
+    """A profile's active-reading-seconds bucket for one day (W3.3)."""
+
+    activity_date: date
+    active_seconds: int
+    updated_at: datetime
+    # The portion of THIS flush's seconds_delta the server has taken
+    # responsibility for, either by recording it or by discarding it under the
+    # guardian pause policy. The client advances its synced baseline by exactly
+    # this, so a clamped flush leaves the unsettled remainder to be retried
+    # later rather than being marked synced and lost. Distinct from
+    # active_seconds, which is the day's running total across every device.
+    settled_seconds: int = 0
 
 
 class SeriesNextBook(BaseModel):
@@ -784,6 +1014,18 @@ class StoryRequestView(BaseModel):
     created before WS-7 shipped (no stored interpretation). For a blocked row it
     is the generic, premise-free interpretation, safe to surface alongside
     ``request_text=None`` (CR-1); ``_to_view`` does not redact it separately.
+
+    ``resulting_storybook_id`` (W0.4) is the storybook this request produced,
+    or ``None`` until publish. It is stamped exactly once, by
+    ``publishing/service.py::approve()`` -- the sole path that sets
+    ``storybook.status="published"`` -- so a non-``None`` value here always
+    names a fully moderated, human-approved book; unlike ``status`` (which
+    stays ``"approved"`` forever and never itself distinguishes "still
+    generating" from "on the shelf"), this field is the honest signal the
+    kid-facing request card needs. ``_to_view`` applies no further
+    per-caller narrowing beyond the row projection every other field here
+    gets (see its own #ASSUME for why exposing the bare id, even before the
+    book is assigned to any profile, is safe).
     """
 
     id: str
@@ -800,6 +1042,7 @@ class StoryRequestView(BaseModel):
     proposed_series_title: str | None = None
     anchor_storybook_id: str | None = None
     interpretation: RequestInterpretationView | None = None
+    resulting_storybook_id: str | None = None
 
 
 class StoryRequestListView(BaseModel):
@@ -1184,6 +1427,18 @@ class ProfileView(BaseModel):
     # has_pin derives from pin_hash is not None -- the timestamp itself is
     # never serialized, only the boolean state.
     processing_restricted: bool
+    # W3.4 gamification settings (gamification-recommendation-2026-08-01.md
+    # section 4). ring_enabled/ring_goal_days are the RAW stored value, null
+    # meaning "no override, use the P-A band default"; this view is what the
+    # guardian settings form edits, so it must distinguish "guardian chose
+    # off" from "never touched, following the band default" rather than
+    # showing a pre-resolved value that would hide that distinction. The
+    # kid-facing resolved value (what actually renders) comes from
+    # ``GET /me/progress``'s ``settings`` field instead.
+    ring_enabled: bool | None
+    ring_goal_days: RingGoalDays | None
+    badges_enabled: bool
+    time_capture_paused: bool
     created_at: datetime
 
 
@@ -1191,6 +1446,34 @@ class ProfileListView(BaseModel):
     """The profiles the calling principal may act on."""
 
     profiles: list[ProfileView]
+
+
+class ProfileStoryStatusView(BaseModel):
+    """One profile's "new story ready" pill status (W1.4, design review 4.1).
+
+    Deliberately boolean-only: this view is served to a pre-child-session
+    picker principal (a device grant, or a guardian who has not yet handed
+    the device to a specific child), which may legitimately list every
+    profile in the family (``api/profiles.py::_listable_profiles``) but must
+    never learn a SIBLING profile's book titles or shelf counts from the
+    picker screen. ``has_new_story`` is the only signal; no
+    ``storybook_id``/``title``/``count`` field is ever added here (see the
+    endpoint docstring for the "new" definition).
+    """
+
+    profile_id: str
+    has_new_story: bool
+
+
+class ProfileStoryStatusListView(BaseModel):
+    """Bulk "new story ready" status for every profile the caller may list.
+
+    One entry per profile ``api/profiles.py::_listable_profiles`` returns for
+    the calling principal, in the same order; a profile the principal cannot
+    list never appears here either (see ``GET /profiles/story-status``).
+    """
+
+    statuses: list[ProfileStoryStatusView]
 
 
 class ProfileCreateBody(BaseModel):
@@ -1210,6 +1493,14 @@ class ProfileCreateBody(BaseModel):
     ) = None
     request_auto_approve: bool = False
     monthly_request_envelope: Annotated[int, Field(ge=0, le=100)] | None = None
+    # W3.4: omitted/null at creation means "no override yet, follow the P-A
+    # band default" (see ProfileView's field docstring); a guardian who wants
+    # a non-default ring state sets it via a follow-up PATCH, same as every
+    # other optional G2/G3 field on create.
+    ring_enabled: bool | None = None
+    ring_goal_days: RingGoalDays | None = None
+    badges_enabled: bool = True
+    time_capture_paused: bool = False
 
 
 class ProfileUpdateBody(BaseModel):
@@ -1252,6 +1543,16 @@ class ProfileUpdateBody(BaseModel):
     # a null here rather than simply omitting the field). True sets
     # processing_restricted_at to now; False clears it back to None.
     processing_restricted: bool | None = None
+    # W3.4 gamification settings (gamification-recommendation-2026-08-01.md
+    # section 4). ring_enabled/ring_goal_days follow the avatar/pin
+    # "explicit null clears back to band default, omitted leaves unchanged"
+    # contract via model_fields_set; badges_enabled/time_capture_paused
+    # follow the non-null-applies contract (no legitimate "clear" state --
+    # they always have a concrete, non-band-dependent default).
+    ring_enabled: bool | None = None
+    ring_goal_days: RingGoalDays | None = None
+    badges_enabled: bool | None = None
+    time_capture_paused: bool | None = None
 
 
 # ---------------------------------------------------------------------------

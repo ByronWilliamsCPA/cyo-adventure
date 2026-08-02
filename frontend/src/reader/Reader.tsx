@@ -15,8 +15,9 @@ import { ChoiceButton } from '@ds/components/ChoiceButton'
 import { PassageText } from '@ds/components/PassageText'
 import { useMachine } from '@xstate/react'
 
-import type { SeriesNextBookInfo, SubmitFlagParams } from '../api/readerApi'
+import type { CompletionOutcome, SeriesNextBookInfo, SubmitFlagParams } from '../api/readerApi'
 import type { KidFlagCreatedView, ReadingHistoryItem } from '../client/types.gen'
+import type { EarnedBadgeCard, ProgressApi } from '../kid/progressApi'
 import { canGoBack, currentEndingId, visibleChoices } from '../player/engine'
 import { Mascot } from '../kid/Mascot'
 import { readerMachine } from '../player/machine'
@@ -26,16 +27,22 @@ import {
   type ValuesPayload,
 } from '../player/personalization'
 import { SATISFYING_ENDING_KINDS, seriesMeta } from '../player/series'
+import { canGoBackOneStop } from '../player/stops'
 import type { ReadingState, Storybook } from '../player/types'
+import type { ReadingTimeApi } from '../offline/readingTimeSync'
 import { BackToLibrary } from './BackToLibrary'
+import { BadgeUnlockToast } from './BadgeUnlockToast'
 import { ContinueSeries } from './ContinueSeries'
 import { DedicationOverlay } from './DedicationOverlay'
+import { EndingsGalleryButton } from './EndingsGalleryButton'
 import { EndingsProgress } from './EndingsProgress'
 import { FlagButton } from './FlagButton'
 import { ReaderChrome } from './ReaderChrome'
 import { TextSizeControl } from './TextSizeControl'
 import { useReaderFontScale } from './useReaderFontScale'
-import { readerProgressLabel, readerProgressPercent } from './readerProgress'
+import { useReadingTimeAccumulator } from './useReadingTimeAccumulator'
+import { isFlowedBand, readerPositionLabel } from './readerProgress'
+import { useFlowedStop } from './useFlowedStop'
 import { useReadAloud } from './useReadAloud'
 import './reader.css'
 
@@ -70,6 +77,13 @@ export interface ReaderProps {
    * ending screen shows "You found ending N of M" once total_endings > 1.
    * Omitted entirely (no fetch attempted) when the caller has none to offer. */
   fetchReadingHistory?: (profileId: string) => Promise<ReadingHistoryItem[]>
+  /** The just-reached ending's POST /completions outcome (W0.3), forwarded
+   * to EndingsProgress so the ending screen can render the tracker directly
+   * from the completion response (and distinguish a new find from a repeat
+   * visit) instead of always racing fetchReadingHistory. Omitted entirely
+   * by a caller with no POST-outcome tracking, which keeps the
+   * fetchReadingHistory-only behavior. */
+  completionOutcome?: CompletionOutcome
   /** Submits a child's structured content flag (K15). When provided, the
    * chrome offers a "Tell a grown-up" affordance; FlagButton itself hides
    * when no valid child session exists for this profile, so omitting this
@@ -86,6 +100,41 @@ export interface ReaderProps {
    * cheaper than trusting every future write path.
    */
   personalization?: ValuesPayload | null
+  /**
+   * The reading profile's `age_band` (ADR-026 decision 6: band is the source
+   * of truth for stop-flowed vs. one-node-per-page rendering), threaded in
+   * from ReaderRoute via a best-effort profile lookup. `undefined` (the
+   * lookup is in flight, has failed, or the caller has none to offer, e.g.
+   * most existing tests) renders the pre-ADR-026 one-node-per-page behavior,
+   * matching every band this ADR does not name (3-5, 5-8) -- an unknown band
+   * is never treated as flowed. See `readerProgress.ts`'s `isFlowedBand` for
+   * the exact band list.
+   */
+  ageBand?: string
+  /**
+   * The reading-time flush port (W3.3), forwarded straight to the
+   * accumulator hook. Omitted entirely (e.g. most existing tests) means the
+   * hook still accrues into IndexedDB locally but never attempts a network
+   * flush; see `useReadingTimeAccumulator`'s own doc.
+   */
+  readingTimeApi?: ReadingTimeApi
+  /** Guardian per-profile "pause time capture" toggle (resolved gamification
+   * settings). Defaults to false (capture on) so a caller with no settings
+   * fetch wired yet (most existing tests) behaves as before. */
+  timeCapturePaused?: boolean
+  /**
+   * The progress port (W3.2), forwarded to the ending screen's Endings
+   * Gallery entry. Omitted entirely means the "See your endings" button
+   * does not render (mirrors `fetchReadingHistory`'s own optional pattern).
+   */
+  progressApi?: ProgressApi
+  /** A newly-earned badge to toast on the ending screen (W3.2), or null/
+   * undefined for none. The caller (ReaderPage) owns the pre/post progress
+   * comparison and the IndexedDB "seen" bookkeeping; this component only
+   * renders whatever it is handed. */
+  newlyEarnedBadge?: EarnedBadgeCard | null
+  /** Dismisses the badge-unlock toast (marks it seen on the caller's side). */
+  onDismissBadgeToast?: () => void
 }
 
 export function Reader({
@@ -98,8 +147,15 @@ export function Reader({
   fetchSeriesNext,
   ttsEnabled = false,
   fetchReadingHistory,
+  completionOutcome,
   submitFlag,
   personalization = null,
+  ageBand,
+  readingTimeApi,
+  timeCapturePaused = false,
+  progressApi,
+  newlyEarnedBadge,
+  onDismissBadgeToast,
 }: ReaderProps) {
   const navigate = useNavigate()
   const fontScale = useReaderFontScale(profileId)
@@ -108,6 +164,19 @@ export function Reader({
   })
   const { reading, error: choiceError } = snapshot.context
   const node = story.nodes.find((n) => n.id === reading.current_node)
+
+  // ADR-026 (W1.1): 8-11 and up flow consecutive single-choice, non-ending
+  // nodes into one rendered stop; 3-5/5-8 keep today's one-node-per-page
+  // rendering. `flowed` gates every piece of stop-specific behavior below so
+  // an unrecognized/missing band (most existing tests, a caller with no
+  // profile lookup yet) is always the pre-ADR-026 path.
+  const flowed = isFlowedBand(ageBand)
+  // See useFlowedStop.ts: this hook is the only thing that silently walks
+  // the machine through a flowed run's intermediate nodes (via the same
+  // public CHOOSE event a tap would send), so a rendered stop's effects and
+  // visit_set entries are applied for real, not just displayed.
+  const { stop: flowedStop, originReading } = useFlowedStop(story, reading, send, flowed)
+  const nodesById = useMemo(() => new Map(story.nodes.map((n) => [n.id, n])), [story])
 
   // #CRITICAL: security: resolved here rather than at each JSX site so no future
   // render branch can add a fourth path that shows a raw marker to a child.
@@ -118,18 +187,41 @@ export function Reader({
   // Memoized on the input text and the payload: read-aloud word highlighting
   // re-renders this component per spoken word, and the resolve (two regex
   // passes over the passage) should not re-run on each of those renders.
+  // A flowed stop joins each node's own resolved body with a blank line;
+  // PassageText already renders a blank-line-separated string as one
+  // paragraph per node (splitParagraphsWithOffsets), so this reuses that
+  // component unchanged and keeps its global highlight-range-to-paragraph
+  // mapping correct for read-aloud below. A length-1 stop (the common case,
+  // and always true at an ending) reduces to exactly the single-node text
+  // the pre-W1.1 reader rendered, so this replaces (not branches around) the
+  // old `node?.body` computation.
   // #VERIFY: Reader.test.tsx "renders the generic word when there is no payload".
-  const bodyText = useMemo(
-    () => resolvePersonalization(node?.body ?? '', personalization),
-    [node, personalization]
-  )
+  const bodyText = useMemo(() => {
+    if (flowedStop) {
+      return flowedStop.nodeIds
+        .map((id) => resolvePersonalization(nodesById.get(id)?.body ?? '', personalization))
+        .join('\n\n')
+    }
+    return resolvePersonalization(node?.body ?? '', personalization)
+  }, [flowedStop, nodesById, node, personalization])
   const endingTitle = useMemo(
     () => resolvePersonalization(node?.ending?.title ?? '', personalization),
     [node, personalization]
   )
   // The generic-resolved body, for the read-aloud egress guard: a non-local
   // TTS voice must never receive the personalized text (see useReadAloud).
-  const genericBodyText = useMemo(() => resolvePersonalization(node?.body ?? '', null), [node])
+  // Read-aloud must read the WHOLE flowed passage, not just its first node
+  // (W1.1): joining every stop node's generic body the same way bodyText
+  // does above is what makes that so, since useReadAloud is handed this
+  // exact string.
+  const genericBodyText = useMemo(() => {
+    if (flowedStop) {
+      return flowedStop.nodeIds
+        .map((id) => resolvePersonalization(nodesById.get(id)?.body ?? '', null))
+        .join('\n\n')
+    }
+    return resolvePersonalization(node?.body ?? '', null)
+  }, [flowedStop, nodesById, node])
 
   // The dedication belongs on the opening screen: it is a note from a grown-up
   // on page one, and one repeated mid-story stops being a dedication.
@@ -138,23 +230,57 @@ export function Reader({
   // to the start node, which is BY DESIGN indistinguishable from a short read,
   // because the engine's back() truncates the recorded path; backing up to
   // page one therefore legitimately re-shows the dedication.
-  const atOpening = reading.path.length <= 1 && reading.current_node === story.start_node
+  // #ASSUME: timing dependencies: at a flowed band, `reading` (the machine's
+  // live state) can already be silently advanced past the start node by the
+  // time this renders (useFlowedStop's layout effect runs before paint), so
+  // checking the live state here would miss page one entirely. `originReading`
+  // is the pre-advance state the currently-displayed stop was actually
+  // composed from, so it is what page bands' `reading` already was.
+  // #VERIFY: Reader.test.tsx "still shows the dedication overlay on page one
+  // at a flowed band whose start node flows into a branch".
+  const openingCheckState = flowed && originReading ? originReading : reading
+  const atOpening =
+    openingCheckState.path.length <= 1 && openingCheckState.current_node === story.start_node
 
   // Read-aloud (K7): the toggle itself renders in ReaderChrome, but the
   // speech content (passage body, then choice labels) is only known here.
   const readAloud = useReadAloud(ttsEnabled)
+
+  // Active reading-time accumulation (W3.3): shared across all three render
+  // branches below (error/ended/normal), each of which mounts its own
+  // `.reader-shell` root -- only one branch renders at a time, so one ref
+  // reattaching across them is correct, not a bug. Passive pointerdown/
+  // keydown/scroll listeners on the shell (attached inside the hook) plus
+  // the explicit recordInteraction() calls on choose()/go-back below cover
+  // every interaction the recommendation names; read-aloud playing counts
+  // via `isReadAloudPlaying` with no tap required.
+  const shellRef = useRef<HTMLDivElement>(null)
+  const { recordInteraction } = useReadingTimeAccumulator({
+    profileId,
+    api: readingTimeApi,
+    paused: timeCapturePaused,
+    isReadAloudPlaying: readAloud.speaking,
+    containerRef: shellRef,
+  })
   // Choice labels never legally carry sentinels (generation/binding.py), but
   // the module's own rationale applies here too: a defensive strip to generic
   // words is cheaper than trusting every future write path, and a label is a
   // kid-facing surface like any other. Strip only, never resolve: a personal
   // value in a label would be a new egress surface, not a feature.
+  // At a flowed band the choices to render are the composed stop's TERMINAL
+  // node's (ADR-026 decision 1), which is `flowedStop.state` -- by the time a
+  // render actually paints this equals the live `reading` too (useFlowedStop
+  // has already walked the machine there), but reading from the stop is
+  // still correct during the one internal, never-painted render pass before
+  // that walk completes.
+  const choiceState = flowedStop?.state ?? reading
   const choices = useMemo(
     () =>
-      visibleChoices(story, reading).map((choice) => ({
+      visibleChoices(story, choiceState).map((choice) => ({
         ...choice,
         label: stripSentinels(choice.label),
       })),
-    [story, reading]
+    [story, choiceState]
   )
 
   // Report progress whenever the reading state changes (drives WP7 persistence).
@@ -197,6 +323,7 @@ export function Reader({
     // navigation within the same mounted Reader (no unmount), so this is not
     // covered by the hook's unmount cleanup.
     readAloud.stop()
+    recordInteraction()
     send({ type: 'CHOOSE', choiceId })
   }
 
@@ -274,16 +401,32 @@ export function Reader({
     </button>
   )
 
-  // Kids mis-tap constantly; Go back undoes just the last choice by replaying
-  // the recorded path through the deterministic engine (machine BACK event),
+  // Kids mis-tap constantly; Go back undoes just the last choice (page bands)
+  // or the last STOP (ADR-026 decision 3, flowed bands) by replaying the
+  // recorded path through the deterministic engine (machine BACK event),
   // instead of forcing a full restart. Hidden entirely (not disabled) when
   // there is nothing to undo: at the start node, and for states the engine
-  // cannot faithfully replay (continuation reads). canGoBack replays the path
-  // to answer, so memoize it per reading state rather than per render.
+  // cannot faithfully replay (continuation reads).
+  // #ASSUME: timing dependencies: at a flowed band, by the time this renders
+  // the live `reading` already sits at the current stop's TERMINAL node
+  // (useFlowedStop's silent advance -- see that module's doc), matching what
+  // `backOneStop`/`canGoBackOneStop` (player/stops.ts) assume their input
+  // state represents. `goBackSteps` back() calls through the existing BACK
+  // event therefore reproduces `backOneStop`'s own "call back() once per node
+  // in the stop" algorithm exactly, without needing a "jump to this state"
+  // machine event this integration must not add (see useFlowedStop.ts).
+  // #VERIFY: Reader.test.tsx "go back at a flowed band rewinds the whole
+  // stop, landing on the previous stop's terminal choice, not mid-flow".
+  const canUndo = useMemo(
+    () => (flowedStop ? canGoBackOneStop(story, flowedStop) : canGoBack(story, reading)),
+    [story, reading, flowedStop]
+  )
+  const goBackSteps = flowedStop ? flowedStop.nodeIds.length : 1
   // Labelled "Go back a page" (not bare "Go back"): on the ending screen it
   // sits beside "Back to my books", and two unqualified "back"s left a young
-  // reader guessing which one stays in the story.
-  const canUndo = useMemo(() => canGoBack(story, reading), [story, reading])
+  // reader guessing which one stays in the story. Kept as-is at flowed bands
+  // too (not "Go back a stop"): from a child's seat it is still "undo my
+  // last tap", the same action it has always been.
   const goBackButton = canUndo ? (
     <Button
       variant="ghost"
@@ -292,7 +435,10 @@ export function Reader({
         // Going back changes the current node without unmounting the Reader,
         // so read-aloud must be stopped explicitly here.
         readAloud.stop()
-        send({ type: 'BACK' })
+        recordInteraction()
+        for (let i = 0; i < goBackSteps; i += 1) {
+          send({ type: 'BACK' })
+        }
       }}
     >
       <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -309,12 +455,11 @@ export function Reader({
     </Button>
   ) : null
 
-  // showLabel is left at its default (hidden): the percent's denominator is all
-  // of the story's nodes, not the reachable subset for this branch, so it can
-  // never hit 100% on a real playthrough. The bar's fill and aria-label still
-  // convey progress; only the misleading numeric text is withheld. On an
-  // ending the bar is forced full: the story is done, and a finished story
-  // must never look unfinished to the child who just finished it.
+  // W1.2/AL-029: `position.complete` is the one moment the chrome shows a
+  // real percent -- the story is genuinely, truly done. Otherwise it is the
+  // plain "Page N" position label (readerProgress.ts), never a percent: the
+  // graph has no honest "how much is left on the path this child took"
+  // figure to fill a bar toward (see that module's doc for why).
   const ended = snapshot.matches('ended')
   // The read-aloud toggle only makes sense while there is a real passage to
   // read (the normal reading and ending screens); the stuck-page error
@@ -325,8 +470,11 @@ export function Reader({
   // rendering a dead button.
   const chrome = (
     <ReaderChrome
-      percent={ended ? 100 : readerProgressPercent(story, reading)}
-      label={ended ? 'You finished this story!' : readerProgressLabel(story, reading)}
+      position={
+        ended
+          ? { label: 'You finished this story!', complete: true }
+          : { label: readerPositionLabel(story, reading, ageBand) }
+      }
       back={leaveButton}
       fontControl={<TextSizeControl fontScale={fontScale} />}
       readAloud={
@@ -354,7 +502,7 @@ export function Reader({
 
   if (choiceError) {
     return (
-      <div className="reader-shell" style={shellStyle}>
+      <div className="reader-shell" style={shellStyle} ref={shellRef}>
         {chrome}
         <section className="reader-error" role="alert">
           <Mascot size={96} className="reader-error__mascot" />
@@ -393,7 +541,7 @@ export function Reader({
     // data celebrates: finishing a story is a win by default.
     const celebrate = ending?.valence !== 'negative'
     return (
-      <div className="reader-shell" style={shellStyle}>
+      <div className="reader-shell" style={shellStyle} ref={shellRef}>
         {chrome}
         <section data-testid="ending-screen" className="reader-ending">
           <div
@@ -435,7 +583,26 @@ export function Reader({
               profileId={profileId}
               storybookId={story.id}
               fetchReadingHistory={fetchReadingHistory}
+              completionOutcome={completionOutcome}
             />
+          ) : null}
+          {/* W3.2: the Endings Gallery's ending-screen entry point. Omitted
+              entirely (no button) when the caller has no progress port
+              wired, mirroring fetchReadingHistory's own optional pattern. */}
+          {progressApi ? (
+            <EndingsGalleryButton
+              profileId={profileId}
+              storybookId={story.id}
+              bookTitle={story.title}
+              api={progressApi}
+            />
+          ) : null}
+          {/* W3.2: badge-unlock toast. The caller (ReaderPage) decides WHICH
+              badge (pre/post progress comparison + IndexedDB seen-state);
+              this only renders whatever it is handed and clears it on
+              dismiss (tap or auto-dismiss). */}
+          {newlyEarnedBadge ? (
+            <BadgeUnlockToast badge={newlyEarnedBadge} onDismiss={() => onDismissBadgeToast?.()} />
           ) : null}
           <div className="reader-ending__actions">
             <Button
@@ -444,6 +611,7 @@ export function Reader({
               data-testid="restart"
               onClick={() => {
                 readAloud.stop()
+                recordInteraction()
                 send({ type: 'RESTART' })
               }}
             >
@@ -469,7 +637,7 @@ export function Reader({
   }
 
   return (
-    <div className="reader-shell" style={shellStyle}>
+    <div className="reader-shell" style={shellStyle} ref={shellRef}>
       {chrome}
       <section data-testid="reader" className="reader">
         {atOpening ? <DedicationOverlay personalization={personalization} /> : null}

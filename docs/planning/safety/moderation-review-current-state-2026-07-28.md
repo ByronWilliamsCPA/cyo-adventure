@@ -217,9 +217,7 @@ control is the noise floor (`thresholds.py:184-219`, default 0.05, DB row
 `admin_noise_floor`):
 
 ```python
-return not (
-    verdict is Verdict.ADVISORY and score is not None and score < noise_floor
-)
+return not (verdict is Verdict.ADVISORY and score is not None and score < noise_floor)
 ```
 
 All three conjuncts must hold to suppress, so the floor **only ever hides
