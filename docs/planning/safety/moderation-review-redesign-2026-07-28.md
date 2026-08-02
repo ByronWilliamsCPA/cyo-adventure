@@ -104,9 +104,21 @@ with three changes:
    (artifact: `batch-sweep-results-2026-08-01.json` in this directory).
    `review_batch_size` now defaults to 8. The E-class misses (E2/E3
    reviewer-injection) exist at the size-1 baseline and are unchanged by
-   batching; they are tracked as a separate reviewer-hardening issue, not
-   a batching regression. Re-run the sweep after any reviewer-model or
-   batch-prompt change.**
+   batching; they are tracked as a separate reviewer-hardening issue
+   (#542), not a batching regression. Re-run the sweep after any
+   reviewer-model or batch-prompt change.**
+   **Read that evidence with two limits in view.** (a) *Requested 8,
+   realized 6.* The corpus's largest age band holds 6 Stage-1 nodes, and a
+   chunk is `min(batch_size, nodes_in_band)`, so no call in either run
+   carried 8 nodes and sizes 4 and 8 were identical in 3 of the 4 bands.
+   The ratified value is one step past what was measured. The harness now
+   records `realized_chunk_sizes` per size so a later run cannot repeat
+   this ambiguity silently. (b) *Binary scoring hid a softening.* Recall
+   was scored with `is_caught` (observed max verdict >= `expected_min`), so
+   `C2-aggregate-stranger-10-13` going `block` -> `flag` at sizes 4 and 8
+   scored as no regression because `flag` still cleared its
+   `expected_min`. The harness now reports severity downgrades and verdict
+   drift separately from the pass/fail comparison.
 3. **Merge stage (deterministic, post-review).** After all stages run, a new
    `moderation/synthesis.py` groups content findings by every field the
    merged finding takes from a single survivor: `(category, concern, source,

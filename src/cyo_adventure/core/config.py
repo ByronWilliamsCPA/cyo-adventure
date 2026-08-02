@@ -599,13 +599,38 @@ class Settings(BaseSettings):
     # (scripts/adversarial_harness.py --batch-size sweep, two independent
     # runs on 2026-08-01, artifact
     # docs/planning/safety/batch-sweep-results-2026-08-01.json): zero
-    # item-level recall regressions vs size 1 at sizes 4 and 8 on every
-    # scored class, and zero structural-collapse (parse-failure) findings.
+    # item-level recall regressions vs size 1 on every scored class, and
+    # zero structural-collapse (parse-failure) findings.
+    # Read the evidence with its limits in view, they are not incidental:
+    #   - REQUESTED size 8, REALIZED max 6. The adversarial corpus's largest
+    #     age band holds 6 Stage-1 nodes, so no call in that run ever carried
+    #     8 nodes. Sizes 4 and 8 were identical in 3 of the 4 bands. The
+    #     ratified value is therefore extrapolated one step past what was
+    #     measured; the harness now records realized_chunk_sizes so a future
+    #     run cannot repeat this ambiguity silently.
+    #   - Scoring was binary (is_caught against expected_min). One aggregate
+    #     item softened block -> flag at sizes 4 and 8 while still clearing
+    #     its expected_min, so it scored as no regression. The harness now
+    #     reports that class of severity drift separately.
+    # #ASSUME: external-resources: batched verdicts may be less accurate than
+    # single-node calls on real passages. A reviewer asked to attribute N
+    # verdicts to N node ids in one response can mis-attribute, merge, or
+    # flatten them in ways a single-node call cannot; the 2026-08-01 sweep
+    # found no such case on a 13-item corpus, which bounds the risk without
+    # eliminating it.
     # #ASSUME: external-resources: the recall parity above was measured
     # against the openrouter reviewer and the current batch prompt; a
     # reviewer model or _SAFETY_SYSTEM_BATCH prompt change invalidates it.
+    # #CRITICAL: security: raising this raises the fail-safe blast radius
+    # proportionally. A chunk whose verdicts fail to parse collapses to ONE
+    # structural FLAG covering every node in the chunk, so at 8 a single
+    # malformed response withholds per-node safety detail for 8 nodes instead
+    # of 1. Fail-safe direction is preserved (the story still cannot
+    # auto-publish), but the reviewer's granularity is lost for the batch.
     # #VERIFY: re-run the adversarial-harness batch sweep after any reviewer
-    # model or batch-prompt change before keeping the default above 1.
+    # model or batch-prompt change before keeping the default above 1, and
+    # confirm the run's realized_chunk_sizes actually reach the value set
+    # here rather than merely requesting it.
     review_batch_size: int = Field(default=8, ge=1, le=50)
     # Escape hatch for `review_provider="mock"` outside `environment="local"`
     # (design doc section 2.4, moderation review redesign). The mock reviewer
