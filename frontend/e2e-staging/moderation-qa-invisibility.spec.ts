@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
 import { signInAsStagingTestUser, unlockParentalGateIfPresent } from './support/auth'
+import { readPersistedGrantId, revokeDeviceGrantBackstop } from './support/device-grant'
 import { gotoResilient, paceNavigation } from '../e2e-support/rate-limit'
 
 /**
@@ -142,6 +143,14 @@ test.describe('mqa books are invisible to a kid profile on staging', () => {
 
   let sharedPage: Page
 
+  /**
+   * Captured at mint time, not re-read at teardown: a device-grant 401 makes
+   * useApi.ts clear the localStorage record, so the backstop's only input
+   * would be gone in exactly the runs where the backstop is the only cleanup
+   * left. See support/device-grant.ts.
+   */
+  let mintedGrantId: string | null = null
+
   test.beforeAll(async ({ browser }) => {
     sharedPage = await browser.newPage()
     await signInAsStagingTestUser(sharedPage, 'guardian')
@@ -151,49 +160,7 @@ test.describe('mqa books are invisible to a kid profile on staging', () => {
     // Same best-effort DELETE backstop as kid-library-smoke.spec.ts, for the
     // same reason: if the explicit revoke test below never ran, do not leave
     // a live grant on shared staging.
-    try {
-      const cleanup = await sharedPage.evaluate(
-        async ([key]) => {
-          const raw = window.localStorage.getItem(key)
-          const token = window.localStorage.getItem('auth_token')
-          let outcome: { attempted: boolean; ok: boolean; status: number } = {
-            attempted: false,
-            ok: false,
-            status: 0,
-          }
-          if (raw && token) {
-            try {
-              const grant = JSON.parse(raw) as { id?: string }
-              if (grant.id) {
-                const res = await fetch(`/api/v1/device-grants/${grant.id}`, {
-                  method: 'DELETE',
-                  headers: { Authorization: `Bearer ${token}` },
-                })
-                outcome = {
-                  attempted: true,
-                  ok: res.ok || res.status === 404,
-                  status: res.status,
-                }
-              }
-            } catch {
-              outcome = { attempted: true, ok: false, status: 0 }
-            }
-          }
-          window.localStorage.removeItem(key)
-          return outcome
-        },
-        [DEVICE_GRANT_KEY] as const
-      )
-      if (cleanup.attempted && !cleanup.ok) {
-        console.warn(
-          '[moderation-qa-invisibility] backstop device-grant revoke did not ' +
-            `confirm (HTTP ${cleanup.status}); a grant may still be live on ` +
-            'staging. List device grants and revoke it manually.'
-        )
-      }
-    } catch {
-      /* page already closed / evaluate unavailable: nothing to clean */
-    }
+    await revokeDeviceGrantBackstop(sharedPage, mintedGrantId, '[moderation-qa-invisibility]')
     await sharedPage.close()
   })
 
@@ -210,11 +177,12 @@ test.describe('mqa books are invisible to a kid profile on staging', () => {
     }
 
     await expect(sharedPage.getByRole('button', { name: 'Hand device to a child' })).toBeVisible()
-    const stored = await sharedPage.evaluate(
-      (key) => window.localStorage.getItem(key),
-      DEVICE_GRANT_KEY
-    )
-    expect(stored, 'a device grant should be persisted after authorize').not.toBeNull()
+    mintedGrantId = await readPersistedGrantId(sharedPage)
+    expect(
+      mintedGrantId,
+      'a device grant carrying an id should be persisted after authorize; the ' +
+        'afterAll backstop has no other way to revoke it if a later test fails'
+    ).not.toBeNull()
   })
 
   test('the kid library response and render contain no mqa book', async () => {
@@ -292,5 +260,7 @@ test.describe('mqa books are invisible to a kid profile on staging', () => {
       DEVICE_GRANT_KEY
     )
     expect(stored, 'the device grant should be cleared after remove').toBeNull()
+    // Revoked explicitly, so the backstop has nothing left to do.
+    mintedGrantId = null
   })
 })
