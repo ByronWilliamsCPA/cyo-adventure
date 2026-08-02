@@ -110,9 +110,12 @@ Established by reading `moderation/pipeline.py`, `moderation/stages.py`,
   spend). A missing key **skips** that classifier silently. Graded categories ->
   non-blocking `ADVISORY`.
 - Stage 1 (`run_safety_stage`): the **only** LLM hard gate. **Per node verdict**:
-  it walks `(node_id, prose)` in chunks of `review_batch_size` (default 1, so one
-  node per prompt unless raised) and returns one verdict per node either way. Parse
-  failure fails safe to `FLAG`, and an unparseable batch fails every node in it safe.
+  it walks `(node_id, prose)` in chunks of `review_batch_size` (default 8 since
+  2026-08-01) and returns one verdict per node either way. A chunk holding a single
+  node still uses the single-node prompt whatever the configured size is, so a story
+  with fewer than 8 nodes is prompted exactly as it was at a default of 1. Parse
+  failure fails safe to `FLAG`, and an unparseable batch fails every node in it safe,
+  which is why the default's blast radius is now 8 nodes per collapse rather than 1.
 - Stage 3 (coherence) is a soft gate (`FLAG` -> one bounded repair, then re-moderate
   once). Stage 4 (engagement) is advisory only. Stage 2 (per-node LLM readability)
   was retired; see the Class B note below.
@@ -181,14 +184,19 @@ evaluates the assembled path for safety.
 - **Model-independent at the default configuration**: confirmed at source
   (`stages.py::run_safety_stage`; no path-aware aggregation exists anywhere). See
   Finding 4.
-- **Narrowed, not closed, by `review_batch_size`.** At the default of 1 each node is
-  prompted alone, exactly as originally assessed. Raising the knob puts several nodes
-  in one prompt, so a reviewer *could* notice harm assembling across nodes that share
-  a chunk. Do not count that as coverage: the prompt still demands an independent
-  verdict per node, chunks are cut from the node list in iteration order rather than
-  along choice paths, and any path crossing a chunk boundary is unaccumulated as
-  before. The gap is a property of the gate's design; batching only makes the
-  incidental odds of catching it configuration-dependent.
+- **Narrowed, not closed, by `review_batch_size`.** The default is 8 (since
+  2026-08-01), so up to 8 nodes now share a prompt and a reviewer *could* notice harm
+  assembling across nodes in the same chunk. Do not count that as coverage: the prompt
+  still demands an independent verdict per node, chunks are cut from the node list in
+  iteration order rather than along choice paths, any path crossing a chunk boundary is
+  unaccumulated as before, and a chunk that happens to hold one node is prompted exactly
+  as it was at a default of 1. The gap is a property of the gate's design; batching only
+  makes the incidental odds of catching it configuration-dependent, which is a worse
+  property than a stable miss, not a better one.
+- **Batching also widens one failure mode.** A chunk whose response fails to parse
+  collapses to a single structural `FLAG` covering every node in it. At 8 that
+  withholds per-node safety detail for 8 nodes at once. The direction stays fail-safe
+  (the story cannot auto-publish), but reviewer granularity is lost for the batch.
 
 ### Class D: moderation-bypass seams (model-independent)
 

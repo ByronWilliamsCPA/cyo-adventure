@@ -394,12 +394,14 @@ class TestReviewBatchSize:
     """Tests for review_batch_size (design doc 2.2 item 2, Stage B2)."""
 
     @pytest.mark.unit
-    def test_review_batch_size_defaults_to_one(self) -> None:
-        """The default is 1: every chunk is a single node, matching the
-        pre-chunking Stage-1 behavior exactly."""
+    def test_review_batch_size_defaults_to_eight(self) -> None:
+        """The default is 8, ratified by the Gate 3 recall comparison (two
+        identical owner runs on 2026-08-01; artifact
+        docs/planning/safety/batch-sweep-results-2026-08-01.json): zero
+        recall regression vs size 1 and zero structural collapses."""
         from cyo_adventure.core.config import Settings
 
-        assert Settings().review_batch_size == 1
+        assert Settings().review_batch_size == 8
 
     @pytest.mark.unit
     def test_review_batch_size_reads_from_env(
