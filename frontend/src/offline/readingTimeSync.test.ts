@@ -293,13 +293,42 @@ describe('makeReadingTimeApi', () => {
     )
     const api = makeReadingTimeApi({ post } as unknown as AxiosInstance)
     const result = await api.flush(DATE, 30, 'flush-1', 'device-1')
-    expect(post).toHaveBeenCalledWith('/v1/me/reading-time', {
-      date: DATE,
-      seconds_delta: 30,
-      flush_id: 'flush-1',
-      device_id: 'device-1',
-    })
+    // The third argument is asserted, not omitted: a routine tick must reach
+    // axios with NO per-request config, so it keeps the instance's default
+    // (XHR) adapter. Letting the fetch-adapter override leak onto the normal
+    // path is the regression this pins, and `toHaveBeenCalledWith` is
+    // arity-strict, so spelling `undefined` out is what makes that assertion
+    // real rather than merely unstated.
+    expect(post).toHaveBeenCalledWith(
+      '/v1/me/reading-time',
+      {
+        date: DATE,
+        seconds_delta: 30,
+        flush_id: 'flush-1',
+        device_id: 'device-1',
+      },
+      undefined
+    )
     expect(result.active_seconds).toBe(30)
+  })
+
+  it('switches to the fetch adapter only when keepalive is requested', async () => {
+    // The companion to the assertion above, and the only test at THIS layer
+    // that pins what `keepalive` actually does. The sync-layer tests prove the
+    // flag reaches `flush`; nothing else proves `flush` turns it into the
+    // adapter override that survives page unload. `keepalive` is a fetch-only
+    // capability, so getting it wrong here silently returns the unload flush
+    // to an XHR that dies with the page, losing the child's last reading
+    // seconds with no error anywhere.
+    const post = vi.fn(() =>
+      Promise.resolve({ data: { activity_date: DATE, active_seconds: 30, updated_at: 't' } })
+    )
+    const api = makeReadingTimeApi({ post } as unknown as AxiosInstance)
+    await api.flush(DATE, 30, 'flush-k', 'device-1', true)
+    expect(post).toHaveBeenCalledWith('/v1/me/reading-time', expect.anything(), {
+      adapter: 'fetch',
+      fetchOptions: { keepalive: true },
+    })
   })
 
   it('maps a transport failure (no HTTP response) to OfflineError', async () => {
