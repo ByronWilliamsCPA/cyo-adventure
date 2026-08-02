@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
 import pytest
@@ -37,9 +38,11 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 
+from cyo_adventure.api.deps import Role, _device_principal
 from cyo_adventure.core.database import apply_family_rls_context
+from cyo_adventure.core.device_grant import mint_device_grant_token
 from cyo_adventure.db.models import ChildProfile as ChildProfileModel
-from cyo_adventure.db.models import Family
+from cyo_adventure.db.models import DeviceGrant, Family, User
 from tests.integration._migration_utils import migrate_and_connect_as
 
 if TYPE_CHECKING:
@@ -66,6 +69,11 @@ class _Tier1Env:
     sessions: async_sessionmaker[AsyncSession]
     family_a: uuid.UUID
     family_b: uuid.UUID
+    # An unrevoked device grant belonging to family A, plus the guardian that
+    # minted it. Seeded through the owner connection like every other baseline
+    # row, so it exists regardless of policy and only RLS decides visibility.
+    grant_jti: uuid.UUID
+    grant_authorized_by: uuid.UUID
 
 
 @pytest_asyncio.fixture
@@ -82,6 +90,7 @@ async def tier1_env(pg_url: str) -> AsyncIterator[_Tier1Env]:
     )
     family_a = uuid.uuid4()
     family_b = uuid.uuid4()
+    grant_jti = uuid.uuid4()
 
     admin_engine = create_async_engine(admin_url, poolclass=NullPool)
     admin_sessions = async_sessionmaker(admin_engine, expire_on_commit=False)
@@ -94,6 +103,10 @@ async def tier1_env(pg_url: str) -> AsyncIterator[_Tier1Env]:
                 ]
             )
             await session.flush()
+            guardian = User(
+                family_id=family_a, role="guardian", authn_subject="guardian-rls-a"
+            )
+            session.add(guardian)
             session.add_all(
                 [
                     ChildProfileModel(
@@ -104,14 +117,30 @@ async def tier1_env(pg_url: str) -> AsyncIterator[_Tier1Env]:
                     ),
                 ]
             )
+            await session.flush()
+            session.add(
+                DeviceGrant(
+                    family_id=family_a,
+                    authorized_by=guardian.id,
+                    jti=grant_jti,
+                    expires_at=datetime.now(UTC) + timedelta(days=90),
+                )
+            )
             await session.commit()
+            grant_authorized_by = guardian.id
     finally:
         await admin_engine.dispose()
 
     api_engine = create_async_engine(role_url, poolclass=NullPool)
     api_sessions = async_sessionmaker(api_engine, expire_on_commit=False)
     try:
-        yield _Tier1Env(sessions=api_sessions, family_a=family_a, family_b=family_b)
+        yield _Tier1Env(
+            sessions=api_sessions,
+            family_a=family_a,
+            family_b=family_b,
+            grant_jti=grant_jti,
+            grant_authorized_by=grant_authorized_by,
+        )
     finally:
         await api_engine.dispose()
 
@@ -196,3 +225,54 @@ async def test_tier1_admin_context_reads_across_families(
             await session.execute(text(f"SELECT count(*) FROM {_TIER1_TABLE}"))  # noqa: S608
         ).scalar_one()
     assert count == 2, "the admin escape hatch must read across families"
+
+
+async def test_device_grant_invisible_without_context(tier1_env: _Tier1Env) -> None:
+    """A bare device_grant lookup with no context sees nothing (the regression).
+
+    Pins the exact shape of the 2026-08-02 staging outage. ``device_grant`` is
+    Tier 1, so a ``cyo_api`` caller that has not set ``app.family_id`` matches
+    the policy predicate against NULL and gets ZERO ROWS rather than an error.
+    That silence is what made the bug so expensive to find: the auth path read
+    it as "this grant was never minted" and returned 401, while the row sat
+    plainly visible to any ``psql`` session connected as the BYPASSRLS owner.
+
+    Kept as its own test, separate from the passing case below, so a future
+    change that quietly widens the policy fails HERE rather than leaving the
+    positive test green for the wrong reason.
+    """
+    async with tier1_env.sessions() as session:
+        count = (
+            await session.execute(
+                text("SELECT count(*) FROM device_grant WHERE jti = :jti"),
+                {"jti": str(tier1_env.grant_jti)},
+            )
+        ).scalar_one()
+    assert count == 0, (
+        "device_grant must stay fail-closed without context; if this row is "
+        "visible the Tier 1 policy was weakened, not the auth path fixed"
+    )
+
+
+async def test_device_principal_resolves_under_tier1_rls(
+    tier1_env: _Tier1Env,
+) -> None:
+    """``_device_principal`` must resolve a live grant as the NOBYPASSRLS role.
+
+    The end-to-end counterpart to the test above, and the only configuration
+    that ever reproduced the bug: the owner-connected fixtures elsewhere in the
+    suite bypass RLS, so they authenticated a device token happily for the two
+    weeks staging could not. Exercising the real function (not a hand-rolled
+    query) is the point, since the defect was in WHERE the production code set
+    its RLS context, not in the SQL it issued.
+    """
+    token, _ = mint_device_grant_token(
+        family_id=tier1_env.family_a,
+        authorized_by=tier1_env.grant_authorized_by,
+        jti=tier1_env.grant_jti,
+    )
+    async with tier1_env.sessions() as session:
+        principal = await _device_principal(session, token)
+    assert principal.role is Role.DEVICE
+    assert principal.family_id == tier1_env.family_a
+    assert principal.profile_ids == frozenset()
