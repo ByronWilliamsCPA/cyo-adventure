@@ -99,6 +99,90 @@ Nothing relevant here.
 )
 
 
+# A minimal but complete plan-manifest.toml fixture whose track-1 phase set matches
+# _VALID_ROADMAP's declared headings exactly, so manifest-focused tests can construct their own
+# isolated manifest without depending on (or drifting from) the real plan-manifest.toml.
+_VALID_MANIFEST = """\
+schema_version = 1
+
+[status_vocabulary]
+"yes/yes" = "delivered"
+"yes/partial" = "substantially delivered"
+"partial/partial" = "partially delivered"
+"no/no" = "not started"
+
+[rungs.R1]
+requires_phases = ["0", "1", "2", "2b", "3", "4a", "4b", "4c", "4d", "5"]
+
+[rungs.R2]
+requires_phases = ["0", "1", "2", "2b", "3", "4a", "4b", "4c", "4d", "5", "6"]
+excludes_phases = ["7"]
+
+[rungs.R3]
+requires_phases = ["0", "1", "2", "2b", "3", "4a", "4b", "4c", "4d", "5", "6", "7"]
+
+[phases."0"]
+track = 1
+shipped = "yes"
+usable = "yes"
+
+[phases."1"]
+track = 1
+shipped = "yes"
+usable = "yes"
+
+[phases."2"]
+track = 1
+shipped = "yes"
+usable = "yes"
+
+[phases."2b"]
+track = 1
+shipped = "yes"
+usable = "yes"
+
+[phases."3"]
+track = 1
+shipped = "yes"
+usable = "yes"
+
+[phases."4a"]
+track = 1
+shipped = "yes"
+usable = "yes"
+
+[phases."4b"]
+track = 1
+shipped = "yes"
+usable = "partial"
+
+[phases."4c"]
+track = 1
+shipped = "yes"
+usable = "partial"
+
+[phases."4d"]
+track = 1
+shipped = "yes"
+usable = "partial"
+
+[phases."5"]
+track = 1
+shipped = "partial"
+usable = "partial"
+
+[phases."6"]
+track = 2
+shipped = "no"
+usable = "no"
+
+[phases."7"]
+track = 2
+shipped = "no"
+usable = "no"
+"""
+
+
 def _write(path: Path, content: str) -> Path:
     """Write text to a file and return its path, for compact fixture setup.
 
@@ -426,6 +510,464 @@ def test_check_linkage_reports_drift_when_roadmap_adds_an_unrecognised_phase(
     drift = [p for p in problems if "vocabulary drift" in p]
     assert len(drift) == 1
     assert "10" in drift[0]
+
+
+def test_check_roadmap_vocabulary_accepts_matching_manifest_phases() -> None:
+    """A roadmap whose headings exactly match the given manifest phase set is clean."""
+    assert (
+        _MODULE._check_roadmap_vocabulary(
+            _VALID_ROADMAP.splitlines(),
+            Path("roadmap.md"),
+            frozenset({"0", "1", "2", "2b", "3", "4a", "4b", "4c", "4d", "5"}),
+        )
+        == []
+    )
+
+
+def test_check_roadmap_vocabulary_reports_drift_against_a_smaller_manifest_set() -> (
+    None
+):
+    """A roadmap heading the given manifest phase set does not know about is drift."""
+    problems = _MODULE._check_roadmap_vocabulary(
+        _VALID_ROADMAP.splitlines(),
+        Path("roadmap.md"),
+        frozenset({"0", "1", "2", "2b", "3", "4a", "4b", "4c", "4d"}),
+    )
+    assert len(problems) == 1
+    assert "vocabulary drift" in problems[0]
+    assert "5" in problems[0]
+
+
+# ---------------------------------------------------------------------------
+# D. plan-manifest.toml loading and phase-vocabulary derivation
+# ---------------------------------------------------------------------------
+
+
+def test_load_manifest_returns_parsed_toml_on_success(tmp_path: Path) -> None:
+    """A well-formed manifest parses into a dict with the expected top-level tables."""
+    manifest_path = _write(tmp_path / "manifest.toml", _VALID_MANIFEST)
+    problems: list[str] = []
+    manifest = _MODULE._load_manifest(manifest_path, problems)
+    assert problems == []
+    assert manifest is not None
+    assert manifest["phases"]["0"]["shipped"] == "yes"
+
+
+def test_load_manifest_reports_missing_file_instead_of_raising(tmp_path: Path) -> None:
+    """A missing manifest is a reported problem, not a traceback."""
+    problems: list[str] = []
+    manifest = _MODULE._load_manifest(tmp_path / "does-not-exist.toml", problems)
+    assert manifest is None
+    assert len(problems) == 1
+    assert "cannot read" in problems[0]
+
+
+def test_load_manifest_reports_unparseable_toml_instead_of_raising(
+    tmp_path: Path,
+) -> None:
+    """Malformed TOML is a reported problem, not a traceback."""
+    manifest_path = _write(tmp_path / "manifest.toml", "not = valid = toml = [[[")
+    problems: list[str] = []
+    manifest = _MODULE._load_manifest(manifest_path, problems)
+    assert manifest is None
+    assert len(problems) == 1
+    assert "cannot parse" in problems[0]
+
+
+def test_manifest_phases_for_track_splits_phases_by_their_track_field(
+    tmp_path: Path,
+) -> None:
+    """Track-1 and track-2 phase tokens are derived from each phase's own ``track`` field."""
+    manifest_path = _write(tmp_path / "manifest.toml", _VALID_MANIFEST)
+    manifest = _MODULE._load_manifest(manifest_path, [])
+    assert manifest is not None
+    assert _MODULE._manifest_phases_for_track(manifest, 1) == {
+        "0",
+        "1",
+        "2",
+        "2b",
+        "3",
+        "4a",
+        "4b",
+        "4c",
+        "4d",
+        "5",
+    }
+    assert _MODULE._manifest_phases_for_track(manifest, 2) == {"6", "7"}
+
+
+def test_check_linkage_reports_unreadable_manifest_but_still_runs_other_checks(
+    tmp_path: Path,
+) -> None:
+    """A missing manifest only skips the manifest-dependent checks, not everything else."""
+    register_path = _write(
+        tmp_path / "register.md",
+        _register(
+            "## Cluster B: debt-register phase linkage\n\n"
+            "| ID | Item | Phase | Status |\n"
+            "| --- | --- | --- | --- |\n"
+            "| UW-B01 | Covers `C1` | 5 | unscheduled |\n"
+        ),
+    )
+    debt_path = _write(
+        tmp_path / "debt.md",
+        _DEBT_TABLE_HEADER + "| C2 | Uncited | src | Low | fix |\n",
+    )
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _VALID_ROADMAP),
+        debt_path,
+        _write(tmp_path / "lessons.md", ""),
+        _write_no_open_capability_register(tmp_path),
+        manifest_path=tmp_path / "missing-manifest.toml",
+    )
+    assert any("cannot read" in problem for problem in problems)
+    assert any("debt 'C2'" in problem for problem in problems)
+
+
+def test_check_linkage_reports_unparseable_manifest_end_to_end(tmp_path: Path) -> None:
+    """A malformed manifest surfaces through check_linkage as a reported problem."""
+    register_path = _write(tmp_path / "register.md", _register())
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _VALID_ROADMAP),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        _write_no_open_capability_register(tmp_path),
+        manifest_path=_write(tmp_path / "manifest.toml", "not [ valid toml"),
+    )
+    assert any("cannot parse" in problem for problem in problems)
+
+
+# ---------------------------------------------------------------------------
+# E. manifest integrity
+# ---------------------------------------------------------------------------
+
+
+def test_check_manifest_rung_phase_references_flags_an_unknown_phase() -> None:
+    """A rung requiring a phase absent from [phases] is reported."""
+    manifest = {
+        "phases": {"0": {}},
+        "rungs": {"R1": {"requires_phases": ["0", "9"]}},
+    }
+    problems = _MODULE._check_manifest_rung_phase_references(
+        manifest, Path("plan-manifest.toml")
+    )
+    assert len(problems) == 1
+    assert "R1" in problems[0]
+    assert "'9'" in problems[0]
+
+
+def test_check_manifest_rung_phase_references_accepts_all_declared_phases() -> None:
+    """A rung whose phase lists reference only declared phases passes."""
+    manifest = {
+        "phases": {"0": {}, "7": {}},
+        "rungs": {"R2": {"requires_phases": ["0"], "excludes_phases": ["7"]}},
+    }
+    assert (
+        _MODULE._check_manifest_rung_phase_references(
+            manifest, Path("plan-manifest.toml")
+        )
+        == []
+    )
+
+
+def test_check_manifest_rung_requires_excludes_disjoint_flags_overlap() -> None:
+    """A rung listing the same phase in both requires_phases and excludes_phases is reported."""
+    manifest = {
+        "rungs": {"R2": {"requires_phases": ["6", "7"], "excludes_phases": ["7"]}},
+    }
+    problems = _MODULE._check_manifest_rung_requires_excludes_disjoint(
+        manifest, Path("plan-manifest.toml")
+    )
+    assert len(problems) == 1
+    assert "R2" in problems[0]
+    assert "7" in problems[0]
+
+
+def test_check_manifest_rung_requires_excludes_disjoint_accepts_disjoint_lists() -> (
+    None
+):
+    """A rung whose requires and excludes lists share nothing passes."""
+    manifest = {
+        "rungs": {"R2": {"requires_phases": ["6"], "excludes_phases": ["7"]}},
+    }
+    assert (
+        _MODULE._check_manifest_rung_requires_excludes_disjoint(
+            manifest, Path("plan-manifest.toml")
+        )
+        == []
+    )
+
+
+def test_check_manifest_rung_monotonicity_flags_a_dropped_phase() -> None:
+    """A higher rung that drops a phase the lower rung required is reported."""
+    manifest = {
+        "rungs": {
+            "R1": {"requires_phases": ["0", "1"]},
+            "R2": {"requires_phases": ["0"]},
+            "R3": {"requires_phases": ["0", "1"]},
+        }
+    }
+    problems = _MODULE._check_manifest_rung_monotonicity(
+        manifest, Path("plan-manifest.toml")
+    )
+    assert len(problems) == 1
+    assert "R2" in problems[0]
+    assert "1" in problems[0]
+
+
+def test_check_manifest_rung_monotonicity_accepts_a_monotonic_ladder() -> None:
+    """R1 requires subset of R2 requires subset of R3 requires passes."""
+    manifest = {
+        "rungs": {
+            "R1": {"requires_phases": ["0"]},
+            "R2": {"requires_phases": ["0", "6"]},
+            "R3": {"requires_phases": ["0", "6", "7"]},
+        }
+    }
+    assert (
+        _MODULE._check_manifest_rung_monotonicity(manifest, Path("plan-manifest.toml"))
+        == []
+    )
+
+
+def test_check_manifest_status_vocabulary_coverage_flags_a_missing_entry() -> None:
+    """A phase's (shipped, usable) pair with no matching status_vocabulary key is reported."""
+    manifest = {
+        "phases": {"5": {"shipped": "partial", "usable": "no"}},
+        "status_vocabulary": {"partial/partial": "partially delivered"},
+    }
+    problems = _MODULE._check_manifest_status_vocabulary_coverage(
+        manifest, Path("plan-manifest.toml")
+    )
+    assert len(problems) == 1
+    assert "partial/no" in problems[0]
+
+
+def test_check_manifest_status_vocabulary_coverage_accepts_a_covered_pair() -> None:
+    """A phase's (shipped, usable) pair with a matching status_vocabulary key passes."""
+    manifest = {
+        "phases": {"5": {"shipped": "partial", "usable": "partial"}},
+        "status_vocabulary": {"partial/partial": "partially delivered"},
+    }
+    assert (
+        _MODULE._check_manifest_status_vocabulary_coverage(
+            manifest, Path("plan-manifest.toml")
+        )
+        == []
+    )
+
+
+def test_check_manifest_status_values_flags_an_out_of_vocabulary_value() -> None:
+    """A shipped/usable value outside yes/partial/no is reported."""
+    manifest = {"phases": {"0": {"shipped": "definitely", "usable": "yes"}}}
+    problems = _MODULE._check_manifest_status_values(
+        manifest, Path("plan-manifest.toml")
+    )
+    assert len(problems) == 1
+    assert "definitely" in problems[0]
+
+
+@pytest.mark.parametrize("shipped", ["yes", "partial", "no"])
+@pytest.mark.parametrize("usable", ["yes", "partial", "no"])
+def test_check_manifest_status_values_accepts_every_valid_combination(
+    shipped: str, usable: str
+) -> None:
+    """Every combination of the three valid shipped/usable values passes."""
+    manifest = {"phases": {"0": {"shipped": shipped, "usable": usable}}}
+    assert (
+        _MODULE._check_manifest_status_values(manifest, Path("plan-manifest.toml"))
+        == []
+    )
+
+
+def test_check_manifest_phase_7_excluded_from_r2_flags_phase_7_in_r2() -> None:
+    """Phase 7 appearing in R2's requires_phases is the one load-bearing regression this check
+    exists to catch: it breaks the fact that TestFlight (R2) can ship before the Kids compliance
+    checklist (Phase 7) finishes.
+    """
+    manifest = {"rungs": {"R2": {"requires_phases": ["6", "7"]}}}
+    problems = _MODULE._check_manifest_phase_7_excluded_from_r2(
+        manifest, Path("plan-manifest.toml")
+    )
+    assert len(problems) == 1
+    assert "R2" in problems[0]
+    assert "7" in problems[0]
+
+
+def test_check_manifest_phase_7_excluded_from_r2_accepts_phase_7_absent_from_r2() -> (
+    None
+):
+    """R2 not requiring phase 7 at all is the expected, passing shape."""
+    manifest = {"rungs": {"R2": {"requires_phases": ["6", "8"]}}}
+    assert (
+        _MODULE._check_manifest_phase_7_excluded_from_r2(
+            manifest, Path("plan-manifest.toml")
+        )
+        == []
+    )
+
+
+def test_check_manifest_phase_7_excluded_from_r2_accepts_the_real_manifest() -> None:
+    """The real plan-manifest.toml currently keeps phase 7 out of R2's requires_phases."""
+    manifest = _MODULE._load_manifest(_MODULE._DEFAULT_MANIFEST, [])
+    assert manifest is not None
+    assert (
+        _MODULE._check_manifest_phase_7_excluded_from_r2(
+            manifest, _MODULE._DEFAULT_MANIFEST
+        )
+        == []
+    )
+
+
+def test_check_manifest_integrity_returns_no_problems_for_the_real_manifest() -> None:
+    """The real plan-manifest.toml is internally consistent end to end."""
+    manifest = _MODULE._load_manifest(_MODULE._DEFAULT_MANIFEST, [])
+    assert manifest is not None
+    assert _MODULE._check_manifest_integrity(manifest, _MODULE._DEFAULT_MANIFEST) == []
+
+
+def test_check_linkage_reports_a_manifest_integrity_problem_end_to_end(
+    tmp_path: Path,
+) -> None:
+    """Phase 7 leaking into R2's requires_phases surfaces through check_linkage."""
+    register_path = _write(tmp_path / "register.md", _register())
+    broken_manifest = _VALID_MANIFEST.replace(
+        '[rungs.R2]\nrequires_phases = ["0", "1", "2", "2b", "3", "4a", "4b", "4c", "4d", "5", "6"]',
+        '[rungs.R2]\nrequires_phases = ["0", "1", "2", "2b", "3", "4a", "4b", "4c", "4d", "5", "6", "7"]',
+    )
+    assert broken_manifest != _VALID_MANIFEST
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _VALID_ROADMAP),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        _write_no_open_capability_register(tmp_path),
+        manifest_path=_write(tmp_path / "manifest.toml", broken_manifest),
+    )
+    assert any("R2" in p and "7" in p for p in problems)
+
+
+# ---------------------------------------------------------------------------
+# F. roadmap phase-status prose vs manifest [status_vocabulary]
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("cell", "expected"),
+    [
+        ("✅ Delivered", "delivered"),
+        ("✅ Delivered (backend)", "delivered"),
+        ("✅ Delivered (R1 feature-complete)", "delivered"),
+        ("✅ Substantially delivered (2026-07-20 audit)", "substantially delivered"),
+        ("🟡 Partially delivered", "partially delivered"),
+    ],
+)
+def test_normalize_roadmap_status_prose_strips_glyph_and_trailing_qualifier(
+    cell: str, expected: str
+) -> None:
+    """Leading status glyphs and trailing parenthetical qualifiers are noise, not signal."""
+    assert _MODULE._normalize_roadmap_status_prose(cell) == expected
+
+
+def test_roadmap_phase_status_rows_returns_no_rows_when_the_table_is_absent() -> None:
+    """A roadmap with no phase-status table (every fixture in this suite) has nothing to check,
+    not a malformed-structure failure; the real roadmap.md's table is what this check exists to
+    validate.
+    """
+    assert _MODULE._roadmap_phase_status_rows(_VALID_ROADMAP.splitlines()) == []
+
+
+def test_roadmap_phase_status_rows_parses_phase_token_and_raw_status_cell() -> None:
+    """The phase token is the leading word of column 1; the status cell is passed through raw
+    for the caller to normalize."""
+    text = (
+        "| Phase | Status | Evidence |\n"
+        "|-------|--------|----------|\n"
+        "| 0 Foundations | ✅ Delivered | done |\n"
+        "| 5 Hardening | \U0001f7e1 Partially delivered | wip |\n"
+    )
+    rows = _MODULE._roadmap_phase_status_rows(text.splitlines())
+    assert [(token, status) for _line, token, status in rows] == [
+        ("0", "✅ Delivered"),
+        ("5", "\U0001f7e1 Partially delivered"),
+    ]
+
+
+def test_check_roadmap_phase_status_ignores_a_phase_token_unknown_to_the_manifest() -> (
+    None
+):
+    """A status row for a phase token the manifest does not declare is not this check's
+    finding; the vocabulary-drift check reports that mismatch instead."""
+    manifest = {"phases": {}, "status_vocabulary": {}}
+    lines = (
+        "| Phase | Status | Evidence |\n"
+        "|-------|--------|----------|\n"
+        "| 99 Unknown | ✅ Delivered | n/a |\n"
+    ).splitlines()
+    assert (
+        _MODULE._check_roadmap_phase_status(lines, Path("roadmap.md"), manifest) == []
+    )
+
+
+def test_check_roadmap_phase_status_ignores_a_pair_with_no_vocabulary_entry() -> None:
+    """A phase whose (shipped, usable) pair has no status_vocabulary key is not this check's
+    finding; the manifest-integrity check reports that gap instead."""
+    manifest = {
+        "phases": {"0": {"shipped": "yes", "usable": "no"}},
+        "status_vocabulary": {"yes/yes": "delivered"},
+    }
+    lines = (
+        "| Phase | Status | Evidence |\n"
+        "|-------|--------|----------|\n"
+        "| 0 Foundations | ✅ Shipped but unusable | n/a |\n"
+    ).splitlines()
+    assert (
+        _MODULE._check_roadmap_phase_status(lines, Path("roadmap.md"), manifest) == []
+    )
+
+
+def test_check_linkage_accepts_matching_roadmap_phase_status(tmp_path: Path) -> None:
+    """A roadmap status cell whose normalized term matches the manifest's derived term is
+    clean."""
+    register_path = _write(tmp_path / "register.md", _register())
+    roadmap = _VALID_ROADMAP + (
+        "\n| Phase | Status | Evidence |\n"
+        "|-------|--------|----------|\n"
+        "| 0 Foundations | ✅ Delivered | done |\n"
+    )
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", roadmap),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        _write_no_open_capability_register(tmp_path),
+        manifest_path=_write(tmp_path / "manifest.toml", _VALID_MANIFEST),
+    )
+    assert problems == []
+
+
+def test_check_linkage_reports_a_roadmap_phase_status_mismatch(tmp_path: Path) -> None:
+    """A roadmap status cell whose normalized term disagrees with the manifest is reported."""
+    register_path = _write(tmp_path / "register.md", _register())
+    roadmap = _VALID_ROADMAP + (
+        "\n| Phase | Status | Evidence |\n"
+        "|-------|--------|----------|\n"
+        "| 0 Foundations | \U0001f7e1 Partially delivered | wrong |\n"
+    )
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", roadmap),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        _write_no_open_capability_register(tmp_path),
+        manifest_path=_write(tmp_path / "manifest.toml", _VALID_MANIFEST),
+    )
+    mismatches = [p for p in problems if "status column" in p]
+    assert len(mismatches) == 1
+    assert "'0'" in mismatches[0]
+    assert "delivered" in mismatches[0]
 
 
 # ---------------------------------------------------------------------------
@@ -1142,6 +1684,40 @@ def test_main_returns_zero_and_prints_ok_on_a_clean_construction(
     out = capsys.readouterr().out
     assert "ok:" in out
     assert "A=1" in out
+
+
+def test_main_accepts_a_manifest_flag(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The --manifest flag is wired through to check_linkage like the other path flags."""
+    register_path = _write(
+        tmp_path / "register.md",
+        _register(
+            "## Cluster A: ADR follow-ons\n\n"
+            "| ID | Item | Phase | Status |\n"
+            "| --- | --- | --- | --- |\n"
+            "| UW-A01 | Do the thing | 5 | unscheduled |\n"
+        ),
+    )
+    exit_code = _MODULE.main(
+        [
+            "--register",
+            str(register_path),
+            "--roadmap",
+            str(_write(tmp_path / "roadmap.md", _VALID_ROADMAP)),
+            "--debt-register",
+            str(_write(tmp_path / "debt.md", "")),
+            "--lessons-log",
+            str(_write(tmp_path / "lessons.md", "")),
+            "--capability-register",
+            str(_write_no_open_capability_register(tmp_path)),
+            "--manifest",
+            str(_write(tmp_path / "manifest.toml", _VALID_MANIFEST)),
+        ]
+    )
+
+    assert exit_code == 0
+    assert "ok:" in capsys.readouterr().out
 
 
 def test_main_returns_one_and_prints_fail_on_a_broken_construction(

@@ -1,0 +1,230 @@
+# Status: Active | Source of truth for phase and rung vocabulary | Updated 2026-08-01
+#
+# plan-manifest.toml
+#
+# The machine-readable spine of the plan. Three things live here and nowhere else:
+#
+#   1. The closed vocabulary of phase tokens. `scripts/check_work_linkage.py` derives its
+#      phase vocabulary from this file rather than hardcoding it, and validates that
+#      `roadmap.md`'s own headings declare exactly this set. Before this file existed the
+#      vocabulary was duplicated: a hardcoded Python frozenset AND a scrape of the roadmap
+#      headings, so a phase change meant editing two places, one of them code.
+#
+#   2. The phase-to-rung mapping. The release ladder is an OVERLAY on the phase plan, not a
+#      continuation of it: each rung adds phases to the one below. The single most
+#      load-bearing dependency fact in the plan is that Phase 7 gates R3 and explicitly does
+#      NOT gate R2, which means TestFlight can ship before the compliance work finishes.
+#      That fact used to live in prose, in two documents, in slightly different words, where
+#      nothing could check it. Here it is data, and `check_work_linkage.py` asserts it.
+#
+#   3. The two-axis status model. `shipped` answers "did the code merge"; `usable` answers
+#      "can a real person do the thing". Those two questions diverged repeatedly on this
+#      project, which is the honest reason the roadmap invented the phrase "substantially
+#      delivered". One column was being asked to answer both. The roadmap's prose vocabulary
+#      is now DERIVED from these two fields (see [status_vocabulary] below) and the checker
+#      verifies the prose matches, so the words and the data cannot drift apart.
+#
+# Editing rules:
+#   - Adding a phase means adding it here first, then adding the matching roadmap heading.
+#     The checker fails if the two disagree, in either direction.
+#   - `usable` is the honest field. Resist the urge to set it to "yes" because the PR merged;
+#     that is precisely the conflation this model exists to prevent.
+#   - Every phase whose `usable` is not "yes" should carry a `gaps` entry naming what is
+#     missing. The gap text is prose and is not machine-checked, but an empty `gaps` list on
+#     a partial phase is a smell.
+
+schema_version = 1
+updated = "2026-08-01"
+
+# ---------------------------------------------------------------------------------------
+# Status vocabulary
+# ---------------------------------------------------------------------------------------
+# The roadmap writes phase status as prose. These entries define the prose term each
+# (shipped, usable) pair maps to, so the checker can verify the roadmap's words against the
+# manifest's data. `shipped` and `usable` each take one of: "yes", "partial", "no".
+
+[status_vocabulary]
+"yes/yes" = "delivered"
+"yes/partial" = "substantially delivered"
+"yes/no" = "shipped but unusable"
+"partial/partial" = "partially delivered"
+"partial/no" = "partially delivered"
+"no/no" = "not started"
+
+# ---------------------------------------------------------------------------------------
+# Release rungs
+# ---------------------------------------------------------------------------------------
+# Each rung lists every phase it requires, including those inherited from the rung below.
+# `gates` on a phase is derived from these lists: a phase gates the lowest rung that
+# requires it.
+
+[rungs.R1]
+name = "Internal release, web only"
+description = "The web PWA run for the maintainer's own family. No native app, no outside users."
+requires_phases = ["0", "1", "2", "2b", "3", "4a", "4b", "4c", "4d", "5"]
+alpha_phases = ["0", "1", "2", "2b", "3", "4a"]
+alpha_shipped = "2026-07-03"
+alpha_live = "2026-07-05"
+status = "alpha live, full rung not signed off"
+
+[rungs.R2]
+name = "Limited release, TestFlight iOS"
+description = "Capacitor iOS shell plus public guardian authentication, distributed over TestFlight to a controlled group."
+requires_phases = ["0", "1", "2", "2b", "3", "4a", "4b", "4c", "4d", "5", "6", "8"]
+estimate = "6 to 9 weeks after R1"
+status = "Phase 6 substantially built, Phase 8 not started"
+# The load-bearing exclusion. Phase 7 is deliberately absent: the compliance checklist gates
+# the public store submission, not the TestFlight build. `check_work_linkage.py` asserts
+# this exclusion explicitly rather than inferring it, because silently dropping it would
+# reorder the critical path without failing anything.
+excludes_phases = ["7", "9"]
+
+[rungs.R3]
+name = "Public launch, App Store"
+description = "The full product under Kids Category rules: verifiable parental consent, account deletion, private cover storage, hosted infrastructure, curated public catalog, live moderation."
+requires_phases = [
+  "0", "1", "2", "2b", "3", "4a", "4b", "4c", "4d", "5", "6", "7", "8", "9",
+]
+estimate = "5 to 8 weeks after R2, partially overlapping"
+status = "Phase 7 partial, Phase 9 not started"
+
+# ---------------------------------------------------------------------------------------
+# Phases
+# ---------------------------------------------------------------------------------------
+
+[phases."0"]
+name = "Foundations"
+track = 1
+shipped = "yes"
+usable = "yes"
+summary = "Schema, scaffold, CI and security baseline."
+gaps = []
+
+[phases."1"]
+name = "Schema and reader"
+track = 1
+shipped = "yes"
+usable = "yes"
+summary = "Player, condition evaluator, Layer-1 validation, offline PWA reader."
+gaps = []
+
+[phases."2"]
+name = "Generation and gate"
+track = 1
+shipped = "yes"
+usable = "yes"
+summary = "Layer-2 walk, orchestrator, RQ worker, policy gate."
+gaps = []
+
+[phases."2b"]
+name = "Live providers and yield"
+track = 1
+shipped = "yes"
+usable = "yes"
+summary = "OpenRouter and Ollama adapters. 70 percent live yield (14 of 20) cleared the 60 percent bar."
+gaps = ["Tier-2 yield is weak at 3 of 7, a standing quality risk rather than a phase blocker."]
+
+[phases."3"]
+name = "Safety and review"
+track = 1
+shipped = "yes"
+usable = "yes"
+summary = "Moderation pipeline, publish state machine, approval and send-back, review-surface API."
+gaps = []
+
+[phases."4a"]
+name = "Library and profiles"
+track = 1
+shipped = "yes"
+usable = "yes"
+summary = "App shell, auth, profiles, library, guardian console, intake, assignment. This is the R1-alpha line."
+gaps = []
+
+[phases."4b"]
+name = "Editor and engagement"
+track = 1
+shipped = "yes"
+usable = "partial"
+summary = "Node editor, endings tracker, read-aloud, guardian content controls, per-child permission envelopes, kid feedback flag. Shipped 2026-07-17 in PR #270."
+gaps = [
+  "Bookmarks were never built at all.",
+  "Guardian storage and download visibility is missing; revoke exists, download visibility does not.",
+]
+
+[phases."4c"]
+name = "Family loops"
+track = 1
+shipped = "yes"
+usable = "partial"
+summary = "Notification feed, guardian engagement visibility, kid-facing generation status, budget consent. Push channel closed 2026-07-28 via authenticated SSE."
+gaps = ["No server-scheduled digest job, which is why capability S9 stays partial."]
+
+[phases."4d"]
+name = "Connections"
+track = 1
+shipped = "yes"
+usable = "partial"
+summary = "Dual-guardian consent flow, kid-facing recommendation chips. Shipped 2026-07-17 in PR #270."
+# The roadmap contradicts itself on this phase: the phase table (roadmap.md line 64) says
+# "Substantially delivered" while the milestone table (line 341) says "Delivered". This
+# manifest follows the phase table, the more conservative and more specific of the two.
+# Resolving the milestone table's wording is tracked separately; the checker validates the
+# phase table only, so it will not silently bless the other claim.
+gaps = ["Privacy-model erasure coverage for connections has not been independently re-verified."]
+
+[phases."5"]
+name = "Hardening"
+track = 1
+shipped = "partial"
+usable = "partial"
+summary = "Redis-backed rate limiter, ADR-007 purge job, offline-copy revocation, operator runbook, and a first cut of re-screen are merged."
+gaps = [
+  "Performance pass not done.",
+  "Sentry backups and restore drill not done.",
+  "Admin audit view not built.",
+  "Nightly and staging test ladder not green.",
+  "Safety gap H1: band-ceiling bypass on assign.",
+  "Safety gap H2: unmoderated covers.",
+]
+
+[phases."6"]
+name = "Public auth and multi-tenancy"
+track = 2
+shipped = "partial"
+usable = "partial"
+summary = "JWT validation, JIT guardian onboarding, child-session tokens, profile picker and PIN, parental gate all built and tested."
+gaps = [
+  "Native iOS auth path (remainder of P6-05) is unstarted; web OAuth is done.",
+  "Frontend token-storage abstraction and CSP update (P6-06) not done.",
+  "Cross-tenant IDOR coverage (P6-10) not independently re-verified beyond the child-token case.",
+]
+
+[phases."7"]
+name = "Kids compliance and account lifecycle"
+track = 2
+shipped = "partial"
+usable = "no"
+summary = "Account deletion, PII-egress hardening, and the telemetry audit are done. The compliance checklist that gates submission is not."
+gaps = [
+  "P7-08 compliance checklist has a template but no owner sign-off. This gates R3 submission.",
+  "P7-03 privacy policy exists as a draft, is not published, and is not linked in-app.",
+  "P7-01 Apple Developer Program enrollment not started; EU DSA trader status undecided.",
+  "P7-12 processor agreements: a checklist exists, no DPAs are signed.",
+  "P7-07 age-rating questionnaire prep not started.",
+]
+
+[phases."8"]
+name = "iOS shell and subscriptions"
+track = 2
+shipped = "no"
+usable = "no"
+summary = "Capacitor shell, Keychain storage, entitlements and credit ledger, in-app purchase, paywall, sandbox matrix."
+gaps = ["Zero Capacitor or entitlement code exists in the repo as of the 2026-07-20 audit."]
+
+[phases."9"]
+name = "Public catalog, hosted infra, launch"
+track = 2
+shipped = "no"
+usable = "no"
+summary = "Published-catalog state, curated starter library, hosted infrastructure, quotas and cost caps, observability, submission."
+gaps = ["No catalog_published state exists anywhere in the repo as of the 2026-07-20 audit."]

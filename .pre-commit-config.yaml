@@ -339,7 +339,7 @@ repos:
         name: Work linkage (registers resolve to a phase or a proof)
         entry: python scripts/check_work_linkage.py
         language: system
-        files: ^(docs/planning/.*\.md|scripts/check_work_linkage\.py)$
+        files: ^(docs/planning/.*\.(md|toml)|scripts/check_work_linkage\.py)$
         pass_filenames: false
         stages: [pre-commit]
 

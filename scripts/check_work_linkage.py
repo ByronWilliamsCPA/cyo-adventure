@@ -23,11 +23,22 @@ Within the unscheduled-work register itself, for every cluster table (``## Clust
 6. A ``Phase`` value is never empty when ``Status`` is ``unscheduled``.
 7. Ids are unique across the whole register, not just within one cluster.
 
-Vocabulary drift: the contract claims ``roadmap.md`` is the source of truth for the product-phase
-vocabulary. This script parses ``## Phase`` headings (and the ``2b``/``4a``/``4b`` sub-headings
-that do not follow that exact shape) out of ``roadmap.md`` and fails if the hardcoded vocabulary
-disagrees with what the roadmap actually contains, so a new phase added to the roadmap without a
-vocabulary update is caught here rather than discovered later.
+Vocabulary drift: ``docs/planning/plan-manifest.toml`` (the "plan manifest") is the source of
+truth for the phase vocabulary, the phase-to-rung mapping, and the two-axis (``shipped``/
+``usable``) status model; ``roadmap.md`` is checked against it, not the other way around. This
+script parses ``## Phase`` headings (and the ``2b``/``4a``/``4b`` sub-headings that do not follow
+that exact shape) out of ``roadmap.md`` and fails if the manifest's track-1 phase set disagrees
+with what the roadmap actually contains, so a new phase added to the roadmap without a matching
+manifest entry is caught here rather than discovered later. Two further checks guard the manifest
+and the roadmap's prose against each other:
+
+* ``_check_manifest_integrity``: the manifest is internally consistent (every rung's phase
+  references exist, ``requires_phases``/``excludes_phases`` are disjoint, the rungs are
+  monotonic, every phase's status pair has a matching ``[status_vocabulary]`` entry, and Phase 7
+  does not gate R2).
+* ``_check_roadmap_phase_status``: the roadmap's phase-status table prose (for example
+  "Substantially delivered") matches the term the manifest's ``[status_vocabulary]`` derives from
+  that phase's ``(shipped, usable)`` pair.
 
 Cross-register linkage:
 
@@ -57,7 +68,9 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+import tomllib
 from pathlib import Path
+from typing import Any
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _DEFAULT_REGISTER = _REPO_ROOT / "docs" / "planning" / "unscheduled-work-register.md"
@@ -69,15 +82,95 @@ _DEFAULT_LESSONS_LOG = _REPO_ROOT / "docs" / "planning" / "authoring-lessons-log
 _DEFAULT_CAPABILITY_REGISTER = (
     _REPO_ROOT / "docs" / "planning" / "capability-register.md"
 )
+_DEFAULT_MANIFEST = _REPO_ROOT / "docs" / "planning" / "plan-manifest.toml"
 
 _UW_ID_RE = re.compile(r"^UW-[A-M]\d{2}$")
 
 _STATUSES = frozenset({"unscheduled", "blocked", "decision", "verify", "done"})
 
-# The closed phase vocabulary from "### Phase vocabulary (closed set)" and
-# "### Non-phase dispositions (closed set)" in the linkage contract.
-_PRODUCT_PHASES = frozenset({"0", "1", "2", "2b", "3", "4a", "4b", "4c", "4d", "5"})
-_TRACK2_PHASES = frozenset({"6", "7", "8", "9"})
+_MANIFEST_STATUS_VALUES = frozenset({"yes", "partial", "no"})
+
+
+def _load_manifest(path: Path, problems: list[str]) -> dict[str, Any] | None:
+    """Read and parse ``plan-manifest.toml``, recording a problem instead of raising.
+
+    Uses the standard-library ``tomllib`` parser rather than a third-party TOML or YAML
+    library: this script also runs under pre-commit and in CI, contexts where the dev extras
+    that a third-party parser would live in may not be installed.
+
+    Args:
+        path: The plan manifest TOML file.
+        problems: The running problem list; a read or parse failure is appended here.
+
+    Returns:
+        dict[str, Any] | None: The parsed manifest, or None if it could not be read or parsed.
+    """
+    try:
+        with path.open("rb") as handle:
+            return tomllib.load(handle)
+    except OSError as exc:
+        problems.append(f"cannot read {path}: {exc}")
+        return None
+    except tomllib.TOMLDecodeError as exc:
+        problems.append(f"cannot parse {path}: {exc}")
+        return None
+
+
+def _manifest_phases_for_track(manifest: dict[str, Any], track: int) -> frozenset[str]:
+    """Return the phase tokens in a parsed manifest that belong to one release track.
+
+    Args:
+        manifest: The parsed plan-manifest.toml document, as returned by ``_load_manifest``.
+        track: The track number to filter phases by (1 for the R1/R2/R3 web ladder, 2 for the
+            App Store track).
+
+    Returns:
+        frozenset[str]: Every phase token whose ``[phases.<token>].track`` field equals
+            ``track``.
+    """
+    phases = manifest.get("phases", {})
+    return frozenset(
+        token
+        for token, entry in phases.items()
+        if isinstance(entry, dict) and entry.get("track") == track
+    )
+
+
+def _bootstrap_phase_vocabulary() -> tuple[frozenset[str], frozenset[str]]:
+    """Load the default plan manifest's track-1/track-2 phase vocabulary at import time.
+
+    ``_phase_in_vocabulary`` (and everything built on it, such as ``_check_row_phase``) needs a
+    phase vocabulary available without every call site threading a manifest through to validate
+    one already-known value. Loading the default manifest once here, rather than hardcoding the
+    phase sets, is what removes the old dual source of truth (a hardcoded frozenset that could
+    silently drift from ``plan-manifest.toml``). A missing or unparseable manifest does not raise
+    here: it falls back to an empty vocabulary so importing this module never crashes;
+    ``check_linkage()`` loads the manifest itself and reports a clear problem for that same
+    failure when it actually runs the checks that depend on it.
+
+    Returns:
+        tuple[frozenset[str], frozenset[str]]: The track-1 and track-2 phase token sets.
+    """
+    # #ASSUME: external resource: the default manifest exists and parses at import time.
+    # #VERIFY: a missing/broken manifest degrades to an empty vocabulary rather than an
+    # ImportError, so every _check_row_phase call fails closed (every phase value rejected)
+    # instead of the module refusing to load; check_linkage() separately loads and reports the
+    # same failure explicitly, so the root cause is not left to be inferred from the symptom.
+    bootstrap_problems: list[str] = []
+    manifest = _load_manifest(_DEFAULT_MANIFEST, bootstrap_problems)
+    if manifest is None:
+        return frozenset(), frozenset()
+    return (
+        _manifest_phases_for_track(manifest, 1),
+        _manifest_phases_for_track(manifest, 2),
+    )
+
+
+# The phase vocabulary, derived from plan-manifest.toml's [phases] table rather than
+# hardcoded: see _bootstrap_phase_vocabulary. plan-manifest.toml is now the single source of
+# truth for phase tokens; roadmap.md's headings are checked against it (_check_roadmap_vocabulary)
+# instead of the other way around.
+_PRODUCT_PHASES, _TRACK2_PHASES = _bootstrap_phase_vocabulary()
 _RELEASE_RUNGS = frozenset({"R1", "R2", "R3"})
 _NAMED_WORKSTREAMS = frozenset({"content", "now"})
 _SENTINELS_EXACT = frozenset({"CI hygiene", "doc", "recurring", "post-launch"})
@@ -840,30 +933,403 @@ def _check_cluster_rows(
 
 
 def _check_roadmap_vocabulary(
-    roadmap_lines: list[str], roadmap_path: Path
+    roadmap_lines: list[str],
+    roadmap_path: Path,
+    manifest_track1_phases: frozenset[str],
 ) -> list[str]:
-    """Check the roadmap's phase headings agree with the hardcoded product-phase vocabulary.
+    """Check the roadmap's phase headings agree with the manifest's track-1 phase vocabulary.
+
+    Track-2 phases (6, 7, 8, 9) are declared in the manifest but never appear as their own
+    ``roadmap.md`` headings, so the comparison is scoped to track-1 phases only; comparing
+    against the full manifest vocabulary would report every track-2 phase as a permanent,
+    spurious "missing heading".
 
     Args:
         roadmap_lines: ``roadmap.md``'s lines.
         roadmap_path: ``roadmap.md``'s path, for message text.
+        manifest_track1_phases: The track-1 phase tokens declared in
+            ``plan-manifest.toml``'s ``[phases]`` table.
 
     Returns:
-        list[str]: One problem if the derived and hardcoded vocabularies disagree; empty
+        list[str]: One problem if the derived and manifest vocabularies disagree; empty
             otherwise.
     """
     derived = frozenset(_extract_roadmap_product_phases("\n".join(roadmap_lines)))
-    if derived == _PRODUCT_PHASES:
+    if derived == manifest_track1_phases:
         return []
-    missing = ", ".join(sorted(_PRODUCT_PHASES - derived)) or "(none)"
-    extra = ", ".join(sorted(derived - _PRODUCT_PHASES)) or "(none)"
+    missing = ", ".join(sorted(manifest_track1_phases - derived)) or "(none)"
+    extra = ", ".join(sorted(derived - manifest_track1_phases)) or "(none)"
     return [
         (
             f"product-phase vocabulary drift: {roadmap_path.name} is missing headings for "
-            f"{missing} and declares unrecognised phase(s) {extra}; update the hardcoded "
-            f"vocabulary and this check together with the roadmap change"
+            f"{missing} and declares unrecognised phase(s) {extra}; update "
+            f"plan-manifest.toml's [phases] table and this check together with the roadmap "
+            f"change"
         )
     ]
+
+
+_MANIFEST_PHASE_STATUS_HEADER_CELLS = ("Phase", "Status")
+# "5 Hardening" -> "5"; "4c Family Loops (NEW 2026-07-16)" -> "4c". The phase token is always
+# the first whitespace-separated word of the roadmap phase-status table's first column.
+_ROADMAP_PHASE_STATUS_TOKEN_RE = re.compile(r"^(\S+)")
+# A leading status glyph (for example the checkmark or the yellow-circle emoji) plus any
+# whitespace before the prose proper begins.
+_ROADMAP_STATUS_LEADING_GLYPH_RE = re.compile(r"^[^A-Za-z]+")
+# A single trailing parenthetical qualifier, for example "(backend)" or "(2026-07-20 audit)".
+_ROADMAP_STATUS_TRAILING_QUALIFIER_RE = re.compile(r"\s*\([^)]*\)\s*$")
+
+
+def _normalize_roadmap_status_prose(status_cell: str) -> str:
+    """Strip a roadmap phase-status cell down to its bare, lower-cased status term.
+
+    "``✅ Substantially delivered (2026-07-20 audit)``" becomes "``substantially delivered``":
+    the leading glyph and the trailing qualifier are noise around the one term this check
+    actually compares against the manifest's ``[status_vocabulary]``.
+
+    Args:
+        status_cell: The roadmap phase-status table's ``Status`` column value for one row.
+
+    Returns:
+        str: The lower-cased status term, with the leading glyph and trailing parenthetical
+            qualifier removed.
+    """
+    without_glyph = _ROADMAP_STATUS_LEADING_GLYPH_RE.sub("", status_cell)
+    without_qualifier = _ROADMAP_STATUS_TRAILING_QUALIFIER_RE.sub("", without_glyph)
+    return without_qualifier.strip().lower()
+
+
+def _find_roadmap_phase_status_header(
+    lines: list[str],
+) -> tuple[int, int, int] | None:
+    """Locate the roadmap's phase-status table header by its cells, not a fixed line number.
+
+    Args:
+        lines: ``roadmap.md``'s lines.
+
+    Returns:
+        tuple[int, int, int] | None: The header's 0-based line index, ``Phase`` column index,
+            and ``Status`` column index; None if no row's first cell is ``Phase`` with a
+            ``Status`` column alongside it.
+    """
+    for index, line in enumerate(lines):
+        if "|" not in line:
+            continue
+        cells = _split_row(line)
+        if cells and cells[0] == "Phase" and "Status" in cells:
+            return index, 0, cells.index("Status")
+    return None
+
+
+def _roadmap_phase_status_rows(lines: list[str]) -> list[tuple[int, str, str]]:
+    """Return each row of the roadmap's phase-status table as (line, phase token, status prose).
+
+    A roadmap document that simply has no such table (every test fixture in this suite, and
+    conceivably a future roadmap restructure) is not a failure: it has nothing for this check to
+    compare, the same "genuinely nothing here yet" treatment ``_lessons_needing_citation`` and
+    ``_capability_register_open_ids`` give a document with no table-like content at all. The
+    table's own presence and shape are not this script's concern; only its status prose, once
+    found, is.
+
+    Args:
+        lines: ``roadmap.md``'s lines.
+
+    Returns:
+        list[tuple[int, str, str]]: One (1-based line number, phase token, raw ``Status`` cell
+            text) tuple per data row; empty if the table cannot be located.
+    """
+    located = _find_roadmap_phase_status_header(lines)
+    if located is None:
+        return []
+    header_index, phase_col, status_col = located
+
+    rows: list[tuple[int, str, str]] = []
+    for offset, line in enumerate(lines[header_index + 1 :], start=header_index + 2):
+        if "|" not in line:
+            break
+        cells = _split_row(line)
+        if _is_separator(cells):
+            continue
+        if len(cells) <= max(phase_col, status_col):
+            continue
+        token_match = _ROADMAP_PHASE_STATUS_TOKEN_RE.match(cells[phase_col])
+        if token_match is None:
+            continue
+        rows.append((offset, token_match.group(1), cells[status_col]))
+    return rows
+
+
+def _check_roadmap_phase_status(
+    roadmap_lines: list[str],
+    roadmap_path: Path,
+    manifest: dict[str, Any],
+) -> list[str]:
+    """Check the roadmap's phase-status table prose against the manifest's status vocabulary.
+
+    For each row, the phase's ``(shipped, usable)`` pair is looked up in the manifest and mapped
+    to its prose term via ``[status_vocabulary]``; that term is compared, case-insensitively,
+    against the roadmap cell with its leading glyph and trailing parenthetical qualifier
+    stripped. A phase token the manifest does not recognise, or a ``(shipped, usable)`` pair
+    with no ``[status_vocabulary]`` entry, is not reported here: those are the vocabulary-drift
+    and manifest-integrity checks' findings respectively, and reporting them a second time here
+    would just be duplicate noise about the same root cause.
+
+    Args:
+        roadmap_lines: ``roadmap.md``'s lines.
+        roadmap_path: ``roadmap.md``'s path, for message text.
+        manifest: The parsed plan-manifest.toml document.
+
+    Returns:
+        list[str]: One problem per row whose status prose does not match the manifest-derived
+            term; empty when every row matches (including when the table is not found at all).
+    """
+    phases = manifest.get("phases", {})
+    vocabulary = manifest.get("status_vocabulary", {})
+
+    problems: list[str] = []
+    for line_number, phase_token, status_cell in _roadmap_phase_status_rows(
+        roadmap_lines
+    ):
+        entry = phases.get(phase_token)
+        if not isinstance(entry, dict):
+            continue
+        key = f"{entry.get('shipped')}/{entry.get('usable')}"
+        expected_term = vocabulary.get(key)
+        if not isinstance(expected_term, str):
+            continue
+        actual_term = _normalize_roadmap_status_prose(status_cell)
+        if actual_term != expected_term.strip().lower():
+            problems.append(
+                f"{roadmap_path.name}:{line_number}: phase '{phase_token}' status column "
+                f"reads '{status_cell}' (normalized to '{actual_term}'), but "
+                f"plan-manifest.toml's [status_vocabulary] derives '{expected_term}' from "
+                f"(shipped={entry.get('shipped')!r}, usable={entry.get('usable')!r})"
+            )
+    return problems
+
+
+def _check_manifest_rung_phase_references(
+    manifest: dict[str, Any], manifest_path: Path
+) -> list[str]:
+    """Check every phase token a rung requires or excludes is declared in ``[phases]``.
+
+    Args:
+        manifest: The parsed plan-manifest.toml document.
+        manifest_path: The manifest's path, for message text.
+
+    Returns:
+        list[str]: One problem per rung phase-list entry with no matching ``[phases]`` table.
+    """
+    phases = manifest.get("phases", {})
+    rungs = manifest.get("rungs", {})
+    problems: list[str] = []
+    for rung_name, rung in sorted(rungs.items()):
+        if not isinstance(rung, dict):
+            continue
+        for field in ("requires_phases", "excludes_phases"):
+            problems.extend(
+                (
+                    f"{manifest_path.name}: rungs.{rung_name}.{field} references phase "
+                    f"'{token}', which has no [phases.\"{token}\"] entry"
+                )
+                for token in rung.get(field, [])
+                if token not in phases
+            )
+    return problems
+
+
+def _check_manifest_rung_requires_excludes_disjoint(
+    manifest: dict[str, Any], manifest_path: Path
+) -> list[str]:
+    """Check a rung never lists the same phase in both ``requires_phases`` and ``excludes_phases``.
+
+    Args:
+        manifest: The parsed plan-manifest.toml document.
+        manifest_path: The manifest's path, for message text.
+
+    Returns:
+        list[str]: One problem per rung whose two phase lists overlap.
+    """
+    rungs = manifest.get("rungs", {})
+    problems: list[str] = []
+    for rung_name, rung in sorted(rungs.items()):
+        if not isinstance(rung, dict):
+            continue
+        requires = set(rung.get("requires_phases", []))
+        excludes = set(rung.get("excludes_phases", []))
+        overlap = requires & excludes
+        if overlap:
+            listed = ", ".join(sorted(overlap))
+            problems.append(
+                f"{manifest_path.name}: rungs.{rung_name} lists {listed} in both "
+                f"requires_phases and excludes_phases; a rung cannot both require and "
+                f"exclude the same phase"
+            )
+    return problems
+
+
+def _check_manifest_rung_monotonicity(
+    manifest: dict[str, Any], manifest_path: Path
+) -> list[str]:
+    """Check each rung's required phases are a superset of the rung below it.
+
+    The release ladder is an overlay on the phase plan: R2 must require everything R1 requires,
+    and R3 must require everything R2 requires. A rung that drops a phase the lower rung needed
+    would silently un-gate a release that should still be blocked on it.
+
+    Args:
+        manifest: The parsed plan-manifest.toml document.
+        manifest_path: The manifest's path, for message text.
+
+    Returns:
+        list[str]: One problem per broken (lower, higher) rung pair.
+    """
+    rungs = manifest.get("rungs", {})
+    problems: list[str] = []
+    for lower_name, higher_name in (("R1", "R2"), ("R2", "R3")):
+        lower = rungs.get(lower_name, {})
+        higher = rungs.get(higher_name, {})
+        if not isinstance(lower, dict) or not isinstance(higher, dict):
+            continue
+        lower_requires = set(lower.get("requires_phases", []))
+        higher_requires = set(higher.get("requires_phases", []))
+        dropped = lower_requires - higher_requires
+        if dropped:
+            listed = ", ".join(sorted(dropped))
+            problems.append(
+                f"{manifest_path.name}: rungs.{higher_name}.requires_phases drops "
+                f"{listed} from rungs.{lower_name}.requires_phases; the release ladder "
+                f"must be monotonic, each rung requiring everything the rung below it "
+                f"requires"
+            )
+    return problems
+
+
+def _check_manifest_status_vocabulary_coverage(
+    manifest: dict[str, Any], manifest_path: Path
+) -> list[str]:
+    """Check every phase's ``(shipped, usable)`` pair has a matching ``[status_vocabulary]`` key.
+
+    Args:
+        manifest: The parsed plan-manifest.toml document.
+        manifest_path: The manifest's path, for message text.
+
+    Returns:
+        list[str]: One problem per phase whose status pair has no matching vocabulary entry.
+    """
+    phases = manifest.get("phases", {})
+    vocabulary = manifest.get("status_vocabulary", {})
+    problems: list[str] = []
+    for token, entry in sorted(phases.items()):
+        if not isinstance(entry, dict):
+            continue
+        key = f"{entry.get('shipped')}/{entry.get('usable')}"
+        if key not in vocabulary:
+            problems.append(
+                f'{manifest_path.name}: phases."{token}" has '
+                f"(shipped={entry.get('shipped')!r}, usable={entry.get('usable')!r}), "
+                f"but [status_vocabulary] has no '{key}' entry to derive its roadmap "
+                f"prose term from"
+            )
+    return problems
+
+
+def _check_manifest_status_values(
+    manifest: dict[str, Any], manifest_path: Path
+) -> list[str]:
+    """Check every phase's ``shipped``/``usable`` value is one of yes, partial, or no.
+
+    Args:
+        manifest: The parsed plan-manifest.toml document.
+        manifest_path: The manifest's path, for message text.
+
+    Returns:
+        list[str]: One problem per phase with an out-of-vocabulary ``shipped`` or ``usable``
+            value.
+    """
+    phases = manifest.get("phases", {})
+    problems: list[str] = []
+    for token, entry in sorted(phases.items()):
+        if not isinstance(entry, dict):
+            continue
+        for field in ("shipped", "usable"):
+            value = entry.get(field)
+            if value not in _MANIFEST_STATUS_VALUES:
+                problems.append(
+                    f'{manifest_path.name}: phases."{token}".{field} is {value!r}, not '
+                    f"one of 'yes', 'partial', or 'no'"
+                )
+    return problems
+
+
+def _check_manifest_phase_7_excluded_from_r2(
+    manifest: dict[str, Any], manifest_path: Path
+) -> list[str]:
+    """Check Phase 7 never appears in R2's ``requires_phases``.
+
+    This is the single most load-bearing dependency fact in the plan: Phase 7 (Kids compliance
+    and account lifecycle) gates R3 (the public App Store launch) but must NOT gate R2 (the
+    TestFlight limited release), which is exactly what lets TestFlight ship before the
+    compliance checklist is signed off. That fact is deliberately asserted here rather than left
+    for the monotonicity check to imply, because monotonicity alone would stay green even if
+    Phase 7 were added to both R2 and R3 at once; only an explicit check catches Phase 7 leaking
+    into R2 specifically.
+
+    Args:
+        manifest: The parsed plan-manifest.toml document.
+        manifest_path: The manifest's path, for message text.
+
+    Returns:
+        list[str]: One problem if Phase 7 is in R2's requires_phases; empty otherwise.
+    """
+    # #CRITICAL: data integrity: Phase 7 gating R2 would reorder the critical path (compliance
+    # work would block TestFlight, not just the App Store submission) without any other check
+    # in this script failing.
+    # #VERIFY: covered by test_check_manifest_phase_7_excluded_from_r2_flags_phase_7_in_r2, which
+    # asserts this specific regression rather than relying on the monotonicity check to catch it.
+    r2 = manifest.get("rungs", {}).get("R2", {})
+    if not isinstance(r2, dict):
+        return []
+    if "7" in set(r2.get("requires_phases", [])):
+        return [
+            (
+                f"{manifest_path.name}: rungs.R2.requires_phases includes phase '7', which "
+                f"breaks the load-bearing dependency fact that Phase 7 (Kids compliance and "
+                f"account lifecycle) gates R3 (public App Store launch) only, not R2 "
+                f"(TestFlight limited release); TestFlight can currently ship before the "
+                f"compliance checklist finishes, and this change would silently block that"
+            )
+        ]
+    return []
+
+
+def _check_manifest_integrity(
+    manifest: dict[str, Any], manifest_path: Path
+) -> list[str]:
+    """Validate the plan manifest's internal consistency.
+
+    Runs every self-consistency check the manifest can be validated against without reference to
+    any other document: rung phase references resolve, requires/excludes never overlap, the
+    release ladder is monotonic, every phase's status pair has a vocabulary term, every status
+    value is in the closed vocabulary, and Phase 7 does not gate R2.
+
+    Args:
+        manifest: The parsed plan-manifest.toml document.
+        manifest_path: The manifest's path, for message text.
+
+    Returns:
+        list[str]: Problems found; empty when the manifest is internally consistent.
+    """
+    problems: list[str] = []
+    problems.extend(_check_manifest_rung_phase_references(manifest, manifest_path))
+    problems.extend(
+        _check_manifest_rung_requires_excludes_disjoint(manifest, manifest_path)
+    )
+    problems.extend(_check_manifest_rung_monotonicity(manifest, manifest_path))
+    problems.extend(_check_manifest_status_vocabulary_coverage(manifest, manifest_path))
+    problems.extend(_check_manifest_status_values(manifest, manifest_path))
+    problems.extend(_check_manifest_phase_7_excluded_from_r2(manifest, manifest_path))
+    return problems
 
 
 def _check_debt_linkage(
@@ -963,16 +1429,21 @@ def check_linkage(
     debt_register_path: Path,
     lessons_log_path: Path,
     capability_register_path: Path,
+    *,
+    manifest_path: Path = _DEFAULT_MANIFEST,
 ) -> list[str]:
-    """Validate the work-linkage contract across all five planning documents.
+    """Validate the work-linkage contract across all five planning documents plus the manifest.
 
     Args:
         register_path: The unscheduled-work register markdown file.
-        roadmap_path: ``roadmap.md``, the product-phase vocabulary's source of truth and the home
-            of the capability-register mapping section.
+        roadmap_path: ``roadmap.md``, checked against the manifest's phase vocabulary and status
+            vocabulary, and the home of the capability-register mapping section.
         debt_register_path: The R1 deferred-debt register markdown file.
         lessons_log_path: The authoring lessons log markdown file.
         capability_register_path: The capability register markdown file.
+        manifest_path: ``plan-manifest.toml``, the phase vocabulary, phase-to-rung mapping, and
+            two-axis status model's source of truth. Keyword-only with a default so existing
+            callers passing five positional arguments keep working unchanged.
 
     Returns:
         list[str]: One problem per failed check; empty when every check passes.
@@ -995,9 +1466,19 @@ def check_linkage(
     row_problems, cluster_item_text = _check_register_rows(clusters)
     problems.extend(row_problems)
 
+    manifest = _load_manifest(manifest_path, problems)
+    if manifest is not None:
+        problems.extend(_check_manifest_integrity(manifest, manifest_path))
+
     roadmap_lines = _read_lines(roadmap_path, problems)
-    if roadmap_lines is not None:
-        problems.extend(_check_roadmap_vocabulary(roadmap_lines, roadmap_path))
+    if roadmap_lines is not None and manifest is not None:
+        track1_phases = _manifest_phases_for_track(manifest, 1)
+        problems.extend(
+            _check_roadmap_vocabulary(roadmap_lines, roadmap_path, track1_phases)
+        )
+        problems.extend(
+            _check_roadmap_phase_status(roadmap_lines, roadmap_path, manifest)
+        )
 
     debt_lines = _read_lines(debt_register_path, problems)
     if debt_lines is not None:
@@ -1085,7 +1566,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--roadmap",
         default=str(_DEFAULT_ROADMAP),
-        help="Path to roadmap.md, the product-phase vocabulary's source of truth.",
+        help="Path to roadmap.md, checked against the manifest's phase vocabulary.",
+    )
+    parser.add_argument(
+        "--manifest",
+        default=str(_DEFAULT_MANIFEST),
+        help=(
+            "Path to plan-manifest.toml, the phase vocabulary, phase-to-rung mapping, and "
+            "status model's source of truth."
+        ),
     )
     parser.add_argument(
         "--debt-register",
@@ -1111,6 +1600,7 @@ def main(argv: list[str] | None = None) -> int:
         Path(args.debt_register),
         Path(args.lessons_log),
         Path(args.capability_register),
+        manifest_path=Path(args.manifest),
     )
     if problems:
         sys.stdout.write(f"FAIL {register_path}:\n")
