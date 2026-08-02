@@ -4,6 +4,11 @@
 # (advisory) and documentation link checking (blocking). The aggregate job
 # `Dependency & Standards Validation` is the required status check, and it
 # fails when the link check fails.
+#
+# The link check is scoped to the files the PR changes. Whole-corpus coverage
+# lives in link-check-full.yml, which runs weekly and files an issue instead of
+# blocking. See the long comment on the `link-check` job for why the split
+# exists; it is load-bearing, not tidying.
 name: PR Validation
 
 on:
@@ -151,6 +156,84 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Full history so the step below can reach the merge base and compute
+          # what this PR actually changed.
+          fetch-depth: 0
+
+      # WHY THIS JOB IS SCOPED TO THE DIFF
+      #
+      # It used to check the whole corpus (~1,266 links, ~129 remote hosts) on
+      # every PR, which made a REQUIRED status check a lottery against the
+      # availability of a hundred third parties. PR #562 demonstrated the
+      # failure mode: three consecutive runs inside twenty minutes produced
+      # three DISJOINT failure sets (a 520 on readingrockets.org, a 415 on
+      # hiwavemakers.com, then connection failures on eis.ucsc.edu and
+      # securityscorecards.dev). Every one of those URLs answered 200 in under
+      # 1.2s when probed directly.
+      #
+      # The corpus-wide flags below (concurrency, accept-timeouts, cache,
+      # retry-wait) each cut the failure rate and none of them could fix this,
+      # because the exposure scales with the number of hosts contacted, not
+      # with the odds per host. Scoping to the diff attacks the exposure: a
+      # typical PR touches a handful of documents, so the blocking check now
+      # contacts a handful of hosts.
+      #
+      # Be honest about what that does and does not buy. Replayed against
+      # #562's diff, this scoping drops the third run's failures entirely
+      # (both files were untouched by that PR) and the 415 is now accepted, so
+      # two of the three go away. The 520 does not: that URL is cited by a file
+      # the PR edits, and a live host returning 5xx is exactly the case a link
+      # check should not paper over. Scoping shrinks the lottery, it does not
+      # cancel it, and no flag here should be widened to pretend otherwise.
+      #
+      # Whole-corpus coverage did not go away, it moved to link-check-full.yml,
+      # which runs weekly and files an issue. That split is the point: link rot
+      # is worth knowing about, and a third party's five-minute outage is not
+      # worth blocking a merge over. Losing the split would restore the defect.
+      - name: Collect changed documentation files
+        id: changed
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+
+          # Three-dot: files this PR changed, measured from the merge base, so
+          # unrelated documents that landed on main meanwhile are not dragged
+          # in. `--diff-filter=d` drops deletions, which have nothing to check.
+          #
+          # #CRITICAL: security: lychee-action interpolates `args` into a
+          # shell, so a path reaching it is executed text. The pattern below is
+          # an ALLOW-LIST on the character class, not merely a location filter:
+          # a fork PR adding a file whose name carries a space, quote, or shell
+          # metacharacter fails to match and is excluded rather than injected.
+          # Do not loosen it to `.*` to "support more paths".
+          # #VERIFY: any change to this regex must keep the character class
+          # closed. Test with a filename containing `;`, `$(`, and a space.
+          git diff --name-only --diff-filter=d "${BASE_SHA}...${HEAD_SHA}" \
+            | grep -E '^(docs/[A-Za-z0-9._/-]+\.md|README\.md|CONTRIBUTING\.md)$' \
+            > changed-docs.txt || true
+
+          count=$(wc -l < changed-docs.txt | tr -d ' ')
+          paths=$(tr '\n' ' ' < changed-docs.txt)
+
+          {
+            echo "count=${count}"
+            echo "paths=${paths}"
+          } >> "$GITHUB_OUTPUT"
+
+          {
+            echo "## Documentation Links"
+            echo ""
+            if [ "$count" -eq 0 ]; then
+              echo "No documentation files changed; nothing to check."
+            else
+              echo "Checking links in ${count} changed file(s):"
+              echo ""
+              sed 's/^/- /' changed-docs.txt
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
 
       # Restores `.lycheecache` so a re-run of the same commit re-requests only
       # the URLs that were NOT already confirmed good. See the `--cache` note on
@@ -167,6 +250,7 @@ jobs:
           restore-keys: lychee-
 
       - name: Check documentation links
+        if: steps.changed.outputs.count != '0'
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
           args: >-
@@ -178,13 +262,11 @@ jobs:
             --retry-wait-time 5
             --max-concurrency 16
             --accept-timeouts
-            --accept 200,204,206,301,302,403,429
+            --accept 200,204,206,301,302,403,415,429
             --exclude '^https://github.com/.*/(issues|pulls|compare)/.*$'
             --exclude '^https://linear.app/.*$'
             --exclude '^https?://(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?(/|$)'
-            './docs/**/*.md'
-            './README.md'
-            './CONTRIBUTING.md'
+            ${{ steps.changed.outputs.paths }}
           # Blocking. This check found and hid 7 genuinely broken links while
           # it was advisory; a link check that cannot fail is a link ignorer.
           # The flags below are what make blocking survivable, because a gate
@@ -210,6 +292,13 @@ jobs:
           # that blackholes rather than refuses, which presents as a timeout;
           # a dead domain still fails DNS and is still reported as an error,
           # verified against a 404 and a nonexistent host with the flag on.
+          #
+          # `415` is in `--accept` because a 415 Unsupported Media Type is the
+          # server answering and refusing the request method, not a statement
+          # that the resource is missing. hiwavemakers.com returned one to a
+          # runner while serving 200 to a browser and to curl from elsewhere.
+          # Treating it as a broken link is a false positive; a genuinely dead
+          # URL still gives 404, 410, or a DNS failure.
           #
           # `--cache --max-cache-age 1d` plus the restore step above address a
           # THIRD failure mode: a bare `Connection reset by peer (os error 104)`

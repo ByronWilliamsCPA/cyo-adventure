@@ -1,0 +1,164 @@
+# Whole-corpus documentation link check.
+#
+# The PR-time link check in pr-validation.yml is scoped to the files a PR
+# touches, because a required status check that contacts ~129 third-party hosts
+# fails on their availability rather than on the change it is gating. That
+# scoping would silently drop coverage of every document nobody is editing,
+# which is exactly where link rot accumulates. This workflow is the other half:
+# it checks everything, on a schedule, and reports by filing an issue rather
+# than by blocking anyone.
+#
+# Read the two together. Deleting or disabling this one turns the PR-side
+# scoping into a coverage loss instead of a trade.
+#
+# No untrusted event text is interpolated anywhere here. The github-script step
+# uses only `context.*` values inside JavaScript, never inside a shell.
+name: Link Check (Full Corpus)
+
+on:
+  schedule:
+    # 41 minutes past 05:00 UTC on Mondays: off-peak, offset from the hour, and
+    # ahead of the 06:23 and 07:11 Monday jobs so the three do not contend.
+    - cron: '41 5 * * 1'
+  workflow_dispatch:
+  # Runs on changes to its own definition and to the PR-side check, so a
+  # mistake in either is caught on the PR that makes it rather than on the
+  # following Monday. Expect this run to be flaky on such a PR: it is the
+  # full-corpus scan, so it inherits the third-party lottery by design. It is
+  # NOT a required check and must never be added to one. Read a red result the
+  # way the filed issue says to read it, by checking whether the URL is
+  # actually dead.
+  pull_request:
+    paths:
+      - '.github/workflows/link-check-full.yml'
+      - '.github/workflows/pr-validation.yml'
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  link-check-full:
+    name: Full Corpus Links
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Deliberately NOT cached. The PR-side check caches because it re-runs on
+      # the same content many times and a warm cache is what stops a re-run
+      # replaying network weather. This one runs weekly against a corpus whose
+      # whole purpose is to detect links that have died since the last run, and
+      # a cache with a 1d age would suppress precisely that signal on anything
+      # checked in the previous 24 hours.
+      - name: Check every documentation link
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          # Flags mirror pr-validation.yml's link-check job, minus the cache.
+          # Keep them in sync: a URL class accepted there and rejected here
+          # produces a weekly issue for something no PR can ever fail on, which
+          # trains everyone to ignore the issue.
+          args: >-
+            --verbose
+            --no-progress
+            --max-retries 3
+            --retry-wait-time 5
+            --max-concurrency 16
+            --accept-timeouts
+            --accept 200,204,206,301,302,403,415,429
+            --exclude '^https://github.com/.*/(issues|pulls|compare)/.*$'
+            --exclude '^https://linear.app/.*$'
+            --exclude '^https?://(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?(/|$)'
+            './docs/**/*.md'
+            './README.md'
+            './CONTRIBUTING.md'
+          fail: true
+          jobSummary: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  file-rot-issue:
+    name: File link-rot issue
+    needs: link-check-full
+    # Scheduled runs only. A pull_request failure is already visible on the pull
+    # request, and a manual dispatch is being watched by whoever dispatched it.
+    # `failure()` checks the needed job's result, per GitHub's job-level
+    # status-check semantics.
+    if: failure() && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      # write, isolated to this job and this trigger so the scanning job above
+      # never holds it. Same pattern as planning-linkage.yml (PR #465).
+      issues: write
+
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: File a link-rot issue
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const title = 'Documentation links have rotted';
+            const body = [
+              'The weekly whole-corpus link check failed, which means at least',
+              'one link in docs/, README.md, or CONTRIBUTING.md did not resolve.',
+              '',
+              `Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              'The failing URLs and their source files are in that run\'s job summary.',
+              '',
+              'Before editing anything, confirm the link is actually dead. This',
+              'check contacts around 129 third-party hosts, and a single run',
+              'routinely catches one of them having a bad moment:',
+              '',
+              '- A **404, 410, or DNS failure** is real rot. Fix or remove the link.',
+              '- A **connection failure or 5xx** is usually the host, not the link.',
+              '  Probe it directly before changing a citation.',
+              '- A **redirect** is not a failure, but pointing at the final URL',
+              '  removes a hop and one chance for an edge to interfere.',
+              '',
+              'Re-running is a legitimate first response HERE, unlike on a pull',
+              'request, because nothing is blocked while you wait.',
+              '',
+              'Filed automatically because scheduled workflows surface nowhere else.',
+              'Close it once a scheduled run succeeds again.',
+            ].join('\n');
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ci-failure',
+              per_page: 100,
+            });
+            const existing = issues.find((issue) => issue.title === title);
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['ci-failure'],
+              });
+            }
