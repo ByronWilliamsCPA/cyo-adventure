@@ -483,7 +483,11 @@ detail when a storybook has more than one version).
   (unlock diff + IndexedDB seen-state dedupe), `frontend/src/reader/BadgeUnlockToast.test.tsx`
   (auto-dismiss, manual close, disabled auto-dismiss, unmount cleanup),
   `frontend/src/reader/EndingsGalleryButton.test.tsx` (opens only after the fetch settles,
-  in-flight disable, failure logs profile context and degrades to the empty state)
+  in-flight disable, failure logs profile context and degrades to the empty state),
+  `frontend/src/kid/kidMotion.test.ts` (stylesheet-text assertions that both reduce-motion
+  paths, the OS preference and the guardian per-profile flag, still the weekly ring's
+  progress transition, its celebrate animation, and the picker pill; jsdom never applies
+  these rules, so no rendering test can cover them)
 - Integration: `frontend/src/test/App.test.tsx`
 
 ## Kid: read a story (reader page, choices, endings)
