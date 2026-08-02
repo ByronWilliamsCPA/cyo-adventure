@@ -417,8 +417,11 @@ interactions:
 > acceptance criteria, capacity model, and owner gates, in
 > [story-structure-improvement-plan.md](story-structure-improvement-plan.md).
 
-<!-- markdownlint-disable MD029 -- the item numbers deliberately continue 1..17 across the
-     subsection boundaries below, because later text cross-references specific plan items -->
+<!-- Rationale for the directive below: the item numbers deliberately continue 1..17 across the
+     subsection boundaries, because later text cross-references specific plan items by number
+     (see section 7). Keep the disable directive itself on ONE line: markdownlint ignores a
+     directive comment that wraps, silently, with no warning. -->
+<!-- markdownlint-disable MD029 -->
 
 Re-sequenced after review. The ordering principle: first make the *deployed* system match the analyzed
 one (6.0), then make the built machinery bite where it can (6.1), then lift the ceiling (6.2), then

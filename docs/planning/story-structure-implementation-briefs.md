@@ -101,6 +101,7 @@ re-moderation entry point and catalog sweep script). [catalog-first-inventory-ga
 documents that the only blocker was that nobody ran the commands.
 
 **Change.** This is an operational runbook plus small gap-filling, not a feature build:
+
 1. Run `import_catalog` against a staging database; capture the report.
 2. Run the #529 re-moderation sweep over the imported set; triage FLAGs to the owner queue.
 3. Owner executes gate G1 (publish list); promote approved books via `promote_catalog_story`.
@@ -122,6 +123,7 @@ a request landing on an oversized skeleton burns ~4 repair rounds and fails dete
 (AL-046: 13 of 26 committed fills already exceed the cap).
 
 **Change.**
+
 1. New pure function `generation/feasibility.py::estimate_fill_tokens(skeleton) -> int`: sum of FILL
    `words=` targets converted to tokens (calibrate the words-to-tokens factor by regressing the
    committed fills in `out/`, 25 files: 23 top-level plus 2 pilot re-themes, against their actual
@@ -153,6 +155,7 @@ SKILL.md step 4 explicitly instructs a single-pass fill with a stable cached pre
 fill exists anywhere today; this brief creates the first one.
 
 **Change.**
+
 1. Chunker: partition the node set into acts by graph structure (dominator-tree segments or the
    act-hub boundaries the beats already imply; the walker in `diversity/` has the traversal
    utilities). Scene closure is an enforced invariant, not a preference: nodes sharing a scene (a
@@ -191,6 +194,7 @@ axis for every job (`select_axis(str(request.id))` at line ~610), but only
 current inventory) bypass every lever.
 
 **Change.**
+
 1. `import_story.py`: read the persisted `authoring_metadata` keys (`differentiation_level`,
    `prior_titles`, `prior_theme_tags`, `variation_axis`) when resuming a skill job and record them in
    the import report so the human author sees them.
@@ -291,6 +295,7 @@ story in the window and one has two; an empty/unknown theme signature scores sim
 out-of-vocabulary themes never escalate (analysis section 5, dark sensor).
 
 **Change.**
+
 1. `trigger.py`: count distinct *families* with `DEFAULT_MIN_DISTINCT_FAMILIES = 2`. Contract
    decision, stated so the enum-only payload rule survives: the `CELL_SATURATED` payload today
    carries only `age_band`/`length`/`style`/`level`, and the trigger counts distinct request
@@ -369,6 +374,7 @@ them under four post-conditions (fingerprint unchanged, CR-1 role/words map pres
 tokens, gate not blocked); the fidelity review targets the beat text.
 
 **Design questions the ADR must answer** (with proposed defaults):
+
 1. **Storage**: variants live beside the primary beat. Proposal: extend the directive grammar to
    `beats='...' alt1='...' alt2='...'` OR a sidecar `<slug>.variants.json` keyed by node id. Prefer
    the sidecar: the directive regex, `structure_fingerprint`'s strip logic, binding's
@@ -451,6 +457,7 @@ docstring), with five silent no-op paths (no slug, no partner, missing blob, inv
 fingerprint drift). Findings ride the one bounded repair in `moderation/repair.py`.
 
 **Change**, strictly after SQ-12's margin is met:
+
 1. Calibrate `_BAND_THRESHOLDS` per band from the pilot's paired-fill distributions (the pilot gives
    both a "genuinely different" and a "same-variant" distribution per band it covers; extend the
    panel to uncovered bands with the SQ-13 rollout's first fills).
@@ -478,6 +485,7 @@ against `StoryEngine` (0 divergences / 1,800 walks); ADR-026's `player/stops.py:
 defines the rendered-stop unit for 8-11+.
 
 **Change.** New module `diversity/experience.py` (pure, no I/O, same import rules as the package):
+
 - `decision_cadence`: real choices per 1,000 words over N seeded uniform walks, computed over
   rendered stops for flowed bands (reuse `compose_stop`) and raw nodes for 3-5/5-8.
 - `corridor_ratio`: fraction of stops/nodes with exactly one choice on the sampled walks.
@@ -527,20 +535,28 @@ asserting no transition state yields a feasible pool below 2.
 **Status quo.** A13b ("Try a different way" at the ending screen: walk up to 3 hops to the last real
 pick, fall back one step, availability exactly today's `path.length > 1`) is fully specified in
 [story-diversity-plan-v2.md](story-diversity-plan-v2.md) row A13b and authorized by ADR-024; not
-built. Engagement telemetry (`node_engagement`, reader-path-engagement-design.md) keys per
-`(storybook_id, version, node_id)` with no skeleton rollup.
+built. Engagement telemetry is **designed but not built**: `node_engagement` is a table proposed in
+[reader-path-engagement-design.md](reader-path-engagement-design.md) (`status: proposed`) and has
+zero occurrences in `src/` or `supabase/migrations/`. As designed it keys per
+`(storybook_id, version, node_id)` with no skeleton rollup, which is the gap (b) closes; but there is
+no deployed telemetry to roll up until that design is ratified and shipped.
 
 **Change.** (a) Implement A13b in `frontend/src/player/` + `Reader.tsx` per the A13b row's exact
 semantics (the row text is the spec; respect its two MUST NOTs: availability must not become
 "untaken choice exists within 3 hops", and the walk stops at the first branching ancestor). Apply
-A18's glyph differentiation while in the file. (b) Backend: a rollup query/view joining
-`storybook_version.skeleton_slug` so per-stop signals aggregate across fills of a tree; expose in
-the WS-0 report, not a new API. If any API shape changes: regenerate the frontend client (0.3).
+A18's glyph differentiation while in the file. (b) Backend, **conditional on the telemetry existing**:
+ratify and ship reader-path-engagement-design.md (its own decision, not assumed by this brief), then
+add a rollup query/view joining `storybook_version.skeleton_slug` so per-stop signals aggregate
+across fills of a tree; expose in the WS-0 report, not a new API. If the design is not ratified, (b)
+does not start and the brief closes on (a) alone. If any API shape changes: regenerate the frontend
+client (0.3).
 
 **Tests.** Frontend: the preserved-climax case (take A, die, go back, take B, win) keeps the button
 visible; 3-hop and fallback cases from the plan-v2 measured terminals. Backend: rollup unit test.
 
-**Size M. Depends: nothing. Frontend + backend pair; good parallel item for a second engineer.**
+**Size M. Depends: (a) nothing; (b) hard on reader-path-engagement-design.md being ratified and its
+`node_engagement` table shipped (neither is scheduled by this plan, so (b) may not become
+actionable). Frontend + backend pair; (a) is the good parallel item for a second engineer.**
 
 ### SQ-19: Path-length honesty
 

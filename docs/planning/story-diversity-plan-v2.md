@@ -158,6 +158,8 @@ whether a book with their own name in it feels new.
 > beat opens "The harbor office: kettle, charts", and a casefolding scan would have reported the appliance as a leak
 > of the librarian `Ms. Kettle`.
 
+<!-- separates two distinct correction notes; without it markdownlint reads them as one blockquote (MD028) -->
+
 > **A9 correction (2026-07-26, on investigating it): "clone pair" was wrong, and A9 is two items whose efficient
 > routes point in opposite directions.** Measured: **every `structure_features` field of the two books is identical**
 > (550 nodes, 152 endings, 801 choices, `max_depth` 58, `mean_branching` 2.892, the same ending-kind and valence

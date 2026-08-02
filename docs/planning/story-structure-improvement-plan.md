@@ -188,7 +188,7 @@ its schedule.
 | SQ-15 | **Per-path experience metrics** in `structure_features`: decision cadence over rendered stops (post-ADR-026 the stop, not the node, is the experience unit), corridor ratio, outcome-mix entropy over sampled walks, median-walk depth, agency density (share of decision stops whose options reach different ending valences; single definition, shared with the implementation brief and the metric tests). Wire into SQ-07's de-weighting and the flywheel ranking key. | Analysis 6.3; plan v2 walker (validated, 0 divergences / 1,800 walks) | M | Metrics computed for all 61 skeletons and committed as a baseline; selection and ranking consume at least two of them; unit tests pin the walker lockstep property |
 | SQ-16 | **Stop-based ADR-011 section 10 compliance measurement.** Implement the real stop-level rule as a *report* first (UW-C23: nothing computes stop adjacency in the validator today), measure the catalog, and only then decide gating. Never re-use the node-level D1 figure (AL-076's unit lesson). | UW-C23, UW-C24; analysis 3 | M | Compliance table per skeleton committed; gating decision recorded with the measurement attached |
 | SQ-17 | **D11 amendment: replacement floor.** A grandfathered skeleton leaves selection for a cell only when at least 2 grammar-compliant trees exist there. One-paragraph amendment to the design-review decision plus a selection-filter test. | Analysis 5 (pool-of-1 trough) | S | Amendment recorded; simulation shows no cell's feasible pool drops below 2 during transition |
-| SQ-18 | **A13b ending-screen affordance + engagement rollup.** Deliver "Try a different way" (ADR-024-authorized, 3-hop walk to the last real pick, fallback one step); add a skeleton-level rollup to engagement telemetry so per-stop signals aggregate across fills of a tree. | Plan v2 A13b; analysis 3, 5 (telemetry blind to the armature) | M | A13b behind the existing reader flag with its designed availability rule; rollup query joins version.skeleton_slug; both tested |
+| SQ-18 | **A13b ending-screen affordance + engagement rollup.** (a) Deliver "Try a different way" (ADR-024-authorized, 3-hop walk to the last real pick, fallback one step). (b) *Conditional*: add a skeleton-level rollup to engagement telemetry so per-stop signals aggregate across fills of a tree. `node_engagement` does not exist in `src/` or `supabase/migrations/`; it is proposed in reader-path-engagement-design.md (`status: proposed`), so (b) cannot start until that design is ratified and shipped, which no deliverable here schedules. | Plan v2 A13b; analysis 3, 5 (telemetry blind to the armature) | M ((a) alone: S-M) | (a) A13b behind the existing reader flag with its designed availability rule, tested. (b) if and only if the telemetry ships: rollup query joins `storybook_version.skeleton_slug`, tested |
 | SQ-19 | **Path-length honesty.** AL-027's median-uniform-walk advisory per cell; UW-M06's PL-17 gamebook floor reshape so the endings floor stops rewarding terminating-leaf breadth. | AL-027; UW-M06 | M | Advisory emits for the known worst offenders; floor reshape lands as a validator change with a catalog impact report (no whole-class failure, per AL-051) |
 
 ## 6. Stage 4: grow the structure space (demand-driven, last)
@@ -306,15 +306,24 @@ lands):
 **Supersession, stated per the repo convention.** This plan takes over the *scheduling* function for
 the still-open diversity work; [story-diversity-plan-v2.md](story-diversity-plan-v2.md) remains
 `active` as the record of the delivered A/B deliverables and their evidence, and carries a pointer
-banner to this plan for its open items. The measurement records
+banner to this plan for its open items.
+[story-diversity-implementation-plan.md](story-diversity-implementation-plan.md), whose only function
+was sequencing plan v2, is marked `superseded` for scheduling in this PR, with one carve-out stated
+in its banner: its section 4 rule-ID reservations against open PR #416 remain binding, because this
+plan does not restate them. The measurement records
 ([story-diversity-analysis.md](story-diversity-analysis.md) and its errata) are not superseded; the
 new [analysis](story-structure-diversity-critical-analysis.md) extends them and says so in its
 section 8. This plan does not modify register rows; each flips with a Ref when its deliverable lands,
 and if an SQ item is ever dropped from this schedule while still worth doing, it must be registered
 as a UW row before removal.
 
-**Complete SQ-to-register map** (the `SQ-*` namespace is otherwise invisible to
-`scripts/check_work_linkage.py`, so this table is the audit surface):
+**Complete SQ-to-register map.** The `SQ-*` namespace is invisible to
+`scripts/check_work_linkage.py` today, so this table is the audit surface. That is an interim state,
+not the intended one: `docs/planning/plan-manifest.toml` does not exist on `main` yet (it lands with
+the plan-manifest status-model work), so `SQ-*` cannot be registered as a machine-checkable namespace
+from this PR. **Follow-up**: register `SQ-*` in `plan-manifest.toml` when that file lands, and drop
+this table's audit role at that point. Until then, a change to the table below is a change to the
+only linkage record that exists.
 
 | SQ | Register / source | SQ | Register / source |
 | --- | --- | --- | --- |
