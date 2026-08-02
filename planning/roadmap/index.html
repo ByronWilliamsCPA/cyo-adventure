@@ -4895,13 +4895,13 @@ The old wording stands in historical sections above; this table governs.</p>
 <td>M4d: Connections</td>
 <td>G17 consent, K17 surfaces, A15 enforcement guard (ADR-016 ring 2)</td>
 <td>2-3 wks, overlaps 4c</td>
-<td>✅ Delivered 2026-07-17 (PR #270); privacy-model erasure coverage for connections not independently re-verified</td>
+<td>✅ Substantially delivered 2026-07-17 (PR #270). Corrected 2026-08-01: this row said "Delivered" while the phase table said "Substantially delivered"; code validation settles it as the latter. Dual consent is genuinely enforced twice over (<code>recommendations.py:203</code> <code>_is_dual_consented</code>, plus a second ring-2 gate in <code>personalization.py</code>). Open: the erasure CASCADE is migrated but no test creates a <code>FamilyConnection</code> then deletes a family, and <code>models.py:786-789</code>'s <code>#VERIFY</code> points at <code>test_deletion_drill.py</code>, where the only connection lives in an <em>export</em> test; no integration or e2e test drives ring-2 dual consent over the real stack</td>
 </tr>
 <tr>
 <td>M5: Hardened family tier</td>
 <td>Phase 5 expanded scope: purge, offline revocation, audit view, re-screen, restore drill, nightly/staging/prod test ladder green with alerting</td>
 <td>2-3 wks</td>
-<td>🟡 M4b-4d dependency satisfied as of 2026-07-17 (see the 2026-07-20 audit note above); remaining Phase 5 gaps are audit view, restore drill, remaining test ladder, plus the newly surfaced H1/H2</td>
+<td>🟡 M4b-4d dependency satisfied as of 2026-07-17. <strong>Revised 2026-08-01 against code</strong>: the audit view IS built (<code>frontend/src/admin/AuditPage.tsx</code>, routed at <code>/admin/audit</code>) and safety gap <strong>H1 is closed</strong> (<code>assignments.py:285-312</code> raises on <code>book_rank &gt; profile_rank</code>, with a regression test); H2 is half closed, since the human cover-approval gate exists and only the automated image classifier is missing. All three test ladders have real <code>schedule:</code> triggers. Genuinely remaining: the performance pass, backups plus restore drill, the H2 classifier, and the H1 residual (the band check is fail-open on blobs lacking band metadata)</td>
 </tr>
 <tr>
 <td><strong>M5.1 = R1 (full): "the web app functions properly"</strong></td>
@@ -5648,7 +5648,7 @@ and Tier-2 corpora.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 18:01:05 UTC">August 2, 2026</span>
   </span>
 
     

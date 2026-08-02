@@ -1,0 +1,397 @@
+# Status: Active | Source of truth for phase and rung vocabulary | Updated 2026-08-01
+#
+# plan-manifest.toml
+#
+# The machine-readable spine of the plan. Three things live here and nowhere else:
+#
+#   1. The closed vocabulary of phase tokens. `scripts/check_work_linkage.py` derives its
+#      phase vocabulary from this file rather than hardcoding it, and validates that
+#      `roadmap.md`'s own headings declare exactly this set. Before this file existed the
+#      vocabulary was duplicated: a hardcoded Python frozenset AND a scrape of the roadmap
+#      headings, so a phase change meant editing two places, one of them code.
+#
+#   2. The phase-to-rung mapping. The release ladder is an OVERLAY on the phase plan, not a
+#      continuation of it: each rung adds phases to the one below. The single most
+#      load-bearing dependency fact in the plan is that Phase 7 gates R3 and explicitly does
+#      NOT gate R2, which means TestFlight can ship before the compliance work finishes.
+#      That fact used to live in prose, in two documents, in slightly different words, where
+#      nothing could check it. Here it is data, and `check_work_linkage.py` asserts it.
+#
+#   3. The two-axis status model. `shipped` answers "did the code merge"; `usable` answers
+#      "can a real person do the thing". Those two questions diverged repeatedly on this
+#      project, which is the honest reason the roadmap invented the phrase "substantially
+#      delivered". One column was being asked to answer both. The roadmap's prose vocabulary
+#      is now DERIVED from these two fields (see [status_vocabulary] below) and the checker
+#      verifies the prose matches, so the words and the data cannot drift apart.
+#
+# Editing rules:
+#   - Adding a phase means adding it here first, then adding the matching roadmap heading.
+#     The checker fails if the two disagree, in either direction.
+#   - `usable` is the honest field. Resist the urge to set it to "yes" because the PR merged;
+#     that is precisely the conflation this model exists to prevent.
+#   - Every phase whose `usable` is not "yes" should carry a `gaps` entry naming what is
+#     missing. The gap text is prose and is not machine-checked, but an empty `gaps` list on
+#     a partial phase is a smell.
+
+schema_version = 1
+updated = "2026-08-01"
+
+# ---------------------------------------------------------------------------------------
+# Validation provenance
+# ---------------------------------------------------------------------------------------
+# Until 2026-08-01 every status in this file was derived from planning-document prose. That
+# is circular: the roadmap asserted a status, this manifest recorded it, and a reader
+# checking one against the other found agreement without either being grounded in code.
+#
+# On 2026-08-01 all fourteen phases were re-validated against the repository by eleven
+# parallel agents, each forbidden from reading roadmap.md, PROJECT-PLAN.md, the capability
+# register, or this file. Their evidence universe was source, tests, migrations, and
+# workflows only, and every claim had to carry a file path and symbol name or be reported as
+# "no evidence found". Each agent was given its phase's then-current claim as an allegation
+# to falsify rather than a summary to confirm.
+#
+# Outcome: no (shipped, usable) pair changed. The two-axis model held. The GAP LISTS did
+# not: two Phase 5 gaps were already closed in code, one was half closed, and Phases 3, 6,
+# 7 and 9 each carried real gaps the manifest did not admit. Gaps rot in one direction,
+# because nobody returns to a planning document after fixing something. Re-validate gap
+# lists at least as often as feature status.
+[validation]
+last_validated = "2026-08-01"
+method = "eleven parallel code-only agents, planning docs excluded from their evidence universe"
+result = "no status pair changed; nine of fourteen phases had incorrect gap lists"
+# Re-anchored 2026-08-02 onto a main that had advanced eight commits (through the
+# v0.59.0 release) since the validation base. Five files carrying gap-list locators had
+# changed; the three affected gap claims (Phase 2b generation_provider validator, Phase 3
+# send-back persistence, Phase 4d erasure-cascade test) were re-checked and all three are
+# still open. Four line numbers had drifted and were corrected.
+#
+# #ASSUME: data integrity: a path:line locator here is only as fresh as last_validated;
+# code moves and a citation that still resolves can silently point at the wrong symbol.
+# #VERIFY: scripts/check_work_linkage.py checks structure, not locators. Before trusting a
+# locator after main has moved, re-resolve it by SYMBOL (grep the marker text), not by line.
+locator_basis = "resolved against main at v0.59.0 on 2026-08-02; all 36 path:line refs in range"
+
+# ---------------------------------------------------------------------------------------
+# Status vocabulary
+# ---------------------------------------------------------------------------------------
+# The roadmap writes phase status as prose. These entries define the prose term each
+# (shipped, usable) pair maps to, so the checker can verify the roadmap's words against the
+# manifest's data. `shipped` and `usable` each take one of: "yes", "partial", "no".
+
+[status_vocabulary]
+"yes/yes" = "delivered"
+"yes/partial" = "substantially delivered"
+"yes/no" = "shipped but unusable"
+"partial/partial" = "partially delivered"
+"partial/no" = "partially delivered"
+"no/no" = "not started"
+
+# ---------------------------------------------------------------------------------------
+# Release rungs
+# ---------------------------------------------------------------------------------------
+# Each rung lists every phase it requires, including those inherited from the rung below.
+# `gates` on a phase is derived from these lists: a phase gates the lowest rung that
+# requires it.
+
+[rungs.R1]
+name = "Internal release, web only"
+description = "The web PWA run for the maintainer's own family. No native app, no outside users."
+requires_phases = ["0", "1", "2", "2b", "3", "4a", "4b", "4c", "4d", "5"]
+alpha_phases = ["0", "1", "2", "2b", "3", "4a"]
+alpha_shipped = "2026-07-03"
+alpha_live = "2026-07-05"
+status = "alpha live, full rung not signed off"
+
+[rungs.R2]
+name = "Limited release, TestFlight iOS"
+description = "Capacitor iOS shell plus public guardian authentication, distributed over TestFlight to a controlled group."
+requires_phases = ["0", "1", "2", "2b", "3", "4a", "4b", "4c", "4d", "5", "6", "8"]
+estimate = "6 to 9 weeks after R1"
+status = "Phase 6 substantially built, Phase 8 not started"
+# The load-bearing exclusion. Phase 7 is deliberately absent: the compliance checklist gates
+# the public store submission, not the TestFlight build. `check_work_linkage.py` asserts
+# this exclusion explicitly rather than inferring it, because silently dropping it would
+# reorder the critical path without failing anything.
+excludes_phases = ["7", "9"]
+
+[rungs.R3]
+name = "Public launch, App Store"
+description = "The full product under Kids Category rules: verifiable parental consent, account deletion, private cover storage, hosted infrastructure, curated public catalog, live moderation."
+requires_phases = [
+  "0", "1", "2", "2b", "3", "4a", "4b", "4c", "4d", "5", "6", "7", "8", "9",
+]
+estimate = "5 to 8 weeks after R2, partially overlapping"
+status = "Phase 7 partial, Phase 9 not started"
+
+# ---------------------------------------------------------------------------------------
+# Phases
+# ---------------------------------------------------------------------------------------
+
+[phases."0"]
+name = "Foundations"
+track = 1
+shipped = "yes"
+usable = "yes"
+summary = "Schema, scaffold, CI and security baseline."
+validated = "2026-08-01"
+# Confirmed on code: CI and the security workflows run on real push/PR/merge_group/schedule
+# triggers, not workflow_dispatch only, and ci.yml's ci-gate job fails the workflow on any
+# non-success. Exactly one workflow is dispatch-only (supabase-production.yml), which is a
+# deliberate production-deploy gate rather than a disarmed check.
+gaps = [
+  "Not a defect, a limit on what this repository can prove: bandit's local config and CI flag are present, but the invocation itself happens inside an out-of-repo org reusable workflow (ByronWilliamsCPA/.github). First-party evidence that bandit actually executes cannot be obtained from this repo alone.",
+]
+
+[phases."1"]
+name = "Schema and reader"
+track = 1
+shipped = "yes"
+usable = "yes"
+summary = "Player, condition evaluator, Layer-1 validation, offline PWA reader."
+validated = "2026-08-01"
+# Confirmed on code: backend and frontend player engines agree, and shared conformance
+# fixtures (schema/conformance/*.json) are wired into both test suites.
+gaps = [
+  "No drift gate on schema/storybook.schema.json. validator/gate.py:200 carries a live #VERIFY asking that schema_export.build_schema() stay in sync with the committed schema, but no CI job, pre-commit hook, nox session or script re-exports and diffs it. The OpenAPI contract job protects the frontend contract; nothing protects the story contract.",
+]
+
+[phases."2"]
+name = "Generation and gate"
+track = 1
+shipped = "yes"
+usable = "yes"
+summary = "Layer-2 walk, orchestrator, RQ worker, policy gate."
+validated = "2026-08-01"
+# Confirmed on code, including the property that matters most: the gate has a genuine FAIL
+# path rather than always passing. validator/gate.py:161-164 computes blocked, and
+# tests/unit/test_gate.py exercises L1 failure, L2 failure, policy violation and
+# defensive-parse failure all setting it. The RQ worker is a real process entry point
+# (generation/worker_main.py:70) wired as a docker-compose service.
+gaps = []
+
+[phases."2b"]
+name = "Live providers and yield"
+track = 1
+shipped = "yes"
+usable = "yes"
+summary = "OpenRouter and Ollama adapters. 70 percent live yield (14 of 20) cleared the 60 percent bar."
+validated = "2026-08-01"
+# The yield numbers are real data, not prose: docs/planning/yield-results/phase-2b-2026-06-22.json
+# holds total=20, passed=14, tier_split.tier2={total:7,passed:3}, produced by the unit-tested
+# harness at scripts/yield_harness.py. The summary above is nonetheless narrower than it reads,
+# see the first gap.
+gaps = [
+  "The 70 percent figure measures the OpenRouter primary leg in isolation (--no-fallback), not the production FallbackProvider cascade, and Ollama's own yield was never measured. The run is from 2026-06-22 and no CI job re-runs it, so the number is a point-in-time single-leg measurement rather than a standing property.",
+  "Tier-2 yield is weak at 3 of 7, a standing quality risk rather than a phase blocker.",
+  "generation_provider defaults to \"mock\" (core/config.py:388-390) and no startup validator rejects it outside local, unlike the sibling _reject_dev_database_url_outside_local and _require_oidc_config_outside_local in the same class. A deployed tier misconfigured to mock would serve canned stories and raise no error. Self-documented at core/config.py:402-416 with the exact fix; the DB allowlist already excludes mock, so admin selection is blocked and only env misconfiguration is uncovered.",
+]
+
+[phases."3"]
+name = "Safety and review"
+track = 1
+shipped = "yes"
+usable = "yes"
+summary = "Moderation pipeline, publish state machine, approval and send-back, review-surface API."
+validated = "2026-08-01"
+# The core safety property holds under inspection: publishing/state_machine.py's
+# LEGAL_TRANSITIONS admits exactly one hop into PUBLISHED, via (IN_REVIEW, APPROVE), and the
+# moderation pipeline only ever calls submit or auto_reject, never approve. The read gate in
+# api/library.py requires approved_by IS NOT NULL AND a StorybookAssignment row on both the
+# list and the version-fetch path. Two boot-time validators fail startup outside local if a
+# real reviewer or Stage-0 classifier is missing.
+#
+# This phase previously claimed gaps = []. That was wrong.
+gaps = [
+  "The send-back reason is never persisted. publishing/service.py:501-510 logs it and stops; events/writer.py:36 sets EventType.SENT_BACK to an empty payload allowlist (correctly, under the PII-free payload contract, since a free-text reason can name a child), and no send_back_reason column exists in db/models.py or any migration. The code names its own deferral: \"the reason is logged (not persisted) in slice 1; slice 2 stores it on the moderation report\". Slice 2 was never built, so a guardian's stated reason is gone from the product by the next page load.",
+  "ACCEPTED BY DECISION, not a defect: a dual-role guardian+admin can approve, publish and send back their own family's story with no second reviewer. This four-eyes collapse was ratified in the persona expectation audit for a guardian acting on their own family, and is exercised deliberately by tests/integration/test_pipeline_event_instrumentation.py::test_dual_role_same_family_*. Recorded here so future audits stop rediscovering it as a finding.",
+]
+
+[phases."4a"]
+name = "Library and profiles"
+track = 1
+shipped = "yes"
+usable = "yes"
+summary = "App shell, auth, profiles, library, guardian console, intake, assignment. This is the R1-alpha line."
+validated = "2026-08-01"
+# Confirmed on code and the strongest result in the sweep: every named deliverable has both a
+# registered route and a reachable UI entry point, guardian and admin subtrees are
+# capability-gated and wrapped by AdultGate, the kid tree is gated by device grant, and the
+# assignment read gate is enforced on both library read paths. Avatars are preset-only with no
+# child-photo upload path, which is an explicit privacy non-goal rather than a missing feature.
+gaps = []
+
+[phases."4b"]
+name = "Editor and engagement"
+track = 1
+shipped = "yes"
+usable = "partial"
+summary = "Node editor, endings tracker, read-aloud, guardian content controls, per-child permission envelopes, kid feedback flag. Shipped 2026-07-17 in PR #270."
+validated = "2026-08-01"
+# Both gaps re-checked against code and both are genuinely still open, which is worth stating
+# because most of the other phases' gap lists were not. All six deliverables were located;
+# read-aloud in particular is real (Web Speech API in frontend/src/reader/useReadAloud.ts),
+# not a UI affordance, and is gated by the per-profile tts_enabled flag.
+gaps = [
+  "Bookmarks were never built at all. Confirmed: the only bookmark hits in source, tests and migrations are incidental comments about BROWSER bookmarks in deep-link handling.",
+  "Guardian storage and download visibility is missing; revoke exists (api/device_grants.py:243-291), download visibility does not.",
+]
+
+[phases."4c"]
+name = "Family loops"
+track = 1
+shipped = "yes"
+usable = "partial"
+summary = "Notification feed, guardian engagement visibility, kid-facing generation status, budget consent. Push channel closed 2026-07-29 via authenticated SSE."
+validated = "2026-08-01"
+# The SSE endpoint (api/notifications.py:351-419) resolves the principal via require_principal
+# and applies the guardian role check before streaming any byte, so the push channel is genuinely
+# authenticated. Budget consent is server-enforced, not a UI checkbox:
+# story_requests/service.py:251 enforce_family_quota returns a 409.
+gaps = [
+  "No server-scheduled digest job, which is why capability S9 stays partial. Narrower than it reads: pg_cron is already deployed and running six scheduled jobs across three migrations (all retention and purge), so the scheduling substrate exists and only the digest job itself was never written.",
+]
+# CLOSED since this phase's 2026-08-01 validation, retained here so the closure is auditable:
+#   - "Kid-facing 'it's on your shelf' indicator is a client-side title-substring guess" is
+#     CLOSED. resulting_storybook_id (db/models.py:1601) now links a request to the storybook
+#     it produced, added and backfilled by supabase/migrations/20260801000000_* and
+#     20260801060000_*, projected by api/story_requests.py:329-331, and landed in commit
+#     36b32bca (PR #532), an ancestor of this branch. frontend/src/library/RequestStory.tsx:26-42
+#     documents isPublishedToShelf(), which now requires the backend field AND profile-library
+#     membership and explicitly says it "replaces the retired isLikelyPublished substring-match
+#     guess".
+
+[phases."4d"]
+name = "Connections"
+track = 1
+shipped = "yes"
+usable = "partial"
+summary = "Dual-guardian consent flow, kid-facing recommendation chips. Shipped 2026-07-17 in PR #270."
+validated = "2026-08-01"
+# The roadmap used to contradict itself here: the phase table said "Substantially delivered"
+# while the milestone table said "Delivered", and this manifest followed the phase table
+# because it was the more conservative guess. It is no longer a guess. Code validation on
+# 2026-08-01 confirms yes/partial, and the milestone table has been corrected to match.
+#
+# Dual consent is real and enforced more thoroughly than the summary claimed: two independent
+# predicates, api/recommendations.py:203 _is_dual_consented (applied in Python at
+# recommendations.py:224-253 specifically so single-side consent is excluded) and a second
+# gate on the personalization ring-2 read path at api/personalization.py:1180-1262. Connection
+# deletion tombstones attached ring-2 disclosure consents so revoked evidence cannot
+# misreport as active. What holds this phase at partial is test coverage, not function.
+gaps = [
+  "The erasure cascade is asserted but untested. db/models.py:786-789 tags FamilyConnection with #CRITICAL data-integrity CASCADE on both sides and points #VERIFY at tests/integration/test_deletion_drill.py, but that file creates a FamilyConnection only inside an EXPORT test (:465) and its family-deletion test (:273) creates none; the module docstring says so at :63. The migration is correct; nothing proves the cascade fires. One test closes this.",
+  "No integration test drives the ring-2 dual-consent logic over the real HTTP and DB stack. The 11 consent tests and 17 recommendation tests are fake-session unit tests; test_authz_matrix.py hits the recommendations route over HTTP but only for role-gate shape. No e2e test touches connections or recommendations at all.",
+]
+
+[phases."5"]
+name = "Hardening"
+track = 1
+shipped = "partial"
+usable = "partial"
+summary = "Redis-backed rate limiter, ADR-007 purge job, offline-copy revocation, operator runbook, and a first cut of re-screen are merged."
+validated = "2026-08-01"
+# This phase's gap list was the most wrong in the manifest. Of six gaps, two were already
+# closed in code, one was half closed, and one described a condition that does not hold. Two
+# were genuinely open. The H1 case is the sharpest illustration of why doc-derived status is
+# not good enough: the manifest listed an open CHILD-SAFETY gap whose fix is in the code,
+# tagged with that gap's own identifier.
+gaps = [
+  "Performance pass not done. Confirmed still open: no locust, k6, artillery or other load harness exists, and the one perf test (tests/perf/test_evaluator_perf.py:12-14) says in its own docstring that the real load test is out of scope.",
+  "Sentry backups and restore drill not done. Confirmed still open: Sentry error tracking is wired, but no database backup or restore-drill artifact exists in scripts/ or .github/workflows/.",
+  "Safety gap H2 is HALF closed, not open. The mandatory human-approval gate on covers is built and wired (covers/service.py:307-378 approve_cover, surfaced in frontend/src/admin/ReviewDetailPage.tsx), so no cover reaches a child unreviewed. What remains absent is the AUTOMATED image-safety classifier, explicitly marked out of scope at covers/service.py:206-217. Only that half is open.",
+  "RESIDUAL of the former H1 gap, restated accurately: the band-ceiling check is deliberately fail-open on unparseable data on either side. A legacy blob with no metadata.age_band, or a profile whose stored age_band string does not parse, has no ceiling to compare against and passes. That is a documented, reasoned choice (api/assignments.py:285-296), and it is the live residual; the bypass the old gap text described no longer exists.",
+  "Offline revocation has an accepted mid-read window: a book pulled while a child is actively reading it is not revoked until the next library fetch or reload. Documented at frontend/src/offline/revocation.ts:16-25, previously in code only and not in this list.",
+]
+# CLOSED on 2026-08-01 validation, retained here so the closure is auditable rather than
+# silently vanishing from the list:
+#   - "Admin audit view not built" is CLOSED. frontend/src/admin/AuditPage.tsx exists and is
+#     routed at /admin/audit (frontend/src/router.tsx:277-280) against api/audit.py.
+#   - "Safety gap H1: band-ceiling bypass on assign" is CLOSED. api/assignments.py:285-312
+#     raises BusinessLogicError when book_rank > profile_rank, carries a #CRITICAL security
+#     marker naming H1, is backed by the regression test
+#     test_assign_storybook_rejects_band_above_profile_band, and library.py's read paths carry
+#     the same check as defense in depth.
+#   - "Nightly and staging test ladder not green" was partly a false premise: both ladders have
+#     real schedule: cron triggers (e2e-real-nightly.yml, e2e-staging.yml), as does a third
+#     production ladder (e2e-prod.yml). Whether recent runs are green is CI run history, which
+#     is not a property of the code and does not belong in this file.
+
+[phases."6"]
+name = "Public auth and multi-tenancy"
+track = 2
+shipped = "partial"
+usable = "partial"
+summary = "JWT validation, JIT guardian onboarding, child-session tokens, profile picker and PIN, parental gate all built and tested."
+validated = "2026-08-01"
+# The auth primitives hold up: JWT signatures are verified against live JWKS
+# (api/deps.py:331-387), child-session and device-grant tokens use real HS256 verification with
+# pinned issuer and audience, and the PIN is PBKDF2-HMAC-SHA256 at 600k iterations, salted,
+# with constant-time verify and fail-closed behavior (core/pin.py:38-109), which is also
+# FIPS-approved.
+gaps = [
+  "Native iOS auth path (remainder of P6-05) is unstarted; web OAuth is done. Confirmed: no ios/ directory, no Capacitor dependency, no Podfile anywhere in the repo.",
+  "P6-06 is understated. All three token families (guardian, device grant, child session) sit in plaintext localStorage with no storage abstraction, and the browser-served frontend carries NO Content-Security-Policy at all: frontend/nginx.conf sets four other security headers and no CSP, while the only CSP in the repo (middleware/security.py:113-124) lands on backend JSON responses, which are never rendered as documents and therefore cannot be protected by one.",
+  "Postgres RLS is a documented no-op for the running backend, and this list never said so. The backend connects as the table-owning role, which Postgres unconditionally exempts from every policy; the migration says as much itself (20260724120000_scoped_rls_tier1_family_scoping.sql:35-41, \"NO-OP ... until the ADR-021 least-privilege cutover\"). Cross-tenant isolation therefore rests entirely on Python-layer checks with no database backstop. Even after the cutover, reading_state, completion and rating tables would not be family-scoped.",
+  "Cross-tenant IDOR coverage (P6-10) remains only partly re-verified. A 2026-08-01 sweep traced 35 authorize_profile/authorize_family call sites and found no concrete IDOR, but the API surface is 100 routes and the sweep did not cover all of them.",
+]
+
+[phases."7"]
+name = "Kids compliance and account lifecycle"
+track = 2
+shipped = "partial"
+usable = "no"
+summary = "PII-egress hardening and the telemetry audit are done. Account deletion is built on the backend but not reachable by a guardian, and is incomplete in three respects. The compliance checklist that gates submission is not done."
+validated = "2026-08-01"
+# PII-egress hardening and the telemetry audit survive inspection well. generation/pii.py:229
+# assert_prompt_pii_safe is a single chokepoint called from generation, story requests, node
+# edit, the worker, moderation and covers; personalization values, the highest-risk field,
+# never reach a prompt at all. Telemetry is Sentry only, with no product analytics SDK,
+# send_default_pii hardcoded off, Replay and Tracing never wired rather than merely sampled to
+# zero, and a scrub hook stripping user, request and breadcrumb data.
+#
+# Account deletion is where the previous summary was wrong. The endpoint and its cascade are
+# real and tested, but "done" was not accurate.
+gaps = [
+  "Whole-family account deletion has NO UI entry point. DELETE /v1/me/family exists (api/me.py:359), is tested, and is in the generated client, but nothing under frontend/src outside src/client/ calls it, so a guardian cannot delete their account through the product. frontend/src/guardian/PrivacyPage.tsx:93-99 admits this in its own comments. For a kids product this is a compliance-relevant hole, not a polish item.",
+  "Cover images in R2/S3 object storage are never deleted on any erasure path. covers/storage.py:189 delete_cover exists but its only real caller is cover REGENERATION (covers/service.py:164); no deletion path invokes it and no orphan-collection job exists. A deleted family's cover art survives in object storage indefinitely.",
+  "The Supabase Auth identity is never deleted. Account erasure removes application rows via the database cascade but no Supabase Admin API call exists anywhere in the backend and no migration touches auth.users, so the login identity and email outlive the account.",
+  "P7-03 privacy policy not published and not linked in-app, and worse than previously stated: the legal Privacy Notice is presented in the COPPA parental-consent flow as something the guardian electronically agrees to, with no clickable link to it anywhere (frontend/src/auth/GuardianConsentPage.tsx:103,131). The separate guardian trust page (PrivacyPage.tsx) exists and is linked in nav, but it is not the legal notice.",
+  "P7-08 compliance checklist has a template but no owner sign-off. This gates R3 submission. NOT CODE-VERIFIABLE, organizational.",
+  "P7-01 Apple Developer Program enrollment not started; EU DSA trader status undecided. NOT CODE-VERIFIABLE, organizational.",
+  "P7-12 processor agreements: a checklist exists, no DPAs are signed. NOT CODE-VERIFIABLE, organizational.",
+  "P7-07 age-rating questionnaire prep not started. NOT CODE-VERIFIABLE, organizational.",
+]
+
+[phases."8"]
+name = "iOS shell and subscriptions"
+track = 2
+shipped = "no"
+usable = "no"
+summary = "Capacitor shell, Keychain storage, entitlements and credit ledger, in-app purchase, paywall, sandbox matrix."
+validated = "2026-08-01"
+gaps = [
+  "Zero Capacitor or entitlement code exists in the repo. Re-confirmed 2026-08-01 by exhaustive search, and this absence claim survived a deliberate falsification attempt: two capacitor hits repo-wide, both forward-looking comments in Playwright config, no ios/ directory, no Podfile, no xcodeproj, no StoreKit or purchase code, and no credit or subscription column in any migration.",
+]
+
+[phases."9"]
+name = "Public catalog, hosted infra, launch"
+track = 2
+shipped = "no"
+usable = "no"
+summary = "Published-catalog state and curated starter library are genuinely unstarted. Hosted infrastructure and observability are partly built already; the phase name bundles them with work that has not begun."
+validated = "2026-08-01"
+# shipped/usable stay no/no because the phase's defining deliverable, a public catalog, does
+# not exist. But the previous summary implied nothing in this phase existed, and that was
+# wrong: production and staging deploy pipelines, a scheduled production E2E ladder, and
+# Sentry are all live. Recorded so the phase is not over-estimated as remaining work.
+gaps = [
+  "No catalog_published, published_catalog or is_public state exists anywhere in src/, frontend/src/ or supabase/migrations/. Re-confirmed 2026-08-01, zero hits. Ring 3 (the anonymized global aggregate) is explicitly not built, per api/recommendations.py:9.",
+  "No curated starter library exists.",
+  "No infrastructure cost cap exists. Note the ambiguity this phase name creates: a per-family monthly STORY quota does exist and is enforced (story_requests/service.py:251 enforce_family_quota), but that is a guardian-facing spend-consent control, not an infra cost cap. The two are bundled under one phrase.",
+  "No Prometheus, Grafana, OpenTelemetry or /metrics endpoint. Sentry error tracking is wired and tested, so observability is partial rather than absent.",
+]
+# ALREADY BUILT, contrary to the previous summary: production and staging Supabase migration
+# deploy pipelines (supabase-production.yml with a gated environment and required reviewer,
+# supabase-staging.yml), homelab image-build dispatch on every main push
+# (trigger-image-build.yml), a scheduled daily production E2E suite against a live target
+# (e2e-prod.yml), and Sentry error tracking (core/observability.py init_sentry).
