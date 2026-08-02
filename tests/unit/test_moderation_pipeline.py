@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import copy
 import json
+import math
 import uuid
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, cast
@@ -63,17 +64,27 @@ _BLOB: dict[str, object] = dict(_CANNED_STORY)
 
 _NODE_COUNT = len(cast("list[object]", _CANNED_STORY["nodes"]))
 
-# Review calls per moderation pass: safety per node (review_batch_size=1, the
-# Settings default, so every chunk is one node), coherence + engagement once
-# each. A repair run makes two passes; pad the budget so an exhausted
-# MockProvider (which raises loudly) signals a real pipeline bug, not a
-# miscounted fixture.
+# Review calls per moderation pass: safety per node (review_batch_size=1,
+# pinned by _settings() below, so every chunk is one node), coherence +
+# engagement once each. A repair run makes two passes; pad the budget so an
+# exhausted MockProvider (which raises loudly) signals a real pipeline bug,
+# not a miscounted fixture.
 _REVIEW_BUDGET = 4 * (_NODE_COUNT + 2)
 
 
 def _settings() -> Settings:
-    """Return a minimal Settings with review_provider='mock'."""
-    return Settings(review_provider="mock")
+    """Return a minimal Settings with review_provider='mock'.
+
+    Pins ``review_batch_size=1``: the fixtures built by ``_review_provider``
+    answer Stage-1 prompts with a single verdict OBJECT, which only the
+    single-node parser accepts (see the coupling notes on
+    ``_review_provider``). The Settings default rose to 8 after the Gate 3
+    recall comparison (2026-08-01); the size-1 path stays a supported
+    configuration and these legacy tests keep exercising it, while
+    default-batching coverage lives in the ``review_batch_size wiring``
+    tests at the bottom of this file.
+    """
+    return Settings(review_provider="mock", review_batch_size=1)
 
 
 def _pii() -> PiiContext:
@@ -145,8 +156,9 @@ def _verdict_review_provider(*, safety_flags_first_pass: bool = False) -> MockPr
             Stage 1 safety instead, since it is the only stage left capable
             of a per-node FLAG.
 
-    Coupled to ``review_batch_size == 1`` (the default) in two ways, neither
-    of which announces itself if the default changes:
+    Coupled to ``review_batch_size == 1`` (pinned by ``_settings()``; the
+    Settings default is 8 since Gate 3) in two ways, neither of which
+    announces itself if the pin is removed:
 
     1. It answers with a single verdict OBJECT. The batched Stage-1 prompt
        starts with the same ``"Age band:"`` prefix this dispatches on, but
@@ -157,10 +169,11 @@ def _verdict_review_provider(*, safety_flags_first_pass: bool = False) -> MockPr
        how it tells the first moderation pass from the post-repair one. At a
        batch size of B that boundary is ``ceil(_NODE_COUNT / B)``.
 
-    Symptom if the default is ever raised: these tests fail with unexplained
-    fail-safe FLAGs rather than with anything naming the batch size. The fix
-    is to return an array keyed by the node ids in the prompt and to derive
-    the pass boundary from the batch size, not to relax the assertions.
+    Symptom if the ``_settings()`` pin is ever dropped: these tests fail
+    with unexplained fail-safe FLAGs rather than with anything naming the
+    batch size. The fix is to return an array keyed by the node ids in the
+    prompt and to derive the pass boundary from the batch size (see
+    ``_batched_verdict_review_provider``), not to relax the assertions.
 
     Returns:
         A :class:`MockProvider` seeded with the dispatching responder.
@@ -525,6 +538,9 @@ async def test_mock_review_escape_hatch_stamps_report_as_not_independent(
         review_provider="mock",
         environment="staging",
         allow_mock_review=True,
+        # Same coupling as _settings(): the single-object verdict responders
+        # in this file only speak the size-1 parser's format.
+        review_batch_size=1,
         database_url="postgresql+asyncpg://user:pw@staging-db:5432/cyo_adventure",
         oidc_issuer="https://issuer.example.com",
         oidc_jwks_url="https://issuer.example.com/jwks.json",
@@ -629,6 +645,9 @@ async def test_mock_review_stamp_survives_adopted_repair(
         review_provider="mock",
         environment="staging",
         allow_mock_review=True,
+        # Same coupling as _settings(): the single-object verdict responders
+        # in this file only speak the size-1 parser's format.
+        review_batch_size=1,
         database_url="postgresql+asyncpg://user:pw@staging-db:5432/cyo_adventure",
         oidc_issuer="https://issuer.example.com",
         oidc_jwks_url="https://issuer.example.com/jwks.json",
@@ -2415,17 +2434,24 @@ async def test_review_batch_size_from_settings_drives_chunked_safety_calls(
 
 
 @pytest.mark.unit
-async def test_review_batch_size_default_is_one_node_per_call(
+async def test_review_batch_size_default_batches_stage1_calls(
     mock_session: AsyncMock,
     monkeypatch: pytest.MonkeyPatch,
     review_seam: Callable[[MockProvider], dict[str, object]],
 ) -> None:
-    """The Settings default (review_batch_size=1) issues one Stage-1 call per
-    node, matching pre-chunking behavior exactly (B2.1/B2.2 parity)."""
+    """The Settings DEFAULT (review_batch_size=8, ratified by the Gate 3
+    recall comparison on 2026-08-01) chunks Stage-1 into ceil(N/8) calls
+    through the pipeline's call site, and the story still reviews clean.
+
+    Unlike the other pipeline tests, this deliberately builds ``Settings``
+    without the ``_settings()`` batch-size pin so it exercises whatever the
+    shipped default is; if the default changes, the expected call count
+    below moves with it."""
     story, version = _story(), _version()
     _load(mock_session, story, version)
     provider = _batched_verdict_review_provider()
     review_seam(provider)
+    settings = Settings(review_provider="mock")
     submit = AsyncMock()
     monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
 
@@ -2433,11 +2459,12 @@ async def test_review_batch_size_default_is_one_node_per_call(
         session=mock_session,
         story_id="s1",
         version=1,
-        settings=_settings(),
+        settings=settings,
         generation_provider=MockProvider(responses=[]),
         pii=_pii(),
     )
 
     submit.assert_awaited_once()
     safety_calls = [c for c in provider.calls if c.startswith("Age band:")]
-    assert len(safety_calls) == _NODE_COUNT
+    assert settings.review_batch_size == 8
+    assert len(safety_calls) == math.ceil(_NODE_COUNT / settings.review_batch_size)

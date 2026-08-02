@@ -96,7 +96,17 @@ with three changes:
    #ASSUME: external-resources: batched verdicts may be less accurate than
    single-node calls on long nodes. #VERIFY: run both modes over the
    adversarial corpus (tests/llm_eval) and compare recall before enabling
-   batching by default.
+   batching by default. **Resolved 2026-08-01 (Gate 3): the owner ran
+   `scripts/adversarial_harness.py --batch-size 1 --batch-size 4
+   --batch-size 8` twice against the openrouter reviewer; both runs were
+   identical, with zero item-level recall regressions vs size 1 on every
+   scored class and zero structural-collapse (parse-failure) findings
+   (artifact: `batch-sweep-results-2026-08-01.json` in this directory).
+   `review_batch_size` now defaults to 8. The E-class misses (E2/E3
+   reviewer-injection) exist at the size-1 baseline and are unchanged by
+   batching; they are tracked as a separate reviewer-hardening issue, not
+   a batching regression. Re-run the sweep after any reviewer-model or
+   batch-prompt change.**
 3. **Merge stage (deterministic, post-review).** After all stages run, a new
    `moderation/synthesis.py` groups content findings by every field the
    merged finding takes from a single survivor: `(category, concern, source,
