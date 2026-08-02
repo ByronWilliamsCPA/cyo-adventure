@@ -11,8 +11,10 @@ tags:
 
 CYO Adventure deploys to a self-hosted homelab using Docker containers orchestrated
 by Dockge (ADR-004: homelab-first deployment). External access is secured by Pangolin
-zero-trust reverse proxy (Tailscale or Cloudflare Tunnel). Supabase Auth provides OIDC
-identity for the guardian and admin roles (ADR-009; children authenticate via
+zero-trust reverse proxy: public traffic reaches Pangolin through Cloudflare (proxied
+DNS) over Newt, a WireGuard-based reverse tunnel, while LAN clients bypass Cloudflare
+entirely via split-horizon DNS and reach Pangolin directly over mTLS. Supabase Auth
+provides OIDC identity for the guardian and admin roles (ADR-009; children authenticate via
 backend-minted scoped sessions, not Supabase), and the operational database is
 Supabase Postgres, reached through the session pooler (ADR-009 decision 2; R1 Task 1.7,
 cut over 2026-07-05).
@@ -45,7 +47,10 @@ session mode). See the Network Architecture section below.
 
 All family device traffic enters through **Pangolin**, which terminates TLS and
 forwards plain HTTP to the backend container on port 8000. Pangolin runs as its own
-container in the stack and handles the zero-trust tunnel to the homelab.
+container in the stack. Public traffic reaches it via Cloudflare's proxied DNS over
+Newt, a WireGuard-based reverse tunnel (there is no `cloudflared`/Cloudflare Tunnel
+process in this stack); LAN clients reach it directly over split-horizon DNS (an
+Unbound override) and mTLS, bypassing Cloudflare entirely.
 
 The R1 internal-web deploy (`services/cyo-adventure/` in the separate
 `ByronWilliamsCPA/homelab-infra` repo) is a distinct rung from this ADR-004 topology:

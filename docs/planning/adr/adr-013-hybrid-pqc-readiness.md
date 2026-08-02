@@ -20,6 +20,19 @@ tags:
 > **Relates to**: [ADR-009](./adr-009-supabase-platform.md) (Supabase auth and JWKS verification),
 > [ADR-004](./adr-004-homelab-first-deployment.md) (deployment topology and the external TLS layer)
 
+> **Correction (2026-08-02):** the `cloudflared`/"Cloudflare Tunnel" references throughout this
+> ADR (TL;DR, Constraints, Decision item 2, Implementation) describe infrastructure the
+> deployment no longer uses; a security review flagged this drift. Public traffic now reaches
+> the homelab via Cloudflare (proxied DNS) into Pangolin over Newt, a WireGuard-based reverse
+> tunnel; there is no `cloudflared` process in the deployed stack. LAN clients bypass Cloudflare
+> entirely through split-horizon DNS (an Unbound override routing straight to the Pangolin host)
+> plus mTLS. This does not change the decision itself: the target hybrid TLS group
+> (`X25519MLKEM768`) and its ownership on the Pangolin/nginx leg are unaffected; only the "keep
+> `cloudflared` current" tracking item is void, since there is no `cloudflared` to keep current.
+> The Decision and Implementation sections below are left as originally written rather than
+> silently rewritten, per this repo's practice for correcting ADRs; do not action the
+> `cloudflared` items in them.
+
 ## TL;DR
 
 Adopt a key-exchange-first hybrid post-quantum posture. Hybrid X25519+ML-KEM-768 key agreement
