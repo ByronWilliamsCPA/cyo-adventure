@@ -210,8 +210,13 @@ First tranche of work. Each invalidates multiple rows at once.
   `Dependency & Standards Validation` is a required status check (ruleset `cyo-require-ci-gate`)
   and fans in from the lychee link check, which scans the **whole tree**, not the PR's diff. So an
   external site that is slow, or that rejects a HEAD request, turns a required gate red on a PR
-  that did not touch the file. Observed twice within ten minutes on PR #562, each time on a
-  different URL in someone else's document. Compounding it, `pr-validation.yml` has no `push`
+  that did not touch the file. Observed on **three consecutive runs of PR #562 within twenty
+  minutes, with three disjoint failure sets and no overlap with the PR's diff**: a 520 on
+  `readingrockets.org`, then a 415 on `hiwavemakers.com`, then connection failures on
+  `eis.ucsc.edu` (three references) and `securityscorecards.dev`. Every one of those URLs returned
+  200 in under 1.2 seconds when probed directly. The failing set differs every run because the scan
+  covers several hundred external URLs, so per-URL remediation cannot converge. Compounding it,
+  `pr-validation.yml` has no `push`
   trigger, so main is never link-checked and a bad URL is only ever discovered by, and attributed
   to, the next unrelated PR. `--accept` omits 415, which servers return when they refuse the HEAD
   method rather than when a link is broken. Two effects, both bad: real link rot is indistinguishable
