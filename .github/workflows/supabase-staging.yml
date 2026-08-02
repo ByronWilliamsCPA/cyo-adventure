@@ -69,19 +69,25 @@ jobs:
       # Staging is the environment that hits this, and structurally so: it
       # auto-deploys on every merge touching migrations, so it can apply a
       # LATER migration before an earlier-numbered one is merged. Production
-      # deploys by manual dispatch in ordered batches and does not see the
-      # inversion. That is why staging can be red while production is green on
-      # the identical migration set.
+      # deploys by manual dispatch in ordered batches, so it usually sees both
+      # files in one run and applies them in order. That is a property of the
+      # dispatch cadence, not a guarantee. It is why staging can be red while
+      # production is green on the identical migration set.
       #
       # #CRITICAL: data integrity: --include-all is NOT unconditionally safe. A
       # migration that replaces a CHECK constraint with an ABSOLUTE cumulative
-      # list (see 20260729050000's #CRITICAL header) applied out of order will
-      # drop values that a later, already-applied migration added, and each
-      # file's idempotency guard only tests for its OWN new value. Before
-      # dispatching with include_all, confirm every listed file is either a
-      # no-op against the current remote schema or genuinely order-independent.
-      # #VERIFY: read the files named in the "Rerun the command with
-      # --include-all" output; do not dispatch on the assumption they are safe.
+      # list (see 20260729050000's #CRITICAL header) can drop values that are
+      # already in the remote constraint, because each file's idempotency guard
+      # only tests for its OWN new value. The danger condition is an
+      # absolute-list migration that runs AFTER another absolute-list migration
+      # for the same constraint is already in remote history, without carrying
+      # that other file's values.
+      # #VERIFY: before dispatching with include_all, read the REMOTE state
+      # (`supabase migration list` plus a pg_get_constraintdef query), then walk
+      # the three criteria in the "Repairing an out-of-order divergence" section
+      # of docs/guides/supabase-environments.md. Do not infer the applied state
+      # from which workflow runs are green, and do not dispatch on the
+      # assumption the listed files are safe.
       - name: Push migrations
         env:
           # Via env, not inlined into the command: a workflow_dispatch input is
