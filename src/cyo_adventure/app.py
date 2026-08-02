@@ -8,7 +8,8 @@ generated frontend client.
 
 from __future__ import annotations
 
-from typing import Any, cast
+from contextlib import asynccontextmanager
+from typing import TYPE_CHECKING, Any, cast
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError, ResponseValidationError
@@ -59,7 +60,10 @@ from cyo_adventure.core.exceptions import (
 )
 from cyo_adventure.core.observability import init_sentry
 from cyo_adventure.middleware import CorrelationMiddleware, add_security_middleware
-from cyo_adventure.utils.logging import get_logger
+from cyo_adventure.utils.logging import get_logger, setup_logging
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator
 
 logger = get_logger(__name__)
 
@@ -422,6 +426,46 @@ class _DocumentedApp(FastAPI):
         return self.openapi_schema
 
 
+@asynccontextmanager
+async def _lifespan(_app: FastAPI) -> AsyncGenerator[None]:
+    """Configure application-wide logging for the lifetime of the process.
+
+    # #CRITICAL: security: nothing else calls ``setup_logging`` on the serving
+    # path. ``Dockerfile`` starts bare uvicorn, which configures structlog not
+    # at all, so without this hook a deployed process ran on structlog's
+    # defaults: ``settings.log_level`` and ``settings.json_logs`` were dead
+    # config, and, most importantly, ``correlation_context_processor`` was
+    # absent, so no production log line carried a correlation id (CLAUDE.md
+    # architectural fact #3) and the censoring processor that redacts
+    # accidentally-logged credentials was never installed either.
+    # #VERIFY: tests/unit/test_logging_startup.py asserts structlog is
+    # configured, carries correlation, and reads both settings after startup,
+    # each from a deliberately reset structlog so the assertion cannot pass
+    # vacuously on the autouse conftest fixture.
+    #
+    # #ASSUME: timing: this runs in the lifespan rather than in ``create_app``
+    # because ``app = create_app()`` executes at import time; configuring
+    # process-wide logging as an import side effect would reconfigure logging
+    # for anything that merely imports this module (scripts, Alembic-style
+    # tooling, the test suite).
+    # #VERIFY: tests/unit/test_logging_startup.py::
+    # TestAppLifespanIsNotAnImportSideEffect asserts create_app() alone leaves
+    # structlog unconfigured.
+
+    Args:
+        _app: The application being started (unused).
+
+    Yields:
+        None: Once, between startup and shutdown.
+    """
+    setup_logging(
+        level=settings.log_level,
+        json_logs=settings.json_logs,
+        include_timestamp=settings.include_timestamp,
+    )
+    yield
+
+
 def create_app() -> FastAPI:
     """Build and configure the FastAPI application.
 
@@ -430,6 +474,7 @@ def create_app() -> FastAPI:
     """
     init_sentry(settings)
     app = _DocumentedApp(
+        lifespan=_lifespan,
         title="CYO Adventure",
         # The installed distribution version tracks pyproject.toml (bumped by
         # the release workflow), so the served schema and /health report the
