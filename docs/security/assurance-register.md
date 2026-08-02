@@ -71,7 +71,7 @@ contracting.
 
 **T5 business model.** No sale or sharing of personal data, no targeted advertising, no profiling
 with legal or similarly significant effect. Two features matter for classification:
-**cross-family recommendation sharing (ADR-017)** is user-initiated dissemination to other users,
+**cross-family recommendation sharing (ADR-016)** is user-initiated dissemination to other users,
 and **app-store distribution (ADR-008)** is planned for R2/R3.
 
 **T6 deployment.** Self-managed homelab hardware behind a third-party edge, plus a BaaS identity
@@ -102,10 +102,10 @@ discovery. This is the same treatment GDPR gets: written down before it binds.
 | **App store accountability acts** (TX SB 2420, UT, LA, AL) | Store distribution at R2/R3. Duties land on the **developer**: age rating, ingest store age and consent signals, re-trigger consent on significant change | O-98 |
 | **App store policies** (Apple Kids, Google Play Families) | Store submission | O-99 |
 | **GDPR / UK GDPR** | First EU or UK child or guardian | O-57 to O-60, O-93, O-34 |
-| **DSA Art. 28** | **Open counsel question**, see below | O-97 |
+| **DSA Art. 28** | Analysed: does not engage, the service is not an Art. 3(i) online platform. Re-open if any O-118 structure changes | O-118 |
 | **EU AI Act** transparency | EU market entry; generated content disclosure | O-74 |
 | **CRA** | Placing the product on the EU market | Deferred |
-| **UK Online Safety Act** | UK users plus a user-to-user classification | **Open counsel question** |
+| **UK Online Safety Act** | UK users. The s.3(1) user-to-user test is broader than the DSA's and is **not** clearly failed here | **Open counsel question**, see below |
 | **CAN-SPAM / TCPA** | Any marketing email or SMS beyond transactional guardian notifications | Deferred |
 | **CIPA / session replay** | Adding third-party analytics, replay, or advertising tags | Deferred |
 | **BIPA / CUBI** | Any face, voice, or fingerprint processing. Note: a child avatar photo is not biometric data unless a face template is derived | Deferred |
@@ -121,15 +121,51 @@ DFARS (no government contract), EAR/ITAR/OFAC (no export-controlled technology; 
 still worth considering at public launch), NIS2, DORA, DMA, Data Act, eIDAS 2 (no trigger).
 Each carries the obvious reassessment trigger: the fact that made it N/A changing.
 
-### Two open counsel questions
+### DSA Art. 28 and UK OSA classification
 
-1. **Does ADR-017 cross-family recommendation sharing make this an "online platform" under DSA
-   Art. 28, or a user-to-user service under the UK OSA?** Three external research runs concluded
-   these probably do not bind, reasoning that the product delivers operator-gated content within
-   one family. **That premise is incomplete**: ADR-017 specifies sharing across a three-ring social
-   boundary, which is user-initiated dissemination to other users. Resolve before R2, because the
-   answer determines whether age-assurance machinery is owed at all.
-2. **Is an EU representative required under Art. 27** when EU users are first admitted.
+Analysed 2026-08-02 against primary text. Three external research runs concluded neither binds, but
+each reasoned from an incomplete premise (they were not told ADR-016 exists). The conclusion holds;
+the reasoning below replaces theirs.
+
+**DSA: Art. 28 does not engage.** Art. 28 applies to providers of *online platforms*. An online
+platform (Art. 3(i)) requires *dissemination to the public*, defined at Art. 3(k) as "making
+available of information to a potentially unlimited number of persons." Recital 14 supplies the
+test for group-admission cases: information behind registration or group admission is publicly
+disseminated only "where recipients of the service seeking to access the information are
+automatically registered or admitted without a human decision."
+
+Admission here requires three human decisions: an admin creates the connection
+(`POST /admin/family-connections`, `_require_admin`), then each side's guardian separately consents
+(`_require_guardian`, setting `consented_by_sharer_*` and `consented_by_viewer_*`), and `_is_active`
+requires both. Either side revoking deactivates immediately. ADR-016 forecloses a "receive from
+everyone" option, user discovery, and free text. The recipient set is individually named and
+individually approved, so Recital 14's automatic-admission test fails and Art. 3(k) is not
+satisfied. Art. 19 (micro and small enterprises are excluded from all of Section 3, where Art. 28
+sits) is an independent second line that we do not need to rely on. Art. 28(2) is satisfied by
+having no advertising; Art. 28(3) forecloses a mandate to collect more data to detect minors.
+
+**UK OSA is unresolved and is the harder case.** OSA s.3(1) defines a user-to-user service with no
+"dissemination to the public" qualifier and no Recital 14 equivalent, so a recommendation shared
+between two consented guardians is caught on the face of the definition. There is no
+micro-enterprise exemption, and Schedule 1's limited-functionality exemption enumerates comments and
+reviews on provider content plus likes, emoji, and yes/no voting, which does not squarely reach a
+structured recommendation. **Counsel question, narrowly framed**: does a structured, non-free-text
+recommendation exchanged between two mutually consented guardian accounts constitute user-generated
+content encountered by another user, and if so does Schedule 1 para 4 reach it? Owned by O-97.
+Practical hedge: keep the UK out of scope by design via the jurisdiction signal at O-117.
+
+**Structures that carry the DSA conclusion.** Each is currently doing legal work; changing any one
+of them re-opens the classification. Tracked as O-118.
+
+| Structure | Where | Why it matters |
+|---|---|---|
+| Admin-gated connection creation | `api/family_connections.py` `_require_admin` | An auto-accepting invite link is exactly Recital 14's "admitted without a human decision" |
+| Dual guardian consent, both sides | `_is_active` requires both timestamps | One-sided push weakens the closed-group characterisation |
+| No discovery surface | absence of any family or profile search | A directory makes the recipient set potentially unlimited at point of search |
+| No free text between users | whitelisted recommendation fields only | Highest-cost reversal: converts provider content into user content and engages Art. 16, 17, and 20 plus the OSA illegal-content duties at once |
+| Directional and revocable | revoke deactivates immediately | Supports the closed-group reading |
+
+**Still open.** Is an EU representative required under Art. 27 when EU users are first admitted.
 
 ## Existing gate coverage
 
@@ -306,7 +342,7 @@ Two mandatory subsections: vertical (role and capability) and horizontal (cross-
 | ID | Class | Check |
 |----|-------|-------|
 | O-05 | DYNAMIC | A guardian in family A receives 403/404 for every resource ID from family B, enumerated across all resource-bearing routers, including cursors, object keys, job IDs, and nested relationship IDs |
-| O-06 | DYNAMIC | Cross-family recommendation payloads (ADR-017) contain only whitelisted fields, never child identity or reading history |
+| O-06 | DYNAMIC | Cross-family recommendation payloads (ADR-016) contain only whitelisted fields, never child identity or reading history |
 | O-07 | DYNAMIC | A guardian-only token is rejected by every `/admin` route and every moderation-threshold mutation |
 | O-08 | DYNAMIC | Every secondary object reference (storybook version, node, assignment, cover asset) is authorization-checked at the leaf, not inherited from a parent check |
 | O-09 | RUNTIME-CONFIG | Background workers connect with a least-privilege role subject to RLS, not the service key. Blocked on the ADR-021 cutover |
@@ -440,6 +476,9 @@ posture at a trust boundary must be verified from outside that boundary.
 | O-97 | MANUAL | A jurisdiction-trigger matrix maps each child's residence to the regimes it activates, per the spine's T4 rule. Owns the state-comprehensive-privacy and minors'-design-code determinations |
 | O-98 | *deferred, R2* | App-store accountability: designate an age rating, ingest store-provided age and consent signals via the platform API, re-trigger parental consent on significant change (TX SB 2420, UT, LA, AL) |
 | O-99 | *deferred, R2* | Apple Kids Category and Google Play Families pre-submission checklist, reviewed quarterly with captured page dates |
+| O-117 | STATIC + DYNAMIC | A country-of-residence signal is recorded at account creation and is queryable per account. Without it the DSA Art. 2(1) and GDPR Art. 3(2) targeting tests cannot be answered, and a market can be excluded by design rather than by hope. Cheap pre-launch, requires a re-consent campaign afterwards |
+| O-118 | STATIC | The five structures that keep the product outside DSA Art. 3(i) hold: admin-gated connection creation, dual guardian consent, no discovery surface, no free text between users, directional and revocable connections. A change to any one re-opens the classification and must be an attributable decision, not a refactor. **Failure oracle**: a test that creates an active connection without two distinct guardian consents must fail |
+| O-119 | STATIC | The guardian account carries an adulthood attestation signal with a timestamp. Every age regime that can attach at R2 locates its duty on the adult account, not the kid profile; today only kid profiles carry age data. Trivial pre-launch, requires backfill against live accounts afterwards |
 
 ### SP-16 Availability, Resilience, Recovery
 
@@ -529,7 +568,7 @@ source, and why O-108 owns the refresh.
 ### Prompt defects worth recording
 
 Two facts were sanitized out of the research brief, and both produced confidently wrong conclusions:
-the origin is self-managed hardware behind a third-party edge, not fully managed cloud; and ADR-017
+the origin is self-managed hardware behind a third-party edge, not fully managed cloud; and ADR-016
 cross-family recommendation sharing exists, which bears directly on DSA Art. 28 classification.
 Over-sanitizing a brief does not produce a vaguer answer, it produces a confident answer to a
 different question.
