@@ -48,14 +48,27 @@ PERSPECTIVE_ATTRIBUTES: tuple[str, ...] = (
     "INSULT",
 )
 
-# Graded scores below this floor are classifier noise, not signal: both APIs
-# return a nonzero float for every category on every call (observed ceiling on
-# clean children's prose ~6e-4), so without a floor every node emits every
-# category as an advisory finding and the review surface reads as fully
-# flagged. OpenAI's own boolean flag bypasses the floor (Perspective returns
-# no such flag, so its only bypass is the score-based bright-line); advisories
-# never gate (report.has_soft_flag counts FLAG only), so the floor is report
-# hygiene, not a safety relaxation.
+# Graded scores below this floor are dropped from the advisory surface: both
+# APIs return a nonzero float for every category on every call, so without a
+# floor every node emits every category as an advisory finding and the review
+# surface reads as fully flagged. OpenAI's own boolean flag bypasses the floor
+# (Perspective returns no such flag, so its only bypass is the score-based
+# bright-line); advisories never gate (report.has_soft_flag counts FLAG only),
+# so the floor is report hygiene, not a safety relaxation.
+#
+# This rationale originally cited an observed Perspective ceiling of ~6e-4 on
+# clean children's prose. The 2026-08-01 Stage-0 baseline at
+# docs/planning/safety/stage0-baseline-2026-08-01.json refutes that figure: all
+# 120 clean passages carry at least one attribute at or above this floor, and
+# the clean maximum (0.397, SEXUALLY_EXPLICIT) exceeds the adversarial maximum
+# (0.161). Only SEVERE_TOXICITY (0.0153) and IDENTITY_ATTACK (0.0276) stay near
+# ~6e-4. The floor as set therefore does not produce the quiet surface
+# described above; 0.01 is kept here unchanged pending recalibration against
+# that baseline, since moving it is a behavior change needing its own tests.
+# #ASSUME: security: 0.01 no longer matches measured clean-prose scores, so the
+# advisory surface is noisier than the rationale above implies.
+# #VERIFY: recalibrate against the Stage-0 baseline before the 2026-12-31
+# Perspective sunset; advisories never gate, so the gap is surface noise only.
 _ADVISORY_SCORE_FLOOR = 0.01
 
 # Category slug for a "the automated net was down" advisory finding. It never

@@ -326,17 +326,39 @@ are the only durable record of their claims.
    LLM Stage-1 hard gate.
 2. **Run the baseline capture now** (while Perspective answers):
    `PYTHONPATH=. uv run python scripts/capture_stage0_baseline.py
-   --env-file .env --out docs/planning/safety/stage0-baseline-2026-07-28.json`.
+   --env-file .env --out "docs/planning/safety/stage0-baseline-$(date +%F).json"`.
    This preserves the calibration oracle whether or not a successor is
    adopted.
-   **Deferred (owner, 2026-07-30):** the capture run is postponed; the rest
-   of the staged delivery proceeds without it. It stays a hard prerequisite
-   for two things only: the Modal guard-model eval (item 3 scores against
-   this baseline) and Perspective retirement (the sunset makes the scores
-   unobtainable afterward). Owner-run step: confirm
-   `CYO_ADVENTURE_PERSPECTIVE_API_KEY` is set in `.env`, then run the
-   command above. Deadline unchanged: before the 2026-12-31 sunset, and
-   before starting the Modal eval.
+
+   **Resolved 2026-08-01.** This supersedes the 2026-07-30 owner deferral
+   previously recorded here.
+
+   - *Command:* the one above, run against the tree at `6682ec17` with both
+     `CYO_ADVENTURE_PERSPECTIVE_API_KEY` and the OpenAI key configured.
+   - *Result:* 135 records (120 clean node passages, 15 corpus items), zero
+     provider errors, `text_sha256` on every record.
+   - *Artifact:* `docs/planning/safety/stage0-baseline-2026-08-01.json`,
+     committed and re-derivable from the `reproduction` parameters it carries.
+   - *Consequent change:* the capture **refutes** the `~6e-4` clean-prose
+     ceiling that justified `_ADVISORY_SCORE_FLOOR = 0.01` in
+     `moderation/classifiers.py`. All 120 clean passages score at or above the
+     floor on at least one attribute, and the clean maximum (0.397
+     `SEXUALLY_EXPLICIT`) exceeds the adversarial maximum (0.161); only
+     `SEVERE_TOXICITY` (0.0153) and `IDENTITY_ATTACK` (0.0276) stay near
+     `~6e-4`. The stale rationale is corrected in the same PR. The floor value
+     is deliberately unchanged: advisories never gate, so this is review-surface
+     noise, and moving it is a behavior change needing its own tests.
+   - *Known gaps:* the capture predates #532, which rewrote 7 of the 25
+     clean-source `out/*.filled.json` files, so a seeded re-run at a later head
+     samples a different pool. All 120 sampled node bodies were verified
+     byte-identical at both commits, so the recorded scores stand, but
+     bit-identical reproduction is not guaranteed. Separately, 2 of the 13
+     corpus items (`D1-import-bypass`, `D2-admin-submit-bypass`) are
+     `"executable": false` call-graph controls with no text to score and are
+     absent by construction.
+   - *Re-run trigger:* any change to the clean corpus or the classifier set,
+     and in any case before the 2026-12-31 sunset makes the scores
+     unobtainable.
 3. **Evaluate guard models on Modal as a candidate second axis**, scoped as
    an experiment, not a commitment: Qwen3Guard (0.6B/4B, Apache-2.0-family),
    ShieldGemma, Llama Guard 4, and Granite Guardian HAP-125M (CPU-viable,
@@ -453,7 +475,7 @@ exist in production. Design:
 | --- | --- | --- | --- |
 | **A: stop the bleeding** | Structural-failure collapse (2.3), mock environment guard (2.4), observability (2.5), fenced-JSON regression test | Small PR, no schema change readers must migrate for | nothing |
 | **B: the review model** | Finding schema (2.1), structured verdicts + chunking (2.2), merge stage, surfaces (2.6), RL-13/PL-19 visibility, Stage-2 disposition per owner choice (2.7) | The main PR series | A |
-| **C: Stage-0 successor** | Baseline capture run, Modal guard-model eval, calibration report, Perspective emission retirement (unset `PERSPECTIVE_API_KEY` / remove the leg, all call sites per 3.2 item 5) | Experiment + small PRs | capture deferred by owner 2026-07-30 (see 3.2 item 2), still due before the Modal eval and the 2026-12-31 sunset; rest independent of A/B |
+| **C: Stage-0 successor** | Baseline capture run, Modal guard-model eval, calibration report, Perspective emission retirement (unset `PERSPECTIVE_API_KEY` / remove the leg, all call sites per 3.2 item 5) | Experiment + small PRs | capture DONE 2026-08-01 (see 3.2 item 2), unblocking the Modal eval; rest independent of A/B |
 | **D: catalog remediation** | Re-moderate entry point + the 18-book sweep | Small PR + ops run | A, B |
 | **QA corpus (staging)** *(design confirmed 2026-07-29, decision 6)* | Labeled storybook fixtures (section 5), staging seed script + containment guards, scorecard diff | Repo fixtures + small PR | authored anytime; seeded before B's UI QA; feeds C's eval |
 
