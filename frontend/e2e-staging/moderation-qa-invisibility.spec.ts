@@ -113,6 +113,26 @@ test.describe('moderation QA corpus is present on staging (admin view)', () => {
         `${id} is missing from staging; re-run scripts/seed_moderation_qa.py ` +
           `(found mqa books: ${[...mqaById.keys()].sort().join(', ') || 'none'})`
       ).toBe(true)
+
+      // #CRITICAL: security: the single-layer-sensitive half of this spec. The
+      // invisibility assertions below are guarded by five conjunctive
+      // conditions in list_library (family/catalog visibility, published
+      // status, a current published version, an approval, and an EXISTS on
+      // StorybookAssignment), and the QA family holds no ChildProfile for an
+      // assignment to target, so they cannot go red until several layers fail
+      // at once. This one goes red the moment the publishing guard alone slips,
+      // which is the regression most likely to actually happen.
+      // #VERIFY: asserted as "not published" rather than "is draft" on purpose.
+      // seed_moderation_qa.py inserts at status="draft", but the corpus exists
+      // to be run through moderation, so a legitimate sweep may move a book to
+      // another non-published state; pinning to "draft" would fail on correct
+      // behaviour. "published" is the only status that breaks containment.
+      expect(
+        mqaById.get(id),
+        `${id} is ${String(mqaById.get(id))} on staging; a moderation QA book ` +
+          `must never reach "published", which is the one status that makes it ` +
+          `eligible for the kid library. Check the publishing guard.`
+      ).not.toBe('published')
     }
   })
 })
@@ -243,9 +263,19 @@ test.describe('mqa books are invisible to a kid profile on staging', () => {
     // DOM-level sweep on top of the API check: covers whatever the render
     // path shows (including recommendation rails fed by other requests),
     // not just the one captured response.
-    await expect(sharedPage.getByRole('heading', { name: 'My Books' })).toBeVisible()
+    await expect(
+      sharedPage.getByRole('heading', { name: 'My Books' }),
+      'the kid library should have rendered; without it the title sweep below ' +
+        'would pass against an unrendered page rather than against a real library'
+    ).toBeVisible()
     for (const title of MQA_TITLES) {
-      await expect(sharedPage.getByText(title, { exact: true })).toHaveCount(0)
+      await expect(
+        sharedPage.getByText(title, { exact: true }),
+        `the moderation QA title "${title}" is rendered on a kid library page. ` +
+          'The API assertion above passed, so this reached the DOM by some ' +
+          'other path (a recommendation rail, an offline cache, or a ' +
+          'prefetch), not through GET /api/v1/library.'
+      ).toHaveCount(0)
     }
   })
 
