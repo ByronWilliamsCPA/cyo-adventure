@@ -206,6 +206,17 @@ First tranche of work. Each invalidates multiple rows at once.
   `qlty-full`, `pydoclint`, `markdownlint`. CI recovers three of them.
 - **pre-commit.ci is not installed**, so the `ci:`/`skip:` block at `.pre-commit-config.yaml:12-15`
   is inert and there is no hosted fallback. No workflow runs `pre-commit run --all-files`.
+- **A required check fails on third-party availability, in files outside the diff.**
+  `Dependency & Standards Validation` is a required status check (ruleset `cyo-require-ci-gate`)
+  and fans in from the lychee link check, which scans the **whole tree**, not the PR's diff. So an
+  external site that is slow, or that rejects a HEAD request, turns a required gate red on a PR
+  that did not touch the file. Observed twice within ten minutes on PR #562, each time on a
+  different URL in someone else's document. Compounding it, `pr-validation.yml` has no `push`
+  trigger, so main is never link-checked and a bad URL is only ever discovered by, and attributed
+  to, the next unrelated PR. `--accept` omits 415, which servers return when they refuse the HEAD
+  method rather than when a link is broken. Two effects, both bad: real link rot is indistinguishable
+  from third-party flakiness, and the standing incentive is to re-run until green, which is
+  precisely how a gate stops being read. Status: **evidence invalid**.
 - **No CI-side secret scanning.** No trufflehog, gitleaks, or detect-secrets in any workflow.
   Detection is one local commit-stage hook, bypassable by `--no-verify` or by a clone that never
   ran `pre-commit install`. Fails **AISVS AC.4.2**.
@@ -585,15 +596,19 @@ different question.
    `C/GS/U/T/P/SL` shapes, the capability register's `[KGAS]NN`, and `AL-NNN`) are hardcoded in the
    checker as a path constant plus row and citation regexes.
 
-   Two routes. Hardcode a fifth namespace, matching precedent and repeating the work for the sixth;
-   or add a `[namespaces]` table to the manifest declaring prefix, register path, and linkage rule,
-   and make the checker data-driven. **The second is preferred**, on the manifest's own stated
-   rationale for existing: it was created so the phase vocabulary would be "read from the manifest
-   rather than hardcoding it", after the duplication between a Python frozenset and a roadmap scrape
-   proved unmaintainable. The four namespaces are in that same pre-manifest state today. The
-   `SQ-*` story-structure track is blocked behind the identical obstacle and clears with the same
-   change; note that `story-structure-improvement-plan.md` section 11 still attributes the block to
-   the manifest not existing on main, which stopped being true at `fc36b51a`.
+   Two routes were considered. Hardcode a fifth namespace, matching precedent and repeating the
+   work for the sixth; or add a `[namespaces]` table to the manifest declaring prefix, register
+   path, and linkage rule, and make the checker data-driven. **Decided 2026-08-02: the second.**
+   The rationale is the manifest's own stated reason for existing: it was created so the phase
+   vocabulary would be "read from the manifest rather than hardcoding it", after the duplication
+   between a Python frozenset and a roadmap scrape proved unmaintainable. The four namespaces are
+   in that same pre-manifest state today.
+
+   The `SQ-*` story-structure track is blocked behind the identical obstacle and clears with the
+   same change, so the two should land together. Note that
+   `story-structure-improvement-plan.md` section 11 still attributes the block to the manifest not
+   existing on main, which stopped being true at `fc36b51a`; retire that paragraph in the same
+   change.
 
 2. **Rename `O-nn` to `SEC-nnn` when the namespace lands.** The identifiers are provisional. `O-01`
    reads as a zero and the letter carries no meaning. `SQ-*` was previously suspected of colliding
