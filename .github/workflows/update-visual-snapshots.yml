@@ -57,6 +57,11 @@
 # actually resolves to, so those three baselines legitimately gain the
 # gamification chrome this PR added. Review the diff as an addition of chrome
 # that was previously invisible, not as a layout regression.
+#
+# Re-run bump 2026-08-02: the a815080 run regenerated kid-picker and library
+# baselines but its createCommitOnBranch raced a concurrent push (b517604,
+# coverage-matrix registration) and was rejected on expectedHeadOid; bump to
+# regenerate and commit them on the current head.
 name: Update Visual Snapshots
 
 on:
