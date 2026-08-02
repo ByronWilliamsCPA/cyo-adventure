@@ -3229,17 +3229,39 @@ are the only durable record of their claims.</p>
    LLM Stage-1 hard gate.</li>
 <li><strong>Run the baseline capture now</strong> (while Perspective answers):
    <code>PYTHONPATH=. uv run python scripts/capture_stage0_baseline.py
-   --env-file .env --out docs/planning/safety/stage0-baseline-2026-07-28.json</code>.
+   --env-file .env --out "docs/planning/safety/stage0-baseline-$(date +%F).json"</code>.
    This preserves the calibration oracle whether or not a successor is
-   adopted.
-   <strong>Deferred (owner, 2026-07-30):</strong> the capture run is postponed; the rest
-   of the staged delivery proceeds without it. It stays a hard prerequisite
-   for two things only: the Modal guard-model eval (item 3 scores against
-   this baseline) and Perspective retirement (the sunset makes the scores
-   unobtainable afterward). Owner-run step: confirm
-   <code>CYO_ADVENTURE_PERSPECTIVE_API_KEY</code> is set in <code>.env</code>, then run the
-   command above. Deadline unchanged: before the 2026-12-31 sunset, and
-   before starting the Modal eval.</li>
+   adopted.</li>
+</ol>
+<p><strong>Resolved 2026-08-01.</strong> This supersedes the 2026-07-30 owner deferral
+   previously recorded here.</p>
+<ul>
+<li><em>Command:</em> the one above, run against the tree at <code>6682ec17</code> with both
+     <code>CYO_ADVENTURE_PERSPECTIVE_API_KEY</code> and the OpenAI key configured.</li>
+<li><em>Result:</em> 135 records (120 clean node passages, 15 corpus items), zero
+     provider errors, <code>text_sha256</code> on every record.</li>
+<li><em>Artifact:</em> <code>docs/planning/safety/stage0-baseline-2026-08-01.json</code>,
+     committed and re-derivable from the <code>reproduction</code> parameters it carries.</li>
+<li><em>Consequent change:</em> the capture <strong>refutes</strong> the <code>~6e-4</code> clean-prose
+     ceiling that justified <code>_ADVISORY_SCORE_FLOOR = 0.01</code> in
+     <code>moderation/classifiers.py</code>. All 120 clean passages score at or above the
+     floor on at least one attribute, and the clean maximum (0.397
+     <code>SEXUALLY_EXPLICIT</code>) exceeds the adversarial maximum (0.161); only
+     <code>SEVERE_TOXICITY</code> (0.0153) and <code>IDENTITY_ATTACK</code> (0.0276) stay near
+     <code>~6e-4</code>. The stale rationale is corrected in the same PR. The floor value
+     is deliberately unchanged: advisories never gate, so this is review-surface
+     noise, and moving it is a behavior change needing its own tests.</li>
+<li><em>Known gaps:</em> the capture predates #532, which rewrote 7 of the 25
+     clean-source <code>out/*.filled.json</code> files, so a seeded re-run at a later head
+     samples a different pool. All 120 sampled node bodies were verified
+     byte-identical at both commits, so the recorded scores stand, but
+     bit-identical reproduction is not guaranteed. Separately, 2 of the 13
+     corpus items (<code>D1-import-bypass</code>, <code>D2-admin-submit-bypass</code>) are
+     <code>"executable": false</code> call-graph controls with no text to score and are
+     absent by construction.</li>
+<li><em>Re-run trigger:</em> any change to the clean corpus or the classifier set,
+     and in any case before the 2026-12-31 sunset makes the scores
+     unobtainable.</li>
 <li><strong>Evaluate guard models on Modal as a candidate second axis</strong>, scoped as
    an experiment, not a commitment: Qwen3Guard (0.6B/4B, Apache-2.0-family),
    ShieldGemma, Llama Guard 4, and Granite Guardian HAP-125M (CPU-viable,
@@ -3280,7 +3302,7 @@ are the only durable record of their claims.</p>
    rows exist in the measured environment; verify the other environment(s)
    before deleting anything. Config already refuses Perspective-only
    deployments.</li>
-</ol>
+</ul>
 <p>Privacy note (verified this session): moderation egress carries stripped,
 un-personalized text (sentinels stripped at <code>pipeline.py:736</code>; per-node PII
 guard at <code>pipeline.py:746-747</code>; reviewer wrapped in <code>PiiGuardedProvider</code>),
@@ -3376,7 +3398,7 @@ exist in production. Design:</p>
 <td><strong>C: Stage-0 successor</strong></td>
 <td>Baseline capture run, Modal guard-model eval, calibration report, Perspective emission retirement (unset <code>PERSPECTIVE_API_KEY</code> / remove the leg, all call sites per 3.2 item 5)</td>
 <td>Experiment + small PRs</td>
-<td>capture deferred by owner 2026-07-30 (see 3.2 item 2), still due before the Modal eval and the 2026-12-31 sunset; rest independent of A/B</td>
+<td>capture DONE 2026-08-01 (see 3.2 item 2), unblocking the Modal eval; rest independent of A/B</td>
 </tr>
 <tr>
 <td><strong>D: catalog remediation</strong></td>
@@ -3476,7 +3498,7 @@ makes the failure class visible, even if B's surface redesign takes longer.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 04:44:48 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 04:49:30 UTC">August 2, 2026</span>
   </span>
 
     
