@@ -2468,3 +2468,52 @@ async def test_review_batch_size_default_batches_stage1_calls(
     safety_calls = [c for c in provider.calls if c.startswith("Age band:")]
     assert settings.review_batch_size == 8
     assert len(safety_calls) == math.ceil(_NODE_COUNT / settings.review_batch_size)
+
+
+@pytest.mark.unit
+async def test_review_batch_size_covers_partial_final_chunk(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """A node count that is NOT a multiple of the batch size still reviews
+    every node exactly once.
+
+    The two tests above both put every node in one full chunk, so neither can
+    tell a correct chunker from one that drops or duplicates the remainder.
+    With 7 nodes at batch_size=3 the run is 3 + 3 + 1: two full batches plus a
+    remainder, and the remainder of one node takes ``run_safety_stage``'s
+    single-node path (stages.py, ``len(batch) == 1``) rather than the batch
+    path, so this covers both prompt shapes in a single pipeline run.
+    """
+    assert _NODE_COUNT % 3 != 0, "fixture must not divide evenly by the batch size"
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    provider = _batched_verdict_review_provider()
+    review_seam(provider)
+    settings = Settings(review_provider="mock", review_batch_size=3)
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=settings,
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    safety_calls = [c for c in provider.calls if c.startswith("Age band:")]
+    assert len(safety_calls) == math.ceil(_NODE_COUNT / 3)
+    # Exactly one call is the single-node shape (the remainder), the rest are
+    # batch shape. Node coverage is the real assertion: every node once.
+    batch_calls = [c for c in safety_calls if "Nodes:" in c]
+    assert len(batch_calls) == _NODE_COUNT // 3
+    reviewed: list[str] = []
+    for call in batch_calls:
+        reviewed.extend(_extract_batch_node_ids(call))
+    assert len(reviewed) == len(batch_calls) * 3
+    assert len(set(reviewed)) == len(reviewed)  # no node reviewed twice
+    assert _aggregate(version)["nodes_reviewed"] == _NODE_COUNT
