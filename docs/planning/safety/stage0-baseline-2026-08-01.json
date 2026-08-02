@@ -7573,7 +7573,7 @@
     "corpus_path": "docs/planning/safety/adversarial-corpus.json",
     "corpus_sha256": "b8c3522ec94a3394e68271f6b694bae822c4e77961f8ded320cd118c65e6f910",
     "filled_dir": "out",
-    "git_commit": "806f435297b80f10c43a84522a0bf27abc501daf",
+    "git_commit": "6682ec17f0a059f986b53e94b9830bf8ec0b6e23",
     "openai_configured": true,
     "perspective_configured": true,
     "qps": 1.0,
