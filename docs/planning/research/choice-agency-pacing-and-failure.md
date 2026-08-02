@@ -71,7 +71,8 @@ Not child-tested; no age-differentiated version exists.
 
 Kleinman's line ([ICIDS 2016](https://link.springer.com/chapter/10.1007/978-3-319-48279-8_32);
 [FDG 2018, DOI 10.1145/3235765.3235773](https://dl.acm.org/doi/10.1145/3235765.3235773);
-[Entertainment Computing 2020](https://www.sciencedirect.com/science/article/abs/pii/S1875952117301167))
+Entertainment Computing 2020, ScienceDirect PII S1875952117301167; cited text-only because Elsevier
+rejects non-browser link checks)
 taxonomizes rewind (Restricted / Unrestricted / External) and finds rewind-as-mechanic can support
 rather than destroy narrative experience; empirical data remain thin. Companion:
 [Mitchell, ICIDS 2020](https://link.springer.com/chapter/10.1007/978-3-030-62516-0_15) on repeat
