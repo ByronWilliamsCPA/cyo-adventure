@@ -20,6 +20,18 @@ on:
 permissions:
   contents: read
 
+# #CRITICAL: concurrency: only one `supabase db push` may touch the staging
+# migration history at a time. A human repair dispatch can otherwise overlap an
+# automatic push-triggered deploy and interleave writes to
+# supabase_migrations.schema_migrations. cancel-in-progress stays false: an
+# aborted migration run leaves partially-applied schema, which is worse than a
+# queued one.
+# #VERIFY: keep this group name in sync with the runbook section "Repairing an
+# out-of-order divergence" in docs/guides/supabase-environments.md.
+concurrency:
+  group: supabase-staging-migrations
+  cancel-in-progress: false
+
 jobs:
   deploy-staging:
     name: Push migrations to staging
