@@ -17,8 +17,10 @@ not a test bug.
 from __future__ import annotations
 
 import importlib.util
+import subprocess
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
+from unittest.mock import patch
 
 import pytest
 
@@ -1799,3 +1801,594 @@ def test_main_against_the_real_repository_documents_exits_zero(
     assert exit_code == 0
     out = capsys.readouterr().out
     assert out.startswith("ok:")
+
+
+def test_main_default_invocation_never_calls_subprocess() -> None:
+    """The default (no-flags) CLI path never shells out; --check-issues is opt-in precisely so
+    pre-commit stays offline."""
+    with patch("subprocess.run") as mock_run:
+        exit_code = _MODULE.main([])
+    assert exit_code == 0
+    mock_run.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# G. capability-register status vocabulary (Task A)
+# ---------------------------------------------------------------------------
+
+
+def test_capability_register_status_rows_returns_line_id_docs_notes_tuples() -> None:
+    """Each row's line number, id, Docs cell, and Notes cell are returned in document order."""
+    lines = (
+        _CAPABILITY_TABLE_HEADER
+        + "| K1 | Kid thing | \U0001f7e1 | needs work |\n"
+        + "| K2 | Done thing | ✅ | |\n"
+    ).splitlines()
+    rows = _MODULE._capability_register_status_rows(lines)
+    assert rows == [
+        (3, "K1", "\U0001f7e1", "needs work"),
+        (4, "K2", "✅", ""),
+    ]
+
+
+def test_check_capability_status_vocabulary_accepts_every_glyph_and_tallies_counts() -> (
+    None
+):
+    """Each of the three recognised glyphs passes, and the glyph tally is exact."""
+    rows = [
+        (10, "K1", "✅", "done"),
+        (11, "K2", "\U0001f7e1", "partial notes"),
+        (12, "K3", "❌", "missing notes"),
+    ]
+    problems, counts = _MODULE._check_capability_status_vocabulary(
+        rows, Path("capability-register.md")
+    )
+    assert problems == []
+    assert counts == {"✅": 1, "\U0001f7e1": 1, "❌": 1}
+
+
+def test_check_capability_status_vocabulary_rejects_an_unrecognised_glyph() -> None:
+    """A Docs cell holding anything other than the three status glyphs fails, naming the row,
+    line, and offending cell content."""
+    rows = [(5, "K9", "\U0001f7e2", "notes")]
+    problems, counts = _MODULE._check_capability_status_vocabulary(
+        rows, Path("capability-register.md")
+    )
+    assert len(problems) == 1
+    assert "K9" in problems[0]
+    assert "5" in problems[0]
+    assert "\U0001f7e2" in problems[0]
+    assert counts == {}
+
+
+@pytest.mark.parametrize("glyph", ["\U0001f7e1", "❌"])
+def test_check_capability_status_vocabulary_rejects_empty_notes_on_an_open_row(
+    glyph: str,
+) -> None:
+    """A partial or missing capability with an empty Notes cell fails: not-delivered with no
+    explanation of what is missing is not useful scope tracking."""
+    rows = [(7, "K5", glyph, "")]
+    problems, counts = _MODULE._check_capability_status_vocabulary(
+        rows, Path("capability-register.md")
+    )
+    assert len(problems) == 1
+    assert "K5" in problems[0]
+    assert "empty" in problems[0]
+    assert counts == {glyph: 1}
+
+
+def test_check_capability_status_vocabulary_allows_empty_notes_on_a_done_row() -> None:
+    """A done (checkmark) row needs no Notes cell; only partial/missing rows require one."""
+    rows = [(8, "K6", "✅", "")]
+    problems, counts = _MODULE._check_capability_status_vocabulary(
+        rows, Path("capability-register.md")
+    )
+    assert problems == []
+    assert counts == {"✅": 1}
+
+
+def test_check_linkage_reports_an_unrecognised_capability_docs_glyph_end_to_end(
+    tmp_path: Path,
+) -> None:
+    """A bad Docs glyph in the real capability-register shape surfaces through check_linkage."""
+    register_path = _write(tmp_path / "register.md", _register())
+    capability_path = _write(
+        tmp_path / "capability.md",
+        _CAPABILITY_TABLE_HEADER + "| K1 | Something | \U0001f7e2 | notes |\n",
+    )
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _ROADMAP_WITH_MAPPING),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        capability_path,
+    )
+    assert any(
+        "K1" in problem and "not one of the three status glyphs" in problem
+        for problem in problems
+    )
+
+
+def test_check_linkage_reports_empty_notes_on_an_open_capability_row_end_to_end(
+    tmp_path: Path,
+) -> None:
+    """A partial capability with an empty Notes cell surfaces through check_linkage, cited in
+    the mapping section so the only expected problem is the empty-Notes one."""
+    register_path = _write(tmp_path / "register.md", _register())
+    capability_path = _write(
+        tmp_path / "capability.md",
+        _CAPABILITY_TABLE_HEADER + "| K1 | Kid-facing thing | \U0001f7e1 | |\n",
+    )
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _ROADMAP_WITH_MAPPING),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        capability_path,
+    )
+    assert len(problems) == 1
+    assert "K1" in problems[0]
+    assert "empty" in problems[0]
+
+
+def test_capability_summary_reports_per_glyph_counts(tmp_path: Path) -> None:
+    """The success-summary helper reports total row count and per-glyph tally, checkmark first,
+    matching the cluster-count summary's format convention."""
+    capability_path = _write(
+        tmp_path / "capability.md",
+        _CAPABILITY_TABLE_HEADER
+        + "| K1 | Done | ✅ | |\n"
+        + "| K2 | Partial | \U0001f7e1 | needs work |\n"
+        + "| K3 | Missing | ❌ | needs build |\n",
+    )
+    summary = _MODULE._capability_summary(capability_path)
+    assert "3 capability row(s)" in summary
+    assert "✅=1" in summary
+    assert "\U0001f7e1=1" in summary
+    assert "❌=1" in summary
+
+
+def test_main_prints_capability_summary_line_on_success(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The CLI's success path prints the capability glyph summary after the cluster summary."""
+    register_path = _write(
+        tmp_path / "register.md",
+        _register(
+            "## Cluster A: ADR follow-ons\n\n"
+            "| ID | Item | Phase | Status |\n"
+            "| --- | --- | --- | --- |\n"
+            "| UW-A01 | Do the thing | 5 | unscheduled |\n"
+        ),
+    )
+    roadmap = _VALID_ROADMAP + (
+        "\n### Where every open register item lands\n\n"
+        "| Register items | Phase |\n"
+        "|----------------|-------|\n"
+        "| K2 partial | 4b |\n"
+        "| K3 missing | 4b |\n"
+    )
+    capability_path = _write(
+        tmp_path / "capability.md",
+        _CAPABILITY_TABLE_HEADER
+        + "| K1 | Done | ✅ | |\n"
+        + "| K2 | Partial | \U0001f7e1 | needs work |\n"
+        + "| K3 | Missing | ❌ | needs build |\n",
+    )
+    exit_code = _MODULE.main(
+        [
+            "--register",
+            str(register_path),
+            "--roadmap",
+            str(_write(tmp_path / "roadmap.md", roadmap)),
+            "--debt-register",
+            str(_write(tmp_path / "debt.md", "")),
+            "--lessons-log",
+            str(_write(tmp_path / "lessons.md", "")),
+            "--capability-register",
+            str(capability_path),
+        ]
+    )
+    assert exit_code == 0
+    out = capsys.readouterr().out
+    assert "3 capability row(s): ✅=1, \U0001f7e1=1, ❌=1" in out
+
+
+def test_check_linkage_against_the_real_capability_register_status_vocabulary() -> None:
+    """The real capability-register.md's Docs/Notes cells satisfy the new status-vocabulary
+    rules with zero problems: this is the "if real rows violate these rules, report that as a
+    finding" case from a clean baseline, pinning that the real document has no such violations
+    as of this change."""
+    lines = _MODULE._DEFAULT_CAPABILITY_REGISTER.read_text(
+        encoding="utf-8"
+    ).splitlines()
+    rows = _MODULE._capability_register_status_rows(lines)
+    problems, counts = _MODULE._check_capability_status_vocabulary(
+        rows, _MODULE._DEFAULT_CAPABILITY_REGISTER
+    )
+    assert problems == []
+    assert sum(counts.values()) == len(rows)
+
+
+# ---------------------------------------------------------------------------
+# H. GitHub issue checks (Task B): --check-issues / --check-issue-orphans
+# ---------------------------------------------------------------------------
+
+
+def test_collect_register_issue_citations_extracts_phase_and_cluster_d_references(
+    tmp_path: Path,
+) -> None:
+    """Both citation shapes are collected: an issue:NNN Phase value, and bare #NNN references
+    inside a cluster D row's Issues column."""
+    register = _register(
+        "## Cluster A: ADR follow-ons\n\n"
+        "| ID | Item | Phase | Status |\n"
+        "| --- | --- | --- | --- |\n"
+        "| UW-A01 | Tracks a live defect | issue:460 | unscheduled |\n",
+        "## Cluster D: untracked GitHub issues\n\n"
+        "| ID | Issues | Theme | Phase | Status |\n"
+        "| --- | --- | --- | --- | --- |\n"
+        "| UW-D01 | #249, #250 | Something | 5 | unscheduled |\n",
+    )
+    register_path = _write(tmp_path / "register.md", register)
+    lines = register_path.read_text(encoding="utf-8").splitlines()
+    clusters = _MODULE._find_clusters(lines)
+    citations = _MODULE._collect_register_issue_citations(clusters)
+    assert citations[460] == [("UW-A01", "unscheduled")]
+    assert citations[249] == [("UW-D01", "unscheduled")]
+    assert citations[250] == [("UW-D01", "unscheduled")]
+
+
+def test_check_cited_issues_not_closed_flags_closed_issue_on_non_done_row() -> None:
+    """A not-done row citing a CLOSED issue is a problem naming the row, issue, and title."""
+    citations = {460: [("UW-A01", "unscheduled")]}
+    issues: list[dict[str, Any]] = [
+        {"number": 460, "state": "CLOSED", "title": "Some bug"}
+    ]
+    problems = _MODULE._check_cited_issues_not_closed(
+        citations, issues, Path("unscheduled-work-register.md")
+    )
+    assert len(problems) == 1
+    assert "UW-A01" in problems[0]
+    assert "#460" in problems[0]
+    assert "Some bug" in problems[0]
+    assert "CLOSED" in problems[0]
+
+
+def test_check_cited_issues_not_closed_allows_closed_issue_on_a_done_row() -> None:
+    """A row already marked done citing a closed issue is not a problem: the row and the issue
+    agree that the work is finished."""
+    citations = {460: [("UW-A01", "done")]}
+    issues: list[dict[str, Any]] = [
+        {"number": 460, "state": "CLOSED", "title": "Some bug"}
+    ]
+    assert (
+        _MODULE._check_cited_issues_not_closed(
+            citations, issues, Path("unscheduled-work-register.md")
+        )
+        == []
+    )
+
+
+def test_check_cited_issues_not_closed_allows_an_open_issue_on_any_row() -> None:
+    """An issue GitHub still reports OPEN is never a problem, regardless of the citing row's
+    status."""
+    citations = {460: [("UW-A01", "unscheduled")]}
+    issues: list[dict[str, Any]] = [
+        {"number": 460, "state": "OPEN", "title": "Some bug"}
+    ]
+    assert (
+        _MODULE._check_cited_issues_not_closed(
+            citations, issues, Path("unscheduled-work-register.md")
+        )
+        == []
+    )
+
+
+def test_check_cited_issues_not_closed_flags_a_nonexistent_issue_number() -> None:
+    """A citation to an issue number GitHub has never heard of is its own problem, independent
+    of open/closed state."""
+    citations = {999999: [("UW-A01", "unscheduled")]}
+    problems = _MODULE._check_cited_issues_not_closed(
+        citations, [], Path("unscheduled-work-register.md")
+    )
+    assert len(problems) == 1
+    assert "999999" in problems[0]
+    assert "does not exist" in problems[0]
+
+
+def test_extract_issue_numbers_from_text_finds_both_citation_shapes() -> None:
+    """A bare #NNN and an inline issue:NNN mention are both recognised, from the same text."""
+    text = "See #460 and issue:472 in the same paragraph, plus PR #99."
+    assert _MODULE._extract_issue_numbers_from_text(text) == {460, 472, 99}
+
+
+def test_planning_docs_cited_issue_numbers_scans_every_markdown_file_recursively(
+    tmp_path: Path,
+) -> None:
+    """Every *.md file under the given directory is searched, recursively; non-markdown files
+    are not."""
+    _write(tmp_path / "a.md", "cites #1\n")
+    sub = tmp_path / "adr"
+    sub.mkdir()
+    _write(sub / "b.md", "cites issue:2\n")
+    _write(tmp_path / "not-markdown.txt", "cites #3\n")
+    assert _MODULE._planning_docs_cited_issue_numbers(tmp_path) == {1, 2}
+
+
+def test_check_issue_orphans_flags_an_uncited_open_issue_without_the_unplanned_label() -> (
+    None
+):
+    """An open issue cited nowhere and carrying no 'unplanned' label is an orphan."""
+    issues: list[dict[str, Any]] = [
+        {"number": 5, "state": "OPEN", "title": "Do a thing", "labels": []}
+    ]
+    problems = _MODULE._check_issue_orphans(issues, cited_numbers=set())
+    assert problems == ["#5 Do a thing"]
+
+
+def test_check_issue_orphans_accepts_a_cited_open_issue() -> None:
+    """An open issue cited somewhere under docs/planning/ is not an orphan."""
+    issues: list[dict[str, Any]] = [
+        {"number": 5, "state": "OPEN", "title": "Do a thing", "labels": []}
+    ]
+    assert _MODULE._check_issue_orphans(issues, cited_numbers={5}) == []
+
+
+def test_check_issue_orphans_accepts_an_unplanned_labelled_issue_even_if_uncited() -> (
+    None
+):
+    """The 'unplanned' label is an explicit, deliberate escape hatch from the citation
+    requirement."""
+    issues: list[dict[str, Any]] = [
+        {
+            "number": 5,
+            "state": "OPEN",
+            "title": "Do a thing",
+            "labels": [{"name": "unplanned"}],
+        }
+    ]
+    assert _MODULE._check_issue_orphans(issues, cited_numbers=set()) == []
+
+
+def test_check_issue_orphans_ignores_closed_issues() -> None:
+    """A closed issue is never an orphan candidate; only OPEN issues need a home."""
+    issues: list[dict[str, Any]] = [
+        {"number": 5, "state": "CLOSED", "title": "Old", "labels": []}
+    ]
+    assert _MODULE._check_issue_orphans(issues, cited_numbers=set()) == []
+
+
+def _completed(
+    returncode: int, stdout: str, stderr: str = ""
+) -> subprocess.CompletedProcess[str]:
+    """Build a subprocess.CompletedProcess fixture for mocking subprocess.run's return value.
+
+    Args:
+        returncode: The process exit code to simulate.
+        stdout: The captured stdout text to simulate.
+        stderr: The captured stderr text to simulate.
+
+    Returns:
+        subprocess.CompletedProcess[str]: The fixture, matching the shape
+        ``_fetch_github_issues`` reads (``.returncode``, ``.stdout``, ``.stderr``).
+    """
+    return subprocess.CompletedProcess(
+        args=["gh", "issue", "list"],
+        returncode=returncode,
+        stdout=stdout,
+        stderr=stderr,
+    )
+
+
+def test_fetch_github_issues_returns_parsed_list_on_success() -> None:
+    """A clean gh invocation returns the parsed issue list and appends no problems."""
+    problems: list[str] = []
+    completed = _completed(
+        0, '[{"number": 1, "state": "OPEN", "title": "x", "labels": []}]'
+    )
+    with patch("subprocess.run", return_value=completed) as mock_run:
+        issues = _MODULE._fetch_github_issues(problems)
+    assert problems == []
+    assert issues == [{"number": 1, "state": "OPEN", "title": "x", "labels": []}]
+    mock_run.assert_called_once()
+    call_args, call_kwargs = mock_run.call_args
+    assert call_args[0][:3] == ["gh", "issue", "list"]
+    assert call_kwargs["timeout"] == _MODULE._GH_ISSUE_LIST_TIMEOUT_SECONDS
+    assert call_kwargs["check"] is False
+
+
+def test_fetch_github_issues_reports_a_nonzero_returncode() -> None:
+    """A non-zero gh exit is a reported problem, not a silent empty result."""
+    problems: list[str] = []
+    completed = _completed(1, "", "not authenticated")
+    with patch("subprocess.run", return_value=completed):
+        issues = _MODULE._fetch_github_issues(problems)
+    assert issues is None
+    assert len(problems) == 1
+    assert "not authenticated" in problems[0]
+
+
+def test_fetch_github_issues_reports_a_missing_gh_binary() -> None:
+    """gh not being installed/on PATH is a clear, named failure, not a crash."""
+    problems: list[str] = []
+    with patch("subprocess.run", side_effect=FileNotFoundError):
+        issues = _MODULE._fetch_github_issues(problems)
+    assert issues is None
+    assert len(problems) == 1
+    assert "not installed" in problems[0]
+
+
+def test_fetch_github_issues_reports_a_timeout() -> None:
+    """A hung gh call is bounded by the timeout and reported, not left to block forever."""
+    problems: list[str] = []
+    with patch(
+        "subprocess.run",
+        side_effect=subprocess.TimeoutExpired(cmd="gh", timeout=30),
+    ):
+        issues = _MODULE._fetch_github_issues(problems)
+    assert issues is None
+    assert len(problems) == 1
+    assert "did not complete within" in problems[0]
+
+
+def test_fetch_github_issues_reports_unparsable_json() -> None:
+    """Non-JSON stdout from gh is a reported problem, not an unhandled exception."""
+    problems: list[str] = []
+    completed = _completed(0, "not json")
+    with patch("subprocess.run", return_value=completed):
+        issues = _MODULE._fetch_github_issues(problems)
+    assert issues is None
+    assert len(problems) == 1
+    assert "unparsable JSON" in problems[0]
+
+
+def test_fetch_github_issues_reports_json_that_is_not_a_list() -> None:
+    """Valid JSON of the wrong shape (not a list of issues) is also a reported problem."""
+    problems: list[str] = []
+    completed = _completed(0, '{"not": "a list"}')
+    with patch("subprocess.run", return_value=completed):
+        issues = _MODULE._fetch_github_issues(problems)
+    assert issues is None
+    assert len(problems) == 1
+    assert "not a list" in problems[0]
+
+
+def test_check_issues_returns_empty_and_skips_network_when_both_flags_are_false(
+    tmp_path: Path,
+) -> None:
+    """Neither flag set means no gh call at all: --check-issues/--check-issue-orphans are the
+    only things gating any network access."""
+    with patch("subprocess.run") as mock_run:
+        problems = _MODULE._check_issues(
+            tmp_path / "register.md",
+            tmp_path,
+            check_issues=False,
+            check_issue_orphans=False,
+        )
+    assert problems == []
+    mock_run.assert_not_called()
+
+
+def test_check_issues_runs_cited_issue_check_when_flag_set(tmp_path: Path) -> None:
+    """--check-issues alone finds a not-done row citing a closed issue."""
+    register = _register(
+        "## Cluster A: ADR follow-ons\n\n"
+        "| ID | Item | Phase | Status |\n"
+        "| --- | --- | --- | --- |\n"
+        "| UW-A01 | Tracks a live defect | issue:460 | unscheduled |\n"
+    )
+    register_path = _write(tmp_path / "register.md", register)
+    completed = _completed(
+        0, '[{"number": 460, "state": "CLOSED", "title": "Old bug", "labels": []}]'
+    )
+    with patch("subprocess.run", return_value=completed):
+        problems = _MODULE._check_issues(
+            register_path, tmp_path, check_issues=True, check_issue_orphans=False
+        )
+    assert any("UW-A01" in p and "#460" in p for p in problems)
+
+
+def test_check_issues_runs_orphan_check_when_flag_set(tmp_path: Path) -> None:
+    """--check-issue-orphans alone finds an uncited open issue."""
+    register_path = _write(tmp_path / "register.md", _register())
+    completed = _completed(
+        0, '[{"number": 7, "state": "OPEN", "title": "Untracked", "labels": []}]'
+    )
+    with patch("subprocess.run", return_value=completed):
+        problems = _MODULE._check_issues(
+            register_path, tmp_path, check_issues=False, check_issue_orphans=True
+        )
+    assert problems == ["#7 Untracked"]
+
+
+def test_check_issues_reports_gh_failure_once_and_skips_downstream_checks(
+    tmp_path: Path,
+) -> None:
+    """A gh failure is reported once and short-circuits both downstream checks, rather than
+    running them against no data."""
+    register_path = _write(tmp_path / "register.md", _register())
+    with patch("subprocess.run", side_effect=FileNotFoundError):
+        problems = _MODULE._check_issues(
+            register_path, tmp_path, check_issues=True, check_issue_orphans=True
+        )
+    assert len(problems) == 1
+    assert "not installed" in problems[0]
+
+
+def test_check_issues_shares_one_gh_call_across_both_flags(tmp_path: Path) -> None:
+    """Both flags set together still make exactly one batched gh call, not one each."""
+    register_path = _write(tmp_path / "register.md", _register())
+    completed = _completed(0, "[]")
+    with patch("subprocess.run", return_value=completed) as mock_run:
+        _MODULE._check_issues(
+            register_path, tmp_path, check_issues=True, check_issue_orphans=True
+        )
+    mock_run.assert_called_once()
+
+
+def test_main_check_issues_flag_wired_through(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """--check-issues on the CLI surfaces a closed-issue-cited-by-a-not-done-row failure."""
+    register_path = _write(
+        tmp_path / "register.md",
+        _register(
+            "## Cluster A: ADR follow-ons\n\n"
+            "| ID | Item | Phase | Status |\n"
+            "| --- | --- | --- | --- |\n"
+            "| UW-A01 | Tracks a live defect | issue:460 | unscheduled |\n"
+        ),
+    )
+    completed = _completed(
+        0, '[{"number": 460, "state": "CLOSED", "title": "Old bug", "labels": []}]'
+    )
+    with patch("subprocess.run", return_value=completed):
+        exit_code = _MODULE.main(
+            [
+                "--register",
+                str(register_path),
+                "--roadmap",
+                str(_write(tmp_path / "roadmap.md", _VALID_ROADMAP)),
+                "--debt-register",
+                str(_write(tmp_path / "debt.md", "")),
+                "--lessons-log",
+                str(_write(tmp_path / "lessons.md", "")),
+                "--capability-register",
+                str(_write_no_open_capability_register(tmp_path)),
+                "--check-issues",
+            ]
+        )
+    assert exit_code == 1
+    out = capsys.readouterr().out
+    assert "UW-A01" in out
+    assert "#460" in out
+
+
+def test_main_check_issue_orphans_flag_wired_through(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """--check-issue-orphans on the CLI surfaces an uncited open issue."""
+    register_path = _write(tmp_path / "register.md", _register())
+    completed = _completed(
+        0, '[{"number": 7, "state": "OPEN", "title": "Untracked", "labels": []}]'
+    )
+    with patch("subprocess.run", return_value=completed):
+        exit_code = _MODULE.main(
+            [
+                "--register",
+                str(register_path),
+                "--roadmap",
+                str(_write(tmp_path / "roadmap.md", _VALID_ROADMAP)),
+                "--debt-register",
+                str(_write(tmp_path / "debt.md", "")),
+                "--lessons-log",
+                str(_write(tmp_path / "lessons.md", "")),
+                "--capability-register",
+                str(_write_no_open_capability_register(tmp_path)),
+                "--check-issue-orphans",
+            ]
+        )
+    assert exit_code == 1
+    out = capsys.readouterr().out
+    assert "#7 Untracked" in out

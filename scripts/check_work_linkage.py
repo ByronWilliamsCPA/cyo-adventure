@@ -66,7 +66,9 @@ Exit codes:
 from __future__ import annotations
 
 import argparse
+import json
 import re
+import subprocess
 import sys
 import tomllib
 from pathlib import Path
@@ -194,6 +196,23 @@ _AL_CLOSED_STATUSES = frozenset({"applied", "rejected", "superseded"})
 _CAP_ROW_ID_RE = re.compile(r"^[KGAS]\d+$")
 _CAP_ID_RE = re.compile(r"\b[KGAS]\d+\b")
 _CAP_DONE_MARK = "✅"  # the register's "done" checkmark cell value (U+2705).
+_CAP_OPEN_GLYPHS = frozenset({"🟡", "❌"})  # partial (U+1F7E1) and missing (U+274C).
+_CAP_STATUS_GLYPHS = frozenset({_CAP_DONE_MARK}) | _CAP_OPEN_GLYPHS
+
+# An "issue:NNN" Phase cell, capturing the number (the vocabulary check, _ISSUE_RE above, only
+# needs to confirm the shape; the GitHub issue checks need the number itself).
+_ISSUE_PHASE_NUMBER_RE = re.compile(r"^issue:(\d+)$")
+# A bare "#NNN" reference, used both inside a cluster D row's Issues column and when scanning
+# the wider docs/planning/ tree for citations (the orphan check).
+_BARE_ISSUE_REF_RE = re.compile(r"#(\d+)")
+# An inline "issue:NNN" mention in prose (not anchored like _ISSUE_PHASE_NUMBER_RE, since prose
+# can carry it mid-sentence rather than as a whole Phase cell value).
+_PROSE_ISSUE_REF_RE = re.compile(r"\bissue:(\d+)\b")
+
+# #ASSUME: external resource: gh issue list over the network can hang on a stalled connection.
+# #VERIFY: _fetch_github_issues passes this as subprocess.run's timeout, so a hung call becomes
+# a reported problem (TimeoutExpired caught explicitly) rather than blocking the run forever.
+_GH_ISSUE_LIST_TIMEOUT_SECONDS = 30
 
 # The mapping section roadmap.md's linkage contract points at for capability-register linkage.
 _ROADMAP_MAPPING_HEADING = "### Where every open register item lands"
@@ -691,24 +710,33 @@ def _capability_header_docs_index(cells: list[str]) -> int | None:
     return None
 
 
-def _capability_register_open_ids(lines: list[str]) -> dict[str, int]:
-    """Return capability ids not marked done, mapped to their 1-based line number.
+def _capability_register_status_rows(
+    lines: list[str],
+) -> list[tuple[int, str, str, str]]:
+    """Return every capability row's line number, id, ``Docs`` cell, and ``Notes`` cell.
 
     The register holds four separate tables (K, G, A, S), each headed by its own
     ``| ID | Capability | Docs | Notes |`` row; this walks the whole file once and tracks
     whichever header was most recently seen, so a row only counts once a header naming a ``Docs``
     column has been observed. Each ``## `` section heading resets the tracked header, so a
     same-shaped table appearing later in the document (outside the four capability sections)
-    cannot be mistaken for an open capability row under a stale header. The ``Docs`` cell holds
-    exactly one status glyph (verified against the current document: no row mixes a glyph with
-    other text), so an equality check against the done mark is reliable rather than a loose
-    substring test.
+    cannot be mistaken for a capability row under a stale header.
+
+    This is the single walk both ``_capability_register_open_ids`` (open-vs-done linkage) and
+    ``_check_capability_status_vocabulary`` (glyph and Notes validity) build on, so the document
+    is only parsed once and a malformed header is only ever reported once rather than by both
+    checks independently.
 
     Args:
         lines: The capability register's lines.
 
     Returns:
-        dict[str, int]: Open (not done) capability ids mapped to the line they were found on.
+        list[tuple[int, str, str, str]]: One (1-based line number, id, ``Docs`` cell, ``Notes``
+            cell) tuple per capability row. A row with fewer cells than the ``Docs`` column
+            index is silently skipped, mirroring the original single-purpose walk this replaces:
+            such a row is malformed in a way no check here is positioned to name usefully. The
+            ``Notes`` cell is empty string when the table has no ``Notes`` column or the row has
+            too few cells to reach it.
 
     Raises:
         LookupError: If any row shaped like a capability row (its first cell matches the
@@ -721,14 +749,16 @@ def _capability_register_open_ids(lines: list[str]) -> dict[str, int]:
             pipe-containing line at all is not this failure mode and returns no rows instead.
     """
     if not any("|" in line for line in lines):
-        return {}
+        return []
     docs_idx: int | None = None
+    notes_idx: int | None = None
     tables_found = 0
-    open_ids: dict[str, int] = {}
+    rows: list[tuple[int, str, str, str]] = []
     unlocated: list[tuple[str, int]] = []
     for number, line in enumerate(lines, start=1):
         if line.startswith("## "):
             docs_idx = None
+            notes_idx = None
             continue
         if "|" not in line:
             continue
@@ -738,14 +768,20 @@ def _capability_register_open_ids(lines: list[str]) -> dict[str, int]:
         header_docs_idx = _capability_header_docs_index(cells)
         if header_docs_idx is not None:
             docs_idx = header_docs_idx
+            notes_idx = cells.index("Notes") if "Notes" in cells else None
             tables_found += 1
             continue
         if _is_separator(cells) or not _CAP_ROW_ID_RE.match(cells[0]):
             continue
         if docs_idx is None:
             unlocated.append((cells[0], number))
-        elif len(cells) > docs_idx and cells[docs_idx] != _CAP_DONE_MARK:
-            open_ids[cells[0]] = number
+            continue
+        if len(cells) <= docs_idx:
+            continue
+        notes_val = (
+            cells[notes_idx] if notes_idx is not None and len(cells) > notes_idx else ""
+        )
+        rows.append((number, cells[0], cells[docs_idx], notes_val))
     if tables_found == 0:
         msg = "no table header with 'ID' and 'Docs' columns found"
         raise LookupError(msg)
@@ -758,7 +794,82 @@ def _capability_register_open_ids(lines: list[str]) -> dict[str, int]:
             f"{ids_listed}"
         )
         raise LookupError(msg)
-    return open_ids
+    return rows
+
+
+def _capability_register_open_ids(  # pyright: ignore[reportUnusedFunction]
+    lines: list[str],
+) -> dict[str, int]:
+    """Return capability ids not marked done, mapped to their 1-based line number.
+
+    The ``Docs`` cell holds exactly one status glyph (verified against the current document: no
+    row mixes a glyph with other text), so an equality check against the done mark is reliable
+    rather than a loose substring test.
+
+    Kept as a standalone, from-raw-lines entry point even though ``check_linkage`` now derives
+    open ids inline from ``_capability_register_status_rows`` (to avoid re-parsing the register
+    and reporting a malformed-header ``LookupError`` twice): ``tests/unit/test_check_work_linkage.py``
+    exercises this function's from-raw-lines contract directly, including the malformed-header
+    and corrupted-single-table cases, so it stays production code rather than test-only fixture
+    logic, just with no in-module caller.
+
+    Args:
+        lines: The capability register's lines.
+
+    Returns:
+        dict[str, int]: Open (not done) capability ids mapped to the line they were found on.
+
+    Raises:
+        LookupError: See ``_capability_register_status_rows``, which this delegates the walk to.
+    """
+    return {
+        entry_id: number
+        for number, entry_id, docs_val, _notes_val in _capability_register_status_rows(
+            lines
+        )
+        if docs_val != _CAP_DONE_MARK
+    }
+
+
+def _check_capability_status_vocabulary(
+    capability_rows: list[tuple[int, str, str, str]],
+    capability_register_path: Path,
+) -> tuple[list[str], dict[str, int]]:
+    """Check every capability row's ``Docs`` glyph, and ``Notes`` when the row is not done.
+
+    Two rules: the ``Docs`` cell must be exactly one of the three recognised status glyphs
+    (checkmark, yellow circle, cross), and a row marked partial or missing must carry a
+    non-empty ``Notes`` cell naming what is missing, since "not delivered" with no explanation
+    is not useful scope tracking.
+
+    Args:
+        capability_rows: The capability register's rows, as returned by
+            ``_capability_register_status_rows``.
+        capability_register_path: The capability register's path, for message text.
+
+    Returns:
+        tuple[list[str], dict[str, int]]: Problems found, and each recognised glyph mapped to
+            its row count (for the CLI's success-summary line); a row with an unrecognised glyph
+            is not counted under any key.
+    """
+    problems: list[str] = []
+    counts: dict[str, int] = {}
+    for number, entry_id, docs_val, notes_val in capability_rows:
+        if docs_val not in _CAP_STATUS_GLYPHS:
+            problems.append(
+                f"{capability_register_path.name}:{number}: capability '{entry_id}' Docs "
+                f"cell is '{docs_val}', not one of the three status glyphs (checkmark, "
+                f"yellow circle, or cross)"
+            )
+            continue
+        counts[docs_val] = counts.get(docs_val, 0) + 1
+        if docs_val in _CAP_OPEN_GLYPHS and not notes_val.strip():
+            problems.append(
+                f"{capability_register_path.name}:{number}: capability '{entry_id}' is "
+                f"'{docs_val}' but its Notes cell is empty; a capability that is not "
+                f"delivered must name what is missing"
+            )
+    return problems, counts
 
 
 def _extract_roadmap_mapping_section(lines: list[str]) -> str:
@@ -1393,7 +1504,7 @@ def _check_lessons_linkage(
 
 
 def _check_capability_linkage(
-    capability_lines: list[str],
+    capability_rows: list[tuple[int, str, str, str]],
     capability_register_path: Path,
     roadmap_lines: list[str],
     roadmap_path: Path,
@@ -1401,7 +1512,10 @@ def _check_capability_linkage(
     """Check every open capability id appears in roadmap.md's register-item mapping section.
 
     Args:
-        capability_lines: The capability register's lines.
+        capability_rows: The capability register's rows, as returned by
+            ``_capability_register_status_rows``; taking the already-walked rows rather than raw
+            lines means a malformed header is only reported once, by the caller that first walks
+            the document, not duplicated here.
         capability_register_path: The capability register's path, for message text.
         roadmap_lines: ``roadmap.md``'s lines.
         roadmap_path: ``roadmap.md``'s path, for message text.
@@ -1410,7 +1524,11 @@ def _check_capability_linkage(
         list[str]: One problem per open capability id missing from the mapping section.
     """
     problems: list[str] = []
-    open_capability_ids = _capability_register_open_ids(capability_lines)
+    open_capability_ids = {
+        entry_id: number
+        for number, entry_id, docs_val, _notes_val in capability_rows
+        if docs_val != _CAP_DONE_MARK
+    }
     mapping_text = _extract_roadmap_mapping_section(roadmap_lines)
     cited_capability_ids = _extract_citations(mapping_text, _CAP_ID_RE)
     for capability_id, line_number in sorted(open_capability_ids.items()):
@@ -1509,17 +1627,30 @@ def check_linkage(
             problems.append(f"{lessons_log_path.name}: {exc}")
 
     capability_lines = _read_lines(capability_register_path, problems)
-    if capability_lines is not None and roadmap_lines is not None:
+    capability_rows: list[tuple[int, str, str, str]] | None = None
+    if capability_lines is not None:
+        try:
+            capability_rows = _capability_register_status_rows(capability_lines)
+        except LookupError as exc:
+            problems.append(f"{capability_register_path.name}: {exc}")
+
+    if capability_rows is not None:
+        status_problems, _capability_glyph_counts = _check_capability_status_vocabulary(
+            capability_rows, capability_register_path
+        )
+        problems.extend(status_problems)
+
+    if capability_rows is not None and roadmap_lines is not None:
         try:
             problems.extend(
                 _check_capability_linkage(
-                    capability_lines,
+                    capability_rows,
                     capability_register_path,
                     roadmap_lines,
                     roadmap_path,
                 )
             )
-        except (LookupError, ValueError) as exc:
+        except ValueError as exc:
             problems.append(f"{capability_register_path.name}: {exc}")
 
     return problems
@@ -1544,6 +1675,318 @@ def _summary(register_path: Path) -> str:
     return (
         f"     {total} row(s) across {len(clusters)} cluster(s): {', '.join(parts)}\n"
     )
+
+
+def _capability_summary(capability_register_path: Path) -> str:
+    """Return a one-line per-glyph tally for a capability register already known well formed.
+
+    Args:
+        capability_register_path: The validated capability register markdown file.
+
+    Returns:
+        str: A newline-terminated summary of ``Docs`` glyph counts, in checkmark/yellow/cross
+            order.
+    """
+    lines = capability_register_path.read_text(encoding="utf-8").splitlines()
+    rows = _capability_register_status_rows(lines)
+    _problems, counts = _check_capability_status_vocabulary(
+        rows, capability_register_path
+    )
+    total = sum(counts.values())
+    parts = [
+        f"{glyph}={counts[glyph]}"
+        for glyph in (_CAP_DONE_MARK, "🟡", "❌")
+        if glyph in counts
+    ]
+    return f"     {total} capability row(s): {', '.join(parts)}\n"
+
+
+def _resolve_cluster_issues_index(header_cells: list[str]) -> int | None:
+    """Return a cluster header's ``Issues`` column index, or None when it has no such column.
+
+    Only cluster D currently has an ``Issues`` column; every other cluster's rows are simply
+    skipped for the bare-``#NNN`` half of citation collection.
+
+    Args:
+        header_cells: A cluster table's header cells.
+
+    Returns:
+        int | None: The 0-based ``Issues`` column index, or None.
+    """
+    return header_cells.index("Issues") if "Issues" in header_cells else None
+
+
+def _collect_register_issue_citations(
+    clusters: dict[str, tuple[list[str], list[tuple[int, list[str]]]]],
+) -> dict[int, list[tuple[str, str]]]:
+    """Collect every GitHub issue number cited in the register, with each citing row's id/status.
+
+    Two citation shapes are recognised: an ``issue:NNN`` ``Phase`` value (any cluster with a
+    ``Phase`` column), and a bare ``#NNN`` reference inside a cluster D row's ``Issues`` column.
+
+    Args:
+        clusters: Cluster letter mapped to its header cells and data rows, as returned by
+            ``_find_clusters``.
+
+    Returns:
+        dict[int, list[tuple[str, str]]]: Issue number mapped to every (row id, row ``Status``)
+            pair that cites it. A number cited by more than one row keeps every citation, since
+            each citing row's own ``Status`` independently determines whether citing a closed
+            issue is a problem.
+    """
+    citations: dict[int, list[tuple[str, str]]] = {}
+
+    def _add(number: int, entry_id: str, status: str) -> None:
+        citations.setdefault(number, []).append((entry_id, status))
+
+    for header_cells, rows in clusters.values():
+        indexes = _resolve_column_indexes(header_cells)
+        id_idx, status_idx, phase_idx = (
+            indexes["ID"],
+            indexes["Status"],
+            indexes["Phase"],
+        )
+        issues_idx = _resolve_cluster_issues_index(header_cells)
+        for _line_number, cells in rows:
+            if len(cells) != len(header_cells):
+                continue
+            entry_id = cells[id_idx] if id_idx is not None else ""
+            status = cells[status_idx] if status_idx is not None else ""
+            if phase_idx is not None:
+                phase_match = _ISSUE_PHASE_NUMBER_RE.match(cells[phase_idx])
+                if phase_match:
+                    _add(int(phase_match.group(1)), entry_id, status)
+            if issues_idx is not None:
+                for issue_match in _BARE_ISSUE_REF_RE.finditer(cells[issues_idx]):
+                    _add(int(issue_match.group(1)), entry_id, status)
+
+    return citations
+
+
+def _fetch_github_issues(problems: list[str]) -> list[dict[str, Any]] | None:
+    """Fetch every issue (open and closed) via one batched ``gh issue list`` call.
+
+    A single call fetches number/state/title/labels for up to 500 issues, so both
+    ``--check-issues`` (cited issue not CLOSED) and ``--check-issue-orphans`` (every OPEN issue
+    cited somewhere) share this one network round trip rather than one call per issue number.
+
+    # #ASSUME: external resource: gh is installed, authenticated against this repository, and
+    # the network is reachable. --check-issues/--check-issue-orphans are opt-in specifically so
+    # this call only ever runs when a caller (CI, not pre-commit) has deliberately asked for it.
+    # #VERIFY: every failure mode (missing binary, timeout, non-zero exit, unparsable or
+    # unexpected-shape JSON) is turned into an appended problem and a None return, never a
+    # silent empty result: a check that can only pass is worse than no check at all.
+
+    Args:
+        problems: The running problem list; a missing gh, an auth or network failure, a
+            timeout, a non-zero exit, or unparsable JSON is appended here instead of raised.
+
+    Returns:
+        list[dict[str, Any]] | None: The parsed issue list (each entry carrying at least
+            ``number``, ``state``, ``title``, ``labels``), or None if the call could not be
+            completed.
+    """
+    try:
+        result = subprocess.run(
+            [
+                "gh",
+                "issue",
+                "list",
+                "--state",
+                "all",
+                "--limit",
+                "500",
+                "--json",
+                "number,state,title,labels",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=_GH_ISSUE_LIST_TIMEOUT_SECONDS,
+            check=False,
+        )
+    except FileNotFoundError:
+        problems.append(
+            "gh is not installed or not on PATH; --check-issues/--check-issue-orphans "
+            "require the GitHub CLI"
+        )
+        return None
+    except subprocess.TimeoutExpired:
+        problems.append(
+            f"gh issue list did not complete within {_GH_ISSUE_LIST_TIMEOUT_SECONDS}s"
+        )
+        return None
+
+    if result.returncode != 0:
+        problems.append(
+            f"gh issue list failed (exit {result.returncode}): {result.stderr.strip()}"
+        )
+        return None
+
+    try:
+        issues = json.loads(result.stdout)
+    except json.JSONDecodeError as exc:
+        problems.append(f"gh issue list returned unparsable JSON: {exc}")
+        return None
+
+    if not isinstance(issues, list):
+        problems.append("gh issue list returned JSON that is not a list of issues")
+        return None
+
+    return issues
+
+
+def _check_cited_issues_not_closed(
+    citations: dict[int, list[tuple[str, str]]],
+    issues: list[dict[str, Any]],
+    register_path: Path,
+) -> list[str]:
+    """Check every cited issue exists and, when its citing row is not done, is not CLOSED.
+
+    Args:
+        citations: Issue number mapped to citing (row id, row ``Status``) pairs, as returned by
+            ``_collect_register_issue_citations``.
+        issues: The fetched issue list, as returned by ``_fetch_github_issues``.
+        register_path: The unscheduled-work register's path, for message text.
+
+    Returns:
+        list[str]: One problem per citation of a nonexistent issue, plus one problem per
+            not-done row citing an issue GitHub reports CLOSED.
+    """
+    problems: list[str] = []
+    lookup = {issue["number"]: issue for issue in issues}
+    for number, citers in sorted(citations.items()):
+        issue = lookup.get(number)
+        if issue is None:
+            problems.extend(
+                f"{register_path.name}: row '{entry_id}' cites issue #{number}, which "
+                f"does not exist on GitHub"
+                for entry_id, _status in citers
+            )
+            continue
+        if issue.get("state") != "CLOSED":
+            continue
+        problems.extend(
+            f"{register_path.name}: row '{entry_id}' (status '{status}') cites issue "
+            f"#{number} ('{issue.get('title', '')}'), which GitHub reports CLOSED"
+            for entry_id, status in citers
+            if status != "done"
+        )
+    return problems
+
+
+def _extract_issue_numbers_from_text(text: str) -> set[int]:
+    """Return every GitHub issue number cited in a block of prose.
+
+    Recognises both a bare ``#NNN`` reference and an inline ``issue:NNN`` mention.
+
+    Args:
+        text: The prose to search.
+
+    Returns:
+        set[int]: Every issue number cited.
+    """
+    numbers = {int(match) for match in _BARE_ISSUE_REF_RE.findall(text)}
+    numbers |= {int(match) for match in _PROSE_ISSUE_REF_RE.findall(text)}
+    return numbers
+
+
+def _planning_docs_cited_issue_numbers(planning_dir: Path) -> set[int]:
+    """Return every issue number cited anywhere in the markdown tree under ``planning_dir``.
+
+    Args:
+        planning_dir: The directory to search recursively for ``*.md`` files (in the real
+            repository, ``docs/planning/``).
+
+    Returns:
+        set[int]: Every issue number cited in any markdown file found.
+    """
+    numbers: set[int] = set()
+    for path in sorted(planning_dir.rglob("*.md")):
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        numbers |= _extract_issue_numbers_from_text(text)
+    return numbers
+
+
+def _check_issue_orphans(
+    issues: list[dict[str, Any]], cited_numbers: set[int]
+) -> list[str]:
+    """Check every OPEN issue is either cited under docs/planning/ or labelled ``unplanned``.
+
+    Args:
+        issues: The fetched issue list, as returned by ``_fetch_github_issues``.
+        cited_numbers: Every issue number cited anywhere under docs/planning/, as returned by
+            ``_planning_docs_cited_issue_numbers``.
+
+    Returns:
+        list[str]: One ``"#NNN <title>"`` entry per orphaned open issue.
+    """
+    problems: list[str] = []
+    for issue in issues:
+        if issue.get("state") != "OPEN":
+            continue
+        number = issue.get("number")
+        if number in cited_numbers:
+            continue
+        labels = {label.get("name", "") for label in issue.get("labels", [])}
+        if "unplanned" in labels:
+            continue
+        problems.append(f"#{number} {issue.get('title', '')}")
+    return problems
+
+
+def _check_issues(
+    register_path: Path,
+    planning_dir: Path,
+    *,
+    check_issues: bool,
+    check_issue_orphans: bool,
+) -> list[str]:
+    """Run the opt-in GitHub issue checks, sharing one batched ``gh issue list`` call.
+
+    Both checks are off by default (see ``main``'s ``--check-issues``/``--check-issue-orphans``
+    flags): they need network access and ``gh`` auth, which pre-commit's offline, fast posture
+    cannot assume, so only an explicit flag (as CI passes) runs them at all.
+
+    Args:
+        register_path: The unscheduled-work register markdown file, searched for citations by
+            ``--check-issues``.
+        planning_dir: The directory searched recursively for citations by
+            ``--check-issue-orphans`` (in the real repository, ``docs/planning/``).
+        check_issues: Whether to run the cited-issue-not-closed check.
+        check_issue_orphans: Whether to run the open-issue-cited-somewhere check.
+
+    Returns:
+        list[str]: Problems found; empty when neither flag is set or every check passes.
+    """
+    if not check_issues and not check_issue_orphans:
+        return []
+
+    problems: list[str] = []
+    issues = _fetch_github_issues(problems)
+    if issues is None:
+        return problems
+
+    if check_issues:
+        register_lines = _read_lines(register_path, problems)
+        if register_lines is not None:
+            try:
+                clusters = _find_clusters(register_lines)
+            except LookupError as exc:
+                problems.append(f"{register_path.name}: {exc}")
+            else:
+                citations = _collect_register_issue_citations(clusters)
+                problems.extend(
+                    _check_cited_issues_not_closed(citations, issues, register_path)
+                )
+
+    if check_issue_orphans:
+        cited_numbers = _planning_docs_cited_issue_numbers(planning_dir)
+        problems.extend(_check_issue_orphans(issues, cited_numbers))
+
+    return problems
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1591,16 +2034,45 @@ def main(argv: list[str] | None = None) -> int:
         default=str(_DEFAULT_CAPABILITY_REGISTER),
         help="Path to the capability register markdown file.",
     )
+    parser.add_argument(
+        "--check-issues",
+        action="store_true",
+        help=(
+            "Also validate that a register row citing a GitHub issue (an 'issue:NNN' Phase "
+            "value, or a bare '#NNN' inside a cluster D row) never cites an issue GitHub "
+            "reports CLOSED while the row itself is not done, and that every cited issue "
+            "number exists. Off by default: needs network access and 'gh' auth, so pre-commit "
+            "stays offline; only CI passes this flag."
+        ),
+    )
+    parser.add_argument(
+        "--check-issue-orphans",
+        action="store_true",
+        help=(
+            "Also validate that every OPEN GitHub issue is cited somewhere under "
+            "docs/planning/ or carries the 'unplanned' label. Off by default, independent of "
+            "--check-issues: needs network access and 'gh' auth."
+        ),
+    )
     args = parser.parse_args(argv)
 
     register_path = Path(args.register)
+    capability_register_path = Path(args.capability_register)
     problems = check_linkage(
         register_path,
         Path(args.roadmap),
         Path(args.debt_register),
         Path(args.lessons_log),
-        Path(args.capability_register),
+        capability_register_path,
         manifest_path=Path(args.manifest),
+    )
+    problems.extend(
+        _check_issues(
+            register_path,
+            register_path.parent,
+            check_issues=args.check_issues,
+            check_issue_orphans=args.check_issue_orphans,
+        )
     )
     if problems:
         sys.stdout.write(f"FAIL {register_path}:\n")
@@ -1610,6 +2082,7 @@ def main(argv: list[str] | None = None) -> int:
 
     sys.stdout.write(f"ok: {register_path.name} satisfies the work-linkage contract\n")
     sys.stdout.write(_summary(register_path))
+    sys.stdout.write(_capability_summary(capability_register_path))
     return 0
 
 

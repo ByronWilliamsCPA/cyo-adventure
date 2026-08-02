@@ -53,8 +53,9 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: read
-      # Only the scheduled run files an issue; pull_request runs surface the
-      # failure on the pull request itself and need nothing beyond read.
+      # write is a superset of read; the scheduled run's drift-issue-filing
+      # step needs write, and that covers the read access --check-issues
+      # needs to list issues via `gh issue list`.
       issues: write
 
     steps:
@@ -73,7 +74,13 @@ jobs:
           python-version: '3.14'
 
       - name: Check work linkage
-        run: python scripts/check_work_linkage.py
+        # --check-issues resolves every issue:NNN / cluster-D #NNN citation
+        # against GitHub in one batched `gh issue list` call; the pre-commit
+        # hook that runs this same script locally omits the flag so it stays
+        # offline. GH_TOKEN authenticates the gh CLI invocation.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/check_work_linkage.py --check-issues
 
       - name: Check the authoring lessons log
         # Runs even when the linkage check failed, so one run reports both
