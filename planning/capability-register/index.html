@@ -2859,7 +2859,7 @@
 
 <h1 id="capability-register">Capability Register<a class="headerlink" href="#capability-register" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Active | <strong>Version</strong>: 1.8 | <strong>Created</strong>: 2026-07-16 | <strong>Updated</strong>: 2026-07-25
+<p><strong>Status</strong>: Active | <strong>Version</strong>: 1.9 | <strong>Created</strong>: 2026-07-16 | <strong>Updated</strong>: 2026-08-01
 (v1.4: note corrections and ruling queue from the full traceability review, see
 <a href="../traceability-review-2026-07-16/">traceability-review-2026-07-16.md</a>;
 v1.5: owner rulings applied: K18 and A16 minted, back button ratified, ADR-007
@@ -2874,7 +2874,18 @@ see the 2026-07-20 plan-audit summary in roadmap.md for the full cross-doc recon
 v1.8 (2026-07-25): <strong>G18</strong> and <strong>K20</strong> minted for guardian opt-in story personalization
 (<a href="../adr/adr-023-story-personalization-slots/">ADR-023</a>, status Proposed), with scope notes
 added to G4, G17, K19, S10, S11, and S12; see the ruling entry under "Unregistered scope" for
-why two new IDs rather than cross-references alone)</p>
+why two new IDs rather than cross-references alone;
+v1.9 (2026-08-01): <strong>K21, K22, K23, and G19</strong> minted for gamification, the weekly
+reading-days ring, day-grain active reading time, and guardian gamification controls,
+from owner decisions D6/D12/D16/D17 in
+<a href="../design-review-kid-appeal-2026-08-01/">design-review-kid-appeal-2026-08-01.md</a>
+section 8; <strong>row wording awaits owner final sign-off</strong>. Same-day delivery notes added to
+K12 and K19 (kid loop closure shipped: honest request status, picker pill, reflect-back
+surfaced), G9 and S10 (K23 extensions). Rendered-stop flow, the choice grammar, tone,
+and POV rulings change presentation and content contracts under existing IDs (K1, K2,
+K5, K11, K13) rather than minting new ones; ADR-026 and ADR-011 section 10 are their
+decision records. K8's illustration pilot (plan wave 4) and K23/K22 delivery will flip
+statuses when shipped)</p>
 <p><strong>Delivery update (2026-07-17, M4b-d execution on branch
 claude/app-capabilities-review-wm6gt3)</strong>: the following capabilities moved to DELIVERED
 (code, tests, and E2E where noted; commits 5fd1de7 through 6f729d5): K5 (Go Back pinned),
@@ -2962,7 +2973,7 @@ vision doc (v1.2):</p>
 <td>K1</td>
 <td>Read with age-appropriate presentation: legible type, UI complexity, and reading level matched to the child's band</td>
 <td>✅</td>
-<td>Bands/reading levels specced (ADR-011); per-band presentation/UX shipped PR #389 (2026-07-24): <code>KidShell.tsx</code> stamps <code>data-age-band</code>, <code>band-tokens.css</code> maps every <code>AgeBand</code> to typography/motion tiers, consumed live by <code>PassageText.css</code>/<code>reader.css</code>. Residual: <code>--band-tap-min</code> token defined but unconsumed by <code>Button.css</code> (tracked as a trivial follow-up, not a scope gap)</td>
+<td>Bands/reading levels specced (ADR-011); per-band presentation/UX shipped PR #389 (2026-07-24): <code>KidShell.tsx</code> stamps <code>data-age-band</code>, <code>band-tokens.css</code> maps every <code>AgeBand</code> to typography/motion tiers, consumed live by <code>PassageText.css</code>/<code>reader.css</code>. Residual (corrected 2026-08-01 per the kid-appeal design review section 6 item 2): not just <code>--band-tap-min</code>; the entire motion and gap tier of <code>band-tokens.css</code> (<code>--band-motion-*</code>, <code>--band-gap</code>) has zero consumers, so the 8-11/10-13 "adventurer" tier renders identically to the teen tier, and the file's header cites a <code>frontend/src/kid/ageBand.ts</code> that does not exist. Consume or delete (design review recommendation 11)</td>
 </tr>
 <tr>
 <td>K2</td>
@@ -3028,7 +3039,7 @@ vision doc (v1.2):</p>
 <td>K12</td>
 <td>Kid-friendly waiting and error states: "your story is being written", sync conflicts, and failures presented in kid terms</td>
 <td>✅</td>
-<td>Shipped 2026-07-17 in PR #270 (per its own delivery banner, "K12 complete incl. generation status"): kid-language request statuses, plain-language conflict dialog, mascot error/empty states, honest save-retry banner, and the kid-facing generation-in-progress state</td>
+<td>Shipped 2026-07-17 in PR #270 (per its own delivery banner, "K12 complete incl. generation status"): kid-language request statuses, plain-language conflict dialog, mascot error/empty states, honest save-retry banner, and the kid-facing generation-in-progress state. <strong>Extended 2026-08-01</strong> (plan W0.4/W1.4, closing persona-audit findings 1A/2B): request status is now honest end to end via <code>story_request.resulting_storybook_id</code> (the title-substring guess is deleted; an ordinary one-off request flips to "it's on your shelf" when the linked book is assigned), and the profile picker gained the "new story!" pill over the boolean-only bulk <code>GET /v1/profiles/story-status</code> endpoint (7-day assignment window matching the shelf's NEW badge)</td>
 </tr>
 <tr>
 <td>K13</td>
@@ -3070,13 +3081,31 @@ vision doc (v1.2):</p>
 <td>K19</td>
 <td>Request interpretation and expectation-setting: when a child submits a free-form story idea, the app reflects it back in kid terms before generation, what it understood and will build into the story versus what it set aside and why (outside the age band, not safe, or not part of this kind of story), so the child knows what to expect from their wish</td>
 <td>✅</td>
-<td>DELIVERED 2026-07-20 (WS-7 D1-D8): the interpretation core (<code>story_requests/interpretation.py</code>), the persisted <code>story_request.interpretation</code> column, the submission-time general layer, the contract-grounded refined layer (interpret-and-bind + worker wiring), the CANNOT_CARRY rejection surface, and the D8 API contract (<code>RequestInterpretationView</code> on the story-request view) are built, tested, and merged. Added 2026-07-18 (owner directive). Design record: <a href="../story-flexibility-plan/">story-flexibility-plan.md</a> WS-7 and <a href="../ws7-request-interpretation-design/">ws7-request-interpretation-design.md</a>. Gated by K13 (never echo unsafe input back); complements K11 (express a request) and K12 (kid-friendly states). The guardian-console view is the G-side companion surface. <strong>Copy dependency added 2026-07-25</strong>: this capability's kid-facing Route A line ("Heroes in our stories always have made-up names") becomes false for a family that enables <strong>G18</strong>, so ADR-023 makes rewording it a precondition on that feature's flag, not a follow-up; the wording also has to stay consistent with PR #415's A11 hero-name copy. <strong>Status checked 2026-07-26: this dependency is still OPEN, and note the collision of two different "A11"s.</strong> The register's own A11 (corpus quality tooling, above) is a separate item; the one named here is PR #415's plan item A11, a reader-UX change to <code>RequestStory.tsx</code>. That change is unstarted, gated behind a naive-user comprehension session, and PR #415 has touched zero frontend files, so the Route A hero-name copy is unchanged on both sides. Both halves of the dependency therefore remain to be done together, and neither G18 nor plan-A11 may ship its wording without the other</td>
+<td>DELIVERED 2026-07-20 (WS-7 D1-D8): the interpretation core (<code>story_requests/interpretation.py</code>), the persisted <code>story_request.interpretation</code> column, the submission-time general layer, the contract-grounded refined layer (interpret-and-bind + worker wiring), the CANNOT_CARRY rejection surface, and the D8 API contract (<code>RequestInterpretationView</code> on the story-request view) are built, tested, and merged. Added 2026-07-18 (owner directive). Design record: <a href="../story-flexibility-plan/">story-flexibility-plan.md</a> WS-7 and <a href="../ws7-request-interpretation-design/">ws7-request-interpretation-design.md</a>. Gated by K13 (never echo unsafe input back); complements K11 (express a request) and K12 (kid-friendly states). The guardian-console view is the G-side companion surface. <strong>Copy dependency added 2026-07-25</strong>: this capability's kid-facing Route A line ("Heroes in our stories always have made-up names") becomes false for a family that enables <strong>G18</strong>, so ADR-023 makes rewording it a precondition on that feature's flag, not a follow-up; the wording also has to stay consistent with PR #415's A11 hero-name copy. <strong>Status checked 2026-07-26: this dependency is still OPEN, and note the collision of two different "A11"s.</strong> The register's own A11 (corpus quality tooling, above) is a separate item; the one named here is PR #415's plan item A11, a reader-UX change to <code>RequestStory.tsx</code>. That change is unstarted, gated behind a naive-user comprehension session, and PR #415 has touched zero frontend files, so the Route A hero-name copy is unchanged on both sides. Both halves of the dependency therefore remain to be done together, and neither G18 nor plan-A11 may ship its wording without the other. <strong>Kid-UI delivery closed 2026-08-01</strong> (plan W1.4, resolving the persona audit's 2A finding that the kid surface showed none of the reflect-back): the request card now renders "We heard you: {interpretation.kid_summary}" on pending and approved requests, so the register status and the shipped surface finally agree</td>
 </tr>
 <tr>
 <td>K20</td>
 <td>Read a story that uses my own details: my name, and a small closed set of other things my grown-up has turned on (a pet, a brother or sister, what I call my grandma), appearing in the story itself; plus my own switch to turn that off and back on for my books</td>
 <td>❌</td>
 <td>Proposed 2026-07-25 in <a href="../adr/adr-023-story-personalization-slots/">ADR-023</a> (status Proposed, not yet Accepted). The kid-facing half of G18. Distinct from K16 (picking "me" from a picker is identity <em>in the app</em>; this is identity <em>in the story</em>) and from K11/K19 (what a child may <em>ask for</em> is unchanged: Route A's self-naming block stays fully in force, and this capability is reached only through a guardian setting, never by asking). The child's switch narrows within the guardian's envelope and can never widen it. <strong>Not offered at the 3-5 band</strong>: a control a pre-reader cannot exercise is not a safeguard, so for the youngest band this is guardian-controlled with no child-side surface (ADR-023 section 9)</td>
+</tr>
+<tr>
+<td>K21</td>
+<td>Collect and be celebrated: an endings gallery (found endings as cards, unfound as silhouettes), finished-shelf states, and story-themed badges earned from real reading (distinct endings, distinct books, replay depth); rewards are made of story, never points or currency; family-visible within ring 1, never ranked against siblings, never crossing ring 2</td>
+<td>🟡</td>
+<td><strong>Minted 2026-08-01</strong> from owner decisions D6/D12 (<a href="../design-review-kid-appeal-2026-08-01/">design-review-kid-appeal-2026-08-01.md</a> section 8; design authority <a href="../gamification-recommendation-2026-08-01/">gamification-recommendation-2026-08-01.md</a> sections 1-2). Row wording awaits owner sign-off. <strong>Delivered 2026-08-01</strong> end to end: backend projection (<code>progress/</code> package, <code>GET /v1/me/progress</code>, badges 1-8/10/11) and kid UI (<code>EndingsGallery.tsx</code>, <code>BadgeCase.tsx</code>, <code>BookCard</code> ribbons, <code>BadgeUnlockToast</code> with badges_enabled suppression). Residuals: badges 9 and 12 (dependencies landed same day, trailing work), curated badge art (placeholder styling). Bounded by K14: no loss states, no leaderboards, no purchasable anything</td>
+</tr>
+<tr>
+<td>K22</td>
+<td>A weekly reading-days ring: "you read on N days this week" toward a per-band default goal, celebrating a filled week and doing nothing at all on an unfilled one; no consecutive-day streak, no resets, no reminders; goal capped at 6 so one free day is always guaranteed; off by default at 3-5; teen bands set their own goal within a guardian cap</td>
+<td>🟡</td>
+<td><strong>Minted 2026-08-01</strong> from owner decisions D6/D16/D17 (per-band defaults table P-A, approved). Row wording awaits owner sign-off. Design authority: gamification recommendation section 2.3 (the no-loss-state rationale and the calendar-day versus reading-days evidence). <strong>Delivered same day</strong>: <code>WeeklyRing.tsx</code> in the kid shell, server-resolved P-A defaults (<code>api/progress.py::_resolve_ring_settings</code>, cap-6 triple-backstopped), once-per-week celebration, fail-closed on fetch errors, guardian toggles. Residual: teen self-set goal within the guardian cap (guardian-only in v1, #ASSUME-tagged both sides). Guardian per-profile controls are G19</td>
+</tr>
+<tr>
+<td>K23</td>
+<td>My reading days are counted honestly and privately: active reading time captured at day grain only (nothing finer ever leaves the device), surfacing to the child as days and milestones, never minutes; guardian sees minutes per day as a literacy signal (G9); first-party only, 12-month day-grain retention default, and never used to make the app harder to put down</td>
+<td>🟡</td>
+<td><strong>Minted 2026-08-01</strong> from owner decisions D12 (total active reading time added) and the plan defaults (retention). Row wording awaits owner sign-off. <strong>Substrate delivered 2026-08-01</strong>: reading_activity_day table (CASCADE, RLS, deletion-drill), idempotent clamped flush endpoint with server-side enforcement of the guardian pause toggle, 90s-idle visibility-gated client accumulator with offline day buckets. Residuals: 12-month retention/rollover job unbuilt (documented in the model), counsel-bundle entry pending (UW-M03). Extends S10's data classification (new child-linked behavioral category; counsel-bundle retention entry per UW-M03) and is bound by K14's no-dark-patterns exclusion, which the trust copy makes testable: "nothing in the app punishes a missed day"</td>
 </tr>
 </tbody>
 </table>
@@ -3143,7 +3172,7 @@ vision doc (v1.2):</p>
 <td>G9</td>
 <td>Engagement visibility: what each child is reading, how much, endings found, re-reads; literacy signals, not surveillance</td>
 <td>✅</td>
-<td>Shipped 2026-07-17 in PR #270: <code>GET /families/me/reading-summary</code> (<code>src/cyo_adventure/api/reading_history.py</code>), guardian-facing <code>frontend/src/guardian/ReadingPage.tsx</code>. Open extension (proposed 2026-07-25, <a href="../reader-path-engagement-design/">reader-path-engagement-design.md</a> decision 4): whether a guardian sees their own child's <strong>stop points</strong>. "Started three times, furthest point chapter 3" is real reading-support value for a struggling reader and is the closest this capability comes to its own surveillance edge; the recommendation is book-granular support framing, never a choice-by-choice replay. Note the underlying data already arrives and is discarded: the offline client sends the full accumulated <code>path</code> on every save and the server overwrites it</td>
+<td>Shipped 2026-07-17 in PR #270: <code>GET /families/me/reading-summary</code> (<code>src/cyo_adventure/api/reading_history.py</code>), guardian-facing <code>frontend/src/guardian/ReadingPage.tsx</code>. Open extension (proposed 2026-07-25, <a href="../reader-path-engagement-design/">reader-path-engagement-design.md</a> decision 4): whether a guardian sees their own child's <strong>stop points</strong>. "Started three times, furthest point chapter 3" is real reading-support value for a struggling reader and is the closest this capability comes to its own surveillance edge; the recommendation is book-granular support framing, never a choice-by-choice replay. Note the underlying data already arrives and is discarded: the offline client sends the full accumulated <code>path</code> on every save and the server overwrites it. <strong>Extended 2026-08-01</strong>: the reading summary gains minutes-per-day and days-per-week from K23's day-grain reading-time substrate (plan W3.3, in flight); the per-profile control surface for that data is G19</td>
 </tr>
 <tr>
 <td>G10</td>
@@ -3198,6 +3227,12 @@ vision doc (v1.2):</p>
 <td>Opt a child's real details into their stories, per child and per slot, scoped by ring: within our own family (ring 1) or additionally with a specific connected family (ring 2, behind its own signed disclosure consent); and revoke either at any time</td>
 <td>❌</td>
 <td>Proposed 2026-07-25 in <a href="../adr/adr-023-story-personalization-slots/">ADR-023</a> (status Proposed, not yet Accepted; OD-1 and OD-5 gate the ring-2 half). Everything defaults <strong>off</strong>. Extends G4 ("personalized stories") with a mechanism G4's own note could not offer: substitution happens client-side at render time, so the S10 invariant ("no child PII to providers") is preserved rather than traded away. The ring-2 consent is layered <strong>on top of</strong> G17's connection consent, never merged into it: G17 consents to recommendations crossing the boundary, G18 consents to a child's real details appearing in story content read in another household. Revocation is prospective (effective on the connected household's next connection), not a retroactive claw-back</td>
+</tr>
+<tr>
+<td>G19</td>
+<td>Gamification controls: per-profile toggles for the weekly ring (on/off and goal, within the cap), badges (hide without losing earned awards), and a pause switch for reading-time capture; defaults per the approved P-A table (ring off at 3-5); plus the guardian-side reading-time view (minutes per day, days per week) folded into the existing G9 reading summary</td>
+<td>🟡</td>
+<td><strong>Minted 2026-08-01</strong> from owner decisions D12/D16/D17. Row wording awaits owner sign-off. Design authority: gamification recommendation section 4 (controls and defaults table). Distinct from G3 (request permissions and limits; its note explicitly scoped screen-time norms out, and the ring is a reading goal, not a screen-time cap) and from G2 (content controls). <strong>Partially delivered 2026-08-01</strong> (flip ❌ to 🟡): per-profile toggles shipped in <code>ProfileFormDialog.tsx</code> backed by the child_profile gamification columns; the reading-summary API carries minutes_last_7_days and days_read_this_week. Residual: the guardian ReadingPage UI does not yet render the time fields (API-only)</td>
 </tr>
 </tbody>
 </table>
@@ -3379,7 +3414,7 @@ vision doc (v1.2):</p>
 <td>S10</td>
 <td>Privacy architecture: no child PII to providers, data minimization, deletion-readiness, no third-party trackers in the kid context</td>
 <td>✅</td>
-<td>Privacy model, PII guard, ADR-007/008/009. <strong>Materially extended, not merely touched, by G18/K20</strong> (ADR-023, proposed 2026-07-25): the "no PII to providers" invariant is preserved by construction, but the feature adds a new child-linked data category (per-child slot values), a new client-held payload at rest on devices, and a new cross-family flow, all of which the classification, retention schedule, and deletion drill must cover</td>
+<td>Privacy model, PII guard, ADR-007/008/009. <strong>Materially extended, not merely touched, by G18/K20</strong> (ADR-023, proposed 2026-07-25): the "no PII to providers" invariant is preserved by construction, but the feature adds a new child-linked data category (per-child slot values), a new client-held payload at rest on devices, and a new cross-family flow, all of which the classification, retention schedule, and deletion drill must cover. <strong>Extended again 2026-08-01 by K23</strong> (reading_activity_day): a second new child-linked behavioral category, deliberately day-grain-only, cascade-purged with the profile, deletion-drill-covered, with a 12-month day-grain retention default entered into the UW-M03 counsel bundle</td>
 </tr>
 <tr>
 <td>S11</td>
@@ -3511,7 +3546,7 @@ Added 2026-07-25 by the ADR-023 authorship pass:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 31, 2026 04:06:36 UTC">July 31, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
   </span>
 
     

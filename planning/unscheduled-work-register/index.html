@@ -3707,7 +3707,7 @@ substantially the same work under different headings. Do not triple-book.</p>
 <tbody>
 <tr>
 <td>UW-C01</td>
-<td><strong><code>AL-014</code> blocking</strong>: no hand-authored skeleton can pass <code>check_promotion_bundle</code>, because the lineage sidecar is unconditional. Called blocking inside <code>A11</code> while sitting in the post-launch backlog.</td>
+<td><strong><code>AL-014</code> blocking</strong>: no hand-authored skeleton could pass <code>check_promotion_bundle</code>, because the lineage sidecar was unconditional. <strong>Partially closed 2026-08-01</strong> (PR #532, commit <code>4b6fe922</code>): <code>prove_shell</code> now runs <code>check_skeleton</code> (gate/cell/envelope) and <code>check_theme_contract</code> for a lineage-less shell and skips only the two parent-relative legs, logging that it did; the <code>skeleton-promotion.yml</code> filter that had been dropping such shells out of the prover's argv entirely is gone. <strong>Still open</strong>: <code>AL-014</code>'s proposal also asked for an origin sidecar and for the WS-5 anti-clone floor to still apply to a hand-authored original. The floor is parent-relative and cannot run without a lineage parent, so proving an original against its in-cell siblings (the <code>UW-C06</code> <code>check_incell_clones</code> path) is the remaining work.</td>
 <td>now</td>
 <td>unscheduled</td>
 </tr>
@@ -3836,6 +3836,18 @@ substantially the same work under different headings. Do not triple-book.</p>
 <td><code>AL-073</code> resolve <code>OLLAMA_CA_BUNDLE</code> and sibling file-path settings repo-root-relative in <code>core/config.py</code> (or build the <code>--preflight</code> mode <code>AL-056</code> already proposed), so a script run from a git worktree does not fail on a cwd-relative CA-bundle path. Second occurrence of the same defect <code>UW-C16</code> already tracks; recorded separately per the linkage contract because it is a distinct lesson row, but the fix is the same work item.</td>
 <td>CI hygiene</td>
 <td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C23</td>
+<td>ADR-011 section 10's flowed-band choiceless rule ("1, prefer 0" at 8-11, "0-1" above) counts STOPS and is unimplemented. <code>validator/choice_grammar.py</code>'s CG-1 caps consecutive single-choice NODES at 6 for those bands, which is a derived words-per-stop backstop, not the ADR rule, and its <code>#ASSUME</code> now says so. Implementing the real rule needs stop-level adjacency (ADR-026 <code>compose_stop</code> boundaries), which nothing in the validator computes today. Surfaced by the PR #532 review (I8).</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C24</td>
+<td>Every <code>CG-1</code>..<code>CG-4</code> choice-grammar rule is inert in production: <code>validator/gate.py::run_gate</code> defaults <code>enforce_grammar=False</code> and no production caller passes <code>True</code> (only <code>tests/unit/test_choice_grammar.py</code> does). The D3/D11 grandfathering rationale is sound, but the flip condition was recorded nowhere. It is now stated in the module docstring: the flag flips when the D11 <code>deprecated</code> per-skeleton marker lands (W2.4), at which point the gate can enforce for unmarked (new) skeletons and skip marked ones, and the default can become <code>True</code>. Until then the rules produce no finding on any real story. Surfaced by the PR #532 review (I9).</td>
+<td>4b</td>
+<td>decision</td>
 </tr>
 </tbody>
 </table>
@@ -5019,7 +5031,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 31, 2026 21:33:03 UTC">July 31, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
   </span>
 
     

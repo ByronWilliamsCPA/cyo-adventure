@@ -3045,6 +3045,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#kid-progress-badges-and-weekly-ring-k21k22k23-w32w34" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kid: progress, badges, and weekly ring (K21/K22/K23, W3.2/W3.4)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#kid-read-a-story-reader-page-choices-endings" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3639,7 +3650,7 @@ detail when a storybook has more than one version).</p>
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/device-authorization.spec.ts</code>, <code>frontend/e2e/landing.spec.ts</code>, <code>frontend/e2e/profiles.spec.ts</code>, <code>frontend/e2e/naive-user/naive-kid-misuse.spec.ts</code></li>
 <li>E2E-real: <code>frontend/e2e-real/kid-reads.spec.ts</code></li>
-<li>Component: <code>frontend/src/kid/ProfilePickerPage.test.tsx</code> (incl. PIN gate), <code>frontend/src/kid/KidNav.test.tsx</code>, <code>frontend/src/kid/KidShell.test.tsx</code>, <code>frontend/src/kid/childSessionApi.test.ts</code>, <code>frontend/src/profiles/AvatarCircle.test.tsx</code>, <code>frontend/src/profiles/profilesApi.test.ts</code></li>
+<li>Component: <code>frontend/src/kid/ProfilePickerPage.test.tsx</code> (incl. PIN gate), <code>frontend/src/kid/KidNav.test.tsx</code>, <code>frontend/src/kid/KidShell.test.tsx</code>, <code>frontend/src/kid/childSessionApi.test.ts</code>, <code>frontend/src/kid/storyStatusApi.test.ts</code> (W1.4 "new story!" pill adapter: normal, malformed, and error responses all degrade to no pills), <code>frontend/src/profiles/AvatarCircle.test.tsx</code>, <code>frontend/src/profiles/profilesApi.test.ts</code></li>
 <li>Integration: <code>frontend/src/test/App.test.tsx</code></li>
 </ul>
 <h2 id="kid-browse-library">Kid: browse library<a class="headerlink" href="#kid-browse-library" title="Permanent link">&para;</a></h2>
@@ -3651,11 +3662,29 @@ detail when a storybook has more than one version).</p>
 <li>Component: <code>frontend/src/library/LibraryPage.test.tsx</code>, <code>frontend/src/library/BookCard.test.tsx</code>, <code>frontend/src/library/pickHero.test.ts</code>, <code>frontend/src/library/libraryApi.test.ts</code>, <code>frontend/src/library/RequestStory.test.tsx</code>, <code>frontend/src/library/storyRequestApi.test.ts</code>, <code>frontend/src/library/bookCardUtils.test.ts</code> (the "New" badge's pure predicate, <code>isRecentlyPublished</code>: inside and exactly at the <code>NEW_BADGE_WINDOW_MS</code> edge is new, one second past it is not, and every not-new fallback is pinned explicitly rather than left to chance, a null <code>published_at</code>, the field absent entirely on an offline-cached item that predates it, a malformed timestamp, and a future timestamp as clock-skew defense)</li>
 <li>Integration: <code>frontend/src/test/App.test.tsx</code></li>
 </ul>
+<h2 id="kid-progress-badges-and-weekly-ring-k21k22k23-w32w34">Kid: progress, badges, and weekly ring (K21/K22/K23, W3.2/W3.4)<a class="headerlink" href="#kid-progress-badges-and-weekly-ring-k21k22k23-w32w34" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Component: <code>frontend/src/kid/WeeklyRing.test.tsx</code> (band-default resolution, once-per-week
+  celebration, K14 no-negative-states), <code>frontend/src/kid/BadgeCase.test.tsx</code> (earned vs locked
+  rendering), <code>frontend/src/kid/badgeCatalog.test.ts</code> (drift guard against the backend badge
+  catalog), <code>frontend/src/kid/progressApi.test.ts</code> (adapter shape degradation to safe defaults),
+  <code>frontend/src/library/EndingsGallery.test.tsx</code> (found cards, hidden silhouettes, large-M
+  milestone mode, no negative framing), <code>frontend/src/reader/ReaderPage.badgeToast.test.tsx</code>
+  (unlock diff + IndexedDB seen-state dedupe), <code>frontend/src/reader/BadgeUnlockToast.test.tsx</code>
+  (auto-dismiss, manual close, disabled auto-dismiss, unmount cleanup),
+  <code>frontend/src/reader/EndingsGalleryButton.test.tsx</code> (opens only after the fetch settles,
+  in-flight disable, failure logs profile context and degrades to the empty state),
+  <code>frontend/src/kid/kidMotion.test.ts</code> (stylesheet-text assertions that both reduce-motion
+  paths, the OS preference and the guardian per-profile flag, still the weekly ring's
+  progress transition, its celebrate animation, and the picker pill; jsdom never applies
+  these rules, so no rendering test can cover them)</li>
+<li>Integration: <code>frontend/src/test/App.test.tsx</code></li>
+</ul>
 <h2 id="kid-read-a-story-reader-page-choices-endings">Kid: read a story (reader page, choices, endings)<a class="headerlink" href="#kid-read-a-story-reader-page-choices-endings" title="Permanent link">&para;</a></h2>
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/reader.spec.ts</code>, <code>frontend/e2e/reader-conflict.spec.ts</code>, <code>frontend/e2e/reader-reload-resume.spec.ts</code>, <code>frontend/e2e/series-continue.spec.ts</code></li>
 <li>E2E-real: <code>frontend/e2e-real/kid-reads.spec.ts</code>, <code>frontend/e2e-real/series-continue-real.spec.ts</code></li>
-<li>Component: <code>frontend/src/reader/Reader.test.tsx</code>, <code>frontend/src/reader/ReaderPage.test.tsx</code> (largest suite), <code>frontend/src/reader/ReaderRoute.test.tsx</code>, <code>frontend/src/reader/ReaderChrome.test.tsx</code>, <code>frontend/src/reader/ReaderLeave.test.tsx</code>, <code>frontend/src/reader/BackToLibrary.test.tsx</code>, <code>frontend/src/reader/dialogs.test.tsx</code>, <code>frontend/src/reader/readerProgress.test.ts</code>, <code>frontend/src/player/engine.test.ts</code>, <code>frontend/src/player/evaluator.test.ts</code>, <code>frontend/src/player/machine.test.ts</code>, <code>frontend/src/api/readerApi.test.ts</code></li>
+<li>Component: <code>frontend/src/reader/Reader.test.tsx</code>, <code>frontend/src/reader/ReaderPage.test.tsx</code> (largest suite), <code>frontend/src/reader/ReaderRoute.test.tsx</code>, <code>frontend/src/reader/ReaderChrome.test.tsx</code>, <code>frontend/src/reader/ReaderLeave.test.tsx</code>, <code>frontend/src/reader/BackToLibrary.test.tsx</code>, <code>frontend/src/reader/dialogs.test.tsx</code>, <code>frontend/src/reader/readerProgress.test.ts</code>, <code>frontend/src/player/engine.test.ts</code>, <code>frontend/src/player/evaluator.test.ts</code>, <code>frontend/src/player/machine.test.ts</code>, <code>frontend/src/player/stops.test.ts</code> (ADR-026 rendered-stop composition, shared <code>stop_traces.json</code> corpus with the Python engine), <code>frontend/src/api/readerApi.test.ts</code>, <code>frontend/src/reader/readerSoundEvents.test.ts</code>, <code>frontend/src/reader/soundPreference.test.ts</code>, <code>frontend/src/reader/sounds.test.ts</code> (W4.2 placeholder SFX: mute logic, reduce-motion quiet default, event bus isolation), <code>frontend/src/reader/useReadingTimeAccumulator.test.ts</code> (K23 client half: 90s idle window, visibility gating, read-aloud counts as active)</li>
 <li>Integration: <code>frontend/src/test/App.test.tsx</code></li>
 </ul>
 <h2 id="kid-personalized-story-rendering-adr-023-p6p7-flag-gated">Kid: personalized story rendering (ADR-023 P6/P7, flag-gated)<a class="headerlink" href="#kid-personalized-story-rendering-adr-023-p6p7-flag-gated" title="Permanent link">&para;</a></h2>
@@ -3704,7 +3733,7 @@ detail when a storybook has more than one version).</p>
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/reader.spec.ts</code> (fully-offline play), <code>frontend/e2e/reader-conflict.spec.ts</code>, <code>frontend/e2e/reader-reload-resume.spec.ts</code>, <code>frontend/e2e/naive-user/naive-kid-misuse.spec.ts</code> (reload resume)</li>
 <li>E2E-real: <code>frontend/e2e-real/offline-conflict-real.spec.ts</code> (two real <code>BrowserContext</code>s race saves on "The Clockwork Garden": device A creates the row, device B resyncs and advances it, device A's next save gets a real 409 resolved via "Keep this device", device B's next gets a real 409 resolved via "Use the newest place"; picked up by the nightly <code>e2e-real-nightly.yml</code>), <code>frontend/e2e-real/offline-online-parity-real.spec.ts</code> (G3, Phase 7.3: on "The Clockwork Garden", a condition-gated story, the identical five-choice sequence is driven online through the real backend and, in a separate profile, offline through the client player engine then synced; both land on the same final node/path/visit_set/var_state and the same ending, proving offline/online branch parity; each pass also forces a real Python-engine replay of its own choice sequence via the <code>choice_path</code> field on the reading-state PUT, so the parity is confirmed cross-engine, not just client-vs-client)</li>
-<li>Component: <code>frontend/src/offline/db.test.ts</code>, <code>frontend/src/offline/sync.test.ts</code>, <code>frontend/src/offline/revocation.test.ts</code> (offline-copy revocation reconcile: shared-blob refcounting, cross-profile isolation, queue-drop, never-purge-on-failed-fetch, and the documented mid-read latency window), <code>frontend/src/reader/ReaderPage.test.tsx</code> (conflict dialog resolution paths), <code>frontend/src/reader/ReaderRoute.test.tsx</code> (replay-reconciliation suite), <code>frontend/src/reader/dialogs.test.tsx</code> (ConflictDialog UI), <code>frontend/src/hooks/useReplayOnReconnect.test.ts</code>, <code>frontend/src/hooks/useOnlineStatus.test.ts</code>, <code>frontend/src/library/LibraryPage.test.tsx</code> (the reconcile call-site: fires only on the success branch, re-fires on reconnect, logs a reconcile rejection)</li>
+<li>Component: <code>frontend/src/offline/db.test.ts</code>, <code>frontend/src/offline/sync.test.ts</code>, <code>frontend/src/offline/downloadBudget.test.ts</code> (W4.3 250MB/500MB storage.estimate gate + least-recently-opened eviction + kid-friendly refusal), <code>frontend/src/offline/readingTimeSync.test.ts</code> (K23 idempotent day-bucket flush: frozen flush_id/delta pairs, offline accrual), <code>frontend/src/offline/revocation.test.ts</code> (offline-copy revocation reconcile: shared-blob refcounting, cross-profile isolation, queue-drop, never-purge-on-failed-fetch, and the documented mid-read latency window), <code>frontend/src/reader/ReaderPage.test.tsx</code> (conflict dialog resolution paths), <code>frontend/src/reader/ReaderRoute.test.tsx</code> (replay-reconciliation suite), <code>frontend/src/reader/dialogs.test.tsx</code> (ConflictDialog UI), <code>frontend/src/hooks/useReplayOnReconnect.test.ts</code>, <code>frontend/src/hooks/useOnlineStatus.test.ts</code>, <code>frontend/src/library/LibraryPage.test.tsx</code> (the reconcile call-site: fires only on the success branch, re-fires on reconnect, logs a reconcile rejection)</li>
 <li><strong>Gap</strong>: no <code>e2e-staging</code> or <code>e2e-prod</code> coverage of conflict/sync against a real backend. Offline-copy revocation (register G8/A5) has a known mid-read latency window: a book pulled server-side is not purged from the device until the next successful library fetch drives a reconcile; closing it needs a revocation push channel or reader-route mid-session revalidation, both out of scope (pinned by the <code>revocation.test.ts</code> "mid-read latency window" characterization test).</li>
 </ul>
 <h2 id="kid-series-continuation-across-storybooks">Kid: series continuation across storybooks<a class="headerlink" href="#kid-series-continuation-across-storybooks" title="Permanent link">&para;</a></h2>
@@ -3892,7 +3921,7 @@ closure. A companion action-level verdict for this audit lives at
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 15:52:00 UTC">July 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
   </span>
 
     

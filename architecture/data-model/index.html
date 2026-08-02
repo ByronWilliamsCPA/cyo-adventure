@@ -3467,6 +3467,8 @@ relationships, kept for inline rendering directly on GitHub without opening the 
     storybook ||--o{ reading_state : "read as"
     storybook_version ||--o{ reading_state : "pins version"
     child_profile ||--o{ completion : "completes"
+    child_profile ||--o{ reading_activity_day : "reads on days"
+    storybook |o--o{ story_request : "resulting storybook"
     storybook_version ||--o{ completion : "pins version"
     child_profile ||--o{ rating : "rates"
     child_profile ||--o{ storybook_assignment : "assigned to"
@@ -3528,6 +3530,10 @@ relationships, kept for inline rendering directly on GitHub without opening the 
         timestamptz processing_restricted_at "NULL; GDPR Art 18/21"
         boolean real_name_ring1_enabled "default false; ADR-023 own-family real name"
         boolean real_name_ring2_enabled "default false; ADR-023 connected-family real name"
+        boolean ring_enabled "NULL; G19/K22 band default when NULL"
+        int ring_goal_days "NULL; G19/K22 1-6, band default when NULL"
+        boolean badges_enabled "default true; G19/K21"
+        boolean time_capture_paused "default false; G19/K23 server discards flushes"
     }
 
     family_connection {
@@ -3641,6 +3647,14 @@ relationships, kept for inline rendering directly on GitHub without opening the 
         timestamptz found_at
     }
 
+    reading_activity_day {
+        uuid child_profile_id PK, FK
+        date activity_date PK
+        int active_seconds "CHECK &gt;= 0; K23 day-grain only"
+        varchar(120) last_flush_id "NULL; single-slot idempotency"
+        timestamptz updated_at
+    }
+
     rating {
         uuid child_profile_id PK, FK
         varchar(120) storybook_id PK, FK
@@ -3693,6 +3707,7 @@ relationships, kept for inline rendering directly on GitHub without opening the 
         uuid concept_id FK "NULL; set on approval"
         uuid series_id FK "NULL; WS-B PR3 continuation"
         varchar(120) anchor_storybook_id FK "NULL; soft-continuation source"
+        varchar(120) resulting_storybook_id FK "NULL; W0.4 stamped at publish, SET NULL on delete"
         varchar(120) proposed_series_title "NULL"
         timestamptz created_at
     }
@@ -5473,7 +5488,7 @@ primary authorization boundary; RLS is defense-in-depth beneath it, not a replac
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 30, 2026 21:49:37 UTC">July 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
   </span>
 
     

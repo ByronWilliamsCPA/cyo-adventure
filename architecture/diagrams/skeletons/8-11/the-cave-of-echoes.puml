@@ -19,8 +19,8 @@ state la_glitter2 #D1C4E9
 la_glitter2 : rising · 95w
 state la_grotto_app #FFF9C4
 la_grotto_app : choice · 100w
-state la_retreat_pool #FFCDD2
-la_retreat_pool : setback (negative)
+state la_retreat_pool #E0E0E0
+la_retreat_pool : setback (neutral)
 la_retreat_pool : "Turned Back at {A1_GATE}"
 state la_squeeze #D1C4E9
 la_squeeze : rising · 95w
@@ -44,8 +44,8 @@ state la_hum2 #D1C4E9
 la_hum2 : rising · 95w
 state la_bell_app #FFF9C4
 la_bell_app : choice · 100w
-state la_hum_back #FFCDD2
-la_hum_back : setback (negative)
+state la_hum_back #E0E0E0
+la_hum_back : setback (neutral)
 la_hum_back : "Turned Back at {A2_GATE}"
 state la_bell #D1C4E9
 la_bell : rising · 95w
@@ -66,8 +66,8 @@ state ra_lake2 #D1C4E9
 ra_lake2 : rising · 95w
 state ra_lake_app #FFF9C4
 ra_lake_app : choice · 105w
-state ra_lake_back #FFCDD2
-ra_lake_back : setback (negative)
+state ra_lake_back #E0E0E0
+ra_lake_back : setback (neutral)
 ra_lake_back : "Turned Back at {B1_GATE}"
 state ra_descend #D1C4E9
 ra_descend : rising · 95w
@@ -89,8 +89,8 @@ state ra_pool2 #D1C4E9
 ra_pool2 : rising · 95w
 state ra_pool_app #FFF9C4
 ra_pool_app : choice · 100w
-state ra_pool_back #FFCDD2
-ra_pool_back : setback (negative)
+state ra_pool_back #E0E0E0
+ra_pool_back : setback (neutral)
 ra_pool_back : "Turned Back at {B2_GATE}"
 state ra_pool_enter #D1C4E9
 ra_pool_enter : rising · 95w
@@ -116,8 +116,8 @@ state da_bat2 #D1C4E9
 da_bat2 : rising · 95w
 state da_bat_app #FFF9C4
 da_bat_app : choice · 105w
-state da_bat_back #FFCDD2
-da_bat_back : setback (negative)
+state da_bat_back #E0E0E0
+da_bat_back : setback (neutral)
 da_bat_back : "Turned Back at {C1_GATE}"
 state da_bat_enter #D1C4E9
 da_bat_enter : rising · 95w
@@ -134,8 +134,8 @@ state da_cache2 #D1C4E9
 da_cache2 : rising · 95w
 state da_cache_app #FFF9C4
 da_cache_app : choice · 105w
-state da_cache_back #FFCDD2
-da_cache_back : setback (negative)
+state da_cache_back #E0E0E0
+da_cache_back : setback (neutral)
 da_cache_back : "Turned Back at {C2_GATE}"
 state da_cache_enter #D1C4E9
 da_cache_enter : rising · 95w
@@ -235,7 +235,7 @@ legend right
   The Cave of Echoes
   Band 8-11 · Tier 1 · ~8 min
   Topology: time_cave
-  64 nodes · 16 endings (10+ / 0n / 6-)
+  64 nodes · 16 endings (10+ / 6n / 0-)
   Production-eligible
   Scale: short · prose
 endlegend

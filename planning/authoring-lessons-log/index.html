@@ -3620,6 +3620,46 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>applied</td>
 <td>PR #520, commit <code>83b4c58a</code>; shape widened and the divergence recorded in the class docstring, with the register outcome in <code>unscheduled-work-register.md</code> UW-F22 (d)</td>
 </tr>
+<tr>
+<td>AL-075</td>
+<td>2026-08-01</td>
+<td>W2.1 choice-grammar validator (<code>validator/choice_grammar.py</code>, kid-appeal implementation plan)</td>
+<td>tooling</td>
+<td>BasedPyright strict mode can narrow a <code>tuple[str, ...]</code>-typed dataclass field to the literal empty-tuple type <code>tuple[()]</code> across an <code>and</code>-joined boolean guard (<code>if len(run.node_ids) &lt; 2 and run.terminal_id is None: continue</code>), then reports a later <code>run.node_ids[0]</code> as <code>Index 0 is out of range for type tuple[()]</code>. The message names the symptom, not the cause: nothing about it points at the guard clause that produced the narrowing, and the field's real runtime type is never actually the empty tuple (a <code>_Run</code> is always constructed with at least one node id). Diagnosed by bisecting the guard out of the loop; the fix cost no logic change, only reordering.</td>
+<td>Where a strict-mode narrowing error's line is not the line that caused it, hoist the field read (<code>len(...)</code>, indexing) into a local variable <em>before</em> the narrowing guard, rather than trusting the reported line number to name the fix site; add this as a named pattern so the next strict-mode surprise on a variadic-tuple field is recognised in one pass instead of re-bisected.</td>
+<td>applied</td>
+<td><code>validator/choice_grammar.py::check_words_per_stop</code> hoists <code>run_length</code>/<code>head_id</code> above the guard; <code>uv run basedpyright src/cyo_adventure/validator/choice_grammar.py</code> clean (0 errors)</td>
+</tr>
+<tr>
+<td>AL-076</td>
+<td>2026-08-01</td>
+<td>PR #532 review (I8), <code>validator/choice_grammar.py</code></td>
+<td>tooling</td>
+<td><code>_FLOWED_RUN_CAP = 6</code> carried a comment saying the ADR-011 section 10 table "fixes at 6". The table's flowed rows read <code>1, prefer 0</code> and <code>0-1</code>, and they count STOPS while the code counts NODES; the number 6 appears nowhere in the ADR, and section 10's own closing paragraph scopes graph-level run caps to the discrete-page bands. The citation was invented after the fact to justify a derived backstop, which is worse than no citation: it reads as ratified, so nobody re-checks it, and the real stop-level rule stays unimplemented behind a rule that looks like it.</td>
+<td>Where a constant is DERIVED rather than read off a ratified table, say so in the same breath and name the unit it is in; reserve an ADR citation for a number the ADR actually prints. Where a proxy stands in for an unimplemented constraint, tag it <code>#ASSUME</code> and register the real rule, so a green check is not mistaken for the constraint being enforced.</td>
+<td>applied</td>
+<td><code>validator/choice_grammar.py</code> <code>_FLOWED_RUN_CAP</code> comment rewritten with the derivation and an <code>#ASSUME</code>; stop-level rule registered as <code>UW-C23</code></td>
+</tr>
+<tr>
+<td>AL-077</td>
+<td>2026-08-01</td>
+<td>PR #532 review (I12), <code>frontend/src/kid/badgeCatalog.ts</code></td>
+<td>tooling</td>
+<td>A <code>#VERIFY</code> claimed its test pinned "every id/name/description pair" against the Python catalog. The test did <code>expect(source).toContain('"&lt;id&gt;"')</code>: ids only, one direction, whole-file substring, so a match inside a comment satisfied it and every kid-facing name and description could drift silently. The marker was written from the intent, not from the assertion.</td>
+<td>When writing a <code>#VERIFY</code> that names a test, state what the test ASSERTS rather than what it is for, and prefer parsing the mirrored source to substring-matching it so the claim and the check cannot diverge.</td>
+<td>applied</td>
+<td><code>frontend/src/kid/badgeCatalog.test.ts</code> now parses <code>BADGE_CATALOG</code> out of <code>progress/badges.py</code> and compares sorted (id, name, description) triples in both directions, with a length guard against a silently non-matching regex; proven by renaming one badge (test fails) and reverting</td>
+</tr>
+<tr>
+<td>AL-078</td>
+<td>2026-08-01</td>
+<td>PR #532 review (I15), <code>scripts/audit_ending_valence.py</code></td>
+<td>tooling</td>
+<td>The ending-valence triage audit read <code>valence = str(ending.get("valence", ""))</code>, and its suspect heuristic returns False for anything that is not exactly <code>negative</code>. A MISSING valence therefore collapsed into the benign branch: the one ending guaranteed to need a human was the one guaranteed to be invisible. Two more silent skips sat beside it (a node marked <code>is_ending</code> with no <code>ending</code> object was <code>continue</code>d, and a non-list <code>nodes</code> returned zero rows), and all three still exited 0, so a partial scan was indistinguishable from a clean one. Separately, <code>path.relative_to(_REPO_ROOT)</code> crashed on any <code>--out-root</code> outside the repo, which is why the script had no tests.</td>
+<td>An audit must never let a missing field take the same branch as a well-formed benign value: validate against the closed set of legal values and report anything outside it, rather than defaulting into the safe branch. Anything the audit could not audit gets its own row, its own count, and its own exit code, kept distinct from the informational triage findings; and display filters (<code>--band</code>, <code>--suspect-only</code>) must be applied after the exit code is computed, so choosing a filter cannot turn a defective catalog into a clean-looking run.</td>
+<td>applied</td>
+<td><code>scripts/audit_ending_valence.py</code> emits PROBLEM rows and exit code 2; <code>tests/unit/test_audit_ending_valence.py</code> (7 cases) proves each, verified by reverting the valence check</td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -3659,7 +3699,7 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 31, 2026 21:33:03 UTC">July 31, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
   </span>
 
     

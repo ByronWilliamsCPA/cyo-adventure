@@ -27,8 +27,8 @@ state tb_office #FFF9C4
 tb_office : choice · 100w
 state tb_photo #FFF9C4
 tb_photo : choice · 95w
-state e_set_doze #FFCDD2
-e_set_doze : setback (negative)
+state e_set_doze #E0E0E0
+e_set_doze : setback (neutral)
 e_set_doze : "The Chair That Was Too Comfortable"
 state hm_door #FFF9C4
 hm_door : choice · 100w
@@ -46,8 +46,8 @@ state hm_behind #FFF9C4
 hm_behind : choice · 100w
 state hm_flicker #FFF9C4
 hm_flicker : choice · 95w
-state e_set_lost #FFCDD2
-e_set_lost : setback (negative)
+state e_set_lost #E0E0E0
+e_set_lost : setback (neutral)
 e_set_lost : "Fresh Batteries and a Ball of String"
 state ws_door #FFF9C4
 ws_door : choice · 100w
@@ -73,8 +73,8 @@ state bw_watch #FFF9C4
 bw_watch : choice · 95w
 state bw_call #FFF9C4
 bw_call : choice · 100w
-state e_set_tide #FFCDD2
-e_set_tide : setback (negative)
+state e_set_tide #E0E0E0
+e_set_tide : setback (neutral)
 e_set_tide : "Soaked to the Knees"
 state cv_door #FFF9C4
 cv_door : choice · 95w
@@ -105,8 +105,8 @@ state ol_rolls #FFF9C4
 ol_rolls : choice · 105w
 state ol_crest #FFF9C4
 ol_crest : choice · 95w
-state e_set_bolt #FFCDD2
-e_set_bolt : setback (negative)
+state e_set_bolt #E0E0E0
+e_set_bolt : setback (neutral)
 e_set_bolt : "The Loudest Note in Town"
 state e_disc_waltz #E0E0E0
 e_disc_waltz : discovery (neutral)
@@ -123,8 +123,8 @@ state fin_press #D1C4E9
 fin_press : rising · 105w
 state fin_drawings #FFF9C4
 fin_drawings : choice · 120w
-state e_set_home #FFCDD2
-e_set_home : setback (negative)
+state e_set_home #E0E0E0
+e_set_home : setback (neutral)
 e_set_home : "Prying When You Should Press"
 state r_caretaker #FFF9C4
 r_caretaker : choice · 105w
@@ -298,7 +298,7 @@ legend right
   The Locked Carousel
   Band 8-11 · Tier 1 · ~8 min
   Topology: open_map
-  71 nodes · 13 endings (6+ / 2n / 5-)
+  71 nodes · 13 endings (6+ / 7n / 0-)
   Production-eligible
   Scale: short · prose
 endlegend

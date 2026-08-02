@@ -1,0 +1,4466 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/design-review-kid-appeal-2026-08-01/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Kid-Appeal Design and Architecture Review (2026-08-01) - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#kid-appeal-design-and-architecture-review-2026-08-01" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Kid-Appeal Design and Architecture Review (2026-08-01)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#purpose-and-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose and method
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-is-already-strong-do-not-re-litigate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What is already strong (do not re-litigate)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-content-appeal-the-biggest-gap-is-what-the-stories-are" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Content appeal: the biggest gap is what the stories are
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Content appeal: the biggest gap is what the stories are">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-the-under-13-catalog-is-a-single-genre-lane-net-new-highest-content-leverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 The under-13 catalog is a single genre lane (net-new, highest content leverage)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-the-kid-bands-got-the-less-immersive-point-of-view-net-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 The kid bands got the less immersive point of view (net-new)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-more-than-half-of-all-pages-offer-no-choice-net-new-extends-al-027" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 More than half of all pages offer no choice (net-new; extends AL-027)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-nothing-in-the-pipeline-asks-for-the-story-to-be-fun-net-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Nothing in the pipeline asks for the story to be fun (net-new)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-every-child-initiated-request-is-forced-to-the-smallest-gentlest-legal-book-net-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Every child-initiated request is forced to the smallest, gentlest legal book (net-new)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-personalization-is-built-vocabularied-tested-and-wired-to-exactly-one-skeleton" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 Personalization is built, vocabularied, tested, and wired to exactly one skeleton
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#27-ending-valence-is-miscoded-which-suppresses-the-celebration-kids-do-earn-net-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.7 Ending valence is miscoded, which suppresses the celebration kids do earn (net-new)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#28-the-3-5-bands-readability-target-fights-read-aloud-quality-net-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.8 The 3-5 band's readability target fights read-aloud quality (net-new)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-reader-experience-the-moment-to-moment-feel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Reader experience: the moment-to-moment feel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Reader experience: the moment-to-moment feel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-age-band-theming-is-90-dead-code-net-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Age-band theming is ~90% dead code (net-new)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-the-reader-drops-the-books-identity-at-the-door-net-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 The reader drops the book's identity at the door (net-new)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-the-core-interaction-has-almost-no-feedback-net-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 The core interaction has almost no feedback (net-new)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-the-payoff-for-finishing-is-thin-and-the-app-cannot-tell-a-new-ending-from-a-re-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 The payoff for finishing is thin, and the app cannot tell a new ending from a re-run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-identity-and-polish-gaps-a-kid-notices-net-new-batchable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Identity and polish gaps a kid notices (net-new, batchable)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-progress-and-time-signals-mislead-tracked-al-022-al-028-al-029" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Progress and time signals mislead (tracked: AL-022, AL-028, AL-029)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-engagement-loops-the-app-never-talks-back-to-the-kid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Engagement loops: the app never talks back to the kid
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Engagement loops: the app never talks back to the kid">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-the-kid-is-never-told-their-story-arrived-highest-single-engagement-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 The kid is never told their story arrived (highest single engagement fix)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-no-cross-book-progress-exists-for-the-kid-and-the-data-is-already-computed-net-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 No cross-book progress exists for the kid, and the data is already computed (net-new)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-paths-are-received-and-destroyed-tracked-reader-path-engagement-design-uw-c10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Paths are received and destroyed (tracked: reader-path-engagement-design, UW-C10)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-ratings-and-flags-are-dead-ends-from-the-kids-seat-partially-tracked-u6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Ratings and flags are dead ends from the kid's seat (partially tracked: U6)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-recommendations-cannot-recommend-anything-new-net-new-needs-an-owner-decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Recommendations cannot recommend anything new (net-new, needs an owner decision)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-architecture-what-blocks-or-enables-the-above" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Architecture: what blocks or enables the above
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Architecture: what blocks or enables the above">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-the-storybook-format-is-closed-for-extension-and-this-sits-in-front-of-every-rich-media-idea" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 The storybook format is closed for extension, and this sits in front of every rich-media idea
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-in-story-illustration-needs-a-new-adr-and-the-young-bands-are-the-bounded-place-to-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 In-story illustration needs a new ADR, and the young bands are the bounded place to start
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-player-duplication-tax-on-every-runtime-visible-feature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Player duplication tax on every runtime-visible feature
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-smaller-frictions-noted-not-urgent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Smaller frictions, noted not urgent
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-documentation-corrections-found-during-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Documentation corrections found during review
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-ranked-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Ranked recommendations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-owner-decisions-and-open-questions-2026-08-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Owner decisions and open questions (2026-08-01)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Owner decisions and open questions (2026-08-01)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#decision-d1-owner-2026-08-01-every-non-terminal-node-must-offer-a-choice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decision D1 (owner, 2026-08-01): every non-terminal node must offer a choice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decisions-recorded-2026-08-01-second-round-answering-the-sheet-below" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decisions recorded 2026-08-01 (second round, answering the sheet below)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proposals-awaiting-owner-approval-fourth-round" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proposals awaiting owner approval (fourth round)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#research-review-d1-versus-adr-011-2026-08-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Research review: D1 versus ADR-011 (2026-08-01)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remaining-decisions-before-an-implementation-plan-can-be-built" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remaining decisions before an implementation plan can be built
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#research-appendix-digital-choice-pacing-for-children-2026-08-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Research appendix: digital choice pacing for children (2026-08-01)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#draft-per-band-choice-grammar-proposal-for-q2-awaiting-owner-sign-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Draft per-band choice grammar (proposal for Q2, awaiting owner sign-off)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="kid-appeal-design-and-architecture-review-2026-08-01">Kid-Appeal Design and Architecture Review (2026-08-01)<a class="headerlink" href="#kid-appeal-design-and-architecture-review-2026-08-01" title="Permanent link">&para;</a></h1>
+<h2 id="purpose-and-method">Purpose and method<a class="headerlink" href="#purpose-and-method" title="Permanent link">&para;</a></h2>
+<p>This review asks one question of the whole system: <strong>would a child pick this app up twice?</strong> It covers
+four surfaces in parallel: the kid-facing frontend, the story content pipeline (skeletons, prompts,
+personalization, art), the backend engagement loops (progress, notifications, recommendations,
+ratings), and the architecture that either enables or blocks iterating on any of the above. Every
+finding cites the code or content it rests on. Findings that the planning registers already track are
+labeled with their <code>UW-*</code> / <code>AL-*</code> / debt IDs so this document adds priority and framing, not
+duplicate intake rows.</p>
+<p><strong>Summary judgment</strong>: the safety, correctness, and offline architecture are genuinely strong, and the
+warm parchment design system, the endings tracker, read-aloud, and the kind error copy are real kid-UX
+assets. But the system is currently optimized end to end for <em>passing the gate</em>, not for <em>delight</em>.
+The catalog's kid half is one narrow genre lane, the prompts never ask for fun, most pages offer no
+real choice, the child who requests a story is never told it arrived, and the reward for finishing a
+20-minute read is three CSS glyphs. Almost all of the highest-leverage fixes are content and
+feedback-loop work, not new infrastructure.</p>
+<hr />
+<h2 id="1-what-is-already-strong-do-not-re-litigate">1. What is already strong (do not re-litigate)<a class="headerlink" href="#1-what-is-already-strong-do-not-re-litigate" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Design system</strong>: <code>frontend/design-system/</code> is a real token system (warm storybook palette, 18px
+  base type, dark mode with contrast ratios documented in comments, 44px tap floors, twin
+  reduced-motion rules driven by both the OS and a per-profile flag).</li>
+<li><strong>Kind, kid-first copy</strong>: "Hmm, that PIN didn't work. Give it another try!", the "ask a grown-up"
+  escape after 3 wrong PINs, mascot-fronted error and empty states (K12).</li>
+<li><strong>Reader fundamentals</strong>: go-back undo built explicitly because "kids mis-tap constantly"
+  (<code>frontend/src/reader/Reader.tsx:277</code>), valence-aware ending celebration, read-aloud with word
+  highlighting and a local-voice-only guard for personalized text, dedication overlay.</li>
+<li><strong>Offline honesty</strong>: IndexedDB shelf with "No internet. These books are ready to read.", versioned
+  DB migrations, revocation reconciliation (K10).</li>
+<li><strong>Architecture enablers</strong>: a pure player kernel with a cross-implementation conformance corpus
+  (<code>schema/conformance/player_traces.json</code> run by both engines), compile-time API contract parity,
+  an append-only event log with a pure notification-composer projection over it, GZip on story blobs.</li>
+<li><strong>Safety posture</strong>: three-gate publish path, PII egress guard that hard-fails rather than redacts,
+  no third-party SDKs in the kid context.</li>
+</ul>
+<hr />
+<h2 id="2-content-appeal-the-biggest-gap-is-what-the-stories-are">2. Content appeal: the biggest gap is what the stories are<a class="headerlink" href="#2-content-appeal-the-biggest-gap-is-what-the-stories-are" title="Permanent link">&para;</a></h2>
+<h3 id="21-the-under-13-catalog-is-a-single-genre-lane-net-new-highest-content-leverage">2.1 The under-13 catalog is a single genre lane (net-new, highest content leverage)<a class="headerlink" href="#21-the-under-13-catalog-is-a-single-genre-lane-net-new-highest-content-leverage" title="Permanent link">&para;</a></h3>
+<p>The kid-facing catalog is 22 skeletons (bands 3-5, 5-8, 8-11) out of 61. Every 3-5 and 5-8 title is
+domestic or nature realism: <em>The Lost Mitten</em>, <em>Puddle Jumping Day</em>, <em>The Teddy Bears' Picnic</em>,
+<em>Baking Day with Grandma Vole</em>, <em>The Tide Pool Rescue</em>, <em>The School Garden Mystery</em>. Across all three
+kid bands there are <strong>zero</strong> dragons, magic, dinosaurs, space, pirates, superheroes, sports, gentle
+spooky, or comedy skeletons; only three touch speculative genre at all.</p>
+<p>Meanwhile the diversity vocabulary exists precisely because children ask for those things:
+<code>diversity/similarity_vocab.py:23-37</code> documents that "none of the 132 curated <code>metadata.themes</code> is a
+value in the echo map"; kids name concrete subjects (dragon, space, pirate) and the catalog is tagged
+with abstract virtues (courage, friendship, community). A child who asks for a dragon story today
+gets a tide-pool tree wearing dragon paint, or has their dragon "set aside."</p>
+<p><strong>Recommendation</strong>: make the next skeleton wave (<code>UW-G13</code>, 36 planned skeletons) explicitly
+genre-quota'd for the kid bands: 4-6 speculative/adventure/comedy skeletons per band before any other
+growth. This is authoring work with no schema or pipeline change, and it converts directly into
+request-to-story satisfaction. Also note one slot of apparent variety is fake: <code>13-16/the-sunken-temple</code>
+and <code>13-16/the-harrowstone-keep</code> are the same 550-node tree re-skinned (identical ending histograms).</p>
+<h3 id="22-the-kid-bands-got-the-less-immersive-point-of-view-net-new">2.2 The kid bands got the less immersive point of view (net-new)<a class="headerlink" href="#22-the-kid-bands-got-the-less-immersive-point-of-view-net-new" title="Permanent link">&para;</a></h3>
+<p><code>templates/drafting_guide.md:95-112</code> mandates second person, present tense ("Address the reader as
+'you'"). Measured against the 23 filled stories in <code>out/</code>: the 13-16/16+ books comply (15-57
+"you"-per-1000-words), while the 3-5/5-8/8-11 books are third person with named animal protagonists
+(0-6.6). So the children, the readers for whom "YOU are the hero" is the core pitch of a
+choose-your-own-adventure, are the ones reading about someone else, and the drafting guide is
+violated by the entire kid half of the corpus.</p>
+<p><strong>Recommendation</strong>: decide the POV rule per band, write it into <code>drafting_guide.md</code>'s band table, and
+enforce it in the fill gate. Either direction is defensible per band; the current state (a guide that
+says one thing and a corpus that does another) is not. Note the interaction with 2.6: third-person
+kid books are actually the <em>easier</em> target for hero-name personalization, because a named protagonist
+is a name-shaped hole.</p>
+<h3 id="23-more-than-half-of-all-pages-offer-no-choice-net-new-extends-al-027">2.3 More than half of all pages offer no choice (net-new; extends AL-027)<a class="headerlink" href="#23-more-than-half-of-all-pages-offer-no-choice-net-new-extends-al-027" title="Permanent link">&para;</a></h3>
+<p>Measured across all 61 skeletons: 52-61% of non-ending nodes in the kid bands have exactly one
+choice (70% at 13-16), and mean branching is ~1.5 everywhere. The interactive promise of the format
+is delivered on roughly two of every five pages; the rest are "Continue" taps.
+<code>validator/band_profile.py</code> floors (<code>min_decisions</code> 1-4 per story; breadth floor 8% of nodes) are low
+enough to permit an almost linear book. <code>AL-027</code> already observes that nothing constrains the
+<em>typical</em> path; this finding is the per-page version of the same problem.</p>
+<p><strong>Recommendation</strong>: add a validator advisory (later, hard rule) capping consecutive single-choice
+nodes (e.g. no more than 2 in a row for 8-11 and below) and raise the per-story decision floor.
+Cheap, measurable, and it directly changes how the app feels in the hand.</p>
+<h3 id="24-nothing-in-the-pipeline-asks-for-the-story-to-be-fun-net-new">2.4 Nothing in the pipeline asks for the story to be fun (net-new)<a class="headerlink" href="#24-nothing-in-the-pipeline-asks-for-the-story-to-be-fun-net-new" title="Permanent link">&para;</a></h3>
+<p>Across all 10 generation templates and the 270-line drafting guide there are zero occurrences of
+humor, funny, silly, joke, laugh, delight, playful, or whimsy. Every word of craft guidance is a
+constraint: budgets, depth, FK grade, schema, what not to change. The 10 variation axes
+(<code>generation/variation.py</code>) are explicitly "not a content lever," and none of them is humor, wonder,
+suspense, or surprise. The <code>.claude/skills/cyo-author</code> quality bar is entirely mechanical. The
+pipeline therefore produces exactly what it optimizes for: safe, on-budget, structurally valid, and
+flat.</p>
+<p><strong>Recommendation</strong>: add a positive craft section to <code>drafting_guide.md</code> (a memorable recurring image,
+a laugh per chapter at the young bands, sensory specificity, a strong last line per ending) and 3-4
+new variation axes oriented at humor and wonder. This is prompt work; the deterministic gate is
+unaffected.</p>
+<h3 id="25-every-child-initiated-request-is-forced-to-the-smallest-gentlest-legal-book-net-new">2.5 Every child-initiated request is forced to the smallest, gentlest legal book (net-new)<a class="headerlink" href="#25-every-child-initiated-request-is-forced-to-the-smallest-gentlest-legal-book-net-new" title="Permanent link">&para;</a></h3>
+<p><code>story_requests/brief.py</code> hardcodes, for every child request regardless of what the child asked for:
+<code>tone="gentle"</code> (line 206), <code>tier=1</code> (no state mechanics), <code>structure_pattern=BRANCH_AND_BOTTLENECK</code>,
+and <code>target_node_count = band.min_nodes</code> / <code>ending_count = band.min_endings</code> (lines 178-179), the
+floor of the band, not its middle. A kid who asks for a scary story, a funny story, or an epic gets
+"gentle," the smallest legal book, with the fewest legal endings. Separately, skeleton selection
+(<code>generation/skeleton_match.py::candidates_for_cell</code>) filters only on <code>(band, length, style)</code> and
+weights by inverse recency: it is theme-blind, even though <code>SIMILARITY_TAG_MAP</code> already maps request
+premises and skeleton themes into one comparable space for the differentiation directive.</p>
+<p><strong>Recommendation</strong>: three bounded changes. Derive tone from the request text (screened, banded);
+target the middle of the band envelope rather than the floor; score skeleton candidates by theme
+similarity to the request so a cave/ocean request draws <em>The Cave of Echoes</em> rather than <em>Baking Day
+with Grandma Vole</em> reskinned. All three sit behind the existing safety gates.</p>
+<h3 id="26-personalization-is-built-vocabularied-tested-and-wired-to-exactly-one-skeleton">2.6 Personalization is built, vocabularied, tested, and wired to exactly one skeleton<a class="headerlink" href="#26-personalization-is-built-vocabularied-tested-and-wired-to-exactly-one-skeleton" title="Permanent link">&para;</a></h3>
+<p>Eleven personalization fields, six closed vocabularies, sentinel substitution, a dedication overlay,
+an opt-in per-profile flag, and a PII guard all exist. But exactly <strong>one</strong> slot in the entire
+skeleton library is declared <code>kind: "personalizable"</code> (<code>skeletons/10-13/the-midnight-museum.contract.json</code>);
+<code>personalization_values.py:161-164</code> admits the feature is latent. The corpus being second person at
+the teen bands is <em>why</em> hero names fail to land there (<code>DedicationOverlay.tsx:10-14</code>: 11 of 30
+stories never name the hero).</p>
+<p><strong>Constraint to respect</strong>: ADR-023 is Proposed and blocked (Stage A gate fired STOP at 3.3% sentinel
+survival; counsel gate <code>UW-H03</code>), and K20 stays ❌ until it is Accepted. The recommendation here is
+the upstream data work only: declare <code>personalizable</code> HERO slots across the other 34 contracts so the
+already-shipped ring-1 plumbing has something to bind when ADR-023 unblocks. Do not ship new
+child-PII surface ahead of the ADR.</p>
+<h3 id="27-ending-valence-is-miscoded-which-suppresses-the-celebration-kids-do-earn-net-new">2.7 Ending valence is miscoded, which suppresses the celebration kids do earn (net-new)<a class="headerlink" href="#27-ending-valence-is-miscoded-which-suppresses-the-celebration-kids-do-earn-net-new" title="Permanent link">&para;</a></h3>
+<p>Sampled from committed fills: <code>out/the-clover-and-the-butterfly.filled.json</code> ending <code>e_bee_setback</code>
+is tagged <code>valence: "negative"</code> but its prose ends "But Clover was happy. She went back home."
+<code>out/the-lantern-festival.filled.json</code> "Oops, Bouncing Berries" is tagged negative for prose that
+ends in laughter and "time to try again." <code>Reader.tsx</code> keys the star-burst celebration on
+<code>valence !== 'negative'</code>, so these plainly happy endings render without it. Kid bands carry 9 (3-5),
+18 (5-8), and 71 (8-11) negative-tagged endings, many of which are warm try-again beats. Related:
+<code>AL-052</code> already flags ending-mix skew in 6 filled books, and the teen catalog is 1,846 negative
+endings out of 2,229 (one book is 147 deaths out of 150 endings), which combined with 68-70%
+single-choice nodes reads as a corridor that kills you at the end.</p>
+<p><strong>Recommendation</strong>: audit and re-tag kid-band ending valences (cheap data pass, immediate UX effect);
+fold the teen death-ratio question into the <code>AL-052</code> content triage.</p>
+<h3 id="28-the-3-5-bands-readability-target-fights-read-aloud-quality-net-new">2.8 The 3-5 band's readability target fights read-aloud quality (net-new)<a class="headerlink" href="#28-the-3-5-bands-readability-target-fights-read-aloud-quality-net-new" title="Permanent link">&para;</a></h3>
+<p>FK grade 1.0 with a ±1.0 window (tightest of any band) produces the committed style: "Clover is a
+little kitten. She sat in a sunny garden. A blue butterfly flew past!" Six consecutive 5-7 word
+sentences, with a tense flip. Books at this band are read <em>to</em> the child; real picture-book prose
+uses longer rhythmic sentences, repetition, and rhyme, which FK penalizes. ADR-011 itself notes 3-5
+has no research basis and is product-defined.</p>
+<p><strong>Recommendation</strong>: for 3-5 (and partially 5-8), replace the FK target with a read-aloud-oriented
+rubric in the prompt (rhythm, repetition, page-turn hooks) and keep FK as a loose advisory ceiling.</p>
+<hr />
+<h2 id="3-reader-experience-the-moment-to-moment-feel">3. Reader experience: the moment-to-moment feel<a class="headerlink" href="#3-reader-experience-the-moment-to-moment-feel" title="Permanent link">&para;</a></h2>
+<h3 id="31-age-band-theming-is-90-dead-code-net-new">3.1 Age-band theming is ~90% dead code (net-new)<a class="headerlink" href="#31-age-band-theming-is-90-dead-code-net-new" title="Permanent link">&para;</a></h3>
+<p><code>design-system/src/band-tokens.css</code> defines 8 tokens across three tiers; only <code>--band-reader-text</code>
+(3 consumers) and <code>--band-reader-leading</code> (1) are ever read. All four motion tokens, <code>--band-gap</code>,
+and <code>--band-tap-min</code> have zero consumers (verified by grep: no <code>var(--band-motion-*)</code> or
+<code>var(--band-tap-min)</code> anywhere outside the definition file). The 8-11/10-13 "adventurer" tier sets
+only motion tokens, so it renders byte-for-byte identically to the neutral teen tier, and the file's
+header cites <code>frontend/src/kid/ageBand.ts</code>, which does not exist. K1 is marked delivered in the
+register with a residual note about <code>--band-tap-min</code> only; the real residual is larger.</p>
+<p><strong>Recommendation</strong>: either consume the tokens (the two animation files even carry comments explaining
+they routed around them) or delete the dead tiers and correct K1's register note. A 9-year-old's and
+a 15-year-old's reader currently differ only in font size.</p>
+<h3 id="32-the-reader-drops-the-books-identity-at-the-door-net-new">3.2 The reader drops the book's identity at the door (net-new)<a class="headerlink" href="#32-the-reader-drops-the-books-identity-at-the-door-net-new" title="Permanent link">&para;</a></h3>
+<p><code>Storybook.title</code> is never referenced anywhere under <code>frontend/src/reader/</code>, and <code>cover_url</code> is used
+only by <code>BookCard</code>. The illustrated cover a kid tapped vanishes the instant the book opens: no cover
+on the opening passage, no title in the chrome, no cover on the ending screen (whose heading falls
+back to a bare "The End"). Showing the cover as a title page and again at the ending is pure frontend
+work with data already in hand, and it makes every generated cover earn twice.</p>
+<h3 id="33-the-core-interaction-has-almost-no-feedback-net-new">3.3 The core interaction has almost no feedback (net-new)<a class="headerlink" href="#33-the-core-interaction-has-almost-no-feedback-net-new" title="Permanent link">&para;</a></h3>
+<p>Tapping a choice, the single most repeated act in the app, produces a 120ms background-color change
+on touch devices (the <code>translateX</code> affordance is hover-only, and hover never fires on tablets).
+There is no transition between passages (new text replaces old; only the scroll is smoothed), no
+sound, no haptic, and the whole app owns 10 <code>@keyframes</code>, two of which are duplicate mascot bobs.
+A page-turn or fade transition, a satisfying press state, and an optional soft page sound (respecting
+<code>reduce_motion</code> and a mute) are small, self-contained wins. Related bug: every choice renders with
+<code>aria-pressed="false"</code> because <code>ChoiceButton</code> defaults <code>selected=false</code> and the reader never passes
+it, exposing plain buttons as unpressed toggles to screen readers.</p>
+<h3 id="34-the-payoff-for-finishing-is-thin-and-the-app-cannot-tell-a-new-ending-from-a-re-run">3.4 The payoff for finishing is thin, and the app cannot tell a new ending from a re-run<a class="headerlink" href="#34-the-payoff-for-finishing-is-thin-and-the-app-cannot-tell-a-new-ending-from-a-re-run" title="Permanent link">&para;</a></h3>
+<p>The entire reward for a 20-30 minute read is three star glyphs and a mascot bob. The server knows
+whether a completion is new (<code>api/reading.py::record_completion</code> dedupes on the PK) and discards that
+fact; the frontend then re-fetches counts in a race that can under-report the ending just reached
+(<code>EndingsProgress.tsx</code> documents it, and the persona audit lists it). There is no "you found a NEW
+ending!", no "you found them all!" moment, and the <code>Ending</code> model carries no metadata to celebrate
+with: no rarity, no secret flag, no badge, nothing beyond <code>{id, valence, kind, title}</code>.</p>
+<p><strong>Recommendation</strong>: have <code>POST /completions</code> return <code>{is_new, found, total}</code> and render from the
+response (fixes the race and enables the NEW-ending moment in one change); add optional
+<code>rarity</code>/<code>is_secret</code> to the ending block when the schema-evolution work in §5.1 lands; then an
+endings-gallery screen becomes the natural collection surface. Interacts with <code>AL-028</code> (the "found 1
+of 232" inversion at large M): milestone framing should be designed once for both surfaces.</p>
+<h3 id="35-identity-and-polish-gaps-a-kid-notices-net-new-batchable">3.5 Identity and polish gaps a kid notices (net-new, batchable)<a class="headerlink" href="#35-identity-and-polish-gaps-a-kid-notices-net-new-batchable" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Fonts</strong>: system faces only (Georgia + Segoe UI); no display face for "Who's reading?", no
+  dyslexia-friendly option, in an app that invests heavily in early readers.</li>
+<li><strong>Kid-controlled personalization</strong>: a kid cannot pick their avatar (intentional, #65), but also
+  cannot pick an accent color or shelf name; <code>tokens.css:70-74</code> already reserves berry/gold "for
+  upcoming kid-surface accents." A per-profile accent is one token indirection away and carries no
+  privacy surface.</li>
+<li><strong>PWA manifest</strong>: <code>theme_color: '#1d3557'</code> / <code>background_color: '#f1faee'</code> are leftover
+  template values matching nothing in the parchment palette, so the installed app's splash and
+  status bar are cold navy/mint around a warm app.</li>
+<li><strong>Mascot</strong>: one static pose does five jobs (error, empty, loading, welcome, celebration);
+  <code>Mascot.tsx</code> self-describes as placeholder pending the curated set (<code>UW-I08</code>). Even three poses
+  (happy, oops, sleepy) would change the feel.</li>
+<li><strong>Landing page</strong>: the kid door is a 30px outline icon plus the words "Kids / Start reading"; a
+  pre-reader has to parse text to find their way in.</li>
+<li><strong>Reader chrome</strong>: six control clusters sit above the story on a phone, plus the floating theme
+  toggle; <code>reader.css:20-23</code> concedes it outgrows a phone row. An auto-hiding chrome (reappear on
+  tap) would give the story the screen.</li>
+<li><strong>Copy tone is single-band</strong>: exactly one copy set spans ages 6-16; "ask a grown-up" appears in
+  6+ places and is right at 6, patronizing at 15. <code>data-age-band</code> is already on the shell; copy can
+  branch on it.</li>
+</ul>
+<h3 id="36-progress-and-time-signals-mislead-tracked-al-022-al-028-al-029">3.6 Progress and time signals mislead (tracked: AL-022, AL-028, AL-029)<a class="headerlink" href="#36-progress-and-time-signals-mislead-tracked-al-022-al-028-al-029" title="Permanent link">&para;</a></h3>
+<p>Already filed and worth elevating as a set, because all three lie to the kid at the exact moments
+that drive replay: the progress bar measures corpus coverage so a median read shows 1% then snaps to
+100% (<code>AL-029</code>); a 42,000-word book advertises "14 min" because <code>estimated_minutes</code> is the
+fastest-finish clock (<code>AL-022</code>); and the endings tracker inverts into discouragement at large M
+("1 of 232 found", dot row silently dropped above 10) (<code>AL-028</code>). These three plus §3.4 form one
+coherent "honest, motivating progress" work package.</p>
+<hr />
+<h2 id="4-engagement-loops-the-app-never-talks-back-to-the-kid">4. Engagement loops: the app never talks back to the kid<a class="headerlink" href="#4-engagement-loops-the-app-never-talks-back-to-the-kid" title="Permanent link">&para;</a></h2>
+<h3 id="41-the-kid-is-never-told-their-story-arrived-highest-single-engagement-fix">4.1 The kid is never told their story arrived (highest single engagement fix)<a class="headerlink" href="#41-the-kid-is-never-told-their-story-arrived-highest-single-engagement-fix" title="Permanent link">&para;</a></h3>
+<p>Both notification surfaces are hard-gated guardian-only (<code>api/notifications.py:199,417</code>); the
+composer for <code>BOOK_ASSIGNED</code> writes "...is ready on {child}'s shelf" and delivers it to the parent.
+On the kid side, <code>RequestStory.tsx::isLikelyPublished</code> guesses published status by substring-matching
+<code>proposed_series_title</code> against shelf titles; its own <code>#ASSUME</code> block records that there is no
+backend field linking a request to the storybook it produced, so every ordinary one-off request reads
+"being written" forever, even after the book is on the shelf (persona audit 1A). The profile-picker
+"new story ready!" pill is documented as shipped in <code>user-journeys.md</code> and is not built
+(<code>ProfilePickerPage.tsx:64</code>; persona audit 2B). K19's reflect-back is persisted server-side but the
+kid UI shows none of it (persona audit 2A, register status contested).</p>
+<p>The child does the asking (K11 shipped), waits through three human gates of unbounded duration, and
+receives nothing at any step. For a kid, this is the difference between magic ("I wished for a story
+and it appeared!") and a void.</p>
+<p><strong>Recommendation</strong> (mostly already on the tier-3 agenda; this review ranks it first among engagement
+work): add <code>story_request.resulting_storybook_id</code> at publish time; flip request status honestly;
+surface the K19 reflect-back ("We heard: a dragon who loves pancakes!"); build the picker pill via a
+bulk status endpoint; and add a kid-scoped projection of <code>BOOK_ASSIGNED</code> over the existing event
+substrate. The notification architecture (pure composers over an append-only log, SSE transport
+already running) makes the kid feed a role gate plus a second composer table, not new plumbing.</p>
+<h3 id="42-no-cross-book-progress-exists-for-the-kid-and-the-data-is-already-computed-net-new">4.2 No cross-book progress exists for the kid, and the data is already computed (net-new)<a class="headerlink" href="#42-no-cross-book-progress-exists-for-the-kid-and-the-data-is-already-computed-net-new" title="Permanent link">&para;</a></h3>
+<p>Per-book "3 of 7 endings" is the ceiling of kid-visible progress. Books finished, total endings
+found, and last activity are already aggregated in <code>GET /families/me/reading-summary</code>, which
+explicitly 403s a child token (<code>reading_history.py:418</code>, correctly, as a guardian rollup). A
+kid-scoped variant ("You've finished 5 books and found 22 endings!") is nearly free and is the
+foundation for any collection mechanic. Streaks, badges, and stickers have zero code, zero schema,
+and zero event types today, but <code>Completion.found_at</code> plus the event log are sufficient substrate to
+compute them retroactively without new writes. Any such feature must stay first-party and
+anonymized-analytics-free per ADR-018; nothing about a local reading streak conflicts with that.</p>
+<h3 id="43-paths-are-received-and-destroyed-tracked-reader-path-engagement-design-uw-c10">4.3 Paths are received and destroyed (tracked: reader-path-engagement-design, UW-C10)<a class="headerlink" href="#43-paths-are-received-and-destroyed-tracked-reader-path-engagement-design-uw-c10" title="Permanent link">&para;</a></h3>
+<p>The client sends the full path on every save and the server overwrites it
+(<code>api/reading.py::_apply_body</code>). No re-read count, no "you took a different path this time," no
+furthest-point marker, and on the authoring side <code>AL-019</code> stands: no reader outcome ever reaches an
+author. <code>docs/planning/reader-path-engagement-design.md</code> is a complete, privacy-reviewed design for
+exactly this and is unbuilt, blocked on four owner decisions. This review's contribution is
+priority: the same table that powers author analytics powers kid-facing replay features ("try a
+different path" hints), so it pays twice.</p>
+<h3 id="44-ratings-and-flags-are-dead-ends-from-the-kids-seat-partially-tracked-u6">4.4 Ratings and flags are dead ends from the kid's seat (partially tracked: U6)<a class="headerlink" href="#44-ratings-and-flags-are-dead-ends-from-the-kids-seat-partially-tracked-u6" title="Permanent link">&para;</a></h3>
+<p>A rating produces one CSS pulse, cannot be cleared (U6), is captured on the shelf rather than at the
+ending screen (the moment of peak feeling), and feeds only siblings' chips, never anything the rater
+sees. A kid's "this scared me" flag (K15) returns a reassuring toast and then nothing, ever. Small
+closures: allow clearing a rating; offer the star row on the ending screen too; when a flag is
+resolved, let the kid's next session show "a grown-up looked at this. Thank you for telling us."
+(This stays inside ADR-016: it is system feedback to the same child, not a social channel.)</p>
+<h3 id="45-recommendations-cannot-recommend-anything-new-net-new-needs-an-owner-decision">4.5 Recommendations cannot recommend anything new (net-new, needs an owner decision)<a class="headerlink" href="#45-recommendations-cannot-recommend-anything-new-net-new-needs-an-owner-decision" title="Permanent link">&para;</a></h3>
+<p><code>_visible_books</code> intersects candidates with the caller's own assigned shelf, so a chip can only
+decorate a book the kid already has; for a single-child family with no connections the endpoint
+returns <code>[]</code> permanently. The signal is exclusively "sibling rated ≥ 4." Ring 3 is unbuilt (S12,
+post-launch). If discovery-by-recommendation is wanted sooner, the bounded option that respects
+ADR-015/ADR-016 is: let a ring-1/ring-2 recommendation surface an <em>unassigned but published</em> book to
+the kid as a request-one-tap ("Cousin Maya loved The Cave of Echoes. Ask for it?"), which routes
+through the guardian consent gate exactly like any other request. Structured data only; no free
+text; the three-ring boundary is untouched.</p>
+<hr />
+<h2 id="5-architecture-what-blocks-or-enables-the-above">5. Architecture: what blocks or enables the above<a class="headerlink" href="#5-architecture-what-blocks-or-enables-the-above" title="Permanent link">&para;</a></h2>
+<h3 id="51-the-storybook-format-is-closed-for-extension-and-this-sits-in-front-of-every-rich-media-idea">5.1 The storybook format is closed for extension, and this sits in front of every rich-media idea<a class="headerlink" href="#51-the-storybook-format-is-closed-for-extension-and-this-sits-in-front-of-every-rich-media-idea" title="Permanent link">&para;</a></h3>
+<p>Every model in <code>storybook/models.py</code> is <code>extra="forbid"</code> (10 occurrences), the JSON schema sets
+<code>additionalProperties: false</code> throughout, and <code>Storybook._check_schema_version</code> requires exact
+equality with <code>SCHEMA_VERSION = "2.0"</code>. Bumping to "2.1" to add <code>Node.image_url</code> would reject every
+already-published blob; adding a field without bumping hard-fails old backends. There is no
+additive-minor rule, no extension bag, no blob migration path. The one mitigation: the frontend TS
+types are structurally open, so cached offline blobs and old clients tolerate unknown fields; the
+strictness is entirely server-side.</p>
+<p><strong>Recommendation</strong>: before any per-node art, audio, or ending-metadata feature, land a small format
+policy: minor versions are additive-optional, the server accepts <code>2.x</code> within a declared range, and
+the JSON-schema validator gets per-minor variants. This is a prerequisite ADR-sized decision, and it
+unblocks §3.4, §5.2, and any future rich-media work at once.</p>
+<h3 id="52-in-story-illustration-needs-a-new-adr-and-the-young-bands-are-the-bounded-place-to-start">5.2 In-story illustration needs a new ADR, and the young bands are the bounded place to start<a class="headerlink" href="#52-in-story-illustration-needs-a-new-adr-and-the-young-bands-are-the-bounded-place-to-start" title="Permanent link">&para;</a></h3>
+<p>ADR-017 explicitly scopes art to one cover per version and says revisiting per-passage illustration
+requires a new ADR; K8's residual (pre-reader picture support beyond covers) is open and unowned. The
+covers pipeline already proves the org can produce child-safe, styled, textless art with a human
+gate. A 3-5 band book is 11-32 nodes and 3-5 estimated minutes: illustrating one image per node (or
+per bottleneck scene) is a bounded cost, and ADR-018's constraints are already handled by the cover
+path (metadata-only prompts, no child PII to the image provider). ADR-017's own amendment clause
+must be honored: at per-node volume, per-item human review stops scaling, so an automated
+image-moderation pass becomes a precondition. Recommendation: write the ADR now, pilot on the seven
+3-5 skeletons, keep the field optional per §5.1 so nothing else moves.</p>
+<h3 id="53-player-duplication-tax-on-every-runtime-visible-feature">5.3 Player duplication tax on every runtime-visible feature<a class="headerlink" href="#53-player-duplication-tax-on-every-runtime-visible-feature" title="Permanent link">&para;</a></h3>
+<p>Engine, evaluator, and personalization each exist twice (plus <code>replay.py</code> a third traversal); the
+conformance corpus covers engine and conditions but not personalization or series-carry, which are
+held in sync by prose comments. Any new runtime behavior (a conditional image, an SFX trigger, ending
+rarity) must be written twice and needs a corpus entry or it silently drifts. Recommendation: extend
+<code>schema/conformance/</code> to personalization and series-carry before adding new runtime features, and
+treat "corpus entry included" as review policy for player changes.</p>
+<h3 id="54-smaller-frictions-noted-not-urgent">5.4 Smaller frictions, noted not urgent<a class="headerlink" href="#54-smaller-frictions-noted-not-urgent" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The assignment gate is the third manual adult action before a kid sees a book; an approved,
+  published story that nobody assigned is invisible. A default-assign-on-publish option per profile
+  (guardian-controlled) would remove the most forgettable step. (Interacts with <code>A9</code> starter
+  library: 12 curated stories, 4 per band, so a new child never sees an empty shelf; that item is
+  already planned for Phase 9 and the empty-catalog reality of <code>UW-G14</code> makes both moot until
+  import/publish happens.)</li>
+<li><code>GET /library</code> is unpaginated and <code>api/schemas.py</code> is a 2,516-line hot file; new kid surfaces are
+  cheap to write but land in high-contention modules.</li>
+<li>New child-linked tables carry the known four-artifact tax (SQL migration, RLS policy, cascade,
+  deletion-drill test); <code>reader-path-engagement-design.md</code> already itemizes it.</li>
+</ul>
+<hr />
+<h2 id="6-documentation-corrections-found-during-review">6. Documentation corrections found during review<a class="headerlink" href="#6-documentation-corrections-found-during-review" title="Permanent link">&para;</a></h2>
+<ol>
+<li><code>docs/architecture/user-journeys.md</code> (Act 5 and the shipped/planned table) claims the
+   profile-picker book-status pill is shipped; <code>ProfilePickerPage.tsx:64</code> documents it as deferred.
+   The doc is wrong and should be corrected or the pill built (§4.1).</li>
+<li>K1's capability-register note lists only <code>--band-tap-min</code> as residual; per §3.1 the entire motion
+   and gap tier of band tokens is unconsumed and the referenced <code>ageBand.ts</code> does not exist.</li>
+<li>K19 is marked delivered; the kid UI shows none of it (already on the persona-audit tier-3 agenda
+   as "ship it or downgrade").</li>
+<li><code>13-16/the-sunken-temple</code> and <code>13-16/the-harrowstone-keep</code> are structurally identical; the
+   catalog counts should treat them as one tree until one is re-derived.</li>
+<li>ADR-011 cites <code>docs/planning/research/</code> as the home of its empirical basis (JHM 2019 and the
+   four-source reconciliation); that directory does not exist in the repo. The underlying data is
+   unrecoverable from the repository as committed; fix the citation or commit the research notes
+   (found 2026-08-01 during the D1 research review, section 8).</li>
+</ol>
+<hr />
+<h2 id="7-ranked-recommendations">7. Ranked recommendations<a class="headerlink" href="#7-ranked-recommendations" title="Permanent link">&para;</a></h2>
+<p>Ordered by expected impact on kid appeal per unit of effort. "Tracked" means an existing register row
+already covers it and this review adds priority; "new" means no register row exists yet.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Recommendation</th>
+<th>Section</th>
+<th>Status</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Import and publish the 23 filled books; empty catalog blocks everything</td>
+<td>5.4</td>
+<td>tracked <code>UW-G14</code></td>
+<td>S</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Close the request loop: <code>resulting_storybook_id</code>, honest status, K19 reflect-back surfaced, picker pill, kid-scoped "story ready" event</td>
+<td>4.1</td>
+<td>partially tracked (persona tier-3)</td>
+<td>M</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Genre-quota the next skeleton wave: dragons, space, dinosaurs, pirates, comedy for under-13</td>
+<td>2.1</td>
+<td>new (shapes <code>UW-G13</code>)</td>
+<td>M</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Fix the celebration path: completion response returns <code>is_new</code>, NEW-ending moment, valence re-tag audit, milestone framing with AL-028</td>
+<td>3.4, 2.7</td>
+<td>new + tracked <code>AL-028</code></td>
+<td>S-M</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Unforce child-request defaults (tone, mid-band size, ending scaling) and make skeleton selection theme-aware</td>
+<td>2.5</td>
+<td>new</td>
+<td>S-M</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Add craft-for-delight guidance and humor/wonder variation axes to the prompts</td>
+<td>2.4</td>
+<td>new</td>
+<td>S</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Choice-tap and page-transition feedback; <code>aria-pressed</code> fix; auto-hiding reader chrome</td>
+<td>3.3, 3.5</td>
+<td>new</td>
+<td>S-M</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Validator rule against consecutive single-choice nodes; raise decision floors</td>
+<td>2.3</td>
+<td>new (extends <code>AL-027</code>)</td>
+<td>S</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Kid-scoped cross-book progress endpoint; groundwork for streaks/badges on the event log</td>
+<td>4.2</td>
+<td>new</td>
+<td>M</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Format-evolution policy ADR (additive minor versions), then in-story illustration ADR piloted on the 3-5 band</td>
+<td>5.1, 5.2</td>
+<td>new (K8 residual)</td>
+<td>M-L</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Consume or delete the band-token tiers; per-kid accent color from the reserved berry/gold tokens</td>
+<td>3.1, 3.5</td>
+<td>new</td>
+<td>S</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Reader shows title and cover (title page + ending screen)</td>
+<td>3.2</td>
+<td>new</td>
+<td>S</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Honest progress package: route-relative bar, dual read-time clocks</td>
+<td>3.6</td>
+<td>tracked <code>AL-029</code>, <code>AL-022</code></td>
+<td>M</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Declare <code>personalizable</code> HERO slots across the remaining 34 contracts (data-only, behind the ADR-023 block)</td>
+<td>2.6</td>
+<td>tracked (ADR-023 prereq)</td>
+<td>S</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Rating clearable + offered at the ending screen; flag resolution acknowledgment to the kid</td>
+<td>4.4</td>
+<td>partially tracked <code>U6</code></td>
+<td>S</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Read-aloud-first prose rubric for the 3-5 band in place of tight FK targeting</td>
+<td>2.8</td>
+<td>new</td>
+<td>S</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Mascot pose set, kid-forward landing door, PWA manifest colors, display font</td>
+<td>3.5</td>
+<td>partially tracked <code>UW-I08</code></td>
+<td>S-M</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Recommendation-to-request one-tap for unassigned published books (owner decision; stays inside ADR-015/016)</td>
+<td>4.5</td>
+<td>new, decision</td>
+<td>M</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Conformance corpus for personalization and series-carry before new runtime features</td>
+<td>5.3</td>
+<td>new</td>
+<td>S</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Run the naive-user session with real children; it gates UW-I01/UW-I02 and would validate most of the above</td>
+<td>(all)</td>
+<td>tracked <code>UW-M02</code></td>
+<td>owner</td>
+</tr>
+</tbody>
+</table>
+<p>Constraints honored throughout: ADR-016 (no free text, no discovery, no feed mechanics), ADR-017
+(per-passage art requires a new ADR; image moderation precondition at volume), ADR-018 (no child PII
+to providers, no third-party SDKs in the kid context, parental gate), ADR-023 (personalization
+blocked pending re-plan and counsel; only its upstream data work is recommended), ADR-014 (kid
+bundle must not import Supabase; new kid surfaces ride the child-session principal).</p>
+<hr />
+<h2 id="8-owner-decisions-and-open-questions-2026-08-01">8. Owner decisions and open questions (2026-08-01)<a class="headerlink" href="#8-owner-decisions-and-open-questions-2026-08-01" title="Permanent link">&para;</a></h2>
+<h3 id="decision-d1-owner-2026-08-01-every-non-terminal-node-must-offer-a-choice">Decision D1 (owner, 2026-08-01): every non-terminal node must offer a choice<a class="headerlink" href="#decision-d1-owner-2026-08-01-every-non-terminal-node-must-offer-a-choice" title="Permanent link">&para;</a></h3>
+<p>The owner's ruling on finding 2.3: all non-ending nodes should present a choice, not a "Continue"
+tap. Measured impact against the committed catalog:</p>
+<ul>
+<li>5,873 of 8,573 non-ending nodes (69%) currently have exactly one choice.</li>
+<li><strong>0 of 61 skeletons comply</strong> as authored.</li>
+<li>Single-choice nodes cluster in short runs: of 3,241 runs, 39% are length 1 and 43% length 2
+  (max 13). They are scene-splits, almost certainly produced by ADR-011's per-node word ceilings
+  (e.g. 90 words/node at 3-5), not deliberate corridors.</li>
+</ul>
+<p>Consequence: D1 cannot be a retroactive hard rule without voiding the catalog; it needs the
+calibration questions A1-A5 below answered, and it likely requires an ADR-011 amendment on the
+words-per-node side (whichever way A4 lands).</p>
+<h3 id="decisions-recorded-2026-08-01-second-round-answering-the-sheet-below">Decisions recorded 2026-08-01 (second round, answering the sheet below)<a class="headerlink" href="#decisions-recorded-2026-08-01-second-round-answering-the-sheet-below" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Decision (owner, 2026-08-01)</th>
+<th>Answers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D2</td>
+<td>Choice depth varies by band: lower bands may use flavor choices (reconverging targets, no real consequences); older bands require more consequential, distinct-target choices with fewer flavor choices. Loop-back routes are allowed.</td>
+<td>A1, A5</td>
+</tr>
+<tr>
+<td>D3</td>
+<td>Existing 61 skeletons are grandfathered for now but must be phased out; new content meets the choice rule. Deprecation mechanics open (Q3 below).</td>
+<td>A2, A3</td>
+</tr>
+<tr>
+<td>D4</td>
+<td>"Your story is ready" reaches the kid in-app only; no web/PWA push channel.</td>
+<td>C1</td>
+</tr>
+<tr>
+<td>D5</td>
+<td>A tone axis is approved for child requests; the per-band tone vocabulary still needs definition (Q4 below).</td>
+<td>C3</td>
+</tr>
+<tr>
+<td>D6</td>
+<td>Gamification is in scope, and broadly: collection mechanics, badges, and streaks are all included.</td>
+<td>D2 (gamification)</td>
+</tr>
+<tr>
+<td>D7</td>
+<td>Media (art, audio) ship as optional built-in format fields; budgets are set by balancing Supabase free storage and R2 capacity against reasonable offline download sizes. Any sound feature requires a mute control.</td>
+<td>E1, E2</td>
+</tr>
+<tr>
+<td>D8</td>
+<td>POV (second person, "you are the hero") is to be available in all bands.</td>
+<td>E3</td>
+</tr>
+<tr>
+<td>D9</td>
+<td>The additive-minor format-evolution policy is approved: ratified as <a href="../adr/adr-025-additive-storybook-schema-versioning/">ADR-025</a> (Accepted 2026-08-01).</td>
+<td>F1</td>
+</tr>
+</tbody>
+</table>
+<p>Third round (owner, 2026-08-01, answering Q1/Q3/Q5/Q6/Q7 below):</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Decision (owner, 2026-08-01)</th>
+<th>Answers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D10</td>
+<td>The D1 reconciliation is ratified: render-time flow for 8-11 and up, discrete pages with a choice cadence at 3-5/5-8. Ratified as <a href="../adr/adr-026-rendered-stop-flow/">ADR-026</a> (Accepted 2026-08-01). The per-band grammar table remains a proposal pending sign-off.</td>
+<td>Q1</td>
+</tr>
+<tr>
+<td>D11</td>
+<td>Deprecation rule for the grandfathered catalog: a grandfathered skeleton may be used for a cell only until at least one updated (grammar-compliant) skeleton exists for that cell; from then on it is excluded from selection for new generation. Already-published books stay readable.</td>
+<td>Q3</td>
+</tr>
+<tr>
+<td>D12</td>
+<td>Gamification (amending D6): an agent-developed recommendation is commissioned (dispatched 2026-08-01). Total active reading time is added to the tracked metrics. Engagement is child-focused; some elements may be family-visible; nothing ever leaves ring 1.</td>
+<td>Q5</td>
+</tr>
+<tr>
+<td>D13</td>
+<td>Media budgets: adopt a best-practice recommendation (external research dispatched 2026-08-01) rather than ad hoc numbers.</td>
+<td>Q6</td>
+</tr>
+<tr>
+<td>D14</td>
+<td>POV: second person is the standard for all bands. Existing third-person books are phased out under D11's mechanism, so that ultimately every book in the catalog carries the reader-POV voice.</td>
+<td>Q7</td>
+</tr>
+</tbody>
+</table>
+<p>Fourth round (owner, 2026-08-01):</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Decision (owner, 2026-08-01)</th>
+<th>Answers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D15</td>
+<td>The per-band choice grammar table is ratified as proposed. Adopted as ADR-011 section 10 (amendment, 2026-08-01), companion to ADR-026.</td>
+<td>Q2</td>
+</tr>
+<tr>
+<td>D16</td>
+<td>The weekly reading-days ring design is approved, with the modification that it varies by age band. Per-band defaults proposed below for sign-off.</td>
+<td>gamification section 7 Q3/Q4</td>
+</tr>
+</tbody>
+</table>
+<p>Fifth round (owner, 2026-08-01):</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Decision (owner, 2026-08-01)</th>
+<th>Answers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D17</td>
+<td>The per-band reading-ring defaults table (P-A) is approved as proposed.</td>
+<td>P-A</td>
+</tr>
+<tr>
+<td>D18</td>
+<td>The tone vocabulary table (P-B) is approved as a starting point, with the expectation that it expands in a future push. Expansion is future work, not v1 scope.</td>
+<td>Q4 / P-B</td>
+</tr>
+<tr>
+<td>D19</td>
+<td>The sequencing waves (P-C) are approved.</td>
+<td>Q8 / P-C</td>
+</tr>
+<tr>
+<td>D20</td>
+<td>The media budget recommendation is adopted as appropriate: per-band budget table, WebP at 1536px, app-bundled UI SFX only for v1 with mute, 250MB default / 500MB hard offline cap, Add-to-Home-Screen gating of the offline promise on iOS.</td>
+<td>media recommendation section 7</td>
+</tr>
+</tbody>
+</table>
+<p>With D15-D20 the decision set needed for an implementation plan is complete; the plan lives at
+<a href="../kid-appeal-implementation-plan/">kid-appeal-implementation-plan.md</a>.</p>
+<h3 id="proposals-awaiting-owner-approval-fourth-round">Proposals awaiting owner approval (fourth round)<a class="headerlink" href="#proposals-awaiting-owner-approval-fourth-round" title="Permanent link">&para;</a></h3>
+<p><strong>P-A. Per-band reading-ring defaults (implements D16).</strong> The ring's mechanics are identical at
+every band (fill days, celebrate, never punish); what varies is default state, default goal, and
+who may adjust the goal. Selectable goal caps at 6 at every band so one free day is always
+guaranteed (gamification recommendation section 7 Q3).</p>
+<table>
+<thead>
+<tr>
+<th>Band</th>
+<th>Ring default</th>
+<th>Default goal (days/week)</th>
+<th>Goal adjustable by</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3-5</td>
+<td>off</td>
+<td>2 if enabled</td>
+<td>guardian</td>
+<td>habit mechanics on pre-readers reward the parent's schedule; badges and gallery stay on</td>
+</tr>
+<tr>
+<td>5-8</td>
+<td>on</td>
+<td>2</td>
+<td>guardian</td>
+<td>ring rendered in the simplest visual form (stars filling)</td>
+</tr>
+<tr>
+<td>8-11</td>
+<td>on</td>
+<td>3</td>
+<td>guardian</td>
+<td>the recommendation's baseline</td>
+</tr>
+<tr>
+<td>10-13</td>
+<td>on</td>
+<td>3</td>
+<td>guardian</td>
+<td></td>
+</tr>
+<tr>
+<td>13-16</td>
+<td>on</td>
+<td>4</td>
+<td>kid, within guardian cap</td>
+<td>teen agency: the reader sets their own goal, guardian sets the ceiling</td>
+</tr>
+<tr>
+<td>16+</td>
+<td>on</td>
+<td>4</td>
+<td>kid, within guardian cap</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>P-B. Tone vocabulary per band (Q4).</strong> Tone is derived from the request text by the screened
+mapping (D5), defaults to <code>gentle</code> when nothing is detected, and is always additionally capped by
+the guardian's banned themes and the band's content-flag ceilings and ending-kind rules (ADR-011);
+a requested tone can narrow but never widen a band's safety envelope.</p>
+<table>
+<thead>
+<tr>
+<th>Tone</th>
+<th>3-5</th>
+<th>5-8</th>
+<th>8-11</th>
+<th>10-13</th>
+<th>13-16</th>
+<th>16+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>gentle</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>funny</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>exciting</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>mysterious</td>
+<td>-</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>a little spooky</td>
+<td>-</td>
+<td>-</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>scary</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>sad (bittersweet)</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>P-C. Sequencing (Q8).</strong> Waves, not phases: each wave is separately shippable, and waves 2-4 can
+overlap once wave 0 lands. Register/phase homes noted for the linkage sweep.</p>
+<table>
+<thead>
+<tr>
+<th>Wave</th>
+<th>Name</th>
+<th>Contents</th>
+<th>Depends on</th>
+<th>Decisions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Unblockers (Content WS, now)</td>
+<td>Import/publish the 23 filled books under grandfather status (<code>UW-G14</code>, D11); ending-valence re-tag audit; <code>POST /completions</code> returns <code>{is_new, found, total}</code>; <code>story_request.resulting_storybook_id</code> plus honest request status</td>
+<td>nothing</td>
+<td>D3, D11</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Reader: stops and loop closure (Phase 4b)</td>
+<td>ADR-026 stop-flow in both engines plus conformance corpus, memoized replay (<code>AL-030</code>), route-relative progress (<code>AL-029</code>); NEW-ending celebration; profile-picker "story ready" pill and kid-scoped story-ready projection; K19 reflect-back surfaced</td>
+<td>wave 0</td>
+<td>D10, D4</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Content: grammar and tone (Content WS)</td>
+<td>Grammar validator rules for new content (ADR-011 section 10); genre wave skeletons (re-scope <code>UW-G13</code> with the under-13 genre quota); tone axis plus unforced request defaults plus theme-aware skeleton selection; POV second-person fill-gate rule (D14); drafting-guide craft/humor rewrite</td>
+<td>ADR-011 amendment (done); P-B approval</td>
+<td>D2, D5, D14, D15</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Engagement (Phase 4b/4c)</td>
+<td>Gamification v1 per the recommendation: endings gallery, badges 1-8/10/11, weekly ring with P-A defaults, <code>reading_activity_day</code> and time sync; badges 9 and 12 trail their dependencies</td>
+<td>waves 0-1</td>
+<td>D6, D12, D16</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Media (new ADR)</td>
+<td>In-story illustration ADR and 3-5 band pilot per the media budget table; app-bundled UI SFX with mute; PWA manifest color fix rides along</td>
+<td>ADR-025 (done); media table approval</td>
+<td>D7, D13</td>
+</tr>
+<tr>
+<td>M</td>
+<td>Measure (owner-gated)</td>
+<td>The naive-user session with real children (<code>UW-M02</code>) runs once wave 1 is testable, before the request-page reshape (<code>UW-I01</code>) and the reader-UX items it gates (<code>UW-I02</code>) ship; it also validates the grammar's felt pacing and the ring framing</td>
+<td>wave 1 testable</td>
+<td>standing gate</td>
+</tr>
+</tbody>
+</table>
+<h3 id="research-review-d1-versus-adr-011-2026-08-01">Research review: D1 versus ADR-011 (2026-08-01)<a class="headerlink" href="#research-review-d1-versus-adr-011-2026-08-01" title="Permanent link">&para;</a></h3>
+<p>The owner asked how the initial research handles choice-per-node versus words-per-node. Findings:</p>
+<ol>
+<li><strong>ADR-011 locks constants that conflict with D1 as literally stated.</strong> Section 6 fixes
+   "decisions per path ~4-8 (length adds breadth, not depth; do not inflate); choices per decision
+   2-3; setup before first choice ~2-3 nodes," and section 4 mandates that fastest-finish substance
+   "is added with mandatory <strong>linear passages</strong>, not extra decisions." The linear passage (1 to 1)
+   is a first-class flow primitive in section 7. The empirical anchor is JHM 2019: 40 classic
+   printed CYOA books (ages 9-12), ~5 decisions per playthrough, substance carried between
+   decisions by linear pages.</li>
+<li><strong>The conflict is presentational, which suggests the reconciliation.</strong> In a printed book a
+   linear passage is continuous prose the reader flows through; our app renders each linear node as
+   a discrete screen ending in a "Continue" tap, which is what makes 69% of stops choiceless. The
+   graph shape matches the researched genre; the node-equals-screen rendering does not match the
+   researched reading experience. The candidate reconciliation is therefore: keep linear beats in
+   the graph (preserving ADR-011's researched constants and the words-per-node ceilings), and make
+   the renderer flow consecutive single-choice nodes into one scrollable passage so that <strong>every
+   stop a child makes ends in a choice</strong>, which satisfies D1's intent. D2's band grading then
+   applies to the choices themselves, not to a per-node quota.</li>
+<li><strong>The research base is print-only and 9-12-only.</strong> JHM 2019 measured printed books for ages
+   9-12; 3-5 and 16+ are explicitly product-defined, and no source addresses digital tap pacing,
+   flavor-choice tolerance by age, or screen-length norms. A dedicated external research pass on
+   digital choice pacing for children was dispatched 2026-08-01; its findings will be appended to
+   this document and should inform the per-band grammar (Q2) before ADR-011 is amended.</li>
+<li><strong>Broken citation found</strong>: ADR-011 cites <code>docs/planning/research/</code> as the home of the empirical
+   basis; that directory does not exist in the repo. The nearest on-topic documents are
+   <code>cyoa-book-benchmark-comparison.md</code> and <code>pathfinder-structure-exploration.md</code>, neither of which
+   contains the JHM 2019 data. Either the research files were never committed or the path is stale;
+   this needs correcting in ADR-011 (added to section 6 as item 5).</li>
+</ol>
+<h3 id="remaining-decisions-before-an-implementation-plan-can-be-built">Remaining decisions before an implementation plan can be built<a class="headerlink" href="#remaining-decisions-before-an-implementation-plan-can-be-built" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>Status update (third round, 2026-08-01)</strong>: Q1 resolved (D10, ADR-026). Q3 resolved (D11).
+Q7 resolved (D14). The commissioned recommendations (D12, D13) are delivered and await owner
+approval: <a href="../gamification-recommendation-2026-08-01/">gamification-recommendation-2026-08-01.md</a>
+(weekly reading-days ring, 12-badge seed taxonomy, endings gallery, day-grain active-reading-time
+table; five sharp open questions in its section 7) and
+<a href="../media-budget-recommendation-2026-08-01/">media-budget-recommendation-2026-08-01.md</a>
+(per-band budgets, WebP 1536px at ~150KB per illustration, app-bundled SFX only, 250MB default /
+500MB cap offline library, Add-to-Home-Screen gating on iOS; four decision points in its
+section 7). Still fully open: <strong>Q2</strong> (the per-band choice
+grammar table below awaits sign-off), <strong>Q4</strong> (tone vocabulary), and <strong>Q8</strong> (sequencing). The
+streak-design question raised by the owner (calendar days versus reading days) is answered
+inside the commissioned gamification recommendation's scope; in short, a calendar-day streak
+breaks after any single day without reading, while a reading-days design counts days-read within
+a rolling window (for example 4 reading days per week keeps the streak alive) so a missed school
+night or a weekend at a grandparent's does not zero a child's progress.</p>
+</blockquote>
+<ul>
+<li><strong>Q1. Ratify the D1 reconciliation.</strong> Adopt render-time flow of linear passages (every stop ends
+  in a choice; graph keeps linear beats; ADR-011 constants stand) versus amend ADR-011 to require
+  choices on every node (voids the researched shape, changes generation budgets). Recommended:
+  render-time flow, pending the external research findings. Whichever way, this is a new ADR
+  (player semantics change) plus conformance-corpus work.</li>
+<li><strong>Q2. Approve the per-band choice grammar numbers</strong> implementing D2. A concrete,
+  validator-expressible table needs owner sign-off, for each band: options per choice (2-3 per
+  research), allowed flavor-choice share, required consequential-choice count (Tier-2 gated at
+  which bands), loop-back allowance, and (if Q1 lands on render-flow) max words per rendered stop.
+  The dispatched research pass feeds this; a draft table belongs in the implementation plan.</li>
+<li><strong>Q3. Deprecation mechanics for the grandfathered catalog</strong> (D3): marker (<code>production_eligible</code>
+  flip versus a new <code>deprecated</code> flag with a reason), effect (excluded from new generation and new
+  assignment while already-published books stay readable), and the retirement trigger (per cell,
+  once N compliant skeletons exist, or a date). Also: are the 23 committed fills imported under
+  grandfather status (<code>UW-G14</code>), or held to the new rule?</li>
+<li><strong>Q4. The tone vocabulary per band</strong> (D5). Proposal to approve or edit: gentle / funny /
+  exciting at every band; add "a little spooky" from 8-11; add "scary" and "sad" from 13-16.
+  Screening still caps tone by the band's content-flag ceilings regardless of request.</li>
+<li><strong>Q5. Gamification shape</strong> (D6). (a) Streak definition: consecutive calendar days versus
+  reading-days-per-week with grace, and whether a lapsed streak resets visibly (pressure) or
+  quietly. (b) Badge taxonomy seed set (first book, every ending in a book, N books, first
+  request, series complete). &copy; Surfaces: library, profile picker, both. (d) Guardian per-profile
+  off-switch for streaks? (e) Compliance check: engagement mechanics in a child-directed app get
+  App Store Kids Category and COPPA scrutiny; fold into the ADR-018 counsel bundle (<code>UW-M03</code>).
+  All data stays first-party per ADR-018; new tables carry the standing four-artifact tax.</li>
+<li><strong>Q6. Media budgets</strong> (D7). Numbers to set: per-book offline download ceiling per band
+  (reference points: story blobs are ~100-400KB gzipped; covers are 800px WebP at a ~256KB
+  ceiling; a fully-illustrated 3-5 book at 10-23 nodes and ~500px art lands roughly 1-3MB).
+  Whether UI sounds ship app-bundled (no storage cost, one-time download) versus per-story audio
+  (R2 storage and per-book size); mute scope (global toggle versus per-profile persisted, and
+  default on or off). Current storage facts: covers live on Cloudflare R2 (S3 API); Supabase holds
+  Postgres only, so media budget planning is primarily an R2 and download-size question, not a
+  Supabase one.</li>
+<li><strong>Q7. POV operationalization</strong> (D8). "Available in all bands" needs one of: (a) second person
+  becomes the rule everywhere (drafting guide as written, kid-band corpus is out of spec and gets
+  refilled or phased out with D3), or (b) a per-story <code>pov</code> field (second or third person) with a
+  band default, letting both exist. (b) requires a schema minor (now cheap via ADR-025) and
+  fill-gate enforcement of consistency. Owner intent reads as (a)-leaning ("I wanted POV available
+  in all bands"); confirm, and decide the existing-fills remedy.</li>
+<li><strong>Q8. Sequencing.</strong> Which of the above land in the Content workstream versus Phase 4b, and
+  whether the naive-user session (<code>UW-M02</code>) runs before the request-page and choice-grammar
+  changes ship, per the standing gate in <code>handoff-s5-reader-ux-remaining-2026-07-26.md</code>.</li>
+</ul>
+<h3 id="research-appendix-digital-choice-pacing-for-children-2026-08-01">Research appendix: digital choice pacing for children (2026-08-01)<a class="headerlink" href="#research-appendix-digital-choice-pacing-for-children-2026-08-01" title="Permanent link">&para;</a></h3>
+<p>External research pass (web sources; evidence graded strong = peer-reviewed and measured, pract =
+practitioner heuristic). Full sourcing sits in the findings below; the headline items:</p>
+<ol>
+<li><strong>Flavor choices work, if and only if the next line acknowledges them.</strong> Fendt, Harrison, Ware,
+   Cardona-Rivera and Roberts (ICIDS 2012, "Achieving the Illusion of Agency") found no significant
+   difference in felt agency between a truly branching story and a linear story whose choices got
+   immediate textual acknowledgment; choices with no feedback underperformed. This is the strongest
+   single result behind D2's flavor-choice allowance, and it adds a requirement: the fill gate
+   should require choice acknowledgment in the following passage. (strong)</li>
+<li><strong>The act of choosing motivates children independent of consequence, with diminishing returns.</strong>
+   Patall, Cooper and Robinson (Psychological Bulletin 2008, 41-study meta-analysis): choice
+   enhances intrinsic motivation and effort, strongest at 2-4 successive choices per session, and
+   more options per choice raises cognitive cost. Few options, frequent-but-bounded choices.
+   (strong)</li>
+<li><strong>For pre-readers, interaction competes with comprehension.</strong> Takacs, Swart and Bus (Review of
+   Educational Research 2015, 43 studies, ages ~2-12): story-incongruent interactive features hurt
+   comprehension via cognitive load, worst for the youngest. Peebles, Bonus and Mares (Computers in
+   Human Behavior 2018): preschool comprehension gains came from scaffolding interactions
+   (questions, predictions), not from plot agency. Implication: at 3-5, "a choice on every page"
+   should relax to "a story-congruent interaction on most pages," with short continue-runs
+   acceptable. (strong)</li>
+<li><strong>Delayed, state-gated consequences reliably land from about age 8-9.</strong> The causal-comprehension
+   literature (Frontiers in Psychology 2014 review; Trabasso et al.) puts adult-like narrative
+   causal processing at ~9; before ~6, consequence-tracking barely exists, so consequences must be
+   immediate and visible. This calibrates D2's consequence gradient. (strong)</li>
+<li><strong>The winning print-to-digital adaptation kept linear beats in the graph and removed them from
+   the surface.</strong> inkle's Sorcery!/80 Days re-authored long gamebook passages into short beats with
+   frequent low-consequence, immediately-acknowledged choices; the ink language's gather syntax
+   exists precisely so a graph keeps linear structure while the rendered surface flows and nearly
+   every stop ends in a choice. Tin Man Games' faithful page-per-section ports served nostalgic
+   adults, and their own lead conceded the format needed more. Netflix's user-tested cadence for
+   lean-back interactive titles is a decision every 3-5 minutes, binary options, with reconvergence
+   framed diegetically. (pract, strong track record)</li>
+<li><strong>Explicit answer to Q1's fork</strong>: the evidence favors render-time flow (merge linear beats into
+   scrolling prose so every stop ends in a choice) for 8-11 and up, and a modified hybrid at 3-5
+   and 5-8 (discrete pages, choice on a regular cadence rather than every page, scaffold
+   interactions between). No source supports force-branching every node, and Patall 2008 predicts
+   diminishing returns from doing so. This confirms the section 8.3 reconciliation and keeps
+   ADR-011's researched constants intact.</li>
+<li><strong>Named evidence gaps</strong>: no measured study of choice frequency in children's reading apps
+   specifically, none on whether children detect reconvergence on replay, none on tap versus
+   scroll for early readers. The per-band numbers below are triangulated calibrations, not
+   measured optima; the naive-user session (<code>UW-M02</code>) is the project's chance to measure some of
+   this directly.</li>
+</ol>
+<p>Key sources: Fendt et al. 2012 (ciigar.csc.ncsu.edu/files/bib/Fendt2012-IllusionOfAgency.pdf);
+Patall, Cooper and Robinson 2008 (Psychological Bulletin 134(2)); Takacs, Swart and Bus 2015
+(RER 85(4)); Peebles, Bonus and Mares 2018 (CHB 85); Kolhoff and Nack, ICIDS 2019; Reed,
+"50 Years of Text Games" on 80 Days (if50.substack.com/p/2014-80-days); Humfrey, "Open sourcing
+ink" (gamedeveloper.com); Ingold GDC 2015/2017; Variety 2018 on Netflix cadence; children's
+publishing word-count norms (Kole; Cioffi).</p>
+<h3 id="draft-per-band-choice-grammar-proposal-for-q2-awaiting-owner-sign-off">Draft per-band choice grammar (proposal for Q2, awaiting owner sign-off)<a class="headerlink" href="#draft-per-band-choice-grammar-proposal-for-q2-awaiting-owner-sign-off" title="Permanent link">&para;</a></h3>
+<p>"Stop" means a rendered page the child lands on, after Q1's render-flow merge where that applies.
+Words per stop follow children's publishing norms and stay compatible with ADR-011's per-node caps
+once linear beats merge.</p>
+<table>
+<thead>
+<tr>
+<th>Band</th>
+<th>Presentation</th>
+<th>Choice cadence</th>
+<th>Max choiceless stops in a row</th>
+<th>Flavor vs consequential</th>
+<th>Options per choice</th>
+<th>Words per stop</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3-5</td>
+<td>discrete pages</td>
+<td>choice every 2<sup>nd</sup>-4<sup>th</sup> stop; scaffold interaction (predict, point, answer) on other pages</td>
+<td>2-3</td>
+<td>~90/10; consequences immediate and visible on the next page; reconvergence free</td>
+<td>2</td>
+<td>10-40</td>
+</tr>
+<tr>
+<td>5-8</td>
+<td>discrete pages</td>
+<td>choice every 1<sup>st</sup>-2<sup>nd</sup> stop</td>
+<td>2</td>
+<td>~70/30; same-scene payoff; every pick acknowledged in the next line</td>
+<td>2-3</td>
+<td>30-70</td>
+</tr>
+<tr>
+<td>8-11</td>
+<td>flowed prose</td>
+<td>every stop ends in a choice</td>
+<td>1, prefer 0</td>
+<td>~50/50; state-gated consequences begin, always with a visible "noticed" cue</td>
+<td>3</td>
+<td>60-135</td>
+</tr>
+<tr>
+<td>10-13</td>
+<td>flowed prose</td>
+<td>every stop ends in a choice</td>
+<td>0-1</td>
+<td>~40/60; delayed and cross-scene consequences expected; distinct targets</td>
+<td>3</td>
+<td>80-150</td>
+</tr>
+<tr>
+<td>13-16</td>
+<td>flowed prose</td>
+<td>every stop ends in a choice</td>
+<td>0-1</td>
+<td>~30/70; consequence foreshadowed (foreseeability was the measured weak point in Bandersnatch)</td>
+<td>3-4</td>
+<td>100-200</td>
+</tr>
+<tr>
+<td>16+</td>
+<td>flowed prose</td>
+<td>every stop ends in a choice</td>
+<td>0-1</td>
+<td>~30/70, gamebook style may push higher lethality per ADR-011</td>
+<td>3-4</td>
+<td>100-230</td>
+</tr>
+</tbody>
+</table>
+<p>Cross-cutting rules (all bands): every choice acknowledged in the immediately following prose
+(fill-gate rule); options few, choices bounded; every interaction story-congruent, none decorative;
+from 8-11 up, design for replay detection of reconvergence (differing acknowledgment lines,
+visible state). New concept introduced by the research that needs its own owner call, folded into
+Q2: <strong>scaffold interactions</strong> at 3-5 (predict/answer beats that are not plot forks) are what the
+evidence actually supports on choiceless pages; they are a new node affordance and would need a
+schema minor (cheap under ADR-025) and prompt support.</p>
+<p>The original question sheet (first round) is preserved below for the record; struck items were
+answered by the decisions table above.</p>
+<p><strong>A. Calibrating D1 (choice density)</strong></p>
+<ul>
+<li><strong>A1. What counts as "a choice"?</strong> (a) 2+ options with any targets, which permits flavor choices
+  that reconverge immediately; (b) 2+ options with distinct targets; &copy; 2+ options where at least
+  one has a downstream consequence (flag set or different subtree). Suggested: (b) at 8-11 and up,
+  (a) allowed at 3-5/5-8.</li>
+<li><strong>A2. Enforcement point and severity.</strong> Hard failure at skeleton promotion for new content, with
+  advisory-only on the existing catalog until A3 is decided? Or hard everywhere on a deadline?</li>
+<li><strong>A3. What happens to the 61 existing skeletons and 23 fills?</strong> Options: (1) authoring-time merge
+  of single-choice chains into their predecessor node (colliding with word caps, see A4); (2)
+  player render-time merge: the engine walks through single-choice nodes and renders one scrollable
+  passage until the next real choice, so "Continue" disappears with zero content changes (both
+  engines plus the conformance corpus must change, and node-count-based progress semantics shift);
+  (3) a mutation-pipeline pass that adds real branches; (4) grandfather the catalog. Suggested:
+  (2) as the fast win, plus the hard rule for new content; revisit (3) per skeleton over time.</li>
+<li><strong>A4. Which rule gives way: choice-per-node or words-per-node?</strong> If every node must branch, then
+  either per-node word ceilings rise (or a node body may span multiple rendered screens with the
+  cap becoming per-screen advisory), or stories get denser branching and ADR-011's
+  nodes-from-words arithmetic changes. Either way ADR-011 needs an amendment; which side?</li>
+<li><strong>A5. Does D1 apply fully to the 3-5 band,</strong> where reading is adult-mediated and picture-book
+  pacing is partly linear by convention? (Only 69 single-choice nodes exist at 3-5, so full
+  compliance is cheap if wanted.)</li>
+</ul>
+<p><strong>B. Content and genre</strong></p>
+<ul>
+<li><strong>B1.</strong> Rank the genre wave for under-13 skeletons: dragons/magic, space, dinosaurs, pirates,
+  gentle-spooky, comedy, sports, superheroes, mystery. Any to exclude on principle?</li>
+<li><strong>B2.</strong> Which growth path gets investment first: fixing hand-authoring promotion (<code>UW-C01</code>,
+  currently nothing passes), harvesting the mutation pipeline, or an LLM structure pass?</li>
+<li><strong>B3.</strong> Target ending-valence mix for teen books (currently 83% negative at 13-16/16+; one book
+  is 147 deaths of 150 endings). A ratio ceiling per book, or leave gamebook-lethal as a style?</li>
+</ul>
+<p><strong>C. Request loop and defaults</strong></p>
+<ul>
+<li><strong>C1.</strong> Where may "your story is ready" reach the kid: in-app only (picker pill, library banner,
+  request-card flip), or is PWA push on the table (new ADR-018 privacy surface)?</li>
+<li><strong>C2.</strong> Reflect-back voice: show the stored K19 interpretation verbatim, or invest in
+  LLM-authored kid-facing prose (<code>OQ-5</code> / <code>UW-I07</code>)?</li>
+<li><strong>C3.</strong> Define the tone vocabulary a child may request per band (does "a little spooky" exist at
+  8-11? is "funny" available everywhere?). Tone can only leave "gentle" once the allowed set is
+  named.</li>
+<li><strong>C4.</strong> Story size on request: auto mid-band, or kid-selectable short/long?</li>
+</ul>
+<p><strong>D. Celebration and gamification</strong></p>
+<ul>
+<li><strong>D2. The gamification ceiling.</strong> Which mechanics are in-bounds for this product: collection
+  (endings gallery, finished shelf) vs achievement badges vs streaks? Streaks are a re-engagement
+  pressure mechanic some families explicitly reject; this is a values call, not an engineering one.</li>
+<li><strong>D3.</strong> Ending rarity/secret markers: authored in skeleton metadata (stable, band-reviewable) or
+  derived from reading data? Suggested: authored.</li>
+<li><strong>D4.</strong> Large-book denominator (<code>AL-028</code>): curated signature endings (the author names ~5-9
+  headline endings as the kid-visible set) vs milestone framing ("3 new endings found")?</li>
+</ul>
+<p><strong>E. Art, audio, and voice</strong></p>
+<ul>
+<li><strong>E1.</strong> In-story illustration: pilot now (per-node at 3-5 only, or per-bottleneck-scene at
+  3-5/5-8) or post-launch? At that volume ADR-017's amendment clause triggers: is the automated
+  image-moderation precondition acceptable? What is the art budget per book?</li>
+<li><strong>E2.</strong> Sound: none, soft UI sounds (page turn, choice tap, ending chime; muted by default or
+  not), or ambient audio? Read-aloud is already slated as a subscription feature post-launch; does
+  browser TTS stay free?</li>
+<li><strong>E3.</strong> POV per band: second person everywhere (the drafting guide as written) or third person at
+  3-5/5-8 with second person from 8-11 up? This decision gates both the corpus fix (2.2) and where
+  hero-name personalization can land (2.6).</li>
+</ul>
+<p><strong>F. Sequencing and process</strong></p>
+<ul>
+<li><strong>F1.</strong> Approve the additive-minor format-evolution policy (server accepts a declared <code>2.x</code>
+  range; minor versions are additive-optional)? It sequences before ending metadata, images, and
+  sound cues.</li>
+<li><strong>F2.</strong> May the personalization contract-slot data work proceed now, while ADR-023 remains
+  blocked on counsel, on the understanding nothing ships until the ADR is Accepted?</li>
+<li><strong>F3.</strong> May a ring-1/ring-2 recommendation surface an unassigned published book to a kid as a
+  one-tap "ask for it" request (routing through the normal guardian consent gate)?</li>
+<li><strong>F4.</strong> When can the naive-user session with real children run (<code>UW-M02</code>)? It gates the
+  request-page reshape and two reader-UX items, and would pressure-test most of the choices above.</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

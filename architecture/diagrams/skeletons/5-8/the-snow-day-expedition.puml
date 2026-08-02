@@ -23,8 +23,8 @@ state m_2 #FFF9C4
 m_2 : choice · 80w
 state m_r1 #D1C4E9
 m_r1 : rising · 60w
-state e_m_retreat #FFCDD2
-e_m_retreat : setback (negative)
+state e_m_retreat #E0E0E0
+e_m_retreat : setback (neutral)
 e_m_retreat : "Turned Back at {A1_GATE}"
 state m_3 #D1C4E9
 m_3 : rising · 66w
@@ -76,8 +76,8 @@ state p_2 #FFF9C4
 p_2 : choice · 80w
 state p_r1 #D1C4E9
 p_r1 : rising · 60w
-state e_p_retreat #FFCDD2
-e_p_retreat : setback (negative)
+state e_p_retreat #E0E0E0
+e_p_retreat : setback (neutral)
 e_p_retreat : "Turned Back at {B2_GATE}"
 state p_3 #D1C4E9
 p_3 : rising · 66w
@@ -145,7 +145,7 @@ legend right
   The Snow Day Expedition
   Band 5-8 · Tier 1 · ~5 min
   Topology: time_cave
-  38 nodes · 10 endings (8+ / 0n / 2-)
+  38 nodes · 10 endings (8+ / 2n / 0-)
   Production-eligible
   Scale: short · prose
 endlegend
