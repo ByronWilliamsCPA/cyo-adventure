@@ -206,16 +206,23 @@ First tranche of work. Each invalidates multiple rows at once.
   `qlty-full`, `pydoclint`, `markdownlint`. CI recovers three of them.
 - **pre-commit.ci is not installed**, so the `ci:`/`skip:` block at `.pre-commit-config.yaml:12-15`
   is inert and there is no hosted fallback. No workflow runs `pre-commit run --all-files`.
-- **A required check fails on third-party availability, in files outside the diff.**
+- **A required check fails on third-party availability, including in files outside the diff.**
   `Dependency & Standards Validation` is a required status check (ruleset `cyo-require-ci-gate`)
   and fans in from the lychee link check, which scans the **whole tree**, not the PR's diff. So an
   external site that is slow, or that rejects a HEAD request, turns a required gate red on a PR
   that did not touch the file. Observed on **three consecutive runs of PR #562 within twenty
-  minutes, with three disjoint failure sets and no overlap with the PR's diff**: a 520 on
-  `readingrockets.org`, then a 415 on `hiwavemakers.com`, then connection failures on
-  `eis.ucsc.edu` (three references) and `securityscorecards.dev`. Every one of those URLs returned
-  200 in under 1.2 seconds when probed directly. The failing set differs every run because the scan
-  covers several hundred external URLs, so per-URL remediation cannot converge. Compounding it,
+  minutes, producing three disjoint failure sets**: a 520 on `readingrockets.org`, then a 415 on
+  `hiwavemakers.com`, then connection failures on `eis.ucsc.edu` (three references) and
+  `securityscorecards.dev`. Every one of those URLs returned 200 in under 1.2 seconds when probed
+  directly. Attribution splits: the third run's failures were in
+  `docs/planning/research/choice-agency-pacing-and-failure.md` and `docs/PROJECT_SETUP.md`, neither
+  of which #562 touches, so that run failed purely on unrelated files. The first two were in
+  `docs/planning/gamification-recommendation-2026-08-01.md`, which #562 does touch. That distinction
+  matters for the remedy and not for the finding: diff-scoping removes the third class outright and
+  shrinks the first two from a draw against ~129 hosts to a draw against the handful a PR cites,
+  but it does not make a required gate immune to a live host having a bad minute. The failing set
+  differs every run because the scan covers several hundred external URLs, so per-URL remediation
+  cannot converge. Compounding it,
   `pr-validation.yml` has no `push`
   trigger, so main is never link-checked and a bad URL is only ever discovered by, and attributed
   to, the next unrelated PR. `--accept` omits 415, which servers return when they refuse the HEAD
