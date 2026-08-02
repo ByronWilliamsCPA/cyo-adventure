@@ -457,6 +457,12 @@ exist in production. Design:
      story outside staging (defense in depth against an admin misclick).
    - #VERIFY: seed-script env-guard test; publishing-guard unit test; a
      staging e2e assertion that no `mqa_` book is kid-visible.
+     **All three exist as of 2026-08-01**: the e2e half is
+     `frontend/e2e-staging/moderation-qa-invisibility.spec.ts` (daily
+     e2e-staging workflow), which anchors on an admin presence check of all
+     six corpus ids so a staging reset turns the assertion loudly red
+     instead of vacuously green, then asserts the kid library API payload
+     and rendered DOM are `mqa_`-free from a real device-grant session.
 4. **Scorecard**: after moderation runs over the seeded set, compare stored
    reports against expected labels and emit a pass/fail diff. This is the
    Stage B UI QA fixture (admins inspect a known-bad book's merged decision
@@ -535,4 +541,6 @@ makes the failure class visible, even if B's surface redesign takes longer.
   kid surface (section 5 containment layers: seed script env refusal,
   `mqa_` namespace + dedicated family, read gate, publishing guard).
   #VERIFY: seed-script env-guard test, publishing-guard unit test, and a
-  staging e2e assertion that no `mqa_` book is kid-visible.
+  staging e2e assertion that no `mqa_` book is kid-visible (all three exist
+  as of 2026-08-01; e2e =
+  `frontend/e2e-staging/moderation-qa-invisibility.spec.ts`).
