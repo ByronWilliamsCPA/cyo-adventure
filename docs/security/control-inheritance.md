@@ -288,17 +288,33 @@ particular needs a recorded verdict.
 Each needs a `UW-*` row so it has a phase home. None of them blocks a release.
 
 1. **A9 origin bypass** (`homelab-infra`). Highest severity, smallest change.
-2. **`consent_ip` records an infrastructure address, not the guardian.** `db/models.py:487-493`
-   stores `consent_ip` as the evidentiary record of parental consent and carries an `#ASSUME`
-   that it holds the real client address; `api/deps.py:857-862` repeats it. The chain is
-   `frontend/nginx.conf:114` (`$proxy_add_x_forwarded_for`) into uvicorn 0.51.0, whose
-   `ProxyHeadersMiddleware` walks `X-Forwarded-For` right-to-left and stops at the rightmost
-   address outside `--forwarded-allow-ips`, which `Dockerfile:148` sets to `172.16.0.0/12` only.
-   At least two hops outside that range now sit in front of it. Exact recorded value not yet
-   confirmed; the non-invasive diagnostic is a cardinality query
-   (`count(*)` versus `count(DISTINCT consent_ip)`), which proves the defect without returning
-   any address. Ordering constraint: switching to `CF-Connecting-IP` is only safe **after** A9 is
-   closed, otherwise the header becomes attacker-controlled.
+2. **`consent_ip` is correct today and will silently break on the first external consent.**
+   `db/models.py:502` stores `consent_ip` as the evidentiary record of parental consent and
+   carries an `#ASSUME` that it holds the real client address; `api/deps.py:857-862` repeats it.
+   The chain is `frontend/nginx.conf:114` (`$proxy_add_x_forwarded_for`) into uvicorn 0.51.0,
+   whose `ProxyHeadersMiddleware` walks `X-Forwarded-For` right-to-left and stops at the
+   rightmost address outside `--forwarded-allow-ips`, which `Dockerfile:148` sets to
+   `172.16.0.0/12` only.
+
+   Measured against production on 2026-08-02 with a counts-only query returning no addresses.
+   The `"user"` table holds 6 rows, 2 with a consent record, across 2 families and 2 distinct
+   signer names, resolving to **1 distinct address in `192.168.0.0/16`**, with zero in
+   `172.16.0.0/12` and zero loopback. `personalization_disclosure_consent` is empty.
+
+   Reading: the mechanism **works** on the internal path. A `192.168` value is a real LAN client,
+   not a container address, which means the Docker hops are correctly treated as trusted and the
+   true client is recovered. Two signers sharing one address is consistent with both accounts
+   having been created from the same machine and is not evidence of a defect.
+
+   What it actually shows is that **every consent on record was captured from the LAN**, so no
+   consent has yet traversed Cloudflare and the data cannot speak to the external path at all.
+   The forward risk stands: once a guardian consents from outside the LAN, the rightmost address
+   outside `172.16.0.0/12` becomes the Cloudflare edge rather than the guardian, and the record
+   degrades with no error and no log line. There is no corrupted evidence to remediate today, and
+   this must be fixed before any guardian can consent from off-LAN.
+
+   Ordering constraint: switching to `CF-Connecting-IP` is only safe **after** A9 is closed,
+   otherwise the header becomes attacker-controlled.
 3. **A6**: pin `Full (strict)` explicitly rather than leaving SSL/TLS on Automatic.
 4. **A8**: accept-or-disable decision on Network Error Logging, which sends child-device
    connectivity reports (URL, timestamp, client IP) to Cloudflare and is absent from the privacy
