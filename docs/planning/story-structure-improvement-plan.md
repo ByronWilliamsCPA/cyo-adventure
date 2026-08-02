@@ -27,6 +27,11 @@ source: "story-structure-diversity-critical-analysis.md (as corrected by the 202
 
 # Story Structure and Diversity Improvement Plan
 
+> **For the implementation team**: per-deliverable implementation briefs, with file/function anchors,
+> current behavior, change specifications, test plans, and the onboarding reading list, are in
+> [story-structure-implementation-briefs.md](story-structure-implementation-briefs.md). Read the
+> briefs' section 0 before writing any code.
+
 ## 0. Objective and non-goals
 
 **Objective**: a reader's next story should feel like a new adventure, and the system should be able
@@ -46,24 +51,64 @@ reader encounters (not graph-level metric distance), on the paths readers actual
 changes a supervisor-ruled contract says so; effort is S (hours to a day), M (days), L (a week plus or
 a program).
 
-## 1. Shape of the plan
+## 1. Shape of the plan: critical path and parallel lanes
 
 Five phases ordered by the loop analysis (analysis section 5): the deployed system first, then the
-signals, then the ceiling, then the measures, then growth. Phases 0 and 1 are mostly parallel small
-items; Phase 2 is the decisive bet; Phase 4 is deliberately last.
+signals, then the ceiling, then the measures, then growth.
+
+### 1.1 Critical path
+
+The plan's core outcome (experience-distinct stories on repeated trees, enforced) has one long
+dependency chain, and it runs through the beat-variant program:
+
+**G3 -> SQ-11 (ADR) -> SQ-12 (pilot, falsification gate) -> SQ-13 (per-skeleton rollout) -> SQ-14
+(ATG blocking, gate G4)**, with **SQ-03 (act-scoped fill)** joining as a prerequisite for SQ-13's
+large-tree slices. Everything else is off the critical path and exists to be parallelized around it.
+Start SQ-11 immediately after PR review; start SQ-03 in the same week, because it has the longest
+lead time of the Phase 0 items and gates the back half of SQ-13.
+
+The secondary chain for Phase 4: **SQ-08 + SQ-15 -> SQ-20 -> SQ-23**, deliberately behind the
+primary chain.
 
 ```mermaid
 flowchart LR
-  P0["Phase 0<br/>Deployment gap"] --> P2["Phase 2<br/>Beat variants"]
-  P1["Phase 1<br/>Signals + selection"] --> P2
-  P2 --> P2b["SQ-14 ATG blocking"]
-  P1 --> P3["Phase 3<br/>Experience measures"]
-  P3 --> P4["Phase 4<br/>Catalog growth"]
-  P1 --> P4
-  P2 --> P4
+  subgraph critical["Critical path"]
+    SQ11["SQ-11 ADR"] --> SQ12["SQ-12 pilot"]
+    SQ12 --> SQ13["SQ-13 rollout"]
+    SQ12 --> SQ14["SQ-14 ATG blocking"]
+    SQ03["SQ-03 act-scoped fill"] --> SQ13
+  end
+  SQ02["SQ-02 feasibility"] --> SQ03
+  SQ07["SQ-07 selection"] -.plumbing.-> SQ14
+  SQ08["SQ-08 trigger"] --> SQ20["SQ-20 flywheel run"]
+  SQ15["SQ-15 experience metrics"] --> SQ20
+  SQ15 --> SQ19["SQ-19 path-length"]
+  SQ15 --> SQ16["SQ-16 stop grammar"]
+  SQ20 --> SQ23["SQ-23 expansion"]
 ```
 
-Hard sequencing constraints from the review (violating these re-creates the loop):
+### 1.2 Parallel lanes (suggested team split)
+
+Three engineering lanes plus an authoring lane run concurrently without stepping on each other's
+files; the owner reviews everything (section 7). Items within a lane are ordered; lanes are
+independent except where the critical path says otherwise.
+
+| Lane | Items in order | Skills | Notes |
+| --- | --- | --- | --- |
+| **A: Pipeline** (critical-path support) | SQ-05, SQ-02, SQ-03, SQ-04, SQ-06 | Backend, prompts | SQ-05 first (cheapest real gain); SQ-03 is the long pole |
+| **B: Signals and selection** | SQ-07, SQ-08, SQ-10, SQ-09(a) | Backend, simulation | All independent of Lane A; SQ-07(2) plumbing is a prerequisite for SQ-14 later |
+| **C: Beat variants** (critical path) | SQ-11, SQ-12, SQ-13, SQ-14 | Design + authoring + backend | SQ-11/SQ-12 can start day one; SQ-13 consumes Lane A's SQ-03 for large trees |
+| **D: Measurement and reader** | SQ-15, SQ-16, SQ-18, SQ-17, SQ-19 | Backend + frontend | SQ-18 is the natural frontend-heavy item; SQ-15 feeds Lanes B and E |
+| **E: Growth and content** | SQ-01 (runbook, week one), SQ-09(b), SQ-21, SQ-20, then SQ-22/SQ-23 decisions | Authoring + ops | SQ-01 is the single highest-impact week-one item in the whole plan; SQ-09(b)/SQ-21 are authoring-heavy and pair together |
+| Cross-cutting | SQ-24 | Docs | Any time; closes UW-C25/UW-G17 |
+
+Minimum viable staffing: two engineers (Lanes A+C and B+D merged) plus the owner on gates, review,
+and the authoring-heavy slices. With three engineers, split as tabled. SQ-01 is lane-independent and
+should happen in week one regardless of staffing.
+
+### 1.3 Hard sequencing constraints
+
+From the review (violating these re-creates the loop):
 
 1. **SQ-14 (ATG blocking) strictly after SQ-12 (beat-variant pilot proves variants work).** Blocking
    the guard while beats are frozen creates an unsatisfiable constraint set (directive says
@@ -141,13 +186,19 @@ derived, label words/node and total-words as designer priors, record the Ashwell
 eight-pattern-to-six-topology mapping, and resolve the five reconciliation actions including
 reconvergence targets. Effort S-M; unblocked now that [research/](research/README.md) exists.
 
-## 7. Capacity model (single owner)
+## 7. Capacity model (implementation team + owner as gate)
 
-One person is author, reviewer, promotion gate, and adjudicator. The plan therefore budgets *review
-and authoring attention*, not calendar effort, and makes debt explicit:
+The plan assumes an implementation team executes the briefs while the owner remains the human
+approval gate that ADR-005 and the flywheel's S7 rule require: the owner reviews every PR, adjudicates
+every gate G1-G6, and personally approves any content that could reach a child (published books,
+restructured series books, promoted mutants, authored variants). The binding constraint therefore
+shifts from authoring hours to **owner review bandwidth**, and the rules below protect it:
 
-- **Two concurrent programs maximum**: Phase 2 rollout (SQ-13) plus one other L item. Everything else
-  queues.
+- **The team never merges content-bearing changes without the owner**: skeleton edits, beat variants,
+  ending remixes, and publish promotions are owner-reviewed by name, not by rubber stamp. Pure-code
+  changes (selection weights, metrics, wiring) follow normal PR review.
+- **Two concurrent content programs maximum** (SQ-13 rollout plus one of SQ-09(b)/SQ-21). Code lanes
+  A/B/D are not capped.
 - **Per-skeleton Phase 2 cost is measured, not assumed**: the pilot (SQ-12) records hours for an
   11-node and a 25-node skeleton; the 100-250-node prose skeletons are estimated from that measurement
   before scheduling; the 300-680-node teen books are scheduled last and only with the act-scoped fill
