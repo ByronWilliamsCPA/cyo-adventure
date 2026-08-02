@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import sys
+from pathlib import Path
 from typing import TYPE_CHECKING, cast
 from unittest.mock import Mock
 
@@ -28,11 +29,18 @@ from scripts.adversarial_harness import (
     SweepReport,
     _catch_rate,  # pyright: ignore[reportPrivateUsage]
     _group_by_age_band,  # pyright: ignore[reportPrivateUsage]
+    _has_misses,  # pyright: ignore[reportPrivateUsage]
+    _load_items,  # pyright: ignore[reportPrivateUsage]
     _parse_args,  # pyright: ignore[reportPrivateUsage]
     _partition_stage1,  # pyright: ignore[reportPrivateUsage]
+    _review_batch_size_bounds,  # pyright: ignore[reportPrivateUsage]
     _run_stage1_sweep_band,  # pyright: ignore[reportPrivateUsage]
+    _sweep_regressions,  # pyright: ignore[reportPrivateUsage]
     _sweep_rows,  # pyright: ignore[reportPrivateUsage]
     _sweep_to_json,  # pyright: ignore[reportPrivateUsage]
+    _validate_batch_sizes,  # pyright: ignore[reportPrivateUsage]
+    _verdict_drift,  # pyright: ignore[reportPrivateUsage]
+    _write_sweep_results,  # pyright: ignore[reportPrivateUsage]
     classify_item,
     estimate_call_counts,
     run_sweep,
@@ -40,6 +48,15 @@ from scripts.adversarial_harness import (
 
 if TYPE_CHECKING:
     from cyo_adventure.moderation.review_provider import ReviewProvider
+
+# Anchored to this file, not to the process cwd: the harness resolves --corpus
+# against the repo root, and a cwd-relative literal silently becomes a
+# nonexistent path (exit 2, a load error) when pytest runs from anywhere but
+# the repo root, which reads as a passing "it exited non-zero" assertion.
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+_CORPUS_ARG = str(
+    _REPO_ROOT / "docs" / "planning" / "safety" / "adversarial-corpus.json"
+)
 
 
 def _stage1_item(
@@ -167,12 +184,16 @@ class TestRunStage1SweepBand:
                 )
             ]
         )
-        by_item, structural_count = await _run_stage1_sweep_band(
+        result = await _run_stage1_sweep_band(
             "8-11", band_items, provider, batch_size=4
         )
         assert len(provider.calls) == 1  # one call for both items, not two
-        assert by_item == {"A": ["pass"], "B": ["flag"]}
-        assert structural_count == 0
+        assert result.by_item == {"A": ["pass"], "B": ["flag"]}
+        assert result.structural_count == 0
+        # Requested 4, but the band only held 2 nodes, so a batch of 4 was
+        # never exercised. The realized sizes are what the artifact reports.
+        assert result.realized_chunk_sizes == (2,)
+        assert len(result.realized_chunk_sizes) == len(provider.calls)
 
     @pytest.mark.asyncio
     async def test_batch_size_one_issues_one_call_per_node(self) -> None:
@@ -186,12 +207,14 @@ class TestRunStage1SweepBand:
                 json.dumps({"verdict": "flag", "reason": "scary"}),
             ]
         )
-        by_item, structural_count = await _run_stage1_sweep_band(
+        result = await _run_stage1_sweep_band(
             "8-11", band_items, provider, batch_size=1
         )
         assert len(provider.calls) == 2
-        assert by_item == {"A": ["pass"], "B": ["flag"]}
-        assert structural_count == 0
+        assert result.by_item == {"A": ["pass"], "B": ["flag"]}
+        assert result.structural_count == 0
+        assert result.realized_chunk_sizes == (1, 1)
+        assert len(result.realized_chunk_sizes) == len(provider.calls)
 
     @pytest.mark.asyncio
     async def test_unparseable_batch_response_collapses_structurally_and_degrades_recall(
@@ -210,16 +233,17 @@ class TestRunStage1SweepBand:
             ),
         ]
         provider = MockProvider(responses=["not a json array"])
-        by_item, structural_count = await _run_stage1_sweep_band(
+        result = await _run_stage1_sweep_band(
             "8-11", band_items, provider, batch_size=2
         )
-        assert structural_count == 1
-        assert by_item == {"C": ["flag"]}  # fail-safe FLAG, not the real verdict
+        assert result.structural_count == 1
+        # fail-safe FLAG, not the real verdict
+        assert result.by_item == {"C": ["flag"]}
 
         # Feed the observed verdicts through the same scoring path run_sweep
         # uses, to show the concrete recall consequence: FLAG (rank 2) never
         # satisfies an expected "block" (rank 3), so the item is a miss.
-        outcome = classify_item(band_items[0], by_item["C"])
+        outcome = classify_item(band_items[0], result.by_item["C"])
         assert outcome.status == "missed"
 
     @pytest.mark.asyncio
@@ -232,6 +256,24 @@ class TestRunStage1SweepBand:
         provider = MockProvider(responses=[])
         with pytest.raises(ValidationError):
             _ = await _run_stage1_sweep_band("8-11", [item], provider, batch_size=1)
+
+    @pytest.mark.asyncio
+    async def test_guard_covers_the_band_wide_union_not_just_the_owning_item(
+        self,
+    ) -> None:
+        """Batching merges two items into one prompt, so the guard must cover
+        both items' child names. A guard scoped to only the item that declared
+        the name would let the OTHER item's merged text egress that name."""
+        carrier = _stage1_item("A", passage="my friend Aabria said hello")
+        declarer = _stage1_item("B", passage="nothing identifying here")
+        # B declares the name; A is the item whose text actually contains it.
+        declarer["pii_context"] = {"child_names": ["Aabria"], "birthdates": []}
+        provider = MockProvider(responses=[])
+        with pytest.raises(ValidationError):
+            _ = await _run_stage1_sweep_band(
+                "8-11", [carrier, declarer], provider, batch_size=8
+            )
+        assert not provider.calls  # raised BEFORE egress, not after
 
 
 class TestRunSweep:
@@ -376,7 +418,7 @@ class TestMainRoutesToSweepOnlyWhenBatchSizeGiven:
             [
                 "adversarial_harness.py",
                 "--corpus",
-                "docs/planning/safety/adversarial-corpus.json",
+                _CORPUS_ARG,
             ],
         )
         sweep_cli_mock = Mock()
@@ -384,8 +426,8 @@ class TestMainRoutesToSweepOnlyWhenBatchSizeGiven:
 
         def _fake_build_review_provider_for_cli(
             _name: str,
-        ) -> tuple[ReviewProvider, adversarial_harness.ReviewProviderName]:
-            return MockProvider(responses=["{}"] * 50), "mock"
+        ) -> tuple[ReviewProvider, adversarial_harness.ReviewProviderName, int]:
+            return MockProvider(responses=["{}"] * 50), "mock", 8
 
         monkeypatch.setattr(
             adversarial_harness,
@@ -406,7 +448,7 @@ class TestMainRoutesToSweepOnlyWhenBatchSizeGiven:
             [
                 "adversarial_harness.py",
                 "--corpus",
-                "docs/planning/safety/adversarial-corpus.json",
+                _CORPUS_ARG,
                 "--batch-size",
                 "1",
             ],
@@ -418,3 +460,192 @@ class TestMainRoutesToSweepOnlyWhenBatchSizeGiven:
         adversarial_harness.main()
         sweep_cli_mock.assert_called_once()
         run_corpus_mock.assert_not_called()
+
+
+class TestLoadItemsIdValidation:
+    """Corpus ids are the sweep's stitching key, so they are validated on load."""
+
+    def test_blank_id_is_rejected(self, tmp_path: Path) -> None:
+        corpus = tmp_path / "c.json"
+        _ = corpus.write_text(
+            json.dumps({"items": [_stage1_item("A"), {"taxonomy_class": "B"}]}),
+            encoding="utf-8",
+        )
+        with pytest.raises(SystemExit) as exc:
+            _ = _load_items(corpus)
+        assert exc.value.code == 2
+
+    def test_duplicate_id_is_rejected(self, tmp_path: Path) -> None:
+        corpus = tmp_path / "c.json"
+        _ = corpus.write_text(
+            json.dumps({"items": [_stage1_item("A"), _stage1_item("A")]}),
+            encoding="utf-8",
+        )
+        with pytest.raises(SystemExit) as exc:
+            _ = _load_items(corpus)
+        assert exc.value.code == 2
+
+    def test_valid_ids_load_cleanly(self, tmp_path: Path) -> None:
+        corpus = tmp_path / "c.json"
+        _ = corpus.write_text(
+            json.dumps({"items": [_stage1_item("A"), _stage1_item("B")]}),
+            encoding="utf-8",
+        )
+        assert [it["id"] for it in _load_items(corpus)] == ["A", "B"]
+
+
+class TestSweepRegressionGate:
+    """The gate compares sizes to the baseline; it does not re-report absolute
+    misses, which a permanently-missed corpus item would pin to 'fail'.
+
+    Each case sweeps a ONE-item corpus, so both sizes send single-node chunks:
+    ``run_safety_stage`` takes its single-node path whenever a chunk holds one
+    node, whatever batch size was requested (stages.py, ``len(batch) == 1``).
+    The scripted responses are therefore objects, not arrays, and the verdict
+    difference between the two runs comes from the response script rather than
+    from the chunking. That keeps these tests about the comparison logic.
+    """
+
+    @pytest.mark.asyncio
+    async def _sweep_from(
+        self, items: list[dict[str, object]], responses: list[str]
+    ) -> SweepReport:
+        provider = MockProvider(responses=responses)
+        name: ReviewProviderName = "openrouter"
+        return await run_sweep(
+            items, provider, review_provider_name=name, batch_sizes=[1, 2]
+        )
+
+    @pytest.mark.asyncio
+    async def test_permanent_baseline_miss_alone_is_not_a_regression(self) -> None:
+        """An item missed at EVERY size is a pre-existing recall gap. Gating on
+        it would saturate the gate: it could never report 'no batching
+        regression' no matter how batching behaved."""
+        item = _stage1_item("E", expected_min_verdict="block", passage="t")
+        sweep = await self._sweep_from(
+            [item],
+            [
+                json.dumps({"verdict": "safe", "reason": "r"}),
+                json.dumps({"verdict": "safe", "reason": "r"}),
+            ],
+        )
+        assert _has_misses(sweep.baseline.report)  # the gap is real...
+        assert _sweep_regressions(sweep) == []  # ...and is not a regression
+
+    @pytest.mark.asyncio
+    async def test_caught_at_baseline_missed_at_size_is_a_regression(self) -> None:
+        item = _stage1_item("X", expected_min_verdict="flag", passage="t")
+        sweep = await self._sweep_from(
+            [item],
+            [
+                json.dumps({"verdict": "flag", "reason": "r"}),
+                json.dumps({"verdict": "safe", "reason": "r"}),
+            ],
+        )
+        regressions = _sweep_regressions(sweep)
+        kinds = {r.kind for r in regressions}
+        assert "status" in kinds
+        assert all(r.batch_size == 2 for r in regressions)
+
+    @pytest.mark.asyncio
+    async def test_severity_downgrade_above_expected_min_is_still_a_regression(
+        self,
+    ) -> None:
+        """block -> flag against expected_min='flag' scores caught both times
+        and a catch-rate delta of 0.0. The binary scoring cannot see it; the
+        severity comparison can."""
+        item = _stage1_item("X", expected_min_verdict="flag", passage="t")
+        sweep = await self._sweep_from(
+            [item],
+            [
+                json.dumps({"verdict": "block", "reason": "r"}),
+                json.dumps({"verdict": "flag", "reason": "r"}),
+            ],
+        )
+        assert not _has_misses(sweep.sizes[1].report)  # invisible to status scoring
+        rows = {(r["class"], r["batch_size"]): r for r in _sweep_rows(sweep)}
+        assert rows[("A", 2)]["delta_vs_baseline"] == pytest.approx(0.0)
+        assert [r.kind for r in _sweep_regressions(sweep)] == ["severity"]
+
+    @pytest.mark.asyncio
+    async def test_hardening_is_reported_as_drift_but_not_as_a_regression(self) -> None:
+        item = _stage1_item("X", expected_min_verdict="flag", passage="t")
+        sweep = await self._sweep_from(
+            [item],
+            [
+                json.dumps({"verdict": "flag", "reason": "r"}),
+                json.dumps({"verdict": "block", "reason": "r"}),
+            ],
+        )
+        assert _sweep_regressions(sweep) == []
+        drift = _verdict_drift(sweep)
+        assert len(drift) == 1
+        assert drift[0]["baseline_observed"] == ["flag"]
+        assert drift[0]["observed"] == ["block"]
+
+
+class TestBatchSizeValidation:
+    """--batch-size bounds come from the Settings field, and repeats are errors."""
+
+    def test_bounds_match_the_settings_field_constraints(self) -> None:
+        assert _review_batch_size_bounds() == (1, 50)
+
+    @pytest.mark.parametrize("size", [0, -1, 51])
+    def test_out_of_range_size_exits_2(self, size: int) -> None:
+        with pytest.raises(SystemExit) as exc:
+            _validate_batch_sizes([1, size])
+        assert exc.value.code == 2
+
+    def test_repeated_size_exits_2_rather_than_paying_for_a_duplicate_run(
+        self,
+    ) -> None:
+        with pytest.raises(SystemExit) as exc:
+            _validate_batch_sizes([1, 4, 4])
+        assert exc.value.code == 2
+
+    def test_distinct_in_range_sizes_pass(self) -> None:
+        _validate_batch_sizes([1, 4, 8])
+
+
+class TestWriteSweepResults:
+    """A write failure after a paid sweep must be a loud exit, not a traceback."""
+
+    @pytest.mark.asyncio
+    async def test_unwritable_path_exits_2(self, tmp_path: Path) -> None:
+        provider = MockProvider(responses=[json.dumps({"verdict": "flag", "r": "r"})])
+        name: ReviewProviderName = "openrouter"
+        sweep = await run_sweep(
+            [_stage1_item("X")], provider, review_provider_name=name, batch_sizes=[1]
+        )
+        blocker = tmp_path / "blocker"
+        _ = blocker.write_text("not a directory", encoding="utf-8")
+        with pytest.raises(SystemExit) as exc:
+            _write_sweep_results(blocker / "sub" / "out.json", sweep)
+        assert exc.value.code == 2
+
+    @pytest.mark.asyncio
+    async def test_payload_records_realized_chunk_sizes(self, tmp_path: Path) -> None:
+        provider = MockProvider(
+            responses=[
+                json.dumps(
+                    [
+                        {"verdict": "flag", "reason": "r", "node_id": "i0n0"},
+                        {"verdict": "flag", "reason": "r", "node_id": "i1n0"},
+                    ]
+                )
+            ]
+        )
+        name: ReviewProviderName = "openrouter"
+        sweep = await run_sweep(
+            [_stage1_item("X"), _stage1_item("Y")],
+            provider,
+            review_provider_name=name,
+            batch_sizes=[8],
+        )
+        out = tmp_path / "out.json"
+        _write_sweep_results(out, sweep)
+        payload = cast("dict[str, object]", json.loads(out.read_text(encoding="utf-8")))
+        sizes = cast("list[dict[str, object]]", payload["sizes"])
+        # Requested 8, realized 2: the artifact must not imply 8 was measured.
+        assert sizes[0]["batch_size"] == 8
+        assert sizes[0]["max_realized_chunk_size"] == 2

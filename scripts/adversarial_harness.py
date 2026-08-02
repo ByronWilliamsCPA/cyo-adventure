@@ -72,8 +72,10 @@ if TYPE_CHECKING:
     from cyo_adventure.moderation.report import Finding
 
 __all__ = [
+    "BandProbeResult",
     "CorpusReport",
     "ItemOutcome",
+    "SweepRegression",
     "SweepReport",
     "SweepSizeReport",
     "classify_item",
@@ -274,13 +276,22 @@ def _pii_context_of(item: Mapping[str, object]) -> PiiContext:
 
 
 async def _observe_item(
-    item: Mapping[str, object], review_provider: ReviewProvider
+    item: Mapping[str, object],
+    review_provider: ReviewProvider,
+    *,
+    batch_size: int = 1,
 ) -> tuple[list[str], bool | None]:
     """Run the appropriate moderation probe for one item.
 
     Args:
         item: The corpus item.
         review_provider: The configured review provider (LLM stages).
+        batch_size: The ``review_batch_size`` to run Stage 1 at. Defaults to 1
+            so a caller that omits it keeps the historical single-node probe,
+            but ``main()`` and the recurring safety evaluation pass
+            ``Settings.review_batch_size`` so the measured configuration is the
+            one production runs. Most corpus items carry a single node, so this
+            only changes behavior for the multi-node aggregate items.
 
     Returns:
         ``(observed_verdicts, guard_raised)``. ``guard_raised`` is ``None`` for
@@ -312,6 +323,7 @@ async def _observe_item(
             nodes=nodes,
             age_band=band,
             max_tokens=_PROBE_MAX_TOKENS,
+            batch_size=batch_size,
         )
     else:
         # #ASSUME: data integrity: target_stage is hand-authored corpus JSON with no
@@ -380,6 +392,7 @@ async def run_corpus(
     review_provider: ReviewProvider,
     *,
     review_provider_name: ReviewProviderName,
+    batch_size: int = 1,
 ) -> CorpusReport:
     """Run every corpus item through its probe and classify the outcome.
 
@@ -387,16 +400,27 @@ async def run_corpus(
         items: The corpus items.
         review_provider: The configured review provider.
         review_provider_name: The provider name (``mock`` marks a non-evidence run).
+        batch_size: The ``review_batch_size`` to run Stage 1 at, forwarded to
+            :func:`_observe_item`.
 
     Returns:
         A :class:`CorpusReport`. ``is_evidence`` is ``False`` for a mock run.
+
+    #ASSUME: security: a recurring safety gate only constrains production if it
+    runs production's configuration. This parameter exists so the weekly
+    evaluation and the CLI can both pass ``Settings.review_batch_size`` rather
+    than silently measuring a single-node topology production stopped using.
+    #VERIFY: ``main()`` and ``tests/llm_eval/test_adversarial_safety_eval.py``
+    both pass ``settings.review_batch_size``; neither relies on the default.
     """
     outcomes: list[ItemOutcome] = []
     for item in items:
         if not _as_bool(item.get("executable")):
             outcomes.append(classify_item(item, []))
             continue
-        observed, guard_raised = await _observe_item(item, review_provider)
+        observed, guard_raised = await _observe_item(
+            item, review_provider, batch_size=batch_size
+        )
         outcomes.append(classify_item(item, observed, guard_raised=guard_raised))
     return CorpusReport(
         review_provider=review_provider_name,
@@ -411,10 +435,13 @@ async def run_corpus(
 # both single-node and batched review over the adversarial corpus and compare
 # recall before enabling review_batch_size > 1 by default).
 #
-# ``run_corpus`` above is left completely untouched by everything below: the
-# no-flag CLI path keeps calling it directly, so the classic single-run mode
-# stays byte-compatible and tests/llm_eval/test_adversarial_safety_eval.py
-# (which imports run_corpus directly) is unaffected.
+# ``run_corpus`` above keeps its own scoring core: the no-flag CLI path calls it
+# directly and the sweep below reuses its classification and rollup helpers
+# unchanged, so a sweep row and a classic row mean the same thing. The one
+# behavioral seam is ``batch_size``, which ``run_corpus`` now forwards to Stage 1
+# so the recurring evaluation can measure production's configuration instead of
+# an implicit single-node topology; every caller that omits it keeps the prior
+# behavior.
 # ---------------------------------------------------------------------------
 
 
@@ -473,17 +500,24 @@ def estimate_call_counts(
     """Estimate total review-provider calls per requested batch size.
 
     Stage-1 items batch within their age band, so their call count depends on
-    ``batch_size``; every other executable item issues exactly one call per
-    size regardless, since the sweep re-runs the full corpus at each size
-    (see ``_run_corpus_at_batch_size``). Pure and network-free: used for the
+    ``batch_size``; every other executable item is counted as one call per
+    size, since the sweep re-runs the full corpus at each size (see
+    ``_run_corpus_at_batch_size``). Pure and network-free: used for the
     preflight log printed before any provider call is made.
+
+    The result is an upper bound, not a prediction. A ``pii_guard`` item whose
+    passage trips ``assert_prompt_pii_safe`` raises inside
+    ``PiiGuardedProvider`` before it delegates, so a correctly-firing guard
+    issues zero provider calls where this counts one. Over-estimating is the
+    safe direction for a preflight whose purpose is letting an operator abort
+    before spending tokens.
 
     Args:
         items: The corpus items.
         batch_sizes: The requested ``review_batch_size`` values.
 
     Returns:
-        ``{batch_size: estimated_call_count}``.
+        ``{batch_size: estimated_call_count}``, an upper bound per size.
     """
     stage1_items, other_items = _partition_stage1(items)
     band_node_counts = {
@@ -522,12 +556,81 @@ class _CountingProvider:
         )
 
 
+def _sweep_item_key(item: Mapping[str, object], band: str, idx: int) -> str:
+    """Return the key a Stage-1 sweep item's outcomes are recorded under.
+
+    The corpus id when there is one, else a synthetic per-position key. Both
+    the producer (``_run_stage1_sweep_band``) and the consumer
+    (``_run_corpus_at_batch_size``) must derive the key the SAME way; deriving
+    it twice from different expressions is what previously let an item with a
+    missing or non-string ``id`` be scored with an empty observed list no
+    matter what the reviewer actually returned. A single derivation used by
+    both sides makes that class of mismatch unrepresentable.
+
+    Args:
+        item: The Stage-1 corpus item.
+        band: The age band the item was grouped into.
+        idx: The item's position within that band's item list.
+
+    Returns:
+        The stitching key for this item.
+    """
+    return _as_str(item.get("id")) or f"<band-{band}-item-{idx}>"
+
+
+@dataclass(frozen=True, slots=True)
+class BandProbeResult:
+    """One age band's batched Stage-1 probe result.
+
+    Attributes:
+        by_item: Stitching key -> observed verdict strings.
+        structural_count: Structural (parse/attribution failure) findings.
+        realized_chunk_sizes: The node counts actually sent per
+            ``run_safety_stage`` call for this band. A band with fewer nodes
+            than ``batch_size`` yields ONE chunk smaller than the requested
+            size, so a sweep at ``--batch-size 8`` over a corpus whose largest
+            band holds 6 nodes never exercises a batch of 8. Recording this is
+            what keeps the artifact from overstating what was measured.
+    """
+
+    by_item: dict[str, list[str]]
+    structural_count: int
+    realized_chunk_sizes: tuple[int, ...]
+
+
+def _chunk_sizes(node_count: int, batch_size: int) -> tuple[int, ...]:
+    """Return the per-call node counts ``run_safety_stage`` will produce.
+
+    Args:
+        node_count: Total nodes handed to the stage for one band.
+        batch_size: The requested ``review_batch_size``.
+
+    Returns:
+        One entry per review call, in order.
+
+    #ASSUME: data integrity: ``run_safety_stage`` chunks its node list into
+    consecutive fixed-size groups, so the last chunk is the remainder. If the
+    stage ever changes to a different partitioning (interleaved, balanced), the
+    realized sizes reported here become wrong while still looking plausible.
+    #VERIFY: the sweep tests assert this function's chunk count equals the
+    provider call count actually observed for the band, which fails loudly if
+    the stage's partitioning diverges.
+    """
+    if node_count <= 0 or batch_size <= 0:
+        return ()
+    full, remainder = divmod(node_count, batch_size)
+    sizes = [batch_size] * full
+    if remainder:
+        sizes.append(remainder)
+    return tuple(sizes)
+
+
 async def _run_stage1_sweep_band(
     band: str,
     band_items: Sequence[Mapping[str, object]],
     provider: ReviewProvider,
     batch_size: int,
-) -> tuple[dict[str, list[str]], int]:
+) -> BandProbeResult:
     """Run one age band's Stage-1 items as one batched node list.
 
     Most corpus items carry a single node, so batching only pays off across
@@ -547,18 +650,17 @@ async def _run_stage1_sweep_band(
         batch_size: The ``review_batch_size`` to run this band at.
 
     Returns:
-        ``(item_id -> observed verdict strings, structural_finding_count)``.
-        ``structural_finding_count`` is the number of collapsed
-        parse-failure/attribution-failure findings ``run_safety_stage``
-        emitted for this band (design doc section 2.3): the batching failure
-        mode this sweep exists to measure.
+        A :class:`BandProbeResult`. Its ``structural_count`` is the number of
+        collapsed parse-failure/attribution-failure findings
+        ``run_safety_stage`` emitted for this band (design doc section 2.3):
+        the batching failure mode this sweep exists to measure.
     """
     key_to_item: dict[str, str] = {}
     nodes: list[tuple[str, str]] = []
     by_item: dict[str, list[str]] = {}
     forbidden_names: set[str] = set()
     for idx, item in enumerate(band_items):
-        item_id = _as_str(item.get("id")) or f"<band-{band}-item-{idx}>"
+        item_id = _sweep_item_key(item, band, idx)
         by_item[item_id] = []
         forbidden_names.update(_pii_context_of(item).child_names)
         for node_idx, (_raw_node_id, prose) in enumerate(_nodes_of(item)):
@@ -572,6 +674,15 @@ async def _run_stage1_sweep_band(
     # per-band probe must match that topology so a guard regression would
     # show up in the sweep too, not just in the single-item probe path.
     # #VERIFY: guarded, not provider, is passed to run_safety_stage below.
+    #
+    # The band-wide union of child_names is deliberate, not an oversight.
+    # Batching puts every item in this band into ONE prompt, so the egress
+    # surface of that prompt is the union: if item B's child name appears
+    # anywhere in the merged text, that name egresses, and a per-item guard
+    # scoped to item A alone would let it through. Guarding the union is the
+    # posture that matches what is actually sent. The cost is blast radius,
+    # which the caller handles: one tripped guard is recorded against this
+    # band rather than aborting the whole sweep (see _run_corpus_at_batch_size).
     guarded = PiiGuardedProvider(
         provider, forbidden=PiiContext(child_names=frozenset(forbidden_names))
     )
@@ -597,7 +708,11 @@ async def _run_stage1_sweep_band(
             item_id = key_to_item.get(finding.node_id)
             if item_id is not None:
                 by_item[item_id].append(finding.verdict.value)
-    return by_item, structural_count
+    return BandProbeResult(
+        by_item=by_item,
+        structural_count=structural_count,
+        realized_chunk_sizes=_chunk_sizes(len(nodes), batch_size),
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -616,12 +731,19 @@ class SweepSizeReport:
             ``batch_size > 1``, since a single-node parse failure collapses
             the same way (production has observed ``verdict_parse_failed`` at
             ``batch_size == 1`` too).
+        realized_chunk_sizes: Every node count actually sent in a Stage-1
+            call during this run, sorted descending. ``batch_size`` is what was
+            REQUESTED; this is what was MEASURED. They diverge whenever a band
+            holds fewer nodes than ``batch_size``, so reading the requested
+            size as evidence that a batch that large was exercised is wrong
+            unless ``max(realized_chunk_sizes) == batch_size``.
     """
 
     batch_size: int
     report: CorpusReport
     call_count: int
     structural_collapse_count: int
+    realized_chunk_sizes: tuple[int, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -662,25 +784,50 @@ async def _run_corpus_at_batch_size(
     stage1_items, _other_items = _partition_stage1(items)
 
     stage1_outcomes: dict[str, list[str]] = {}
+    # Object identity, not corpus id: an item's stitching key is derived once,
+    # here, and reused below. Re-deriving it from item["id"] at lookup time is
+    # what let an id-less item score as an empty observed list regardless of
+    # the reviewer's actual verdict, silently turning a control over-block into
+    # a pass.
+    key_by_item: dict[int, str] = {}
     structural_total = 0
+    realized: list[int] = []
     for band, band_items in _group_by_age_band(stage1_items).items():
-        by_item, structural_count = await _run_stage1_sweep_band(
-            band, band_items, counting_provider, batch_size
-        )
-        stage1_outcomes.update(by_item)
-        structural_total += structural_count
+        for idx, band_item in enumerate(band_items):
+            key_by_item[id(band_item)] = _sweep_item_key(band_item, band, idx)
+        try:
+            band_result = await _run_stage1_sweep_band(
+                band, band_items, counting_provider, batch_size
+            )
+        except ValidationError as exc:
+            # The band-wide PII guard tripped before egress, which is the guard
+            # working. Record it against this band and keep going: aborting the
+            # process would discard every other class's result for the whole
+            # sweep, which is a far worse outcome than one unscored band.
+            print(
+                f"PII guard tripped for age band {band!r} at "
+                f"batch_size={batch_size}: {exc}",
+                file=sys.stderr,
+            )
+            for band_item in band_items:
+                stage1_outcomes[key_by_item[id(band_item)]] = []
+            continue
+        stage1_outcomes.update(band_result.by_item)
+        structural_total += band_result.structural_count
+        realized.extend(band_result.realized_chunk_sizes)
 
-    stage1_ids = {_as_str(it.get("id")) for it in stage1_items}
     outcomes: list[ItemOutcome] = []
     for item in items:
         if not _as_bool(item.get("executable")):
             outcomes.append(classify_item(item, []))
             continue
-        item_id = _as_str(item.get("id"))
-        if item_id in stage1_ids:
-            outcomes.append(classify_item(item, stage1_outcomes.get(item_id, [])))
+        stitch_key = key_by_item.get(id(item))
+        if stitch_key is not None:
+            outcomes.append(classify_item(item, stage1_outcomes.get(stitch_key, [])))
             continue
-        observed, guard_raised = await _observe_item(item, counting_provider)
+        observed, guard_raised = await _observe_item(
+            item, counting_provider, batch_size=batch_size
+        )
         outcomes.append(classify_item(item, observed, guard_raised=guard_raised))
 
     report = CorpusReport(
@@ -693,12 +840,198 @@ async def _run_corpus_at_batch_size(
         report=report,
         call_count=counting_provider.calls,
         structural_collapse_count=structural_total,
+        realized_chunk_sizes=tuple(sorted(realized, reverse=True)),
     )
 
 
-def _sweep_has_misses(sweep: SweepReport) -> bool:
-    """Return whether any requested size failed the harness's existing thresholds."""
-    return any(_has_misses(sr.report) for sr in sweep.sizes)
+@dataclass(frozen=True, slots=True)
+class SweepRegression:
+    """One way a non-baseline batch size scored worse than the baseline.
+
+    Attributes:
+        batch_size: The size that regressed.
+        kind: ``status``, ``severity``, ``catch_rate``, or ``structural``.
+        subject: The corpus item id, or the taxonomy class for ``catch_rate``,
+            or ``"<run>"`` for a whole-run ``structural`` regression.
+        detail: Human-readable baseline-to-size description.
+    """
+
+    batch_size: int
+    kind: str
+    subject: str
+    detail: str
+
+
+def _outcomes_by_id(report: CorpusReport) -> dict[str, ItemOutcome]:
+    """Index a report's item outcomes by corpus item id."""
+    return {out.item_id: out for out in report.outcomes}
+
+
+def _observed_max_rank(outcome: ItemOutcome) -> int:
+    """Return the strongest verdict rank observed for an item (0 if none)."""
+    return max((verdict_rank(v) for v in outcome.observed), default=0)
+
+
+def _is_control(outcome: ItemOutcome) -> bool:
+    """Return whether an outcome belongs to a benign control item."""
+    return outcome.status in {"control_ok", "control_over_block"}
+
+
+def _item_regressions(
+    baseline_out: ItemOutcome, size_out: ItemOutcome, batch_size: int
+) -> list[SweepRegression]:
+    """Compare one item's baseline and at-size outcomes.
+
+    Args:
+        baseline_out: The item's outcome at the baseline batch size.
+        size_out: The same item's outcome at ``batch_size``.
+        batch_size: The non-baseline size being compared.
+
+    Returns:
+        Zero or more regressions for this item.
+    """
+    found: list[SweepRegression] = []
+    if baseline_out.status == "caught" and size_out.status != "caught":
+        found.append(
+            SweepRegression(
+                batch_size=batch_size,
+                kind="status",
+                subject=size_out.item_id,
+                detail=f"caught at baseline, {size_out.status} at this size",
+            )
+        )
+    if baseline_out.status == "control_ok" and size_out.status == "control_over_block":
+        found.append(
+            SweepRegression(
+                batch_size=batch_size,
+                kind="status",
+                subject=size_out.item_id,
+                detail="control passed at baseline, over-blocked at this size",
+            )
+        )
+    # A severity downgrade that stays at or above expected_min is invisible to
+    # the boolean is_caught scoring: block -> flag against expected_min="flag"
+    # scores caught both times and a catch-rate delta of 0.0. It is still a real
+    # softening of the moderation response under batching, so compare ranks
+    # directly. Controls are excluded: for a benign item, LOWER is better.
+    if not _is_control(size_out):
+        baseline_rank = _observed_max_rank(baseline_out)
+        size_rank = _observed_max_rank(size_out)
+        if size_rank < baseline_rank:
+            found.append(
+                SweepRegression(
+                    batch_size=batch_size,
+                    kind="severity",
+                    subject=size_out.item_id,
+                    detail=(
+                        f"strongest verdict softened "
+                        f"{'/'.join(baseline_out.observed) or 'none'} -> "
+                        f"{'/'.join(size_out.observed) or 'none'}"
+                    ),
+                )
+            )
+    return found
+
+
+def _size_regressions(
+    baseline: SweepSizeReport, size_report: SweepSizeReport
+) -> list[SweepRegression]:
+    """Return every way ``size_report`` scored worse than ``baseline``.
+
+    Args:
+        baseline: The baseline size's run.
+        size_report: A non-baseline size's run over the same corpus.
+
+    Returns:
+        The regressions found, which is empty when the size is no worse than
+        the baseline on any tracked dimension.
+    """
+    if size_report.batch_size == baseline.batch_size:
+        return []
+    found: list[SweepRegression] = []
+    baseline_items = _outcomes_by_id(baseline.report)
+    for size_out in size_report.report.outcomes:
+        baseline_out = baseline_items.get(size_out.item_id)
+        if baseline_out is None:
+            continue
+        found.extend(_item_regressions(baseline_out, size_out, size_report.batch_size))
+    for tax, counts in size_report.report.per_class.items():
+        rate = _catch_rate(counts)
+        baseline_rate = _catch_rate(baseline.report.per_class.get(tax, {}))
+        if rate is not None and baseline_rate is not None and rate < baseline_rate:
+            found.append(
+                SweepRegression(
+                    batch_size=size_report.batch_size,
+                    kind="catch_rate",
+                    subject=tax,
+                    detail=f"catch rate {baseline_rate:.0%} -> {rate:.0%}",
+                )
+            )
+    if size_report.structural_collapse_count > baseline.structural_collapse_count:
+        found.append(
+            SweepRegression(
+                batch_size=size_report.batch_size,
+                kind="structural",
+                subject="<run>",
+                detail=(
+                    f"structural-collapse findings "
+                    f"{baseline.structural_collapse_count} -> "
+                    f"{size_report.structural_collapse_count}"
+                ),
+            )
+        )
+    return found
+
+
+def _sweep_regressions(sweep: SweepReport) -> list[SweepRegression]:
+    """Return every regression any non-baseline size shows against the baseline.
+
+    This, not :func:`_has_misses`, is what the sweep gates on.
+
+    #CRITICAL: security: the sweep's question is "does batching lose recall
+    relative to batch_size=1", and only a baseline-relative comparison answers
+    it. Gating on absolute misses instead cannot: the corpus contains items
+    (the E2/E3 prompt-injection pair) that are permanently missed at EVERY
+    size, so an absolute gate is pinned to "fail" and its verdict carries no
+    information about batching at all. A saturated gate is indistinguishable
+    from a broken one.
+    #VERIFY: tests/unit/test_adversarial_harness_batch_sweep.py asserts a
+    sweep whose baseline already misses an item still exits 0-or-4 rather
+    than 1 when no size regresses, and exits 1 when one does.
+    """
+    baseline = sweep.baseline
+    found: list[SweepRegression] = []
+    for size_report in sweep.sizes:
+        found.extend(_size_regressions(baseline, size_report))
+    return found
+
+
+def _verdict_drift(sweep: SweepReport) -> list[dict[str, object]]:
+    """Return every per-item verdict change vs. the baseline, in either direction.
+
+    Informational only, and deliberately separate from
+    :func:`_sweep_regressions`: hardening (a batched run blocking what the
+    baseline only flagged) is drift worth seeing but is not a regression, and
+    folding it into the gate would make a safety improvement fail the build.
+    """
+    baseline_items = _outcomes_by_id(sweep.baseline.report)
+    drift: list[dict[str, object]] = []
+    for size_report in sweep.sizes:
+        if size_report.batch_size == sweep.baseline.batch_size:
+            continue
+        for size_out in size_report.report.outcomes:
+            baseline_out = baseline_items.get(size_out.item_id)
+            if baseline_out is None or baseline_out.observed == size_out.observed:
+                continue
+            drift.append(
+                {
+                    "batch_size": size_report.batch_size,
+                    "item_id": size_out.item_id,
+                    "baseline_observed": list(baseline_out.observed),
+                    "observed": list(size_out.observed),
+                }
+            )
+    return drift
 
 
 async def run_sweep(
@@ -844,23 +1177,77 @@ def _print_sweep_report(sweep: SweepReport) -> None:
     print()
     print("Per-size call counts and structural-collapse (parse-failure) findings:")
     for size_report in sweep.sizes:
+        realized = size_report.realized_chunk_sizes
+        realized_str = ", ".join(str(n) for n in realized) if realized else "n/a"
         line = (
-            f"  batch_size={size_report.batch_size}: "
+            f"  requested batch_size={size_report.batch_size}: "
             f"{size_report.call_count} calls, "
-            f"{size_report.structural_collapse_count} structural-collapse finding(s)"
+            f"{size_report.structural_collapse_count} structural-collapse finding(s), "
+            f"realized Stage-1 chunk sizes: {realized_str}"
         )
         print(line)
+        if realized and max(realized) < size_report.batch_size:
+            print(
+                f"    NOTE: no chunk reached {size_report.batch_size} nodes "
+                f"(largest was {max(realized)}); this corpus cannot exercise "
+                f"a batch that large."
+            )
+    print()
+    regressions = _sweep_regressions(sweep)
+    if regressions:
+        print(f"REGRESSIONS vs. batch_size={baseline_size} ({len(regressions)}):")
+        for reg in regressions:
+            print(
+                f"  [{reg.kind}] batch_size={reg.batch_size} "
+                f"{reg.subject}: {reg.detail}"
+            )
+    else:
+        print(f"No regressions vs. batch_size={baseline_size}.")
+    drift = _verdict_drift(sweep)
+    if drift:
+        print()
+        print(f"Verdict drift vs. baseline ({len(drift)}, informational):")
+        for row in drift:
+            before = cast("list[str]", row["baseline_observed"])
+            after = cast("list[str]", row["observed"])
+            print(
+                f"  batch_size={row['batch_size']} {row['item_id']}: "
+                f"{'/'.join(before) or 'none'} -> {'/'.join(after) or 'none'}"
+            )
+    if _has_misses(sweep.baseline.report):
+        print()
+        print(
+            f"NOTE: the baseline (batch_size={baseline_size}) itself has "
+            "misses or control over-blocks. Those are pre-existing recall gaps, "
+            "not batching regressions; this sweep does not gate on them."
+        )
     print("=" * 64)
 
 
 def _sweep_to_json(sweep: SweepReport) -> dict[str, object]:
     """Build the machine-readable ``--out`` payload for a sweep run."""
+    regressions = _sweep_regressions(sweep)
     return {
         "baseline_batch_size": sweep.baseline.batch_size,
+        "baseline_has_misses": _has_misses(sweep.baseline.report),
         "rows": _sweep_rows(sweep),
+        "regressions": [
+            {
+                "batch_size": reg.batch_size,
+                "kind": reg.kind,
+                "subject": reg.subject,
+                "detail": reg.detail,
+            }
+            for reg in regressions
+        ],
+        "verdict_drift": _verdict_drift(sweep),
         "sizes": [
             {
                 "batch_size": sr.batch_size,
+                "realized_chunk_sizes": list(sr.realized_chunk_sizes),
+                "max_realized_chunk_size": (
+                    max(sr.realized_chunk_sizes) if sr.realized_chunk_sizes else None
+                ),
                 "call_count": sr.call_count,
                 "structural_collapse_count": sr.structural_collapse_count,
                 "per_class": sr.report.per_class,
@@ -887,11 +1274,30 @@ def _sweep_to_json(sweep: SweepReport) -> dict[str, object]:
 
 
 def _write_sweep_results(out_path: Path, sweep: SweepReport) -> None:
-    """Write the sweep results as JSON (rows plus full per-size detail)."""
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(
-        json.dumps(_sweep_to_json(sweep), indent=2) + "\n", encoding="utf-8"
-    )
+    """Write the sweep results as JSON (rows plus full per-size detail).
+
+    Args:
+        out_path: Destination path; parent directories are created.
+        sweep: The sweep report to serialize.
+
+    Raises:
+        SystemExit: Exit code 2 if the artifact cannot be written.
+
+    #ASSUME: data integrity: a sweep costs real review-provider calls, so a
+    write failure must be loud. Letting an OSError escape as a traceback after
+    the run completed would discard the evidence and give no actionable
+    message; exiting 2 with the path and errno says what to fix.
+    #VERIFY: covered by the unwritable-out-path test in
+    tests/unit/test_adversarial_harness_batch_sweep.py.
+    """
+    try:
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(
+            json.dumps(_sweep_to_json(sweep), indent=2) + "\n", encoding="utf-8"
+        )
+    except OSError as exc:
+        print(f"Error writing sweep results to {out_path}: {exc}", file=sys.stderr)
+        sys.exit(2)
 
 
 def _load_items(corpus_path: Path) -> list[dict[str, object]]:
@@ -904,7 +1310,18 @@ def _load_items(corpus_path: Path) -> list[dict[str, object]]:
         The list of item dicts.
 
     Raises:
-        SystemExit: If the file cannot be read or parsed, or has no items array.
+        SystemExit: If the file cannot be read or parsed, has no items array, or
+            any item is missing a non-empty unique string ``id``.
+
+    #ASSUME: data integrity: every item's ``id`` is a non-empty string unique
+    within the corpus. The sweep stitches per-item Stage-1 verdicts back onto
+    corpus items by id; a blank or duplicated id would silently attribute one
+    item's verdict to another, or score an item against an empty verdict list,
+    and an empty verdict list reads as "no finding" (a pass) for an adversarial
+    item. Validating at load makes that unrepresentable rather than a silent
+    mis-score in a child-safety gate.
+    #VERIFY: covered by the blank-id and duplicate-id cases in
+    tests/unit/test_adversarial_harness_batch_sweep.py.
     """
     try:
         raw_text = corpus_path.read_text(encoding="utf-8")
@@ -927,11 +1344,49 @@ def _load_items(corpus_path: Path) -> list[dict[str, object]]:
     if not isinstance(raw_items, list):
         print("Error: corpus 'items' must be an array.", file=sys.stderr)
         sys.exit(2)
-    return [
+    items = [
         cast("dict[str, object]", entry)
         for entry in raw_items  # pyright: ignore[reportUnknownVariableType]
         if isinstance(entry, dict)
     ]
+    _validate_item_ids(items)
+    return items
+
+
+def _validate_item_ids(items: Sequence[Mapping[str, object]]) -> None:
+    """Exit 2 unless every item carries a non-empty ``id`` unique in the corpus.
+
+    Args:
+        items: The loaded corpus items.
+
+    Raises:
+        SystemExit: Exit code 2 on the first blank or duplicated id, reporting
+            every offending position so one run fixes the whole file.
+    """
+    blank: list[int] = []
+    seen: dict[str, int] = {}
+    duplicates: list[str] = []
+    for idx, item in enumerate(items):
+        raw_id = item.get("id")
+        if not isinstance(raw_id, str) or not raw_id.strip():
+            blank.append(idx)
+            continue
+        if raw_id in seen:
+            duplicates.append(raw_id)
+        else:
+            seen[raw_id] = idx
+    if not blank and not duplicates:
+        return
+    problems: list[str] = []
+    if blank:
+        positions = ", ".join(str(i) for i in blank)
+        problems.append(f"missing or blank 'id' at item index/indices {positions}")
+    if duplicates:
+        problems.append(
+            f"duplicate 'id' value(s): {', '.join(sorted(set(duplicates)))}"
+        )
+    print(f"Error: corpus item ids are invalid: {'; '.join(problems)}", file=sys.stderr)
+    sys.exit(2)
 
 
 def _load_env_file(env_path: Path) -> None:
@@ -1112,7 +1567,7 @@ def _parse_args() -> argparse.Namespace:
 
 def _build_review_provider_for_cli(
     provider_name: str,
-) -> tuple[ReviewProvider, ReviewProviderName]:
+) -> tuple[ReviewProvider, ReviewProviderName, int]:
     """Build ``Settings`` and the review provider for a CLI invocation.
 
     Shared by the single-run and sweep code paths so the mock-review escape
@@ -1122,8 +1577,11 @@ def _build_review_provider_for_cli(
         provider_name: The raw ``--review-provider`` CLI value.
 
     Returns:
-        ``(review_provider, provider_name)``, the latter narrowed to the
-        harness's own ``ReviewProviderName`` literal.
+        ``(review_provider, provider_name, review_batch_size)``. The name is
+        narrowed to the harness's own ``ReviewProviderName`` literal. The batch
+        size is the resolved ``Settings.review_batch_size`` (env-overridable),
+        so the classic run can probe at production's configuration rather than
+        at a hard-coded 1.
 
     Raises:
         ProjectBaseError: If settings validation or provider construction
@@ -1150,7 +1608,77 @@ def _build_review_provider_for_cli(
     review_provider, _independent = build_review_provider(
         settings, generator_provider=None, generator_model=None
     )
-    return review_provider, cast("ReviewProviderName", provider_name)
+    return (
+        review_provider,
+        cast("ReviewProviderName", provider_name),
+        settings.review_batch_size,
+    )
+
+
+def _review_batch_size_bounds() -> tuple[int, int]:
+    """Return ``Settings.review_batch_size``'s (min, max) read from the model.
+
+    Returns:
+        The field's ``ge``/``le`` constraints, falling back to ``(1, 50)`` if
+        either is absent.
+
+    #ASSUME: data integrity: the CLI's accepted range must be the SAME range
+    production accepts. Hard-coding 1-50 here duplicated the constraint, so
+    widening the field would leave this validator silently rejecting values
+    production would take. Reading the constraint off the field makes the two
+    impossible to drift apart.
+    #VERIFY: tests/unit/test_adversarial_harness_batch_sweep.py asserts this
+    matches the Field(ge=..., le=...) declared in core/config.py.
+    """
+    # annotated_types.Ge/Le instances; typed as object so the getattr probes
+    # below are checked rather than silently Any.
+    metadata: list[object] = list(Settings.model_fields["review_batch_size"].metadata)
+    low: int | None = None
+    high: int | None = None
+    for meta in metadata:
+        ge: object = getattr(meta, "ge", None)
+        le: object = getattr(meta, "le", None)
+        if isinstance(ge, int):
+            low = ge
+        if isinstance(le, int):
+            high = le
+    return (low if low is not None else 1, high if high is not None else 50)
+
+
+def _validate_batch_sizes(batch_sizes: Sequence[int]) -> None:
+    """Exit 2 unless every requested size is in range and appears once.
+
+    Args:
+        batch_sizes: The requested ``--batch-size`` values, in order.
+
+    Raises:
+        SystemExit: Exit code 2 on an out-of-range or repeated size. A repeat
+            is rejected rather than deduplicated because it would spend a full
+            extra corpus run of real review-provider calls to produce a
+            duplicate column.
+    """
+    low, high = _review_batch_size_bounds()
+    for size in batch_sizes:
+        if not low <= size <= high:
+            msg = (
+                f"Error: --batch-size {size} is outside the supported range "
+                f"{low}-{high} (Settings.review_batch_size constraints)."
+            )
+            print(msg, file=sys.stderr)
+            sys.exit(2)
+    seen: set[int] = set()
+    repeated: set[int] = set()
+    for size in batch_sizes:
+        if size in seen:
+            repeated.add(size)
+        seen.add(size)
+    if repeated:
+        print(
+            "Error: --batch-size values must be distinct; repeated: "
+            f"{', '.join(str(s) for s in sorted(repeated))}.",
+            file=sys.stderr,
+        )
+        sys.exit(2)
 
 
 def _run_sweep_cli(
@@ -1161,10 +1689,16 @@ def _run_sweep_cli(
 ) -> None:
     """Sweep-mode CLI body: preflight log, run, report, and exit.
 
-    Exit codes mirror ``main()``'s single-run semantics: 0 clean, 1 if any
-    requested size missed the harness's existing per-class thresholds, 2 if
-    a batch size is out of range or the provider could not be built, 3 for a
-    non-evidence (mock) run.
+    Exit codes:
+        0: no size regressed against the baseline, and the baseline is clean.
+        1: at least one non-baseline size regressed against the baseline. This
+           is the only code that means "batching lost recall".
+        2: a batch size was invalid, the corpus was unusable, the provider
+           could not be built, or the ``--out`` artifact could not be written.
+        3: a non-evidence (mock) run.
+        4: no batching regression, but the baseline itself has misses or
+           control over-blocks. Pre-existing recall gaps, distinct from a
+           batching regression so the two cannot be confused.
 
     Args:
         items: The loaded corpus items.
@@ -1172,19 +1706,14 @@ def _run_sweep_cli(
         out_path: Optional resolved ``--out`` path for the JSON results.
         batch_sizes: The requested ``review_batch_size`` values, in order.
     """
-    for size in batch_sizes:
-        if not 1 <= size <= 50:
-            msg = (
-                f"Error: --batch-size {size} is outside the supported range "
-                "1-50 (matches Settings.review_batch_size)."
-            )
-            print(msg, file=sys.stderr)
-            sys.exit(2)
+    _validate_batch_sizes(batch_sizes)
 
     _print_sweep_preflight(items, batch_sizes)
 
     try:
-        review_provider, resolved_name = _build_review_provider_for_cli(provider_name)
+        review_provider, resolved_name, _ = _build_review_provider_for_cli(
+            provider_name
+        )
         sweep = asyncio.run(
             run_sweep(
                 items,
@@ -1214,7 +1743,9 @@ def _run_sweep_cli(
 
     if not is_evidence:
         sys.exit(3)
-    sys.exit(1 if _sweep_has_misses(sweep) else 0)
+    if _sweep_regressions(sweep):
+        sys.exit(1)
+    sys.exit(4 if _has_misses(sweep.baseline.report) else 0)
 
 
 def main() -> None:
@@ -1228,8 +1759,16 @@ def main() -> None:
 
     When ``--batch-size`` is given one or more times, delegates to the Gate 3
     batch-size recall-comparison sweep (``_run_sweep_cli``) instead of the
-    single classic run; the no-flag path below is otherwise untouched, so it
-    stays byte-compatible with every prior invocation.
+    single classic run.
+
+    #CRITICAL: security: the no-flag path now probes at the resolved
+    ``Settings.review_batch_size`` rather than a hard-coded 1. This is a
+    deliberate behavior change: a recurring safety gate that measures a
+    topology production stopped using constrains nothing. The probe's printed
+    batch size makes the measured configuration explicit in every run's output
+    so a reader never has to assume it.
+    #VERIFY: the printed ``review_batch_size=`` line above the results, and
+    tests/llm_eval/test_adversarial_safety_eval.py passing the same value.
     """
     args = _parse_args()
     corpus_path = _resolve_within(cast("Path", args.corpus), label="--corpus")
@@ -1251,12 +1790,16 @@ def main() -> None:
         return
 
     try:
-        review_provider, resolved_name = _build_review_provider_for_cli(provider_name)
+        review_provider, resolved_name, prod_batch_size = (
+            _build_review_provider_for_cli(provider_name)
+        )
+        print(f"Probing Stage 1 at review_batch_size={prod_batch_size}.")
         report = asyncio.run(
             run_corpus(
                 items,
                 review_provider,
                 review_provider_name=resolved_name,
+                batch_size=prod_batch_size,
             )
         )
     except ProjectBaseError as exc:
