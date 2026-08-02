@@ -2523,15 +2523,25 @@ export type OnboardingBody = {
 /**
  * OnboardingConsent
  *
- * Verifiable-parental-consent payload (Phase 2 / ADR-018 D1).
+ * Verifiable-parental-consent payload (Phase 2 / ADR-018 D1; O-117/O-119).
  *
  * A signature-capture step layered on the Supabase/Google OAuth login that
  * already authenticates the guardian: ``signer_name`` is a typed
  * full-legal-name attestation, standing in for the FTC's "sign and submit
  * electronically" method (312.5(b)(2)(i)). ``accepted``, ``policy_version``,
- * and ``signer_name`` must all be present together to actually record
- * consent; a request that omits or falsifies any of them records nothing
- * (see ``onboarding._record_consent``), it does not partially persist.
+ * ``signer_name``, ``residence_country``, and ``adulthood_attested`` must
+ * all be present together to actually record consent; a request that omits
+ * or falsifies any of them records nothing (see
+ * ``onboarding._record_consent``), it does not partially persist.
+ *
+ * ``residence_country`` (O-117) and ``adulthood_attested`` (O-119) are new
+ * fields on this same versioned consent form, not a reinterpretation of the
+ * guardianship attestation ``signer_name``/``accepted`` already capture:
+ * guardianship and age are different claims, so they get their own
+ * checkbox and their own columns (``User.residence_country``,
+ * ``User.adulthood_attested_at``). There is no separate
+ * attestation-version field for the new checkbox: it ships inside this same
+ * form, so ``policy_version`` already records what text was shown.
  */
 export type OnboardingConsent = {
     /**
@@ -2546,6 +2556,14 @@ export type OnboardingConsent = {
      * Signer Name
      */
     signer_name?: string | null;
+    /**
+     * Residence Country
+     */
+    residence_country?: string | null;
+    /**
+     * Adulthood Attested
+     */
+    adulthood_attested?: boolean | null;
 };
 
 /**

@@ -467,17 +467,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // ADR-018 D1's decision record); signerName is a typed full-legal-name
       // attestation, the FTC 312.5(b)(2)(i) "sign and submit electronically"
       // method layered on the OAuth login that already authenticated this
-      // session. Rethrows on failure (e.g. the backend's 422 for an empty
-      // name) so GuardianConsentPage can show it; on success, re-runs the
-      // full syncPrincipal flow (fresh getSession(), no event) so the
-      // now-consented guardian proceeds straight to /v1/me and 'signed-in'
-      // instead of needing a second trigger.
+      // session. residenceCountry (O-117) travels alongside it on the same
+      // submission; adulthood_attested (O-119) is hardcoded true here
+      // because GuardianConsentPage only allows this call once its own
+      // adulthood checkbox is checked, mirroring accepted: true above.
+      // Rethrows on failure (e.g. the backend's 422 for an empty name or a
+      // malformed country code) so GuardianConsentPage can show it; on
+      // success, re-runs the full syncPrincipal flow (fresh getSession(), no
+      // event) so the now-consented guardian proceeds straight to /v1/me and
+      // 'signed-in' instead of needing a second trigger.
       // #VERIFY: AuthContext.test.tsx recordConsent success/failure cases.
-      recordConsent: async (signerName) => {
+      recordConsent: async (signerName, residenceCountry) => {
         await onboardingApi.onboard({
           accepted: true,
           policy_version: CONSENT_POLICY_VERSION,
           signer_name: signerName,
+          residence_country: residenceCountry,
+          adulthood_attested: true,
         })
         const { data } = await supabase.auth.getSession()
         await syncPrincipal(data.session)

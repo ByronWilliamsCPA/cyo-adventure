@@ -137,12 +137,16 @@ async def test_record_consent_race_keeps_first_writer_values() -> None:
             "consent_policy_version",
             "consent_signer_name",
             "consent_ip",
+            "residence_country",
+            "adulthood_attested_at",
         ]
         # Simulate the winner's write becoming visible on refresh.
         target.consent_accepted_at = datetime.now(UTC)
         target.consent_policy_version = "winner-policy"
         target.consent_signer_name = "Winner Guardian"
         target.consent_ip = "10.0.0.1"
+        target.residence_country = "CA"
+        target.adulthood_attested_at = datetime.now(UTC)
 
     session = MagicMock()
     session.execute = AsyncMock(
@@ -151,7 +155,11 @@ async def test_record_consent_race_keeps_first_writer_values() -> None:
     session.refresh = AsyncMock(side_effect=_fake_refresh)
 
     consent = OnboardingConsent(
-        accepted=True, policy_version="losing-policy", signer_name="Losing Guardian"
+        accepted=True,
+        policy_version="losing-policy",
+        signer_name="Losing Guardian",
+        residence_country="US",
+        adulthood_attested=True,
     )
 
     await _record_consent(session, user, consent, "203.0.113.5")
@@ -161,3 +169,5 @@ async def test_record_consent_race_keeps_first_writer_values() -> None:
     assert user.consent_signer_name == "Winner Guardian"
     assert user.consent_policy_version == "winner-policy"
     assert user.consent_ip == "10.0.0.1"
+    assert user.residence_country == "CA"
+    assert user.adulthood_attested_at is not None

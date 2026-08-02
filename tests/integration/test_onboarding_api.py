@@ -253,6 +253,51 @@ async def test_consent_requires_policy_version_and_signer_name(
     assert resp.status_code == 422
 
 
+async def test_consent_requires_residence_country_and_adulthood_attested(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """accepted=True with policy_version/signer_name but no O-117/O-119 fields is rejected.
+
+    The pre-existing consent_* quartet being complete is not enough: O-117
+    (residence_country) and O-119 (adulthood_attested) are new independently
+    required fields on the same consent submission.
+    """
+    _ = seed
+    resp = await client.post(
+        _ONBOARDING,
+        headers=auth("no-country-guardian"),
+        json={
+            "consent": {
+                "accepted": True,
+                "policy_version": "2026-07",
+                "signer_name": "Jane A. Guardian",
+            }
+        },
+    )
+    assert resp.status_code == 422
+
+
+async def test_consent_rejects_malformed_country_code(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A non-alpha-2 residence_country is rejected at the Pydantic boundary (422)."""
+    _ = seed
+    resp = await client.post(
+        _ONBOARDING,
+        headers=auth("bad-country-guardian"),
+        json={
+            "consent": {
+                "accepted": True,
+                "policy_version": "2026-07",
+                "signer_name": "Jane A. Guardian",
+                "residence_country": "USA",
+                "adulthood_attested": True,
+            }
+        },
+    )
+    assert resp.status_code == 422
+
+
 async def test_onboarding_records_consent_once_and_is_idempotent(
     client: AsyncClient,
     sessions: async_sessionmaker[AsyncSession],
@@ -262,7 +307,9 @@ async def test_onboarding_records_consent_once_and_is_idempotent(
 
     A second onboarding call with a DIFFERENT consent payload does not
     overwrite the first: consent is written once, matching
-    api/onboarding.py::_record_consent's idempotency contract.
+    api/onboarding.py::_record_consent's idempotency contract. Covers
+    O-117/O-119 (residence_country / adulthood_attested_at) alongside the
+    pre-existing consent_* quartet, since all five are written together.
     """
     _ = seed
     subject = "consenting-guardian"
@@ -274,6 +321,8 @@ async def test_onboarding_records_consent_once_and_is_idempotent(
                 "accepted": True,
                 "policy_version": "2026-07",
                 "signer_name": "Jane A. Guardian",
+                "residence_country": "us",
+                "adulthood_attested": True,
             }
         },
     )
@@ -286,7 +335,12 @@ async def test_onboarding_records_consent_once_and_is_idempotent(
     assert user.consent_policy_version == "2026-07"
     assert user.consent_signer_name == "Jane A. Guardian"
     assert user.consent_ip is not None
+    # Lowercase input is uppercased by the schema's normalizer before it
+    # ever reaches the CHECK constraint or the database.
+    assert user.residence_country == "US"
+    assert user.adulthood_attested_at is not None
     first_recorded_at = user.consent_accepted_at
+    first_attested_at = user.adulthood_attested_at
 
     second = await client.post(
         _ONBOARDING,
@@ -296,6 +350,8 @@ async def test_onboarding_records_consent_once_and_is_idempotent(
                 "accepted": True,
                 "policy_version": "2027-01",
                 "signer_name": "Someone Else",
+                "residence_country": "CA",
+                "adulthood_attested": True,
             }
         },
     )
@@ -307,6 +363,8 @@ async def test_onboarding_records_consent_once_and_is_idempotent(
     assert user.consent_accepted_at == first_recorded_at
     assert user.consent_policy_version == "2026-07"
     assert user.consent_signer_name == "Jane A. Guardian"
+    assert user.residence_country == "US"
+    assert user.adulthood_attested_at == first_attested_at
 
 
 async def test_onboarding_race_recovers_winner(
