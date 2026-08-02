@@ -106,6 +106,9 @@ _DEFAULT_CAPABILITY_REGISTER = (
     _REPO_ROOT / "docs" / "planning" / "capability-register.md"
 )
 _DEFAULT_MANIFEST = _REPO_ROOT / "docs" / "planning" / "plan-manifest.toml"
+# roadmap.md details phases 0-5 and says so ("Phases 6 through 9 ... are not detailed here").
+# Track-2 phases are narrated here instead, which is why their status needs its own check.
+_DEFAULT_PROJECT_PLAN = _REPO_ROOT / "docs" / "planning" / "PROJECT-PLAN.md"
 
 _UW_ID_RE = re.compile(r"^UW-[A-M]\d{2}$")
 
@@ -1482,6 +1485,125 @@ def _check_roadmap_status_glyph(
     ]
 
 
+# "### Phase 6: Public Authentication and Multi-Tenancy (3-4 weeks)" -> "6". PROJECT-PLAN.md
+# narrates each track-2 phase under a heading of this shape; the token is the word after "Phase".
+_PROJECT_PLAN_PHASE_HEADING_RE = re.compile(r"^#{2,4}\s+Phase\s+(\S+?):")
+# The bolded status line that opens each of those sections.
+_PROJECT_PLAN_STATUS_RE = re.compile(r"^\*\*Status\*\*:\s*(.+)$")
+# Where the status term ends and the narrative qualifying it begins. Unlike a roadmap table cell,
+# a PROJECT-PLAN.md status line runs on into wrapped prose ("Partially delivered, ahead of
+# schedule, corrected 2026-07-20 (this section had said ..."), so the term is the first clause
+# rather than the whole cell with trailing parentheticals stripped.
+_PROJECT_PLAN_STATUS_TERM_END_RE = re.compile(r"[,.;(]")
+
+
+def _project_plan_phase_status_lines(lines: list[str]) -> dict[str, tuple[int, str]]:
+    """Map each ``## Phase <token>:`` section in PROJECT-PLAN.md to its ``**Status**:`` line.
+
+    Args:
+        lines: ``PROJECT-PLAN.md``'s lines.
+
+    Returns:
+        dict[str, tuple[int, str]]: Phase token to its status line's 1-based line number and raw
+            status text. A section with no ``**Status**:`` line before the next phase heading is
+            absent from the mapping, which the caller reports as a missing status rather than
+            silently treating as a match.
+    """
+    found: dict[str, tuple[int, str]] = {}
+    current: str | None = None
+    for index, line in enumerate(lines):
+        heading = _PROJECT_PLAN_PHASE_HEADING_RE.match(line)
+        if heading:
+            current = heading.group(1)
+            continue
+        if current is None or current in found:
+            continue
+        status = _PROJECT_PLAN_STATUS_RE.match(line)
+        if status:
+            found[current] = (index + 1, status.group(1).strip())
+    return found
+
+
+def _normalize_project_plan_status_prose(status_text: str) -> str:
+    """Strip a PROJECT-PLAN.md status line down to its bare, lower-cased status term.
+
+    Args:
+        status_text: Everything after ``**Status**:`` on one phase section's status line.
+
+    Returns:
+        str: The lower-cased status term: the leading glyph removed and everything from the
+            first comma, period, semicolon, or opening parenthesis onward discarded.
+    """
+    without_glyph = _ROADMAP_STATUS_LEADING_GLYPH_RE.sub("", status_text)
+    return (
+        _PROJECT_PLAN_STATUS_TERM_END_RE.split(without_glyph, maxsplit=1)[0]
+        .strip()
+        .lower()
+    )
+
+
+def _check_project_plan_phase_status(
+    plan_lines: list[str],
+    plan_path: Path,
+    manifest: dict[str, Any],
+) -> list[str]:
+    """Check PROJECT-PLAN.md's track-2 phase sections agree with the manifest's status model.
+
+    ``_check_roadmap_phase_status`` iterates roadmap rows, not manifest phases, so a manifest
+    phase with no roadmap row is never compared to anything. Track-2 phases (6-9) are exactly
+    that case by design: ``roadmap.md`` states outright that they "are not detailed here", and
+    ``_check_roadmap_vocabulary`` excludes them for the same reason. The effect was that four
+    phases' ``shipped``/``usable`` values were asserted in the manifest and validated against no
+    document at all, which is the same vacuous pass this whole gate exists to prevent. This is
+    the track-2 half of the drift check, reading the narrative document that does cover them.
+
+    Only the status *term* is compared. PROJECT-PLAN.md writes an unstarted phase as the pause
+    glyph where the capability register writes a cross, so importing ``_check_roadmap_status_glyph``
+    here would force a cosmetic rewrite of the document to satisfy a vocabulary built for a
+    different one, with no accuracy gained.
+
+    Args:
+        plan_lines: ``PROJECT-PLAN.md``'s lines.
+        plan_path: ``PROJECT-PLAN.md``'s path, for message text.
+        manifest: The parsed plan-manifest.toml document.
+
+    Returns:
+        list[str]: One problem per track-2 phase with no section, no status line, or a status
+            term the manifest does not derive; empty when every track-2 phase matches.
+    """
+    phases = manifest.get("phases", {})
+    if not isinstance(phases, dict):
+        return []
+    vocabulary = manifest.get("status_vocabulary", {})
+    sections = _project_plan_phase_status_lines(plan_lines)
+
+    problems: list[str] = []
+    for token in sorted(_manifest_phases_for_track(manifest, 2)):
+        entry = phases[token]
+        found = sections.get(token)
+        if found is None:
+            problems.append(
+                f"{plan_path.name}: track-2 phase '{token}' has no '## Phase {token}:' section "
+                f"with a '**Status**:' line; roadmap.md does not cover track-2 phases, so "
+                f"without one this phase's manifest status is checked against nothing"
+            )
+            continue
+        line_number, status_text = found
+        key = f"{entry.get('shipped')}/{entry.get('usable')}"
+        expected_term = vocabulary.get(key)
+        if not isinstance(expected_term, str):
+            continue
+        actual_term = _normalize_project_plan_status_prose(status_text)
+        if actual_term != expected_term.strip().lower():
+            problems.append(
+                f"{plan_path.name}:{line_number}: phase '{token}' status line reads "
+                f"'{status_text}' (normalized to '{actual_term}'), but plan-manifest.toml's "
+                f"[status_vocabulary] derives '{expected_term}' from "
+                f"(shipped={entry.get('shipped')!r}, usable={entry.get('usable')!r})"
+            )
+    return problems
+
+
 def _check_manifest_structure(
     manifest: dict[str, Any], manifest_path: Path
 ) -> list[str]:
@@ -1881,6 +2003,7 @@ def check_linkage(
     capability_register_path: Path,
     *,
     manifest_path: Path = _DEFAULT_MANIFEST,
+    project_plan_path: Path = _DEFAULT_PROJECT_PLAN,
 ) -> list[str]:
     """Validate the work-linkage contract across all five planning documents plus the manifest.
 
@@ -1897,6 +2020,9 @@ def check_linkage(
             this run, including the register's own ``Phase`` cell vocabulary, reads from this
             one file: a run cannot validate one document against this manifest and another
             against a different one.
+        project_plan_path: ``PROJECT-PLAN.md``, which narrates the track-2 phases (6-9) that
+            ``roadmap.md`` explicitly does not cover. Their manifest status is drift-checked
+            against this document because there is no roadmap row to check it against.
 
     Returns:
         list[str]: One problem per failed check; empty when every check passes.
@@ -1941,6 +2067,15 @@ def check_linkage(
             )
         except LookupError as exc:
             problems.append(f"{roadmap_path.name}: {exc}")
+
+    if manifest is not None:
+        plan_lines = _read_lines(project_plan_path, problems)
+        if plan_lines is not None:
+            problems.extend(
+                _check_project_plan_phase_status(
+                    plan_lines, project_plan_path, manifest
+                )
+            )
 
     debt_lines = _read_lines(debt_register_path, problems)
     if debt_lines is not None:
@@ -2469,6 +2604,14 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--project-plan",
+        default=str(_DEFAULT_PROJECT_PLAN),
+        help=(
+            "Path to PROJECT-PLAN.md, which narrates the track-2 phases roadmap.md states it "
+            "does not cover. Their manifest status is drift-checked against this file."
+        ),
+    )
+    parser.add_argument(
         "--debt-register",
         default=str(_DEFAULT_DEBT_REGISTER),
         help="Path to the R1 deferred-debt register markdown file.",
@@ -2514,6 +2657,7 @@ def main(argv: list[str] | None = None) -> int:
         Path(args.lessons_log),
         capability_register_path,
         manifest_path=Path(args.manifest),
+        project_plan_path=Path(args.project_plan),
     )
     problems.extend(
         _check_issues(

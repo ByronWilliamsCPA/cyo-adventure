@@ -229,6 +229,34 @@ def _write(path: Path, content: str) -> Path:
     return path
 
 
+_MATCHING_PROJECT_PLAN = """\
+### Phase 6: Public Authentication and Multi-Tenancy
+
+**Status**: ⏸️ Not started
+
+### Phase 7: Kids Compliance and Account Lifecycle
+
+**Status**: ⏸️ Not started
+"""
+
+
+def _write_matching_project_plan(tmp_path: Path) -> Path:
+    """Write a PROJECT-PLAN.md whose track-2 statuses agree with ``_VALID_MANIFEST``.
+
+    ``check_linkage`` drift-checks the manifest's track-2 phases against PROJECT-PLAN.md, so a
+    test pairing a fixture manifest with the repository's real plan document is validating two
+    documents that were never meant to describe each other. This gives such tests a plan that
+    matches their manifest, the same way ``_VALID_ROADMAP`` matches it for track 1.
+
+    Args:
+        tmp_path: The pytest ``tmp_path`` fixture's directory.
+
+    Returns:
+        Path: The written file's path.
+    """
+    return _write(tmp_path / "PROJECT-PLAN.md", _MATCHING_PROJECT_PLAN)
+
+
 _PLACEHOLDER_CLUSTER = "## Cluster A: ADR follow-ons\n\n| ID | Item | Phase | Status |\n| --- | --- | --- | --- |\n"
 
 
@@ -1160,6 +1188,7 @@ def test_check_linkage_reports_a_roadmap_with_pipe_content_but_no_phase_status_h
         _write(tmp_path / "lessons.md", ""),
         _write_no_open_capability_register(tmp_path),
         manifest_path=_write(tmp_path / "manifest.toml", _VALID_MANIFEST),
+        project_plan_path=_write_matching_project_plan(tmp_path),
     )
     assert any("table content but no phase-status table header" in p for p in problems)
 
@@ -1229,6 +1258,7 @@ def test_check_linkage_accepts_matching_roadmap_phase_status(tmp_path: Path) -> 
         _write(tmp_path / "lessons.md", ""),
         _write_no_open_capability_register(tmp_path),
         manifest_path=_write(tmp_path / "manifest.toml", _VALID_MANIFEST),
+        project_plan_path=_write_matching_project_plan(tmp_path),
     )
     assert problems == []
 
@@ -1258,6 +1288,7 @@ def test_check_linkage_reports_a_roadmap_phase_status_prose_mismatch(
         _write(tmp_path / "lessons.md", ""),
         _write_no_open_capability_register(tmp_path),
         manifest_path=_write(tmp_path / "manifest.toml", _VALID_MANIFEST),
+        project_plan_path=_write_matching_project_plan(tmp_path),
     )
     mismatches = [p for p in problems if "normalized to" in p]
     assert len(mismatches) == 1
@@ -1293,6 +1324,7 @@ def test_check_linkage_reports_a_roadmap_phase_status_glyph_mismatch(
         _write(tmp_path / "lessons.md", ""),
         _write_no_open_capability_register(tmp_path),
         manifest_path=_write(tmp_path / "manifest.toml", _VALID_MANIFEST),
+        project_plan_path=_write_matching_project_plan(tmp_path),
     )
     glyph_mismatches = [p for p in problems if "glyph is" in p]
     assert len(glyph_mismatches) == 1
@@ -1655,6 +1687,7 @@ def test_check_linkage_accepts_open_capability_cited_in_mapping_section(
         _write(tmp_path / "lessons.md", ""),
         capability_path,
         manifest_path=_write(tmp_path / "manifest.toml", _VALID_MANIFEST),
+        project_plan_path=_write_matching_project_plan(tmp_path),
     )
     assert problems == []
 
@@ -1677,6 +1710,7 @@ def test_check_linkage_treats_done_capability_as_satisfied(tmp_path: Path) -> No
         _write(tmp_path / "lessons.md", ""),
         capability_path,
         manifest_path=_write(tmp_path / "manifest.toml", _VALID_MANIFEST),
+        project_plan_path=_write_matching_project_plan(tmp_path),
     )
     assert problems == []
 
@@ -1842,6 +1876,7 @@ def test_check_linkage_reports_a_capability_register_with_no_locatable_header(
         _write(tmp_path / "lessons.md", ""),
         capability_path,
         manifest_path=_write(tmp_path / "manifest.toml", _VALID_MANIFEST),
+        project_plan_path=_write_matching_project_plan(tmp_path),
     )
     assert len(problems) == 1
     assert "capability.md" in problems[0]
@@ -2088,6 +2123,8 @@ def test_main_accepts_a_manifest_flag(
             str(_write_no_open_capability_register(tmp_path)),
             "--manifest",
             str(_write(tmp_path / "manifest.toml", _VALID_MANIFEST)),
+            "--project-plan",
+            str(_write_matching_project_plan(tmp_path)),
         ]
     )
 
@@ -2341,6 +2378,7 @@ def test_check_linkage_reports_empty_notes_on_an_open_capability_row_end_to_end(
         _write(tmp_path / "lessons.md", ""),
         capability_path,
         manifest_path=_write(tmp_path / "manifest.toml", _VALID_MANIFEST),
+        project_plan_path=_write_matching_project_plan(tmp_path),
     )
     assert len(problems) == 1
     assert "K1" in problems[0]
@@ -2415,6 +2453,8 @@ def test_main_prints_capability_summary_line_on_success(
             str(capability_path),
             "--manifest",
             str(_write(tmp_path / "manifest.toml", _VALID_MANIFEST)),
+            "--project-plan",
+            str(_write_matching_project_plan(tmp_path)),
         ]
     )
     assert exit_code == 0
@@ -3018,3 +3058,104 @@ def test_main_check_issue_orphans_flag_wired_through(
     assert "#7" in out
     assert "Untracked" in out
     assert "is OPEN but is cited in no document under docs/planning/" in out
+
+
+# ---------------------------------------------------------------------------
+# PROJECT-PLAN.md track-2 phase status
+# ---------------------------------------------------------------------------
+
+_TRACK2_MANIFEST: dict[str, object] = {
+    "phases": {
+        "5": {"track": 1, "shipped": "partial", "usable": "partial"},
+        "8": {"track": 2, "shipped": "no", "usable": "no"},
+    },
+    "status_vocabulary": {
+        "partial/partial": "partially delivered",
+        "no/no": "not started",
+    },
+}
+
+
+def test_project_plan_phase_status_lines_maps_each_section_to_its_status_line() -> None:
+    """Each '## Phase <token>:' heading binds to the first **Status**: line beneath it."""
+    lines = (
+        "### Phase 8: iOS Shell (3-5 weeks)\n"
+        "**Branch**: `feat/phase-8`\n"
+        "**Status**: ⏸️ Not started\n"
+        "### Phase 9: Launch\n"
+        "**Status**: ⏸️ Not started\n"
+    ).splitlines()
+    assert _MODULE._project_plan_phase_status_lines(lines) == {
+        "8": (3, "⏸️ Not started"),
+        "9": (5, "⏸️ Not started"),
+    }
+
+
+def test_project_plan_phase_status_lines_takes_only_the_first_status_line_per_section() -> (
+    None
+):
+    """A later **Status**: line inside the same section does not overwrite the section's own."""
+    lines = (
+        "### Phase 8: iOS Shell\n**Status**: ⏸️ Not started\n**Status**: ✅ Delivered\n"
+    ).splitlines()
+    assert _MODULE._project_plan_phase_status_lines(lines) == {
+        "8": (2, "⏸️ Not started")
+    }
+
+
+def test_normalize_project_plan_status_prose_keeps_only_the_first_clause() -> None:
+    """A status line running on into wrapped narrative normalizes to its bare term."""
+    assert (
+        _MODULE._normalize_project_plan_status_prose(
+            "🟡 Partially delivered, ahead of schedule, corrected 2026-07-20 (this section"
+        )
+        == "partially delivered"
+    )
+
+
+def test_check_project_plan_phase_status_accepts_a_matching_track2_section() -> None:
+    """A track-2 status term the manifest derives is clean."""
+    lines = ("### Phase 8: iOS Shell\n**Status**: ⏸️ Not started\n").splitlines()
+    assert (
+        _MODULE._check_project_plan_phase_status(
+            lines, Path("PROJECT-PLAN.md"), _TRACK2_MANIFEST
+        )
+        == []
+    )
+
+
+def test_check_project_plan_phase_status_rejects_a_drifted_track2_status() -> None:
+    """A track-2 status term the manifest does not derive is reported with both values."""
+    lines = ("### Phase 8: iOS Shell\n**Status**: ✅ Delivered\n").splitlines()
+    problems = _MODULE._check_project_plan_phase_status(
+        lines, Path("PROJECT-PLAN.md"), _TRACK2_MANIFEST
+    )
+    assert len(problems) == 1
+    assert "phase '8'" in problems[0]
+    assert "normalized to 'delivered'" in problems[0]
+    assert "derives 'not started'" in problems[0]
+
+
+def test_check_project_plan_phase_status_reports_a_track2_phase_with_no_section() -> (
+    None
+):
+    """A manifest track-2 phase PROJECT-PLAN.md never narrates is reported, not skipped.
+
+    This is the regression the check exists for: roadmap.md does not cover track-2 phases, so
+    a phase missing from both documents previously had its status validated against nothing.
+    """
+    problems = _MODULE._check_project_plan_phase_status(
+        ["# Plan", "no phase sections here"], Path("PROJECT-PLAN.md"), _TRACK2_MANIFEST
+    )
+    assert len(problems) == 1
+    assert "track-2 phase '8' has no '## Phase 8:' section" in problems[0]
+    assert "checked against nothing" in problems[0]
+
+
+def test_check_project_plan_phase_status_ignores_track1_phases() -> None:
+    """Track-1 phases are the roadmap check's business; a missing section here is not a finding."""
+    lines = ("### Phase 8: iOS Shell\n**Status**: ⏸️ Not started\n").splitlines()
+    problems = _MODULE._check_project_plan_phase_status(
+        lines, Path("PROJECT-PLAN.md"), _TRACK2_MANIFEST
+    )
+    assert not any("'5'" in problem for problem in problems)

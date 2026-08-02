@@ -980,7 +980,7 @@ in the phase named):
 
 **Branch**: `feat/phase-6-public-auth`
 **Milestone**: M6 - A stranger family can onboard in staging (public auth live behind a flag)
-**Status**: 🟡 Substantially delivered ahead of schedule, corrected 2026-07-20 (this section
+**Status**: 🟡 Partially delivered, ahead of schedule, corrected 2026-07-20 (this section
 had said "Planned" through v2.7, which understated reality by five items). P6-01, P6-02,
 and P6-09 were pulled forward into Phase 4a's C4a-1 app shell (2026-07-02). **The 2026-07-20
 plan audit additionally confirmed P6-03, P6-04, P6-07, and P6-08 are fully built and tested**
@@ -1139,7 +1139,7 @@ P6-01 identities). Blocks Phase 9 submission via P7-08.
 
 **Branch**: `feat/phase-8-ios-monetization`
 **Milestone**: M8 - Sandbox subscription lifecycle green end to end
-**Status**: Planned
+**Status**: ⏸️ Not started
 
 **Objective**: Package the PWA as a reviewable native app and build the revenue machinery:
 a Capacitor shell that passes the Guideline 4.2 minimum-functionality bar, plus a
@@ -1193,7 +1193,7 @@ account). Blocks Phase 9 submission.
 
 **Branch**: `feat/phase-9-public-launch`
 **Milestone**: M9 - App Store approval and public launch
-**Status**: Planned
+**Status**: ⏸️ Not started
 
 **Objective**: Give the public app something worth subscribing to (a curated catalog),
 somewhere real to run (hosted infrastructure), guardrails against cost abuse, and a
