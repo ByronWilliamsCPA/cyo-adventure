@@ -347,7 +347,7 @@ repos:
         name: Authoring lessons log well-formed
         entry: python scripts/check_lessons_log.py
         language: system
-        files: ^docs/planning/authoring-lessons-log\.md$
+        files: ^(docs/planning/authoring-lessons-log\.md|scripts/check_lessons_log\.py)$
         pass_filenames: false
         stages: [pre-commit]
 
