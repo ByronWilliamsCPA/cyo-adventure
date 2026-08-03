@@ -89,6 +89,8 @@ erDiagram
         varchar(32) consent_policy_version "NULL"
         varchar(200) consent_signer_name "NULL; typed legal-name signature"
         varchar(64) consent_ip "NULL; evidentiary only"
+        varchar(2) residence_country "NULL; ISO 3166-1 alpha-2; O-117 jurisdiction signal"
+        timestamptz adulthood_attested_at "NULL; O-119 self-declared adult attestation"
     }
 
     child_profile {
@@ -427,6 +429,8 @@ one adult can be a guardian, an admin, or both.
 | consent_policy_version | VARCHAR(32) NULL | Policy version the guardian consented to; paired with `consent_accepted_at` (both NULL or both set) |
 | consent_signer_name | VARCHAR(200) NULL | Guardian's typed full-legal-name electronic signature |
 | consent_ip | VARCHAR(64) NULL | Evidentiary record of the consenting request's client IP; never queried or joined on |
+| residence_country | VARCHAR(2) NULL | O-117 jurisdiction signal; ISO 3166-1 alpha-2, guardian-selected at consent. Membership in the assigned-code set is enforced in the API layer; the DB CHECK enforces two-letter syntax only |
+| adulthood_attested_at | TIMESTAMPTZ NULL | O-119 self-declared adulthood attestation timestamp; records when the guardian ticked the box, not any identity evidence. Paired with `residence_country` (both NULL or both set, and only alongside a recorded consent) |
 
 ### `child_profile`
 
