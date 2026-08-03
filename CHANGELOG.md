@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.60.2] - 2026-08-03
+
+### Bug Fixes
+
+- **frontend**: Bump brace-expansion to 5.0.9 to close GHSA-rgw5-rvv9-x895
+  ([#582](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/582),
+  [`d4f40be`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/d4f40befe2ad926371cf3023d51b1b15b639b730))
+
+
 ## [0.60.1] - 2026-08-03
 
 ### Bug Fixes
@@ -3049,6 +3058,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.60.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.60.1...v0.60.2
 [0.60.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.60.0...v0.60.1
 [0.60.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.59.2...v0.60.0
 [0.59.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.59.1...v0.59.2
