@@ -1976,6 +1976,8 @@
       
         
       
+        
+      
     
     
     
@@ -2670,6 +2672,201 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../planning/research/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Story Structure Diversity
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_7" id="__nav_9_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Story Structure Diversity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/story-structure-diversity-critical-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Critical Analysis
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/story-structure-improvement-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Improvement Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/story-structure-implementation-briefs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Briefs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -3182,11 +3379,24 @@ are:</p>
   runs under a <code>concurrency:</code> group (<code>e2e-staging</code>, <code>cancel-in-progress: false</code>)
   so a scheduled run and a manual dispatch can never execute at the same
   time against the shared project.</li>
-<li><strong>The one write path cleans up after itself.</strong> <code>kid-library-smoke.spec.ts</code>
+<li><strong>The one write path cleans up after itself, and is checked twice.</strong>
+  <code>kid-library-smoke.spec.ts</code> (and <code>moderation-qa-invisibility.spec.ts</code>)
   mints a device grant to reach the populated library, then revokes it in
   the test itself, with an <code>afterAll</code> backstop DELETE if an earlier
   assertion failed first, mirroring the same pattern already proven in
-  <code>frontend/e2e-prod/kid-device-grant.spec.ts</code>.</li>
+  <code>frontend/e2e-prod/kid-device-grant.spec.ts</code>. Cleanup is not trusted on
+  its own word: Playwright's serial-block retry spawns a fresh worker, so a
+  failed first attempt can leak its own grant while the retry cleanly
+  revokes a different one and the run still reports "flaky" and exits 0.
+  Two signals close that. The <strong>diagnostic</strong> is a jsonl ledger
+  (<code>test-results/leaked-device-grants.jsonl</code>) that names which spec left a
+  grant live; the <strong>authoritative backstop</strong> is
+  <code>frontend/e2e-staging-sweep/</code>, a separate post-run Playwright config that
+  the workflow runs on <code>if: always()</code> and that asks staging itself whether
+  the test family still holds an active grant. The sweep is fail-closed: a
+  429, a non-2xx, or an unparseable list response fails the job rather than
+  being read as "no leaks". It reports without auto-revoking, so a live
+  grant keeps the job red until a human acts.</li>
 <li><strong>If a future <code>dev</code> tier is added</strong> on this same shared staging project,
   it must join the same <code>concurrency:</code> group (or a shared one covering both
   workflows) before being enabled, and any new fixtures it creates should
@@ -3228,7 +3438,7 @@ reach staging or production.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 18:41:11 UTC">July 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 22:31:24 UTC">August 3, 2026</span>
   </span>
 
     

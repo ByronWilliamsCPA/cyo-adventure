@@ -1976,6 +1976,8 @@
       
         
       
+        
+      
     
     
     
@@ -2670,6 +2672,201 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../research/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Story Structure Diversity
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_7" id="__nav_9_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Story Structure Diversity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-diversity-critical-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Critical Analysis
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-improvement-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Improvement Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-implementation-briefs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Briefs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -3119,10 +3316,23 @@ an admin publishes it with <code>visibility='catalog'</code> (ADR-005 human appr
 unchanged), which is exactly requirement &#8532; of the gap below.</p>
 <p><strong>What actually resolved the gap</strong> (verified 2026-07-28): the sentinel design
 was fully built and merged to <code>main</code>, and the 23 authored drafts were blocked
-only because nobody had run the import command, not by any code or schema
-defect. See the disposition notes at the end of this file. This document is
+by process rather than by any code or schema defect. See the disposition notes
+at the end of this file. This document is
 retained as the historical record of the rejected approach; do not implement
 Gap A as written.</p>
+<p><strong>Correction (2026-08-03).</strong> The 2026-07-28 note above originally said the
+drafts "were blocked only because nobody had run the import command." That is
+not accurate as of its own writing date: issue #347, opened 2026-07-21, records
+an import run against production (the ADR-021 catalog seed, 25 stories landed
+at <code>in_review</code>). The import command had been run a week earlier. The blocked
+step is the one after it: <code>import_catalog.py</code> never publishes by design, and
+nothing on record shows the separate admin promotion,
+<code>publishing/catalog_publish.py::promote_catalog_story</code>, has run for this
+inventory. The gap's conclusion is unchanged, since an imported-but-unpromoted
+book is just as invisible to a kid profile as an unimported one; only the
+mechanism is corrected. Current live database state is not established by this
+document and is verified as step 1 of the SQ-01 runbook in
+<a href="../story-structure-implementation-briefs/">story-structure-implementation-briefs.md</a>.</p>
 <hr />
 <p><em>Original proposal (2026-07-17), preserved for history:</em> Surfaced during the
 initial story-inventory authoring run
@@ -3298,7 +3508,7 @@ session does not re-derive it.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 22:49:46 UTC">July 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 22:31:48 UTC">August 3, 2026</span>
   </span>
 
     
