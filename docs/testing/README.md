@@ -69,11 +69,24 @@ are:
   runs under a `concurrency:` group (`e2e-staging`, `cancel-in-progress: false`)
   so a scheduled run and a manual dispatch can never execute at the same
   time against the shared project.
-- **The one write path cleans up after itself.** `kid-library-smoke.spec.ts`
+- **The one write path cleans up after itself, and is checked twice.**
+  `kid-library-smoke.spec.ts` (and `moderation-qa-invisibility.spec.ts`)
   mints a device grant to reach the populated library, then revokes it in
   the test itself, with an `afterAll` backstop DELETE if an earlier
   assertion failed first, mirroring the same pattern already proven in
-  `frontend/e2e-prod/kid-device-grant.spec.ts`.
+  `frontend/e2e-prod/kid-device-grant.spec.ts`. Cleanup is not trusted on
+  its own word: Playwright's serial-block retry spawns a fresh worker, so a
+  failed first attempt can leak its own grant while the retry cleanly
+  revokes a different one and the run still reports "flaky" and exits 0.
+  Two signals close that. The **diagnostic** is a jsonl ledger
+  (`test-results/leaked-device-grants.jsonl`) that names which spec left a
+  grant live; the **authoritative backstop** is
+  `frontend/e2e-staging-sweep/`, a separate post-run Playwright config that
+  the workflow runs on `if: always()` and that asks staging itself whether
+  the test family still holds an active grant. The sweep is fail-closed: a
+  429, a non-2xx, or an unparseable list response fails the job rather than
+  being read as "no leaks". It reports without auto-revoking, so a live
+  grant keeps the job red until a human acts.
 - **If a future `dev` tier is added** on this same shared staging project,
   it must join the same `concurrency:` group (or a shared one covering both
   workflows) before being enabled, and any new fixtures it creates should
