@@ -16,6 +16,7 @@ not a test bug.
 
 from __future__ import annotations
 
+import copy
 import importlib.util
 import json
 import re
@@ -3459,3 +3460,107 @@ def test_check_project_plan_phase_status_ignores_track1_phases() -> None:
         lines, Path("PROJECT-PLAN.md"), _TRACK2_MANIFEST
     )
     assert not any("'5'" in problem for problem in problems)
+
+
+@pytest.mark.parametrize(
+    ("loose_pattern", "expected_position"),
+    [(r"\b[KGAS]\d+(?![-\w])", "start"), (r"(?<![-\w])[KGAS]\d+\b", "end")],
+)
+def test_namespace_registry_reports_a_citation_pattern_missing_either_guard(
+    loose_pattern: str, expected_position: str
+) -> None:
+    """Negative control: a `\\b`-bounded citation pattern must fail at whichever end is loose.
+
+    Both shapes shipped at some point, so a check that cannot fail here would be certifying
+    the defect it was written to prevent. Parametrising over the two ends is what stops the
+    right-hand guard from being enforced only by the constant's existence.
+
+    Asserted as a DELTA against the unmutated manifest rather than as `len(problems) == 1`.
+    The base fixture is the live production manifest, so a future unrelated defect in it (a
+    moved `source`, an undeclared namespace) would break an absolute count and point the
+    reader at the citation guard, which would not be the cause.
+    """
+    baseline = set(
+        _MODULE._check_namespace_registry(
+            copy.deepcopy(_REAL_MANIFEST), Path("plan-manifest.toml")
+        )
+    )
+    manifest = copy.deepcopy(_REAL_MANIFEST)
+    manifest["namespaces"]["cap"]["citation_pattern"] = loose_pattern
+    problems = _MODULE._check_namespace_registry(manifest, Path("plan-manifest.toml"))
+    introduced = set(problems) - baseline
+    assert len(introduced) == 1
+    only = introduced.pop()
+    assert f"[namespaces.cap] citation_pattern must {expected_position} with" in only
+    assert "a hyphen is a word boundary" in only
+
+
+@pytest.mark.parametrize(
+    ("namespace", "sample"),
+    [("debt", "C12"), ("al", "AL-072"), ("cap", "K16")],
+)
+def test_shipped_citation_pattern_reads_a_standalone_id_but_not_a_fragment(
+    namespace: str, sample: str
+) -> None:
+    """The behavioural half of the guard: the real patterns reject ids inside longer ids.
+
+    The structural check in `_check_namespace_registry` only inspects the pattern's leading and
+    trailing characters. This runs the shipped pattern against text, which is what the linkage
+    checks actually do, so the guard is proven by behaviour and not only by spelling.
+    """
+    pattern = re.compile(_REAL_MANIFEST["namespaces"][namespace]["citation_pattern"])
+    assert pattern.search(f"scheduled under {sample} for now") is not None
+    # `UW-` is the real collision on the left: every phantom id measured before the guard
+    # existed was a fragment of an unscheduled-work id. `X` covers the plain word-character
+    # case that `\b` also missed.
+    assert pattern.search(f"UW-{sample}") is None
+    assert pattern.search(f"X{sample}") is None
+    # The right-hand mirror. `-05` is the live shape (`P9-05`); the trailing letter covers the
+    # word-character case. Both were readable through the trailing `\b` this pattern replaced.
+    assert pattern.search(f"{sample}-05") is None
+    assert pattern.search(f"{sample}X") is None
+
+
+def test_the_debt_pattern_no_longer_reads_p9_out_of_the_p9_05_task_id() -> None:
+    """The right-hand mirror of the K16 defect, asserted against the real register.
+
+    Cluster B of the register cites `P9-05`, which is PROJECT-PLAN.md's
+    `<letter><phase>-<item>` task numbering and has nothing to do with the debt namespace's
+    `P1`-`P4`. The trailing `\\b` read `P9` out of it, putting a phantom id into the set the
+    cluster-B debt check consults. It was invisible because no cluster-B row is numbered `P9`.
+
+    Scoped to the row, not the file. `P9` is a REAL debt citation elsewhere in the register
+    (cluster J's UW-J02 cites it), and the debt check reads only the cluster-B slice, so a
+    whole-file oracle would see the phantom and the genuine citation as one indistinguishable
+    `P9` and pass no matter which pattern shipped.
+    """
+    register = (
+        _MODULE._REPO_ROOT / "docs/planning/unscheduled-work-register.md"
+    ).read_text(encoding="utf-8")
+    rows = [line for line in register.splitlines() if "P9-05" in line]
+    loose = re.compile(r"(?<![-\w])(?:C\d+|GS\d+|U\d+|T\d+|P\d+|SL\d+)\b")
+    pattern = re.compile(_REAL_MANIFEST["namespaces"]["debt"]["citation_pattern"])
+    # Non-vacuous in three directions: the compound id is really live in the repo, the
+    # left-guard-only pattern really did read `P9` out of it, and the shipped pattern drops
+    # only that phantom while still reading the genuine `P1` citation on the very same row.
+    assert len(rows) == 1
+    assert loose.findall(rows[0]) == ["P1", "P9"]
+    assert pattern.findall(rows[0]) == ["P1"]
+
+
+def test_the_capability_pattern_no_longer_reads_k16_out_of_uw_k16() -> None:
+    """The specific live defect, asserted against the real roadmap rather than a fixture.
+
+    `K16`'s only occurrence in roadmap.md is inside `UW-K16`. Under the previous pattern the
+    capability-linkage check counted that fragment as K16's citation. K16 is delivered today, so
+    the gate was not lying, but it was one reopened capability away from certifying an unmapped
+    item as mapped.
+    """
+    roadmap = (_MODULE._REPO_ROOT / "docs/planning/roadmap.md").read_text(
+        encoding="utf-8"
+    )
+    pattern = re.compile(_REAL_MANIFEST["namespaces"]["cap"]["citation_pattern"])
+    # Non-vacuous: the fragment really is present, and the loose pattern really did read it.
+    assert "UW-K16" in roadmap
+    assert "K16" in re.findall(r"\b[KGAS]\d+\b", roadmap)
+    assert "K16" not in pattern.findall(roadmap)
