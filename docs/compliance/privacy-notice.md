@@ -52,10 +52,16 @@ sets up and controls.
 |---|---|---|---|
 | Email, authentication identity, account role | Guardian | Operate your account, let you sign in | Contract |
 | Consent record (your typed name, the date, and the policy version you agreed to) | Guardian | Prove verifiable parental consent under COPPA and GDPR Article 8 | Legal obligation |
+| Country of residence, chosen from a list on the same screen where you give consent | Guardian | Determine which country's privacy and online-safety rules apply to your account (for example GDPR in the EU/EEA, the Online Safety Act in the UK, COPPA in the US) | Legitimate interest (see Note 1) |
+| Confirmation that you are an adult, and the date you confirmed it | Guardian | Determine which age-related regulations apply to your account. This is a self-declaration: we record the date you checked the box, not proof of your age or identity | Legitimate interest (see Note 1) |
 | Child's display name (a nickname, not a legal name), age band, reading-level cap, avatar (from a fixed set of illustrations, not a photo), content settings | Child | Build and safely tailor your child's reading profile | Contract, on your behalf as their guardian |
 | Story requests (your child's or your own typed story ideas), reading progress, completions, ratings | Child | Generate, moderate, and deliver stories; let your child pick up where they left off | Contract |
 | Cross-family connection settings, if you choose to link with another family | Guardian | Let book recommendations flow between families you've explicitly agreed to connect with | Consent (a separate, explicit "Allow" click for the connection itself; see below) |
 | Admin actions on your account or your child's profiles, and admin *views* of your family's data across families | Guardian, Child | Safety review, account support, and an audit trail of who did what | Legal obligation / legitimate interest (accountability) |
+
+**About the country and adulthood fields**: we do not verify the country you select, and we do
+not check any identification to confirm you are an adult. We record what you tell us, the
+country you choose and the date you checked the box, and nothing more.
 
 **Note 1**: We have not yet formally documented an Article 6 basis for every purpose above in
 a way that has been reviewed by counsel; the table states our best current understanding.

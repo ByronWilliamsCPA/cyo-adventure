@@ -22,6 +22,7 @@ from pydantic import (
     model_validator,
 )
 
+from cyo_adventure.api.residence_countries import ASSIGNED_RESIDENCE_COUNTRY_CODES
 from cyo_adventure.db.models import RING_GOAL_DAYS_MAX, RING_GOAL_DAYS_MIN
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
@@ -1975,9 +1976,11 @@ class FamilyExportView(BaseModel):
     Attributes:
         exported_at: When this export was generated (UTC).
         family: The family row (id, name, created_at).
-        guardians: Every guardian/admin/child login row in the family
-            (id, role, is_admin, email, created_at); no ``pin_hash`` or
-            ``authn_subject`` (credential material, never exported).
+        guardians: Every guardian/admin/child login row in the family (id,
+            role, is_admin, email, created_at, the consent_* quartet, and the
+            O-117/O-119 residence_country/adulthood_attested_at fields); no
+            ``pin_hash`` or ``authn_subject`` (credential material, never
+            exported).
         profiles: Every child profile, each with its own nested
             ``reading_state``, ``completions``, ``ratings``, ``assignments``,
             ``personalization`` (ADR-023 P4 ``ChildProfilePersonalization``
@@ -2087,28 +2090,83 @@ class DeviceGrantListItem(BaseModel):
 # ---------------------------------------------------------------------------
 
 
+def _normalize_residence_country(value: str) -> str:
+    """Uppercase and validate an ISO 3166-1 alpha-2 country code.
+
+    Two checks, in order, so the 422 message tells the two failure modes
+    apart: a value that is not two letters at all (a syntax error) versus a
+    value that IS two letters but names no assigned country (e.g. "ZZ",
+    "XX", "QQ", the user-assigned/reserved alpha-2 ranges), which the regex
+    alone cannot catch.
+
+    Args:
+        value: The raw country code from the request body.
+
+    Returns:
+        str: The uppercased, validated two-letter code.
+
+    Raises:
+        ValueError: If the normalized value is not exactly two ASCII
+            letters, or is two letters but not an assigned ISO 3166-1
+            alpha-2 code. Pydantic reports either as a 422.
+    """
+    normalized = value.strip().upper()
+    if not re.fullmatch(r"[A-Z]{2}", normalized):
+        msg = "residence_country must be an ISO 3166-1 alpha-2 code (two letters)"
+        raise ValueError(msg)
+    if normalized not in ASSIGNED_RESIDENCE_COUNTRY_CODES:
+        msg = (
+            f"residence_country '{normalized}' is not an assigned "
+            "ISO 3166-1 alpha-2 code"
+        )
+        raise ValueError(msg)
+    return normalized
+
+
+# O-117: enforces two things db/models.py::User.residence_country's CHECK
+# constraint (``^[A-Z]{2}$``) does not: this validator also rejects a
+# syntactically valid but unassigned code (e.g. "ZZ"), by checking
+# membership in ASSIGNED_RESIDENCE_COUNTRY_CODES. The at-rest CHECK stays
+# format-only (see its own comment for why); this is the ISO-membership
+# gate, and it runs at the wire boundary so a rejected code 422s before it
+# ever reaches the database.
+ResidenceCountry = Annotated[str, AfterValidator(_normalize_residence_country)]
+
+
 class OnboardingConsent(BaseModel):
-    """Verifiable-parental-consent payload (Phase 2 / ADR-018 D1).
+    """Verifiable-parental-consent payload (Phase 2 / ADR-018 D1; O-117/O-119).
 
     A signature-capture step layered on the Supabase/Google OAuth login that
     already authenticates the guardian: ``signer_name`` is a typed
     full-legal-name attestation, standing in for the FTC's "sign and submit
     electronically" method (312.5(b)(2)(i)). ``accepted``, ``policy_version``,
-    and ``signer_name`` must all be present together to actually record
-    consent; a request that omits or falsifies any of them records nothing
-    (see ``onboarding._record_consent``), it does not partially persist.
+    ``signer_name``, ``residence_country``, and ``adulthood_attested`` must
+    all be present together to actually record consent; a request that omits
+    or falsifies any of them records nothing (see
+    ``onboarding._record_consent``), it does not partially persist.
+
+    ``residence_country`` (O-117) and ``adulthood_attested`` (O-119) are new
+    fields on this same versioned consent form, not a reinterpretation of the
+    guardianship attestation ``signer_name``/``accepted`` already capture:
+    guardianship and age are different claims, so they get their own
+    checkbox and their own columns (``User.residence_country``,
+    ``User.adulthood_attested_at``). There is no separate
+    attestation-version field for the new checkbox: it ships inside this same
+    form, so ``policy_version`` already records what text was shown.
     """
 
     model_config = ConfigDict(extra="forbid")
 
-    # #CRITICAL: security: onboarding._record_consent requires all three of
-    # accepted=True, policy_version, and signer_name before writing a
-    # User.consent_* row; this schema itself does not enforce that
-    # combination so a caller can still send accepted=True with no name (the
-    # 422 for that case comes from the route handler, not Pydantic, to keep
-    # the "what's missing" error message field-specific).
+    # #CRITICAL: security: onboarding._record_consent requires all five of
+    # accepted=True, policy_version, signer_name, residence_country, and
+    # adulthood_attested=True before writing a User.consent_*/O-117/O-119
+    # row; this schema itself does not enforce that combination so a caller
+    # can still send accepted=True with fields missing (the 422 for that
+    # case comes from the route handler, not Pydantic, to keep the "what's
+    # missing" error message field-specific).
     # #VERIFY: tests/integration/test_onboarding_api.py::
-    # test_consent_requires_policy_version_and_signer_name.
+    # test_consent_requires_policy_version_and_signer_name,
+    # test_consent_requires_residence_country_and_adulthood_attested.
     accepted: bool | None = None
     policy_version: str | None = None
     # A typed full legal name (e.g. "Jane A. Smith"), not a display name or
@@ -2116,6 +2174,14 @@ class OnboardingConsent(BaseModel):
     # signer, distinct from ProfileCreateBody.display_name (a CHILD's
     # nickname, an entirely different field on an entirely different model).
     signer_name: str | None = None
+    # O-117: ISO 3166-1 alpha-2, uppercased and format-checked by
+    # ResidenceCountry's validator. Without a recorded country signal the DSA
+    # Art. 2(1) and GDPR Art. 3(2) targeting tests cannot be answered.
+    residence_country: ResidenceCountry | None = None
+    # O-119: must be explicitly True, mirroring ``accepted``'s own
+    # explicit-True contract (a missing or False value is treated as "not
+    # attested", never coerced from truthiness).
+    adulthood_attested: bool | None = None
 
 
 class OnboardingBody(BaseModel):

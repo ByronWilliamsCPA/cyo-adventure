@@ -274,6 +274,16 @@ async def _assemble_family_export(
                 "is_admin": row.is_admin,
                 "email": row.email,
                 "created_at": row.created_at.isoformat(),
+                "consent_accepted_at": row.consent_accepted_at.isoformat()
+                if row.consent_accepted_at is not None
+                else None,
+                "consent_policy_version": row.consent_policy_version,
+                "consent_signer_name": row.consent_signer_name,
+                "consent_ip": row.consent_ip,
+                "residence_country": row.residence_country,
+                "adulthood_attested_at": row.adulthood_attested_at.isoformat()
+                if row.adulthood_attested_at is not None
+                else None,
             }
             for row in guardian_rows
         ],
