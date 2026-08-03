@@ -68,7 +68,45 @@ jobs:
       - name: E2E (Playwright, staging tier)
         run: npm run test:e2e:staging
 
-      - name: Upload Playwright trace on failure
+      # Playwright's serial-block retry spawns a fresh worker on the first
+      # failure, so a failed teardown revoke in that first attempt leaks its
+      # own device grant while the retry mints and cleanly revokes a NEW one;
+      # the spec then reports "flaky" rather than "failed" and this job exits
+      # 0. frontend/e2e-staging/support/device-grant.ts now records every
+      # unconfirmed revoke to test-results/leaked-device-grants.jsonl
+      # regardless of overall pass/fail, so this step (if: always(), runs even
+      # when the step above already failed) is the deterministic check: a
+      # non-empty file always fails the job, independent of what Playwright
+      # itself reported.
+      #
+      # No untrusted external input reaches this script (no github.event.*
+      # fields): the only input is a file this same job's own test run wrote
+      # under frontend/test-results/, and each line is only ever read via jq
+      # and passed through a shell variable, never interpolated into the
+      # run: block by the workflow templater.
+      #
+      # Placed before the trace upload rather than setting a separate step
+      # output: a step that exits non-zero makes `failure()` true for every
+      # later step in the job, so the existing `if: ${{ failure() }}` on the
+      # upload step below already covers "leak detected" once this step can
+      # fail, with no extra output wiring needed.
+      - name: Check for leaked staging device grants
+        if: always()
+        run: |
+          LEAK_FILE="test-results/leaked-device-grants.jsonl"
+          if [ ! -s "$LEAK_FILE" ]; then
+            echo "No leaked device grants recorded."
+            exit 0
+          fi
+          echo "One or more staging device grants were not confirmed revoked by teardown:"
+          while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            grant_id=$(printf '%s' "$line" | jq -r '.grantId // "unknown"')
+            echo "::error::Leaked staging device grant ${grant_id}, revoke it manually: ${line}"
+          done < "$LEAK_FILE"
+          exit 1
+
+      - name: Upload Playwright trace on failure or leaked grant
         if: ${{ failure() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:

@@ -1,3 +1,6 @@
+import { appendFile, mkdir } from 'node:fs/promises'
+import path from 'node:path'
+
 import type { Page } from '@playwright/test'
 
 /**
@@ -22,10 +25,60 @@ import type { Page } from '@playwright/test'
  * test-scoped variable and pass it to `revokeDeviceGrantBackstop`, which
  * treats a null id and a missing guardian token as reportable outcomes rather
  * than as nothing to do.
+ *
+ * #CRITICAL: security: a failed revoke used to be observable only through a
+ * `console.warn` line. Playwright's serial-block retry spawns a fresh worker
+ * process on the first failure, so a failed first attempt leaks its own
+ * grant, the retry mints and cleanly revokes a NEW one, and the file reports
+ * "flaky" rather than "failed": the job exits 0 and the console line is
+ * never read by anything. Every path that leaves a grant live now also
+ * appends a machine-readable record to `test-results/leaked-device-grants.jsonl`
+ * (see `recordLeakedGrant` below), which `.github/workflows/e2e-staging.yml`
+ * reads in a dedicated `if: always()` step and fails the job on.
+ * #VERIFY: seed that file locally and confirm the workflow's leak-check step
+ * exits non-zero; confirm it exits zero on a run that produced no file.
  */
 
 /** Shape persisted by the frontend under `localStorage['device_grant']`. */
 const DEVICE_GRANT_KEY = 'device_grant'
+
+/**
+ * Append-only leak ledger, one JSON object per line. Lives under
+ * `test-results/`, already gitignored and already the directory Playwright
+ * writes trace output to, so no new top-level artifact path needs wiring
+ * into CI upload/cleanup steps.
+ */
+const LEAK_LOG_PATH = path.join(process.cwd(), 'test-results', 'leaked-device-grants.jsonl')
+
+interface LeakedGrantRecord {
+  grantId: string
+  specLabel: string
+  detail: string
+  timestamp: string
+}
+
+/**
+ * Records a grant this teardown could not confirm as revoked.
+ *
+ * #CRITICAL: external resource: the write itself must never throw. This
+ * function runs inside a teardown path that is already reporting a problem;
+ * a filesystem error here must not replace that signal with a new,
+ * unrelated one. Both `mkdir` (directory may not exist on a fresh checkout)
+ * and `appendFile` are wrapped, and any failure degrades to the existing
+ * `console.warn` only, never to a thrown error.
+ * #VERIFY: the CI leak-check step (`.github/workflows/e2e-staging.yml`)
+ * treats a missing file as "nothing leaked", so a write failure here is
+ * fail-open for the deterministic check too; the `console.warn` in the
+ * caller is what remains as a human-visible signal in that narrow case.
+ */
+async function recordLeakedGrant(record: LeakedGrantRecord): Promise<void> {
+  try {
+    await mkdir(path.dirname(LEAK_LOG_PATH), { recursive: true })
+    await appendFile(LEAK_LOG_PATH, `${JSON.stringify(record)}\n`, 'utf8')
+  } catch (err) {
+    console.warn(`could not record leaked device grant to ${LEAK_LOG_PATH}: ${String(err)}`)
+  }
+}
 
 /**
  * Reads the persisted grant id immediately after a mint.
@@ -70,6 +123,15 @@ export async function revokeDeviceGrantBackstop(
     // No mint happened, or the mint test failed before capturing the id. The
     // former is the common case (a beforeAll sign-in failure) and leaves
     // nothing live; the latter cannot be cleaned up from here.
+    //
+    // #EDGE: security: this second case (a mint that happened but was never
+    // captured) is not recordable as a leak: recordLeakedGrant requires a
+    // grant id, and by construction none was captured here. It is not a gap
+    // in the deterministic check, because the mint test's own assertion
+    // (`readPersistedGrantId(...).not.toBeNull()`) already fails that test
+    // whenever a mint leaves no id behind, which fails the job on its own.
+    // #VERIFY: if that assertion is ever weakened or removed, this path
+    // becomes a silent leak again; keep the two changes coupled.
     return
   }
 
@@ -110,5 +172,13 @@ export async function revokeDeviceGrantBackstop(
       `${specLabel} backstop device-grant revoke did not confirm (${detail}). ` +
         `Device grant ${grantId} may still be live on staging; revoke it manually.`
     )
+    // Keep this never-throwing: recordLeakedGrant already swallows its own
+    // errors, so this call cannot itself introduce a new teardown failure.
+    await recordLeakedGrant({
+      grantId,
+      specLabel,
+      detail,
+      timestamp: new Date().toISOString(),
+    })
   }
 }
