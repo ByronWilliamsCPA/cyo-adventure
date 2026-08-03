@@ -19,19 +19,26 @@ Drafted 2026-08-02.
 
 This file is **portable**. It describes no product. A project instantiates it by producing a
 register that marks every category and every regime applicable or not applicable, with a reason
-and a reassessment trigger for each N/A. The worked instantiation for this repository is
-[`assurance-register.md`](assurance-register.md).
+and a reassessment trigger for each N/A. An instantiation is conventionally a sibling file named
+`assurance-register.md`; this document deliberately does not link to one, because a relative link
+resolves only in the repository the spine happens to be sitting in.
 
 Intended destination is the global standards set (`~/.claude/standards/`), so that a new project
-starts from the spine rather than rediscovering it. Nothing below depends on this repository.
+starts from the spine rather than rediscovering it. Nothing below depends on any one repository:
+where a concrete figure appears, it is labelled as an observation from a particular instantiation
+rather than as a property of the spine.
 
 ## Why a spine rather than a checklist
 
 A checklist enumerates findings someone else once had. A spine enumerates the places a system can
 fail, so a gap in your own product is visible as a category with no rows rather than as a question
-nobody asked. The originating artifact for this work was a 10-item "common issues" list; when
-mapped against the categories below, **eight of seventeen received zero questions**. That is the
-argument for the structure, not for any particular item on it.
+nobody asked. A checklist cannot show you its own omissions; a category with no rows can.
+
+That is the argument for the structure, and it is independent of any particular item. It is worth
+knowing what the argument looks like when it is exercised: in the instantiation this spine was
+first written against, the originating artifact was a 10-item "common issues" list, and mapping it
+onto the categories below left **eight of the seventeen with zero questions**. Expect the figure
+to differ elsewhere. The point is that the mapping makes such a number computable at all.
 
 Three properties are load-bearing and are what make the spine reusable:
 
@@ -75,7 +82,7 @@ a topic list:
 ### Verification classes
 
 | Class | Meaning |
-|-------|---------|
+| ------- | --------- |
 | STATIC | Assertable from source, schema, policy-as-code, or version-controlled configuration |
 | DYNAMIC | Must be exercised against a running system |
 | RUNTIME-CONFIG | Authoritative state lives in a deployed service or vendor control plane |
@@ -87,7 +94,7 @@ Binary pass/fail cannot express the dominant real-world failure, which is a chec
 tells you nothing. Seven states:
 
 | Status | Meaning |
-|--------|---------|
+| -------- | --------- |
 | Evidence current | Verified against the correct target within cadence |
 | Finding open | A defect was found and the phase home is named |
 | Verification scheduled | Method and owner exist, evidence is not yet current |
@@ -102,7 +109,7 @@ Run these seven questions before writing any row. Each answer switches regimes o
 change to the answers; that re-run is itself a register row.
 
 | # | Question | Switches on |
-|---|----------|-------------|
+| --- | ---------- | ------------- |
 | T1 | **What data classes are handled?** Personal data, sensitive personal data, biometric, precise geolocation, health, genetic, financial account, card data, government ID, credentials, children's data, education records, employment data, video-viewing records, communications content | Sectoral and data-class regimes |
 | T2 | **Who are the data subjects?** General consumers, children under 13, minors 13-17, patients, students, employees, job applicants, EU/UK residents, residents of specific US states | Protected-population and jurisdictional regimes |
 | T3 | **What sector does the operator sit in?** Health, financial services, education, government contracting, critical infrastructure, telecommunications, ad tech, general commercial | Sectoral regimes, which in the US are the primary vector |
@@ -123,7 +130,7 @@ Two rules that repeatedly get this wrong:
 ## The seventeen categories
 
 | ID | Category | Fails as |
-|----|----------|----------|
+| ---- | ---------- | ---------- |
 | SP-01 | Identity, Authentication, Session Lifecycle | Wrong principal is admitted, or a session outlives its authority |
 | SP-02 | Authorization and Tenancy Isolation | Right principal reaches the wrong object, or crosses a tenant boundary |
 | SP-03 | Input Validation, Encoding, Injection | Untrusted data is interpreted as instruction, code, or markup |
@@ -166,7 +173,7 @@ safeguards and an annual evaluation.
 ## Framework layer
 
 | Source | Role | Notes |
-|---|---|---|
+| --- | --- | --- |
 | **OWASP ASVS 5.0.0** | Primary spine for application security | 17 chapters, ~350 requirements, released 30 May 2025. Machine-readable (CSV, CycloneDX JSON) |
 | **OWASP AISVS 1.0** | Overlay for AI-specific surface | 12 chapters + 3 appendices, June 2026. Levels align 1:1 with ASVS |
 | **OWASP MASVS 2.1.0** | Overlay for mobile | Activates on a native or wrapped mobile client |
@@ -193,7 +200,7 @@ Canary for bad secondary sources: any reference stating ASVS 5.0 has **14 chapte
 the 4.0.3 count and should not be trusted on anything else.
 
 | # | ASVS 5.0.0 chapter | # | ASVS 5.0.0 chapter |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | V1 | Encoding and Sanitization | V10 | OAuth and OIDC |
 | V2 | Validation and Business Logic | V11 | Cryptography |
 | V3 | Web Frontend Security | V12 | Secure Communication |
@@ -216,7 +223,7 @@ Verifying against AISVS Level N **assumes** verification against ASVS Level N. E
 scope, with AISVS's own named deferral target:
 
 | Out of AISVS scope | Deferred to |
-|---|---|
+| --- | --- |
 | General application security | ASVS |
 | General software supply chain | OWASP SCVS, SLSA, CIS Controls |
 | General infrastructure and platform hardening | CIS Benchmarks, NIST SP 800-53, SP 800-190, CSF |
@@ -233,7 +240,7 @@ OWASP's own position is that infrastructure hardening is still owed, just from a
 standard, for whatever layers you operate.
 
 | AISVS chapter | Lands in |
-|---|---|
+| --- | --- |
 | C1 Training Data Integrity and Traceability | SP-14, SP-10 |
 | C2 Input Validation (prompt injection, content and policy screening) | SP-03, SP-14 |
 | C3 Model Lifecycle Management and Change Control | SP-14, SP-09 |
@@ -253,13 +260,14 @@ standard, for whatever layers you operate.
 Source: `OWASP/AISVS`, `1.0/en/0x92-Appendix-C_AI_for_Code_Generation.md`. Fetched and read
 2026-08-02. Fourteen sections, roughly sixty level-tagged requirements.
 
-**This applies to any project developed with AI assistance, which for this operator is all of
-them.** It is the published answer to a question that otherwise gets answered from first
+**This applies to any project developed with AI assistance**, so a project instantiating the spine
+should treat Appendix C as in scope unless it can state that no part of its codebase or pipeline
+was AI-assisted. It is the published answer to a question that otherwise gets answered from first
 principles every time, and three of its sections cover a surface most security programs miss
 entirely: the development pipeline being attacked *through* the AI tooling.
 
 | Section | Subject | Lands in |
-|---|---|---|
+| --- | --- | --- |
 | AC.1 | AI-assisted secure-coding workflow: written scope, SSDLC coverage, named adversarial scenarios, metrics vs a human-only baseline | SP-17 |
 | AC.2 | Tool qualification and threat modeling, incl. vendor model supply chain and pre-onboarding adversarial testing | SP-10, SP-17 |
 | AC.3 | Secure prompt and context management: no secrets or PII in prompts, automated redaction, **external context treated as untrusted**, instruction hierarchy, no silent truncation | SP-03, SP-08 |
@@ -299,14 +307,14 @@ is a scoping aid, not legal advice; every entry with real exposure needs counsel
 ### Always on, US
 
 | Regime | Adds | Lands in |
-|---|---|---|
+| --- | --- | --- |
 | **FTC Act §5** (unfair or deceptive acts) | The catch-all. Security claims in a privacy policy or marketing page become enforceable representations. Covers dark patterns, deceptive defaults, and "reasonable security" as an unfairness theory. Enforced through consent decrees with 20-year terms | SP-13, SP-12, all |
 | **State breach notification** (50 states + DC + territories) | Divergent definitions of covered data, harm thresholds, notice deadlines, AG and credit-bureau thresholds. The strictest applicable deadline governs a multi-state incident | SP-11 |
 
 ### US federal, sectoral (trigger T1/T3)
 
 | Regime | Trigger | Adds | Lands in |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **COPPA** (16 CFR 312; amended rule 90 FR 16977, effective 23 Jun 2025, compliance 22 Apr 2026) | Personal info from children under 13, or a child-directed service | Verifiable parental consent, separate consent for third-party disclosure, direct notice, **retention policy published in the privacy notice itself, not linked**, §312.8 written security program with a named coordinator, annual risk assessment, ongoing safeguard testing, annual evaluation, and written assurances from recipients | SP-13, SP-12, SP-17 |
 | **HIPAA** (Privacy, Security 45 CFR 164.302-318, Breach Notification) | PHI, as covered entity or business associate | Risk analysis, workforce controls, audit controls, BAAs, 60-day breach notice, minimum necessary | SP-02, SP-11, SP-12 |
 | **GLBA Safeguards Rule** (16 CFR 314, amended 2021) | "Financial institution", read broadly: mortgage brokers, auto dealers, tax preparers, collection agencies, some fintech | Named **Qualified Individual**, written risk assessment, MFA or equivalent for any system holding customer information, encryption in transit and at rest, secure disposal, change management, continuous monitoring **or** annual pen test plus biannual vulnerability assessment, service-provider oversight, written IR plan, annual written report to the board | SP-01, SP-08, SP-11, SP-17 |
@@ -331,7 +339,7 @@ US State Privacy Legislation Tracker and the Bloomberg Law tracker; the refresh 
 material, not a footnote.
 
 | Family | Status as verified | What it adds |
-|---|---|---|
+| --- | --- | --- |
 | **Comprehensive consumer privacy** | **20 states have laws on the books as of Feb 2026**, counting Florida's narrower scope. Indiana, Kentucky, and Rhode Island took effect 1 Jan 2026; Connecticut, Arkansas, and Utah changes 1 Jul 2026 | Notice; access, delete, correct, portability; opt-out of sale, sharing, and targeted advertising; sensitive-data opt-in or opt-out depending on state; **universal opt-out signal (Global Privacy Control) recognition** in a growing subset; data-protection assessments for high-risk processing; processor contract terms; profiling opt-out. Cure periods are sunsetting, so enforcement risk is rising even where the substantive law is unchanged |
 | **Breach notification** | All states | See "always on" above |
 | **Biometric** | Illinois BIPA, Texas CUBI, Washington HB 1493, plus biometric clauses inside comprehensive laws | Written policy with a retention and destruction schedule, informed written consent before collection, no sale. **BIPA carries a private right of action with per-violation statutory damages**, which makes it the single highest-exposure US privacy statute for a small operator |
@@ -348,7 +356,7 @@ Handled the same way COPPA and GDPR are handled: recorded now with triggers, so 
 a scoping decision rather than a discovery.
 
 | Regime | Trigger | Adds |
-|---|---|---|
+| --- | --- | --- |
 | **GDPR** (EU 2016/679) | Offering goods or services to, or monitoring, EU data subjects | Lawful basis; Art. 5 principles; Art. 8 child consent age (13-16, set per member state); Art. 12 transparency; Art. 15-22 rights incl. portability and automated-decision safeguards; Art. 24-25 accountability and data protection by design and by default; Art. 27 EU representative; Art. 28-29 processor and subprocessor terms; Art. 30 records of processing; **Art. 32(1)(a)-(d) security, with (d) the testing-effectiveness duty**; Art. 33-34 breach notice at 72 hours; Art. 35 DPIA; Art. 44-49 transfers |
 | **UK GDPR + DPA 2018**, as amended by the Data (Use and Access) Act 2025 | UK data subjects | Largely parallel; separate transfer regime, separate regulator, separate representative requirement |
 | **ePrivacy Directive** and national implementations | Cookies, similar storage, unsolicited communications | Prior consent for non-essential storage, independent of GDPR lawful basis |
@@ -369,7 +377,7 @@ Parts of this file decay at very different rates, and treating them uniformly is
 quietly wrong.
 
 | Layer | Half-life | Refresh |
-|---|---|---|
+| --- | --- | --- |
 | The seventeen categories | Years | Only on a genuine new failure mode |
 | Framework versions (ASVS, AISVS, MASVS, PCI) | 1-3 years | Check on major release; re-verify chapter lists from the primary document, never a summary |
 | US federal sectoral | Slow, but rule amendments matter | Annual, plus on any FTC or sector-regulator rulemaking |

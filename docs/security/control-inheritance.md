@@ -14,7 +14,7 @@ tags:
 
 Audited: 2026-08-02.
 Companion to: [`crypto-inventory.md`](crypto-inventory.md), which uses this same owner-column
-format scoped to cryptography only. This file generalises it to all inherited controls.
+format scoped to cryptography only. This file generalizes it to all inherited controls.
 Update trigger: any change to a control plane listed below, and any conversion between
 deployment tiers (R1 internal-web, R2 TestFlight, R3 App Store).
 
@@ -23,7 +23,7 @@ deployment tiers (R1 internal-web, R2 TestFlight, R3 App Store).
 A repository-scoped review can only see three of the five places a control can live:
 
 | Layer | Example | Covered by existing gates |
-|-------|---------|---------------------------|
+| ------- | --------- | --------------------------- |
 | L1 source | middleware, validators | yes (Ruff, BasedPyright, Bandit, tests) |
 | L2 dependency graph | CVEs in pinned deps | yes (pip-audit, OSV, Dependabot) |
 | L3 built container | image CVEs, build args | yes (Trivy, container-security.yml) |
@@ -68,7 +68,7 @@ Proxy status verified from the Cloudflare dashboard on 2026-08-02: `cyo`, `cyo-d
 read from the same session.
 
 | # | Control | Applies today | Evidence | Re-validate when |
-|---|---------|---------------|----------|------------------|
+| --- | --------- | --------------- | ---------- | ------------------ |
 | A1 | Edge TLS termination | Yes, for traffic that arrives via the edge | Proxy enabled | Proxy status change |
 | A2 | WAF / managed rules | **Advisory only** (see A9) | Proxy enabled | Proxy status change; A9 closure |
 | A3 | DDoS and rate limiting | **Advisory only** (see A9) | Proxy enabled | Proxy status change; A9 closure |
@@ -186,7 +186,7 @@ client address once a proxy is inserted.
    - step-ca must be issued under a **separate root or dedicated intermediate**, not the one at
      `services/traefik/dynamic/tls.yml:74`. Sharing an anchor would let every homelab device
      certificate satisfy the CYO edge router.
-   - Lifetime: issue long-lived and diarise rotation. Existing renewal tooling
+   - Lifetime: issue long-lived and calendar the rotation. Existing renewal tooling
      (`services/cert-enroll/scripts/renew-cert.sh`) pushes certificates to devices; Cloudflare
      requires an API upload instead, so short step-ca defaults would cause a recurring outage.
      Automating the Cloudflare-side upload is a follow-up, not a prerequisite.
@@ -220,7 +220,7 @@ step 1 it silently corrupts geo-restriction and ban logic.
 ## Plane B: Supabase dashboard (project `cvrnaydpzijtszfbsraq`)
 
 | # | Control | Applies today | Evidence | Re-validate when |
-|---|---------|---------------|----------|------------------|
+| --- | --------- | --------------- | ---------- | ------------------ |
 | B1 | RLS enabled on all tables | Yes, all 25 | Live read-only probe, 2026-08-02 | Every new-table migration |
 | B2 | No `anon` / `authenticated` policies | Yes | Probe: reads return `200 []`, writes `42501` | Every policy migration |
 | B3 | `anon` role table grants | **Full DML grants present** | `supabase/migrations/20260729000000_add_child_profile_personalization.sql:48-56` | Continuous |
@@ -240,7 +240,7 @@ grants." That is false, and the migration cited in B3 is the authoritative contr
 This is where the controls that are actually enforcing live.
 
 | # | Control | Applies today | Evidence | Re-validate when |
-|---|---------|---------------|----------|------------------|
+| --- | --------- | --------------- | ---------- | ------------------ |
 | C1 | Public TLS termination | Yes | Pangolin VPS | Infra change |
 | C2 | Response security headers | Yes, and **overwrites** the app's stronger CSP | `middleware.yml:112-129` uses `Header().Set()` | Any header change in either repo |
 | C3 | HSTS | Yes, unconditional | `middleware.yml` | Infra change |
@@ -253,7 +253,7 @@ in production responses is Traefik's, not the ten-directive one in
 `src/cyo_adventure/middleware/security.py:113-124`. Any CSP change must land in `middleware.yml`.
 
 Correction owed: `docs/architecture/deployment.md:46-48` describes this chain incorrectly, and
-`crypto-inventory.md:68` names `cloudflared` for the edge-to-origin tunnel. The tunnel is
+`crypto-inventory.md:67` names `cloudflared` for the edge-to-origin tunnel. The tunnel is
 Newt/WireGuard behind Pangolin; `cloudflared` is not deployed.
 
 ## Plane D: GitHub repository settings
@@ -264,7 +264,7 @@ already produced at least one silent gate failure in this project's history, whe
 check could not fail.
 
 | # | Control | Applies today | Re-validate when |
-|---|---------|---------------|------------------|
+| --- | --------- | --------------- | ------------------ |
 | D1 | Required status checks | Assumed, unverified | Any workflow rename or deletion |
 | D2 | Branch protection on `main` | Assumed, unverified | Ruleset change |
 | D3 | Merge queue configuration | Assumed, unverified | Ruleset change |
@@ -275,7 +275,7 @@ highest-value candidate for an automated read of the settings API.
 ## Plane E: Cloudflare R2 (cover-art object storage)
 
 | # | Control | Applies today | Re-validate when |
-|---|---------|---------------|------------------|
+| --- | --------- | --------------- | ------------------ |
 | E1 | Bucket public/private posture | Unverified | Any covers change |
 | E2 | CORS policy | Unverified | Frontend origin change |
 | E3 | Object lifecycle / retention | Unverified | Retention policy decision |
