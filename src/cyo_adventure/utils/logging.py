@@ -26,13 +26,47 @@ from structlog.stdlib import BoundLogger
 from cyo_adventure.middleware.correlation import (
     correlation_context_processor,
 )
-from cyo_adventure.utils.redaction import censor_sensitive_processor
+from cyo_adventure.utils.redaction import (
+    RedactingLogFilter,
+    censor_sensitive_processor,
+)
 
 if TYPE_CHECKING:
     from structlog.types import Processor
 
 # Global console for rich output (stderr for proper output separation)
 console = Console(stderr=True)
+
+_DEFAULT_LEVEL_NAME = "INFO"
+
+
+def _resolve_level(level: str) -> tuple[int, str | None]:
+    """Map a configured level name to its numeric value.
+
+    # #ASSUME: data integrity: ``getattr(logging, level.upper())`` used to
+    # back this, which silently returned the INFO default for a typo'd
+    # ``LOG_LEVEL`` (and would have returned an unrelated module attribute
+    # for a name like ``getLogger``). Validating against the level registry
+    # makes an unusable value visible instead of silently downgrading it.
+    # #VERIFY: the caller logs the returned warning through the freshly
+    # configured root logger; tests/unit/test_logging.py::TestSetupLogging::
+    # test_an_unknown_level_falls_back_to_info_and_warns pins both halves.
+
+    Args:
+        level: The configured level name (any casing).
+
+    Returns:
+        tuple[int, str | None]: The numeric level, and a warning message when
+        the name was not a known level (None when it was).
+    """
+    normalized = level.upper()
+    known = logging.getLevelNamesMapping()
+    resolved = known.get(normalized)
+    if resolved is None:
+        return known[_DEFAULT_LEVEL_NAME], (
+            f"unknown log level {level!r}; falling back to {_DEFAULT_LEVEL_NAME}"
+        )
+    return resolved, None
 
 
 def setup_logging(
@@ -63,25 +97,42 @@ def setup_logging(
         >>> # Production setup with correlation
         >>> setup_logging(level="INFO", json_logs=True, include_correlation=True)
     """
-    log_level = getattr(logging, level.upper(), logging.INFO)
+    log_level, level_warning = _resolve_level(level)
 
-    # Configure standard Python logging
+    handler: logging.Handler = (
+        RichHandler(
+            console=console,
+            rich_tracebacks=True,
+            show_time=include_timestamp,
+            show_level=True,
+            show_path=True,
+        )
+        if not json_logs
+        else logging.StreamHandler(sys.stdout)
+    )
+    # #CRITICAL: security: the same value-shape rules the structlog processor
+    # applies, carried onto the root handler so records that never enter
+    # structlog's chain (uvicorn.access, botocore, SQLAlchemy, rq) are covered
+    # too. See redaction.py's "Scope" section for what this can and cannot do.
+    # #VERIFY: tests/unit/test_logging.py::TestSetupLogging::
+    # test_a_stdlib_log_record_is_redacted_by_the_root_handler_filter drives a
+    # plain stdlib logger through the installed handler.
+    handler.addFilter(RedactingLogFilter())
+
+    # Configure standard Python logging.
+    # #CRITICAL: external resources: force=True is load-bearing. basicConfig
+    # is a documented no-op when the root logger already has a handler, and
+    # under uvicorn/gunicorn/pytest it usually does; without force the root
+    # level would stay at WARNING and structlog's filter_by_level (chain
+    # index 0) would silently drop every INFO record this app emits.
+    # #VERIFY: tests/unit/test_logging.py::TestSetupLogging::
+    # test_setup_logging_replaces_a_preexisting_root_handler asserts the
+    # handler and level are installed over a pre-existing root handler.
     logging.basicConfig(
         format="%(message)s",
         level=log_level,
-        handlers=[
-            (
-                RichHandler(
-                    console=console,
-                    rich_tracebacks=True,
-                    show_time=include_timestamp,
-                    show_level=True,
-                    show_path=True,
-                )
-                if not json_logs
-                else logging.StreamHandler(sys.stdout)
-            )
-        ],
+        handlers=[handler],
+        force=True,
     )
 
     # Define a no-op processor for when timestamp is disabled
@@ -149,6 +200,16 @@ def setup_logging(
         logger_factory=structlog.stdlib.LoggerFactory(),
         cache_logger_on_first_use=True,
     )
+
+    # Emitted only after the chain above exists, so the warning about the
+    # misconfiguration is itself rendered by the configured handler.
+    if level_warning is not None:
+        get_logger(__name__).warning(
+            "log_level_unknown",
+            configured_level=level,
+            effective_level=_DEFAULT_LEVEL_NAME,
+            detail=level_warning,
+        )
 
 
 def get_logger(name: str) -> BoundLogger:

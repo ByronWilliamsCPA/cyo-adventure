@@ -13,14 +13,18 @@ Test-isolation note: ``tests/conftest.py``'s autouse ``setup_logging`` fixture
 mutates process-global structlog state before every test, so a naive assertion
 here would pass vacuously against the unfixed code. Every test below calls
 ``structlog.reset_defaults()`` first and asserts the unconfigured precondition,
-so it genuinely exercises application startup.
+so it genuinely exercises application startup. That same conftest fixture also
+snapshots and restores structlog and root-handler state around every test, so
+the teardown of the deliberate reset below leaks nothing into later tests; the
+snapshot/restore used to be a module-local fixture here and was moved to
+conftest once ``TestClient`` began running the lifespan (and therefore
+``setup_logging``) for every module that builds one.
 """
 
 from __future__ import annotations
 
 import contextvars
 import logging
-from typing import TYPE_CHECKING
 
 import pytest
 import structlog
@@ -32,30 +36,7 @@ from cyo_adventure.middleware.correlation import (
     set_correlation_id,
 )
 
-if TYPE_CHECKING:
-    from collections.abc import Iterator
-
 pytestmark = [pytest.mark.unit, pytest.mark.security]
-
-
-@pytest.fixture(autouse=True)
-def _restore_logging_config() -> Iterator[None]:
-    """Snapshot and restore process-wide structlog and stdlib-logging config.
-
-    These tests deliberately tear structlog's configuration down to prove the
-    app rebuilds it; without this the teardown would leak an unconfigured (or
-    differently configured) structlog into every later test in the session.
-    """
-    saved_structlog = structlog.get_config()
-    root = logging.getLogger()
-    saved_handlers = root.handlers[:]
-    saved_level = root.level
-    try:
-        yield
-    finally:
-        structlog.configure(**saved_structlog)
-        root.handlers[:] = saved_handlers
-        root.setLevel(saved_level)
 
 
 def _capture_one_log(logger_name: str, event: str) -> list[str]:
