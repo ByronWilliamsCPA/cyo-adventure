@@ -39,7 +39,7 @@ source: "Full read of skeletons/ (61 files), generation/skeleton_match.py, story
 > **(e)** the causes interact as a feedback loop (section 5), which re-sequences the recommendations
 > (section 6). The research-base rebuild recommended here has been executed on this branch: see
 > [research/](research/README.md).
-
+>
 > **Corrected (2026-08-03).** Section 1's cause #6 and section 2.6's first bullet asserted that the 23
 > authored catalog books (25 counting the 2 pilot re-themes) "were never imported"; that mechanism
 > claim was wrong and is corrected in place below. Issue #347 records an import run against production

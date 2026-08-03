@@ -12,6 +12,11 @@ owner: core-maintainer
 purpose: "Give ADR-011's citations a committed, re-examinable home, per the stale-citation note in
   ADR-011 and design-review-kid-appeal-2026-08-01.md section 6 item 5."
 component: Strategy
+source: "Index only; it makes no claims of its own. Every substantive claim lives in the two notes it
+  indexes, cyoa-structure-measurements.md (external research pass, 2026-08-02) and
+  choice-agency-pacing-and-failure.md (external literature pass, 2026-08-02), each of which carries
+  its own evidence grading. Provenance for the rebuild itself: ADR-011's stale citation note and
+  design-review-kid-appeal-2026-08-01.md section 6 item 5."
 ---
 
 # Research Base for the Story Scale and Structure Framework

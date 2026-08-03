@@ -33,7 +33,7 @@ limited (iOS via TestFlight), and R3 public launch (App Store).
 | [r1-deferred-debt-register.md](r1-deferred-debt-register.md) | Consciously-deferred debt inventory, including the R2 gate blockers |
 | [unscheduled-work-register.md](unscheduled-work-register.md) | Directed-but-unscheduled work (UW-* IDs) found by the 2026-07-28 sweep, each with a proposed phase |
 | [story-structure-diversity-critical-analysis.md](story-structure-diversity-critical-analysis.md) | Root-cause analysis of the structural ceiling limiting story diversity: seven compounding causes |
-| [story-structure-improvement-plan.md](story-structure-improvement-plan.md) | Execution plan for the critical analysis: 5 stages, 24 deliverables (SQ-01..SQ-24), 7 owner gates |
+| [story-structure-improvement-plan.md](story-structure-improvement-plan.md) | Execution plan for the critical analysis: 5 stages, 24 deliverables (SQ-01..SQ-24), 8 owner gates |
 | [story-structure-implementation-briefs.md](story-structure-implementation-briefs.md) | Per-deliverable briefs for SQ-01..SQ-24: file/function anchors, change spec, test plan |
 | [research/README.md](research/README.md) | Index and provenance for the research base behind ADR-011 and the story structure/diversity work |
 | [naive-user-ux-testing-design.md](naive-user-ux-testing-design.md) | Naive-user UX test methodology (Playwright misuse regressions + Claude-for-Chrome comprehension prompts) |

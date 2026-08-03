@@ -3,7 +3,7 @@ schema_type: planning
 title: "Story Structure and Diversity Improvement Plan"
 description: "The execution plan for the seven root causes and compounding loop identified in
   story-structure-diversity-critical-analysis.md. Five stages, 24 deliverables with IDs, dependencies,
-  acceptance criteria, a single-owner capacity model, six owner decision gates, and falsifiable
+  acceptance criteria, a single-owner capacity model, eight owner decision gates, and falsifiable
   success measures split pre-launch vs post-launch."
 tags:
   - planning
@@ -210,7 +210,8 @@ reconvergence targets. Effort S-M; unblocked now that [research/](research/READM
 
 The plan assumes an implementation team executes the briefs while the owner remains the human
 approval gate that ADR-005 and the flywheel's S7 rule require: the owner reviews every PR, adjudicates
-every gate OG1-OG6, and personally approves any content that could reach a child (published books,
+all eight owner gates of section 8 (OG1-OG7, OG3b included), and personally approves any content
+that could reach a child (published books,
 restructured series books, promoted mutants, authored variants). The binding constraint therefore
 shifts from authoring hours to **owner review bandwidth**, and the rules below protect it:
 
@@ -249,7 +250,7 @@ shifts from authoring hours to **owner review bandwidth**, and the rules below p
 | OG4 | ATG contract ruling (fail-open advisory to scoped blocking) | SQ-14 flip | Per-skeleton blocking gated on SQ-13 coverage, one bounded repair as remediation; global only when rollout covers production cells |
 | OG5 | Pathfinder Phase 0 go/no-go (+ legal review; owner of both: repository owner; legal review completes before any Phase 0 work starts) | SQ-22 | Defer to the Stage 4 boundary. Note: teen engagement data would inform this, but no scheduled deliverable produces it (reading telemetry is deferred behind the privacy review), so absent data the decision is product judgment, stated as such |
 | OG6 | ADR-011 amendment scope (SQ-24) | SQ-24 | Full scope per UW-G17 plus UW-C25 |
-| OG7 | Phase disposition for the whole SQ program: map Stage 0-4 (and SQ-01 specifically) onto the register's closed phase vocabulary, per section 11.1 | Whether the register/manifest treat any SQ item as gating R1 (full)/M5.1, and whether UW-G12's `post-launch`/`blocked` cell still holds once SQ-11 unblocks it | Adopt section 11.1's proposed mapping: SQ-01 to `R1`/`M5.1` as a usability gap, not `content`; SQ-16 and SQ-18 keep their already-established `4b`; every other SQ item to `content`, matching the roadmap's Content workstream, which is explicitly release-rung-independent. The ruling should also resolve UW-G12's now-inconsistent `post-launch`/`blocked` cell against Stage 2's value-critical-chain priority; that register edit is out of this plan's file scope |
+| OG7 | Phase disposition for the whole SQ program: map Stage 0-4 (and SQ-01 specifically) onto the register's closed phase vocabulary, per section 11.1 | Whether the register/manifest treat any SQ item as gating R1 (full)/M5.1, and whether UW-G12's `post-launch`/`blocked` cell still holds once SQ-11 unblocks it | Adopt section 11.1's proposed mapping: SQ-01 to the single token `R1` as a usability gap, not `content` (the register permits one value per `Phase` cell, so the `M5.1` sign-off it blocks is stated in the Item text, not in `Phase`); SQ-16 and SQ-18 keep their already-established `4b`; SQ-19, SQ-22 and SQ-24 take no new token (SQ-19's UW-M06 is a cluster-M row with no `Phase` column, SQ-22 has no register row, and SQ-24's UW-G17 already carries `post-launch`); every other SQ item to `content`, matching the roadmap's Content workstream, which is explicitly release-rung-independent. The ruling should also resolve UW-G12's now-inconsistent `post-launch`/`blocked` cell against Stage 2's value-critical-chain priority; that register edit is out of this plan's file scope |
 
 ## 9. Success measures
 
@@ -361,8 +362,10 @@ answers "does SQ-13 ship before or after R1 (full)/M5.1 sign-off", because that 
 answered in the register's vocabulary and this plan deliberately does not write to the register
 (section 11's opening paragraph). This subsection proposes an answer; it does not assert one, because
 assigning a `Phase` cell is an owner decision under this repo's conventions (the register's "Not
-allowed" list forbids anything but a real phase token or `blocked`/`decision` with a named blocker,
-and the vocabulary's own "Source of truth" column names `roadmap.md`, not this plan). Gate OG7 in
+allowed" list permits exactly one real phase token per `Phase` cell and forbids that cell repeating a
+`Status` value: `blocked` and `decision` are statuses, and a row in either state still needs the phase
+it will land in once resolved, which `scripts/check_work_linkage.py` enforces; the vocabulary's own
+"Source of truth" column names `roadmap.md`, not this plan). Gate OG7 in
 section 8 is where the owner rules on the mapping below; nothing here edits a register row or the
 manifest.
 
@@ -372,15 +375,15 @@ manifest.
 | --- | --- | --- | --- |
 | Stage 0: SQ-02, SQ-03 | `content` | Already the register's own disposition for the underlying item (UW-C07, `content`/unscheduled); this plan changes nothing about that classification. | No, follows precedent |
 | Stage 0: SQ-04, SQ-05, SQ-06 | `content` | Unregistered ("new"), but they are Lane A prerequisites for the same fill-pipeline work as SQ-02/SQ-03 and ship no user-visible surface on their own; grouping them with their lane is the low-friction default. | Mild: no register row to anchor the token, so this is inference by lane, not citation |
-| Stage 0: **SQ-01** | `R1` (full) / `M5.1`, not `content` | Distinctive case, argued explicitly. UW-G14 currently carries `content`, and the roadmap's Content workstream states outright that this workstream "does not block a release rung" (roadmap.md's Content workstream section, Dependencies). But `M5.1`'s own definition is "every family-tier register row at delivered status" with the five golden journeys green, and a library with zero reachable catalog books is not a family-tier row at delivered status: it is the core reading loop failing for any family that has not yet completed a custom request. Promotion (the corrected SQ-01 mechanism, see the Stage 0 table above) is a day-scale operational step gated on a moderation sweep, not an authoring program; treating it as ordinary `content` cadence buries a usability gap inside a bucket the roadmap has defined as non-blocking. Default proposal: `R1` (full) / `M5.1`. | **Yes, explicit owner call**: this reverses UW-G14's current `content` cell and the roadmap's own framing; the owner may instead affirm `content` if the empty-catalog gap is judged acceptable pending organic demand |
+| Stage 0: **SQ-01** | `R1`, not `content` | Distinctive case, argued explicitly. UW-G14 currently carries `content`, and the roadmap's Content workstream states outright that this workstream "does not block a release rung" (roadmap.md's Content workstream section, Dependencies). But `M5.1`'s own definition is "every family-tier register row at delivered status" with the five golden journeys green, and a library with zero reachable catalog books is not a family-tier row at delivered status: it is the core reading loop failing for any family that has not yet completed a custom request. Promotion (the corrected SQ-01 mechanism, see the Stage 0 table above) is a day-scale operational step gated on a moderation sweep, not an authoring program; treating it as ordinary `content` cadence buries a usability gap inside a bucket the roadmap has defined as non-blocking. Default proposal: the single token `R1`. It has to be a single token: the register permits one value per `Phase` cell, taking the earliest phase the work starts in, so `R1` is the token and the `M5.1` sign-off it blocks is stated in the row's Item text rather than crammed into `Phase`. | **Yes, explicit owner call**: this reverses UW-G14's current `content` cell and the roadmap's own framing; the owner may instead affirm `content` if the empty-catalog gap is judged acceptable pending organic demand |
 | Stage 1: SQ-07, SQ-08, SQ-09, SQ-10 | `content` | These are signals/selection code, not authoring, but every adjacent registered item in the same UW-G cluster (e.g. UW-G03, UW-G04) already carries `content`, and the roadmap's Content workstream description covers "diversity and catalog growth" broadly enough to include the selection machinery that serves it. | Mild: stretches the token from authoring to backend-algorithm work; flagged so the owner can reject the stretch if `content` is meant to mean prose authoring specifically |
 | Stage 2: SQ-11, SQ-12, SQ-13, SQ-14 | `content` | **The most consequential call in this table.** UW-G12 (SQ-11's target row) is currently `post-launch`/`blocked`, but section 1.1 schedules SQ-11 to start "immediately after PR review" alongside SQ-02 and calls this chain the plan's value-critical chain, not deferred work. Leaving UW-G12 at `post-launch` while this plan treats Stage 2 as the decisive near-term bet is an active contradiction, not a stale label like the SQ-01 case. Proposed resolution: once SQ-11 unblocks UW-G12 (as the section 11 map already notes), its disposition should flip from `post-launch`/`blocked` to `content`, matching the rest of the diversity workstream and its "does not block a release rung" framing (section 7's own admission that this plan asserts no calendar dates supports the same conclusion: decisive in impact, not gating in timing). `content` is proposed over an `R2` release-rung token because nothing in the plan makes Stage 2 a precondition for the iOS shell. | **Yes, explicit owner call**: the owner must reconcile UW-G12's cell with this plan's priority; that register edit is out of this plan's file scope and is listed as a needed change in the authoring report, not made here |
 | Stage 3: SQ-15, SQ-17 | `content` | Unregistered measurement work in the same catalog-quality vein as Stage 1's signals items. | Mild, same stretch as Stage 1 |
 | Stage 3: SQ-16 | `4b` (unchanged) | Already established: UW-C23 and UW-C24 both carry `4b` today, and choice-grammar enforcement is Editor+UX-phase validator work by the register's own classification. This plan makes no change here; listed for completeness so the mapping table is not silently missing an SQ id. | No, already resolved upstream |
 | Stage 3: SQ-18 | `4b` | User-facing reader-UX feature (A13b ending-screen affordance); the roadmap's own linkage table already routes `UW-I*`/`UW-J*` reader-UX gaps to `4b`, and SQ-18 is the same kind of surface. | Mild: no direct UW row for SQ-18 itself (plan-v2 A13b/A18 are unregistered), so this is inference by category |
-| Stage 3: SQ-19 | Stays `decision` (UW-M06) | UW-M06 is itself an owner-decision row; this plan does not resolve it, so no phase token is proposed until the owner rules there. | Already a decision row; no new call needed |
+| Stage 3: SQ-19 | No token: stays a cluster-M row with no `Phase` cell (UW-M06) | UW-M06 is itself an owner-decision row, and cluster M's table carries only `ID`, `Item`, `Owner` and `Status` columns, with no `Phase` column at all, so there is no cell to propose a token for. Its `Status` stays `decision` with `project owner` named as the ruler, which is the evidence that status requires. Writing `decision` into a `Phase` column would fail the register's own rule against a `Phase` repeating a `Status`. | Already a decision row; no new call needed |
 | Stage 4: SQ-20, SQ-21, SQ-23 | `content` | UW-G09-adjacent and UW-G13 already carry `content`; SQ-21 is unregistered but is explicitly paired with SQ-09(b) in Lane E and shares its authoring cadence. | No (SQ-20, SQ-23) / mild (SQ-21) |
-| Stage 4: SQ-22 | Stays `decision` (pathfinder Phase 0, gate OG5) | Already an owner-decision item with its own gate; no phase token is proposed ahead of that ruling. | Already a decision row; no new call needed |
+| Stage 4: SQ-22 | No token proposed (no register row today) | Already an owner-decision item with its own gate (OG5), recorded in `pathfinder-structure-exploration.md`, and it has no register row for a `Phase` cell to sit in. `decision` is a `Status`, not a phase token, so it cannot stand in for one here. If OG5 rules go and the pilot becomes schedulable work with a register row, that row takes its phase token at that point. | Already a decision item; no new call needed |
 | Cross-cutting: SQ-24 | Stays `post-launch`/`decision` (UW-G17) | Already established and internally consistent with UW-C25's `doc` disposition; no tension to flag. | No |
 
 **Net answer to the opening question, if the defaults above are accepted:** almost the entire SQ
@@ -388,8 +391,12 @@ program (Stage 1, most of Stage 0, all of Stage 2, most of Stage 3 and 4) lands 
 the roadmap defines as explicitly not gating any release rung; that is a coherent answer, not an
 evasion, because it matches how this work has always been scheduled once the register finally gave it
 a home (roadmap.md's Content workstream section). The two deliberate exceptions are SQ-01, proposed as
-an `R1` (full)/`M5.1` blocking item because it is a reachability gap rather than catalog growth, and
-SQ-16/SQ-18, which inherit the already-scheduled `4b` (post-R1 Editor+UX) phase. The single item the
+an `R1` blocking item because it is a reachability gap rather than catalog growth (`R1` is the whole
+token; the `M5.1` sign-off it would otherwise leave unmet is named in the Item text, since the
+register permits one value per `Phase` cell), and SQ-16/SQ-18, which inherit the already-scheduled
+`4b` (post-R1 Editor+UX) phase. Three items propose no new token: SQ-19 and SQ-22 have no `Phase`
+cell to fill (UW-M06 is a cluster-M row whose table carries no `Phase` column, and SQ-22 has no
+register row at all), and SQ-24's UW-G17 already carries a settled `post-launch`. The single item the
 owner most needs to rule on is Stage 2: its current register cell (`post-launch`/`blocked` via UW-G12)
 contradicts this plan's own framing of it as the decisive, near-term bet, and that contradiction
 predates this plan.

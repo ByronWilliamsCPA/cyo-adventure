@@ -3,17 +3,40 @@ SPDX-FileCopyrightText: 2026 Byron Williams <byronawilliams@gmail.com>
 SPDX-License-Identifier: MIT
 -->
 
-# Draft stories manifest (authored, not yet in production)
+# Draft stories manifest (authored and imported, not yet published)
 
 These are complete, validator-passed filled Storybooks that have been authored
 (a `skeletons/<band>/<slug>.json` shell filled with age-band-appropriate prose)
-but have NOT been imported or published to production. They become "in
-production" only after the import/publish flow: the `cyo-author` skill validates
-and imports a filled story, then it passes the `publishing/` approve-and-publish
-state machine plus guardian/admin approval before it is served to a child.
+and imported into production, where they sit at `in_review`. They have NOT been
+published: no child can reach them yet.
+
+**Corrected 2026-08-03.** This manifest previously said the books "have NOT been
+imported or published to production". The import half of that was wrong. Issue
+[#347](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/347) records an
+import run against production on 2026-07-21, the ADR-021 production catalog
+seed, landing 25 stories (the 23 below plus the 2 pilot re-themes) at
+`in_review`.
+
+Import and publish are two separate steps, and only the first has run:
+
+- **Import** (`generation/import_catalog.py`, or the `cyo-author` skill for a
+  single story) runs the validator gate, persists a draft, and runs moderation,
+  leaving each story at `in_review` or `needs_revision`. Its own module
+  docstring states that it never publishes, because ADR-005 makes human
+  approval mandatory.
+- **Publish** is the separate, explicitly-invoked admin promotion
+  (`publishing/catalog_publish.py::promote_catalog_story`), which runs the
+  `publishing/` approve-and-publish state machine and sets `published` /
+  `catalog` visibility. Nothing on record shows it has run for this inventory.
+
+This manifest has no database access and cannot confirm current live state; it
+records only that an import run happened and that promotion is the outstanding
+step. Verifying the live `visibility` per book is step 1 of the SQ-01 runbook in
+[story-structure-implementation-briefs.md](story-structure-implementation-briefs.md).
 
 All files below are git-tracked in `ByronWilliamsCPA/cyo-adventure`; no access
-beyond the repository is required. Generated 2026-07-20.
+beyond the repository is required. Generated 2026-07-20; import state corrected
+2026-08-03.
 
 Not drafts (do not point here):
 
