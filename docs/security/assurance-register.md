@@ -943,8 +943,20 @@ row somewhere in this register. **Three are cited by nothing: AC.2** (tool quali
 modeling, including vendor model supply chain and pre-onboarding adversarial testing), **AC.6**
 (continuous feedback, red-teaming of the AI tooling itself, regression harness after every prompt
 or model change), and **AC.9** (artifact origin validation at deploy: signed provenance, trusted
-verifier, quarantine on failure). Recount with `grep -oE 'AC\.[0-9]+'` against the spine's
-AC.1 to AC.14 table.
+verifier, quarantine on failure).
+
+Recount only with a pattern scoped to row blocks, because this paragraph names the three uncovered
+sections and a whole-file `grep -oE 'AC\.[0-9]+'` therefore finds all fourteen and reports full
+coverage. That trap was hit while writing this entry, which is why the working recipe is recorded
+rather than left to be reconstructed:
+
+```console
+$ awk '/^#### O-[0-9]+$/{r=1} /^### |^## /{r=0} r' docs/security/assurance-register.md \
+    | grep -oE 'AC\.[0-9]+' | sort -u
+```
+
+A verification method that reads the sentence describing a gap and concludes the gap is closed is
+the register's own subject matter, one level up.
 
 No rows are added for them here, deliberately. The row count is already the subject of an open
 budget decision (prerequisite 6), and adding three more would pre-empt a call that belongs to the
