@@ -396,32 +396,66 @@ them in order:
 
 ## 6. Backup and restore
 
-**This is an explicit, owner-acknowledged gap, not an oversight.** As of this writing:
+**Partially closed 2026-08-02** (issue #558 / `UW-D27`). A scheduled backup now exists; the
+restore side is documented below but **not yet drilled against a live project** -- see the
+`#VERIFY` note at the end of this section before relying on it in a real incident.
 
-- [ADR-004](../planning/adr/adr-004-homelab-first-deployment.md) records "nightly Postgres dump
-  and MinIO snapshot, with a restore drill in Phase 5" as a stated intent, and its own Success
-  Criteria mark "A restore from backup succeeds in a drill" as **unchecked**.
-- [ADR-009](../planning/adr/adr-009-supabase-platform.md) notes that Supabase's Pro plan (the
-  production tier) includes automated backups/PITR as a platform feature, but "the restore drill
-  remains ours to run" and its own Success Criteria mark the restore/export drill as
-  **unchecked**.
-- `docs/planning/roadmap.md`'s Phase 5 deliverable list includes "Sentry wired on client and
-  server; backups and a tested restore" as **not started**.
-- There is no backup script, restore script, or restore runbook anywhere in this repository today.
+### What runs today
 
-**Operator action, not a documented procedure**: until the Phase 5 backup-and-restore-drill
-deliverable lands, do not assume any automated backup exists for the homelab/family tier beyond
-whatever Supabase's Pro-plan PITR provides for the managed Postgres database itself (subject to
-that plan actually being active for the target project; see ADR-009 decision 9 on plan tiers). If
-you need a point-in-time restore before this deliverable ships, the immediate steps are: (1)
-confirm which Supabase project tier the target environment is on and whether PITR is enabled in
-the Supabase dashboard, (2) use the Supabase dashboard's own restore flow for Postgres, and (3)
-treat any object-storage content (cover art in R2) as unbacked-up separately, since no export
-tooling for it exists in this repo. Do not improvise a database dump/restore procedure without
-first confirming it against the live schema (`supabase/migrations/`) and the async-engine
-connection settings in `core/database.py`; a hand-rolled restore that skips the Supavisor
-pooling constraints noted in ADR-009 (`CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE`) can corrupt
-prepared-statement state under the transaction-mode pooler.
+[`.github/workflows/supabase-backup.yml`](../../.github/workflows/supabase-backup.yml) runs
+[`scripts/backup_database.py`](../../scripts/backup_database.py) daily at 08:00 UTC (and on
+`workflow_dispatch`). Each run:
+
+1. Executes `supabase db dump` three times (roles, schema, data-via-COPY) against
+   `SUPABASE_DB_URL`, which **must be the direct (non-pooler) connection string** --
+   [ADR-009](../planning/adr/adr-009-supabase-platform.md)'s Supavisor pooling constraints
+   (`CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE`) apply to any long-lived dump/restore
+   connection, and a hand-rolled dump against the pooler URL can corrupt prepared-statement
+   state under the transaction-mode pooler.
+2. Encrypts each leg with AES-256-GCM (a random nonce per file; the key never leaves the
+   `BACKUP_ENCRYPTION_KEY` secret and is not derivable from the ciphertext).
+3. Uploads to a **dedicated** R2 bucket (`R2_BACKUP_BUCKET`, distinct from the public covers
+   bucket, using a scoped R2 token distinct from the covers-upload token) under a tiered
+   prefix: `daily/` always, `weekly/` on ISO Sunday, `monthly/` on the 1st.
+4. Asserts a per-prefix R2 lifecycle expiration rule on every run (self-healing if the bucket
+   configuration ever drifts): daily 7 days, weekly 28 days, monthly 180 days by default,
+   tunable via `workflow_dispatch` inputs. This bounds total retained storage to roughly
+   7 + 4 + 6 = 17 backup sets at any time, sized for limited R2 space rather than unbounded
+   growth -- re-tune the day counts once real dump sizes are known (see the `#ASSUME` in the
+   script's module docstring).
+
+A failed run opens or comments on a `ci-failure`-labelled issue titled `[db-backup] scheduled
+database backup failing`, per the "Alert on failure" step in the workflow: see Section 7 for the
+general convention. Cover art in R2 is **not** covered by this workflow; it remains unbacked-up
+separately, since no export tooling for object storage exists in this repo (tracked as its own
+gap, distinct from `UW-D27`).
+
+### Restore procedure
+
+1. Identify the backup to restore from: list objects under `daily/`, `weekly/`, or `monthly/`
+   in the R2 backup bucket for the target date (`<tier>/<YYYY-MM-DD>/{roles,schema,data}.sql.enc`).
+2. Download the three `.enc` objects and decrypt each with
+   `scripts/backup_database.py`'s `decrypt_bytes(blob, key)`, using the same
+   `BACKUP_ENCRYPTION_KEY` the backup was taken with (store this key OUTSIDE this repo; losing
+   it makes every existing backup unrecoverable). A short one-off script or a REPL invocation
+   against the imported module is sufficient; there is no dedicated CLI restore command yet.
+3. Restore into a **new, empty** target database first, never directly into a live project:
+   `psql "$TARGET_DB_URL" -f roles.sql`, then `-f schema.sql`, then `-f data.sql`, in that
+   order (roles before schema before data, matching Supabase's own documented dump/restore
+   ordering).
+4. Verify row counts on a handful of load-bearing tables (`family`, `profile`, `storybook`,
+   `storybook_version`) against expectations before pointing any environment at the restored
+   database.
+5. Only after (3) and (4) succeed against a scratch database should a restore ever be pointed
+   at production, and only as a deliberate incident-response decision, not a routine drill step.
+
+> **#CRITICAL data integrity**: this restore procedure has been written to match the backup
+> format exactly, but has NOT been exercised end-to-end against a real Supabase project from
+> this repository. A backup that has never been restored is unverified by definition.
+> **#VERIFY**: run one real restore into a scratch Supabase project (or local Postgres) before
+> treating this as a closed capability; update this section with the actual command output
+> and any deviation found, and flip the roadmap's Phase 5 "backups and a tested restore" line
+> only after that drill succeeds.
 
 ## 7. How you find out something broke
 
