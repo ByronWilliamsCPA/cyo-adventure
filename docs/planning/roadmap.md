@@ -960,8 +960,13 @@ Full detail by ID in the [unscheduled work register](./unscheduled-work-register
       effects, plus a 35-ending remix to 0.0710).
 - [ ] Wave 5 (`UW-G13`): 36 new skeletons, 2 per production cell; the dagger-cell 460-node ceiling
       experiment; the Tier-2 stateful pilot.
-- [ ] Import and publish the 23 filled stories committed to `main` (`UW-G14`); 3 legacy-shaped fills
-      need normalization at import, paired with `AL-050`'s schema-v2 migration.
+- [ ] Promote the 23 filled stories committed to `main` to `visibility='catalog'` (`UW-G14`); 3
+      legacy-shaped fills need normalization at import, paired with `AL-050`'s schema-v2 migration.
+      Mechanism corrected 2026-08-03: issue #347 records an import run to `in_review` on 2026-07-21,
+      so the open step is the separate admin promotion via
+      `publishing/catalog_publish.py::promote_catalog_story`, not the import. Live database state is
+      unverified; checking it is step 1 of the SQ-01 runbook in
+      [story-structure-implementation-briefs.md](./story-structure-implementation-briefs.md).
 - [ ] WS-0 Phase 3 calibration, WS-1 ATG wiring, WS-5 grammar composer, WS-6 fresh-generation feed,
       and WS-8 flywheel follow-ons (`UW-G05` to `UW-G10`, `UW-A32` to `UW-A36`).
 

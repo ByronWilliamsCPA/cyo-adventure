@@ -148,7 +148,7 @@ lands, catalog-diversity work is idle machinery.
 
 | ID | Deliverable | Evidence / register | Effort | Acceptance |
 | --- | --- | --- | --- | --- |
-| SQ-01 | **Ship the inventory.** Run `generation/import_catalog.py` for the 23 authored books, drive them through the re-moderation sweep (#529/#537) and per-story `publishing/catalog_publish.py`. Owner gate G1 decides the publish list and order. | Analysis 2.6; UW-G14; catalog-first-inventory-gap.md | S (process) + review time | A kid profile's library lists catalog books in every offered band that has approved content; `visibility='catalog'` rows exist; UW-G14 closed with Ref |
+| SQ-01 | **Promote the inventory.** Issue #347 records an import run of the 23 authored books to `in_review` on 2026-07-21; `generation/import_catalog.py` imports but by design never publishes (its own docstring says so), so the actual gap is promotion, not import. First runbook step: verify current `visibility` state per book (neither this plan nor its author can query the live database, so this is a check, not an assumption). Then drive the still-`in_review` books through the re-moderation sweep (#529/#537) and per-story `publishing/catalog_publish.py::promote_catalog_story`. Owner gate G1 decides the publish list and order. | Analysis 2.6; UW-G14; catalog-first-inventory-gap.md; issue #347 | S (process) + review time | A kid profile's library lists catalog books in every offered band that has approved content; `visibility='catalog'` rows exist; UW-G14 closed with Ref |
 | SQ-02 | **Fill-feasibility predicate in selection.** Estimate per-skeleton token demand (sum of `words=` targets plus JSON overhead, calibrated against the 26 committed fills); exclude infeasible candidates from automated-path selection with a logged reason; a cell whose feasible pool is empty 422s with a distinct reason code instead of burning the repair budget. | Analysis 2.6, 5; AL-046; UW-C07 | S-M | No automated job targets an infeasible skeleton (test); the doomed-request path is a fast 422; feasible-pool size is logged per request |
 | SQ-03 | **Act-scoped fill loop.** Chunk the fill by act/subtree with a stable shared context, per AL-046's proposal; each chunk re-states the differentiation directive and variation axis (which also makes SQ-05's repair threading uniform). Landing SQ-03 also flips SQ-02's selector input from the whole-story cap to the per-chunk cap, so previously infeasible skeletons re-enter selection; the estimator survives for chunk sizing and logging. | Analysis 2.6, 2.7; AL-046 | M-L | The largest production skeleton fills end to end on the automated path; per-chunk fidelity checks pass; one committed fill of a previously infeasible skeleton; an end-to-end test from candidate selection (previously infeasible skeleton now selectable) through successful act-scoped fill |
 | SQ-04 | **Skill-path parity.** `.claude/skills/cyo-author/` reads the persisted differentiation level, prior-title context, and variation axis; `generation/import_story.py` records them; the skill's compliance report shows which axis was applied. | Analysis 2.7; no register row (new) | S-M | A skill-authored fill's report names its axis; grep shows import_story consuming the metadata; parity test comparing worker and skill prompt contexts |
@@ -242,13 +242,14 @@ shifts from authoring hours to **owner review bandwidth**, and the rules below p
 
 | Gate | Decision | Blocks | Default proposal |
 | --- | --- | --- | --- |
-| G1 | Publish list and order for the 23 authored books | SQ-01 | Publish all books that pass the #529 re-moderation sweep, kid bands first. Stated cost, accepted consciously: this ships the single-voice, no-diversity-machinery inventory as-is (analysis 2.7), on the judgment that a reachable catalog beats an empty one; the SQ-13 variant passes are the remedy, and G1 may hold back specific look-alike pairs. Re-authoring the inventory through the parity-fixed path (SQ-04) first is the alternative, at much higher cost |
+| G1 | Publish list and order for the 23 authored books already imported to `in_review` per issue #347 | SQ-01 | Promote all books that pass the #529 re-moderation sweep, kid bands first. Stated cost, accepted consciously: this ships the single-voice, no-diversity-machinery inventory as-is (analysis 2.7), on the judgment that a reachable catalog beats an empty one; the SQ-13 variant passes are the remedy, and G1 may hold back specific look-alike pairs. Re-authoring the inventory through the parity-fixed path (SQ-04) first is the alternative, at much higher cost |
 | G2 | Theme-overlap bonus cap value | SQ-07(a) | 1.3x as an initial engineering BOUND, not a calibrated value (the no-uncalibrated-targets rule applies to success metrics; this is a safety cap on a known concentrator). SQ-10's cohort-concentration report calibrates it after one month of serving |
 | G3 | Alternate-beats ADR acceptance (the ADR is SQ-11's deliverable; G3 follows it) | SQ-12, SQ-13, SQ-14 | Accept with the pilot as the falsification gate |
 | G3b | Pilot-falsification exit (fires only if SQ-12 misses its pre-registered margin) | SQ-13, SQ-14 vs the pivot | Owner decides on the SQ-12 run record: stop the variant program, promote SQ-15 into Stage 2's slot, and re-center on Stage 4 growth judged by experience metrics |
 | G4 | ATG contract ruling (fail-open advisory to scoped blocking) | SQ-14 flip | Per-skeleton blocking gated on SQ-13 coverage, one bounded repair as remediation; global only when rollout covers production cells |
 | G5 | Pathfinder Phase 0 go/no-go (+ legal review; owner of both: repository owner; legal review completes before any Phase 0 work starts) | SQ-22 | Defer to the Stage 4 boundary. Note: teen engagement data would inform this, but no scheduled deliverable produces it (reading telemetry is deferred behind the privacy review), so absent data the decision is product judgment, stated as such |
 | G6 | ADR-011 amendment scope (SQ-24) | SQ-24 | Full scope per UW-G17 plus UW-C25 |
+| G7 | Phase disposition for the whole SQ program: map Stage 0-4 (and SQ-01 specifically) onto the register's closed phase vocabulary, per section 11.1 | Whether the register/manifest treat any SQ item as gating R1 (full)/M5.1, and whether UW-G12's `post-launch`/`blocked` cell still holds once SQ-11 unblocks it | Adopt section 11.1's proposed mapping: SQ-01 to `R1`/`M5.1` as a usability gap, not `content`; SQ-16 and SQ-18 keep their already-established `4b`; every other SQ item to `content`, matching the roadmap's Content workstream, which is explicitly release-rung-independent. The ruling should also resolve UW-G12's now-inconsistent `post-launch`/`blocked` cell against Stage 2's value-critical-chain priority; that register edit is out of this plan's file scope |
 
 ## 9. Success measures
 
@@ -319,11 +320,16 @@ as a UW row before removal.
 
 **Complete SQ-to-register map.** The `SQ-*` namespace is invisible to
 `scripts/check_work_linkage.py` today, so this table is the audit surface. That is an interim state,
-not the intended one: `docs/planning/plan-manifest.toml` does not exist on `main` yet (it lands with
-the plan-manifest status-model work), so `SQ-*` cannot be registered as a machine-checkable namespace
-from this PR. **Follow-up**: register `SQ-*` in `plan-manifest.toml` when that file lands, and drop
-this table's audit role at that point. Until then, a change to the table below is a change to the
-only linkage record that exists.
+not the intended one: `docs/planning/plan-manifest.toml` exists on `main` (landed in PR #553, commit
+`fc36b51`), so the earlier claim that it did not exist was wrong; correction stated here so it does
+not travel further. What the manifest does not yet carry is a machine-checkable `SQ-*` namespace
+entry: that is the gap this table stands in for. PR #566
+(`refactor(planning): make work-linkage id namespaces data-driven and register SQ-*`) adds a
+`[namespaces]` table to the manifest and registers `SQ-*` there; consult its current status (open or
+merged) rather than assuming either from this text. **Follow-up**: once `SQ-*` is registered in
+`plan-manifest.toml` by #566 or equivalent, confirm `check_work_linkage.py` covers this table's
+mappings and drop this table's audit role at that point. Until then, a change to the table below is a
+change to the only linkage record that exists.
 
 | SQ | Register / source | SQ | Register / source |
 | --- | --- | --- | --- |
@@ -346,3 +352,47 @@ work from inception, which is why no UW row is minted for it. The rebuilt resear
 designer priors. Terminology note: this plan's internal Stage 0-4 grouping is deliberately not called
 "Phase" to avoid colliding with the register's closed phase vocabulary, whose source of truth is
 `roadmap.md`.
+
+### 11.1 Proposed phase home for the SQ program (owner decision, gate G7)
+
+**The problem, stated plainly.** Stage 0-4 is a schedule, not a phase: the previous paragraph's
+terminology note explains why it avoids the word "Phase", but the consequence is that the register's
+closed phase vocabulary (product phases, milestones, release rungs, `content`, `post-launch`, and the
+other sentinels; see `unscheduled-work-register.md`'s "Phase vocabulary" and "Non-phase dispositions"
+tables) cannot express where this program lands relative to the R1/R2/R3 rungs. Nothing in this plan
+answers "does SQ-13 ship before or after R1 (full)/M5.1 sign-off", because that question can only be
+answered in the register's vocabulary and this plan deliberately does not write to the register
+(section 11's opening paragraph). This subsection proposes an answer; it does not assert one, because
+assigning a `Phase` cell is an owner decision under this repo's conventions (the register's "Not
+allowed" list forbids anything but a real phase token or `blocked`/`decision` with a named blocker,
+and the vocabulary's own "Source of truth" column names `roadmap.md`, not this plan). Gate G7 in
+section 8 is where the owner rules on the mapping below; nothing here edits a register row or the
+manifest.
+
+**Proposed mapping, reasoned from the actual work, not asserted by fiat:**
+
+| Stage / SQ items | Proposed token | Reasoning | Owner call? |
+| --- | --- | --- | --- |
+| Stage 0: SQ-02, SQ-03 | `content` | Already the register's own disposition for the underlying item (UW-C07, `content`/unscheduled); this plan changes nothing about that classification. | No, follows precedent |
+| Stage 0: SQ-04, SQ-05, SQ-06 | `content` | Unregistered ("new"), but they are Lane A prerequisites for the same fill-pipeline work as SQ-02/SQ-03 and ship no user-visible surface on their own; grouping them with their lane is the low-friction default. | Mild: no register row to anchor the token, so this is inference by lane, not citation |
+| Stage 0: **SQ-01** | `R1` (full) / `M5.1`, not `content` | Distinctive case, argued explicitly. UW-G14 currently carries `content`, and the roadmap's Content workstream states outright that this workstream "does not block a release rung" (roadmap.md line 977). But `M5.1`'s own definition is "every family-tier register row at delivered status" with the five golden journeys green, and a library with zero reachable catalog books is not a family-tier row at delivered status: it is the core reading loop failing for any family that has not yet completed a custom request. Promotion (the corrected SQ-01 mechanism, see the Stage 0 table above) is a day-scale operational step gated on a moderation sweep, not an authoring program; treating it as ordinary `content` cadence buries a usability gap inside a bucket the roadmap has defined as non-blocking. Default proposal: `R1` (full) / `M5.1`. | **Yes, explicit owner call**: this reverses UW-G14's current `content` cell and the roadmap's own framing; the owner may instead affirm `content` if the empty-catalog gap is judged acceptable pending organic demand |
+| Stage 1: SQ-07, SQ-08, SQ-09, SQ-10 | `content` | These are signals/selection code, not authoring, but every adjacent registered item in the same UW-G cluster (e.g. UW-G03, UW-G04) already carries `content`, and the roadmap's Content workstream description covers "diversity and catalog growth" broadly enough to include the selection machinery that serves it. | Mild: stretches the token from authoring to backend-algorithm work; flagged so the owner can reject the stretch if `content` is meant to mean prose authoring specifically |
+| Stage 2: SQ-11, SQ-12, SQ-13, SQ-14 | `content` | **The most consequential call in this table.** UW-G12 (SQ-11's target row) is currently `post-launch`/`blocked`, but section 1.1 schedules SQ-11 to start "immediately after PR review" alongside SQ-02 and calls this chain the plan's value-critical chain, not deferred work. Leaving UW-G12 at `post-launch` while this plan treats Stage 2 as the decisive near-term bet is an active contradiction, not a stale label like the SQ-01 case. Proposed resolution: once SQ-11 unblocks UW-G12 (as the section 11 map already notes), its disposition should flip from `post-launch`/`blocked` to `content`, matching the rest of the diversity workstream and its "does not block a release rung" framing (section 7's own admission that this plan asserts no calendar dates supports the same conclusion: decisive in impact, not gating in timing). `content` is proposed over an `R2` release-rung token because nothing in the plan makes Stage 2 a precondition for the iOS shell. | **Yes, explicit owner call**: the owner must reconcile UW-G12's cell with this plan's priority; that register edit is out of this plan's file scope and is listed as a needed change in the authoring report, not made here |
+| Stage 3: SQ-15, SQ-17 | `content` | Unregistered measurement work in the same catalog-quality vein as Stage 1's signals items. | Mild, same stretch as Stage 1 |
+| Stage 3: SQ-16 | `4b` (unchanged) | Already established: UW-C23 and UW-C24 both carry `4b` today, and choice-grammar enforcement is Editor+UX-phase validator work by the register's own classification. This plan makes no change here; listed for completeness so the mapping table is not silently missing an SQ id. | No, already resolved upstream |
+| Stage 3: SQ-18 | `4b` | User-facing reader-UX feature (A13b ending-screen affordance); the roadmap's own linkage table already routes `UW-I*`/`UW-J*` reader-UX gaps to `4b`, and SQ-18 is the same kind of surface. | Mild: no direct UW row for SQ-18 itself (plan-v2 A13b/A18 are unregistered), so this is inference by category |
+| Stage 3: SQ-19 | Stays `decision` (UW-M06) | UW-M06 is itself an owner-decision row; this plan does not resolve it, so no phase token is proposed until the owner rules there. | Already a decision row; no new call needed |
+| Stage 4: SQ-20, SQ-21, SQ-23 | `content` | UW-G09-adjacent and UW-G13 already carry `content`; SQ-21 is unregistered but is explicitly paired with SQ-09(b) in Lane E and shares its authoring cadence. | No (SQ-20, SQ-23) / mild (SQ-21) |
+| Stage 4: SQ-22 | Stays `decision` (pathfinder Phase 0, gate G5) | Already an owner-decision item with its own gate; no phase token is proposed ahead of that ruling. | Already a decision row; no new call needed |
+| Cross-cutting: SQ-24 | Stays `post-launch`/`decision` (UW-G17) | Already established and internally consistent with UW-C25's `doc` disposition; no tension to flag. | No |
+
+**Net answer to the opening question, if the defaults above are accepted:** almost the entire SQ
+program (Stage 1, most of Stage 0, all of Stage 2, most of Stage 3 and 4) lands on `content`, which
+the roadmap defines as explicitly not gating any release rung; that is a coherent answer, not an
+evasion, because it matches how this work has always been scheduled once the register finally gave it
+a home (roadmap.md's Content workstream section). The two deliberate exceptions are SQ-01, proposed as
+an `R1` (full)/`M5.1` blocking item because it is a reachability gap rather than catalog growth, and
+SQ-16/SQ-18, which inherit the already-scheduled `4b` (post-R1 Editor+UX) phase. The single item the
+owner most needs to rule on is Stage 2: its current register cell (`post-launch`/`blocked` via UW-G12)
+contradicts this plan's own framing of it as the decisive, near-term bet, and that contradiction
+predates this plan.
