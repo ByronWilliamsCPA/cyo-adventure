@@ -83,10 +83,13 @@ export function GuardianConsentPage() {
   // enforce a minimum beyond non-empty, so neither does this form.
   // #VERIFY: GuardianConsentPage.test.tsx pins that submit stays disabled
   // until the name field is non-empty.
-  // O-117/O-119: residenceCountry and adulthoodAttested are equally
-  // required gates on submit, mirroring signerName/agreed above -- the
-  // backend rejects a consent payload missing either (onboarding.py::
-  // _record_consent), so the form does not let a guardian reach that 422.
+  // #ASSUME: data-integrity: O-117/O-119: residenceCountry and
+  // adulthoodAttested are equally required gates on submit, mirroring
+  // signerName/agreed above -- the backend rejects a consent payload
+  // missing either (onboarding.py::_record_consent), so the form does not
+  // let a guardian reach that 422.
+  // #VERIFY: GuardianConsentPage.test.tsx pins that submit stays disabled
+  // until both residenceCountry and adulthoodAttested are set.
   const canSubmit =
     trimmedName.length > 0 && agreed && residenceCountry.length > 0 && adulthoodAttested && !busy
 
