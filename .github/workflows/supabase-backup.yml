@@ -1,0 +1,188 @@
+# Scheduled + manual database backup: dumps Supabase (roles/schema/data), encrypts,
+# and uploads to a dedicated R2 bucket under a tiered daily/weekly/monthly prefix with
+# per-tier lifecycle expiry. Closes issue #558 / UW-D27 (docs/planning/roadmap.md
+# Phase 5, docs/operations/runbook.md section 6).
+#
+# Required secrets on the `production` GitHub Environment (none of these exist yet as
+# Actions secrets -- they are net-new, distinct from the app's runtime R2 credentials
+# and from the existing SUPABASE_DB_PASSWORD used by supabase-production.yml, which
+# authenticates `supabase link` rather than a raw connection string):
+#
+#   SUPABASE_DB_URL          Direct (non-pooler) Postgres connection string. Per
+#                             docs/operations/runbook.md's Supavisor-pooling warning,
+#                             this must be the DIRECT connection
+#                             (db.<project-ref>.supabase.co:5432), not the pgbouncer/
+#                             Supavisor pooler URL the app itself uses at runtime.
+#   R2_ACCOUNT_ID             Cloudflare account id.
+#   R2_BACKUP_ACCESS_KEY_ID   A scoped R2 API token, access to the backup bucket ONLY --
+#   R2_BACKUP_SECRET_ACCESS_KEY  deliberately separate from the app's cover-art upload
+#                             token, so one compromised credential cannot read/overwrite
+#                             the other's data.
+#   R2_BACKUP_BUCKET          Destination bucket name, separate from the public covers
+#                             bucket (backups must never be publicly readable).
+#   BACKUP_ENCRYPTION_KEY     Base64-encoded 32-byte AES-256 key. Generate with:
+#                             `openssl rand -base64 32`. Store this key itself somewhere
+#                             OTHER than this repo (a password manager / secret store) --
+#                             losing it makes every existing backup unrecoverable, and it
+#                             must survive independently of the GitHub repo.
+#
+# Failure alerting: a nightly backup that quietly stops running (a workflow-level
+# failure, not a defect in the backed-up data) is exactly the failure mode worth
+# guarding against, so this follows the same "file/comment on a labelled issue on
+# failure" pattern as every other scheduled workflow in this repository (see
+# e2e-prod.yml's "Alert on failure" step and planning-linkage.yml's "File drift issue"
+# job; docs/operations/runbook.md section 7 documents the convention). Uses the
+# `ci-failure` label (shared with planning-linkage.yml and the other non-E2E scheduled
+# jobs) rather than `e2e-alert`, since this is an ops job, not an E2E tier.
+#
+# Injection posture: the alert step below interpolates only context.serverUrl,
+# context.repo, and context.runId (all runner-supplied, never attacker-controlled) and
+# a locally-computed ISO date string; no GitHub event field (issue/PR title or body,
+# commit message, ref) is read or interpolated anywhere in this workflow.
+name: Database backup
+
+on:
+  schedule:
+    # 08:00 UTC daily. Tier promotion (weekly/monthly) is computed from this run's date
+    # inside scripts/backup_database.py, not by separate cron lines.
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+    inputs:
+      daily_days:
+        description: "Daily-tier retention (days)"
+        type: number
+        default: 7
+      weekly_days:
+        description: "Weekly-tier retention (days)"
+        type: number
+        default: 28
+      monthly_days:
+        description: "Monthly-tier retention (days)"
+        type: number
+        default: 180
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    name: Dump, encrypt, and upload
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    permissions:
+      # contents alone for the backup steps; issues:write is scoped down to just the
+      # alert-on-failure step's needs, matching planning-linkage.yml's split (a job
+      # that only sometimes needs write should not hold it for every step).
+      contents: read
+      issues: write
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+
+      # `api` extra is enough: it carries boto3 (R2 upload) and cryptography is a core
+      # dependency (AES-256-GCM encryption). No database driver or test tooling needed
+      # for a script that shells out to the Supabase CLI rather than connecting itself.
+      - name: Install backend (api extra)
+        run: uv sync --extra api
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@46f7f98c7f948ad727d22c1e67fab04c223a0520 # v3.0.0
+        with:
+          version: 2.109.1
+
+      - name: Run backup
+        env:
+          # Scoped to this single step rather than the job: no other step in this
+          # job (checkout, setup-python, install, setup-cli) needs any of these six
+          # secrets, so none of them should be able to read the values via its own
+          # process environment.
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BACKUP_ACCESS_KEY_ID: ${{ secrets.R2_BACKUP_ACCESS_KEY_ID }}
+          R2_BACKUP_SECRET_ACCESS_KEY: ${{ secrets.R2_BACKUP_SECRET_ACCESS_KEY }}
+          R2_BACKUP_BUCKET: ${{ secrets.R2_BACKUP_BUCKET }}
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+        run: |
+          uv run python scripts/backup_database.py \
+            --daily-days "${{ inputs.daily_days || 7 }}" \
+            --weekly-days "${{ inputs.weekly_days || 28 }}" \
+            --monthly-days "${{ inputs.monthly_days || 180 }}"
+
+      - name: Alert on failure (pinned issue)
+        # Reusable alerting pattern for scheduled workflows (e2e-prod.yml's "Alert on
+        # failure" step, adapted): find an OPEN issue labelled `ci-failure` whose title
+        # starts with this workflow's marker and comment on it, or open one if none
+        # exists yet, so repo watchers get GitHub's native email/push notification
+        # instead of a red run nobody checks the Actions tab for. A nightly backup that
+        # silently stops running (as opposed to producing a bad backup, which
+        # run_backup's own empty-dump check guards against) would otherwise go
+        # unnoticed for weeks.
+        if: ${{ failure() }}
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const marker = '[db-backup]'
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const today = new Date().toISOString().slice(0, 10)
+
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ci-failure',
+              per_page: 100,
+            })
+            const existing = issues.find((issue) => issue.title.startsWith(marker))
+
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Scheduled database backup failed again on ${today}. Run: ${runUrl}`,
+              })
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `${marker} scheduled database backup failing`,
+                labels: ['ci-failure'],
+                body: [
+                  'The scheduled `Database backup` workflow (`.github/workflows/supabase-backup.yml`) failed.',
+                  '',
+                  'This is the nightly `supabase db dump` -> AES-256-GCM encrypt -> tiered R2',
+                  'upload job (issue #558 / UW-D27). A failure here means either a required',
+                  'secret is missing/invalid, the Supabase CLI or direct DB connection is',
+                  'unreachable, R2 rejected the upload, or a dump leg came back empty and',
+                  'run_backup() aborted rather than uploading a placeholder backup.',
+                  '',
+                  `First failing run: ${runUrl}`,
+                  `Date: ${today}`,
+                  '',
+                  'Reproduce locally with `uv run --env-file .env python scripts/backup_database.py --dry-run`',
+                  'first, then without `--dry-run` against a non-production bucket if the dry run',
+                  'looks correct. See docs/operations/runbook.md section 6 for the required secrets',
+                  'and the restore procedure.',
+                  '',
+                  'This issue stays open and accumulates one comment per failing run until',
+                  'someone resolves the underlying problem and closes it; the next failure',
+                  'after that opens a fresh issue.',
+                ].join('\n'),
+              })
+            }
