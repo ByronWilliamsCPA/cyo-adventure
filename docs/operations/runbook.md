@@ -402,8 +402,8 @@ restore side is documented below but **not yet drilled against a live project** 
 
 ### What runs today
 
-[`.github/workflows/supabase-backup.yml`](../../.github/workflows/supabase-backup.yml) runs
-[`scripts/backup_database.py`](../../scripts/backup_database.py) daily at 08:00 UTC (and on
+`.github/workflows/supabase-backup.yml` runs
+`scripts/backup_database.py` daily at 08:00 UTC (and on
 `workflow_dispatch`). Each run:
 
 1. Executes `supabase db dump` three times (roles, schema, data-via-COPY) against
