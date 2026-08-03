@@ -21,8 +21,11 @@ from cyo_adventure.utils.redaction import digest_identifier
 
 pytestmark = pytest.mark.unit
 
-# Clearly-fake stand-in shaped like a real cover_object_salt (token_hex(16)).
-_FAKE_SALT = "0f1e2d3c4b5a69788796a5b4c3d2e1f0"
+# Clearly-fake stand-in for a cover_object_salt. Deliberately NOT shaped like
+# the real thing (32 hex characters), because a 32-hex literal under a name
+# containing SALT is exactly what a generic high-entropy secret detector
+# flags. Nothing under test parses the salt, so its shape buys no coverage.
+_PLACEHOLDER_SALT = "salt-placeholder-for-tests"
 
 
 @pytest.fixture
@@ -225,18 +228,19 @@ class TestDeleteCoverNeverLogsTheSaltedKey:
         self, storage_logs: LogCapture
     ) -> None:
         """The unconfigured warning carries identifiers, never the salted key."""
-        key = cover_object_key("s1", 2, _FAKE_SALT)
+        key = cover_object_key("s1", 2, _PLACEHOLDER_SALT)
 
         deleted = await delete_cover(key, _settings(r2_bucket=None))
 
         assert deleted is False
         emitted = repr(storage_logs.entries)
-        assert _FAKE_SALT not in emitted
+        assert _PLACEHOLDER_SALT not in emitted
         assert key not in emitted
         assert [e["event"] for e in storage_logs.entries] == [
             "cover_delete_unconfigured"
         ]
         assert storage_logs.entries[0]["storybook_id"] == "s1"
+        assert storage_logs.entries[0]["version"] == 2
         assert storage_logs.entries[0]["key_digest"] == digest_identifier(key)
 
     @pytest.mark.unit
@@ -246,7 +250,7 @@ class TestDeleteCoverNeverLogsTheSaltedKey:
         self, storage_logs: LogCapture
     ) -> None:
         """The failed-DeleteObject warning carries identifiers, not the key."""
-        key = cover_object_key("s1", 2, _FAKE_SALT)
+        key = cover_object_key("s1", 2, _PLACEHOLDER_SALT)
         mock_client = MagicMock()
         mock_client.delete_object.side_effect = ClientError(
             {"Error": {"Code": "500", "Message": "boom"}}, "DeleteObject"
@@ -259,10 +263,11 @@ class TestDeleteCoverNeverLogsTheSaltedKey:
 
         assert deleted is False
         emitted = repr(storage_logs.entries)
-        assert _FAKE_SALT not in emitted
+        assert _PLACEHOLDER_SALT not in emitted
         assert key not in emitted
         assert [e["event"] for e in storage_logs.entries] == ["cover_delete_failed"]
         assert storage_logs.entries[0]["storybook_id"] == "s1"
+        assert storage_logs.entries[0]["version"] == 2
         assert storage_logs.entries[0]["key_digest"] == digest_identifier(key)
 
     @pytest.mark.unit
@@ -277,7 +282,11 @@ class TestDeleteCoverNeverLogsTheSaltedKey:
         deleted = await delete_cover(key, _settings(r2_account_id=None))
 
         assert deleted is False
+        # Asserted for the same reason as its two siblings above: presence of
+        # the safe fields does not by itself prove the unsafe one is gone.
+        assert key not in repr(storage_logs.entries)
         assert storage_logs.entries[0]["storybook_id"] == "s1"
+        assert storage_logs.entries[0]["version"] == 2
         assert storage_logs.entries[0]["key_digest"] == digest_identifier(key)
 
 
@@ -449,3 +458,38 @@ async def test_generate_presigned_cover_urls_returns_empty_dict_on_client_error(
         result = await generate_presigned_cover_urls([("s1", 1, None)], _settings())
 
     assert result == {}
+
+
+class TestKeyLogFields:
+    """The projection every ``delete_cover`` warning path emits."""
+
+    @pytest.mark.unit
+    def test_a_salted_key_yields_id_version_and_digest(self) -> None:
+        """The version is not secret and names WHICH cover failed."""
+        key = cover_object_key("s1", 2, _PLACEHOLDER_SALT)
+
+        assert storage_module._key_log_fields(key) == {
+            "storybook_id": "s1",
+            "key_digest": digest_identifier(key),
+            "version": 2,
+        }
+
+    @pytest.mark.unit
+    def test_a_legacy_unsalted_key_yields_the_same_shape(self) -> None:
+        """A pre-migration key parses its version identically."""
+        fields = storage_module._key_log_fields("s1/2.webp")
+
+        assert fields["version"] == 2
+
+    @pytest.mark.unit
+    def test_an_unparseable_key_omits_version_rather_than_retyping_it(self) -> None:
+        """``version`` must never vary in type between log lines.
+
+        A key that does not parse (a hand-built path, a future key format)
+        drops the field entirely instead of emitting a string where every
+        other line carries an int.
+        """
+        fields = storage_module._key_log_fields("not-a-key")
+
+        assert "version" not in fields
+        assert fields["storybook_id"] == "not-a-key"

@@ -9,10 +9,13 @@ Custom pytest markers are registered in ``pyproject.toml``
 (``[tool.pytest.ini_options].markers``), not here.
 """
 
+import logging
 import os
+from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
+import structlog
 from hypothesis import HealthCheck, settings
 
 # ============================================================================
@@ -115,11 +118,36 @@ def make_clean_moderation_report() -> dict[str, object]:
 
 
 @pytest.fixture(autouse=True)
-def setup_logging() -> None:
-    """Setup test logging configuration.
+def setup_logging() -> Iterator[None]:
+    """Configure logging per test, then restore the process-global state.
 
     Automatically applied to all tests to ensure consistent logging setup.
-    """
-    from cyo_adventure.utils.logging import setup_logging
 
-    setup_logging(level="DEBUG", json_logs=False, include_timestamp=False)
+    The restore half used to live in ``tests/unit/test_logging_startup.py``,
+    which was the only module that knowingly tore structlog down. It belongs
+    here instead: any test that constructs a ``TestClient`` now runs the app
+    lifespan, and the lifespan calls ``setup_logging``, so ANY such test
+    mutates process-wide structlog and root-handler state. With
+    ``cache_logger_on_first_use=True`` a leaked configuration is an
+    order-dependent hazard that only shows up under ``pytest-randomly``.
+
+    Yields:
+        None: after logging is configured for the test.
+    """
+    from cyo_adventure.utils.logging import setup_logging as configure_logging
+
+    was_configured = structlog.is_configured()
+    saved_structlog = structlog.get_config()
+    root = logging.getLogger()
+    saved_handlers = root.handlers[:]
+    saved_level = root.level
+    configure_logging(level="DEBUG", json_logs=False, include_timestamp=False)
+    try:
+        yield
+    finally:
+        if was_configured:
+            structlog.configure(**saved_structlog)
+        else:
+            structlog.reset_defaults()
+        root.handlers[:] = saved_handlers
+        root.setLevel(saved_level)

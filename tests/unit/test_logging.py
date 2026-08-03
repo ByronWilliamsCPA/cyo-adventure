@@ -18,7 +18,11 @@ from cyo_adventure.utils.logging import (
     correlation_context_processor,
     setup_logging,
 )
-from cyo_adventure.utils.redaction import REDACTED, censor_sensitive_processor
+from cyo_adventure.utils.redaction import (
+    REDACTED,
+    RedactingLogFilter,
+    censor_sensitive_processor,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -148,6 +152,93 @@ class TestSetupLogging:
         assert _FAKE_SECRET not in rendered
         assert REDACTED in rendered
         assert "anthropic" in rendered
+
+    @pytest.mark.unit
+    def test_setup_logging_replaces_a_preexisting_root_handler(self) -> None:
+        """``force=True`` is load-bearing, not decoration.
+
+        ``basicConfig`` is a documented no-op when the root logger already has
+        a handler, which under uvicorn, gunicorn, or pytest it usually does.
+        Without ``force`` the root level would stay wherever it was and
+        structlog's ``filter_by_level`` (chain index 0) would silently drop
+        every INFO record this app emits.
+        """
+        root = logging.getLogger()
+        preexisting = logging.NullHandler()
+        root.handlers[:] = [preexisting]
+        root.setLevel(logging.WARNING)
+
+        setup_logging(level="DEBUG", json_logs=True)
+
+        assert preexisting not in root.handlers
+        assert root.level == logging.DEBUG
+
+    @pytest.mark.unit
+    def test_the_installed_root_handler_carries_the_redacting_filter(self) -> None:
+        """Structlog's processor never sees a stdlib-origin record."""
+        setup_logging(level="INFO", json_logs=True)
+
+        handlers = logging.getLogger().handlers
+        assert handlers, "setup_logging must install a root handler"
+        assert any(
+            isinstance(f, RedactingLogFilter)
+            for handler in handlers
+            for f in handler.filters
+        )
+
+    @pytest.mark.unit
+    @pytest.mark.security
+    def test_a_stdlib_log_record_is_redacted_by_the_root_handler_filter(self) -> None:
+        """uvicorn.access, botocore, SQLAlchemy and rq bypass structlog entirely.
+
+        Their records reach the root handler without passing through any
+        structlog processor, so the censoring processor cannot see them. The
+        message below is shaped like a uvicorn.access request line whose query
+        string carries a presigned-URL signature.
+        """
+        setup_logging(level="INFO", json_logs=True)
+        captured: list[str] = []
+        for handler in logging.getLogger().handlers:
+            handler.emit = lambda record: captured.append(record.getMessage())  # type: ignore[method-assign]
+
+        logging.getLogger("stdlib_bypass_probe").info(
+            "GET /v1/covers?X-Amz-Signature=%s HTTP/1.1", _FAKE_SECRET
+        )
+
+        rendered = "\n".join(captured)
+        assert rendered, "expected the root handler to see the record"
+        assert _FAKE_SECRET not in rendered
+        assert REDACTED in rendered
+
+    @pytest.mark.unit
+    def test_a_known_level_name_is_applied_case_insensitively(self) -> None:
+        """The happy path keeps working, including lowercase env values."""
+        setup_logging(level="warning", json_logs=True)
+
+        assert logging.getLogger().level == logging.WARNING
+
+    @pytest.mark.unit
+    def test_an_unknown_level_falls_back_to_info_and_warns(self) -> None:
+        """A typo'd LOG_LEVEL must be visible, not silently downgraded.
+
+        ``getattr(logging, level.upper(), logging.INFO)`` used to swallow this
+        outright: ``LOG_LEVEL=DEBGU`` simply became INFO with nothing said.
+        """
+        captured: list[str] = []
+        # Attached to the emitting logger, not to root: setup_logging's
+        # basicConfig(force=True) tears every ROOT handler down, so a probe
+        # parked there would be removed before the warning is emitted.
+        probe_logger = logging.getLogger("cyo_adventure.utils.logging")
+        probe = logging.StreamHandler()
+        probe.emit = lambda record: captured.append(record.getMessage())  # type: ignore[method-assign]
+        probe_logger.addHandler(probe)
+        try:
+            setup_logging(level="DEBGU", json_logs=True, include_timestamp=False)
+        finally:
+            probe_logger.removeHandler(probe)
+
+        assert logging.getLogger().level == logging.INFO
+        assert any("log_level_unknown" in message for message in captured), captured
 
 
 class TestLogPerformance:

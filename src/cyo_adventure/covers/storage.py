@@ -39,7 +39,7 @@ def _r2_endpoint_url(account_id: str) -> str:
     return f"https://{account_id}.r2.cloudflarestorage.com"
 
 
-def _key_log_fields(key: str) -> dict[str, str]:
+def _key_log_fields(key: str) -> dict[str, object]:
     """Project an object key into log fields that disclose no salt.
 
     # #CRITICAL: security: the object key embeds ``cover_object_salt``, whose
@@ -57,12 +57,26 @@ def _key_log_fields(key: str) -> dict[str, str]:
         key: The object key, as produced by :func:`cover_object_key`.
 
     Returns:
-        dict[str, str]: ``storybook_id`` (the key's already-public prefix,
-        empty when the key has no ``/``) and ``key_digest``, a stable digest
-        that correlates repeated failures on one object without revealing it.
+        dict[str, object]: ``storybook_id`` (the key's already-public prefix,
+        empty when the key has no ``/``), ``version`` (the salt-free numeric
+        segment, matching what the sibling ``cover_presign_*`` log sites emit,
+        and omitted when the key does not parse), and ``key_digest``, a stable
+        digest that correlates repeated failures on one object without
+        revealing it.
     """
-    storybook_id, _, _ = key.partition("/")
-    return {"storybook_id": storybook_id, "key_digest": digest_identifier(key)}
+    storybook_id, _, remainder = key.partition("/")
+    fields: dict[str, object] = {
+        "storybook_id": storybook_id,
+        "key_digest": digest_identifier(key),
+    }
+    # `<version>-<salt>.webp` when salted, `<version>.webp` when legacy. The
+    # version is not secret and is what tells an operator WHICH cover failed;
+    # it is omitted rather than emitted as a string for an unparseable key, so
+    # this field never varies in type between log lines.
+    version_text = remainder.partition("-")[0].removesuffix(".webp")
+    if version_text.isdigit():
+        fields["version"] = int(version_text)
+    return fields
 
 
 def _require_r2_configured(
