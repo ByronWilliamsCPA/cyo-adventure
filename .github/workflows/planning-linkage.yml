@@ -52,12 +52,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
+      # contents alone: the checker reads local files and makes no API call.
+      # Filing/commenting on the drift issue needs `issues: write`, but
+      # job-level permissions cannot be made conditional on event name, so that
+      # write scope lives on the separate file-drift-issue job below instead of
+      # being granted here on every pull_request run too (PR #465).
       contents: read
-      # Read only. Filing/commenting on the drift issue needs `issues: write`,
-      # but job-level permissions cannot be made conditional on event name, so
-      # that write scope lives on the separate file-drift-issue job below
-      # instead of being granted here on every pull_request run too (PR #465).
-      issues: read
 
     steps:
       - name: Harden the runner
@@ -75,15 +75,12 @@ jobs:
           python-version: '3.14'
 
       - name: Check work linkage
-        # --check-issues resolves every issue:NNN / cluster-D #NNN citation
-        # against GitHub, and --check-issue-orphans checks every open issue is
-        # cited under docs/planning/ or labelled 'unplanned'; both share one
-        # batched `gh issue list` call. The pre-commit hook that runs this
-        # same script locally omits both flags so it stays offline. GH_TOKEN
-        # authenticates the gh CLI invocation.
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python scripts/check_work_linkage.py --check-issues --check-issue-orphans
+        # No flags, no network, no token: this is byte-for-byte the invocation
+        # the check-work-linkage pre-commit hook runs locally. Two GitHub-facing
+        # checks used to run here and nowhere else, which meant CI enforced a
+        # contract the hook could not; retiring them removed that divergence
+        # along with the upkeep of giving every open issue a phase home.
+        run: python scripts/check_work_linkage.py
 
       - name: Check the authoring lessons log
         # Runs even when the linkage check failed, so one run reports both
