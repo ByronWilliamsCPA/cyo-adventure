@@ -26,6 +26,7 @@ from structlog.stdlib import BoundLogger
 from cyo_adventure.middleware.correlation import (
     correlation_context_processor,
 )
+from cyo_adventure.utils.redaction import censor_sensitive_processor
 
 if TYPE_CHECKING:
     from structlog.types import Processor
@@ -123,6 +124,17 @@ def setup_logging(
         )
         insert_at = (add_log_level_idx + 1) if add_log_level_idx is not None else 0
         processors.insert(insert_at, correlation_context_processor)
+
+    # #CRITICAL: security: the censoring backstop is appended LAST before the
+    # renderer, so it sees the fully-assembled event dict (including fields
+    # added by the processors above) and covers both renderers below. Anything
+    # inserted after it would emit uncensored values.
+    # #VERIFY: tests/unit/test_logging.py::TestSetupLogging::
+    # test_censor_processor_is_installed_before_the_renderer pins the ordering
+    # for both renderers, and
+    # ::test_configured_chain_redacts_a_secret_field_end_to_end drives a real
+    # log call through the configured chain.
+    processors.append(censor_sensitive_processor)
 
     if json_logs:
         # Production: JSON logs for easy parsing and aggregation

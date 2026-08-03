@@ -167,6 +167,62 @@ def test_main_sweeps_before_starting_the_worker(
 
 
 @pytest.mark.unit
+@pytest.mark.security
+def test_main_configures_logging_before_anything_else(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """main() calls setup_logging from settings before the sweep or the worker.
+
+    Regression: worker_main imported only ``get_logger``, so the worker
+    process ran on structlog's defaults, with no level filtering, no JSON
+    renderer, and no ``correlation_context_processor``. The call must come
+    first, or the sweep's own log lines are emitted unconfigured.
+    """
+    calls: list[str] = []
+    setup_kwargs: list[dict[str, object]] = []
+
+    @asynccontextmanager
+    async def _fake_get_session() -> AsyncGenerator[_FakeSession]:
+        yield _FakeSession()
+
+    async def _fake_requeue(session: object, **_kwargs: object) -> int:
+        _ = session
+        calls.append("sweep")
+        return 0
+
+    def _fake_setup_logging(**kwargs: object) -> None:
+        calls.append("setup_logging")
+        setup_kwargs.append(kwargs)
+
+    fake_queue = MagicMock(spec=Queue)
+    fake_queue.connection = "fake-connection"
+    fake_worker_instance = MagicMock(spec=Worker)
+
+    def _fake_worker_cls(queues: object, *, connection: object) -> MagicMock:
+        _ = queues, connection
+        calls.append("worker_constructed")
+        return fake_worker_instance
+
+    monkeypatch.setattr(worker_main, "setup_logging", _fake_setup_logging)
+    monkeypatch.setattr(worker_main, "get_worker_session", _fake_get_session)
+    monkeypatch.setattr(worker_main, "requeue_stranded_jobs", _fake_requeue)
+    _install_fake_engine(monkeypatch)
+    monkeypatch.setattr(worker_main, "get_queue", lambda _settings: fake_queue)
+    monkeypatch.setattr(worker_main, "Worker", _fake_worker_cls)
+
+    worker_main.main()
+
+    assert calls == ["setup_logging", "sweep", "worker_constructed"]
+    assert setup_kwargs == [
+        {
+            "level": worker_main._default_settings.log_level,
+            "json_logs": worker_main._default_settings.json_logs,
+            "include_timestamp": worker_main._default_settings.include_timestamp,
+        }
+    ]
+
+
+@pytest.mark.unit
 def test_main_disposes_engine_after_sweep_and_before_worker_work(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
