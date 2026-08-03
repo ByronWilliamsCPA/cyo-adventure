@@ -266,8 +266,8 @@ substantially the same work under different headings. Do not triple-book.
 ## Cluster D: untracked GitHub issues
 
 roadmap.md lines 197-199 assert that open issues "remain accurately tracked" in the debt register.
-That claim is false: the debt register cites 9 issue numbers, 6 still open, against 39 open issues
-as of 2026-08-02. The 30 issues below appear in no other planning document by number or by
+That claim is false: the debt register cites 9 issue numbers, 6 still open, against 48 open issues
+as of 2026-08-03. The 31 issues below appear in no other planning document by number or by
 description, so this cluster is their only phase home. `scripts/check_work_linkage.py
 --check-issue-orphans` enforces the other half of the rule: every open issue must be either cited
 under `docs/planning/` or carry the `unplanned` label. This table and that label are jointly the
@@ -304,6 +304,7 @@ compliance; only the CI workflow gate does.
 | UW-D19 | #505 | 7 unfixed linux-libc-dev kernel-header CVEs with no Debian trixie fix published. Blocked on an upstream trixie kernel-header release; nothing in this repo can close it. Re-triage quarterly, because the OpenSSF release gate blocks a release on any vulnerability older than 60 days regardless of reassessment status. | 5 | blocked |
 | UW-D20 | #542 | Stage-1 reviewer passes prompt-injection corpus items E2/E3 at **every** batch size, so the injection gap is not a batch-tuning artifact and the PR #541 batch-size default cannot close it. From the moderation review redesign track. | 5 | unscheduled |
 | UW-D21 | #552 | `renovate.json` package rules that never fire. Another silent-gate failure: a rule matching nothing is indistinguishable from a rule with nothing to match, so the config looks configured while the dependency class it names goes ungoverned. | CI hygiene | unscheduled |
+| UW-D22 | #571 | `e2e-staging` is green **by retry, not clean**: the last spec's device-grant revoke fails its first attempt in every observed run and passes on `retries: 1`. The console's own banner proves the backend rejected the `DELETE`, and an identical helper call earlier in the tier passes first time, so it is position-dependent rather than a helper bug. Starts as CI hygiene because the first deliverable is diagnostic: the banner text cannot discriminate 429 from 401, 5xx, or a dropped connection, so the actual status must be captured before a cause can be named. If the 60 rpm/IP hypothesis confirms, the fix converges with UW-D17 (#71) in phase 5 and this row moves there. Green-with-retry does not close it. | CI hygiene | unscheduled |
 
 ## Cluster E: security and safety hardening
 
