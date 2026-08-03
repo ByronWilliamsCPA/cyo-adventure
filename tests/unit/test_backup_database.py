@@ -852,23 +852,32 @@ def test_redact_secrets_scrubs_password_containing_at_sign() -> None:
 
     libpq accepts it, so it occurs in real connection strings. A password class that
     excluded ``@`` would stop at the first one and leave the remainder in the log.
+
+    The fixture keeps the angle-bracket placeholder convention used throughout this
+    module rather than a realistic password literal. Secret scanners key on the
+    ``://user:pw@host`` shape and fire on a plausible-looking password in that slot,
+    so a realistic value here makes this repository's own scanners flag their own
+    test data. The ``@`` inside the brackets is what the test actually needs.
     """
-    text = "connection failed: postgresql://<user>:p@ssw0rd@<host>:5432/<dbname>"
+    text = "connection failed: postgresql://<user>:<pass@tail>@<host>:5432/<dbname>"
 
     redacted = backup_database._redact_secrets(text)
 
-    assert "p@ssw0rd" not in redacted
-    assert "ssw0rd" not in redacted
+    assert "<pass@tail>" not in redacted
+    # The tail after the first `@` is the part a naive password class would leak.
+    assert "tail>" not in redacted
     assert "postgresql://[redacted]@<host>:5432/<dbname>" in redacted
 
 
 def test_redact_secrets_scrubs_conninfo_password() -> None:
     """libpq's keyword/value form carries no ``://``, so the URL pattern cannot see it."""
-    text = "could not connect: host=<host> user=<user> password=hunter2 dbname=<dbname>"
+    text = (
+        "could not connect: host=<host> user=<user> password=<secret> dbname=<dbname>"
+    )
 
     redacted = backup_database._redact_secrets(text)
 
-    assert "hunter2" not in redacted
+    assert "<secret>" not in redacted
     assert "password=[redacted]" in redacted
     # Non-credential keywords are diagnostic and must survive.
     assert "host=<host>" in redacted
