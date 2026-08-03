@@ -220,10 +220,15 @@ document warns about, and it is easy to make here.
    - step-ca must be issued under a **separate root or dedicated intermediate**, not the one at
      `services/traefik/dynamic/tls.yml:74`. Sharing an anchor would let every homelab device
      certificate satisfy the CYO edge router.
-   - Lifetime: issue long-lived and calendar the rotation. Existing renewal tooling
-     (`services/cert-enroll/scripts/renew-cert.sh`) pushes certificates to devices; Cloudflare
-     requires an API upload instead, so short step-ca defaults would cause a recurring outage.
-     Automating the Cloudflare-side upload is a follow-up, not a prerequisite.
+   - Lifetime: issue with a bounded lifetime, a named owner for the expiration alert, and an
+     overlap-and-rollback procedure tested before enforcement is switched on. Expiry of this
+     certificate takes the origin offline to Cloudflare, so this is an outage control rather
+     than a hygiene one, and "calendar the rotation" is not sufficient on its own. Existing
+     renewal tooling (`services/cert-enroll/scripts/renew-cert.sh`) pushes certificates to
+     devices, which is not a path Cloudflare accepts; the Cloudflare side takes an upload,
+     via either the API or the dashboard, so short step-ca defaults would cause a recurring
+     outage. Automating that upload is a prerequisite for enabling enforcement, unless manual
+     rotation is recorded as an accepted risk with a named owner and an expiry.
 
    Evaluated and rejected for A9, 2026-08-02: **Cloudflare Client Certificates**
    (`developers.cloudflare.com/ssl/client-certificates/`). That product secures the
