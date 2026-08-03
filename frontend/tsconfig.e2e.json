@@ -25,10 +25,12 @@
     "e2e",
     "e2e-real",
     "e2e-staging",
+    "e2e-staging-sweep",
     "e2e-support",
     "e2e-prod",
     "playwright.config.ts",
     "playwright.e2e-staging.config.ts",
+    "playwright.e2e-staging-sweep.config.ts",
     "playwright.e2e-prod.config.ts"
   ]
 }

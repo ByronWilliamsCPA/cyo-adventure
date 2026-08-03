@@ -66,10 +66,125 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: E2E (Playwright, staging tier)
+        id: playwright
         run: npm run test:e2e:staging
 
-      - name: Upload Playwright trace on failure
-        if: ${{ failure() }}
+      # Signal 1 of 2, the DIAGNOSTIC.
+      #
+      # Playwright's serial-block retry spawns a fresh worker on the first
+      # failure, so a failed teardown revoke in that first attempt leaks its
+      # own device grant while the retry mints and cleanly revokes a NEW one;
+      # the spec then reports "flaky" rather than "failed" and this job exits
+      # 0. frontend/e2e-staging/support/device-grant.ts records every
+      # unconfirmed revoke to test-results/leaked-device-grants.jsonl
+      # regardless of overall pass/fail, so this step (if: always(), runs even
+      # when the step above already failed) fails the job on a non-empty file,
+      # independent of what Playwright itself reported.
+      #
+      # This ledger is SELF-REPORTED teardown state and cannot be the only
+      # signal: a worker killed after the mint, an afterAll that blows the
+      # tier timeout, and recordLeakedGrant's own fail-open all leave a live
+      # grant and no line here. What it uniquely provides is WHICH spec leaked
+      # and why, which the sweep below cannot tell you. The sweep is the
+      # deterministic backstop; this is the diagnostic. Keep both.
+      #
+      # No untrusted external input reaches this script (no github.event.*
+      # fields): the only input is a file this same job's own test run wrote
+      # under frontend/test-results/, and each line is only ever read via jq
+      # and passed through a shell variable, never interpolated into the
+      # run: block by the workflow templater. The records hold a DB row id, a
+      # spec label, and a fixed-vocabulary detail string; no token, bearer, or
+      # password is ever written to them, so echoing a whole line is safe.
+      - name: Check for leaked staging device grants
+        id: leak_check
+        if: always()
+        run: |
+          LEAK_FILE="test-results/leaked-device-grants.jsonl"
+          if [ ! -s "$LEAK_FILE" ]; then
+            echo "No leaked device grants recorded."
+            exit 0
+          fi
+          echo "One or more staging device grants were not confirmed revoked by teardown:"
+          # `|| [ -n "$line" ]` keeps the final record when the file has no
+          # trailing newline, which is what a worker killed mid-append leaves
+          # behind. Without it that record fails the job but is never named,
+          # so an operator sees a red run with no grant id to act on.
+          #
+          # GitHub runs this block as `bash -e {0}`, and a bare assignment
+          # from a command substitution carries THAT command's exit status.
+          # A truncated record therefore used to make jq exit non-zero, trip
+          # set -e, and terminate this loop mid-report: the bad record and
+          # every record after it went unnamed, so a multi-leak run showed at
+          # most one id. `|| grant_id=''` keeps set -e out of it and lets the
+          # empty-value fallback below actually fire. jq's stderr is left
+          # visible on purpose; it is the only diagnostic for a malformed
+          # record, and this file holds no secrets.
+          #
+          # grantId is legitimately null when a mint happened but its id was
+          # never captured, so `// "id-not-captured"` is a real outcome, not
+          # a parse failure. "unparseable" is reserved for jq failing.
+          while IFS= read -r line || [ -n "$line" ]; do
+            [ -z "$line" ] && continue
+            grant_id=$(printf '%s' "$line" | jq -r '.grantId // "id-not-captured"') || grant_id=''
+            if [ -z "$grant_id" ]; then
+              grant_id="unparseable"
+            fi
+            echo "::error::Leaked staging device grant ${grant_id}, revoke it manually: ${line}"
+          done < "$LEAK_FILE"
+          exit 1
+
+      # Signal 2 of 2, the AUTHORITATIVE BACKSTOP.
+      #
+      # Asks staging itself whether the test guardian's family still holds an
+      # active device grant, so it shares none of the ledger's failure modes
+      # (it does not read a file the dying process was supposed to write). It
+      # runs on if: always() because the runs that leak are exactly the runs
+      # where something above failed.
+      #
+      # Fail-closed by construction: a 429, a network error, an auth failure,
+      # a non-2xx, a non-JSON body, or a body that is not a list all FAIL the
+      # spec. "Could not list" is never "nothing leaked"; degrading it to a
+      # pass would recreate the silent-failure class this whole change closes.
+      # See frontend/e2e-staging-sweep/device-grant-sweep.spec.ts.
+      #
+      # Reports and fails, deliberately without auto-revoking: a live grant
+      # keeps this job red on every subsequent scheduled run until a human
+      # acts, where a self-healing sweep would go green again after one red
+      # and would also destroy a device a human authorized for manual QA on
+      # this shared family.
+      #
+      # Its config pins trace/screenshot/video off, so a sweep failure writes
+      # no artifact carrying the staging bearer it signs in with.
+      - name: Sweep staging for surviving device grants
+        id: grant_sweep
+        if: always()
+        run: npm run test:e2e:staging:sweep
+
+      # The ledger only: a DB row id, a spec label, a fixed detail string, and
+      # a timestamp. Uploaded as its own small artifact so a leak never has to
+      # pull the trace bundle along with it.
+      - name: Upload leaked-grant ledger
+        if: ${{ !cancelled() && steps.leak_check.outcome == 'failure' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-staging-leaked-grant-ledger
+          path: frontend/test-results/leaked-device-grants.jsonl
+          retention-days: 7
+
+      # #CRITICAL: security: gated on the Playwright step's OWN outcome, never
+      # on job-level failure(). test-results/ holds `retain-on-failure` traces
+      # that carry the real staging guardian Supabase bearer, the minted
+      # device-grant token, and DOM snapshots of the sign-in form, and THIS
+      # REPOSITORY IS PUBLIC, so every workflow artifact is downloadable by
+      # anyone for its whole retention window. A job-level `failure()` here
+      # would mean the leak check and the sweep each publish that bundle on
+      # runs that would previously have uploaded nothing, strictly widening
+      # credential exposure in the name of observability. The ledger upload
+      # above is what a leak needs, and it carries no secrets.
+      # #VERIFY: never change this to `failure()` or `always()`, and never
+      # point another artifact at frontend/test-results/ wholesale.
+      - name: Upload Playwright trace on Playwright failure
+        if: ${{ !cancelled() && steps.playwright.outcome == 'failure' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: e2e-staging-traces

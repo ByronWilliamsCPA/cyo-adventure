@@ -2,7 +2,11 @@ import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
 import { signInAsStagingTestUser, unlockParentalGateIfPresent } from './support/auth'
-import { readPersistedGrantId, revokeDeviceGrantBackstop } from './support/device-grant'
+import {
+  createDeviceGrantMintState,
+  readPersistedGrantId,
+  revokeDeviceGrantBackstop,
+} from './support/device-grant'
 import { removeDeviceFromConsole } from '../e2e-support/device-grant-ui'
 import { gotoResilient, paceNavigation } from '../e2e-support/rate-limit'
 
@@ -148,9 +152,10 @@ test.describe('mqa books are invisible to a kid profile on staging', () => {
    * Captured at mint time, not re-read at teardown: a device-grant 401 makes
    * useApi.ts clear the localStorage record, so the backstop's only input
    * would be gone in exactly the runs where the backstop is the only cleanup
-   * left. See support/device-grant.ts.
+   * left. The `mintAttempted` half is what makes an uncaptured id still
+   * reportable. See support/device-grant.ts.
    */
-  let mintedGrantId: string | null = null
+  const grantState = createDeviceGrantMintState()
 
   test.beforeAll(async ({ browser }) => {
     sharedPage = await browser.newPage()
@@ -161,7 +166,7 @@ test.describe('mqa books are invisible to a kid profile on staging', () => {
     // Same best-effort DELETE backstop as kid-library-smoke.spec.ts, for the
     // same reason: if the explicit revoke test below never ran, do not leave
     // a live grant on shared staging.
-    await revokeDeviceGrantBackstop(sharedPage, mintedGrantId, '[moderation-qa-invisibility]')
+    await revokeDeviceGrantBackstop(sharedPage, grantState, '[moderation-qa-invisibility]')
     await sharedPage.close()
   })
 
@@ -171,6 +176,11 @@ test.describe('mqa books are invisible to a kid profile on staging', () => {
 
     const setUp = sharedPage.getByRole('button', { name: 'Set up this device for your kids' })
     const reauthorize = sharedPage.getByRole('button', { name: 'Re-authorize this device' })
+
+    // Armed BEFORE the click, for the same reason as kid-library-smoke.spec.ts:
+    // the POST can mint server-side and still leave this test with no id, and
+    // teardown must report that as a leak rather than as nothing to do.
+    grantState.mintAttempted = true
     if (await setUp.isVisible().catch(() => false)) {
       await setUp.click()
     } else {
@@ -178,9 +188,9 @@ test.describe('mqa books are invisible to a kid profile on staging', () => {
     }
 
     await expect(sharedPage.getByRole('button', { name: 'Hand device to a child' })).toBeVisible()
-    mintedGrantId = await readPersistedGrantId(sharedPage)
+    grantState.grantId = await readPersistedGrantId(sharedPage)
     expect(
-      mintedGrantId,
+      grantState.grantId,
       'a device grant carrying an id should be persisted after authorize; the ' +
         'afterAll backstop has no other way to revoke it if a later test fails'
     ).not.toBeNull()
@@ -258,7 +268,9 @@ test.describe('mqa books are invisible to a kid profile on staging', () => {
       DEVICE_GRANT_KEY
     )
     expect(stored, 'the device grant should be cleared after remove').toBeNull()
-    // Revoked explicitly, so the backstop has nothing left to do.
-    mintedGrantId = null
+    // Revoked explicitly, so the backstop has nothing left to do: clear both
+    // halves, or the uncaptured-mint branch would report a phantom leak.
+    grantState.grantId = null
+    grantState.mintAttempted = false
   })
 })

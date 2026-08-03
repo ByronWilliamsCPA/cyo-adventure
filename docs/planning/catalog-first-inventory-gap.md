@@ -30,10 +30,24 @@ tags:
 >
 > **What actually resolved the gap** (verified 2026-07-28): the sentinel design
 > was fully built and merged to `main`, and the 23 authored drafts were blocked
-> only because nobody had run the import command, not by any code or schema
-> defect. See the disposition notes at the end of this file. This document is
+> by process rather than by any code or schema defect. See the disposition notes
+> at the end of this file. This document is
 > retained as the historical record of the rejected approach; do not implement
 > Gap A as written.
+>
+> **Correction (2026-08-03).** The 2026-07-28 note above originally said the
+> drafts "were blocked only because nobody had run the import command." That is
+> not accurate as of its own writing date: issue #347, opened 2026-07-21, records
+> an import run against production (the ADR-021 catalog seed, 25 stories landed
+> at `in_review`). The import command had been run a week earlier. The blocked
+> step is the one after it: `import_catalog.py` never publishes by design, and
+> nothing on record shows the separate admin promotion,
+> `publishing/catalog_publish.py::promote_catalog_story`, has run for this
+> inventory. The gap's conclusion is unchanged, since an imported-but-unpromoted
+> book is just as invisible to a kid profile as an unimported one; only the
+> mechanism is corrected. Current live database state is not established by this
+> document and is verified as step 1 of the SQ-01 runbook in
+> [story-structure-implementation-briefs.md](story-structure-implementation-briefs.md).
 >
 > ---
 >
