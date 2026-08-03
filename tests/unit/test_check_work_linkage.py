@@ -16,6 +16,7 @@ not a test bug.
 
 from __future__ import annotations
 
+import copy
 import importlib.util
 import json
 import re
@@ -3459,3 +3460,56 @@ def test_check_project_plan_phase_status_ignores_track1_phases() -> None:
         lines, Path("PROJECT-PLAN.md"), _TRACK2_MANIFEST
     )
     assert not any("'5'" in problem for problem in problems)
+
+
+def test_namespace_registry_reports_a_citation_pattern_without_the_left_guard() -> None:
+    """Negative control: a word-bounded-only citation pattern must fail the registry check.
+
+    This is the shape every shipped citation pattern had before the guard existed, so a check
+    that cannot fail here would be certifying the defect it was written to prevent.
+    """
+    manifest = copy.deepcopy(_REAL_MANIFEST)
+    manifest["namespaces"]["cap"]["citation_pattern"] = r"\b[KGAS]\d+\b"
+    problems = _MODULE._check_namespace_registry(manifest, Path("plan-manifest.toml"))
+    assert len(problems) == 1
+    assert "[namespaces.cap] citation_pattern must start with the guard" in problems[0]
+    assert "a hyphen is a word boundary" in problems[0]
+
+
+@pytest.mark.parametrize(
+    ("namespace", "sample"),
+    [("debt", "C12"), ("al", "AL-072"), ("cap", "K16")],
+)
+def test_shipped_citation_pattern_reads_a_standalone_id_but_not_a_fragment(
+    namespace: str, sample: str
+) -> None:
+    """The behavioural half of the guard: the real patterns reject ids inside longer ids.
+
+    The structural check in `_check_namespace_registry` only inspects the pattern's leading
+    characters. This runs the shipped pattern against text, which is what the linkage checks
+    actually do, so the guard is proven by behaviour and not only by spelling.
+    """
+    pattern = re.compile(_REAL_MANIFEST["namespaces"][namespace]["citation_pattern"])
+    assert pattern.search(f"scheduled under {sample} for now") is not None
+    # `UW-` is the real collision: every phantom id measured before the fix was a fragment of
+    # an unscheduled-work id. `X` covers the plain word-character case that `\b` also missed.
+    assert pattern.search(f"UW-{sample}") is None
+    assert pattern.search(f"X{sample}") is None
+
+
+def test_the_capability_pattern_no_longer_reads_k16_out_of_uw_k16() -> None:
+    """The specific live defect, asserted against the real roadmap rather than a fixture.
+
+    `K16`'s only occurrence in roadmap.md is inside `UW-K16`. Under the previous pattern the
+    capability-linkage check counted that fragment as K16's citation. K16 is delivered today, so
+    the gate was not lying, but it was one reopened capability away from certifying an unmapped
+    item as mapped.
+    """
+    roadmap = (_MODULE._REPO_ROOT / "docs/planning/roadmap.md").read_text(
+        encoding="utf-8"
+    )
+    pattern = re.compile(_REAL_MANIFEST["namespaces"]["cap"]["citation_pattern"])
+    # Non-vacuous: the fragment really is present, and the loose pattern really did read it.
+    assert "UW-K16" in roadmap
+    assert "K16" in re.findall(r"\b[KGAS]\d+\b", roadmap)
+    assert "K16" not in pattern.findall(roadmap)

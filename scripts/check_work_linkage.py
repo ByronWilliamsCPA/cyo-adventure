@@ -142,6 +142,17 @@ _MANIFEST_REQUIRED_RUNGS = ("R1", "R2", "R3")
 # `citation_pattern` is deliberately per-namespace rather than universal: uw and sq ids are
 # validated only inside their own document and are never cited from another, so requiring the
 # field would force a pattern that nothing runs.
+# Every `citation_pattern` must refuse to begin matching immediately after a hyphen or a word
+# character. `\b` does not do this: a hyphen IS a word boundary, so `\b[KGAS]\d+\b` matched `K16`
+# inside `UW-K16`, and capability K16's only apparent citation in roadmap.md was a fragment of an
+# unscheduled-work id. Measured before the guard existed: 18 phantom capability ids in roadmap.md
+# and 25 phantom debt ids in the register, every one a fragment of a longer `UW-*` id.
+#
+# The guard belongs in the pattern, not in the ids. Renaming `A1` to `CI-A1` does not help, because
+# `\b` matches the `A1` inside the renamed form just as happily; that rename was tried and measured
+# to have changed nothing.
+_CITATION_LEFT_GUARD = r"(?<![-\w])"
+
 _NAMESPACE_REGISTRY_CONTRACT: dict[str, tuple[str, ...]] = {
     "uw": ("prefix", "source", "pattern"),
     "debt": ("prefix", "source", "pattern", "citation_pattern"),
@@ -1807,13 +1818,20 @@ def _check_namespace_registry(
     ``source`` against the repo root turns a moved document into a reported problem instead of
     a comment that quietly stops being true.
 
+    It also enforces `_CITATION_LEFT_GUARD` on every declared ``citation_pattern``. Putting the
+    patterns in the manifest made a latent defect into a declared contract: the shipped capability
+    and debt citation patterns were word-bounded only, so they read ids out of the middle of longer
+    ids from other namespaces. Requiring the guard makes that class unrepresentable rather than
+    merely fixed once.
+
     Args:
         manifest: The parsed plan-manifest.toml document.
         manifest_path: The manifest's path, for message text.
 
     Returns:
-        list[str]: One problem per undeclared, unexpected, incomplete, or unresolvable
-            namespace entry; empty when the registry matches the contract exactly.
+        list[str]: One problem per undeclared, unexpected, incomplete, unresolvable, or
+            insufficiently guarded namespace entry; empty when the registry matches the
+            contract exactly.
     """
     # #CRITICAL: data integrity: a namespace the checker consumes but the manifest does not
     # declare resolves to _NEVER_MATCHES_RE, which matches no id at all. Every row in that
@@ -1870,6 +1888,15 @@ def _check_namespace_registry(
             )
             for field in sorted(set(entry) - set(required))
         )
+        citation = entry.get("citation_pattern")
+        if isinstance(citation, str) and not citation.startswith(_CITATION_LEFT_GUARD):
+            problems.append(
+                f"{manifest_path.name}: [namespaces.{name}] citation_pattern must start with "
+                f"the guard {_CITATION_LEFT_GUARD} so it cannot begin matching inside a longer "
+                f"id. "
+                f"A leading '\\b' is not enough: a hyphen is a word boundary, so such a pattern "
+                f"reads the '{name}' id out of ids from other namespaces that merely contain one"
+            )
         source = entry.get("source")
         if isinstance(source, str) and source.strip():
             if (_REPO_ROOT / source).is_file():
