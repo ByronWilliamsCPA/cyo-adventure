@@ -99,9 +99,17 @@ jobs:
             exit 0
           fi
           echo "One or more staging device grants were not confirmed revoked by teardown:"
-          while IFS= read -r line; do
+          # `|| [ -n "$line" ]` keeps the final record when the file has no
+          # trailing newline, which is what a worker killed mid-append leaves
+          # behind. Without it that record fails the job but is never named,
+          # so an operator sees a red run with no grant id to act on. The jq
+          # fallback covers the same truncation at the field level: a partial
+          # line makes jq exit non-zero and print nothing, so `// "unknown"`
+          # never fires and the id would render empty.
+          while IFS= read -r line || [ -n "$line" ]; do
             [ -z "$line" ] && continue
-            grant_id=$(printf '%s' "$line" | jq -r '.grantId // "unknown"')
+            grant_id=$(printf '%s' "$line" | jq -r '.grantId // "unknown"' 2>/dev/null)
+            [ -z "$grant_id" ] && grant_id="unparseable"
             echo "::error::Leaked staging device grant ${grant_id}, revoke it manually: ${line}"
           done < "$LEAK_FILE"
           exit 1
