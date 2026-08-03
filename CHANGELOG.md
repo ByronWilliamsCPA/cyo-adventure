@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.60.1] - 2026-08-03
+
+### Bug Fixes
+
+- **planning**: Stop citation patterns reading ids out of longer ids
+  ([#579](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/579),
+  [`23afc00`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/23afc008edce7728339f4a01efc9531c7d0f2ef5))
+
+
 ## [0.60.0] - 2026-08-03
 
 ### Features
@@ -3040,6 +3049,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.60.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.60.0...v0.60.1
 [0.60.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.59.2...v0.60.0
 [0.59.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.59.1...v0.59.2
 [0.59.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.59.0...v0.59.1
