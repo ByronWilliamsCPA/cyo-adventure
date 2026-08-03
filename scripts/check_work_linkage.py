@@ -142,16 +142,27 @@ _MANIFEST_REQUIRED_RUNGS = ("R1", "R2", "R3")
 # `citation_pattern` is deliberately per-namespace rather than universal: uw and sq ids are
 # validated only inside their own document and are never cited from another, so requiring the
 # field would force a pattern that nothing runs.
-# Every `citation_pattern` must refuse to begin matching immediately after a hyphen or a word
-# character. `\b` does not do this: a hyphen IS a word boundary, so `\b[KGAS]\d+\b` matched `K16`
-# inside `UW-K16`, and capability K16's only apparent citation in roadmap.md was a fragment of an
-# unscheduled-work id. Measured before the guard existed: 18 phantom capability ids in roadmap.md
-# and 25 phantom debt ids in the register, every one a fragment of a longer `UW-*` id.
+# Every `citation_pattern` must refuse to match a fragment of a longer id, at BOTH ends. `\b` does
+# not do this at either end, because a hyphen IS a word boundary:
 #
-# The guard belongs in the pattern, not in the ids. Renaming `A1` to `CI-A1` does not help, because
+#   left  `\b[KGAS]\d+\b` matched `K16` inside `UW-K16`, so capability K16's only apparent citation
+#         in roadmap.md was a fragment of an unscheduled-work id. Measured before the guard
+#         existed: 18 phantom capability ids in roadmap.md and 25 phantom debt ids in the register,
+#         every one a fragment of a longer `UW-*` id.
+#   right the same `\b` is satisfied by a digit-to-hyphen transition, so the debt pattern read `P9`
+#         out of `P9-05` in cluster B of the unscheduled-work register. `P9-05` is PROJECT-PLAN.md's
+#         `<letter><phase>-<item>` task numbering, unrelated to the debt namespace's `P1`-`P4`.
+#
+# Guarding one end and not the other leaves the same defect class live, mirrored. Measured over the
+# three texts the citation checks actually scan, adding the right guard removes exactly one id, the
+# phantom `P9`, and loses no real citation: pure-digit truncation (`C123` -> `C12`) was never
+# possible, since `\d+` is greedy and backtracking cannot manufacture a boundary between digits.
+#
+# The guards belong in the pattern, not in the ids. Renaming `A1` to `CI-A1` does not help, because
 # `\b` matches the `A1` inside the renamed form just as happily; that rename was tried and measured
 # to have changed nothing.
 _CITATION_LEFT_GUARD = r"(?<![-\w])"
+_CITATION_RIGHT_GUARD = r"(?![-\w])"
 
 _NAMESPACE_REGISTRY_CONTRACT: dict[str, tuple[str, ...]] = {
     "uw": ("prefix", "source", "pattern"),
@@ -1818,11 +1829,12 @@ def _check_namespace_registry(
     ``source`` against the repo root turns a moved document into a reported problem instead of
     a comment that quietly stops being true.
 
-    It also enforces `_CITATION_LEFT_GUARD` on every declared ``citation_pattern``. Putting the
-    patterns in the manifest made a latent defect into a declared contract: the shipped capability
-    and debt citation patterns were word-bounded only, so they read ids out of the middle of longer
-    ids from other namespaces. Requiring the guard makes that class unrepresentable rather than
-    merely fixed once.
+    It also enforces `_CITATION_LEFT_GUARD` and `_CITATION_RIGHT_GUARD` on every declared
+    ``citation_pattern``. Putting the patterns in the manifest made a latent defect into a
+    declared contract: the shipped capability and debt citation patterns were word-bounded only,
+    so they read ids out of the middle of longer ids from other namespaces. Both ends are required
+    because a hyphen is a word boundary on either side, which makes that class unrepresentable
+    rather than fixed once at whichever end happened to be noticed first.
 
     Args:
         manifest: The parsed plan-manifest.toml document.
@@ -1888,14 +1900,25 @@ def _check_namespace_registry(
             )
             for field in sorted(set(entry) - set(required))
         )
+        # An absent or blank citation_pattern is already reported by the required-field loop
+        # above; re-reporting it here as an unguarded pattern would name a second cause for
+        # one defect and send the reader looking for a regex that does not exist.
         citation = entry.get("citation_pattern")
-        if isinstance(citation, str) and not citation.startswith(_CITATION_LEFT_GUARD):
-            problems.append(
-                f"{manifest_path.name}: [namespaces.{name}] citation_pattern must start with "
-                f"the guard {_CITATION_LEFT_GUARD} so it cannot begin matching inside a longer "
-                f"id. "
-                f"A leading '\\b' is not enough: a hyphen is a word boundary, so such a pattern "
-                f"reads the '{name}' id out of ids from other namespaces that merely contain one"
+        if isinstance(citation, str) and citation.strip():
+            problems.extend(
+                (
+                    f"{manifest_path.name}: [namespaces.{name}] citation_pattern must "
+                    f"{position} with the guard {guard} so it cannot match a fragment of a "
+                    f"longer id. A '\\b' there is not enough: a hyphen is a word boundary, so "
+                    f"such a pattern reads a {name}-namespace id out of a longer id that "
+                    f"merely contains one, the way '\\b[KGAS]\\d+\\b' read 'K16' out of "
+                    f"'UW-K16' and '(?:P\\d+)\\b' read 'P9' out of 'P9-05'"
+                )
+                for position, guard, satisfied in (
+                    ("start", _CITATION_LEFT_GUARD, citation.startswith),
+                    ("end", _CITATION_RIGHT_GUARD, citation.endswith),
+                )
+                if not satisfied(guard)
             )
         source = entry.get("source")
         if isinstance(source, str) and source.strip():

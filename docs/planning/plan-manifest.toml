@@ -118,11 +118,13 @@ locator_basis = "resolved against main at v0.59.0 on 2026-08-02; all 36 path:lin
 #                        namespace inside another document's prose (used by the cross-register
 #                        linkage checks). Omitted when the namespace is never cited from another
 #                        document, only validated within its own table (uw, sq): `pattern`
-#                        already serves that single purpose. Must begin with `(?<![-\\w])`, and
-#                        the checker rejects it otherwise. A leading `\\b` is NOT sufficient: a
-#                        hyphen is a word boundary, so `\\b[KGAS]\\d+\\b` matched `K16` inside
-#                        `UW-K16`. That produced 18 phantom capability ids in roadmap.md and 25
-#                        phantom debt ids in the register, each a fragment of a longer `UW-*` id.
+#                        already serves that single purpose. Must begin with `(?<![-\\w])` AND end
+#                        with `(?![-\\w])`; the checker rejects it otherwise. `\\b` is NOT
+#                        sufficient at either end, because a hyphen is a word boundary on both
+#                        sides: `\\b[KGAS]\\d+\\b` matched `K16` inside `UW-K16` (18 phantom
+#                        capability ids in roadmap.md, 25 phantom debt ids in the register), and
+#                        the same trailing `\\b` read `P9` out of `P9-05`, which is
+#                        PROJECT-PLAN.md's task numbering rather than a debt id.
 #
 # debt and AL deliberately keep their citation pattern looser than their row pattern (AL rows
 # are `AL-\d{3}$`, zero-padded to three digits, but a citation may reasonably be written
@@ -141,19 +143,19 @@ pattern = "^UW-(?P<cluster>[A-M])\\d{2}$"
 prefix = "debt"
 source = "docs/planning/r1-deferred-debt-register.md"
 pattern = "^(?:C\\d+|GS\\d+|U\\d+|T\\d+|P\\d+|SL\\d+)$"
-citation_pattern = "(?<![-\\w])(?:C\\d+|GS\\d+|U\\d+|T\\d+|P\\d+|SL\\d+)\\b"
+citation_pattern = "(?<![-\\w])(?:C\\d+|GS\\d+|U\\d+|T\\d+|P\\d+|SL\\d+)(?![-\\w])"
 
 [namespaces.al]
 prefix = "AL"
 source = "docs/planning/authoring-lessons-log.md"
 pattern = "^AL-\\d{3}$"
-citation_pattern = "(?<![-\\w])AL-\\d+\\b"
+citation_pattern = "(?<![-\\w])AL-\\d+(?![-\\w])"
 
 [namespaces.cap]
 prefix = "cap"
 source = "docs/planning/capability-register.md"
 pattern = "^[KGAS]\\d+$"
-citation_pattern = "(?<![-\\w])[KGAS]\\d+\\b"
+citation_pattern = "(?<![-\\w])[KGAS]\\d+(?![-\\w])"
 
 [namespaces.sq]
 prefix = "SQ"
