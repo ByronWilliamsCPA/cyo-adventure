@@ -476,7 +476,10 @@ async def test_seed_inserts_fixtures_when_absent(
     # literal "5-8" and so agreed with the seed instead of checking it against
     # the content. Assert the relationship, not the value: the next fixture
     # added to _STORIES with a higher band must fail here rather than in a
-    # nightly e2e run.
+    # nightly e2e run. Pin it to the MAXIMUM assigned rank rather than to a
+    # ceiling: `story_rank <= profile_rank` alone also accepts any broader band,
+    # so a seed regression from "10-13" to "18+" would pass while putting an
+    # adult band on a child reader in a kids' app.
     # #VERIFY: keep this ranked comparison; do not reintroduce a literal band.
     story_bands = [str(version.blob["metadata"]["age_band"]) for version in versions]
     story_ranks = [parse_age_band_rank(band) for band in story_bands]
@@ -484,10 +487,13 @@ async def test_seed_inserts_fixtures_when_absent(
         f"assigned story age_bands {story_bands!r} contain an unknown band "
         f"(parsed ranks {story_ranks!r})"
     )
-    assert all(rank <= profile_rank for rank in story_ranks if rank is not None), (
-        f"seeded profile band {profiles[0].age_band!r} (rank {profile_rank}) ranks "
-        f"below assigned story bands {story_bands!r} (ranks {story_ranks!r}); "
-        f"the api/library.py age-band ceiling would hide those books"
+    max_story_rank = max(rank for rank in story_ranks if rank is not None)
+    assert profile_rank == max_story_rank, (
+        f"seeded profile band {profiles[0].age_band!r} (rank {profile_rank}) must "
+        f"equal the highest assigned story band (rank {max_story_rank}) from "
+        f"{story_bands!r} (ranks {story_ranks!r}). Ranking BELOW it means "
+        f"api/library.py's age-band ceiling hides those books; ranking ABOVE it "
+        f"means the seed drifted off the fixtures it assigns."
     )
 
     assignments = [row for row in added if type(row).__name__ == "StorybookAssignment"]
