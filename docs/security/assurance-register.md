@@ -218,10 +218,11 @@ First tranche of work. Each invalidates multiple rows at once.
   `qlty-full`, `pydoclint`, `markdownlint`. CI recovers three of them.
 - **pre-commit.ci is not installed**, so the `ci:`/`skip:` block at `.pre-commit-config.yaml:12-15`
   is inert and there is no hosted fallback. No workflow runs `pre-commit run --all-files`.
-- **A required check fails on third-party availability, including in files outside the diff.**
+- **A required check failed on third-party availability, including in files outside the diff.**
+  *Largely remediated 2026-08-03; the residual is stated at the end of this entry.*
   `Dependency & Standards Validation` is a required status check (ruleset `cyo-require-ci-gate`)
-  and fans in from the lychee link check, which scans the **whole tree**, not the PR's diff. So an
-  external site that is slow, or that rejects a HEAD request, turns a required gate red on a PR
+  and fans in from the lychee link check, which scanned the **whole tree**, not the PR's diff. So an
+  external site that was slow, or that rejected a HEAD request, turned a required gate red on a PR
   that did not touch the file. Observed on **three consecutive runs of PR #562 within twenty
   minutes, producing three disjoint failure sets**: a 520 on `readingrockets.org`, then a 415 on
   `hiwavemakers.com`, then connection failures on `eis.ucsc.edu` (three references) and
@@ -233,14 +234,41 @@ First tranche of work. Each invalidates multiple rows at once.
   matters for the remedy and not for the finding: diff-scoping removes the third class outright and
   shrinks the first two from a draw against ~129 hosts to a draw against the handful a PR cites,
   but it does not make a required gate immune to a live host having a bad minute. The failing set
-  differs every run because the scan covers several hundred external URLs, so per-URL remediation
-  cannot converge. Compounding it,
-  `pr-validation.yml` has no `push`
-  trigger, so main is never link-checked and a bad URL is only ever discovered by, and attributed
-  to, the next unrelated PR. `--accept` omits 415, which servers return when they refuse the HEAD
-  method rather than when a link is broken. Two effects, both bad: real link rot is indistinguishable
-  from third-party flakiness, and the standing incentive is to re-run until green, which is
-  precisely how a gate stops being read. Status: **evidence invalid**.
+  differed every run because the scan covered several hundred external URLs, so per-URL remediation
+  could not converge. Compounding it, `pr-validation.yml` had no `push` trigger, so main was never
+  link-checked and a bad URL was only ever discovered by, and attributed to, the next unrelated PR.
+  `--accept` omitted 415, which servers return when they refuse the HEAD method rather than when a
+  link is broken. Two effects, both bad: real link rot was indistinguishable from third-party
+  flakiness, and the standing incentive was to re-run until green, which is precisely how a gate
+  stops being read.
+
+  **Remediated 2026-08-03 by PR #563 (`4e54fade`), verified against the merged workflows.** The
+  blocking check now computes the PR's changed files from the merge base and scans only those, so
+  the exposure scales with what a PR touches rather than with the size of the corpus; `--accept` is
+  now `200,204,206,301,302,403,415,429`, so a HEAD refusal no longer reads as link rot; and a new
+  `link-check-full.yml` runs the whole corpus on a schedule and files a `ci-failure` issue, so rot
+  on main surfaces as its own issue instead of being attributed to the next unrelated PR. The
+  absence of a `push` trigger on `pr-validation.yml` is no longer the gap it was, because the
+  scheduled workflow now owns corpus coverage.
+
+  Measured on this PR after the remediation merged, using lychee 0.24.2 with the merged workflow's
+  own accept and exclude flags: **3 links extracted, all local file references, 0 external hosts
+  contacted, exit 0.** The same PR previously drew against roughly 129 hosts. The URL in this
+  register's companion file is not counted because it sits inside a `console` block and lychee's
+  `include_verbatim` defaults to false, which is worth recording as a fact about the tool rather
+  than luck: evidence transcripts pasted as verbatim blocks are not link-checked.
+
+  **Residual, and it is the honest part.** A live host returning 5xx on a URL cited by a file the
+  PR *does* edit still turns a required gate red, and #563's own header comment says so rather than
+  claiming otherwise: replayed against #562's history, the scoping drops two of the three failure
+  classes and does not drop the 520. So the category of defect is narrowed, not eliminated, and the
+  re-run-until-green incentive survives in the narrowed case.
+
+  Status: **finding open**, downgraded from *evidence invalid*. The distinction is the point of the
+  status model: the gate is no longer measuring the wrong thing, it is measuring the right thing
+  with a known residual failure mode. This entry is retained rather than deleted because a register
+  that silently drops a finding once it is fixed cannot show that its own findings ever led
+  anywhere.
 - **Documentation misdescribes where CodeQL and secret scanning are configured; both controls
   run.** An earlier revision of this section recorded "CodeQL does not run" and "no CI-side secret
   scanning" as AISVS AC.4.2 failures. Both were wrong, and wrong for the same reason: the method
