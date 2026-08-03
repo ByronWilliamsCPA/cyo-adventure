@@ -1,0 +1,4570 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/security/assurance-spine/">
+      
+      
+        <link rel="prev" href="../../architecture/deployment/">
+      
+      
+        <link rel="next" href="../assurance-register/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Portable Security and Privacy Assurance Spine - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#why-a-spine-rather-than-a-checklist" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Portable Security and Privacy Assurance Spine
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Security
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../planning/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Spine
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Spine
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-a-spine-rather-than-a-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why a spine rather than a checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instantiation-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instantiation contract
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Instantiation contract">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#row-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Row schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verification-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status model
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#applicability-determination" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Applicability determination
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-seventeen-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The seventeen categories
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#framework-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Framework layer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Framework layer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#two-facts-about-asvs-500-that-change-how-references-are-written" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two facts about ASVS 5.0.0 that change how references are written
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aisvs-10-scope-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AISVS 1.0 scope boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aisvs-appendix-c-the-ai-assisted-development-control-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AISVS Appendix C: the AI-assisted development control set
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regulatory-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regulatory catalog
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Regulatory catalog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#always-on-us" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Always on, US
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#us-federal-sectoral-trigger-t1t3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        US federal, sectoral (trigger T1/T3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#us-state-trigger-t4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        US state (trigger T4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eu-uk-and-other-non-us-readiness-trigger-t4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EU, UK, and other non-US readiness (trigger T4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#volatility-and-refresh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Volatility and refresh
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../assurance-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Register
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../control-inheritance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Inheritance Map
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../crypto-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cryptographic Inventory
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../red-team-design-review-2026-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Team Design Review
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../planning/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../planning/adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-a-spine-rather-than-a-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why a spine rather than a checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instantiation-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instantiation contract
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Instantiation contract">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#row-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Row schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verification-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status model
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#applicability-determination" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Applicability determination
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-seventeen-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The seventeen categories
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#framework-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Framework layer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Framework layer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#two-facts-about-asvs-500-that-change-how-references-are-written" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two facts about ASVS 5.0.0 that change how references are written
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aisvs-10-scope-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AISVS 1.0 scope boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aisvs-appendix-c-the-ai-assisted-development-control-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AISVS Appendix C: the AI-assisted development control set
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regulatory-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regulatory catalog
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Regulatory catalog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#always-on-us" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Always on, US
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#us-federal-sectoral-trigger-t1t3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        US federal, sectoral (trigger T1/T3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#us-state-trigger-t4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        US state (trigger T4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eu-uk-and-other-non-us-readiness-trigger-t4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EU, UK, and other non-US readiness (trigger T4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#volatility-and-refresh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Volatility and refresh
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Assurance Spine</h1>
+
+<p>Drafted 2026-08-02.</p>
+<p>This file is <strong>portable</strong>. It describes no product. A project instantiates it by producing a
+register that marks every category and every regime applicable or not applicable, with a reason
+and a reassessment trigger for each N/A. An instantiation is conventionally a sibling file named
+<code>assurance-register.md</code>; this document deliberately does not link to one, because a relative link
+resolves only in the repository the spine happens to be sitting in.</p>
+<p>Intended destination is the global standards set (<code>~/.claude/standards/</code>), so that a new project
+starts from the spine rather than rediscovering it. Nothing below depends on any one repository:
+where a concrete figure appears, it is labelled as an observation from a particular instantiation
+rather than as a property of the spine.</p>
+<h2 id="why-a-spine-rather-than-a-checklist">Why a spine rather than a checklist<a class="headerlink" href="#why-a-spine-rather-than-a-checklist" title="Permanent link">&para;</a></h2>
+<p>A checklist enumerates findings someone else once had. A spine enumerates the places a system can
+fail, so a gap in your own product is visible as a category with no rows rather than as a question
+nobody asked. A checklist cannot show you its own omissions; a category with no rows can.</p>
+<p>That is the argument for the structure, and it is independent of any particular item. It is worth
+knowing what the argument looks like when it is exercised: in the instantiation this spine was
+first written against, the originating artifact was a 10-item "common issues" list, and mapping it
+onto the categories below left <strong>eight of the seventeen with zero questions</strong>. Expect the figure
+to differ elsewhere. The point is that the mapping makes such a number computable at all.</p>
+<p>Three properties are load-bearing and are what make the spine reusable:</p>
+<ol>
+<li><strong>Categories are defined by what fails</strong>, not by what technology is present. "Authorization and
+   tenancy isolation" survives a move from Postgres to DynamoDB; "RLS policy coverage" does not.</li>
+<li><strong>Regimes attach by trigger</strong>, not by assumption. A project does not decide it is
+   GDPR-in-scope; it determines whether the triggers fire.</li>
+<li><strong>N/A is a recorded decision with an expiry</strong>, not an omission. The failure this spine exists
+   to prevent is <em>not done and not in the plan</em>, and a silently dropped category is exactly that.</li>
+</ol>
+<h2 id="instantiation-contract">Instantiation contract<a class="headerlink" href="#instantiation-contract" title="Permanent link">&para;</a></h2>
+<p>A project's register MUST:</p>
+<ul>
+<li>Carry every one of the seventeen categories, including the N/A ones, with a reason and a
+  reassessment trigger on each N/A.</li>
+<li>Run the applicability determination in the next section and record which regimes attach, which
+  do not, and why.</li>
+<li>Give every row a named verification method and a phase home in the project plan. <strong>A passing
+  check is not required.</strong> An item is correctly handled when it is planned, not when it is green.</li>
+<li>Enter every automated check at status <em>mechanism unproven</em> and only promote it once a negative
+  control has demonstrably tripped it.</li>
+</ul>
+<p>A project's register MAY add categories. It may not silently delete one.</p>
+<h3 id="row-schema">Row schema<a class="headerlink" href="#row-schema" title="Permanent link">&para;</a></h3>
+<p><code>ID | category | framework ref | legal ref | class | protected property | verification target |
+failure oracle | negative control | trigger | existing coverage | phase home | owner | last
+verified | status</code></p>
+<p>Four of these fields are the anti-hollow machinery and are the difference between a register and
+a topic list:</p>
+<ul>
+<li><strong>Protected property</strong>: the condition claimed true, stated so that it could be false.</li>
+<li><strong>Verification target</strong>: the actual deployed role, endpoint, artifact, dashboard, or workflow
+  examined, as distinct from a fixture standing in for it.</li>
+<li><strong>Failure oracle</strong>: the observable result distinguishing true from false.</li>
+<li><strong>Negative control</strong>: the deliberate violation demonstrated to trip the check.</li>
+</ul>
+<h3 id="verification-classes">Verification classes<a class="headerlink" href="#verification-classes" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>STATIC</td>
+<td>Assertable from source, schema, policy-as-code, or version-controlled configuration</td>
+</tr>
+<tr>
+<td>DYNAMIC</td>
+<td>Must be exercised against a running system</td>
+</tr>
+<tr>
+<td>RUNTIME-CONFIG</td>
+<td>Authoritative state lives in a deployed service or vendor control plane</td>
+</tr>
+<tr>
+<td>MANUAL</td>
+<td>Judgment is unavoidable, so the item carries an owner, trigger, cadence, and retained evidence</td>
+</tr>
+</tbody>
+</table>
+<h3 id="status-model">Status model<a class="headerlink" href="#status-model" title="Permanent link">&para;</a></h3>
+<p>Binary pass/fail cannot express the dominant real-world failure, which is a check that runs and
+tells you nothing. Seven states:</p>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Evidence current</td>
+<td>Verified against the correct target within cadence</td>
+</tr>
+<tr>
+<td>Finding open</td>
+<td>A defect was found and the phase home is named</td>
+</tr>
+<tr>
+<td>Verification scheduled</td>
+<td>Method and owner exist, evidence is not yet current</td>
+</tr>
+<tr>
+<td><strong>Evidence invalid</strong></td>
+<td>The check ran but targeted the wrong environment, role, path, or version</td>
+</tr>
+<tr>
+<td><strong>Mechanism unproven</strong></td>
+<td>The check has never demonstrated an ability to fail</td>
+</tr>
+<tr>
+<td>Accepted exception</td>
+<td>Risk, compensating controls, and expiry recorded</td>
+</tr>
+<tr>
+<td>Not applicable</td>
+<td>Reason and reassessment trigger recorded</td>
+</tr>
+</tbody>
+</table>
+<h2 id="applicability-determination">Applicability determination<a class="headerlink" href="#applicability-determination" title="Permanent link">&para;</a></h2>
+<p>Run these seven questions before writing any row. Each answer switches regimes on. Re-run on any
+change to the answers; that re-run is itself a register row.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Question</th>
+<th>Switches on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T1</td>
+<td><strong>What data classes are handled?</strong> Personal data, sensitive personal data, biometric, precise geolocation, health, genetic, financial account, card data, government ID, credentials, children's data, education records, employment data, video-viewing records, communications content</td>
+<td>Sectoral and data-class regimes</td>
+</tr>
+<tr>
+<td>T2</td>
+<td><strong>Who are the data subjects?</strong> General consumers, children under 13, minors 13-17, patients, students, employees, job applicants, EU/UK residents, residents of specific US states</td>
+<td>Protected-population and jurisdictional regimes</td>
+</tr>
+<tr>
+<td>T3</td>
+<td><strong>What sector does the operator sit in?</strong> Health, financial services, education, government contracting, critical infrastructure, telecommunications, ad tech, general commercial</td>
+<td>Sectoral regimes, which in the US are the primary vector</td>
+</tr>
+<tr>
+<td>T4</td>
+<td><strong>Where do users reside?</strong> Determined <strong>per user</strong>, not by operator location. One resident of a state or country pulls in that regime</td>
+<td>Jurisdictional regimes</td>
+</tr>
+<tr>
+<td>T5</td>
+<td><strong>What is the business model?</strong> Sale or sharing of personal data, targeted advertising, profiling with legal or similarly significant effect, subscription, marketplace, user-to-user distribution, app-store distribution</td>
+<td>Opt-out rights, DPIA duties, platform duties, store duties</td>
+</tr>
+<tr>
+<td>T6</td>
+<td><strong>What is the deployment and operating model?</strong> Self-managed hardware, IaaS, PaaS, BaaS, third-party edge or CDN, on-device, hybrid. Which control planes are outside the repository</td>
+<td>Infrastructure baselines, shared-responsibility boundaries, inheritance mapping</td>
+</tr>
+<tr>
+<td>T7</td>
+<td><strong>What contractual regimes bind, independent of statute?</strong> PCI DSS, customer DPAs, insurance warranties, app-store policies, government contract clauses, SOC 2 or ISO commitments</td>
+<td>Contractual obligations, which are enforceable without any statute</td>
+</tr>
+</tbody>
+</table>
+<p>Two rules that repeatedly get this wrong:</p>
+<ul>
+<li><strong>US obligations stack; they rarely preempt.</strong> There is no general federal consumer privacy
+  statute. Federal sectoral law, state comprehensive law, state sectoral law, and contract all
+  apply simultaneously, and the strictest wins per-obligation rather than per-statute.</li>
+<li><strong>Jurisdiction attaches per data subject.</strong> A US-only operator with one EU user, or one
+  Illinois user whose face is scanned, is in scope for that regime. Decide from where the users
+  are, never from where the company is.</li>
+</ul>
+<h2 id="the-seventeen-categories">The seventeen categories<a class="headerlink" href="#the-seventeen-categories" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Category</th>
+<th>Fails as</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SP-01</td>
+<td>Identity, Authentication, Session Lifecycle</td>
+<td>Wrong principal is admitted, or a session outlives its authority</td>
+</tr>
+<tr>
+<td>SP-02</td>
+<td>Authorization and Tenancy Isolation</td>
+<td>Right principal reaches the wrong object, or crosses a tenant boundary</td>
+</tr>
+<tr>
+<td>SP-03</td>
+<td>Input Validation, Encoding, Injection</td>
+<td>Untrusted data is interpreted as instruction, code, or markup</td>
+</tr>
+<tr>
+<td>SP-04</td>
+<td>Business Logic and Abuse Resistance</td>
+<td>Every request is individually valid and the sequence is still an attack</td>
+</tr>
+<tr>
+<td>SP-05</td>
+<td>Client-Side Storage, Offline Sync, Client Surface</td>
+<td>Data at rest on a device leaks, or client-asserted state is trusted on return</td>
+</tr>
+<tr>
+<td>SP-06</td>
+<td>API Surface, Egress, SSRF</td>
+<td>An undocumented route exists, or the server is used as a proxy into trusted networks</td>
+</tr>
+<tr>
+<td>SP-07</td>
+<td>File, Object Storage, Media</td>
+<td>Uploaded content executes, or stored objects are reachable without authorization</td>
+</tr>
+<tr>
+<td>SP-08</td>
+<td>Cryptography, Secrets, Key Management, Transport</td>
+<td>A secret is where it should not be, or a transport claim is untrue</td>
+</tr>
+<tr>
+<td>SP-09</td>
+<td>Runtime Configuration and Control-Plane Drift</td>
+<td>Deployed state diverges from reviewed state, in places source review cannot see</td>
+</tr>
+<tr>
+<td>SP-10</td>
+<td>Build and Software Supply Chain</td>
+<td>A trusted artifact is not the artifact that was reviewed</td>
+</tr>
+<tr>
+<td>SP-11</td>
+<td>Logging, Audit Integrity, Alerting, Incident Response</td>
+<td>The event happened and nobody can prove it, or nobody was told</td>
+</tr>
+<tr>
+<td>SP-12</td>
+<td>Data Lifecycle, Rights, Processors, Transfers</td>
+<td>Data outlives its purpose, crosses a border unlawfully, or a right cannot be honored</td>
+</tr>
+<tr>
+<td>SP-13</td>
+<td>Protected-Population Duties and Age-Appropriate Design</td>
+<td>A heightened duty owed to a specific population is met only for the general case</td>
+</tr>
+<tr>
+<td>SP-14</td>
+<td>AI and Model Layer: Generation, Prompts, Providers, Output</td>
+<td>The model is steered, or its output is trusted</td>
+</tr>
+<tr>
+<td>SP-15</td>
+<td>Human Decision Gates and Publication Integrity</td>
+<td>The last human barrier is bypassed, mis-defaulted, or shown an incomplete picture</td>
+</tr>
+<tr>
+<td>SP-16</td>
+<td>Availability, Resilience, Recovery</td>
+<td>The system is unavailable, or recovery reintroduces removed state</td>
+</tr>
+<tr>
+<td>SP-17</td>
+<td>Assurance Validity and Change Lifecycle</td>
+<td>The controls above are asserted by checks that cannot fail</td>
+</tr>
+</tbody>
+</table>
+<p>Notes on the three least obvious:</p>
+<p><strong>SP-13 generalizes beyond children.</strong> The pattern is a population to whom the law owes more than
+the general case: children under 13 (COPPA), minors 13-17 (state design codes and app-store acts),
+patients (HIPAA), students (FERPA), employees and applicants (state AI-in-hiring law), and
+consumers subject to automated decisions. A project with none of these marks the category N/A with
+a trigger, and re-runs on any change to T2.</p>
+<p><strong>SP-15 generalizes beyond content moderation.</strong> The pattern is any workflow where a human decision
+is the last barrier before an irreversible or externally-visible effect: content publication,
+payment release, access provisioning, clinical sign-off, model promotion, production deploy. It
+fails through mis-defaulted state and incomplete reviewer context, not through the failures in
+SP-14, which is why it is a separate category.</p>
+<p><strong>SP-17 is a legal obligation, not hygiene.</strong> GDPR Art. 32(1)(d) requires "a process for regularly
+testing, assessing and evaluating the effectiveness" of security measures. A check structurally
+incapable of detecting failure is not an assessment of effectiveness. Multiple US regimes carry
+the equivalent: the GLBA Safeguards Rule requires continuous monitoring or annual penetration
+testing plus biannual vulnerability assessment, and COPPA §312.8 requires ongoing testing of
+safeguards and an annual evaluation.</p>
+<h2 id="framework-layer">Framework layer<a class="headerlink" href="#framework-layer" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Role</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OWASP ASVS 5.0.0</strong></td>
+<td>Primary spine for application security</td>
+<td>17 chapters, ~350 requirements, released 30 May 2025. Machine-readable (CSV, CycloneDX JSON)</td>
+</tr>
+<tr>
+<td><strong>OWASP AISVS 1.0</strong></td>
+<td>Overlay for AI-specific surface</td>
+<td>12 chapters + 3 appendices, June 2026. Levels align 1:1 with ASVS</td>
+</tr>
+<tr>
+<td><strong>OWASP MASVS 2.1.0</strong></td>
+<td>Overlay for mobile</td>
+<td>Activates on a native or wrapped mobile client</td>
+</tr>
+<tr>
+<td><strong>OWASP SCVS / SLSA</strong></td>
+<td>Overlay for supply chain</td>
+<td>AISVS names these as its own deferral target</td>
+</tr>
+<tr>
+<td><strong>CIS Benchmarks</strong></td>
+<td>Overlay for operated infrastructure</td>
+<td>Scope to layers actually operated, not vendor-managed internals</td>
+</tr>
+<tr>
+<td><strong>NIST SSDF SP 800-218 / 218A</strong></td>
+<td>Consult for SDLC practices</td>
+<td>218A is the generative-AI addendum</td>
+</tr>
+<tr>
+<td><strong>NIST CSF 2.0 / SP 800-53</strong></td>
+<td>Consult; required where a contract names them</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>PCI DSS 4.0.1</strong></td>
+<td>Binding by contract where card data is handled</td>
+<td>Not a statute; enforceable anyway</td>
+</tr>
+<tr>
+<td>OWASP LLM Top 10, API Top 10, MITRE ATLAS</td>
+<td>Threat enumeration for corpus building</td>
+<td>Not control catalogs. Do not spine on them</td>
+</tr>
+<tr>
+<td>ISO 27001 / 27701 / 42001, CSA CCM/AICM, SAMM, BSIMM</td>
+<td>Ignore below enterprise scale unless a customer contract requires certification</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="two-facts-about-asvs-500-that-change-how-references-are-written">Two facts about ASVS 5.0.0 that change how references are written<a class="headerlink" href="#two-facts-about-asvs-500-that-change-how-references-are-written" title="Permanent link">&para;</a></h3>
+<p>Both verified against the published document and confirmed by three independent research runs.</p>
+<ol>
+<li><strong>Requirement IDs must be version-qualified</strong> (<code>v5.0.0-V8.2.1</code>). Of 286 requirements in 4.0.3,
+   only 11 carried forward unchanged and 15 took grammatical edits; 109 ceased to exist as
+   separate requirements. A bare <code>V8.2.1</code> is ambiguous across editions.</li>
+<li><strong>5.0.0 removed the embedded external-standard mappings</strong>, moving crosswalks to the OWASP CRE
+   ecosystem. Any framework-reference column is therefore hand-maintained, with no official
+   crosswalk to align to.</li>
+</ol>
+<p>Canary for bad secondary sources: any reference stating ASVS 5.0 has <strong>14 chapters</strong> is reproducing
+the 4.0.3 count and should not be trusted on anything else.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>ASVS 5.0.0 chapter</th>
+<th>#</th>
+<th>ASVS 5.0.0 chapter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V1</td>
+<td>Encoding and Sanitization</td>
+<td>V10</td>
+<td>OAuth and OIDC</td>
+</tr>
+<tr>
+<td>V2</td>
+<td>Validation and Business Logic</td>
+<td>V11</td>
+<td>Cryptography</td>
+</tr>
+<tr>
+<td>V3</td>
+<td>Web Frontend Security</td>
+<td>V12</td>
+<td>Secure Communication</td>
+</tr>
+<tr>
+<td>V4</td>
+<td>API and Web Service</td>
+<td>V13</td>
+<td>Configuration</td>
+</tr>
+<tr>
+<td>V5</td>
+<td>File Handling</td>
+<td>V14</td>
+<td>Data Protection</td>
+</tr>
+<tr>
+<td>V6</td>
+<td>Authentication</td>
+<td>V15</td>
+<td>Secure Coding and Architecture</td>
+</tr>
+<tr>
+<td>V7</td>
+<td>Session Management</td>
+<td>V16</td>
+<td>Security Logging and Error Handling</td>
+</tr>
+<tr>
+<td>V8</td>
+<td>Authorization</td>
+<td>V17</td>
+<td>WebRTC</td>
+</tr>
+<tr>
+<td>V9</td>
+<td>Self-contained Tokens</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="aisvs-10-scope-boundary">AISVS 1.0 scope boundary<a class="headerlink" href="#aisvs-10-scope-boundary" title="Permanent link">&para;</a></h3>
+<p>AISVS states its own limits, and the statement is more useful than most of its requirements
+because it tells you what you still owe elsewhere:</p>
+<blockquote>
+<p>"AISVS is intentionally narrow. It only defines security requirements that are specific to AI
+and ML systems... It is not a self-contained security program for an AI application."</p>
+</blockquote>
+<p>Verifying against AISVS Level N <strong>assumes</strong> verification against ASVS Level N. Explicitly out of
+scope, with AISVS's own named deferral target:</p>
+<table>
+<thead>
+<tr>
+<th>Out of AISVS scope</th>
+<th>Deferred to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>General application security</td>
+<td>ASVS</td>
+</tr>
+<tr>
+<td>General software supply chain</td>
+<td>OWASP SCVS, SLSA, CIS Controls</td>
+</tr>
+<tr>
+<td>General infrastructure and platform hardening</td>
+<td>CIS Benchmarks, NIST SP 800-53, SP 800-190, CSF</td>
+</tr>
+<tr>
+<td><strong>Data protection and privacy operations</strong>, incl. consent-management operation</td>
+<td>ASVS, ISO/IEC 27001, GDPR</td>
+</tr>
+<tr>
+<td>General logging and monitoring</td>
+<td>ASVS</td>
+</tr>
+<tr>
+<td>AI governance and risk management</td>
+<td>ISO/IEC 42001, ISO/IEC 23894, NIST AI RMF</td>
+</tr>
+</tbody>
+</table>
+<p>Two corrections worth recording, because secondary summaries get both wrong: AISVS does <strong>not</strong>
+cover privacy, and it has <strong>no human-oversight requirements chapter</strong>. <code>AD.19 Human Oversight &amp;
+Shutdown Control</code> is an entry in Appendix B's cross-reference inventory of defence techniques.</p>
+<p>The scope table also answers the recurring "the vendor owns infrastructure, skip CIS" argument:
+OWASP's own position is that infrastructure hardening is still owed, just from a different
+standard, for whatever layers you operate.</p>
+<table>
+<thead>
+<tr>
+<th>AISVS chapter</th>
+<th>Lands in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1 Training Data Integrity and Traceability</td>
+<td>SP-14, SP-10</td>
+</tr>
+<tr>
+<td>C2 Input Validation (prompt injection, content and policy screening)</td>
+<td>SP-03, SP-14</td>
+</tr>
+<tr>
+<td>C3 Model Lifecycle Management and Change Control</td>
+<td>SP-14, SP-09</td>
+</tr>
+<tr>
+<td>C4 Infrastructure, Configuration and Deployment</td>
+<td>SP-09</td>
+</tr>
+<tr>
+<td>C5 Access Control and Identity for AI Components</td>
+<td>SP-01, SP-02</td>
+</tr>
+<tr>
+<td>C6 Supply Chain Security for Models (AI BOM)</td>
+<td>SP-10</td>
+</tr>
+<tr>
+<td>C7 Model Behavior, Output Control and Safety Assurance</td>
+<td>SP-14, SP-03</td>
+</tr>
+<tr>
+<td>C8 Memory, Embeddings and Vector Database Security</td>
+<td>SP-02, SP-12</td>
+</tr>
+<tr>
+<td>C9 Orchestration and Agentic Security</td>
+<td>SP-04, SP-15</td>
+</tr>
+<tr>
+<td>C10 Model Context Protocol Security</td>
+<td>SP-06, SP-10</td>
+</tr>
+<tr>
+<td>C11 Adversarial Robustness</td>
+<td>SP-14</td>
+</tr>
+<tr>
+<td>C12 Monitoring, Logging and Anomaly Detection</td>
+<td>SP-11</td>
+</tr>
+<tr>
+<td><strong>Appendix C, AC.1-AC.14 AI-Assisted Secure Coding</strong></td>
+<td><strong>SP-10, SP-17</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="aisvs-appendix-c-the-ai-assisted-development-control-set">AISVS Appendix C: the AI-assisted development control set<a class="headerlink" href="#aisvs-appendix-c-the-ai-assisted-development-control-set" title="Permanent link">&para;</a></h3>
+<p>Source: <code>OWASP/AISVS</code>, <code>1.0/en/0x92-Appendix-C_AI_for_Code_Generation.md</code>. Fetched and read
+2026-08-02. Fourteen sections, roughly sixty level-tagged requirements.</p>
+<p><strong>This applies to any project developed with AI assistance</strong>, so a project instantiating the spine
+should treat Appendix C as in scope unless it can state that no part of its codebase or pipeline
+was AI-assisted. It is the published answer to a question that otherwise gets answered from first
+principles every time, and three of its sections cover a surface most security programs miss
+entirely: the development pipeline being attacked <em>through</em> the AI tooling.</p>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Subject</th>
+<th>Lands in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AC.1</td>
+<td>AI-assisted secure-coding workflow: written scope, SSDLC coverage, named adversarial scenarios, metrics vs a human-only baseline</td>
+<td>SP-17</td>
+</tr>
+<tr>
+<td>AC.2</td>
+<td>Tool qualification and threat modeling, incl. vendor model supply chain and pre-onboarding adversarial testing</td>
+<td>SP-10, SP-17</td>
+</tr>
+<tr>
+<td>AC.3</td>
+<td>Secure prompt and context management: no secrets or PII in prompts, automated redaction, <strong>external context treated as untrusted</strong>, instruction hierarchy, no silent truncation</td>
+<td>SP-03, SP-08</td>
+</tr>
+<tr>
+<td>AC.4</td>
+<td>Validation of AI-generated code: human review by a <strong>different identity</strong>, full scanner set per PR, merge block at CVSS &gt;= 9.0, elevated review for security-critical files</td>
+<td>SP-10</td>
+</tr>
+<tr>
+<td>AC.5</td>
+<td>Explainability and traceability: prompt to response to commit to build to deployment replay chain, tamper-evident</td>
+<td>SP-11, SP-17</td>
+</tr>
+<tr>
+<td>AC.6</td>
+<td>Continuous feedback, red-teaming of the AI tooling itself, regression harness after every prompt or model change</td>
+<td>SP-17</td>
+</tr>
+<tr>
+<td>AC.7</td>
+<td>AI-generated infrastructure and pipeline artifacts: labeled, human-reviewed, policy-as-code gated, dual control on high-impact triggers, drift detection vs signed baselines</td>
+<td>SP-09, SP-10</td>
+</tr>
+<tr>
+<td>AC.8</td>
+<td>Autonomous agent change control: an agent <strong>cannot approve, merge, sign, or deploy what it generated</strong>, enforced by SCM, CI, and registry. "Policy alone does not satisfy this control"</td>
+<td>SP-10, SP-15</td>
+</tr>
+<tr>
+<td>AC.9</td>
+<td>Artifact origin validation at deploy: signed provenance, trusted verifier, quarantine on failure</td>
+<td>SP-10</td>
+</tr>
+<tr>
+<td>AC.10</td>
+<td>Generation audit trail completeness: model identity and version, prompt hash, human involvement, correlation IDs; reject on incomplete metadata</td>
+<td>SP-10, SP-11</td>
+</tr>
+<tr>
+<td>AC.11</td>
+<td><strong>AI review and assistant bot hardening</strong>: PR content is untrusted input, signed and hash-pinned system prompts, schema-validated output only, network-isolated least-privilege sandbox, privileged actions adjudicated by a policy engine and not by the LLM, read-only shadow mode for fork PRs, continuous injection replay</td>
+<td>SP-03, SP-10</td>
+</tr>
+<tr>
+<td>AC.12</td>
+<td><strong>CI/CD hardening for AI augmentation</strong>: <code>pull_request_target</code> and <code>workflow_run</code> never execute untrusted code with write permissions or secrets, no persisted credentials, environment protection for fork and first-time contributors, ephemeral runners, elevated review on workflow-file changes, real-time pipeline audit streaming, and <strong>re-validation of PRs opened before a workflow fix landed</strong></td>
+<td>SP-10, SP-09</td>
+</tr>
+<tr>
+<td>AC.13</td>
+<td><strong>Adversarial AI detection in inbound contributions</strong>: contribution-velocity and reputation analytics, maintainer approval gate for first-time contributors, typosquat and phantom-dependency detection, ATT&amp;CK T1195 and ATLAS tagging, automated containment</td>
+<td>SP-10, SP-11</td>
+</tr>
+<tr>
+<td>AC.14</td>
+<td>Compromise containment for AI-in-pipeline: playbook, automatic rotation of every secret touched by a suspect run, rapid agent-identity revocation with a tested target time, provenance-driven blast-radius identification, annual live-fire</td>
+<td>SP-11, SP-17</td>
+</tr>
+</tbody>
+</table>
+<p>Three requirements are worth quoting because they are unusually precise and are commonly failed:</p>
+<ul>
+<li><strong>AC.4.1 (L1)</strong>: "AI-generated code always goes through code review by a qualified human
+  engineer. The reviewer must not be the same identity that asked for the AI generation in the
+  first place (separation of duties). And the AI agent itself does not count as the human
+  reviewer." A single-maintainer AI-assisted repository <strong>cannot satisfy this as written</strong>. The
+  correct handling is an accepted exception with compensating controls and an expiry, not a
+  silent skip.</li>
+<li><strong>AC.8.1 (L1)</strong>: an agent cannot approve, merge, sign, or deploy its own artifacts, "enforced by
+  the source-control system, the CI system, and the artifact registry. Policy alone does not
+  satisfy this control." Any setup where an assistant can enable auto-merge on a PR it authored
+  fails this.</li>
+<li><strong>AC.12.8 (L2)</strong>: remediating a vulnerable workflow must invalidate or re-validate PRs opened
+  before the fix, "without this step, a later commit to the same PR can pick up the stale workflow
+  definition and route around the fix."</li>
+</ul>
+<h2 id="regulatory-catalog">Regulatory catalog<a class="headerlink" href="#regulatory-catalog" title="Permanent link">&para;</a></h2>
+<p>Organized by trigger. Each entry names what it adds beyond the baseline and where it lands. This
+is a scoping aid, not legal advice; every entry with real exposure needs counsel.</p>
+<h3 id="always-on-us">Always on, US<a class="headerlink" href="#always-on-us" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Regime</th>
+<th>Adds</th>
+<th>Lands in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>FTC Act §5</strong> (unfair or deceptive acts)</td>
+<td>The catch-all. Security claims in a privacy policy or marketing page become enforceable representations. Covers dark patterns, deceptive defaults, and "reasonable security" as an unfairness theory. Enforced through consent decrees with 20-year terms</td>
+<td>SP-13, SP-12, all</td>
+</tr>
+<tr>
+<td><strong>State breach notification</strong> (50 states + DC + territories)</td>
+<td>Divergent definitions of covered data, harm thresholds, notice deadlines, AG and credit-bureau thresholds. The strictest applicable deadline governs a multi-state incident</td>
+<td>SP-11</td>
+</tr>
+</tbody>
+</table>
+<h3 id="us-federal-sectoral-trigger-t1t3">US federal, sectoral (trigger T1/T3)<a class="headerlink" href="#us-federal-sectoral-trigger-t1t3" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Regime</th>
+<th>Trigger</th>
+<th>Adds</th>
+<th>Lands in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>COPPA</strong> (16 CFR 312; amended rule 90 FR 16977, effective 23 Jun 2025, compliance 22 Apr 2026)</td>
+<td>Personal info from children under 13, or a child-directed service</td>
+<td>Verifiable parental consent, separate consent for third-party disclosure, direct notice, <strong>retention policy published in the privacy notice itself, not linked</strong>, §312.8 written security program with a named coordinator, annual risk assessment, ongoing safeguard testing, annual evaluation, and written assurances from recipients</td>
+<td>SP-13, SP-12, SP-17</td>
+</tr>
+<tr>
+<td><strong>HIPAA</strong> (Privacy, Security 45 CFR 164.302-318, Breach Notification)</td>
+<td>PHI, as covered entity or business associate</td>
+<td>Risk analysis, workforce controls, audit controls, BAAs, 60-day breach notice, minimum necessary</td>
+<td>SP-02, SP-11, SP-12</td>
+</tr>
+<tr>
+<td><strong>GLBA Safeguards Rule</strong> (16 CFR 314, amended 2021)</td>
+<td>"Financial institution", read broadly: mortgage brokers, auto dealers, tax preparers, collection agencies, some fintech</td>
+<td>Named <strong>Qualified Individual</strong>, written risk assessment, MFA or equivalent for any system holding customer information, encryption in transit and at rest, secure disposal, change management, continuous monitoring <strong>or</strong> annual pen test plus biannual vulnerability assessment, service-provider oversight, written IR plan, annual written report to the board</td>
+<td>SP-01, SP-08, SP-11, SP-17</td>
+</tr>
+<tr>
+<td><strong>FERPA / PPRA</strong></td>
+<td>Education records, or a school-directed service</td>
+<td>School-official exception terms, directory-information handling, parental rights, survey restrictions</td>
+<td>SP-13, SP-12</td>
+</tr>
+<tr>
+<td><strong>SOX §404</strong></td>
+<td>Public company financial reporting</td>
+<td>ITGC: access provisioning and review, change management, segregation of duties</td>
+<td>SP-02, SP-10</td>
+</tr>
+<tr>
+<td><strong>SEC cybersecurity disclosure</strong></td>
+<td>Public company</td>
+<td>Material incident on Form 8-K Item 1.05 within four business days of materiality determination; annual risk-management and governance disclosure</td>
+<td>SP-11</td>
+</tr>
+<tr>
+<td><strong>FCRA</strong></td>
+<td>Consumer reports, eligibility decisions</td>
+<td>Permissible purpose, accuracy, adverse-action notice, disposal rule</td>
+<td>SP-12</td>
+</tr>
+<tr>
+<td><strong>CAN-SPAM / TCPA</strong></td>
+<td>Commercial email, SMS, autodialed or prerecorded calls</td>
+<td>Consent capture and proof, opt-out honored within statutory windows. TCPA carries a private right of action with statutory damages</td>
+<td>SP-12, SP-04</td>
+</tr>
+<tr>
+<td><strong>VPPA</strong></td>
+<td>Video content plus disclosure to a third party</td>
+<td>Consent for disclosure of viewing records. The active litigation vector is advertising pixels on pages with video</td>
+<td>SP-12, SP-06</td>
+</tr>
+<tr>
+<td><strong>ECPA / Wiretap Act</strong> and state two-party-consent analogues (notably California CIPA)</td>
+<td>Session replay, chat interception, third-party tags reading form input</td>
+<td>Consent for interception. Also a live litigation vector</td>
+<td>SP-12, SP-05</td>
+</tr>
+<tr>
+<td><strong>ADA Title III / Section 508</strong></td>
+<td>Public accommodation, or federal procurement</td>
+<td>WCAG conformance as the de facto standard</td>
+<td>SP-13</td>
+</tr>
+<tr>
+<td><strong>NIST SP 800-171 / CMMC</strong></td>
+<td>Federal contract involving CUI</td>
+<td>110 controls, SSP and POA&amp;M, assessment level by contract</td>
+<td>all</td>
+</tr>
+<tr>
+<td><strong>FedRAMP</strong></td>
+<td>Selling a cloud service to a federal agency</td>
+<td>Authorization boundary, control baseline, continuous monitoring</td>
+<td>all</td>
+</tr>
+<tr>
+<td><strong>EAR / ITAR / OFAC</strong></td>
+<td>Export-controlled technology, or users in sanctioned jurisdictions</td>
+<td>Encryption export classification, geo-restriction, screening</td>
+<td>SP-02, SP-12</td>
+</tr>
+<tr>
+<td><strong>PCI DSS 4.0.1</strong> (contractual)</td>
+<td>Card data touched, transmitted, or influenced</td>
+<td>Scoping and segmentation, SAQ or ROC by level, and 4.x additions: client-side script integrity and change-and-tamper detection on payment pages, targeted risk analyses, expanded MFA</td>
+<td>SP-08, SP-05, SP-09</td>
+</tr>
+</tbody>
+</table>
+<h3 id="us-state-trigger-t4">US state (trigger T4)<a class="headerlink" href="#us-state-trigger-t4" title="Permanent link">&para;</a></h3>
+<p>The state layer is the fastest-moving part of this catalog and the part most likely to be stale.
+<strong>Do not treat any enumeration below as current without re-checking.</strong> Maintain against the IAPP
+US State Privacy Legislation Tracker and the Bloomberg Law tracker; the refresh is register row
+material, not a footnote.</p>
+<table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Status as verified</th>
+<th>What it adds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Comprehensive consumer privacy</strong></td>
+<td><strong>20 states have laws on the books as of Feb 2026</strong>, counting Florida's narrower scope. Indiana, Kentucky, and Rhode Island took effect 1 Jan 2026; Connecticut, Arkansas, and Utah changes 1 Jul 2026</td>
+<td>Notice; access, delete, correct, portability; opt-out of sale, sharing, and targeted advertising; sensitive-data opt-in or opt-out depending on state; <strong>universal opt-out signal (Global Privacy Control) recognition</strong> in a growing subset; data-protection assessments for high-risk processing; processor contract terms; profiling opt-out. Cure periods are sunsetting, so enforcement risk is rising even where the substantive law is unchanged</td>
+</tr>
+<tr>
+<td><strong>Breach notification</strong></td>
+<td>All states</td>
+<td>See "always on" above</td>
+</tr>
+<tr>
+<td><strong>Biometric</strong></td>
+<td>Illinois BIPA, Texas CUBI, Washington HB 1493, plus biometric clauses inside comprehensive laws</td>
+<td>Written policy with a retention and destruction schedule, informed written consent before collection, no sale. <strong>BIPA carries a private right of action with per-violation statutory damages</strong>, which makes it the single highest-exposure US privacy statute for a small operator</td>
+</tr>
+<tr>
+<td><strong>Consumer health data</strong></td>
+<td>Washington My Health My Data, Nevada SB 370, Connecticut</td>
+<td>Broad definition of health data reaching well past HIPAA, separate consent for collection and for sharing, geofencing prohibitions near health facilities. <strong>MHMDA carries a private right of action</strong></td>
+</tr>
+<tr>
+<td><strong>Minors and age-appropriate design</strong></td>
+<td>California AADC (partially enjoined, <em>NetChoice v. Bonta</em>), Maryland Kids Code, Nebraska, Vermont, Connecticut SB 3 amendments, Texas SCOPE Act, Florida HB 3, Utah Minor Protection</td>
+<td>DPIA for features likely to be accessed by minors, high-privacy defaults, no profiling by default, no dark patterns, age-appropriate notice language, limits on precise geolocation. Constitutional challenges are active, so track litigation status per state rather than assuming enforceability</td>
+</tr>
+<tr>
+<td><strong>App store accountability</strong></td>
+<td>Texas SB 2420 (1 Jan 2026), Utah (6 May 2026), Louisiana, Alabama</td>
+<td><strong>Obligations land on the developer, not only the store</strong>: designate an age rating, ingest age-category and parental-consent signals from the store API, re-trigger parental consent on a significant change to the app. Directly relevant to any project planning store distribution</td>
+</tr>
+<tr>
+<td><strong>AI-specific</strong></td>
+<td>Colorado AI Act (SB 24-205, implementation delayed to Jun 2026), Texas TRAIGA/HB 149 (1 Jan 2026), Illinois HB 3773 (employment AI, 1 Jan 2026), NYC Local Law 144 (AEDT bias audit), California CPPA ADMT regulations, Utah AI disclosure</td>
+<td>Impact assessments for consequential decisions, notice that AI is in use, human review or appeal, bias audit and public posting, developer-to-deployer documentation duties</td>
+</tr>
+<tr>
+<td><strong>State sectoral security</strong></td>
+<td>New York SHIELD Act, NYDFS Part 500 (amended Nov 2023, phased through Nov 2025), Massachusetts 201 CMR 17.00, California SB-327 IoT</td>
+<td>Written information security program, MFA, CISO designation and board reporting, 72-hour incident notice (NYDFS), encryption of personal information (MA), no default passwords (CA IoT)</td>
+</tr>
+<tr>
+<td><strong>Data broker registration</strong></td>
+<td>California Delete Act, Texas, Oregon, Vermont</td>
+<td>Registration, and for California the DROP deletion-request mechanism</td>
+</tr>
+</tbody>
+</table>
+<h3 id="eu-uk-and-other-non-us-readiness-trigger-t4">EU, UK, and other non-US readiness (trigger T4)<a class="headerlink" href="#eu-uk-and-other-non-us-readiness-trigger-t4" title="Permanent link">&para;</a></h3>
+<p>Handled the same way COPPA and GDPR are handled: recorded now with triggers, so that expansion is
+a scoping decision rather than a discovery.</p>
+<table>
+<thead>
+<tr>
+<th>Regime</th>
+<th>Trigger</th>
+<th>Adds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GDPR</strong> (EU 2016/679)</td>
+<td>Offering goods or services to, or monitoring, EU data subjects</td>
+<td>Lawful basis; Art. 5 principles; Art. 8 child consent age (13-16, set per member state); Art. 12 transparency; Art. 15-22 rights incl. portability and automated-decision safeguards; Art. 24-25 accountability and data protection by design and by default; Art. 27 EU representative; Art. 28-29 processor and subprocessor terms; Art. 30 records of processing; <strong>Art. 32(1)(a)-(d) security, with (d) the testing-effectiveness duty</strong>; Art. 33-34 breach notice at 72 hours; Art. 35 DPIA; Art. 44-49 transfers</td>
+</tr>
+<tr>
+<td><strong>UK GDPR + DPA 2018</strong>, as amended by the Data (Use and Access) Act 2025</td>
+<td>UK data subjects</td>
+<td>Largely parallel; separate transfer regime, separate regulator, separate representative requirement</td>
+</tr>
+<tr>
+<td><strong>ePrivacy Directive</strong> and national implementations</td>
+<td>Cookies, similar storage, unsolicited communications</td>
+<td>Prior consent for non-essential storage, independent of GDPR lawful basis</td>
+</tr>
+<tr>
+<td><strong>EU AI Act</strong> (2024/1689)</td>
+<td>Placing an AI system on the EU market or its output used in the EU</td>
+<td>Phased: prohibited practices and AI literacy from Feb 2025; GPAI obligations from Aug 2025; high-risk obligations from Aug 2026 and Aug 2027. Risk classification, transparency for systems interacting with people, technical documentation, logging, human oversight, post-market monitoring</td>
+</tr>
+<tr>
+<td><strong>DSA</strong> (2022/2065)</td>
+<td>Intermediary, hosting, or online platform</td>
+<td>Tiered. <strong>Art. 28 requires a high level of privacy, safety, and security for minors</strong> and prohibits profiling-based advertising to minors. The classification question is whether users disseminate content to other users, which catches features that look internal</td>
+</tr>
+<tr>
+<td><strong>NIS2</strong> (2022/2555)</td>
+<td>Essential or important entity in listed sectors</td>
+<td>Risk-management measures, supply-chain security, 24-hour early warning and 72-hour notification, management-body accountability</td>
+</tr>
+<tr>
+<td><strong>DORA</strong> (2022/2554)</td>
+<td>Financial entities and their ICT third parties</td>
+<td>ICT risk framework, incident classification and reporting, threat-led penetration testing, third-party register and contractual terms</td>
+</tr>
+<tr>
+<td><strong>Cyber Resilience Act</strong> (2024/2847)</td>
+<td>Placing a product with digital elements on the EU market</td>
+<td>Security by design, vulnerability handling for the support period, SBOM, <strong>actively-exploited-vulnerability reporting from Sep 2026</strong>, main obligations Dec 2027</td>
+</tr>
+<tr>
+<td><strong>European Accessibility Act</strong></td>
+<td>Consumer-facing e-commerce, e-books, banking, transport</td>
+<td>EN 301 549 conformance, in force since Jun 2025</td>
+</tr>
+<tr>
+<td><strong>Product Liability Directive</strong> (2024/2853)</td>
+<td>Software placed on the EU market</td>
+<td>Software is a product; defective-security claims become product-liability claims</td>
+</tr>
+<tr>
+<td><strong>Data Act</strong>, <strong>eIDAS 2</strong>, <strong>DMA</strong></td>
+<td>Connected products and data sharing; digital identity wallets; gatekeepers</td>
+<td>Recorded for completeness; each has a narrow trigger</td>
+</tr>
+<tr>
+<td><strong>UK Online Safety Act</strong></td>
+<td>User-to-user or search service with UK users</td>
+<td>Illegal-content and children's-safety duties, risk assessments, age assurance where required</td>
+</tr>
+<tr>
+<td><strong>Other</strong></td>
+<td>Per-country users</td>
+<td>Brazil LGPD; Canada PIPEDA and Quebec Law 25; Australia Privacy Act and the Children's Online Privacy Code; India DPDP Act; China PIPL; Japan APPI; South Korea PIPA; Switzerland revFADP</td>
+</tr>
+</tbody>
+</table>
+<h2 id="volatility-and-refresh">Volatility and refresh<a class="headerlink" href="#volatility-and-refresh" title="Permanent link">&para;</a></h2>
+<p>Parts of this file decay at very different rates, and treating them uniformly is how a spine goes
+quietly wrong.</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Half-life</th>
+<th>Refresh</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The seventeen categories</td>
+<td>Years</td>
+<td>Only on a genuine new failure mode</td>
+</tr>
+<tr>
+<td>Framework versions (ASVS, AISVS, MASVS, PCI)</td>
+<td>1-3 years</td>
+<td>Check on major release; re-verify chapter lists from the primary document, never a summary</td>
+</tr>
+<tr>
+<td>US federal sectoral</td>
+<td>Slow, but rule amendments matter</td>
+<td>Annual, plus on any FTC or sector-regulator rulemaking</td>
+</tr>
+<tr>
+<td><strong>US state</strong></td>
+<td><strong>Months</strong></td>
+<td><strong>Quarterly</strong>, against IAPP and Bloomberg trackers. Track litigation status separately from enactment status: several minors' design codes are enacted and partially enjoined</td>
+</tr>
+<tr>
+<td>EU phased regimes (AI Act, CRA, NIS2)</td>
+<td>Known dates, moving guidance</td>
+<td>Semi-annual, against the phase calendar</td>
+</tr>
+</tbody>
+</table>
+<p>Two standing rules that follow from the table:</p>
+<ul>
+<li><strong>Re-verify framework structure from primary sources.</strong> A published, confident, wrong summary of
+  a standard is common; one specimen states ASVS 5.0 has 14 chapters. Chapter and requirement
+  lists come from the standard, not from an article about the standard.</li>
+<li><strong>Enumerations of the state layer are dated snapshots, not facts.</strong> Any register citing "20
+  states" carries the date and source of that count, and a refresh row that owns it.</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 02:56:31 UTC">August 3, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 02:56:31 UTC">August 3, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

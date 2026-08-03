@@ -1,0 +1,3964 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/security/control-inheritance/">
+      
+      
+        <link rel="prev" href="../assurance-register/">
+      
+      
+        <link rel="next" href="../crypto-inventory/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Control Inheritance Map - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#why-this-file-exists" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Control Inheritance Map
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../assurance-spine/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Security
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../planning/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../assurance-spine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Spine
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../assurance-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Register
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Inheritance Map
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Inheritance Map
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-this-file-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why this file exists
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-vantage-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification vantage rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plane-a-cloudflare-zone-williamshomefamily" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plane A: Cloudflare (zone williamshome.family)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plane A: Cloudflare (zone williamshome.family)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a9-origin-bypass-open-defect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A9: origin bypass (open defect)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plane-b-supabase-dashboard-project-cvrnaydpzijtszfbsraq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plane B: Supabase dashboard (project cvrnaydpzijtszfbsraq)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plane-c-homelab-infra-pangolin-newt-traefik-nginx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plane C: homelab-infra (Pangolin / Newt / Traefik / nginx)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plane-d-github-repository-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plane D: GitHub repository settings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plane-e-cloudflare-r2-cover-art-object-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plane E: Cloudflare R2 (cover-art object storage)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#open-items-produced-by-this-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open items produced by this audit
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#relationship-to-existing-registers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Relationship to existing registers
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../crypto-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cryptographic Inventory
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../red-team-design-review-2026-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Team Design Review
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../planning/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../planning/adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-this-file-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why this file exists
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-vantage-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification vantage rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plane-a-cloudflare-zone-williamshomefamily" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plane A: Cloudflare (zone williamshome.family)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plane A: Cloudflare (zone williamshome.family)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a9-origin-bypass-open-defect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A9: origin bypass (open defect)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plane-b-supabase-dashboard-project-cvrnaydpzijtszfbsraq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plane B: Supabase dashboard (project cvrnaydpzijtszfbsraq)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plane-c-homelab-infra-pangolin-newt-traefik-nginx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plane C: homelab-infra (Pangolin / Newt / Traefik / nginx)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plane-d-github-repository-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plane D: GitHub repository settings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plane-e-cloudflare-r2-cover-art-object-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plane E: Cloudflare R2 (cover-art object storage)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#open-items-produced-by-this-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open items produced by this audit
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#relationship-to-existing-registers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Relationship to existing registers
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Control Inheritance Map</h1>
+
+<p>Audited: 2026-08-02.
+Companion to: <a href="../crypto-inventory/"><code>crypto-inventory.md</code></a>, which uses this same owner-column
+format scoped to cryptography only. This file generalizes it to all inherited controls.
+Update trigger: any change to a control plane listed below, and any conversion between
+deployment tiers (R1 internal-web, R2 TestFlight, R3 App Store).</p>
+<h2 id="why-this-file-exists">Why this file exists<a class="headerlink" href="#why-this-file-exists" title="Permanent link">&para;</a></h2>
+<p>A repository-scoped review can only see three of the five places a control can live:</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Example</th>
+<th>Covered by existing gates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L1 source</td>
+<td>middleware, validators</td>
+<td>yes (Ruff, BasedPyright, Bandit, tests)</td>
+</tr>
+<tr>
+<td>L2 dependency graph</td>
+<td>CVEs in pinned deps</td>
+<td>yes (pip-audit, OSV, Dependabot)</td>
+</tr>
+<tr>
+<td>L3 built container</td>
+<td>image CVEs, build args</td>
+<td>yes (Trivy, container-security.yml)</td>
+</tr>
+<tr>
+<td><strong>L4 deployed runtime config</strong></td>
+<td>Traefik middleware, firewall rules, DNS proxy status</td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td><strong>L5 operational capability</strong></td>
+<td>Cloudflare WAF, Supabase RLS state, R2 bucket policy</td>
+<td><strong>no</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Every control at L4 and L5 lives in an out-of-repo <strong>control plane</strong>. Nothing in CI reads those
+planes, so their posture is asserted in prose and never measured. That is how a control ends up
+documented as working while being structurally unable to function.</p>
+<p>This file does not enforce anything and does not block a release. Its contract is narrower and
+is the one that was missing: <strong>an inherited control must have a named owner, a stated
+applies-today verdict, and a named re-validation trigger.</strong> An entry may legitimately read
+"does not apply, by design, for this release tier." What it may not do is go unrecorded.</p>
+<h2 id="verification-vantage-rule">Verification vantage rule<a class="headerlink" href="#verification-vantage-rule" title="Permanent link">&para;</a></h2>
+<p>Adopted 2026-08-02 after a false negative produced while building this file.</p>
+<blockquote>
+<p><strong>A control that describes posture at a trust boundary must be verified from outside that
+boundary. A check that runs inside the boundary it is testing is a hollow check by
+construction.</strong></p>
+</blockquote>
+<p>Worked example. Public DNS for <code>cyo.williamshome.family</code> was measured from a workstation on the
+home LAN and returned <code>192.168.1.209</code> from <code>1.1.1.1</code>, <code>8.8.8.8</code>, and <code>9.9.9.9</code>, which reads as
+"the record is not proxied." The result was fabricated: split-horizon DNS transparently
+intercepts all outbound port-53 traffic and answers it locally, regardless of the destination
+address the query is sent to. The tell is that queries addressed to the zone's own authoritative
+Cloudflare nameservers (<code>kobe.ns.cloudflare.com</code>, <code>sky.ns.cloudflare.com</code>) returned the same
+RFC1918 answer, which those servers cannot produce. The true state is the opposite of the
+measurement: <code>cyo</code>, <code>cyo-dev</code>, and <code>cyo-staging</code> are all A records to <code>66.42.78.207</code> with the
+proxy enabled.</p>
+<p>Consequence for tooling: external-posture checks belong on a GitHub-hosted runner or a probe
+running on the VPS, never on a developer machine. This is the acceptance criterion for any
+future dynamic assurance job.</p>
+<h2 id="plane-a-cloudflare-zone-williamshomefamily">Plane A: Cloudflare (zone <code>williamshome.family</code>)<a class="headerlink" href="#plane-a-cloudflare-zone-williamshomefamily" title="Permanent link">&para;</a></h2>
+<p>Proxy status verified from the Cloudflare dashboard on 2026-08-02: <code>cyo</code>, <code>cyo-dev</code>, and
+<code>cyo-staging</code> are each an A record to <code>66.42.78.207</code>, all Proxied. Zone-level settings below were
+read from the same session.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Control</th>
+<th>Applies today</th>
+<th>Evidence</th>
+<th>Re-validate when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1</td>
+<td>Edge TLS termination</td>
+<td>Yes, for traffic that arrives via the edge</td>
+<td>Proxy enabled</td>
+<td>Proxy status change</td>
+</tr>
+<tr>
+<td>A2</td>
+<td>WAF / managed rules</td>
+<td><strong>Advisory only</strong> (see A9)</td>
+<td>Proxy enabled</td>
+<td>Proxy status change; A9 closure</td>
+</tr>
+<tr>
+<td>A3</td>
+<td>DDoS and rate limiting</td>
+<td><strong>Advisory only</strong> (see A9)</td>
+<td>Proxy enabled</td>
+<td>Proxy status change; A9 closure</td>
+</tr>
+<tr>
+<td>A4</td>
+<td>Bot mitigation</td>
+<td><strong>Advisory only</strong> (see A9)</td>
+<td>Proxy enabled</td>
+<td>Proxy status change; A9 closure</td>
+</tr>
+<tr>
+<td>A5</td>
+<td>HTTP to HTTPS redirect at edge</td>
+<td><strong>No rule configured</strong></td>
+<td>Rules gallery shows only "Create from template" for every entry</td>
+<td>Any Rules change</td>
+</tr>
+<tr>
+<td>A6</td>
+<td>Origin certificate validation</td>
+<td>Yes, but <strong>not pinned</strong></td>
+<td>Mode is "Automatic SSL/TLS"; badge reads "Currently running: Full (strict)"; next scan Aug 7</td>
+<td>Every Cloudflare re-scan</td>
+</tr>
+<tr>
+<td>A7</td>
+<td>Post-quantum key exchange to origin</td>
+<td>Automatic key exchange ON; compliance checkboxes observed <strong>unsaved</strong></td>
+<td>Dashboard, 2026-08-02</td>
+<td>Origin TLS stack change; ADR-013 review</td>
+</tr>
+<tr>
+<td>A8</td>
+<td>Network Error Logging</td>
+<td><strong>Yes, enabled</strong></td>
+<td>Zone Network settings</td>
+<td>Privacy model review</td>
+</tr>
+<tr>
+<td>A9</td>
+<td><strong>Origin reachable directly, bypassing the edge</strong></td>
+<td><strong>Yes: confirmed defect</strong></td>
+<td>See below</td>
+<td>On closure</td>
+</tr>
+<tr>
+<td>A10</td>
+<td>Web Analytics / RUM</td>
+<td>Not enabled</td>
+<td>"No data available"</td>
+<td>If observability plan adopts it</td>
+</tr>
+<tr>
+<td>A11</td>
+<td>IP Geolocation (<code>CF-IPCountry</code>)</td>
+<td>Enabled, unused by the app</td>
+<td>Zone Network settings</td>
+<td>If the app starts consuming it</td>
+</tr>
+<tr>
+<td>A12</td>
+<td>Maximum upload size</td>
+<td>100 MB at edge vs <code>client_max_body_size 2m</code> at nginx</td>
+<td>Zone Network settings; <code>frontend/nginx.conf:132</code></td>
+<td>Upload feature change</td>
+</tr>
+</tbody>
+</table>
+<p>Also observed and recorded so they are not re-raised: IPv6 compatibility ON, WebSockets ON,
+gRPC OFF, Pseudo IPv4 Off, Onion Routing OFF, True-Client-IP unavailable (Enterprise-only).
+The three SendGrid CNAME records in this zone were triaged previously and are accepted as-is.</p>
+<h3 id="a9-origin-bypass-open-defect">A9: origin bypass (open defect)<a class="headerlink" href="#a9-origin-bypass-open-defect" title="Permanent link">&para;</a></h3>
+<p>The origin serves the full application on <code>:443</code> with Cloudflare entirely out of the path:</p>
+<div class="language-console highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">$ </span>curl<span class="w"> </span>--resolve<span class="w"> </span>cyo.williamshome.family:443:66.42.78.207<span class="w"> </span>https://cyo.williamshome.family/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="go">HTTP/2 200</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="go">server: nginx</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">strict-transport-security: max-age=31536000; includeSubDomains; preload</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp gp-VirtualEnv">(no cf-ray)</span>
+</span></code></pre></div>
+<p>Two <code>homelab-infra</code> facts compose with this:</p>
+<ul>
+<li><code>services/pangolin/vps/scripts/03-firewall-setup.sh:61</code> opens <code>443/tcp</code> with no source
+  restriction.</li>
+<li><code>middleware.yml:321-332</code> shows the <code>pangolin-source-verify</code> IP allowlist was deleted.</li>
+</ul>
+<p>The origin address is not secret: it is the A-record value, it is in DNS history, and it is
+committed to <code>homelab-infra/dns-backups/</code>. Consequence: A2, A3, and A4 protect only clients that
+arrive via the edge voluntarily. They are advisory, not enforcing, until the origin refuses
+requests that did not come through the edge.</p>
+<p>Remediation owner: <code>homelab-infra</code>, not this repository.</p>
+<h4 id="why-the-firewall-is-the-wrong-enforcement-point">Why the firewall is the wrong enforcement point<a class="headerlink" href="#why-the-firewall-is-the-wrong-enforcement-point" title="Permanent link">&para;</a></h4>
+<p><code>services/pangolin/vps/scripts/03-firewall-setup.sh</code> is otherwise deliberately hardened: port 80
+is closed (DNS-01 ACME, so there is no HTTP-01 dependency), SSH is reachable only through the
+management tunnel, and all three WireGuard ports are pinned to the OPNsense WAN IP. Line 61 is
+the only unrestricted rule in the file.</p>
+<p>It cannot simply be narrowed, because a <code>ufw</code> rule matches on address and port and cannot see the
+requested hostname. Five records point at <code>66.42.78.207</code>; four are Proxied and
+<code>auth.williamshome.family</code> is <strong>not</strong> (evidence: <code>dns-backups/williamshome.family-20260712T211442Z.json</code>,
+dated 2026-07-12, so confirm before acting). Restricting <code>443/tcp</code> to Cloudflare ranges would
+take <code>auth</code> offline, and no firewall exception can distinguish the two hostnames on a shared
+socket.</p>
+<p>Enforcement therefore belongs at Traefik, which is hostname-aware, per-router.</p>
+<h4 id="ordering-constraint-recovering-the-real-client-ip-comes-first">Ordering constraint: recovering the real client IP comes first<a class="headerlink" href="#ordering-constraint-recovering-the-real-client-ip-comes-first" title="Permanent link">&para;</a></h4>
+<p><code>traefik_config.yml</code> has no <code>forwardedHeaders.trustedIPs</code> block, so Traefik treats the socket peer
+as the client address. That is correct today precisely because clients connect directly. Once
+traffic is forced through Cloudflare, every request appears to originate from a Cloudflare edge
+IP, which breaks two live controls:</p>
+<ul>
+<li><code>13-configure-geo-restriction.sh:280</code> bans on <code>evt.Meta.source_ip</code>, so it would evaluate the
+  edge's country rather than the visitor's.</li>
+<li>A CrowdSec or fail2ban decision would ban a Cloudflare edge IP, cutting off every legitimate
+  user routed through that edge.</li>
+</ul>
+<p>This shares a root cause with the <code>consent_ip</code> defect: nothing in the chain recovers the true
+client address once a proxy is inserted.</p>
+<h4 id="blocker-the-sequence-below-names-two-different-traefik-instances">Blocker: the sequence below names two different Traefik instances<a class="headerlink" href="#blocker-the-sequence-below-names-two-different-traefik-instances" title="Permanent link">&para;</a></h4>
+<p><strong>Found 2026-08-03, and it must be resolved before any step below is executed.</strong> The sequence spans
+two Traefik deployments without saying so, and does not record how traffic gets between them:</p>
+<ul>
+<li>Step 1 targets <code>services/pangolin/vps/config/traefik/traefik_config.yml</code>, the <strong>VPS</strong> Traefik on
+  <code>66.42.78.207</code>. That file's <code>websecure</code> entrypoint is a bare <code>address: ":443"</code> with no
+  <code>forwardedHeaders</code>, as described. It contains no <code>cyo</code> reference of any kind.</li>
+<li>Step 2 targets the CYO routers, which are Docker labels in
+  <code>services/cyo-adventure/docker-compose.yml</code> on the <code>traefik_proxy</code> network, resolved by the
+  <strong>Charon</strong> Traefik. Their middleware chain (<code>public-chain-cyo</code>) is defined in
+  <code>services/traefik/dynamic/middleware.yml</code>, also Charon. The deleted <code>pangolin-source-verify</code>
+  that step 2 proposes restoring is likewise a Charon middleware.</li>
+</ul>
+<p>So "enforce edge-only at Traefik" does not yet name a specific instance, and the correct allowlist
+differs by instance: Cloudflare ranges if enforcement sits on the VPS, the tunnel or peer source if
+it sits on Charon behind the VPS. Executing the sequence as written risks configuring the wrong hop
+and believing the bypass closed.</p>
+<p>The ordering constraint in the next subsection is unaffected and still binds. What is unresolved is
+<em>where</em>, not <em>whether</em>.</p>
+<p>A9 therefore remains <strong>open and accurately described in the present tense</strong>. This file records the
+exposure; it does not claim a remediation that has not happened. Verified still live 2026-08-03:
+<code>curl --resolve cyo.williamshome.family:443:66.42.78.207 https://cyo.williamshome.family/</code> returns
+<code>HTTP/2 200</code> with no <code>cf-ray</code>.</p>
+<p>Note on verification vantage, since this file is where that rule is written down: the check above
+must force the origin address. A client on the home LAN resolves <code>cyo.williamshome.family</code> to a
+private address through split-horizon DNS and never consults Cloudflare at all, so from inside the
+network no conclusion about edge proxy status is available. That is the same vantage error this
+document warns about, and it is easy to make here.</p>
+<h4 id="agreed-remediation-sequence">Agreed remediation sequence<a class="headerlink" href="#agreed-remediation-sequence" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Add <code>forwardedHeaders.trustedIPs</code> (Cloudflare ranges) to the websecure entrypoint in
+   <code>traefik_config.yml</code>. <strong>Must land first</strong>, or steps 2 and 3 cause an outage. Subject to the
+   instance question above.</li>
+<li>Enforce edge-only at Traefik, attached only to the CYO routers
+   (<code>services/cyo-adventure/docker-compose.yml:392-398</code>). Interim form: restore a
+   <code>pangolin-source-verify</code>-style <code>IPAllowList</code>. <strong>Target form: Cloudflare Authenticated Origin
+   Pulls (mTLS)</strong>, adopted 2026-08-02 because mTLS is already established practice in this
+   environment; it is hostname-precise, does not go stale when Cloudflare adds ranges, and is not
+   defeated by learning the origin IP.</li>
+</ol>
+<p>The existing pattern transplants directly. <code>homelab-infra</code>
+   <code>services/traefik/dynamic/tls.yml:69-75</code> defines an <code>internal-mtls</code> TLSOption
+   (<code>clientAuthType: RequireAndVerifyClientCert</code> over <code>caFiles: /certs/internal-ca.crt</code>), applied
+   per-router rather than globally, which is exactly the granularity needed here. The VPS Traefik
+   already runs a <code>file:</code> provider (<code>services/pangolin/vps/config/traefik/traefik_config.yml:54-55</code>),
+   so a new TLSOption drops in without restructuring.</p>
+<p>Two qualifications:</p>
+<ul>
+<li><strong>Different instance, different CA.</strong> <code>internal-mtls</code> lives on the homelab Traefik, on the
+     <code>websecure-internal</code> entrypoint, authenticating device certificates issued by step-ca.
+     Origin pulls must be enforced on the <strong>VPS</strong> Traefik against <strong>Cloudflare's</strong> origin-pull CA.
+     Do not merge the two CA pools into one TLSOption: a shared pool would let any homelab device
+     certificate satisfy the CYO router, and any Cloudflare-issued origin-pull certificate satisfy
+     internal mTLS. Define a separate, dedicated TLSOption.</li>
+<li><strong>Use per-hostname origin pull certificates, not zone-level.</strong> Zone-level Authenticated
+     Origin Pulls validate against a certificate Cloudflare shares across all customers, so it
+     proves only "arrived via Cloudflare," not "arrived via this zone." A customer-supplied
+     per-hostname certificate is what makes the control actually bind to this account.</li>
+</ul>
+<p>Issuing CA decision, 2026-08-02: <strong>step-ca</strong>. The origin-pull certificate is a client
+   certificate in a private trust relationship between Cloudflare and the origin, never validated
+   by a browser, so public trust adds nothing. <code>clientAuthType: RequireAndVerifyClientCert</code>
+   verifies only that the chain reaches an anchor in <code>caFiles</code>, and Traefik has no built-in
+   subject or SAN filter for client certificates, so the strength of the control equals the
+   issuance surface of the trusted CA.</p>
+<ul>
+<li>ZeroSSL is rejected: trusting a public CA root means every certificate that CA has ever
+     issued authenticates to the origin.</li>
+<li>Cloudflare's own CA is the rejected zone-level option above.</li>
+<li>step-ca must be issued under a <strong>separate root or dedicated intermediate</strong>, not the one at
+     <code>services/traefik/dynamic/tls.yml:74</code>. Sharing an anchor would let every homelab device
+     certificate satisfy the CYO edge router.</li>
+<li>Lifetime: issue long-lived and calendar the rotation. Existing renewal tooling
+     (<code>services/cert-enroll/scripts/renew-cert.sh</code>) pushes certificates to devices; Cloudflare
+     requires an API upload instead, so short step-ca defaults would cause a recurring outage.
+     Automating the Cloudflare-side upload is a follow-up, not a prerequisite.</li>
+</ul>
+<p>Evaluated and rejected for A9, 2026-08-02: <strong>Cloudflare Client Certificates</strong>
+   (<code>developers.cloudflare.com/ssl/client-certificates/</code>). That product secures the
+   client-to-edge leg, where a connecting client presents a certificate and Cloudflare verifies
+   it at the edge via mTLS rules (<code>cf.tls_client_auth.cert_verified</code>). A9 is a bypass of the edge
+   entirely, so a control enforced at the edge cannot see the traffic it would need to reject.
+   Adopting it would make A9 more urgent rather than less, because edge-enforced access control
+   fails open for anyone reaching the origin directly.</p>
+<p>Its certificates should also not be repurposed as the origin-pull certificate. Cloudflare
+   validates them "against CAs set at the account level," which describes where the validation
+   list is configured, not that the issuing root is cryptographically unique per account. If
+   account scoping is enforced in Cloudflare's validation logic rather than in the chain, then
+   trusting that root at the origin would accept client certificates issued to any Cloudflare
+   customer, which is the same union problem as ZeroSSL. Unverified either way, and step-ca has
+   no such ambiguity.
+3. Widen or replace <code>--forwarded-allow-ips=172.16.0.0/12</code> (<code>Dockerfile:148</code>) so the backend
+   recovers the guardian's address. Safe only after step 2, otherwise the header is
+   attacker-supplied.</p>
+<p>Contingent, not scheduled: proxying <code>auth.williamshome.family</code> would additionally unlock a
+kernel-level <code>ufw</code> backstop beneath all of the above. <strong>Open investigation (owner: maintainer,
+2026-08-02): whether proxying <code>auth</code> breaks anything.</strong> Viable only if <code>auth</code> is plain HTTPS.</p>
+<p>Explicitly rejected: narrowing <code>ufw</code> alone. On current DNS it takes <code>auth</code> offline, and without
+step 1 it silently corrupts geo-restriction and ban logic.</p>
+<h2 id="plane-b-supabase-dashboard-project-cvrnaydpzijtszfbsraq">Plane B: Supabase dashboard (project <code>cvrnaydpzijtszfbsraq</code>)<a class="headerlink" href="#plane-b-supabase-dashboard-project-cvrnaydpzijtszfbsraq" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Control</th>
+<th>Applies today</th>
+<th>Evidence</th>
+<th>Re-validate when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1</td>
+<td>RLS enabled on all tables</td>
+<td>Yes, all 25</td>
+<td>Live read-only probe, 2026-08-02</td>
+<td>Every new-table migration</td>
+</tr>
+<tr>
+<td>B2</td>
+<td>No <code>anon</code> / <code>authenticated</code> policies</td>
+<td>Yes</td>
+<td>Probe: reads return <code>200 []</code>, writes <code>42501</code></td>
+<td>Every policy migration</td>
+</tr>
+<tr>
+<td>B3</td>
+<td><code>anon</code> role table grants</td>
+<td><strong>Full DML grants present</strong></td>
+<td><code>supabase/migrations/20260729000000_add_child_profile_personalization.sql:48-56</code></td>
+<td>Continuous</td>
+</tr>
+<tr>
+<td>B4</td>
+<td>OIDC / JWKS configuration</td>
+<td>Assumed correct, unverified</td>
+<td>none</td>
+<td>Auth provider change</td>
+</tr>
+</tbody>
+</table>
+<p>B3 is the live risk and it is a single-layer defence, not an exposure. The <code>USING(true)</code> policies
+are scoped <code>TO cyo_api, cyo_worker</code> and never to <code>anon</code>, so no data is reachable today. But
+because <code>anon</code> holds the underlying grants, RLS is the only thing standing between the public
+PostgREST endpoint and the tables. Adding <code>ALTER DEFAULT PRIVILEGES</code> plus explicit revokes would
+make it two-layer.</p>
+<p>Correction owed: ADR-022 context point 3 asserts that <code>anon</code> and <code>authenticated</code> "have no
+grants." That is false, and the migration cited in B3 is the authoritative contradiction.</p>
+<h2 id="plane-c-homelab-infra-pangolin-newt-traefik-nginx">Plane C: homelab-infra (Pangolin / Newt / Traefik / nginx)<a class="headerlink" href="#plane-c-homelab-infra-pangolin-newt-traefik-nginx" title="Permanent link">&para;</a></h2>
+<p>This is where the controls that are actually enforcing live.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Control</th>
+<th>Applies today</th>
+<th>Evidence</th>
+<th>Re-validate when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1</td>
+<td>Public TLS termination</td>
+<td>Yes</td>
+<td>Pangolin VPS</td>
+<td>Infra change</td>
+</tr>
+<tr>
+<td>C2</td>
+<td>Response security headers</td>
+<td>Yes, and <strong>overwrites</strong> the app's stronger CSP</td>
+<td><code>middleware.yml:112-129</code> uses <code>Header().Set()</code></td>
+<td>Any header change in either repo</td>
+</tr>
+<tr>
+<td>C3</td>
+<td>HSTS</td>
+<td>Yes, unconditional</td>
+<td><code>middleware.yml</code></td>
+<td>Infra change</td>
+</tr>
+<tr>
+<td>C4</td>
+<td>Source IP allowlist</td>
+<td><strong>Deleted</strong></td>
+<td><code>middleware.yml:321-332</code></td>
+<td>See A9</td>
+</tr>
+<tr>
+<td>C5</td>
+<td>Host firewall</td>
+<td><code>443/tcp</code> open to the world</td>
+<td><code>03-firewall-setup.sh:61</code></td>
+<td>See A9</td>
+</tr>
+</tbody>
+</table>
+<p>C2 is the reason an in-repo CSP fix does not work. Traefik <code>Set()</code>s the header, so a
+<code>frontend/nginx.conf</code> CSP is discarded before any client sees it. The four-directive CSP observed
+in production responses is Traefik's, not the ten-directive one in
+<code>src/cyo_adventure/middleware/security.py:113-124</code>. Any CSP change must land in <code>middleware.yml</code>.</p>
+<p>Correction owed: <code>docs/architecture/deployment.md:46-48</code> describes this chain incorrectly, and
+<code>crypto-inventory.md:67</code> names <code>cloudflared</code> for the edge-to-origin tunnel. The tunnel is
+Newt/WireGuard behind Pangolin; <code>cloudflared</code> is not deployed.</p>
+<h2 id="plane-d-github-repository-settings">Plane D: GitHub repository settings<a class="headerlink" href="#plane-d-github-repository-settings" title="Permanent link">&para;</a></h2>
+<p>Branch protection, required status checks, merge-queue configuration, and ruleset membership are
+configured through the GitHub API and are not represented in any tracked file. This plane has
+already produced at least one silent gate failure in this project's history, where a required
+check could not fail.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Control</th>
+<th>Applies today</th>
+<th>Re-validate when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1</td>
+<td>Required status checks</td>
+<td>Assumed, unverified</td>
+<td>Any workflow rename or deletion</td>
+</tr>
+<tr>
+<td>D2</td>
+<td>Branch protection on <code>main</code></td>
+<td>Assumed, unverified</td>
+<td>Ruleset change</td>
+</tr>
+<tr>
+<td>D3</td>
+<td>Merge queue configuration</td>
+<td>Assumed, unverified</td>
+<td>Ruleset change</td>
+</tr>
+</tbody>
+</table>
+<p>A workflow rename silently detaches a required check without any signal, which makes D1 the
+highest-value candidate for an automated read of the settings API.</p>
+<h2 id="plane-e-cloudflare-r2-cover-art-object-storage">Plane E: Cloudflare R2 (cover-art object storage)<a class="headerlink" href="#plane-e-cloudflare-r2-cover-art-object-storage" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Control</th>
+<th>Applies today</th>
+<th>Re-validate when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E1</td>
+<td>Bucket public/private posture</td>
+<td>Unverified</td>
+<td>Any covers change</td>
+</tr>
+<tr>
+<td>E2</td>
+<td>CORS policy</td>
+<td>Unverified</td>
+<td>Frontend origin change</td>
+</tr>
+<tr>
+<td>E3</td>
+<td>Object lifecycle / retention</td>
+<td>Unverified</td>
+<td>Retention policy decision</td>
+</tr>
+</tbody>
+</table>
+<p>Not represented in any repository artifact. Covers are child-associated content, so E1 in
+particular needs a recorded verdict.</p>
+<h2 id="open-items-produced-by-this-audit">Open items produced by this audit<a class="headerlink" href="#open-items-produced-by-this-audit" title="Permanent link">&para;</a></h2>
+<p>Each needs a <code>UW-*</code> row so it has a phase home. None of them blocks a release.</p>
+<ol>
+<li><strong>A9 origin bypass</strong> (<code>homelab-infra</code>). Highest severity, smallest change.</li>
+<li><strong><code>consent_ip</code> is correct today and will silently break on the first external consent.</strong>
+   <code>db/models.py:502</code> stores <code>consent_ip</code> as the evidentiary record of parental consent and
+   carries an <code>#ASSUME</code> that it holds the real client address; <code>api/deps.py:857-862</code> repeats it.
+   The chain is <code>frontend/nginx.conf:114</code> (<code>$proxy_add_x_forwarded_for</code>) into uvicorn 0.51.0,
+   whose <code>ProxyHeadersMiddleware</code> walks <code>X-Forwarded-For</code> right-to-left and stops at the
+   rightmost address outside <code>--forwarded-allow-ips</code>, which <code>Dockerfile:148</code> sets to
+   <code>172.16.0.0/12</code> only.</li>
+</ol>
+<p>Measured against production on 2026-08-02 with a counts-only query returning no addresses.
+   The <code>"user"</code> table holds 6 rows, 2 with a consent record, across 2 families and 2 distinct
+   signer names, resolving to <strong>1 distinct address in <code>192.168.0.0/16</code></strong>, with zero in
+   <code>172.16.0.0/12</code> and zero loopback. <code>personalization_disclosure_consent</code> is empty.</p>
+<p>Reading: the mechanism <strong>works</strong> on the internal path. A <code>192.168</code> value is a real LAN client,
+   not a container address, which means the Docker hops are correctly treated as trusted and the
+   true client is recovered. Two signers sharing one address is consistent with both accounts
+   having been created from the same machine and is not evidence of a defect.</p>
+<p>What it actually shows is that <strong>every consent on record was captured from the LAN</strong>, so no
+   consent has yet traversed Cloudflare and the data cannot speak to the external path at all.
+   The forward risk stands: once a guardian consents from outside the LAN, the rightmost address
+   outside <code>172.16.0.0/12</code> becomes the Cloudflare edge rather than the guardian, and the record
+   degrades with no error and no log line. There is no corrupted evidence to remediate today, and
+   this must be fixed before any guardian can consent from off-LAN.</p>
+<p>Ordering constraint: switching to <code>CF-Connecting-IP</code> is only safe <strong>after</strong> A9 is closed,
+   otherwise the header becomes attacker-controlled.
+3. <strong>A6</strong>: pin <code>Full (strict)</code> explicitly rather than leaving SSL/TLS on Automatic.
+4. <strong>A8</strong>: accept-or-disable decision on Network Error Logging, which sends child-device
+   connectivity reports (URL, timestamp, client IP) to Cloudflare and is absent from the privacy
+   model.
+5. <strong>B3</strong>: revoke <code>anon</code> grants to make RLS two-layer; correct ADR-022 context point 3.
+6. <strong>A7 / ADR-013</strong>: the edge-to-origin leg exists and the PQ setting is live, but ADR-013 names
+   a component that is not deployed. Re-point it at Newt/WireGuard and Pangolin.
+7. <strong>Plane D and E</strong> have no verified rows at all.</p>
+<h2 id="relationship-to-existing-registers">Relationship to existing registers<a class="headerlink" href="#relationship-to-existing-registers" title="Permanent link">&para;</a></h2>
+<p>This file records <strong>posture</strong>. It deliberately does not duplicate:</p>
+<ul>
+<li><code>crypto-inventory.md</code>, which is the same instrument scoped to cryptography. One gap worth
+  noting: its row 2 (client to Cloudflare edge, "already hybrid") can be skipped entirely while
+  A9 is open, dropping a client straight onto row 3's classical leg.</li>
+<li><code>docs/planning/unscheduled-work-register.md</code>, which records <strong>scheduling</strong>. Every open item
+  above belongs there as well; this file is not a substitute for a phase home.</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 02:56:31 UTC">August 3, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 02:56:31 UTC">August 3, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
