@@ -142,10 +142,44 @@ IP, which breaks two live controls:
 This shares a root cause with the `consent_ip` defect: nothing in the chain recovers the true
 client address once a proxy is inserted.
 
+#### Blocker: the sequence below names two different Traefik instances
+
+**Found 2026-08-03, and it must be resolved before any step below is executed.** The sequence spans
+two Traefik deployments without saying so, and does not record how traffic gets between them:
+
+- Step 1 targets `services/pangolin/vps/config/traefik/traefik_config.yml`, the **VPS** Traefik on
+  `66.42.78.207`. That file's `websecure` entrypoint is a bare `address: ":443"` with no
+  `forwardedHeaders`, as described. It contains no `cyo` reference of any kind.
+- Step 2 targets the CYO routers, which are Docker labels in
+  `services/cyo-adventure/docker-compose.yml` on the `traefik_proxy` network, resolved by the
+  **Charon** Traefik. Their middleware chain (`public-chain-cyo`) is defined in
+  `services/traefik/dynamic/middleware.yml`, also Charon. The deleted `pangolin-source-verify`
+  that step 2 proposes restoring is likewise a Charon middleware.
+
+So "enforce edge-only at Traefik" does not yet name a specific instance, and the correct allowlist
+differs by instance: Cloudflare ranges if enforcement sits on the VPS, the tunnel or peer source if
+it sits on Charon behind the VPS. Executing the sequence as written risks configuring the wrong hop
+and believing the bypass closed.
+
+The ordering constraint in the next subsection is unaffected and still binds. What is unresolved is
+*where*, not *whether*.
+
+A9 therefore remains **open and accurately described in the present tense**. This file records the
+exposure; it does not claim a remediation that has not happened. Verified still live 2026-08-03:
+`curl --resolve cyo.williamshome.family:443:66.42.78.207 https://cyo.williamshome.family/` returns
+`HTTP/2 200` with no `cf-ray`.
+
+Note on verification vantage, since this file is where that rule is written down: the check above
+must force the origin address. A client on the home LAN resolves `cyo.williamshome.family` to a
+private address through split-horizon DNS and never consults Cloudflare at all, so from inside the
+network no conclusion about edge proxy status is available. That is the same vantage error this
+document warns about, and it is easy to make here.
+
 #### Agreed remediation sequence
 
 1. Add `forwardedHeaders.trustedIPs` (Cloudflare ranges) to the websecure entrypoint in
-   `traefik_config.yml`. **Must land first**, or steps 2 and 3 cause an outage.
+   `traefik_config.yml`. **Must land first**, or steps 2 and 3 cause an outage. Subject to the
+   instance question above.
 2. Enforce edge-only at Traefik, attached only to the CYO routers
    (`services/cyo-adventure/docker-compose.yml:392-398`). Interim form: restore a
    `pangolin-source-verify`-style `IPAllowList`. **Target form: Cloudflare Authenticated Origin
