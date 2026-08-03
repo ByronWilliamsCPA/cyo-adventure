@@ -474,8 +474,13 @@ def _strip_credentials_from_db_url(db_url: str) -> tuple[str, dict[str, str]]:
     # password. No Supabase-CLI-specific env var was needed or invented.
     #
     # TWO credential locations are handled, not one. libpq accepts the password in the
-    # userinfo (`://user:pw@host`) AND as a URI query parameter
-    # (`?password=pw&sslmode=require`); `urlsplit().password` is None for the second
+    # userinfo (`://user:pw@host`) AND as a URI query parameter: a `password` key in the
+    # query string, alongside ordinary connection parameters such as `sslmode`. That
+    # second form is spelled out in words rather than shown as a literal
+    # `key=value` pair, because a secret scanner's generic-password detector matches the
+    # assignment SHAPE and cannot tell an illustrative token in a comment apart from a
+    # real credential; written literally here it raised a false-positive incident
+    # against this file. `urlsplit().password` is None for the second
     # form, so a query-parameter password used to survive this function untouched,
     # reach argv, and get echoed verbatim by the failure path in main(). The same
     # applies to `passfile`, which is moved to PGPASSFILE rather than dropped, since
@@ -550,8 +555,10 @@ _URL_CREDENTIALS_RE = re.compile(r"://[^/\s:@]+:[^/\s]+@")
 # libpq also accepts keyword/value conninfo strings, and some client error paths echo
 # that form instead of a URL. The URL pattern above cannot see a bare `password=...`.
 # The value class stops at `&` as well as whitespace: the same `password=` shape occurs
-# in a URI query string, where `password=hunter2&sslmode=require` is two parameters, and
-# a `\S+` class swallowed the `sslmode` diagnostic along with the secret.
+# in a URI query string, where the password and a following `sslmode` are two separate
+# parameters, and a `\S+` class swallowed the `sslmode` diagnostic along with the secret.
+# (Spelled out rather than shown as a literal pair, for the scanner reason given at
+# _strip_credentials_from_db_url.)
 _CONNINFO_PASSWORD_RE = re.compile(r"(?i)\bpassword\s*=\s*[^\s&]+")
 
 
