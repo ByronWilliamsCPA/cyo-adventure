@@ -1,7 +1,7 @@
 # Whole-corpus documentation link check.
 #
 # The PR-time link check in pr-validation.yml is scoped to the files a PR
-# touches, because a required status check that contacts ~129 third-party hosts
+# touches, because a required status check that contacts ~96 third-party hosts
 # fails on their availability rather than on the change it is gating. That
 # scoping would silently drop coverage of every document nobody is editing,
 # which is exactly where link rot accumulates. This workflow is the other half:
@@ -17,8 +17,10 @@ name: Link Check (Full Corpus)
 
 on:
   schedule:
-    # 41 minutes past 05:00 UTC on Mondays: off-peak, offset from the hour, and
-    # ahead of the 06:23 and 07:11 Monday jobs so the three do not contend.
+    # 41 minutes past 05:00 UTC on Mondays: off-peak, offset from the hour,
+    # and first of the eight Monday jobs (05:41 here, then 06:23, 07:11, 07:13,
+    # 08:00, 09:00 twice, and 10:00), so it starts against an idle runner pool
+    # rather than contending with them.
     - cron: '41 5 * * 1'
   workflow_dispatch:
   # Runs on changes to its own definition and to the PR-side check, so a
@@ -35,8 +37,13 @@ on:
 
 permissions: {}
 
+# Keyed by event as well as ref. Without the event, a workflow_dispatch and
+# the Monday schedule both resolve to refs/heads/main, share a group, and the
+# newer one cancels the older. A cancelled job's result is `cancelled`, not
+# `failure`, so the file-rot job below would not fire: real link rot would go
+# unreported for a week with nothing on screen to say it had been swallowed.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -84,6 +91,12 @@ jobs:
             './README.md'
             './CONTRIBUTING.md'
           fail: true
+          # Left at the default, and stated explicitly so it does not get
+          # "harmonised" with the PR-side job, which sets it to false. The
+          # asymmetry is deliberate: this job's globs are fixed, so a run that
+          # finds zero links means the globs stopped matching, and a broken
+          # glob reporting success would silently retire whole-corpus coverage.
+          failIfEmpty: true
           jobSummary: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -94,7 +107,11 @@ jobs:
     # Scheduled runs only. A pull_request failure is already visible on the pull
     # request, and a manual dispatch is being watched by whoever dispatched it.
     # `failure()` checks the needed job's result, per GitHub's job-level
-    # status-check semantics.
+    # status-check semantics. It is deliberately not widened to include
+    # `cancelled()`: a cancellation is not evidence that anything rotted, and
+    # filing an issue on one would train everyone to ignore the issue. The
+    # concurrency key above is what stops a cancellation from swallowing a
+    # real scheduled failure in the first place.
     if: failure() && github.event_name == 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -123,7 +140,7 @@ jobs:
               'The failing URLs and their source files are in that run\'s job summary.',
               '',
               'Before editing anything, confirm the link is actually dead. This',
-              'check contacts around 129 third-party hosts, and a single run',
+              'check contacts around a hundred third-party hosts, and a run',
               'routinely catches one of them having a bad moment:',
               '',
               '- A **404, 410, or DNS failure** is real rot. Fix or remove the link.',
@@ -145,7 +162,12 @@ jobs:
               labels: 'ci-failure',
               per_page: 100,
             });
-            const existing = issues.find((issue) => issue.title === title);
+            // listForRepo returns pull requests as well as issues. A PR that
+            // happened to carry this title would otherwise absorb the comment,
+            // and the real issue would never be found or created.
+            const existing = issues.find(
+              (issue) => !issue.pull_request && issue.title === title,
+            );
             if (existing) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
