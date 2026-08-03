@@ -28,6 +28,17 @@ import { expect, type Page } from '@playwright/test'
  * device grant" is the unit-level statement of the same contract; if that copy
  * changes, both it and this helper must change together.
  *
+ * The confirm click is scoped to the dialog rather than to the page, so it
+ * cannot resolve against any "Remove device" control that is outside the
+ * confirmation; a regression that rendered the action while the dialog failed
+ * to open would then fail at the confirm instead of clicking through. Scoping
+ * also subsumes the separate heading assertion it replaces: matching
+ * `getByRole('dialog', { name })` proves both that the dialog element rendered
+ * and that Dialog.tsx's `aria-labelledby` still resolves to the title heading,
+ * where asserting the heading alone proved only that the text exists somewhere
+ * on the page. Grafted from the parallel fix in #568, now closed as a
+ * duplicate of this PR.
+ *
  * The console clears the local grant only after the server DELETE succeeds, so
  * the first-run CTA returning proves the revoke landed on the backend rather
  * than only in the browser. That also makes the wait network-bound: the default
@@ -45,8 +56,9 @@ import { expect, type Page } from '@playwright/test'
  */
 export async function removeDeviceFromConsole(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'Remove from this device' }).click()
-  await expect(page.getByRole('heading', { name: 'Remove this device?' })).toBeVisible()
-  await page.getByRole('button', { name: 'Remove device', exact: true }).click()
+  const confirm = page.getByRole('dialog', { name: 'Remove this device?' })
+  await expect(confirm).toBeVisible()
+  await confirm.getByRole('button', { name: 'Remove device', exact: true }).click()
 
   const cta = page.getByRole('button', { name: 'Set up this device for your kids' })
   const revokeFailed = page.getByText(/That didn.t work\. Check your connection/)
