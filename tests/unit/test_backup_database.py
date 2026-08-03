@@ -36,6 +36,80 @@ pytestmark = pytest.mark.unit
 
 _VALID_KEY = base64.b64encode(b"0" * 32).decode()
 
+# Realistic `supabase db dump` output captured from a live local Supabase stack
+# (2026-08-04, CLI 2.109.1, Postgres 17.6) for a project with zero custom roles and
+# zero application tables. This is the shape a wrong-project-ref, revoked-grant, or
+# wrong-search_path dump actually produces: non-whitespace, well-formed SQL, with none
+# of the leg's real content. `str.strip()` alone cannot distinguish this from a good
+# dump; only a structural marker check can.
+_BOILERPLATE_ROLES_SQL = """
+SET default_transaction_read_only = off;
+
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+
+RESET ALL;
+"""
+
+_BOILERPLATE_SCHEMA_SQL = """--
+-- PostgreSQL database dump
+--
+
+-- \\restrict aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+-- Dumped from database version 17.6
+-- Dumped by pg_dump version 17.6
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+-- \\unrestrict aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+"""
+
+_BOILERPLATE_DATA_SQL = """SET session_replication_role = replica;
+
+--
+-- PostgreSQL database dump
+--
+
+-- \\restrict bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+
+-- Dumped from database version 17.6
+-- Dumped by pg_dump version 17.6
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+-- \\unrestrict bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+
+RESET ALL;
+"""
+
+# Real leg content (also captured from the same live stack) for legs that must pass
+# the guard while a sibling leg is deliberately boilerplate-only.
+_REAL_ROLES_SQL = 'ALTER ROLE "anon" SET "statement_timeout" TO \'3s\';\n'
+_REAL_SCHEMA_SQL = (
+    'CREATE TABLE IF NOT EXISTS "public"."profiles" (\n    "id" uuid NOT NULL\n);\n'
+)
+_REAL_DATA_SQL = 'COPY "public"."profiles" ("id") FROM stdin;\n\\.\n'
+
 
 def test_tiers_for_date_weekday_is_daily_only() -> None:
     # 2026-08-04 is a Tuesday.
@@ -158,19 +232,150 @@ def test_run_backup_rejects_empty_dump(tmp_path: Path) -> None:
         )
 
 
-def test_run_backup_uploads_each_leg_to_every_applicable_tier() -> None:
-    written: dict[Path, str] = {}
+def _leg_writer(content_by_filename: dict[str, str]):
+    def _write(_db_url: str, out_path: Path, _extra_args: tuple[str, ...]) -> None:
+        out_path.write_text(content_by_filename[out_path.name])
 
-    def _write_fake_dump(
-        _db_url: str, out_path: Path, _extra_args: tuple[str, ...]
-    ) -> None:
-        out_path.write_text("-- fake dump content\n")
-        written[out_path] = out_path.name
+    return _write
+
+
+def test_run_backup_rejects_boilerplate_only_roles_dump() -> None:
+    """Load-bearing regression test: boilerplate-only roles.sql must be rejected.
+
+    This is the exact shape a real ``supabase db dump --role-only`` produces when the
+    dump connected successfully but the target has no custom roles to report (wrong
+    project ref, revoked grant, wrong search_path): pg_dump/pg_dumpall boilerplate,
+    zero whitespace-only content, and no restorable roles. The old
+    ``if not plaintext.strip()`` guard passes this silently because it is
+    non-whitespace bytes; run this test against that implementation and it fails
+    (no RuntimeError is raised).
+    """
+    writer = _leg_writer(
+        {
+            "roles.sql": _BOILERPLATE_ROLES_SQL,
+            "schema.sql": _REAL_SCHEMA_SQL,
+            "data.sql": _REAL_DATA_SQL,
+        }
+    )
+    with (
+        patch.object(backup_database, "_build_client", return_value=MagicMock()),
+        patch.object(backup_database, "run_dump_leg", side_effect=writer),
+        pytest.raises(RuntimeError, match=r"roles\.sql"),
+    ):
+        backup_database.run_backup(
+            db_url="postgresql://example",
+            r2_account_id="acct",
+            r2_access_key_id="key",
+            r2_secret_access_key="secret",
+            r2_bucket="backup-bucket",
+            encryption_key=b"0" * 32,
+            policy=backup_database.RetentionPolicy(),
+            dry_run=False,
+            now=datetime(2026, 8, 4, tzinfo=UTC),
+        )
+
+
+def test_run_backup_rejects_boilerplate_only_schema_dump() -> None:
+    """Boilerplate-only schema.sql (no CREATE TABLE) must be rejected."""
+    writer = _leg_writer(
+        {
+            "roles.sql": _REAL_ROLES_SQL,
+            "schema.sql": _BOILERPLATE_SCHEMA_SQL,
+            "data.sql": _REAL_DATA_SQL,
+        }
+    )
+    with (
+        patch.object(backup_database, "_build_client", return_value=MagicMock()),
+        patch.object(backup_database, "run_dump_leg", side_effect=writer),
+        pytest.raises(RuntimeError, match=r"schema\.sql"),
+    ):
+        backup_database.run_backup(
+            db_url="postgresql://example",
+            r2_account_id="acct",
+            r2_access_key_id="key",
+            r2_secret_access_key="secret",
+            r2_bucket="backup-bucket",
+            encryption_key=b"0" * 32,
+            policy=backup_database.RetentionPolicy(),
+            dry_run=False,
+            now=datetime(2026, 8, 4, tzinfo=UTC),
+        )
+
+
+def test_run_backup_rejects_boilerplate_only_data_dump() -> None:
+    """Boilerplate-only data.sql (no COPY ... FROM stdin) must be rejected."""
+    writer = _leg_writer(
+        {
+            "roles.sql": _REAL_ROLES_SQL,
+            "schema.sql": _REAL_SCHEMA_SQL,
+            "data.sql": _BOILERPLATE_DATA_SQL,
+        }
+    )
+    with (
+        patch.object(backup_database, "_build_client", return_value=MagicMock()),
+        patch.object(backup_database, "run_dump_leg", side_effect=writer),
+        pytest.raises(RuntimeError, match=r"data\.sql"),
+    ):
+        backup_database.run_backup(
+            db_url="postgresql://example",
+            r2_account_id="acct",
+            r2_access_key_id="key",
+            r2_secret_access_key="secret",
+            r2_bucket="backup-bucket",
+            encryption_key=b"0" * 32,
+            policy=backup_database.RetentionPolicy(),
+            dry_run=False,
+            now=datetime(2026, 8, 4, tzinfo=UTC),
+        )
+
+
+def test_run_backup_uploads_nothing_when_a_later_leg_fails() -> None:
+    """No R2 upload happens for any leg unless all three legs pass validation.
+
+    Regression test for the partial-backup finding: leg 1 (roles) and leg 2 (schema)
+    are valid, leg 3 (data) is boilerplate-only. Nothing must reach R2 for any of the
+    three legs, not just the failing one.
+    """
+    writer = _leg_writer(
+        {
+            "roles.sql": _REAL_ROLES_SQL,
+            "schema.sql": _REAL_SCHEMA_SQL,
+            "data.sql": _BOILERPLATE_DATA_SQL,
+        }
+    )
+    mock_client = MagicMock()
+    with (
+        patch.object(backup_database, "_build_client", return_value=mock_client),
+        patch.object(backup_database, "run_dump_leg", side_effect=writer),
+        pytest.raises(RuntimeError, match=r"data\.sql"),
+    ):
+        backup_database.run_backup(
+            db_url="postgresql://example",
+            r2_account_id="acct",
+            r2_access_key_id="key",
+            r2_secret_access_key="secret",
+            r2_bucket="backup-bucket",
+            encryption_key=b"0" * 32,
+            policy=backup_database.RetentionPolicy(),
+            dry_run=False,
+            now=datetime(2026, 8, 4, tzinfo=UTC),
+        )
+    mock_client.put_object.assert_not_called()
+
+
+def test_run_backup_uploads_each_leg_to_every_applicable_tier() -> None:
+    writer = _leg_writer(
+        {
+            "roles.sql": _REAL_ROLES_SQL,
+            "schema.sql": _REAL_SCHEMA_SQL,
+            "data.sql": _REAL_DATA_SQL,
+        }
+    )
 
     mock_client = MagicMock()
     with (
         patch.object(backup_database, "_build_client", return_value=mock_client),
-        patch.object(backup_database, "run_dump_leg", side_effect=_write_fake_dump),
+        patch.object(backup_database, "run_dump_leg", side_effect=writer),
     ):
         result = backup_database.run_backup(
             db_url="postgresql://example",
@@ -217,3 +422,104 @@ def test_run_dump_leg_propagates_cli_failure(tmp_path: Path) -> None:
         pytest.raises(subprocess.CalledProcessError),
     ):
         backup_database.run_dump_leg("postgresql://direct", out_path, ())
+
+
+def test_strip_password_from_db_url_moves_password_out_of_the_url() -> None:
+    sanitized, password = backup_database._strip_password_from_db_url(
+        "postgresql://<user>:<password>@<host>:5432/<dbname>"
+    )
+    assert password == "<password>"
+    assert "<password>" not in sanitized
+    assert sanitized == "postgresql://<user>@<host>:5432/<dbname>"
+
+
+def test_strip_password_from_db_url_passes_through_urls_with_no_password() -> None:
+    sanitized, password = backup_database._strip_password_from_db_url(
+        "postgresql://direct"
+    )
+    assert password is None
+    assert sanitized == "postgresql://direct"
+
+
+def test_run_dump_leg_never_puts_password_in_argv(tmp_path: Path) -> None:
+    out_path = tmp_path / "schema.sql"
+    with patch.object(backup_database.subprocess, "run") as mock_run:
+        backup_database.run_dump_leg(
+            "postgresql://<user>:<password>@<host>:5432/<dbname>", out_path, ()
+        )
+    args = mock_run.call_args.args[0]
+    assert "<password>" not in " ".join(args)
+    assert "--db-url" in args
+    db_url_arg = args[args.index("--db-url") + 1]
+    assert db_url_arg == "postgresql://<user>@<host>:5432/<dbname>"
+    call_env = mock_run.call_args.kwargs["env"]
+    assert call_env["PGPASSWORD"] == "<password>"
+
+
+def test_run_dump_leg_omits_pgpassword_when_url_has_no_password(
+    tmp_path: Path,
+) -> None:
+    out_path = tmp_path / "schema.sql"
+    with patch.object(backup_database.subprocess, "run") as mock_run:
+        backup_database.run_dump_leg("postgresql://direct", out_path, ())
+    call_env = mock_run.call_args.kwargs["env"]
+    assert "PGPASSWORD" not in call_env
+
+
+def test_redact_secrets_scrubs_url_password() -> None:
+    text = (
+        "connection failed: could not connect to "
+        "postgresql://<user>:<password>@<host>:5432/<dbname>"
+    )
+    redacted = backup_database._redact_secrets(text)
+    assert "<password>" not in redacted
+    assert "postgres://[redacted]@" in redacted or "postgresql://[redacted]@" in (
+        redacted
+    )
+
+
+def test_decode_process_output_returns_empty_string_for_none() -> None:
+    assert backup_database._decode_process_output(None) == ""
+    assert backup_database._decode_process_output(b"") == ""
+
+
+def test_decode_process_output_redacts_and_truncates() -> None:
+    long_tail = "x" * (backup_database._ERROR_OUTPUT_TRUNCATE_CHARS + 500)
+    data = f"postgresql://<user>:<password>@<host>/<db> {long_tail}".encode()
+    result = backup_database._decode_process_output(data)
+    assert "<password>" not in result
+    assert "truncated" in result
+    assert len(result) < len(long_tail) + 200
+
+
+def test_main_prints_redacted_stderr_on_dump_failure(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    env = {
+        "SUPABASE_DB_URL": "postgresql://<user>:<password>@<host>/<db>",
+        "R2_ACCOUNT_ID": "acct",
+        "R2_BACKUP_ACCESS_KEY_ID": "key",
+        "R2_BACKUP_SECRET_ACCESS_KEY": "secret",
+        "R2_BACKUP_BUCKET": "bucket",
+        "BACKUP_ENCRYPTION_KEY": _VALID_KEY,
+    }
+    failure = subprocess.CalledProcessError(
+        1,
+        "supabase",
+        output=b"stdout is fine",
+        stderr=(
+            b"FATAL: could not connect to "
+            b"postgresql://<user>:<password>@<host>/<db>: connection refused"
+        ),
+    )
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", side_effect=failure),
+        pytest.raises(SystemExit),
+    ):
+        backup_database.main()
+    captured = capsys.readouterr()
+    assert "<password>" not in captured.out
+    assert "connection refused" in captured.out
+    assert "[redacted]@" in captured.out

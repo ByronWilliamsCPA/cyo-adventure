@@ -44,9 +44,21 @@ Required environment variables (see .github/workflows/supabase-backup.yml):
 # this module nor any structlog call below ever logs their values or lengths. The one
 # thing that IS logged about the key is that it failed to decode (load_encryption_key's
 # error messages), never the raw or partially-decoded value.
-# #VERIFY: test_backup_database.py has no assertion for this because it is a negative
-# property (absence of a log call); grep for `_logger` call sites here before adding
-# new ones and confirm none interpolate `encryption_key`, `raw`, or the R2 secret.
+#
+# SUPABASE_DB_URL embeds a password too, and that one previously WAS exposed: it was
+# passed as a `--db-url` argv element to the `supabase` subprocess, readable from
+# `/proc/<pid>/cmdline` by any co-resident process for up to _DUMP_TIMEOUT_SECONDS.
+# run_dump_leg now strips the password out of the URL before it ever becomes an argv
+# element (see `_strip_password_from_db_url`) and exports it to the subprocess only via
+# `PGPASSWORD` in `env=`, which the Supabase CLI's underlying libpq connection honors
+# (verified manually against a live Supabase CLI 2.109.1 / local Postgres 17.6 stack:
+# an otherwise-identical dump with the password moved from the URL to `PGPASSWORD`
+# produced byte-identical output). `env=` values are not visible in `/proc/<pid>/cmdline`
+# the way argv is.
+# #VERIFY: test_backup_database.py::test_run_dump_leg_never_puts_password_in_argv and
+# ::test_strip_password_from_db_url_moves_password_out_of_the_url pin this; grep for
+# `_logger` call sites here before adding new ones and confirm none interpolate
+# `encryption_key`, `raw`, the R2 secret, or a raw (unsanitized) db_url.
 
 This is a real one-shot/scheduled operator script that dumps a live database and uploads
 to a live bucket. It is NOT covered by integration tests against live infrastructure;
@@ -59,6 +71,7 @@ from __future__ import annotations
 import argparse
 import base64
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -66,6 +79,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
+from urllib.parse import urlsplit, urlunsplit
 
 import boto3
 import structlog
@@ -96,6 +110,48 @@ _DEFAULT_WEEKLY_RETENTION_DAYS = 28
 _DEFAULT_MONTHLY_RETENTION_DAYS = 180
 
 _ISO_SUNDAY = 7
+
+# A dump leg below this many bytes is rejected outright, no marker check needed: real
+# legs (even a roles.sql from a project with zero custom roles) run into the hundreds
+# of bytes at minimum (a live capture from a default local Supabase stack measured 297
+# bytes for roles.sql). This floor only catches a truly empty or near-truncated file;
+# the structural marker check below is what actually distinguishes a real dump from
+# well-formed boilerplate.
+_MIN_LEG_BYTES = 40
+
+# Leg-appropriate structural markers, verified empirically (2026-08-04) against a live
+# local Supabase stack (CLI 2.109.1, Postgres 17.6) rather than assumed:
+#
+# - roles.sql (`supabase db dump --role-only`): pg_dumpall's own sed pipeline comments
+#   out and then deletes CREATE ROLE/ALTER ROLE lines for every reserved Supabase role
+#   name (anon, authenticated, service_role, ...), so a project with no custom roles
+#   can legitimately have ZERO `CREATE ROLE` lines. What always survives, because it is
+#   explicitly excluded from that deletion, are the platform-default per-role
+#   statement_timeout settings emitted as `ALTER ROLE "..." SET "statement_timeout" ...`
+#   -- confirmed present (3 lines: anon/authenticated/authenticator) on a fresh local
+#   stack with no custom roles at all. Hence the marker accepts either verb.
+# - schema.sql (`supabase db dump`, schema-only): pg_dump emits `CREATE TABLE "..."`,
+#   which the CLI's own sed pipeline rewrites to `CREATE TABLE IF NOT EXISTS "..."`; a
+#   plain substring/regex search for `CREATE TABLE` matches both forms.
+# - data.sql (`supabase db dump --data-only --use-copy`): confirmed this flag combination
+#   produces `COPY "schema"."table" (...) FROM stdin;` blocks, not `INSERT INTO`
+#   statements (the `--use-copy` flag specifically means "do not add pg_dump's
+#   --column-inserts", which is what forces INSERT-style output). If this leg's
+#   `extra_args` in `_DUMP_LEGS` above ever changes to drop `--use-copy`, this marker
+#   must change to `INSERT INTO` too.
+_LEG_REQUIREMENTS: dict[str, tuple[str, re.Pattern[str]]] = {
+    "roles.sql": (
+        "CREATE ROLE or ALTER ROLE",
+        re.compile(r"\b(?:CREATE|ALTER)\s+ROLE\b"),
+    ),
+    "schema.sql": ("CREATE TABLE", re.compile(r"\bCREATE\s+TABLE\b")),
+    "data.sql": ("COPY ... FROM stdin", re.compile(r"\bCOPY\b[^\n]*\bFROM stdin\b")),
+}
+
+# Ceiling on how much subprocess stdout/stderr main() prints per stream on failure: long
+# enough to carry a real Postgres/CLI error, short enough that a runaway or looping
+# error message cannot flood the workflow log.
+_ERROR_OUTPUT_TRUNCATE_CHARS = 4000
 
 
 @dataclass(frozen=True)
@@ -246,6 +302,86 @@ def decrypt_bytes(blob: bytes, key: bytes) -> bytes:
     return AESGCM(key).decrypt(nonce, ciphertext, associated_data=None)
 
 
+def _strip_password_from_db_url(db_url: str) -> tuple[str, str | None]:
+    """Split a Postgres connection URL into a password-free URL and its password.
+
+    # #CRITICAL: security: this is what keeps the database password out of argv (and
+    # therefore out of `/proc/<pid>/cmdline`, readable by any co-resident process for
+    # the subprocess's lifetime). Manually verified against a live Supabase CLI 2.109.1
+    # / local Postgres 17.6 stack: dumping with the password left in `--db-url` and
+    # dumping with the password stripped from the URL and exported as `PGPASSWORD`
+    # instead produced byte-identical roles.sql output, confirming the CLI's underlying
+    # libpq connection honors `PGPASSWORD` from the environment when the URL's userinfo
+    # omits a password. No Supabase-CLI-specific env var was needed or invented.
+    # #VERIFY: test_backup_database.py::test_strip_password_from_db_url_moves_password_out_of_the_url.
+
+    Args:
+        db_url: A (possibly password-bearing) Postgres connection URL, e.g.
+            ``postgresql://<user>:<password>@<host>:5432/<dbname>``.
+
+    Returns:
+        A tuple of ``(sanitized_url, password)``. ``password`` is ``None`` when the
+        input URL had no embedded password (nothing to strip, nothing to export);
+        ``sanitized_url`` is always safe to pass as a CLI argument.
+    """
+    parsed = urlsplit(db_url)
+    if parsed.password is None:
+        return db_url, None
+    netloc = parsed.username or ""
+    if parsed.hostname:
+        netloc += f"@{parsed.hostname}"
+    if parsed.port:
+        netloc += f":{parsed.port}"
+    sanitized = urlunsplit(
+        (parsed.scheme, netloc, parsed.path, parsed.query, parsed.fragment)
+    )
+    return sanitized, parsed.password
+
+
+_URL_CREDENTIALS_RE = re.compile(r"://[^/\s:@]+:[^/\s@]+@")
+
+
+def _redact_secrets(text: str) -> str:
+    """Scrub credential-shaped substrings before subprocess output reaches a log.
+
+    # #CRITICAL: security: a failed `supabase db dump` connection (wrong host, refused
+    # auth) can echo the connection string, including its embedded password, back in
+    # its stderr. This must never reach CI logs verbatim. Mirrors the URL-credentials
+    # pattern in the (not yet merged, see PR #581) `src/cyo_adventure/utils/redaction.py`
+    # rather than importing it: this script must run standalone in CI with only the
+    # `api` extra installed and must not gain a dependency on the app package for one
+    # regex.
+    # #VERIFY: test_backup_database.py::test_redact_secrets_scrubs_url_password.
+
+    Args:
+        text: Raw decoded subprocess output.
+
+    Returns:
+        ``text`` with any ``scheme://user:password@`` substring's password replaced.
+    """
+    return _URL_CREDENTIALS_RE.sub("://[redacted]@", text)
+
+
+def _decode_process_output(data: bytes | None) -> str:
+    """Decode, redact, and truncate captured subprocess stdout/stderr for printing.
+
+    Args:
+        data: Raw bytes from ``subprocess.CalledProcessError``/``TimeoutExpired``'s
+            ``stdout``/``stderr`` attribute, or ``None``.
+
+    Returns:
+        An empty string if ``data`` is falsy; otherwise the decoded, redacted text,
+        truncated to ``_ERROR_OUTPUT_TRUNCATE_CHARS`` characters.
+    """
+    if not data:
+        return ""
+    text = _redact_secrets(data.decode("utf-8", errors="replace"))
+    if len(text) <= _ERROR_OUTPUT_TRUNCATE_CHARS:
+        return text
+    omitted = len(text) - _ERROR_OUTPUT_TRUNCATE_CHARS
+    return f"{text[:_ERROR_OUTPUT_TRUNCATE_CHARS]}... [truncated, {omitted} more chars]"
+
+
 def run_dump_leg(db_url: str, out_path: Path, extra_args: tuple[str, ...]) -> None:
     """Run one ``supabase db dump`` leg, writing output to ``out_path``.
 
@@ -268,13 +404,17 @@ def run_dump_leg(db_url: str, out_path: Path, extra_args: tuple[str, ...]) -> No
         subprocess.TimeoutExpired: If the dump does not finish within
             ``_DUMP_TIMEOUT_SECONDS``.
     """
+    sanitized_url, password = _strip_password_from_db_url(db_url)
+    env = os.environ.copy()
+    if password is not None:
+        env["PGPASSWORD"] = password
     subprocess.run(
         [
             "supabase",
             "db",
             "dump",
             "--db-url",
-            db_url,
+            sanitized_url,
             "-f",
             str(out_path),
             *extra_args,
@@ -282,6 +422,7 @@ def run_dump_leg(db_url: str, out_path: Path, extra_args: tuple[str, ...]) -> No
         check=True,
         timeout=_DUMP_TIMEOUT_SECONDS,
         capture_output=True,
+        env=env,
     )
 
 
@@ -381,8 +522,9 @@ def run_backup(
         empty in dry-run mode).
 
     Raises:
-        RuntimeError: If any dump leg is empty (see the #CRITICAL note below); nothing
-            from that leg is uploaded to any tier.
+        RuntimeError: If any dump leg is too small or missing its structural marker
+            (see the #CRITICAL note below); nothing is uploaded to any tier for any
+            leg, including legs that already passed validation earlier in this run.
         subprocess.CalledProcessError: If a ``supabase db dump`` leg exits non-zero.
         subprocess.TimeoutExpired: If a dump leg does not finish within
             ``_DUMP_TIMEOUT_SECONDS``.
@@ -408,24 +550,60 @@ def run_backup(
     client = _build_client(r2_account_id, r2_access_key_id, r2_secret_access_key)
     ensure_lifecycle_rules(client, r2_bucket, policy)
 
-    uploaded: list[str] = []
+    # #CRITICAL: data integrity: dump and validate every leg into this run's temp
+    # directory FIRST, uploading nothing until all three pass (chosen over a
+    # completeness-marker-object approach, since the TemporaryDirectory already holds
+    # every leg's bytes for the process lifetime, so buffering the encrypted
+    # ciphertext too, at most tens of MB, costs nothing extra). If leg 2 or 3 fails
+    # (auth revoked mid-run, CLI crash, disk full, a boilerplate-only dump), leg 1's
+    # ciphertext is simply discarded when the TemporaryDirectory is cleaned up: R2
+    # never receives ANY object for this date until the whole set is known-good, so a
+    # rushed restore can never find an unlabeled partial set under daily/<date>/.
+    # #VERIFY: test_backup_database.py::test_run_backup_uploads_nothing_when_a_later_leg_fails.
+    ciphertexts: dict[str, bytes] = {}
     with tempfile.TemporaryDirectory() as tmp:
         tmp_dir = Path(tmp)
         for filename, extra_args in _DUMP_LEGS:
             out_path = tmp_dir / filename
             run_dump_leg(db_url, out_path, extra_args)
-            # #CRITICAL: data integrity: an empty dump file (a truncated or silently
-            # failed `supabase db dump` that still exits 0) must not be uploaded as if
-            # it were a real backup -- that would look like a successful nightly run
-            # while actually holding nothing to restore from. This check runs BEFORE
-            # any upload for this leg, to every tier, so a bad dump never reaches R2
-            # under any prefix.
-            # #VERIFY: test_backup_database.py::test_run_backup_rejects_empty_dump.
+            # #CRITICAL: data integrity: `supabase db dump`/pg_dump output ALWAYS
+            # carries non-whitespace boilerplate (headers, `SET ...` lines, comments)
+            # even when the dump captured ZERO real data for this leg -- a wrong
+            # project ref, revoked grant, or wrong search_path still exits 0 and
+            # produces well-formed, non-blank SQL. A bare blankness check cannot tell
+            # that apart from a real backup, so each leg must additionally contain a
+            # structural marker specific to what that leg is supposed to hold (see
+            # `_LEG_REQUIREMENTS` above, verified against a live dump, not assumed).
+            # This check runs BEFORE any upload for this leg, to every tier, so a bad
+            # dump never reaches R2 under any prefix.
+            # #VERIFY: test_backup_database.py::test_run_backup_rejects_boilerplate_only_roles_dump,
+            # ::test_run_backup_rejects_boilerplate_only_schema_dump,
+            # ::test_run_backup_rejects_boilerplate_only_data_dump,
+            # ::test_run_backup_rejects_empty_dump.
             plaintext = out_path.read_bytes()
-            if not plaintext.strip():
-                msg = f"supabase db dump produced an empty {filename}; aborting upload"
+            if len(plaintext) < _MIN_LEG_BYTES:
+                msg = (
+                    f"supabase db dump produced an empty or near-empty {filename} "
+                    f"({len(plaintext)} bytes, need at least {_MIN_LEG_BYTES}); "
+                    "aborting upload"
+                )
                 raise RuntimeError(msg)
-            ciphertext = encrypt_bytes(plaintext, encryption_key)
+            marker_label, marker_pattern = _LEG_REQUIREMENTS[filename]
+            if not marker_pattern.search(plaintext.decode("utf-8", errors="replace")):
+                msg = (
+                    f"supabase db dump produced {filename} with no {marker_label} "
+                    "statement; the dump ran and produced only boilerplate output "
+                    "(pg_dump/pg_dumpall headers and SET lines, no real content), "
+                    "which means it likely captured the wrong project, database, or "
+                    "search_path; aborting upload"
+                )
+                raise RuntimeError(msg)
+            ciphertexts[filename] = encrypt_bytes(plaintext, encryption_key)
+
+        # All three legs dumped and validated: only now does anything touch R2.
+        uploaded: list[str] = []
+        for filename, _extra_args in _DUMP_LEGS:
+            ciphertext = ciphertexts[filename]
             for tier in tiers:
                 key = upload_encrypted(
                     client, r2_bucket, tier, date_str, filename, ciphertext
@@ -525,7 +703,22 @@ def main() -> None:
         ClientError,
         RuntimeError,
     ) as exc:
+        # #CRITICAL: data integrity: str(exc) on a CalledProcessError/TimeoutExpired
+        # does NOT include stdout/stderr (verified: it renders as just
+        # "Command '[...]' returned non-zero exit status 1."), so without this, the one
+        # piece of information most useful during a real incident, WHY the dump or
+        # upload failed (auth, network, permissions), was captured by
+        # capture_output=True and then silently discarded. stdout/stderr are only
+        # present on the two subprocess exception types; BotoCoreError/ClientError/
+        # RuntimeError have no such attributes, hence getattr with a None default.
+        # #VERIFY: test_backup_database.py::test_main_prints_redacted_stderr_on_dump_failure.
         print(f"[ERROR] backup failed: {exc}")
+        stdout = _decode_process_output(getattr(exc, "stdout", None))
+        stderr = _decode_process_output(getattr(exc, "stderr", None))
+        if stdout:
+            print(f"[ERROR] stdout:\n{stdout}")
+        if stderr:
+            print(f"[ERROR] stderr:\n{stderr}")
         sys.exit(1)
 
     print(f"[LIVE] backup summary: {result}")
