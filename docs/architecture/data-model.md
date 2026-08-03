@@ -47,6 +47,8 @@ erDiagram
     storybook ||--o{ reading_state : "read as"
     storybook_version ||--o{ reading_state : "pins version"
     child_profile ||--o{ completion : "completes"
+    child_profile ||--o{ reading_activity_day : "reads on days"
+    storybook |o--o{ story_request : "resulting storybook"
     storybook_version ||--o{ completion : "pins version"
     child_profile ||--o{ rating : "rates"
     child_profile ||--o{ storybook_assignment : "assigned to"
@@ -87,6 +89,8 @@ erDiagram
         varchar(32) consent_policy_version "NULL"
         varchar(200) consent_signer_name "NULL; typed legal-name signature"
         varchar(64) consent_ip "NULL; evidentiary only"
+        varchar(2) residence_country "NULL; ISO 3166-1 alpha-2; O-117 jurisdiction signal"
+        timestamptz adulthood_attested_at "NULL; O-119 self-declared adult attestation"
     }
 
     child_profile {
@@ -108,6 +112,10 @@ erDiagram
         timestamptz processing_restricted_at "NULL; GDPR Art 18/21"
         boolean real_name_ring1_enabled "default false; ADR-023 own-family real name"
         boolean real_name_ring2_enabled "default false; ADR-023 connected-family real name"
+        boolean ring_enabled "NULL; G19/K22 band default when NULL"
+        int ring_goal_days "NULL; G19/K22 1-6, band default when NULL"
+        boolean badges_enabled "default true; G19/K21"
+        boolean time_capture_paused "default false; G19/K23 server discards flushes"
     }
 
     family_connection {
@@ -221,6 +229,14 @@ erDiagram
         timestamptz found_at
     }
 
+    reading_activity_day {
+        uuid child_profile_id PK, FK
+        date activity_date PK
+        int active_seconds "CHECK >= 0; K23 day-grain only"
+        varchar(120) last_flush_id "NULL; single-slot idempotency"
+        timestamptz updated_at
+    }
+
     rating {
         uuid child_profile_id PK, FK
         varchar(120) storybook_id PK, FK
@@ -273,6 +289,7 @@ erDiagram
         uuid concept_id FK "NULL; set on approval"
         uuid series_id FK "NULL; WS-B PR3 continuation"
         varchar(120) anchor_storybook_id FK "NULL; soft-continuation source"
+        varchar(120) resulting_storybook_id FK "NULL; W0.4 stamped at publish, SET NULL on delete"
         varchar(120) proposed_series_title "NULL"
         timestamptz created_at
     }
@@ -412,6 +429,8 @@ one adult can be a guardian, an admin, or both.
 | consent_policy_version | VARCHAR(32) NULL | Policy version the guardian consented to; paired with `consent_accepted_at` (both NULL or both set) |
 | consent_signer_name | VARCHAR(200) NULL | Guardian's typed full-legal-name electronic signature |
 | consent_ip | VARCHAR(64) NULL | Evidentiary record of the consenting request's client IP; never queried or joined on |
+| residence_country | VARCHAR(2) NULL | O-117 jurisdiction signal; ISO 3166-1 alpha-2, guardian-selected at consent. Membership in the assigned-code set is enforced in the API layer; the DB CHECK enforces two-letter syntax only |
+| adulthood_attested_at | TIMESTAMPTZ NULL | O-119 self-declared adulthood attestation timestamp; records when the guardian ticked the box, not any identity evidence. Paired with `residence_country` (both NULL or both set, and only alongside a recorded consent) |
 
 ### `child_profile`
 

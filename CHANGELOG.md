@@ -7,6 +7,76 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.60.1] - 2026-08-03
+
+### Bug Fixes
+
+- **planning**: Stop citation patterns reading ids out of longer ids
+  ([#579](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/579),
+  [`23afc00`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/23afc008edce7728339f4a01efc9531c7d0f2ef5))
+
+
+## [0.60.0] - 2026-08-03
+
+### Features
+
+- **auth**: Add residence country and adulthood attestation to guardian consent
+  ([#567](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/567),
+  [`eef0458`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/eef04585caffe9f95674e7730511e838d9ba4b9d))
+
+### Refactoring
+
+- **planning**: Make work-linkage id namespaces data-driven and register SQ-*
+  ([#566](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/566),
+  [`cc1d82f`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/cc1d82f8df97428a08b1e39de1a4c558f9791e1c))
+
+
+## [0.59.2] - 2026-08-03
+
+### Bug Fixes
+
+- **e2e**: Unblock the staging e2e tier (seed age band + device-removal confirm)
+  ([#564](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/564),
+  [`e037bea`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/e037bea271792eca95f79b9dac827882d4ab9be8))
+
+
+## [0.59.1] - 2026-08-03
+
+### Bug Fixes
+
+- **auth**: Set Tier 1 RLS context before the device-grant lookup
+  ([#560](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/560),
+  [`eb96f68`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/eb96f6878f54172b8a5a510fc100c1d39d27e99f))
+
+
+## [0.59.0] - 2026-08-02
+
+### Features
+
+- **kid**: Kid-appeal design decisions, rendered-stop reader, engagement v1, content and media
+  groundwork ([#532](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/532),
+  [`36b32bc`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/36b32bca929e51717fc8ea89a4aeb8d78fb14b42))
+
+- **moderation**: Gate 3 batch recall sweep + default review_batch_size=8
+  ([#541](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/541),
+  [`ae5a981`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/ae5a981b2877bb0c7718d1b4d2251ec081294cb1))
+
+
+## [0.58.0] - 2026-08-01
+
+### Bug Fixes
+
+- **moderation**: Re-moderate imported books instead of rejecting 'import' provenance
+  ([#537](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/537),
+  [`6682ec1`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/6682ec17f0a059f986b53e94b9830bf8ec0b6e23))
+
+### Features
+
+- **moderation**: Admin re-moderation entry point and catalog sweep script
+  ([#529](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/529),
+  [`ea3970c`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/ea3970c82a8bd1b28440ad4d7b7f11aee12d1e47))
+
+
 ## [0.57.0] - 2026-08-01
 
 ### Features
@@ -2979,6 +3049,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.60.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.60.0...v0.60.1
+[0.60.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.59.2...v0.60.0
+[0.59.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.59.1...v0.59.2
+[0.59.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.59.0...v0.59.1
+[0.59.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.58.0...v0.59.0
+[0.58.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.57.0...v0.58.0
 [0.57.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.56.0...v0.57.0
 [0.56.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.55.2...v0.56.0
 [0.55.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.55.1...v0.55.2

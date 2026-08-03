@@ -134,6 +134,7 @@ For deployment on FIPS-enabled systems (Ubuntu LTS with fips-updates, government
 ```python
 # ✗ WRONG - Will fail on FIPS systems
 import hashlib
+
 h = hashlib.md5(data)
 
 # ✓ CORRECT - Non-security use is allowed

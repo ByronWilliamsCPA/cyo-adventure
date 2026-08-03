@@ -18,6 +18,8 @@
 # whatever the app renders, so a human must confirm the new appearance is
 # correct, not a regression.
 #
+# Bump: 2026-08-01 regenerate after the reader chrome change (PR #532: the
+# position pill replaced the in-read progress bar per AL-029/ADR-026).
 # Re-run trigger: touch this file (a comment bump is enough) and push to a
 # feature branch to regenerate after a UI change or a merge from main.
 #
@@ -45,6 +47,21 @@
 # emits one merged text node, and browsers shape and kern per text run, so a
 # glyph pair spanning the old node boundary lands on a different subpixel.
 # Cosmetically and semantically inert; the baseline is simply pixel-exact.
+#
+# Baseline bump 2026-08-01 (2): the three kid baselines (picker, library,
+# reader) were being captured with `/v1/me/progress` and
+# `/v1/profiles/story-status` UNROUTED, so both adapters failed closed against a
+# backend that is not running and the weekly ring, badge-case button,
+# endings-gallery button and "new story!" pill were absent from every baseline.
+# visual.spec.ts now mocks both endpoints with the ON settings a 6-8 reader
+# actually resolves to, so those three baselines legitimately gain the
+# gamification chrome this PR added. Review the diff as an addition of chrome
+# that was previously invisible, not as a layout regression.
+#
+# Re-run bump 2026-08-02: the a815080 run regenerated kid-picker and library
+# baselines but its createCommitOnBranch raced a concurrent push (b517604,
+# coverage-matrix registration) and was rejected on expectedHeadOid; bump to
+# regenerate and commit them on the current head.
 name: Update Visual Snapshots
 
 on:

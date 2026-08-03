@@ -11,7 +11,8 @@ guardian management page need.
 from __future__ import annotations
 
 import asyncio
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
+from typing import TYPE_CHECKING
 
 from fastapi import APIRouter
 from sqlalchemy import select
@@ -28,6 +29,8 @@ from cyo_adventure.api.schemas import (
     ContentFlagCaps,
     ProfileCreateBody,
     ProfileListView,
+    ProfileStoryStatusListView,
+    ProfileStoryStatusView,
     ProfileUpdateBody,
     ProfileView,
     error_responses,
@@ -39,13 +42,36 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.core.pin import hash_pin
-from cyo_adventure.db.models import ChildProfile, User
+from cyo_adventure.db.models import ChildProfile, StorybookAssignment, User
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.validator.slots import (
     band_mandatory_bundles,
     denylisted_bundles,
     structural_value_violations,
 )
+
+if TYPE_CHECKING:
+    import uuid
+
+# W1.4 (design review 4.1 / kid-appeal-implementation-plan.md): the window a
+# StorybookAssignment counts as "new" for the profile-picker pill.
+#
+# #ASSUME: data-integrity: "new" is defined as "assigned within the last N
+# days", NOT "assigned since this profile's last child session", because no
+# child-session-start timestamp is ever persisted -- a child session token is
+# a self-contained, backend-signed JWT verified with zero database round-trip
+# (api/deps.py::_child_principal's docstring), so there is no row to compare
+# against. Falls back to the same 7-day window the shelf's own "new" badge
+# already uses (frontend/src/library/bookCardUtils.ts::NEW_BADGE_WINDOW_MS),
+# so a child does not see two different definitions of "new" between the
+# picker pill and the shelf they land on next.
+# #VERIFY: tests/integration/test_profiles.py::
+# test_story_status_true_for_assignment_within_seven_days,
+# ::test_story_status_excludes_assignment_older_than_seven_days pin this
+# window server-side; frontend/src/library/bookCardUtils.test.ts pins the
+# 7-day constant on its own side (no cross-language test ties the two, so a
+# future change to either must update this comment by hand).
+_NEW_STORY_WINDOW = timedelta(days=7)
 
 router = APIRouter(
     prefix="/api/v1", tags=["profiles"], responses=error_responses(401, 403)
@@ -85,6 +111,10 @@ def _view(row: ChildProfile) -> ProfileView:
         request_auto_approve=row.request_auto_approve,
         monthly_request_envelope=row.monthly_request_envelope,
         processing_restricted=row.processing_restricted_at is not None,
+        ring_enabled=row.ring_enabled,
+        ring_goal_days=row.ring_goal_days,
+        badges_enabled=row.badges_enabled,
+        time_capture_paused=row.time_capture_paused,
         created_at=row.created_at,
     )
 
@@ -164,6 +194,37 @@ def _apply_g2_content_controls(row: ChildProfile, body: ProfileUpdateBody) -> No
         row.request_auto_approve = body.request_auto_approve
     if "monthly_request_envelope" in fields:
         row.monthly_request_envelope = body.monthly_request_envelope
+
+
+def _apply_gamification_settings(row: ChildProfile, body: ProfileUpdateBody) -> None:
+    """Apply the W3.4 gamification-toggle fields of a PATCH.
+
+    ``ring_enabled``/``ring_goal_days`` follow the avatar/pin "explicit null
+    clears (back to the P-A band default), omitted leaves unchanged"
+    contract; ``badges_enabled``/``time_capture_paused`` follow the
+    non-null-applies contract, since they always have a concrete default and
+    no legitimate "clear" state.
+
+    Args:
+        row: The profile row being updated (mutated in place).
+        body: The PATCH body; ``model_fields_set`` distinguishes omitted from
+            explicit null.
+    """
+    fields = body.model_fields_set
+    # #CRITICAL: data-integrity: an explicit null here must land as a stored
+    # NULL (band default resumes), not be silently dropped -- resolution
+    # happens downstream in api/progress.py, not here, so this write path
+    # must preserve the "no override" state precisely.
+    # #VERIFY: tests/integration/test_profiles.py::
+    # test_update_ring_settings_explicit_null_clears_to_band_default.
+    if "ring_enabled" in fields:
+        row.ring_enabled = body.ring_enabled
+    if "ring_goal_days" in fields:
+        row.ring_goal_days = body.ring_goal_days
+    if body.badges_enabled is not None:
+        row.badges_enabled = body.badges_enabled
+    if body.time_capture_paused is not None:
+        row.time_capture_paused = body.time_capture_paused
 
 
 def validate_display_name(display_name: str, age_band: str) -> None:
@@ -257,15 +318,21 @@ async def _require_consent(ctx: Context) -> None:
         raise BusinessLogicError(msg, rule="vpc_required")
 
 
-@router.get("/profiles")
-async def list_profiles(ctx: Context) -> ProfileListView:
-    """List the child profiles the calling principal may act on.
+async def _listable_profiles(ctx: Context) -> list[ChildProfile]:
+    """Return the ChildProfile rows the calling principal may list.
+
+    The SOLE scoping logic for "which profiles can this caller see at all",
+    shared by ``list_profiles`` and ``list_profile_story_status`` so the two
+    endpoints can never drift apart on who is in scope: the story-status pill
+    endpoint deliberately re-derives its profile set from this exact function
+    rather than re-implementing the DEVICE/guardian branch, so a future change
+    to one endpoint's scoping cannot silently widen the other's.
 
     Args:
         ctx: The request context (principal + unit-of-work session).
 
     Returns:
-        ProfileListView: All family profiles for a guardian or a DEVICE
+        list[ChildProfile]: All family profiles for a guardian or a DEVICE
             principal (ADR-014 phase 2: the picker needs the family's
             profiles to offer without a live guardian bearer); the single
             assigned profile for a child; empty if the principal has none.
@@ -277,7 +344,10 @@ async def list_profiles(ctx: Context) -> ProfileListView:
     # profile_ids-based query below, which would otherwise always yield an
     # empty list for a device token.
     # #VERIFY: test_profiles.py::test_device_grant_lists_own_family_profiles
-    # asserts the family's profiles are returned and a second family's are not.
+    # asserts the family's profiles are returned and a second family's are not;
+    # tests/integration/test_profiles.py::
+    # test_story_status_device_grant_scoped_to_own_family covers the same
+    # invariant for the story-status endpoint built on this helper.
     if ctx.principal.role is Role.DEVICE:
         # #ASSUME: data-integrity: a deactivated profile (WS-J) is excluded
         # here too, mirroring _resolve_profiles, so a shared device's picker
@@ -292,15 +362,17 @@ async def list_profiles(ctx: Context) -> ProfileListView:
             )
             .order_by(ChildProfile.created_at.asc(), ChildProfile.id.asc())
         )
-        return ProfileListView(profiles=[_view(row) for row in rows.all()])
+        return list(rows.all())
     # #CRITICAL: security: scope strictly to principal.profile_ids (resolved at
     # the auth boundary in deps.py), never to a client-supplied family or
     # profile id, so no cross-family row can ever appear (IDOR). profile_ids
     # already excludes deactivated profiles (_resolve_profiles).
     # #VERIFY: test_profiles.py::test_guardian_lists_own_family_profiles asserts
-    # family B's profile is absent from guardian A's list.
+    # family B's profile is absent from guardian A's list; tests/integration/
+    # test_profiles.py::test_story_status_guardian_scoped_to_own_profile_ids
+    # covers the same invariant for the story-status endpoint.
     if not ctx.principal.profile_ids:
-        return ProfileListView(profiles=[])
+        return []
     rows = await ctx.session.scalars(
         select(ChildProfile)
         .where(ChildProfile.id.in_(ctx.principal.profile_ids))
@@ -308,7 +380,115 @@ async def list_profiles(ctx: Context) -> ProfileListView:
         # avoids DB-dependent row order flicker; id breaks created_at ties.
         .order_by(ChildProfile.created_at.asc(), ChildProfile.id.asc())
     )
-    return ProfileListView(profiles=[_view(row) for row in rows.all()])
+    return list(rows.all())
+
+
+@router.get("/profiles")
+async def list_profiles(ctx: Context) -> ProfileListView:
+    """List the child profiles the calling principal may act on.
+
+    Args:
+        ctx: The request context (principal + unit-of-work session).
+
+    Returns:
+        ProfileListView: All family profiles for a guardian or a DEVICE
+            principal (ADR-014 phase 2: the picker needs the family's
+            profiles to offer without a live guardian bearer); the single
+            assigned profile for a child; empty if the principal has none.
+    """
+    rows = await _listable_profiles(ctx)
+    return ProfileListView(profiles=[_view(row) for row in rows])
+
+
+@router.get("/profiles/story-status")
+async def list_profile_story_status(ctx: Context) -> ProfileStoryStatusListView:
+    """Bulk "new story ready" pill status for every listable profile (W1.4).
+
+    Serves the profile picker (design review 4.1): a device-grant or
+    not-yet-handed-off guardian principal, called BEFORE any child session is
+    minted, so a per-profile ``GET /library`` (which a picker-stage principal
+    could not even authorize for a sibling child, per
+    ``ProfilePickerPage.tsx``'s own deferred-work comment) is never an option
+    here. ``has_new_story`` is a plain boolean derived purely from
+    ``storybook_assignment`` timing; see ``_NEW_STORY_WINDOW`` for the "new"
+    definition and why it is a 7-day fallback rather than a last-session
+    comparison.
+
+    Args:
+        ctx: The request context (principal + unit-of-work session).
+
+    Returns:
+        ProfileStoryStatusListView: One boolean-only entry per profile
+        ``_listable_profiles`` returns for this caller -- never more, never a
+        title or count. A profile with no recent assignment reads
+        ``has_new_story=False``, not merely absent.
+    """
+    # #CRITICAL: security: profile scope is derived from the EXACT SAME
+    # ``_listable_profiles`` helper ``GET /profiles`` uses, not a
+    # re-implementation, so this endpoint can never show a caller a profile
+    # (or, by extension, that profile's pill state) it could not already list
+    # by name. No sibling-library read ever happens: only
+    # ``storybook_assignment`` rows for ids already in this scoped set are
+    # queried.
+    # #VERIFY: tests/integration/test_authz_matrix.py ROUTE_TABLE entry for
+    # ("GET", "/api/v1/profiles/story-status") pins the same allowed-role set
+    # as ("GET", "/api/v1/profiles"); tests/integration/test_profiles.py::
+    # test_story_status_cross_family_profile_never_appears.
+    rows = await _listable_profiles(ctx)
+    if not rows:
+        return ProfileStoryStatusListView(statuses=[])
+    profile_ids = [row.id for row in rows]
+    cutoff = datetime.now(UTC) - _NEW_STORY_WINDOW
+    # #CRITICAL: security: the response never carries storybook_id or title --
+    # only the profile_id already in `profile_ids` (itself already
+    # caller-scoped above) and a bool. Even if a future edit widened this
+    # query's SELECT list by mistake, ProfileStoryStatusView's schema (extra
+    # fields silently dropped by Pydantic on construction, since only
+    # profile_id/has_new_story are ever passed to it below) is the second
+    # layer that keeps a title from ever reaching the wire.
+    # #VERIFY: tests/integration/test_profiles.py::
+    # test_story_status_response_never_carries_a_title_or_count.
+    new_rows = await ctx.session.scalars(
+        select(StorybookAssignment.child_profile_id)
+        .where(
+            StorybookAssignment.child_profile_id.in_(profile_ids),
+            StorybookAssignment.created_at >= cutoff,
+        )
+        .distinct()
+    )
+    return _build_story_status_view(profile_ids, set(new_rows.all()))
+
+
+def _build_story_status_view(
+    profile_ids: list[uuid.UUID], new_profile_ids: set[uuid.UUID]
+) -> ProfileStoryStatusListView:
+    """Assemble the boolean-only response from a scoped id list and a "new" set.
+
+    Pure and DB-free (mirrors ``notifications/registry.py``'s composer
+    pattern), so it is unit-testable with plain constructed fixtures -- no
+    session, no ASGI, no principal. Kept as the sole place that turns "is this
+    id in the new set" into a ``ProfileStoryStatusView``, so a future field
+    added to that view can never accidentally be sourced from anything other
+    than ``profile_id``/membership.
+
+    Args:
+        profile_ids: The caller-scoped profile ids, in display order
+            (``_listable_profiles``'s own ordering is preserved end to end).
+        new_profile_ids: The subset with a ``storybook_assignment`` inside
+            ``_NEW_STORY_WINDOW``.
+
+    Returns:
+        ProfileStoryStatusListView: One entry per ``profile_ids``, in order.
+    """
+    return ProfileStoryStatusListView(
+        statuses=[
+            ProfileStoryStatusView(
+                profile_id=str(profile_id),
+                has_new_story=profile_id in new_profile_ids,
+            )
+            for profile_id in profile_ids
+        ]
+    )
 
 
 @router.post("/profiles", status_code=201, responses=error_responses(400))
@@ -364,6 +544,12 @@ async def create_profile(body: ProfileCreateBody, ctx: Context) -> ProfileView:
         # #VERIFY: test_profiles.py::test_create_and_update_envelope_fields.
         request_auto_approve=body.request_auto_approve,
         monthly_request_envelope=body.monthly_request_envelope,
+        # W3.4: omitted at creation means "no override, follow the P-A band
+        # default" (see ProfileCreateBody's field docstring).
+        ring_enabled=body.ring_enabled,
+        ring_goal_days=body.ring_goal_days,
+        badges_enabled=body.badges_enabled,
+        time_capture_paused=body.time_capture_paused,
     )
     ctx.session.add(row)
     # The unit-of-work dependency commits on success; flush + refresh to read
@@ -435,6 +621,7 @@ async def update_profile(
             datetime.now(UTC) if body.processing_restricted else None
         )
     _apply_g2_content_controls(row, body)
+    _apply_gamification_settings(row, body)
     await ctx.session.flush()
     return _view(row)
 

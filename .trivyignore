@@ -15,13 +15,17 @@
 #   - openssl / libssl CVE-2026-45447: resolved by `apt-get upgrade`.
 #   - Go stdlib / esbuild CVEs: frontend/node_modules excluded via .dockerignore.
 #
-# Last reviewed: 2026-07-30 (added the 7-CVE linux-libc-dev block from the
-# PR #494 Container Security run; removed the CVE-2026-53399 / CVE-2026-64600
-# block, whose own removal condition was met when the dhi-python:3.14-debian13
-# base advanced from 6.12.95-1+dhi0 to 6.12.96-1+dhi0, the version Debian
-# records as fixing both. gawk block 2026-07-14). See each block's own
-# "Confirmed via" comment below for when it was individually last re-verified
-# against a live Trivy run.
+# Last reviewed: 2026-08-02 (added the single-CVE linux-libc-dev 6.12.100-1+dhi0
+# block from the PR #547 Container Security run. CVE-2026-64530 and
+# CVE-2026-64531 were never added here: they were fixed outright by that same
+# base-image digest bump, which is why they are recorded in
+# docs/known-vulnerabilities.md as resolved rather than accepted. Prior review
+# 2026-07-30: added the 7-CVE linux-libc-dev block from the PR #494 Container
+# Security run; removed the CVE-2026-53399 / CVE-2026-64600 block, whose own
+# removal condition was met when the dhi-python:3.14-debian13 base advanced from
+# 6.12.95-1+dhi0 to 6.12.96-1+dhi0, the version Debian records as fixing both.
+# gawk block 2026-07-14). See each block's own "Confirmed via" comment below for
+# when it was individually last re-verified against a live Trivy run.
 
 # --- perl-base (Perl + bundled Archive::Tar / IO-Compress); no Debian fix yet ---
 CVE-2026-42496
@@ -142,3 +146,20 @@ CVE-2026-64434
 CVE-2026-64534
 CVE-2026-64552
 CVE-2026-64558
+
+# --- linux-libc-dev (6.12.100-1+dhi0); kernel UAPI headers only, no running
+# kernel code in this image; no Debian fix on the trixie track ---
+# Confirmed via the PR #547 Container Security run against
+# ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13
+# (workflow run 30733734393): this is the image's only remaining finding
+# (Total: 1, HIGH: 1, CRITICAL: 0), reported with an empty Fixed Version and
+# status "affected". Independently corroborated against the Debian security
+# tracker on 2026-08-02: trixie (6.12.94-1) and trixie-security (6.12.100-1)
+# both record "vulnerable"; the fix landed only in sid (7.0.12-1), which this
+# base image does not track. The defect is an AMD GPU DRM fix in
+# amdgpu_hmm_range_get_pages, hardware this deployment does not use at all.
+# Same kernel-UAPI-headers non-applicability rationale as the blocks above:
+# compile-time headers, not a running kernel binary, and the container runs on
+# the host's kernel. Documented in docs/known-vulnerabilities.md; reassess
+# 2026-09-30.
+CVE-2026-63879

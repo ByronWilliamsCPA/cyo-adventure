@@ -38,10 +38,23 @@
   }
 }
 
-/* The progress bar takes the remaining row width, but keeps a sane floor so it
-   never collapses to nothing when the controls wrap onto their own line. */
+/* The progress bar (ended screen only, W1.2/AL-029) takes the remaining row
+   width, but keeps a sane floor so it never collapses to nothing when the
+   controls wrap onto their own line. */
 .reader-chrome .cyo-progress {
   flex: 1 1 12rem;
+}
+
+/* W1.2/AL-029: the plain "Page N" position readout shown in place of a
+   percent bar for as long as the story is in progress. No fill, no motion:
+   just legible text, so it needs no reduce-motion twin. */
+.reader-chrome__position {
+  flex: 1 1 8rem;
+  margin: 0;
+  color: var(--color-ink-secondary, var(--color-ink));
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold, 600);
+  font-size: var(--text-sm);
 }
 
 /* UX-K2: A / A+ / A++ text-size picker in the reader top bar. */
@@ -159,6 +172,45 @@
     border-color: var(--color-amber-deep);
     background: var(--color-amber-deep);
   }
+}
+
+/* Sound-effects mute toggle (W4.2, D7): round icon-only button (no text
+   label, unlike Leave/Listen, since a mute glyph reads on its own), sized to
+   the full 44px tap floor since this is a new control with no legacy size to
+   match. The --on modifier gives it the same filled "active" look the
+   read-aloud toggle uses for its speaking state, so "sound is playing" reads
+   consistently across both controls. */
+.reader-sound-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-parchment-deeper);
+  background: var(--color-parchment);
+  color: var(--color-ink);
+  font-size: var(--text-lg);
+  cursor: pointer;
+}
+
+.reader-sound-toggle:focus-visible {
+  border-color: var(--color-amber);
+  background: var(--color-amber-subtle);
+}
+
+@media (hover: hover) {
+  .reader-sound-toggle:hover {
+    border-color: var(--color-amber);
+    background: var(--color-amber-subtle);
+  }
+}
+
+.reader-sound-toggle--on {
+  border-color: var(--color-amber-deep);
+  background: var(--color-amber-subtle);
 }
 
 /* Tell a grown-up (K15): same pill shape as the Leave/Listen controls so it

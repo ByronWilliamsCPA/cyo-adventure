@@ -25,6 +25,12 @@ repos:
         stages: [pre-commit]
       - id: end-of-file-fixer
         stages: [pre-commit]
+        # Skeleton SVGs are PlantUML output, which ends at "</svg>" with no
+        # trailing newline. Without this exclusion the hook appends one to every
+        # skeleton SVG a commit happens to stage, so any PR touching one diagram
+        # silently acquires one-byte diffs on the other 60-odd, and the next
+        # regeneration reverts them again.
+        exclude: ^docs/architecture/diagrams/skeletons/.*\.svg$
       - id: check-yaml
         stages: [pre-commit]
         exclude: mkdocs.yml  # Exclude mkdocs.yml due to !ENV custom tags
@@ -333,7 +339,7 @@ repos:
         name: Work linkage (registers resolve to a phase or a proof)
         entry: python scripts/check_work_linkage.py
         language: system
-        files: ^(docs/planning/.*\.md|scripts/check_work_linkage\.py)$
+        files: ^(docs/planning/.*\.(md|toml)|scripts/check_work_linkage\.py)$
         pass_filenames: false
         stages: [pre-commit]
 
@@ -341,7 +347,7 @@ repos:
         name: Authoring lessons log well-formed
         entry: python scripts/check_lessons_log.py
         language: system
-        files: ^docs/planning/authoring-lessons-log\.md$
+        files: ^(docs/planning/authoring-lessons-log\.md|scripts/check_lessons_log\.py)$
         pass_filenames: false
         stages: [pre-commit]
 

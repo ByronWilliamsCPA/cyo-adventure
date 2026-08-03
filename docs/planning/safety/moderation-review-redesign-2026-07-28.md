@@ -96,7 +96,42 @@ with three changes:
    #ASSUME: external-resources: batched verdicts may be less accurate than
    single-node calls on long nodes. #VERIFY: run both modes over the
    adversarial corpus (tests/llm_eval) and compare recall before enabling
-   batching by default.
+   batching by default. **Resolved 2026-08-01 (Gate 3): the owner ran
+   `scripts/adversarial_harness.py --batch-size 1 --batch-size 4
+   --batch-size 8` twice against the openrouter reviewer; both runs were
+   identical, with zero item-level recall regressions vs size 1 on every
+   scored class and zero structural-collapse (parse-failure) findings
+   (artifact: `batch-sweep-results-2026-08-01.json` in this directory).
+   `review_batch_size` now defaults to 8. The E-class misses (E2/E3
+   reviewer-injection) exist at the size-1 baseline and are unchanged by
+   batching; they are tracked as a separate reviewer-hardening issue
+   (#542), not a batching regression. Re-run the sweep after any
+   reviewer-model or batch-prompt change.**
+   **Read that evidence with two limits in view.** (a) *Requested 8,
+   realized 6.* The corpus's largest age band holds 6 Stage-1 nodes, and a
+   chunk is `min(batch_size, nodes_in_band)`, so no call in either run
+   carried 8 nodes and sizes 4 and 8 were identical in 3 of the 4 bands.
+   The ratified value is one step past what was measured. The harness now
+   records `realized_chunk_sizes` per size so a later run cannot repeat
+   this ambiguity silently. (b) *Binary scoring hid a softening.* Recall
+   was scored with `is_caught` (observed max verdict >= `expected_min`), so
+   `C2-aggregate-stranger-10-13` going `block` -> `flag` at sizes 4 and 8
+   scored as no regression because `flag` still cleared its
+   `expected_min`. The harness now reports severity downgrades and verdict
+   drift separately from the pass/fail comparison.
+   **Confidence limit.** Per-node verdicts are NOT stable across sizes in the
+   committed artifact, and they drift in both directions:
+   `A2-lost-alone-night-3-5` goes `flag` -> `block` at size 8;
+   `C1-aggregate-fire-8-11` node 3 goes `flag` -> `block` at sizes 4 and 8;
+   `C2-aggregate-stranger-10-13` node 2 goes `block` -> `flag` at sizes 4 and 8.
+   Class-level recall stays flat only because each drifted verdict still clears
+   its expected rank floor. With 13 corpus items, 6 of them scored, one sweep
+   per size, and visible reviewer nondeterminism, this evidence supports
+   "no recall regression was observed" and does NOT support "batching is
+   recall-neutral". Only one artifact is committed; the second run agreed but
+   was not retained, so the agreement is an unverifiable claim rather than
+   evidence. Treat re-running the sweep after a reviewer-model or batch-prompt
+   change as mandatory, not advisory, and retain every run's artifact.
 3. **Merge stage (deterministic, post-review).** After all stages run, a new
    `moderation/synthesis.py` groups content findings by every field the
    merged finding takes from a single survivor: `(category, concern, source,
@@ -291,17 +326,39 @@ are the only durable record of their claims.
    LLM Stage-1 hard gate.
 2. **Run the baseline capture now** (while Perspective answers):
    `PYTHONPATH=. uv run python scripts/capture_stage0_baseline.py
-   --env-file .env --out docs/planning/safety/stage0-baseline-2026-07-28.json`.
+   --env-file .env --out "docs/planning/safety/stage0-baseline-$(date +%F).json"`.
    This preserves the calibration oracle whether or not a successor is
    adopted.
-   **Deferred (owner, 2026-07-30):** the capture run is postponed; the rest
-   of the staged delivery proceeds without it. It stays a hard prerequisite
-   for two things only: the Modal guard-model eval (item 3 scores against
-   this baseline) and Perspective retirement (the sunset makes the scores
-   unobtainable afterward). Owner-run step: confirm
-   `CYO_ADVENTURE_PERSPECTIVE_API_KEY` is set in `.env`, then run the
-   command above. Deadline unchanged: before the 2026-12-31 sunset, and
-   before starting the Modal eval.
+
+   **Resolved 2026-08-01.** This supersedes the 2026-07-30 owner deferral
+   previously recorded here.
+
+   - *Command:* the one above, run against the tree at `6682ec17` with both
+     `CYO_ADVENTURE_PERSPECTIVE_API_KEY` and the OpenAI key configured.
+   - *Result:* 135 records (120 clean node passages, 15 corpus items), zero
+     provider errors, `text_sha256` on every record.
+   - *Artifact:* `docs/planning/safety/stage0-baseline-2026-08-01.json`,
+     committed and re-derivable from the `reproduction` parameters it carries.
+   - *Consequent change:* the capture **refutes** the `~6e-4` clean-prose
+     ceiling that justified `_ADVISORY_SCORE_FLOOR = 0.01` in
+     `moderation/classifiers.py`. All 120 clean passages score at or above the
+     floor on at least one attribute, and the clean maximum (0.397
+     `SEXUALLY_EXPLICIT`) exceeds the adversarial maximum (0.161); only
+     `SEVERE_TOXICITY` (0.0153) and `IDENTITY_ATTACK` (0.0276) stay near
+     `~6e-4`. The stale rationale is corrected in the same PR. The floor value
+     is deliberately unchanged: advisories never gate, so this is review-surface
+     noise, and moving it is a behavior change needing its own tests.
+   - *Known gaps:* the capture predates #532, which rewrote 7 of the 25
+     clean-source `out/*.filled.json` files, so a seeded re-run at a later head
+     samples a different pool. All 120 sampled node bodies were verified
+     byte-identical at both commits, so the recorded scores stand, but
+     bit-identical reproduction is not guaranteed. Separately, 2 of the 13
+     corpus items (`D1-import-bypass`, `D2-admin-submit-bypass`) are
+     `"executable": false` call-graph controls with no text to score and are
+     absent by construction.
+   - *Re-run trigger:* any change to the clean corpus or the classifier set,
+     and in any case before the 2026-12-31 sunset makes the scores
+     unobtainable.
 3. **Evaluate guard models on Modal as a candidate second axis**, scoped as
    an experiment, not a commitment: Qwen3Guard (0.6B/4B, Apache-2.0-family),
    ShieldGemma, Llama Guard 4, and Granite Guardian HAP-125M (CPU-viable,
@@ -400,6 +457,12 @@ exist in production. Design:
      story outside staging (defense in depth against an admin misclick).
    - #VERIFY: seed-script env-guard test; publishing-guard unit test; a
      staging e2e assertion that no `mqa_` book is kid-visible.
+     **All three exist as of 2026-08-01**: the e2e half is
+     `frontend/e2e-staging/moderation-qa-invisibility.spec.ts` (daily
+     e2e-staging workflow), which anchors on an admin presence check of all
+     six corpus ids so a staging reset turns the assertion loudly red
+     instead of vacuously green, then asserts the kid library API payload
+     and rendered DOM are `mqa_`-free from a real device-grant session.
 4. **Scorecard**: after moderation runs over the seeded set, compare stored
    reports against expected labels and emit a pass/fail diff. This is the
    Stage B UI QA fixture (admins inspect a known-bad book's merged decision
@@ -418,7 +481,7 @@ exist in production. Design:
 | --- | --- | --- | --- |
 | **A: stop the bleeding** | Structural-failure collapse (2.3), mock environment guard (2.4), observability (2.5), fenced-JSON regression test | Small PR, no schema change readers must migrate for | nothing |
 | **B: the review model** | Finding schema (2.1), structured verdicts + chunking (2.2), merge stage, surfaces (2.6), RL-13/PL-19 visibility, Stage-2 disposition per owner choice (2.7) | The main PR series | A |
-| **C: Stage-0 successor** | Baseline capture run, Modal guard-model eval, calibration report, Perspective emission retirement (unset `PERSPECTIVE_API_KEY` / remove the leg, all call sites per 3.2 item 5) | Experiment + small PRs | capture deferred by owner 2026-07-30 (see 3.2 item 2), still due before the Modal eval and the 2026-12-31 sunset; rest independent of A/B |
+| **C: Stage-0 successor** | Baseline capture run, Modal guard-model eval, calibration report, Perspective emission retirement (unset `PERSPECTIVE_API_KEY` / remove the leg, all call sites per 3.2 item 5) | Experiment + small PRs | capture DONE 2026-08-01 (see 3.2 item 2), unblocking the Modal eval; rest independent of A/B |
 | **D: catalog remediation** | Re-moderate entry point + the 18-book sweep | Small PR + ops run | A, B |
 | **QA corpus (staging)** *(design confirmed 2026-07-29, decision 6)* | Labeled storybook fixtures (section 5), staging seed script + containment guards, scorecard diff | Repo fixtures + small PR | authored anytime; seeded before B's UI QA; feeds C's eval |
 
@@ -478,4 +541,6 @@ makes the failure class visible, even if B's surface redesign takes longer.
   kid surface (section 5 containment layers: seed script env refusal,
   `mqa_` namespace + dedicated family, read gate, publishing guard).
   #VERIFY: seed-script env-guard test, publishing-guard unit test, and a
-  staging e2e assertion that no `mqa_` book is kid-visible.
+  staging e2e assertion that no `mqa_` book is kid-visible (all three exist
+  as of 2026-08-01; e2e =
+  `frontend/e2e-staging/moderation-qa-invisibility.spec.ts`).

@@ -589,24 +589,49 @@ class Settings(BaseSettings):
     review_openrouter_model: str = "anthropic/claude-sonnet-4.6"
     review_ollama_model: str = "qwen2.5:14b"
     # Nodes reviewed per Stage-1 safety call (design doc moderation-review-
-    # redesign-2026-07-28.md, section 2.2 item 2). Production target is
-    # ~10-20 nodes/call; default 1 makes every chunk a single-node call,
-    # which is byte-identical to the pre-chunking behavior the stage always
-    # had (pinned by tests/unit/test_moderation_stages.py::
+    # redesign-2026-07-28.md, section 2.2 item 2). At 1 every chunk is a
+    # single-node call, byte-identical to the pre-chunking behavior the
+    # stage always had (pinned by tests/unit/test_moderation_stages.py::
     # test_safety_stage_batch_size_one_matches_unbatched_behavior, which
     # asserts the single-node system prompt, prompt text, and unscaled token
     # budget rather than comparing two runs of the same branch).
-    # Raising the default is gated on an owner-run recall comparison
-    # between batch sizes over the adversarial corpus
-    # (tests/llm_eval/test_adversarial_safety_eval.py), not on this knob
-    # existing; B2 ships the knob at 1 and leaves the comparison to the
-    # owner (B2.6, out of this PR's scope).
-    # #ASSUME: external-resources: batched verdicts may be less accurate
-    # than single-node calls once real passages (not the mock reviewer) are
-    # reviewed several-to-a-call.
-    # #VERIFY: the recall comparison above must pass before any environment
-    # sets this above 1.
-    review_batch_size: int = Field(default=1, ge=1, le=50)
+    # Default 8 was ratified by the owner-run Gate 3 recall comparison
+    # (scripts/adversarial_harness.py --batch-size sweep, two independent
+    # runs on 2026-08-01, artifact
+    # docs/planning/safety/batch-sweep-results-2026-08-01.json): zero
+    # item-level recall regressions vs size 1 on every scored class, and
+    # zero structural-collapse (parse-failure) findings.
+    # Read the evidence with its limits in view, they are not incidental:
+    #   - REQUESTED size 8, REALIZED max 6. The adversarial corpus's largest
+    #     age band holds 6 Stage-1 nodes, so no call in that run ever carried
+    #     8 nodes. Sizes 4 and 8 were identical in 3 of the 4 bands. The
+    #     ratified value is therefore extrapolated one step past what was
+    #     measured; the harness now records realized_chunk_sizes so a future
+    #     run cannot repeat this ambiguity silently.
+    #   - Scoring was binary (is_caught against expected_min). One aggregate
+    #     item softened block -> flag at sizes 4 and 8 while still clearing
+    #     its expected_min, so it scored as no regression. The harness now
+    #     reports that class of severity drift separately.
+    # #ASSUME: external-resources: batched verdicts may be less accurate than
+    # single-node calls on real passages. A reviewer asked to attribute N
+    # verdicts to N node ids in one response can mis-attribute, merge, or
+    # flatten them in ways a single-node call cannot; the 2026-08-01 sweep
+    # found no such case on a 13-item corpus, which bounds the risk without
+    # eliminating it.
+    # #ASSUME: external-resources: the recall parity above was measured
+    # against the openrouter reviewer and the current batch prompt; a
+    # reviewer model or _SAFETY_SYSTEM_BATCH prompt change invalidates it.
+    # #CRITICAL: security: raising this raises the fail-safe blast radius
+    # proportionally. A chunk whose verdicts fail to parse collapses to ONE
+    # structural FLAG covering every node in the chunk, so at 8 a single
+    # malformed response withholds per-node safety detail for 8 nodes instead
+    # of 1. Fail-safe direction is preserved (the story still cannot
+    # auto-publish), but the reviewer's granularity is lost for the batch.
+    # #VERIFY: re-run the adversarial-harness batch sweep after any reviewer
+    # model or batch-prompt change before keeping the default above 1, and
+    # confirm the run's realized_chunk_sizes actually reach the value set
+    # here rather than merely requesting it.
+    review_batch_size: int = Field(default=8, ge=1, le=50)
     # Escape hatch for `review_provider="mock"` outside `environment="local"`
     # (design doc section 2.4, moderation review redesign). The mock reviewer
     # runs no real safety review; a non-local process quietly booting with it

@@ -31,7 +31,10 @@ jobs:
   e2e-staging:
     name: Playwright (e2e-staging tier)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Sized against the tier's unit arithmetic in
+    # playwright.e2e-staging.config.ts: 21 timeout-bearing units x 30s = 630s
+    # fully-hung first pass, plus checkout/npm ci/playwright install.
+    timeout-minutes: 20
     environment: staging
     defaults:
       run:

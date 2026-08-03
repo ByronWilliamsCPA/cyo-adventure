@@ -19,6 +19,7 @@ from sqlalchemy import select
 
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.models import Storybook, StorybookVersion
+from cyo_adventure.diversity.normalize import containment, similarity_signature
 from cyo_adventure.generation.skeleton import is_sidecar
 from cyo_adventure.storybook.models import StoryMetadata
 from cyo_adventure.utils.logging import get_logger
@@ -26,7 +27,7 @@ from cyo_adventure.utils.logging import get_logger
 if TYPE_CHECKING:
     import random
     import uuid
-    from collections.abc import Mapping
+    from collections.abc import Mapping, Sequence
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -251,6 +252,87 @@ def candidates_for_cell(
     ]
 
 
+def request_theme_signature(premise: str) -> frozenset[str]:
+    """Return a request premise's canonical similarity-tag signature (W2.2).
+
+    Thin wrapper over ``diversity.normalize.similarity_signature`` so both
+    sides of a theme-aware skeleton pick (the request premise here, a
+    candidate's ``metadata.themes`` via :func:`_theme_overlap_bonus`) go
+    through the exact same ``SIMILARITY_TAG_MAP`` machinery the diversity
+    package already uses for request/story similarity elsewhere, rather than
+    duplicating tag-matching logic in this module.
+
+    Args:
+        premise: The request's free-text premise (``ConceptBrief.premise``,
+            or the raw request text before a brief is built).
+
+    Returns:
+        frozenset[str]: Canonical similarity tags; empty when the premise
+            matches nothing in the vocabulary (a zero-overlap request, which
+            leaves every candidate's bonus at 0.0 -- today's behavior).
+    """
+    return similarity_signature({"premise": premise})
+
+
+def _theme_overlap_bonus(
+    request_tags: frozenset[str], metadata: StoryMetadata
+) -> float:
+    """Return a candidate skeleton's theme-overlap bonus against a request.
+
+    Args:
+        request_tags: The request's similarity-tag signature (see
+            :func:`request_theme_signature`).
+        metadata: The candidate skeleton's typed metadata.
+
+    Returns:
+        float: ``containment(request_tags, story_tags)`` in ``[0, 1]``: how
+            much of what the request asked for this skeleton's curated
+            themes already cover. ``0.0`` when ``request_tags`` is empty (a
+            request the vocabulary did not recognize contributes no bonus to
+            anything, per :func:`diversity.normalize.containment`) or when
+            the candidate's themes share no tag with the request.
+    """
+    story_tags = similarity_signature(None, metadata.themes)
+    return containment(request_tags, story_tags)
+
+
+def theme_overlap_for_candidates(
+    request_premise: str, band: str, candidates: Sequence[str]
+) -> dict[str, float]:
+    """Return a per-slug theme-overlap bonus for an in-cell candidate list.
+
+    A convenience entry point for a caller that only has the request premise
+    and candidate slugs on hand (:func:`candidates_for_cell`'s return shape);
+    it re-scans the band's production-eligible metadata once and computes
+    :func:`_theme_overlap_bonus` for each requested slug, so a future
+    ``select_skeleton_for_cell(..., theme_overlap=...)`` caller does not need
+    to separately load and thread ``StoryMetadata`` for every candidate.
+
+    Args:
+        request_premise: The request's free-text premise.
+        band: The request's age band (the candidates' own band; scans that
+            band's directory only, matching how the candidates were found).
+        candidates: The in-cell candidate slugs (from
+            :func:`candidates_for_cell`).
+
+    Returns:
+        dict[str, float]: ``{slug: bonus}`` for every slug in ``candidates``
+            whose metadata is still readable; a slug absent from the band's
+            production-eligible scan (should not happen for a slug that was
+            itself just produced by :func:`candidates_for_cell` against the
+            same band) is simply omitted, which
+            :func:`select_skeleton_for_cell` treats as a 0.0 bonus via
+            ``.get(slug, 0.0)``.
+    """
+    request_tags = request_theme_signature(request_premise)
+    metadata_by_slug = dict(_production_candidates(band))
+    return {
+        slug: _theme_overlap_bonus(request_tags, metadata_by_slug[slug])
+        for slug in candidates
+        if slug in metadata_by_slug
+    }
+
+
 def resolve_skeleton_path(band: str, slug: str) -> Path:
     """Return the validated ``skeletons/<band>/<slug>.json`` path.
 
@@ -388,6 +470,7 @@ def select_skeleton_for_cell(
     rng: random.Random,
     *,
     similar_usage: Mapping[str, int] | None = None,
+    theme_overlap: Mapping[str, float] | None = None,
 ) -> Selection:
     """Weighted-random pick from an in-cell candidate list.
 
@@ -410,6 +493,20 @@ def select_skeleton_for_cell(
             ``_weight(recent_usage[slug])``, unchanged from the pre-WS-4
             behavior. When provided, weights blend recency and theme reuse
             via :func:`_blended_weight`.
+        theme_overlap: {slug: bonus} of how much a candidate's curated themes
+            overlap the request premise (W2.2, from
+            :func:`theme_overlap_for_candidates` or
+            :func:`_theme_overlap_bonus`), each in ``[0, 1]``. When ``None``
+            (the default), behavior is unchanged from pre-W2.2 (recency/
+            similarity only) -- a zero-overlap request also leaves this
+            unchanged, since every bonus is then 0.0. When provided, the
+            recency/similarity weight (whichever of the two paths above
+            applies) is multiplied by ``(1 + bonus)``: a perfect-overlap
+            candidate (``bonus == 1.0``) gets up to double weight over an
+            otherwise-identical, zero-overlap candidate in the same cell,
+            so a matching skeleton reliably outdraws a non-matching one
+            without the novelty floor (decision C-4) ever reaching zero for
+            either.
 
     Returns:
         Selection: the weighted pick, plus every in-cell candidate as
@@ -426,11 +523,18 @@ def select_skeleton_for_cell(
         msg = "select_skeleton_for_cell requires at least one candidate"
         raise ValidationError(msg, field="candidates", value=None)
     if similar_usage is None:
-        weights = [_weight(recent_usage.get(slug, 0)) for slug in candidates]
+        base_weights = [_weight(recent_usage.get(slug, 0)) for slug in candidates]
     else:
-        weights = [
+        base_weights = [
             _blended_weight(recent_usage.get(slug, 0), similar_usage.get(slug, 0))
             for slug in candidates
+        ]
+    if theme_overlap is None:
+        weights = base_weights
+    else:
+        weights = [
+            weight * (1.0 + theme_overlap.get(slug, 0.0))
+            for weight, slug in zip(base_weights, candidates, strict=True)
         ]
     pick = rng.choices(candidates, weights=weights, k=1)[0]
     return Selection(slug=pick, alternatives=tuple(candidates))

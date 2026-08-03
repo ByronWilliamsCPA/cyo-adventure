@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import uuid
 from pathlib import Path
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from sqlalchemy import Update
@@ -61,6 +61,21 @@ def _story(status: str, *, current: int | None = None) -> Storybook:
     )
 
 
+def _scalar_result(value: object) -> MagicMock:
+    """Build a fake ``Result`` whose ``scalar_one_or_none()`` returns ``value``.
+
+    W0.4: a bare ``AsyncMock(spec=AsyncSession)`` makes
+    ``session.execute(...)`` itself return an ``AsyncMock``, so
+    ``.scalar_one_or_none()`` on it is a coroutine rather than a value;
+    ``_stamp_resulting_storybook_id`` (called by every ``approve()`` run)
+    needs a real, sync ``Result`` double instead. Mirrors
+    tests/unit/test_publishing_service_unit.py's identical helper.
+    """
+    result = MagicMock()
+    result.scalar_one_or_none.return_value = value
+    return result
+
+
 @pytest.mark.asyncio
 async def test_approve_nulls_generation_job_report() -> None:
     """approve() issues an UPDATE that nulls report for the published job.
@@ -78,6 +93,8 @@ async def test_approve_nulls_generation_job_report() -> None:
     )
     session = AsyncMock(spec=AsyncSession)
     session.get = AsyncMock(return_value=version_row)
+    # W0.4: see _scalar_result's own docstring for why this is needed.
+    session.execute = AsyncMock(return_value=_scalar_result(None))
     principal = _principal("admin")
 
     await service.approve(session, principal, story, 1)
@@ -127,6 +144,8 @@ async def test_approve_report_purge_runs_before_publish_flushes() -> None:
     )
     session = AsyncMock(spec=AsyncSession)
     session.get = AsyncMock(return_value=version_row)
+    # W0.4: see _scalar_result's own docstring for why this is needed.
+    session.execute = AsyncMock(return_value=_scalar_result(None))
 
     await service.approve(session, _principal("admin"), story, 2)
 

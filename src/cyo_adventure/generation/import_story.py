@@ -63,7 +63,9 @@ _FIRST_VERSION = 1
 # Sentinel recorded on StorybookVersion.provider for a version created via
 # this offline authoring import path, distinguishing it from a real generation
 # provider name ("mock", "anthropic", ...) stamped by generation/worker.py.
-_IMPORT_PROVIDER = "import"
+# Public: api/remoderate.py must recognize it to avoid handing a provenance
+# marker to generation.provider.build_provider as if it named a provider.
+IMPORT_PROVIDER = "import"
 
 
 @dataclass(frozen=True, slots=True)
@@ -193,7 +195,7 @@ async def import_filled_story(
         created_by=request.created_by,
         model=request.model,
         prompt_version=request.prompt_version,
-        provider=_IMPORT_PROVIDER,
+        provider=IMPORT_PROVIDER,
         validation_report=result.report.to_dict(),
         skeleton_slug=request.skeleton_slug,
         sentinel_manifest=request.sentinel_manifest,

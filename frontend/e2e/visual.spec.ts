@@ -42,6 +42,53 @@ test('the landing page matches its visual baseline', async ({ page }) => {
   await expect(page).toHaveScreenshot('landing-page.png', { animations: 'disabled' })
 })
 
+/**
+ * Gamification chrome (W3.1/W3.2/W3.4) for the kid surfaces.
+ *
+ * These mocks exist because the three kid baselines were being captured with
+ * `/v1/me/progress` and `/v1/profiles/story-status` UNROUTED, so they resolved
+ * by failing against a backend that is not running. Both adapters fail closed
+ * on a rejected fetch, which meant the weekly ring, the badge-case button, the
+ * endings-gallery button and the picker's "new story!" pill were all absent
+ * from every baseline: the surfaces this PR changed were the ones the visual
+ * suite was least able to see. Worse, the determinism was accidental, resting
+ * on a connection error rather than on a fixture.
+ *
+ * Settings are the ON shape a 6-8 reader actually resolves to server-side, not
+ * the fail-closed shape, so the baselines capture the chrome as a child meets
+ * it rather than a degraded state that only occurs when the API is unreachable.
+ */
+const KID_PROGRESS = {
+  badges: [
+    {
+      id: 'first_ending',
+      name: 'First Ending',
+      description: 'You reached your first ending!',
+      earned_at: '2026-07-01T10:00:00Z',
+    },
+  ],
+  books: [
+    {
+      storybook_id: 's1',
+      title: 'The Lantern',
+      endings_found: 1,
+      total_endings: 3,
+      finished: true,
+      every_path_walked: false,
+      found_endings: [{ ending_id: 'e1', title: 'The Bright Way Home', valence: 'positive' }],
+    },
+  ],
+  totals: { books_finished: 1, endings_found: 1 },
+  days_read_this_week: 2,
+  lifetime_days_read: 9,
+  settings: {
+    ring_enabled: true,
+    ring_goal_days: 3,
+    badges_enabled: true,
+    time_capture_paused: false,
+  },
+}
+
 const PICKER_PROFILES = {
   profiles: [
     {
@@ -62,6 +109,12 @@ test('the kid picker page matches its visual baseline', async ({ page, context }
   })
   await seedDeviceGrant(context)
   await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: PICKER_PROFILES }))
+  // The "new story!" pill (W1.4). Pinned true so the picker baseline actually
+  // contains the pill this PR added; unrouted, the status fetch fails and the
+  // pill is never rendered at all.
+  await page.route('**/api/v1/profiles/story-status', (route) =>
+    route.fulfill({ json: { statuses: [{ profile_id: 'child-fox', has_new_story: true }] } })
+  )
   await page.goto('/kids')
   await expect(page.getByRole('heading', { name: "Who's reading?" })).toBeVisible()
   await expect(page).toHaveScreenshot('kid-picker-page.png', { animations: 'disabled' })
@@ -101,6 +154,7 @@ test('the reader page matches its visual baseline', async ({ page, context }) =>
   })
   await seedDeviceGrant(context)
   await page.route('**/api/v1/storybooks/**', (route) => route.fulfill({ json: lantern }))
+  await page.route('**/api/v1/me/progress', (route) => route.fulfill({ json: KID_PROGRESS }))
   await page.route('**/api/v1/reading-state/**', (route) => {
     if (route.request().method() === 'GET') {
       return route.fulfill({ status: 404, json: { error: 'not found' } })
@@ -162,6 +216,7 @@ test('the library page matches its visual baseline', async ({ page, context }) =
   await seedDeviceGrant(context)
   await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: LIBRARY_PROFILE }))
   await page.route('**/api/v1/library*', (route) => route.fulfill({ json: LIBRARY_STORIES }))
+  await page.route('**/api/v1/me/progress', (route) => route.fulfill({ json: KID_PROGRESS }))
 
   await page.goto('/library/p1')
   await expect(page.getByRole('heading', { name: 'My Books' })).toBeVisible()

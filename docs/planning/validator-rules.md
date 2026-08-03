@@ -41,6 +41,7 @@ to this document.
 | Policy (PL) | Pass/fail (PL-19 story-mean, PL-23 and PL-24 are advisory) | Yes |
 | Layer 2 (L2) | Pass/fail | Yes (Tier-2 only) |
 | Reading Level (RL) | Advisory | No (warns only) |
+| Choice Grammar (CG) | Advisory, and opt-in | No (warns only, and emits nothing at all by default) |
 | Series (SR) | Pass/fail | Yes (blocks publish of a chain) |
 | Safety (SAFE) | Always human-routed | Yes (routes to human review, not auto-rejected) |
 | Series (SR) | Pass/fail | Yes, at publish only (cross-book; not part of `run_gate`) |
@@ -107,6 +108,36 @@ the closure of reachable configurations. The default configuration cap is 100,00
 | Rule ID | Layer | Description | Failure Message Template |
 |---------|-------|-------------|--------------------------|
 | RL-13 | Advisory | **Reading level**: Flesch-Kincaid grade for each node `body` is compared to `metadata.reading_level.target +/- tolerance`. Any node outside the tolerance range generates a warning. This check warns and logs; it never hard-fails, because FK scores are noisy at passage length and the parent makes the final call. The grade comes from a **vendored** implementation (`validator/reading_level.py::_flesch_kincaid_grade`), not from textstat, which is not a dependency: the formula needs only word/sentence/syllable counts, so vendoring avoids a heavy NLP dependency tree for a check that never blocks, and keeps scores version-stable. Two nodes are skipped silently: a body under `_MIN_WORDS_FOR_FK` (20) words, where FK is statistically unreliable, and an unfilled skeleton body carrying a `<<FILL` directive, which is a directive rather than prose (PL-19 skips the same marker). | `RL-13 level: node '{node_id}' FK grade {actual:.1f} outside target {target} +/- {tolerance} in story '{story_id}' (advisory only)` |
+
+---
+
+## Choice Grammar (Advisory and Opt-In, All Stories)
+
+ADR-011 section 10's choice-grammar rules, implemented in `validator/choice_grammar.py` and
+merged by `gate.py::run_gate` as step 6. Two things make this family unlike every other one in
+this catalog, and both are load-bearing when reading a report:
+
+1. **Every CG rule is WARNING severity.** No CG finding ever sets `blocked`, exactly like RL-13.
+2. **No CG rule runs at all unless `run_gate` is called with `enforce_grammar=True`, and no
+   production caller passes it.** The default is `False` and only `tests/unit/test_choice_grammar.py`
+   overrides it, so on `main` today these rules emit nothing on any real story. That is deliberate
+   D3/D11 grandfathering: the committed corpus predates the grammar and would light up wholesale.
+   The flag flips when the D11 `deprecated` per-skeleton marker lands (W2.4), at which point the
+   gate can enforce for unmarked (new) skeletons and skip marked ones. Tracked as `UW-C24`. Until
+   then, a green gate says nothing whatsoever about choice grammar, and a reviewer must not read
+   one as evidence that ADR-011 section 10 is satisfied.
+
+The rows are catalogued anyway, and are covered by the same
+`tests/unit/test_validator_rules_catalog.py` lockstep guard as every other family, because an
+inert rule that later becomes enforced is exactly the case where an undocumented id does the most
+damage: the flip would turn on four rules nobody had written down.
+
+| Rule ID | Layer | Description | Failure Message Template |
+|---------|-------|-------------|--------------------------|
+| CG-1 | Advisory (opt-in) | **Choiceless-run cap**: caps consecutive single-choice, non-ending nodes per band (3 at 3-5, rising per `_DISCRETE_RUN_CAP`, and a flat `_FLOWED_RUN_CAP` of 6 for the flowed bands 8-11 and up). At a flowed band the message also reports the composed stop's word count against the words-per-stop ceiling, since that is what the cap is really a proxy for. **This is a derived backstop, not the ADR rule.** ADR-011 section 10 states its flowed-band rule over *stops* ("1, prefer 0" at 8-11, "0-1" above), and stop-level adjacency needs ADR-026 `compose_stop` boundaries, which nothing in the validator computes; CG-1 counts nodes instead. Tracked as `UW-C23`. | `CG-1 grammar: node '{head_id}' starts a run of {length} consecutive single-choice nodes in band '{band}' (cap {cap}) in story '{story_id}' (advisory only, new-content grammar per ADR-011 section 10){detail}` |
+| CG-2 | Advisory (opt-in) | **Options per choice**: bounds how many choices one decision node may offer, per band (`_OPTIONS_BOUNDS`). Scoped to decision nodes, so a single-choice node is out of scope by construction (that shape is CG-1's). A band with no configured bounds is skipped rather than defaulted. | `CG-2 grammar: node '{node_id}' offers {count} choices, outside band '{band}' bounds [{lo}, {hi}] in story '{story_id}' (advisory only, new-content grammar per ADR-011 section 10)` |
+| CG-3 | Advisory (opt-in) | **Words per composed stop**: sums the bodies of a whole flowed run plus the branch or ending node it flows into, and compares the total to the band's `_WORDS_PER_STOP_CEILING`. Where PL-19 bounds a single node, this bounds what a reader actually sees on one screen at a flowed band. Skips a run whose word count cannot be determined and a trivial single-node run with no terminal, which PL-19 already covers. | `CG-3 grammar: composed stop starting at node '{head_id}' totals ~{words} words, above band '{band}' words-per-stop ceiling {ceiling} in story '{story_id}' (advisory only; stop nodes: {member_ids})` |
+| CG-4 | Advisory (opt-in) | **Choice acknowledgment**: a heuristic proxy for section 10's "every choice is acknowledged in the immediately following prose" rule. Flags a decision-child whose opening sentence shares no content word (post-stopword) with the label of the choice that reaches it. Explicitly lossy: paraphrase and pronoun reference both trip it, which is why it can never be more than advisory. Skips an unfilled `<<FILL` body and any comparison where either side tokenizes to zero content words. | `CG-4 grammar: node '{target_id}' (reached via choice '{choice_id}' labeled {label!r} from node '{node_id}') has no content-word overlap between its opening sentence and the choice label in story '{story_id}' (advisory heuristic; may be a false positive, see module docstring)` |
 
 ---
 
@@ -198,10 +229,12 @@ The validator applies rules in this order:
 3. L2-8 through L2-14 (state-space; Tier-2 only). Stop if any L2 rule fails; L2-13 is a
    non-blocking scale advisory and never stops the run.
 4. RL-13 (advisory; all stories). Log warnings; continue.
-5. SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.
-6. SR-1 through SR-9 (series chain; series stories only) run **later and elsewhere**, at
+5. CG-1 through CG-4 (advisory; all stories) **only when `run_gate` is called with
+   `enforce_grammar=True`**, which no production caller does today. Log warnings; continue.
+6. SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.
+7. SR-1 through SR-9 (series chain; series stories only) run **later and elsewhere**, at
    publish time over the whole chain rather than inside `run_gate` over one story. A book
-   can clear steps 1-5 at generation time and still be refused at publish by an SR error.
+   can clear steps 1-6 at generation time and still be refused at publish by an SR error.
 
 Stopping at the first Layer-1 failure is allowed for efficiency; all Layer-1 failures may also
 be collected in a single pass before reporting, which is preferred for repair-stage prompts

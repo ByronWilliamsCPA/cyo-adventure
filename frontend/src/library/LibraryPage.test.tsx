@@ -95,6 +95,9 @@ beforeEach(() => {
   globalThis.indexedDB = new IDBFactory()
   _resetDbHandle()
   mockReconcile.mockReset().mockResolvedValue(undefined)
+  // W4.3: clear any pending download-refusal flag so one test's banner never
+  // leaks into the next.
+  localStorage.clear()
 })
 
 describe('LibraryPage', () => {
@@ -187,8 +190,18 @@ describe('LibraryPage', () => {
   })
 
   it('shows an error state with retry on fetch failure', async () => {
-    mockGet.mockRejectedValueOnce(new Error('boom'))
-    mockGet.mockResolvedValueOnce({ data: { stories: [IN_PROGRESS] } })
+    // W3.2 added a second, parallel GET (progress) fired from its own
+    // mount effect; route by URL so the Once-queue below applies to the
+    // LIBRARY LIST call specifically (the one the retry button drives),
+    // not whichever endpoint's effect happens to fire first.
+    let libraryCall = 0
+    mockGet.mockImplementation((url: string) => {
+      if (url !== '/v1/library') return Promise.resolve({ data: {} })
+      libraryCall += 1
+      return libraryCall === 1
+        ? Promise.reject(new Error('boom'))
+        : Promise.resolve({ data: { stories: [IN_PROGRESS] } })
+    })
     renderLibrary()
     const retry = await screen.findByRole('button', { name: /try again/i })
     fireEvent.click(retry)
@@ -386,7 +399,10 @@ describe('LibraryPage', () => {
     resolveList({ data: { stories: [] } })
 
     await new Promise((resolve) => setTimeout(resolve, 0))
-    expect(mockGet).toHaveBeenCalledTimes(1)
+    // 2, not 1: W3.2's progress fetch fires from its own parallel mount
+    // effect alongside the library list call; the point of this test (no
+    // state write survives unmount) is unaffected by which endpoints fired.
+    expect(mockGet).toHaveBeenCalledTimes(2)
     expect(document.body.textContent).toBe('')
   })
 
@@ -595,6 +611,62 @@ describe('LibraryPage', () => {
       expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
       expect(screen.queryByText(/endings found/i)).not.toBeInTheDocument()
     })
+
+    // W3.2: the gallery BUTTON is gated on reading history, the gallery's
+    // CONTENTS come from /v1/me/progress. Two fetches, and only one of them
+    // has to succeed for the button to appear, so the failure below is the
+    // one where the screen contradicts itself: the card badge says "2 of 5"
+    // and the modal it opens says nothing has been found.
+    it('does not report an empty ending collection when the progress fetch failed', async () => {
+      mockGet.mockImplementation((url: string) => {
+        if (url === '/v1/me/progress') return Promise.reject(new Error('progress boom'))
+        if (url.startsWith('/v1/reading-history/')) {
+          return Promise.resolve({
+            data: {
+              profile_id: 'p1',
+              books: [{ storybook_id: IN_PROGRESS.id, endings_found: 2, total_endings: 5 }],
+            },
+          })
+        }
+        return Promise.resolve({ data: { stories: [IN_PROGRESS] } })
+      })
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      renderLibrary()
+      const hero = await screen.findByRole('region', { name: /continue reading/i })
+      // The badge proves the child HAS found endings, which is exactly what
+      // makes the empty-state copy a lie rather than merely unhelpful.
+      expect(await within(hero).findByText('2 of 5 endings found')).toBeInTheDocument()
+
+      fireEvent.click(await within(hero).findByTestId('open-endings-gallery'))
+      expect(await screen.findByTestId('endings-gallery-unavailable')).toBeInTheDocument()
+      expect(screen.queryByText(/keep reading to start finding endings/i)).not.toBeInTheDocument()
+      errorSpy.mockRestore()
+    })
+
+    it('still shows the real empty state when progress loads and is genuinely empty', async () => {
+      mockGet.mockImplementation((url: string) => {
+        if (url === '/v1/me/progress') {
+          return Promise.resolve({ data: { badges: [], books: [], totals: null } })
+        }
+        if (url.startsWith('/v1/reading-history/')) {
+          return Promise.resolve({
+            data: {
+              profile_id: 'p1',
+              books: [{ storybook_id: IN_PROGRESS.id, endings_found: 0, total_endings: 5 }],
+            },
+          })
+        }
+        return Promise.resolve({ data: { stories: [IN_PROGRESS] } })
+      })
+      renderLibrary()
+      const hero = await screen.findByRole('region', { name: /continue reading/i })
+      fireEvent.click(await within(hero).findByTestId('open-endings-gallery'))
+      // The point of the pair: 'unavailable' must not become the answer to
+      // every empty gallery, or it just relabels the same wrong message.
+      await waitFor(() => {
+        expect(screen.queryByTestId('endings-gallery-unavailable')).not.toBeInTheDocument()
+      })
+    })
   })
 
   describe('K17 recommendations feed (ADR-016 rings 1-2)', () => {
@@ -754,6 +826,42 @@ describe('LibraryPage', () => {
         expect(errorSpy).toHaveBeenCalledWith('offline cache reconcile failed', 'reconcile boom')
       )
       errorSpy.mockRestore()
+    })
+  })
+
+  describe('offline download budget refusal banner (W4.3, D20)', () => {
+    it('shows the kid-friendly full-shelf notice once, consuming the pending refusal flag', async () => {
+      localStorage.setItem('offline_download_refusal', String(Date.now()))
+      mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS] } })
+      renderLibrary()
+      expect(
+        await screen.findByText("This tablet's bookshelf is full. Ask a grown-up to remove a book.")
+      ).toBeInTheDocument()
+      // Consumed: a stored refusal is gone after being read once.
+      expect(localStorage.getItem('offline_download_refusal')).toBeNull()
+    })
+
+    it('shows no notice when no download was ever refused', async () => {
+      mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS] } })
+      renderLibrary()
+      await screen.findByRole('region', { name: /continue reading/i })
+      expect(
+        screen.queryByText("This tablet's bookshelf is full. Ask a grown-up to remove a book.")
+      ).not.toBeInTheDocument()
+    })
+
+    it('reports an eviction as its own notice, not as the full-shelf refusal', async () => {
+      // Opposite outcomes: the new book WAS saved. Telling a child the shelf
+      // is full when it is not, and saying nothing at all when one of their
+      // downloaded books just disappeared, are both wrong.
+      localStorage.setItem('offline_download_eviction', String(Date.now()))
+      mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS] } })
+      renderLibrary()
+      expect(await screen.findByText(/We made room for your new book/)).toBeInTheDocument()
+      expect(
+        screen.queryByText("This tablet's bookshelf is full. Ask a grown-up to remove a book.")
+      ).not.toBeInTheDocument()
+      expect(localStorage.getItem('offline_download_eviction')).toBeNull()
     })
   })
 })

@@ -130,7 +130,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_left_pool",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Back to the Mouth"
       }
@@ -269,7 +269,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_left_hum",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Another Low Tide"
       }
@@ -397,7 +397,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_lake",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "The Weed-Slick Shelf"
       }
@@ -524,7 +524,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_pool",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Beat the Tide Back"
       }
@@ -680,7 +680,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_bat",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Let the Bats Sleep"
       }
@@ -779,7 +779,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_cache",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Mark It on the Map"
       }

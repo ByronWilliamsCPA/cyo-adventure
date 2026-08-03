@@ -7,7 +7,7 @@
  * with it; that is what makes sequential saves and 409 detection work.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
 import { Button } from '@ds/components/Button'
@@ -17,13 +17,25 @@ import {
   ForbiddenError,
   StoryNotFoundError,
   UnauthenticatedError,
+  type CompletionOutcome,
   type CompletionRequest,
+  type CompletionResult,
   type SeriesNextBookInfo,
   type SubmitFlagParams,
 } from '../api/readerApi'
 import type { KidFlagCreatedView, ReadingHistoryItem } from '../client/types.gen'
+import { useApi } from '../hooks/useApi'
+import { makeProgressApi, type EarnedBadgeCard } from '../kid/progressApi'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
-import { cacheStorybook, getCachedStorybook, getReadingState, putReadingState } from '../offline/db'
+import {
+  cacheStorybook,
+  getCachedStorybook,
+  getReadingState,
+  isBadgeSeen,
+  markBadgeSeen,
+  putReadingState,
+} from '../offline/db'
+import { makeReadingTimeApi } from '../offline/readingTimeSync'
 import {
   LocalWriteError,
   OfflineError,
@@ -69,10 +81,18 @@ export interface ReaderPageProps {
    * "no fetch, no resolver input" the structural default rather than a branch.
    */
   fetchPersonalizationValues?: (storybookId: string) => Promise<ValuesPayload | null>
+  /**
+   * The reading profile's `age_band` (ADR-026 decision 6), forwarded
+   * straight to the Reader (see its own doc for the exact band list and the
+   * "unknown means page-per-node" default). Resolved in `ReaderRoute` via a
+   * best-effort profile lookup; omitted here has the identical effect as an
+   * explicit `undefined`.
+   */
+  ageBand?: string
 }
 
 type FetchServerState = (profileId: string, storybookId: string) => Promise<ReadingState | null>
-type RecordCompletion = (body: CompletionRequest) => Promise<void>
+type RecordCompletion = (body: CompletionRequest) => Promise<CompletionResult>
 
 // Stable module-level defaults, not inline default-parameter expressions: a
 // default-parameter expression is re-evaluated to a fresh function reference
@@ -82,7 +102,15 @@ type RecordCompletion = (body: CompletionRequest) => Promise<void>
 // every render and forming an unbounded reload loop (~650 GETs/500ms
 // observed). A stable reference by identity is what keeps `load` stable.
 const NO_SERVER_STATE: FetchServerState = () => Promise.resolve(null)
-const NO_RECORD_COMPLETION: RecordCompletion = () => Promise.resolve()
+// #ASSUME: data-integrity: this default's resolved value is never actually
+// rendered from: a caller that omits `recordCompletion` also has no reason
+// to wire `fetchReadingHistory`/EndingsProgress, so the ending screen's
+// tracker never mounts to read it. It exists only so handleComplete's
+// `.then` has a well-typed value to flow through when the prop is omitted.
+// #VERIFY: ReaderPage.test.tsx "does not reload in a loop when
+// fetchServerState/recordCompletion are omitted".
+const NO_RECORD_COMPLETION: RecordCompletion = () =>
+  Promise.resolve({ is_new: false, found: 0, total: 0 })
 
 type ErrorPhase = 'not-found' | 'forbidden' | 'unauthenticated' | 'offline' | 'error'
 
@@ -133,8 +161,107 @@ export function ReaderPage({
   fetchReadingHistory,
   submitFlag,
   fetchPersonalizationValues,
+  ageBand,
 }: ReaderPageProps) {
   const [pageState, setPageState] = useState<PageState>({ phase: 'loading' })
+
+  // W3.3/W3.2: this page builds its own network ports for reading-time
+  // capture and progress off the shared axios instance, rather than adding
+  // parameters ReaderRoute would have to thread through (this change's touch
+  // scope does not extend to ReaderRoute.tsx). Both hand-typed (see each
+  // module's own note on why): the routes landed the same day as this
+  // change and the generated client has not been regenerated for their
+  // exact wire shapes yet.
+  const rawApi = useApi()
+  const readingTimeApi = useMemo(() => makeReadingTimeApi(rawApi), [rawApi])
+  const progressApi = useMemo(() => makeProgressApi(rawApi, profileId), [rawApi, profileId])
+
+  // Guardian per-profile "pause time capture" toggle (W3.4), resolved
+  // best-effort on mount. Starts false (capture on) so a slow or failing
+  // settings fetch never silently stops a session's reading time from
+  // accruing; it only ever turns capture OFF once the real setting is known.
+  const [timeCapturePaused, setTimeCapturePaused] = useState(false)
+  // Badge toasts follow the guardian's badges_enabled toggle (G19): off
+  // suppresses the toast while awards still compute server-side, per the
+  // gamification recommendation's controls table. Defaults true (show) and
+  // only ever turns off once the real setting is known, mirroring the
+  // capture toggle's fail-open-for-celebration posture above.
+  const badgesEnabledRef = useRef(true)
+  useEffect(() => {
+    let cancelled = false
+    progressApi
+      .getProgress()
+      .then((progress) => {
+        if (!cancelled) {
+          setTimeCapturePaused(progress.settings.time_capture_paused)
+          badgesEnabledRef.current = progress.settings.badges_enabled
+        }
+      })
+      .catch((error: unknown) => {
+        // Best-effort: a failed settings fetch must never block reading;
+        // capture simply stays on (the safe default -- see above).
+        console.error('[reader] progress settings fetch failed', { profileId, error })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [progressApi, profileId])
+
+  // W3.2: badge-unlock toast state. `checkForNewBadge` (wired into
+  // handleComplete below) is the sole writer; IndexedDB `badge_seen` is the
+  // durable per-device dedupe so a badge earned on a DIFFERENT device (whose
+  // "seen" state this device never wrote) can still toast here once, but
+  // never toasts twice on this same device even across a remount.
+  // #ASSUME: data-integrity: badge seen-state is intentionally per-device,
+  // not synced (gamification recommendation section 5: "badge seen-state
+  // lives client-side in IndexedDB, avoiding a table"), so a family reading
+  // the same profile across two devices could see the same badge toast once
+  // per device rather than exactly once ever. Accepted: a badge is a
+  // celebration, not a scarce resource, and a repeat toast on a second
+  // device is a much kinder failure mode than a missed one.
+  // #VERIFY: ReaderPage.test.tsx badge-toast tests.
+  const [newlyEarnedBadge, setNewlyEarnedBadge] = useState<EarnedBadgeCard | null>(null)
+  const checkForNewBadge = useCallback(
+    async (badgesBefore: Promise<Set<string>>) => {
+      try {
+        // Cheap early-out only: skips the fetch when the setting is already
+        // known to be off. It is NOT the gate, because the ref defaults true
+        // and is read before any await, so a child who reaches an ending
+        // before the mount-time settings fetch resolves would pass it.
+        if (!badgesEnabledRef.current) return
+        const before = await badgesBefore
+        // `fresh`: this read is ordered AFTER the completion POST, so it must
+        // be a request of its own rather than one already in flight from a
+        // mount effect (see ProgressReadOptions).
+        const after = await progressApi.getProgress({ fresh: true })
+        const candidate = after.badges.find((badge) => !before.has(badge.id))
+        if (candidate === undefined) return
+        // #CRITICAL: security: the authoritative gate, read from the response
+        // we just awaited rather than from the pre-await ref. It must stay
+        // ahead of markBadgeSeen: that write consumes the badge's one toast
+        // on this device, so suppressing AFTER marking would silently burn a
+        // celebration the guardian merely paused. G19 is a guardian control
+        // over what their child sees, so failing open on an unresolved fetch
+        // is not acceptable here even though the ring/capture paths above
+        // deliberately fail open for accrual.
+        // #VERIFY: ReaderPage.test.tsx "suppresses the badge toast when
+        // badges_enabled turns false after the ending is reached".
+        if (!after.settings.badges_enabled) {
+          badgesEnabledRef.current = false
+          return
+        }
+        if (await isBadgeSeen(profileId, candidate.id)) return
+        await markBadgeSeen(profileId, candidate.id)
+        setNewlyEarnedBadge(candidate)
+      } catch (error) {
+        // Best-effort, purely celebratory: a failed check just means no
+        // toast this time, never an error surfaced to the child.
+        console.error('[reader] badge check failed', { profileId, error })
+      }
+    },
+    [progressApi, profileId]
+  )
+
   // ADR-023 P6: resolved independently of the story load, so a slow or failing
   // values fetch can never delay or fail the story itself. Starts null (generic)
   // and upgrades once resolved, which is safe because the resolver is total and
@@ -462,27 +589,73 @@ export function ReaderPage({
     })()
   }, [navigate, profileId])
 
+  // W0.3 (design review 2026-08-01 section 3.4): the completion POST's own
+  // response carries {is_new, found, total}, so EndingsProgress can render
+  // the ending-screen tracker from it directly instead of racing a second
+  // GET. 'pending' is the state while the POST is in flight; the ending
+  // screen shows nothing rather than fetching (which would risk the same
+  // under-report race this replaces).
+  const [completionOutcome, setCompletionOutcome] = useState<CompletionOutcome>({
+    status: 'pending',
+  })
+
   const handleComplete = useCallback(
     (endingId: string) => {
-      // #EDGE: external-resources: completion recording is best-effort. A failed
-      // post must never surface a raw error on the kid ending screen.
-      // #VERIFY: swallow to console.error; the child still sees "The End".
+      // #ASSUME: timing dependencies: reset to 'pending' the instant a new
+      // ending is reached, before this call's POST settles, so
+      // EndingsProgress can never show a stale PREVIOUS ending's outcome (or
+      // prematurely fall back to fetching) while this ending's completion is
+      // still in flight. RESTART re-reaching an earlier ending, or reaching a
+      // second distinct ending later in the same session, are both covered:
+      // Reader.tsx's completedEndingsRef gates onComplete to at-most-once per
+      // distinct ending, but each of those calls still resets this state.
+      // #VERIFY: ReaderPage.test.tsx "resets the completion outcome to
+      // pending for each newly reached ending".
+      setCompletionOutcome({ status: 'pending' })
+      // W3.2: snapshot the badge set BEFORE this completion's POST, so the
+      // toast can diff "what's new" rather than guessing from a single
+      // post-completion read (which cannot distinguish a badge earned by
+      // THIS completion from one earned earlier that this device simply
+      // never toasted). Started in parallel with the completion POST, not
+      // awaited here, so it never delays the ending-screen tracker.
+      // `fresh` here too, and for a blunter reason than the "after" read: a
+      // mount-time fetch that is still hanging would otherwise BE this
+      // snapshot, so the diff would wait on it instead of on the completion.
+      const badgesBefore = progressApi
+        .getProgress({ fresh: true })
+        .then((progress) => new Set(progress.badges.map((badge) => badge.id)))
+        .catch(() => new Set<string>())
       void recordCompletion({
         profile_id: profileId,
         storybook_id: storybookId,
         version,
         ending_id: endingId,
-      }).catch((error: unknown) => {
-        console.error('[reader] completion post failed', {
-          profileId,
-          storybookId,
-          version,
-          endingId,
-          error,
-        })
       })
+        .then((result) => {
+          setCompletionOutcome({ status: 'ready', result })
+          void checkForNewBadge(badgesBefore)
+        })
+        .catch((error: unknown) => {
+          // #EDGE: external-resources: completion recording is best-effort. A
+          // failed post must never surface a raw error on the kid ending
+          // screen; it also leaves no {is_new, found, total} to render
+          // directly, so EndingsProgress falls back to its own
+          // fetchReadingHistory lookup (see its #ASSUME) instead of showing
+          // nothing forever.
+          // #VERIFY: swallow to console.error; the child still sees "The
+          // End"; ReaderPage.test.tsx "falls back to unavailable when the
+          // completion POST rejects".
+          console.error('[reader] completion post failed', {
+            profileId,
+            storybookId,
+            version,
+            endingId,
+            error,
+          })
+          setCompletionOutcome({ status: 'unavailable' })
+        })
     },
-    [recordCompletion, profileId, storybookId, version]
+    [recordCompletion, profileId, storybookId, version, progressApi, checkForNewBadge]
   )
 
   if (pageState.phase === 'loading') {
@@ -579,8 +752,15 @@ export function ReaderPage({
         fetchSeriesNext={fetchSeriesNext}
         ttsEnabled={ttsEnabled}
         fetchReadingHistory={fetchReadingHistory}
+        completionOutcome={completionOutcome}
         submitFlag={submitFlag}
         personalization={personalization}
+        ageBand={ageBand}
+        readingTimeApi={readingTimeApi}
+        timeCapturePaused={timeCapturePaused}
+        progressApi={progressApi}
+        newlyEarnedBadge={newlyEarnedBadge}
+        onDismissBadgeToast={() => setNewlyEarnedBadge(null)}
       />
     </>
   )

@@ -63,14 +63,14 @@ state r_tell #D1C4E9
 r_tell : rising · 70w
 state r_show #FFF9C4
 r_show : choice · 75w
-state e_set_compost #FFCDD2
-e_set_compost : setback (negative)
+state e_set_compost #E0E0E0
+e_set_compost : setback (neutral)
 e_set_compost : "{B3_SETBACK}"
-state e_set_splash #FFCDD2
-e_set_splash : setback (negative)
+state e_set_splash #E0E0E0
+e_set_splash : setback (neutral)
 e_set_splash : "{E3_SETBACK}"
-state e_set_dash #FFCDD2
-e_set_dash : setback (negative)
+state e_set_dash #E0E0E0
+e_set_dash : setback (neutral)
 e_set_dash : "{F3_SETBACK}"
 state e_patch #C8E6C9
 e_patch : completion (positive)
@@ -152,7 +152,7 @@ legend right
   The School Garden Mystery
   Band 5-8 · Tier 1 · ~5 min
   Topology: open_map
-  35 nodes · 7 endings (4+ / 0n / 3-)
+  35 nodes · 7 endings (4+ / 3n / 0-)
   Production-eligible
   Scale: short · prose
 endlegend

@@ -201,8 +201,8 @@ def test_verify_sha256_rejects_mismatch(tmp_path: Path) -> None:
 def test_render_svgs_skips_gracefully_without_jar(tmp_path: Path) -> None:
     puml = tmp_path / "a.puml"
     puml.write_text("@startuml a\n@enduml\n", encoding="utf-8")
-    # jar=None means "unavailable"; must return [] and not raise.
-    assert render_svgs([puml], jar=None) == []
+    # jar=None means "unavailable"; must return empty lists and not raise.
+    assert render_svgs([puml], jar=None) == ([], [])
 
 
 @pytest.mark.unit
@@ -334,7 +334,7 @@ def test_render_svgs_missing_java_binary_degrades_gracefully(
         raise FileNotFoundError("java")
 
     monkeypatch.setattr(rsd.subprocess, "run", fake_run)
-    assert render_svgs([puml], jar=jar) == []
+    assert render_svgs([puml], jar=jar) == ([], [])
     assert "java executable not found" in capsys.readouterr().err
 
 
@@ -356,9 +356,90 @@ def test_render_svgs_render_failure_skips_file_and_continues(
         target.with_suffix(".svg").write_text("<svg/>", encoding="utf-8")
 
     monkeypatch.setattr(rsd.subprocess, "run", fake_run)
-    result = render_svgs([puml_bad, puml_good], jar=jar)
-    assert result == [puml_good.with_suffix(".svg")]
+    rendered, corrupt = render_svgs([puml_bad, puml_good], jar=jar)
+    assert rendered == [puml_good.with_suffix(".svg")]
+    # A non-zero exit is a reported failure, not a corrupt output: nothing was
+    # written for bad.puml, so there is no error card to quarantine.
+    assert corrupt == []
     assert "PlantUML failed to render" in capsys.readouterr().err
+
+
+# ---------------------------------------------------------------------------
+# Error-card guard (PR #532 review, finding C1): PlantUML exits 0 and writes a
+# ~6 KB "Cannot find Graphviz" card in place of the diagram, so 62 real diagrams
+# were once replaced by error images that every existing gate passed.
+# ---------------------------------------------------------------------------
+
+ERROR_CARD = (
+    '<svg xmlns="http://www.w3.org/2000/svg">'
+    "<text>Cannot find Graphviz. You should try</text>"
+    "<text>@startuml</text></svg>"
+)
+
+
+@pytest.mark.unit
+def test_render_svgs_rejects_graphviz_error_card(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    puml = tmp_path / "a.puml"
+    puml.write_text("@startuml a\n@enduml\n", encoding="utf-8")
+    jar = tmp_path / "x.jar"
+    jar.write_bytes(b"hello")
+
+    class FakeProc:
+        stderr = b"java.io.IOException: Cannot run program dot"
+
+    def fake_run(cmd: list[str], **_kwargs: object) -> FakeProc:
+        # PlantUML's real behaviour: exit 0, write an error card.
+        Path(cmd[-1]).with_suffix(".svg").write_text(ERROR_CARD, encoding="utf-8")
+        return FakeProc()
+
+    monkeypatch.setattr(rsd.subprocess, "run", fake_run)
+    rendered, corrupt = render_svgs([puml], jar=jar)
+    assert rendered == []
+    assert corrupt == [puml.with_suffix(".svg")]
+    err = capsys.readouterr().err
+    assert "error card" in err
+    assert "Cannot run program dot" in err, "swallowed PlantUML stderr must surface"
+
+
+@pytest.mark.unit
+def test_render_svgs_reports_success_with_no_output_file(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    puml = tmp_path / "a.puml"
+    puml.write_text("@startuml a\n@enduml\n", encoding="utf-8")
+    jar = tmp_path / "x.jar"
+    jar.write_bytes(b"hello")
+    monkeypatch.setattr(rsd.subprocess, "run", lambda *_a, **_k: None)
+
+    rendered, corrupt = render_svgs([puml], jar=jar)
+    assert rendered == []
+    assert corrupt == [puml.with_suffix(".svg")]
+    assert "wrote no SVG" in capsys.readouterr().err
+
+
+@pytest.mark.unit
+def test_svg_error_marker_accepts_a_real_diagram(tmp_path: Path) -> None:
+    svg = tmp_path / "ok.svg"
+    svg.write_text("<svg><g><text>Start</text></g></svg>", encoding="utf-8")
+    assert rsd.svg_error_marker(svg) is None
+
+
+@pytest.mark.unit
+def test_check_committed_svgs_flags_error_cards(tmp_path: Path) -> None:
+    good_puml = tmp_path / "good.puml"
+    bad_puml = tmp_path / "bad.puml"
+    good_puml.with_suffix(".svg").write_text(
+        "<svg><text>ok</text></svg>", encoding="utf-8"
+    )
+    bad_puml.with_suffix(".svg").write_text(ERROR_CARD, encoding="utf-8")
+    absent = tmp_path / "absent.puml"
+
+    corrupt = rsd.check_committed_svgs(
+        {good_puml: "x", bad_puml: "y", absent: "z"},
+    )
+    assert corrupt == [(bad_puml.with_suffix(".svg"), "Cannot find Graphviz")]
 
 
 # ---------------------------------------------------------------------------

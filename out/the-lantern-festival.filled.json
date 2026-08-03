@@ -455,7 +455,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_berry_oops",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Oops, Bouncing Berries"
       }
@@ -466,7 +466,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_willow_oops",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Oops, Too Loud a Bell"
       }
@@ -477,7 +477,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_reed_oops",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Oops, Soggy Reeds"
       }

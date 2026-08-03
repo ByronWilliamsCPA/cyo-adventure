@@ -93,11 +93,14 @@ Provide implementation details:
 # Example showing how the decision is implemented
 from pydantic import BaseModel, Field
 
+
 class User(BaseModel):
     """User model with validation."""
+
     name: str = Field(..., min_length=1)
-    email: str = Field(..., regex=r'^[^@]+@[^@]+\.[^@]+$')
+    email: str = Field(..., regex=r"^[^@]+@[^@]+\.[^@]+$")
     age: int = Field(..., ge=0, le=150)
+
 
 # Usage
 user = User(name="John", email="john@example.com", age=30)

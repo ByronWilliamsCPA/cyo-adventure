@@ -15,10 +15,38 @@ tags:
 
 # ADR-013: Hybrid post-quantum cryptography readiness
 
-> **Status**: Accepted (2026-07-11)
+> **Status**: Accepted (2026-07-11; amended 2026-08-02, see Amendment below)
 > **Date**: 2026-07-11
 > **Relates to**: [ADR-009](./adr-009-supabase-platform.md) (Supabase auth and JWKS verification),
 > [ADR-004](./adr-004-homelab-first-deployment.md) (deployment topology and the external TLS layer)
+
+## Amendment (2026-08-02): there is no Cloudflare Tunnel, and the edge leg is now hybrid
+
+The `cloudflared`/"Cloudflare Tunnel" references in this ADR describe infrastructure the
+deployment no longer uses; a security review flagged the drift. They appear in **TL;DR**,
+**Context > Constraints**, **Decision item 2**, and **Consequences > Technical Debt**. They do not
+appear in the Implementation section.
+
+The actual chain: Cloudflare's proxied DNS points at the Charon VPS and reaches it over **TLS on
+443**, where **Traefik on Charon terminates**; only inside Charon does traffic enter the WireGuard
+tunnel (Gerbil to Newt) to the homelab, where a second Traefik re-terminates. Pangolin sits behind
+Charon's Traefik as an HTTP service and does not terminate public TLS. There is no `cloudflared`
+process anywhere in the stack. LAN clients bypass Cloudflare entirely through split-horizon DNS
+(an Unbound override routing straight to the homelab) plus mTLS. Tailscale is likewise not in this
+path.
+
+**The decision itself is unchanged, and its target has now been met on the leg that matters.**
+`X25519MLKEM768` is negotiated on the Cloudflare-to-origin leg as of 2026-08-02, verified directly
+against the origin. Getting there was not routine: Cloudflare now offers origins only post-quantum
+groups, the Traefik build then running on Charon supported none of them, and the resulting TLS
+alert 40 took both `cyo` and `cyo-staging` publicly offline until Traefik was moved to v3.7.10.
+That makes the Go/Traefik version floor an availability control on this leg, not merely a posture
+one; see `docs/security/crypto-inventory.md` section 2 and its dependency-floor table.
+
+The one voided item is the "keep `cloudflared` current" tracking entry in Technical Debt, since
+there is no `cloudflared` to keep current. The sections below are left as originally written
+rather than silently rewritten, following the amendment convention used in ADR-003, ADR-005,
+ADR-007, ADR-009, ADR-015, and ADR-020; do not action the `cloudflared` items in them.
 
 ## TL;DR
 
@@ -100,7 +128,7 @@ from an algorithm broken classically.
 
 4. **Dependency floors.** `cryptography` >= 45 (ML-DSA/SLH-DSA primitives; currently 49.0.0 via
    `pyjwt[crypto]`), runtime container on Debian 13 (OpenSSL 3.5.x, already true of
-   `dhi-python:3.12-debian13`), and Go 1.24+ builds for the Go proxies in `homelab-infra`.
+   `dhi-python:3.14-debian13`), and Go 1.24+ builds for the Go proxies in `homelab-infra`.
    Floors are recorded in the cryptographic inventory; downgrades are treated as regressions.
 
 5. **Signature migration is deferred behind explicit gates**, revisited quarterly:

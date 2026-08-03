@@ -9,7 +9,7 @@ tags:
   - planning
   - generation
   - diversity
-status: active
+status: superseded
 owner: core-maintainer
 authors:
   - name: "Byron Williams"
@@ -21,8 +21,19 @@ source: "story-diversity-plan-v2.md (the specification); story-diversity-review-
   story-personalization-implementation-plan.md; PR #416 (open, deferred by owner decision). 2026-07-26."
 ---
 
+> ## SUPERSEDED for scheduling (2026-08-02)
+>
+> **Do not start work from this document's slice order.** This plan's entire function is sequencing, and
+> sequencing of the still-open diversity work has moved to
+> [story-structure-improvement-plan.md](story-structure-improvement-plan.md) (the `SQ-*` namespace; its
+> section 11 carries the SQ-to-register map). Slices whose work already landed keep their record here.
+>
+> **Two things here remain binding and are NOT superseded**: section 4's rule-ID reservations (they exist
+> to keep rule IDs collision-free against open PR #416, a constraint the SQ plan does not restate), and
+> section 4.1's conflict resolutions for when #416 merges. Consult them before minting any new rule ID.
+>
 > **Specification**: [story-diversity-plan-v2.md](story-diversity-plan-v2.md). That document says *what* and
-> *why*; this one says *in what order* and *how it is verified*. Where the two disagree, plan v2 governs the
+> *why*; this one said *in what order* and *how it is verified*. Where the two disagree, plan v2 governs the
 > intent and this plan is corrected.
 
 ---

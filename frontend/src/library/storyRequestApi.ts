@@ -17,10 +17,35 @@ export interface KidStoryRequest {
   request_text: string
   /** The guardian-confirmed series name (K12), when this request named one.
    * Null for a one-off idea or an anchor-driven "ask for the next book"
-   * continuation. Used only as a best-effort hint for matching an approved
-   * request to a book that has since appeared on the shelf; never shown
-   * verbatim to the child. */
+   * continuation. */
   proposedSeriesTitle: string | null
+  /** W0.4: the storybook this request produced, once the backend has
+   * stamped it (publishing/service.py::approve(), at publish time). Null
+   * until then. A non-null value here always names a published book (see
+   * the backend's #ASSUME on api/story_requests.py::_to_view), but it may
+   * not yet be assigned to this child's shelf; RequestStory only flips its
+   * "it's on your shelf!" copy once this id also appears in the profile's
+   * own library list. */
+  resultingStorybookId: string | null
+  /**
+   * W1.4 (K19 reflect-back, design review 4.1): the request view's
+   * ``interpretation.kid_summary`` field only -- a single pre-rendered,
+   * template-authored, echo-safe sentence
+   * (``story_requests/interpretation.py::_kid_summary``), e.g. "We built in
+   * 1 of your ideas.". Deliberately NOT the per-element
+   * ``interpretation.elements[].kid_text``/``element`` list, and NEVER
+   * ``interpretation.guardian_summary`` or any element's ``guardian_text``:
+   * this adapter's whole job is stripping guardian-facing fields at the
+   * wire boundary (see the module docstring), and the summary is the one
+   * field the backend already designed to stand alone as a short,
+   * kid-appropriate reflection of the whole request -- picking the raw
+   * element list instead would mean choosing which of possibly several
+   * requested elements to show and in what order, a UI judgment call the
+   * per-request summary already makes once, server-side, for every band.
+   * Null for a request created before WS-7 shipped (no stored
+   * interpretation) or when the backend omits the field entirely.
+   */
+  kidSummary: string | null
 }
 
 // Internal wire type: full response from backend (not exported)
@@ -36,6 +61,12 @@ interface WireStoryRequest {
     verdict: string
     message: string
   }>
+  resulting_storybook_id?: string | null
+  // Only the one field this adapter reads is declared; guardian_summary and
+  // the elements[] list (each carrying a guardian_text field) exist on the
+  // real wire payload but are never referenced here, so they can never leak
+  // into kid-surface code even by accident (see kidSummary's own doc above).
+  interpretation?: { kid_summary: string } | null
 }
 
 export interface CreateStoryRequestExtras {
@@ -77,6 +108,8 @@ export function makeKidStoryRequestApi(api: AxiosInstance): KidStoryRequestApi {
         status: res.data.status,
         request_text: res.data.request_text,
         proposedSeriesTitle: res.data.proposed_series_title ?? null,
+        resultingStorybookId: res.data.resulting_storybook_id ?? null,
+        kidSummary: res.data.interpretation?.kid_summary ?? null,
       }
     },
     async listForProfile(profileId: string): Promise<KidStoryRequest[]> {
@@ -91,6 +124,8 @@ export function makeKidStoryRequestApi(api: AxiosInstance): KidStoryRequestApi {
         status: r.status,
         request_text: r.request_text,
         proposedSeriesTitle: r.proposed_series_title ?? null,
+        resultingStorybookId: r.resulting_storybook_id ?? null,
+        kidSummary: r.interpretation?.kid_summary ?? null,
       }))
     },
   }

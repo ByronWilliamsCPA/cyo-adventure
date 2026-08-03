@@ -18,6 +18,7 @@ import { isPersonalizationEnabled } from '../env'
 import { useApi } from '../hooks/useApi'
 import { useReplayOnReconnect } from '../hooks/useReplayOnReconnect'
 import { getReadAloudPreference } from '../kid/readAloudPreference'
+import { useKidProfile } from '../kid/useKidProfile'
 import { useToast } from '../notifications/useToast'
 import { clearPersonalizationValues, getCachedPersonalizationValues } from '../offline/db'
 import { type ReplayOutcome } from '../offline/sync'
@@ -176,6 +177,14 @@ export function ReaderRoute() {
     () => (profileId ? getReadAloudPreference(profileId) : false),
     [profileId]
   )
+  // ADR-026 decision 6: band is the source of truth for stop-flowed vs.
+  // one-node-per-page reading. Same best-effort profile lookup KidShell uses
+  // for its data-age-band attribute (useKidProfile dedupes concurrent
+  // lookups for the same profileId, so this does not double the network
+  // cost of KidShell's own call on the same route); a lookup still in
+  // flight or that failed resolves to `undefined`, which Reader.tsx treats
+  // as "not flowed" (today's behavior), never a guess.
+  const ageBand = useKidProfile(profileId)?.profile?.age_band
 
   const [replayFailedCount, setReplayFailedCount] = useState(0)
   const { showToast } = useToast()
@@ -276,6 +285,7 @@ export function ReaderRoute() {
         fetchReadingHistory={fetchReadingHistory}
         submitFlag={submitFlag}
         fetchPersonalizationValues={fetchPersonalizationValues}
+        ageBand={ageBand}
       />
       {replayFailedCount > 0 && (
         <div role="alert" className="replay-failed-banner">

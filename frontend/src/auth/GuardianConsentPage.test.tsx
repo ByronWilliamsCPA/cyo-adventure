@@ -66,39 +66,64 @@ describe('GuardianConsentPage', () => {
     expect(screen.getByText('Admin console')).toBeInTheDocument()
   })
 
-  it('disables submit until a name is typed and the checkbox is checked', () => {
+  /** Fills every required field except the one named in `except`. */
+  function fillAllExcept(except?: 'name' | 'guardian' | 'country' | 'adulthood') {
+    if (except !== 'name') {
+      fireEvent.change(screen.getByLabelText(/your full legal name/i), {
+        target: { value: 'Jane A. Guardian' },
+      })
+    }
+    if (except !== 'guardian') {
+      fireEvent.click(screen.getByLabelText(/parent or legal guardian/i))
+    }
+    if (except !== 'country') {
+      fireEvent.change(screen.getByLabelText(/country of residence/i), {
+        target: { value: 'US' },
+      })
+    }
+    if (except !== 'adulthood') {
+      fireEvent.click(screen.getByLabelText(/i confirm that i am an adult/i))
+    }
+  }
+
+  it('disables submit until the name, both checkboxes, and the country are all set', () => {
     renderWithRouter()
     const submit = screen.getByRole('button', { name: /agree and continue/i })
     expect(submit).toBeDisabled()
 
-    fireEvent.change(screen.getByLabelText(/your full legal name/i), {
-      target: { value: 'Jane A. Guardian' },
-    })
+    fillAllExcept('adulthood')
     expect(submit).toBeDisabled()
 
-    fireEvent.click(screen.getByRole('checkbox'))
+    fireEvent.click(screen.getByLabelText(/i confirm that i am an adult/i))
     expect(submit).toBeEnabled()
   })
 
-  it('submits the trimmed typed name on agree', async () => {
+  it('disables submit when the country of residence is not selected', () => {
+    renderWithRouter()
+    fillAllExcept('country')
+    expect(screen.getByRole('button', { name: /agree and continue/i })).toBeDisabled()
+  })
+
+  it('submits the trimmed typed name and selected country on agree', async () => {
     mockRecordConsent.mockResolvedValue(undefined)
     renderWithRouter()
     fireEvent.change(screen.getByLabelText(/your full legal name/i), {
       target: { value: '  Jane A. Guardian  ' },
     })
-    fireEvent.click(screen.getByRole('checkbox'))
+    fireEvent.click(screen.getByLabelText(/parent or legal guardian/i))
+    fireEvent.change(screen.getByLabelText(/country of residence/i), {
+      target: { value: 'CA' },
+    })
+    fireEvent.click(screen.getByLabelText(/i confirm that i am an adult/i))
     fireEvent.click(screen.getByRole('button', { name: /agree and continue/i }))
 
-    await waitFor(() => expect(mockRecordConsent).toHaveBeenCalledWith('Jane A. Guardian'))
+    await waitFor(() => expect(mockRecordConsent).toHaveBeenCalledWith('Jane A. Guardian', 'CA'))
   })
 
   it('shows an error and re-enables the form when recordConsent rejects', async () => {
     mockRecordConsent.mockRejectedValue(new Error('422 from backend'))
     renderWithRouter()
-    fireEvent.change(screen.getByLabelText(/your full legal name/i), {
-      target: { value: 'Jane A. Guardian' },
-    })
-    fireEvent.click(screen.getByRole('checkbox'))
+    fillAllExcept()
     fireEvent.click(screen.getByRole('button', { name: /agree and continue/i }))
 
     await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument())

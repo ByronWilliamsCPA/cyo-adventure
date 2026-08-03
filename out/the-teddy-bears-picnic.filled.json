@@ -109,7 +109,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_honey_oops",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Oops, Buzzy Bees"
       }
@@ -154,7 +154,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_berry_oops",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Oops, Tumbling Berries"
       }
@@ -199,7 +199,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_ball_oops",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Oops, a Ticklish Hopper"
       }
@@ -244,7 +244,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_kite_oops",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Oops, a Windy Muddle"
       }
@@ -289,7 +289,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_owl_oops",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Oops, a Pile of Leaves"
       }
@@ -334,7 +334,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_music_oops",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Oops, a Jumbled Tune"
       }

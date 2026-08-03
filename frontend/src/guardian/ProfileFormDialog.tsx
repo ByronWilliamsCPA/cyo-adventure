@@ -13,6 +13,7 @@ import {
   type ContentFlagCaps,
   type ContentFlagLevelValue,
   type ProfileCreateBody,
+  type ProfileGamificationFields,
   type ProfileView,
 } from '../profiles/profilesApi'
 import { ageBandLabel } from './storyRequestOptions'
@@ -21,6 +22,25 @@ import { ageBandLabel } from './storyRequestOptions'
 // up to 20 themes, each 1-40 characters after trim/lowercase.
 const BANNED_THEMES_MAX = 20
 const BANNED_THEME_MAX_LENGTH = 40
+
+// W3.4 (gamification-recommendation-2026-08-01.md section 4): the
+// selectable goal caps at 6 at every band (one guaranteed free day).
+const RING_GOAL_DAYS_MAX = 6
+
+/** The three states the ring-enabled control can be in; `'default'` is the
+ * nullable "no override" state, distinct from an explicit on/off so a
+ * guardian can deliberately revert to the band default later. */
+type RingChoice = 'default' | 'on' | 'off'
+
+function ringChoiceFrom(value: boolean | null | undefined): RingChoice {
+  if (value === true) return 'on'
+  if (value === false) return 'off'
+  return 'default'
+}
+
+function ringChoiceToValue(choice: RingChoice): boolean | null {
+  return choice === 'default' ? null : choice === 'on'
+}
 
 const CONTENT_FLAG_LABELS: Record<'violence' | 'scariness' | 'peril', string> = {
   violence: 'Violence',
@@ -58,13 +78,18 @@ interface ProfileFormDialogBaseProps {
   onClose: () => void
   /**
    * The child's current ADR-015 G3 pre-approval settings, when known.
-   * ProfileView carries neither field (see profilesApi.ts's
-   * ProfileEnvelopeFields doc), so this cannot be derived from `initial`;
-   * the only place they round-trip today is GET /v1/families/me/budget's
-   * per-child usage rows (budgetApi.ts's ChildEnvelopeUsage), which the
-   * caller (ProfilesPage) fetches separately and matches by profile id.
-   * Absent (create mode, or a failed/not-yet-loaded budget fetch) seeds the
-   * section to its off/no-limit default.
+   * The caller (ProfilesPage) reads them from GET /v1/families/me/budget's
+   * per-child usage rows (budgetApi.ts's ChildEnvelopeUsage) and matches by
+   * profile id. Absent (create mode, or a failed/not-yet-loaded budget
+   * fetch) seeds the section to its off/no-limit default.
+   *
+   * This prop is now reducible: the backend's own ProfileView serializes
+   * `request_auto_approve` and `monthly_request_envelope` (api/schemas.py),
+   * so a later change can declare them on the hand-typed ProfileView and
+   * seed straight from `initial`, dropping the separate budget fetch. Left
+   * as-is here because that touches ProfilesPage's load path, not this
+   * dialog. An earlier version of this doc claimed ProfileView carries
+   * neither field; that has not been true since the G3 write path landed.
    */
   envelopeInfo?: ProfileEnvelopeInfo
 }
@@ -123,6 +148,16 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
   )
   const [bannedThemes, setBannedThemes] = useState<string[]>(initial?.banned_themes ?? [])
   const [themeInput, setThemeInput] = useState('')
+  // W3.4 gamification settings. `ringChoice` seeds to 'default' (no stored
+  // override) for a fresh create, matching ring_enabled/ring_goal_days'
+  // omitted-on-create semantics (see ProfileCreateBody's own field doc in
+  // api/schemas.py).
+  const [ringChoice, setRingChoice] = useState<RingChoice>(ringChoiceFrom(initial?.ring_enabled))
+  const [ringGoalText, setRingGoalText] = useState(
+    initial?.ring_goal_days != null ? String(initial.ring_goal_days) : ''
+  )
+  const [badgesEnabled, setBadgesEnabled] = useState(initial?.badges_enabled ?? true)
+  const [timeCapturePaused, setTimeCapturePaused] = useState(initial?.time_capture_paused ?? false)
   // ADR-015 G3 "Story requests" section. Seeded from envelopeInfo (not
   // `initial`, which cannot carry these fields -- see the prop's doc); a
   // fresh create or a missing envelopeInfo seeds off/no-limit.
@@ -187,6 +222,28 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
       const envelopeValue = trimmedEnvelope === '' ? null : Number(trimmedEnvelope)
       const envelopeTouched =
         autoApprove !== initialAutoApprove || envelopeValue !== initialEnvelope
+      const ringGoalTrimmed = ringGoalText.trim()
+      // W3.4: sent unconditionally (unlike the G3 envelope fields above,
+      // which gate on "touched" to preserve PATCH's omitted-vs-null
+      // distinction) -- always reflecting the current control state keeps a
+      // resave idempotent: an untouched control just resends the value it
+      // was seeded with.
+      //
+      // #CRITICAL: external-resources: unconditional means these four keys
+      // are on the wire for EVERY create and edit, and both bodies are
+      // `extra="forbid"` server-side, so one divergent field name 422s a
+      // guardian renaming their child, not just this section. That is why
+      // ProfileGamificationFields is a shared profilesApi.ts type under
+      // apiContractParity.ts rather than a local mirror here.
+      // #VERIFY: apiContractParity.ts turns the divergence into a
+      // `npm run typecheck` failure; ProfileFormDialog.test.tsx pins that
+      // an untouched form still round-trips its seeded values.
+      const gamification: ProfileGamificationFields = {
+        ring_enabled: ringChoiceToValue(ringChoice),
+        ring_goal_days: ringGoalTrimmed === '' ? null : Number(ringGoalTrimmed),
+        badges_enabled: badgesEnabled,
+        time_capture_paused: timeCapturePaused,
+      }
       const base: ProfileFormCreateBody = {
         display_name: displayName,
         age_band: ageBand,
@@ -196,6 +253,7 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
         reduce_motion: reduceMotion,
         content_flag_caps: contentFlagCaps,
         banned_themes: bannedThemes,
+        ...gamification,
         ...(envelopeTouched
           ? { request_auto_approve: autoApprove, monthly_request_envelope: envelopeValue }
           : {}),
@@ -245,7 +303,14 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
   const envelopeInvalid =
     envelopeTrimmed !== '' &&
     (!Number.isFinite(envelopeNum) || !Number.isInteger(envelopeNum) || envelopeNum < 0)
-  const valid = !nameMissing && !capInvalid && pinValid && !envelopeInvalid
+  // W3.4: mirrors the backend CHECK/Field bound (1-6); blank is always valid
+  // (it means "use the band default").
+  const ringGoalTrimmed = ringGoalText.trim()
+  const ringGoalNum = Number(ringGoalTrimmed)
+  const ringGoalInvalid =
+    ringGoalTrimmed !== '' &&
+    (!Number.isInteger(ringGoalNum) || ringGoalNum < 1 || ringGoalNum > RING_GOAL_DAYS_MAX)
+  const valid = !nameMissing && !capInvalid && pinValid && !envelopeInvalid && !ringGoalInvalid
 
   // Names what still blocks Save while it is disabled for missing/invalid
   // inputs (null while saving or once everything is filled). Derived from
@@ -255,6 +320,8 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
   if (capInvalid) missingInputs.push('a reading level from 0 to 99')
   if (!pinValid) missingInputs.push('a 4-8 digit PIN')
   if (envelopeInvalid) missingInputs.push('a monthly auto-approve limit of 0 or more, or blank')
+  if (ringGoalInvalid)
+    missingInputs.push(`a reading-days goal from 1 to ${RING_GOAL_DAYS_MAX}, or blank`)
   const saveHint =
     !saving && missingInputs.length > 0 ? `Enter ${missingInputs.join(' and ')} to save.` : null
 
@@ -372,6 +439,82 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
           Turns off bouncy/playful motion in this child&apos;s library and reader, matching a
           device&apos;s own reduced-motion setting.
         </p>
+        {/* W3.4 gamification settings (gamification-recommendation-2026-08-01.md
+            section 4). Nothing here is punitive (K14): every control is a
+            visibility/pause toggle, never a loss state, and re-enabling
+            restores everything with nothing lost. */}
+        <fieldset className="profile-form__gamification">
+          <legend>Reading rewards</legend>
+          <label className="cyo-field">
+            Weekly reading-days ring
+            <select
+              className="cyo-field__control"
+              value={ringChoice}
+              onChange={(e) => setRingChoice(e.target.value as RingChoice)}
+              aria-describedby="ring-help"
+            >
+              <option value="default">Use the age band&apos;s default</option>
+              <option value="on">On</option>
+              <option value="off">Off</option>
+            </select>
+          </label>
+          <p id="ring-help" className="profile-form__hint">
+            A small ring in {displayName.trim() || 'this child'}&apos;s library showing how many
+            days they read this week. Off removes it entirely; it never shows a missed day, only
+            days read.
+          </p>
+          <label className="cyo-field">
+            Weekly goal (days)
+            <input
+              type="number"
+              min="1"
+              max={RING_GOAL_DAYS_MAX}
+              step="1"
+              className="cyo-field__control"
+              value={ringGoalText}
+              onChange={(e) => setRingGoalText(e.target.value)}
+              placeholder="Age band default"
+              aria-describedby="ring-goal-help"
+            />
+          </label>
+          <p id="ring-goal-help" className="profile-form__hint">
+            Leave blank to use the age band&apos;s default. Capped at {RING_GOAL_DAYS_MAX} days so
+            there is always at least one free day.
+            {/* #ASSUME: data integrity: teens (13-16/16+) are speced to
+                self-set their own goal within this guardian-set ceiling
+                (design review P-A); a kid-side goal control does not exist
+                yet, so this number IS the effective goal for every band,
+                including teens, until that ships. #VERIFY: none yet;
+                intentional v1 deferral (see api/progress.py's matching
+                note). */}
+          </p>
+          <label className="cyo-field cyo-field--checkbox">
+            <input
+              type="checkbox"
+              checked={badgesEnabled}
+              onChange={(e) => setBadgesEnabled(e.target.checked)}
+              aria-describedby="badges-help"
+            />
+            Badges
+          </label>
+          <p id="badges-help" className="profile-form__hint">
+            Off hides the badge case and stops new-badge celebrations; badges still quietly earn in
+            the background, so turning this back on restores everything at once.
+          </p>
+          <label className="cyo-field cyo-field--checkbox">
+            <input
+              type="checkbox"
+              checked={timeCapturePaused}
+              onChange={(e) => setTimeCapturePaused(e.target.checked)}
+              aria-describedby="time-capture-help"
+            />
+            Pause reading-time tracking
+          </label>
+          <p id="time-capture-help" className="profile-form__hint">
+            When on, we stop recording how many minutes {displayName.trim() || 'this child'} reads.
+            The weekly ring and reading summary keep working from days already recorded.
+          </p>
+        </fieldset>
         <fieldset className="profile-form__budget">
           <legend>Story requests</legend>
           <label className="cyo-field cyo-field--checkbox">

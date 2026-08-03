@@ -29,8 +29,9 @@ const CONSENT_SIGNER_NAME = 'Staging E2E Test Guardian'
  * lighter-weight target in this respect: `app.py` enables the 60 rpm/IP limiter
  * for every `ENVIRONMENT != "local"` deployment, so the identical ceiling
  * applies here. Staging is in fact the worse case, because this tier signs in
- * three times per run (guardian smoke, admin smoke, kid library) against one
- * runner IP, where the prod tier signs in twice.
+ * five times per run (guardian smoke, admin smoke, kid library, and the
+ * moderation-QA spec's admin + guardian sessions) against one runner IP,
+ * where the prod tier signs in twice.
  *
  * A 429 on the post-login `/v1/me` renders AuthContext's "we couldn't load your
  * account" alert, which is indistinguishable at the UI from a real auth break,
@@ -154,6 +155,8 @@ export async function acceptGuardianConsentIfPresent(page: Page): Promise<void> 
       name: /electronic signature agreeing to CYO Adventure's Privacy Notice/,
     })
     .check()
+  await page.getByLabel('Your country of residence').selectOption('US')
+  await page.getByRole('checkbox', { name: 'I confirm that I am an adult.' }).check()
   await page.getByRole('button', { name: 'Agree and continue' }).click()
 
   // The page has no local success state: recordConsent's syncPrincipal flips

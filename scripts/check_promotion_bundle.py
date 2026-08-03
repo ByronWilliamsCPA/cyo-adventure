@@ -333,9 +333,28 @@ def prove_shell(shell_path: Path, *, skeletons_root: Path) -> list[str]:
     if contract_path.is_file() and _run_check_theme_contract([str(shell_path)]) != 0:
         reasons.append(f"{name}: check_theme_contract failed")
 
+    # A hand-authored original has no mutation lineage to re-prove, and
+    # demanding one blocks legitimate metadata-only edits to the curated
+    # catalog (AL-014/UW-C01; hit by the 2026-08-01 valence re-tag).
+    #
+    # #CRITICAL: security: make the LINEAGE LEGS conditional here, never the
+    # shell itself upstream. Filtering lineage-less shells out of the CI job's
+    # argv (the shape this started as) drops check_skeleton and
+    # check_theme_contract along with the lineage checks, and because
+    # --diff-filter=AM includes ADDED files, a brand-new hand-authored skeleton
+    # is skipped by construction: on the run that motivated this note, 10 of 14
+    # changed skeletons were proved by nothing at all. Everything that does not
+    # depend on a parent stays mandatory for every changed shell.
+    # #VERIFY: tests/unit/test_ws8_promotion.py::
+    # test_hand_authored_shell_still_runs_the_non_lineage_checks.
     lineage_path = shell_path.with_name(f"{shell_path.stem}.lineage.json")
     if not lineage_path.is_file():
-        reasons.append(f"{name}: missing lineage sidecar {lineage_path.name}")
+        # Never downgrade a check silently: say which legs were skipped and why.
+        print(
+            f"note: {name}: no lineage sidecar; proved as a hand-authored "
+            "original (gate/cell/envelope and theme contract enforced; "
+            "parent-hash and anti-clone floor not applicable)"
+        )
         return reasons
 
     try:

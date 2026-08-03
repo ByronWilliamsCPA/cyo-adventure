@@ -1,0 +1,477 @@
+{
+  "description": "Cross-implementation rendered-stop conformance (ADR-026): composing a stop from the same origin must reach an identical Stop in the Python and TypeScript engines. Each case gives the choices (if any) needed to reach the stop's origin from a fresh read, then the expected composed Stop. 'back_check' cases additionally cover go-back-by-stop (frontend-only; the Python harness only checks the two composed stops independently, since backtracking has no Python-side counterpart, see stops.py's Stop docstring). visit_set is compared as a set (order-independent).",
+  "schema_version": "2.0",
+  "cases": [
+    {
+      "name": "flow_effects_in_order_to_branch",
+      "prefix_choices": [],
+      "expected": {
+        "origin_node": "n_start",
+        "node_ids": ["n_start", "n_hall", "n_gallery"],
+        "terminal_reason": "branch",
+        "current_node": "n_gallery",
+        "var_state": { "lanterns": 2 },
+        "visit_set": ["n_start", "n_hall", "n_gallery"],
+        "ending_id": null,
+        "visible_choice_ids": ["c_left", "c_right"]
+      },
+      "story": {
+        "schema_version": "2.0",
+        "id": "s_stop_flow",
+        "version": 1,
+        "title": "The Long Gallery",
+        "metadata": {
+          "age_band": "10-13",
+          "reading_level": { "scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5 },
+          "tier": 2,
+          "themes": [],
+          "estimated_minutes": 10,
+          "ending_count": 2,
+          "content_flags": { "violence": "none", "scariness": "none", "peril": "none" },
+          "topology": "gauntlet"
+        },
+        "variables": [{ "name": "lanterns", "type": "int", "initial": 0, "min": 0, "max": 5 }],
+        "start_node": "n_start",
+        "nodes": [
+          {
+            "id": "n_start",
+            "body": "You step through the front door.",
+            "is_ending": false,
+            "choices": [{ "id": "c_enter", "label": "Go in.", "target": "n_hall" }]
+          },
+          {
+            "id": "n_hall",
+            "body": "A long hall stretches ahead.",
+            "is_ending": false,
+            "on_enter": [{ "op": "inc", "var": "lanterns", "value": 1 }],
+            "choices": [{ "id": "c_walk", "label": "Walk on.", "target": "n_gallery" }]
+          },
+          {
+            "id": "n_gallery",
+            "body": "The gallery opens into two wings.",
+            "is_ending": false,
+            "on_enter": [{ "op": "inc", "var": "lanterns", "value": 1, "once": true }],
+            "choices": [
+              { "id": "c_left", "label": "Take the left wing.", "target": "n_end_left" },
+              { "id": "c_right", "label": "Take the right wing.", "target": "n_end_right" }
+            ]
+          },
+          {
+            "id": "n_end_left",
+            "body": "The left wing ends in a quiet garden.",
+            "is_ending": true,
+            "ending": { "id": "e_garden", "valence": "positive", "kind": "completion", "title": "Garden" },
+            "choices": []
+          },
+          {
+            "id": "n_end_right",
+            "body": "The right wing ends in a locked door.",
+            "is_ending": true,
+            "ending": { "id": "e_locked", "valence": "neutral", "kind": "discovery", "title": "Locked Door" },
+            "choices": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "flow_into_ending",
+      "prefix_choices": [],
+      "expected": {
+        "origin_node": "n_intro",
+        "node_ids": ["n_intro", "n_relay", "n_finale"],
+        "terminal_reason": "ending",
+        "current_node": "n_finale",
+        "var_state": { "steps": 1 },
+        "visit_set": ["n_intro", "n_relay", "n_finale"],
+        "ending_id": "e_finale",
+        "visible_choice_ids": []
+      },
+      "story": {
+        "schema_version": "2.0",
+        "id": "s_stop_ending",
+        "version": 1,
+        "title": "Straight to the End",
+        "metadata": {
+          "age_band": "10-13",
+          "reading_level": { "scheme": "flesch_kincaid", "target": 4.0, "tolerance": 1.0 },
+          "tier": 2,
+          "themes": [],
+          "estimated_minutes": 5,
+          "ending_count": 1,
+          "content_flags": { "violence": "none", "scariness": "none", "peril": "none" },
+          "topology": "gauntlet"
+        },
+        "variables": [{ "name": "steps", "type": "int", "initial": 0, "min": 0, "max": 5 }],
+        "start_node": "n_intro",
+        "nodes": [
+          {
+            "id": "n_intro",
+            "body": "The path is short today.",
+            "is_ending": false,
+            "choices": [{ "id": "c_go", "label": "Go on.", "target": "n_relay" }]
+          },
+          {
+            "id": "n_relay",
+            "body": "One more turn.",
+            "is_ending": false,
+            "on_enter": [{ "op": "inc", "var": "steps", "value": 1 }],
+            "choices": [{ "id": "c_finish", "label": "Finish.", "target": "n_finale" }]
+          },
+          {
+            "id": "n_finale",
+            "body": "You arrive.",
+            "is_ending": true,
+            "ending": { "id": "e_finale", "valence": "positive", "kind": "completion", "title": "Arrived" },
+            "choices": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "condition_true_flows_through",
+      "prefix_choices": ["c_take_key"],
+      "expected": {
+        "origin_node": "n_vestibule",
+        "node_ids": ["n_vestibule", "n_treasure_room"],
+        "terminal_reason": "ending",
+        "current_node": "n_treasure_room",
+        "var_state": { "has_key": true },
+        "visit_set": ["n_gate", "n_vestibule", "n_treasure_room"],
+        "ending_id": "e_treasure",
+        "visible_choice_ids": []
+      },
+      "story": {
+        "schema_version": "2.0",
+        "id": "s_stop_condition",
+        "version": 1,
+        "title": "The Locked Door",
+        "metadata": {
+          "age_band": "10-13",
+          "reading_level": { "scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5 },
+          "tier": 2,
+          "themes": [],
+          "estimated_minutes": 8,
+          "ending_count": 1,
+          "content_flags": { "violence": "none", "scariness": "none", "peril": "none" },
+          "topology": "gauntlet"
+        },
+        "variables": [{ "name": "has_key", "type": "bool", "initial": false }],
+        "start_node": "n_gate",
+        "nodes": [
+          {
+            "id": "n_gate",
+            "body": "A key glints in the grass by the gate.",
+            "is_ending": false,
+            "choices": [
+              {
+                "id": "c_take_key",
+                "label": "Take the key.",
+                "target": "n_vestibule",
+                "effects": [{ "op": "set", "var": "has_key", "value": true }]
+              },
+              { "id": "c_skip_key", "label": "Leave it and go in.", "target": "n_vestibule" }
+            ]
+          },
+          {
+            "id": "n_vestibule",
+            "body": "A locked door stands ahead.",
+            "is_ending": false,
+            "choices": [
+              {
+                "id": "c_locked_door",
+                "label": "Unlock the door.",
+                "target": "n_treasure_room",
+                "condition": { "==": [{ "var": "has_key" }, true] }
+              }
+            ]
+          },
+          {
+            "id": "n_treasure_room",
+            "body": "The door swings open on a room full of light.",
+            "is_ending": true,
+            "ending": { "id": "e_treasure", "valence": "positive", "kind": "success", "title": "Treasure Room" },
+            "choices": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "condition_false_dead_end",
+      "prefix_choices": ["c_skip_key"],
+      "expected": {
+        "origin_node": "n_vestibule",
+        "node_ids": ["n_vestibule"],
+        "terminal_reason": "dead_end",
+        "current_node": "n_vestibule",
+        "var_state": { "has_key": false },
+        "visit_set": ["n_gate", "n_vestibule"],
+        "ending_id": null,
+        "visible_choice_ids": []
+      },
+      "story": {
+        "schema_version": "2.0",
+        "id": "s_stop_condition",
+        "version": 1,
+        "title": "The Locked Door",
+        "metadata": {
+          "age_band": "10-13",
+          "reading_level": { "scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5 },
+          "tier": 2,
+          "themes": [],
+          "estimated_minutes": 8,
+          "ending_count": 1,
+          "content_flags": { "violence": "none", "scariness": "none", "peril": "none" },
+          "topology": "gauntlet"
+        },
+        "variables": [{ "name": "has_key", "type": "bool", "initial": false }],
+        "start_node": "n_gate",
+        "nodes": [
+          {
+            "id": "n_gate",
+            "body": "A key glints in the grass by the gate.",
+            "is_ending": false,
+            "choices": [
+              {
+                "id": "c_take_key",
+                "label": "Take the key.",
+                "target": "n_vestibule",
+                "effects": [{ "op": "set", "var": "has_key", "value": true }]
+              },
+              { "id": "c_skip_key", "label": "Leave it and go in.", "target": "n_vestibule" }
+            ]
+          },
+          {
+            "id": "n_vestibule",
+            "body": "A locked door stands ahead.",
+            "is_ending": false,
+            "choices": [
+              {
+                "id": "c_locked_door",
+                "label": "Unlock the door.",
+                "target": "n_treasure_room",
+                "condition": { "==": [{ "var": "has_key" }, true] }
+              }
+            ]
+          },
+          {
+            "id": "n_treasure_room",
+            "body": "The door swings open on a room full of light.",
+            "is_ending": true,
+            "ending": { "id": "e_treasure", "valence": "positive", "kind": "success", "title": "Treasure Room" },
+            "choices": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "loop_back_ends_stop",
+      "prefix_choices": [],
+      "expected": {
+        "origin_node": "n_p",
+        "node_ids": ["n_p", "n_q"],
+        "terminal_reason": "loop",
+        "current_node": "n_q",
+        "var_state": { "visits": 1 },
+        "visit_set": ["n_p", "n_q"],
+        "ending_id": null,
+        "visible_choice_ids": ["c_to_p"]
+      },
+      "story": {
+        "schema_version": "2.0",
+        "id": "s_stop_loop",
+        "version": 1,
+        "title": "The Turning Room",
+        "metadata": {
+          "age_band": "10-13",
+          "reading_level": { "scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5 },
+          "tier": 2,
+          "themes": [],
+          "estimated_minutes": 5,
+          "ending_count": 1,
+          "content_flags": { "violence": "none", "scariness": "none", "peril": "none" },
+          "topology": "loop_and_grow"
+        },
+        "variables": [{ "name": "visits", "type": "int", "initial": 0, "min": 0, "max": 9 }],
+        "start_node": "n_p",
+        "nodes": [
+          {
+            "id": "n_p",
+            "body": "A room with a single door marked Q.",
+            "is_ending": false,
+            "choices": [{ "id": "c_to_q", "label": "Go through to Q.", "target": "n_q" }]
+          },
+          {
+            "id": "n_q",
+            "body": "A room with a single door marked P.",
+            "is_ending": false,
+            "on_enter": [{ "op": "inc", "var": "visits", "value": 1 }],
+            "choices": [{ "id": "c_to_p", "label": "Go through to P.", "target": "n_p" }]
+          },
+          {
+            "id": "n_exit",
+            "body": "A door out, never reached while the two rooms loop.",
+            "is_ending": true,
+            "ending": { "id": "e_exit", "valence": "neutral", "kind": "discovery", "title": "Exit" },
+            "choices": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "length_one_stop_already_branching",
+      "prefix_choices": [],
+      "expected": {
+        "origin_node": "n_hub",
+        "node_ids": ["n_hub"],
+        "terminal_reason": "branch",
+        "current_node": "n_hub",
+        "var_state": {},
+        "visit_set": ["n_hub"],
+        "ending_id": null,
+        "visible_choice_ids": ["c_a", "c_b"]
+      },
+      "story": {
+        "schema_version": "2.0",
+        "id": "s_stop_branch_start",
+        "version": 1,
+        "title": "The Crossroads",
+        "metadata": {
+          "age_band": "10-13",
+          "reading_level": { "scheme": "flesch_kincaid", "target": 4.0, "tolerance": 1.0 },
+          "tier": 2,
+          "themes": [],
+          "estimated_minutes": 3,
+          "ending_count": 2,
+          "content_flags": { "violence": "none", "scariness": "none", "peril": "none" },
+          "topology": "branch_and_bottleneck"
+        },
+        "variables": [],
+        "start_node": "n_hub",
+        "nodes": [
+          {
+            "id": "n_hub",
+            "body": "Two paths lead away from the crossroads.",
+            "is_ending": false,
+            "choices": [
+              { "id": "c_a", "label": "Take the north path.", "target": "n_a" },
+              { "id": "c_b", "label": "Take the south path.", "target": "n_b" }
+            ]
+          },
+          {
+            "id": "n_a",
+            "body": "The north path ends at a windmill.",
+            "is_ending": true,
+            "ending": { "id": "e_windmill", "valence": "positive", "kind": "completion", "title": "Windmill" },
+            "choices": []
+          },
+          {
+            "id": "n_b",
+            "body": "The south path ends at a bridge.",
+            "is_ending": true,
+            "ending": { "id": "e_bridge", "valence": "positive", "kind": "completion", "title": "Bridge" },
+            "choices": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "back_by_stop_boundary",
+      "prefix_choices": ["c_leave", "c_shed"],
+      "expected": {
+        "origin_node": "n_tool",
+        "node_ids": ["n_tool", "n_bench"],
+        "terminal_reason": "branch",
+        "current_node": "n_bench",
+        "var_state": { "tools": 1 },
+        "visit_set": ["n_home", "n_yard", "n_tool", "n_bench"],
+        "ending_id": null,
+        "visible_choice_ids": ["c_sit", "c_stand"]
+      },
+      "back_check": {
+        "prefix_choices": [],
+        "expected": {
+          "origin_node": "n_home",
+          "node_ids": ["n_home", "n_yard"],
+          "terminal_reason": "branch",
+          "current_node": "n_yard",
+          "var_state": { "tools": 0 },
+          "visit_set": ["n_home", "n_yard"],
+          "ending_id": null,
+          "visible_choice_ids": ["c_shed", "c_garden"]
+        }
+      },
+      "story": {
+        "schema_version": "2.0",
+        "id": "s_stop_back",
+        "version": 1,
+        "title": "The Backyard",
+        "metadata": {
+          "age_band": "10-13",
+          "reading_level": { "scheme": "flesch_kincaid", "target": 4.0, "tolerance": 1.0 },
+          "tier": 2,
+          "themes": [],
+          "estimated_minutes": 8,
+          "ending_count": 3,
+          "content_flags": { "violence": "none", "scariness": "none", "peril": "none" },
+          "topology": "branch_and_bottleneck"
+        },
+        "variables": [{ "name": "tools", "type": "int", "initial": 0, "min": 0, "max": 5 }],
+        "start_node": "n_home",
+        "nodes": [
+          {
+            "id": "n_home",
+            "body": "You step out of the back door into the yard.",
+            "is_ending": false,
+            "choices": [{ "id": "c_leave", "label": "Walk into the yard.", "target": "n_yard" }]
+          },
+          {
+            "id": "n_yard",
+            "body": "The yard has a shed and a garden.",
+            "is_ending": false,
+            "choices": [
+              { "id": "c_shed", "label": "Go to the shed.", "target": "n_tool" },
+              { "id": "c_garden", "label": "Go to the garden.", "target": "n_flowers" }
+            ]
+          },
+          {
+            "id": "n_tool",
+            "body": "The shed is full of tools.",
+            "is_ending": false,
+            "on_enter": [{ "op": "inc", "var": "tools", "value": 1 }],
+            "choices": [{ "id": "c_pick_hammer", "label": "Pick up a hammer.", "target": "n_bench" }]
+          },
+          {
+            "id": "n_bench",
+            "body": "A workbench sits by the wall.",
+            "is_ending": false,
+            "choices": [
+              { "id": "c_sit", "label": "Sit at the bench.", "target": "n_end_sit" },
+              { "id": "c_stand", "label": "Stand and look around.", "target": "n_end_stand" }
+            ]
+          },
+          {
+            "id": "n_flowers",
+            "body": "The garden is full of flowers.",
+            "is_ending": true,
+            "ending": { "id": "e_flowers", "valence": "positive", "kind": "completion", "title": "Flowers" },
+            "choices": []
+          },
+          {
+            "id": "n_end_sit",
+            "body": "You sit a while and rest.",
+            "is_ending": true,
+            "ending": { "id": "e_rest", "valence": "positive", "kind": "completion", "title": "Rest" },
+            "choices": []
+          },
+          {
+            "id": "n_end_stand",
+            "body": "You stand and stretch.",
+            "is_ending": true,
+            "ending": { "id": "e_stretch", "valence": "neutral", "kind": "completion", "title": "Stretch" },
+            "choices": []
+          }
+        ]
+      }
+    }
+  ]
+}

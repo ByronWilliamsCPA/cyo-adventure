@@ -79,12 +79,18 @@ export interface AuthContextValue {
   updatePassword: (newPassword: string) => Promise<void>
   /**
    * Submits the Phase 2 / ADR-018 D1 VPC signature-capture consent
-   * (GuardianConsentPage). On success, re-resolves the principal via GET
-   * /v1/me and transitions status to 'signed-in'; rethrows on failure (e.g.
-   * a 422 for a missing/invalid signer name) so the form can show it. Only
-   * meaningful while status === 'needs-consent'.
+   * (GuardianConsentPage), plus the O-117 residence-country signal. On
+   * success, re-resolves the principal via GET /v1/me and transitions
+   * status to 'signed-in'; rethrows on failure (e.g. a 422 for a
+   * missing/invalid signer name or country code) so the form can show it.
+   * Only meaningful while status === 'needs-consent'. The O-119 adulthood
+   * attestation is not a parameter here: submitting this call at all is
+   * only possible once the form's adulthood checkbox is checked (mirrors
+   * how `accepted: true` is likewise hardcoded rather than passed in), so
+   * `adulthood_attested: true` is sent unconditionally by the
+   * implementation.
    */
-  recordConsent: (signerName: string) => Promise<void>
+  recordConsent: (signerName: string, residenceCountry: string) => Promise<void>
   /**
    * P-6d: re-resolves status/principal from the CURRENT Supabase session,
    * without submitting anything. Used by GuardianAwaitingApprovalPage's

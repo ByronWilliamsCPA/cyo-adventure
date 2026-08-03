@@ -93,13 +93,22 @@ async def _record_consent(
     consent: OnboardingConsent | None,
     client_ip: str | None,
 ) -> None:
-    """Persist the guardian's VPC signature-capture consent record (Phase 2 / ADR-018 D1).
+    """Persist the guardian's VPC signature-capture consent record.
+
+    Phase 2 / ADR-018 D1; O-117/O-119.
 
     A no-op when ``consent`` is absent, not accepted, or the user already has
     a recorded consent (idempotent: a retried onboarding call must not
     overwrite an existing record with a later timestamp). ``accepted=True``
-    without both ``policy_version`` and ``signer_name`` is rejected outright
-    rather than silently recording a partial attestation.
+    without ``policy_version``, ``signer_name``, ``residence_country``, and
+    ``adulthood_attested=True`` is rejected outright rather than silently
+    recording a partial attestation.
+
+    ``residence_country`` (O-117) and ``adulthood_attested_at`` (O-119) are
+    written in the same call and the same idempotency envelope as the
+    existing ``consent_*`` quartet: an existing already-consented guardian's
+    row retains ``NULL`` in both new columns, since there is no
+    re-consent-on-policy-change flow that would ever revisit it.
 
     Args:
         session: The request unit-of-work session.
@@ -110,14 +119,15 @@ async def _record_consent(
         client_ip: The requesting client's address, or ``None``.
 
     Raises:
-        ValidationError: If ``accepted`` is ``True`` but ``policy_version``
-            or ``signer_name`` is missing (422).
+        ValidationError: If ``accepted`` is ``True`` but ``policy_version``,
+            ``signer_name``, ``residence_country``, or
+            ``adulthood_attested=True`` is missing (422).
     """
-    # #CRITICAL: security: this is the sole writer of User.consent_*; no
-    # other code path may set these columns (mirrors family_connections.py's
-    # consent endpoints being the sole writer of FamilyConnection's consent
-    # columns). A record, once written, is never overwritten -- see the
-    # idempotency check below.
+    # #CRITICAL: security: this is the sole writer of User.consent_* /
+    # residence_country / adulthood_attested_at; no other code path may set
+    # these columns (mirrors family_connections.py's consent endpoints being
+    # the sole writer of FamilyConnection's consent columns). A record, once
+    # written, is never overwritten -- see the idempotency check below.
     # #VERIFY: tests/integration/test_onboarding_api.py::
     # test_onboarding_records_consent_once_and_is_idempotent.
     if consent is None or consent.accepted is not True:
@@ -125,28 +135,41 @@ async def _record_consent(
     if not consent.policy_version or not consent.signer_name:
         msg = "policy_version and signer_name are both required when accepted is true"
         raise ValidationError(msg, field="consent")
+    # O-117/O-119: both are required for a NEW consent submission. Checked
+    # here, not on OnboardingConsent itself, so the 422 stays field-specific
+    # (mirrors the policy_version/signer_name check above).
+    if not consent.residence_country or consent.adulthood_attested is not True:
+        msg = (
+            "residence_country and adulthood_attested=true are both required "
+            "when accepted is true"
+        )
+        raise ValidationError(msg, field="consent")
     if user.consent_accepted_at is not None:
         return
     # #CRITICAL: concurrency: the in-memory check above is a TOCTOU race --
     # two concurrent onboarding calls for this same user could both observe
     # consent_accepted_at IS NULL before either writes. An unconditional
     # UPDATE would let the second call silently overwrite the first call's
-    # policy_version/signer_name/consent_ip, contradicting the "never
-    # overwritten" guarantee above. Guarding the UPDATE itself on
-    # consent_accepted_at IS NULL (mirroring _provision_guardian's own
-    # race-safe insert-then-recover pattern) makes only the first writer's
-    # values stick; a loser's WHERE clause matches zero rows and it refreshes
-    # to read back the winner's values instead of trusting its stale copy.
+    # policy_version/signer_name/consent_ip/residence_country/
+    # adulthood_attested_at, contradicting the "never overwritten" guarantee
+    # above. Guarding the UPDATE itself on consent_accepted_at IS NULL
+    # (mirroring _provision_guardian's own race-safe insert-then-recover
+    # pattern) makes only the first writer's values stick; a loser's WHERE
+    # clause matches zero rows and it refreshes to read back the winner's
+    # values instead of trusting its stale copy.
     # #VERIFY: tests/unit/test_onboarding_handler.py::
     # test_record_consent_race_keeps_first_writer_values.
+    now = datetime.now(UTC)
     result = await session.execute(
         sa_update(User)
         .where(User.id == user.id, User.consent_accepted_at.is_(None))
         .values(
-            consent_accepted_at=datetime.now(UTC),
+            consent_accepted_at=now,
             consent_policy_version=consent.policy_version,
             consent_signer_name=consent.signer_name,
             consent_ip=client_ip,
+            residence_country=consent.residence_country,
+            adulthood_attested_at=now,
         )
         .execution_options(synchronize_session="evaluate")
         .returning(User.id)
@@ -159,6 +182,8 @@ async def _record_consent(
                 "consent_policy_version",
                 "consent_signer_name",
                 "consent_ip",
+                "residence_country",
+                "adulthood_attested_at",
             ],
         )
         return

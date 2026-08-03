@@ -67,6 +67,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -241,6 +242,14 @@ def _flag_body(seed: Seed) -> dict[str, Any]:
 
 def _flag_resolve_body(_seed: Seed) -> dict[str, Any]:
     return {"resolution": "dismissed"}
+
+
+def _reading_time_body(_seed: Seed) -> dict[str, Any]:
+    return {
+        "date": datetime.now(tz=UTC).date().isoformat(),
+        "seconds_delta": 30,
+        "flush_id": str(uuid.uuid4()),
+    }
 
 
 def _reading_state_body(seed: Seed) -> dict[str, Any]:
@@ -679,8 +688,23 @@ _ROUTE_SPECS: list[RouteSpec] = [
         frozenset({Role.GUARDIAN}),
         json_body=_guardian_invite_body,
     ),
+    # -- progress.py: W3.1, child-only ("me", no path param; see that
+    # module's docstring for why no guardian/admin variant exists yet) ------
+    RouteSpec("GET", "/api/v1/me/progress", frozenset({Role.CHILD})),
+    # -- reading_time.py: W3.3, child-only, same "me" shape as progress.py --
+    RouteSpec(
+        "POST",
+        "/api/v1/me/reading-time",
+        frozenset({Role.CHILD}),
+        json_body=_reading_time_body,
+    ),
     # -- profiles.py ---------------------------------------------------------
     RouteSpec("GET", "/api/v1/profiles", ALL_ROLES),
+    # W1.4: same allowed-role set as GET /profiles by construction -- both
+    # endpoints derive their visible profile set from the identical
+    # api/profiles.py::_listable_profiles helper, so whichever roles may list
+    # profiles at all may also read this boolean-only pill status for them.
+    RouteSpec("GET", "/api/v1/profiles/story-status", ALL_ROLES),
     RouteSpec(
         "POST",
         "/api/v1/profiles",
@@ -1615,4 +1639,18 @@ async def test_device_token_allowed_on_profiles_list(
     """A device grant lists its own family's profiles (200, not 403)."""
     device_token = await mint_device_token(client, seed.guardian_token)
     resp = await client.get("/api/v1/profiles", headers=auth(device_token))
+    assert resp.status_code == 200, resp.text
+
+
+async def test_device_token_allowed_on_profile_story_status(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """W1.4: a device grant reads the picker's story-status pill (200, not 403).
+
+    The picker calls this endpoint pre-child-session, exactly the device-grant
+    scenario ADR-014 phase 2 introduced ``GET /profiles`` for; this pins the
+    same allowance for its story-status sibling.
+    """
+    device_token = await mint_device_token(client, seed.guardian_token)
+    resp = await client.get("/api/v1/profiles/story-status", headers=auth(device_token))
     assert resp.status_code == 200, resp.text

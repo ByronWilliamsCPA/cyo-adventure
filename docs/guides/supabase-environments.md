@@ -119,6 +119,83 @@ Promotion is a one-way ratchet: local, then staging, then production, in that or
    which requires an approving reviewer before the job runs; this is the human gate between a
    rehearsed migration and the live database.
 
+### Repairing an out-of-order divergence
+
+`supabase db push` refuses to apply a migration whose filename timestamp sorts **before** the
+last one already applied remotely, and reports:
+
+    Found local migration files to be inserted before the last migration on remote database.
+    Rerun the command with --include-all flag to apply these migrations:
+      supabase/migrations/<file>.sql
+
+**Staging hits this and production usually does not**, structurally rather than by accident.
+Staging auto-deploys on every merge touching migrations, so it can apply a later-numbered
+migration before an earlier-numbered one is merged; a PR that renumbers a migration during a
+merge with `main` then lands "in the past". Production deploys by manual dispatch in ordered
+batches, so it usually sees both files in one run and applies them in order. That is a property
+of the dispatch cadence, not a guarantee: a production dispatch that lands between the two merges
+is exposed the same way. Staging can therefore be red while production is green on the identical
+migration set, which is a divergence in *applied history*, not a defect in the SQL.
+
+To repair, dispatch **Deploy Supabase Migrations (staging)** with the `include_all` input set to
+`true`. It runs `supabase db push --include-all` for that one run; every automatic deploy keeps
+the ordering guard. The workflow serializes runs through the `supabase-staging-migrations`
+concurrency group, so a repair dispatch queues behind an in-flight automatic deploy instead of
+racing it for the same history table. Note that the `staging` GitHub Environment carries no
+reviewer protection rule, so the dispatch gate is repository write access, not a second pair of
+eyes: the checks below are the only thing standing between a dispatch and applied history.
+
+**Read the remote state first.** Do not infer what staging has applied from which workflow runs
+are green; a run can fail after applying some migrations, and the last *successful* run is what
+bounds applied history. Two commands give the ground truth:
+
+    supabase migration list
+
+shows which timestamps the remote history table records, and for the constraint family below:
+
+    select pg_get_constraintdef(oid)
+    from pg_constraint
+    where conname = 'ck_pipeline_event_event_type';
+
+shows which values the remote constraint currently allows.
+
+**Check before you dispatch.** `--include-all` is not unconditionally safe. A migration that
+replaces a CHECK constraint with an absolute cumulative list (the `ck_pipeline_event_event_type`
+family; see the `#CRITICAL` header in
+`20260729050000_add_storybook_archived_to_pipeline_event.sql`) can drop values that are already
+in the remote constraint, because each file's idempotency guard only tests for its **own** new
+value. The danger condition is precise: an absolute-list migration runs **after** another
+absolute-list migration for the same constraint is already in remote history, and does not carry
+that other file's values. For every file named in the CLI output, confirm one of:
+
+- its idempotency guard is already satisfied against the remote schema, so it is a true no-op
+  and only the history row gets recorded; or
+- it is genuinely order-independent (an additive column or index, no absolute list); or
+- every absolute-list migration for that constraint is itself in the pending set, and the
+  last-sorting one carries the full cumulative list. `--include-all` applies the whole pending
+  set in filename order, so a later file restating the complete list overwrites any intermediate
+  narrowing. Verify by diffing that file's list against the query output above plus every value
+  the pending files add; do not assume it, since a pending file that sorts last but restates only
+  a partial list fails this criterion.
+
+If none holds, fix the ordering by writing a **new** migration that restates the correct
+cumulative state. Never renumber or edit a migration that has already been applied anywhere:
+history is forward-only per ADR-012 and there is no down script.
+
+**Close the history gap afterwards.** A corrective migration fixes the *schema* but leaves the
+skipped file permanently absent from the remote history table, so every later `db push`
+re-proposes it and hits the same ordering guard. Retire it with the metadata-only write already
+used in section 5, once the corrective migration has landed and the query above confirms the
+schema is correct:
+
+    supabase migration repair --status applied <skipped-timestamp>
+
+`repair` writes a history row without executing that file's SQL, so it is correct only when the
+schema state the file would have produced is already present; running it earlier records a lie.
+Both `--include-all` and `repair` are one-off repair tools. A normal deploy needs neither, and
+reaching for `--include-all` on successive pushes means the ordering guard is being routed around
+rather than the divergence being fixed.
+
 ## 5. One-time setup (Gate A / Gate B checklist)
 
 These steps run once, with the user present, before the pipeline can move schema anywhere

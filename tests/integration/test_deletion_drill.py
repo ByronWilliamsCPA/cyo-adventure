@@ -14,7 +14,7 @@ constraint.
 from __future__ import annotations
 
 import uuid
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from typing import TYPE_CHECKING
 
 import pytest
@@ -30,6 +30,7 @@ from cyo_adventure.db.models import (
     KidFlag,
     PersonalizationDisclosureConsent,
     Rating,
+    ReadingActivityDay,
     ReadingState,
     Storybook,
     StorybookAssignment,
@@ -49,8 +50,8 @@ pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
 async def _populate_child_linked_rows(
     sessions: async_sessionmaker[AsyncSession], seed: Seed
 ) -> None:
-    """Add a reading state, completion, rating, personalization row, consent
-    row, and (already-seeded) assignment.
+    """Add a reading state, completion, rating, reading-activity-day,
+    personalization row, consent row, and (already-seeded) assignment.
 
     ``seed`` already assigns ``seed.storybook_id``/``version`` to
     ``seed.child_profile_id``; this adds the tables the fixture does not
@@ -63,7 +64,8 @@ async def _populate_child_linked_rows(
     connection-delete-then-tombstone mechanics (a live connection's FK
     actually going ``NULL`` on that connection's own deletion) are already
     proven by ``test_personalization_consent_tombstone.py`` and are not
-    re-covered here.
+    re-covered here. The reading-activity-day row (W3.3) proves the same
+    CASCADE for the newest child-linked table.
     """
     async with sessions() as s:
         s.add(
@@ -87,6 +89,13 @@ async def _populate_child_linked_rows(
                 child_profile_id=seed.child_profile_id,
                 storybook_id=seed.storybook_id,
                 value=5,
+            )
+        )
+        s.add(
+            ReadingActivityDay(
+                child_profile_id=seed.child_profile_id,
+                activity_date=date(2026, 1, 1),
+                active_seconds=600,
             )
         )
         s.add(
@@ -197,6 +206,15 @@ async def test_delete_profile_removes_child_linked_rows(
                 )
             )
         ) is None
+        # W3.3: reading-activity-day accrual is child-linked behavioral data,
+        # purged with the profile like reading state/completions/ratings.
+        assert (
+            await s.scalar(
+                select(ReadingActivityDay).where(
+                    ReadingActivityDay.child_profile_id == seed.child_profile_id
+                )
+            )
+        ) is None
         # ADR-023 P4 (Task B3): the personalization row and disclosure
         # consent row CASCADE with the profile too.
         assert (
@@ -296,6 +314,15 @@ async def test_delete_my_family_removes_everything(
         assert (
             await s.scalar(
                 select(Rating).where(Rating.child_profile_id == seed.child_profile_id)
+            )
+        ) is None
+        # W3.3: reading-activity-day cascades transitively through the
+        # deleted profile too.
+        assert (
+            await s.scalar(
+                select(ReadingActivityDay).where(
+                    ReadingActivityDay.child_profile_id == seed.child_profile_id
+                )
             )
         ) is None
         # ADR-023 P4 (Task B3): both cascade transitively through the

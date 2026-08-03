@@ -307,6 +307,28 @@ def _to_view(
             if request.interpretation is not None
             else None
         ),
+        # #ASSUME: security: resulting_storybook_id is projected unfiltered
+        # for every caller (guardian, admin, and the child token this
+        # kid-facing surface actually runs under in R1), with no extra
+        # per-caller narrowing the way ``status`` gets none either (a
+        # request's status is already the same value for every viewer; this
+        # field just adds a second, honest signal alongside it). This is
+        # safe because publishing/service.py::approve() -- the sole path
+        # that sets it -- only runs after the storybook has already passed
+        # moderation and human approval and reached status="published", so
+        # a non-None value here can never point at an unpublished or
+        # rejected draft. It also cannot be used to jump the assignment
+        # gate: api/library.py's read path independently requires a
+        # StorybookAssignment row for the caller's own profile before any
+        # child token can fetch a storybook version, published or not, so
+        # learning this id early (before the book is assigned to any
+        # profile) grants no read access it would not otherwise have.
+        # #VERIFY: test_child_sees_resulting_storybook_id_once_published and
+        # test_resulting_storybook_id_none_before_publish in
+        # tests/unit/test_story_requests.py; the assignment gate itself is
+        # covered by test_child_cannot_fetch_unassigned_version in
+        # tests/integration/test_library_invariant.py.
+        resulting_storybook_id=request.resulting_storybook_id,
     )
 
 

@@ -14,10 +14,11 @@ migrations simple and avoids enum-type churn.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 
 from sqlalchemy import (
     CheckConstraint,
+    Date,
     DateTime,
     ForeignKey,
     ForeignKeyConstraint,
@@ -29,7 +30,6 @@ from sqlalchemy import (
     func,
     text,
 )
-from sqlalchemy import text as sa_text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -71,6 +71,16 @@ _ONDELETE_SET_NULL = "SET NULL"
 # migration's ON CONFLICT DO NOTHING insert.
 CATALOG_FAMILY_ID = uuid.UUID("0ca7a109-0000-4000-8000-000000000000")
 CATALOG_FAMILY_NAME = "Catalog (system)"
+
+# W3.4: the selectable range for ChildProfile.ring_goal_days, named once so the
+# CHECK constraint below and the Pydantic bound in api/schemas.py (which imports
+# these) state the same numbers rather than four hand-written copies. The cap
+# guarantees one free day a week survives a guardian's most aggressive setting
+# (gamification-recommendation-2026-08-01.md, "Plan defaults" item 4); NULL
+# still means "no override, follow the P-A band default" and is unconstrained
+# by either bound.
+RING_GOAL_DAYS_MIN = 1
+RING_GOAL_DAYS_MAX = 6
 
 # The five storybook lifecycle states, named once for the CHECK constraint.
 _STORYBOOK_STATUS_VALUES = (
@@ -296,7 +306,7 @@ class Family(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # policy version, just a stored preference, matching 8.6's "a notice
     # fixes surprise; a signature would not fix it any better".
     personalization_receive_enabled: Mapped[bool] = mapped_column(
-        server_default=sa_text("true"), default=True
+        server_default=text("true"), default=True
     )
 
 
@@ -389,6 +399,43 @@ class User(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
             "AND (consent_accepted_at IS NULL) = (consent_ip IS NULL)",
             name="ck_user_consent_pairing",
         ),
+        # O-117: mirrors the CHECK added by
+        # supabase/migrations/20260802000000_add_user_residence_country_and_adulthood_attestation.sql;
+        # NULL (no signal recorded yet) is always allowed, a non-null value
+        # must be two uppercase ASCII letters. This is a FORMAT check only:
+        # it accepts any two-letter string, including an unassigned code
+        # ("ZZ", "XX", "QQ"), not just a real ISO 3166-1 alpha-2 code.
+        # Real ISO membership is enforced one layer up, at the API boundary
+        # (api/schemas.py::_normalize_residence_country, against
+        # api/residence_countries.py::ASSIGNED_RESIDENCE_COUNTRY_CODES); this
+        # CHECK is defense-in-depth for any write path that bypasses that
+        # validator, not the membership gate itself.
+        CheckConstraint(
+            "residence_country IS NULL OR residence_country ~ '^[A-Z]{2}$'",
+            name="ck_user_residence_country_format",
+        ),
+        # O-117/O-119: mirrors the CHECK added by
+        # supabase/migrations/20260802000000_add_user_residence_country_and_adulthood_attestation.sql.
+        # api/onboarding.py::_record_consent is the sole writer and already
+        # only ever sets residence_country and adulthood_attested_at together
+        # (alongside the consent_* quartet, never before it); this CHECK is
+        # the at-rest backstop for any other write path, mirroring
+        # ck_user_consent_pairing's own role for the original quartet. Two
+        # requirements: (1) the two new columns are set or cleared together,
+        # same "no partial claim" shape as the consent quartet; (2) whenever
+        # they carry a value, consent_accepted_at must also be non-null, so
+        # an at-rest row can never record a country/adulthood attestation
+        # with no corroborating consent record. An already-consented row from
+        # before this migration has both new columns NULL, which satisfies
+        # clause (1) trivially and short-circuits clause (2) via the OR, so
+        # this ALTER TABLE cannot fail against existing production data.
+        # #VERIFY: tests/integration/test_onboarding_api.py::
+        # test_onboarding_records_consent_once_and_is_idempotent.
+        CheckConstraint(
+            "(residence_country IS NULL) = (adulthood_attested_at IS NULL) "
+            "AND (residence_country IS NULL OR consent_accepted_at IS NOT NULL)",
+            name="ck_user_residence_adulthood_pairing",
+        ),
     )
 
     # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): every
@@ -408,9 +455,7 @@ class User(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # #VERIFY: apply the migration in each environment ahead of the image
     # rollout (migrate-before-deploy), per the header comment in the
     # migration file.
-    is_admin: Mapped[bool] = mapped_column(
-        server_default=sa_text("false"), default=False
-    )
+    is_admin: Mapped[bool] = mapped_column(server_default=text("false"), default=False)
     authn_subject: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     # Contact data ONLY, never an identity key. Populated from the Supabase
     # user's email claim at JIT onboarding (P6-03) for receipts and consent
@@ -468,7 +513,7 @@ class User(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # _USER_STATUS_VALUES; String(16) truncated 'awaiting_approval' before
     # (StringDataRightTruncationError), and String(20) would truncate this one.
     status: Mapped[str] = mapped_column(
-        String(32), default="active", server_default=sa_text("'active'")
+        String(32), default="active", server_default=text("'active'")
     )
     # #CRITICAL: security: Phase 2 / ADR-018 D1 verifiable-parental-consent
     # record. A guardian's typed full-legal-name attestation counts as the
@@ -492,6 +537,54 @@ class User(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # Postgres INET column: this is an evidentiary record, never queried or
     # joined on, so INET's validation/operator features add nothing here.
     consent_ip: Mapped[str | None] = mapped_column(String(64), default=None)
+    # O-117 (pre-launch compliance): ISO 3166-1 alpha-2 country of residence,
+    # recorded on the adult account rather than Family (a family could span
+    # countries), so the DSA Art. 2(1) and GDPR Art. 3(2) targeting tests can
+    # be answered; without a recorded country signal a market can be
+    # excluded by design rather than by hope. Written once by
+    # api/onboarding.py::_record_consent alongside the existing consent_*
+    # quartet, never overwritten afterward (mirrors consent_accepted_at's own
+    # contract): a guardian who consented before this column existed keeps
+    # NULL here, since there is no re-consent-on-policy-change flow.
+    # String(2): ISO 3166-1 alpha-2 is exactly two characters; the format is
+    # additionally enforced at rest by ck_user_residence_country_format
+    # above. A prior String(N) guess on this same table truncated
+    # 'awaiting_approval' in production (see the status column's comment
+    # below in this class for that incident), so this width is derived from
+    # the value domain, not guessed.
+    # #CRITICAL: timing dependencies: migration
+    # supabase/migrations/20260802000000_add_user_residence_country_and_adulthood_attestation.sql
+    # must be applied BEFORE an image carrying this column deploys. Every
+    # full-entity select(User) (the auth path in api/deps.py::require_principal
+    # runs one per authenticated request) emits this column; against a
+    # database without it, asyncpg raises UndefinedColumn and every
+    # authenticated endpoint 500s.
+    # #VERIFY: apply the migration in each environment ahead of the image
+    # rollout (migrate-before-deploy), per the header comment in the
+    # migration file.
+    residence_country: Mapped[str | None] = mapped_column(String(2), default=None)
+    # O-119 (pre-launch compliance): adulthood attestation timestamp. Every
+    # age regime that can attach at R2 locates its duty on the adult
+    # account, not the kid profile; today age data lives only on
+    # ChildProfile.age_band and Series.age_band, neither of which is the
+    # adult signing the account into existence. Written once by
+    # api/onboarding.py::_record_consent in the same call that writes the
+    # existing consent_* quartet, and never overwritten afterward for the
+    # same reason. There is deliberately no separate attestation-version
+    # column: the new checkbox ships inside the same versioned consent form,
+    # so consent_policy_version already records what text was shown when it
+    # was checked.
+    # #CRITICAL: timing dependencies: migration
+    # supabase/migrations/20260802000000_add_user_residence_country_and_adulthood_attestation.sql
+    # must be applied BEFORE an image carrying this column deploys. Every
+    # full-entity select(User) (the auth path in api/deps.py::require_principal
+    # runs one per authenticated request) emits this column; against a
+    # database without it, asyncpg raises UndefinedColumn and every
+    # authenticated endpoint 500s.
+    # #VERIFY: apply the migration in each environment ahead of the image
+    # rollout (migrate-before-deploy), per the header comment in the
+    # migration file.
+    adulthood_attested_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
 
 
 class ChildProfile(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
@@ -503,12 +596,24 @@ class ChildProfile(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
             "monthly_request_envelope IS NULL OR monthly_request_envelope >= 0",
             name="ck_child_profile_monthly_request_envelope_non_negative",
         ),
+        # W3.4: mirrors the CHECK added by
+        # supabase/migrations/20260801050000_add_child_profile_gamification_settings.sql;
+        # NULL (band default) is always allowed, a non-null goal must sit in
+        # the selectable range the gamification recommendation's "Plan
+        # defaults" item 4 fixes (max 6, one guaranteed free day). Built from
+        # the constants above rather than spelled out, so this bound and the
+        # Pydantic one in api/schemas.py (which imports them) cannot drift.
+        CheckConstraint(
+            "ring_goal_days IS NULL OR ring_goal_days BETWEEN "
+            f"{RING_GOAL_DAYS_MIN} AND {RING_GOAL_DAYS_MAX}",
+            name="ck_child_profile_ring_goal_days_range",
+        ),
         # Phase 4c: backs purge_stale_deactivated_profile_activity's WHERE
         # clause (supabase/migrations/20260720150000_add_retention_purge_jobs.sql).
         Index(
             "ix_child_profile_deactivated_at",
             "deactivated_at",
-            postgresql_where=sa_text("deactivated_at IS NOT NULL"),
+            postgresql_where=text("deactivated_at IS NOT NULL"),
         ),
     )
 
@@ -554,10 +659,10 @@ class ChildProfile(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # connected families (FamilyConnection). Both default False: a real
     # name is never personalized in without an explicit guardian opt-in.
     real_name_ring1_enabled: Mapped[bool] = mapped_column(
-        server_default=sa_text("false"), default=False
+        server_default=text("false"), default=False
     )
     real_name_ring2_enabled: Mapped[bool] = mapped_column(
-        server_default=sa_text("false"), default=False
+        server_default=text("false"), default=False
     )
     avatar: Mapped[str | None] = mapped_column(String(255), default=None)
     # #CRITICAL: security: write-only PIN credential material (P6-07), encoded
@@ -608,6 +713,28 @@ class ChildProfile(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # #VERIFY: tests/integration/test_profiles.py::
     # test_restrict_processing_blocks_new_story_requests.
     processing_restricted_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    # W3.4 (kid-appeal-implementation-plan.md; gamification-recommendation-
+    # 2026-08-01.md section 4/P-A): per-profile gamification toggles. The
+    # weekly-ring pair is nullable-means-band-default (mirrors banned_themes'
+    # "None = no override" contract, not "None = empty"); resolution into a
+    # concrete on/off + goal happens server-side in
+    # api/progress.py::_resolve_ring_settings so every client (kid, future
+    # guardian display) reads the SAME resolved values rather than each
+    # re-implementing the P-A band table.
+    # #CRITICAL: data-integrity: a NULL here must resolve to the P-A band
+    # default, never to "off"/"0", or a profile that has never been touched by
+    # a guardian would silently lose its band-appropriate ring instead of
+    # getting it.
+    # #VERIFY: tests/unit/test_progress_api_unit.py::TestResolveRingSettings;
+    # tests/integration/test_profiles.py gamification-fields round-trip tests.
+    ring_enabled: Mapped[bool | None] = mapped_column(default=None)
+    ring_goal_days: Mapped[int | None] = mapped_column(default=None)
+    badges_enabled: Mapped[bool] = mapped_column(
+        server_default=text("true"), default=True
+    )
+    time_capture_paused: Mapped[bool] = mapped_column(
+        server_default=text("false"), default=False
+    )
 
 
 class ChildProfilePersonalization(CreatedAtMixin, UpdatedAtMixin, Base):
@@ -667,10 +794,10 @@ class ChildProfilePersonalization(CreatedAtMixin, UpdatedAtMixin, Base):
         ForeignKey(_FK_CHILD_PROFILE, ondelete="CASCADE"), default=None
     )
     ring1_enabled: Mapped[bool] = mapped_column(
-        server_default=sa_text("false"), default=False
+        server_default=text("false"), default=False
     )
     ring2_enabled: Mapped[bool] = mapped_column(
-        server_default=sa_text("false"), default=False
+        server_default=text("false"), default=False
     )
 
 
@@ -734,7 +861,7 @@ class FamilyConnection(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         Index(
             "ix_family_connection_active_viewer",
             "family_id",
-            postgresql_where=sa_text(
+            postgresql_where=text(
                 "consented_by_viewer_user_id IS NOT NULL"
                 " AND consented_by_sharer_user_id IS NOT NULL"
             ),
@@ -816,7 +943,7 @@ class PersonalizationDisclosureConsent(UUIDPrimaryKeyMixin, CreatedAtMixin, Base
             "child_profile_id",
             "family_connection_id",
             unique=True,
-            postgresql_where=sa_text("family_connection_id IS NOT NULL"),
+            postgresql_where=text("family_connection_id IS NOT NULL"),
         ),
         # Referencing-side FK index: family_connection_id is ON DELETE SET
         # NULL, so every family_connection deletion scans this table without
@@ -859,7 +986,7 @@ class PersonalizationDisclosureConsent(UUIDPrimaryKeyMixin, CreatedAtMixin, Base
     # Set only for a consent whose covered_slot_types includes the sibling
     # slot; see design plan 10.1 for the attestation ceremony this backs.
     sibling_authority_attested: Mapped[bool] = mapped_column(
-        server_default=sa_text("false"), default=False
+        server_default=text("false"), default=False
     )
     consent_accepted_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
     consent_policy_version: Mapped[str | None] = mapped_column(String(32), default=None)
@@ -1039,14 +1166,14 @@ class StorybookVersion(CreatedAtMixin, Base):
     # set by the fill/import path only when the skeleton contract declares
     # personalizable slots.
     personalization_eligible: Mapped[bool] = mapped_column(
-        server_default=sa_text("false"), default=False
+        server_default=text("false"), default=False
     )
     # A separate, narrower flag (design plan section 2/5): whether this
     # version's contract additionally parameterizes pronouns. Off by
     # default, set only by an explicit per-skeleton audit; never implied by
     # personalization_eligible alone.
     pronoun_parameterized: Mapped[bool] = mapped_column(
-        server_default=sa_text("false"), default=False
+        server_default=text("false"), default=False
     )
     # Stage R re-scope (Task R3): the per-node token multiset that
     # deterministic re-insertion actually produced
@@ -1218,6 +1345,67 @@ class StorybookAssignment(CreatedAtMixin, Base):
     )
 
 
+class ReadingActivityDay(UpdatedAtMixin, Base):
+    """A child's active-reading-seconds bucket for one calendar day (W3.3).
+
+    Day-grain by design (S10 posture; gamification-recommendation-2026-08-01.md
+    section 2.4/5): no session rows and no timestamp finer than a day ever
+    reaches the server. ``active_seconds`` accumulates a client-measured,
+    idle-gated, visibility-gated active-reading total via idempotent
+    ``POST /me/reading-time`` flushes (``api/reading_time.py``); the server
+    additively clamps each flush rather than trusting it verbatim (see that
+    module for the clamp).
+
+    ``last_flush_id`` is a deliberate addition beyond the recommendation's
+    literal data-model sketch (section 5 lists only child_profile_id,
+    activity_date, active_seconds, updated_at): the kid-appeal-implementation-
+    plan.md W3.3 task explicitly authorizes "a simple per-(profile, date)
+    last_flush_id column" as an acceptable idempotency strategy, mirroring
+    ``ReadingState.last_event_id``.
+
+    #ASSUME: concurrency: single-slot idempotency (the LAST applied flush id
+    only, not a set of every id ever seen) assumes the client single-flights
+    retries of one flush before starting the next, exactly like
+    ReadingState.last_event_id. The residual window is A-B-A across devices:
+    device 1 loses the ack for flush A, device 2 lands flush B, device 1
+    retries A, and A is applied twice. Note the direction, since it is easy to
+    get backwards: the accumulate itself is an ON CONFLICT DO UPDATE in
+    api/reading_time.py::accumulate_stmt, so racing writes SUM correctly and
+    cannot lose an increment or collide on the primary key; only the A-B-A
+    replay above can over-count. Acceptable here because this is a literacy
+    signal, not a billing ledger (recommendation section 2.4), and the
+    per-flush clamp in api/reading_time.py bounds one duplicate to 6h.
+    #VERIFY: tests/unit/test_reading_time_api_unit.py covers replay dedup and
+    pins the A-B-A residual explicitly.
+
+    Retention: the kid-appeal-implementation-plan.md "Plan defaults" section
+    (item 2) adopts a 12-month retention default for day-grain rows, after
+    which detail rolls into a running total (lifetime days-read survives) --
+    to be entered into the ADR-018 counsel bundle and the privacy model's
+    data classification. Enforcing that rollover (a scheduled purge/aggregate
+    job) is explicitly OUT OF SCOPE for this change; this docstring and the
+    plan document the decision, no code here implements it yet. Do not infer
+    a retention job exists from this table's presence.
+    """
+
+    __tablename__ = "reading_activity_day"
+    __table_args__ = (
+        CheckConstraint(
+            "active_seconds >= 0", name="ck_reading_activity_day_active_seconds"
+        ),
+    )
+
+    # #CRITICAL: data-integrity: CASCADE (Phase 3a): reading-time accrual is
+    # child-linked behavioral data, purged with the profile.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
+    child_profile_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_CHILD_PROFILE, ondelete="CASCADE"), primary_key=True
+    )
+    activity_date: Mapped[date] = mapped_column(Date, primary_key=True)
+    active_seconds: Mapped[int] = mapped_column(default=0, server_default=text("0"))
+    last_flush_id: Mapped[str | None] = mapped_column(String(64), default=None)
+
+
 class Concept(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     """A generation concept brief: the intake form for a story request.
 
@@ -1313,6 +1501,11 @@ class StoryRequest(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
             from, or ``None``.
         proposed_series_title: The kid's original series title proposal,
             retained as an audit trail after ratification or request decline.
+        resulting_storybook_id: The storybook this request produced, stamped
+            once at publish (``publishing/service.py::approve``), or
+            ``None`` before publish. See the column's own comment for the
+            resolution path and why publish (not generation) is the stamp
+            point (W0.4).
         created_at: Wall-clock insert time (UTC, TIMESTAMPTZ).
     """
 
@@ -1458,6 +1651,43 @@ class StoryRequest(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         default=None,
     )
     proposed_series_title: Mapped[str | None] = mapped_column(String(120), default=None)
+    # W0.4 (kid-appeal-implementation-plan.md, design review section 4.1): the
+    # storybook this request actually produced, or None until publish. Stamped
+    # exactly once, in publishing/service.py::approve() (the sole
+    # draft/in_review -> published transition), by resolving
+    # GenerationJob WHERE (storybook_id, version) == the approved storybook's
+    # (id, version) to a concept_id, then StoryRequest WHERE concept_id ==
+    # that concept_id -- the same two-hop resolution
+    # _stamp_request_interpretation (generation/worker.py) already uses for
+    # the K19 interpretation write, reused here instead of adding a third way
+    # to walk request -> concept -> job -> storybook. Never set at generation
+    # time (job/storybook creation): a story is fully moderated and
+    # human-approved by the time this column is non-null, so a kid seeing it
+    # never learns of an unpublished or rejected draft (api/story_requests.py
+    # ``_to_view`` exposes it with no further narrowing for exactly this
+    # reason; see the #ASSUME there). Never updated after (a request produces
+    # at most one storybook; a re-run after a failure creates a new
+    # GenerationJob/Storybook pair tied to the same concept_id, and only the
+    # run that actually reaches approve() stamps this field).
+    # #CRITICAL: data-integrity: SET NULL, not CASCADE. A storybook row is
+    # never deleted by any live application code path today (no admin
+    # "delete storybook" endpoint exists; family deletion CASCADEs both the
+    # storybook and the story_request together via family_id, so that path
+    # never triggers this SET NULL in practice either). This is still the
+    # correct ondelete action, matching every other nullable non-owning
+    # reference on this row (profile_id, reviewed_by, concept_id,
+    # anchor_storybook_id): the request itself is family-owned content that
+    # must survive a storybook row vanishing by any other means (a manual
+    # admin fixup, a future hard-delete tool, direct SQL), not silently fail
+    # to delete or drag the request down with it.
+    # #VERIFY: tests/integration/test_deletion_drill.py and
+    # tests/unit/test_publishing_service_unit.py::
+    # test_approve_stamps_resulting_storybook_id_and_survives_storybook_delete.
+    resulting_storybook_id: Mapped[str | None] = mapped_column(
+        String(120),
+        ForeignKey(_FK_STORYBOOK, ondelete=_ONDELETE_SET_NULL),
+        default=None,
+    )
 
 
 _MIN_VERDICT_VALUES = "'advisory', 'flag', 'block'"
@@ -1652,7 +1882,7 @@ class PipelineEvent(UUIDPrimaryKeyMixin, Base):
     from_state: Mapped[str | None] = mapped_column(String(32), nullable=True)
     to_state: Mapped[str | None] = mapped_column(String(32), nullable=True)
     payload: Mapped[dict[str, object]] = mapped_column(
-        JSONB, nullable=False, server_default=sa_text("'{}'::jsonb")
+        JSONB, nullable=False, server_default=text("'{}'::jsonb")
     )
 
 

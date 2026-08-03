@@ -303,6 +303,43 @@ Cells are tagged by evidence: `8-11` measured (high); `5-8` node counts measured
 estimated; `10-13` medium; `13-16` gamebook metadata; `3-5`/`16+` product-defined. This
 records which numbers are empirical and which are tunable product choices.
 
+### 10. Amendment (2026-08-01): per-band choice grammar
+
+> Adopted 2026-08-01 on owner sign-off, recorded as decision D15 in
+> [design-review-kid-appeal-2026-08-01.md](../design-review-kid-appeal-2026-08-01.md) section 8.
+> Companion to [ADR-026](./adr-026-rendered-stop-flow.md) (rendered-stop flow), which supplies the
+> "stop" concept: one rendered page the child lands on, a flowed multi-node passage at `8-11` and
+> up, a single node page at `3-5`/`5-8`. Applies to **new** skeletons and fills; the existing
+> catalog is grandfathered and retired per cell under decision D11.
+
+| Band | Presentation | Choice cadence | Max choiceless stops in a row | Flavor vs consequential | Options per choice | Words per stop |
+| --- | --- | --- | ---: | --- | --- | --- |
+| 3-5 | discrete pages | choice every 2nd-4th page; scaffold interaction (predict, point, answer) on other pages | 2-3 | ~90/10; consequences immediate, visible on the next page; reconvergence free | 2 | 10-40 |
+| 5-8 | discrete pages | choice every 1st-2nd page | 2 | ~70/30; same-scene payoff | 2-3 | 30-70 |
+| 8-11 | flowed prose | every stop ends in a choice | 1, prefer 0 | ~50/50; state-gated consequences begin, with a visible "noticed" cue | 3 | 60-135 |
+| 10-13 | flowed prose | every stop ends in a choice | 0-1 | ~40/60; delayed, cross-scene consequences; distinct targets | 3 | 80-150 |
+| 13-16 | flowed prose | every stop ends in a choice | 0-1 | ~30/70; consequence foreshadowed | 3-4 | 100-200 |
+| 16+ | flowed prose | every stop ends in a choice | 0-1 | ~30/70; gamebook lethality per the section 5 shape | 3-4 | 100-230 |
+
+Cross-cutting rules, all bands:
+
+- **Every choice is acknowledged in the immediately following prose.** This is a fill-gate rule;
+  the evidence base (Fendt et al. 2012, ICIDS; see the design review's research appendix) shows
+  flavor choices sustain felt agency only when the next line visibly registers the pick.
+- **Every interaction is story-congruent; none is decorative** (Takacs, Swart and Bus 2015).
+- From `8-11` up, design for replay detection of reconvergence: differing acknowledgment lines,
+  visible state.
+- **Scaffold interactions** at `3-5` (predict/answer beats that are not plot forks) are the
+  approved mechanism for choiceless pages; they require a schema minor (ADR-025) and their own
+  small design before authoring uses them.
+
+Relationship to the locked constants of section 6: unchanged. Decisions per path stay ~4-8; the
+grammar governs surface pacing, flavor mix, and per-stop reading load, not path decision counts.
+The words-per-stop column becomes the operative *felt page size* where stops flow (`8-11`+); the
+per-node ceilings of section 3 remain as authoring guardrails inside a stop. Enforcement lands as
+validator rules for new content (choiceless-run caps at the graph level for the discrete-page
+bands, acknowledgment checks at the fill gate); specifics belong to the implementation plan.
+
 ## Consequences
 
 - ✅ Size is a recorded, self-consistent contract (nodes derived from words and
@@ -351,3 +388,6 @@ records which numbers are empirical and which are tunable product choices.
 - [ADR-006](./adr-006-conditions-inhouse-evaluator.md): the evaluator series state-carry
   relies on.
 - `docs/planning/research/`: the empirical anchors (JHM 2019 + four-source reconciliation).
+  **Stale citation (noted 2026-08-01)**: this directory is not in the repo; the research notes
+  were never committed. See design-review-kid-appeal-2026-08-01.md section 6 item 5.
+- [ADR-026](./adr-026-rendered-stop-flow.md): rendered-stop flow (companion to section 10).

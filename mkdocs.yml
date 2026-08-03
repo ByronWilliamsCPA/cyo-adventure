@@ -178,6 +178,13 @@ nav:
       - Data Model: architecture/data-model.md
       - Deployment: architecture/deployment.md
 
+  - Security:
+      - Assurance Spine: security/assurance-spine.md
+      - Assurance Register: security/assurance-register.md
+      - Control Inheritance Map: security/control-inheritance.md
+      - Cryptographic Inventory: security/crypto-inventory.md
+      - Red Team Design Review: security/red-team-design-review-2026-07.md
+
   - Development:
       - Architecture: development/architecture.md
       - Testing: development/testing.md

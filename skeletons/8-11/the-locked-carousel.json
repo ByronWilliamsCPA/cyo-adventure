@@ -218,7 +218,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_set_doze",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "The Chair That Was Too Comfortable"
       }
@@ -370,7 +370,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_set_lost",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Fresh Batteries and a Ball of String"
       }
@@ -600,7 +600,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_set_tide",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Soaked to the Knees"
       }
@@ -853,7 +853,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_set_bolt",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "The Loudest Note in Town"
       }
@@ -977,7 +977,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_set_home",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Prying When You Should Press"
       }

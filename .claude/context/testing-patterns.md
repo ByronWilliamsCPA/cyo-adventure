@@ -26,6 +26,7 @@ def test_user_creation():
 def sample_user():
     return User(name="Test", email="test@example.com")
 
+
 def test_user_display(sample_user):
     assert sample_user.display_name == "Test"
 ```
@@ -37,7 +38,9 @@ def user_factory():
     def create_user(**kwargs):
         defaults = {"name": "Test", "email": "test@example.com"}
         return User(**{**defaults, **kwargs})
+
     return create_user
+
 
 def test_custom_user(user_factory):
     admin = user_factory(role="admin")
@@ -60,6 +63,7 @@ async def async_client():
 def mock_api(mocker):
     return mocker.patch("module.external_api.call", return_value={"status": "ok"})
 
+
 def test_with_mock(mock_api):
     result = service.process()
     mock_api.assert_called_once()
@@ -78,11 +82,14 @@ def mock_db(mocker):
 ## Parametrized Tests
 
 ```python
-@pytest.mark.parametrize("input,expected", [
-    ("hello", "HELLO"),
-    ("world", "WORLD"),
-    ("", ""),
-])
+@pytest.mark.parametrize(
+    "input,expected",
+    [
+        ("hello", "HELLO"),
+        ("world", "WORLD"),
+        ("", ""),
+    ],
+)
 def test_uppercase(input, expected):
     assert input.upper() == expected
 ```
@@ -91,6 +98,7 @@ def test_uppercase(input, expected):
 
 ```python
 from hypothesis import given, strategies as st
+
 
 @given(st.text())
 def test_encode_decode_roundtrip(text):

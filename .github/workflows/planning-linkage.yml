@@ -52,10 +52,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
+      # contents alone: the checker reads local files and makes no API call.
+      # Filing/commenting on the drift issue needs `issues: write`, but
+      # job-level permissions cannot be made conditional on event name, so that
+      # write scope lives on the separate file-drift-issue job below instead of
+      # being granted here on every pull_request run too (PR #465).
       contents: read
-      # Only the scheduled run files an issue; pull_request runs surface the
-      # failure on the pull request itself and need nothing beyond read.
-      issues: write
 
     steps:
       - name: Harden the runner
@@ -73,18 +75,44 @@ jobs:
           python-version: '3.14'
 
       - name: Check work linkage
+        # No flags, no network, no token: this is byte-for-byte the invocation
+        # the check-work-linkage pre-commit hook runs locally. Two GitHub-facing
+        # checks used to run here and nowhere else, which meant CI enforced a
+        # contract the hook could not; retiring them removed that divergence
+        # along with the upkeep of giving every open issue a phase home.
         run: python scripts/check_work_linkage.py
 
       - name: Check the authoring lessons log
         # Runs even when the linkage check failed, so one run reports both
-        # rather than making the author fix one, push, and discover the other.
-        if: always()
+        # rather than making the author fix one, push, and discover the
+        # other; !cancelled() keeps that intent without overriding a workflow
+        # cancellation the way always() would.
+        if: ${{ !cancelled() }}
         run: python scripts/check_lessons_log.py
 
+  file-drift-issue:
+    name: File drift issue
+    needs: linkage
+    # Scheduled runs only. A pull_request failure is already visible on the
+    # pull request; filing an issue for it would duplicate the signal.
+    # `failure()` here checks the needed job's (linkage) result, per GitHub's
+    # job-level status-check semantics.
+    if: failure() && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      # write, isolated to this job and this trigger so the linkage job above
+      # (which also runs on every pull_request) never holds it (PR #465).
+      issues: write
+
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
       - name: File a drift issue
-        # Scheduled runs only. A pull_request failure is already visible on the
-        # pull request; filing an issue for it would duplicate the signal.
-        if: failure() && github.event_name == 'schedule'
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
@@ -111,11 +139,12 @@ jobs:
               'never surface failures on a pull request. Close it once a scheduled',
               'run succeeds again.',
             ].join('\n');
-            const { data: issues } = await github.rest.issues.listForRepo({
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'open',
               labels: 'ci-failure',
+              per_page: 100,
             });
             const existing = issues.find((issue) => issue.title === title);
             if (existing) {

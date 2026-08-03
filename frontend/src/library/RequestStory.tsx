@@ -24,26 +24,17 @@ export interface ContinueAnchor {
   title: string
 }
 
-// #ASSUME: data-integrity: the story-requests endpoint never marks a request
-// "published" (its status stays 'approved' forever once approved; see
-// api/story_requests.py and db/models.py's 4-value status check constraint).
-// There is no backend field linking a request to the storybook it produced,
-// so "it's on your shelf" is a best-effort GUESS from data already fetched
-// for the shelf itself (LibraryPage's existing GET /v1/library), not a real
-// status the server reports.
-// #VERIFY: match only the guardian-confirmed series title (never the child's
-// free-form idea text, which the backend does not echo back as a book
-// title) against the shelf's book titles, case-insensitively, substring not
-// exact (a generated book is commonly titled "<series>: <subtitle>"). A
-// request with no proposed_series_title (an ordinary one-off idea, or an
-// anchor-driven continuation) never matches, so it always shows "being
-// written" until a real link exists server-side; this under-reports rather
-// than ever falsely claiming a still-generating story is done.
-const MIN_MATCH_LENGTH = 3
-function isLikelyPublished(proposedSeriesTitle: string | null, libraryTitles: string[]): boolean {
-  const needle = proposedSeriesTitle?.trim().toLowerCase()
-  if (!needle || needle.length < MIN_MATCH_LENGTH) return false
-  return libraryTitles.some((title) => title.toLowerCase().includes(needle))
+// W0.4: an approved request's card flips from "being written" to "it's on
+// your shelf" only once BOTH backend facts hold: the request carries a
+// resulting_storybook_id (stamped by publishing/service.py::approve() at
+// publish time, so it always names a fully moderated, human-approved book;
+// see that field's #ASSUME on api/story_requests.py::_to_view) AND that id
+// is present in this profile's own library list (a published book is not
+// necessarily assigned to this child yet). Replaces the retired
+// isLikelyPublished substring-match guess against shelf titles, which had
+// no real backend link to work from.
+function isPublishedToShelf(resultingStorybookId: string | null, libraryIds: string[]): boolean {
+  return resultingStorybookId !== null && libraryIds.includes(resultingStorybookId)
 }
 
 /**
@@ -57,24 +48,24 @@ function isLikelyPublished(proposedSeriesTitle: string | null, libraryTitles: st
  * "Ask for the next book" on) opens the form pre-set to request a continuation
  * of that book instead of a new series name.
  *
- * K12: `libraryTitles` (the profile's current shelf titles, already fetched
- * by LibraryPage) lets an 'approved' request distinguish "being written"
- * from "it's on your shelf" without any new backend call; see
- * isLikelyPublished's #ASSUME for the matching heuristic and its limits.
- * Defaults to an empty list so every approved request reads as "being
- * written" when the caller has no shelf data to offer.
+ * K12/W0.4: `libraryIds` (the profile's current shelf storybook ids, already
+ * fetched by LibraryPage) lets an 'approved' request distinguish "being
+ * written" from "it's on your shelf" without any new backend call; see
+ * isPublishedToShelf for the real resulting_storybook_id/library-membership
+ * check. Defaults to an empty list so every approved request reads as
+ * "being written" when the caller has no shelf data to offer.
  */
 export function RequestStory({
   profileId,
   anchor = null,
   onClearAnchor,
-  libraryTitles = [],
+  libraryIds = [],
   openSignal = 0,
 }: {
   profileId: string
   anchor?: ContinueAnchor | null
   onClearAnchor?: () => void
-  libraryTitles?: string[]
+  libraryIds?: string[]
   /** Bumped by the parent (the shelf's "Ask for a new story" tile) to open
    * the idea form from afar, exactly like tapping the form's own button:
    * clears any stale error, preserves anything already typed. */
@@ -317,15 +308,32 @@ export function RequestStory({
                   {'”'}
                 </span>
               ) : null
+              // W1.4 (K19 reflect-back, design review 4.1): a short "we heard
+              // you" line under a pending or approved request only -- a
+              // declined/blocked row already gets its own honest STATUS_COPY
+              // line ("Not this time...", "Let's try a different idea!"),
+              // and layering a generic "We could not build this wish yet"
+              // reflection on top of that would read as confusing, not warm.
+              // req.kidSummary is a single pre-rendered, echo-safe sentence
+              // (see storyRequestApi.ts::KidStoryRequest.kidSummary's own doc
+              // for why this field, not the per-element list, was chosen);
+              // null for a request with no stored interpretation (pre-WS-7),
+              // so the line is simply omitted rather than showing "We heard:"
+              // with nothing after it.
+              const heard =
+                (req.status === 'pending' || req.status === 'approved') && req.kidSummary ? (
+                  <span className="request-story__item-status">We heard you: {req.kidSummary}</span>
+                ) : null
               if (req.status !== 'approved') {
                 return (
                   <li key={req.id} data-status={req.status} className="request-story__item">
                     {ideaSpan}
                     <span className="request-story__item-status">{STATUS_COPY[req.status]}</span>
+                    {heard}
                   </li>
                 )
               }
-              const published = isLikelyPublished(req.proposedSeriesTitle, libraryTitles)
+              const published = isPublishedToShelf(req.resultingStorybookId, libraryIds)
               return (
                 <li
                   key={req.id}
@@ -348,6 +356,7 @@ export function RequestStory({
                       Your story is being written…
                     </span>
                   )}
+                  {heard}
                 </li>
               )
             })}

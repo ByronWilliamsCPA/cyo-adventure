@@ -3,8 +3,9 @@
 Creates (idempotently): a guardian and an admin user in Supabase Auth via the
 GoTrue admin API (email_confirm=true), a "Test Family", matching User rows
 whose authn_subject is each Auth user's UUID, a "Test Reader" child profile
-(age band 5-8), and the two hand-authored published stories assigned to the
-profile. Run with:
+(age band 10-13, matching the highest band among the assigned stories so the
+read-time band ceiling does not hide them; see _CHILD_AGE_BAND), and the two
+hand-authored published stories assigned to the profile. Run with:
 
     SEED_GUARDIAN_PASSWORD=... SEED_ADMIN_PASSWORD=... \\
         CYO_ADVENTURE_ALLOW_MOCK_REVIEW=1 \\
@@ -88,7 +89,18 @@ _STORIES = ("06_tier1_tide_pools.json", "07_tier2_clockwork_garden.json")
 
 _FAMILY_NAME = "Test Family"
 _CHILD_DISPLAY_NAME = "Test Reader"
-_CHILD_AGE_BAND = "5-8"
+# #CRITICAL: data integrity: this band is NOT cosmetic. api/library.py's
+# read-time age-band ceiling (added by #493, H1) hides any assigned book whose
+# metadata.age_band ranks ABOVE the profile's band, so a profile banded below
+# every book in _STORIES lists an EMPTY library and kid-library-smoke.spec.ts
+# fails on "No books yet" with a 200 response and no error anywhere. This value
+# must therefore rank at or above the HIGHEST band in _STORIES, currently
+# 07_tier2_clockwork_garden.json at 10-13. Seeding a younger reader is not
+# possible today: the lowest band in tests/fixtures/storybook/valid is 8-11, so
+# there is no 5-8 fixture to assign.
+# #VERIFY: for each file in _STORIES, metadata.age_band must not rank above
+# this value per storybook/models.py::parse_age_band_rank.
+_CHILD_AGE_BAND = "10-13"
 
 
 def require_env() -> None:

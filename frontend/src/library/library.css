@@ -566,3 +566,104 @@
   color: var(--color-amber-text, var(--color-ink));
   font-weight: var(--weight-semibold);
 }
+
+/* W3.2: "Every path walked!" outranks the plain "Finished!" ribbon -- a book
+   with every ending found gets its own warmer state, styled like
+   .book-card__finished but with the amber accent (matches the endings
+   badge's own warm color) instead of the plain success green. */
+.book-card__every-path {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.book-card__every-path-label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold, 600);
+  /* amber-TEXT: --text-xs is below the large-text threshold, so amber-deep's
+     3:1 non-text minimum does not apply here. See the token file's own note. */
+  color: var(--color-amber-text, #87561d);
+  white-space: nowrap;
+}
+
+/* W3.2 gallery entry point: a quiet text link under the endings badge, on
+   both BookCard and the ending screen's own copy of this button
+   (reader/EndingsGalleryButton.tsx, which reuses this class name so both
+   entry points look identical). */
+.book-card__gallery-button,
+.reader-ending__gallery-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 2px var(--space-2);
+  border: none;
+  background: none;
+  /* amber-TEXT: a transparent-background text link is the exact case the
+     token file names ("ghost-button labels"); amber-deep is for fills and
+     borders. This button also sits on .book-card's parchment-DARK surface,
+     which is the shade that failed axe-core at 4.0:1 with a lighter value. */
+  color: var(--color-amber-text, #87561d);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold, 600);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Endings Gallery (W3.2): found cards render in color; unfound "still
+   hidden" silhouettes are muted and carry no real title, only the
+   placeholder text. */
+.endings-gallery__milestone {
+  margin: 0 0 var(--space-3, 0.75rem);
+  font-weight: var(--weight-bold, 700);
+  /* amber-TEXT: inherits the body size, so this is normal-size bold text at
+     the 4.5:1 threshold, not the 3:1 one amber-deep is documented against. */
+  color: var(--color-amber-text, #87561d);
+}
+
+.endings-gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: var(--space-3, 0.75rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.endings-gallery__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-3, 0.75rem);
+  border-radius: var(--radius-lg, 0.75rem);
+  border: 2px solid var(--color-parchment-deeper, #e0d5b8);
+  background: var(--color-parchment, #f8f3e8);
+  text-align: center;
+}
+
+.endings-gallery__card--found {
+  border-color: var(--color-amber, #e07f2e);
+  background: var(--color-amber-subtle, #fdf3e6);
+}
+
+.endings-gallery__card--hidden {
+  opacity: 0.55;
+  filter: grayscale(1);
+}
+
+.endings-gallery__icon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.endings-gallery__card-title {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold, 600);
+}
+
+.endings-gallery__empty {
+  margin: var(--space-3, 0.75rem) 0 0;
+  color: var(--color-ink-secondary);
+  font-size: var(--text-sm);
+}

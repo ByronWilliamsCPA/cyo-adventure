@@ -103,8 +103,8 @@ state a_spare_net #D1C4E9
 a_spare_net : rising · 95w
 state a_parapet_lunge #D1C4E9
 a_parapet_lunge : rising · 95w
-state a_short_net_end #FFCDD2
-a_short_net_end : setback (negative)
+state a_short_net_end #E0E0E0
+a_short_net_end : setback (neutral)
 a_short_net_end : "{A2_BRIDGE_PRIZE2}"
 state b_bend #D1C4E9
 b_bend : rising · 95w
@@ -284,8 +284,8 @@ state c_stone_step #D1C4E9
 c_stone_step : rising · 95w
 state c_lead_bends #D1C4E9
 c_lead_bends : rising · 90w
-state c_torn_end #FFCDD2
-c_torn_end : setback (negative)
+state c_torn_end #E0E0E0
+c_torn_end : setback (neutral)
 c_torn_end : "{C2_ISLAND_PRIZE2}"
 s_morning --> s_launch : Carry {COMPANION} to the {ENTRANCE}.
 s_launch --> s_split : Run with the fleet toward {SPLIT_LANDMAR...
@@ -444,7 +444,7 @@ legend right
   The River of Small Boats
   Band 8-11 · Tier 1 · ~10 min
   Topology: time_cave
-  127 nodes · 26 endings (17+ / 7n / 2-)
+  127 nodes · 26 endings (17+ / 9n / 0-)
   Production-eligible
   Scale: medium · prose
 endlegend

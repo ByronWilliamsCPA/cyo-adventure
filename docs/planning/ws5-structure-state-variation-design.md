@@ -313,9 +313,10 @@ mirrors the `storybook/theme_contract.py` layering discipline):
 ```python
 @dataclass(frozen=True, slots=True)
 class MutationResult:
-    candidate: dict[str, object]      # the mutated shell, ids/metadata resynced
+    candidate: dict[str, object]  # the mutated shell, ids/metadata resynced
     reguide: tuple[ReguideItem, ...]  # nodes/choices whose guidance needs re-authoring
-    notes: tuple[str, ...]            # operator-specific audit notes
+    notes: tuple[str, ...]  # operator-specific audit notes
+
 
 class MutationOp(Protocol):
     op_id: str

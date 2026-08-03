@@ -24,7 +24,12 @@ from cyo_adventure.core.exceptions import (
     BusinessLogicError,
     ResourceNotFoundError,
 )
-from cyo_adventure.db.models import GenerationJob, Storybook, StorybookVersion
+from cyo_adventure.db.models import (
+    GenerationJob,
+    Storybook,
+    StorybookVersion,
+    StoryRequest,
+)
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.publishing.state_machine import (
     Action,
@@ -243,6 +248,67 @@ async def _series_chain_docs(
     return docs
 
 
+async def _stamp_resulting_storybook_id(
+    session: AsyncSession, storybook: Storybook, version: int
+) -> None:
+    """Link the originating request to the just-published storybook (W0.4).
+
+    Resolves the ``GenerationJob`` that produced this ``(storybook_id,
+    version)`` pair to its ``concept_id``, then ``StoryRequest WHERE
+    concept_id == that concept_id`` -- the same two-hop request -> concept ->
+    job -> storybook resolution ``generation/worker.py::
+    _stamp_request_interpretation`` already uses for the K19 interpretation
+    write, reused here rather than adding a third way to walk that chain.
+
+    Deliberately called only from :func:`approve`, the sole path that sets
+    ``status="published"``: a story is fully moderated and human-approved by
+    the time this stamp lands, so a kid who later sees a non-``None``
+    ``resulting_storybook_id`` (``api/story_requests.py::_to_view``) never
+    learns of an unpublished or rejected draft. Never re-stamped: a request
+    produces at most one storybook in practice (a retry after failure
+    creates a new ``GenerationJob``/``Storybook`` pair under the same
+    ``concept_id``, but only the run that actually reaches ``approve()``
+    calls this).
+
+    Does NOT commit: the caller's terminal commit records it in the same
+    transaction as the rest of ``approve()``'s writes.
+
+    # #ASSUME: data-integrity: neither ``(GenerationJob.storybook_id,
+    # GenerationJob.version)`` nor ``StoryRequest.concept_id`` carries a
+    # unique constraint at the database level (mirroring the same gap
+    # documented on ``_stamp_request_interpretation``); a genuinely
+    # duplicated row would make ``scalar_one_or_none()`` raise
+    # ``MultipleResultsFound`` and abort the publish rather than silently
+    # stamping the wrong request. No try/except here, deliberately matching
+    # ``_stamp_request_interpretation``'s own convention for this exact join:
+    # fail loud on corrupted data instead of guessing.
+    # #VERIFY: test_approve_stamps_resulting_storybook_id and
+    # test_approve_resulting_storybook_id_noop_without_request in
+    # tests/unit/test_publishing_service_unit.py.
+
+    Args:
+        session: The request session (caller owns the transaction).
+        storybook: The story being approved.
+        version: The version number being published.
+    """
+    concept_result = await session.execute(
+        select(GenerationJob.concept_id).where(
+            GenerationJob.storybook_id == storybook.id,
+            GenerationJob.version == version,
+        )
+    )
+    concept_id = concept_result.scalar_one_or_none()
+    if concept_id is None:
+        return
+    request_result = await session.execute(
+        select(StoryRequest).where(StoryRequest.concept_id == concept_id)
+    )
+    request_row = request_result.scalar_one_or_none()
+    if request_row is None:
+        return
+    request_row.resulting_storybook_id = storybook.id
+
+
 async def approve(
     session: AsyncSession,
     principal: Principal,
@@ -384,6 +450,13 @@ async def approve(
         )
         .values(report=None)
     )
+    # #CRITICAL: data-integrity: W0.4 -- stamp story_request.resulting_
+    # storybook_id in the same flush as the status/approved_by/published_at
+    # writes above, so a rollback of the publish also rolls back the stamp
+    # (both-or-neither, mirroring the report-nulling UPDATE just above).
+    # #VERIFY: test_approve_stamps_resulting_storybook_id in
+    # tests/unit/test_publishing_service_unit.py.
+    await _stamp_resulting_storybook_id(session, storybook, version)
     # #CRITICAL: data-integrity: this is the WS-D event-log record of the
     # publish transition; record_event's internal flush lands it in the same
     # pending transaction as the status/approved_by/published_at writes above,

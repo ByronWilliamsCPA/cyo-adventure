@@ -13,9 +13,14 @@ It deliberately records **raw** per-attribute scores rather than
 :class:`~cyo_adventure.moderation.report.Finding` objects.
 :func:`~cyo_adventure.moderation.classifiers.run_classifiers` drops graded
 scores below ``_ADVISORY_SCORE_FLOOR`` (0.01) as noise, but that sub-floor band
-is precisely the calibration signal: on clean children's prose Perspective's
-observed ceiling is ~6e-4, so a successor's separation between "clean fiction"
-and "adversarial passage" is invisible once the floor has flattened it.
+carries calibration signal a successor needs: flatten it and the separation
+between "clean fiction" and "adversarial passage" is no longer visible.
+
+The pre-capture expectation was a Perspective ceiling of ~6e-4 on clean
+children's prose. The first run of this script (2026-08-01) refuted it: all 120
+clean passages scored at or above 0.01 on at least one attribute, and the clean
+maximum exceeded the adversarial maximum. That is a result of the capture, not
+a premise of it; see the note on ``_ADVISORY_SCORE_FLOOR``.
 
 Two populations are captured, because a replacement has to be judged on both:
 
@@ -31,7 +36,7 @@ Real network I/O and real quota, so it is opt-in and never runs in CI::
 
     PYTHONPATH=. uv run python scripts/capture_stage0_baseline.py \\
         --env-file .env \\
-        --out docs/planning/safety/stage0-baseline-2026-07-28.json
+        --out "docs/planning/safety/stage0-baseline-$(date +%F).json"
 
 Every passage passes the same PII egress guard production runs immediately
 before ``run_classifiers`` (``api/node_edit.py``, ``story_requests/screening``),

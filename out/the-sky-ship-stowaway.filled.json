@@ -456,7 +456,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_nest",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Down from the Windy Nest"
       }
@@ -590,7 +590,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_salon",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Spotted in the Saloon"
       }
@@ -681,7 +681,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_galley",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "The Cook Catches On"
       }
@@ -750,7 +750,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_cabin",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Under the Chart Table"
       }
@@ -910,7 +910,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_storm1",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Waiting Out the Blow"
       }
@@ -979,7 +979,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_storm2",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Knocked Off Her Feet"
       }
@@ -1171,7 +1171,7 @@
       "is_ending": true,
       "ending": {
         "id": "e_set_reveal",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Too Slow Through the Flood"
       }

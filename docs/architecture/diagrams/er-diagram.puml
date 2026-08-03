@@ -56,10 +56,13 @@ entity "user" as user_t #E3F2FD {
   consent_policy_version : VARCHAR(32) NULL
   consent_signer_name : VARCHAR(200) NULL [typed legal-name signature]
   consent_ip : VARCHAR(64) NULL [evidentiary only, never queried/joined]
+  residence_country : VARCHAR(2) NULL [ISO 3166-1 alpha-2;\nO-117 jurisdiction signal]
+  adulthood_attested_at : TIMESTAMPTZ NULL [O-119 self-declared\nadult attestation]
   --
   CHECK (role<>'child' OR is_admin=false)
   CHECK (role<>'admin' OR is_admin=true)
   CHECK (consent_accepted_at/policy_version/\nsigner_name/ip all NULL or all set)
+  CHECK (residence_country/adulthood_attested_at\nboth NULL or both set with consent)
 }
 
 entity "child_profile" as child_profile #FFF3E0 {
@@ -82,6 +85,10 @@ entity "child_profile" as child_profile #FFF3E0 {
   processing_restricted_at : TIMESTAMPTZ NULL [GDPR Art. 18/21; blocks\nNEW story requests only, distinct\nfrom deactivated_at]
   real_name_ring1_enabled : BOOLEAN [ADR-023; default false;\nreal name in own-family stories]
   real_name_ring2_enabled : BOOLEAN [ADR-023; default false;\nreal name across a connection]
+  ring_enabled : BOOLEAN NULL [G19/K22; NULL = band default\n(off at 3-5)]
+  ring_goal_days : INT NULL [G19/K22; 1-6; NULL = band default]
+  badges_enabled : BOOLEAN [G19/K21; default true;\noff hides case + toasts, awards keep computing]
+  time_capture_paused : BOOLEAN [G19/K23; default false;\nserver discards flushes while paused]
 }
 
 entity "family_connection" as family_connection #E8F5E9 {
@@ -230,6 +237,15 @@ entity "completion" as completion #DCEDC8 {
   found_at : TIMESTAMPTZ
 }
 
+entity "reading_activity_day" as reading_activity_day #DCEDC8 {
+  * child_profile_id : UUID <<PK, FK child_profile.id>>
+  * activity_date : DATE <<PK>>
+  --
+  active_seconds : INT [CHECK >= 0; K23 day-grain only]
+  last_flush_id : VARCHAR(120) NULL [single-slot idempotency]
+  updated_at : TIMESTAMPTZ
+}
+
 entity "rating" as rating #FFF9C4 {
   * child_profile_id : UUID <<PK, FK child_profile.id>>
   * storybook_id : VARCHAR(120) <<PK, FK storybook.id>>
@@ -275,6 +291,7 @@ entity "story_request" as story_request #FFE0B2 {
   concept_id : UUID <<FK concept.id, NULL>> [set on approval]
   series_id : UUID <<FK series.id, NULL>>
   anchor_storybook_id : VARCHAR(120) <<FK storybook.id, NULL>>
+  resulting_storybook_id : VARCHAR(120) <<FK storybook.id, NULL>> [W0.4;\nstamped at publish; SET NULL on delete]
   proposed_series_title : VARCHAR(120) NULL
   created_at : TIMESTAMPTZ
 }
@@ -432,6 +449,8 @@ child_profile ||--o{ reading_state : "1 profile\nmany reading states"
 storybook ||--o{ reading_state : "1 story\nmany reader states"
 storybook_version ||--o{ reading_state : "(storybook_id, version)\ncomposite FK"
 child_profile ||--o{ completion : "1 profile\nmany completions"
+child_profile ||--o{ reading_activity_day : "1 profile\none bucket per day (K23);\nCASCADE on delete"
+storybook |o--o{ story_request : "resulting_storybook_id\nstamped at publish (W0.4);\nSET NULL on delete"
 storybook_version ||--o{ completion : "(storybook_id, version)\ncomposite FK"
 child_profile ||--o{ rating : "1 profile\nmany ratings"
 child_profile ||--o{ storybook_assignment : "1 profile\nmany assignments"

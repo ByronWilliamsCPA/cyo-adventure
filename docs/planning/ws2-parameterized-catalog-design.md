@@ -144,33 +144,38 @@ noted at `skeleton_match.py:34-36`).
 
 ```python
 class SlotScope(StrEnum):
-    GLOBAL = "global"    # whole-story identity (hero, place, deadline)
-    ROUTE = "route"      # a top-level branch's identity
-    TRACK = "track"      # a sub-track / segment within a branch
-    ENDING = "ending"    # names an ending title (prize / setback)
+    GLOBAL = "global"  # whole-story identity (hero, place, deadline)
+    ROUTE = "route"  # a top-level branch's identity
+    TRACK = "track"  # a sub-track / segment within a branch
+    ENDING = "ending"  # names an ending title (prize / setback)
+
 
 class SlotConstraints(BaseModel):
     model_config = ConfigDict(extra="forbid")
     max_words: int = Field(default=8, ge=1, le=16)
-    forbid: list[str] = Field(default_factory=list)   # denylist bundle ids, section 3.1
+    forbid: list[str] = Field(default_factory=list)  # denylist bundle ids, section 3.1
     distinct_from: list[str] = Field(default_factory=list)  # sibling slot ids
-    pattern: str | None = None                        # optional fullmatch regex
+    pattern: str | None = None  # optional fullmatch regex
+
 
 class SlotSpec(BaseModel):
     model_config = ConfigDict(extra="forbid")
     id: str = Field(pattern=r"^[A-Z][A-Z0-9_]*$")
     scope: SlotScope
-    meaning: str = Field(min_length=1)      # human meaning (audit/review surface)
-    guidance: str = ""                      # ADVISORY text injected into bind + fill prompts
+    meaning: str = Field(min_length=1)  # human meaning (audit/review surface)
+    guidance: str = ""  # ADVISORY text injected into bind + fill prompts
     constraints: SlotConstraints = Field(default_factory=SlotConstraints)
+
 
 class ThemeContract(BaseModel):
     model_config = ConfigDict(extra="forbid")
     contract_version: int = Field(ge=1)
     skeleton_slug: str = Field(min_length=1)
     age_band: AgeBand
-    legacy_lexicon: list[str] = Field(default_factory=list)  # original theme's nouns/terms
-    default_binding: dict[str, str]         # original theme's values; golden fixture
+    legacy_lexicon: list[str] = Field(
+        default_factory=list
+    )  # original theme's nouns/terms
+    default_binding: dict[str, str]  # original theme's values; golden fixture
     slots: list[SlotSpec] = Field(min_length=1)
     # model_validator: unique slot ids; default_binding keys == slot id set;
     # distinct_from references resolve to declared ids; forbid ids resolve to
@@ -341,9 +346,10 @@ async def bind_theme_to_contract(
 ```python
 @dataclass(frozen=True, slots=True)
 class SlotViolation:
-    slot_id: str          # "" for binding-level violations (missing/undeclared keys)
-    rule: str             # "charset", "max_words", "forbid:lethal", "distinct_from", ...
-    message: str          # human-readable, safe to echo into the re-bind prompt
+    slot_id: str  # "" for binding-level violations (missing/undeclared keys)
+    rule: str  # "charset", "max_words", "forbid:lethal", "distinct_from", ...
+    message: str  # human-readable, safe to echo into the re-bind prompt
+
 
 def validate_slot_bindings(
     contract: ThemeContract,
@@ -407,7 +413,9 @@ Per skeleton, decided at fill time by sidecar presence:
 ```python
 # in generation/binding.py
 def contract_path_for(skeleton_path: Path) -> Path: ...
-def load_contract_for(skeleton_path: Path, skeleton: dict[str, object]) -> ThemeContract | None:
+def load_contract_for(
+    skeleton_path: Path, skeleton: dict[str, object]
+) -> ThemeContract | None:
     """None when no sidecar exists (legacy skeleton). Raises ValidationError when
     a sidecar exists but is invalid OR when the skeleton carries {SLOT} tokens
     with no sidecar (half-migrated: fail closed, never fill raw tokens)."""

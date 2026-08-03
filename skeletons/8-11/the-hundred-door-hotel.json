@@ -556,7 +556,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_lb_ladder",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "The Ladder Takes a Ride"
       }
@@ -567,7 +567,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_lb_horn",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Four Answers, No Footsteps"
       }
@@ -1041,7 +1041,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_kt_jam",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "The Plum Jam Avalanche"
       }
@@ -1052,7 +1052,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_kt_cocoa",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Cocoa Gets the Last Word"
       }
@@ -1063,7 +1063,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_kt_ride",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Stairs Exist"
       }
@@ -1531,7 +1531,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_wg_tap",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "The Forty-Year Rainstorm"
       }
@@ -1553,7 +1553,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_wg_climb",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "The Compost Heap Catches"
       }
@@ -2019,7 +2019,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_gf_lost",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Warmer, Colder, Morning"
       }
@@ -2030,7 +2030,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_gf_early",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "The Point That Would Not Count"
       }
@@ -2041,7 +2041,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_gf_rounds",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Thirty Rounds Past Bedtime"
       }
@@ -2412,7 +2412,7 @@
       "is_ending": true,
       "ending": {
         "id": "end_ob_ride",
-        "valence": "negative",
+        "valence": "neutral",
         "kind": "setback",
         "title": "Two Laps of the Heavens"
       }

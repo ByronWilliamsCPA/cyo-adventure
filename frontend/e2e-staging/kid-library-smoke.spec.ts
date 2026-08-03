@@ -2,11 +2,14 @@ import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
 import { signInAsStagingTestUser, unlockParentalGateIfPresent } from './support/auth'
+import { readPersistedGrantId, revokeDeviceGrantBackstop } from './support/device-grant'
+import { removeDeviceFromConsole } from '../e2e-support/device-grant-ui'
 import { gotoResilient, paceNavigation } from '../e2e-support/rate-limit'
 
 /**
- * The one staging spec that writes: mints a device grant (via the real
- * console UI) to reach the seeded "Test Reader" profile's populated library,
+ * A grant-writing staging spec (moderation-qa-invisibility.spec.ts runs the
+ * same reversible pattern): mints a device grant (via the real console UI)
+ * to reach the seeded "Test Reader" profile's populated library,
  * then revokes it. Mirrors e2e-prod/kid-device-grant.spec.ts's narrow,
  * fully-reversible write pattern (exactly one grant, removed by the final
  * test and, if that never runs, by the afterAll backstop) rather than
@@ -22,6 +25,14 @@ test.describe('kid library via a real device grant on staging', () => {
 
   let sharedPage: Page
 
+  /**
+   * Captured at mint time, not re-read at teardown: a device-grant 401 makes
+   * useApi.ts clear the localStorage record, so the backstop's only input
+   * would be gone in exactly the runs where the backstop is the only cleanup
+   * left. See support/device-grant.ts.
+   */
+  let mintedGrantId: string | null = null
+
   test.beforeAll(async ({ browser }) => {
     sharedPage = await browser.newPage()
     await signInAsStagingTestUser(sharedPage, 'guardian')
@@ -30,46 +41,7 @@ test.describe('kid library via a real device grant on staging', () => {
   test.afterAll(async () => {
     // See e2e-prod/kid-device-grant.spec.ts for the rationale: a best-effort
     // DELETE backstop in case the explicit revoke test below didn't run.
-    try {
-      const cleanup = await sharedPage.evaluate(async ([key]) => {
-        const raw = window.localStorage.getItem(key)
-        const token = window.localStorage.getItem('auth_token')
-        let outcome: { attempted: boolean; ok: boolean; status: number } = {
-          attempted: false,
-          ok: false,
-          status: 0,
-        }
-        if (raw && token) {
-          try {
-            const grant = JSON.parse(raw) as { id?: string }
-            if (grant.id) {
-              const res = await fetch(`/api/v1/device-grants/${grant.id}`, {
-                method: 'DELETE',
-                headers: { Authorization: `Bearer ${token}` },
-              })
-              outcome = {
-                attempted: true,
-                ok: res.ok || res.status === 404,
-                status: res.status,
-              }
-            }
-          } catch {
-            outcome = { attempted: true, ok: false, status: 0 }
-          }
-        }
-        window.localStorage.removeItem(key)
-        return outcome
-      }, [DEVICE_GRANT_KEY] as const)
-      if (cleanup.attempted && !cleanup.ok) {
-        console.warn(
-          '[kid-library-smoke] backstop device-grant revoke did not confirm ' +
-            `(HTTP ${cleanup.status}); a grant may still be live on staging. ` +
-            'List device grants and revoke it manually.'
-        )
-      }
-    } catch {
-      /* page already closed / evaluate unavailable: nothing to clean */
-    }
+    await revokeDeviceGrantBackstop(sharedPage, mintedGrantId, '[kid-library-smoke]')
     await sharedPage.close()
   })
 
@@ -86,16 +58,19 @@ test.describe('kid library via a real device grant on staging', () => {
     }
 
     await expect(sharedPage.getByRole('button', { name: 'Hand device to a child' })).toBeVisible()
-    const stored = await sharedPage.evaluate(
-      (key) => window.localStorage.getItem(key),
-      DEVICE_GRANT_KEY
-    )
-    expect(stored, 'a device grant should be persisted after authorize').not.toBeNull()
+    mintedGrantId = await readPersistedGrantId(sharedPage)
+    expect(
+      mintedGrantId,
+      'a device grant carrying an id should be persisted after authorize; the ' +
+        'afterAll backstop has no other way to revoke it if a later test fails'
+    ).not.toBeNull()
   })
 
   test('the authorized device opens the populated test kid library', async () => {
     await gotoResilient(sharedPage, '/kids')
-    await expect(sharedPage.getByRole('heading', { name: "Who's reading?", level: 1 })).toBeVisible()
+    await expect(
+      sharedPage.getByRole('heading', { name: "Who's reading?", level: 1 })
+    ).toBeVisible()
 
     // Paced by hand because this is an in-app route change, not a goto: the
     // library mount fans out into its own list and recommendations fetches, so
@@ -121,14 +96,13 @@ test.describe('kid library via a real device grant on staging', () => {
     await gotoResilient(sharedPage, '/guardian')
     await unlockParentalGateIfPresent(sharedPage, 'guardian')
 
-    await sharedPage.getByRole('button', { name: 'Remove from this device' }).click()
-    await expect(
-      sharedPage.getByRole('button', { name: 'Set up this device for your kids' })
-    ).toBeVisible()
+    await removeDeviceFromConsole(sharedPage)
     const stored = await sharedPage.evaluate(
       (key) => window.localStorage.getItem(key),
       DEVICE_GRANT_KEY
     )
     expect(stored, 'the device grant should be cleared after remove').toBeNull()
+    // Revoked explicitly, so the backstop has nothing left to do.
+    mintedGrantId = null
   })
 })

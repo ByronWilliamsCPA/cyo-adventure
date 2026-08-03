@@ -93,7 +93,16 @@ pytestmark = [
 
 
 async def _run_live_corpus() -> CorpusReport:
-    """Load the corpus and run every item through the real moderation stages."""
+    """Load the corpus and run every item through the real moderation stages.
+
+    #CRITICAL: security: the Stage-1 probe runs at the resolved
+    ``Settings.review_batch_size``, not at the harness default of 1. This gate
+    is the recurring evidence that the deployed moderation configuration
+    catches the adversarial corpus; measuring a single-node topology while
+    production batches would leave the batched path ungated by anything.
+    #VERIFY: ``batch_size=settings.review_batch_size`` below, sourced from the
+    same ``Settings`` instance that builds the review provider.
+    """
     raw_items = json.loads(_CORPUS_PATH.read_text(encoding="utf-8"))["items"]
     items = cast("list[Mapping[str, object]]", raw_items)
     settings = Settings.model_validate({"review_provider": _PROVIDER})
@@ -104,6 +113,7 @@ async def _run_live_corpus() -> CorpusReport:
         items,
         review_provider,
         review_provider_name=cast("ReviewProviderName", _PROVIDER),
+        batch_size=settings.review_batch_size,
     )
 
 

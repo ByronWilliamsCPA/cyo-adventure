@@ -679,6 +679,61 @@ describe('ReaderRoute flag-off residue purge', () => {
   })
 })
 
+describe('ReaderRoute age-band wiring (ADR-026 decision 6)', () => {
+  beforeEach(() => {
+    globalThis.indexedDB = new IDBFactory()
+    _resetDbHandle()
+    mockGet.mockReset()
+    mockPut.mockReset()
+    mockPost.mockReset()
+  })
+
+  afterEach(() => {
+    cleanup()
+  })
+
+  it('looks up the profile so the reader can render band-appropriate stop flow', async () => {
+    mockGet.mockImplementation((url: string) => {
+      if (url.startsWith('/v1/storybooks/')) return Promise.resolve({ data: lantern })
+      if (url.startsWith('/v1/reading-state/')) {
+        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+      }
+      if (url === '/v1/profiles') {
+        return Promise.resolve({
+          data: {
+            profiles: [
+              {
+                id: 'p_band',
+                display_name: 'Kid',
+                age_band: '8-11',
+                reading_level_cap: 5,
+                avatar: null,
+                tts_enabled: false,
+                reduce_motion: false,
+                has_pin: false,
+                content_flag_caps: {},
+                banned_themes: [],
+                created_at: '2026-07-01T00:00:00Z',
+              },
+            ],
+          },
+        })
+      }
+      return Promise.reject(new Error(`unexpected GET ${url}`))
+    })
+
+    renderAt(`/read/p_band/${lantern.id}/${lantern.version}`)
+
+    await screen.findByTestId('reader')
+    // ReaderRoute's own useKidProfile lookup reached the real /v1/profiles
+    // endpoint; Reader.tsx's ageBand-gated behavior is unit-tested directly
+    // in Reader.test.tsx against this exact wiring.
+    await waitFor(() =>
+      expect(mockGet.mock.calls.some(([url]) => url === '/v1/profiles')).toBe(true)
+    )
+  })
+})
+
 describe('ReaderRoute replay success toast', () => {
   beforeEach(() => {
     globalThis.indexedDB = new IDBFactory()

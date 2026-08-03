@@ -15,7 +15,10 @@ Rule application order (per ``docs/planning/validator-rules.md``
 4. Layer 2 (L2-9..L2-13): state-space walk, Tier-2 only (Tier-1 skips). L2-13
    is a WARNING-only scale advisory and never sets ``blocked``.
 5. RL-13: advisory reading-level check (WARNING, never blocks).
-6. SAFE-14: safety content check (Phase-2 stub, always empty).
+6. CG-1..CG-4: advisory choice-grammar checks (WARNING, never blocks),
+   gated behind ``enforce_grammar`` (default False; D3/D11 grandfathering,
+   see ``validator/choice_grammar.py``).
+7. SAFE-14: safety content check (Phase-2 stub, always empty).
 
 Blocking semantics
 ------------------
@@ -38,6 +41,7 @@ from typing import TYPE_CHECKING
 from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.storybook.models import Storybook
+from cyo_adventure.validator.choice_grammar import check_choice_grammar
 from cyo_adventure.validator.layer1 import Scale, validate_layer1
 from cyo_adventure.validator.layer2 import validate_layer2
 from cyo_adventure.validator.policy import validate_policy
@@ -73,7 +77,12 @@ class GateResult:
     safety_flagged: bool
 
 
-def run_gate(data: Mapping[str, object], scale: Scale = "standard") -> GateResult:
+def run_gate(
+    data: Mapping[str, object],
+    scale: Scale = "standard",
+    *,
+    enforce_grammar: bool = False,
+) -> GateResult:
     """Run all validation layers and return a combined gate result.
 
     Accepts the raw decoded story JSON (a mapping) because Layer 1 operates
@@ -84,6 +93,12 @@ def run_gate(data: Mapping[str, object], scale: Scale = "standard") -> GateResul
         data: The raw decoded story JSON mapping.
         scale: Story-size profile the L1-7 budget is enforced against
             (``"standard"`` or ``"compact"``); forwarded to Layer 1.
+        enforce_grammar: Forwarded to ``choice_grammar.check_choice_grammar``.
+            Defaults to ``False`` so every existing caller (the grandfathered
+            61-skeleton catalog, generation, the API validate endpoint) is
+            unaffected; a future skeleton-promotion path opts in explicitly
+            (D3/D11). CG-* findings are WARNING-only and never set
+            ``blocked`` regardless of this flag.
 
     Returns:
         GateResult: The merged report, block status, and safety flag.
@@ -129,6 +144,12 @@ def run_gate(data: Mapping[str, object], scale: Scale = "standard") -> GateResul
     # --- RL-13: advisory reading-level check (WARNING, never blocks) ---
     rl_report = check_reading_level(story)
     for finding in rl_report.findings:
+        merged.add(finding)
+
+    # --- CG-1..CG-4: advisory choice-grammar checks (WARNING, never blocks,
+    # gated behind enforce_grammar per D3/D11 grandfathering) ---
+    cg_report = check_choice_grammar(story, enforce_grammar=enforce_grammar)
+    for finding in cg_report.findings:
         merged.add(finding)
 
     # --- SAFE-14: safety check (Phase-2 stub, always empty) ---
