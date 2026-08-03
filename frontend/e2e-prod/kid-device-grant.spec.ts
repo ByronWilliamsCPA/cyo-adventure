@@ -177,10 +177,15 @@ test.describe('kid access via a real device grant', () => {
     await gotoResilient(sharedPage, '/guardian')
     await unlockParentalGateIfPresent(sharedPage)
 
-    // "Remove from this device" clears the local grant only after the server
-    // DELETE succeeds, so the first-run CTA returning proves the revoke landed
-    // on the backend, not just in the browser.
+    // "Remove from this device" opens a confirm dialog (ConsolePage.tsx); the
+    // dialog's "Remove device" action clears the local grant only after the
+    // server DELETE succeeds, so the first-run CTA returning proves the revoke
+    // landed on the backend, not just in the browser.
     await sharedPage.getByRole('button', { name: 'Remove from this device' }).click()
+    await sharedPage
+      .getByRole('dialog', { name: 'Remove this device?' })
+      .getByRole('button', { name: 'Remove device' })
+      .click()
     await expect(
       sharedPage.getByRole('button', { name: 'Set up this device for your kids' })
     ).toBeVisible()

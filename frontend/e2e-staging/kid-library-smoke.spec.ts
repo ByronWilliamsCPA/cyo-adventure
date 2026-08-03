@@ -96,6 +96,12 @@ test.describe('kid library via a real device grant on staging', () => {
     await unlockParentalGateIfPresent(sharedPage, 'guardian')
 
     await sharedPage.getByRole('button', { name: 'Remove from this device' }).click()
+    // The remove is wrapped in a confirm dialog (ConsolePage.tsx); the server
+    // DELETE only fires from its "Remove device" action.
+    await sharedPage
+      .getByRole('dialog', { name: 'Remove this device?' })
+      .getByRole('button', { name: 'Remove device' })
+      .click()
     await expect(
       sharedPage.getByRole('button', { name: 'Set up this device for your kids' })
     ).toBeVisible()
