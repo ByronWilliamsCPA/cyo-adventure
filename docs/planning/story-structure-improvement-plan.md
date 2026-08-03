@@ -317,13 +317,12 @@ section 8. This plan does not modify register rows; each flips with a Ref when i
 and if an SQ item is ever dropped from this schedule while still worth doing, it must be registered
 as a UW row before removal.
 
-**Complete SQ-to-register map.** The `SQ-*` namespace is invisible to
-`scripts/check_work_linkage.py` today, so this table is the audit surface. That is an interim state,
-not the intended one: `docs/planning/plan-manifest.toml` does not exist on `main` yet (it lands with
-the plan-manifest status-model work), so `SQ-*` cannot be registered as a machine-checkable namespace
-from this PR. **Follow-up**: register `SQ-*` in `plan-manifest.toml` when that file lands, and drop
-this table's audit role at that point. Until then, a change to the table below is a change to the
-only linkage record that exists.
+**Complete SQ-to-register map.** The `SQ-*` namespace is registered in
+[`plan-manifest.toml`](plan-manifest.toml)'s `[namespaces.sq]` table, so `scripts/check_work_linkage.py`
+validates every id below against that pattern and checks the table for duplicates the same way it
+validates the other four id namespaces. The "Register / source" column stays freeform prose, not
+machine-checked; this table is still the audit surface for where each `SQ-*` item's scheduling record
+lives, and a change to it is a change to the only linkage record that exists for this namespace.
 
 | SQ | Register / source | SQ | Register / source |
 | --- | --- | --- | --- |
