@@ -256,7 +256,7 @@ async def test_consent_requires_policy_version_and_signer_name(
 async def test_consent_requires_residence_country_and_adulthood_attested(
     client: AsyncClient, seed: Seed
 ) -> None:
-    """accepted=True with policy_version/signer_name but no O-117/O-119 fields is rejected.
+    """accepted=True with policy_version/signer_name but no O-117/O-119 is rejected.
 
     The pre-existing consent_* quartet being complete is not enough: O-117
     (residence_country) and O-119 (adulthood_attested) are new independently
@@ -296,6 +296,115 @@ async def test_consent_rejects_malformed_country_code(
         },
     )
     assert resp.status_code == 422
+
+
+async def test_consent_rejects_false_adulthood_attested(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """adulthood_attested=false alongside accepted=true is rejected (422).
+
+    Mirrors test_consent_requires_residence_country_and_adulthood_attested,
+    but for an explicit False rather than an omitted field: _record_consent
+    treats anything other than an explicit True as "not attested" (never
+    coerced from truthiness).
+    """
+    _ = seed
+    resp = await client.post(
+        _ONBOARDING,
+        headers=auth("not-adult-guardian"),
+        json={
+            "consent": {
+                "accepted": True,
+                "policy_version": "2026-07",
+                "signer_name": "Jane A. Guardian",
+                "residence_country": "US",
+                "adulthood_attested": False,
+            }
+        },
+    )
+    assert resp.status_code == 422
+
+
+async def test_consent_rejects_empty_country_code(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """An empty residence_country string is rejected at the Pydantic boundary (422)."""
+    _ = seed
+    resp = await client.post(
+        _ONBOARDING,
+        headers=auth("empty-country-guardian"),
+        json={
+            "consent": {
+                "accepted": True,
+                "policy_version": "2026-07",
+                "signer_name": "Jane A. Guardian",
+                "residence_country": "",
+                "adulthood_attested": True,
+            }
+        },
+    )
+    assert resp.status_code == 422
+
+
+async def test_consent_rejects_unassigned_country_code(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A syntactically valid but unassigned alpha-2 code is rejected (422).
+
+    "ZZ" passes the two-letter format regex but names no real ISO 3166-1
+    country; ResidenceCountry's normalizer must reject it against
+    ASSIGNED_RESIDENCE_COUNTRY_CODES, not just the format check (the
+    ck_user_residence_country_format CHECK at rest would let it through).
+    """
+    _ = seed
+    resp = await client.post(
+        _ONBOARDING,
+        headers=auth("unassigned-country-guardian"),
+        json={
+            "consent": {
+                "accepted": True,
+                "policy_version": "2026-07",
+                "signer_name": "Jane A. Guardian",
+                "residence_country": "ZZ",
+                "adulthood_attested": True,
+            }
+        },
+    )
+    assert resp.status_code == 422
+
+
+async def test_consent_normalizes_whitespace_padded_lowercase_country_code(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """A whitespace-padded, lowercase country code is trimmed and uppercased.
+
+    Positive counterpart to the rejection tests above: " us " is a valid
+    submission, not a malformed one, once _normalize_residence_country strips
+    and uppercases it.
+    """
+    _ = seed
+    subject = "padded-lowercase-country-guardian"
+    resp = await client.post(
+        _ONBOARDING,
+        headers=auth(subject),
+        json={
+            "consent": {
+                "accepted": True,
+                "policy_version": "2026-07",
+                "signer_name": "Jane A. Guardian",
+                "residence_country": " us ",
+                "adulthood_attested": True,
+            }
+        },
+    )
+    assert resp.status_code == 201
+
+    async with sessions() as session:
+        user = await session.scalar(select(User).where(User.authn_subject == subject))
+    assert user is not None
+    assert user.residence_country == "US"
 
 
 async def test_onboarding_records_consent_once_and_is_idempotent(
