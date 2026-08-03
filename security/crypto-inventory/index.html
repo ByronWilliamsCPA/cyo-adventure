@@ -3283,7 +3283,7 @@ token/signing scheme must update this file in the same PR.</p>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
 <p>The application performs almost no cryptography itself. It verifies JWTs issued by Supabase,
 computes SHA-256 fingerprints for non-security integrity checks, and delegates all TLS
-termination to infrastructure (Cloudflare and the Pangolin/nginx layer in <code>homelab-infra</code>).
+termination to infrastructure (Cloudflare at the edge, then Traefik in <code>homelab-infra</code>).
 Quantum-risk priorities per ADR-013: key-exchange legs first (harvest-now-decrypt-later),
 signatures deferred.</p>
 <table>
@@ -3319,21 +3319,21 @@ signatures deferred.</p>
 </tr>
 <tr>
 <td>3</td>
-<td>Edge to origin (Tunnel/Pangolin)</td>
-<td>TLS</td>
-<td>Classical today</td>
+<td>Edge to origin (Cloudflare to Traefik)</td>
+<td>TLS 1.3</td>
+<td>Hybrid X25519MLKEM768</td>
 <td>homelab-infra</td>
 <td>HNDL</td>
-<td>Target: X25519MLKEM768</td>
+<td>Hybrid since 2026-08-02</td>
 </tr>
 <tr>
 <td>4</td>
-<td>Pangolin to backend</td>
-<td>Plain HTTP (internal)</td>
-<td>none</td>
+<td>Charon to homelab, then to app</td>
+<td>WireGuard, then internal TLS/HTTP</td>
+<td>Curve25519 (WireGuard)</td>
 <td>homelab-infra</td>
-<td>n/a</td>
-<td>Trusted network segment</td>
+<td>HNDL</td>
+<td>No WireGuard PQ option yet</td>
 </tr>
 <tr>
 <td>5</td>
@@ -3408,17 +3408,37 @@ signatures deferred.</p>
   JOSE registration, PyJWT, and a header-size capacity test; ML-DSA-44 signatures are ~2.4 KB).</li>
 </ul>
 <h2 id="2-tls-legs">2. TLS legs<a class="headerlink" href="#2-tls-legs" title="Permanent link">&para;</a></h2>
-<p>Documented chain (<code>docs/architecture/deployment.md</code>): Cloudflare (Tunnel) or Tailscale into
-Pangolin, which terminates TLS and forwards plain HTTP to FastAPI on port 8000; an nginx rung
-serves the R1 internal-web tier. No file in this repo pins TLS versions, cipher suites, or
-groups; that is deliberate and lives in <code>homelab-infra</code> plus the Cloudflare dashboard.</p>
+<p>Documented chain (<code>docs/architecture/deployment.md</code>, corroborated by <code>homelab-infra</code>): Cloudflare's
+proxied DNS points at the Charon VPS, and Cloudflare reaches it <strong>over TLS on 443</strong>. Public TLS is
+terminated by <strong>Traefik on Charon</strong> (<code>services/pangolin/vps/docker-compose.yml</code>, <code>websecure</code>
+entrypoint on <code>:443</code>), not by Pangolin, which is an HTTP service behind that Traefik. Only inside
+Charon does the traffic enter the WireGuard tunnel (Gerbil on the VPS to Newt on the docker host),
+which carries already-decrypted TCP; a second Traefik on the docker host re-terminates TLS and
+forwards to nginx and to FastAPI on port 8000. LAN clients bypass Cloudflare entirely via
+split-horizon DNS plus mTLS. There is no <code>cloudflared</code> process in this stack. No file in this repo
+pins TLS versions, cipher suites, or groups; that is deliberate and lives in <code>homelab-infra</code> plus
+the Cloudflare dashboard.</p>
+<p>The distinction between the two legs is not pedantry: they fail differently, and conflating them
+hides the failure that actually occurred. Cloudflare to Charon is a TLS negotiation whose group is
+chosen by Traefik's Go version; Charon to homelab is WireGuard, whose posture is fixed by the
+protocol and has no group to negotiate.</p>
 <ul>
 <li><strong>Client to edge</strong>: hybrid X25519MLKEM768 by default (Cloudflare edge, modern browsers).</li>
-<li><strong>Edge to origin</strong>: keep <code>cloudflared</code> current for tunnel PQC; Pangolin (Go) picks up
-  X25519MLKEM768 from Go 1.24+ builds; nginx needs an OpenSSL 3.5+ build. Verification
-  (negotiated-group check) is the <code>homelab-infra</code> acceptance test.</li>
+<li><strong>Edge to origin</strong>: TLS, and <strong>now hybrid</strong>. Cloudflare offers origins only post-quantum groups
+  (<code>0x11ec</code> X25519MLKEM768 and <code>0xfe32</code>). The Traefik build then running on Charon (v3.4.0,
+  Go 1.23) supported neither, answered with TLS alert 40, and Cloudflare surfaced that as HTTP
+  525: on 2026-08-02 both <code>cyo</code> and <code>cyo-staging</code> were publicly unreachable until Charon's Traefik
+  was moved to v3.7.10. Verified
+  2026-08-02 against the origin directly:
+  <code>openssl s_client -connect 66.42.78.207:443 -servername cyo.williamshome.family
+  -groups X25519MLKEM768 -tls1_3</code> returns <code>Negotiated TLS1.3 group: X25519MLKEM768</code>. This is the
+  one leg where a routine version floor is load-bearing for availability, not just for posture.</li>
+<li><strong>Charon to homelab</strong>: Newt/Gerbil (WireGuard), so its post-quantum posture is WireGuard's, not
+  a TLS group, and it is not addressed by keeping any Cloudflare daemon current. WireGuard has no
+  standardized hybrid handshake in this deployment, so this leg stays classical (Curve25519) and
+  is deferred under ADR-013's key-exchange-first ordering.</li>
 <li><strong>Backend egress</strong> (<code>httpx</code>): OpenRouter/Anthropic/Gemini/Supabase JWKS fetches use the
-  container's OpenSSL defaults. Runtime image <code>dhi-python:3.12-debian13</code> ships OpenSSL 3.5.x,
+  container's OpenSSL defaults. Runtime image <code>dhi-python:3.14-debian13</code> ships OpenSSL 3.5.x,
   so hybrid groups are offered when the far end supports them; the 3.5 floor is asserted in
   CI by the <code>fips-runtime-parity</code> and <code>fips-image-floor</code> jobs (see section 7).</li>
 <li><strong>Ollama leg</strong>: <code>src/cyo_adventure/generation/provider.py</code> builds
@@ -3484,14 +3504,26 @@ MD5/SHA-1 anywhere (enforced by <code>scripts/check_fips_compatibility.py</code>
 <tr>
 <td>Runtime base image</td>
 <td>Debian 13</td>
-<td><code>dhi-python:3.12-debian13</code></td>
+<td><code>dhi-python:3.14-debian13</code></td>
 <td>OpenSSL 3.5.x (ML-KEM groups)</td>
+</tr>
+<tr>
+<td>Traefik on Charon (homelab-infra)</td>
+<td>&gt;= 3.6 (Go 1.24+)</td>
+<td><code>v3.7.10</code> running; repo pins <code>3.6</code></td>
+<td>Terminates the Cloudflare leg; below the floor the site is <strong>down</strong>, not merely classical</td>
+</tr>
+<tr>
+<td>Traefik on docker host (homelab-infra)</td>
+<td>&gt;= 3.6 (Go 1.24+)</td>
+<td><code>dhi-traefik:3.6-debian13</code></td>
+<td>X25519MLKEM768 default in crypto/tls</td>
 </tr>
 <tr>
 <td>Pangolin/Go proxies (homelab-infra)</td>
 <td>Go 1.24+ builds</td>
 <td>verify in homelab-infra</td>
-<td>X25519MLKEM768 default in crypto/tls</td>
+<td>Behind Charon Traefik; no public TLS termination</td>
 </tr>
 <tr>
 <td>nginx (homelab-infra)</td>
@@ -3500,10 +3532,10 @@ MD5/SHA-1 anywhere (enforced by <code>scripts/check_fips_compatibility.py</code>
 <td>ML-KEM group support</td>
 </tr>
 <tr>
-<td><code>cloudflared</code> (homelab-infra)</td>
+<td>Newt/Gerbil WireGuard (homelab-infra)</td>
 <td>current</td>
 <td>verify in homelab-infra</td>
-<td>Tunnel PQC support</td>
+<td>Charon-to-homelab leg; WireGuard PQ posture, not TLS groups</td>
 </tr>
 </tbody>
 </table>
@@ -3530,9 +3562,9 @@ MD5/SHA-1 anywhere (enforced by <code>scripts/check_fips_compatibility.py</code>
   is parametrized via <code>FIPS_STDLIB_OPENSSL_FLOOR</code> (3.0 on ordinary hosts, whose uv-managed
   interpreters statically link OpenSSL 3.0.x). Two CI jobs in <code>fips-compatibility.yml</code> raise
   it to the ML-KEM-capable line: <code>fips-runtime-parity</code> runs the assertion suite on the
-  Debian 13 python line (<code>python:3.12-slim-trixie</code>, same distro OpenSSL 3.5.x as the
+  Debian 13 python line (<code>python:3.14-slim-trixie</code>, same distro OpenSSL 3.5.x as the
   hardened runtime base) with the floor at 3.5, and <code>fips-image-floor</code> executes a shell-free
-  <code>python -c</code> check inside the pinned <code>dhi-python:3.12-debian13</code> digest itself. A base-image
+  <code>python -c</code> check inside the pinned <code>dhi-python:3.14-debian13</code> digest itself. A base-image
   digest bump that regressed below OpenSSL 3.5 now fails CI (<code>Dockerfile</code> is in the
   workflow's trigger paths).</li>
 <li><code>core/config.py</code> startup validators fail the boot on forgeable JWT allowlist values.</li>
@@ -3567,7 +3599,7 @@ MD5/SHA-1 anywhere (enforced by <code>scripts/check_fips_compatibility.py</code>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 17, 2026 17:52:43 UTC">July 17, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 05:00:44 UTC">August 3, 2026</span>
   </span>
 
     

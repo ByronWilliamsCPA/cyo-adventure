@@ -2998,6 +2998,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#amendment-2026-08-02-there-is-no-cloudflare-tunnel-and-the-edge-leg-is-now-hybrid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Amendment (2026-08-02): there is no Cloudflare Tunnel, and the edge leg is now hybrid
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tldr" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3252,11 +3263,34 @@
 
 <h1 id="adr-013-hybrid-post-quantum-cryptography-readiness">ADR-013: Hybrid post-quantum cryptography readiness<a class="headerlink" href="#adr-013-hybrid-post-quantum-cryptography-readiness" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Accepted (2026-07-11)
+<p><strong>Status</strong>: Accepted (2026-07-11; amended 2026-08-02, see Amendment below)
 <strong>Date</strong>: 2026-07-11
 <strong>Relates to</strong>: <a href="../adr-009-supabase-platform/">ADR-009</a> (Supabase auth and JWKS verification),
 <a href="../adr-004-homelab-first-deployment/">ADR-004</a> (deployment topology and the external TLS layer)</p>
 </blockquote>
+<h2 id="amendment-2026-08-02-there-is-no-cloudflare-tunnel-and-the-edge-leg-is-now-hybrid">Amendment (2026-08-02): there is no Cloudflare Tunnel, and the edge leg is now hybrid<a class="headerlink" href="#amendment-2026-08-02-there-is-no-cloudflare-tunnel-and-the-edge-leg-is-now-hybrid" title="Permanent link">&para;</a></h2>
+<p>The <code>cloudflared</code>/"Cloudflare Tunnel" references in this ADR describe infrastructure the
+deployment no longer uses; a security review flagged the drift. They appear in <strong>TL;DR</strong>,
+<strong>Context &gt; Constraints</strong>, <strong>Decision item 2</strong>, and <strong>Consequences &gt; Technical Debt</strong>. They do not
+appear in the Implementation section.</p>
+<p>The actual chain: Cloudflare's proxied DNS points at the Charon VPS and reaches it over <strong>TLS on
+443</strong>, where <strong>Traefik on Charon terminates</strong>; only inside Charon does traffic enter the WireGuard
+tunnel (Gerbil to Newt) to the homelab, where a second Traefik re-terminates. Pangolin sits behind
+Charon's Traefik as an HTTP service and does not terminate public TLS. There is no <code>cloudflared</code>
+process anywhere in the stack. LAN clients bypass Cloudflare entirely through split-horizon DNS
+(an Unbound override routing straight to the homelab) plus mTLS. Tailscale is likewise not in this
+path.</p>
+<p><strong>The decision itself is unchanged, and its target has now been met on the leg that matters.</strong>
+<code>X25519MLKEM768</code> is negotiated on the Cloudflare-to-origin leg as of 2026-08-02, verified directly
+against the origin. Getting there was not routine: Cloudflare now offers origins only post-quantum
+groups, the Traefik build then running on Charon supported none of them, and the resulting TLS
+alert 40 took both <code>cyo</code> and <code>cyo-staging</code> publicly offline until Traefik was moved to v3.7.10.
+That makes the Go/Traefik version floor an availability control on this leg, not merely a posture
+one; see <code>docs/security/crypto-inventory.md</code> section 2 and its dependency-floor table.</p>
+<p>The one voided item is the "keep <code>cloudflared</code> current" tracking entry in Technical Debt, since
+there is no <code>cloudflared</code> to keep current. The sections below are left as originally written
+rather than silently rewritten, following the amendment convention used in ADR-003, ADR-005,
+ADR-007, ADR-009, ADR-015, and ADR-020; do not action the <code>cloudflared</code> items in them.</p>
 <h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
 <p>Adopt a key-exchange-first hybrid post-quantum posture. Hybrid X25519+ML-KEM-768 key agreement
 (the <code>X25519MLKEM768</code> TLS group) is the target for every TLS leg we control; enabling it is an
@@ -3335,7 +3369,7 @@ from an algorithm broken classically.</p>
 <li>
 <p><strong>Dependency floors.</strong> <code>cryptography</code> &gt;= 45 (ML-DSA/SLH-DSA primitives; currently 49.0.0 via
    <code>pyjwt[crypto]</code>), runtime container on Debian 13 (OpenSSL 3.5.x, already true of
-   <code>dhi-python:3.12-debian13</code>), and Go 1.24+ builds for the Go proxies in <code>homelab-infra</code>.
+   <code>dhi-python:3.14-debian13</code>), and Go 1.24+ builds for the Go proxies in <code>homelab-infra</code>.
    Floors are recorded in the cryptographic inventory; downgrades are treated as regressions.</p>
 </li>
 <li>
@@ -3461,7 +3495,7 @@ routine instead of an emergency.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 12, 2026 03:08:39 UTC">July 12, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 05:00:44 UTC">August 3, 2026</span>
   </span>
 
     

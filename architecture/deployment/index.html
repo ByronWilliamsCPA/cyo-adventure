@@ -3319,9 +3319,13 @@
   <h1>Deployment</h1>
 
 <p>CYO Adventure deploys to a self-hosted homelab using Docker containers orchestrated
-by Dockge (ADR-004: homelab-first deployment). External access is secured by Pangolin
-zero-trust reverse proxy (Tailscale or Cloudflare Tunnel). Supabase Auth provides OIDC
-identity for the guardian and admin roles (ADR-009; children authenticate via
+by Dockge (ADR-004: homelab-first deployment). External access is secured by the Pangolin
+zero-trust stack on the Charon VPS: Cloudflare's proxied DNS reaches Charon over TLS on 443,
+Traefik there terminates it, and the traffic then crosses a WireGuard reverse tunnel
+(Gerbil to Newt) into the homelab, where a second Traefik re-terminates and routes to the
+containers. LAN clients bypass Cloudflare entirely via split-horizon DNS and reach the
+homelab directly over mTLS. Supabase Auth
+provides OIDC identity for the guardian and admin roles (ADR-009; children authenticate via
 backend-minted scoped sessions, not Supabase), and the operational database is
 Supabase Postgres, reached through the session pooler (ADR-009 decision 2; R1 Task 1.7,
 cut over 2026-07-05).</p>
@@ -3377,9 +3381,21 @@ homelab), not a container in this stack; <code>cyo-backend</code> and <code>cyo-
 the internet through Supabase's session pooler (<code>aws-0-us-east-1.pooler.supabase.com:5432</code>,
 session mode). See the Network Architecture section below.</p>
 <h2 id="network-architecture">Network Architecture<a class="headerlink" href="#network-architecture" title="Permanent link">&para;</a></h2>
-<p>All family device traffic enters through <strong>Pangolin</strong>, which terminates TLS and
-forwards plain HTTP to the backend container on port 8000. Pangolin runs as its own
-container in the stack and handles the zero-trust tunnel to the homelab.</p>
+<p>All family device traffic enters through the <strong>Pangolin</strong> zero-trust stack, which runs on the
+Charon VPS rather than in the homelab. The hops, in order:</p>
+<ol>
+<li><strong>Cloudflare to Charon</strong>, TLS on 443 (proxied DNS). <strong>Traefik on Charon terminates this
+   TLS</strong>, not Pangolin; Pangolin itself is an HTTP service behind that Traefik. This leg
+   negotiates the hybrid <code>X25519MLKEM768</code> group (see <code>docs/security/crypto-inventory.md</code>
+   section 2), and Traefik's version floor here is load-bearing for availability.</li>
+<li><strong>Charon to homelab</strong>, a WireGuard reverse tunnel (Gerbil on the VPS, Newt on the docker
+   host) carrying already-decrypted TCP. There is no <code>cloudflared</code>/Cloudflare Tunnel process
+   anywhere in this stack, and no Tailscale in this path.</li>
+<li><strong>Inside the homelab</strong>, a second Traefik re-terminates TLS and routes by <code>Host()</code> to the
+   service containers, which listen on plain HTTP (FastAPI on port 8000).</li>
+</ol>
+<p>LAN clients skip hops 1 and 2 entirely: split-horizon DNS (an Unbound override) points them
+straight at the homelab, where they authenticate with mTLS.</p>
 <p>The R1 internal-web deploy (<code>services/cyo-adventure/</code> in the separate
 <code>ByronWilliamsCPA/homelab-infra</code> repo) is a distinct rung from this ADR-004 topology:
 there, nginx is the ingress point on <code>docker-host</code>, reverse-proxying <code>/api</code> to the
@@ -3530,7 +3546,7 @@ future image build were narrowed to copy just <code>src/</code>.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 26, 2026 11:32:42 UTC">July 26, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 05:00:44 UTC">August 3, 2026</span>
   </span>
 
     
