@@ -5,7 +5,8 @@ status: published
 owner: core-maintainer
 purpose: "CYO Adventure's instantiation of the portable assurance spine: which of the seventeen
   categories and which regulatory regimes apply to this product, the audited state of existing
-  gates, and the register rows with their verification methods and phase homes."
+  gates, and the register rows with their verification methods. Phase homes are declared but not
+  yet assigned; see the Contract section."
 tags:
   - security
   - compliance
@@ -35,6 +36,14 @@ Automated verifications run report-only: they write a status and a scheduled sum
 zero. Every automated check enters at status *mechanism unproven* and leaves only once a negative
 control has tripped it.
 
+Applied to this document as it currently stands, that contract convicts it: **every one of the 116
+rows carries `Phase home: unassigned`, so by the register's own definition all 116 are open
+defects.** This is stated rather than left to be inferred, because a register that defines a defect
+and then quietly exhibits it everywhere is the hollow artifact SP-17 is about. It is not a reason
+to soften the definition. Nothing can be assigned a phase home until the `UW-*` linkage in
+prerequisite 1 can cite these IDs, which is why that prerequisite is first and why this file claims
+no verification status beyond *drafted*.
+
 ## Category applicability
 
 All seventeen categories apply. None is N/A for this product, which is itself worth noting: a
@@ -44,11 +53,11 @@ planned store distribution touches the whole spine.
 Sub-scope exclusions recorded rather than dropped:
 
 | Excluded | Category | Reason | Reassessment trigger |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | ASVS V17 WebRTC | SP-03, SP-06 | No peer-to-peer media | Any voice or video reading feature |
 | AISVS C1 training data | SP-14 | No training or fine-tuning; hosted inference only | Any fine-tune or LoRA |
 | AISVS C10 MCP | SP-06 | MCP is development tooling, not in the product | Any MCP surface shipped to users |
-| AISVS C8 embeddings | SP-02, SP-12 | **Unconfirmed.** `diversity/` is believed to use structural and lexical similarity, not embeddings | Confirm against the code; any vector store |
+| AISVS C8 embeddings | SP-02, SP-12 | **Verified 2026-08-02.** `diversity/` computes hand-built structural feature vectors compared by Canberra distance, and cosine similarity over token-count `Counter` objects, which is a bag-of-words measure. It imports no ML or embedding library and holds no learned representation, so there is no embedding or vector store to govern | Any introduction of a learned embedding, a vector store, or an ANN index anywhere in the pipeline |
 | MASVS | SP-05 | No native or wrapped mobile client yet | Mobile wrapper enters design (R2) |
 | PCI DSS | SP-08 | No payment processing | Any payment, subscription, or in-app purchase |
 
@@ -84,7 +93,7 @@ government contract clauses.
 ### Regimes that attach now
 
 | Regime | Why | Register rows |
-|---|---|---|
+| --- | --- | --- |
 | **FTC Act §5** | Any consumer-facing product. Security and privacy claims in the notice become enforceable representations | O-38, O-62, O-94 |
 | **COPPA** (compliance date 22 Apr 2026, therefore live) | Children under 13, child-directed service | O-35, O-36, O-61, O-62, O-31 |
 | **State breach notification** | Attaches with the first non-household user | O-92 |
@@ -96,7 +105,7 @@ Recorded now with the trigger, so that crossing it is a scheduling decision rath
 discovery. This is the same treatment GDPR gets: written down before it binds.
 
 | Regime | Trigger | Status |
-|---|---|---|
+| --- | --- | --- |
 | **State comprehensive privacy** (20 states as of Feb 2026) | First user outside the operator's household in a covered state, above any applicable threshold | O-97 jurisdiction matrix owns the determination |
 | **State minors' design codes** (CA AADC, MD, NE, VT, CT, TX SCOPE, FL HB 3, UT) | Public launch. Track enactment and litigation status separately; several are partially enjoined | O-94, O-97 |
 | **App store accountability acts** (TX SB 2420, UT, LA, AL) | Store distribution at R2/R3. Duties land on the **developer**: age rating, ingest store age and consent signals, re-trigger consent on significant change | O-98 |
@@ -158,7 +167,7 @@ Practical hedge: keep the UK out of scope by design via the jurisdiction signal 
 of them re-opens the classification. Tracked as O-118.
 
 | Structure | Where | Why it matters |
-|---|---|---|
+| --- | --- | --- |
 | Admin-gated connection creation | `api/family_connections.py` `_require_admin` | An auto-accepting invite link is exactly Recital 14's "admitted without a human decision" |
 | Dual guardian consent, both sides | `_is_active` requires both timestamps | One-sided push weakens the closed-group characterisation |
 | No discovery surface | absence of any family or profile search | A directory makes the recipient set potentially unlimited at point of search |
@@ -172,12 +181,12 @@ of them re-opens the classification. Tracked as O-118.
 Audited 2026-08-02 against twelve areas. The "can it fail" column is the one that matters.
 
 | Area | Verdict | Can it fail? |
-|------|---------|--------------|
+| ------ | --------- | -------------- |
 | Privacy / RLS correctness | PARTIAL | Yes in CI, but RLS is a no-op in production |
 | Authentication edge cases | PARTIAL | Yes; role-change and concurrent-session slices absent |
 | Duplicate / divergent workflows | PARTIAL | Mostly no |
 | DB structure and field types | COVERED | Yes |
-| Query efficiency / N+1 | PARTIAL | Yes for 2 of 28 routers |
+| Query efficiency / N+1 | PARTIAL | Yes for 2 of 32 routers |
 | Error handling and logging | PARTIAL | Yes; one test pins a gap rather than closing it |
 | Hardcoded credentials / keys | PARTIAL | Local pre-commit only; no CI secret scan |
 | Security response headers | PARTIAL | Yes for FastAPI; no gate on the nginx edge |
@@ -197,9 +206,12 @@ First tranche of work. Each invalidates multiple rows at once.
   from the PostgREST anon path, verified closed in `control-inheritance.md` Plane B; the gap here
   is the loss of defence-in-depth behind an application-layer authorization bug. Status:
   **evidence invalid**.
-- **Scoping exists for 3 of ~20 RLS tables.** `20260724120000_scoped_rls_tier1_family_scoping.sql`
-  scopes `child_profile`, `story_request`, `device_grant`. The other 17 carry a blanket
-  `USING(true)`; their privacy rests entirely on the FastAPI layer.
+- **Scoping exists for 3 of 25 RLS tables.** `20260724120000_scoped_rls_tier1_family_scoping.sql`
+  scopes `child_profile`, `story_request`, `device_grant`. The other 22 carry a blanket
+  `USING(true)`; their privacy rests entirely on the FastAPI layer. The denominator is 25
+  distinct tables carrying `ENABLE ROW LEVEL SECURITY` across `supabase/migrations/` (28 raw
+  statements, 25 unique tables, since some are enabled twice across migrations), which matches
+  `control-inheritance.md` row B1.
 - **The pre-push hook tier does not exist.** `.git/hooks/` contains only `pre-commit`, and
   `default_install_hook_types` is absent. Nine hooks staged `pre-push` have never run:
   `detect-secrets`, `bandit-full`, `basedpyright`, `frontend-typecheck`, `yamllint`, `qlty-check`,
@@ -229,13 +241,31 @@ First tranche of work. Each invalidates multiple rows at once.
   method rather than when a link is broken. Two effects, both bad: real link rot is indistinguishable
   from third-party flakiness, and the standing incentive is to re-run until green, which is
   precisely how a gate stops being read. Status: **evidence invalid**.
-- **No CI-side secret scanning.** No trufflehog, gitleaks, or detect-secrets in any workflow.
-  Detection is one local commit-stage hook, bypassable by `--no-verify` or by a clone that never
-  ran `pre-commit install`. Fails **AISVS AC.4.2**.
-- **CodeQL does not run.** `CLAUDE.md` states `security-analysis.yml` runs it; that workflow runs
-  Bandit and OSV-Scanner only, and the repo-wide `github/codeql-action` uses are `upload-sarif`
-  steps. There is no SAST over the TypeScript tree at all. Also fails **AISVS AC.4.2**. The
-  documentation must be corrected as well as the gap closed.
+- **Documentation misdescribes where CodeQL and secret scanning are configured; both controls
+  run.** An earlier revision of this section recorded "CodeQL does not run" and "no CI-side secret
+  scanning" as AISVS AC.4.2 failures. Both were wrong, and wrong for the same reason: the method
+  was a grep of `.github/workflows/`, and neither control is configured in a workflow file.
+  Verified against the repository's own configuration and against this PR's checks:
+  - **CodeQL runs via code scanning default setup**, state `configured`, `extended` query suite,
+    over `javascript-typescript`, `typescript`, `python`, and `actions`. Default setup has no
+    workflow file by design, which is precisely why the grep missed it. The claim that there is
+    "no SAST over the TypeScript tree" was the inverse of the truth.
+  - **Secret scanning, push protection, and validity checks are all enabled** at repository level,
+    and `GitGuardian Security Checks` runs on pull requests. Push protection is strictly stronger
+    than a CI-stage scan: it refuses the push rather than reporting after the secret is already in
+    history.
+
+  The residual finding is documentation, not coverage: `CLAUDE.md` states that
+  `security-analysis.yml` runs CodeQL, and it does not; that workflow runs Bandit and OSV-Scanner,
+  and the repo-wide `github/codeql-action` uses are `upload-sarif` steps. Correct `CLAUDE.md` to
+  describe default setup. **AISVS AC.4.2 is met**, not failed.
+
+  This entry is retained rather than deleted because the error is the instructive part. A control
+  configured outside the artifact being searched is invisible to a search of that artifact, and
+  reporting its absence as a finding is the exact failure mode the verification vantage rule in
+  `control-inheritance.md` exists to prevent. Applied to a control plane rather than a network
+  boundary, the rule reads: establish where a control is configured before concluding from one
+  vantage that it is not configured at all.
 - **Source maps are served in production.** `frontend/vite.config.ts:188` `sourcemap: 'hidden'`
   emits the `.map` files and only omits the `sourceMappingURL` comment; `frontend/Dockerfile:101`
   copies `dist/` wholesale; `frontend/nginx.conf:69`'s asset regex does not match `.map`, so they
@@ -254,25 +284,225 @@ First tranche of work. Each invalidates multiple rows at once.
 
 ## Register rows
 
-Seventy-eight items. Provisional `O-nn` IDs pending the `SQ-*` reconciliation. Twelve are deferred
-triggers, so the active count is sixty-six, which is **above** the ~60 ceiling one maintainer can
-review meaningfully. Trimming is the maintainer's decision, not a silent truncation.
+One hundred and sixteen items, carrying provisional `O-nn` IDs that become `SEC-nnn` when the
+namespace lands. Three are deferred triggers (O-76, O-98, O-99), so the active count is one hundred
+and thirteen, which is **far above** the ~60 ceiling one maintainer can review meaningfully.
+Trimming is the maintainer's decision, not a silent truncation.
+
+Each row carries the fifteen fields the spine's row schema requires. Where a field could not be
+derived from the row's own check, the enclosing section, or this document's audit sections, it
+records an honest placeholder (`not determined`, `none`, `unassigned`, `not verified`) rather than
+a plausible-looking value. That is deliberate: a register of invented failure oracles reads as
+verified and is not, which is the exact defect SP-17 exists to catch. The placeholders are the
+work queue. Every row's `Phase home` is `unassigned` today, because no `UW-*` row can cite these
+IDs until the namespace in prerequisite 1 lands.
+
+Earlier revisions of this paragraph said "seventy-eight items ... twelve deferred ... sixty-six
+active", and the lifecycle section separately recorded a decision to accept "81 rows". All three
+figures were wrong, and the error was load-bearing rather than cosmetic: it presented the register
+as six rows over a review ceiling it is actually fifty-three rows over, and it recorded a
+row-budget decision whose stated purpose was to prevent a budget being silently exceeded. The
+authoritative count is a count of `#### O-<digits>` headings within this section: 116 rows, IDs
+running O-01 to O-119 with O-63, O-64, and O-65 unassigned. Recount with
+`grep -cE '^#### O-[0-9]+$'`. Note that O-117 and O-119 also appear as the first cell of the
+initial-build commitments table below; those are cross-references to rows defined here, not
+additional rows, and the heading-anchored pattern above deliberately excludes them.
 
 ### SP-17 Assurance Validity and Change Lifecycle
 
 Listed first because it gates the credibility of every other row. Legal basis GDPR Art. 32(1)(d);
 US equivalents are COPPA §312.8 ongoing safeguard testing and annual evaluation.
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-27 | MANUAL | Every verification method in this register has a deliberate failing fixture proving it can report a failure. Checks with no such fixture hold status *mechanism unproven* |
-| O-66 | STATIC | Every automated check records its production control target, execution trigger, evidence artifact, failure oracle, and owner; a quarterly query finds rows missing any field |
-| O-67 | DYNAMIC | Each check's execution path is **observed, not inferred**: the hook fired, the workflow ran on the relevant event, against the right revision, over the right paths, with exit code propagated |
-| O-68 | RUNTIME-CONFIG | Each deployment records a diff of vendor control-plane settings against the last known-good baseline, so dashboard drift is visible |
-| O-69 | MANUAL | Quarterly, a named maintainer samples control evidence from source to deployed effect and records whether that evidence could have been produced while the protected property was false |
-| O-70 | STATIC | Reassessment is triggered by **affected control surface, not by authorship**. Triggers: identity, authorization, tenancy or schema change; new or changed provider, SDK, dependency, model, prompt, moderation threshold, or parser; change to child-visible storage, sync, logging, or publication state; new data field, purpose, recipient, jurisdiction, or retention rule; control-plane change |
-| O-107 | MANUAL | **AISVS AC.1.1-AC.1.3**: a written AI-assisted-coding workflow names approved tools, prohibited use cases, permitted input data classifications, the SSDLC phases covered, the gates that stay mandatory regardless of AI involvement, and the adversarial scenarios it mitigates |
-| O-108 | MANUAL | **Quarterly US state-law refresh** against the IAPP and Bloomberg trackers, tracking enactment and litigation status separately. The spine's own volatility table makes this the fastest-decaying input to this register |
+#### O-27
+
+- **Category:** SP-17
+- **Framework ref:** not determined
+- **Legal ref:** GDPR Art. 32(1)(d) / COPPA 312.8
+- **Class:** MANUAL
+- **Protected property:** every verification method in this register has a demonstrated ability to
+  report a failure (a deliberate failing fixture exists for it)
+- **Verification target:** this register's own row set and each row's recorded negative-control
+  fixture
+- **Failure oracle:** a row carries a status other than *mechanism unproven* while no deliberate
+  failing fixture is recorded for it
+- **Negative control:** a row entered or promoted with no deliberate failing fixture on record
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Every verification method in this register has a deliberate failing fixture proving it
+  can report a failure. Checks with no such fixture hold status *mechanism unproven*
+
+#### O-66
+
+- **Category:** SP-17
+- **Framework ref:** not determined
+- **Legal ref:** GDPR Art. 32(1)(d) / COPPA 312.8
+- **Class:** STATIC
+- **Protected property:** every automated check's row records its production control target,
+  execution trigger, evidence artifact, failure oracle, and owner
+- **Verification target:** this register's row set, queried for field completeness
+- **Failure oracle:** a quarterly query over the register finds an automated-check row missing its
+  control target, execution trigger, evidence artifact, failure oracle, or owner
+- **Negative control:** a row saved with one of those required fields blank
+- **Trigger:** quarterly
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Every automated check records its production control target, execution trigger,
+  evidence artifact, failure oracle, and owner; a quarterly query finds rows missing any field
+
+#### O-67
+
+- **Category:** SP-17
+- **Framework ref:** not determined
+- **Legal ref:** GDPR Art. 32(1)(d) / COPPA 312.8
+- **Class:** DYNAMIC
+- **Protected property:** each check's execution path is confirmed by observation, not inferred:
+  the hook fired, or the workflow ran on the relevant event, against the right revision, over the
+  right paths, with its exit code propagated
+- **Verification target:** CI workflow run logs and hook execution records for each registered
+  check
+- **Failure oracle:** a check's row is treated as having run while no observed log confirms the
+  hook fired or the workflow ran on the relevant event, revision, and paths with exit code
+  propagated
+- **Negative control:** a check whose hook or workflow did not fire, or fired on the wrong revision
+  or paths, recorded as having run
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Each check's execution path is **observed, not inferred**: the hook fired, the
+  workflow ran on the relevant event, against the right revision, over the right paths, with exit
+  code propagated
+
+#### O-68
+
+- **Category:** SP-17
+- **Framework ref:** not determined
+- **Legal ref:** GDPR Art. 32(1)(d) / COPPA 312.8
+- **Class:** RUNTIME-CONFIG
+- **Protected property:** each deployment records a diff of vendor control-plane settings against
+  the last known-good baseline, so dashboard drift is visible
+- **Verification target:** vendor control-plane settings (dashboards) at each deployment, diffed
+  against the last known-good baseline
+- **Failure oracle:** a deployment occurs with no recorded diff of vendor control-plane settings
+  against the last known-good baseline, or drift exists that no diff surfaced
+- **Negative control:** a control-plane setting changed between deployments with no diff recorded
+- **Trigger:** each deployment
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Each deployment records a diff of vendor control-plane settings against the last
+  known-good baseline, so dashboard drift is visible
+
+#### O-69
+
+- **Category:** SP-17
+- **Framework ref:** not determined
+- **Legal ref:** GDPR Art. 32(1)(d) / COPPA 312.8
+- **Class:** MANUAL
+- **Protected property:** sampled control evidence, traced from source to deployed effect, could
+  not have been produced if the protected property it attests to were actually false
+- **Verification target:** the control-evidence trail from source to deployed effect, for a
+  quarterly sample of rows
+- **Failure oracle:** the quarterly sample finds evidence that could have been produced regardless
+  of whether the protected property was true or false
+- **Negative control:** not determined
+- **Trigger:** quarterly
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Quarterly, a named maintainer samples control evidence from source to deployed effect
+  and records whether that evidence could have been produced while the protected property was false
+
+#### O-70
+
+- **Category:** SP-17
+- **Framework ref:** not determined
+- **Legal ref:** GDPR Art. 32(1)(d) / COPPA 312.8
+- **Class:** STATIC
+- **Protected property:** reassessment of register rows is triggered by which control surface a
+  change affects, not by whether that change was authored by a human or an AI tool
+- **Verification target:** the reassessment-trigger process applied to changes touching identity,
+  authorization, tenancy or schema; provider, SDK, dependency, model, prompt, moderation threshold,
+  or parser; child-visible storage, sync, logging, or publication state; data field, purpose,
+  recipient, jurisdiction, or retention rule; or control-plane configuration
+- **Failure oracle:** a change to one of the listed control surfaces lands without a corresponding
+  reassessment record for the affected register rows
+- **Negative control:** a listed control-surface change merged with no reassessment record
+- **Trigger:** identity, authorization, tenancy or schema change; new or changed provider, SDK,
+  dependency, model, prompt, moderation threshold, or parser; change to child-visible storage,
+  sync, logging, or publication state; new data field, purpose, recipient, jurisdiction, or
+  retention rule; control-plane change
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Reassessment is triggered by **affected control surface, not by authorship**.
+  Triggers: identity, authorization, tenancy or schema change; new or changed provider, SDK,
+  dependency, model, prompt, moderation threshold, or parser; change to child-visible storage,
+  sync, logging, or publication state; new data field, purpose, recipient, jurisdiction, or
+  retention rule; control-plane change
+
+#### O-107
+
+- **Category:** SP-17
+- **Framework ref:** AISVS AC.1.1 to AC.1.3
+- **Legal ref:** GDPR Art. 32(1)(d) / COPPA 312.8
+- **Class:** MANUAL
+- **Protected property:** a written AI-assisted-coding workflow document names approved tools,
+  prohibited use cases, permitted input data classifications, the SSDLC phases it covers, the gates
+  that stay mandatory regardless of AI involvement, and the adversarial scenarios it mitigates
+- **Verification target:** the written AI-assisted-coding workflow document
+- **Failure oracle:** the workflow document does not exist, or is missing one of: approved tools,
+  prohibited use cases, permitted input data classifications, SSDLC phases covered, mandatory
+  gates, or adversarial scenarios mitigated
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** **AISVS AC.1.1-AC.1.3**: a written AI-assisted-coding workflow names approved tools,
+  prohibited use cases, permitted input data classifications, the SSDLC phases covered, the gates
+  that stay mandatory regardless of AI involvement, and the adversarial scenarios it mitigates
+
+#### O-108
+
+- **Category:** SP-17
+- **Framework ref:** not determined
+- **Legal ref:** GDPR Art. 32(1)(d) / COPPA 312.8
+- **Class:** MANUAL
+- **Protected property:** US state privacy-law applicability recorded in this register is refreshed
+  quarterly against the IAPP and Bloomberg trackers, with enactment status tracked separately from
+  litigation status
+- **Verification target:** this register's regulatory-applicability section, cross-checked against
+  the IAPP and Bloomberg law trackers
+- **Failure oracle:** a quarter passes with no recorded refresh against the trackers, or a tracked
+  state-law enactment or litigation change is not reflected in the register within a quarter
+- **Negative control:** not determined
+- **Trigger:** quarterly
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** **Quarterly US state-law refresh** against the IAPP and Bloomberg trackers, tracking
+  enactment and litigation status separately. The spine's own volatility table makes this the
+  fastest-decaying input to this register
 
 O-27 is the register's own health check. This repository has already produced multiple distinct
 silent-pass failures; a register whose checks cannot fail reproduces the exact pathology it exists
@@ -286,15 +516,172 @@ comment does not warrant what a hand-written authorization change warrants.
 The last barrier before content reaches a child. Fails differently from the model layer: through
 mis-defaulted visibility and reviewer incompleteness, not through prompt injection.
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-17 | STATIC + DYNAMIC | No reader-visible node body exists without both a passing validator report and a human approval record, enforced in the read path and confirmed by a data invariant query |
-| O-53 | STATIC | The **schema default** for content visibility is invisible, so a row the application forgets to set is safe |
-| O-52 | DYNAMIC | The reviewer interface exposes every reachable branch, personalization substitution, moderation warning, media asset, and validation exception. Negative control: a hidden unsafe branch inserted into a test artifact must appear to the reviewer. Pattern source AISVS 9.2.2 |
-| O-54 | DYNAMIC | Any post-approval change to text, graph, personalization, media, or policy version invalidates approval and returns the artifact to review |
-| O-55 | DYNAMIC | Moderation classifier timeout, refusal, malformed response, quota exhaustion, or threshold misconfiguration routes to a human and **cannot be represented as approval** |
-| O-71 | STATIC | Approval is bound to an immutable content digest plus reviewer identity, policy version, and timestamp; it cannot be satisfied by replaying a prior approval or by a default-true field |
-| O-72 | DYNAMIC | No child-scoped principal can retrieve a story in any pre-approval state through any path: endpoint, cache, signed URL, offline bundle, notification, or search result |
+#### O-17
+
+- **Category:** SP-15
+- **Framework ref:** AISVS C9.2 (analogy, not citation; see section note below)
+- **Legal ref:** not determined
+- **Class:** DYNAMIC (secondary: STATIC, already named in the Check text as "enforced in the read
+  path")
+- **Protected property:** no reader-visible node body exists without both a passing validator
+  report and a human approval record
+- **Verification target:** the read path's node-visibility enforcement, confirmed by a data
+  invariant query over stored node and approval records
+- **Failure oracle:** the data invariant query finds a reader-visible node body with no passing
+  validator report, or no human approval record
+- **Negative control:** a node body marked reader-visible in test data with no validator report or
+  no approval record attached
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** No reader-visible node body exists without both a passing validator report and a
+  human approval record, enforced in the read path and confirmed by a data invariant query
+
+#### O-53
+
+- **Category:** SP-15
+- **Framework ref:** AISVS C9.2 (analogy, not citation; see section note below)
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** the schema default for content visibility is invisible, so a row the
+  application forgets to set is safe
+- **Verification target:** the schema/migration definition of the content-visibility column's
+  default value
+- **Failure oracle:** the schema default for the content-visibility column is anything other than
+  invisible
+- **Negative control:** a migration or schema change setting the visibility default to visible
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** The **schema default** for content visibility is invisible, so a row the application
+  forgets to set is safe
+
+#### O-52
+
+- **Category:** SP-15
+- **Framework ref:** AISVS 9.2.2 (pattern analogy, not citation)
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** the reviewer interface exposes every reachable branch, personalization
+  substitution, moderation warning, media asset, and validation exception for a story under review
+- **Verification target:** the admin/guardian reviewer interface's rendering of a story under
+  review
+- **Failure oracle:** a reachable branch, personalization substitution, moderation warning, media
+  asset, or validation exception exists in the story but does not appear to the reviewer
+- **Negative control:** a hidden unsafe branch inserted into a test artifact must appear to the
+  reviewer
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** The reviewer interface exposes every reachable branch, personalization substitution,
+  moderation warning, media asset, and validation exception. Negative control: a hidden unsafe
+  branch inserted into a test artifact must appear to the reviewer. Pattern analogy, not a
+  citation: AISVS 9.2.2 is scoped to agent runtimes, and this pipeline is staged RQ jobs (see the
+  section note below)
+
+#### O-54
+
+- **Category:** SP-15
+- **Framework ref:** AISVS C9.2 (analogy, not citation; see section note below)
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** any post-approval change to text, graph, personalization, media, or
+  policy version invalidates the existing approval and returns the artifact to review
+- **Verification target:** the publishing state machine's approval-invalidation logic on edit
+- **Failure oracle:** a post-approval edit to text, graph, personalization, media, or policy
+  version occurs and the artifact remains in an approved or publishable state
+- **Negative control:** an edit made to an approved artifact that does not trigger re-review
+- **Trigger:** any post-approval change to text, graph, personalization, media, or policy version
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Any post-approval change to text, graph, personalization, media, or policy version
+  invalidates approval and returns the artifact to review
+
+#### O-55
+
+- **Category:** SP-15
+- **Framework ref:** AISVS C9.2 (analogy, not citation; see section note below)
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** a moderation classifier timeout, refusal, malformed response, quota
+  exhaustion, or threshold misconfiguration always routes content to a human and can never be
+  represented as approval
+- **Verification target:** the moderation pipeline's error and exception handling path
+- **Failure oracle:** a classifier timeout, refusal, malformed response, quota exhaustion, or
+  threshold misconfiguration results in a state recorded or treated as approval rather than routed
+  to a human
+- **Negative control:** injecting a classifier timeout, malformed response, or quota exhaustion and
+  observing whether the pipeline defaults to an approval-equivalent state
+- **Trigger:** classifier timeout, refusal, malformed response, quota exhaustion, or threshold
+  misconfiguration event
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Moderation classifier timeout, refusal, malformed response, quota exhaustion, or
+  threshold misconfiguration routes to a human and **cannot be represented as approval**
+
+#### O-71
+
+- **Category:** SP-15
+- **Framework ref:** AISVS C9.2 (analogy, not citation; see section note below)
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** approval is bound to an immutable content digest plus reviewer identity,
+  policy version, and timestamp, and cannot be satisfied by replaying a prior approval or by a
+  default-true field
+- **Verification target:** the approval record schema and the code path that checks approval
+  validity
+- **Failure oracle:** an approval is accepted as valid without matching the current content digest,
+  reviewer identity, policy version, and timestamp, for example by replay of a prior approval or a
+  field defaulting to true
+- **Negative control:** replaying a prior approval record against changed content, or a
+  default-true field satisfying the approval check
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Approval is bound to an immutable content digest plus reviewer identity, policy
+  version, and timestamp; it cannot be satisfied by replaying a prior approval or by a default-true
+  field
+
+#### O-72
+
+- **Category:** SP-15
+- **Framework ref:** AISVS C9.2 (analogy, not citation; see section note below)
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** no child-scoped principal can retrieve a story in any pre-approval state,
+  through any path: endpoint, cache, signed URL, offline bundle, notification, or search result
+- **Verification target:** every child-facing retrieval path: API endpoints, caches, signed URLs,
+  offline sync bundles, notifications, and search results
+- **Failure oracle:** a child-scoped principal successfully retrieves pre-approval-state story
+  content through any of the listed paths
+- **Negative control:** a child session attempting to retrieve a not-yet-approved story through
+  each listed path
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** No child-scoped principal can retrieve a story in any pre-approval state through any
+  path: endpoint, cache, signed URL, offline bundle, notification, or search result
 
 AISVS C9.2 is the nearest published anchor for this category. It is an **analogy, not a citation**:
 C9.2 is scoped to agent runtimes and this pipeline is staged RQ jobs. The DTSP Best Practices
@@ -307,17 +694,214 @@ product control, not a CI gate, and is therefore compatible with the no-blocking
 
 ### SP-14 AI and Model Layer
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-14 | STATIC | Untrusted intake text is passed in a data position with delimiters, never concatenated into system-prompt position (AISVS C2.1) |
-| O-15 | STATIC | Content re-entering a later stage (series continuation, mutated skeletons) is re-classified before reuse |
-| O-16 | STATIC | Every provider path (Anthropic, OpenRouter, Ollama, Modal, fallback) terminates in the identical validator plus moderation gate, with no provider-specific shortcut |
-| O-18 | MANUAL | A maintained adversarial corpus runs against live thresholds each release; pass rate recorded with a trend (AISVS C11.1) |
-| O-19 | RUNTIME-CONFIG | Worker egress is allowlisted to approved provider endpoints; child identifiers pseudonymized before crossing the boundary |
-| O-20 | MANUAL | Each enabled provider has a recorded DPA/ZDR posture and a pinned model identifier (AISVS C3.1) |
-| O-56 | DYNAMIC | The admin review dashboard is not an XSS sink for pipeline output. Composite path: guardian prompt injection produces markup in generated text, the validator checks topology and reading level but not markup safety, and it renders on the highest-privilege surface in the system |
-| O-73 | DYNAMIC | Provider timeout, refusal, malformed output, content-filter response, or model removal produces an explicit non-publishable state, never an unmoderated fallback or a partial story |
-| O-74 | RUNTIME-CONFIG | Provider or model changes, including silent hosted-model aliases, trigger regression against the structural, safety, and privacy corpora, retained by exact model version. Also the hook for EU AI Act generated-content disclosure if EU market entry occurs |
+#### O-14
+
+- **Category:** SP-14
+- **Framework ref:** AISVS C2.1
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** untrusted intake text is always passed in a data position with
+  delimiters, never concatenated into system-prompt position
+- **Verification target:** the prompt-construction code paths in `generation/` that assemble LLM
+  system prompts from story-request intake
+- **Failure oracle:** a code path concatenates untrusted intake text directly into system-prompt
+  position rather than a delimited data position
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Untrusted intake text is passed in a data position with delimiters, never concatenated
+  into system-prompt position (AISVS C2.1)
+
+#### O-15
+
+- **Category:** SP-14
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** content re-entering a later pipeline stage (series continuation, mutated
+  skeletons) is re-classified before reuse
+- **Verification target:** the series-continuation and skeleton-mutation code paths that reuse
+  prior content
+- **Failure oracle:** previously generated content is reused at a later stage without being
+  re-classified first
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Content re-entering a later stage (series continuation, mutated skeletons) is
+  re-classified before reuse
+
+#### O-16
+
+- **Category:** SP-14
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** every provider path (Anthropic, OpenRouter, Ollama, Modal, fallback)
+  terminates in the identical validator plus moderation gate, with no provider-specific shortcut
+- **Verification target:** each provider module under `generation/providers/` and its call path
+  into `validator/` and `moderation/`
+- **Failure oracle:** a provider path reaches a publishable or reviewable state without passing
+  through the same validator and moderation gate as the other providers
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Every provider path (Anthropic, OpenRouter, Ollama, Modal, fallback) terminates in the
+  identical validator plus moderation gate, with no provider-specific shortcut
+
+#### O-18
+
+- **Category:** SP-14
+- **Framework ref:** AISVS C11.1
+- **Legal ref:** not determined
+- **Class:** MANUAL
+- **Protected property:** a maintained adversarial corpus is run against live moderation
+  thresholds at each release, with pass rate recorded as a trend over time
+- **Verification target:** the adversarial test corpus and the moderation threshold configuration
+  in effect at release time
+- **Failure oracle:** a release occurs with no adversarial corpus run recorded against it, or the
+  pass-rate trend is not recorded
+- **Negative control:** not determined
+- **Trigger:** each release
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** A maintained adversarial corpus runs against live thresholds each release; pass rate
+  recorded with a trend (AISVS C11.1)
+
+#### O-19
+
+- **Category:** SP-14
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** RUNTIME-CONFIG
+- **Protected property:** worker network egress is allowlisted to approved provider endpoints only,
+  and child identifiers are pseudonymized before crossing that boundary
+- **Verification target:** the deployed worker's network egress allowlist/firewall configuration
+  and the outbound request payload sent to providers
+- **Failure oracle:** a worker process reaches a non-allowlisted endpoint, or an outbound request
+  carries a raw, non-pseudonymized child identifier
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Worker egress is allowlisted to approved provider endpoints; child identifiers
+  pseudonymized before crossing the boundary
+
+#### O-20
+
+- **Category:** SP-14
+- **Framework ref:** AISVS C3.1
+- **Legal ref:** not determined
+- **Class:** MANUAL
+- **Protected property:** each enabled generation provider has a recorded DPA/zero-data-retention
+  posture and a pinned (non-floating) model identifier
+- **Verification target:** the provider allowlist/configuration records and each enabled provider's
+  DPA/ZDR documentation
+- **Failure oracle:** an enabled provider has no recorded DPA/ZDR posture, or its configured model
+  identifier is unpinned (a floating alias rather than a fixed version)
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Each enabled provider has a recorded DPA/ZDR posture and a pinned model identifier
+  (AISVS C3.1)
+
+#### O-56
+
+- **Category:** SP-14
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** the admin review dashboard does not act as an XSS sink for
+  pipeline-generated text
+- **Verification target:** the admin review dashboard's rendering of pipeline-generated story text
+- **Failure oracle:** markup injected via a guardian prompt into generated text executes or renders
+  as active content in the admin review dashboard
+- **Negative control:** a guardian-authored prompt injection that produces markup in generated
+  text, rendered to check for execution on the admin review dashboard
+- **Trigger:** not determined
+- **Existing coverage:** none (the Check text records that the validator checks topology and
+  reading level, but explicitly not markup safety)
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** The admin review dashboard is not an XSS sink for pipeline output. Composite path:
+  guardian prompt injection produces markup in generated text, the validator checks topology and
+  reading level but not markup safety, and it renders on the highest-privilege surface in the
+  system
+
+#### O-73
+
+- **Category:** SP-14
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** a provider timeout, refusal, malformed output, content-filter response,
+  or model removal always produces an explicit non-publishable state, never an unmoderated fallback
+  or a partial story
+- **Verification target:** the generation orchestrator's error-handling path for each provider
+  failure mode
+- **Failure oracle:** one of the listed provider failure modes results in content reaching a
+  publishable or reviewable state without moderation, or a partial story being retained as a
+  candidate
+- **Negative control:** injecting a provider timeout, refusal, malformed output, content-filter
+  response, or a simulated model removal and observing the resulting state
+- **Trigger:** provider timeout, refusal, malformed output, content-filter response, or model
+  removal event
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Provider timeout, refusal, malformed output, content-filter response, or model removal
+  produces an explicit non-publishable state, never an unmoderated fallback or a partial story
+
+#### O-74
+
+- **Category:** SP-14
+- **Framework ref:** not determined
+- **Legal ref:** EU AI Act (generated-content disclosure, conditional on EU market entry)
+- **Class:** RUNTIME-CONFIG
+- **Protected property:** any provider or model change, including a silent hosted-model alias
+  change, triggers a regression run against the structural, safety, and privacy corpora, with
+  results retained by exact model version
+- **Verification target:** the provider/model version pinning configuration and the regression
+  corpus run records, keyed by exact model version
+- **Failure oracle:** a provider or model change, including a silent hosted-model alias swap,
+  occurs with no corresponding regression run recorded against the structural, safety, and privacy
+  corpora for that exact model version
+- **Negative control:** a simulated silent model-alias change with no regression run triggered
+- **Trigger:** provider or model change, including silent hosted-model aliases; also the trigger
+  for EU AI Act generated-content disclosure if EU market entry occurs
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Provider or model changes, including silent hosted-model aliases, trigger regression
+  against the structural, safety, and privacy corpora, retained by exact model version. Also the
+  hook for EU AI Act generated-content disclosure if EU market entry occurs
 
 ### SP-10 Build and Software Supply Chain
 
@@ -326,21 +910,346 @@ development pipeline being attacked *through* the AI tooling, a surface this reg
 previously touch at all. It is live here: CodeRabbit and `claude-baseline-review.yml` both consume
 PR content.
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-24 | RUNTIME-CONFIG | Released container digests carry verifiable provenance; deployment pins by digest, not tag |
-| O-25 | STATIC | Actions pinned by commit SHA; no `pull_request_target` or `workflow_run` executing untrusted code with write permissions or secret access; no secret reachable from a fork-triggered job (**AC.12.1**) |
-| O-26 | STATIC | The client drift job runs on every contract change; lockfile integrity verified at install |
-| O-81 | STATIC | **AC.4.2**: SAST, secret scanning, IaC scanning, and SCA run on every pull request. **Currently failing**: CodeQL does not run and no CI secret scanning exists |
-| O-82 | MANUAL | **AC.4.1** requires AI-generated code to be reviewed by a human who is not the identity that requested the generation. A single-maintainer AI-assisted repository cannot satisfy this as written. Record as an **accepted exception with compensating controls and an expiry**, not a silent skip |
-| O-83 | STATIC | **AC.3.1-AC.3.2**: secrets, credentials, and PII never enter AI tool context, enforced in hooks and CI, with automated redaction of context windows |
-| O-84 | STATIC | **AC.7.1-AC.7.3**: AI-generated infrastructure and pipeline artifacts are labeled, human-reviewed before running outside a sandbox, and pass policy-as-code at least as strictly as human-authored changes |
-| O-109 | STATIC | **AC.8.1**: an agent cannot approve, merge, sign, or deploy an artifact it generated, enforced by branch protection, CI, and the registry. AISVS is explicit that "policy alone does not satisfy this control". **Live exposure**: assistants in this repo can enable auto-merge on PRs they authored |
-| O-110 | STATIC | **AC.11.1-AC.11.3**: AI review bots treat PR diff, title, body, comments, commit messages, and linked URLs as untrusted; their system prompts are hash-pinned and not modifiable from repository or PR-controlled input; their output is schema-validated and never executed |
-| O-111 | STATIC | **AC.11.7 + AC.12.3 + AC.13.2**: fork and first-time-contributor PRs run AI review in read-only shadow mode and require maintainer approval before any secret-bearing or privileged workflow processes them. Bot-level enforcement does not substitute for platform-level environment protection |
-| O-112 | STATIC | **AC.12.5**: changes to workflow definition files route through an elevated review path regardless of author, and no agent holds bypass authority over it |
-| O-113 | MANUAL | **AC.12.8**: remediating a vulnerable workflow invalidates or re-validates every PR opened before the fix, so a later commit to an old PR cannot pick up the stale definition and route around it |
-| O-114 | STATIC | **AC.10.1 + AC.5.1**: AI-generated artifacts carry model identity and version, tool identity, prompt hash, human involvement, and correlation IDs, sufficient to replay prompt to response to commit to build to deployment |
+**Appendix C coverage, stated rather than implied.** Of AC.1 through AC.14, eleven are cited by a
+row somewhere in this register. **Three are cited by nothing: AC.2** (tool qualification and threat
+modeling, including vendor model supply chain and pre-onboarding adversarial testing), **AC.6**
+(continuous feedback, red-teaming of the AI tooling itself, regression harness after every prompt
+or model change), and **AC.9** (artifact origin validation at deploy: signed provenance, trusted
+verifier, quarantine on failure). Recount with `grep -oE 'AC\.[0-9]+'` against the spine's
+AC.1 to AC.14 table.
+
+No rows are added for them here, deliberately. The row count is already the subject of an open
+budget decision (prerequisite 6), and adding three more would pre-empt a call that belongs to the
+maintainer. The gap is recorded instead, which is the whole point of a spine: an uncovered section
+is visible as a section with no rows rather than as a question nobody asked.
+
+#### O-24
+
+- **Category:** SP-10 Build and Software Supply Chain
+- **Framework ref:** AISVS Appendix C (inherited from the section intro; no specific AC clause
+  cited in this row)
+- **Legal ref:** not determined
+- **Class:** RUNTIME-CONFIG
+- **Protected property:** Released container images carry verifiable provenance and are deployed
+  pinned by digest, never by mutable tag.
+- **Verification target:** the release/deployment configuration's image reference (digest vs. tag)
+  and the provenance attestation attached to the released container digest.
+- **Failure oracle:** A deployment configuration references a container image by tag rather than
+  digest, or the deployed digest has no verifiable provenance attestation attached.
+- **Negative control:** not determined
+- **Trigger:** each container release and deployment
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Released container digests carry verifiable provenance; deployment pins by digest,
+  not tag
+
+#### O-25
+
+- **Category:** SP-10 Build and Software Supply Chain
+- **Framework ref:** AISVS Appendix C AC.12.1
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** All GitHub Actions are pinned by commit SHA, and no `pull_request_target`
+  or `workflow_run` trigger executes untrusted code with write permissions or secret access; no
+  secret is reachable from a fork-triggered job.
+- **Verification target:** `.github/workflows/*.yml` action references (`uses:` lines) and the
+  trigger/permissions configuration of any `pull_request_target` or `workflow_run` workflow.
+- **Failure oracle:** A workflow references an action by a mutable tag or branch rather than a
+  commit SHA, or a `pull_request_target`/`workflow_run` workflow executes checked-out PR code with
+  write permissions or secret access reachable from a fork.
+- **Negative control:** not determined
+- **Trigger:** any change to a workflow file
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Actions pinned by commit SHA; no `pull_request_target` or `workflow_run` executing
+  untrusted code with write permissions or secret access; no secret reachable from a
+  fork-triggered job (**AC.12.1**)
+
+#### O-26
+
+- **Category:** SP-10 Build and Software Supply Chain
+- **Framework ref:** AISVS Appendix C (inherited from the section intro; no specific AC clause
+  cited in this row)
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** The frontend API client stays in sync with the backend OpenAPI contract,
+  and installed dependencies match their lockfile.
+- **Verification target:** the `contract` CI job that dumps the OpenAPI schema and diffs the
+  generated client, and the package manager's lockfile-integrity check at install time.
+- **Failure oracle:** A backend contract change merges without the generated client being
+  regenerated and committed, or a dependency installs at a version that does not match its
+  lockfile entry.
+- **Negative control:** not determined
+- **Trigger:** every backend contract change (route or Pydantic model change) and every dependency
+  install
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** The client drift job runs on every contract change; lockfile integrity verified at
+  install
+
+#### O-81
+
+- **Category:** SP-10 Build and Software Supply Chain
+- **Framework ref:** AISVS Appendix C AC.4.2
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** SAST, secret scanning, IaC scanning, and SCA run on every pull request
+  before merge.
+- **Verification target:** the repository's code scanning default setup configuration (CodeQL
+  state, query suite, and covered languages) and the repository's secret scanning, push
+  protection, and validity-check settings, plus the GitGuardian Security Checks PR status.
+- **Failure oracle:** A pull request merges without CodeQL (or another SAST tool), secret
+  scanning, IaC scanning, or SCA having run against it; or code scanning default setup, secret
+  scanning, or push protection is found disabled at the repository level.
+- **Negative control:** not determined
+- **Trigger:** every pull request
+- **Existing coverage:** GitHub code scanning default setup (CodeQL, state configured, extended
+  query suite, over javascript-typescript, typescript, python, and actions); repository-level
+  secret scanning, push protection, and validity checks; GitGuardian Security Checks on pull
+  requests. IaC scanning and SCA coverage were not part of this correction and remain unconfirmed
+  by it.
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** **AC.4.2**: SAST, secret scanning, IaC scanning, and SCA run on every pull request.
+  **Corrected**: CodeQL runs via GitHub code scanning default setup (state configured, extended
+  query suite, over javascript-typescript, typescript, python, and actions); secret scanning, push
+  protection, and validity checks are all enabled at repository level, with GitGuardian Security
+  Checks running on pull requests. AISVS AC.4.2 is met, not failed. An earlier revision of this row
+  read "Currently failing: CodeQL does not run and no CI secret scanning exists"; both claims were
+  false, found by grepping `.github/workflows/`, which misses code scanning default setup because
+  it has no workflow file.
+
+#### O-82
+
+- **Category:** SP-10 Build and Software Supply Chain
+- **Framework ref:** AISVS Appendix C AC.4.1
+- **Legal ref:** not determined
+- **Class:** MANUAL
+- **Protected property:** AI-generated code is reviewed by a human who is not the identity that
+  requested the generation (separation of duties).
+- **Verification target:** PR review attribution (author vs. approver identity) on AI-assisted
+  commits in this repository.
+- **Failure oracle:** An AI-generated change is merged with no distinct-identity human review
+  recorded, and no accepted-exception record with compensating controls and an expiry exists to
+  cover the gap.
+- **Negative control:** none (a single-maintainer repository cannot structurally trip a
+  distinct-reviewer check; there is no second identity to demonstrate the control)
+- **Trigger:** every AI-generated change, and periodic exception review at expiry
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** accepted exception
+- **Check:** **AC.4.1** requires AI-generated code to be reviewed by a human who is not the
+  identity that requested the generation. A single-maintainer AI-assisted repository cannot
+  satisfy this as written. Record as an **accepted exception with compensating controls and an
+  expiry**, not a silent skip
+
+#### O-83
+
+- **Category:** SP-10 Build and Software Supply Chain
+- **Framework ref:** AISVS Appendix C AC.3.1-AC.3.2
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** Secrets, credentials, and PII never enter AI tool context windows.
+- **Verification target:** pre-commit/CI hooks that scan and redact AI tool context windows
+  (prompts, session transcripts) before they are persisted or transmitted.
+- **Failure oracle:** A secret, credential, or PII value is found unredacted inside an AI tool's
+  context window, prompt log, or transcript.
+- **Negative control:** not determined
+- **Trigger:** every hook invocation and CI run that touches AI tool context
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** **AC.3.1-AC.3.2**: secrets, credentials, and PII never enter AI tool context,
+  enforced in hooks and CI, with automated redaction of context windows
+
+#### O-84
+
+- **Category:** SP-10 Build and Software Supply Chain
+- **Framework ref:** AISVS Appendix C AC.7.1-AC.7.3
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** AI-generated infrastructure and pipeline artifacts are labeled as such,
+  human-reviewed before running outside a sandbox, and pass policy-as-code checks at least as
+  strictly as human-authored changes.
+- **Verification target:** infrastructure-as-code and pipeline artifact changes (labels/metadata)
+  and the policy-as-code gate applied to them.
+- **Failure oracle:** An AI-generated infrastructure or pipeline artifact runs outside a sandbox
+  without a human review recorded, lacks an AI-generated label, or is subject to a looser
+  policy-as-code check than a human-authored equivalent.
+- **Negative control:** not determined
+- **Trigger:** any AI-generated infrastructure or pipeline artifact change
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** **AC.7.1-AC.7.3**: AI-generated infrastructure and pipeline artifacts are labeled,
+  human-reviewed before running outside a sandbox, and pass policy-as-code at least as strictly as
+  human-authored changes
+
+#### O-109
+
+- **Category:** SP-10 Build and Software Supply Chain
+- **Framework ref:** AISVS Appendix C AC.8.1
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** An AI agent cannot approve, merge, sign, or deploy an artifact it
+  generated, enforced mechanically by branch protection, CI, and the registry rather than by
+  policy alone.
+- **Verification target:** branch protection rules, auto-merge settings, and merge permissions on
+  this repository's pull requests.
+- **Failure oracle:** An assistant/agent identity enables auto-merge, approves, or merges a PR it
+  authored, with no branch-protection, CI, or registry control blocking it.
+- **Negative control:** not determined
+- **Trigger:** every PR authored by an assistant/agent identity
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** finding open
+- **Check:** **AC.8.1**: an agent cannot approve, merge, sign, or deploy an artifact it generated,
+  enforced by branch protection, CI, and the registry. AISVS is explicit that "policy alone does
+  not satisfy this control". **Live exposure**: assistants in this repo can enable auto-merge on
+  PRs they authored
+
+#### O-110
+
+- **Category:** SP-10 Build and Software Supply Chain
+- **Framework ref:** AISVS Appendix C AC.11.1-AC.11.3
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** AI review bots treat all PR-controlled content as untrusted input, run
+  with hash-pinned system prompts immune to repository/PR-controlled modification, and produce
+  schema-validated output that is never executed.
+- **Verification target:** the AI review bot integrations in this repository (CodeRabbit,
+  `claude-baseline-review.yml`) and their prompt-configuration and output-handling paths.
+- **Failure oracle:** An AI review bot's behavior changes based on PR-controlled content (diff,
+  title, body, comments, commit messages, or linked URLs) beyond its intended review function, or
+  its output is executed rather than schema-validated and displayed.
+- **Negative control:** not determined
+- **Trigger:** every PR reviewed by an AI bot
+- **Existing coverage:** CLAUDE.md's standing rule to treat issue, PR, and external web content as
+  untrusted data, which this section's trailing note calls a hand-derived version of AC.3.3 and
+  AC.11.1; the published AISVS requirements are stricter and are the better citation than the
+  hand-derived rule.
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** **AC.11.1-AC.11.3**: AI review bots treat PR diff, title, body, comments, commit
+  messages, and linked URLs as untrusted; their system prompts are hash-pinned and not modifiable
+  from repository or PR-controlled input; their output is schema-validated and never executed
+
+#### O-111
+
+- **Category:** SP-10 Build and Software Supply Chain
+- **Framework ref:** AISVS Appendix C AC.11.7 + AC.12.3 + AC.13.2
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** Fork and first-time-contributor PRs run AI review only in read-only
+  shadow mode, and no secret-bearing or privileged workflow processes them without maintainer
+  approval enforced at the platform level.
+- **Verification target:** GitHub environment protection rules and workflow-level approval gates
+  for fork and first-time-contributor PRs.
+- **Failure oracle:** A fork or first-time-contributor PR triggers a secret-bearing or privileged
+  workflow without a platform-level (not merely bot-level) maintainer approval gate having run.
+- **Negative control:** not determined
+- **Trigger:** every PR from a fork or a first-time contributor
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** **AC.11.7 + AC.12.3 + AC.13.2**: fork and first-time-contributor PRs run AI review in
+  read-only shadow mode and require maintainer approval before any secret-bearing or privileged
+  workflow processes them. Bot-level enforcement does not substitute for platform-level
+  environment protection
+
+#### O-112
+
+- **Category:** SP-10 Build and Software Supply Chain
+- **Framework ref:** AISVS Appendix C AC.12.5
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** Changes to workflow definition files route through an elevated review
+  path regardless of author, and no agent holds bypass authority over that path.
+- **Verification target:** branch protection / CODEOWNERS rules covering `.github/workflows/` and
+  the list of identities with bypass authority.
+- **Failure oracle:** A workflow-definition-file change merges without the elevated review path
+  having run, or an agent identity is found with bypass authority over that path.
+- **Negative control:** not determined
+- **Trigger:** every change to a workflow definition file
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** **AC.12.5**: changes to workflow definition files route through an elevated review
+  path regardless of author, and no agent holds bypass authority over it
+
+#### O-113
+
+- **Category:** SP-10 Build and Software Supply Chain
+- **Framework ref:** AISVS Appendix C AC.12.8
+- **Legal ref:** not determined
+- **Class:** MANUAL
+- **Protected property:** Remediating a vulnerable workflow invalidates or re-validates every PR
+  opened before the fix, so a later commit to an old PR cannot pick up the stale workflow
+  definition.
+- **Verification target:** the workflow-remediation process itself: whether fixing a vulnerable
+  workflow triggers re-validation of open PRs predating the fix.
+- **Failure oracle:** A PR opened before a workflow-vulnerability fix later picks up the pre-fix
+  (stale) workflow definition via a new commit, without having been invalidated or re-validated.
+- **Negative control:** not determined
+- **Trigger:** every workflow-vulnerability remediation
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** **AC.12.8**: remediating a vulnerable workflow invalidates or re-validates every PR
+  opened before the fix, so a later commit to an old PR cannot pick up the stale definition and
+  route around it
+
+#### O-114
+
+- **Category:** SP-10 Build and Software Supply Chain
+- **Framework ref:** AISVS Appendix C AC.10.1 + AC.5.1
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** Every AI-generated artifact carries model identity and version, tool
+  identity, prompt hash, human involvement, and correlation IDs sufficient to replay the full
+  prompt-to-response-to-commit-to-build-to-deployment chain.
+- **Verification target:** commit metadata, CI build metadata, and deployment records for
+  AI-generated artifacts.
+- **Failure oracle:** An AI-generated artifact's commit, build, or deployment record is missing
+  model identity/version, tool identity, prompt hash, human-involvement record, or correlation ID,
+  such that the generation chain cannot be replayed end to end.
+- **Negative control:** not determined
+- **Trigger:** every AI-generated artifact reaching commit, build, or deployment
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** **AC.10.1 + AC.5.1**: AI-generated artifacts carry model identity and version, tool
+  identity, prompt hash, human involvement, and correlation IDs, sufficient to replay prompt to
+  response to commit to build to deployment
 
 O-82 is the honest version of a control this project structurally cannot meet. Recording it as an
 exception with an expiry is the difference between a known gap and an invisible one. Note that
@@ -349,28 +1258,319 @@ of AC.3.3 and AC.11.1; the published requirements are stricter and are the bette
 
 ### SP-09 Runtime Configuration and Control-Plane Drift
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-48 | RUNTIME-CONFIG | The origin accepts public traffic only through the intended edge, or requires mTLS from it. **This is A9 in `control-inheritance.md`, confirmed open** |
-| O-47 | STATIC | Forwarded headers are honored only from the known proxy hop; client-supplied correlation IDs are sanitized before logging |
-| O-85 | RUNTIME-CONFIG | Auth, database, CDN, WAF, object-store, queue, CORS, redirect, logging, retention, and backup settings held in dashboards are exported or queried on a cadence and compared with an approved baseline |
-| O-86 | DYNAMIC | Production disables debug behaviors, default credentials, permissive CORS, and test tenants, verified against deployed endpoints. Interacts with `ENVIRONMENT=local` silently disabling rate limiting |
-| O-87 | RUNTIME-CONFIG | CIS Benchmark subset for layers we operate: host, container runtime, reverse proxy. Not the managed Postgres internals |
-| O-115 | RUNTIME-CONFIG | **AC.7.5 + AC.12.4**: drift detection compares deployed infrastructure and live workflow configuration against signed baselines; runners processing untrusted or AI-generated artifacts are ephemeral and isolated from production credentials |
+#### O-48
+
+- **Category:** SP-09 Runtime Configuration and Control-Plane Drift
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** RUNTIME-CONFIG
+- **Protected property:** The origin server accepts public traffic only through the intended edge
+  (reverse proxy/CDN), or requires mTLS from that edge.
+- **Verification target:** the origin's exposed network listeners and firewall/mTLS configuration,
+  as deployed.
+- **Failure oracle:** The origin accepts a request that did not traverse the intended edge, or
+  accepts a connection from the edge without mTLS being enforced.
+- **Negative control:** not determined
+- **Trigger:** not determined (the reassessment trigger would be named in `control-inheritance.md`;
+  not stated in this row)
+- **Existing coverage:** none; this row is a confirmed open finding (`control-inheritance.md` item
+  A9), not a passing gate
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** finding open
+- **Check:** The origin accepts public traffic only through the intended edge, or requires mTLS
+  from it. **This is A9 in `control-inheritance.md`, confirmed open**
+
+#### O-47
+
+- **Category:** SP-09 Runtime Configuration and Control-Plane Drift
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** Forwarded headers (`X-Forwarded-*`) are honored only when received from
+  the known proxy hop, and client-supplied correlation IDs are sanitized before being logged.
+- **Verification target:** the reverse-proxy/edge trust configuration and the middleware that
+  parses forwarded headers and correlation IDs (`CorrelationMiddleware`).
+- **Failure oracle:** A forwarded header or correlation ID supplied directly by a client (bypassing
+  the known proxy hop) is honored or logged unsanitized.
+- **Negative control:** not determined
+- **Trigger:** every inbound request
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Forwarded headers are honored only from the known proxy hop; client-supplied
+  correlation IDs are sanitized before logging
+
+#### O-85
+
+- **Category:** SP-09 Runtime Configuration and Control-Plane Drift
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** RUNTIME-CONFIG
+- **Protected property:** Auth, database, CDN, WAF, object-store, queue, CORS, redirect, logging,
+  retention, and backup settings held only in vendor dashboards match an approved baseline.
+- **Verification target:** the live configuration of each named vendor dashboard/control plane
+  (auth provider, database, CDN, WAF, object store, queue, CORS/redirect config, logging,
+  retention, backup settings), exported or queried.
+- **Failure oracle:** An exported or queried dashboard setting diverges from its approved baseline
+  without a recorded, approved change.
+- **Negative control:** not determined
+- **Trigger:** on a defined cadence (cadence not stated in this row)
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Auth, database, CDN, WAF, object-store, queue, CORS, redirect, logging, retention,
+  and backup settings held in dashboards are exported or queried on a cadence and compared with an
+  approved baseline
+
+#### O-86
+
+- **Category:** SP-09 Runtime Configuration and Control-Plane Drift
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** The production deployment has debug behaviors, default credentials,
+  permissive CORS, and test tenants disabled.
+- **Verification target:** deployed production endpoints, exercised directly (not a fixture), plus
+  the `ENVIRONMENT` setting's effect on rate limiting.
+- **Failure oracle:** A production endpoint responds with debug output, accepts a default
+  credential, honors a permissive CORS origin, exposes a test tenant, or has rate limiting silently
+  disabled because `ENVIRONMENT=local`.
+- **Negative control:** not determined
+- **Trigger:** verified against deployed endpoints (cadence not stated in this row)
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Production disables debug behaviors, default credentials, permissive CORS, and test
+  tenants, verified against deployed endpoints. Interacts with `ENVIRONMENT=local` silently
+  disabling rate limiting
+
+#### O-87
+
+- **Category:** SP-09 Runtime Configuration and Control-Plane Drift
+- **Framework ref:** CIS Benchmarks (host, container runtime, reverse proxy subset; explicit in
+  this row's Check text)
+- **Legal ref:** not determined
+- **Class:** RUNTIME-CONFIG
+- **Protected property:** The host, container runtime, and reverse-proxy layers this operator runs
+  conform to the applicable CIS Benchmark subset, excluding managed Postgres internals which are
+  out of scope as vendor-operated.
+- **Verification target:** the deployed host OS configuration, container runtime configuration,
+  and reverse-proxy configuration.
+- **Failure oracle:** A CIS Benchmark control in the host, container-runtime, or reverse-proxy
+  subset is found unmet on the deployed system.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** CIS Benchmark subset for layers we operate: host, container runtime, reverse proxy.
+  Not the managed Postgres internals
+
+#### O-115
+
+- **Category:** SP-09 Runtime Configuration and Control-Plane Drift
+- **Framework ref:** AISVS Appendix C AC.7.5 + AC.12.4
+- **Legal ref:** not determined
+- **Class:** RUNTIME-CONFIG
+- **Protected property:** Drift detection compares deployed infrastructure and live workflow
+  configuration against signed baselines, and runners processing untrusted or AI-generated
+  artifacts are ephemeral and isolated from production credentials.
+- **Verification target:** the drift-detection mechanism's comparison output against its signed
+  baseline, and the runner configuration (ephemerality, credential scope) for jobs processing
+  untrusted or AI-generated artifacts.
+- **Failure oracle:** Deployed infrastructure or live workflow configuration diverges from its
+  signed baseline without drift detection flagging it, or a runner processing an untrusted or
+  AI-generated artifact retains production credentials or persists beyond the job.
+- **Negative control:** not determined
+- **Trigger:** not determined (drift-detection cadence not stated in this row)
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** **AC.7.5 + AC.12.4**: drift detection compares deployed infrastructure and live
+  workflow configuration against signed baselines; runners processing untrusted or AI-generated
+  artifacts are ephemeral and isolated from production credentials
 
 ### SP-02 Authorization and Tenancy Isolation
 
 Two mandatory subsections: vertical (role and capability) and horizontal (cross-family).
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-05 | DYNAMIC | A guardian in family A receives 403/404 for every resource ID from family B, enumerated across all resource-bearing routers, including cursors, object keys, job IDs, and nested relationship IDs |
-| O-06 | DYNAMIC | Cross-family recommendation payloads (ADR-016) contain only whitelisted fields, never child identity or reading history |
-| O-07 | DYNAMIC | A guardian-only token is rejected by every `/admin` route and every moderation-threshold mutation |
-| O-08 | DYNAMIC | Every secondary object reference (storybook version, node, assignment, cover asset) is authorization-checked at the leaf, not inherited from a parent check |
-| O-09 | RUNTIME-CONFIG | Background workers connect with a least-privilege role subject to RLS, not the service key. Blocked on the ADR-021 cutover |
-| O-77 | RUNTIME-CONFIG | The **production** connection identity is asserted from the deployed session (`current_user`, `rolbypassrls`, table ownership), not from a fixture. The non-hollow replacement for the current RLS suite |
-| O-78 | DYNAMIC | Every RLS policy has a mutation test: dropping the policy turns at least one test red |
+#### O-05
+
+- **Category:** SP-02
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** A guardian authenticated to family A cannot reach any resource that
+  belongs to family B.
+- **Verification target:** every resource-bearing router (including cursors, object keys, job
+  IDs, and nested relationship IDs), exercised with a family-A guardian token against family-B
+  resource IDs.
+- **Failure oracle:** a request for a family-B resource ID, made with a family-A guardian's
+  credentials, returns anything other than 403 or 404 (for example a 200 with data, or a leak in
+  an error body).
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** A guardian in family A receives 403/404 for every resource ID from family B,
+  enumerated across all resource-bearing routers, including cursors, object keys, job IDs, and
+  nested relationship IDs
+
+#### O-06
+
+- **Category:** SP-02
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** cross-family recommendation payloads (ADR-016) expose only an approved
+  whitelist of fields, never child identity or reading history.
+- **Verification target:** the cross-family recommendation-sharing payload and response schema
+  (the ADR-016 feature).
+- **Failure oracle:** a cross-family recommendation response contains a field outside the
+  approved whitelist, or contains child identity or reading-history data.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Cross-family recommendation payloads (ADR-016) contain only whitelisted fields,
+  never child identity or reading history
+
+#### O-07
+
+- **Category:** SP-02
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** a guardian-only token is rejected by every `/admin` route and every
+  moderation-threshold mutation.
+- **Verification target:** all `/admin`-prefixed routes and all moderation-threshold mutation
+  endpoints, exercised with a guardian-only token.
+- **Failure oracle:** any `/admin` route or moderation-threshold mutation accepts a guardian-only
+  token instead of returning 401/403.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** A guardian-only token is rejected by every `/admin` route and every
+  moderation-threshold mutation
+
+#### O-08
+
+- **Category:** SP-02
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** every secondary object reference (storybook version, node, assignment,
+  cover asset) is authorization-checked at the leaf, not inherited from a parent check.
+- **Verification target:** leaf-level access-control logic for storybook version, node,
+  assignment, and cover-asset endpoints.
+- **Failure oracle:** a leaf resource is reachable without an independent leaf-level
+  authorization check, solely because the parent resource's check passed.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Every secondary object reference (storybook version, node, assignment, cover asset)
+  is authorization-checked at the leaf, not inherited from a parent check
+
+#### O-09
+
+- **Category:** SP-02
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** RUNTIME-CONFIG
+- **Protected property:** background workers connect to the database using a least-privilege
+  role subject to RLS, not the service key.
+- **Verification target:** the deployed background-worker process's Postgres connection
+  role/DSN.
+- **Failure oracle:** a background worker's deployed session connects as the service key, the
+  table owner, or any role with `rolbypassrls` set, rather than a scoped least-privilege role
+  subject to RLS.
+- **Negative control:** not determined
+- **Trigger:** ADR-021 cutover (the Check text names this as the current blocker)
+- **Existing coverage:** the gate-coverage audit row "Privacy / RLS correctness" (PARTIAL: yes in
+  CI, but RLS is a no-op in production); the cross-cutting gate defects list records that the
+  application connects as the Postgres table owner pre-cutover, which is the specific gap this
+  row targets.
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** finding open
+- **Check:** Background workers connect with a least-privilege role subject to RLS, not the
+  service key. Blocked on the ADR-021 cutover
+
+#### O-77
+
+- **Category:** SP-02
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** RUNTIME-CONFIG
+- **Protected property:** the production database connection's identity (`current_user`,
+  `rolbypassrls`, table ownership) is asserted from the deployed session, not assumed from a
+  fixture.
+- **Verification target:** the deployed production session's `current_user`, `rolbypassrls`
+  flag, and table ownership.
+- **Failure oracle:** the deployed session shows `current_user` as the table owner, or a role
+  with `rolbypassrls = true`, rather than the intended scoped, RLS-subject role.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** the current RLS enforcement test suite, which the cross-cutting gate
+  defects list describes as forcing the `cyo_api` role in its own fixture and therefore
+  "structurally cannot observe" the deployed connection identity. This row is named in the Check
+  text as its non-hollow replacement.
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** The **production** connection identity is asserted from the deployed session
+  (`current_user`, `rolbypassrls`, table ownership), not from a fixture. The non-hollow
+  replacement for the current RLS suite
+
+#### O-78
+
+- **Category:** SP-02
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** every RLS policy has a mutation test that fails when the policy is
+  removed.
+- **Verification target:** RLS policies defined under `supabase/migrations/` and their paired
+  test suite.
+- **Failure oracle:** dropping an RLS policy does not turn any test red; the full test suite
+  remains green.
+- **Negative control:** dropping the RLS policy under test (stated directly in the Check text).
+- **Trigger:** not determined
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Every RLS policy has a mutation test: dropping the policy turns at least one test
+  red
 
 ### SP-01 Identity, Authentication, Session Lifecycle
 
@@ -378,35 +1578,358 @@ Two mandatory subsections, because this system has two independent session lifec
 
 *Adult, OIDC:*
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-02 | STATIC | JWT verification rejects wrong `iss`, wrong `aud`, `alg` substitution, unknown `kid`, and refreshes JWKS on rotation. Largely covered by `tests/unit/test_oidc_verification.py` |
-| O-03 | STATIC | Adult elevation has absolute and idle timeouts and is not persisted to durable storage |
-| O-42 | RUNTIME-CONFIG | Deployed issuer, audience, signing algorithms, redirect and callback URIs, MFA policy, non-enumerable responses, and account-linking settings match an exported approved baseline. Invisible to source-based review because auth is delegated |
-| O-43 | STATIC | No self-service path grants `is_admin`; elevation is out-of-band and audit-logged |
-| O-100 | DYNAMIC | Password reset, email change, and recovery cannot acquire another family or retain old sessions, with bounded token expiry, exercised through the **provider-hosted** flow rather than a mocked callback |
+#### O-02
+
+- **Category:** SP-01
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** JWT verification rejects a wrong `iss`, a wrong `aud`, an `alg`
+  substitution attack, and an unknown `kid`, and the verifier refreshes its JWKS cache on key
+  rotation.
+- **Verification target:** the JWT/OIDC verification logic covered by
+  `tests/unit/test_oidc_verification.py`, and the JWKS-refresh path.
+- **Failure oracle:** a token with a wrong `iss`, wrong `aud`, substituted `alg`, or unknown `kid`
+  is accepted, or a rotated JWKS key is never picked up by the verifier.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** `tests/unit/test_oidc_verification.py` (Check text states this is
+  "largely covered").
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** JWT verification rejects wrong `iss`, wrong `aud`, `alg` substitution, unknown
+  `kid`, and refreshes JWKS on rotation. Largely covered by
+  `tests/unit/test_oidc_verification.py`
+
+#### O-03
+
+- **Category:** SP-01
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** adult elevation has both an absolute timeout and an idle timeout, and
+  the elevated state is never persisted to durable storage.
+- **Verification target:** the adult elevation/step-up mechanism and its timeout configuration.
+- **Failure oracle:** elevated state remains valid past its absolute or idle timeout, or elevated
+  state is found written to durable storage (database, disk, or a durable cache).
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Adult elevation has absolute and idle timeouts and is not persisted to durable
+  storage
+
+#### O-42
+
+- **Category:** SP-01
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** RUNTIME-CONFIG
+- **Protected property:** the deployed issuer, audience, signing algorithms, redirect and
+  callback URIs, MFA policy, non-enumerable-response behavior, and account-linking settings match
+  an exported approved baseline.
+- **Verification target:** the deployed identity-provider configuration, exported or queried from
+  the provider's control plane (not visible from source review because auth is delegated).
+- **Failure oracle:** any exported/queried provider setting diverges from the approved baseline
+  (for example, an added redirect URI, a weakened signing algorithm, MFA disabled, or an
+  enumerable error response).
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Deployed issuer, audience, signing algorithms, redirect and callback URIs, MFA
+  policy, non-enumerable responses, and account-linking settings match an exported approved
+  baseline. Invisible to source-based review because auth is delegated
+
+#### O-43
+
+- **Category:** SP-01
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** no self-service path grants `is_admin`; elevation happens only
+  out-of-band and is audit-logged.
+- **Verification target:** all account/profile mutation endpoints and the admin-elevation
+  process's audit log.
+- **Failure oracle:** any self-service API call sets `is_admin` to true, or an elevation occurs
+  with no corresponding audit-log entry.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** No self-service path grants `is_admin`; elevation is out-of-band and audit-logged
+
+#### O-100
+
+- **Category:** SP-01
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** password reset, email change, and recovery cannot be used to acquire
+  membership in another family or to retain sessions issued before the change, and reset tokens
+  have bounded expiry.
+- **Verification target:** the provider-hosted (Supabase-hosted) password reset, email-change,
+  and recovery flow, exercised end-to-end rather than through a mocked callback.
+- **Failure oracle:** after a reset/email-change/recovery flow, the account is associated with a
+  different family, a pre-change session token remains valid, or a reset/recovery token remains
+  valid past its bound.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** the gate-coverage audit row "Password reset / enumeration" (PARTIAL:
+  covered on PR runs, not enforced in the merge queue).
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Password reset, email change, and recovery cannot acquire another family or retain
+  old sessions, with bounded token expiry, exercised through the **provider-hosted** flow rather
+  than a mocked callback
 
 *Child, device grant:*
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-01 | DYNAMIC | Revoking a device grant terminates in-flight child sessions and blocks reissue within a stated bound. Known gap pinned at `tests/integration/test_child_sessions.py:792`: a revoked grant leaves a minted child token valid up to 12h |
-| O-04 | STATIC | Offline mode enforces a maximum offline validity window and forces server re-verification on reconnect |
-| O-101 | STATIC | The 4-digit PIN has an attempt cap or a documented, accepted compensating control. `api/child_sessions.py:159-167` currently declines a cap |
+#### O-01
+
+- **Category:** SP-01
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** revoking a device grant immediately terminates any in-flight child
+  session tied to it and blocks reissuance of a new child session within a stated bound.
+- **Verification target:** the device-grant revocation path exercised in
+  `tests/integration/test_child_sessions.py`, specifically the assertion pinned at line 792.
+- **Failure oracle:** after a device grant is revoked, a previously minted child token remains
+  valid, or a new child session can be issued against the revoked grant. Currently observed: a
+  revoked grant leaves a minted child token valid for up to 12 hours.
+- **Negative control:** revoking an active device grant while a minted child token is still
+  within its validity window (the case pinned at `test_child_sessions.py:792`).
+- **Trigger:** not determined
+- **Existing coverage:** `tests/integration/test_child_sessions.py:792`, which the Check text
+  says pins the gap rather than closing it.
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** finding open
+- **Check:** Revoking a device grant terminates in-flight child sessions and blocks reissue
+  within a stated bound. Known gap pinned at `tests/integration/test_child_sessions.py:792`: a
+  revoked grant leaves a minted child token valid up to 12h
+
+#### O-04
+
+- **Category:** SP-01
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** offline reading mode enforces a maximum offline-validity window, and
+  the client is forced to re-verify with the server on reconnect.
+- **Verification target:** the offline-mode validity-window enforcement logic and the reconnect
+  re-verification path.
+- **Failure oracle:** a client remains usable offline past the maximum validity window, or
+  reconnecting does not trigger server re-verification.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Offline mode enforces a maximum offline validity window and forces server
+  re-verification on reconnect
+
+#### O-101
+
+- **Category:** SP-01
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** the 4-digit child PIN is protected by an attempt cap, or by a
+  documented and accepted compensating control if no cap exists.
+- **Verification target:** `api/child_sessions.py:159-167`, the PIN-check/attempt logic.
+- **Failure oracle:** the PIN can be attempted an unbounded number of times, with no attempt cap
+  and no documented, accepted compensating control in place.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none (Check text states the code "currently declines a cap").
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** finding open
+- **Check:** The 4-digit PIN has an attempt cap or a documented, accepted compensating control.
+  `api/child_sessions.py:159-167` currently declines a cap
 
 ### SP-05 Client-Side Storage, Offline Sync, Client Surface
 
 Two mandatory subsections: data at rest (confidentiality) and sync (integrity).
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-39 | STATIC | Offline stores are keyed per profile, purged on logout and grant revocation, and hold no auth secret. Currently NOT COVERED |
-| O-40 | STATIC | The service worker has a versioned kill-switch and never caches authenticated responses in a profile-agnostic key |
-| O-41 | DYNAMIC | Switching profiles evicts the previous profile's cached content and player state |
-| O-50 | DYNAMIC | On reconnect the server treats client-supplied state as untrusted and **re-authorizes it**. Negative control: a tampered payload claiming a gated level was completed, or claiming approval, is rejected |
-| O-51 | DYNAMIC | Sync conflict resolution cannot move reading history, choices, ratings, or stories between children or families |
-| O-75 | STATIC | A documented inventory names every child-data element in IndexedDB, Cache Storage, localStorage, and service-worker caches, with purpose and expiry |
-| O-76 | *deferred, R2* | MASVS L1 plus the MASVS-PRIVACY subset activates when the mobile wrapper enters design |
+#### O-39
+
+- **Category:** SP-05
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** Offline client-side stores (IndexedDB, Cache Storage, localStorage) are keyed
+  per profile, purged on logout and on device-grant revocation, and hold no authentication secret.
+- **Verification target:** the frontend offline storage layer (`frontend/src/offline/`) and its
+  IndexedDB, Cache Storage, and localStorage usage
+- **Failure oracle:** a store found shared across profiles rather than keyed per profile, a store
+  not purged after logout or grant revocation, or an authentication secret or token found in
+  client-side storage
+- **Negative control:** none
+- **Trigger:** not established; no verification mechanism currently exists
+- **Existing coverage:** none. The Check text records "Currently NOT COVERED", matching the
+  existing-gate-coverage table's "Client-side data at rest: NOT COVERED, Nothing to fail"
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Offline stores are keyed per profile, purged on logout and grant revocation, and hold no
+  auth secret. Currently NOT COVERED
+
+#### O-40
+
+- **Category:** SP-05
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** the service worker carries a versioned kill-switch and never caches an
+  authenticated response under a profile-agnostic cache key.
+- **Verification target:** the frontend service worker and its cache-key scheme
+- **Failure oracle:** an authenticated response found cached under a key that is not scoped to a
+  profile, or no mechanism exists to version or invalidate the service-worker cache
+- **Negative control:** none
+- **Trigger:** not established; no verification mechanism currently exists
+- **Existing coverage:** none, per the existing-gate-coverage table's "Client-side data at rest:
+  NOT COVERED, Nothing to fail"
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** The service worker has a versioned kill-switch and never caches authenticated responses
+  in a profile-agnostic key
+
+#### O-41
+
+- **Category:** SP-05
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** switching profiles on a shared device evicts the previous profile's cached
+  content and player state.
+- **Verification target:** the client-side profile-switch flow and its cache and player-state
+  eviction behavior
+- **Failure oracle:** after a profile switch, cached content or player state belonging to the
+  previous profile remains readable
+- **Negative control:** none
+- **Trigger:** not established; no verification mechanism currently exists
+- **Existing coverage:** none, per the existing-gate-coverage table's "Client-side data at rest:
+  NOT COVERED, Nothing to fail"
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Switching profiles evicts the previous profile's cached content and player state
+
+#### O-50
+
+- **Category:** SP-05
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** on reconnect, the server treats client-supplied offline state as untrusted
+  and re-authorizes it before accepting it.
+- **Verification target:** the server-side sync or reconnect endpoint that ingests client-reported
+  offline state
+- **Failure oracle:** a tampered client payload claiming a gated level was completed, or claiming
+  approval, is accepted by the server rather than rejected
+- **Negative control:** a tampered payload claiming a gated level was completed, or claiming
+  approval (named directly in the Check text)
+- **Trigger:** not established; no verification mechanism currently exists
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** On reconnect the server treats client-supplied state as untrusted and **re-authorizes
+  it**. Negative control: a tampered payload claiming a gated level was completed, or claiming
+  approval, is rejected
+
+#### O-51
+
+- **Category:** SP-05
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** sync conflict resolution cannot move reading history, choices, ratings, or
+  stories between children or between families.
+- **Verification target:** the sync conflict-resolution logic, server and client sides
+- **Failure oracle:** a sync conflict resolves in a way that attributes or transfers reading
+  history, choices, ratings, or story access from one child or family to another
+- **Negative control:** none
+- **Trigger:** not established; no verification mechanism currently exists
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Sync conflict resolution cannot move reading history, choices, ratings, or stories
+  between children or families
+
+#### O-75
+
+- **Category:** SP-05
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** a documented inventory names every child-data element stored in
+  IndexedDB, Cache Storage, localStorage, and service-worker caches, with purpose and expiry
+  recorded for each.
+- **Verification target:** a client-storage data inventory document (none currently exists)
+- **Failure oracle:** a child-data element found in client-side storage that is not named in the
+  inventory, or an inventory entry missing a stated purpose or expiry
+- **Negative control:** none
+- **Trigger:** not established; no verification mechanism currently exists
+- **Existing coverage:** none. The section's trailing note states "Nothing currently asserts a
+  policy over client storage and no lint rule restricts `localStorage`"
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** A documented inventory names every child-data element in IndexedDB, Cache Storage,
+  localStorage, and service-worker caches, with purpose and expiry
+
+#### O-76
+
+- **Category:** SP-05
+- **Framework ref:** MASVS L1 / MASVS-PRIVACY (named directly in the Check text; corroborated by
+  the sub-scope exclusion table's "MASVS | SP-05 | No native or wrapped mobile client yet | Mobile
+  wrapper enters design (R2)")
+- **Legal ref:** not determined
+- **Class:** MANUAL
+- **Protected property:** the mobile client, once built, conforms to MASVS L1 plus the
+  MASVS-PRIVACY subset.
+- **Verification target:** not determined. No native or wrapped mobile client exists yet; the
+  verification target is the future mobile wrapper, not yet built.
+- **Failure oracle:** not determined. Conformance cannot be assessed before the mobile wrapper
+  exists.
+- **Negative control:** none
+- **Trigger:** R2, when the mobile wrapper enters design (per the Check text and the sub-scope
+  exclusion table's reassessment trigger)
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** verification scheduled
+- **Check:** MASVS L1 plus the MASVS-PRIVACY subset activates when the mobile wrapper enters design
 
 `personalization_values` in IndexedDB holds children's real first names, sibling names, and kinship
 labels. Nothing currently asserts a policy over client storage and no lint rule restricts
@@ -414,110 +1937,1263 @@ labels. Nothing currently asserts a policy over client storage and no lint rule 
 
 ### SP-03 Input Validation, Encoding, Injection
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-102 | STATIC + DYNAMIC | Every externally writable field, **including generated model output**, has a defined type, length, structural constraint, normalization rule, and rejection behavior enforced server-side. Includes CSRF protection on state-changing forms and transformation of non-serializable internal values at the API boundary |
-| O-103 | DYNAMIC | Child-visible text is rendered with context-appropriate encoding; stored HTML, script, URL, Markdown, Unicode-control, and bidirectional-text payloads remain inert on every child-facing surface |
-| O-104 | DYNAMIC | Parsing failures, malformed graphs, oversized payloads, duplicate identifiers, and recursive structures fail predictably without partial writes or internal error disclosure. Includes OS command injection and RCE paths |
+#### O-102
+
+- **Category:** SP-03
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** every externally writable field, including generated model output, is
+  constrained server-side by a defined type, length, structural constraint, normalization rule, and
+  rejection behavior; state-changing forms carry CSRF protection; non-serializable internal values
+  are transformed at the API boundary.
+- **Verification target:** the FastAPI request and response schema layer (Pydantic models) and the
+  API-boundary serialization and validation code across all routers
+- **Failure oracle:** a writable field, including generated story content, accepted without its
+  defined type, length, or structural constraint; a state-changing form found without CSRF
+  protection; or a non-serializable internal value crossing the API boundary unconverted
+- **Negative control:** none
+- **Trigger:** not established; no verification mechanism currently exists
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Every externally writable field, **including generated model output**, has a defined
+  type, length, structural constraint, normalization rule, and rejection behavior enforced
+  server-side. Includes CSRF protection on state-changing forms and transformation of
+  non-serializable internal values at the API boundary [Secondary class recorded in the source
+  table: DYNAMIC.]
+
+#### O-103
+
+- **Category:** SP-03
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** child-visible text is rendered with context-appropriate encoding, so
+  stored HTML, script, URL, Markdown, Unicode-control, and bidirectional-text payloads remain inert
+  on every child-facing surface.
+- **Verification target:** every child-facing rendering surface (reader and player UI, story
+  content display)
+- **Failure oracle:** a stored HTML, script, URL, Markdown, Unicode-control, or bidirectional-text
+  payload executes, renders as markup, or alters display or reading order on a child-facing surface
+  instead of rendering inert
+- **Negative control:** none
+- **Trigger:** not established; no verification mechanism currently exists
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Child-visible text is rendered with context-appropriate encoding; stored HTML, script,
+  URL, Markdown, Unicode-control, and bidirectional-text payloads remain inert on every child-facing
+  surface
+
+#### O-104
+
+- **Category:** SP-03
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** parsing failures, malformed story graphs, oversized payloads, duplicate
+  identifiers, and recursive structures fail predictably, without partial writes or internal error
+  disclosure, and without permitting OS command injection or remote code execution.
+- **Verification target:** the story-graph and Storybook ingestion and parsing paths
+  (`generation/`, `storybook/`, `validator/`)
+- **Failure oracle:** a malformed graph, oversized payload, duplicate identifier, or recursive
+  structure produces a partial write, discloses internal error detail, or reaches an OS command
+  injection or remote-code-execution path
+- **Negative control:** none
+- **Trigger:** not established; no verification mechanism currently exists
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Parsing failures, malformed graphs, oversized payloads, duplicate identifiers, and
+  recursive structures fail predictably without partial writes or internal error disclosure.
+  Includes OS command injection and RCE paths
 
 ### SP-04 Business Logic and Abuse Resistance
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-10 | STATIC | Story-request creation enforces a per-family windowed generation budget independent of HTTP rate limits |
-| O-11 | STATIC | The publish state machine is the only writer of reader-visible state |
-| O-12 | DYNAMIC | Concurrent approve and concurrent grant-redeem attempts converge on a single terminal state under load |
-| O-13 | DYNAMIC | Flag submission is idempotent per actor-target pair and rate-shaped |
+#### O-10
+
+- **Category:** SP-04
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** story-request creation enforces a per-family windowed generation budget
+  that is independent of HTTP-layer rate limits.
+- **Verification target:** the story-request creation endpoint and its budget-enforcement logic
+  (`story_requests/`)
+- **Failure oracle:** a family creates story requests beyond the windowed generation budget while
+  HTTP rate limits alone are not exercised or are bypassed
+- **Negative control:** none
+- **Trigger:** not established; no verification mechanism currently exists
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Story-request creation enforces a per-family windowed generation budget independent of
+  HTTP rate limits
+
+#### O-11
+
+- **Category:** SP-04
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** the publish state machine is the sole writer of reader-visible story
+  state; no other code path mutates it.
+- **Verification target:** the `publishing/` state machine and every other code path that could
+  write reader-visible storybook state
+- **Failure oracle:** reader-visible state is found mutated by a code path other than the publish
+  state machine
+- **Negative control:** none
+- **Trigger:** not established; no verification mechanism currently exists
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** The publish state machine is the only writer of reader-visible state
+
+#### O-12
+
+- **Category:** SP-04
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** concurrent approve attempts and concurrent grant-redeem attempts converge
+  on a single terminal state under load, without a double-approval or double-redemption outcome.
+- **Verification target:** the approval workflow and the device-grant redemption workflow under
+  concurrent load
+- **Failure oracle:** concurrent approve or concurrent grant-redeem requests produce more than one
+  terminal state, for example a story approved twice or a device grant redeemed more than once
+- **Negative control:** none
+- **Trigger:** not established; no verification mechanism currently exists
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Concurrent approve and concurrent grant-redeem attempts converge on a single terminal
+  state under load
+
+#### O-13
+
+- **Category:** SP-04
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** flag submission is idempotent per actor-target pair and is rate-shaped.
+- **Verification target:** the flag-submission endpoint (`api/flags`)
+- **Failure oracle:** a repeated flag submission from the same actor against the same target
+  creates duplicate records, or flag submission is not rate-shaped
+- **Negative control:** none
+- **Trigger:** not established; no verification mechanism currently exists
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Flag submission is idempotent per actor-target pair and rate-shaped
 
 ### SP-06 API Surface, Egress, SSRF
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-21 | STATIC | Outbound URL fetches use an allowlist and reject link-local, metadata, and private ranges **after** DNS resolution and redirects. Known defect: `middleware/security.py` `_is_blocked_url` returns not-blocked when host parsing fails |
-| O-79 | STATIC + DYNAMIC | The deployed route inventory, methods, auth dependencies, and audience designation are enumerated and reconciled against intent; undocumented or accidentally public routes are reported. Material here: 28 routers, and orphaned endpoints outlive the UI that called them |
+#### O-21
+
+- **Category:** SP-06
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** outbound URL fetches are restricted to an allowlist and reject
+  link-local, metadata, and private IP ranges, checked after DNS resolution and after following
+  redirects.
+- **Verification target:** `middleware/security.py` `_is_blocked_url` and the outbound-fetch
+  allowlist enforcement path
+- **Failure oracle:** an outbound fetch reaches a link-local, metadata, or private-range address
+  after DNS resolution or redirect, or `_is_blocked_url` returns not-blocked when host parsing
+  fails
+- **Negative control:** a host string that fails parsing in `_is_blocked_url`, which the Check text
+  records as currently returning not-blocked; this is a confirmed open defect, not a hypothetical
+- **Trigger:** not established; the defect is recorded from source reading, not surfaced by an
+  automated check
+- **Existing coverage:** none. This is a confirmed open defect in `middleware/security.py`
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** finding open
+- **Check:** Outbound URL fetches use an allowlist and reject link-local, metadata, and private
+  ranges **after** DNS resolution and redirects. Known defect: `middleware/security.py`
+  `_is_blocked_url` returns not-blocked when host parsing fails
+
+#### O-79
+
+- **Category:** SP-06
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** the deployed route inventory, its methods, auth dependencies, and
+  audience designation are enumerated and reconciled against intent; no undocumented or
+  accidentally public route exists.
+- **Verification target:** the FastAPI route registration surface (`app.py`, 32 `include_router`
+  calls) and each router's auth dependencies
+- **Failure oracle:** a route is found in the deployed inventory that is undocumented, has no
+  matching intent record, is accidentally public, or an orphaned endpoint (no longer called by any
+  UI) remains reachable
+- **Negative control:** none
+- **Trigger:** not established; no verification mechanism currently exists
+- **Existing coverage:** not determined
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** The deployed route inventory, methods, auth dependencies, and audience designation are
+  enumerated and reconciled against intent; undocumented or accidentally public routes are
+  reported. Material here: 32 routers, and orphaned endpoints outlive the UI that called them
+  [Secondary class recorded in the source table: DYNAMIC.]
 
 URL parsing belongs to input handling; destination authorization belongs to egress. O-21 is owned
 here rather than by SP-14 on that basis.
 
 ### SP-07 File, Object Storage, Media
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-22 | RUNTIME-CONFIG | Cover and avatar objects served via short-lived signed URLs or an authorizing proxy; the bucket denies public listing |
-| O-23 | STATIC | Uploaded images are re-encoded server-side, EXIF stripped, and type-sniffed rather than trusted |
-| O-80 | DYNAMIC | Object keys cannot be predicted or substituted to reach another family's media; authorization is checked before every signed URL is issued, not embedded in the key name |
+#### O-22
+
+- **Category:** SP-07
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** RUNTIME-CONFIG
+- **Protected property:** Cover and avatar objects are reachable only via short-lived signed URLs
+  or an authorizing proxy, and the bucket denies public listing.
+- **Verification target:** the object storage bucket configuration (listing/ACL settings) and the
+  URL-signing or authorizing-proxy mechanism that issues access to cover and avatar objects.
+- **Failure oracle:** an unauthenticated request lists bucket contents, or a cover or avatar object
+  is reachable via a long-lived or unsigned URL, or without passing through the authorizing proxy.
+- **Negative control:** none
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Cover and avatar objects served via short-lived signed URLs or an authorizing proxy;
+  the bucket denies public listing
+
+#### O-23
+
+- **Category:** SP-07
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** uploaded images are re-encoded server-side, have EXIF metadata stripped,
+  and have their type verified by content sniffing rather than trusted from client-supplied
+  metadata.
+- **Verification target:** the server-side image upload-handling path for cover and avatar images.
+- **Failure oracle:** a stored or served uploaded image retains original EXIF metadata, was not
+  re-encoded server-side, or had its type accepted solely from a client-supplied MIME type or
+  filename extension.
+- **Negative control:** none
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Uploaded images are re-encoded server-side, EXIF stripped, and type-sniffed rather
+  than trusted
+
+#### O-80
+
+- **Category:** SP-07
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** object keys for family media cannot be predicted or substituted to reach
+  another family's media, and authorization is checked before every signed URL is issued rather
+  than being implied by the key name.
+- **Verification target:** the object-key generation scheme and the authorization check performed
+  at signed-URL issuance time for cover and avatar objects.
+- **Failure oracle:** a request for a signed URL to another family's object succeeds without an
+  authorization check, or an object key from one family predictably yields, or can be substituted
+  to reach, another family's object.
+- **Negative control:** none
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Object keys cannot be predicted or substituted to reach another family's media;
+  authorization is checked before every signed URL is issued, not embedded in the key name
 
 ### SP-08 Cryptography, Secrets, Key Management, Transport
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-88 | STATIC + RUNTIME-CONFIG | Secrets absent from source, client bundles, images, logs, generated stories, prompts, and build artifacts; deployed secrets have owners, scopes, rotation procedures, and revocation tests. Includes webhook signature verification using production rather than test-mode secrets |
-| O-89 | DYNAMIC | TLS policy, origin certificate validation, HSTS, redirect behavior, and backend-to-provider transport verified **from an external vantage point** |
-| O-90 | MANUAL | Encryption-at-rest claims identify the threat actually addressed. Where vendor disk encryption does not protect against application or administrator access, the register does not credit it as solving that different threat |
+#### O-88
+
+- **Category:** SP-08
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** secrets are absent from source, client bundles, container images, logs,
+  generated stories, prompts, and build artifacts; deployed secrets each have a recorded owner,
+  scope, rotation procedure, and a tested revocation path; webhook signature verification uses
+  production secrets rather than test-mode secrets.
+- **Verification target:** the source tree, client bundle build output, container images, log
+  output, generated story artifacts, prompts, and build artifacts, plus the deployed secret
+  inventory (owners, scopes, rotation, revocation) and the webhook signature-verification code
+  path.
+- **Failure oracle:** a secret value is found in source, a client bundle, a container image, a log
+  line, generated story content, a prompt, or a build artifact; or a deployed secret lacks a
+  recorded owner, scope, rotation procedure, or revocation test; or webhook signature verification
+  accepts a test-mode secret in production.
+- **Negative control:** none
+- **Trigger:** push to the repository (GitHub secret scanning push protection) and pull request
+  open or update (GitGuardian Security Checks); no stated trigger for the deployed-secret
+  owner/scope/rotation/revocation half of this check.
+- **Existing coverage:** GitHub secret scanning, push protection, and validity checks are enabled
+  at repository level, and `GitGuardian Security Checks` runs on pull requests (corrected in this
+  register's own "Existing gate coverage" audit, which also notes an earlier, wrong claim of "no
+  CI secret scanning"; push protection refuses the push rather than reporting after the fact). A
+  local pre-commit `detect-secrets` hook also runs, but the `pre-push` hook tier is not installed
+  per this register's Cross-cutting gate defects, so `detect-secrets` there does not run. No
+  coverage is recorded for the deployed-secret owner/scope/rotation/revocation half of this check.
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Secrets absent from source, client bundles, images, logs, generated stories, prompts,
+  and build artifacts; deployed secrets have owners, scopes, rotation procedures, and revocation
+  tests. Includes webhook signature verification using production rather than test-mode secrets
+  (Secondary class: RUNTIME-CONFIG, for the deployed secret inventory: owners, scopes, rotation,
+  and revocation state, which lives in the vendor control plane rather than in source.)
+
+#### O-89
+
+- **Category:** SP-08
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** TLS policy, origin certificate validation, HSTS, redirect behavior, and
+  backend-to-provider transport hold when verified from an external vantage point, outside the
+  trust boundary being described.
+- **Verification target:** the deployed TLS chain (Cloudflare Tunnel `cloudflared`, Pangolin, and
+  the nginx origin, per `crypto-inventory.md` section 2, lines 61 to 69) and backend-to-provider
+  egress TLS (OpenRouter, Anthropic, Gemini, Supabase JWKS, Ollama).
+- **Failure oracle:** a check run from inside the network, or against an internal or loopback
+  endpoint, is credited as verifying external TLS posture; or TLS policy, certificate validation,
+  HSTS, or redirect behavior fails when probed from outside the network.
+- **Negative control:** none
+- **Trigger:** not determined
+- **Existing coverage:** `crypto-inventory.md` section 2 documents the TLS chain and names a
+  "negotiated-group check" as the `homelab-infra` acceptance test for edge-to-origin PQC; that
+  test lives in `homelab-infra`, not this repository, and no gate in this repository verifies TLS
+  posture from an external vantage point.
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** TLS policy, origin certificate validation, HSTS, redirect behavior, and backend-to-
+  provider transport verified **from an external vantage point**
+
+#### O-90
+
+- **Category:** SP-08
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** MANUAL
+- **Protected property:** every encryption-at-rest claim in this register names the specific threat
+  it addresses, and vendor disk encryption is not credited with protecting against application or
+  administrator access, which it does not address.
+- **Verification target:** encryption-at-rest claims recorded elsewhere in this register and in
+  `crypto-inventory.md`, checked against the threat model each actually covers.
+- **Failure oracle:** a row or document credits vendor disk or volume encryption with protecting
+  against application-level or administrator access, when disk encryption protects only against
+  physical media loss.
+- **Negative control:** none
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Encryption-at-rest claims identify the threat actually addressed. Where vendor disk
+  encryption does not protect against application or administrator access, the register does not
+  credit it as solving that different threat
 
 O-89 encodes the verification vantage rule from `control-inheritance.md`: a control describing
 posture at a trust boundary must be verified from outside that boundary.
 
 ### SP-11 Logging, Audit Integrity, Alerting, Incident Response
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-28 | STATIC | The events table grants no UPDATE or DELETE to the application role; entries carry a chained digest |
-| O-29 | STATIC | An emitted-field allowlist test asserts no child identifier, story body, or token appears in log output, verified with seeded sensitive markers |
-| O-30 | RUNTIME-CONFIG | Named detections exist for approval-bypass attempts, 403 spikes, and moderation-provider outage, each with a routed recipient |
-| O-91 | DYNAMIC | A synthetic high-value event traverses the **deployed** pipeline to the actual maintained destination and is acknowledged by the named responder. Verifying that a logger was called does not satisfy this |
-| O-92 | MANUAL | The incident plan can trace a child-data event across edge, application, identity provider, database, queue, model provider, object storage, and client sync, and includes state breach-notification decision points, plus Art. 33/34 once EU users exist |
-| O-116 | MANUAL | **AC.14.1-AC.14.3**: an AI-in-pipeline compromise playbook exists; any secret touched by a suspect workflow run is rotated automatically; agent identities can be revoked within a written, annually tested target time |
+#### O-28
+
+- **Category:** SP-11
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** the events table grants the application role no UPDATE or DELETE
+  privilege, and each entry carries a chained digest linking it to the prior entry.
+- **Verification target:** the Postgres role privileges granted on the events table, and the
+  chained-digest computation in the events-writing code path.
+- **Failure oracle:** the application role can execute an UPDATE or DELETE against the events
+  table, or an entry's digest does not chain to, or fails to validate against, the prior entry.
+- **Negative control:** none
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** The events table grants no UPDATE or DELETE to the application role; entries carry a
+  chained digest
+
+#### O-29
+
+- **Category:** SP-11
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** no child identifier, story body, or token appears anywhere in log output,
+  as asserted by an emitted-field allowlist test using seeded sensitive markers.
+- **Verification target:** the emitted-field allowlist test and the log-emission code paths it
+  exercises.
+- **Failure oracle:** a seeded child identifier, story body, or token marker appears in log output
+  and the allowlist test does not catch it.
+- **Negative control:** none
+- **Trigger:** not determined
+- **Existing coverage:** `tests/unit/test_logging_security.py` partially overlaps: it verifies
+  bearer tokens are absent from authentication-failure log output, but does not test child
+  identifier or story body fields, so it does not fully cover this row's claim.
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** An emitted-field allowlist test asserts no child identifier, story body, or token
+  appears in log output, verified with seeded sensitive markers
+
+#### O-30
+
+- **Category:** SP-11
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** RUNTIME-CONFIG
+- **Protected property:** named detections exist for approval-bypass attempts, 403 spikes, and
+  moderation-provider outage, and each has a routed recipient.
+- **Verification target:** the deployed alerting or monitoring configuration (vendor control
+  plane) where these named detections and their routed recipients are configured.
+- **Failure oracle:** an approval-bypass attempt, a 403 spike, or a moderation-provider outage
+  occurs and no corresponding detection fires, or fires without reaching a routed recipient.
+- **Negative control:** none
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Named detections exist for approval-bypass attempts, 403 spikes, and
+  moderation-provider outage, each with a routed recipient
+
+#### O-91
+
+- **Category:** SP-11
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** a synthetic high-value event, injected end to end, traverses the
+  deployed alerting pipeline to its actual maintained destination and is acknowledged by the
+  named responder.
+- **Verification target:** the deployed alerting pipeline end to end, from event source through to
+  the maintained destination and the named responder, not a unit-level assertion that a logger
+  function was invoked.
+- **Failure oracle:** a synthetic high-value event fails to reach the actual maintained
+  destination, or reaches it but no named responder acknowledges it, or the only evidence offered
+  is that a logging call occurred.
+- **Negative control:** none
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** A synthetic high-value event traverses the **deployed** pipeline to the actual
+  maintained destination and is acknowledged by the named responder. Verifying that a logger was
+  called does not satisfy this
+
+#### O-92
+
+- **Category:** SP-11
+- **Framework ref:** not determined
+- **Legal ref:** State breach notification (all US states); GDPR Art. 33-34 (once EU users exist)
+- **Class:** MANUAL
+- **Protected property:** the incident plan can trace a child-data event across edge, application,
+  identity provider, database, queue, model provider, object storage, and client sync, and
+  includes state breach-notification decision points, plus GDPR Art. 33/34 decision points once EU
+  users exist.
+- **Verification target:** the incident response plan or runbook document.
+- **Failure oracle:** the incident plan cannot trace a child-data event through one or more of the
+  named components, lacks a decision point for state breach notification, or, once EU users exist,
+  lacks a decision point for GDPR Art. 33/34.
+- **Negative control:** none
+- **Trigger:** first non-household user, which is when state breach notification attaches per this
+  register's regulatory applicability table; first EU or UK child or guardian, which is when GDPR
+  attaches per the same table, for the Art. 33/34 portion.
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** The incident plan can trace a child-data event across edge, application, identity
+  provider, database, queue, model provider, object storage, and client sync, and includes state
+  breach-notification decision points, plus Art. 33/34 once EU users exist
+
+#### O-116
+
+- **Category:** SP-11
+- **Framework ref:** AISVS 1.0 Appendix C, AC.14 (Compromise containment for AI-in-pipeline),
+  requirements AC.14.1 to AC.14.3
+- **Legal ref:** not determined
+- **Class:** MANUAL
+- **Protected property:** an AI-in-pipeline compromise playbook exists; any secret touched by a
+  suspect workflow run is rotated automatically; agent identities can be revoked within a written,
+  annually tested target time.
+- **Verification target:** the compromise-containment playbook document, the automated
+  secret-rotation mechanism triggered by a suspect workflow run, and the agent-identity revocation
+  mechanism plus its annual test record.
+- **Failure oracle:** no compromise playbook exists for an AI-in-pipeline incident; a secret
+  touched by a suspect workflow run is not rotated automatically; or agent-identity revocation has
+  no written target time, or that target time has not been tested within the past year.
+- **Negative control:** none
+- **Trigger:** annual test cadence, per the Check text's "annually tested target time"
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** **AC.14.1-AC.14.3**: an AI-in-pipeline compromise playbook exists; any secret touched
+  by a suspect workflow run is rotated automatically; agent identities can be revoked within a
+  written, annually tested target time
 
 ### SP-12 Data Lifecycle, Rights, Processors, Transfers
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-31 | MANUAL | An erasure runbook enumerates every store (Postgres, R2, Redis payloads, retained raw LLM output, offline IndexedDB on family devices, backups) and a test deletion demonstrates residue-free removal within the stated SLA |
-| O-32 | STATIC | Every data class has a stated TTL with an automated reaper and evidence of its last successful run |
-| O-33 | MANUAL | An actual restore into a scratch environment was performed and recorded within the last quarter |
-| O-34 | DYNAMIC | A guardian can obtain a machine-readable export within the statutory window, without receiving another family's data |
-| O-57 | MANUAL | Each provider is classified controller/processor/recipient with documented subprocessors, locations, retention, training-use terms, deletion support, and security commitments. COPPA additionally requires written assurances from recipients of children's data |
-| O-58 | MANUAL | A transfer mechanism is recorded per non-US processor, activated on EU/UK entry (Art. 44-49) |
-| O-59 | MANUAL | A DPIA is completed and revisited on trigger. Effectively mandatory on EU entry (children plus profiling plus generative AI), and several state minors' codes require the equivalent on US public launch |
-| O-60 | MANUAL | An Art. 27 EU-representative determination is recorded, with reasoning |
-| O-93 | STATIC | Records of processing are maintained with purposes, recipients, transfers, deletion periods, and a description of security measures |
+#### O-31
+
+- **Category:** SP-12
+- **Framework ref:** not determined
+- **Legal ref:** COPPA (16 CFR 312; per the regulatory-applicability table row mapping COPPA to
+  this ID, not named in the Check text itself)
+- **Class:** MANUAL
+- **Protected property:** Personal data (including children's data) is completely removable from
+  every store that holds it, within the stated SLA.
+- **Verification target:** The erasure runbook document plus the stores it enumerates: Postgres,
+  R2, Redis payloads, retained raw LLM output, offline IndexedDB on family devices, backups.
+- **Failure oracle:** A test deletion leaves residue in any enumerated store, or completes outside
+  the stated SLA.
+- **Negative control:** not determined (Check text does not describe a deliberately seeded
+  residual record used to prove the test deletion can fail)
+- **Trigger:** not determined (no cadence or event named in Check text)
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** An erasure runbook enumerates every store (Postgres, R2, Redis payloads, retained raw
+  LLM output, offline IndexedDB on family devices, backups) and a test deletion demonstrates
+  residue-free removal within the stated SLA
+
+#### O-32
+
+- **Category:** SP-12
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** Every data class has a bounded retention period enforced by an
+  automated mechanism, not merely a stated policy.
+- **Verification target:** The TTL/retention configuration per data class and the reaper job's
+  execution evidence (last successful run record).
+- **Failure oracle:** A data class exists with no stated TTL, or a stated TTL exists with no
+  automated reaper, or the reaper's last successful run cannot be evidenced.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Every data class has a stated TTL with an automated reaper and evidence of its last
+  successful run
+
+#### O-33
+
+- **Category:** SP-12
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** MANUAL
+- **Protected property:** Backups are demonstrably restorable, not merely taken.
+- **Verification target:** The scratch-environment restore record/log for the most recent
+  quarter.
+- **Failure oracle:** No restore record exists within the last quarter, or the recorded restore
+  did not target a scratch environment separate from production.
+- **Negative control:** not determined
+- **Trigger:** Quarterly (per Check text: "within the last quarter")
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** An actual restore into a scratch environment was performed and recorded within the
+  last quarter
+
+#### O-34
+
+- **Category:** SP-12
+- **Framework ref:** not determined
+- **Legal ref:** not determined (Check text says only "the statutory window" without naming which
+  regime; several regimes in the spine's catalog could apply)
+- **Class:** DYNAMIC
+- **Protected property:** A guardian's data export is complete, machine-readable, delivered
+  within the statutory window, and scoped to only their own family's data.
+- **Verification target:** The live export endpoint/flow exercised by an actual guardian account
+  against the deployed system.
+- **Failure oracle:** The export is not machine-readable, arrives outside the statutory window, or
+  contains any record belonging to a different family.
+- **Negative control:** not determined (Check text does not describe a seeded cross-family record
+  used to prove the isolation check can fail)
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** A guardian can obtain a machine-readable export within the statutory window, without
+  receiving another family's data
+
+#### O-57
+
+- **Category:** SP-12
+- **Framework ref:** not determined
+- **Legal ref:** COPPA 312.8 (explicitly named in Check text: "COPPA additionally requires written
+  assurances from recipients of children's data")
+- **Class:** MANUAL
+- **Protected property:** Every data-processing provider has a recorded controller, processor, or
+  recipient classification with documented subprocessors, locations, retention, training-use
+  terms, deletion support, security commitments, and (for children's-data recipients) written
+  COPPA assurances.
+- **Verification target:** The provider/subprocessor register covering every third-party data
+  processor.
+- **Failure oracle:** A provider exists that lacks a classification, lacks any of the documented
+  terms, or (for a children's-data recipient) lacks a written COPPA assurance.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Each provider is classified controller/processor/recipient with documented
+  subprocessors, locations, retention, training-use terms, deletion support, and security
+  commitments. COPPA additionally requires written assurances from recipients of children's data
+
+#### O-58
+
+- **Category:** SP-12
+- **Framework ref:** not determined
+- **Legal ref:** GDPR Art. 44-49
+- **Class:** MANUAL
+- **Protected property:** Every non-US processor handling personal data has a recorded lawful
+  transfer mechanism.
+- **Verification target:** The processor register's transfer-mechanism field for each non-US
+  processor.
+- **Failure oracle:** A non-US processor exists with no recorded transfer mechanism, once the
+  EU/UK entry trigger has fired.
+- **Negative control:** not determined
+- **Trigger:** EU/UK market entry (per Check text: "activated on EU/UK entry")
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** A transfer mechanism is recorded per non-US processor, activated on EU/UK entry
+  (Art. 44-49)
+
+#### O-59
+
+- **Category:** SP-12
+- **Framework ref:** not determined
+- **Legal ref:** GDPR Art. 35 (DPIA duty, per the spine's regulatory catalog; not cited by article
+  number in the Check text itself); state minors' design codes require an equivalent on US public
+  launch (individual states not named in the Check text)
+- **Class:** MANUAL
+- **Protected property:** A Data Protection Impact Assessment exists, covers the
+  children-plus-profiling-plus-generative-AI risk combination, and is revisited whenever a defined
+  trigger fires.
+- **Verification target:** The DPIA document and its revision history/trigger log.
+- **Failure oracle:** No DPIA exists once the EU-entry trigger has fired, or an existing DPIA was
+  not revisited after a named trigger fired.
+- **Negative control:** not determined
+- **Trigger:** EU entry; US public launch (per state minors' codes); and other unnamed triggers
+  referenced generically as "on trigger"
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** A DPIA is completed and revisited on trigger. Effectively mandatory on EU entry
+  (children plus profiling plus generative AI), and several state minors' codes require the
+  equivalent on US public launch
+
+#### O-60
+
+- **Category:** SP-12
+- **Framework ref:** not determined
+- **Legal ref:** GDPR Art. 27
+- **Class:** MANUAL
+- **Protected property:** A recorded, reasoned determination exists on whether an EU
+  representative is required.
+- **Verification target:** The Art. 27 determination record.
+- **Failure oracle:** No determination is recorded, or a determination is recorded without stated
+  reasoning.
+- **Negative control:** not determined
+- **Trigger:** not determined (no cadence named)
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** An Art. 27 EU-representative determination is recorded, with reasoning
+
+#### O-93
+
+- **Category:** SP-12
+- **Framework ref:** not determined
+- **Legal ref:** GDPR Art. 30 (Records of processing; the Check text's language matches the
+  spine's regulatory catalog entry for GDPR Art. 30, but is not cited by article number in the
+  Check text itself)
+- **Class:** STATIC
+- **Protected property:** A records-of-processing register exists and is complete: purposes,
+  recipients, transfers, deletion periods, and security measures, for every processing activity.
+- **Verification target:** The records-of-processing register/document.
+- **Failure oracle:** A processing activity exists with no corresponding record, or a record is
+  missing any of the five required fields.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Records of processing are maintained with purposes, recipients, transfers, deletion
+  periods, and a description of security measures
 
 ### SP-13 Protected-Population Duties and Age-Appropriate Design
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-35 | STATIC | Consent records are immutable, timestamped, versioned to the exact notice text displayed, and non-repudiable. Not a timeless boolean |
-| O-36 | STATIC | Age and band changes are restricted to a verified guardian and audit-logged. Age is a safety parameter, not a preference: it determines what content the pipeline will send a child |
-| O-37 | STATIC | Kid-scoped response schemas are field-allowlisted and diffed against the OpenAPI schema on contract change |
-| O-38 | MANUAL | The published privacy notice's third-party list reconciles against the measured egress inventory. Divergence is an FTC Act §5 misrepresentation, not only a privacy gap |
-| O-61 | MANUAL | A written children's-data security program exists with a named coordinator, annual risk assessment, ongoing safeguard testing, and annual evaluation (COPPA §312.8) |
-| O-62 | STATIC | The data retention policy states purpose, business need, and a specific deletion timeframe, and is **published directly in the online privacy notice**; a link to a separate policy does not satisfy the rule (COPPA) |
-| O-94 | DYNAMIC | Child-facing defaults minimize visibility, sharing, profiling, location, personalization, and persistent identifiers; weakening a protection requires an attributable decision (state minors' design codes; UK AADC and GDPR Art. 25 on EU entry) |
-| O-95 | MANUAL | Notices and error messages are tested separately for roughly ages 5-7, 8-10, and 11-12, not with one adult notice. Overlaps the WCAG duty |
-| O-96 | MANUAL + DYNAMIC | The child is told, age-appropriately, what a guardian or administrator can see and do |
-| O-97 | MANUAL | A jurisdiction-trigger matrix maps each child's residence to the regimes it activates, per the spine's T4 rule. Owns the state-comprehensive-privacy and minors'-design-code determinations |
-| O-98 | *deferred, R2* | App-store accountability: designate an age rating, ingest store-provided age and consent signals via the platform API, re-trigger parental consent on significant change (TX SB 2420, UT, LA, AL) |
-| O-99 | *deferred, R2* | Apple Kids Category and Google Play Families pre-submission checklist, reviewed quarterly with captured page dates |
-| O-117 | STATIC + DYNAMIC | A country-of-residence signal is recorded at account creation and is queryable per account. Without it the DSA Art. 2(1) and GDPR Art. 3(2) targeting tests cannot be answered, and a market can be excluded by design rather than by hope. Cheap pre-launch, requires a re-consent campaign afterwards |
-| O-118 | STATIC | The five structures that keep the product outside DSA Art. 3(i) hold: admin-gated connection creation, dual guardian consent, no discovery surface, no free text between users, directional and revocable connections. A change to any one re-opens the classification and must be an attributable decision, not a refactor. **Failure oracle**: a test that creates an active connection without two distinct guardian consents must fail |
-| O-119 | STATIC | The guardian account carries an adulthood attestation signal with a timestamp. Every age regime that can attach at R2 locates its duty on the adult account, not the kid profile; today only kid profiles carry age data. Trivial pre-launch, requires backfill against live accounts afterwards |
+#### O-35
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** COPPA (16 CFR 312; per the regulatory-applicability table row mapping COPPA to
+  this ID, not named in the Check text itself)
+- **Class:** STATIC
+- **Protected property:** Consent records are immutable, timestamped, version-linked to the exact
+  notice text shown at consent time, and non-repudiable.
+- **Verification target:** The consent-record schema/table and its write path (append-only,
+  versioned to notice text).
+- **Failure oracle:** A consent record can be altered or deleted after creation, lacks a
+  timestamp, is not linked to the specific notice-text version shown, or has no non-repudiation
+  evidence.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Consent records are immutable, timestamped, versioned to the exact notice text
+  displayed, and non-repudiable. Not a timeless boolean
+
+#### O-36
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** COPPA (16 CFR 312; per the regulatory-applicability table row mapping COPPA to
+  this ID, not named in the Check text itself)
+- **Class:** STATIC
+- **Protected property:** A child's age/reading-band can only be changed by a verified guardian,
+  and every change is audit-logged.
+- **Verification target:** The age/band-change code path, its authorization check, and the audit
+  log entries it produces.
+- **Failure oracle:** An age or band change succeeds without guardian verification, or succeeds
+  without producing an audit log entry.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Age and band changes are restricted to a verified guardian and audit-logged. Age is
+  a safety parameter, not a preference: it determines what content the pipeline will send a child
+
+#### O-37
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** A kid-facing API response contains only fields on the declared
+  allowlist; no unlisted field can pass through undetected.
+- **Verification target:** The kid-scoped response schema definitions and the diff check against
+  the OpenAPI schema.
+- **Failure oracle:** A field appears in a kid-scoped response that is not on the allowlist, or
+  the OpenAPI contract changes without the diff check running.
+- **Negative control:** not determined
+- **Trigger:** OpenAPI contract change (per Check text: "diffed against the OpenAPI schema on
+  contract change")
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Kid-scoped response schemas are field-allowlisted and diffed against the OpenAPI
+  schema on contract change
+
+#### O-38
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** FTC Act §5
+- **Class:** MANUAL
+- **Protected property:** The privacy notice's stated third-party list matches the actual
+  measured set of third parties data egresses to.
+- **Verification target:** The published privacy notice's third-party list, reconciled against a
+  measured egress inventory.
+- **Failure oracle:** A third party receives data via measured egress that is not named in the
+  published privacy notice, or a named third party receives no measured egress.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** The published privacy notice's third-party list reconciles against the measured
+  egress inventory. Divergence is an FTC Act §5 misrepresentation, not only a privacy gap
+
+#### O-61
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** COPPA 312.8
+- **Class:** MANUAL
+- **Protected property:** A written, named-coordinator children's-data security program exists
+  and performs annual risk assessment, ongoing safeguard testing, and annual evaluation.
+- **Verification target:** The written security program document and its named coordinator,
+  risk-assessment, testing, and evaluation records.
+- **Failure oracle:** No written program exists, no coordinator is named, or any of the
+  annual/ongoing activities has no record within its required cadence.
+- **Negative control:** not determined
+- **Trigger:** Annual (per Check text: "annual risk assessment", "annual evaluation")
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** A written children's-data security program exists with a named coordinator, annual
+  risk assessment, ongoing safeguard testing, and annual evaluation (COPPA §312.8)
+
+#### O-62
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** COPPA
+- **Class:** STATIC
+- **Protected property:** The retention policy (purpose, business need, specific deletion
+  timeframe) is published as the text of the online privacy notice itself, not merely linked.
+- **Verification target:** The online privacy notice's rendered content.
+- **Failure oracle:** The privacy notice links out to a separate retention policy instead of
+  stating purpose, business need, and deletion timeframe inline, or omits any of those three
+  elements.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** The data retention policy states purpose, business need, and a specific deletion
+  timeframe, and is **published directly in the online privacy notice**; a link to a separate
+  policy does not satisfy the rule (COPPA)
+
+#### O-94
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** State minors' design codes (US); UK AADC; GDPR Art. 25 (on EU entry)
+- **Class:** DYNAMIC
+- **Protected property:** Every child-facing default minimizes visibility, sharing, profiling,
+  location, personalization, and persistent identifiers, and any weakening of a default is
+  traceable to an attributable decision.
+- **Verification target:** The deployed default configuration values for child-facing settings.
+- **Failure oracle:** A child-facing default is set to a less-protective value than the minimizing
+  baseline, with no attributable decision record explaining the change.
+- **Negative control:** not determined
+- **Trigger:** EU entry (for GDPR Art. 25 applicability, per Check text)
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Child-facing defaults minimize visibility, sharing, profiling, location,
+  personalization, and persistent identifiers; weakening a protection requires an attributable
+  decision (state minors' design codes; UK AADC and GDPR Art. 25 on EU entry)
+
+#### O-95
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** ADA Title III / Section 508 (WCAG conformance; the Check text's own phrase
+  "Overlaps the WCAG duty" points to this spine catalog entry, but does not cite the statute
+  directly)
+- **Class:** MANUAL
+- **Protected property:** Child-facing notices and error messages are comprehension-tested
+  separately for each of roughly ages 5 to 7, 8 to 10, and 11 to 12.
+- **Verification target:** The notice/error-message comprehension test records for each named age
+  band.
+- **Failure oracle:** A child-facing notice or error message has no comprehension test recorded
+  for one or more of the three named age bands, or was tested only with an adult-oriented notice.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Notices and error messages are tested separately for roughly ages 5-7, 8-10, and
+  11-12, not with one adult notice. Overlaps the WCAG duty
+
+#### O-96
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** MANUAL (secondary: DYNAMIC, per the original composite tag "MANUAL + DYNAMIC" in the
+  source table)
+- **Protected property:** A child-facing, age-appropriate disclosure exists describing what a
+  guardian or administrator can see and do.
+- **Verification target:** The child-facing disclosure content/UI surface.
+- **Failure oracle:** No such disclosure exists, or its content is not age-appropriate for the
+  child's band.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** The child is told, age-appropriately, what a guardian or administrator can see and do
+
+#### O-97
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** State comprehensive privacy laws; state minors'-design codes (named as categories
+  in the Check text; no single statute cited)
+- **Class:** MANUAL
+- **Protected property:** Every child's residence is mapped to the regulatory regimes it
+  activates, per the spine's T4 rule.
+- **Verification target:** The jurisdiction-trigger matrix document/table.
+- **Failure oracle:** A child's residence has no corresponding entry in the matrix, or the matrix
+  omits an applicable state-comprehensive-privacy or minors'-design-code regime for that
+  residence.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** A jurisdiction-trigger matrix maps each child's residence to the regimes it
+  activates, per the spine's T4 rule. Owns the state-comprehensive-privacy and
+  minors'-design-code determinations
+
+#### O-98
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** TX SB 2420; UT, LA, AL app-store accountability laws (individual citations
+  beyond the state abbreviations are not given in the Check text)
+- **Class:** MANUAL (inferred: designating an age rating and deciding when a change is
+  "significant" enough to re-trigger consent are judgment calls; the Check text describes no
+  automated pass/fail criterion. The original table carried `*deferred, R2*` in this position,
+  which is a status and a trigger, not a class)
+- **Protected property:** The app's store listing carries a correct designated age rating,
+  ingests store-provided age/consent signals, and parental consent is re-triggered on any
+  significant app change.
+- **Verification target:** The app-store listing configuration (age rating) and the consent
+  re-trigger logic/record.
+- **Failure oracle:** The app carries no designated age rating, store-provided signals are not
+  ingested, or a significant change ships without re-triggering parental consent.
+- **Negative control:** not determined
+- **Trigger:** R2 (app-store launch), plus "significant change" to the app (per Check text:
+  "re-trigger parental consent on significant change")
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** verification scheduled
+- **Check:** App-store accountability: designate an age rating, ingest store-provided age and
+  consent signals via the platform API, re-trigger parental consent on significant change (TX
+  SB 2420, UT, LA, AL)
+
+#### O-99
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** not determined (Apple Kids Category and Google Play Families are platform
+  policies, not statutes; the app-store accountability statutes named at O-98 are the adjacent
+  statutory trigger but are not named in this row's Check text)
+- **Class:** MANUAL (inferred: a reviewed pre-submission checklist. The original table carried
+  `*deferred, R2*` in this position, which is a status and a trigger, not a class)
+- **Protected property:** The app's pre-submission posture satisfies the current Apple Kids
+  Category and Google Play Families requirements, reviewed on a quarterly cadence with dated
+  evidence of the reviewed page.
+- **Verification target:** The pre-submission checklist and its captured page-date evidence.
+- **Failure oracle:** No checklist review is recorded within a quarter, or a recorded review has
+  no captured page date evidencing what version of the platform policy was checked.
+- **Negative control:** not determined
+- **Trigger:** R2 (app-store launch), plus quarterly review (per Check text: "reviewed
+  quarterly")
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** verification scheduled
+- **Check:** Apple Kids Category and Google Play Families pre-submission checklist, reviewed
+  quarterly with captured page dates
+
+#### O-117
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** DSA Art. 2(1); GDPR Art. 3(2)
+- **Class:** STATIC (secondary: DYNAMIC, per the original composite tag "STATIC + DYNAMIC" in
+  the source table)
+- **Protected property:** Every account records a country-of-residence signal at creation, and
+  that signal is queryable per account.
+- **Verification target:** The account schema's country-of-residence field and its query path.
+- **Failure oracle:** An account exists with no recorded country-of-residence signal, or the
+  signal cannot be queried per account.
+- **Negative control:** not determined
+- **Trigger:** Account creation (per Check text); recording is cheap pre-launch, but adding it
+  afterward requires a re-consent campaign (per Check text)
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** A country-of-residence signal is recorded at account creation and is queryable per
+  account. Without it the DSA Art. 2(1) and GDPR Art. 3(2) targeting tests cannot be answered,
+  and a market can be excluded by design rather than by hope. Cheap pre-launch, requires a
+  re-consent campaign afterwards
+
+#### O-118
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** DSA Art. 3(i)
+- **Class:** STATIC
+- **Protected property:** All five structures (admin-gated connection creation, dual guardian
+  consent, no discovery surface, no free text between users, directional and revocable
+  connections) hold simultaneously, keeping the product outside DSA Art. 3(i) classification.
+- **Verification target:** The connection-creation code path and its consent-gating logic.
+- **Failure oracle:** A test that creates an active connection without two distinct guardian
+  consents does not fail (quoted directly from Check text's own named failure oracle).
+- **Negative control:** A test that attempts to create an active connection with only one
+  guardian's consent, or none, and asserts it does NOT become active.
+- **Trigger:** Any change to one of the five named structures (per Check text: "A change to any
+  one re-opens the classification")
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** The five structures that keep the product outside DSA Art. 3(i) hold: admin-gated
+  connection creation, dual guardian consent, no discovery surface, no free text between users,
+  directional and revocable connections. A change to any one re-opens the classification and
+  must be an attributable decision, not a refactor. **Failure oracle**: a test that creates an
+  active connection without two distinct guardian consents must fail
+
+#### O-119
+
+- **Category:** SP-13
+- **Framework ref:** not determined
+- **Legal ref:** not determined (Check text says "every age regime" generically, without naming
+  one)
+- **Class:** STATIC
+- **Protected property:** Every guardian account carries a timestamped adulthood-attestation
+  signal.
+- **Verification target:** The guardian-account schema's adulthood-attestation field.
+- **Failure oracle:** A guardian account exists with no adulthood-attestation signal, or with a
+  signal that carries no timestamp.
+- **Negative control:** not determined
+- **Trigger:** R2 (per Check text: "every age regime that can attach at R2"); recording is
+  trivial pre-launch, but requires a backfill campaign against live accounts afterward (per
+  Check text)
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** The guardian account carries an adulthood attestation signal with a timestamp.
+  Every age regime that can attach at R2 locates its duty on the adult account, not the kid
+  profile; today only kid profiles carry age data. Trivial pre-launch, requires backfill against
+  live accounts afterwards
 
 ### SP-16 Availability, Resilience, Recovery
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-44 | STATIC | Every expensive operation (generation, cover art, full-graph validation, re-screen) is queued with bounded concurrency and a per-tenant cap, never executed on the request thread |
-| O-45 | STATIC | The worker re-derives and re-validates authorization from the database at job start rather than trusting the payload |
-| O-46 | RUNTIME-CONFIG | Redis is unreachable from outside the compose network; payloads carry identifiers rather than PII |
-| O-105 | DYNAMIC | Generation and sync jobs are idempotent or uniquely deduplicated, preserve tenant context, and cannot publish or corrupt state after duplicate, delayed, or out-of-order execution. Includes connection-pool release under concurrent load |
-| O-106 | DYNAMIC | A restoration cannot resurrect a deleted account or republish withdrawn content without reconciliation against deletion, revocation, and publication records |
+#### O-44
+
+- **Category:** SP-16
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** Every expensive operation is queued, never run on the request thread,
+  with bounded overall concurrency and a per-tenant cap.
+- **Verification target:** The queueing configuration/code path for generation, cover art,
+  full-graph validation, and re-screen operations.
+- **Failure oracle:** Any of the four named operations executes on the request thread, or runs
+  without a bounded-concurrency or per-tenant cap.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Every expensive operation (generation, cover art, full-graph validation, re-screen)
+  is queued with bounded concurrency and a per-tenant cap, never executed on the request thread
+
+#### O-45
+
+- **Category:** SP-16
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** A queued job's authorization is re-derived from the database at job
+  start, never trusted from the enqueued payload.
+- **Verification target:** The worker's job-start authorization code path.
+- **Failure oracle:** A worker executes a job's privileged action using authorization data taken
+  from the payload without re-deriving it from the database.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** The worker re-derives and re-validates authorization from the database at job start
+  rather than trusting the payload
+
+#### O-46
+
+- **Category:** SP-16
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** RUNTIME-CONFIG
+- **Protected property:** Redis is network-isolated to the compose network, and queued payloads
+  carry only identifiers, never PII directly.
+- **Verification target:** The deployed Redis network configuration/firewall rules, and the
+  shape of queued job payloads.
+- **Failure oracle:** Redis is reachable from outside the compose network, or a queued payload
+  contains PII rather than an identifier reference.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Redis is unreachable from outside the compose network; payloads carry identifiers
+  rather than PII
+
+#### O-105
+
+- **Category:** SP-16
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** Generation and sync jobs are idempotent or deduplicated, preserve
+  tenant context, and cannot publish or corrupt state under duplicate, delayed, or out-of-order
+  execution, including connection-pool release under concurrent load.
+- **Verification target:** The running job-execution system under duplicate, delayed,
+  out-of-order, and concurrent-load conditions.
+- **Failure oracle:** A duplicate, delayed, or out-of-order execution publishes content twice,
+  corrupts state, loses tenant context, or a connection pool is not released correctly under
+  concurrent load.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Generation and sync jobs are idempotent or uniquely deduplicated, preserve tenant
+  context, and cannot publish or corrupt state after duplicate, delayed, or out-of-order
+  execution. Includes connection-pool release under concurrent load
+
+#### O-106
+
+- **Category:** SP-16
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** DYNAMIC
+- **Protected property:** A backup restoration cannot bring back a deleted account or republish
+  withdrawn content unless reconciled against the deletion, revocation, and publication records.
+- **Verification target:** The restore process, exercised against a backup that predates a known
+  deletion, revocation, or unpublication event.
+- **Failure oracle:** A restoration resurrects a deleted account or republishes withdrawn content
+  without first reconciling against deletion, revocation, and publication records.
+- **Negative control:** not determined
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** A restoration cannot resurrect a deleted account or republish withdrawn content
+  without reconciliation against deletion, revocation, and publication records
 
 ### Cross-cutting
 
-| ID | Class | Check |
-|----|-------|-------|
-| O-49 | STATIC | Every gate defaults to not-approved on exception, verified by a fault-injection test per gate. For this product a fail-open moderation gate is the worst possible outcome |
+This grouping is deliberate: it is not one of the spine's seventeen `SP-nn` categories, and holds
+the single item that constrains every other row's default failure behavior rather than one
+system layer.
+
+#### O-49
+
+- **Category:** Cross-cutting (not an SP-nn category; see note)
+- **Framework ref:** not determined
+- **Legal ref:** not determined
+- **Class:** STATIC
+- **Protected property:** Every approval/moderation gate defaults to not-approved (fails closed)
+  when an exception occurs during its evaluation.
+- **Verification target:** Each gate's exception-handling code path, verified via a
+  fault-injection test per gate.
+- **Failure oracle:** A fault-injected exception in a gate's evaluation logic results in an
+  approved/pass outcome rather than not-approved.
+- **Negative control:** A fault-injection test per gate that forces an exception and asserts the
+  gate does NOT approve (per Check text: "verified by a fault-injection test per gate").
+- **Trigger:** not determined
+- **Existing coverage:** none
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** Every gate defaults to not-approved on exception, verified by a fault-injection test
+  per gate. For this product a fail-open moderation gate is the worst possible outcome
 
 ## What the source checklist missed
 
@@ -544,7 +3220,7 @@ from it is the higher-signal part.
 ### Adopted on multi-run agreement
 
 | Change | Votes |
-|--------|-------|
+| -------- | ------- |
 | Split generation into model-layer and human-approval-gate | 3 of 3; two called it the most important recommendation |
 | Add an assurance-validity meta category for hollow checks | 2 of 3, and the dissent contradicted its own Part 2 |
 | Add offline sync integrity as distinct from client data at rest | 3 of 3 |
@@ -567,8 +3243,11 @@ it was accepted with both subsections made mandatory.
 - **"Ignore cloud and container baselines, the vendor owns it."** Refuted by AISVS's own scope
   statement, which names CIS Benchmarks and NIST SP 800-53/190 as the deferral target for
   infrastructure hardening, and by A9: the origin is self-managed hardware with a confirmed bypass.
-- **"Cut cryptography and secrets."** The secrets half is not vendor-managed, and no CI-side secret
-  scanning exists anywhere in the repository.
+- **"Cut cryptography and secrets."** The secrets half is not vendor-managed. The original grounds
+  given here were wrong and are corrected: CI-side secret scanning does exist, as GitHub secret
+  scanning with push protection and validity checks at repository level, plus GitGuardian on pull
+  requests. The rejection stands on the narrower and still-true point that key custody, rotation,
+  and the negotiated TLS parameters at the edge are operator-owned and no scanner observes them.
 - **"Cut availability and recovery."** Art. 32(1)(c) makes restorability binding.
 - **"Merge input validation with client-side data at rest."** Conflates DOM output encoding with
   children's names in IndexedDB: no shared threat, method, or owner.
@@ -603,7 +3282,7 @@ different question.
    mechanism in the repo that enforces the contract at the top of this file.
 
    The obstacle is not a missing manifest entry. `plan-manifest.toml` contains `[phases]`,
-   `[rungs]`, and `[status_vocabulary]`, and those are the only sections the checker reads from it.
+   `[rungs]`, `[status_vocabulary]`, and `[validation]`, of which the checker reads the first three.
    There is no namespace registry. All four existing namespaces (`UW-[A-M]NN`, the debt register's
    `C/GS/U/T/P/SL` shapes, the capability register's `[KGAS]NN`, and `AL-NNN`) are hardcoded in the
    checker as a path constant plus row and citation regexes.
@@ -622,15 +3301,31 @@ different question.
    existing on main, which stopped being true at `fc36b51a`; retire that paragraph in the same
    change.
 
-2. **Rename `O-nn` to `SEC-nnn` when the namespace lands.** The identifiers are provisional. `O-01`
-   reads as a zero and the letter carries no meaning. `SQ-*` was previously suspected of colliding
-   with these; it does not, being an unrelated story-structure track.
+2. **Rename `O-nn` to `SEC-nnn` when the namespace lands, and prefix the inheritance-map IDs in
+   the same change.** The identifiers are provisional. `O-01` reads as a zero and the letter
+   carries no meaning. `SQ-*` was previously suspected of colliding with these; it does not, being
+   an unrelated story-structure track. There is, however, a real collision that the earlier
+   analysis missed: `control-inheritance.md` uses bare `A1` through `A12` as its Plane A row IDs,
+   and those are exact word-bounded matches for the capability register's `\b[KGAS]\d+\b` pattern
+   at `scripts/check_work_linkage.py:234`. The collision is inert today only because the checker
+   never reads `docs/security/`. Making the checker data-driven over declared register paths, which
+   is item 1 above, is exactly what would activate it, so the two changes must land together or the
+   first will manufacture twelve false capability citations.
 3. **Confirm no ASVS 5.0.x patch has shipped since 5.0.0.**
-4. **Confirm AISVS C8 applicability**: whether `diversity/` uses embeddings or only structural and
-   lexical similarity.
+4. ~~**Confirm AISVS C8 applicability**: whether `diversity/` uses embeddings or only structural
+   and lexical similarity.~~ **Confirmed 2026-08-02: structural and lexical only.** `diversity/`
+   imports no ML or embedding library; its feature vectors are hand-built structural tuples
+   compared by Canberra distance, and its cosine similarity runs over token-count `Counter`
+   objects. The exclusion table now records this as a verified reason rather than a belief.
 5. **Counsel scoping decision on UK OSA only.** DSA Art. 28 is resolved above.
-6. ~~Decide the row budget.~~ **Decided 2026-08-02: 81 rows accepted, no trimming.** Recorded
-   because a budget silently exceeded is indistinguishable from one never considered.
+6. **Decide the row budget, against the corrected count.** A prior entry recorded "Decided
+   2026-08-02: 81 rows accepted, no trimming", on the reasoning that a budget silently exceeded is
+   indistinguishable from one never considered. That reasoning holds; the number did not. The
+   register carries 116 rows, 113 of them active, so the decision was taken against a figure 35
+   rows below the real one and the budget was silently exceeded after all, by the very entry
+   written to prevent it. Reopened: decide whether 113 active rows is accepted, or trim to the ~60
+   ceiling. This is the maintainer's call and is deliberately left open rather than re-decided
+   here.
 7. **Promote the spine.** `assurance-spine.md` is written to be lifted into `~/.claude/standards/`
    so other projects instantiate it rather than rediscovering it.
 
@@ -641,9 +3336,9 @@ pre-launch build work, because each is cheap now and requires a re-consent or ba
 once real accounts exist.
 
 | Row | Commitment | Why it cannot wait |
-|---|---|---|
+| --- | --- | --- |
 | O-117 | Country of residence captured at signup, queryable per account | Answers the DSA Art. 2(1) and GDPR Art. 3(2) targeting tests and lets the UK and EU be excluded by design. For the UK specifically the gate is necessary but not sufficient: OSA s.4 also finds links through capability-plus-material-risk, so the gate holds only in combination with the O-118 structures |
-| O-119 | Guardian adulthood attestation with timestamp | Every age regime reachable at R2 attaches its duty to the adult account; today only kid profiles carry age data. Scope is deliberately **attestation, not verification**: DSA Art. 28(3) forecloses an obligation to collect additional personal data to detect minors, and the app-store age signals at O-098 supersede this at R2 |
+| O-119 | Guardian adulthood attestation with timestamp | Every age regime reachable at R2 attaches its duty to the adult account; today only kid profiles carry age data. Scope is deliberately **attestation, not verification**: DSA Art. 28(3) forecloses an obligation to collect additional personal data to detect minors, and the app-store age signals at O-98 supersede this at R2 |
 
 The country field is itself personal data and inherits the minimization, retention, and access
 duties in SP-12.
