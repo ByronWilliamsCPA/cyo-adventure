@@ -788,7 +788,10 @@ runs on Supabase-managed infrastructure instead of the homelab; see
 
 - [ ] Performance pass, offline-edge hardening, accessibility (WCAG AA basics: contrast,
       focus order, scalable text).
-- [ ] Sentry wired on client and server; backups and a tested restore. (Sentry half delivered 2026-07-17; backups remain)
+- [ ] Sentry wired on client and server; backups and a tested restore. (Sentry half delivered
+      2026-07-17; a scheduled backup landed 2026-08-02, tracked as `UW-D27` /
+      [#558](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/558), but the restore drill
+      is not yet exercised, so this line stays open until that drill succeeds)
 - [x] Replace in-memory `RateLimitMiddleware` with Redis-backed rate limiting
       (in-house sliding-window Lua script over the existing `redis` client, not
       `fastapi-limiter`/`slowapi`) to support multi-process and load-balanced
