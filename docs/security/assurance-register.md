@@ -388,11 +388,11 @@ US equivalents are COPPA §312.8 ongoing safeguard testing and annual evaluation
 - **Framework ref:** not determined
 - **Legal ref:** GDPR Art. 32(1)(d) / COPPA 312.8
 - **Class:** STATIC
-- **Protected property:** every automated check's row records its production control target,
-  execution trigger, evidence artifact, failure oracle, and owner
+- **Protected property:** every automated check's row records its verification target, trigger,
+  existing coverage, failure oracle, and owner
 - **Verification target:** this register's row set, queried for field completeness
 - **Failure oracle:** a quarterly query over the register finds an automated-check row missing its
-  control target, execution trigger, evidence artifact, failure oracle, or owner
+  verification target, trigger, existing coverage, failure oracle, or owner
 - **Negative control:** a row saved with one of those required fields blank
 - **Trigger:** quarterly
 - **Existing coverage:** none
@@ -3404,8 +3404,10 @@ different question.
    written to prevent it. Reopened: decide whether 113 active rows is accepted, or trim to the ~60
    ceiling. This is the maintainer's call and is deliberately left open rather than re-decided
    here.
-7. **Promote the spine.** `assurance-spine.md` is written to be lifted into `~/.claude/standards/`
-   so other projects instantiate it rather than rediscovering it.
+7. **Promote the spine.** `assurance-spine.md` is written to be lifted into whatever global
+   standards set the operator's tooling keeps, so other projects instantiate it rather than
+   rediscovering it. The spine deliberately names no concrete install path, because that path is a
+   property of the tool rather than of the document; `~/.claude/standards/` is this operator's.
 
 ## Initial-build commitments
 
