@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.60.3] - 2026-08-03
+
+### Bug Fixes
+
+- **logging**: Stop leaking cover keys, auth subjects, and unconfigured structlog into prod logs
+  ([#581](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/581),
+  [`942eedf`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/942eedf3dbe00e5e4c80b8048a44771ebe077422))
+
+
 ## [0.60.2] - 2026-08-03
 
 ### Bug Fixes
@@ -3058,6 +3067,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.60.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.60.2...v0.60.3
 [0.60.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.60.1...v0.60.2
 [0.60.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.60.0...v0.60.1
 [0.60.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.59.2...v0.60.0
