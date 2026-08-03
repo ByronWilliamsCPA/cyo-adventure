@@ -3720,13 +3720,12 @@ new <a href="../story-structure-diversity-critical-analysis/">analysis</a> exten
 section 8. This plan does not modify register rows; each flips with a Ref when its deliverable lands,
 and if an SQ item is ever dropped from this schedule while still worth doing, it must be registered
 as a UW row before removal.</p>
-<p><strong>Complete SQ-to-register map.</strong> The <code>SQ-*</code> namespace is invisible to
-<code>scripts/check_work_linkage.py</code> today, so this table is the audit surface. That is an interim state,
-not the intended one: <code>docs/planning/plan-manifest.toml</code> does not exist on <code>main</code> yet (it lands with
-the plan-manifest status-model work), so <code>SQ-*</code> cannot be registered as a machine-checkable namespace
-from this PR. <strong>Follow-up</strong>: register <code>SQ-*</code> in <code>plan-manifest.toml</code> when that file lands, and drop
-this table's audit role at that point. Until then, a change to the table below is a change to the
-only linkage record that exists.</p>
+<p><strong>Complete SQ-to-register map.</strong> The <code>SQ-*</code> namespace is registered in
+<a href="../plan-manifest.toml"><code>plan-manifest.toml</code></a>'s <code>[namespaces.sq]</code> table, so <code>scripts/check_work_linkage.py</code>
+validates every id below against that pattern and checks the table for duplicates the same way it
+validates the other four id namespaces. The "Register / source" column stays freeform prose, not
+machine-checked; this table is still the audit surface for where each <code>SQ-*</code> item's scheduling record
+lives, and a change to it is a change to the only linkage record that exists for this namespace.</p>
 <table>
 <thead>
 <tr>
@@ -3839,7 +3838,7 @@ designer priors. Terminology note: this plan's internal Stage 0-4 grouping is de
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 18:08:08 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 13:31:11 UTC">August 3, 2026</span>
   </span>
 
     

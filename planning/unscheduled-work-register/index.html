@@ -4129,8 +4129,8 @@ substantially the same work under different headings. Do not triple-book.</p>
 </table>
 <h2 id="cluster-d-untracked-github-issues">Cluster D: untracked GitHub issues<a class="headerlink" href="#cluster-d-untracked-github-issues" title="Permanent link">&para;</a></h2>
 <p>roadmap.md lines 197-199 assert that open issues "remain accurately tracked" in the debt register.
-That claim is false: the debt register cites 9 issue numbers, 6 still open, against 39 open issues
-as of 2026-08-02. The 30 issues below appear in no other planning document by number or by
+That claim is false: the debt register cites 9 issue numbers, 6 still open, against 48 open issues
+as of 2026-08-03. The 34 issues below appear in no other planning document by number or by
 description, so this cluster is their only phase home. <code>scripts/check_work_linkage.py
 --check-issue-orphans</code> enforces the other half of the rule: every open issue must be either cited
 under <code>docs/planning/</code> or carry the <code>unplanned</code> label. This table and that label are jointly the
@@ -4297,6 +4297,41 @@ compliance; only the CI workflow gate does.</p>
 <td>UW-D21</td>
 <td>#552</td>
 <td><code>renovate.json</code> package rules that never fire. Another silent-gate failure: a rule matching nothing is indistinguishable from a rule with nothing to match, so the config looks configured while the dependency class it names goes ungoverned.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D22</td>
+<td>#571</td>
+<td><code>e2e-staging</code> is green <strong>by retry, not clean</strong>: the last spec's device-grant revoke fails its first attempt in every observed run and passes on <code>retries: 1</code>. The console's own banner proves the backend rejected the <code>DELETE</code>, and an identical helper call earlier in the tier passes first time, so it is position-dependent rather than a helper bug. Starts as CI hygiene because the first deliverable is diagnostic: the banner text cannot discriminate 429 from 401, 5xx, or a dropped connection, so the actual status must be captured before a cause can be named. If the 60 rpm/IP hypothesis confirms, the fix converges with UW-D17 (#71) in phase 5 and this row moves there. Green-with-retry does not close it.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D23</td>
+<td>#573</td>
+<td>The weekly whole-corpus link check found at least one dead link in <code>docs/</code>, <code>README.md</code>, or <code>CONTRIBUTING.md</code>. Filed by <code>link-check-full.yml</code>, which scans ~100 third-party hosts, so confirm a link is actually dead before editing: a host that refuses <code>HEAD</code> or rate-limits the runner reads identically to rot. Related to UW-D26's standing problem, and to the reason that check was split out of the PR gate in the first place (#563).</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D24</td>
+<td>#574</td>
+<td>The weekly dependency-provenance report. It currently reports <strong>zero</strong> actionable transitive vulnerabilities and self-describes as a sticky marker that is updated rather than reopened, so it is a dashboard, not a defect: it stays open by design and closing it would only cause the next run to file a new one. The obligation is to read it each week and act when the count stops being zero, which is a practice rather than a deliverable.</td>
+<td>recurring</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-D25</td>
+<td>#575</td>
+<td>The scheduled Planning Linkage check failed and filed this alert. Its cause was the #571 orphan, which UW-D22 above resolves, so this is very likely already fixed. <strong>To check:</strong> dispatch or wait for a scheduled <code>planning-linkage.yml</code> run after UW-D22 merges, confirm it is green, then close the issue. Nothing closes it automatically; the workflow's own text asks a human to.</td>
+<td>CI hygiene</td>
+<td>verify</td>
+</tr>
+<tr>
+<td>UW-D26</td>
+<td>(no issue)</td>
+<td><strong>Standing problem, not a defect in any one run</strong>, and the reason the three rows above exist at all. Scheduled workflows file <code>ci-failure</code> issues that are deduplicated by title but never auto-closed, and an open uncited issue is an orphan, so every bot alert fails the very gate that files it. #575 is the pure case: the linkage check filed an issue that then made the linkage check fail. The considered fixes were to label bot issues <code>unplanned</code> at filing time, to exempt <code>ci-failure</code> in <code>--check-issue-orphans</code>, or to close the issue from the workflow on a green run. <strong>Decided instead to remove both issue-facing checks</strong> (<code>--check-issues</code> and <code>--check-issue-orphans</code>): tying every open issue to the phase plan was a good idea that cost more than it returned, and an offline checker is also one that the pre-commit hook and CI can run identically. Closes when that removal lands.</td>
 <td>CI hygiene</td>
 <td>unscheduled</td>
 </tr>
@@ -5359,7 +5394,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 19:15:20 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 13:31:11 UTC">August 3, 2026</span>
   </span>
 
     
