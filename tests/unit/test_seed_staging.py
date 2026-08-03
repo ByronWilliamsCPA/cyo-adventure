@@ -449,7 +449,9 @@ async def test_seed_inserts_fixtures_when_absent(
     profiles = [row for row in added if type(row).__name__ == "ChildProfile"]
     assert len(profiles) == 1
     profile_rank = parse_age_band_rank(profiles[0].age_band)
-    assert profile_rank is not None
+    assert profile_rank is not None, (
+        f"seeded profile age_band {profiles[0].age_band!r} is not a known band"
+    )
 
     # Publish/assignment wiring is the actual deliverable: a regression that
     # dropped published_at, mis-set status, or wired approved_by/assigned_by to
@@ -476,12 +478,17 @@ async def test_seed_inserts_fixtures_when_absent(
     # added to _STORIES with a higher band must fail here rather than in a
     # nightly e2e run.
     # #VERIFY: keep this ranked comparison; do not reintroduce a literal band.
-    story_ranks = [
-        parse_age_band_rank(str(version.blob["metadata"]["age_band"]))
-        for version in versions
-    ]
-    assert None not in story_ranks
-    assert all(rank <= profile_rank for rank in story_ranks if rank is not None)
+    story_bands = [str(version.blob["metadata"]["age_band"]) for version in versions]
+    story_ranks = [parse_age_band_rank(band) for band in story_bands]
+    assert None not in story_ranks, (
+        f"assigned story age_bands {story_bands!r} contain an unknown band "
+        f"(parsed ranks {story_ranks!r})"
+    )
+    assert all(rank <= profile_rank for rank in story_ranks if rank is not None), (
+        f"seeded profile band {profiles[0].age_band!r} (rank {profile_rank}) ranks "
+        f"below assigned story bands {story_bands!r} (ranks {story_ranks!r}); "
+        f"the api/library.py age-band ceiling would hide those books"
+    )
 
     assignments = [row for row in added if type(row).__name__ == "StorybookAssignment"]
     assert len(assignments) == 2
