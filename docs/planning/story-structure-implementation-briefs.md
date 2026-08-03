@@ -134,7 +134,7 @@ inside this exact runbook and currently have no other owner; treat them as in-sc
    present.
 4. Run the #529 re-moderation sweep over the full set (re-run entries included); triage FLAGs to the
    owner queue.
-5. Owner executes gate G1 (publish list); promote approved books via `promote_catalog_story`.
+5. Owner executes gate OG1 (publish list); promote approved books via `promote_catalog_story`.
 6. Fix anything else the runbook surfaces (expected: little beyond #347; the tooling is otherwise
    tested).
 7. Write the runbook as `docs/runbooks/catalog-import-publish.md`, with the DB-state check and #347's
@@ -144,7 +144,7 @@ inside this exact runbook and currently have no other owner; treat them as in-sc
 profile's `/v1/library` response contains catalog-visibility books in every offered band that has
 approved content; UW-G14 flipped with Ref.
 
-**Size S (process) + owner review time. Depends: nothing. Gate G1.**
+**Size S (process) + owner review time. Depends: nothing. Gate OG1.**
 
 ### SQ-02: Fill-feasibility predicate in selection
 
@@ -295,7 +295,7 @@ attraction `weight *= (1 + theme_overlap)` up to 2x (`_theme_overlap_bonus`,
 `diversity/`. `structure_features` is computed and unused by selection.
 
 **Change**, in four separable commits, lettered (a)-(d) to match the plan's references:
-(a) **Cap the attraction bonus** (gate G2, default 1.3x): change the multiplier to
+(a) **Cap the attraction bonus** (gate OG2, default 1.3x): change the multiplier to
    `(1 + min(theme_overlap, CAP - 1))`, constant with rationale; add the cross-family Monte Carlo
    from the plan's acceptance as a committed simulation test.
 (b) **Per-profile scoping**: add optional `profile_id` to `load_family_history` /
@@ -316,7 +316,7 @@ attraction `weight *= (1 + theme_overlap)` up to 2x (`_theme_overlap_bonus`,
 simulation (concentration toward 1/3), per-profile preference and fallback, distinct-storybook
 window, structural term never zeroes a weight (C-4 pinned).
 
-**Size M. Depends: nothing (A1-A5 delivered). Gate G2 for the cap value only; land 2-4 regardless.**
+**Size M. Depends: nothing (A1-A5 delivered). Gate OG2 for the cap value only; land 2-4 regardless.**
 
 ### SQ-08: Flywheel trigger respec
 
@@ -435,7 +435,7 @@ tokens, gate not blocked); the fidelity review targets the beat text.
    slot set is per node); `scripts/check_theme_contract.py` extends to validate variants.
 
 **Deliverable**: the ADR + schema/validation code for the chosen storage + the
-`check_theme_contract.py` extension. **Size M. Gate G3.**
+`check_theme_contract.py` extension. **Size M. Gate OG3.**
 
 ### SQ-12: Beat-variant pilot
 
@@ -458,7 +458,7 @@ no fill in either arm moves outside its band's reading-level envelope, checked w
 RL-13 gate before any distance analysis. Record hours spent per node (feeds the capacity model).
 Commit the report; the margin met or the program-stop decision recorded either way.
 
-**Size M. Depends: SQ-11. Gate: none (G3 already accepted the ADR); the pilot IS the gate for
+**Size M. Depends: SQ-11. Gate: none (OG3 already accepted the ADR); the pilot IS the gate for
 SQ-13/SQ-14.**
 
 ### SQ-13: Combined A20 + variants rollout
@@ -495,7 +495,7 @@ fingerprint drift). Findings ride the one bounded repair in `moderation/repair.p
    panel to uncovered bands with the SQ-13 rollout's first fills).
 2. Partner selection: k=3 most recent same-tree fills, minimum distance is the verdict input;
    per-profile scope with family fallback (shares SQ-07(b)'s history plumbing).
-3. Contract revision (gate G4): FAIL becomes blocking on the automated path with the bounded repair
+3. Contract revision (gate OG4): FAIL becomes blocking on the automated path with the bounded repair
    as remediation and `needs_review` (human) as the terminal fallback; every fail-open path is
    enumerated in the module docstring and either justified (fresh_generation has no partner: stays
    open) or closed (missing blob: becomes a logged retryable error).
@@ -503,7 +503,7 @@ fingerprint drift). Findings ride the one bounded repair in `moderation/repair.p
 **Tests.** A deliberately templated fill (noun-swap fixture) FAILs and blocks; a variant-differing
 fill PASSes; each fail-open path has an explicit test asserting its documented behavior.
 
-**Size M. Depends: SQ-12 (hard); SQ-07(b) (plumbing); per-skeleton blocking additionally gated on that skeleton's SQ-13 slice, with global blocking only after SQ-13 covers the production cells (see plan section 1.1). Gate G4.**
+**Size M. Depends: SQ-12 (hard); SQ-07(b) (plumbing); per-skeleton blocking additionally gated on that skeleton's SQ-13 slice, with global blocking only after SQ-13 covers the production cells (see plan section 1.1). Gate OG4.**
 
 ---
 
@@ -650,7 +650,7 @@ validity rails, not the diversity proof.
 
 ### SQ-22: Pathfinder Phase 0 decision
 
-No implementation until gate G5. The decision package is already written
+No implementation until gate OG5. The decision package is already written
 ([pathfinder-structure-exploration.md](pathfinder-structure-exploration.md) section 8); the team's
 only task is to keep it out of scope until the owner and legal gates clear. If go: Stage 1 pilot per
 that document, one 13-16 gamebook skeleton, unchanged validator.
@@ -674,4 +674,4 @@ eight-pattern-to-six-topology mapping table; resolve the five UW-G17 reconciliat
 (reconvergence targets may resolve to "keep `reconvergence_ceiling` unset, monitored via SQ-15",
 which is a legitimate outcome). Closes UW-C25 and part of UW-G17 with Refs; AL-079 flips to applied.
 
-**Size S-M. Depends: research/ (done). Gate G6.**
+**Size S-M. Depends: research/ (done). Gate OG6.**
