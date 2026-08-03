@@ -14,7 +14,8 @@ Checks:
 
 Within the unscheduled-work register itself, for every cluster table (``## Cluster <letter>:``):
 
-1. Every id matches ``UW-[A-M]NN``.
+1. Every id matches the manifest's ``[namespaces.uw]`` pattern, and the cluster letter that
+   pattern captures matches the cluster table the row was found in.
 2. Every ``Status`` is one of: unscheduled, blocked, decision, verify, done.
 3. Where a ``Phase`` column exists (clusters L and M have none), its value is in the closed
    phase vocabulary, which is read from the manifest the run actually loaded.
@@ -25,21 +26,26 @@ Within the unscheduled-work register itself, for every cluster table (``## Clust
 7. Ids are unique across the whole register, not just within one cluster.
 
 Vocabulary drift: ``docs/planning/plan-manifest.toml`` (the "plan manifest") is the source of
-truth for the phase vocabulary, the phase-to-rung mapping, and the two-axis (``shipped``/
-``usable``) status model; ``roadmap.md`` is checked against it, not the other way around. This
+truth for the phase vocabulary, the phase-to-rung mapping, the two-axis (``shipped``/``usable``)
+status model, and every id namespace's regex (``[namespaces.*]``); ``roadmap.md`` is checked
+against it, not the other way around. No id pattern is written twice: this module holds none,
+and the regexes quoted below are descriptions of what the manifest currently declares, not a
+second copy the code reads. This
 script parses ``## Phase`` headings (and the ``2b``/``4a``/``4b`` sub-headings that do not follow
 that exact shape) out of ``roadmap.md`` and fails if the manifest's track-1 phase set disagrees
 with what the roadmap actually contains, so a new phase added to the roadmap without a matching
 manifest entry is caught here rather than discovered later. Two further checks guard the manifest
 and the roadmap's prose against each other:
 
-* ``_check_manifest_integrity``: the manifest is structurally present (the ``[phases]`` and
-  ``[rungs]`` tables exist, are tables, and are non-empty, and the ``R1``/``R2``/``R3`` rungs are
-  declared) and then internally consistent (every rung's phase references exist,
-  ``requires_phases``/``excludes_phases`` are disjoint, the rungs are monotonic, every phase's
-  status pair has a matching ``[status_vocabulary]`` entry, and Phase 7 does not gate R2). The
-  structural precondition runs first and short-circuits the rest: a manifest missing ``[rungs]``
-  entirely would otherwise pass every one of those six checks vacuously.
+* ``_check_manifest_integrity``: the manifest is structurally present (the ``[phases]``,
+  ``[rungs]``, and ``[namespaces]`` tables exist, are tables, and are non-empty, and the
+  ``R1``/``R2``/``R3`` rungs are declared) and then internally consistent (the declared id
+  namespaces match the closed set this module consumes and each one's ``source`` resolves to a
+  real file, every rung's phase references exist, ``requires_phases``/``excludes_phases`` are
+  disjoint, the rungs are monotonic, every phase's status pair has a matching
+  ``[status_vocabulary]`` entry, and Phase 7 does not gate R2). The structural precondition runs
+  first and short-circuits the rest: a manifest missing ``[rungs]`` entirely would otherwise
+  pass every one of those seven checks vacuously.
 * ``_check_roadmap_phase_status``: the roadmap's phase-status table prose (for example
   "Substantially delivered") matches the term the manifest's ``[status_vocabulary]`` derives from
   that phase's ``(shipped, usable)`` pair, and its leading glyph matches that phase's ``shipped``
@@ -47,36 +53,34 @@ and the roadmap's prose against each other:
   than skipped, since a renamed header would otherwise drop every checked row and still pass.
 
 The manifest named on the command line is the only one a run consults. The register's own
-``Phase`` cell vocabulary is derived from it and threaded down to the row checks, so a
-``--manifest`` run cannot end up validating the register against one manifest and the roadmap
-against another. An unloadable manifest yields an empty vocabulary, which rejects every phase
-token; the load failure itself is reported separately, so the cause is named, not inferred.
+``Phase`` cell vocabulary and every id pattern are derived from it and threaded down to the row
+checks, so a ``--manifest`` run cannot end up validating the register against one manifest and
+the roadmap against another. An unloadable manifest is reported and then stops the run: with no
+phase vocabulary and no id patterns, every remaining check would reject every row it saw, and
+several hundred lines of "malformed id" would bury the one line naming the actual cause.
 
 Cross-register linkage:
 
-1. Every row in ``r1-deferred-debt-register.md`` whose first cell is a debt id (``C\\d+``,
-   ``GS\\d+``, ``U\\d+``, ``T\\d+``, ``P\\d+``, or ``SL\\d+``) and which is not marked
-   ``[Closed]`` or ``[Resolved]`` (the register uses both markers interchangeably) must be cited
-   somewhere in cluster B of the unscheduled register.
+1. Every row in ``r1-deferred-debt-register.md`` whose first cell matches ``[namespaces.debt]``
+   (``C``, ``GS``, ``U``, ``T``, ``P``, or ``SL`` followed by digits, as the manifest declares
+   it) and which is not marked ``[Closed]`` or ``[Resolved]`` (the register uses both markers
+   interchangeably) must be cited somewhere in cluster B of the unscheduled register.
 2. Every lesson in ``authoring-lessons-log.md`` whose ``Status`` is not ``applied``, ``rejected``,
    or ``superseded`` must be cited somewhere in cluster C of the unscheduled register.
 3. Every row in ``capability-register.md`` (four tables: K, G, A, S) whose ``Docs`` cell is not
    the done checkmark must appear in ``roadmap.md``'s "Where every open register item lands"
    mapping section.
 
-Two further checks are opt-in, because they need network access and ``gh`` auth that
-pre-commit's offline posture cannot assume: ``--check-issues`` (no register row cites a GitHub
-issue that is CLOSED while the row itself is not done, and every cited issue exists) and
-``--check-issue-orphans`` (every OPEN issue is cited by some markdown or TOML document under
-``docs/planning/``, or carries the ``unplanned`` label). Both share one capped ``gh issue list``
-call, pinned to this repository's own checkout, that refuses to hand back a possibly-truncated
-result.
+Every check reads local files only. Two GitHub-facing checks once lived here behind
+``--check-issues`` and ``--check-issue-orphans`` flags; they were removed because tying every
+open issue to the phase plan cost more upkeep than it returned, and because a checker that
+needs network access and ``gh`` auth cannot run identically in the pre-commit hook and in CI.
+An ``issue:NNN`` Phase value remains valid vocabulary; nothing resolves it against GitHub.
 
 Usage::
 
     uv run python scripts/check_work_linkage.py
     uv run python scripts/check_work_linkage.py --register path/to/register.md
-    uv run python scripts/check_work_linkage.py --check-issues --check-issue-orphans
 
 Exit codes:
     0 - every check passed.
@@ -87,9 +91,7 @@ Exit codes:
 from __future__ import annotations
 
 import argparse
-import json
 import re
-import subprocess
 import sys
 import tomllib
 from pathlib import Path
@@ -109,8 +111,10 @@ _DEFAULT_MANIFEST = _REPO_ROOT / "docs" / "planning" / "plan-manifest.toml"
 # roadmap.md details phases 0-5 and says so ("Phases 6 through 9 ... are not detailed here").
 # Track-2 phases are narrated here instead, which is why their status needs its own check.
 _DEFAULT_PROJECT_PLAN = _REPO_ROOT / "docs" / "planning" / "PROJECT-PLAN.md"
-
-_UW_ID_RE = re.compile(r"^UW-[A-M]\d{2}$")
+# Holds the SQ-to-register map (section 11) that registers the SQ-* namespace's ids.
+_DEFAULT_STORY_STRUCTURE_PLAN = (
+    _REPO_ROOT / "docs" / "planning" / "story-structure-improvement-plan.md"
+)
 
 _STATUSES = frozenset({"unscheduled", "blocked", "decision", "verify", "done"})
 # Every status except `done` still needs the phase the row will land in: the linkage contract's
@@ -124,8 +128,27 @@ _MANIFEST_STATUS_VALUES = frozenset({"yes", "partial", "no"})
 # The top-level manifest tables every downstream integrity check reads, and the rungs those
 # checks name directly. Absent or empty, each of those checks iterates nothing and reports a
 # clean manifest, so their structural presence is asserted before any of them runs.
-_MANIFEST_REQUIRED_TABLES = ("phases", "rungs")
+_MANIFEST_REQUIRED_TABLES = ("phases", "rungs", "namespaces")
 _MANIFEST_REQUIRED_RUNGS = ("R1", "R2", "R3")
+
+# The closed set of id namespaces this checker consumes, and the fields it requires of each.
+# Moving the patterns into the manifest made them data, which removed them from every tool
+# that reads Python: nothing reports an unread TOML key, so without this contract a namespace
+# table with a typo'd name is silently inert and a `prefix`/`source` field can rot unnoticed
+# because no code path ever reads it. Declaring the contract here and checking the manifest
+# against it in both directions restores the "wrong name is an error" property the module-level
+# constants had for free.
+#
+# `citation_pattern` is deliberately per-namespace rather than universal: uw and sq ids are
+# validated only inside their own document and are never cited from another, so requiring the
+# field would force a pattern that nothing runs.
+_NAMESPACE_REGISTRY_CONTRACT: dict[str, tuple[str, ...]] = {
+    "uw": ("prefix", "source", "pattern"),
+    "debt": ("prefix", "source", "pattern", "citation_pattern"),
+    "al": ("prefix", "source", "pattern", "citation_pattern"),
+    "cap": ("prefix", "source", "pattern", "citation_pattern"),
+    "sq": ("prefix", "source", "pattern"),
+}
 
 
 def _load_manifest(path: Path, problems: list[str]) -> dict[str, Any] | None:
@@ -210,6 +233,111 @@ def _manifest_phase_vocabulary(manifest: dict[str, Any] | None) -> frozenset[str
     return frozenset(phases)
 
 
+# A sentinel pattern that matches nothing, used as the fail-closed return value of
+# ``_manifest_namespace_pattern`` when a namespace cannot be resolved. `(?!)` is a negative
+# lookahead on nothing, which never succeeds, so `.match()` against any string is always None.
+# This keeps every namespace-pattern caller Optional-free: they always get a real
+# ``re.Pattern``, and an unresolvable namespace rejects every id rather than needing its own
+# None-handling branch at every call site.
+_NEVER_MATCHES_RE = re.compile(r"(?!)")
+
+# Bounds on a manifest-supplied regex, checked before it is compiled or run.
+#
+# #CRITICAL: external resources: `[namespaces.*].pattern` and `.citation_pattern` are compiled
+# from a planning document and then run against whole cluster bodies of a ~75KB register, so a
+# pattern with nested quantifiers (`([\w ]+)+Q`) backtracks catastrophically. Python's `re` has
+# no timeout, and this script runs both in CI (bounded only by the job's 10-minute cap) and in
+# the `check-work-linkage` pre-commit hook (bounded by nothing at all), so an unbounded pattern
+# wedges every local commit with no diagnostic. This mirrors the reasoning behind
+# `_GH_ISSUE_LIST_TIMEOUT_SECONDS` below: an unbounded external input becomes a reported
+# problem rather than a hang.
+# #VERIFY: both bounds below reject before `re.compile` runs, and the rejection is appended to
+# `problems` so the run fails loudly with the offending pattern named. The nested-quantifier
+# check is a conservative heuristic, not a proof of safety: it catches the `(X+)+` shape that
+# causes exponential backtracking and is verified to accept every pattern the manifest ships.
+# A pattern that is pathological in some other way remains possible, so keep this paired with
+# the length bound rather than relying on either alone.
+_MAX_NAMESPACE_PATTERN_LENGTH = 200
+_NESTED_QUANTIFIER_RE = re.compile(r"\([^()]*[+*][^()]*\)\s*[+*{]")
+
+
+def _manifest_namespace_pattern(
+    manifest: dict[str, Any] | None,
+    manifest_path: Path,
+    namespace: str,
+    field: str,
+    problems: list[str],
+) -> re.Pattern[str]:
+    """Return one compiled regex from the manifest's ``[namespaces.<namespace>]`` table.
+
+    Mirrors ``_manifest_phase_vocabulary``'s fail-closed shape, but unlike that function this
+    one reports its own failures: a namespace's id pattern has no other check standing behind
+    it the way the phase-vocabulary check backstops an empty phase set, so a silent
+    ``_NEVER_MATCHES_RE`` here would surface only as every row in that namespace being reported
+    "malformed", with no problem naming the actual root cause (the manifest not declaring the
+    namespace). The one exception is ``manifest is None``: that failure was already reported by
+    ``_load_manifest`` itself, so this does not report it a second time.
+
+    Args:
+        manifest: The parsed plan-manifest.toml document, or None when it could not be loaded.
+        manifest_path: The manifest's path, for message text.
+        namespace: The ``[namespaces.<namespace>]`` table key (for example ``"uw"``, ``"debt"``,
+            ``"sq"``).
+        field: The field to compile, ``"pattern"`` or ``"citation_pattern"``.
+        problems: The running problem list; a missing namespace, missing field, or invalid
+            regex is appended here.
+
+    Returns:
+        re.Pattern[str]: The compiled regex, or ``_NEVER_MATCHES_RE`` when the namespace or
+            field could not be resolved.
+    """
+    if manifest is None:
+        return _NEVER_MATCHES_RE
+    namespaces = manifest.get("namespaces", {})
+    if not isinstance(namespaces, dict):
+        problems.append(
+            f"{manifest_path.name}: [namespaces] is {type(namespaces).__name__}, not a table"
+        )
+        return _NEVER_MATCHES_RE
+    entry = namespaces.get(namespace)
+    if not isinstance(entry, dict):
+        problems.append(
+            f"{manifest_path.name}: [namespaces.{namespace}] is missing or not a table; the "
+            f"'{namespace}' id namespace cannot be validated without it"
+        )
+        return _NEVER_MATCHES_RE
+    raw_pattern = entry.get(field)
+    # .strip() and not just falsiness: `pattern = "  "` compiles to a regex that matches at
+    # every position, so a whitespace-only field is the fail-open case, not a stylistic one.
+    if not isinstance(raw_pattern, str) or not raw_pattern.strip():
+        problems.append(
+            f"{manifest_path.name}: [namespaces.{namespace}].{field} is missing or empty"
+        )
+        return _NEVER_MATCHES_RE
+    if len(raw_pattern) > _MAX_NAMESPACE_PATTERN_LENGTH:
+        problems.append(
+            f"{manifest_path.name}: [namespaces.{namespace}].{field} is "
+            f"{len(raw_pattern)} characters, over the {_MAX_NAMESPACE_PATTERN_LENGTH}-"
+            f"character bound; an id pattern this long is not an id pattern"
+        )
+        return _NEVER_MATCHES_RE
+    if _NESTED_QUANTIFIER_RE.search(raw_pattern):
+        problems.append(
+            f"{manifest_path.name}: [namespaces.{namespace}].{field} '{raw_pattern}' nests a "
+            f"quantifier inside a quantified group, which backtracks catastrophically against "
+            f"the register text this pattern is run over; rewrite it without the nesting"
+        )
+        return _NEVER_MATCHES_RE
+    try:
+        return re.compile(raw_pattern)
+    except re.error as exc:
+        problems.append(
+            f"{manifest_path.name}: [namespaces.{namespace}].{field} '{raw_pattern}' is not "
+            f"a valid regex: {exc}"
+        )
+        return _NEVER_MATCHES_RE
+
+
 _RELEASE_RUNGS = frozenset({"R1", "R2", "R3"})
 _NAMED_WORKSTREAMS = frozenset({"content", "now"})
 _SENTINELS_EXACT = frozenset({"CI hygiene", "doc", "recurring", "post-launch"})
@@ -219,19 +347,14 @@ _ISSUE_RE = re.compile(r"^issue:\d+$")
 
 _CLUSTER_HEADING_RE = re.compile(r"^## Cluster ([A-M]):")
 
-# Debt ids in r1-deferred-debt-register.md, matched as a whole first cell.
-_DEBT_ROW_ID_RE = re.compile(r"^(?:C\d+|GS\d+|U\d+|T\d+|P\d+|SL\d+)$")
-# The same alternation, used to find citations inside prose (word-bounded, no anchors).
-_DEBT_ID_RE = re.compile(r"\b(?:C\d+|GS\d+|U\d+|T\d+|P\d+|SL\d+)\b")
+# Debt, AL, and capability id row/citation patterns used to live here as hardcoded module-level
+# constants (_DEBT_ROW_ID_RE, _DEBT_ID_RE, _AL_ROW_ID_RE, _AL_ID_RE, _CAP_ROW_ID_RE, _CAP_ID_RE).
+# They are now resolved from plan-manifest.toml's [namespaces.debt/al/cap] tables via
+# ``_manifest_namespace_pattern`` and threaded through the functions that need them, alongside
+# the uw and sq namespaces, so a namespace's shape lives in exactly one place.
 
-_AL_ROW_ID_RE = re.compile(r"^AL-\d{3}$")
-_AL_ID_RE = re.compile(r"\bAL-\d+\b")
 _AL_CLOSED_STATUSES = frozenset({"applied", "rejected", "superseded"})
 
-# Capability ids in capability-register.md (four tables: K, G, A, S), matched as a whole first
-# cell, and the same alternation word-bounded for finding citations inside roadmap.md prose.
-_CAP_ROW_ID_RE = re.compile(r"^[KGAS]\d+$")
-_CAP_ID_RE = re.compile(r"\b[KGAS]\d+\b")
 # The three status glyphs, defined once and derived everywhere else (the recognised-glyph set,
 # the open-glyph set, and the CLI summary's display order all read from these), so a fourth copy
 # of the glyph literals cannot drift from the register's actual vocabulary.
@@ -243,53 +366,8 @@ _CAP_STATUS_GLYPH_ORDER = (_CAP_DONE_MARK, _CAP_PARTIAL_MARK, _CAP_MISSING_MARK)
 _CAP_OPEN_GLYPHS = frozenset({_CAP_PARTIAL_MARK, _CAP_MISSING_MARK})
 _CAP_STATUS_GLYPHS = frozenset(_CAP_STATUS_GLYPH_ORDER)
 
-# An "issue:NNN" Phase cell, capturing the number (the vocabulary check, _ISSUE_RE above, only
-# needs to confirm the shape; the GitHub issue checks need the number itself).
-_ISSUE_PHASE_NUMBER_RE = re.compile(r"^issue:(\d+)$")
-# A bare "#NNN" reference, used both inside a cluster D row's Issues column and when scanning
-# the wider docs/planning/ tree for citations (the orphan check). The guards on both sides are
-# load-bearing, not defensive decoration: this pattern decides whether an open issue counts as
-# cited, so anything it over-matches silently converts an orphaned issue into a "cited" one.
-#   * the leading `(?<![#0-9A-Za-z_])` rejects a "#" that is itself part of a longer token or a
-#     heading run, so "###5" and the tail of a hex colour never yield a number;
-#   * the `(?<!PR )` / `(?<!pr )` / `(?<!PRs )` guards reject a pull-request reference, which
-#     this tree writes as "PR #270" in several planning documents and which is not an issue;
-#   * the trailing `(?![0-9A-Za-z_-])` rejects "#4a4a4a" (a hex colour) and "#4-heading" (a
-#     markdown anchor), and deliberately also rejects the first half of a "#105-#109" span,
-#     since dropping an ambiguous reference over-reports orphans while keeping one under-reports
-#     them, and only under-reporting is silent.
-_BARE_ISSUE_REF_RE = re.compile(
-    r"(?<![#0-9A-Za-z_])(?<!PR )(?<!pr )(?<!PRs )#(\d+)(?![0-9A-Za-z_-])"
-)
-# An inline "issue:NNN" mention in prose (not anchored like _ISSUE_PHASE_NUMBER_RE, since prose
-# can carry it mid-sentence rather than as a whole Phase cell value).
-_PROSE_ISSUE_REF_RE = re.compile(r"\bissue:(\d+)\b")
-
-# #ASSUME: external resource: gh issue list over the network can hang on a stalled connection.
-# #VERIFY: _fetch_github_issues passes this as subprocess.run's timeout, so a hung call becomes
-# a reported problem (TimeoutExpired caught explicitly) rather than blocking the run forever.
-_GH_ISSUE_LIST_TIMEOUT_SECONDS = 30
-# #CRITICAL: data integrity: gh issue list truncates silently at --limit. A truncated set makes
-# --check-issues report real issues as "does not exist on GitHub" and makes --check-issue-orphans
-# miss every open issue past the cut, both of which read as findings about the documents rather
-# than as a fetch that came back short.
-# #VERIFY: _fetch_github_issues compares the returned count against this bound and reports a
-# problem instead of returning a partial list, so no check ever runs on truncated data.
-_GH_ISSUE_LIST_LIMIT = 500
-
 # The mapping section roadmap.md's linkage contract points at for capability-register linkage.
 _ROADMAP_MAPPING_HEADING = "### Where every open register item lands"
-
-# The header cell names a cluster table uses for its GitHub-issue citation column. Both
-# spellings are live in the register today, and a cluster is free to use either.
-_CLUSTER_ISSUE_COLUMN_NAMES = ("Issues", "Issue")
-
-# The deliberate, explicit escape hatch from the "every open issue needs a citation" rule.
-_UNPLANNED_LABEL = "unplanned"
-# File suffixes the orphan check scans for citations. plan-manifest.toml is part of the plan's
-# machine-readable spine, so a citation living there satisfies the rule exactly as a markdown
-# one does; scanning markdown alone made the manifest unable to give an issue a home.
-_PLANNING_DOC_SUFFIXES = frozenset({".md", ".toml"})
 
 # "`SL1` through `SL10`" style natural-language ranges: a same-prefix id range spelled out with
 # "through" instead of listing every id, used once in cluster B for the ten SL debts (each id is
@@ -321,8 +399,9 @@ _ROADMAP_DELIVERABLES_RE = re.compile(r"Deliverables \((\d+[a-zA-Z])\b")
 _ROADMAP_CONTAINER_PHASE = "4"
 
 # A pipe that is not preceded by a backslash: the markdown table cell delimiter. Compiled once at
-# module scope rather than per call, since _split_row runs on every line of five documents plus
-# an rglob sweep of the whole planning tree.
+# module scope rather than per call, since _split_row runs on every line of the six markdown
+# documents this script reads (register, roadmap, debt register, lessons log, capability
+# register, story-structure plan) plus an rglob sweep of the whole planning tree.
 _UNESCAPED_PIPE_RE = re.compile(r"(?<!\\)\|")
 
 
@@ -500,7 +579,9 @@ def _find_clusters(
     return clusters
 
 
-def _check_row_id(cluster: str, number: int, entry_id: str) -> list[str]:
+def _check_row_id(
+    cluster: str, number: int, entry_id: str, id_pattern: re.Pattern[str]
+) -> list[str]:
     """Return problems if a register row's id is malformed or filed under the wrong cluster.
 
     Args:
@@ -508,16 +589,39 @@ def _check_row_id(cluster: str, number: int, entry_id: str) -> list[str]:
             message and the cluster-match check.
         number: The row's 1-based line number.
         entry_id: The row's ``ID`` cell value.
+        id_pattern: The ``[namespaces.uw].pattern`` regex the id must fully match, resolved
+            from the run's manifest. It should expose the cluster letter as a named
+            ``(?P<cluster>...)`` group; see the cluster-letter note in the body.
 
     Returns:
         list[str]: Problems found; empty when the id is well formed and its letter matches the
             cluster it was found in.
     """
-    if not _UW_ID_RE.match(entry_id):
+    match = id_pattern.match(entry_id)
+    if match is None:
+        # Quote the pattern rather than naming a shape. The literal "UW-[A-M]NN" used to be
+        # written here, which silently became a lie the moment the shape moved into the
+        # manifest: a reader who widened [namespaces.uw].pattern would be told their id failed
+        # to match a rule the run was no longer applying.
         return [
-            f"cluster {cluster} line {number}: id '{entry_id}' does not match UW-[A-M]NN"
+            (
+                f"cluster {cluster} line {number}: id '{entry_id}' does not match the uw "
+                f"namespace pattern '{id_pattern.pattern}'"
+            )
         ]
-    id_letter = entry_id[3]
+    # The cluster letter comes from the pattern's named group, not from a fixed offset into the
+    # id. `entry_id[3]` used to be read directly, which re-hardcoded the very layout the
+    # manifest now owns and raised IndexError (an uncaught crash, not a reported problem) for
+    # any id shorter than four characters that a widened pattern let through.
+    id_letter = match.groupdict().get("cluster")
+    if id_letter is None:
+        return [
+            (
+                f"cluster {cluster} line {number}: the uw namespace pattern "
+                f"'{id_pattern.pattern}' has no '(?P<cluster>...)' group, so the cluster letter "
+                f"in id '{entry_id}' cannot be checked against the table it was found in"
+            )
+        ]
     if id_letter != cluster:
         return [
             (
@@ -693,7 +797,9 @@ def _extract_citations(text: str, id_re: re.Pattern[str]) -> set[str]:
     return cited
 
 
-def _debt_register_open_ids(lines: list[str]) -> dict[str, int]:
+def _debt_register_open_ids(
+    lines: list[str], id_pattern: re.Pattern[str]
+) -> dict[str, int]:
     """Return debt ids not marked ``[Closed]`` or ``[Resolved]``, mapped to their line number.
 
     Ids are matched against the whole first cell, so decorated variants such as ``U9a`` (a
@@ -709,6 +815,7 @@ def _debt_register_open_ids(lines: list[str]) -> dict[str, int]:
 
     Args:
         lines: The debt register's lines.
+        id_pattern: The ``[namespaces.debt].pattern`` regex a row's whole first cell must match.
 
     Returns:
         dict[str, int]: Open (neither ``[Closed]`` nor ``[Resolved]``) debt ids mapped to the line
@@ -720,7 +827,7 @@ def _debt_register_open_ids(lines: list[str]) -> dict[str, int]:
         if "|" not in line:
             continue
         cells = _split_row(line)
-        if not cells or not _DEBT_ROW_ID_RE.match(cells[0]):
+        if not cells or not id_pattern.match(cells[0]):
             continue
         debt_cell = cells[debt_cell_idx] if len(cells) > debt_cell_idx else ""
         if "[Closed]" in debt_cell or "[Resolved]" in debt_cell:
@@ -752,25 +859,30 @@ def _find_lessons_status_column(lines: list[str]) -> int:
     raise LookupError(msg)
 
 
-def _is_open_lesson_row(cells: list[str], status_idx: int) -> bool:
+def _is_open_lesson_row(
+    cells: list[str], status_idx: int, id_pattern: re.Pattern[str]
+) -> bool:
     """Report whether a split row is a lesson row still needing cross-register citation.
 
     Args:
         cells: A row's split cell values.
         status_idx: The lessons log header's ``Status`` column index.
+        id_pattern: The ``[namespaces.al].pattern`` regex a row's whole first cell must match.
 
     Returns:
         bool: True when the row's id matches the lesson id shape, it has a ``Status`` cell, and
             that cell is not one of the closed statuses.
     """
-    if not cells or _is_separator(cells) or not _AL_ROW_ID_RE.match(cells[0]):
+    if not cells or _is_separator(cells) or not id_pattern.match(cells[0]):
         return False
     if len(cells) <= status_idx:
         return False
     return cells[status_idx] not in _AL_CLOSED_STATUSES
 
 
-def _lessons_needing_citation(lines: list[str]) -> dict[str, int]:
+def _lessons_needing_citation(
+    lines: list[str], id_pattern: re.Pattern[str]
+) -> dict[str, int]:
     """Return lessons whose status is not applied/rejected/superseded, with line numbers.
 
     The log's own structure (header shape, id sequence, required fields) is validated
@@ -783,6 +895,8 @@ def _lessons_needing_citation(lines: list[str]) -> dict[str, int]:
 
     Args:
         lines: The authoring lessons log's lines.
+        id_pattern: The ``[namespaces.al].pattern`` regex, threaded down to
+            ``_is_open_lesson_row``.
 
     Returns:
         dict[str, int]: Lesson ids still needing linkage, mapped to the line they were found on.
@@ -800,7 +914,7 @@ def _lessons_needing_citation(lines: list[str]) -> dict[str, int]:
         if "|" not in line:
             continue
         cells = _split_row(line)
-        if _is_open_lesson_row(cells, status_idx):
+        if _is_open_lesson_row(cells, status_idx, id_pattern):
             open_lessons[cells[0]] = number
     return open_lessons
 
@@ -822,6 +936,7 @@ def _capability_header_docs_index(cells: list[str]) -> int | None:
 
 def _capability_register_status_rows(
     lines: list[str],
+    id_pattern: re.Pattern[str],
 ) -> list[tuple[int, str, str, str]]:
     """Return every capability row's line number, id, ``Docs`` cell, and ``Notes`` cell.
 
@@ -839,6 +954,7 @@ def _capability_register_status_rows(
 
     Args:
         lines: The capability register's lines.
+        id_pattern: The ``[namespaces.cap].pattern`` regex a row's whole first cell must match.
 
     Returns:
         list[tuple[int, str, str, str]]: One (1-based line number, id, ``Docs`` cell, ``Notes``
@@ -884,7 +1000,7 @@ def _capability_register_status_rows(
             notes_idx = cells.index("Notes") if "Notes" in cells else None
             tables_found += 1
             continue
-        if _is_separator(cells) or not _CAP_ROW_ID_RE.match(cells[0]):
+        if _is_separator(cells) or not id_pattern.match(cells[0]):
             continue
         if docs_idx is None:
             unlocated.append((cells[0], number))
@@ -922,7 +1038,9 @@ def _capability_register_status_rows(
     return rows
 
 
-def _capability_register_open_ids(lines: list[str]) -> dict[str, int]:
+def _capability_register_open_ids(
+    lines: list[str], id_pattern: re.Pattern[str]
+) -> dict[str, int]:
     """Return capability ids not marked done, mapped to their 1-based line number.
 
     The ``Docs`` cell holds exactly one status glyph (verified against the current document: no
@@ -939,6 +1057,8 @@ def _capability_register_open_ids(lines: list[str]) -> dict[str, int]:
 
     Args:
         lines: The capability register's lines.
+        id_pattern: The ``[namespaces.cap].pattern`` regex, threaded down to
+            ``_capability_register_status_rows``.
 
     Returns:
         dict[str, int]: Open (not done) capability ids mapped to the line they were found on.
@@ -950,7 +1070,7 @@ def _capability_register_open_ids(lines: list[str]) -> dict[str, int]:
     return {
         entry_id: number
         for number, entry_id, docs_val, _notes_val in _capability_register_status_rows(
-            lines
+            lines, id_pattern
         )
         if docs_val != _CAP_DONE_MARK
     }
@@ -1035,6 +1155,7 @@ def _extract_roadmap_mapping_section(lines: list[str]) -> str:
 def _check_register_rows(
     clusters: dict[str, tuple[list[str], list[tuple[int, list[str]]]]],
     phase_vocabulary: frozenset[str],
+    id_pattern: re.Pattern[str],
 ) -> tuple[list[str], dict[str, str]]:
     """Run every row-level check across all cluster tables, plus the register-wide id check.
 
@@ -1043,6 +1164,7 @@ def _check_register_rows(
             ``_find_clusters``.
         phase_vocabulary: Every phase token the run's manifest declares, threaded down to
             ``_check_row_phase``.
+        id_pattern: The ``[namespaces.uw].pattern`` regex, threaded down to ``_check_row_id``.
 
     Returns:
         tuple[list[str], dict[str, str]]: The problems found, and each cluster letter mapped to
@@ -1054,7 +1176,7 @@ def _check_register_rows(
 
     for letter, (header_cells, rows) in sorted(clusters.items()):
         row_problems, item_texts, row_ids = _check_cluster_rows(
-            letter, header_cells, rows, phase_vocabulary
+            letter, header_cells, rows, phase_vocabulary, id_pattern
         )
         problems.extend(row_problems)
         cluster_item_text[letter] = "\n".join(item_texts)
@@ -1095,6 +1217,7 @@ def _check_one_row(
     cells: list[str],
     indexes: dict[str, int | None],
     phase_vocabulary: frozenset[str],
+    id_pattern: re.Pattern[str],
 ) -> tuple[list[str], str | None, str]:
     """Run the id, status, and phase checks on one already length-checked cluster row.
 
@@ -1105,6 +1228,7 @@ def _check_one_row(
         indexes: The header's resolved column indexes, as returned by
             ``_resolve_column_indexes``.
         phase_vocabulary: Every phase token the run's manifest declares.
+        id_pattern: The ``[namespaces.uw].pattern`` regex, threaded down to ``_check_row_id``.
 
     Returns:
         tuple[list[str], str | None, str]: The problems found, the row's ``Item`` text (None if
@@ -1120,7 +1244,7 @@ def _check_one_row(
     problems: list[str] = []
 
     entry_id = cells[id_idx] if id_idx is not None else ""
-    problems.extend(_check_row_id(letter, number, entry_id))
+    problems.extend(_check_row_id(letter, number, entry_id, id_pattern))
 
     status = cells[status_idx] if status_idx is not None else ""
     if status_idx is not None:
@@ -1143,6 +1267,7 @@ def _check_cluster_rows(
     header_cells: list[str],
     rows: list[tuple[int, list[str]]],
     phase_vocabulary: frozenset[str],
+    id_pattern: re.Pattern[str],
 ) -> tuple[list[str], list[str], list[tuple[str, int]]]:
     """Run the id, status, and phase checks on one cluster table's data rows.
 
@@ -1156,6 +1281,7 @@ def _check_cluster_rows(
         header_cells: The cluster table's header cells, used to resolve column indexes.
         rows: The cluster's (1-based line number, cells) data rows.
         phase_vocabulary: Every phase token the run's manifest declares.
+        id_pattern: The ``[namespaces.uw].pattern`` regex, threaded down to ``_check_one_row``.
 
     Returns:
         tuple[list[str], list[str], list[tuple[str, int]]]: The problems found, the ``Item``
@@ -1180,7 +1306,7 @@ def _check_cluster_rows(
             continue
 
         row_problems, item_text, entry_id = _check_one_row(
-            letter, number, cells, indexes, phase_vocabulary
+            letter, number, cells, indexes, phase_vocabulary, id_pattern
         )
         problems.extend(row_problems)
         row_ids.append((entry_id, number))
@@ -1665,6 +1791,96 @@ def _check_manifest_structure(
     return problems
 
 
+def _check_namespace_registry(
+    manifest: dict[str, Any], manifest_path: Path
+) -> list[str]:
+    """Check the declared id namespaces match the closed set this checker consumes.
+
+    Moving the id patterns out of Python and into ``[namespaces]`` traded one failure mode for
+    another. As module constants a typo'd name was a ``NameError`` at import; as TOML keys a
+    typo'd name is just an unread table, and the namespace it was supposed to define resolves
+    to the fail-closed sentinel at the one call site that asks for it. This compares the two
+    directions explicitly so neither a missing table nor a stray one can sit unnoticed.
+
+    It also gives ``prefix`` and ``source`` a reader. Both were pure documentation: no code
+    path touched them, so nothing detected a renamed register or an emptied field. Resolving
+    ``source`` against the repo root turns a moved document into a reported problem instead of
+    a comment that quietly stops being true.
+
+    Args:
+        manifest: The parsed plan-manifest.toml document.
+        manifest_path: The manifest's path, for message text.
+
+    Returns:
+        list[str]: One problem per undeclared, unexpected, incomplete, or unresolvable
+            namespace entry; empty when the registry matches the contract exactly.
+    """
+    # #CRITICAL: data integrity: a namespace the checker consumes but the manifest does not
+    # declare resolves to _NEVER_MATCHES_RE, which matches no id at all. Every row in that
+    # namespace then fails, or (where the pattern gates a search rather than a match) every
+    # citation check for it silently finds nothing.
+    # #VERIFY: this runs inside _check_manifest_integrity, whose problems are surfaced by
+    # check_linkage before any namespace-dependent check consumes a pattern.
+    problems: list[str] = []
+    namespaces = manifest.get("namespaces")
+    if not isinstance(namespaces, dict):
+        # _check_manifest_structure already reported this and short-circuits before we run;
+        # the guard exists so this function is safe to call on its own in a test.
+        return problems
+
+    declared = set(namespaces)
+    expected = set(_NAMESPACE_REGISTRY_CONTRACT)
+    problems.extend(
+        (
+            f"{manifest_path.name}: [namespaces.{name}] is missing; check_work_linkage.py reads "
+            f"this namespace, and an undeclared one resolves to a pattern that matches nothing"
+        )
+        for name in sorted(expected - declared)
+    )
+    problems.extend(
+        (
+            f"{manifest_path.name}: [namespaces.{name}] is declared but no code reads it; add it "
+            f"to _NAMESPACE_REGISTRY_CONTRACT or remove the table, because an unread namespace "
+            f"looks enforced and is not"
+        )
+        for name in sorted(declared - expected)
+    )
+
+    for name in sorted(expected & declared):
+        entry = namespaces[name]
+        if not isinstance(entry, dict):
+            problems.append(
+                f"{manifest_path.name}: [namespaces.{name}] is {type(entry).__name__}, not a "
+                f"table"
+            )
+            continue
+        required = _NAMESPACE_REGISTRY_CONTRACT[name]
+        for field in required:
+            value = entry.get(field)
+            if not isinstance(value, str) or not value.strip():
+                problems.append(
+                    f"{manifest_path.name}: [namespaces.{name}] field '{field}' is missing or "
+                    f"empty; it is required for this namespace"
+                )
+        problems.extend(
+            (
+                f"{manifest_path.name}: [namespaces.{name}] has unrecognised field '{field}'; "
+                f"nothing reads it, so a typo'd field name would otherwise disable the check it "
+                f"was meant to configure"
+            )
+            for field in sorted(set(entry) - set(required))
+        )
+        source = entry.get("source")
+        if isinstance(source, str) and source.strip():
+            if (_REPO_ROOT / source).is_file():
+                continue
+            problems.append(
+                f"{manifest_path.name}: [namespaces.{name}] source '{source}' does not resolve "
+                f"to a file under the repository root"
+            )
+    return problems
+
+
 def _check_manifest_rung_phase_references(
     manifest: dict[str, Any], manifest_path: Path
 ) -> list[str]:
@@ -1867,14 +2083,15 @@ def _check_manifest_integrity(
 
     Runs a structural precondition first (``_check_manifest_structure``: the required tables and
     rungs are present, are tables, and are non-empty), and only then every self-consistency check
-    the manifest can be validated against without reference to any other document: rung phase
-    references resolve, requires/excludes never overlap, the release ladder is monotonic, every
-    phase's status pair has a vocabulary term, every status value is in the closed vocabulary,
-    and Phase 7 does not gate R2.
+    the manifest can be validated against without reference to any other document: the declared
+    id namespaces match the closed set the checker consumes, rung phase references resolve,
+    requires/excludes never overlap, the release ladder is monotonic, every phase's status pair
+    has a vocabulary term, every status value is in the closed vocabulary, and Phase 7 does not
+    gate R2.
 
-    The precondition short-circuits deliberately. Each of the six consistency checks iterates a
+    The precondition short-circuits deliberately. Each of the seven consistency checks iterates a
     table it fetches with a ``{}`` default, so on a manifest missing that table it reports
-    nothing; running them anyway would bury the one real finding under six false all-clears.
+    nothing; running them anyway would bury the one real finding under seven false all-clears.
 
     Args:
         manifest: The parsed plan-manifest.toml document.
@@ -1889,6 +2106,7 @@ def _check_manifest_integrity(
         return structural_problems
 
     problems: list[str] = []
+    problems.extend(_check_namespace_registry(manifest, manifest_path))
     problems.extend(_check_manifest_rung_phase_references(manifest, manifest_path))
     problems.extend(
         _check_manifest_rung_requires_excludes_disjoint(manifest, manifest_path)
@@ -1905,6 +2123,8 @@ def _check_debt_linkage(
     debt_register_path: Path,
     register_path: Path,
     cluster_b_text: str,
+    id_pattern: re.Pattern[str],
+    citation_pattern: re.Pattern[str],
 ) -> list[str]:
     """Check every open debt-register id is cited in cluster B of the unscheduled register.
 
@@ -1913,13 +2133,17 @@ def _check_debt_linkage(
         debt_register_path: The debt register's path, for message text.
         register_path: The unscheduled-work register's path, for message text.
         cluster_b_text: Cluster B's joined ``Item`` column text.
+        id_pattern: The ``[namespaces.debt].pattern`` regex, threaded down to
+            ``_debt_register_open_ids``.
+        citation_pattern: The ``[namespaces.debt].citation_pattern`` regex, used to find debt-id
+            mentions in cluster B's prose.
 
     Returns:
         list[str]: One problem per uncited open debt id.
     """
     problems: list[str] = []
-    open_debt_ids = _debt_register_open_ids(debt_lines)
-    cited_debt_ids = _extract_citations(cluster_b_text, _DEBT_ID_RE)
+    open_debt_ids = _debt_register_open_ids(debt_lines, id_pattern)
+    cited_debt_ids = _extract_citations(cluster_b_text, citation_pattern)
     for debt_id, line_number in sorted(open_debt_ids.items()):
         if debt_id not in cited_debt_ids:
             problems.append(
@@ -1935,6 +2159,8 @@ def _check_lessons_linkage(
     lessons_log_path: Path,
     register_path: Path,
     cluster_c_text: str,
+    id_pattern: re.Pattern[str],
+    citation_pattern: re.Pattern[str],
 ) -> list[str]:
     """Check every lesson still needing linkage is cited in cluster C of the unscheduled register.
 
@@ -1943,13 +2169,17 @@ def _check_lessons_linkage(
         lessons_log_path: The lessons log's path, for message text.
         register_path: The unscheduled-work register's path, for message text.
         cluster_c_text: Cluster C's joined ``Item`` column text.
+        id_pattern: The ``[namespaces.al].pattern`` regex, threaded down to
+            ``_lessons_needing_citation``.
+        citation_pattern: The ``[namespaces.al].citation_pattern`` regex, used to find lesson-id
+            mentions in cluster C's prose.
 
     Returns:
         list[str]: One problem per uncited open lesson id.
     """
     problems: list[str] = []
-    open_lesson_ids = _lessons_needing_citation(lessons_lines)
-    cited_lesson_ids = _extract_citations(cluster_c_text, _AL_ID_RE)
+    open_lesson_ids = _lessons_needing_citation(lessons_lines, id_pattern)
+    cited_lesson_ids = _extract_citations(cluster_c_text, citation_pattern)
     for lesson_id, line_number in sorted(open_lesson_ids.items()):
         if lesson_id not in cited_lesson_ids:
             problems.append(
@@ -1965,6 +2195,8 @@ def _check_capability_linkage(
     capability_register_path: Path,
     roadmap_lines: list[str],
     roadmap_path: Path,
+    id_pattern: re.Pattern[str],
+    citation_pattern: re.Pattern[str],
 ) -> list[str]:
     """Check every open capability id appears in roadmap.md's register-item mapping section.
 
@@ -1977,14 +2209,18 @@ def _check_capability_linkage(
         capability_register_path: The capability register's path, for message text.
         roadmap_lines: ``roadmap.md``'s lines.
         roadmap_path: ``roadmap.md``'s path, for message text.
+        id_pattern: The ``[namespaces.cap].pattern`` regex, threaded down to
+            ``_capability_register_open_ids``.
+        citation_pattern: The ``[namespaces.cap].citation_pattern`` regex, used to find
+            capability-id mentions in the roadmap mapping section.
 
     Returns:
         list[str]: One problem per open capability id missing from the mapping section.
     """
     problems: list[str] = []
-    open_capability_ids = _capability_register_open_ids(capability_lines)
+    open_capability_ids = _capability_register_open_ids(capability_lines, id_pattern)
     mapping_text = _extract_roadmap_mapping_section(roadmap_lines)
-    cited_capability_ids = _extract_citations(mapping_text, _CAP_ID_RE)
+    cited_capability_ids = _extract_citations(mapping_text, citation_pattern)
     for capability_id, line_number in sorted(open_capability_ids.items()):
         if capability_id not in cited_capability_ids:
             problems.append(
@@ -1992,6 +2228,233 @@ def _check_capability_linkage(
                 f"'{capability_id}' is not marked done and does not appear in "
                 f'{roadmap_path.name}\'s "Where every open register item lands" mapping'
             )
+    return problems
+
+
+def _find_sq_table_header(lines: list[str]) -> int:
+    """Return the SQ-to-register map table's header line index.
+
+    The table's header row repeats the id/source column pair twice on one line (``| SQ |
+    Register / source | SQ | Register / source |``), because the source document lays the 24
+    rows out two per line rather than one long single-pair table. Matching on the literal column
+    labels, not on position, is what lets this survive a reflow of the surrounding prose.
+
+    Only the first such header is returned, unlike ``_find_sq_work_table_headers``, which
+    returns every deliverables-table header. That asymmetry is deliberate but narrow: the map
+    is one table by contract, where deliverables are split one table per stage. A document that
+    grew a second map table would have its rows silently ignored here, which the coverage rule
+    would then report as deliverables with "no recorded scheduling home" rather than as the
+    split map it actually is. Split the map and this needs to return a list.
+
+    Args:
+        lines: The story-structure-improvement-plan.md document's lines.
+
+    Returns:
+        int: The 0-based index of the first matching header row.
+
+    Raises:
+        LookupError: If no such header row is found.
+    """
+    for index, line in enumerate(lines):
+        if "|" not in line:
+            continue
+        cells = _split_row(line)
+        if len(cells) >= 3 and cells[0] == "SQ" and cells[2] == "SQ":
+            return index
+    msg = "no 'SQ | Register / source | SQ | Register / source' table header found"
+    raise LookupError(msg)
+
+
+def _sq_table_ids(lines: list[str], header_index: int) -> list[tuple[int, str]]:
+    """Return every SQ id in the map table, in both column positions, with line numbers.
+
+    The table separator row directly follows the header; data rows follow until the first line
+    that no longer contains a pipe, which the source document uses as the table's end (a blank
+    line back into prose).
+
+    Args:
+        lines: The story-structure-improvement-plan.md document's lines.
+        header_index: The header row's 0-based index, as returned by ``_find_sq_table_header``.
+
+    Returns:
+        list[tuple[int, str]]: Each ``(line_number, id)`` pair found in either the first or third
+            column, in document order. ``line_number`` is 1-based, matching the rest of this
+            module's message text.
+    """
+    ids: list[tuple[int, str]] = []
+    for number, line in enumerate(lines[header_index + 1 :], start=header_index + 2):
+        if "|" not in line:
+            break
+        cells = _split_row(line)
+        if _is_separator(cells):
+            continue
+        if cells and cells[0]:
+            ids.append((number, cells[0]))
+        if len(cells) > 2 and cells[2]:
+            ids.append((number, cells[2]))
+    return ids
+
+
+# A deliverable that belongs to no single stage is written as a bolded cross-cutting paragraph
+# lead rather than a stage-table row (SQ-24, the ADR-011 amendment, is the current instance).
+# The anchor is deliberately narrow: a looser "any bolded line naming an SQ id" rule would also
+# match the value-chain and dependency-chain prose, which cite ids without defining them, and
+# would inflate the defined-id set until the coverage check stopped meaning anything. A prose
+# deliverable written in some other style is simply not found here, which surfaces as a loud
+# "mapped but not defined" problem rather than a silent pass.
+_SQ_CROSS_CUTTING_RE = re.compile(r"^\*\*Cross-cutting: (?P<id>SQ-\d+)\b")
+
+
+def _find_sq_work_table_headers(lines: list[str]) -> list[int]:
+    """Return every SQ deliverables table's header line index.
+
+    These are the tables that *define* each SQ item (``| ID | Deliverable | Evidence / register |
+    Effort | Acceptance |``), as distinct from the two-pair map table that records where each
+    item's scheduling record lives. The source document splits the deliverables across one table
+    per stage rather than a single long one, so this collects all of them; taking only the first
+    would silently limit the check to stage one. Matching on the first two literal column labels
+    keeps this stable against added trailing columns and a reflow of the surrounding prose.
+
+    Args:
+        lines: The story-structure-improvement-plan.md document's lines.
+
+    Returns:
+        list[int]: Every matching header row's 0-based index, in document order.
+
+    Raises:
+        LookupError: If no such header row is found.
+    """
+    indexes = [
+        index
+        for index, line in enumerate(lines)
+        if "|" in line and _split_row(line)[:2] == ["ID", "Deliverable"]
+    ]
+    if not indexes:
+        msg = "no 'ID | Deliverable | ...' SQ deliverables table header found"
+        raise LookupError(msg)
+    return indexes
+
+
+def _sq_work_table_ids(lines: list[str]) -> list[tuple[int, str]]:
+    """Return every id in the first column of every SQ deliverables table, with line numbers.
+
+    Args:
+        lines: The story-structure-improvement-plan.md document's lines.
+
+    Returns:
+        list[tuple[int, str]]: Each ``(line_number, id)`` pair with 1-based line numbers. Not
+            in document order: every stage table's rows come first, in table order, and the
+            cross-cutting prose deliverables are appended afterwards by a second pass over the
+            whole document. Every caller treats this as a set (a coverage difference, a
+            duplicate check, or a count), so the order is unspecified rather than sorted; do
+            not add a caller that depends on it without sorting first.
+
+    Raises:
+        LookupError: If no SQ deliverables table header can be located.
+    """
+    ids: list[tuple[int, str]] = []
+    for header_index in _find_sq_work_table_headers(lines):
+        for number, line in enumerate(
+            lines[header_index + 1 :], start=header_index + 2
+        ):
+            if "|" not in line:
+                break
+            cells = _split_row(line)
+            if _is_separator(cells):
+                continue
+            if cells and cells[0]:
+                ids.append((number, cells[0]))
+    for number, line in enumerate(lines, start=1):
+        match = _SQ_CROSS_CUTTING_RE.match(line)
+        if match:
+            ids.append((number, match.group("id")))
+    return ids
+
+
+def _check_sq_namespace(
+    lines: list[str], path: Path, id_pattern: re.Pattern[str]
+) -> list[str]:
+    """Validate the SQ-to-register map table's ids against the manifest's sq namespace pattern.
+
+    Unlike the uw/debt/al/cap namespaces, sq ids are never cited from another document, so there
+    is no cross-document citation-linkage check here to mirror ``_check_debt_linkage`` or
+    ``_check_lessons_linkage``. The linkage this namespace does have is internal, between the
+    two tables in this one document: the deliverables table defines each item and the map table
+    records where its scheduling record lives. This function enforces that both tables use
+    well-formed, unique ids AND that they cover each other exactly.
+
+    That mutual-coverage rule is most of what keeps the check from being hollow, but not all of
+    it. Validating the map table alone passes vacuously when the table is emptied:
+    ``_find_sq_table_header`` only proves the *header* survived, and a zero-row table yields
+    zero problems. Requiring every deliverable to appear in the map (and no map entry to name an
+    item that does not exist) means deleting rows from *one* table is reported rather than
+    silently accepted.
+
+    Mutual coverage alone does not close the symmetric case. ``deliverables - map`` and
+    ``map - deliverables`` are both empty when both sets are populated and consistent AND when
+    both sets are empty, so emptying both tables at once passes every coverage rule. The
+    non-empty floor below is what distinguishes those two states; the coverage rules cannot.
+
+    #CRITICAL: data integrity: an assurance check that returns no problems when it inspected no
+    rows is indistinguishable from one that passed, and this repo has a documented history of
+    exactly that failure mode.
+    #VERIFY: any future edit here must keep three tests, because the one-table and both-table
+    cases fail through different rules: empty the map table's data rows only, empty the
+    deliverables tables' data rows only, and empty BOTH at once, each leaving the headers
+    intact, and assert a non-empty problem list in all three. A test suite that covers only the
+    one-table cases leaves the symmetric case open while appearing to satisfy this marker.
+
+    Args:
+        lines: The story-structure-improvement-plan.md document's lines.
+        path: The document's path, for message text.
+        id_pattern: The ``[namespaces.sq].pattern`` regex every id must match.
+
+    Returns:
+        list[str]: One problem per malformed id, per id used on more than one row within a
+            table, and per id present in one table but absent from the other.
+
+    Raises:
+        LookupError: If either the SQ-to-register map table header or the SQ deliverables table
+            header cannot be located.
+    """
+    problems: list[str] = []
+    map_ids = _sq_table_ids(lines, _find_sq_table_header(lines))
+    work_ids = _sq_work_table_ids(lines)
+    for label, entries in (("map", map_ids), ("deliverables", work_ids)):
+        if not entries:
+            problems.append(
+                f"{path.name}: the SQ {label} table has a header but no data rows; an sq "
+                f"namespace with nothing in it cannot be distinguished from one that passed"
+            )
+    valid: dict[str, set[str]] = {"map": set(), "deliverables": set()}
+    for label, entries in (("map", map_ids), ("deliverables", work_ids)):
+        seen: dict[str, list[int]] = {}
+        for number, entry_id in entries:
+            if not id_pattern.match(entry_id):
+                problems.append(
+                    f"{path.name}:{number}: id '{entry_id}' does not match the sq namespace "
+                    f"pattern"
+                )
+                continue
+            seen.setdefault(entry_id, []).append(number)
+        for entry_id, numbers in sorted(seen.items()):
+            if len(numbers) > 1:
+                lines_listed = ", ".join(str(n) for n in numbers)
+                problems.append(
+                    f"{path.name}: id '{entry_id}' is used on {len(numbers)} rows of the "
+                    f"{label} table (lines {lines_listed}); sq ids must be unique"
+                )
+        valid[label] = set(seen)
+    problems.extend(
+        f"{path.name}: id '{entry_id}' is defined in the SQ deliverables table but has no row "
+        f"in the SQ-to-register map table, so it has no recorded scheduling home"
+        for entry_id in sorted(valid["deliverables"] - valid["map"])
+    )
+    problems.extend(
+        f"{path.name}: id '{entry_id}' appears in the SQ-to-register map table but is not "
+        f"defined in the SQ deliverables table"
+        for entry_id in sorted(valid["map"] - valid["deliverables"])
+    )
     return problems
 
 
@@ -2004,8 +2467,9 @@ def check_linkage(
     *,
     manifest_path: Path = _DEFAULT_MANIFEST,
     project_plan_path: Path = _DEFAULT_PROJECT_PLAN,
+    story_structure_plan_path: Path = _DEFAULT_STORY_STRUCTURE_PLAN,
 ) -> list[str]:
-    """Validate the work-linkage contract across all five planning documents plus the manifest.
+    """Validate the work-linkage contract across all six planning documents plus the manifest.
 
     Args:
         register_path: The unscheduled-work register markdown file.
@@ -2014,15 +2478,17 @@ def check_linkage(
         debt_register_path: The R1 deferred-debt register markdown file.
         lessons_log_path: The authoring lessons log markdown file.
         capability_register_path: The capability register markdown file.
-        manifest_path: ``plan-manifest.toml``, the phase vocabulary, phase-to-rung mapping, and
-            two-axis status model's source of truth. Keyword-only with a default so existing
-            callers passing five positional arguments keep working unchanged. Every check in
-            this run, including the register's own ``Phase`` cell vocabulary, reads from this
-            one file: a run cannot validate one document against this manifest and another
-            against a different one.
+        manifest_path: ``plan-manifest.toml``, the phase vocabulary, phase-to-rung mapping,
+            two-axis status model, and id-namespace patterns' source of truth. Keyword-only with
+            a default so existing callers passing five positional arguments keep working
+            unchanged. Every check in this run, including the register's own ``Phase`` cell
+            vocabulary and every id namespace's pattern, reads from this one file: a run cannot
+            validate one document against this manifest and another against a different one.
         project_plan_path: ``PROJECT-PLAN.md``, which narrates the track-2 phases (6-9) that
             ``roadmap.md`` explicitly does not cover. Their manifest status is drift-checked
             against this document because there is no roadmap row to check it against.
+        story_structure_plan_path: ``story-structure-improvement-plan.md``, home of the
+            SQ-to-register map table checked against the manifest's ``sq`` namespace.
 
     Returns:
         list[str]: One problem per failed check; empty when every check passes.
@@ -2042,21 +2508,66 @@ def check_linkage(
         problems.append(f"no '## Cluster <letter>:' tables found in {register_path}")
         return problems
 
-    # Loaded before the register rows are checked, because the phase vocabulary those rows are
-    # validated against comes from this manifest and no other. Reading it from a module-level
-    # default instead is what let a --manifest run validate Phase cells against one manifest and
-    # everything else against another.
+    # Loaded before the register rows are checked, because the phase vocabulary and every id
+    # namespace pattern those rows are validated against come from this manifest and no other.
+    # Reading it from a module-level default instead is what let a --manifest run validate Phase
+    # cells against one manifest and everything else against another.
     manifest = _load_manifest(manifest_path, problems)
+    if manifest is None:
+        # Every downstream check is parameterised by this manifest: the phase vocabulary is
+        # empty and every namespace pattern is _NEVER_MATCHES_RE, so continuing would report
+        # each of the register's ~240 rows as both a malformed id and an out-of-vocabulary
+        # phase. That cascade buries the one problem that explains all of them, which
+        # `_load_manifest` has already appended. Stopping here is safe precisely because the
+        # run is already failing: the caller sees a non-empty problem list either way, and the
+        # line below states plainly which checks did not run so the short list is not mistaken
+        # for a clean bill of health.
+        problems.append(
+            f"{manifest_path.name} could not be loaded, so the register row, cross-register "
+            f"linkage, roadmap, and sq checks were all skipped; fix the manifest and re-run to "
+            f"see them"
+        )
+        return problems
     phase_vocabulary = _manifest_phase_vocabulary(manifest)
+    # The eight resolutions below share their whole-table failure modes: `[namespaces] = "x"` or
+    # a wholly absent table produces the same message from each call, and from the structural
+    # precondition as well. Each still reports its own specific failure ("[namespaces.al]
+    # .citation_pattern is missing"); the deduplication at this function's return collapses the
+    # shared ones back to a single line.
+    uw_id_pattern = _manifest_namespace_pattern(
+        manifest, manifest_path, "uw", "pattern", problems
+    )
+    debt_id_pattern = _manifest_namespace_pattern(
+        manifest, manifest_path, "debt", "pattern", problems
+    )
+    debt_citation_pattern = _manifest_namespace_pattern(
+        manifest, manifest_path, "debt", "citation_pattern", problems
+    )
+    al_id_pattern = _manifest_namespace_pattern(
+        manifest, manifest_path, "al", "pattern", problems
+    )
+    al_citation_pattern = _manifest_namespace_pattern(
+        manifest, manifest_path, "al", "citation_pattern", problems
+    )
+    cap_id_pattern = _manifest_namespace_pattern(
+        manifest, manifest_path, "cap", "pattern", problems
+    )
+    cap_citation_pattern = _manifest_namespace_pattern(
+        manifest, manifest_path, "cap", "citation_pattern", problems
+    )
+    sq_id_pattern = _manifest_namespace_pattern(
+        manifest, manifest_path, "sq", "pattern", problems
+    )
 
-    row_problems, cluster_item_text = _check_register_rows(clusters, phase_vocabulary)
+    row_problems, cluster_item_text = _check_register_rows(
+        clusters, phase_vocabulary, uw_id_pattern
+    )
     problems.extend(row_problems)
 
-    if manifest is not None:
-        problems.extend(_check_manifest_integrity(manifest, manifest_path))
+    problems.extend(_check_manifest_integrity(manifest, manifest_path))
 
     roadmap_lines = _read_lines(roadmap_path, problems)
-    if roadmap_lines is not None and manifest is not None:
+    if roadmap_lines is not None:
         track1_phases = _manifest_phases_for_track(manifest, 1)
         problems.extend(
             _check_roadmap_vocabulary(roadmap_lines, roadmap_path, track1_phases)
@@ -2068,14 +2579,11 @@ def check_linkage(
         except LookupError as exc:
             problems.append(f"{roadmap_path.name}: {exc}")
 
-    if manifest is not None:
-        plan_lines = _read_lines(project_plan_path, problems)
-        if plan_lines is not None:
-            problems.extend(
-                _check_project_plan_phase_status(
-                    plan_lines, project_plan_path, manifest
-                )
-            )
+    plan_lines = _read_lines(project_plan_path, problems)
+    if plan_lines is not None:
+        problems.extend(
+            _check_project_plan_phase_status(plan_lines, project_plan_path, manifest)
+        )
 
     debt_lines = _read_lines(debt_register_path, problems)
     if debt_lines is not None:
@@ -2086,6 +2594,8 @@ def check_linkage(
                     debt_register_path,
                     register_path,
                     cluster_item_text.get("B", ""),
+                    debt_id_pattern,
+                    debt_citation_pattern,
                 )
             )
         except ValueError as exc:
@@ -2100,6 +2610,8 @@ def check_linkage(
                     lessons_log_path,
                     register_path,
                     cluster_item_text.get("C", ""),
+                    al_id_pattern,
+                    al_citation_pattern,
                 )
             )
         except (LookupError, ValueError) as exc:
@@ -2109,7 +2621,9 @@ def check_linkage(
     capability_rows: list[tuple[int, str, str, str]] | None = None
     if capability_lines is not None:
         try:
-            capability_rows = _capability_register_status_rows(capability_lines)
+            capability_rows = _capability_register_status_rows(
+                capability_lines, cap_id_pattern
+            )
         except (LookupError, ValueError) as exc:
             problems.append(f"{capability_register_path.name}: {exc}")
 
@@ -2131,12 +2645,29 @@ def check_linkage(
                     capability_register_path,
                     roadmap_lines,
                     roadmap_path,
+                    cap_id_pattern,
+                    cap_citation_pattern,
                 )
             )
         except ValueError as exc:
             problems.append(f"{capability_register_path.name}: {exc}")
 
-    return problems
+    sq_lines = _read_lines(story_structure_plan_path, problems)
+    if sq_lines is not None:
+        try:
+            problems.extend(
+                _check_sq_namespace(sq_lines, story_structure_plan_path, sq_id_pattern)
+            )
+        except LookupError as exc:
+            problems.append(f"{story_structure_plan_path.name}: {exc}")
+
+    # Deduplicate, preserving first-seen order. Independent checks can reach the same conclusion
+    # about the manifest: `[namespaces] = "x"` is reported once by the structural precondition
+    # and once by whichever namespace resolution hit it first, in identical words. Every problem
+    # this module emits names a location, an id, or a specific table, so two byte-identical
+    # sentences are the same finding reported twice, never two findings that happen to read
+    # alike. Printing it twice inflates the count a reader uses to judge how bad a run was.
+    return list(dict.fromkeys(problems))
 
 
 def _summary(register_path: Path) -> str:
@@ -2160,18 +2691,22 @@ def _summary(register_path: Path) -> str:
     )
 
 
-def _capability_summary(capability_register_path: Path) -> str:
+def _capability_summary(
+    capability_register_path: Path, id_pattern: re.Pattern[str]
+) -> str:
     """Return a one-line per-glyph tally for a capability register already known well formed.
 
     Args:
         capability_register_path: The validated capability register markdown file.
+        id_pattern: The ``[namespaces.cap].pattern`` regex, threaded down to
+            ``_capability_register_status_rows``.
 
     Returns:
         str: A newline-terminated summary of ``Docs`` glyph counts, in checkmark/yellow/cross
             order.
     """
     lines = capability_register_path.read_text(encoding="utf-8").splitlines()
-    rows = _capability_register_status_rows(lines)
+    rows = _capability_register_status_rows(lines, id_pattern)
     _problems, counts = _check_capability_status_vocabulary(
         rows, capability_register_path
     )
@@ -2184,392 +2719,39 @@ def _capability_summary(capability_register_path: Path) -> str:
     return f"     {total} capability row(s): {', '.join(parts)}\n"
 
 
-def _resolve_cluster_issues_index(header_cells: list[str]) -> int | None:
-    """Return a cluster header's issue-citation column index, or None when it has no such column.
+def _sq_summary(story_structure_plan_path: Path) -> str:
+    """Return a row tally for an sq namespace already known to be well formed.
 
-    Any cluster whose header carries an issue-citation column participates in the bare-``#NNN``
-    half of citation collection; clusters without one are skipped for that half and contribute
-    only their ``issue:NNN`` ``Phase`` values. Both the plural and singular spellings of the
-    column are accepted, because the register's cluster tables use both: matching only the plural
-    silently dropped every row of the cluster headed ``| ID | Item | Issue | Status |``, so its
-    citations were never checked against GitHub at all. Which clusters happen to have the column
-    today is a fact about a different file and is deliberately not asserted here.
+    Printing the count is not cosmetic. Without it, a green run cannot be distinguished from a
+    run that inspected an emptied table, which is the reader-facing half of the hollow-check
+    problem ``_check_sq_namespace`` guards against structurally.
+
+    The deliverable count and the map count are deliberately NOT both printed. This function is
+    reached only on the success path, and success means ``_check_sq_namespace`` already proved
+    the two id sets are equal and duplicate-free, so a second number would be the first one
+    again wearing a different label: it would read as a cross-check while being incapable of
+    disagreeing. The stage-table count beside it is genuinely independent information, because
+    the deliverables live in one table per stage and dropping a whole stage table is a real
+    failure the id total alone can hide.
 
     Args:
-        header_cells: A cluster table's header cells.
+        story_structure_plan_path: The validated story-structure-improvement-plan.md file.
 
     Returns:
-        int | None: The 0-based index of the first issue-citation column, or None.
+        str: A newline-terminated summary naming the deliverable count and the number of stage
+            tables those deliverables were collected from.
+
+    Raises:
+        LookupError: If the SQ deliverables table header cannot be located. Unreachable on the
+            success path, where ``_check_sq_namespace`` has already located it.
     """
-    return next(
-        (
-            header_cells.index(name)
-            for name in _CLUSTER_ISSUE_COLUMN_NAMES
-            if name in header_cells
-        ),
-        None,
+    lines = story_structure_plan_path.read_text(encoding="utf-8").splitlines()
+    defined = len(_sq_work_table_ids(lines))
+    stage_tables = len(_find_sq_work_table_headers(lines))
+    return (
+        f"     {defined} SQ deliverable(s) across {stage_tables} stage table(s), each mapped "
+        f"to a scheduling record\n"
     )
-
-
-def _collect_register_issue_citations(
-    clusters: dict[str, tuple[list[str], list[tuple[int, list[str]]]]],
-) -> dict[int, list[tuple[str, str]]]:
-    """Collect every GitHub issue number cited in the register, with each citing row's id/status.
-
-    Two citation shapes are recognised: an ``issue:NNN`` ``Phase`` value (any cluster with a
-    ``Phase`` column), and a bare ``#NNN`` reference inside any cluster's issue-citation column
-    (see ``_resolve_cluster_issues_index``).
-
-    Args:
-        clusters: Cluster letter mapped to its header cells and data rows, as returned by
-            ``_find_clusters``.
-
-    Returns:
-        dict[int, list[tuple[str, str]]]: Issue number mapped to every (row id, row ``Status``)
-            pair that cites it. A number cited by more than one row keeps every citation, since
-            each citing row's own ``Status`` independently determines whether citing a closed
-            issue is a problem.
-    """
-    citations: dict[int, list[tuple[str, str]]] = {}
-
-    def _add(number: int, entry_id: str, status: str) -> None:
-        citations.setdefault(number, []).append((entry_id, status))
-
-    for header_cells, rows in clusters.values():
-        indexes = _resolve_column_indexes(header_cells)
-        id_idx, status_idx, phase_idx = (
-            indexes["ID"],
-            indexes["Status"],
-            indexes["Phase"],
-        )
-        issues_idx = _resolve_cluster_issues_index(header_cells)
-        for _line_number, cells in rows:
-            if len(cells) != len(header_cells):
-                continue
-            entry_id = cells[id_idx] if id_idx is not None else ""
-            status = cells[status_idx] if status_idx is not None else ""
-            if phase_idx is not None:
-                phase_match = _ISSUE_PHASE_NUMBER_RE.match(cells[phase_idx])
-                if phase_match:
-                    _add(int(phase_match.group(1)), entry_id, status)
-            if issues_idx is not None:
-                for issue_match in _BARE_ISSUE_REF_RE.finditer(cells[issues_idx]):
-                    _add(int(issue_match.group(1)), entry_id, status)
-
-    return citations
-
-
-def _validate_github_issue_payload(
-    payload: object, problems: list[str]
-) -> list[dict[str, Any]] | None:
-    """Confirm a decoded ``gh issue list`` payload has the shape every caller assumes.
-
-    ``_check_cited_issues_not_closed`` indexes ``issue["number"]`` and ``_check_issue_orphans``
-    calls ``label.get("name")`` over ``issue["labels"]``. Both assumptions were unchecked, so a
-    malformed entry surfaced as a ``KeyError``/``TypeError``/``AttributeError`` traceback deep in
-    a check rather than as a reported problem at the boundary where the data enters. Validating
-    once here is what lets those two functions state their preconditions instead of guarding
-    them.
-
-    Args:
-        payload: The decoded JSON document, of unknown shape.
-        problems: The running problem list; every shape violation is appended here.
-
-    Returns:
-        list[dict[str, Any]] | None: The payload as a list of issue objects, or None when it does
-            not have that shape.
-    """
-    if not isinstance(payload, list):
-        problems.append("gh issue list returned JSON that is not a list of issues")
-        return None
-
-    shape_problems: list[str] = []
-    for position, entry in enumerate(payload):
-        if not isinstance(entry, dict):
-            shape_problems.append(
-                f"entry {position} is {type(entry).__name__}, not an issue object"
-            )
-            continue
-        number = entry.get("number")
-        # bool is an int subclass; a JSON `true` here would otherwise pass as issue number 1.
-        if not isinstance(number, int) or isinstance(number, bool):
-            shape_problems.append(
-                f"entry {position} has number={number!r}, which is not an integer"
-            )
-        labels = entry.get("labels", [])
-        if not isinstance(labels, list) or not all(
-            isinstance(label, dict) for label in labels
-        ):
-            shape_problems.append(
-                f"entry {position} (issue {number!r}) has labels={labels!r}, which is not a "
-                f"list of label objects"
-            )
-    if shape_problems:
-        joined = "; ".join(shape_problems)
-        problems.append(f"gh issue list returned unexpected-shape JSON: {joined}")
-        return None
-
-    return payload
-
-
-def _fetch_github_issues(problems: list[str]) -> list[dict[str, Any]] | None:
-    """Fetch issues (open and closed) via one batched, capped ``gh issue list`` call.
-
-    A single call fetches number/state/title/labels for at most ``_GH_ISSUE_LIST_LIMIT`` issues,
-    so both ``--check-issues`` (cited issue not CLOSED) and ``--check-issue-orphans`` (every OPEN
-    issue cited somewhere) share this one network round trip rather than one call per issue
-    number. The cap is real, not nominal: a repository that outgrows it makes this function
-    report a problem rather than hand back a partial list.
-
-    # #ASSUME: external resource: gh is installed, authenticated, and the network is reachable.
-    # --check-issues/--check-issue-orphans are opt-in specifically so this call only ever runs
-    # when a caller (CI, not pre-commit) has deliberately asked for it.
-    # #VERIFY: every failure mode (missing binary, timeout, non-zero exit, unparsable JSON,
-    # unexpected-shape JSON per _validate_github_issue_payload, and a result at the --limit cap)
-    # is turned into an appended problem and a None return, never a silent empty or partial
-    # result: a check that can only pass is worse than no check at all.
-    # #ASSUME: external resource: `gh` resolves the target repository from its working
-    # directory's git remote, so a run started from another clone or worktree would validate this
-    # register against a different repository's issues.
-    # #VERIFY: cwd is pinned to _REPO_ROOT, derived from this file's own location, so the issues
-    # fetched always belong to the repository the script ships in; no owner/repo string is
-    # hardcoded, so a fork or a rename needs no edit here.
-
-    Args:
-        problems: The running problem list; a missing gh, an auth or network failure, a
-            timeout, a non-zero exit, unparsable or unexpected-shape JSON, or a truncated result
-            is appended here instead of raised.
-
-    Returns:
-        list[dict[str, Any]] | None: The parsed issue list (each entry carrying an integer
-            ``number`` and a list of label objects), or None if the call could not be completed
-            or its result cannot be trusted to be complete.
-    """
-    try:
-        result = subprocess.run(
-            [
-                "gh",
-                "issue",
-                "list",
-                "--state",
-                "all",
-                "--limit",
-                str(_GH_ISSUE_LIST_LIMIT),
-                "--json",
-                "number,state,title,labels",
-            ],
-            capture_output=True,
-            text=True,
-            timeout=_GH_ISSUE_LIST_TIMEOUT_SECONDS,
-            check=False,
-            cwd=_REPO_ROOT,
-        )
-    except FileNotFoundError:
-        problems.append(
-            "gh is not installed or not on PATH; --check-issues/--check-issue-orphans "
-            "require the GitHub CLI"
-        )
-        return None
-    except subprocess.TimeoutExpired:
-        problems.append(
-            f"gh issue list did not complete within {_GH_ISSUE_LIST_TIMEOUT_SECONDS}s"
-        )
-        return None
-
-    if result.returncode != 0:
-        problems.append(
-            f"gh issue list failed (exit {result.returncode}): {result.stderr.strip()}"
-        )
-        return None
-
-    try:
-        payload = json.loads(result.stdout)
-    except json.JSONDecodeError as exc:
-        problems.append(f"gh issue list returned unparsable JSON: {exc}")
-        return None
-
-    issues = _validate_github_issue_payload(payload, problems)
-    if issues is None:
-        return None
-
-    if len(issues) >= _GH_ISSUE_LIST_LIMIT:
-        problems.append(
-            f"gh issue list returned {len(issues)} issues, at or above its --limit of "
-            f"{_GH_ISSUE_LIST_LIMIT}, so the result may be truncated; raise the limit or page "
-            f"the query. Continuing on a partial set would report real issues as nonexistent "
-            f"and under-report orphans"
-        )
-        return None
-
-    return issues
-
-
-def _check_cited_issues_not_closed(
-    citations: dict[int, list[tuple[str, str]]],
-    issues: list[dict[str, Any]],
-    register_path: Path,
-) -> list[str]:
-    """Check every cited issue exists and, when its citing row is not done, is not CLOSED.
-
-    Args:
-        citations: Issue number mapped to citing (row id, row ``Status``) pairs, as returned by
-            ``_collect_register_issue_citations``.
-        issues: The fetched issue list, as returned by ``_fetch_github_issues``, whose entries
-            are already validated to be objects with an integer ``number``.
-        register_path: The unscheduled-work register's path, for message text.
-
-    Returns:
-        list[str]: One problem per citation of a nonexistent issue, plus one problem per
-            not-done row citing an issue GitHub reports CLOSED.
-    """
-    problems: list[str] = []
-    lookup = {issue["number"]: issue for issue in issues}
-    for number, citers in sorted(citations.items()):
-        issue = lookup.get(number)
-        if issue is None:
-            problems.extend(
-                f"{register_path.name}: row '{entry_id}' cites issue #{number}, which "
-                f"does not exist on GitHub"
-                for entry_id, _status in citers
-            )
-            continue
-        if issue.get("state") != "CLOSED":
-            continue
-        problems.extend(
-            f"{register_path.name}: row '{entry_id}' (status '{status}') cites issue "
-            f"#{number} ('{issue.get('title', '')}'), which GitHub reports CLOSED"
-            for entry_id, status in citers
-            if status != "done"
-        )
-    return problems
-
-
-def _extract_issue_numbers_from_text(text: str) -> set[int]:
-    """Return every GitHub issue number cited in a block of prose.
-
-    Recognises both a bare ``#NNN`` reference and an inline ``issue:NNN`` mention.
-
-    Args:
-        text: The prose to search.
-
-    Returns:
-        set[int]: Every issue number cited.
-    """
-    numbers = {int(match) for match in _BARE_ISSUE_REF_RE.findall(text)}
-    numbers |= {int(match) for match in _PROSE_ISSUE_REF_RE.findall(text)}
-    return numbers
-
-
-def _planning_docs_cited_issue_numbers(planning_dir: Path) -> set[int]:
-    """Return every issue number cited anywhere in the planning tree under ``planning_dir``.
-
-    Args:
-        planning_dir: The directory to search recursively for planning documents (in the real
-            repository, ``docs/planning/``). Both markdown and TOML are searched: see
-            ``_PLANNING_DOC_SUFFIXES``.
-
-    Returns:
-        set[int]: Every issue number cited in any planning document found.
-    """
-    numbers: set[int] = set()
-    for path in sorted(planning_dir.rglob("*")):
-        if path.suffix not in _PLANNING_DOC_SUFFIXES or not path.is_file():
-            continue
-        try:
-            text = path.read_text(encoding="utf-8")
-        except (OSError, UnicodeDecodeError):
-            continue
-        numbers |= _extract_issue_numbers_from_text(text)
-    return numbers
-
-
-def _check_issue_orphans(
-    issues: list[dict[str, Any]], cited_numbers: set[int]
-) -> list[str]:
-    """Check every OPEN issue is either cited under docs/planning/ or labelled ``unplanned``.
-
-    Args:
-        issues: The fetched issue list, as returned by ``_fetch_github_issues``, whose entries
-            are already validated to carry a list of label objects.
-        cited_numbers: Every issue number cited anywhere under docs/planning/, as returned by
-            ``_planning_docs_cited_issue_numbers``.
-
-    Returns:
-        list[str]: One problem per orphaned open issue, worded like every other message in this
-            module: the rule broken, then the remedy. Emitting a bare ``"#NNN <title>"`` made
-            these the only entries in the shared problem list that named a fact without naming
-            what to do about it.
-    """
-    problems: list[str] = []
-    for issue in issues:
-        if issue.get("state") != "OPEN":
-            continue
-        number = issue.get("number")
-        if number in cited_numbers:
-            continue
-        labels = {label.get("name", "") for label in issue.get("labels", [])}
-        if _UNPLANNED_LABEL in labels:
-            continue
-        problems.append(
-            f"issue #{number} ('{issue.get('title', '')}') is OPEN but is cited in no "
-            f"document under docs/planning/ and does not carry the '{_UNPLANNED_LABEL}' "
-            f"label; give it a phase home (cite it from a planning document, for example an "
-            f"'issue:{number}' Phase value or a register row's issue column) or label it "
-            f"'{_UNPLANNED_LABEL}'"
-        )
-    return problems
-
-
-def _check_issues(
-    register_path: Path,
-    planning_dir: Path,
-    *,
-    check_issues: bool,
-    check_issue_orphans: bool,
-) -> list[str]:
-    """Run the opt-in GitHub issue checks, sharing one batched ``gh issue list`` call.
-
-    Both checks are off by default (see ``main``'s ``--check-issues``/``--check-issue-orphans``
-    flags): they need network access and ``gh`` auth, which pre-commit's offline, fast posture
-    cannot assume, so only an explicit flag (as CI passes) runs them at all.
-
-    Args:
-        register_path: The unscheduled-work register markdown file, searched for citations by
-            ``--check-issues``.
-        planning_dir: The directory searched recursively for citations by
-            ``--check-issue-orphans`` (in the real repository, ``docs/planning/``).
-        check_issues: Whether to run the cited-issue-not-closed check.
-        check_issue_orphans: Whether to run the open-issue-cited-somewhere check.
-
-    Returns:
-        list[str]: Problems found; empty when neither flag is set or every check passes.
-    """
-    if not check_issues and not check_issue_orphans:
-        return []
-
-    problems: list[str] = []
-    issues = _fetch_github_issues(problems)
-    if issues is None:
-        return problems
-
-    if check_issues:
-        register_lines = _read_lines(register_path, problems)
-        if register_lines is not None:
-            try:
-                clusters = _find_clusters(register_lines)
-            except LookupError as exc:
-                problems.append(f"{register_path.name}: {exc}")
-            else:
-                citations = _collect_register_issue_citations(clusters)
-                problems.extend(
-                    _check_cited_issues_not_closed(citations, issues, register_path)
-                )
-
-    if check_issue_orphans:
-        cited_numbers = _planning_docs_cited_issue_numbers(planning_dir)
-        problems.extend(_check_issue_orphans(issues, cited_numbers))
-
-    return problems
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -2627,23 +2809,11 @@ def main(argv: list[str] | None = None) -> int:
         help="Path to the capability register markdown file.",
     )
     parser.add_argument(
-        "--check-issues",
-        action="store_true",
+        "--story-structure-plan",
+        default=str(_DEFAULT_STORY_STRUCTURE_PLAN),
         help=(
-            "Also validate that a register row citing a GitHub issue (an 'issue:NNN' Phase "
-            "value, or a bare '#NNN' inside a cluster D row) never cites an issue GitHub "
-            "reports CLOSED while the row itself is not done, and that every cited issue "
-            "number exists. Off by default: needs network access and 'gh' auth, so pre-commit "
-            "stays offline; only CI passes this flag."
-        ),
-    )
-    parser.add_argument(
-        "--check-issue-orphans",
-        action="store_true",
-        help=(
-            "Also validate that every OPEN GitHub issue is cited by some markdown or TOML "
-            "document under docs/planning/, or carries the 'unplanned' label. Off by default, "
-            "independent of --check-issues: needs network access and 'gh' auth."
+            "Path to story-structure-improvement-plan.md, home of the SQ-to-register map table "
+            "checked against the manifest's sq namespace pattern."
         ),
     )
     args = parser.parse_args(argv)
@@ -2658,14 +2828,7 @@ def main(argv: list[str] | None = None) -> int:
         capability_register_path,
         manifest_path=Path(args.manifest),
         project_plan_path=Path(args.project_plan),
-    )
-    problems.extend(
-        _check_issues(
-            register_path,
-            register_path.parent,
-            check_issues=args.check_issues,
-            check_issue_orphans=args.check_issue_orphans,
-        )
+        story_structure_plan_path=Path(args.story_structure_plan),
     )
     if problems:
         sys.stdout.write(f"FAIL {register_path}:\n")
@@ -2675,7 +2838,20 @@ def main(argv: list[str] | None = None) -> int:
 
     sys.stdout.write(f"ok: {register_path.name} satisfies the work-linkage contract\n")
     sys.stdout.write(_summary(register_path))
-    sys.stdout.write(_capability_summary(capability_register_path))
+    # check_linkage already proved the manifest and its cap namespace resolve cleanly (the
+    # success path above is only reached with an empty problems list), so re-resolving the
+    # pattern here for the summary's own read of the capability register cannot newly fail; a
+    # throwaway list absorbs the call's signature without adding a second problems channel.
+    summary_manifest_path = Path(args.manifest)
+    cap_id_pattern = _manifest_namespace_pattern(
+        _load_manifest(summary_manifest_path, []),
+        summary_manifest_path,
+        "cap",
+        "pattern",
+        [],
+    )
+    sys.stdout.write(_capability_summary(capability_register_path, cap_id_pattern))
+    sys.stdout.write(_sq_summary(Path(args.story_structure_plan)))
     return 0
 
 

@@ -155,6 +155,8 @@ export async function acceptGuardianConsentIfPresent(page: Page): Promise<void> 
       name: /electronic signature agreeing to CYO Adventure's Privacy Notice/,
     })
     .check()
+  await page.getByLabel('Your country of residence').selectOption('US')
+  await page.getByRole('checkbox', { name: 'I confirm that I am an adult.' }).check()
   await page.getByRole('button', { name: 'Agree and continue' }).click()
 
   // The page has no local success state: recordConsent's syncPrincipal flips

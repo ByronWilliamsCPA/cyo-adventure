@@ -318,18 +318,15 @@ section 8. This plan does not modify register rows; each flips with a Ref when i
 and if an SQ item is ever dropped from this schedule while still worth doing, it must be registered
 as a UW row before removal.
 
-**Complete SQ-to-register map.** The `SQ-*` namespace is invisible to
-`scripts/check_work_linkage.py` today, so this table is the audit surface. That is an interim state,
-not the intended one: `docs/planning/plan-manifest.toml` exists on `main` (landed in PR #553, commit
-`fc36b51`), so the earlier claim that it did not exist was wrong; correction stated here so it does
-not travel further. What the manifest does not yet carry is a machine-checkable `SQ-*` namespace
-entry: that is the gap this table stands in for. PR #566
-(`refactor(planning): make work-linkage id namespaces data-driven and register SQ-*`) adds a
-`[namespaces]` table to the manifest and registers `SQ-*` there; consult its current status (open or
-merged) rather than assuming either from this text. **Follow-up**: once `SQ-*` is registered in
-`plan-manifest.toml` by #566 or equivalent, confirm `check_work_linkage.py` covers this table's
-mappings and drop this table's audit role at that point. Until then, a change to the table below is a
-change to the only linkage record that exists.
+**Complete SQ-to-register map.** The `SQ-*` namespace is registered in
+[`plan-manifest.toml`](plan-manifest.toml)'s `[namespaces.sq]` table, so `scripts/check_work_linkage.py`
+validates every id below against that pattern and checks the table for duplicates the same way it
+validates the other four id namespaces. It also cross-checks this table against the five per-stage
+deliverables tables in both directions, so an item defined with no scheduling record, or a map entry
+naming no defined item, is reported rather than accepted. The "Register / source" column stays
+freeform prose, not machine-checked; this table is still the audit surface for where each `SQ-*`
+item's scheduling record lives, and a change to it is a change to the only linkage record that exists
+for this namespace.
 
 | SQ | Register / source | SQ | Register / source |
 | --- | --- | --- | --- |

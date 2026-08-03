@@ -187,7 +187,7 @@ function ConsentProbe() {
       <button
         type="button"
         onClick={() =>
-          void recordConsent('Jane A. Guardian').catch((e: Error) => setCaught(e.message))
+          void recordConsent('Jane A. Guardian', 'US').catch((e: Error) => setCaught(e.message))
         }
       >
         agree
@@ -429,6 +429,8 @@ describe('AuthProvider', () => {
         accepted: true,
         policy_version: expect.any(String) as string,
         signer_name: 'Jane A. Guardian',
+        residence_country: 'US',
+        adulthood_attested: true,
       },
     })
     expect(screen.getByTestId('caught')).toHaveTextContent('none')

@@ -25,6 +25,8 @@ interface ConsentPayload {
   accepted?: boolean | null
   policy_version?: string | null
   signer_name?: string | null
+  residence_country?: string | null
+  adulthood_attested?: boolean | null
 }
 
 /**
@@ -95,6 +97,8 @@ test('un-consented guardian is gated, and consenting unblocks the console', asyn
       name: /electronic signature agreeing to CYO Adventure's Privacy Notice/,
     })
     .check()
+  await page.getByLabel('Your country of residence').selectOption('US')
+  await page.getByRole('checkbox', { name: 'I confirm that I am an adult.' }).check()
   await expect(submit).toBeEnabled()
   await submit.click()
 
@@ -107,6 +111,8 @@ test('un-consented guardian is gated, and consenting unblocks the console', asyn
     accepted: true,
     policy_version: CONSENT_POLICY_VERSION,
     signer_name: 'Dana Guardian',
+    residence_country: 'US',
+    adulthood_attested: true,
   })
 
   // The gate no longer fires: intake now renders instead of redirecting.

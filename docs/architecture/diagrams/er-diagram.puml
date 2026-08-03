@@ -56,10 +56,13 @@ entity "user" as user_t #E3F2FD {
   consent_policy_version : VARCHAR(32) NULL
   consent_signer_name : VARCHAR(200) NULL [typed legal-name signature]
   consent_ip : VARCHAR(64) NULL [evidentiary only, never queried/joined]
+  residence_country : VARCHAR(2) NULL [ISO 3166-1 alpha-2;\nO-117 jurisdiction signal]
+  adulthood_attested_at : TIMESTAMPTZ NULL [O-119 self-declared\nadult attestation]
   --
   CHECK (role<>'child' OR is_admin=false)
   CHECK (role<>'admin' OR is_admin=true)
   CHECK (consent_accepted_at/policy_version/\nsigner_name/ip all NULL or all set)
+  CHECK (residence_country/adulthood_attested_at\nboth NULL or both set with consent)
 }
 
 entity "child_profile" as child_profile #FFF3E0 {

@@ -338,16 +338,22 @@ async def _seed_dual_role_user(session: AsyncSession) -> bool:
     )
     if guardian is None:
         return False
+    now = datetime.now(UTC)
     session.add(
         User(
             family_id=guardian.family_id,
             role="guardian",
             is_admin=True,
             authn_subject=_DUAL_SUBJECT,
-            consent_accepted_at=datetime.now(UTC),
+            consent_accepted_at=now,
             consent_policy_version="dev-seed",
             consent_signer_name="Dev Dual-Role Guardian",
             consent_ip="127.0.0.1",
+            # O-117/O-119: dev data mirrors production shape (consent_* is
+            # always written alongside these two by api/onboarding.py::
+            # _record_consent) and satisfies ck_user_residence_adulthood_pairing.
+            residence_country="US",
+            adulthood_attested_at=now,
         )
     )
     return True
@@ -519,11 +525,17 @@ async def seed_dev_data(
         # (docs/api/postman-collection.json), which authenticates as
         # dev-guardian via this exact row, 400s on profile creation. Mirrors
         # tests/integration/conftest.py::_consented.
+        consent_now = datetime.now(UTC)
         consent_kwargs = {
-            "consent_accepted_at": datetime.now(UTC),
+            "consent_accepted_at": consent_now,
             "consent_policy_version": "dev-seed",
             "consent_signer_name": "Dev Guardian",
             "consent_ip": "127.0.0.1",
+            # O-117/O-119: dev data mirrors production shape and satisfies
+            # ck_user_residence_adulthood_pairing (both new columns must be
+            # non-null together, and only when consent_accepted_at is set).
+            "residence_country": "US",
+            "adulthood_attested_at": consent_now,
         }
 
         guardian = User(

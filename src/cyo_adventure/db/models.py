@@ -399,6 +399,43 @@ class User(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
             "AND (consent_accepted_at IS NULL) = (consent_ip IS NULL)",
             name="ck_user_consent_pairing",
         ),
+        # O-117: mirrors the CHECK added by
+        # supabase/migrations/20260802000000_add_user_residence_country_and_adulthood_attestation.sql;
+        # NULL (no signal recorded yet) is always allowed, a non-null value
+        # must be two uppercase ASCII letters. This is a FORMAT check only:
+        # it accepts any two-letter string, including an unassigned code
+        # ("ZZ", "XX", "QQ"), not just a real ISO 3166-1 alpha-2 code.
+        # Real ISO membership is enforced one layer up, at the API boundary
+        # (api/schemas.py::_normalize_residence_country, against
+        # api/residence_countries.py::ASSIGNED_RESIDENCE_COUNTRY_CODES); this
+        # CHECK is defense-in-depth for any write path that bypasses that
+        # validator, not the membership gate itself.
+        CheckConstraint(
+            "residence_country IS NULL OR residence_country ~ '^[A-Z]{2}$'",
+            name="ck_user_residence_country_format",
+        ),
+        # O-117/O-119: mirrors the CHECK added by
+        # supabase/migrations/20260802000000_add_user_residence_country_and_adulthood_attestation.sql.
+        # api/onboarding.py::_record_consent is the sole writer and already
+        # only ever sets residence_country and adulthood_attested_at together
+        # (alongside the consent_* quartet, never before it); this CHECK is
+        # the at-rest backstop for any other write path, mirroring
+        # ck_user_consent_pairing's own role for the original quartet. Two
+        # requirements: (1) the two new columns are set or cleared together,
+        # same "no partial claim" shape as the consent quartet; (2) whenever
+        # they carry a value, consent_accepted_at must also be non-null, so
+        # an at-rest row can never record a country/adulthood attestation
+        # with no corroborating consent record. An already-consented row from
+        # before this migration has both new columns NULL, which satisfies
+        # clause (1) trivially and short-circuits clause (2) via the OR, so
+        # this ALTER TABLE cannot fail against existing production data.
+        # #VERIFY: tests/integration/test_onboarding_api.py::
+        # test_onboarding_records_consent_once_and_is_idempotent.
+        CheckConstraint(
+            "(residence_country IS NULL) = (adulthood_attested_at IS NULL) "
+            "AND (residence_country IS NULL OR consent_accepted_at IS NOT NULL)",
+            name="ck_user_residence_adulthood_pairing",
+        ),
     )
 
     # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): every
@@ -500,6 +537,54 @@ class User(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # Postgres INET column: this is an evidentiary record, never queried or
     # joined on, so INET's validation/operator features add nothing here.
     consent_ip: Mapped[str | None] = mapped_column(String(64), default=None)
+    # O-117 (pre-launch compliance): ISO 3166-1 alpha-2 country of residence,
+    # recorded on the adult account rather than Family (a family could span
+    # countries), so the DSA Art. 2(1) and GDPR Art. 3(2) targeting tests can
+    # be answered; without a recorded country signal a market can be
+    # excluded by design rather than by hope. Written once by
+    # api/onboarding.py::_record_consent alongside the existing consent_*
+    # quartet, never overwritten afterward (mirrors consent_accepted_at's own
+    # contract): a guardian who consented before this column existed keeps
+    # NULL here, since there is no re-consent-on-policy-change flow.
+    # String(2): ISO 3166-1 alpha-2 is exactly two characters; the format is
+    # additionally enforced at rest by ck_user_residence_country_format
+    # above. A prior String(N) guess on this same table truncated
+    # 'awaiting_approval' in production (see the status column's comment
+    # below in this class for that incident), so this width is derived from
+    # the value domain, not guessed.
+    # #CRITICAL: timing dependencies: migration
+    # supabase/migrations/20260802000000_add_user_residence_country_and_adulthood_attestation.sql
+    # must be applied BEFORE an image carrying this column deploys. Every
+    # full-entity select(User) (the auth path in api/deps.py::require_principal
+    # runs one per authenticated request) emits this column; against a
+    # database without it, asyncpg raises UndefinedColumn and every
+    # authenticated endpoint 500s.
+    # #VERIFY: apply the migration in each environment ahead of the image
+    # rollout (migrate-before-deploy), per the header comment in the
+    # migration file.
+    residence_country: Mapped[str | None] = mapped_column(String(2), default=None)
+    # O-119 (pre-launch compliance): adulthood attestation timestamp. Every
+    # age regime that can attach at R2 locates its duty on the adult
+    # account, not the kid profile; today age data lives only on
+    # ChildProfile.age_band and Series.age_band, neither of which is the
+    # adult signing the account into existence. Written once by
+    # api/onboarding.py::_record_consent in the same call that writes the
+    # existing consent_* quartet, and never overwritten afterward for the
+    # same reason. There is deliberately no separate attestation-version
+    # column: the new checkbox ships inside the same versioned consent form,
+    # so consent_policy_version already records what text was shown when it
+    # was checked.
+    # #CRITICAL: timing dependencies: migration
+    # supabase/migrations/20260802000000_add_user_residence_country_and_adulthood_attestation.sql
+    # must be applied BEFORE an image carrying this column deploys. Every
+    # full-entity select(User) (the auth path in api/deps.py::require_principal
+    # runs one per authenticated request) emits this column; against a
+    # database without it, asyncpg raises UndefinedColumn and every
+    # authenticated endpoint 500s.
+    # #VERIFY: apply the migration in each environment ahead of the image
+    # rollout (migrate-before-deploy), per the header comment in the
+    # migration file.
+    adulthood_attested_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
 
 
 class ChildProfile(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
