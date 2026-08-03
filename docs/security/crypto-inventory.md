@@ -23,7 +23,7 @@ token/signing scheme must update this file in the same PR.
 
 The application performs almost no cryptography itself. It verifies JWTs issued by Supabase,
 computes SHA-256 fingerprints for non-security integrity checks, and delegates all TLS
-termination to infrastructure (Cloudflare and the Pangolin/nginx layer in `homelab-infra`).
+termination to infrastructure (Cloudflare at the edge, then Traefik in `homelab-infra`).
 Quantum-risk priorities per ADR-013: key-exchange legs first (harvest-now-decrypt-later),
 signatures deferred.
 
@@ -31,8 +31,8 @@ signatures deferred.
 |---|---------|-----------|------------|-------|--------------|---------|
 | 1 | Bearer-token verification | PyJWT + JWKS | RS256/ES256 (config-driven) | this repo | Forgery-only (deferred) | Agile via `OIDC_ALLOWED_ALGS` |
 | 2 | Client to Cloudflare edge | TLS 1.3 | Hybrid X25519MLKEM768 (browser+edge default) | Cloudflare | HNDL | Already hybrid |
-| 3 | Edge to origin (Tunnel/Pangolin) | TLS | Classical today | homelab-infra | HNDL | Target: X25519MLKEM768 |
-| 4 | Pangolin to backend | Plain HTTP (internal) | none | homelab-infra | n/a | Trusted network segment |
+| 3 | Edge to origin (Cloudflare to Traefik) | TLS 1.3 | Hybrid X25519MLKEM768 | homelab-infra | HNDL | Hybrid since 2026-08-02 |
+| 4 | Charon to homelab, then to app | WireGuard, then internal TLS/HTTP | Curve25519 (WireGuard) | homelab-infra | HNDL | No WireGuard PQ option yet |
 | 5 | Backend to Supabase Postgres | TLS (session pooler) | Classical | Supabase | HNDL (accepted) | Third-party gate |
 | 6 | Backend to LLM/image APIs | TLS via httpx | OS OpenSSL defaults | this repo + OS | HNDL | Inherits OpenSSL 3.5 groups |
 | 7 | Backend to Ollama (homelab) | TLS + private CA | OS OpenSSL defaults | this repo | HNDL (LAN) | Inherits OpenSSL 3.5 groups |
@@ -58,18 +58,36 @@ signatures deferred.
 
 ## 2. TLS legs
 
-Documented chain (`docs/architecture/deployment.md`): public traffic reaches Pangolin through
-Cloudflare's proxied DNS over Newt, a WireGuard-based reverse tunnel; Pangolin terminates TLS and
-forwards plain HTTP to FastAPI on port 8000, and an nginx rung serves the R1 internal-web tier.
-LAN clients bypass Cloudflare entirely via split-horizon DNS plus mTLS. There is no `cloudflared`
-process in this stack. No file in this repo pins TLS versions, cipher suites, or
-groups; that is deliberate and lives in `homelab-infra` plus the Cloudflare dashboard.
+Documented chain (`docs/architecture/deployment.md`, corroborated by `homelab-infra`): Cloudflare's
+proxied DNS points at the Charon VPS, and Cloudflare reaches it **over TLS on 443**. Public TLS is
+terminated by **Traefik on Charon** (`services/pangolin/vps/docker-compose.yml`, `websecure`
+entrypoint on `:443`), not by Pangolin, which is an HTTP service behind that Traefik. Only inside
+Charon does the traffic enter the WireGuard tunnel (Gerbil on the VPS to Newt on the docker host),
+which carries already-decrypted TCP; a second Traefik on the docker host re-terminates TLS and
+forwards to nginx and to FastAPI on port 8000. LAN clients bypass Cloudflare entirely via
+split-horizon DNS plus mTLS. There is no `cloudflared` process in this stack. No file in this repo
+pins TLS versions, cipher suites, or groups; that is deliberate and lives in `homelab-infra` plus
+the Cloudflare dashboard.
+
+The distinction between the two legs is not pedantry: they fail differently, and conflating them
+hides the failure that actually occurred. Cloudflare to Charon is a TLS negotiation whose group is
+chosen by Traefik's Go version; Charon to homelab is WireGuard, whose posture is fixed by the
+protocol and has no group to negotiate.
 
 - **Client to edge**: hybrid X25519MLKEM768 by default (Cloudflare edge, modern browsers).
-- **Edge to origin**: the leg is Newt (WireGuard), so its post-quantum posture is WireGuard's,
-  not a TLS group, and it is not addressed by keeping any Cloudflare daemon current. Pangolin (Go)
-  picks up X25519MLKEM768 from Go 1.24+ builds; nginx needs an OpenSSL 3.5+ build. Verification
-  (negotiated-group check) is the `homelab-infra` acceptance test.
+- **Edge to origin**: TLS, and **now hybrid**. Cloudflare offers origins only post-quantum groups
+  (`0x11ec` X25519MLKEM768 and `0xfe32`). The Traefik build then running on Charon (v3.4.0,
+  Go 1.23) supported neither, answered with TLS alert 40, and Cloudflare surfaced that as HTTP
+  525: on 2026-08-02 both `cyo` and `cyo-staging` were publicly unreachable until Charon's Traefik
+  was moved to v3.7.10. Verified
+  2026-08-02 against the origin directly:
+  `openssl s_client -connect 66.42.78.207:443 -servername cyo.williamshome.family
+  -groups X25519MLKEM768 -tls1_3` returns `Negotiated TLS1.3 group: X25519MLKEM768`. This is the
+  one leg where a routine version floor is load-bearing for availability, not just for posture.
+- **Charon to homelab**: Newt/Gerbil (WireGuard), so its post-quantum posture is WireGuard's, not
+  a TLS group, and it is not addressed by keeping any Cloudflare daemon current. WireGuard has no
+  standardized hybrid handshake in this deployment, so this leg stays classical (Curve25519) and
+  is deferred under ADR-013's key-exchange-first ordering.
 - **Backend egress** (`httpx`): OpenRouter/Anthropic/Gemini/Supabase JWKS fetches use the
   container's OpenSSL defaults. Runtime image `dhi-python:3.14-debian13` ships OpenSSL 3.5.x,
   so hybrid groups are offered when the far end supports them; the 3.5 floor is asserted in
@@ -120,9 +138,11 @@ MD5/SHA-1 anywhere (enforced by `scripts/check_fips_compatibility.py`).
 | `pyjwt[crypto]` | >= 2.13 | 2.13.0 | JWKS client, allowlist enforcement |
 | `cryptography` (via pyjwt extra) | >= 45 | 49.0.0 | ML-DSA/SLH-DSA (FIPS 204/205) primitives |
 | Runtime base image | Debian 13 | `dhi-python:3.14-debian13` | OpenSSL 3.5.x (ML-KEM groups) |
-| Pangolin/Go proxies (homelab-infra) | Go 1.24+ builds | verify in homelab-infra | X25519MLKEM768 default in crypto/tls |
+| Traefik on Charon (homelab-infra) | >= 3.6 (Go 1.24+) | `v3.7.10` running; repo pins `3.6` | Terminates the Cloudflare leg; below the floor the site is **down**, not merely classical |
+| Traefik on docker host (homelab-infra) | >= 3.6 (Go 1.24+) | `dhi-traefik:3.6-debian13` | X25519MLKEM768 default in crypto/tls |
+| Pangolin/Go proxies (homelab-infra) | Go 1.24+ builds | verify in homelab-infra | Behind Charon Traefik; no public TLS termination |
 | nginx (homelab-infra) | OpenSSL 3.5+ build | verify in homelab-infra | ML-KEM group support |
-| Newt/WireGuard tunnel (homelab-infra) | current | verify in homelab-infra | Edge-to-origin leg; WireGuard PQ posture, not TLS groups |
+| Newt/Gerbil WireGuard (homelab-infra) | current | verify in homelab-infra | Charon-to-homelab leg; WireGuard PQ posture, not TLS groups |
 
 ## 7. Tooling guardrails
 

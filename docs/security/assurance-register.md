@@ -269,24 +269,43 @@ First tranche of work. Each invalidates multiple rows at once.
   with a known residual failure mode. This entry is retained rather than deleted because a register
   that silently drops a finding once it is fixed cannot show that its own findings ever led
   anywhere.
-- **Documentation misdescribes where CodeQL and secret scanning are configured; both controls
-  run.** An earlier revision of this section recorded "CodeQL does not run" and "no CI-side secret
-  scanning" as AISVS AC.4.2 failures. Both were wrong, and wrong for the same reason: the method
-  was a grep of `.github/workflows/`, and neither control is configured in a workflow file.
-  Verified against the repository's own configuration and against this PR's checks:
-  - **CodeQL runs via code scanning default setup**, state `configured`, `extended` query suite,
+- **CodeQL is disabled as of 2026-08-03; AISVS AC.4.2 fails on SAST coverage.** Read the
+  supersession paragraph below before acting on the rest of this entry. The earlier text is kept
+  because the reasoning error it records is still the instructive part.
+
+  An earlier revision of this section recorded "CodeQL does not run" and "no CI-side secret
+  scanning" as AISVS AC.4.2 failures. Both were wrong at the time, and wrong for the same reason:
+  the method was a grep of `.github/workflows/`, and neither control is configured in a workflow
+  file. Verified against the repository's own configuration and against PR #562's checks:
+  - **CodeQL ran via code scanning default setup**, state `configured`, `extended` query suite,
     over `javascript-typescript`, `typescript`, `python`, and `actions`. Default setup has no
-    workflow file by design, which is precisely why the grep missed it. The claim that there is
-    "no SAST over the TypeScript tree" was the inverse of the truth.
+    workflow file by design, which is precisely why the grep missed it. The claim that there was
+    "no SAST over the TypeScript tree" was, at that point, the inverse of the truth.
   - **Secret scanning, push protection, and validity checks are all enabled** at repository level,
     and `GitGuardian Security Checks` runs on pull requests. Push protection is strictly stronger
     than a CI-stage scan: it refuses the push rather than reporting after the secret is already in
     history.
 
-  The residual finding is documentation, not coverage: `CLAUDE.md` states that
+  The residual finding was documentation, not coverage: `CLAUDE.md` states that
   `security-analysis.yml` runs CodeQL, and it does not; that workflow runs Bandit and OSV-Scanner,
-  and the repo-wide `github/codeql-action` uses are `upload-sarif` steps. Correct `CLAUDE.md` to
-  describe default setup. **AISVS AC.4.2 is met**, not failed.
+  and the repo-wide `github/codeql-action` uses are `upload-sarif` steps. On the state above,
+  **AISVS AC.4.2 was met**, not failed.
+
+  **Superseded 2026-08-03: CodeQL default setup has been disabled, and AC.4.2 now fails on SAST.**
+  The control was turned off deliberately, on a billing rationale, by
+  `PATCH /repos/ByronWilliamsCPA/cyo-adventure/code-scanning/default-setup` with
+  `state=not-configured`; the endpoint now returns `{"state":"not-configured","updated_at":null}`.
+  The consequence is a real coverage loss, not a documentation change: **no SAST runs over
+  `frontend/` at all.** SonarCloud does not close the gap, because `sonar-project.properties:26`
+  sets `sonar.sources=src/`, the Python backend only, and the SonarCloud gate cannot block a PR
+  regardless (see the SonarCloud entry below). Bandit and OSV-Scanner remain, and both are
+  Python-only. The claim in `CLAUDE.md` that there is "no SAST over the TypeScript tree", which was
+  the inverse of the truth when written, has become true by a change in the world rather than by a
+  correction in the document. Secret scanning, push protection, validity checks, and the
+  GitGuardian PR status are unaffected and remain enabled, so the secret-scanning half of AC.4.2
+  still holds. Re-enabling is the same PATCH with `state=configured`; note that this repository is
+  public, where code scanning is not metered, so the billing pressure that motivated the change
+  most likely originates elsewhere in the account and re-enabling here may cost nothing.
 
   This entry is retained rather than deleted because the error is the instructive part. A control
   configured outside the artifact being searched is invisible to a search of that artifact, and
@@ -1052,23 +1071,28 @@ is visible as a section with no rows rather than as a question nobody asked.
   scanning, or push protection is found disabled at the repository level.
 - **Negative control:** not determined
 - **Trigger:** every pull request
-- **Existing coverage:** GitHub code scanning default setup (CodeQL, state configured, extended
-  query suite, over javascript-typescript, typescript, python, and actions); repository-level
-  secret scanning, push protection, and validity checks; GitGuardian Security Checks on pull
-  requests. IaC scanning and SCA coverage were not part of this correction and remain unconfirmed
-  by it.
+- **Existing coverage:** secret scanning half only. Repository-level secret scanning, push
+  protection, and validity checks; GitGuardian Security Checks on pull requests. **No SAST**: code
+  scanning default setup was disabled 2026-08-03 (state `not-configured`), and the surviving
+  static analyzers are Python-only (Bandit, plus SonarCloud at `sonar.sources=src/`), so `frontend/`
+  has no SAST coverage at all. IaC scanning and SCA coverage remain unconfirmed.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
 - **Last verified:** not verified
-- **Status:** mechanism unproven
+- **Status:** finding open
 - **Check:** **AC.4.2**: SAST, secret scanning, IaC scanning, and SCA run on every pull request.
-  **Corrected**: CodeQL runs via GitHub code scanning default setup (state configured, extended
-  query suite, over javascript-typescript, typescript, python, and actions); secret scanning, push
-  protection, and validity checks are all enabled at repository level, with GitGuardian Security
-  Checks running on pull requests. AISVS AC.4.2 is met, not failed. An earlier revision of this row
-  read "Currently failing: CodeQL does not run and no CI secret scanning exists"; both claims were
-  false, found by grepping `.github/workflows/`, which misses code scanning default setup because
-  it has no workflow file.
+  **Failing on SAST as of 2026-08-03.** Code scanning default setup was deliberately disabled on a
+  billing rationale (`PATCH .../code-scanning/default-setup` with `state=not-configured`, endpoint
+  now returns `{"state":"not-configured","updated_at":null}`), removing the only SAST that covered
+  `frontend/`. Secret scanning, push protection, validity checks, and GitGuardian Security Checks
+  are unaffected and still satisfy the secret-scanning half. Two earlier revisions of this row were
+  wrong in opposite directions and are kept in the narrative above: the first read "CodeQL does not
+  run and no CI secret scanning exists", false at the time and found by grepping
+  `.github/workflows/`, which misses default setup because it has no workflow file; the second read
+  "AISVS AC.4.2 is met, not failed", true when written and made false by the disable rather than by
+  any error in it. Closing this requires restoring SAST over `frontend/`, either by re-enabling
+  default setup (same PATCH with `state=configured`; note this repository is public, where code
+  scanning is not metered) or by adding a TypeScript-capable analyzer to CI.
 
 #### O-82
 

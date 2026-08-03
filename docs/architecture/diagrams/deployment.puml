@@ -58,10 +58,20 @@ cloud "Anthropic / Modal APIs\n[admin-selectable per-job\nprovider legs, WS-C PR
 cloud "Supabase Auth\n[OIDC provider, ADR-009]\nGuardian + admin sign-in (Apple/Google)" as supabase_cloud #E0F7FA
 cloud "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nSession pooler:\naws-0-us-east-1.pooler.supabase.com:5432\n(session mode; dedicated backend\nper connection, R1 Task 1.7)" as supabase_pg_cloud #E0F7FA
 
+cloud "Cloudflare\n[proxied DNS, edge TLS]\nOffers origins PQ groups only" as cloudflare_cloud #FFF8E1
+
+node "Charon VPS\n[public ingress, 66.42.78.207]" as charon #CCEECC {
+  node "Traefik (Charon)\n[websecure :443]\nTerminates public TLS\nX25519MLKEM768" as charon_traefik #CCEECC {
+    component "TLS termination\nHTTPS -> internal HTTP" as tls #CCEECC
+  }
+  component "Pangolin\n[Zero-trust access control]\nHTTP service behind Traefik" as pangolin #CCEECC
+  component "Gerbil\n[WireGuard server :21820]" as gerbil #CCEECC
+}
+
 node "Homelab Server\n[Docker + Dockge]\n(ADR-004)" as homelab #E8F5E9 {
 
-  node "Pangolin\n[Zero-trust reverse proxy\nTailscale / Cloudflare Tunnel]" as pangolin #CCEECC {
-    component "TLS termination\nHTTPS -> internal HTTP" as tls #CCEECC
+  node "Newt + Traefik (docker host)\n[WireGuard client;\nHost() routing, websecure :443]" as homelab_ingress #CCEECC {
+    component "TLS re-termination\n-> internal HTTP" as inner_tls #CCEECC
   }
 
   node "cyo-backend\n[Docker container\ncyo-backend:latest]" as backend_container #B2DFDB {
@@ -92,8 +102,13 @@ node "Homelab Server\n[Docker + Dockge]\n(ADR-004)" as homelab #E8F5E9 {
 }
 
 ' --- Network flows ---
-pwa_client --> tls : "HTTPS (443)"
-tls --> fastapi_app : "HTTP (8000)"
+pwa_client --> cloudflare_cloud : "HTTPS (443)\npublic path"
+cloudflare_cloud --> tls : "TLS 1.3 (443)\nX25519MLKEM768"
+tls --> gerbil : "plain TCP"
+gerbil --> inner_tls : "WireGuard tunnel\n(Gerbil -> Newt, :21820)"
+pwa_client ..> inner_tls : "LAN path: split-horizon DNS\n+ mTLS (bypasses Cloudflare)"
+tls ..> pangolin : "access control"
+inner_tls --> fastapi_app : "HTTP (8000)"
 fastapi_app --> supabase_pg_cloud : "async SQLAlchemy 2\nsession pooler :5432\nas cyo_api (ADR-021)"
 fastapi_app --> redis_db : "rq.Queue\n6379"
 fastapi_app --> ollama_svc : "HTTP\n11434"
