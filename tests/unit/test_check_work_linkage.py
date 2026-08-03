@@ -2694,7 +2694,20 @@ def test_check_linkage_reports_a_namespace_the_manifest_never_declares(
 # I.1 SQ-to-register map table (story-structure-improvement-plan.md)
 # ---------------------------------------------------------------------------
 
-_SQ_TABLE = (
+_SQ_DELIVERABLES = (
+    "| ID | Deliverable | Evidence / register | Effort | Acceptance |\n"
+    "| --- | --- | --- | --- | --- |\n"
+    "| SQ-01 | **One.** | UW-G14 | S | done |\n"
+    "| SQ-02 | **Two.** | UW-C07 | S | done |\n"
+    "\n"
+    "| ID | Deliverable | Evidence / register | Effort | Acceptance |\n"
+    "| --- | --- | --- | --- | --- |\n"
+    "| SQ-03 | **Three.** | new | S | done |\n"
+    "\n"
+    "**Cross-cutting: SQ-04, the prose deliverable** rounds out the set.\n\n"
+)
+
+_SQ_MAP = (
     "## 11. Relationship to existing planning, and the SQ-to-register map\n\n"
     "| SQ | Register / source | SQ | Register / source |\n"
     "| --- | --- | --- | --- |\n"
@@ -2702,10 +2715,14 @@ _SQ_TABLE = (
     "| SQ-03 | new | SQ-04 | new |\n"
 )
 
+# Both tables together: the deliverables tables define the ids and the map table records where
+# each one's scheduling record lives, which is the pairing _check_sq_namespace cross-checks.
+_SQ_TABLE = _SQ_DELIVERABLES + _SQ_MAP
+
 
 def test_find_sq_table_header_locates_the_two_pair_header_row() -> None:
     """The header's two id/source column pairs are matched by cell value, not position."""
-    lines = _SQ_TABLE.splitlines()
+    lines = _SQ_MAP.splitlines()
     assert _MODULE._find_sq_table_header(lines) == 2
 
 
@@ -2741,6 +2758,10 @@ def test_check_sq_namespace_accepts_well_formed_unique_ids() -> None:
 def test_check_sq_namespace_rejects_a_malformed_id() -> None:
     """An id that does not match the sq namespace pattern is reported by line and value."""
     lines = (
+        "| ID | Deliverable | Evidence / register | Effort | Acceptance |\n"
+        "| --- | --- | --- | --- | --- |\n"
+        "| SQ-02 | **Two.** | ok | S | done |\n"
+        "\n"
         "| SQ | Register / source | SQ | Register / source |\n"
         "| --- | --- | --- | --- |\n"
         "| SQ-1 | bad | SQ-02 | ok |\n"
@@ -2756,6 +2777,12 @@ def test_check_sq_namespace_rejects_a_malformed_id() -> None:
 def test_check_sq_namespace_rejects_a_duplicate_id() -> None:
     """The same id appearing on two rows is reported, naming both line numbers."""
     lines = (
+        "| ID | Deliverable | Evidence / register | Effort | Acceptance |\n"
+        "| --- | --- | --- | --- | --- |\n"
+        "| SQ-01 | **One.** | ok | S | done |\n"
+        "| SQ-02 | **Two.** | ok | S | done |\n"
+        "| SQ-03 | **Three.** | ok | S | done |\n"
+        "\n"
         "| SQ | Register / source | SQ | Register / source |\n"
         "| --- | --- | --- | --- |\n"
         "| SQ-01 | first | SQ-02 | ok |\n"
@@ -2768,6 +2795,76 @@ def test_check_sq_namespace_rejects_a_duplicate_id() -> None:
     assert "SQ-01" in problems[0]
     assert "2 rows" in problems[0]
     assert "unique" in problems[0]
+
+
+def test_check_sq_namespace_rejects_an_emptied_map_table() -> None:
+    """Stripping the map table's data rows while leaving its header is reported, not passed.
+
+    This is the hollow-check regression. Locating the header only proves the header survived; a
+    zero-row table yields zero malformed ids and zero duplicates, so before the coverage rule
+    existed this document validated clean while recording nothing.
+    """
+    lines = (_SQ_DELIVERABLES + _SQ_MAP).splitlines()
+    emptied = [line for line in lines if not line.startswith("| SQ-0") or "**" in line]
+    problems = _MODULE._check_sq_namespace(
+        emptied, Path("story-structure-improvement-plan.md"), _SQ_ID_PATTERN
+    )
+    assert problems, "an emptied map table must not validate clean"
+    assert all("no recorded scheduling home" in problem for problem in problems)
+
+
+def test_check_sq_namespace_rejects_an_emptied_deliverables_table() -> None:
+    """The coverage rule runs in both directions: a map entry naming no deliverable is reported."""
+    lines = (_SQ_DELIVERABLES + _SQ_MAP).splitlines()
+    kept = [
+        line
+        for line in lines
+        if not (line.startswith("| SQ-0") and "**" in line)
+        and not line.startswith("**Cross-cutting:")
+    ]
+    problems = _MODULE._check_sq_namespace(
+        kept, Path("story-structure-improvement-plan.md"), _SQ_ID_PATTERN
+    )
+    assert len(problems) == 4
+    assert all("not defined in the SQ deliverables table" in p for p in problems)
+
+
+def test_sq_work_table_ids_spans_every_stage_table_and_the_prose_deliverable() -> None:
+    """Deliverables are split across one table per stage plus a cross-cutting prose lead.
+
+    Reading only the first table would silently narrow the coverage check to stage one, which
+    is why this asserts the full set rather than a non-empty one.
+    """
+    ids = _MODULE._sq_work_table_ids(_SQ_DELIVERABLES.splitlines())
+    assert [entry_id for _number, entry_id in ids] == [
+        "SQ-01",
+        "SQ-02",
+        "SQ-03",
+        "SQ-04",
+    ]
+
+
+def test_sq_work_table_ids_ignores_bolded_prose_that_merely_cites_ids() -> None:
+    """Only the anchored cross-cutting form defines an item; chain prose citing ids does not."""
+    lines = (
+        "**SQ-11 (ADR) -> G3 (accept) -> SQ-12 (pilot)** is the value-critical chain.\n"
+        "| ID | Deliverable | Evidence / register | Effort | Acceptance |\n"
+        "| --- | --- | --- | --- | --- |\n"
+        "| SQ-01 | **One.** | ok | S | done |\n"
+    ).splitlines()
+    ids = _MODULE._sq_work_table_ids(lines)
+    assert [entry_id for _number, entry_id in ids] == ["SQ-01"]
+
+
+def test_sq_summary_reports_both_counts() -> None:
+    """A green run states how many rows it inspected, so it cannot be read as a vacuous pass."""
+    plan = (
+        Path(_MODULE._DEFAULT_REGISTER).parent / "story-structure-improvement-plan.md"
+    )
+    summary = _MODULE._sq_summary(plan)
+    assert "SQ deliverable(s)" in summary
+    assert "mapped to a scheduling record" in summary
+    assert " 0 SQ deliverable(s)" not in summary
 
 
 def test_check_sq_namespace_raises_when_no_table_header_found() -> None:
@@ -2798,6 +2895,10 @@ def test_check_linkage_reports_a_malformed_sq_id_end_to_end(tmp_path: Path) -> N
     register_path = _write(tmp_path / "register.md", _register())
     bad_sq_plan = _write(
         tmp_path / "story-structure-improvement-plan.md",
+        "| ID | Deliverable | Evidence / register | Effort | Acceptance |\n"
+        "| --- | --- | --- | --- | --- |\n"
+        "| SQ-02 | **Two.** | ok | S | done |\n"
+        "\n"
         "| SQ | Register / source | SQ | Register / source |\n"
         "| --- | --- | --- | --- |\n"
         "| SQ-1 | bad | SQ-02 | ok |\n",

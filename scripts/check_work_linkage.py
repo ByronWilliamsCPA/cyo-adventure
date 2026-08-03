@@ -2163,16 +2163,101 @@ def _sq_table_ids(lines: list[str], header_index: int) -> list[tuple[int, str]]:
     return ids
 
 
+# A deliverable that belongs to no single stage is written as a bolded cross-cutting paragraph
+# lead rather than a stage-table row (SQ-24, the ADR-011 amendment, is the current instance).
+# The anchor is deliberately narrow: a looser "any bolded line naming an SQ id" rule would also
+# match the value-chain and dependency-chain prose, which cite ids without defining them, and
+# would inflate the defined-id set until the coverage check stopped meaning anything. A prose
+# deliverable written in some other style is simply not found here, which surfaces as a loud
+# "mapped but not defined" problem rather than a silent pass.
+_SQ_CROSS_CUTTING_RE = re.compile(r"^\*\*Cross-cutting: (?P<id>SQ-\d+)\b")
+
+
+def _find_sq_work_table_headers(lines: list[str]) -> list[int]:
+    """Return every SQ deliverables table's header line index.
+
+    These are the tables that *define* each SQ item (``| ID | Deliverable | Evidence / register |
+    Effort | Acceptance |``), as distinct from the two-pair map table that records where each
+    item's scheduling record lives. The source document splits the deliverables across one table
+    per stage rather than a single long one, so this collects all of them; taking only the first
+    would silently limit the check to stage one. Matching on the first two literal column labels
+    keeps this stable against added trailing columns and a reflow of the surrounding prose.
+
+    Args:
+        lines: The story-structure-improvement-plan.md document's lines.
+
+    Returns:
+        list[int]: Every matching header row's 0-based index, in document order.
+
+    Raises:
+        LookupError: If no such header row is found.
+    """
+    indexes = [
+        index
+        for index, line in enumerate(lines)
+        if "|" in line and _split_row(line)[:2] == ["ID", "Deliverable"]
+    ]
+    if not indexes:
+        msg = "no 'ID | Deliverable | ...' SQ deliverables table header found"
+        raise LookupError(msg)
+    return indexes
+
+
+def _sq_work_table_ids(lines: list[str]) -> list[tuple[int, str]]:
+    """Return every id in the first column of every SQ deliverables table, with line numbers.
+
+    Args:
+        lines: The story-structure-improvement-plan.md document's lines.
+
+    Returns:
+        list[tuple[int, str]]: Each ``(line_number, id)`` pair, in document order, with 1-based
+            line numbers.
+
+    Raises:
+        LookupError: If no SQ deliverables table header can be located.
+    """
+    ids: list[tuple[int, str]] = []
+    for header_index in _find_sq_work_table_headers(lines):
+        for number, line in enumerate(
+            lines[header_index + 1 :], start=header_index + 2
+        ):
+            if "|" not in line:
+                break
+            cells = _split_row(line)
+            if _is_separator(cells):
+                continue
+            if cells and cells[0]:
+                ids.append((number, cells[0]))
+    for number, line in enumerate(lines, start=1):
+        match = _SQ_CROSS_CUTTING_RE.match(line)
+        if match:
+            ids.append((number, match.group("id")))
+    return ids
+
+
 def _check_sq_namespace(
     lines: list[str], path: Path, id_pattern: re.Pattern[str]
 ) -> list[str]:
     """Validate the SQ-to-register map table's ids against the manifest's sq namespace pattern.
 
     Unlike the uw/debt/al/cap namespaces, sq ids are never cited from another document, so there
-    is no citation-linkage check here to mirror ``_check_debt_linkage`` or
-    ``_check_lessons_linkage``: this table is the only linkage record this namespace has, so
-    validating its own ids against the manifest pattern and checking them for duplicates is the
-    whole check.
+    is no cross-document citation-linkage check here to mirror ``_check_debt_linkage`` or
+    ``_check_lessons_linkage``. The linkage this namespace does have is internal, between the
+    two tables in this one document: the deliverables table defines each item and the map table
+    records where its scheduling record lives. This function enforces that both tables use
+    well-formed, unique ids AND that they cover each other exactly.
+
+    That mutual-coverage rule is what keeps the check from being hollow. Validating the map
+    table alone passes vacuously when the table is emptied: ``_find_sq_table_header`` only
+    proves the *header* survived, and a zero-row table yields zero problems. Requiring every
+    deliverable to appear in the map (and no map entry to name an item that does not exist)
+    means deleting rows from either table is reported rather than silently accepted.
+
+    #CRITICAL: data integrity: an assurance check that returns no problems when it inspected no
+    rows is indistinguishable from one that passed, and this repo has a documented history of
+    exactly that failure mode.
+    #VERIFY: any future edit here must keep a test that empties one table's data rows, leaves
+    its header intact, and asserts a non-empty problem list.
 
     Args:
         lines: The story-structure-improvement-plan.md document's lines.
@@ -2180,29 +2265,45 @@ def _check_sq_namespace(
         id_pattern: The ``[namespaces.sq].pattern`` regex every id must match.
 
     Returns:
-        list[str]: One problem per malformed id, plus one problem per id used on more than one
-            row.
+        list[str]: One problem per malformed id, per id used on more than one row within a
+            table, and per id present in one table but absent from the other.
 
     Raises:
-        LookupError: If no SQ-to-register map table header can be located.
+        LookupError: If either the SQ-to-register map table header or the SQ deliverables table
+            header cannot be located.
     """
-    header_index = _find_sq_table_header(lines)
     problems: list[str] = []
-    seen: dict[str, list[int]] = {}
-    for number, entry_id in _sq_table_ids(lines, header_index):
-        if not id_pattern.match(entry_id):
-            problems.append(
-                f"{path.name}:{number}: id '{entry_id}' does not match the sq namespace pattern"
-            )
-            continue
-        seen.setdefault(entry_id, []).append(number)
-    for entry_id, numbers in sorted(seen.items()):
-        if len(numbers) > 1:
-            lines_listed = ", ".join(str(n) for n in numbers)
-            problems.append(
-                f"{path.name}: id '{entry_id}' is used on {len(numbers)} rows (lines "
-                f"{lines_listed}); sq ids must be unique"
-            )
+    map_ids = _sq_table_ids(lines, _find_sq_table_header(lines))
+    work_ids = _sq_work_table_ids(lines)
+    valid: dict[str, set[str]] = {"map": set(), "deliverables": set()}
+    for label, entries in (("map", map_ids), ("deliverables", work_ids)):
+        seen: dict[str, list[int]] = {}
+        for number, entry_id in entries:
+            if not id_pattern.match(entry_id):
+                problems.append(
+                    f"{path.name}:{number}: id '{entry_id}' does not match the sq namespace "
+                    f"pattern"
+                )
+                continue
+            seen.setdefault(entry_id, []).append(number)
+        for entry_id, numbers in sorted(seen.items()):
+            if len(numbers) > 1:
+                lines_listed = ", ".join(str(n) for n in numbers)
+                problems.append(
+                    f"{path.name}: id '{entry_id}' is used on {len(numbers)} rows of the "
+                    f"{label} table (lines {lines_listed}); sq ids must be unique"
+                )
+        valid[label] = set(seen)
+    problems.extend(
+        f"{path.name}: id '{entry_id}' is defined in the SQ deliverables table but has no row "
+        f"in the SQ-to-register map table, so it has no recorded scheduling home"
+        for entry_id in sorted(valid["deliverables"] - valid["map"])
+    )
+    problems.extend(
+        f"{path.name}: id '{entry_id}' appears in the SQ-to-register map table but is not "
+        f"defined in the SQ deliverables table"
+        for entry_id in sorted(valid["map"] - valid["deliverables"])
+    )
     return problems
 
 
@@ -2446,6 +2547,25 @@ def _capability_summary(
         if glyph in counts
     ]
     return f"     {total} capability row(s): {', '.join(parts)}\n"
+
+
+def _sq_summary(story_structure_plan_path: Path) -> str:
+    """Return a row tally for an sq namespace already known to be well formed.
+
+    Printing the count is not cosmetic. Without it, a green run cannot be distinguished from a
+    run that inspected an emptied table, which is the reader-facing half of the hollow-check
+    problem ``_check_sq_namespace`` guards against structurally.
+
+    Args:
+        story_structure_plan_path: The validated story-structure-improvement-plan.md file.
+
+    Returns:
+        str: A newline-terminated summary naming both tables' row counts.
+    """
+    lines = story_structure_plan_path.read_text(encoding="utf-8").splitlines()
+    mapped = len(_sq_table_ids(lines, _find_sq_table_header(lines)))
+    defined = len(_sq_work_table_ids(lines))
+    return f"     {defined} SQ deliverable(s), {mapped} mapped to a scheduling record\n"
 
 
 def _resolve_cluster_issues_index(header_cells: list[str]) -> int | None:
@@ -2961,6 +3081,7 @@ def main(argv: list[str] | None = None) -> int:
         [],
     )
     sys.stdout.write(_capability_summary(capability_register_path, cap_id_pattern))
+    sys.stdout.write(_sq_summary(Path(args.story_structure_plan)))
     return 0
 
 
