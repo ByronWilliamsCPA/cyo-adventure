@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.60.0] - 2026-08-03
+
+### Features
+
+- **auth**: Add residence country and adulthood attestation to guardian consent
+  ([#567](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/567),
+  [`eef0458`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/eef04585caffe9f95674e7730511e838d9ba4b9d))
+
+### Refactoring
+
+- **planning**: Make work-linkage id namespaces data-driven and register SQ-*
+  ([#566](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/566),
+  [`cc1d82f`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/cc1d82f8df97428a08b1e39de1a4c558f9791e1c))
+
+
 ## [0.59.2] - 2026-08-03
 
 ### Bug Fixes
@@ -3025,6 +3040,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.60.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.59.2...v0.60.0
 [0.59.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.59.1...v0.59.2
 [0.59.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.59.0...v0.59.1
 [0.59.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.58.0...v0.59.0
