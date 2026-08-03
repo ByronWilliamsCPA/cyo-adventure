@@ -1178,6 +1178,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="6. Backup and restore">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-runs-today" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What runs today
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore-procedure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restore procedure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3489,6 +3517,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="6. Backup and restore">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-runs-today" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What runs today
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore-procedure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restore procedure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3942,32 +3998,65 @@ them in order:</p>
    assignment (IndexedDB offline cache, <code>frontend/src/offline/</code>).</li>
 </ol>
 <h2 id="6-backup-and-restore">6. Backup and restore<a class="headerlink" href="#6-backup-and-restore" title="Permanent link">&para;</a></h2>
-<p><strong>This is an explicit, owner-acknowledged gap, not an oversight.</strong> As of this writing:</p>
-<ul>
-<li><a href="../../planning/adr/adr-004-homelab-first-deployment/">ADR-004</a> records "nightly Postgres dump
-  and MinIO snapshot, with a restore drill in Phase 5" as a stated intent, and its own Success
-  Criteria mark "A restore from backup succeeds in a drill" as <strong>unchecked</strong>.</li>
-<li><a href="../../planning/adr/adr-009-supabase-platform/">ADR-009</a> notes that Supabase's Pro plan (the
-  production tier) includes automated backups/PITR as a platform feature, but "the restore drill
-  remains ours to run" and its own Success Criteria mark the restore/export drill as
-  <strong>unchecked</strong>.</li>
-<li><code>docs/planning/roadmap.md</code>'s Phase 5 deliverable list includes "Sentry wired on client and
-  server; backups and a tested restore" as <strong>not started</strong>.</li>
-<li>There is no backup script, restore script, or restore runbook anywhere in this repository today.</li>
-</ul>
-<p><strong>Operator action, not a documented procedure</strong>: until the Phase 5 backup-and-restore-drill
-deliverable lands, do not assume any automated backup exists for the homelab/family tier beyond
-whatever Supabase's Pro-plan PITR provides for the managed Postgres database itself (subject to
-that plan actually being active for the target project; see ADR-009 decision 9 on plan tiers). If
-you need a point-in-time restore before this deliverable ships, the immediate steps are: (1)
-confirm which Supabase project tier the target environment is on and whether PITR is enabled in
-the Supabase dashboard, (2) use the Supabase dashboard's own restore flow for Postgres, and (3)
-treat any object-storage content (cover art in R2) as unbacked-up separately, since no export
-tooling for it exists in this repo. Do not improvise a database dump/restore procedure without
-first confirming it against the live schema (<code>supabase/migrations/</code>) and the async-engine
-connection settings in <code>core/database.py</code>; a hand-rolled restore that skips the Supavisor
-pooling constraints noted in ADR-009 (<code>CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE</code>) can corrupt
-prepared-statement state under the transaction-mode pooler.</p>
+<p><strong>Partially closed 2026-08-02</strong> (issue #558 / <code>UW-D27</code>). A scheduled backup now exists; the
+restore side is documented below but <strong>not yet drilled against a live project</strong> -- see the
+<code>#VERIFY</code> note at the end of this section before relying on it in a real incident.</p>
+<h3 id="what-runs-today">What runs today<a class="headerlink" href="#what-runs-today" title="Permanent link">&para;</a></h3>
+<p><code>.github/workflows/supabase-backup.yml</code> runs
+<code>scripts/backup_database.py</code> daily at 08:00 UTC (and on
+<code>workflow_dispatch</code>). Each run:</p>
+<ol>
+<li>Executes <code>supabase db dump</code> three times (roles, schema, data-via-COPY) against
+   <code>SUPABASE_DB_URL</code>, which <strong>must be the direct (non-pooler) connection string</strong> --
+   <a href="../../planning/adr/adr-009-supabase-platform/">ADR-009</a>'s Supavisor pooling constraints
+   (<code>CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE</code>) apply to any long-lived dump/restore
+   connection, and a hand-rolled dump against the pooler URL can corrupt prepared-statement
+   state under the transaction-mode pooler.</li>
+<li>Encrypts each leg with AES-256-GCM (a random nonce per file; the key never leaves the
+   <code>BACKUP_ENCRYPTION_KEY</code> secret and is not derivable from the ciphertext).</li>
+<li>Uploads to a <strong>dedicated</strong> R2 bucket (<code>R2_BACKUP_BUCKET</code>, distinct from the public covers
+   bucket, using a scoped R2 token distinct from the covers-upload token) under a tiered
+   prefix: <code>daily/</code> always, <code>weekly/</code> on ISO Sunday, <code>monthly/</code> on the 1<sup>st</sup>.</li>
+<li>Asserts a per-prefix R2 lifecycle expiration rule on every run (self-healing if the bucket
+   configuration ever drifts): daily 7 days, weekly 28 days, monthly 180 days by default,
+   tunable via <code>workflow_dispatch</code> inputs. This bounds total retained storage to roughly
+   7 + 4 + 6 = 17 backup sets at any time, sized for limited R2 space rather than unbounded
+   growth -- re-tune the day counts once real dump sizes are known (see the <code>#ASSUME</code> in the
+   script's module docstring).</li>
+</ol>
+<p>A failed run opens or comments on a <code>ci-failure</code>-labelled issue titled <code>[db-backup] scheduled
+database backup failing</code>, per the "Alert on failure" step in the workflow: see Section 7 for the
+general convention. Cover art in R2 is <strong>not</strong> covered by this workflow; it remains unbacked-up
+separately, since no export tooling for object storage exists in this repo (tracked as its own
+gap, distinct from <code>UW-D27</code>).</p>
+<h3 id="restore-procedure">Restore procedure<a class="headerlink" href="#restore-procedure" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Identify the backup to restore from: list objects under <code>daily/</code>, <code>weekly/</code>, or <code>monthly/</code>
+   in the R2 backup bucket for the target date (<code>&lt;tier&gt;/&lt;YYYY-MM-DD&gt;/{roles,schema,data}.sql.enc</code>).</li>
+<li>Download the three <code>.enc</code> objects and decrypt each with
+   <code>scripts/backup_database.py</code>'s <code>decrypt_bytes(blob, key)</code>, using the same
+   <code>BACKUP_ENCRYPTION_KEY</code> the backup was taken with (store this key OUTSIDE this repo; losing
+   it makes every existing backup unrecoverable). A short one-off script or a REPL invocation
+   against the imported module is sufficient; there is no dedicated CLI restore command yet.</li>
+<li>Restore into a <strong>new, empty</strong> target database first, never directly into a live project:
+   <code>psql "$TARGET_DB_URL" -f roles.sql</code>, then <code>-f schema.sql</code>, then <code>-f data.sql</code>, in that
+   order (roles before schema before data, matching Supabase's own documented dump/restore
+   ordering).</li>
+<li>Verify row counts on a handful of load-bearing tables (<code>family</code>, <code>profile</code>, <code>storybook</code>,
+   <code>storybook_version</code>) against expectations before pointing any environment at the restored
+   database.</li>
+<li>Only after (3) and (4) succeed against a scratch database should a restore ever be pointed
+   at production, and only as a deliberate incident-response decision, not a routine drill step.</li>
+</ol>
+<blockquote>
+<p><strong>#CRITICAL data integrity</strong>: this restore procedure has been written to match the backup
+format exactly, but has NOT been exercised end-to-end against a real Supabase project from
+this repository. A backup that has never been restored is unverified by definition.
+<strong>#VERIFY</strong>: run one real restore into a scratch Supabase project (or local Postgres) before
+treating this as a closed capability; update this section with the actual command output
+and any deviation found, and flip the roadmap's Phase 5 "backups and a tested restore" line
+only after that drill succeeds.</p>
+</blockquote>
 <h2 id="7-how-you-find-out-something-broke">7. How you find out something broke<a class="headerlink" href="#7-how-you-find-out-something-broke" title="Permanent link">&para;</a></h2>
 <p>There are two scheduled, alerting synthetic checks today, both following the same pattern: on
 failure, find-or-open a GitHub issue labeled <code>e2e-alert</code> whose title starts with a workflow-specific
@@ -4233,7 +4322,7 @@ because that test is currently the only thing that would notice.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 21, 2026 01:23:40 UTC">July 21, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 21:16:11 UTC">August 3, 2026</span>
   </span>
 
     
