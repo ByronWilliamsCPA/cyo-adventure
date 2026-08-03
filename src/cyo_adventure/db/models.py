@@ -402,10 +402,39 @@ class User(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         # O-117: mirrors the CHECK added by
         # supabase/migrations/20260802000000_add_user_residence_country_and_adulthood_attestation.sql;
         # NULL (no signal recorded yet) is always allowed, a non-null value
-        # must be an ISO 3166-1 alpha-2 code.
+        # must be two uppercase ASCII letters. This is a FORMAT check only:
+        # it accepts any two-letter string, including an unassigned code
+        # ("ZZ", "XX", "QQ"), not just a real ISO 3166-1 alpha-2 code.
+        # Real ISO membership is enforced one layer up, at the API boundary
+        # (api/schemas.py::_normalize_residence_country, against
+        # api/residence_countries.py::ASSIGNED_RESIDENCE_COUNTRY_CODES); this
+        # CHECK is defense-in-depth for any write path that bypasses that
+        # validator, not the membership gate itself.
         CheckConstraint(
             "residence_country IS NULL OR residence_country ~ '^[A-Z]{2}$'",
             name="ck_user_residence_country_format",
+        ),
+        # O-117/O-119: mirrors the CHECK added by
+        # supabase/migrations/20260802000000_add_user_residence_country_and_adulthood_attestation.sql.
+        # api/onboarding.py::_record_consent is the sole writer and already
+        # only ever sets residence_country and adulthood_attested_at together
+        # (alongside the consent_* quartet, never before it); this CHECK is
+        # the at-rest backstop for any other write path, mirroring
+        # ck_user_consent_pairing's own role for the original quartet. Two
+        # requirements: (1) the two new columns are set or cleared together,
+        # same "no partial claim" shape as the consent quartet; (2) whenever
+        # they carry a value, consent_accepted_at must also be non-null, so
+        # an at-rest row can never record a country/adulthood attestation
+        # with no corroborating consent record. An already-consented row from
+        # before this migration has both new columns NULL, which satisfies
+        # clause (1) trivially and short-circuits clause (2) via the OR, so
+        # this ALTER TABLE cannot fail against existing production data.
+        # #VERIFY: tests/integration/test_onboarding_api.py::
+        # test_onboarding_records_consent_once_and_is_idempotent.
+        CheckConstraint(
+            "(residence_country IS NULL) = (adulthood_attested_at IS NULL) "
+            "AND (residence_country IS NULL OR consent_accepted_at IS NOT NULL)",
+            name="ck_user_residence_adulthood_pairing",
         ),
     )
 

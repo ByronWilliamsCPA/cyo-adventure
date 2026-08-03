@@ -47,6 +47,24 @@ ALTER TABLE "public"."user"
     ADD CONSTRAINT ck_user_residence_country_format
         CHECK (residence_country IS NULL OR residence_country ~ '^[A-Z]{2}$');
 
+-- At-rest pairing constraint, mirroring db/models.py's ck_user_consent_pairing
+-- pattern for the new columns: (1) residence_country and
+-- adulthood_attested_at are set or cleared together, never one without the
+-- other; (2) whenever they carry a value, consent_accepted_at must also be
+-- non-null, since api/onboarding.py::_record_consent is the sole writer and
+-- always sets all three (plus the rest of the consent quartet) together. A
+-- guardian who consented before this migration has both new columns NULL,
+-- which satisfies clause (1) trivially and short-circuits clause (2) via the
+-- OR, so this ADD CONSTRAINT cannot fail against existing production rows.
+ALTER TABLE "public"."user"
+    DROP CONSTRAINT IF EXISTS ck_user_residence_adulthood_pairing;
+ALTER TABLE "public"."user"
+    ADD CONSTRAINT ck_user_residence_adulthood_pairing
+        CHECK (
+            (residence_country IS NULL) = (adulthood_attested_at IS NULL)
+            AND (residence_country IS NULL OR consent_accepted_at IS NOT NULL)
+        );
+
 -- RLS needs no change: policies on public."user" are the column-agnostic
 -- USING (true) WITH CHECK (true) service-role policies added by
 -- 20260720170200_add_service_role_policies.sql, and "user" carries no
