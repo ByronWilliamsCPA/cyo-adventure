@@ -14,7 +14,8 @@ Checks:
 
 Within the unscheduled-work register itself, for every cluster table (``## Cluster <letter>:``):
 
-1. Every id matches ``UW-[A-M]NN``.
+1. Every id matches the manifest's ``[namespaces.uw]`` pattern, and the cluster letter that
+   pattern captures matches the cluster table the row was found in.
 2. Every ``Status`` is one of: unscheduled, blocked, decision, verify, done.
 3. Where a ``Phase`` column exists (clusters L and M have none), its value is in the closed
    phase vocabulary, which is read from the manifest the run actually loaded.
@@ -25,21 +26,26 @@ Within the unscheduled-work register itself, for every cluster table (``## Clust
 7. Ids are unique across the whole register, not just within one cluster.
 
 Vocabulary drift: ``docs/planning/plan-manifest.toml`` (the "plan manifest") is the source of
-truth for the phase vocabulary, the phase-to-rung mapping, and the two-axis (``shipped``/
-``usable``) status model; ``roadmap.md`` is checked against it, not the other way around. This
+truth for the phase vocabulary, the phase-to-rung mapping, the two-axis (``shipped``/``usable``)
+status model, and every id namespace's regex (``[namespaces.*]``); ``roadmap.md`` is checked
+against it, not the other way around. No id pattern is written twice: this module holds none,
+and the regexes quoted below are descriptions of what the manifest currently declares, not a
+second copy the code reads. This
 script parses ``## Phase`` headings (and the ``2b``/``4a``/``4b`` sub-headings that do not follow
 that exact shape) out of ``roadmap.md`` and fails if the manifest's track-1 phase set disagrees
 with what the roadmap actually contains, so a new phase added to the roadmap without a matching
 manifest entry is caught here rather than discovered later. Two further checks guard the manifest
 and the roadmap's prose against each other:
 
-* ``_check_manifest_integrity``: the manifest is structurally present (the ``[phases]`` and
-  ``[rungs]`` tables exist, are tables, and are non-empty, and the ``R1``/``R2``/``R3`` rungs are
-  declared) and then internally consistent (every rung's phase references exist,
-  ``requires_phases``/``excludes_phases`` are disjoint, the rungs are monotonic, every phase's
-  status pair has a matching ``[status_vocabulary]`` entry, and Phase 7 does not gate R2). The
-  structural precondition runs first and short-circuits the rest: a manifest missing ``[rungs]``
-  entirely would otherwise pass every one of those six checks vacuously.
+* ``_check_manifest_integrity``: the manifest is structurally present (the ``[phases]``,
+  ``[rungs]``, and ``[namespaces]`` tables exist, are tables, and are non-empty, and the
+  ``R1``/``R2``/``R3`` rungs are declared) and then internally consistent (the declared id
+  namespaces match the closed set this module consumes and each one's ``source`` resolves to a
+  real file, every rung's phase references exist, ``requires_phases``/``excludes_phases`` are
+  disjoint, the rungs are monotonic, every phase's status pair has a matching
+  ``[status_vocabulary]`` entry, and Phase 7 does not gate R2). The structural precondition runs
+  first and short-circuits the rest: a manifest missing ``[rungs]`` entirely would otherwise
+  pass every one of those seven checks vacuously.
 * ``_check_roadmap_phase_status``: the roadmap's phase-status table prose (for example
   "Substantially delivered") matches the term the manifest's ``[status_vocabulary]`` derives from
   that phase's ``(shipped, usable)`` pair, and its leading glyph matches that phase's ``shipped``
@@ -47,17 +53,18 @@ and the roadmap's prose against each other:
   than skipped, since a renamed header would otherwise drop every checked row and still pass.
 
 The manifest named on the command line is the only one a run consults. The register's own
-``Phase`` cell vocabulary is derived from it and threaded down to the row checks, so a
-``--manifest`` run cannot end up validating the register against one manifest and the roadmap
-against another. An unloadable manifest yields an empty vocabulary, which rejects every phase
-token; the load failure itself is reported separately, so the cause is named, not inferred.
+``Phase`` cell vocabulary and every id pattern are derived from it and threaded down to the row
+checks, so a ``--manifest`` run cannot end up validating the register against one manifest and
+the roadmap against another. An unloadable manifest is reported and then stops the run: with no
+phase vocabulary and no id patterns, every remaining check would reject every row it saw, and
+several hundred lines of "malformed id" would bury the one line naming the actual cause.
 
 Cross-register linkage:
 
-1. Every row in ``r1-deferred-debt-register.md`` whose first cell is a debt id (``C\\d+``,
-   ``GS\\d+``, ``U\\d+``, ``T\\d+``, ``P\\d+``, or ``SL\\d+``) and which is not marked
-   ``[Closed]`` or ``[Resolved]`` (the register uses both markers interchangeably) must be cited
-   somewhere in cluster B of the unscheduled register.
+1. Every row in ``r1-deferred-debt-register.md`` whose first cell matches ``[namespaces.debt]``
+   (``C``, ``GS``, ``U``, ``T``, ``P``, or ``SL`` followed by digits, as the manifest declares
+   it) and which is not marked ``[Closed]`` or ``[Resolved]`` (the register uses both markers
+   interchangeably) must be cited somewhere in cluster B of the unscheduled register.
 2. Every lesson in ``authoring-lessons-log.md`` whose ``Status`` is not ``applied``, ``rejected``,
    or ``superseded`` must be cited somewhere in cluster C of the unscheduled register.
 3. Every row in ``capability-register.md`` (four tables: K, G, A, S) whose ``Docs`` cell is not
@@ -126,8 +133,27 @@ _MANIFEST_STATUS_VALUES = frozenset({"yes", "partial", "no"})
 # The top-level manifest tables every downstream integrity check reads, and the rungs those
 # checks name directly. Absent or empty, each of those checks iterates nothing and reports a
 # clean manifest, so their structural presence is asserted before any of them runs.
-_MANIFEST_REQUIRED_TABLES = ("phases", "rungs")
+_MANIFEST_REQUIRED_TABLES = ("phases", "rungs", "namespaces")
 _MANIFEST_REQUIRED_RUNGS = ("R1", "R2", "R3")
+
+# The closed set of id namespaces this checker consumes, and the fields it requires of each.
+# Moving the patterns into the manifest made them data, which removed them from every tool
+# that reads Python: nothing reports an unread TOML key, so without this contract a namespace
+# table with a typo'd name is silently inert and a `prefix`/`source` field can rot unnoticed
+# because no code path ever reads it. Declaring the contract here and checking the manifest
+# against it in both directions restores the "wrong name is an error" property the module-level
+# constants had for free.
+#
+# `citation_pattern` is deliberately per-namespace rather than universal: uw and sq ids are
+# validated only inside their own document and are never cited from another, so requiring the
+# field would force a pattern that nothing runs.
+_NAMESPACE_REGISTRY_CONTRACT: dict[str, tuple[str, ...]] = {
+    "uw": ("prefix", "source", "pattern"),
+    "debt": ("prefix", "source", "pattern", "citation_pattern"),
+    "al": ("prefix", "source", "pattern", "citation_pattern"),
+    "cap": ("prefix", "source", "pattern", "citation_pattern"),
+    "sq": ("prefix", "source", "pattern"),
+}
 
 
 def _load_manifest(path: Path, problems: list[str]) -> dict[str, Any] | None:
@@ -220,6 +246,25 @@ def _manifest_phase_vocabulary(manifest: dict[str, Any] | None) -> frozenset[str
 # None-handling branch at every call site.
 _NEVER_MATCHES_RE = re.compile(r"(?!)")
 
+# Bounds on a manifest-supplied regex, checked before it is compiled or run.
+#
+# #CRITICAL: external resources: `[namespaces.*].pattern` and `.citation_pattern` are compiled
+# from a planning document and then run against whole cluster bodies of a ~75KB register, so a
+# pattern with nested quantifiers (`([\w ]+)+Q`) backtracks catastrophically. Python's `re` has
+# no timeout, and this script runs both in CI (bounded only by the job's 10-minute cap) and in
+# the `check-work-linkage` pre-commit hook (bounded by nothing at all), so an unbounded pattern
+# wedges every local commit with no diagnostic. This mirrors the reasoning behind
+# `_GH_ISSUE_LIST_TIMEOUT_SECONDS` below: an unbounded external input becomes a reported
+# problem rather than a hang.
+# #VERIFY: both bounds below reject before `re.compile` runs, and the rejection is appended to
+# `problems` so the run fails loudly with the offending pattern named. The nested-quantifier
+# check is a conservative heuristic, not a proof of safety: it catches the `(X+)+` shape that
+# causes exponential backtracking and is verified to accept every pattern the manifest ships.
+# A pattern that is pathological in some other way remains possible, so keep this paired with
+# the length bound rather than relying on either alone.
+_MAX_NAMESPACE_PATTERN_LENGTH = 200
+_NESTED_QUANTIFIER_RE = re.compile(r"\([^()]*[+*][^()]*\)\s*[+*{]")
+
 
 def _manifest_namespace_pattern(
     manifest: dict[str, Any] | None,
@@ -267,9 +312,25 @@ def _manifest_namespace_pattern(
         )
         return _NEVER_MATCHES_RE
     raw_pattern = entry.get(field)
-    if not isinstance(raw_pattern, str) or not raw_pattern:
+    # .strip() and not just falsiness: `pattern = "  "` compiles to a regex that matches at
+    # every position, so a whitespace-only field is the fail-open case, not a stylistic one.
+    if not isinstance(raw_pattern, str) or not raw_pattern.strip():
         problems.append(
             f"{manifest_path.name}: [namespaces.{namespace}].{field} is missing or empty"
+        )
+        return _NEVER_MATCHES_RE
+    if len(raw_pattern) > _MAX_NAMESPACE_PATTERN_LENGTH:
+        problems.append(
+            f"{manifest_path.name}: [namespaces.{namespace}].{field} is "
+            f"{len(raw_pattern)} characters, over the {_MAX_NAMESPACE_PATTERN_LENGTH}-"
+            f"character bound; an id pattern this long is not an id pattern"
+        )
+        return _NEVER_MATCHES_RE
+    if _NESTED_QUANTIFIER_RE.search(raw_pattern):
+        problems.append(
+            f"{manifest_path.name}: [namespaces.{namespace}].{field} '{raw_pattern}' nests a "
+            f"quantifier inside a quantified group, which backtracks catastrophically against "
+            f"the register text this pattern is run over; rewrite it without the nesting"
         )
         return _NEVER_MATCHES_RE
     try:
@@ -388,8 +449,9 @@ _ROADMAP_DELIVERABLES_RE = re.compile(r"Deliverables \((\d+[a-zA-Z])\b")
 _ROADMAP_CONTAINER_PHASE = "4"
 
 # A pipe that is not preceded by a backslash: the markdown table cell delimiter. Compiled once at
-# module scope rather than per call, since _split_row runs on every line of five documents plus
-# an rglob sweep of the whole planning tree.
+# module scope rather than per call, since _split_row runs on every line of the six markdown
+# documents this script reads (register, roadmap, debt register, lessons log, capability
+# register, story-structure plan) plus an rglob sweep of the whole planning tree.
 _UNESCAPED_PIPE_RE = re.compile(r"(?<!\\)\|")
 
 
@@ -578,17 +640,38 @@ def _check_row_id(
         number: The row's 1-based line number.
         entry_id: The row's ``ID`` cell value.
         id_pattern: The ``[namespaces.uw].pattern`` regex the id must fully match, resolved
-            from the run's manifest.
+            from the run's manifest. It should expose the cluster letter as a named
+            ``(?P<cluster>...)`` group; see the cluster-letter note in the body.
 
     Returns:
         list[str]: Problems found; empty when the id is well formed and its letter matches the
             cluster it was found in.
     """
-    if not id_pattern.match(entry_id):
+    match = id_pattern.match(entry_id)
+    if match is None:
+        # Quote the pattern rather than naming a shape. The literal "UW-[A-M]NN" used to be
+        # written here, which silently became a lie the moment the shape moved into the
+        # manifest: a reader who widened [namespaces.uw].pattern would be told their id failed
+        # to match a rule the run was no longer applying.
         return [
-            f"cluster {cluster} line {number}: id '{entry_id}' does not match UW-[A-M]NN"
+            (
+                f"cluster {cluster} line {number}: id '{entry_id}' does not match the uw "
+                f"namespace pattern '{id_pattern.pattern}'"
+            )
         ]
-    id_letter = entry_id[3]
+    # The cluster letter comes from the pattern's named group, not from a fixed offset into the
+    # id. `entry_id[3]` used to be read directly, which re-hardcoded the very layout the
+    # manifest now owns and raised IndexError (an uncaught crash, not a reported problem) for
+    # any id shorter than four characters that a widened pattern let through.
+    id_letter = match.groupdict().get("cluster")
+    if id_letter is None:
+        return [
+            (
+                f"cluster {cluster} line {number}: the uw namespace pattern "
+                f"'{id_pattern.pattern}' has no '(?P<cluster>...)' group, so the cluster letter "
+                f"in id '{entry_id}' cannot be checked against the table it was found in"
+            )
+        ]
     if id_letter != cluster:
         return [
             (
@@ -1758,6 +1841,96 @@ def _check_manifest_structure(
     return problems
 
 
+def _check_namespace_registry(
+    manifest: dict[str, Any], manifest_path: Path
+) -> list[str]:
+    """Check the declared id namespaces match the closed set this checker consumes.
+
+    Moving the id patterns out of Python and into ``[namespaces]`` traded one failure mode for
+    another. As module constants a typo'd name was a ``NameError`` at import; as TOML keys a
+    typo'd name is just an unread table, and the namespace it was supposed to define resolves
+    to the fail-closed sentinel at the one call site that asks for it. This compares the two
+    directions explicitly so neither a missing table nor a stray one can sit unnoticed.
+
+    It also gives ``prefix`` and ``source`` a reader. Both were pure documentation: no code
+    path touched them, so nothing detected a renamed register or an emptied field. Resolving
+    ``source`` against the repo root turns a moved document into a reported problem instead of
+    a comment that quietly stops being true.
+
+    Args:
+        manifest: The parsed plan-manifest.toml document.
+        manifest_path: The manifest's path, for message text.
+
+    Returns:
+        list[str]: One problem per undeclared, unexpected, incomplete, or unresolvable
+            namespace entry; empty when the registry matches the contract exactly.
+    """
+    # #CRITICAL: data integrity: a namespace the checker consumes but the manifest does not
+    # declare resolves to _NEVER_MATCHES_RE, which matches no id at all. Every row in that
+    # namespace then fails, or (where the pattern gates a search rather than a match) every
+    # citation check for it silently finds nothing.
+    # #VERIFY: this runs inside _check_manifest_integrity, whose problems are surfaced by
+    # check_linkage before any namespace-dependent check consumes a pattern.
+    problems: list[str] = []
+    namespaces = manifest.get("namespaces")
+    if not isinstance(namespaces, dict):
+        # _check_manifest_structure already reported this and short-circuits before we run;
+        # the guard exists so this function is safe to call on its own in a test.
+        return problems
+
+    declared = set(namespaces)
+    expected = set(_NAMESPACE_REGISTRY_CONTRACT)
+    problems.extend(
+        (
+            f"{manifest_path.name}: [namespaces.{name}] is missing; check_work_linkage.py reads "
+            f"this namespace, and an undeclared one resolves to a pattern that matches nothing"
+        )
+        for name in sorted(expected - declared)
+    )
+    problems.extend(
+        (
+            f"{manifest_path.name}: [namespaces.{name}] is declared but no code reads it; add it "
+            f"to _NAMESPACE_REGISTRY_CONTRACT or remove the table, because an unread namespace "
+            f"looks enforced and is not"
+        )
+        for name in sorted(declared - expected)
+    )
+
+    for name in sorted(expected & declared):
+        entry = namespaces[name]
+        if not isinstance(entry, dict):
+            problems.append(
+                f"{manifest_path.name}: [namespaces.{name}] is {type(entry).__name__}, not a "
+                f"table"
+            )
+            continue
+        required = _NAMESPACE_REGISTRY_CONTRACT[name]
+        for field in required:
+            value = entry.get(field)
+            if not isinstance(value, str) or not value.strip():
+                problems.append(
+                    f"{manifest_path.name}: [namespaces.{name}] field '{field}' is missing or "
+                    f"empty; it is required for this namespace"
+                )
+        problems.extend(
+            (
+                f"{manifest_path.name}: [namespaces.{name}] has unrecognised field '{field}'; "
+                f"nothing reads it, so a typo'd field name would otherwise disable the check it "
+                f"was meant to configure"
+            )
+            for field in sorted(set(entry) - set(required))
+        )
+        source = entry.get("source")
+        if isinstance(source, str) and source.strip():
+            if (_REPO_ROOT / source).is_file():
+                continue
+            problems.append(
+                f"{manifest_path.name}: [namespaces.{name}] source '{source}' does not resolve "
+                f"to a file under the repository root"
+            )
+    return problems
+
+
 def _check_manifest_rung_phase_references(
     manifest: dict[str, Any], manifest_path: Path
 ) -> list[str]:
@@ -1960,14 +2133,15 @@ def _check_manifest_integrity(
 
     Runs a structural precondition first (``_check_manifest_structure``: the required tables and
     rungs are present, are tables, and are non-empty), and only then every self-consistency check
-    the manifest can be validated against without reference to any other document: rung phase
-    references resolve, requires/excludes never overlap, the release ladder is monotonic, every
-    phase's status pair has a vocabulary term, every status value is in the closed vocabulary,
-    and Phase 7 does not gate R2.
+    the manifest can be validated against without reference to any other document: the declared
+    id namespaces match the closed set the checker consumes, rung phase references resolve,
+    requires/excludes never overlap, the release ladder is monotonic, every phase's status pair
+    has a vocabulary term, every status value is in the closed vocabulary, and Phase 7 does not
+    gate R2.
 
-    The precondition short-circuits deliberately. Each of the six consistency checks iterates a
+    The precondition short-circuits deliberately. Each of the seven consistency checks iterates a
     table it fetches with a ``{}`` default, so on a manifest missing that table it reports
-    nothing; running them anyway would bury the one real finding under six false all-clears.
+    nothing; running them anyway would bury the one real finding under seven false all-clears.
 
     Args:
         manifest: The parsed plan-manifest.toml document.
@@ -1982,6 +2156,7 @@ def _check_manifest_integrity(
         return structural_problems
 
     problems: list[str] = []
+    problems.extend(_check_namespace_registry(manifest, manifest_path))
     problems.extend(_check_manifest_rung_phase_references(manifest, manifest_path))
     problems.extend(
         _check_manifest_rung_requires_excludes_disjoint(manifest, manifest_path)
@@ -2114,11 +2289,18 @@ def _find_sq_table_header(lines: list[str]) -> int:
     rows out two per line rather than one long single-pair table. Matching on the literal column
     labels, not on position, is what lets this survive a reflow of the surrounding prose.
 
+    Only the first such header is returned, unlike ``_find_sq_work_table_headers``, which
+    returns every deliverables-table header. That asymmetry is deliberate but narrow: the map
+    is one table by contract, where deliverables are split one table per stage. A document that
+    grew a second map table would have its rows silently ignored here, which the coverage rule
+    would then report as deliverables with "no recorded scheduling home" rather than as the
+    split map it actually is. Split the map and this needs to return a list.
+
     Args:
         lines: The story-structure-improvement-plan.md document's lines.
 
     Returns:
-        int: The 0-based index of the header row.
+        int: The 0-based index of the first matching header row.
 
     Raises:
         LookupError: If no such header row is found.
@@ -2210,8 +2392,12 @@ def _sq_work_table_ids(lines: list[str]) -> list[tuple[int, str]]:
         lines: The story-structure-improvement-plan.md document's lines.
 
     Returns:
-        list[tuple[int, str]]: Each ``(line_number, id)`` pair, in document order, with 1-based
-            line numbers.
+        list[tuple[int, str]]: Each ``(line_number, id)`` pair with 1-based line numbers. Not
+            in document order: every stage table's rows come first, in table order, and the
+            cross-cutting prose deliverables are appended afterwards by a second pass over the
+            whole document. Every caller treats this as a set (a coverage difference, a
+            duplicate check, or a count), so the order is unspecified rather than sorted; do
+            not add a caller that depends on it without sorting first.
 
     Raises:
         LookupError: If no SQ deliverables table header can be located.
@@ -2247,17 +2433,26 @@ def _check_sq_namespace(
     records where its scheduling record lives. This function enforces that both tables use
     well-formed, unique ids AND that they cover each other exactly.
 
-    That mutual-coverage rule is what keeps the check from being hollow. Validating the map
-    table alone passes vacuously when the table is emptied: ``_find_sq_table_header`` only
-    proves the *header* survived, and a zero-row table yields zero problems. Requiring every
-    deliverable to appear in the map (and no map entry to name an item that does not exist)
-    means deleting rows from either table is reported rather than silently accepted.
+    That mutual-coverage rule is most of what keeps the check from being hollow, but not all of
+    it. Validating the map table alone passes vacuously when the table is emptied:
+    ``_find_sq_table_header`` only proves the *header* survived, and a zero-row table yields
+    zero problems. Requiring every deliverable to appear in the map (and no map entry to name an
+    item that does not exist) means deleting rows from *one* table is reported rather than
+    silently accepted.
+
+    Mutual coverage alone does not close the symmetric case. ``deliverables - map`` and
+    ``map - deliverables`` are both empty when both sets are populated and consistent AND when
+    both sets are empty, so emptying both tables at once passes every coverage rule. The
+    non-empty floor below is what distinguishes those two states; the coverage rules cannot.
 
     #CRITICAL: data integrity: an assurance check that returns no problems when it inspected no
     rows is indistinguishable from one that passed, and this repo has a documented history of
     exactly that failure mode.
-    #VERIFY: any future edit here must keep a test that empties one table's data rows, leaves
-    its header intact, and asserts a non-empty problem list.
+    #VERIFY: any future edit here must keep three tests, because the one-table and both-table
+    cases fail through different rules: empty the map table's data rows only, empty the
+    deliverables tables' data rows only, and empty BOTH at once, each leaving the headers
+    intact, and assert a non-empty problem list in all three. A test suite that covers only the
+    one-table cases leaves the symmetric case open while appearing to satisfy this marker.
 
     Args:
         lines: The story-structure-improvement-plan.md document's lines.
@@ -2275,6 +2470,12 @@ def _check_sq_namespace(
     problems: list[str] = []
     map_ids = _sq_table_ids(lines, _find_sq_table_header(lines))
     work_ids = _sq_work_table_ids(lines)
+    for label, entries in (("map", map_ids), ("deliverables", work_ids)):
+        if not entries:
+            problems.append(
+                f"{path.name}: the SQ {label} table has a header but no data rows; an sq "
+                f"namespace with nothing in it cannot be distinguished from one that passed"
+            )
     valid: dict[str, set[str]] = {"map": set(), "deliverables": set()}
     for label, entries in (("map", map_ids), ("deliverables", work_ids)):
         seen: dict[str, list[int]] = {}
@@ -2362,7 +2563,27 @@ def check_linkage(
     # Reading it from a module-level default instead is what let a --manifest run validate Phase
     # cells against one manifest and everything else against another.
     manifest = _load_manifest(manifest_path, problems)
+    if manifest is None:
+        # Every downstream check is parameterised by this manifest: the phase vocabulary is
+        # empty and every namespace pattern is _NEVER_MATCHES_RE, so continuing would report
+        # each of the register's ~240 rows as both a malformed id and an out-of-vocabulary
+        # phase. That cascade buries the one problem that explains all of them, which
+        # `_load_manifest` has already appended. Stopping here is safe precisely because the
+        # run is already failing: the caller sees a non-empty problem list either way, and the
+        # line below states plainly which checks did not run so the short list is not mistaken
+        # for a clean bill of health.
+        problems.append(
+            f"{manifest_path.name} could not be loaded, so the register row, cross-register "
+            f"linkage, roadmap, and sq checks were all skipped; fix the manifest and re-run to "
+            f"see them"
+        )
+        return problems
     phase_vocabulary = _manifest_phase_vocabulary(manifest)
+    # The eight resolutions below share their whole-table failure modes: `[namespaces] = "x"` or
+    # a wholly absent table produces the same message from each call, and from the structural
+    # precondition as well. Each still reports its own specific failure ("[namespaces.al]
+    # .citation_pattern is missing"); the deduplication at this function's return collapses the
+    # shared ones back to a single line.
     uw_id_pattern = _manifest_namespace_pattern(
         manifest, manifest_path, "uw", "pattern", problems
     )
@@ -2393,11 +2614,10 @@ def check_linkage(
     )
     problems.extend(row_problems)
 
-    if manifest is not None:
-        problems.extend(_check_manifest_integrity(manifest, manifest_path))
+    problems.extend(_check_manifest_integrity(manifest, manifest_path))
 
     roadmap_lines = _read_lines(roadmap_path, problems)
-    if roadmap_lines is not None and manifest is not None:
+    if roadmap_lines is not None:
         track1_phases = _manifest_phases_for_track(manifest, 1)
         problems.extend(
             _check_roadmap_vocabulary(roadmap_lines, roadmap_path, track1_phases)
@@ -2409,14 +2629,11 @@ def check_linkage(
         except LookupError as exc:
             problems.append(f"{roadmap_path.name}: {exc}")
 
-    if manifest is not None:
-        plan_lines = _read_lines(project_plan_path, problems)
-        if plan_lines is not None:
-            problems.extend(
-                _check_project_plan_phase_status(
-                    plan_lines, project_plan_path, manifest
-                )
-            )
+    plan_lines = _read_lines(project_plan_path, problems)
+    if plan_lines is not None:
+        problems.extend(
+            _check_project_plan_phase_status(plan_lines, project_plan_path, manifest)
+        )
 
     debt_lines = _read_lines(debt_register_path, problems)
     if debt_lines is not None:
@@ -2485,19 +2702,22 @@ def check_linkage(
         except ValueError as exc:
             problems.append(f"{capability_register_path.name}: {exc}")
 
-    if manifest is not None:
-        sq_lines = _read_lines(story_structure_plan_path, problems)
-        if sq_lines is not None:
-            try:
-                problems.extend(
-                    _check_sq_namespace(
-                        sq_lines, story_structure_plan_path, sq_id_pattern
-                    )
-                )
-            except LookupError as exc:
-                problems.append(f"{story_structure_plan_path.name}: {exc}")
+    sq_lines = _read_lines(story_structure_plan_path, problems)
+    if sq_lines is not None:
+        try:
+            problems.extend(
+                _check_sq_namespace(sq_lines, story_structure_plan_path, sq_id_pattern)
+            )
+        except LookupError as exc:
+            problems.append(f"{story_structure_plan_path.name}: {exc}")
 
-    return problems
+    # Deduplicate, preserving first-seen order. Independent checks can reach the same conclusion
+    # about the manifest: `[namespaces] = "x"` is reported once by the structural precondition
+    # and once by whichever namespace resolution hit it first, in identical words. Every problem
+    # this module emits names a location, an id, or a specific table, so two byte-identical
+    # sentences are the same finding reported twice, never two findings that happen to read
+    # alike. Printing it twice inflates the count a reader uses to judge how bad a run was.
+    return list(dict.fromkeys(problems))
 
 
 def _summary(register_path: Path) -> str:
@@ -2556,16 +2776,32 @@ def _sq_summary(story_structure_plan_path: Path) -> str:
     run that inspected an emptied table, which is the reader-facing half of the hollow-check
     problem ``_check_sq_namespace`` guards against structurally.
 
+    The deliverable count and the map count are deliberately NOT both printed. This function is
+    reached only on the success path, and success means ``_check_sq_namespace`` already proved
+    the two id sets are equal and duplicate-free, so a second number would be the first one
+    again wearing a different label: it would read as a cross-check while being incapable of
+    disagreeing. The stage-table count beside it is genuinely independent information, because
+    the deliverables live in one table per stage and dropping a whole stage table is a real
+    failure the id total alone can hide.
+
     Args:
         story_structure_plan_path: The validated story-structure-improvement-plan.md file.
 
     Returns:
-        str: A newline-terminated summary naming both tables' row counts.
+        str: A newline-terminated summary naming the deliverable count and the number of stage
+            tables those deliverables were collected from.
+
+    Raises:
+        LookupError: If the SQ deliverables table header cannot be located. Unreachable on the
+            success path, where ``_check_sq_namespace`` has already located it.
     """
     lines = story_structure_plan_path.read_text(encoding="utf-8").splitlines()
-    mapped = len(_sq_table_ids(lines, _find_sq_table_header(lines)))
     defined = len(_sq_work_table_ids(lines))
-    return f"     {defined} SQ deliverable(s), {mapped} mapped to a scheduling record\n"
+    stage_tables = len(_find_sq_work_table_headers(lines))
+    return (
+        f"     {defined} SQ deliverable(s) across {stage_tables} stage table(s), each mapped "
+        f"to a scheduling record\n"
+    )
 
 
 def _resolve_cluster_issues_index(header_cells: list[str]) -> int | None:
