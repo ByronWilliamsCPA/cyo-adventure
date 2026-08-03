@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.59.1] - 2026-08-03
+
+### Bug Fixes
+
+- **auth**: Set Tier 1 RLS context before the device-grant lookup
+  ([#560](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/560),
+  [`eb96f68`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/eb96f6878f54172b8a5a510fc100c1d39d27e99f))
+
+
 ## [0.59.0] - 2026-08-02
 
 ### Features
@@ -3007,6 +3016,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.59.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.59.0...v0.59.1
 [0.59.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.58.0...v0.59.0
 [0.58.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.57.0...v0.58.0
 [0.57.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.56.0...v0.57.0
