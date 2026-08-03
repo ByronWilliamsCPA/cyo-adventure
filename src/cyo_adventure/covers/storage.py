@@ -11,6 +11,7 @@ from botocore.client import Config as BotoConfig
 from botocore.exceptions import BotoCoreError, ClientError
 
 from cyo_adventure.covers.errors import CoverGenerationError
+from cyo_adventure.utils.redaction import digest_identifier
 
 if TYPE_CHECKING:
     from mypy_boto3_s3.client import S3Client
@@ -36,6 +37,32 @@ _PRESIGNED_URL_TTL_SECONDS = 3600
 def _r2_endpoint_url(account_id: str) -> str:
     """Build the R2 S3-compatible endpoint URL for an account."""
     return f"https://{account_id}.r2.cloudflarestorage.com"
+
+
+def _key_log_fields(key: str) -> dict[str, str]:
+    """Project an object key into log fields that disclose no salt.
+
+    # #CRITICAL: security: the object key embeds ``cover_object_salt``, whose
+    # whole job (see ``cover_object_key``'s note, UW-M07) is to be unguessable
+    # so the bucket's private binding is not the only thing between a guessed
+    # storybook id and the image bytes. Writing the key to a log publishes
+    # that control to every sink the logs reach, in every environment. Only
+    # the already-public storybook id and a non-reversible digest of the key
+    # leave this function.
+    # #VERIFY: tests/unit/test_cover_storage.py::
+    # TestDeleteCoverNeverLogsTheSaltedKey asserts neither the salt nor the
+    # key appears in either warning path's emitted event.
+
+    Args:
+        key: The object key, as produced by :func:`cover_object_key`.
+
+    Returns:
+        dict[str, str]: ``storybook_id`` (the key's already-public prefix,
+        empty when the key has no ``/``) and ``key_digest``, a stable digest
+        that correlates repeated failures on one object without revealing it.
+    """
+    storybook_id, _, _ = key.partition("/")
+    return {"storybook_id": storybook_id, "key_digest": digest_identifier(key)}
 
 
 def _require_r2_configured(
@@ -224,7 +251,7 @@ async def delete_cover(key: str, settings: Settings) -> bool:
     try:
         _require_r2_configured(settings, require_public_base_url=False)
     except CoverGenerationError:
-        _logger.warning("cover_delete_unconfigured", key=key)
+        _logger.warning("cover_delete_unconfigured", **_key_log_fields(key))
         return False
     bucket = settings.r2_bucket
 
@@ -243,7 +270,7 @@ async def delete_cover(key: str, settings: Settings) -> bool:
     try:
         await asyncio.to_thread(_build_client_and_delete)
     except (BotoCoreError, ClientError):
-        _logger.warning("cover_delete_failed", key=key, exc_info=True)
+        _logger.warning("cover_delete_failed", **_key_log_fields(key), exc_info=True)
         return False
     return True
 

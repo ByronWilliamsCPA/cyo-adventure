@@ -4,8 +4,11 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
+import structlog
 from botocore.exceptions import BotoCoreError, ClientError
+from structlog.testing import LogCapture
 
+from cyo_adventure.covers import storage as storage_module
 from cyo_adventure.covers.errors import CoverGenerationError
 from cyo_adventure.covers.storage import (
     cover_object_key,
@@ -14,8 +17,29 @@ from cyo_adventure.covers.storage import (
     generate_presigned_cover_urls,
     upload_cover,
 )
+from cyo_adventure.utils.redaction import digest_identifier
 
 pytestmark = pytest.mark.unit
+
+# Clearly-fake stand-in shaped like a real cover_object_salt (token_hex(16)).
+_FAKE_SALT = "0f1e2d3c4b5a69788796a5b4c3d2e1f0"
+
+
+@pytest.fixture
+def storage_logs(monkeypatch: pytest.MonkeyPatch) -> LogCapture:
+    """Capture ``covers.storage``'s structured logs deterministically.
+
+    Returns:
+        LogCapture: The capture whose ``entries`` hold every event the module
+        logged during the test.
+    """
+    cap = LogCapture()
+    monkeypatch.setattr(
+        storage_module,
+        "_logger",
+        structlog.wrap_logger(structlog.testing.ReturnLogger(), processors=[cap]),
+    )
+    return cap
 
 
 def _settings(**overrides: object) -> SimpleNamespace:
@@ -174,6 +198,87 @@ async def test_delete_cover_returns_false_on_client_construction_failure() -> No
         deleted = await delete_cover("s1/2-abc123.webp", _settings())
 
     assert deleted is False
+
+
+class TestDeleteCoverNeverLogsTheSaltedKey:
+    """The R2 object key embeds ``cover_object_salt``; logging it leaks it.
+
+    ``cover_object_key``'s own #CRITICAL note names that per-cover
+    ``secrets.token_hex(16)`` salt as the unguessability control standing
+    between a guessed storybook id and the image bytes (UW-M07). Both
+    ``delete_cover`` warning paths used to pass ``key=key`` straight to the
+    logger, publishing the control to every log sink in every environment.
+
+    Capture strategy mirrors tests/unit/test_logging_security.py: the module
+    logger is replaced with an explicitly wrapped ``LogCapture`` chain.
+    ``structlog.testing.capture_logs`` is not usable here, because
+    ``storage._logger`` is bound at import under
+    ``cache_logger_on_first_use=True`` and so ignores a later reconfiguration.
+    Capturing at the call site (rather than after the configured chain) also
+    proves the FIX, not the censoring processor backstopping it.
+    """
+
+    @pytest.mark.unit
+    @pytest.mark.security
+    @pytest.mark.asyncio
+    async def test_unconfigured_path_logs_no_salt(
+        self, storage_logs: LogCapture
+    ) -> None:
+        """The unconfigured warning carries identifiers, never the salted key."""
+        key = cover_object_key("s1", 2, _FAKE_SALT)
+
+        deleted = await delete_cover(key, _settings(r2_bucket=None))
+
+        assert deleted is False
+        emitted = repr(storage_logs.entries)
+        assert _FAKE_SALT not in emitted
+        assert key not in emitted
+        assert [e["event"] for e in storage_logs.entries] == [
+            "cover_delete_unconfigured"
+        ]
+        assert storage_logs.entries[0]["storybook_id"] == "s1"
+        assert storage_logs.entries[0]["key_digest"] == digest_identifier(key)
+
+    @pytest.mark.unit
+    @pytest.mark.security
+    @pytest.mark.asyncio
+    async def test_failed_delete_path_logs_no_salt(
+        self, storage_logs: LogCapture
+    ) -> None:
+        """The failed-DeleteObject warning carries identifiers, not the key."""
+        key = cover_object_key("s1", 2, _FAKE_SALT)
+        mock_client = MagicMock()
+        mock_client.delete_object.side_effect = ClientError(
+            {"Error": {"Code": "500", "Message": "boom"}}, "DeleteObject"
+        )
+
+        with patch(
+            "cyo_adventure.covers.storage.boto3.client", return_value=mock_client
+        ):
+            deleted = await delete_cover(key, _settings())
+
+        assert deleted is False
+        emitted = repr(storage_logs.entries)
+        assert _FAKE_SALT not in emitted
+        assert key not in emitted
+        assert [e["event"] for e in storage_logs.entries] == ["cover_delete_failed"]
+        assert storage_logs.entries[0]["storybook_id"] == "s1"
+        assert storage_logs.entries[0]["key_digest"] == digest_identifier(key)
+
+    @pytest.mark.unit
+    @pytest.mark.security
+    @pytest.mark.asyncio
+    async def test_a_legacy_unsalted_key_still_reports_its_storybook_id(
+        self, storage_logs: LogCapture
+    ) -> None:
+        """A pre-migration key has no salt but must still be diagnosable."""
+        key = cover_object_key("s1", 2)
+
+        deleted = await delete_cover(key, _settings(r2_account_id=None))
+
+        assert deleted is False
+        assert storage_logs.entries[0]["storybook_id"] == "s1"
+        assert storage_logs.entries[0]["key_digest"] == digest_identifier(key)
 
 
 def test_cover_object_key_format() -> None:

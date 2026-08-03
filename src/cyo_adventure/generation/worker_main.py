@@ -23,7 +23,7 @@ from cyo_adventure.core.database import (
     get_worker_session,
 )
 from cyo_adventure.generation.queue import get_queue, requeue_stranded_jobs
-from cyo_adventure.utils.logging import get_logger
+from cyo_adventure.utils.logging import get_logger, setup_logging
 
 logger = get_logger(__name__)
 
@@ -79,7 +79,22 @@ def main() -> None:
     # deliberately-untested orchestration shim (asyncio.run + a blocking
     # Worker.work() call) exercised by tests/unit/test_worker_main.py with
     # both dependencies mocked.
+
+    # #CRITICAL: security: the worker process has no other logging-setup hook
+    # (it is started as `python -m cyo_adventure.generation.worker_main`), so
+    # without this call it ran on structlog's defaults: no level filtering,
+    # no JSON renderer, no correlation_context_processor, and no censoring
+    # processor. It must come FIRST, before the sweep, or the sweep's own log
+    # lines are emitted unconfigured.
+    # #VERIFY: tests/unit/test_worker_main.py::
+    # test_main_configures_logging_before_anything_else pins both the call
+    # arguments and the ordering.
     """
+    setup_logging(
+        level=_default_settings.log_level,
+        json_logs=_default_settings.json_logs,
+        include_timestamp=_default_settings.include_timestamp,
+    )
     requeued = asyncio.run(_reclaim_stranded_jobs())
     logger.info("generation_worker.reclaim_sweep_complete", requeued_count=requeued)
 

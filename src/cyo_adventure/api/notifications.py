@@ -50,6 +50,7 @@ from cyo_adventure.core.exceptions import AuthorizationError, ValidationError
 from cyo_adventure.notifications.models import NotificationItem
 from cyo_adventure.notifications.service import list_guardian_notifications
 from cyo_adventure.utils.logging import get_logger
+from cyo_adventure.utils.redaction import digest_identifier
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Awaitable, Callable
@@ -342,9 +343,20 @@ async def _notification_event_source(
         # unhandled exception propagating out of the loop body; in every
         # case the generator is done and holds no further resources (the
         # per-tick session above is already closed by its own try/finally).
+        # #CRITICAL: security: principal.subject can BE the caller's raw
+        # credential. In ENVIRONMENT=local, deps._resolve_subject returns the
+        # bearer token verbatim (the documented dev auth seam), so logging it
+        # wrote the raw Authorization value on every stream close. Outside
+        # local it is the OIDC `sub`, a stable user identifier that still does
+        # not belong in a log line unhashed. The digest keeps the field's only
+        # real use, correlating a reconnect loop from one caller, without
+        # publishing either form.
+        # #VERIFY: tests/unit/test_notifications_api_unit.py::
+        # TestStreamCloseNeverLogsTheRawSubject asserts the raw subject never
+        # appears in the emitted event.
         _logger.info(
             "notification stream closed",
-            subject=principal.subject,
+            subject_digest=digest_identifier(principal.subject),
         )
 
 
