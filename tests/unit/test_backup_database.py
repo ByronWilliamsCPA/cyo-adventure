@@ -16,6 +16,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
+from botocore.exceptions import ClientError
 from cryptography.exceptions import InvalidTag
 
 _SPEC = importlib.util.spec_from_file_location(
@@ -402,6 +403,78 @@ def test_run_backup_uploads_each_leg_to_every_applicable_tier() -> None:
     ]
 
 
+def test_run_backup_rolls_back_uploaded_keys_when_a_later_upload_fails() -> None:
+    """A mid-loop upload failure deletes the keys this run already wrote.
+
+    Validation passing for all three legs only guarantees nothing bad reaches R2
+    BEFORE the loop. Once the loop starts, a network blip or a credential revoked
+    mid-sequence can still land some objects, which would leave a partial set under
+    that date's prefix and read as a usable backup to anyone listing the bucket.
+    """
+    writer = _leg_writer(
+        {
+            "roles.sql": _REAL_ROLES_SQL,
+            "schema.sql": _REAL_SCHEMA_SQL,
+            "data.sql": _REAL_DATA_SQL,
+        }
+    )
+    mock_client = MagicMock()
+    # Upload order is leg-major, tier-minor: roles/daily, roles/weekly, schema/daily,
+    # then schema/weekly, which is the one that fails here.
+    mock_client.put_object.side_effect = [
+        None,
+        None,
+        None,
+        ClientError({"Error": {"Code": "500", "Message": "boom"}}, "PutObject"),
+    ]
+
+    with (
+        patch.object(backup_database, "_build_client", return_value=mock_client),
+        patch.object(backup_database, "run_dump_leg", side_effect=writer),
+        pytest.raises(ClientError),
+    ):
+        backup_database.run_backup(
+            db_url="postgresql://example",
+            r2_account_id="acct",
+            r2_access_key_id="key",
+            r2_secret_access_key="secret",
+            r2_bucket="backup-bucket",
+            encryption_key=b"0" * 32,
+            policy=backup_database.RetentionPolicy(),
+            dry_run=False,
+            # 2026-08-02 is a Sunday: daily + weekly tiers, so 6 planned uploads.
+            now=datetime(2026, 8, 2, tzinfo=UTC),
+        )
+
+    deleted = [call.kwargs["Key"] for call in mock_client.delete_object.call_args_list]
+    # Newest first, and only the three that actually succeeded: the failed key was
+    # never appended, and the two never-attempted keys must not be deleted either.
+    assert deleted == [
+        "daily/2026-08-02/schema.sql.enc",
+        "weekly/2026-08-02/roles.sql.enc",
+        "daily/2026-08-02/roles.sql.enc",
+    ]
+
+
+def test_rollback_uploads_continues_after_a_failed_delete() -> None:
+    """One failed delete neither aborts the rollback nor masks the original error."""
+    mock_client = MagicMock()
+    mock_client.delete_object.side_effect = [
+        ClientError({"Error": {"Code": "500", "Message": "boom"}}, "DeleteObject"),
+        None,
+        None,
+    ]
+
+    # Must not raise: the caller re-raises the original upload error instead.
+    backup_database._rollback_uploads(
+        mock_client,
+        "backup-bucket",
+        ["daily/2026-08-02/roles.sql.enc", "daily/2026-08-02/schema.sql.enc", "k3"],
+    )
+
+    assert mock_client.delete_object.call_count == 3
+
+
 def test_run_dump_leg_invokes_supabase_cli_with_direct_db_url(tmp_path: Path) -> None:
     out_path = tmp_path / "schema.sql"
     with patch.object(backup_database.subprocess, "run") as mock_run:
@@ -476,6 +549,33 @@ def test_redact_secrets_scrubs_url_password() -> None:
     assert "postgres://[redacted]@" in redacted or "postgresql://[redacted]@" in (
         redacted
     )
+
+
+def test_redact_secrets_scrubs_password_containing_at_sign() -> None:
+    """An unencoded ``@`` inside the password must not end the redaction early.
+
+    libpq accepts it, so it occurs in real connection strings. A password class that
+    excluded ``@`` would stop at the first one and leave the remainder in the log.
+    """
+    text = "connection failed: postgresql://cyo:p@ssw0rd@db.example.com:5432/cyo"
+
+    redacted = backup_database._redact_secrets(text)
+
+    assert "p@ssw0rd" not in redacted
+    assert "ssw0rd" not in redacted
+    assert "postgresql://[redacted]@db.example.com:5432/cyo" in redacted
+
+
+def test_redact_secrets_scrubs_conninfo_password() -> None:
+    """libpq's keyword/value form carries no ``://``, so the URL pattern cannot see it."""
+    text = "could not connect: host=db.example.com user=cyo password=hunter2 dbname=cyo"
+
+    redacted = backup_database._redact_secrets(text)
+
+    assert "hunter2" not in redacted
+    assert "password=[redacted]" in redacted
+    # Non-credential keywords are diagnostic and must survive.
+    assert "host=db.example.com" in redacted
 
 
 def test_decode_process_output_returns_empty_string_for_none() -> None:

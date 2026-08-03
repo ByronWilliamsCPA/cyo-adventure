@@ -338,7 +338,16 @@ def _strip_password_from_db_url(db_url: str) -> tuple[str, str | None]:
     return sanitized, parsed.password
 
 
-_URL_CREDENTIALS_RE = re.compile(r"://[^/\s:@]+:[^/\s@]+@")
+# The password class is `[^/\s]+`, NOT `[^/\s@]+`: a password may legitimately
+# contain an unencoded `@`. Excluding `@` made the match stop at the FIRST inner
+# `@`, so `://user:abc@123@host/db` had only `://user:abc@` replaced and leaked the
+# `123` tail. Allowing `@` and relying on greediness makes the match run to the LAST
+# `@` in the run, which is the real user-info/host boundary.
+_URL_CREDENTIALS_RE = re.compile(r"://[^/\s:@]+:[^/\s]+@")
+
+# libpq also accepts keyword/value conninfo strings, and some client error paths echo
+# that form instead of a URL. The URL pattern above cannot see a bare `password=...`.
+_CONNINFO_PASSWORD_RE = re.compile(r"(?i)\bpassword\s*=\s*\S+")
 
 
 def _redact_secrets(text: str) -> str:
@@ -346,20 +355,28 @@ def _redact_secrets(text: str) -> str:
 
     # #CRITICAL: security: a failed `supabase db dump` connection (wrong host, refused
     # auth) can echo the connection string, including its embedded password, back in
-    # its stderr. This must never reach CI logs verbatim. Mirrors the URL-credentials
-    # pattern in the (not yet merged, see PR #581) `src/cyo_adventure/utils/redaction.py`
+    # its stderr. Two credential shapes are scrubbed: the `scheme://user:password@`
+    # URL form, and libpq's keyword/value `password=...` form. Mirrors the
+    # URL-credentials pattern in `src/cyo_adventure/utils/redaction.py` (PR #581)
     # rather than importing it: this script must run standalone in CI with only the
-    # `api` extra installed and must not gain a dependency on the app package for one
-    # regex.
-    # #VERIFY: test_backup_database.py::test_redact_secrets_scrubs_url_password.
+    # `api` extra installed and must not gain a dependency on the app package.
+    #
+    # This is shape-based scrubbing, so it is a strong mitigation and NOT a guarantee.
+    # A password echoed with no surrounding structure at all, for example a bare token
+    # on its own line, matches neither pattern and would survive. Treat these two
+    # shapes as the covered cases, not as proof that nothing can get through.
+    # #VERIFY: test_backup_database.py::test_redact_secrets_scrubs_url_password,
+    # ::test_redact_secrets_scrubs_password_containing_at_sign,
+    # ::test_redact_secrets_scrubs_conninfo_password.
 
     Args:
         text: Raw decoded subprocess output.
 
     Returns:
-        ``text`` with any ``scheme://user:password@`` substring's password replaced.
+        ``text`` with URL-embedded and conninfo-style passwords replaced.
     """
-    return _URL_CREDENTIALS_RE.sub("://[redacted]@", text)
+    redacted = _URL_CREDENTIALS_RE.sub("://[redacted]@", text)
+    return _CONNINFO_PASSWORD_RE.sub("password=[redacted]", redacted)
 
 
 def _decode_process_output(data: bytes | None) -> str:
@@ -491,6 +508,38 @@ def upload_encrypted(
     return key
 
 
+def _rollback_uploads(client: S3Client, bucket: str, keys: list[str]) -> None:
+    """Best-effort delete of the keys this run already wrote, newest first.
+
+    Called only from the upload loop's failure path, to keep R2 from holding a
+    partial set for a date.
+
+    # #CRITICAL: data integrity: every delete is attempted even when an earlier one
+    # fails, and no failure here is allowed to propagate: the caller re-raises the
+    # ORIGINAL upload error, which is the one that explains the run. A rollback error
+    # replacing it would hide the cause and send an operator chasing the cleanup
+    # instead of the outage. Failures are logged individually so a surviving object is
+    # still nameable from the run's logs.
+    # #VERIFY: test_backup_database.py::test_rollback_uploads_continues_after_a_failed_delete.
+
+    Args:
+        client: R2 S3-compatible client.
+        bucket: The backup bucket name.
+        keys: Object keys written earlier in this run, in write order.
+    """
+    for key in reversed(keys):
+        try:
+            client.delete_object(Bucket=bucket, Key=key)
+        except (BotoCoreError, ClientError) as exc:
+            _logger.error(
+                "backup_rollback_delete_failed",
+                key=key,
+                error_type=type(exc).__name__,
+            )
+        else:
+            _logger.info("backup_rollback_deleted", key=key)
+
+
 def run_backup(
     *,
     db_url: str,
@@ -528,8 +577,11 @@ def run_backup(
         subprocess.CalledProcessError: If a ``supabase db dump`` leg exits non-zero.
         subprocess.TimeoutExpired: If a dump leg does not finish within
             ``_DUMP_TIMEOUT_SECONDS``.
-        BotoCoreError: On an R2 client/network-level failure.
-        ClientError: On an R2 API-level failure (e.g. bad credentials, missing bucket).
+        BotoCoreError: On an R2 client/network-level failure. If it interrupts the
+            upload loop, the keys already written this run are deleted best-effort
+            first and the original error is re-raised unchanged.
+        ClientError: On an R2 API-level failure (e.g. bad credentials, missing bucket);
+            same best-effort rollback as above.
     """
     today = now or datetime.now(UTC)
     date_str = today.date().isoformat()
@@ -557,9 +609,16 @@ def run_backup(
     # ciphertext too, at most tens of MB, costs nothing extra). If leg 2 or 3 fails
     # (auth revoked mid-run, CLI crash, disk full, a boilerplate-only dump), leg 1's
     # ciphertext is simply discarded when the TemporaryDirectory is cleaned up: R2
-    # never receives ANY object for this date until the whole set is known-good, so a
-    # rushed restore can never find an unlabeled partial set under daily/<date>/.
-    # #VERIFY: test_backup_database.py::test_run_backup_uploads_nothing_when_a_later_leg_fails.
+    # receives no object for this date until the whole set is known-good.
+    #
+    # That covers failures BEFORE the upload loop. A failure DURING it (a network
+    # blip, an R2 timeout, a credential revoked mid-sequence) can still land some
+    # keys, so the loop below rolls back what it already wrote. The rollback is
+    # best-effort by nature: if the same outage that broke the upload also breaks the
+    # delete, some objects survive. This is a strong bias against partial sets, NOT
+    # an atomic multi-object write, which R2 does not offer.
+    # #VERIFY: test_backup_database.py::test_run_backup_uploads_nothing_when_a_later_leg_fails,
+    # ::test_run_backup_rolls_back_uploaded_keys_when_a_later_upload_fails.
     ciphertexts: dict[str, bytes] = {}
     with tempfile.TemporaryDirectory() as tmp:
         tmp_dir = Path(tmp)
@@ -602,14 +661,22 @@ def run_backup(
 
         # All three legs dumped and validated: only now does anything touch R2.
         uploaded: list[str] = []
-        for filename, _extra_args in _DUMP_LEGS:
-            ciphertext = ciphertexts[filename]
-            for tier in tiers:
-                key = upload_encrypted(
-                    client, r2_bucket, tier, date_str, filename, ciphertext
-                )
-                uploaded.append(key)
-                _logger.info("backup_uploaded", key=key, bytes=len(ciphertext))
+        try:
+            for filename, _extra_args in _DUMP_LEGS:
+                ciphertext = ciphertexts[filename]
+                for tier in tiers:
+                    key = upload_encrypted(
+                        client, r2_bucket, tier, date_str, filename, ciphertext
+                    )
+                    uploaded.append(key)
+                    _logger.info("backup_uploaded", key=key, bytes=len(ciphertext))
+        # Deliberately broader than the (BotoCoreError, ClientError) pair this loop is
+        # documented to raise: the trigger for rollback is "this run wrote part of a
+        # set and then stopped", which is true for any exception, not just the ones
+        # boto names. The error is re-raised unchanged, so nothing is swallowed.
+        except Exception:
+            _rollback_uploads(client, r2_bucket, uploaded)
+            raise
 
     return {"date": date_str, "tiers": list(tiers), "uploaded": uploaded}
 
