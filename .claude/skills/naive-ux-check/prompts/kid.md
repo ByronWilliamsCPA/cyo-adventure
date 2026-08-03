@@ -50,7 +50,7 @@ this browser tab first.
 Operator note: this scenario's zero-profile premise requires an
 operator-arranged empty family (a signed-in guardian with no child
 profiles). The default seeded staging family already has a "Test Reader"
-profile (age band 5-8) with two published stories, so an unmodified seeded
+profile (age band 10-13) with two published stories, so an unmodified seeded
 run lands on the "Who's reading?" avatar grid instead of the "No profiles
 yet" empty state and contradicts the task text below.
 
