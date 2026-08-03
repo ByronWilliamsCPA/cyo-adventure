@@ -22,6 +22,7 @@ from pydantic import (
     model_validator,
 )
 
+from cyo_adventure.api.residence_countries import ASSIGNED_RESIDENCE_COUNTRY_CODES
 from cyo_adventure.db.models import RING_GOAL_DAYS_MAX, RING_GOAL_DAYS_MIN
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
@@ -1975,9 +1976,11 @@ class FamilyExportView(BaseModel):
     Attributes:
         exported_at: When this export was generated (UTC).
         family: The family row (id, name, created_at).
-        guardians: Every guardian/admin/child login row in the family
-            (id, role, is_admin, email, created_at); no ``pin_hash`` or
-            ``authn_subject`` (credential material, never exported).
+        guardians: Every guardian/admin/child login row in the family (id,
+            role, is_admin, email, created_at, the consent_* quartet, and the
+            O-117/O-119 residence_country/adulthood_attested_at fields); no
+            ``pin_hash`` or ``authn_subject`` (credential material, never
+            exported).
         profiles: Every child profile, each with its own nested
             ``reading_state``, ``completions``, ``ratings``, ``assignments``,
             ``personalization`` (ADR-023 P4 ``ChildProfilePersonalization``
@@ -2090,6 +2093,12 @@ class DeviceGrantListItem(BaseModel):
 def _normalize_residence_country(value: str) -> str:
     """Uppercase and validate an ISO 3166-1 alpha-2 country code.
 
+    Two checks, in order, so the 422 message tells the two failure modes
+    apart: a value that is not two letters at all (a syntax error) versus a
+    value that IS two letters but names no assigned country (e.g. "ZZ",
+    "XX", "QQ", the user-assigned/reserved alpha-2 ranges), which the regex
+    alone cannot catch.
+
     Args:
         value: The raw country code from the request body.
 
@@ -2098,17 +2107,28 @@ def _normalize_residence_country(value: str) -> str:
 
     Raises:
         ValueError: If the normalized value is not exactly two ASCII
-            letters, which Pydantic reports as a 422.
+            letters, or is two letters but not an assigned ISO 3166-1
+            alpha-2 code. Pydantic reports either as a 422.
     """
     normalized = value.strip().upper()
     if not re.fullmatch(r"[A-Z]{2}", normalized):
         msg = "residence_country must be an ISO 3166-1 alpha-2 code (two letters)"
         raise ValueError(msg)
+    if normalized not in ASSIGNED_RESIDENCE_COUNTRY_CODES:
+        msg = (
+            f"residence_country '{normalized}' is not an assigned "
+            "ISO 3166-1 alpha-2 code"
+        )
+        raise ValueError(msg)
     return normalized
 
 
-# O-117: mirrors db/models.py::User.residence_country's CHECK constraint
-# (``^[A-Z]{2}$``) at the wire boundary, so a malformed code 422s before it
+# O-117: enforces two things db/models.py::User.residence_country's CHECK
+# constraint (``^[A-Z]{2}$``) does not: this validator also rejects a
+# syntactically valid but unassigned code (e.g. "ZZ"), by checking
+# membership in ASSIGNED_RESIDENCE_COUNTRY_CODES. The at-rest CHECK stays
+# format-only (see its own comment for why); this is the ISO-membership
+# gate, and it runs at the wire boundary so a rejected code 422s before it
 # ever reaches the database.
 ResidenceCountry = Annotated[str, AfterValidator(_normalize_residence_country)]
 

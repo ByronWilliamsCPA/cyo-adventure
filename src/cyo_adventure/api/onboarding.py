@@ -93,7 +93,9 @@ async def _record_consent(
     consent: OnboardingConsent | None,
     client_ip: str | None,
 ) -> None:
-    """Persist the guardian's VPC signature-capture consent record (Phase 2 / ADR-018 D1; O-117/O-119).
+    """Persist the guardian's VPC signature-capture consent record.
+
+    Phase 2 / ADR-018 D1; O-117/O-119.
 
     A no-op when ``consent`` is absent, not accepted, or the user already has
     a recorded consent (idempotent: a retried onboarding call must not
