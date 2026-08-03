@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 
 import { signInAsStagingTestUser, unlockParentalGateIfPresent } from './support/auth'
 import { readPersistedGrantId, revokeDeviceGrantBackstop } from './support/device-grant'
+import { removeDeviceFromConsole } from '../e2e-support/device-grant-ui'
 import { gotoResilient, paceNavigation } from '../e2e-support/rate-limit'
 
 /**
@@ -95,10 +96,7 @@ test.describe('kid library via a real device grant on staging', () => {
     await gotoResilient(sharedPage, '/guardian')
     await unlockParentalGateIfPresent(sharedPage, 'guardian')
 
-    await sharedPage.getByRole('button', { name: 'Remove from this device' }).click()
-    await expect(
-      sharedPage.getByRole('button', { name: 'Set up this device for your kids' })
-    ).toBeVisible()
+    await removeDeviceFromConsole(sharedPage)
     const stored = await sharedPage.evaluate(
       (key) => window.localStorage.getItem(key),
       DEVICE_GRANT_KEY

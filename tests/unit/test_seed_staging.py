@@ -15,6 +15,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 
+from cyo_adventure.storybook.models import parse_age_band_rank
+
 _SPEC = importlib.util.spec_from_file_location(
     "seed_staging",
     Path(__file__).resolve().parents[2] / "scripts" / "seed_staging.py",
@@ -446,7 +448,10 @@ async def test_seed_inserts_fixtures_when_absent(
     # The child profile's age band gates which content it may be assigned.
     profiles = [row for row in added if type(row).__name__ == "ChildProfile"]
     assert len(profiles) == 1
-    assert profiles[0].age_band == "5-8"
+    profile_rank = parse_age_band_rank(profiles[0].age_band)
+    assert profile_rank is not None, (
+        f"seeded profile age_band {profiles[0].age_band!r} is not a known band"
+    )
 
     # Publish/assignment wiring is the actual deliverable: a regression that
     # dropped published_at, mis-set status, or wired approved_by/assigned_by to
@@ -462,6 +467,28 @@ async def test_seed_inserts_fixtures_when_absent(
     assert all(v.published_at is not None for v in versions)
     assert all(v.approved_by == guardian_row.id for v in versions)
     assert all(v.approved_by != admin_row.id for v in versions)
+
+    # #CRITICAL: data integrity: api/library.py enforces a read-time age-band
+    # ceiling (#493, H1), so a seeded profile banded BELOW any story assigned to
+    # it lists an EMPTY library: 200, no error, no log line, and
+    # kid-library-smoke.spec.ts fails on "No books yet" with nothing pointing at
+    # the seed. That is exactly what shipped, because this test pinned the
+    # literal "5-8" and so agreed with the seed instead of checking it against
+    # the content. Assert the relationship, not the value: the next fixture
+    # added to _STORIES with a higher band must fail here rather than in a
+    # nightly e2e run.
+    # #VERIFY: keep this ranked comparison; do not reintroduce a literal band.
+    story_bands = [str(version.blob["metadata"]["age_band"]) for version in versions]
+    story_ranks = [parse_age_band_rank(band) for band in story_bands]
+    assert None not in story_ranks, (
+        f"assigned story age_bands {story_bands!r} contain an unknown band "
+        f"(parsed ranks {story_ranks!r})"
+    )
+    assert all(rank <= profile_rank for rank in story_ranks if rank is not None), (
+        f"seeded profile band {profiles[0].age_band!r} (rank {profile_rank}) ranks "
+        f"below assigned story bands {story_bands!r} (ranks {story_ranks!r}); "
+        f"the api/library.py age-band ceiling would hide those books"
+    )
 
     assignments = [row for row in added if type(row).__name__ == "StorybookAssignment"]
     assert len(assignments) == 2
