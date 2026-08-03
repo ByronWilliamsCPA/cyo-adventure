@@ -32,7 +32,7 @@ every feature below.
 motivation (the overjustification effect); Accelerated Reader's points-and-prizes model is the
 canonical cautionary example, criticized since Kohn (1993) and Carter (1996), with Persinger (2001)
 concluding it motivates children to earn points rather than to read
-([Chartered College review](https://my.chartered.college/research-hub/motivating-students-to-read-a-look-at-the-theory/)).
+([Chartered College review](https://my.chartered.college/research-hub/motivating-students-to-read-a-look-at-the-theory)).
 The strongest counter-finding is Marinak and Gambrell (2008): rewards *proximal* to reading (a
 book, or nothing) sustain motivation, while unrelated tokens undermine it
 ([study](https://www.tandfonline.com/doi/abs/10.1080/19388070701749546),
@@ -47,10 +47,10 @@ but runs on loss aversion, which in children produces documented anxiety and "pe
 learning" ("a meltdown at 11:45 PM over a 200-day streak",
 [Screenwise parent guide](https://screenwiseapp.com/guides/duolingo-streaks-and-anxiety-in-kids)).
 Even Duolingo's own research concedes rigid streaks need "slack" to sustain persistence
-([Duolingo blog](https://blog.duolingo.com/how-duolingo-streak-builds-habit/)). Apps praised for
+([Duolingo blog](https://blog.duolingo.com/how-duolingo-streak-builds-habit)). Apps praised for
 kind design (Finch, Pokemon Smile) have no loss state at all
 ([Together with Kai roundup](https://togetherwithkai.com/blog/best-habit-tracker-apps);
-[Pokemon Smile](https://smile.pokemon.com/en-us/)). Consequence: nothing in this design can be
+[Pokemon Smile](https://smile.pokemon.com/en-us)). Consequence: nothing in this design can be
 lost, reset to zero, or visibly decay.
 
 **P3. Ring 1 only, and no ranking even inside ring 1.** ADR-016 confines all child-linked social
@@ -58,7 +58,7 @@ visibility to the family; rings 2 and 3 are off limits for gamification per the 
 Prodigy shows what comparative mechanics do to children: the FTC complaint by Fairplay/CCFC
 documents "two classes of students" and status pressure from visible tiers
 ([EdWeek](https://www.edweek.org/technology/popular-interactive-math-game-prodigy-is-target-of-complaint-to-federal-trade-commission/2021/02),
-[Fairplay](https://fairplayforkids.org/pf/prodigy/)). Sibling dynamics reproduce this in miniature,
+[Fairplay](https://fairplayforkids.org/pf/prodigy)). Sibling dynamics reproduce this in miniature,
 so even within the family: badges may be *visible*, but no surface ever ranks siblings or places
 their numbers side by side.
 
@@ -75,14 +75,14 @@ a *guardian literacy signal and a kid diary fact*, never a score; nothing unlock
 **P5. Mastery-linked, not completion-farmable.** Khan Academy's early badge system taught students
 to optimize for badges via fast, careless completion, and was redesigned to tie rewards to
 demonstrated mastery
-([HiWave research summary](https://hiwavemakers.com/blog/gamification-learning-apps-backfire-kids-research/)).
+([HiWave research summary](https://hiwavemakers.com/blog/gamification-learning-apps-backfire-kids-research)).
 Consequence: badge conditions key on *distinct* endings, *distinct* books, and replay depth, which
 cannot be farmed by tapping through one corridor repeatedly.
 
 **P6. First-party, in-app, behind the existing consent architecture.** ADR-018: no third-party
 analytics in the kid context (also an Apple Kids Category rule: "Apps in the Kids Category should
 not include third-party analytics or third-party advertising",
-[App Review Guidelines 1.3](https://developer.apple.com/app-store/review/guidelines/)). D4: the kid
+[App Review Guidelines 1.3](https://developer.apple.com/app-store/review/guidelines)). D4: the kid
 channel is in-app only, so streak/badge mechanics get **zero** re-engagement notifications by
 construction. New child-linked tables pay the standing four-artifact tax (section 5).
 
