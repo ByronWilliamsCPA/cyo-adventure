@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import re
 import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -66,6 +67,21 @@ _REAL_PHASE_VOCABULARY = _MODULE._manifest_phase_vocabulary(
 _SAMPLE_PHASE_VOCABULARY = frozenset(
     {"0", "1", "2", "2b", "3", "4a", "4b", "4c", "4d", "5"}
 )
+
+# Test-local literal copies of the real manifest's [namespaces.*] patterns, for tests that call
+# the low-level id-checking functions directly rather than through check_linkage's manifest
+# resolution. Kept identical to plan-manifest.toml's [namespaces] table (and to _VALID_MANIFEST's
+# copy of it above) on purpose: these are the same fail-closed patterns the checker resolves at
+# runtime, just precompiled here so a unit test does not need a manifest fixture on disk to
+# exercise a single row-id or citation function.
+_UW_ID_PATTERN = re.compile(r"^UW-[A-M]\d{2}$")
+_DEBT_ID_PATTERN = re.compile(r"^(?:C\d+|GS\d+|U\d+|T\d+|P\d+|SL\d+)$")
+_DEBT_CITATION_PATTERN = re.compile(r"\b(?:C\d+|GS\d+|U\d+|T\d+|P\d+|SL\d+)\b")
+_AL_ID_PATTERN = re.compile(r"^AL-\d{3}$")
+_AL_CITATION_PATTERN = re.compile(r"\bAL-\d+\b")
+_CAP_ID_PATTERN = re.compile(r"^[KGAS]\d+$")
+_CAP_CITATION_PATTERN = re.compile(r"\b[KGAS]\d+\b")
+_SQ_ID_PATTERN = re.compile(r"^SQ-\d{2}$")
 
 # A roadmap excerpt whose headings declare exactly the hardcoded product-phase vocabulary
 # (0, 1, 2, 2b, 3, 4a, 4b, 4c, 4d, 5), mirroring the real roadmap.md's heading shapes: most phases
@@ -142,6 +158,34 @@ schema_version = 1
 "yes/partial" = "substantially delivered"
 "partial/partial" = "partially delivered"
 "no/no" = "not started"
+
+[namespaces.uw]
+prefix = "UW"
+source = "docs/planning/unscheduled-work-register.md"
+pattern = "^UW-[A-M]\\\\d{2}$"
+
+[namespaces.debt]
+prefix = "debt"
+source = "docs/planning/r1-deferred-debt-register.md"
+pattern = "^(?:C\\\\d+|GS\\\\d+|U\\\\d+|T\\\\d+|P\\\\d+|SL\\\\d+)$"
+citation_pattern = "\\\\b(?:C\\\\d+|GS\\\\d+|U\\\\d+|T\\\\d+|P\\\\d+|SL\\\\d+)\\\\b"
+
+[namespaces.al]
+prefix = "AL"
+source = "docs/planning/authoring-lessons-log.md"
+pattern = "^AL-\\\\d{3}$"
+citation_pattern = "\\\\bAL-\\\\d+\\\\b"
+
+[namespaces.cap]
+prefix = "cap"
+source = "docs/planning/capability-register.md"
+pattern = "^[KGAS]\\\\d+$"
+citation_pattern = "\\\\b[KGAS]\\\\d+\\\\b"
+
+[namespaces.sq]
+prefix = "SQ"
+source = "docs/planning/story-structure-improvement-plan.md"
+pattern = "^SQ-\\\\d{2}$"
 
 [rungs.R1]
 requires_phases = ["0", "1", "2", "2b", "3", "4a", "4b", "4c", "4d", "5"]
@@ -306,12 +350,12 @@ def _write_no_open_capability_register(tmp_path: Path) -> Path:
 
 def test_check_row_id_accepts_well_formed_id() -> None:
     """A cluster-letter-matching, two-digit id passes."""
-    assert _MODULE._check_row_id("A", 10, "UW-A01") == []
+    assert _MODULE._check_row_id("A", 10, "UW-A01", _UW_ID_PATTERN) == []
 
 
 def test_check_row_id_rejects_malformed_id() -> None:
     """An id missing the zero-padded two digits fails with a message naming it."""
-    problems = _MODULE._check_row_id("A", 10, "UW-A1")
+    problems = _MODULE._check_row_id("A", 10, "UW-A1", _UW_ID_PATTERN)
     assert len(problems) == 1
     assert "UW-A1" in problems[0]
     assert "does not match UW-[A-M]NN" in problems[0]
@@ -324,7 +368,7 @@ def test_check_row_id_rejects_id_filed_under_the_wrong_cluster() -> None:
     table) previously passed the id-format check silently, since it only validated the regex
     shape and never compared the id's own letter against the cluster it was found in.
     """
-    problems = _MODULE._check_row_id("B", 10, "UW-A01")
+    problems = _MODULE._check_row_id("B", 10, "UW-A01", _UW_ID_PATTERN)
     assert len(problems) == 1
     assert "UW-A01" in problems[0]
     assert "belongs to cluster 'A'" in problems[0]
@@ -333,7 +377,7 @@ def test_check_row_id_rejects_id_filed_under_the_wrong_cluster() -> None:
 
 def test_check_row_id_accepts_id_matching_its_cluster() -> None:
     """A well-formed id whose letter matches the cluster table it was found in still passes."""
-    assert _MODULE._check_row_id("B", 10, "UW-B01") == []
+    assert _MODULE._check_row_id("B", 10, "UW-B01", _UW_ID_PATTERN) == []
 
 
 def test_check_linkage_reports_malformed_id_in_a_cluster_table(tmp_path: Path) -> None:
@@ -743,7 +787,17 @@ def test_manifest_phases_for_track_splits_phases_by_their_track_field(
 def test_check_linkage_reports_unreadable_manifest_but_still_runs_other_checks(
     tmp_path: Path,
 ) -> None:
-    """A missing manifest only skips the manifest-dependent checks, not everything else."""
+    """A missing manifest is reported, and does not silently pass as a clean run.
+
+    Before every id namespace's pattern moved into the manifest, the debt-register linkage
+    check used a hardcoded regex with no dependency on the manifest at all, so it kept finding
+    open debt ids even when the manifest could not be read. That independence is gone by
+    design: the debt id pattern now lives in ``[namespaces.debt]`` in this same file, so a
+    missing manifest leaves the debt-linkage check with no pattern to find open debt ids with,
+    and it correctly finds none rather than guessing one. What this test still pins is the one
+    guarantee that survives: the manifest failure itself is always reported, never swallowed,
+    so a human has the actual root cause instead of a puzzling absence of findings.
+    """
     register_path = _write(
         tmp_path / "register.md",
         _register(
@@ -766,7 +820,7 @@ def test_check_linkage_reports_unreadable_manifest_but_still_runs_other_checks(
         manifest_path=tmp_path / "missing-manifest.toml",
     )
     assert any("cannot read" in problem for problem in problems)
-    assert any("debt 'C2'" in problem for problem in problems)
+    assert not any("debt 'C2'" in problem for problem in problems)
 
 
 def test_check_linkage_reports_unparseable_manifest_end_to_end(tmp_path: Path) -> None:
@@ -1461,7 +1515,7 @@ def test_extract_citations_rejects_an_absurdly_wide_through_range() -> None:
     typo, e.g. a transposed digit) fails loud rather than silently manufacturing thousands of
     ids nobody actually cited."""
     with pytest.raises(ValueError, match="sanity bound"):
-        _MODULE._extract_citations("`SL1` through `SL9999`", _MODULE._DEBT_ID_RE)
+        _MODULE._extract_citations("`SL1` through `SL9999`", _DEBT_CITATION_PATTERN)
 
 
 def test_extract_citations_expands_a_hyphenated_al_prefix_through_range() -> None:
@@ -1475,7 +1529,9 @@ def test_extract_citations_expands_a_hyphenated_al_prefix_through_range() -> Non
     orphan lesson. Zero-padding is reproduced from the range's own first endpoint, so this
     expands to "AL-001".."AL-005", not "AL-1".."AL-5".
     """
-    cited = _MODULE._extract_citations("`AL-001` through `AL-005`", _MODULE._AL_ID_RE)
+    cited = _MODULE._extract_citations(
+        "`AL-001` through `AL-005`", _AL_CITATION_PATTERN
+    )
     assert cited == {"AL-001", "AL-002", "AL-003", "AL-004", "AL-005"}
 
 
@@ -1483,7 +1539,7 @@ def test_extract_citations_rejects_a_backwards_through_range() -> None:
     """A "through" range whose endpoints are transposed (fix S4) fails loud instead of silently
     expanding to no ids at all, which would report every id it meant to cite as an orphan."""
     with pytest.raises(ValueError, match="runs backwards"):
-        _MODULE._extract_citations("`SL9` through `SL1`", _MODULE._DEBT_ID_RE)
+        _MODULE._extract_citations("`SL9` through `SL1`", _DEBT_CITATION_PATTERN)
 
 
 def test_debt_register_open_ids_excludes_lettered_sub_item_ids() -> None:
@@ -1491,7 +1547,7 @@ def test_debt_register_open_ids_excludes_lettered_sub_item_ids() -> None:
     lines = (
         _DEBT_TABLE_HEADER + "| U9a | A dark-mode polish item | src | Low | none |\n"
     ).splitlines()
-    assert _MODULE._debt_register_open_ids(lines) == {}
+    assert _MODULE._debt_register_open_ids(lines, _DEBT_ID_PATTERN) == {}
 
 
 def test_debt_register_open_ids_ignores_closed_marker_outside_the_debt_cell() -> None:
@@ -1507,7 +1563,7 @@ def test_debt_register_open_ids_ignores_closed_marker_outside_the_debt_cell() ->
         + "| C1 | Still genuinely open | see [Closed] PR discussion | Medium |"
         " do this once related work is [Resolved] |\n"
     ).splitlines()
-    assert _MODULE._debt_register_open_ids(lines) == {"C1": 3}
+    assert _MODULE._debt_register_open_ids(lines, _DEBT_ID_PATTERN) == {"C1": 3}
 
 
 # ---------------------------------------------------------------------------
@@ -1630,7 +1686,7 @@ def test_lessons_needing_citation_returns_no_rows_for_a_genuinely_empty_document
 ):
     """A document with no table-like content at all (not yet holding a table) is not the
     malformed-header failure mode; it has nothing to report and does not raise."""
-    assert _MODULE._lessons_needing_citation([]) == {}
+    assert _MODULE._lessons_needing_citation([], _AL_ID_PATTERN) == {}
 
 
 # ---------------------------------------------------------------------------
@@ -1777,7 +1833,7 @@ def test_capability_register_open_ids_marks_open_glyph_rows_open_and_done_rows_c
         + "| K2 | Red | ❌ | |\n"
         + "| K3 | Done | ✅ | |\n"
     ).splitlines()
-    open_ids = _MODULE._capability_register_open_ids(lines)
+    open_ids = _MODULE._capability_register_open_ids(lines, _CAP_ID_PATTERN)
     assert set(open_ids) == {"K1", "K2"}
 
 
@@ -1793,7 +1849,7 @@ def test_capability_register_open_ids_tracks_each_of_the_four_tables_independent
         + _CAPABILITY_TABLE_HEADER
         + "| G1 | Guardian thing | ✅ | |\n"
     ).splitlines()
-    open_ids = _MODULE._capability_register_open_ids(lines)
+    open_ids = _MODULE._capability_register_open_ids(lines, _CAP_ID_PATTERN)
     assert set(open_ids) == {"K1"}
 
 
@@ -1814,7 +1870,7 @@ def test_capability_register_open_ids_rejects_content_with_no_locatable_header()
     with pytest.raises(
         LookupError, match="no table header with 'ID' and 'Docs' columns"
     ):
-        _MODULE._capability_register_open_ids(lines)
+        _MODULE._capability_register_open_ids(lines, _CAP_ID_PATTERN)
 
 
 def test_capability_register_open_ids_rejects_one_corrupted_table_among_valid_others() -> (
@@ -1840,7 +1896,7 @@ def test_capability_register_open_ids_rejects_one_corrupted_table_among_valid_ot
         + "| G1 | Guardian thing | \U0001f7e1 | |\n"
     ).splitlines()
     with pytest.raises(LookupError, match=r"K1 \(line 5\)"):
-        _MODULE._capability_register_open_ids(lines)
+        _MODULE._capability_register_open_ids(lines, _CAP_ID_PATTERN)
 
 
 def test_capability_register_open_ids_returns_no_rows_for_a_genuinely_empty_document() -> (
@@ -1848,7 +1904,7 @@ def test_capability_register_open_ids_returns_no_rows_for_a_genuinely_empty_docu
 ):
     """A document with no table-like content at all is not the malformed-header failure mode;
     it has nothing to report and does not raise."""
-    assert _MODULE._capability_register_open_ids([]) == {}
+    assert _MODULE._capability_register_open_ids([], _CAP_ID_PATTERN) == {}
 
 
 def test_check_linkage_reports_a_capability_register_with_no_locatable_header(
@@ -2234,7 +2290,7 @@ def test_capability_register_status_rows_returns_line_id_docs_notes_tuples() -> 
         + "| K1 | Kid thing | \U0001f7e1 | needs work |\n"
         + "| K2 | Done thing | ✅ | |\n"
     ).splitlines()
-    rows = _MODULE._capability_register_status_rows(lines)
+    rows = _MODULE._capability_register_status_rows(lines, _CAP_ID_PATTERN)
     assert rows == [
         (3, "K1", "\U0001f7e1", "needs work"),
         (4, "K2", "✅", ""),
@@ -2254,7 +2310,7 @@ def test_capability_register_status_rows_raises_on_a_row_too_short_to_reach_docs
     """
     lines = (_CAPABILITY_TABLE_HEADER + "| K1 | Kid thing |\n").splitlines()
     with pytest.raises(ValueError, match="too short to reach"):
-        _MODULE._capability_register_status_rows(lines)
+        _MODULE._capability_register_status_rows(lines, _CAP_ID_PATTERN)
 
 
 def test_check_linkage_reports_a_too_short_capability_row_end_to_end(
@@ -2395,7 +2451,7 @@ def test_capability_summary_reports_per_glyph_counts(tmp_path: Path) -> None:
         + "| K2 | Partial | \U0001f7e1 | needs work |\n"
         + "| K3 | Missing | ❌ | needs build |\n",
     )
-    summary = _MODULE._capability_summary(capability_path)
+    summary = _MODULE._capability_summary(capability_path, _CAP_ID_PATTERN)
     assert "3 capability row(s)" in summary
     assert "✅=1" in summary
     assert "\U0001f7e1=1" in summary
@@ -2470,12 +2526,311 @@ def test_check_linkage_against_the_real_capability_register_status_vocabulary() 
     lines = _MODULE._DEFAULT_CAPABILITY_REGISTER.read_text(
         encoding="utf-8"
     ).splitlines()
-    rows = _MODULE._capability_register_status_rows(lines)
+    rows = _MODULE._capability_register_status_rows(lines, _CAP_ID_PATTERN)
     problems, counts = _MODULE._check_capability_status_vocabulary(
         rows, _MODULE._DEFAULT_CAPABILITY_REGISTER
     )
     assert problems == []
     assert sum(counts.values()) == len(rows)
+
+
+# ---------------------------------------------------------------------------
+# I. id namespace resolution ([namespaces] table)
+# ---------------------------------------------------------------------------
+#
+# _manifest_namespace_pattern is the abstraction every id namespace (uw, debt, al, cap, sq) now
+# resolves its pattern through, replacing what used to be six hardcoded module-level regex
+# constants. These tests exercise that resolution directly: each namespace declared in a real
+# manifest shape resolves to the expected pattern, and a namespace the manifest fails to declare
+# (a missing table, a missing field, or an unparsable regex) fails loud rather than silently
+# falling back to a permissive default.
+
+
+@pytest.mark.parametrize(
+    ("namespace", "field", "sample_match", "sample_reject"),
+    [
+        ("uw", "pattern", "UW-A01", "UW-A1"),
+        ("debt", "pattern", "C1", "U9a"),
+        ("debt", "citation_pattern", "C1", ""),
+        ("al", "pattern", "AL-001", "AL-1"),
+        ("al", "citation_pattern", "AL-1", ""),
+        ("cap", "pattern", "K1", "Z1"),
+        ("cap", "citation_pattern", "K1", ""),
+        ("sq", "pattern", "SQ-01", "SQ-1"),
+    ],
+)
+def test_manifest_namespace_pattern_resolves_each_declared_namespace_and_field(
+    namespace: str, field: str, sample_match: str, sample_reject: str
+) -> None:
+    """Every [namespaces.<namespace>].<field> in the real manifest compiles and matches the id
+    shape it names, for every namespace and field this checker actually consumes."""
+    manifest = _MODULE._load_manifest(_MODULE._DEFAULT_MANIFEST, [])
+    assert manifest is not None
+    problems: list[str] = []
+    pattern = _MODULE._manifest_namespace_pattern(
+        manifest, _MODULE._DEFAULT_MANIFEST, namespace, field, problems
+    )
+    assert problems == []
+    assert pattern.match(sample_match) is not None
+    if sample_reject:
+        assert pattern.match(sample_reject) is None
+
+
+def test_manifest_namespace_pattern_returns_never_matches_for_none_manifest() -> None:
+    """A manifest that failed to load resolves every namespace to a pattern matching nothing,
+    and does not append a second problem: _load_manifest already reported the root cause."""
+    problems: list[str] = []
+    pattern = _MODULE._manifest_namespace_pattern(
+        None, Path("plan-manifest.toml"), "uw", "pattern", problems
+    )
+    assert pattern.match("UW-A01") is None
+    assert problems == []
+
+
+def test_manifest_namespace_pattern_reports_a_non_table_namespaces_value() -> None:
+    """A [namespaces] value that parsed as a non-table ('namespaces = "x"' is valid TOML) is
+    reported by name, instead of reaching the per-entry lookup as if it were an empty table."""
+    problems: list[str] = []
+    pattern = _MODULE._manifest_namespace_pattern(
+        {"namespaces": "x"}, Path("plan-manifest.toml"), "uw", "pattern", problems
+    )
+    assert pattern.match("UW-A01") is None
+    assert len(problems) == 1
+    assert "[namespaces]" in problems[0]
+    assert "not a table" in problems[0]
+
+
+def test_manifest_namespace_pattern_reports_a_wholly_absent_namespaces_table() -> None:
+    """A manifest with no [namespaces] key at all resolves the same as an empty one (``.get``
+    defaults to {}), so the failure surfaces as the specific entry being missing, not a
+    top-level '[namespaces] missing' message; either way the pattern still fails closed."""
+    problems: list[str] = []
+    pattern = _MODULE._manifest_namespace_pattern(
+        {"phases": {}}, Path("plan-manifest.toml"), "uw", "pattern", problems
+    )
+    assert pattern.match("UW-A01") is None
+    assert len(problems) == 1
+    assert "[namespaces.uw]" in problems[0]
+    assert "missing" in problems[0]
+
+
+def test_manifest_namespace_pattern_reports_a_missing_namespace_entry() -> None:
+    """A [namespaces] table missing one specific namespace's sub-table fails loud, naming it."""
+    problems: list[str] = []
+    pattern = _MODULE._manifest_namespace_pattern(
+        {"namespaces": {"debt": {"pattern": "^C\\d+$"}}},
+        Path("plan-manifest.toml"),
+        "sq",
+        "pattern",
+        problems,
+    )
+    assert pattern.match("SQ-01") is None
+    assert len(problems) == 1
+    assert "[namespaces.sq]" in problems[0]
+    assert "missing" in problems[0]
+
+
+def test_manifest_namespace_pattern_reports_a_missing_field() -> None:
+    """A namespace entry present but missing the requested field (e.g. [namespaces.uw] with no
+    citation_pattern, which it legitimately never declares) fails loud, naming the field."""
+    problems: list[str] = []
+    pattern = _MODULE._manifest_namespace_pattern(
+        {"namespaces": {"uw": {"pattern": "^UW-[A-M]\\d{2}$"}}},
+        Path("plan-manifest.toml"),
+        "uw",
+        "citation_pattern",
+        problems,
+    )
+    assert pattern.match("UW-A01") is None
+    assert len(problems) == 1
+    assert "[namespaces.uw].citation_pattern" in problems[0]
+    assert "missing" in problems[0]
+
+
+def test_manifest_namespace_pattern_reports_an_unparsable_regex() -> None:
+    """A namespace field that fails to compile as a regex fails loud, naming the bad pattern."""
+    problems: list[str] = []
+    pattern = _MODULE._manifest_namespace_pattern(
+        {"namespaces": {"sq": {"pattern": "^SQ-[0-9$"}}},
+        Path("plan-manifest.toml"),
+        "sq",
+        "pattern",
+        problems,
+    )
+    assert pattern.match("SQ-01") is None
+    assert len(problems) == 1
+    assert "[namespaces.sq].pattern" in problems[0]
+
+
+def test_check_linkage_reports_a_namespace_the_manifest_never_declares(
+    tmp_path: Path,
+) -> None:
+    """End to end: a manifest missing the debt namespace fails loud through check_linkage, and
+    the debt-linkage check correctly finds no open debt ids (it has no pattern to find them
+    with) instead of guessing."""
+    manifest_without_debt = re.sub(
+        r"\[namespaces\.debt\]\n(?:.+\n)+?\n", "", _VALID_MANIFEST, count=1
+    )
+    assert "[namespaces.debt]" not in manifest_without_debt
+    assert "[namespaces.uw]" in manifest_without_debt
+    register_path = _write(tmp_path / "register.md", _register())
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _VALID_ROADMAP),
+        _write(
+            tmp_path / "debt.md",
+            _DEBT_TABLE_HEADER + "| C1 | Open | src | Low | fix |\n",
+        ),
+        _write(tmp_path / "lessons.md", ""),
+        _write_no_open_capability_register(tmp_path),
+        manifest_path=_write(tmp_path / "manifest.toml", manifest_without_debt),
+        project_plan_path=_write_matching_project_plan(tmp_path),
+    )
+    assert any("[namespaces.debt]" in p and "missing" in p for p in problems)
+    assert not any("debt 'C1'" in p for p in problems)
+
+
+# ---------------------------------------------------------------------------
+# I.1 SQ-to-register map table (story-structure-improvement-plan.md)
+# ---------------------------------------------------------------------------
+
+_SQ_TABLE = (
+    "## 11. Relationship to existing planning, and the SQ-to-register map\n\n"
+    "| SQ | Register / source | SQ | Register / source |\n"
+    "| --- | --- | --- | --- |\n"
+    "| SQ-01 | UW-G14 | SQ-02 | UW-C07 |\n"
+    "| SQ-03 | new | SQ-04 | new |\n"
+)
+
+
+def test_find_sq_table_header_locates_the_two_pair_header_row() -> None:
+    """The header's two id/source column pairs are matched by cell value, not position."""
+    lines = _SQ_TABLE.splitlines()
+    assert _MODULE._find_sq_table_header(lines) == 2
+
+
+def test_find_sq_table_header_raises_when_absent() -> None:
+    """A document with no SQ-to-register map table fails loud, not with an empty result."""
+    with pytest.raises(LookupError, match="no 'SQ \\| Register"):
+        _MODULE._find_sq_table_header(["# Nothing here\n"])
+
+
+def test_sq_table_ids_reads_both_column_positions() -> None:
+    """Both the first and third column of every data row contribute an id, in document order."""
+    lines = _SQ_TABLE.splitlines()
+    header_index = _MODULE._find_sq_table_header(lines)
+    ids = _MODULE._sq_table_ids(lines, header_index)
+    assert [entry_id for _number, entry_id in ids] == [
+        "SQ-01",
+        "SQ-02",
+        "SQ-03",
+        "SQ-04",
+    ]
+
+
+def test_check_sq_namespace_accepts_well_formed_unique_ids() -> None:
+    """A small, well-formed SQ table with no duplicate ids reports no problems."""
+    problems = _MODULE._check_sq_namespace(
+        _SQ_TABLE.splitlines(),
+        Path("story-structure-improvement-plan.md"),
+        _SQ_ID_PATTERN,
+    )
+    assert problems == []
+
+
+def test_check_sq_namespace_rejects_a_malformed_id() -> None:
+    """An id that does not match the sq namespace pattern is reported by line and value."""
+    lines = (
+        "| SQ | Register / source | SQ | Register / source |\n"
+        "| --- | --- | --- | --- |\n"
+        "| SQ-1 | bad | SQ-02 | ok |\n"
+    ).splitlines()
+    problems = _MODULE._check_sq_namespace(
+        lines, Path("story-structure-improvement-plan.md"), _SQ_ID_PATTERN
+    )
+    assert len(problems) == 1
+    assert "SQ-1" in problems[0]
+    assert "does not match the sq namespace pattern" in problems[0]
+
+
+def test_check_sq_namespace_rejects_a_duplicate_id() -> None:
+    """The same id appearing on two rows is reported, naming both line numbers."""
+    lines = (
+        "| SQ | Register / source | SQ | Register / source |\n"
+        "| --- | --- | --- | --- |\n"
+        "| SQ-01 | first | SQ-02 | ok |\n"
+        "| SQ-01 | duplicate | SQ-03 | ok |\n"
+    ).splitlines()
+    problems = _MODULE._check_sq_namespace(
+        lines, Path("story-structure-improvement-plan.md"), _SQ_ID_PATTERN
+    )
+    assert len(problems) == 1
+    assert "SQ-01" in problems[0]
+    assert "2 rows" in problems[0]
+    assert "unique" in problems[0]
+
+
+def test_check_sq_namespace_raises_when_no_table_header_found() -> None:
+    """A document with no locatable SQ table header fails loud through _check_sq_namespace too."""
+    with pytest.raises(LookupError, match="no 'SQ \\| Register"):
+        _MODULE._check_sq_namespace(
+            ["# Nothing here\n"],
+            Path("story-structure-improvement-plan.md"),
+            _SQ_ID_PATTERN,
+        )
+
+
+def test_check_linkage_validates_the_real_sq_to_register_map_table() -> None:
+    """The real story-structure-improvement-plan.md's 24-row SQ table validates cleanly through
+    check_linkage's default story_structure_plan_path, against the real manifest's sq pattern."""
+    problems = _MODULE.check_linkage(
+        _MODULE._DEFAULT_REGISTER,
+        _MODULE._DEFAULT_ROADMAP,
+        _MODULE._DEFAULT_DEBT_REGISTER,
+        _MODULE._DEFAULT_LESSONS_LOG,
+        _MODULE._DEFAULT_CAPABILITY_REGISTER,
+    )
+    assert not any("story-structure-improvement-plan.md" in p for p in problems)
+
+
+def test_check_linkage_reports_a_malformed_sq_id_end_to_end(tmp_path: Path) -> None:
+    """A malformed id in a custom story-structure-plan document surfaces through check_linkage."""
+    register_path = _write(tmp_path / "register.md", _register())
+    bad_sq_plan = _write(
+        tmp_path / "story-structure-improvement-plan.md",
+        "| SQ | Register / source | SQ | Register / source |\n"
+        "| --- | --- | --- | --- |\n"
+        "| SQ-1 | bad | SQ-02 | ok |\n",
+    )
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _VALID_ROADMAP),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        _write_no_open_capability_register(tmp_path),
+        manifest_path=_write(tmp_path / "manifest.toml", _VALID_MANIFEST),
+        project_plan_path=_write_matching_project_plan(tmp_path),
+        story_structure_plan_path=bad_sq_plan,
+    )
+    assert any("SQ-1" in p and "does not match" in p for p in problems)
+
+
+def test_check_linkage_skips_sq_check_when_manifest_is_unreadable(
+    tmp_path: Path,
+) -> None:
+    """When the manifest itself cannot be read, the SQ check does not also run and pile on a
+    second, redundant problem: the manifest failure is the one thing reported."""
+    register_path = _write(tmp_path / "register.md", _register())
+    problems = _MODULE.check_linkage(
+        register_path,
+        _write(tmp_path / "roadmap.md", _VALID_ROADMAP),
+        _write(tmp_path / "debt.md", ""),
+        _write(tmp_path / "lessons.md", ""),
+        _write_no_open_capability_register(tmp_path),
+        manifest_path=tmp_path / "missing-manifest.toml",
+    )
+    assert any("cannot read" in p for p in problems)
+    assert not any("story-structure-improvement-plan.md" in p for p in problems)
 
 
 # ---------------------------------------------------------------------------

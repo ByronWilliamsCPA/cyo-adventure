@@ -109,8 +109,10 @@ _DEFAULT_MANIFEST = _REPO_ROOT / "docs" / "planning" / "plan-manifest.toml"
 # roadmap.md details phases 0-5 and says so ("Phases 6 through 9 ... are not detailed here").
 # Track-2 phases are narrated here instead, which is why their status needs its own check.
 _DEFAULT_PROJECT_PLAN = _REPO_ROOT / "docs" / "planning" / "PROJECT-PLAN.md"
-
-_UW_ID_RE = re.compile(r"^UW-[A-M]\d{2}$")
+# Holds the SQ-to-register map (section 11) that registers the SQ-* namespace's ids.
+_DEFAULT_STORY_STRUCTURE_PLAN = (
+    _REPO_ROOT / "docs" / "planning" / "story-structure-improvement-plan.md"
+)
 
 _STATUSES = frozenset({"unscheduled", "blocked", "decision", "verify", "done"})
 # Every status except `done` still needs the phase the row will land in: the linkage contract's
@@ -210,6 +212,76 @@ def _manifest_phase_vocabulary(manifest: dict[str, Any] | None) -> frozenset[str
     return frozenset(phases)
 
 
+# A sentinel pattern that matches nothing, used as the fail-closed return value of
+# ``_manifest_namespace_pattern`` when a namespace cannot be resolved. `(?!)` is a negative
+# lookahead on nothing, which never succeeds, so `.match()` against any string is always None.
+# This keeps every namespace-pattern caller Optional-free: they always get a real
+# ``re.Pattern``, and an unresolvable namespace rejects every id rather than needing its own
+# None-handling branch at every call site.
+_NEVER_MATCHES_RE = re.compile(r"(?!)")
+
+
+def _manifest_namespace_pattern(
+    manifest: dict[str, Any] | None,
+    manifest_path: Path,
+    namespace: str,
+    field: str,
+    problems: list[str],
+) -> re.Pattern[str]:
+    """Return one compiled regex from the manifest's ``[namespaces.<namespace>]`` table.
+
+    Mirrors ``_manifest_phase_vocabulary``'s fail-closed shape, but unlike that function this
+    one reports its own failures: a namespace's id pattern has no other check standing behind
+    it the way the phase-vocabulary check backstops an empty phase set, so a silent
+    ``_NEVER_MATCHES_RE`` here would surface only as every row in that namespace being reported
+    "malformed", with no problem naming the actual root cause (the manifest not declaring the
+    namespace). The one exception is ``manifest is None``: that failure was already reported by
+    ``_load_manifest`` itself, so this does not report it a second time.
+
+    Args:
+        manifest: The parsed plan-manifest.toml document, or None when it could not be loaded.
+        manifest_path: The manifest's path, for message text.
+        namespace: The ``[namespaces.<namespace>]`` table key (for example ``"uw"``, ``"debt"``,
+            ``"sq"``).
+        field: The field to compile, ``"pattern"`` or ``"citation_pattern"``.
+        problems: The running problem list; a missing namespace, missing field, or invalid
+            regex is appended here.
+
+    Returns:
+        re.Pattern[str]: The compiled regex, or ``_NEVER_MATCHES_RE`` when the namespace or
+            field could not be resolved.
+    """
+    if manifest is None:
+        return _NEVER_MATCHES_RE
+    namespaces = manifest.get("namespaces", {})
+    if not isinstance(namespaces, dict):
+        problems.append(
+            f"{manifest_path.name}: [namespaces] is {type(namespaces).__name__}, not a table"
+        )
+        return _NEVER_MATCHES_RE
+    entry = namespaces.get(namespace)
+    if not isinstance(entry, dict):
+        problems.append(
+            f"{manifest_path.name}: [namespaces.{namespace}] is missing or not a table; the "
+            f"'{namespace}' id namespace cannot be validated without it"
+        )
+        return _NEVER_MATCHES_RE
+    raw_pattern = entry.get(field)
+    if not isinstance(raw_pattern, str) or not raw_pattern:
+        problems.append(
+            f"{manifest_path.name}: [namespaces.{namespace}].{field} is missing or empty"
+        )
+        return _NEVER_MATCHES_RE
+    try:
+        return re.compile(raw_pattern)
+    except re.error as exc:
+        problems.append(
+            f"{manifest_path.name}: [namespaces.{namespace}].{field} '{raw_pattern}' is not "
+            f"a valid regex: {exc}"
+        )
+        return _NEVER_MATCHES_RE
+
+
 _RELEASE_RUNGS = frozenset({"R1", "R2", "R3"})
 _NAMED_WORKSTREAMS = frozenset({"content", "now"})
 _SENTINELS_EXACT = frozenset({"CI hygiene", "doc", "recurring", "post-launch"})
@@ -219,19 +291,14 @@ _ISSUE_RE = re.compile(r"^issue:\d+$")
 
 _CLUSTER_HEADING_RE = re.compile(r"^## Cluster ([A-M]):")
 
-# Debt ids in r1-deferred-debt-register.md, matched as a whole first cell.
-_DEBT_ROW_ID_RE = re.compile(r"^(?:C\d+|GS\d+|U\d+|T\d+|P\d+|SL\d+)$")
-# The same alternation, used to find citations inside prose (word-bounded, no anchors).
-_DEBT_ID_RE = re.compile(r"\b(?:C\d+|GS\d+|U\d+|T\d+|P\d+|SL\d+)\b")
+# Debt, AL, and capability id row/citation patterns used to live here as hardcoded module-level
+# constants (_DEBT_ROW_ID_RE, _DEBT_ID_RE, _AL_ROW_ID_RE, _AL_ID_RE, _CAP_ROW_ID_RE, _CAP_ID_RE).
+# They are now resolved from plan-manifest.toml's [namespaces.debt/al/cap] tables via
+# ``_manifest_namespace_pattern`` and threaded through the functions that need them, alongside
+# the uw and sq namespaces, so a namespace's shape lives in exactly one place.
 
-_AL_ROW_ID_RE = re.compile(r"^AL-\d{3}$")
-_AL_ID_RE = re.compile(r"\bAL-\d+\b")
 _AL_CLOSED_STATUSES = frozenset({"applied", "rejected", "superseded"})
 
-# Capability ids in capability-register.md (four tables: K, G, A, S), matched as a whole first
-# cell, and the same alternation word-bounded for finding citations inside roadmap.md prose.
-_CAP_ROW_ID_RE = re.compile(r"^[KGAS]\d+$")
-_CAP_ID_RE = re.compile(r"\b[KGAS]\d+\b")
 # The three status glyphs, defined once and derived everywhere else (the recognised-glyph set,
 # the open-glyph set, and the CLI summary's display order all read from these), so a fourth copy
 # of the glyph literals cannot drift from the register's actual vocabulary.
@@ -500,7 +567,9 @@ def _find_clusters(
     return clusters
 
 
-def _check_row_id(cluster: str, number: int, entry_id: str) -> list[str]:
+def _check_row_id(
+    cluster: str, number: int, entry_id: str, id_pattern: re.Pattern[str]
+) -> list[str]:
     """Return problems if a register row's id is malformed or filed under the wrong cluster.
 
     Args:
@@ -508,12 +577,14 @@ def _check_row_id(cluster: str, number: int, entry_id: str) -> list[str]:
             message and the cluster-match check.
         number: The row's 1-based line number.
         entry_id: The row's ``ID`` cell value.
+        id_pattern: The ``[namespaces.uw].pattern`` regex the id must fully match, resolved
+            from the run's manifest.
 
     Returns:
         list[str]: Problems found; empty when the id is well formed and its letter matches the
             cluster it was found in.
     """
-    if not _UW_ID_RE.match(entry_id):
+    if not id_pattern.match(entry_id):
         return [
             f"cluster {cluster} line {number}: id '{entry_id}' does not match UW-[A-M]NN"
         ]
@@ -693,7 +764,9 @@ def _extract_citations(text: str, id_re: re.Pattern[str]) -> set[str]:
     return cited
 
 
-def _debt_register_open_ids(lines: list[str]) -> dict[str, int]:
+def _debt_register_open_ids(
+    lines: list[str], id_pattern: re.Pattern[str]
+) -> dict[str, int]:
     """Return debt ids not marked ``[Closed]`` or ``[Resolved]``, mapped to their line number.
 
     Ids are matched against the whole first cell, so decorated variants such as ``U9a`` (a
@@ -709,6 +782,7 @@ def _debt_register_open_ids(lines: list[str]) -> dict[str, int]:
 
     Args:
         lines: The debt register's lines.
+        id_pattern: The ``[namespaces.debt].pattern`` regex a row's whole first cell must match.
 
     Returns:
         dict[str, int]: Open (neither ``[Closed]`` nor ``[Resolved]``) debt ids mapped to the line
@@ -720,7 +794,7 @@ def _debt_register_open_ids(lines: list[str]) -> dict[str, int]:
         if "|" not in line:
             continue
         cells = _split_row(line)
-        if not cells or not _DEBT_ROW_ID_RE.match(cells[0]):
+        if not cells or not id_pattern.match(cells[0]):
             continue
         debt_cell = cells[debt_cell_idx] if len(cells) > debt_cell_idx else ""
         if "[Closed]" in debt_cell or "[Resolved]" in debt_cell:
@@ -752,25 +826,30 @@ def _find_lessons_status_column(lines: list[str]) -> int:
     raise LookupError(msg)
 
 
-def _is_open_lesson_row(cells: list[str], status_idx: int) -> bool:
+def _is_open_lesson_row(
+    cells: list[str], status_idx: int, id_pattern: re.Pattern[str]
+) -> bool:
     """Report whether a split row is a lesson row still needing cross-register citation.
 
     Args:
         cells: A row's split cell values.
         status_idx: The lessons log header's ``Status`` column index.
+        id_pattern: The ``[namespaces.al].pattern`` regex a row's whole first cell must match.
 
     Returns:
         bool: True when the row's id matches the lesson id shape, it has a ``Status`` cell, and
             that cell is not one of the closed statuses.
     """
-    if not cells or _is_separator(cells) or not _AL_ROW_ID_RE.match(cells[0]):
+    if not cells or _is_separator(cells) or not id_pattern.match(cells[0]):
         return False
     if len(cells) <= status_idx:
         return False
     return cells[status_idx] not in _AL_CLOSED_STATUSES
 
 
-def _lessons_needing_citation(lines: list[str]) -> dict[str, int]:
+def _lessons_needing_citation(
+    lines: list[str], id_pattern: re.Pattern[str]
+) -> dict[str, int]:
     """Return lessons whose status is not applied/rejected/superseded, with line numbers.
 
     The log's own structure (header shape, id sequence, required fields) is validated
@@ -783,6 +862,8 @@ def _lessons_needing_citation(lines: list[str]) -> dict[str, int]:
 
     Args:
         lines: The authoring lessons log's lines.
+        id_pattern: The ``[namespaces.al].pattern`` regex, threaded down to
+            ``_is_open_lesson_row``.
 
     Returns:
         dict[str, int]: Lesson ids still needing linkage, mapped to the line they were found on.
@@ -800,7 +881,7 @@ def _lessons_needing_citation(lines: list[str]) -> dict[str, int]:
         if "|" not in line:
             continue
         cells = _split_row(line)
-        if _is_open_lesson_row(cells, status_idx):
+        if _is_open_lesson_row(cells, status_idx, id_pattern):
             open_lessons[cells[0]] = number
     return open_lessons
 
@@ -822,6 +903,7 @@ def _capability_header_docs_index(cells: list[str]) -> int | None:
 
 def _capability_register_status_rows(
     lines: list[str],
+    id_pattern: re.Pattern[str],
 ) -> list[tuple[int, str, str, str]]:
     """Return every capability row's line number, id, ``Docs`` cell, and ``Notes`` cell.
 
@@ -839,6 +921,7 @@ def _capability_register_status_rows(
 
     Args:
         lines: The capability register's lines.
+        id_pattern: The ``[namespaces.cap].pattern`` regex a row's whole first cell must match.
 
     Returns:
         list[tuple[int, str, str, str]]: One (1-based line number, id, ``Docs`` cell, ``Notes``
@@ -884,7 +967,7 @@ def _capability_register_status_rows(
             notes_idx = cells.index("Notes") if "Notes" in cells else None
             tables_found += 1
             continue
-        if _is_separator(cells) or not _CAP_ROW_ID_RE.match(cells[0]):
+        if _is_separator(cells) or not id_pattern.match(cells[0]):
             continue
         if docs_idx is None:
             unlocated.append((cells[0], number))
@@ -922,7 +1005,9 @@ def _capability_register_status_rows(
     return rows
 
 
-def _capability_register_open_ids(lines: list[str]) -> dict[str, int]:
+def _capability_register_open_ids(
+    lines: list[str], id_pattern: re.Pattern[str]
+) -> dict[str, int]:
     """Return capability ids not marked done, mapped to their 1-based line number.
 
     The ``Docs`` cell holds exactly one status glyph (verified against the current document: no
@@ -939,6 +1024,8 @@ def _capability_register_open_ids(lines: list[str]) -> dict[str, int]:
 
     Args:
         lines: The capability register's lines.
+        id_pattern: The ``[namespaces.cap].pattern`` regex, threaded down to
+            ``_capability_register_status_rows``.
 
     Returns:
         dict[str, int]: Open (not done) capability ids mapped to the line they were found on.
@@ -950,7 +1037,7 @@ def _capability_register_open_ids(lines: list[str]) -> dict[str, int]:
     return {
         entry_id: number
         for number, entry_id, docs_val, _notes_val in _capability_register_status_rows(
-            lines
+            lines, id_pattern
         )
         if docs_val != _CAP_DONE_MARK
     }
@@ -1035,6 +1122,7 @@ def _extract_roadmap_mapping_section(lines: list[str]) -> str:
 def _check_register_rows(
     clusters: dict[str, tuple[list[str], list[tuple[int, list[str]]]]],
     phase_vocabulary: frozenset[str],
+    id_pattern: re.Pattern[str],
 ) -> tuple[list[str], dict[str, str]]:
     """Run every row-level check across all cluster tables, plus the register-wide id check.
 
@@ -1043,6 +1131,7 @@ def _check_register_rows(
             ``_find_clusters``.
         phase_vocabulary: Every phase token the run's manifest declares, threaded down to
             ``_check_row_phase``.
+        id_pattern: The ``[namespaces.uw].pattern`` regex, threaded down to ``_check_row_id``.
 
     Returns:
         tuple[list[str], dict[str, str]]: The problems found, and each cluster letter mapped to
@@ -1054,7 +1143,7 @@ def _check_register_rows(
 
     for letter, (header_cells, rows) in sorted(clusters.items()):
         row_problems, item_texts, row_ids = _check_cluster_rows(
-            letter, header_cells, rows, phase_vocabulary
+            letter, header_cells, rows, phase_vocabulary, id_pattern
         )
         problems.extend(row_problems)
         cluster_item_text[letter] = "\n".join(item_texts)
@@ -1095,6 +1184,7 @@ def _check_one_row(
     cells: list[str],
     indexes: dict[str, int | None],
     phase_vocabulary: frozenset[str],
+    id_pattern: re.Pattern[str],
 ) -> tuple[list[str], str | None, str]:
     """Run the id, status, and phase checks on one already length-checked cluster row.
 
@@ -1105,6 +1195,7 @@ def _check_one_row(
         indexes: The header's resolved column indexes, as returned by
             ``_resolve_column_indexes``.
         phase_vocabulary: Every phase token the run's manifest declares.
+        id_pattern: The ``[namespaces.uw].pattern`` regex, threaded down to ``_check_row_id``.
 
     Returns:
         tuple[list[str], str | None, str]: The problems found, the row's ``Item`` text (None if
@@ -1120,7 +1211,7 @@ def _check_one_row(
     problems: list[str] = []
 
     entry_id = cells[id_idx] if id_idx is not None else ""
-    problems.extend(_check_row_id(letter, number, entry_id))
+    problems.extend(_check_row_id(letter, number, entry_id, id_pattern))
 
     status = cells[status_idx] if status_idx is not None else ""
     if status_idx is not None:
@@ -1143,6 +1234,7 @@ def _check_cluster_rows(
     header_cells: list[str],
     rows: list[tuple[int, list[str]]],
     phase_vocabulary: frozenset[str],
+    id_pattern: re.Pattern[str],
 ) -> tuple[list[str], list[str], list[tuple[str, int]]]:
     """Run the id, status, and phase checks on one cluster table's data rows.
 
@@ -1156,6 +1248,7 @@ def _check_cluster_rows(
         header_cells: The cluster table's header cells, used to resolve column indexes.
         rows: The cluster's (1-based line number, cells) data rows.
         phase_vocabulary: Every phase token the run's manifest declares.
+        id_pattern: The ``[namespaces.uw].pattern`` regex, threaded down to ``_check_one_row``.
 
     Returns:
         tuple[list[str], list[str], list[tuple[str, int]]]: The problems found, the ``Item``
@@ -1180,7 +1273,7 @@ def _check_cluster_rows(
             continue
 
         row_problems, item_text, entry_id = _check_one_row(
-            letter, number, cells, indexes, phase_vocabulary
+            letter, number, cells, indexes, phase_vocabulary, id_pattern
         )
         problems.extend(row_problems)
         row_ids.append((entry_id, number))
@@ -1905,6 +1998,8 @@ def _check_debt_linkage(
     debt_register_path: Path,
     register_path: Path,
     cluster_b_text: str,
+    id_pattern: re.Pattern[str],
+    citation_pattern: re.Pattern[str],
 ) -> list[str]:
     """Check every open debt-register id is cited in cluster B of the unscheduled register.
 
@@ -1913,13 +2008,17 @@ def _check_debt_linkage(
         debt_register_path: The debt register's path, for message text.
         register_path: The unscheduled-work register's path, for message text.
         cluster_b_text: Cluster B's joined ``Item`` column text.
+        id_pattern: The ``[namespaces.debt].pattern`` regex, threaded down to
+            ``_debt_register_open_ids``.
+        citation_pattern: The ``[namespaces.debt].citation_pattern`` regex, used to find debt-id
+            mentions in cluster B's prose.
 
     Returns:
         list[str]: One problem per uncited open debt id.
     """
     problems: list[str] = []
-    open_debt_ids = _debt_register_open_ids(debt_lines)
-    cited_debt_ids = _extract_citations(cluster_b_text, _DEBT_ID_RE)
+    open_debt_ids = _debt_register_open_ids(debt_lines, id_pattern)
+    cited_debt_ids = _extract_citations(cluster_b_text, citation_pattern)
     for debt_id, line_number in sorted(open_debt_ids.items()):
         if debt_id not in cited_debt_ids:
             problems.append(
@@ -1935,6 +2034,8 @@ def _check_lessons_linkage(
     lessons_log_path: Path,
     register_path: Path,
     cluster_c_text: str,
+    id_pattern: re.Pattern[str],
+    citation_pattern: re.Pattern[str],
 ) -> list[str]:
     """Check every lesson still needing linkage is cited in cluster C of the unscheduled register.
 
@@ -1943,13 +2044,17 @@ def _check_lessons_linkage(
         lessons_log_path: The lessons log's path, for message text.
         register_path: The unscheduled-work register's path, for message text.
         cluster_c_text: Cluster C's joined ``Item`` column text.
+        id_pattern: The ``[namespaces.al].pattern`` regex, threaded down to
+            ``_lessons_needing_citation``.
+        citation_pattern: The ``[namespaces.al].citation_pattern`` regex, used to find lesson-id
+            mentions in cluster C's prose.
 
     Returns:
         list[str]: One problem per uncited open lesson id.
     """
     problems: list[str] = []
-    open_lesson_ids = _lessons_needing_citation(lessons_lines)
-    cited_lesson_ids = _extract_citations(cluster_c_text, _AL_ID_RE)
+    open_lesson_ids = _lessons_needing_citation(lessons_lines, id_pattern)
+    cited_lesson_ids = _extract_citations(cluster_c_text, citation_pattern)
     for lesson_id, line_number in sorted(open_lesson_ids.items()):
         if lesson_id not in cited_lesson_ids:
             problems.append(
@@ -1965,6 +2070,8 @@ def _check_capability_linkage(
     capability_register_path: Path,
     roadmap_lines: list[str],
     roadmap_path: Path,
+    id_pattern: re.Pattern[str],
+    citation_pattern: re.Pattern[str],
 ) -> list[str]:
     """Check every open capability id appears in roadmap.md's register-item mapping section.
 
@@ -1977,20 +2084,124 @@ def _check_capability_linkage(
         capability_register_path: The capability register's path, for message text.
         roadmap_lines: ``roadmap.md``'s lines.
         roadmap_path: ``roadmap.md``'s path, for message text.
+        id_pattern: The ``[namespaces.cap].pattern`` regex, threaded down to
+            ``_capability_register_open_ids``.
+        citation_pattern: The ``[namespaces.cap].citation_pattern`` regex, used to find
+            capability-id mentions in the roadmap mapping section.
 
     Returns:
         list[str]: One problem per open capability id missing from the mapping section.
     """
     problems: list[str] = []
-    open_capability_ids = _capability_register_open_ids(capability_lines)
+    open_capability_ids = _capability_register_open_ids(capability_lines, id_pattern)
     mapping_text = _extract_roadmap_mapping_section(roadmap_lines)
-    cited_capability_ids = _extract_citations(mapping_text, _CAP_ID_RE)
+    cited_capability_ids = _extract_citations(mapping_text, citation_pattern)
     for capability_id, line_number in sorted(open_capability_ids.items()):
         if capability_id not in cited_capability_ids:
             problems.append(
                 f"{capability_register_path.name}:{line_number}: capability "
                 f"'{capability_id}' is not marked done and does not appear in "
                 f'{roadmap_path.name}\'s "Where every open register item lands" mapping'
+            )
+    return problems
+
+
+def _find_sq_table_header(lines: list[str]) -> int:
+    """Return the SQ-to-register map table's header line index.
+
+    The table's header row repeats the id/source column pair twice on one line (``| SQ |
+    Register / source | SQ | Register / source |``), because the source document lays the 24
+    rows out two per line rather than one long single-pair table. Matching on the literal column
+    labels, not on position, is what lets this survive a reflow of the surrounding prose.
+
+    Args:
+        lines: The story-structure-improvement-plan.md document's lines.
+
+    Returns:
+        int: The 0-based index of the header row.
+
+    Raises:
+        LookupError: If no such header row is found.
+    """
+    for index, line in enumerate(lines):
+        if "|" not in line:
+            continue
+        cells = _split_row(line)
+        if len(cells) >= 3 and cells[0] == "SQ" and cells[2] == "SQ":
+            return index
+    msg = "no 'SQ | Register / source | SQ | Register / source' table header found"
+    raise LookupError(msg)
+
+
+def _sq_table_ids(lines: list[str], header_index: int) -> list[tuple[int, str]]:
+    """Return every SQ id in the map table, in both column positions, with line numbers.
+
+    The table separator row directly follows the header; data rows follow until the first line
+    that no longer contains a pipe, which the source document uses as the table's end (a blank
+    line back into prose).
+
+    Args:
+        lines: The story-structure-improvement-plan.md document's lines.
+        header_index: The header row's 0-based index, as returned by ``_find_sq_table_header``.
+
+    Returns:
+        list[tuple[int, str]]: Each ``(line_number, id)`` pair found in either the first or third
+            column, in document order. ``line_number`` is 1-based, matching the rest of this
+            module's message text.
+    """
+    ids: list[tuple[int, str]] = []
+    for number, line in enumerate(lines[header_index + 1 :], start=header_index + 2):
+        if "|" not in line:
+            break
+        cells = _split_row(line)
+        if _is_separator(cells):
+            continue
+        if cells and cells[0]:
+            ids.append((number, cells[0]))
+        if len(cells) > 2 and cells[2]:
+            ids.append((number, cells[2]))
+    return ids
+
+
+def _check_sq_namespace(
+    lines: list[str], path: Path, id_pattern: re.Pattern[str]
+) -> list[str]:
+    """Validate the SQ-to-register map table's ids against the manifest's sq namespace pattern.
+
+    Unlike the uw/debt/al/cap namespaces, sq ids are never cited from another document, so there
+    is no citation-linkage check here to mirror ``_check_debt_linkage`` or
+    ``_check_lessons_linkage``: this table is the only linkage record this namespace has, so
+    validating its own ids against the manifest pattern and checking them for duplicates is the
+    whole check.
+
+    Args:
+        lines: The story-structure-improvement-plan.md document's lines.
+        path: The document's path, for message text.
+        id_pattern: The ``[namespaces.sq].pattern`` regex every id must match.
+
+    Returns:
+        list[str]: One problem per malformed id, plus one problem per id used on more than one
+            row.
+
+    Raises:
+        LookupError: If no SQ-to-register map table header can be located.
+    """
+    header_index = _find_sq_table_header(lines)
+    problems: list[str] = []
+    seen: dict[str, list[int]] = {}
+    for number, entry_id in _sq_table_ids(lines, header_index):
+        if not id_pattern.match(entry_id):
+            problems.append(
+                f"{path.name}:{number}: id '{entry_id}' does not match the sq namespace pattern"
+            )
+            continue
+        seen.setdefault(entry_id, []).append(number)
+    for entry_id, numbers in sorted(seen.items()):
+        if len(numbers) > 1:
+            lines_listed = ", ".join(str(n) for n in numbers)
+            problems.append(
+                f"{path.name}: id '{entry_id}' is used on {len(numbers)} rows (lines "
+                f"{lines_listed}); sq ids must be unique"
             )
     return problems
 
@@ -2004,8 +2215,9 @@ def check_linkage(
     *,
     manifest_path: Path = _DEFAULT_MANIFEST,
     project_plan_path: Path = _DEFAULT_PROJECT_PLAN,
+    story_structure_plan_path: Path = _DEFAULT_STORY_STRUCTURE_PLAN,
 ) -> list[str]:
-    """Validate the work-linkage contract across all five planning documents plus the manifest.
+    """Validate the work-linkage contract across all six planning documents plus the manifest.
 
     Args:
         register_path: The unscheduled-work register markdown file.
@@ -2014,15 +2226,17 @@ def check_linkage(
         debt_register_path: The R1 deferred-debt register markdown file.
         lessons_log_path: The authoring lessons log markdown file.
         capability_register_path: The capability register markdown file.
-        manifest_path: ``plan-manifest.toml``, the phase vocabulary, phase-to-rung mapping, and
-            two-axis status model's source of truth. Keyword-only with a default so existing
-            callers passing five positional arguments keep working unchanged. Every check in
-            this run, including the register's own ``Phase`` cell vocabulary, reads from this
-            one file: a run cannot validate one document against this manifest and another
-            against a different one.
+        manifest_path: ``plan-manifest.toml``, the phase vocabulary, phase-to-rung mapping,
+            two-axis status model, and id-namespace patterns' source of truth. Keyword-only with
+            a default so existing callers passing five positional arguments keep working
+            unchanged. Every check in this run, including the register's own ``Phase`` cell
+            vocabulary and every id namespace's pattern, reads from this one file: a run cannot
+            validate one document against this manifest and another against a different one.
         project_plan_path: ``PROJECT-PLAN.md``, which narrates the track-2 phases (6-9) that
             ``roadmap.md`` explicitly does not cover. Their manifest status is drift-checked
             against this document because there is no roadmap row to check it against.
+        story_structure_plan_path: ``story-structure-improvement-plan.md``, home of the
+            SQ-to-register map table checked against the manifest's ``sq`` namespace.
 
     Returns:
         list[str]: One problem per failed check; empty when every check passes.
@@ -2042,14 +2256,40 @@ def check_linkage(
         problems.append(f"no '## Cluster <letter>:' tables found in {register_path}")
         return problems
 
-    # Loaded before the register rows are checked, because the phase vocabulary those rows are
-    # validated against comes from this manifest and no other. Reading it from a module-level
-    # default instead is what let a --manifest run validate Phase cells against one manifest and
-    # everything else against another.
+    # Loaded before the register rows are checked, because the phase vocabulary and every id
+    # namespace pattern those rows are validated against come from this manifest and no other.
+    # Reading it from a module-level default instead is what let a --manifest run validate Phase
+    # cells against one manifest and everything else against another.
     manifest = _load_manifest(manifest_path, problems)
     phase_vocabulary = _manifest_phase_vocabulary(manifest)
+    uw_id_pattern = _manifest_namespace_pattern(
+        manifest, manifest_path, "uw", "pattern", problems
+    )
+    debt_id_pattern = _manifest_namespace_pattern(
+        manifest, manifest_path, "debt", "pattern", problems
+    )
+    debt_citation_pattern = _manifest_namespace_pattern(
+        manifest, manifest_path, "debt", "citation_pattern", problems
+    )
+    al_id_pattern = _manifest_namespace_pattern(
+        manifest, manifest_path, "al", "pattern", problems
+    )
+    al_citation_pattern = _manifest_namespace_pattern(
+        manifest, manifest_path, "al", "citation_pattern", problems
+    )
+    cap_id_pattern = _manifest_namespace_pattern(
+        manifest, manifest_path, "cap", "pattern", problems
+    )
+    cap_citation_pattern = _manifest_namespace_pattern(
+        manifest, manifest_path, "cap", "citation_pattern", problems
+    )
+    sq_id_pattern = _manifest_namespace_pattern(
+        manifest, manifest_path, "sq", "pattern", problems
+    )
 
-    row_problems, cluster_item_text = _check_register_rows(clusters, phase_vocabulary)
+    row_problems, cluster_item_text = _check_register_rows(
+        clusters, phase_vocabulary, uw_id_pattern
+    )
     problems.extend(row_problems)
 
     if manifest is not None:
@@ -2086,6 +2326,8 @@ def check_linkage(
                     debt_register_path,
                     register_path,
                     cluster_item_text.get("B", ""),
+                    debt_id_pattern,
+                    debt_citation_pattern,
                 )
             )
         except ValueError as exc:
@@ -2100,6 +2342,8 @@ def check_linkage(
                     lessons_log_path,
                     register_path,
                     cluster_item_text.get("C", ""),
+                    al_id_pattern,
+                    al_citation_pattern,
                 )
             )
         except (LookupError, ValueError) as exc:
@@ -2109,7 +2353,9 @@ def check_linkage(
     capability_rows: list[tuple[int, str, str, str]] | None = None
     if capability_lines is not None:
         try:
-            capability_rows = _capability_register_status_rows(capability_lines)
+            capability_rows = _capability_register_status_rows(
+                capability_lines, cap_id_pattern
+            )
         except (LookupError, ValueError) as exc:
             problems.append(f"{capability_register_path.name}: {exc}")
 
@@ -2131,10 +2377,24 @@ def check_linkage(
                     capability_register_path,
                     roadmap_lines,
                     roadmap_path,
+                    cap_id_pattern,
+                    cap_citation_pattern,
                 )
             )
         except ValueError as exc:
             problems.append(f"{capability_register_path.name}: {exc}")
+
+    if manifest is not None:
+        sq_lines = _read_lines(story_structure_plan_path, problems)
+        if sq_lines is not None:
+            try:
+                problems.extend(
+                    _check_sq_namespace(
+                        sq_lines, story_structure_plan_path, sq_id_pattern
+                    )
+                )
+            except LookupError as exc:
+                problems.append(f"{story_structure_plan_path.name}: {exc}")
 
     return problems
 
@@ -2160,18 +2420,22 @@ def _summary(register_path: Path) -> str:
     )
 
 
-def _capability_summary(capability_register_path: Path) -> str:
+def _capability_summary(
+    capability_register_path: Path, id_pattern: re.Pattern[str]
+) -> str:
     """Return a one-line per-glyph tally for a capability register already known well formed.
 
     Args:
         capability_register_path: The validated capability register markdown file.
+        id_pattern: The ``[namespaces.cap].pattern`` regex, threaded down to
+            ``_capability_register_status_rows``.
 
     Returns:
         str: A newline-terminated summary of ``Docs`` glyph counts, in checkmark/yellow/cross
             order.
     """
     lines = capability_register_path.read_text(encoding="utf-8").splitlines()
-    rows = _capability_register_status_rows(lines)
+    rows = _capability_register_status_rows(lines, id_pattern)
     _problems, counts = _check_capability_status_vocabulary(
         rows, capability_register_path
     )
@@ -2627,6 +2891,14 @@ def main(argv: list[str] | None = None) -> int:
         help="Path to the capability register markdown file.",
     )
     parser.add_argument(
+        "--story-structure-plan",
+        default=str(_DEFAULT_STORY_STRUCTURE_PLAN),
+        help=(
+            "Path to story-structure-improvement-plan.md, home of the SQ-to-register map table "
+            "checked against the manifest's sq namespace pattern."
+        ),
+    )
+    parser.add_argument(
         "--check-issues",
         action="store_true",
         help=(
@@ -2658,6 +2930,7 @@ def main(argv: list[str] | None = None) -> int:
         capability_register_path,
         manifest_path=Path(args.manifest),
         project_plan_path=Path(args.project_plan),
+        story_structure_plan_path=Path(args.story_structure_plan),
     )
     problems.extend(
         _check_issues(
@@ -2675,7 +2948,19 @@ def main(argv: list[str] | None = None) -> int:
 
     sys.stdout.write(f"ok: {register_path.name} satisfies the work-linkage contract\n")
     sys.stdout.write(_summary(register_path))
-    sys.stdout.write(_capability_summary(capability_register_path))
+    # check_linkage already proved the manifest and its cap namespace resolve cleanly (the
+    # success path above is only reached with an empty problems list), so re-resolving the
+    # pattern here for the summary's own read of the capability register cannot newly fail; a
+    # throwaway list absorbs the call's signature without adding a second problems channel.
+    summary_manifest_path = Path(args.manifest)
+    cap_id_pattern = _manifest_namespace_pattern(
+        _load_manifest(summary_manifest_path, []),
+        summary_manifest_path,
+        "cap",
+        "pattern",
+        [],
+    )
+    sys.stdout.write(_capability_summary(capability_register_path, cap_id_pattern))
     return 0
 
 

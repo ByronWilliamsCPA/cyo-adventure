@@ -2,7 +2,7 @@
 #
 # plan-manifest.toml
 #
-# The machine-readable spine of the plan. Three things live here and nowhere else:
+# The machine-readable spine of the plan. Four things live here and nowhere else:
 #
 #   1. The closed vocabulary of phase tokens. `scripts/check_work_linkage.py` derives its
 #      phase vocabulary from this file rather than hardcoding it, and validates that
@@ -23,6 +23,14 @@
 #      delivered". One column was being asked to answer both. The roadmap's prose vocabulary
 #      is now DERIVED from these two fields (see [status_vocabulary] below) and the checker
 #      verifies the prose matches, so the words and the data cannot drift apart.
+#
+#   4. The closed set of ID namespaces (`[namespaces]` below). Every register that mints its
+#      own id prefix (UW-, debt ids, AL-, capability ids, SQ-) used to have its row-id and
+#      citation regexes hardcoded as Python module-level constants in `check_work_linkage.py`.
+#      That was the same class of duplication phase tokens used to be: a namespace change, or
+#      a new namespace such as SQ-*, meant editing code rather than data. The checker now
+#      resolves every namespace's pattern from here, and fails loudly rather than silently
+#      accepting anything when a namespace it needs is not declared.
 #
 # Editing rules:
 #   - Adding a phase means adding it here first, then adding the matching roadmap heading.
@@ -85,6 +93,53 @@ locator_basis = "resolved against main at v0.59.0 on 2026-08-02; all 36 path:lin
 "partial/partial" = "partially delivered"
 "partial/no" = "partially delivered"
 "no/no" = "not started"
+
+# ---------------------------------------------------------------------------------------
+# ID namespaces
+# ---------------------------------------------------------------------------------------
+# Every id prefix `check_work_linkage.py` validates a register row against. Each entry:
+#
+#   prefix            - the id's letter prefix. Documentation only; the checker validates
+#                        against `pattern`/`citation_pattern`, not this field.
+#   source            - the register or document the namespace's rows live in.
+#   pattern           - the anchored regex a row's own ID cell must fully match.
+#   citation_pattern  - optional. A looser, word-bounded regex for finding a *mention* of an
+#                        id from this namespace inside another document's prose (used by the
+#                        cross-register linkage checks). Omitted when the namespace is never
+#                        cited from another document, only validated within its own table
+#                        (uw, sq): `pattern` already serves that single purpose.
+#
+# debt and AL deliberately keep their citation pattern looser than their row pattern (AL rows
+# are `AL-\d{3}$`, zero-padded to three digits, but a citation may reasonably be written
+# `AL-1`), so the two are declared separately rather than one derived from the other.
+
+[namespaces.uw]
+prefix = "UW"
+source = "docs/planning/unscheduled-work-register.md"
+pattern = "^UW-[A-M]\\d{2}$"
+
+[namespaces.debt]
+prefix = "debt"
+source = "docs/planning/r1-deferred-debt-register.md"
+pattern = "^(?:C\\d+|GS\\d+|U\\d+|T\\d+|P\\d+|SL\\d+)$"
+citation_pattern = "\\b(?:C\\d+|GS\\d+|U\\d+|T\\d+|P\\d+|SL\\d+)\\b"
+
+[namespaces.al]
+prefix = "AL"
+source = "docs/planning/authoring-lessons-log.md"
+pattern = "^AL-\\d{3}$"
+citation_pattern = "\\bAL-\\d+\\b"
+
+[namespaces.cap]
+prefix = "cap"
+source = "docs/planning/capability-register.md"
+pattern = "^[KGAS]\\d+$"
+citation_pattern = "\\b[KGAS]\\d+\\b"
+
+[namespaces.sq]
+prefix = "SQ"
+source = "docs/planning/story-structure-improvement-plan.md"
+pattern = "^SQ-\\d{2}$"
 
 # ---------------------------------------------------------------------------------------
 # Release rungs
