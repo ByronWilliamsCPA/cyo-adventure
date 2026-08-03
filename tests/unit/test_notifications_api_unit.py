@@ -14,7 +14,9 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING, cast
 
 import pytest
+import structlog
 from fastapi.responses import StreamingResponse
+from structlog.testing import LogCapture
 
 from cyo_adventure.api import notifications
 from cyo_adventure.api.deps import Principal, RequestContext
@@ -25,11 +27,16 @@ from cyo_adventure.core.exceptions import (
 )
 from cyo_adventure.notifications.models import NotificationItem
 from cyo_adventure.storybook.sentinels import wrap
+from cyo_adventure.utils.redaction import digest_identifier
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from sqlalchemy.ext.asyncio import AsyncSession
+
+# Clearly-fake credential standing in for the raw bearer token that
+# deps._resolve_subject returns verbatim as the subject in `local`.
+_FAKE_BEARER_TOKEN = "test-local-bearer-not-a-real-token"
 
 
 def _principal(role: str) -> Principal:
@@ -608,6 +615,64 @@ class TestNotificationEventSource:
 
         assert frames == []
         assert get_session_calls == 0
+
+
+class TestStreamCloseNeverLogsTheRawSubject:
+    """``principal.subject`` can BE the caller's raw bearer credential.
+
+    In ``environment == "local"`` ``deps._resolve_subject`` returns the bearer
+    token verbatim (the documented dev auth seam), so the stream-close log
+    used to write the raw Authorization value on every SSE disconnect.
+    Outside local it is the OIDC ``sub``, which is a stable user identifier
+    that also does not belong in a log line unhashed.
+
+    Capture strategy mirrors tests/unit/test_logging_security.py: the module
+    logger is replaced with an explicitly wrapped ``LogCapture`` chain, so the
+    assertion is about the CALL SITE rather than the censoring processor that
+    backstops it.
+    """
+
+    @pytest.mark.unit
+    @pytest.mark.security
+    @pytest.mark.asyncio
+    async def test_stream_close_logs_a_digest_not_the_subject(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The close event carries a non-reversible digest, never the subject."""
+        cap = LogCapture()
+        monkeypatch.setattr(
+            notifications,
+            "_logger",
+            structlog.wrap_logger(structlog.testing.ReturnLogger(), processors=[cap]),
+        )
+        principal = Principal(
+            subject=_FAKE_BEARER_TOKEN,
+            user_id=uuid.uuid4(),
+            role="guardian",
+            family_id=uuid.uuid4(),
+            profile_ids=frozenset(),
+        )
+        config = notifications._StreamConfig(
+            is_disconnected=_ScriptedDisconnect([True]),
+            poll_interval=0.0,
+            max_seconds=60.0,
+        )
+
+        _ = [
+            frame
+            async for frame in notifications._notification_event_source(
+                principal,
+                since=None,
+                config=config,
+                session_factory=_as_factory(_FakeSession),
+            )
+        ]
+
+        assert cap.entries, "expected the stream close to be logged at all"
+        emitted = repr(cap.entries)
+        assert _FAKE_BEARER_TOKEN not in emitted
+        assert cap.entries[0]["subject_digest"] == digest_identifier(_FAKE_BEARER_TOKEN)
+        assert "subject" not in cap.entries[0]
 
 
 class TestFormatSseFrame:

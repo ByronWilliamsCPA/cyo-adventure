@@ -18,9 +18,13 @@ from cyo_adventure.utils.logging import (
     correlation_context_processor,
     setup_logging,
 )
+from cyo_adventure.utils.redaction import REDACTED, censor_sensitive_processor
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+
+# Clearly-fake credential (never real-looking).
+_FAKE_SECRET = "test-not-a-real-api-key"
 
 
 @pytest.fixture(autouse=True)
@@ -91,6 +95,59 @@ class TestSetupLogging:
         assert not _has_instance(
             _configured_processors(), structlog.processors.TimeStamper
         )
+
+    @pytest.mark.unit
+    @pytest.mark.security
+    @pytest.mark.parametrize("json_logs", [True, False], ids=["json", "console"])
+    def test_censor_processor_is_installed_before_the_renderer(
+        self, json_logs: bool
+    ) -> None:
+        """The censoring backstop runs ahead of whichever renderer is active.
+
+        A processor placed after the renderer would see a rendered string, not
+        the event dict, and could not redact anything; pin the ordering rather
+        than mere presence.
+        """
+        setup_logging(level="INFO", json_logs=json_logs)
+
+        procs = _configured_processors()
+        assert censor_sensitive_processor in procs
+        renderer = (
+            structlog.processors.JSONRenderer
+            if json_logs
+            else structlog.dev.ConsoleRenderer
+        )
+        renderer_index = next(i for i, p in enumerate(procs) if isinstance(p, renderer))
+        assert procs.index(censor_sensitive_processor) < renderer_index
+
+    @pytest.mark.unit
+    @pytest.mark.security
+    def test_configured_chain_redacts_a_secret_field_end_to_end(self) -> None:
+        """A secret passed to a real logger is redacted in the rendered output.
+
+        Drives the whole configured chain (not just the processor in
+        isolation) so a regression that installs the censor in the wrong place
+        fails here.
+        """
+        setup_logging(level="INFO", json_logs=True, include_timestamp=False)
+        captured: list[str] = []
+        logger = structlog.get_logger("censor_e2e_test")
+        logger.bind()  # force the lazy proxy to materialize the configured chain
+        stdlib_logger = logging.getLogger("censor_e2e_test")
+        handler = logging.StreamHandler()
+        handler.emit = lambda record: captured.append(record.getMessage())  # type: ignore[method-assign]
+        stdlib_logger.addHandler(handler)
+        stdlib_logger.setLevel(logging.INFO)
+        try:
+            logger.info("provider_call", api_key=_FAKE_SECRET, provider="anthropic")
+        finally:
+            stdlib_logger.removeHandler(handler)
+
+        assert captured, "expected the configured chain to emit a record"
+        rendered = "\n".join(captured)
+        assert _FAKE_SECRET not in rendered
+        assert REDACTED in rendered
+        assert "anthropic" in rendered
 
 
 class TestLogPerformance:
