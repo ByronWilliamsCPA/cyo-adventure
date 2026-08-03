@@ -1504,9 +1504,11 @@ export type FamilyCreateBody = {
  * Attributes:
  * exported_at: When this export was generated (UTC).
  * family: The family row (id, name, created_at).
- * guardians: Every guardian/admin/child login row in the family
- * (id, role, is_admin, email, created_at); no ``pin_hash`` or
- * ``authn_subject`` (credential material, never exported).
+ * guardians: Every guardian/admin/child login row in the family (id,
+ * role, is_admin, email, created_at, the consent_* quartet, and the
+ * O-117/O-119 residence_country/adulthood_attested_at fields); no
+ * ``pin_hash`` or ``authn_subject`` (credential material, never
+ * exported).
  * profiles: Every child profile, each with its own nested
  * ``reading_state``, ``completions``, ``ratings``, ``assignments``,
  * ``personalization`` (ADR-023 P4 ``ChildProfilePersonalization``
