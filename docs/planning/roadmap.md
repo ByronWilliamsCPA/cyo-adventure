@@ -311,6 +311,21 @@ the safety-relevant and blocking items inline, and everything else is held by ID
 no item was closed. The sweep establishes where work lives, not when it happens. Sequencing the
 register against the existing phase estimates is the natural next pass.
 
+## 2026-08-03: Story structure diversity program (pointer only)
+
+A separate root-cause analysis and execution plan address why generated stories cluster into a few
+base structures that swap themes rather than reading as distinct adventures:
+[story-structure-diversity-critical-analysis.md](./story-structure-diversity-critical-analysis.md)
+(the root-cause analysis) and
+[story-structure-improvement-plan.md](./story-structure-improvement-plan.md) (the scheduling
+document, with per-deliverable detail in
+[story-structure-implementation-briefs.md](./story-structure-implementation-briefs.md)). The
+improvement plan is the authority for scheduling this program, not this roadmap: it groups its
+24 deliverables (SQ-01 through SQ-24) into five internal "Stages", a term chosen deliberately to
+avoid colliding with this document's "Phase" vocabulary, since the Phase 0-9 ladder above is a
+closed set with its own status semantics. This roadmap does not assign the SQ items a phase home;
+see the improvement plan itself for their sequencing and owner gates.
+
 ## Timeline Overview
 
 ```text
@@ -948,8 +963,13 @@ Full detail by ID in the [unscheduled work register](./unscheduled-work-register
       effects, plus a 35-ending remix to 0.0710).
 - [ ] Wave 5 (`UW-G13`): 36 new skeletons, 2 per production cell; the dagger-cell 460-node ceiling
       experiment; the Tier-2 stateful pilot.
-- [ ] Import and publish the 23 filled stories committed to `main` (`UW-G14`); 3 legacy-shaped fills
-      need normalization at import, paired with `AL-050`'s schema-v2 migration.
+- [ ] Promote the 23 filled stories committed to `main` to `visibility='catalog'` (`UW-G14`); 3
+      legacy-shaped fills need normalization at import, paired with `AL-050`'s schema-v2 migration.
+      Mechanism corrected 2026-08-03: issue #347 records an import run to `in_review` on 2026-07-21,
+      so the open step is the separate admin promotion via
+      `publishing/catalog_publish.py::promote_catalog_story`, not the import. Live database state is
+      unverified; checking it is step 1 of the SQ-01 runbook in
+      [story-structure-implementation-briefs.md](./story-structure-implementation-briefs.md).
 - [ ] WS-0 Phase 3 calibration, WS-1 ATG wiring, WS-5 grammar composer, WS-6 fresh-generation feed,
       and WS-8 flywheel follow-ons (`UW-G05` to `UW-G10`, `UW-A32` to `UW-A36`).
 

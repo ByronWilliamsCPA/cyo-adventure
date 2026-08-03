@@ -216,6 +216,11 @@ nav:
           - ADR-009: planning/adr/adr-009-supabase-platform.md
           - ADR-010: planning/adr/adr-010-modal-review-and-gated-generation.md
           - ADR-011: planning/adr/adr-011-story-scale-framework.md
+      - Story Structure Diversity:
+          - Critical Analysis: planning/story-structure-diversity-critical-analysis.md
+          - Improvement Plan: planning/story-structure-improvement-plan.md
+          - Implementation Briefs: planning/story-structure-implementation-briefs.md
+          - Research Base: planning/research/README.md
 
   - Supplementary Docs:
       - Project Setup: PROJECT_SETUP.md

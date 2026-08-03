@@ -39,6 +39,18 @@ source: "Full read of skeletons/ (61 files), generation/skeleton_match.py, story
 > **(e)** the causes interact as a feedback loop (section 5), which re-sequences the recommendations
 > (section 6). The research-base rebuild recommended here has been executed on this branch: see
 > [research/](research/README.md).
+>
+> **Corrected (2026-08-03).** Section 1's cause #6 and section 2.6's first bullet asserted that the 23
+> authored catalog books (25 counting the 2 pilot re-themes) "were never imported"; that mechanism
+> claim was wrong and is corrected in place below. Issue #347 records an import run against production
+> on 2026-07-21 (the ADR-021 production catalog seed, 25 stories landed at `in_review`). The
+> reachability finding itself is unchanged and still stands: `generation/import_catalog.py` never
+> publishes by design, and nothing on record shows the separate admin promotion step,
+> `publishing/catalog_publish.py::promote_catalog_story`, has ever run for this inventory, so a child
+> can still reach zero catalog books today. This document has no database access and cannot confirm
+> current database state; it can confirm only that an import run happened and that promotion, not
+> import, is the outstanding step. Verifying live state is left as a runbook step in
+> [story-structure-implementation-briefs.md](story-structure-implementation-briefs.md) (SQ-01).
 
 # Story Structure Diversity: Critical Analysis of the Structural Ceiling
 
@@ -61,9 +73,11 @@ under-deliver:
 4. The catalog is static and batch-authored: two waves, zero organic growth since (section 2.4).
 5. The beat armature is frozen: every fill of a skeleton renders the same scenes forever; themes are
    paint on a fixed mural (section 2.5). This is the direct mechanism behind "swapped in themes."
-6. What a child can actually reach today is a tiny, small-tree subset of the catalog: the authored
-   inventory was never imported, and the automated fill cannot render a large, method-dependent
-   fraction of the skeletons, including every large gamebook (section 2.6).
+6. What a child can actually reach today is a tiny, small-tree subset of the catalog, and can be zero:
+   the authored inventory was imported to `in_review` (issue #347 records a production run on
+   2026-07-21) but nothing has promoted it to `visibility='catalog'`, and the automated fill cannot
+   render a large, method-dependent fraction of the skeletons, including every large gamebook
+   (section 2.6).
 7. The entire served-or-committed inventory was produced by authoring paths that bypass every
    diversity lever the July workstream built, by a single author-reviewer using one model per band
    (section 2.7).
@@ -220,13 +234,19 @@ phrasings" (beat variants sharing an outcome contract) remains parked in UW-G12 
 Everything above analyzes the catalog and pipeline *as designed*. As deployed, two mechanisms shrink
 what a child can actually receive far below the 61-skeleton catalog:
 
-- **The authored inventory is unpublished.** All 23 validator-passed filled books (plus 2 pilot
-  re-themes) sit in `out/*.filled.json` and have never been imported or published (UW-G14;
-  [draft-stories-manifest.md](draft-stories-manifest.md);
-  [catalog-first-inventory-gap.md](catalog-first-inventory-gap.md) records that the blocker was
-  process, not code: nobody ran the import command). The import and publish tooling is built and idle
-  (`generation/import_catalog.py`, `publishing/catalog_publish.py`). A child's library today contains
-  only books generated on demand for their own family.
+- **The authored inventory is unpublished, whatever its import state.** All 23 validator-passed filled
+  books (plus 2 pilot re-themes; 25 total) were authored and are listed in
+  [draft-stories-manifest.md](draft-stories-manifest.md) (UW-G14). Issue #347 records an import run
+  against production on 2026-07-21 (the "ADR-021 production catalog seed", 25 stories landed at
+  `in_review` via `generation/import_catalog.py`); whether those specific rows are still present and
+  unmodified in a live database today is not something this document can confirm, only that a run
+  happened. What holds regardless of that run's fate: `import_catalog.py` never publishes by design,
+  and the only path to `visibility='catalog'` is the separate admin step,
+  `publishing/catalog_publish.py::promote_catalog_story`. Nothing on record shows that step has run for
+  this inventory. So the reachability gap is the same either way: an imported-but-unpromoted book sits
+  at `in_review` under the `CATALOG_FAMILY_ID` sentinel, invisible to every kid profile, exactly as an
+  unimported one would be. A child's library today contains only books generated on demand for their
+  own family, plus whatever catalog titles, if any, an admin has separately promoted.
 - **The automated fill can only render the small end of the catalog.** The fill is one completion of
   the whole Storybook capped at 32k output tokens (`generation/orchestrator.py`, `_MAX_TOKENS_PROSE`),
   with no chunking. The infeasible-skeleton count is method-dependent because it turns on the assumed
