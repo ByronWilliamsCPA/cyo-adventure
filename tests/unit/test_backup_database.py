@@ -3,6 +3,16 @@
 scripts/ is not an importable package (no __init__.py, by design; see per-file-ignores
 INP for scripts/**/*.py in pyproject.toml), so the module is loaded directly from its
 file path via importlib, mirroring tests/unit/test_backfill_covers_r2.py.
+
+Fixture convention: every credential-shaped literal here uses an angle-bracket
+placeholder (``<user>``, ``<host>``, ``<secret>``), never a realistic password. These
+tests exist to prove that redaction strips a password out of a connection string, so the
+fixtures must contain something occupying the password slot, and a secret scanner cannot
+tell that slot apart from a real leak. A plausible-looking literal there makes this
+repository's own scanners raise incidents against their own test data. Whatever a given
+test actually needs to exercise (an embedded ``@``, a query-parameter form, an ``&``
+boundary) goes *inside* the brackets, so the shape under test survives while the value
+stays obviously inert.
 """
 
 from __future__ import annotations
@@ -740,11 +750,11 @@ def test_strip_credentials_moves_query_parameter_password_out_of_the_url() -> No
     argv (and in every error message quoting the URL).
     """
     sanitized, env = backup_database._strip_credentials_from_db_url(
-        "postgresql://<user>@<host>:5432/<dbname>?password=hunter2&sslmode=require"
+        "postgresql://<user>@<host>:5432/<dbname>?password=<secret>&sslmode=require"
     )
 
-    assert env == {"PGPASSWORD": "hunter2"}
-    assert "hunter2" not in sanitized
+    assert env == {"PGPASSWORD": "<secret>"}
+    assert "<secret>" not in sanitized
     # Non-credential parameters are connection-relevant and must survive.
     assert sanitized == "postgresql://<user>@<host>:5432/<dbname>?sslmode=require"
 
@@ -752,10 +762,11 @@ def test_strip_credentials_moves_query_parameter_password_out_of_the_url() -> No
 def test_strip_credentials_prefers_the_userinfo_password() -> None:
     """libpq resolves the userinfo password over the query parameter; so do we."""
     _sanitized, env = backup_database._strip_credentials_from_db_url(
-        "postgresql://<user>:userinfo@<host>/<dbname>?password=fromquery"
+        "postgresql://<user>:<userinfo>@<host>/<dbname>?password=<fromquery>"
     )
 
-    assert env == {"PGPASSWORD": "userinfo"}
+    # The two placeholders differ so the assertion can tell which slot won.
+    assert env == {"PGPASSWORD": "<userinfo>"}
 
 
 def test_strip_credentials_moves_passfile_to_the_environment() -> None:
@@ -853,11 +864,8 @@ def test_redact_secrets_scrubs_password_containing_at_sign() -> None:
     libpq accepts it, so it occurs in real connection strings. A password class that
     excluded ``@`` would stop at the first one and leave the remainder in the log.
 
-    The fixture keeps the angle-bracket placeholder convention used throughout this
-    module rather than a realistic password literal. Secret scanners key on the
-    ``://user:pw@host`` shape and fire on a plausible-looking password in that slot,
-    so a realistic value here makes this repository's own scanners flag their own
-    test data. The ``@`` inside the brackets is what the test actually needs.
+    Per the module-level fixture convention, the ``@`` lives inside an angle-bracket
+    placeholder: the shape under test is preserved without a realistic password literal.
     """
     text = "connection failed: postgresql://<user>:<pass@tail>@<host>:5432/<dbname>"
 
@@ -1189,12 +1197,12 @@ def test_redact_secrets_scrubs_a_query_parameter_password() -> None:
     """The ``?password=`` form has no ``://user:pw@`` shape for the URL pattern to see."""
     text = (
         "connection failed: "
-        "postgresql://<user>@<host>:5432/<dbname>?password=hunter2&sslmode=require"
+        "postgresql://<user>@<host>:5432/<dbname>?password=<secret>&sslmode=require"
     )
 
     redacted = backup_database._redact_secrets(text)
 
-    assert "hunter2" not in redacted
+    assert "<secret>" not in redacted
     assert "password=[redacted]" in redacted
     # The ampersand must bound the match, or every later parameter vanishes with it.
     assert "sslmode=require" in redacted
@@ -1301,7 +1309,7 @@ def test_main_redacts_a_query_parameter_password_in_the_exception_text(
     A LIST-form cmd is what subprocess.run actually raises with, so this exercises the
     real rendering rather than a convenient string.
     """
-    db_url = "postgresql://<user>@<host>:5432/<dbname>?password=hunter2"
+    db_url = "postgresql://<user>@<host>:5432/<dbname>?password=<secret>"
     failure = subprocess.CalledProcessError(
         1, ["supabase", "db", "dump", "--db-url", db_url, "-f", "/tmp/schema.sql"]
     )
@@ -1316,5 +1324,5 @@ def test_main_redacts_a_query_parameter_password_in_the_exception_text(
 
     out = capsys.readouterr().out
     assert exit_info.value.code == 1
-    assert "hunter2" not in out
+    assert "<secret>" not in out
     assert "password=[redacted]" in out
