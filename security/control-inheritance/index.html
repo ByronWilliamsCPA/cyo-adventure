@@ -3597,10 +3597,15 @@ document warns about, and it is easy to make here.</p>
 <li>step-ca must be issued under a <strong>separate root or dedicated intermediate</strong>, not the one at
      <code>services/traefik/dynamic/tls.yml:74</code>. Sharing an anchor would let every homelab device
      certificate satisfy the CYO edge router.</li>
-<li>Lifetime: issue long-lived and calendar the rotation. Existing renewal tooling
-     (<code>services/cert-enroll/scripts/renew-cert.sh</code>) pushes certificates to devices; Cloudflare
-     requires an API upload instead, so short step-ca defaults would cause a recurring outage.
-     Automating the Cloudflare-side upload is a follow-up, not a prerequisite.</li>
+<li>Lifetime: issue with a bounded lifetime, a named owner for the expiration alert, and an
+     overlap-and-rollback procedure tested before enforcement is switched on. Expiry of this
+     certificate takes the origin offline to Cloudflare, so this is an outage control rather
+     than a hygiene one, and "calendar the rotation" is not sufficient on its own. Existing
+     renewal tooling (<code>services/cert-enroll/scripts/renew-cert.sh</code>) pushes certificates to
+     devices, which is not a path Cloudflare accepts; the Cloudflare side takes an upload,
+     via either the API or the dashboard, so short step-ca defaults would cause a recurring
+     outage. Automating that upload is a prerequisite for enabling enforcement, unless manual
+     rotation is recorded as an accepted risk with a named owner and an expiry.</li>
 </ul>
 <p>Evaluated and rejected for A9, 2026-08-02: <strong>Cloudflare Client Certificates</strong>
    (<code>developers.cloudflare.com/ssl/client-certificates/</code>). That product secures the
@@ -3867,7 +3872,7 @@ particular needs a recorded verdict.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 02:56:31 UTC">August 3, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 15:03:13 UTC">August 3, 2026</span>
   </span>
 
     

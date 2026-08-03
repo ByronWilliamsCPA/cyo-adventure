@@ -4035,7 +4035,7 @@ government contract clauses.</p>
 </tr>
 <tr>
 <td><strong>State breach notification</strong></td>
-<td>Attaches with the first non-household user</td>
+<td>The regime attaches with the first non-household user; the notice duty itself fires on discovery of a qualifying breach</td>
 <td>O-92</td>
 </tr>
 <tr>
@@ -4458,11 +4458,11 @@ US equivalents are COPPA §312.8 ongoing safeguard testing and annual evaluation
 <li><strong>Framework ref:</strong> not determined</li>
 <li><strong>Legal ref:</strong> GDPR Art. 32(1)(d) / COPPA 312.8</li>
 <li><strong>Class:</strong> STATIC</li>
-<li><strong>Protected property:</strong> every automated check's row records its production control target,
-  execution trigger, evidence artifact, failure oracle, and owner</li>
+<li><strong>Protected property:</strong> every automated check's row records its verification target, trigger,
+  existing coverage, failure oracle, and owner</li>
 <li><strong>Verification target:</strong> this register's row set, queried for field completeness</li>
 <li><strong>Failure oracle:</strong> a quarterly query over the register finds an automated-check row missing its
-  control target, execution trigger, evidence artifact, failure oracle, or owner</li>
+  verification target, trigger, existing coverage, failure oracle, or owner</li>
 <li><strong>Negative control:</strong> a row saved with one of those required fields blank</li>
 <li><strong>Trigger:</strong> quarterly</li>
 <li><strong>Existing coverage:</strong> none</li>
@@ -4470,8 +4470,9 @@ US equivalents are COPPA §312.8 ongoing safeguard testing and annual evaluation
 <li><strong>Owner:</strong> core-maintainer</li>
 <li><strong>Last verified:</strong> not verified</li>
 <li><strong>Status:</strong> mechanism unproven</li>
-<li><strong>Check:</strong> Every automated check records its production control target, execution trigger,
-  evidence artifact, failure oracle, and owner; a quarterly query finds rows missing any field</li>
+<li><strong>Check:</strong> Every automated check records its verification target, trigger, existing coverage,
+  failure oracle, and owner, named with the spine's own schema fields so the query is writable
+  against real rows; a quarterly query finds rows missing any field</li>
 </ul>
 <h4 id="o-67">O-67<a class="headerlink" href="#o-67" title="Permanent link">&para;</a></h4>
 <ul>
@@ -5169,7 +5170,9 @@ is visible as a section with no rows rather than as a question nobody asked.</p>
 <li><strong>Phase home:</strong> unassigned</li>
 <li><strong>Owner:</strong> core-maintainer</li>
 <li><strong>Last verified:</strong> not verified</li>
-<li><strong>Status:</strong> accepted exception</li>
+<li><strong>Status:</strong> finding open (the spine defines <em>accepted exception</em> as risk, compensating controls,
+  and expiry recorded. None of the three exists yet, so claiming that status here would assert the
+  work the Check below prescribes as already done)</li>
 <li><strong>Check:</strong> <strong>AC.4.1</strong> requires AI-generated code to be reviewed by a human who is not the
   identity that requested the generation. A single-maintainer AI-assisted repository cannot
   satisfy this as written. Record as an <strong>accepted exception with compensating controls and an
@@ -5388,8 +5391,8 @@ of AC.3.3 and AC.11.1; the published requirements are stricter and are the bette
 <li><strong>Failure oracle:</strong> The origin accepts a request that did not traverse the intended edge, or
   accepts a connection from the edge without mTLS being enforced.</li>
 <li><strong>Negative control:</strong> not determined</li>
-<li><strong>Trigger:</strong> not determined (the reassessment trigger would be named in <code>control-inheritance.md</code>;
-  not stated in this row)</li>
+<li><strong>Trigger:</strong> on closure (<code>control-inheritance.md</code> names A9's re-validation trigger as
+  <em>On closure</em>)</li>
 <li><strong>Existing coverage:</strong> none; this row is a confirmed open finding (<code>control-inheritance.md</code> item
   A9), not a passing gate</li>
 <li><strong>Phase home:</strong> unassigned</li>
@@ -7306,6 +7309,16 @@ contained content directed at an automated reader.</p>
 primary sources where a claim was load-bearing. All three disclosed or exhibited anchoring on the
 sixteen-category spine they were shown; convergence with it is partly contaminated and divergence
 from it is the higher-signal part.</p>
+<p><strong>Known gap, not closed here.</strong> The runs are identified by vote count and date only. There is no
+per-run identifier, no retrieval date or document version for the primary sources each claim was
+checked against, and no evidence artifact a reader could re-open. The load-bearing claims that
+would need such citations are the state-law counts, the AISVS Appendix C coverage figure, and the
+regime-applicability determinations. Making those reproducible means a source-and-evidence table
+with stable IDs cited from each claim, which is a deliverable in its own right rather than a
+correction to this one, and it is recorded here instead of built so that the deficiency is visible
+in the document that has it. Until it exists, treat the reconciliation narrative below as an
+account of how the structure was reached, not as evidence for any individual fact in it; the facts
+carry their own citations where they are used.</p>
 <h3 id="adopted-on-multi-run-agreement">Adopted on multi-run agreement<a class="headerlink" href="#adopted-on-multi-run-agreement" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -7440,8 +7453,10 @@ different question.</p>
    written to prevent it. Reopened: decide whether 113 active rows is accepted, or trim to the ~60
    ceiling. This is the maintainer's call and is deliberately left open rather than re-decided
    here.</li>
-<li><strong>Promote the spine.</strong> <code>assurance-spine.md</code> is written to be lifted into <code>~/.claude/standards/</code>
-   so other projects instantiate it rather than rediscovering it.</li>
+<li><strong>Promote the spine.</strong> <code>assurance-spine.md</code> is written to be lifted into whatever global
+   standards set the operator's tooling keeps, so other projects instantiate it rather than
+   rediscovering it. The spine deliberately names no concrete install path, because that path is a
+   property of the tool rather than of the document; <code>~/.claude/standards/</code> is this operator's.</li>
 </ol>
 <h2 id="initial-build-commitments">Initial-build commitments<a class="headerlink" href="#initial-build-commitments" title="Permanent link">&para;</a></h2>
 <p>Approved 2026-08-02. These are the only rows promoted out of the general register into
@@ -7492,7 +7507,7 @@ duties in SP-12.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 05:00:44 UTC">August 3, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 15:03:13 UTC">August 3, 2026</span>
   </span>
 
     
