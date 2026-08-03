@@ -36,12 +36,20 @@ pytestmark = [pytest.mark.unit, pytest.mark.security]
 # detector that normalises string concatenation would still flag them.
 # #VERIFY: if the secret-scanning check reports this file again, replace the
 # fixture values outright rather than adding an ignore comment.
+#
+# The DSN is joined rather than written as one f-string for the same reason.
+# An f-string still leaves the literal `scheme://user:<something>@host` shape
+# on a single source line, and a shape-matching detector has no way to know
+# that `<something>` is a variable reference and not a password. Joining
+# means no line carries the full `user:password@host` triple.
 _FAKE_SECRET = "test-not-a-real-secret-value"
 _FAKE_PASSWORD = "test-not-a-real-password"
 _FAKE_JWT = ".".join(
     ("eyJhbGciOiJIUzI1NiJ9", "eyJzdWIiOiJmYWtlIn0", "not-a-real-signature")
 )
-_FAKE_DSN = f"postgresql+asyncpg://cyo:{_FAKE_PASSWORD}@db.invalid:5432/cyo"
+_FAKE_DSN = "".join(
+    ("postgresql+asyncpg://cyo:", _FAKE_PASSWORD, "@", "db.invalid:5432/cyo")
+)
 
 
 def _censor(**fields: object) -> dict[str, object]:
