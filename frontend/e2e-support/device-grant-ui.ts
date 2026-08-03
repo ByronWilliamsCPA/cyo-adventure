@@ -12,6 +12,22 @@ import { expect, type Page } from '@playwright/test'
  */
 
 /**
+ * Budget for the post-confirm wait on the revoke outcome.
+ *
+ * #ASSUME: timing: a device-grant revoke round-trips within 15s on the live
+ * tiers. Playwright's 5s default is not enough: the wait is network-bound, and
+ * this confirm is the LAST action of the last spec in a tier that signs in five
+ * times from a single runner IP, so it competes with the 60 rpm/IP limiter.
+ * Observed flaking at 5s on staging run 30775018054 and passing on retry.
+ * #VERIFY: re-run the staging tier and re-check this budget after any change to
+ * the limiter, to revoke latency, or to how many times the tier signs in. Raise
+ * it only for a revoke that is SLOW. A revoke that FAILS renders the console's
+ * error banner instead, and no timeout can fix that; issue #571 tracks a
+ * first-attempt revoke failure that presents exactly that way.
+ */
+const DEVICE_REVOKE_TIMEOUT_MS = 15_000
+
+/**
  * Removes this device's grant from the guardian console, through the two-step
  * flow the console actually implements.
  *
@@ -41,11 +57,8 @@ import { expect, type Page } from '@playwright/test'
  *
  * The console clears the local grant only after the server DELETE succeeds, so
  * the first-run CTA returning proves the revoke landed on the backend rather
- * than only in the browser. That also makes the wait network-bound: the default
- * 5s assertion budget is not enough here, and the confirm is the LAST action of
- * the last spec in a tier that signs in five times against one runner IP, so it
- * competes with the 60 rpm/IP limiter. Observed flaking once at 5s on staging
- * run 30775018054 and passing on retry, hence the explicit 15s.
+ * than only in the browser. That makes the post-confirm wait network-bound;
+ * see DEVICE_REVOKE_TIMEOUT_MS for its budget and the assumption behind it.
  *
  * A failed revoke leaves `deviceStatus === 'error'`, which renders an error
  * banner while the console keeps its authorized branch. Racing the two states
@@ -62,7 +75,9 @@ export async function removeDeviceFromConsole(page: Page): Promise<void> {
 
   const cta = page.getByRole('button', { name: 'Set up this device for your kids' })
   const revokeFailed = page.getByText(/That didn.t work\. Check your connection/)
-  await expect(cta.or(revokeFailed).first()).toBeVisible({ timeout: 15_000 })
+  await expect(cta.or(revokeFailed).first()).toBeVisible({
+    timeout: DEVICE_REVOKE_TIMEOUT_MS,
+  })
   await expect(
     revokeFailed,
     'the console reported a failed device-grant revoke; the grant is still live ' +
