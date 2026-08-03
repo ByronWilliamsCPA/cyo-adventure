@@ -396,8 +396,9 @@ them in order:
 
 ## 6. Backup and restore
 
-**Partially closed 2026-08-02** (issue #558 / `UW-D27`). A scheduled backup now exists; the
-restore side is documented below but **not yet drilled against a live project** -- see the
+**Partially closed on merge of the `feat/database-backups-r2` branch** (issue #558 / `UW-D27`);
+replace this line with the merge date once it lands. A scheduled backup exists as of that merge;
+the restore side is documented below but **not yet drilled against a live project** -- see the
 `#VERIFY` note at the end of this section before relying on it in a real incident.
 
 ### What runs today
@@ -406,6 +407,12 @@ restore side is documented below but **not yet drilled against a live project** 
 `scripts/backup_database.py` daily at 08:00 UTC (and on
 `workflow_dispatch`). Each run:
 
+0. Verifies the destination bucket carries a `.cyo-backup-bucket` marker object before doing
+   anything else, and refuses to run if it does not. Every destructive step in the script is
+   scoped by bucket **name** alone, and the lifecycle write in step 5 fully REPLACES whatever
+   configuration the named bucket already has, so a mistyped or rotated `R2_BACKUP_BUCKET`
+   (the public covers bucket is one typo away) would otherwise be silently accepted. Initialize
+   a brand-new bucket once with `--init-bucket`; never as part of the scheduled run.
 1. Executes `supabase db dump` three times (roles, schema, data-via-COPY) against
    `SUPABASE_DB_URL`, which **must be the direct (non-pooler) connection string** --
    [ADR-009](../planning/adr/adr-009-supabase-platform.md)'s Supavisor pooling constraints
@@ -417,18 +424,36 @@ restore side is documented below but **not yet drilled against a live project** 
 3. Uploads to a **dedicated** R2 bucket (`R2_BACKUP_BUCKET`, distinct from the public covers
    bucket, using a scoped R2 token distinct from the covers-upload token) under a tiered
    prefix: `daily/` always, `weekly/` on ISO Sunday, `monthly/` on the 1st.
-4. Asserts a per-prefix R2 lifecycle expiration rule on every run (self-healing if the bucket
-   configuration ever drifts): daily 7 days, weekly 28 days, monthly 180 days by default,
-   tunable via `workflow_dispatch` inputs. This bounds total retained storage to roughly
-   7 + 4 + 6 = 17 backup sets at any time, sized for limited R2 space rather than unbounded
-   growth -- re-tune the day counts once real dump sizes are known (see the `#ASSUME` in the
-   script's module docstring).
+4. Asserts that a recent **pre-existing** backup still exists: lists the date prefixes under
+   `daily/`, excludes today's, and fails the run if the newest survivor is more than 3 days old
+   (or if none survives at all). The workflow's failure alert fires on a run that HAPPENS and
+   fails; it cannot fire for a run that never happens, and GitHub disables scheduled workflows
+   after 60 days of repository inactivity. Without this, a stopped schedule would let retention
+   quietly empty the bucket with zero red runs. It also doubles as the only exercise of the R2
+   **read** path, so a token scoped without list permission is caught here rather than during a
+   restore. An empty bucket is accepted only under `--init-bucket`.
+5. Asserts a per-prefix R2 lifecycle expiration rule (self-healing if the bucket configuration
+   ever drifts): daily 7 days, weekly 28 days, monthly 180 days by default, tunable via
+   `workflow_dispatch` inputs. This bounds total retained storage to roughly 7 + 4 + 6 = 17
+   backup sets at any time, sized for limited R2 space rather than unbounded growth -- re-tune
+   the day counts once real dump sizes are known (see the `#ASSUME` in the script's module
+   docstring). Retention values are validated before anything else runs, against per-tier floors
+   (daily >= 3, weekly >= 14, monthly >= 90) and a `daily <= weekly <= monthly` ordering rule;
+   a deliberate shrink below a floor needs `--force-retention`, and the ordering rule is never
+   waived.
+
+The step order is deliberate: nothing is expired or mutated until a good backup is positively
+confirmed. The lifecycle write is last, so a run that fails its dump cannot leave a bad retention
+value behind; the staleness check sits between the upload and the lifecycle write, so today's
+backup is safely stored before the alarm fires and an incident starts with one more good backup,
+not one fewer.
 
 A failed run opens or comments on a `ci-failure`-labelled issue titled `[db-backup] scheduled
-database backup failing`, per the "Alert on failure" step in the workflow: see Section 7 for the
-general convention. Cover art in R2 is **not** covered by this workflow; it remains unbacked-up
-separately, since no export tooling for object storage exists in this repo (tracked as its own
-gap, distinct from `UW-D27`).
+database backup failing`, per the "Alert on failure" step in the workflow (a separate job holding
+`issues: write`, so the job that handles the six production secrets never holds it): see Section 7
+for the general convention. Cover art in R2 is **not** covered by this workflow; it remains
+unbacked-up separately, since no export tooling for object storage exists in this repo (tracked as
+its own gap, distinct from `UW-D27`).
 
 ### Restore procedure
 

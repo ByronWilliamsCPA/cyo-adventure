@@ -35,10 +35,18 @@
 # `ci-failure` label (shared with planning-linkage.yml and the other non-E2E scheduled
 # jobs) rather than `e2e-alert`, since this is an ops job, not an E2E tier.
 #
-# Injection posture: the alert step below interpolates only context.serverUrl,
-# context.repo, and context.runId (all runner-supplied, never attacker-controlled) and
-# a locally-computed ISO date string; no GitHub event field (issue/PR title or body,
-# commit message, ref) is read or interpolated anywhere in this workflow.
+# Injection posture: this workflow DOES read event input. `workflow_dispatch` supplies
+# three retention inputs, and `inputs.*` IS `github.event.inputs.*`, so it is event data
+# by definition even though only someone with write access can dispatch it. Those three
+# values are therefore bound to `env:` on the step that uses them and referenced as
+# shell variables ("$DAILY_DAYS"), never interpolated into the `run:` script text, which
+# is the pattern every other dispatchable workflow here follows (release.yml's
+# FORCE_LEVEL, supabase-staging.yml's INCLUDE_ALL, update-visual-snapshots.yml's
+# BRANCH). Interpolating them directly would have put event-controlled text into the
+# shell of the one step holding all six production secrets. Beyond those inputs, no
+# GitHub event field (issue/PR title or body, commit message, ref) is read anywhere
+# here, and the alert job interpolates only context.serverUrl, context.repo, and
+# context.runId (all runner-supplied) plus a locally-computed ISO date string.
 name: Database backup
 
 on:
@@ -61,8 +69,21 @@ on:
         type: number
         default: 180
 
-permissions:
-  contents: read
+# Nothing is granted by default; each job below declares exactly what it needs. Matches
+# planning-linkage.yml.
+permissions: {}
+
+concurrency:
+  # Object keys are derived from the run's DATE, not from the run, so two overlapping
+  # runs (a delayed 08:00 schedule meeting a manual dispatch) compute IDENTICAL keys.
+  # The destructive interleaving: run B finishes all six uploads and exits 0 reporting
+  # success, then run A hits an upload error and rolls back, deleting objects that are
+  # now run B's. The result is an incomplete set for a date a successful run already
+  # called complete, with nothing red anywhere. Never cancel an in-flight run in favor
+  # of a newer one: a cancelled backup is a missing backup, and e2e-prod.yml documents
+  # the same reasoning for the same reason.
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 
 jobs:
   backup:
@@ -71,11 +92,13 @@ jobs:
     timeout-minutes: 20
     environment: production
     permissions:
-      # contents alone for the backup steps; issues:write is scoped down to just the
-      # alert-on-failure step's needs, matching planning-linkage.yml's split (a job
-      # that only sometimes needs write should not hold it for every step).
+      # contents alone. Actions has NO step-level `permissions` key, so any scope
+      # granted here is held by every step in this job, including the one that runs
+      # repository Python with all six production secrets in its environment. The
+      # `issues: write` the failure alert needs therefore lives on the separate `alert`
+      # job below, exactly as planning-linkage.yml splits `file-drift-issue` out of
+      # `linkage` (PR #465), because job-level permissions cannot be made conditional.
       contents: read
-      issues: write
     steps:
       - name: Harden the runner
         uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
@@ -118,22 +141,48 @@ jobs:
           R2_BACKUP_SECRET_ACCESS_KEY: ${{ secrets.R2_BACKUP_SECRET_ACCESS_KEY }}
           R2_BACKUP_BUCKET: ${{ secrets.R2_BACKUP_BUCKET }}
           BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+          # The three workflow_dispatch inputs are bound here rather than interpolated
+          # into the run: script below. See the injection-posture note at the top of
+          # this file. The `|| <default>` fallback covers the schedule trigger, where
+          # the inputs context is empty.
+          DAILY_DAYS: ${{ inputs.daily_days || 7 }}
+          WEEKLY_DAYS: ${{ inputs.weekly_days || 28 }}
+          MONTHLY_DAYS: ${{ inputs.monthly_days || 180 }}
         run: |
           uv run python scripts/backup_database.py \
-            --daily-days "${{ inputs.daily_days || 7 }}" \
-            --weekly-days "${{ inputs.weekly_days || 28 }}" \
-            --monthly-days "${{ inputs.monthly_days || 180 }}"
+            --daily-days "$DAILY_DAYS" \
+            --weekly-days "$WEEKLY_DAYS" \
+            --monthly-days "$MONTHLY_DAYS"
 
-      - name: Alert on failure (pinned issue)
+  alert:
+    name: Alert on failure
+    needs: backup
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      # write, isolated to this job, so the backup job above never holds it while
+      # running repository code with six production secrets in scope.
+      issues: write
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: File or comment on the pinned issue
         # Reusable alerting pattern for scheduled workflows (e2e-prod.yml's "Alert on
         # failure" step, adapted): find an OPEN issue labelled `ci-failure` whose title
         # starts with this workflow's marker and comment on it, or open one if none
         # exists yet, so repo watchers get GitHub's native email/push notification
-        # instead of a red run nobody checks the Actions tab for. A nightly backup that
-        # silently stops running (as opposed to producing a bad backup, which
-        # run_backup's own empty-dump check guards against) would otherwise go
-        # unnoticed for weeks.
-        if: ${{ failure() }}
+        # instead of a red run nobody checks the Actions tab for.
+        #
+        # This covers a backup that FAILS. It cannot cover a backup that never runs at
+        # all (a workflow GitHub disabled after 60 days of repository inactivity, a
+        # blocked environment gate, a deleted secret), because there is no run to
+        # report. That case is covered inside the script instead, by
+        # assert_recent_backup_exists(), which fails the next run that does happen if
+        # the newest pre-existing daily backup has gone stale.
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
@@ -167,18 +216,29 @@ jobs:
                   'The scheduled `Database backup` workflow (`.github/workflows/supabase-backup.yml`) failed.',
                   '',
                   'This is the nightly `supabase db dump` -> AES-256-GCM encrypt -> tiered R2',
-                  'upload job (issue #558 / UW-D27). A failure here means either a required',
-                  'secret is missing/invalid, the Supabase CLI or direct DB connection is',
-                  'unreachable, R2 rejected the upload, or a dump leg came back empty and',
-                  'run_backup() aborted rather than uploading a placeholder backup.',
+                  'upload job (issue #558 / UW-D27). A failure here means one of:',
+                  '',
+                  '- a required secret is missing or invalid;',
+                  '- the Supabase CLI or the direct DB connection is unreachable;',
+                  '- R2 rejected the upload;',
+                  '- a dump leg came back empty or boilerplate-only and `run_backup()` aborted',
+                  '  rather than uploading a placeholder backup;',
+                  '- the target bucket carries no `.cyo-backup-bucket` marker, so the script',
+                  '  refused to write to a bucket it could not confirm is the backup bucket;',
+                  '- a retention value was below its documented floor or out of order;',
+                  '- `assert_recent_backup_exists()` found no recent PRE-EXISTING backup, which',
+                  '  means the schedule stopped running at some point while retention kept',
+                  '  expiring objects. Treat that one as an incident, not as a flaky run.',
                   '',
                   `First failing run: ${runUrl}`,
                   `Date: ${today}`,
                   '',
-                  'Reproduce locally with `uv run --env-file .env python scripts/backup_database.py --dry-run`',
-                  'first, then without `--dry-run` against a non-production bucket if the dry run',
-                  'looks correct. See docs/operations/runbook.md section 6 for the required secrets',
-                  'and the restore procedure.',
+                  'Triage: read the run log first, it names which of the above happened.',
+                  '`--dry-run` reports the plan (dates, tiers, object keys) and validates the',
+                  'retention values, but it reads NO secret and makes NO network call, so it',
+                  'cannot tell you whether a secret is missing or invalid; check the `production`',
+                  'environment secrets directly for that. See docs/operations/runbook.md section 6',
+                  'for the required secrets and the restore procedure.',
                   '',
                   'This issue stays open and accumulates one comment per failing run until',
                   'someone resolves the underlying problem and closes it; the next failure',
