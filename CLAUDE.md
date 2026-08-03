@@ -272,7 +272,7 @@ When working on this project, always suggest appropriate security measures:
 - **Containers**: Suggest image vulnerability scanning (Trivy)
 ### 2. Never Bypass Security Issues
 
-- **ALL security findings** from scanners (Bandit, OSV-Scanner, CodeQL, SonarCloud) should be addressed, not dismissed
+- **ALL security findings** from scanners (Bandit, OSV-Scanner, SonarCloud) should be addressed, not dismissed
 - If a finding is a false positive, document WHY with inline comments
 - Use baseline files only for truly unavoidable exceptions with justification
 
@@ -976,13 +976,17 @@ uv run pytest tests/unit/test_example.py::test_function_name -v
 
 ## CI/CD Pipeline
 
-**GitHub Actions Workflows** (`.github/workflows/`, 24 files):
+**GitHub Actions Workflows** (`.github/workflows/`, 35 files):
 
-- **Quality gate**: `ci.yml` (tests/lint/typecheck on Python 3.12, includes the
-  frontend contract-drift check), `python-compatibility.yml` (3.11-3.13 Ubuntu
-  plus 3.12 macOS/Windows), `pr-title.yml`, `pr-validation.yml`
-- **Security/supply chain**: `security-analysis.yml` (CodeQL, Bandit,
-  OSV-Scanner), `container-security.yml`, `dependency-review.yml`,
+- **Quality gate**: `ci.yml` (tests/lint/typecheck on Python 3.14, includes the
+  frontend contract-drift check), `python-compatibility.yml` (3.11-3.14 Ubuntu
+  plus 3.14 macOS/Windows), `pr-title.yml`, `pr-validation.yml`
+- **Security/supply chain**: `security-analysis.yml` (Bandit and OSV-Scanner
+  only). CodeQL previously ran via GitHub code scanning **default setup**, which
+  has no workflow file, so grepping `.github/workflows/` never showed it; it was
+  disabled on 2026-08-03, so no SAST covers the TypeScript tree today. Check the
+  live state with `gh api repos/{owner}/{repo}/code-scanning/default-setup`
+  rather than by grepping. Also: `container-security.yml`, `dependency-review.yml`,
   `dependency-provenance-weekly.yml`, `fips-compatibility.yml`,
   `slsa-provenance.yml`, `scorecard.yml` (OpenSSF), `sonarcloud.yml`
 - **Testing depth**: `cifuzzy.yml` (fuzzing), `mutation-testing.yml`

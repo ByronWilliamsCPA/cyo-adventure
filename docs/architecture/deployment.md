@@ -10,9 +10,13 @@ tags:
 ---
 
 CYO Adventure deploys to a self-hosted homelab using Docker containers orchestrated
-by Dockge (ADR-004: homelab-first deployment). External access is secured by Pangolin
-zero-trust reverse proxy (Tailscale or Cloudflare Tunnel). Supabase Auth provides OIDC
-identity for the guardian and admin roles (ADR-009; children authenticate via
+by Dockge (ADR-004: homelab-first deployment). External access is secured by the Pangolin
+zero-trust stack on the Charon VPS: Cloudflare's proxied DNS reaches Charon over TLS on 443,
+Traefik there terminates it, and the traffic then crosses a WireGuard reverse tunnel
+(Gerbil to Newt) into the homelab, where a second Traefik re-terminates and routes to the
+containers. LAN clients bypass Cloudflare entirely via split-horizon DNS and reach the
+homelab directly over mTLS. Supabase Auth
+provides OIDC identity for the guardian and admin roles (ADR-009; children authenticate via
 backend-minted scoped sessions, not Supabase), and the operational database is
 Supabase Postgres, reached through the session pooler (ADR-009 decision 2; R1 Task 1.7,
 cut over 2026-07-05).
@@ -43,9 +47,21 @@ session mode). See the Network Architecture section below.
 
 ## Network Architecture
 
-All family device traffic enters through **Pangolin**, which terminates TLS and
-forwards plain HTTP to the backend container on port 8000. Pangolin runs as its own
-container in the stack and handles the zero-trust tunnel to the homelab.
+All family device traffic enters through the **Pangolin** zero-trust stack, which runs on the
+Charon VPS rather than in the homelab. The hops, in order:
+
+1. **Cloudflare to Charon**, TLS on 443 (proxied DNS). **Traefik on Charon terminates this
+   TLS**, not Pangolin; Pangolin itself is an HTTP service behind that Traefik. This leg
+   negotiates the hybrid `X25519MLKEM768` group (see `docs/security/crypto-inventory.md`
+   section 2), and Traefik's version floor here is load-bearing for availability.
+2. **Charon to homelab**, a WireGuard reverse tunnel (Gerbil on the VPS, Newt on the docker
+   host) carrying already-decrypted TCP. There is no `cloudflared`/Cloudflare Tunnel process
+   anywhere in this stack, and no Tailscale in this path.
+3. **Inside the homelab**, a second Traefik re-terminates TLS and routes by `Host()` to the
+   service containers, which listen on plain HTTP (FastAPI on port 8000).
+
+LAN clients skip hops 1 and 2 entirely: split-horizon DNS (an Unbound override) points them
+straight at the homelab, where they authenticate with mTLS.
 
 The R1 internal-web deploy (`services/cyo-adventure/` in the separate
 `ByronWilliamsCPA/homelab-infra` repo) is a distinct rung from this ADR-004 topology:
