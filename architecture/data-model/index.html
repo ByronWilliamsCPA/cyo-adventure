@@ -3779,6 +3779,8 @@ relationships, kept for inline rendering directly on GitHub without opening the 
         varchar(32) consent_policy_version "NULL"
         varchar(200) consent_signer_name "NULL; typed legal-name signature"
         varchar(64) consent_ip "NULL; evidentiary only"
+        varchar(2) residence_country "NULL; ISO 3166-1 alpha-2; O-117 jurisdiction signal"
+        timestamptz adulthood_attested_at "NULL; O-119 self-declared adult attestation"
     }
 
     child_profile {
@@ -4200,6 +4202,16 @@ one adult can be a guardian, an admin, or both.</p>
 <td>consent_ip</td>
 <td>VARCHAR(64) NULL</td>
 <td>Evidentiary record of the consenting request's client IP; never queried or joined on</td>
+</tr>
+<tr>
+<td>residence_country</td>
+<td>VARCHAR(2) NULL</td>
+<td>O-117 jurisdiction signal; ISO 3166-1 alpha-2, guardian-selected at consent. Membership in the assigned-code set is enforced in the API layer; the DB CHECK enforces two-letter syntax only</td>
+</tr>
+<tr>
+<td>adulthood_attested_at</td>
+<td>TIMESTAMPTZ NULL</td>
+<td>O-119 self-declared adulthood attestation timestamp; records when the guardian ticked the box, not any identity evidence. Paired with <code>residence_country</code> (both NULL or both set, and only alongside a recorded consent)</td>
 </tr>
 </tbody>
 </table>
@@ -5758,7 +5770,7 @@ primary authorization boundary; RLS is defense-in-depth beneath it, not a replac
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 14:07:36 UTC">August 3, 2026</span>
   </span>
 
     

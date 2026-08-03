@@ -70,6 +70,8 @@ erDiagram
         varchar(32) consent_policy_version "NULL"
         varchar(200) consent_signer_name "NULL; typed legal-name signature"
         varchar(64) consent_ip "NULL; evidentiary only"
+        varchar(2) residence_country "NULL; ISO 3166-1 alpha-2; O-117 jurisdiction signal"
+        timestamptz adulthood_attested_at "NULL; O-119 self-declared adult attestation"
     }
 
     child_profile {
