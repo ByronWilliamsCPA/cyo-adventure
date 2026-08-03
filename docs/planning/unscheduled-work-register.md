@@ -268,18 +268,17 @@ substantially the same work under different headings. Do not triple-book.
 roadmap.md lines 197-199 assert that open issues "remain accurately tracked" in the debt register.
 That claim is false: the debt register cites 9 issue numbers, 6 still open, against 39 open issues
 as of 2026-08-02. The 30 issues below appear in no other planning document by number or by
-description, so this cluster is their only phase home. `scripts/check_work_linkage.py
---check-issue-orphans` enforces the other half of the rule: every open issue must be either cited
-under `docs/planning/` or carry the `unplanned` label. This table and that label are jointly the
-closed set, which is why an issue that is genuinely not project work (a bot-maintained dashboard)
-gets the label rather than a fabricated row here.
+description, so this cluster is their only phase home.
 
-This flag needs network access to the GitHub API, so it is not universally enforced: the CI
-workflow (`.github/workflows/planning-linkage.yml`) runs `check_work_linkage.py` with both
-`--check-issues` and `--check-issue-orphans`, but the local pre-commit hook
-(`.pre-commit-config.yaml`) invokes the script with no flags at all, so it stays offline and never
-resolves an issue orphan. A green pre-commit run therefore proves nothing about issue-orphan
-compliance; only the CI workflow gate does.
+Adding a row here is now a judgement call rather than a gate. `scripts/check_work_linkage.py`
+once carried a `--check-issue-orphans` flag requiring every open GitHub issue to be cited under
+`docs/planning/` or labelled `unplanned`, plus a `--check-issues` flag resolving each cited
+number against the API. Both were retired: they ran only in CI, because they needed network
+access and `gh` auth that the pre-commit hook deliberately does not have, so the two gates
+enforced different contracts and a green local run proved nothing about the stricter one. The
+recurring cost also outgrew the return, most visibly when the workflow's own drift-alert issue
+became an uncited open issue and failed the gate that filed it. What remains is the offline
+linkage contract, which every row in this table is still bound by.
 
 | ID | Issues | Theme | Phase | Status |
 |----|--------|-------|-------|--------|

@@ -64,19 +64,16 @@ Cross-register linkage:
    the done checkmark must appear in ``roadmap.md``'s "Where every open register item lands"
    mapping section.
 
-Two further checks are opt-in, because they need network access and ``gh`` auth that
-pre-commit's offline posture cannot assume: ``--check-issues`` (no register row cites a GitHub
-issue that is CLOSED while the row itself is not done, and every cited issue exists) and
-``--check-issue-orphans`` (every OPEN issue is cited by some markdown or TOML document under
-``docs/planning/``, or carries the ``unplanned`` label). Both share one capped ``gh issue list``
-call, pinned to this repository's own checkout, that refuses to hand back a possibly-truncated
-result.
+Every check reads local files only. Two GitHub-facing checks once lived here behind
+``--check-issues`` and ``--check-issue-orphans`` flags; they were removed because tying every
+open issue to the phase plan cost more upkeep than it returned, and because a checker that
+needs network access and ``gh`` auth cannot run identically in the pre-commit hook and in CI.
+An ``issue:NNN`` Phase value remains valid vocabulary; nothing resolves it against GitHub.
 
 Usage::
 
     uv run python scripts/check_work_linkage.py
     uv run python scripts/check_work_linkage.py --register path/to/register.md
-    uv run python scripts/check_work_linkage.py --check-issues --check-issue-orphans
 
 Exit codes:
     0 - every check passed.
@@ -87,9 +84,7 @@ Exit codes:
 from __future__ import annotations
 
 import argparse
-import json
 import re
-import subprocess
 import sys
 import tomllib
 from pathlib import Path
@@ -243,53 +238,8 @@ _CAP_STATUS_GLYPH_ORDER = (_CAP_DONE_MARK, _CAP_PARTIAL_MARK, _CAP_MISSING_MARK)
 _CAP_OPEN_GLYPHS = frozenset({_CAP_PARTIAL_MARK, _CAP_MISSING_MARK})
 _CAP_STATUS_GLYPHS = frozenset(_CAP_STATUS_GLYPH_ORDER)
 
-# An "issue:NNN" Phase cell, capturing the number (the vocabulary check, _ISSUE_RE above, only
-# needs to confirm the shape; the GitHub issue checks need the number itself).
-_ISSUE_PHASE_NUMBER_RE = re.compile(r"^issue:(\d+)$")
-# A bare "#NNN" reference, used both inside a cluster D row's Issues column and when scanning
-# the wider docs/planning/ tree for citations (the orphan check). The guards on both sides are
-# load-bearing, not defensive decoration: this pattern decides whether an open issue counts as
-# cited, so anything it over-matches silently converts an orphaned issue into a "cited" one.
-#   * the leading `(?<![#0-9A-Za-z_])` rejects a "#" that is itself part of a longer token or a
-#     heading run, so "###5" and the tail of a hex colour never yield a number;
-#   * the `(?<!PR )` / `(?<!pr )` / `(?<!PRs )` guards reject a pull-request reference, which
-#     this tree writes as "PR #270" in several planning documents and which is not an issue;
-#   * the trailing `(?![0-9A-Za-z_-])` rejects "#4a4a4a" (a hex colour) and "#4-heading" (a
-#     markdown anchor), and deliberately also rejects the first half of a "#105-#109" span,
-#     since dropping an ambiguous reference over-reports orphans while keeping one under-reports
-#     them, and only under-reporting is silent.
-_BARE_ISSUE_REF_RE = re.compile(
-    r"(?<![#0-9A-Za-z_])(?<!PR )(?<!pr )(?<!PRs )#(\d+)(?![0-9A-Za-z_-])"
-)
-# An inline "issue:NNN" mention in prose (not anchored like _ISSUE_PHASE_NUMBER_RE, since prose
-# can carry it mid-sentence rather than as a whole Phase cell value).
-_PROSE_ISSUE_REF_RE = re.compile(r"\bissue:(\d+)\b")
-
-# #ASSUME: external resource: gh issue list over the network can hang on a stalled connection.
-# #VERIFY: _fetch_github_issues passes this as subprocess.run's timeout, so a hung call becomes
-# a reported problem (TimeoutExpired caught explicitly) rather than blocking the run forever.
-_GH_ISSUE_LIST_TIMEOUT_SECONDS = 30
-# #CRITICAL: data integrity: gh issue list truncates silently at --limit. A truncated set makes
-# --check-issues report real issues as "does not exist on GitHub" and makes --check-issue-orphans
-# miss every open issue past the cut, both of which read as findings about the documents rather
-# than as a fetch that came back short.
-# #VERIFY: _fetch_github_issues compares the returned count against this bound and reports a
-# problem instead of returning a partial list, so no check ever runs on truncated data.
-_GH_ISSUE_LIST_LIMIT = 500
-
 # The mapping section roadmap.md's linkage contract points at for capability-register linkage.
 _ROADMAP_MAPPING_HEADING = "### Where every open register item lands"
-
-# The header cell names a cluster table uses for its GitHub-issue citation column. Both
-# spellings are live in the register today, and a cluster is free to use either.
-_CLUSTER_ISSUE_COLUMN_NAMES = ("Issues", "Issue")
-
-# The deliberate, explicit escape hatch from the "every open issue needs a citation" rule.
-_UNPLANNED_LABEL = "unplanned"
-# File suffixes the orphan check scans for citations. plan-manifest.toml is part of the plan's
-# machine-readable spine, so a citation living there satisfies the rule exactly as a markdown
-# one does; scanning markdown alone made the manifest unable to give an issue a home.
-_PLANNING_DOC_SUFFIXES = frozenset({".md", ".toml"})
 
 # "`SL1` through `SL10`" style natural-language ranges: a same-prefix id range spelled out with
 # "through" instead of listing every id, used once in cluster B for the ten SL debts (each id is
@@ -2184,394 +2134,6 @@ def _capability_summary(capability_register_path: Path) -> str:
     return f"     {total} capability row(s): {', '.join(parts)}\n"
 
 
-def _resolve_cluster_issues_index(header_cells: list[str]) -> int | None:
-    """Return a cluster header's issue-citation column index, or None when it has no such column.
-
-    Any cluster whose header carries an issue-citation column participates in the bare-``#NNN``
-    half of citation collection; clusters without one are skipped for that half and contribute
-    only their ``issue:NNN`` ``Phase`` values. Both the plural and singular spellings of the
-    column are accepted, because the register's cluster tables use both: matching only the plural
-    silently dropped every row of the cluster headed ``| ID | Item | Issue | Status |``, so its
-    citations were never checked against GitHub at all. Which clusters happen to have the column
-    today is a fact about a different file and is deliberately not asserted here.
-
-    Args:
-        header_cells: A cluster table's header cells.
-
-    Returns:
-        int | None: The 0-based index of the first issue-citation column, or None.
-    """
-    return next(
-        (
-            header_cells.index(name)
-            for name in _CLUSTER_ISSUE_COLUMN_NAMES
-            if name in header_cells
-        ),
-        None,
-    )
-
-
-def _collect_register_issue_citations(
-    clusters: dict[str, tuple[list[str], list[tuple[int, list[str]]]]],
-) -> dict[int, list[tuple[str, str]]]:
-    """Collect every GitHub issue number cited in the register, with each citing row's id/status.
-
-    Two citation shapes are recognised: an ``issue:NNN`` ``Phase`` value (any cluster with a
-    ``Phase`` column), and a bare ``#NNN`` reference inside any cluster's issue-citation column
-    (see ``_resolve_cluster_issues_index``).
-
-    Args:
-        clusters: Cluster letter mapped to its header cells and data rows, as returned by
-            ``_find_clusters``.
-
-    Returns:
-        dict[int, list[tuple[str, str]]]: Issue number mapped to every (row id, row ``Status``)
-            pair that cites it. A number cited by more than one row keeps every citation, since
-            each citing row's own ``Status`` independently determines whether citing a closed
-            issue is a problem.
-    """
-    citations: dict[int, list[tuple[str, str]]] = {}
-
-    def _add(number: int, entry_id: str, status: str) -> None:
-        citations.setdefault(number, []).append((entry_id, status))
-
-    for header_cells, rows in clusters.values():
-        indexes = _resolve_column_indexes(header_cells)
-        id_idx, status_idx, phase_idx = (
-            indexes["ID"],
-            indexes["Status"],
-            indexes["Phase"],
-        )
-        issues_idx = _resolve_cluster_issues_index(header_cells)
-        for _line_number, cells in rows:
-            if len(cells) != len(header_cells):
-                continue
-            entry_id = cells[id_idx] if id_idx is not None else ""
-            status = cells[status_idx] if status_idx is not None else ""
-            if phase_idx is not None:
-                phase_match = _ISSUE_PHASE_NUMBER_RE.match(cells[phase_idx])
-                if phase_match:
-                    _add(int(phase_match.group(1)), entry_id, status)
-            if issues_idx is not None:
-                for issue_match in _BARE_ISSUE_REF_RE.finditer(cells[issues_idx]):
-                    _add(int(issue_match.group(1)), entry_id, status)
-
-    return citations
-
-
-def _validate_github_issue_payload(
-    payload: object, problems: list[str]
-) -> list[dict[str, Any]] | None:
-    """Confirm a decoded ``gh issue list`` payload has the shape every caller assumes.
-
-    ``_check_cited_issues_not_closed`` indexes ``issue["number"]`` and ``_check_issue_orphans``
-    calls ``label.get("name")`` over ``issue["labels"]``. Both assumptions were unchecked, so a
-    malformed entry surfaced as a ``KeyError``/``TypeError``/``AttributeError`` traceback deep in
-    a check rather than as a reported problem at the boundary where the data enters. Validating
-    once here is what lets those two functions state their preconditions instead of guarding
-    them.
-
-    Args:
-        payload: The decoded JSON document, of unknown shape.
-        problems: The running problem list; every shape violation is appended here.
-
-    Returns:
-        list[dict[str, Any]] | None: The payload as a list of issue objects, or None when it does
-            not have that shape.
-    """
-    if not isinstance(payload, list):
-        problems.append("gh issue list returned JSON that is not a list of issues")
-        return None
-
-    shape_problems: list[str] = []
-    for position, entry in enumerate(payload):
-        if not isinstance(entry, dict):
-            shape_problems.append(
-                f"entry {position} is {type(entry).__name__}, not an issue object"
-            )
-            continue
-        number = entry.get("number")
-        # bool is an int subclass; a JSON `true` here would otherwise pass as issue number 1.
-        if not isinstance(number, int) or isinstance(number, bool):
-            shape_problems.append(
-                f"entry {position} has number={number!r}, which is not an integer"
-            )
-        labels = entry.get("labels", [])
-        if not isinstance(labels, list) or not all(
-            isinstance(label, dict) for label in labels
-        ):
-            shape_problems.append(
-                f"entry {position} (issue {number!r}) has labels={labels!r}, which is not a "
-                f"list of label objects"
-            )
-    if shape_problems:
-        joined = "; ".join(shape_problems)
-        problems.append(f"gh issue list returned unexpected-shape JSON: {joined}")
-        return None
-
-    return payload
-
-
-def _fetch_github_issues(problems: list[str]) -> list[dict[str, Any]] | None:
-    """Fetch issues (open and closed) via one batched, capped ``gh issue list`` call.
-
-    A single call fetches number/state/title/labels for at most ``_GH_ISSUE_LIST_LIMIT`` issues,
-    so both ``--check-issues`` (cited issue not CLOSED) and ``--check-issue-orphans`` (every OPEN
-    issue cited somewhere) share this one network round trip rather than one call per issue
-    number. The cap is real, not nominal: a repository that outgrows it makes this function
-    report a problem rather than hand back a partial list.
-
-    # #ASSUME: external resource: gh is installed, authenticated, and the network is reachable.
-    # --check-issues/--check-issue-orphans are opt-in specifically so this call only ever runs
-    # when a caller (CI, not pre-commit) has deliberately asked for it.
-    # #VERIFY: every failure mode (missing binary, timeout, non-zero exit, unparsable JSON,
-    # unexpected-shape JSON per _validate_github_issue_payload, and a result at the --limit cap)
-    # is turned into an appended problem and a None return, never a silent empty or partial
-    # result: a check that can only pass is worse than no check at all.
-    # #ASSUME: external resource: `gh` resolves the target repository from its working
-    # directory's git remote, so a run started from another clone or worktree would validate this
-    # register against a different repository's issues.
-    # #VERIFY: cwd is pinned to _REPO_ROOT, derived from this file's own location, so the issues
-    # fetched always belong to the repository the script ships in; no owner/repo string is
-    # hardcoded, so a fork or a rename needs no edit here.
-
-    Args:
-        problems: The running problem list; a missing gh, an auth or network failure, a
-            timeout, a non-zero exit, unparsable or unexpected-shape JSON, or a truncated result
-            is appended here instead of raised.
-
-    Returns:
-        list[dict[str, Any]] | None: The parsed issue list (each entry carrying an integer
-            ``number`` and a list of label objects), or None if the call could not be completed
-            or its result cannot be trusted to be complete.
-    """
-    try:
-        result = subprocess.run(
-            [
-                "gh",
-                "issue",
-                "list",
-                "--state",
-                "all",
-                "--limit",
-                str(_GH_ISSUE_LIST_LIMIT),
-                "--json",
-                "number,state,title,labels",
-            ],
-            capture_output=True,
-            text=True,
-            timeout=_GH_ISSUE_LIST_TIMEOUT_SECONDS,
-            check=False,
-            cwd=_REPO_ROOT,
-        )
-    except FileNotFoundError:
-        problems.append(
-            "gh is not installed or not on PATH; --check-issues/--check-issue-orphans "
-            "require the GitHub CLI"
-        )
-        return None
-    except subprocess.TimeoutExpired:
-        problems.append(
-            f"gh issue list did not complete within {_GH_ISSUE_LIST_TIMEOUT_SECONDS}s"
-        )
-        return None
-
-    if result.returncode != 0:
-        problems.append(
-            f"gh issue list failed (exit {result.returncode}): {result.stderr.strip()}"
-        )
-        return None
-
-    try:
-        payload = json.loads(result.stdout)
-    except json.JSONDecodeError as exc:
-        problems.append(f"gh issue list returned unparsable JSON: {exc}")
-        return None
-
-    issues = _validate_github_issue_payload(payload, problems)
-    if issues is None:
-        return None
-
-    if len(issues) >= _GH_ISSUE_LIST_LIMIT:
-        problems.append(
-            f"gh issue list returned {len(issues)} issues, at or above its --limit of "
-            f"{_GH_ISSUE_LIST_LIMIT}, so the result may be truncated; raise the limit or page "
-            f"the query. Continuing on a partial set would report real issues as nonexistent "
-            f"and under-report orphans"
-        )
-        return None
-
-    return issues
-
-
-def _check_cited_issues_not_closed(
-    citations: dict[int, list[tuple[str, str]]],
-    issues: list[dict[str, Any]],
-    register_path: Path,
-) -> list[str]:
-    """Check every cited issue exists and, when its citing row is not done, is not CLOSED.
-
-    Args:
-        citations: Issue number mapped to citing (row id, row ``Status``) pairs, as returned by
-            ``_collect_register_issue_citations``.
-        issues: The fetched issue list, as returned by ``_fetch_github_issues``, whose entries
-            are already validated to be objects with an integer ``number``.
-        register_path: The unscheduled-work register's path, for message text.
-
-    Returns:
-        list[str]: One problem per citation of a nonexistent issue, plus one problem per
-            not-done row citing an issue GitHub reports CLOSED.
-    """
-    problems: list[str] = []
-    lookup = {issue["number"]: issue for issue in issues}
-    for number, citers in sorted(citations.items()):
-        issue = lookup.get(number)
-        if issue is None:
-            problems.extend(
-                f"{register_path.name}: row '{entry_id}' cites issue #{number}, which "
-                f"does not exist on GitHub"
-                for entry_id, _status in citers
-            )
-            continue
-        if issue.get("state") != "CLOSED":
-            continue
-        problems.extend(
-            f"{register_path.name}: row '{entry_id}' (status '{status}') cites issue "
-            f"#{number} ('{issue.get('title', '')}'), which GitHub reports CLOSED"
-            for entry_id, status in citers
-            if status != "done"
-        )
-    return problems
-
-
-def _extract_issue_numbers_from_text(text: str) -> set[int]:
-    """Return every GitHub issue number cited in a block of prose.
-
-    Recognises both a bare ``#NNN`` reference and an inline ``issue:NNN`` mention.
-
-    Args:
-        text: The prose to search.
-
-    Returns:
-        set[int]: Every issue number cited.
-    """
-    numbers = {int(match) for match in _BARE_ISSUE_REF_RE.findall(text)}
-    numbers |= {int(match) for match in _PROSE_ISSUE_REF_RE.findall(text)}
-    return numbers
-
-
-def _planning_docs_cited_issue_numbers(planning_dir: Path) -> set[int]:
-    """Return every issue number cited anywhere in the planning tree under ``planning_dir``.
-
-    Args:
-        planning_dir: The directory to search recursively for planning documents (in the real
-            repository, ``docs/planning/``). Both markdown and TOML are searched: see
-            ``_PLANNING_DOC_SUFFIXES``.
-
-    Returns:
-        set[int]: Every issue number cited in any planning document found.
-    """
-    numbers: set[int] = set()
-    for path in sorted(planning_dir.rglob("*")):
-        if path.suffix not in _PLANNING_DOC_SUFFIXES or not path.is_file():
-            continue
-        try:
-            text = path.read_text(encoding="utf-8")
-        except (OSError, UnicodeDecodeError):
-            continue
-        numbers |= _extract_issue_numbers_from_text(text)
-    return numbers
-
-
-def _check_issue_orphans(
-    issues: list[dict[str, Any]], cited_numbers: set[int]
-) -> list[str]:
-    """Check every OPEN issue is either cited under docs/planning/ or labelled ``unplanned``.
-
-    Args:
-        issues: The fetched issue list, as returned by ``_fetch_github_issues``, whose entries
-            are already validated to carry a list of label objects.
-        cited_numbers: Every issue number cited anywhere under docs/planning/, as returned by
-            ``_planning_docs_cited_issue_numbers``.
-
-    Returns:
-        list[str]: One problem per orphaned open issue, worded like every other message in this
-            module: the rule broken, then the remedy. Emitting a bare ``"#NNN <title>"`` made
-            these the only entries in the shared problem list that named a fact without naming
-            what to do about it.
-    """
-    problems: list[str] = []
-    for issue in issues:
-        if issue.get("state") != "OPEN":
-            continue
-        number = issue.get("number")
-        if number in cited_numbers:
-            continue
-        labels = {label.get("name", "") for label in issue.get("labels", [])}
-        if _UNPLANNED_LABEL in labels:
-            continue
-        problems.append(
-            f"issue #{number} ('{issue.get('title', '')}') is OPEN but is cited in no "
-            f"document under docs/planning/ and does not carry the '{_UNPLANNED_LABEL}' "
-            f"label; give it a phase home (cite it from a planning document, for example an "
-            f"'issue:{number}' Phase value or a register row's issue column) or label it "
-            f"'{_UNPLANNED_LABEL}'"
-        )
-    return problems
-
-
-def _check_issues(
-    register_path: Path,
-    planning_dir: Path,
-    *,
-    check_issues: bool,
-    check_issue_orphans: bool,
-) -> list[str]:
-    """Run the opt-in GitHub issue checks, sharing one batched ``gh issue list`` call.
-
-    Both checks are off by default (see ``main``'s ``--check-issues``/``--check-issue-orphans``
-    flags): they need network access and ``gh`` auth, which pre-commit's offline, fast posture
-    cannot assume, so only an explicit flag (as CI passes) runs them at all.
-
-    Args:
-        register_path: The unscheduled-work register markdown file, searched for citations by
-            ``--check-issues``.
-        planning_dir: The directory searched recursively for citations by
-            ``--check-issue-orphans`` (in the real repository, ``docs/planning/``).
-        check_issues: Whether to run the cited-issue-not-closed check.
-        check_issue_orphans: Whether to run the open-issue-cited-somewhere check.
-
-    Returns:
-        list[str]: Problems found; empty when neither flag is set or every check passes.
-    """
-    if not check_issues and not check_issue_orphans:
-        return []
-
-    problems: list[str] = []
-    issues = _fetch_github_issues(problems)
-    if issues is None:
-        return problems
-
-    if check_issues:
-        register_lines = _read_lines(register_path, problems)
-        if register_lines is not None:
-            try:
-                clusters = _find_clusters(register_lines)
-            except LookupError as exc:
-                problems.append(f"{register_path.name}: {exc}")
-            else:
-                citations = _collect_register_issue_citations(clusters)
-                problems.extend(
-                    _check_cited_issues_not_closed(citations, issues, register_path)
-                )
-
-    if check_issue_orphans:
-        cited_numbers = _planning_docs_cited_issue_numbers(planning_dir)
-        problems.extend(_check_issue_orphans(issues, cited_numbers))
-
-    return problems
-
-
 def main(argv: list[str] | None = None) -> int:
     """Validate the work-linkage contract using paths named on the command line.
 
@@ -2626,26 +2188,6 @@ def main(argv: list[str] | None = None) -> int:
         default=str(_DEFAULT_CAPABILITY_REGISTER),
         help="Path to the capability register markdown file.",
     )
-    parser.add_argument(
-        "--check-issues",
-        action="store_true",
-        help=(
-            "Also validate that a register row citing a GitHub issue (an 'issue:NNN' Phase "
-            "value, or a bare '#NNN' inside a cluster D row) never cites an issue GitHub "
-            "reports CLOSED while the row itself is not done, and that every cited issue "
-            "number exists. Off by default: needs network access and 'gh' auth, so pre-commit "
-            "stays offline; only CI passes this flag."
-        ),
-    )
-    parser.add_argument(
-        "--check-issue-orphans",
-        action="store_true",
-        help=(
-            "Also validate that every OPEN GitHub issue is cited by some markdown or TOML "
-            "document under docs/planning/, or carries the 'unplanned' label. Off by default, "
-            "independent of --check-issues: needs network access and 'gh' auth."
-        ),
-    )
     args = parser.parse_args(argv)
 
     register_path = Path(args.register)
@@ -2658,14 +2200,6 @@ def main(argv: list[str] | None = None) -> int:
         capability_register_path,
         manifest_path=Path(args.manifest),
         project_plan_path=Path(args.project_plan),
-    )
-    problems.extend(
-        _check_issues(
-            register_path,
-            register_path.parent,
-            check_issues=args.check_issues,
-            check_issue_orphans=args.check_issue_orphans,
-        )
     )
     if problems:
         sys.stdout.write(f"FAIL {register_path}:\n")
