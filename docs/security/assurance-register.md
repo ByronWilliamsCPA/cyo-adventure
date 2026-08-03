@@ -96,7 +96,7 @@ government contract clauses.
 | --- | --- | --- |
 | **FTC Act §5** | Any consumer-facing product. Security and privacy claims in the notice become enforceable representations | O-38, O-62, O-94 |
 | **COPPA** (compliance date 22 Apr 2026, therefore live) | Children under 13, child-directed service | O-35, O-36, O-61, O-62, O-31 |
-| **State breach notification** | Attaches with the first non-household user | O-92 |
+| **State breach notification** | The regime attaches with the first non-household user; the notice duty itself fires on discovery of a qualifying breach | O-92 |
 | **ADA / WCAG** | Consumer-facing; also overlaps the age-appropriate-design duty to be understandable | O-95 |
 
 ### Regimes that attach at a named trigger
@@ -400,8 +400,9 @@ US equivalents are COPPA §312.8 ongoing safeguard testing and annual evaluation
 - **Owner:** core-maintainer
 - **Last verified:** not verified
 - **Status:** mechanism unproven
-- **Check:** Every automated check records its production control target, execution trigger,
-  evidence artifact, failure oracle, and owner; a quarterly query finds rows missing any field
+- **Check:** Every automated check records its verification target, trigger, existing coverage,
+  failure oracle, and owner, named with the spine's own schema fields so the query is writable
+  against real rows; a quarterly query finds rows missing any field
 
 #### O-67
 
@@ -1114,7 +1115,9 @@ is visible as a section with no rows rather than as a question nobody asked.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
 - **Last verified:** not verified
-- **Status:** accepted exception
+- **Status:** finding open (the spine defines *accepted exception* as risk, compensating controls,
+  and expiry recorded. None of the three exists yet, so claiming that status here would assert the
+  work the Check below prescribes as already done)
 - **Check:** **AC.4.1** requires AI-generated code to be reviewed by a human who is not the
   identity that requested the generation. A single-maintainer AI-assisted repository cannot
   satisfy this as written. Record as an **accepted exception with compensating controls and an
@@ -1335,8 +1338,8 @@ of AC.3.3 and AC.11.1; the published requirements are stricter and are the bette
 - **Failure oracle:** The origin accepts a request that did not traverse the intended edge, or
   accepts a connection from the edge without mTLS being enforced.
 - **Negative control:** not determined
-- **Trigger:** not determined (the reassessment trigger would be named in `control-inheritance.md`;
-  not stated in this row)
+- **Trigger:** on closure (`control-inheritance.md` names A9's re-validation trigger as
+  *On closure*)
 - **Existing coverage:** none; this row is a confirmed open finding (`control-inheritance.md` item
   A9), not a passing gate
 - **Phase home:** unassigned
@@ -3280,6 +3283,17 @@ Three external deep-research runs, 2026-08-02, all treated as untrusted data and
 primary sources where a claim was load-bearing. All three disclosed or exhibited anchoring on the
 sixteen-category spine they were shown; convergence with it is partly contaminated and divergence
 from it is the higher-signal part.
+
+**Known gap, not closed here.** The runs are identified by vote count and date only. There is no
+per-run identifier, no retrieval date or document version for the primary sources each claim was
+checked against, and no evidence artifact a reader could re-open. The load-bearing claims that
+would need such citations are the state-law counts, the AISVS Appendix C coverage figure, and the
+regime-applicability determinations. Making those reproducible means a source-and-evidence table
+with stable IDs cited from each claim, which is a deliverable in its own right rather than a
+correction to this one, and it is recorded here instead of built so that the deficiency is visible
+in the document that has it. Until it exists, treat the reconciliation narrative below as an
+account of how the structure was reached, not as evidence for any individual fact in it; the facts
+carry their own citations where they are used.
 
 ### Adopted on multi-run agreement
 
