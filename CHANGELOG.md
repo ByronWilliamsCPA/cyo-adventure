@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.61.1] - 2026-08-03
+
+### Bug Fixes
+
+- **e2e**: Make a leaked staging device grant fail the CI job
+  ([#583](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/583),
+  [`b8502ba`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/b8502bab0a6c83a966dd425d1ea6857026c36502))
+
+- **logging**: Close redaction gaps left open by PR #581
+  ([#592](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/592),
+  [`b9f352f`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/b9f352fd4e40ae4c1dcb8ac7879fc1fda6c40f25))
+
+
 ## [0.61.0] - 2026-08-03
 
 ### Features
@@ -3076,6 +3089,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.61.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.61.0...v0.61.1
 [0.61.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.60.3...v0.61.0
 [0.60.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.60.2...v0.60.3
 [0.60.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.60.1...v0.60.2
