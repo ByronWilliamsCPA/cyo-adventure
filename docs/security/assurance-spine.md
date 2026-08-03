@@ -23,8 +23,9 @@ and a reassessment trigger for each N/A. An instantiation is conventionally a si
 `assurance-register.md`; this document deliberately does not link to one, because a relative link
 resolves only in the repository the spine happens to be sitting in.
 
-Intended destination is the global standards set (`~/.claude/standards/`), so that a new project
-starts from the spine rather than rediscovering it. Nothing below depends on any one repository:
+Intended destination is the operator's global standards set, wherever their tooling keeps one, so
+that a new project starts from the spine rather than rediscovering it. The concrete install path is
+a property of that tool, not of this document. Nothing below depends on any one repository:
 where a concrete figure appears, it is labelled as an observation from a particular instantiation
 rather than as a property of the spine.
 
