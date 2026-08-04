@@ -17,6 +17,13 @@ sliding-window-log algorithm in Python against a shared in-memory dict. Two
 `RateLimitMiddleware` instances constructed with the SAME `_FakeAsyncRedis`
 instance model two worker processes sharing one Redis server -- the
 multi-process property this backend exists to provide.
+
+Every rate-limit trip (OPS-005) now also calls
+`middleware.security.record_security_event`, which opens a real DB session
+when unmocked; the module-scoped `_mock_security_event_writer` autouse
+fixture below patches it for every test in this file so none of them make a
+real database connection attempt, matching the no-real-network-calls rule
+above.
 """
 
 from __future__ import annotations
@@ -24,15 +31,43 @@ from __future__ import annotations
 import json
 import time
 from typing import TYPE_CHECKING
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from starlette.responses import Response
 
 pytestmark = [pytest.mark.security]
+
+
+@pytest.fixture(autouse=True)
+def _mock_security_event_writer() -> Iterator[AsyncMock]:
+    """Patch record_security_event for every test in this module (OPS-005).
+
+    RateLimitMiddleware calls this on every 429 trip; unit tests must not
+    make real network/database calls (tests/CLAUDE.md), so this is autouse
+    rather than opt-in per test. Tests that need the mock VALUE (to assert
+    on) take the ``security_event_writer`` alias below instead of this
+    fixture directly: a leading-underscore fixture consumed as a test
+    parameter trips Ruff's PT019 ("side-effect only"), the same reason
+    ``tests/integration/conftest.py`` aliases ``_pg_url`` as ``pg_url``.
+    """
+    with patch(
+        "cyo_adventure.middleware.security.record_security_event"
+    ) as mock_record:
+        yield mock_record
+
+
+@pytest.fixture
+def security_event_writer(_mock_security_event_writer: AsyncMock) -> AsyncMock:
+    """Public alias for ``_mock_security_event_writer``'s mock; see its docstring."""
+    return _mock_security_event_writer
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -343,14 +378,15 @@ class TestRateLimitMiddleware:
         assert response.status_code == 429
 
     @pytest.mark.unit
-    def test_rate_limit_trip_emits_security_event(self) -> None:
+    def test_rate_limit_trip_emits_security_event(
+        self, security_event_writer: AsyncMock
+    ) -> None:
         """A tripped rpm limit logs a distinct, attributable security event
-        (OPS-005): before this, only the Redis-unavailable fallback path
-        logged anything, so a rate-limit trip against a healthy backend left
-        no trace to detect or reconstruct an attack from.
+        (OPS-005), and records it to the durable security_event table: before
+        this, only the Redis-unavailable fallback path logged anything, so a
+        rate-limit trip against a healthy backend left no trace to detect or
+        reconstruct an attack from.
         """
-        from unittest.mock import patch
-
         app = self._rate_limited_app(requests_per_minute=1, burst_size=100)
         client = TestClient(app, raise_server_exceptions=False)
 
@@ -366,14 +402,21 @@ class TestRateLimitMiddleware:
             requests_per_minute=1,
             suppressed_since_last=0,
         )
+        security_event_writer.assert_awaited_once_with(
+            event_type="security_rate_limit_exceeded",
+            reason="rpm",
+            client_ip="testclient",
+            status_code=429,
+        )
 
     @pytest.mark.unit
-    def test_burst_limit_trip_emits_security_event(self) -> None:
+    def test_burst_limit_trip_emits_security_event(
+        self, security_event_writer: AsyncMock
+    ) -> None:
         """A tripped burst limit logs the same distinct security event as an
-        rpm trip, tagged `limit_type="burst"` (OPS-005).
+        rpm trip, tagged `limit_type="burst"` (OPS-005), and records the same
+        to the durable security_event table.
         """
-        from unittest.mock import patch
-
         from cyo_adventure.middleware.security import RateLimitMiddleware
 
         app = _minimal_app()
@@ -393,22 +436,29 @@ class TestRateLimitMiddleware:
             burst_size=2,
             suppressed_since_last=0,
         )
+        security_event_writer.assert_awaited_once_with(
+            event_type="security_rate_limit_exceeded",
+            reason="burst",
+            client_ip="testclient",
+            status_code=429,
+        )
 
     @pytest.mark.unit
-    def test_repeated_trips_within_interval_log_once_with_suppressed_tally(
-        self,
+    @pytest.mark.asyncio
+    async def test_repeated_trips_within_interval_log_once_with_suppressed_tally(
+        self, security_event_writer: AsyncMock
     ) -> None:
-        """A flood produces ONE log line per IP per interval, not one per
-        rejected request.
+        """A flood produces ONE log line (and ONE durable write) per IP per
+        interval, not one per rejected request.
 
         This is the bound that makes `security_rate_limit_exceeded` safe to
         emit at all. A rejected request returns before it is appended to the
         sliding window (`_check_memory` returns above the `append`), so the
         requests-per-minute cap does not limit how many trips a flooding
-        client can generate: without this throttle, log volume tracks the
-        attacker's raw request rate against the host's disk.
+        client can generate: without this throttle, log AND durable-write
+        volume would track the attacker's raw request rate.
         """
-        from unittest.mock import MagicMock, patch
+        from unittest.mock import MagicMock
 
         from cyo_adventure.middleware.security import RateLimitMiddleware
 
@@ -416,11 +466,13 @@ class TestRateLimitMiddleware:
             app=MagicMock(), requests_per_minute=1, burst_size=100
         )
         t0 = 1_000_000.0
-        assert middleware._check_memory("198.51.100.7", t0) is None
+        assert await middleware._check_memory("198.51.100.7", t0) is None
 
         with patch("cyo_adventure.middleware.security._struct_logger") as mock_logger:
             for offset in range(1, 51):
-                response = middleware._check_memory("198.51.100.7", t0 + offset * 0.01)
+                response = await middleware._check_memory(
+                    "198.51.100.7", t0 + offset * 0.01
+                )
                 assert response is not None
                 assert response.status_code == 429
 
@@ -431,6 +483,11 @@ class TestRateLimitMiddleware:
         ]
         assert len(trips) == 1
         assert trips[0].kwargs["suppressed_since_last"] == 0
+        # The durable write is nested inside the same throttle guard as the
+        # log line (OPS-005 C-2): one write for the whole 50-trip flood, not
+        # 50 -- the write-amplification the throttle exists to bound applies
+        # equally to the DB, not just the log store.
+        assert security_event_writer.await_count == 1
 
         # Once the interval rolls, the next trip logs again and reports how
         # many were swallowed in between, so the suppression is auditable
@@ -438,8 +495,10 @@ class TestRateLimitMiddleware:
         with patch("cyo_adventure.middleware.security._struct_logger") as mock_logger:
             # The original request has aged out of the 60s window by now, so
             # this one is admitted and re-primes the window; the next trips.
-            assert middleware._check_memory("198.51.100.7", t0 + 61) is None
-            assert middleware._check_memory("198.51.100.7", t0 + 61.01) is not None
+            assert await middleware._check_memory("198.51.100.7", t0 + 61) is None
+            assert (
+                await middleware._check_memory("198.51.100.7", t0 + 61.01) is not None
+            )
         trips = [
             call
             for call in mock_logger.warning.call_args_list
@@ -447,6 +506,7 @@ class TestRateLimitMiddleware:
         ]
         assert len(trips) == 1
         assert trips[0].kwargs["suppressed_since_last"] == 49
+        assert security_event_writer.await_count == 2
 
     @pytest.mark.unit
     def test_trip_log_state_is_bounded_by_max_tracked_ips(self) -> None:
@@ -577,6 +637,60 @@ class TestRateLimitMiddleware:
         assert "3.3.3.3" in middleware.requests
         assert "2.2.2.2" in middleware.requests
         assert "1.1.1.1" not in middleware.requests
+
+    @pytest.mark.unit
+    def test_trip_reaches_the_real_writer_with_an_accepted_signature(self) -> None:
+        """One test drives the real writer, not the autouse AsyncMock.
+
+        Every other test in this module runs against
+        ``_mock_security_event_writer``, and an ``AsyncMock`` accepts any
+        keyword argument at all. That makes the rest of the file blind to
+        signature drift: rename a parameter on ``record_security_event`` and
+        every ``assert_awaited_once_with`` here still passes while production
+        raises ``TypeError`` inside the ASGI middleware on the first 429.
+        Restoring the real function for this one test closes that gap; only
+        the database session is mocked out.
+        """
+        from unittest.mock import MagicMock
+
+        from cyo_adventure.db.models import SecurityEvent
+        from cyo_adventure.security_audit import record_security_event
+
+        session = MagicMock()
+        session.commit = AsyncMock()
+
+        class _CM:
+            async def __aenter__(self) -> MagicMock:
+                return session
+
+            async def __aexit__(
+                self, exc_type: object, exc: object, tb: object
+            ) -> bool:
+                return False
+
+        app = self._rate_limited_app(requests_per_minute=1, burst_size=100)
+        client = TestClient(app, raise_server_exceptions=False)
+
+        client.get("/")
+        with (
+            # Overrides this module's autouse patch for this test only.
+            patch(
+                "cyo_adventure.middleware.security.record_security_event",
+                record_security_event,
+            ),
+            patch("cyo_adventure.security_audit.get_session", return_value=_CM()),
+        ):
+            response = client.get("/")
+
+        assert response.status_code == 429
+        session.add.assert_called_once()
+        row = session.add.call_args.args[0]
+        assert isinstance(row, SecurityEvent)
+        assert row.event_type == "security_rate_limit_exceeded"
+        assert row.reason == "rpm"
+        assert row.client_ip == "testclient"
+        assert row.status_code == 429
+        session.commit.assert_awaited_once()
 
 
 # ---------------------------------------------------------------------------
@@ -739,13 +853,15 @@ class TestRedisBackedRateLimitMiddleware:
 
     @pytest.mark.unit
     @pytest.mark.asyncio
-    async def test_redis_backend_trip_emits_security_event(self) -> None:
+    async def test_redis_backend_trip_emits_security_event(
+        self, security_event_writer: AsyncMock
+    ) -> None:
         """A tripped Redis-backend rpm limit logs the same distinct security
-        event as the memory backend (OPS-005); previously only the
-        Redis-unavailable fallback path (a different code path entirely)
-        logged anything.
+        event as the memory backend (OPS-005) and records it to the durable
+        security_event table; previously only the Redis-unavailable fallback
+        path (a different code path entirely) logged anything.
         """
-        from unittest.mock import MagicMock, patch
+        from unittest.mock import MagicMock
 
         from cyo_adventure.middleware.security import RateLimitMiddleware
 
@@ -772,14 +888,23 @@ class TestRedisBackedRateLimitMiddleware:
             requests_per_minute=1,
             suppressed_since_last=0,
         )
+        security_event_writer.assert_awaited_once_with(
+            event_type="security_rate_limit_exceeded",
+            reason="rpm",
+            client_ip="10.0.0.20",
+            status_code=429,
+        )
 
     @pytest.mark.unit
     @pytest.mark.asyncio
-    async def test_redis_backend_burst_trip_emits_security_event(self) -> None:
+    async def test_redis_backend_burst_trip_emits_security_event(
+        self, security_event_writer: AsyncMock
+    ) -> None:
         """The Redis-backend burst-limit trip is tagged `limit_type="burst"`,
-        mirroring the memory backend's burst event (OPS-005).
+        mirroring the memory backend's burst event (OPS-005), and records the
+        same to the durable security_event table.
         """
-        from unittest.mock import MagicMock, patch
+        from unittest.mock import MagicMock
 
         from cyo_adventure.middleware.security import RateLimitMiddleware
 
@@ -806,6 +931,12 @@ class TestRedisBackedRateLimitMiddleware:
             client_ip="10.0.0.21",
             burst_size=2,
             suppressed_since_last=0,
+        )
+        security_event_writer.assert_awaited_once_with(
+            event_type="security_rate_limit_exceeded",
+            reason="burst",
+            client_ip="10.0.0.21",
+            status_code=429,
         )
 
     @pytest.mark.unit

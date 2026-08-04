@@ -36,6 +36,8 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.responses import JSONResponse, RedirectResponse, Response
 
+from cyo_adventure.security_audit import record_security_event
+
 logger = logging.getLogger(__name__)
 # Structured logger for the Redis-backed rate limiter's fail-open path: an
 # operator alerting rule should be able to key on the `event` field
@@ -524,13 +526,24 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 dict(sorted_ips[: self.max_tracked_ips]),
             )
 
-    def _check_memory(self, client_ip: str, current_time: float) -> Response | None:
+    async def _check_memory(
+        self, client_ip: str, current_time: float
+    ) -> Response | None:
         """Evaluate the in-memory sliding-window counters for one request.
 
         Returns a 429 ``JSONResponse`` if either limit is exceeded, else
         records the request and returns ``None`` so the caller proceeds. Used
         both as the ``"memory"`` backend and as the fail-open fallback path
         for ``"redis"`` (see ``dispatch``).
+
+        # #CRITICAL: timing dependencies: async (not sync) specifically so
+        # the security-event DB write below can be awaited before this
+        # method returns its 429, rather than fired off unawaited from a
+        # sync context. Both call sites in dispatch already await this
+        # method.
+        # #VERIFY: test_security.py's trip-logging tests drive this through
+        # TestClient, which requires the awaited response to have already
+        # completed.
         """
         # Periodic cleanup to prevent memory leaks
         self._cleanup_stale_entries(current_time)
@@ -560,6 +573,21 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                     requests_per_minute=self.requests_per_minute,
                     suppressed_since_last=suppressed,
                 )
+                # #CRITICAL: security: nested inside the same throttle guard
+                # as the log line above, not a sibling of it -- a durable
+                # write for every suppressed trip would defeat the whole
+                # point of _tally_trip (bounding write volume under
+                # sustained abuse) by moving the amplification from the log
+                # store to Postgres instead.
+                # #VERIFY: test_security.py::TestRateLimitMiddleware::
+                # test_rate_limit_trip_emits_security_event and the
+                # companion throttle test both assert on this nesting.
+                await record_security_event(
+                    event_type="security_rate_limit_exceeded",
+                    reason="rpm",
+                    client_ip=client_ip,
+                    status_code=429,
+                )
             return JSONResponse(
                 status_code=429,
                 content={
@@ -587,6 +615,14 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                     client_ip=client_ip,
                     burst_size=self.burst_size,
                     suppressed_since_last=suppressed,
+                )
+                # #CRITICAL: security: see the rpm-limit branch above -- the
+                # durable write must stay inside the throttle guard.
+                await record_security_event(
+                    event_type="security_rate_limit_exceeded",
+                    reason="burst",
+                    client_ip=client_ip,
+                    status_code=429,
                 )
             return JSONResponse(
                 status_code=429,
@@ -683,6 +719,15 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                     requests_per_minute=self.requests_per_minute,
                     suppressed_since_last=suppressed,
                 )
+                # #CRITICAL: security: nested inside the throttle guard, same
+                # rationale as _check_memory's identical rpm branch.
+                # #VERIFY: test_security.py::TestRedisBackedRateLimitMiddleware.
+                await record_security_event(
+                    event_type="security_rate_limit_exceeded",
+                    reason="rpm",
+                    client_ip=client_ip,
+                    status_code=429,
+                )
             return JSONResponse(
                 status_code=429,
                 content={
@@ -704,6 +749,14 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                     client_ip=client_ip,
                     burst_size=self.burst_size,
                     suppressed_since_last=suppressed,
+                )
+                # #CRITICAL: security: see the code==1 branch above -- the
+                # durable write must stay inside the throttle guard.
+                await record_security_event(
+                    event_type="security_rate_limit_exceeded",
+                    reason="burst",
+                    client_ip=client_ip,
+                    status_code=429,
                 )
             return JSONResponse(
                 status_code=429,
@@ -747,9 +800,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                     client_ip=client_ip,
                     cooldown_seconds=cooldown_seconds,
                 )
-                decision = self._check_memory(client_ip, current_time)
+                decision = await self._check_memory(client_ip, current_time)
         else:
-            decision = self._check_memory(client_ip, current_time)
+            decision = await self._check_memory(client_ip, current_time)
 
         if decision is not None:
             return decision

@@ -62,6 +62,7 @@ from cyo_adventure.core.exceptions import (
 )
 from cyo_adventure.core.observability import init_sentry
 from cyo_adventure.middleware import CorrelationMiddleware, add_security_middleware
+from cyo_adventure.security_audit import record_security_event
 from cyo_adventure.utils.logging import get_logger, setup_logging
 
 if TYPE_CHECKING:
@@ -112,7 +113,7 @@ def _status_for(exc: ProjectBaseError) -> int:
     return 400
 
 
-def _handle_project_error(request: Request, exc: Exception) -> JSONResponse:
+async def _handle_project_error(request: Request, exc: Exception) -> JSONResponse:
     """Render a core exception as a JSON error response.
 
     The full error payload (including caller `value` and internal `context`)
@@ -121,6 +122,17 @@ def _handle_project_error(request: Request, exc: Exception) -> JSONResponse:
     `AuthorizationError` additionally emits a distinctly-named security event
     (see below), since this handler is the one place every such failure in
     the app passes through on its way to a response.
+
+    # #CRITICAL: timing dependencies: async (not sync) specifically so the
+    # security-event DB write below can be awaited before the response is
+    # sent, rather than fired via asyncio.create_task and risked being
+    # cancelled when the ASGI request scope tears down. FastAPI/Starlette's
+    # exception middleware awaits an async handler directly; no change is
+    # needed at the app.add_exception_handler registration site.
+    # #VERIFY: tests/unit/test_app.py's TestHandleProjectError and
+    # TestSecurityEventLogging classes are async (pytestmark inside the
+    # class body, per tests/CLAUDE.md's mixed-module convention) and await
+    # this handler directly.
 
     Args:
         request: The incoming request; read only for the client address,
@@ -182,13 +194,28 @@ def _handle_project_error(request: Request, exc: Exception) -> JSONResponse:
     # `path` cannot terminate a rendered log record.
     client_ip = request.client.host if request.client is not None else None
     if isinstance(exc, AuthenticationError):
+        reason = payload.get("message")
+        code = payload.get("code")
         logger.warning(
             "security_auth_failed",
-            reason=payload.get("message"),
-            code=payload.get("code"),
+            reason=reason,
+            code=code,
             client_ip=client_ip,
             path=request.url.path,
             method=request.method,
+        )
+        # #CRITICAL: external resources: record_security_event never raises
+        # (it swallows and logs its own DB failures internally); a security
+        # audit-trail outage must not turn this 401 into a 500.
+        # #VERIFY: security_audit.py's own #CRITICAL note and test suite.
+        await record_security_event(
+            event_type="security_auth_failed",
+            reason=str(reason) if reason is not None else "",
+            code=str(code) if code is not None else None,
+            client_ip=client_ip,
+            path=request.url.path,
+            method=request.method,
+            status_code=status,
         )
     elif isinstance(exc, AuthorizationError):
         # #CRITICAL: security: use the CLIENT-SAFE details (value/context
@@ -202,14 +229,30 @@ def _handle_project_error(request: Request, exc: Exception) -> JSONResponse:
         # test_authorization_error_security_event_omits_sensitive_detail_keys
         # (the class qualifier is required; the bare function name does not
         # resolve as a pytest node id).
+        reason = payload.get("message")
+        code = payload.get("code")
+        safe_details = _client_safe_error(payload).get("details")
         logger.warning(
             "security_authz_denied",
-            reason=payload.get("message"),
-            code=payload.get("code"),
+            reason=reason,
+            code=code,
             client_ip=client_ip,
             path=request.url.path,
             method=request.method,
-            details=_client_safe_error(payload).get("details"),
+            details=safe_details,
+        )
+        resource = (
+            safe_details.get("resource") if isinstance(safe_details, dict) else None
+        )
+        await record_security_event(
+            event_type="security_authz_denied",
+            reason=str(reason) if reason is not None else "",
+            code=str(code) if code is not None else None,
+            client_ip=client_ip,
+            path=request.url.path,
+            method=request.method,
+            status_code=status,
+            resource=str(resource) if resource is not None else None,
         )
     return JSONResponse(status_code=status, content=_client_safe_error(payload))
 
