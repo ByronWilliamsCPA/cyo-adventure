@@ -112,15 +112,20 @@ def _status_for(exc: ProjectBaseError) -> int:
     return 400
 
 
-def _handle_project_error(_request: Request, exc: Exception) -> JSONResponse:
+def _handle_project_error(request: Request, exc: Exception) -> JSONResponse:
     """Render a core exception as a JSON error response.
 
     The full error payload (including caller `value` and internal `context`)
     is logged server-side; the client body is sanitized so it never discloses
-    raw input or internal lifecycle state.
+    raw input or internal lifecycle state. An `AuthenticationError` or
+    `AuthorizationError` additionally emits a distinctly-named security event
+    (see below), since this handler is the one place every such failure in
+    the app passes through on its way to a response.
 
     Args:
-        _request: The incoming request (unused).
+        request: The incoming request; read only for the client address,
+            path, and method attached to a security event, never for
+            business logic.
         exc: The exception raised during handling.
 
     Returns:
@@ -142,6 +147,40 @@ def _handle_project_error(_request: Request, exc: Exception) -> JSONResponse:
         status_code=status,
         details=payload.get("details"),
     )
+    # #CRITICAL: security: OPS-005 -- AuthenticationError/AuthorizationError is
+    # raised from 35+ call sites (api/deps.py, api/*, core/child_session.py,
+    # core/device_grant.py, publishing/, covers/) and every one of them passes
+    # through this single handler, so this is the one choke point that emits a
+    # security-relevant event for all of them without instrumenting each raise
+    # site (and without changing require_principal's signature to thread a
+    # Request through it). The event name is deliberately distinct from
+    # "project_error" so a log-based alert/detection rule can key on it
+    # directly instead of parsing status_code out of a generic line, and it
+    # carries the client address/path/method the raise site itself never has
+    # access to. `reason` is always one of this codebase's fixed,
+    # developer-authored `msg = "..."` literals -- never caller input -- so
+    # logging it verbatim carries no injection or PII risk.
+    # #VERIFY: tests/unit/test_app.py::TestSecurityEventLogging asserts both
+    # event names, their fields, and that a non-auth ProjectBaseError (e.g.
+    # ValidationError) does NOT emit either one.
+    client_ip = request.client.host if request.client is not None else None
+    if isinstance(exc, AuthenticationError):
+        logger.warning(
+            "security_auth_failed",
+            reason=payload.get("message"),
+            client_ip=client_ip,
+            path=request.url.path,
+            method=request.method,
+        )
+    elif isinstance(exc, AuthorizationError):
+        logger.warning(
+            "security_authz_denied",
+            reason=payload.get("message"),
+            client_ip=client_ip,
+            path=request.url.path,
+            method=request.method,
+            details=payload.get("details"),
+        )
     return JSONResponse(status_code=status, content=_client_safe_error(payload))
 
 

@@ -343,6 +343,56 @@ class TestRateLimitMiddleware:
         assert response.status_code == 429
 
     @pytest.mark.unit
+    def test_rate_limit_trip_emits_security_event(self) -> None:
+        """A tripped rpm limit logs a distinct, attributable security event
+        (OPS-005): before this, only the Redis-unavailable fallback path
+        logged anything, so a rate-limit trip against a healthy backend left
+        no trace to detect or reconstruct an attack from.
+        """
+        from unittest.mock import patch
+
+        app = self._rate_limited_app(requests_per_minute=1, burst_size=100)
+        client = TestClient(app, raise_server_exceptions=False)
+
+        client.get("/")
+        with patch("cyo_adventure.middleware.security._struct_logger") as mock_logger:
+            response = client.get("/")
+
+        assert response.status_code == 429
+        mock_logger.warning.assert_any_call(
+            "security_rate_limit_exceeded",
+            limit_type="rpm",
+            client_ip="testclient",
+            requests_per_minute=1,
+        )
+
+    @pytest.mark.unit
+    def test_burst_limit_trip_emits_security_event(self) -> None:
+        """A tripped burst limit logs the same distinct security event as an
+        rpm trip, tagged `limit_type="burst"` (OPS-005).
+        """
+        from unittest.mock import patch
+
+        from cyo_adventure.middleware.security import RateLimitMiddleware
+
+        app = _minimal_app()
+        app.add_middleware(RateLimitMiddleware, requests_per_minute=1000, burst_size=2)
+        client = TestClient(app, raise_server_exceptions=False)
+
+        client.get("/")
+        client.get("/")
+        with patch("cyo_adventure.middleware.security._struct_logger") as mock_logger:
+            response = client.get("/")
+
+        assert response.status_code == 429
+        mock_logger.warning.assert_any_call(
+            "security_rate_limit_exceeded",
+            limit_type="burst",
+            client_ip="testclient",
+            burst_size=2,
+        )
+
+    @pytest.mark.unit
     def test_rate_limiter_cleanup_stale_entries(self) -> None:
         """_cleanup_stale_entries removes expired IP timestamps."""
         from unittest.mock import MagicMock
@@ -606,6 +656,75 @@ class TestRedisBackedRateLimitMiddleware:
         assert body["error"] == "Too Many Requests"
         assert body["retry_after"] == 60
         assert "Rate limit exceeded" in body["message"]
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_redis_backend_trip_emits_security_event(self) -> None:
+        """A tripped Redis-backend rpm limit logs the same distinct security
+        event as the memory backend (OPS-005); previously only the
+        Redis-unavailable fallback path (a different code path entirely)
+        logged anything.
+        """
+        from unittest.mock import MagicMock, patch
+
+        from cyo_adventure.middleware.security import RateLimitMiddleware
+
+        fake_redis = _FakeAsyncRedis()
+        middleware = RateLimitMiddleware(
+            app=MagicMock(),
+            requests_per_minute=1,
+            burst_size=100,
+            backend="redis",
+            redis_client=fake_redis,
+        )
+
+        t0 = 4_000_000.0
+        assert await middleware._check_redis("10.0.0.20", t0) is None
+        with patch("cyo_adventure.middleware.security._struct_logger") as mock_logger:
+            response = await middleware._check_redis("10.0.0.20", t0 + 1)
+
+        assert response is not None
+        assert response.status_code == 429
+        mock_logger.warning.assert_any_call(
+            "security_rate_limit_exceeded",
+            limit_type="rpm",
+            client_ip="10.0.0.20",
+            requests_per_minute=1,
+        )
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_redis_backend_burst_trip_emits_security_event(self) -> None:
+        """The Redis-backend burst-limit trip is tagged `limit_type="burst"`,
+        mirroring the memory backend's burst event (OPS-005).
+        """
+        from unittest.mock import MagicMock, patch
+
+        from cyo_adventure.middleware.security import RateLimitMiddleware
+
+        fake_redis = _FakeAsyncRedis()
+        middleware = RateLimitMiddleware(
+            app=MagicMock(),
+            requests_per_minute=1000,
+            burst_size=2,
+            backend="redis",
+            redis_client=fake_redis,
+        )
+
+        t0 = 5_000_000.0
+        assert await middleware._check_redis("10.0.0.21", t0) is None
+        assert await middleware._check_redis("10.0.0.21", t0 + 0.1) is None
+        with patch("cyo_adventure.middleware.security._struct_logger") as mock_logger:
+            response = await middleware._check_redis("10.0.0.21", t0 + 0.2)
+
+        assert response is not None
+        assert response.status_code == 429
+        mock_logger.warning.assert_any_call(
+            "security_rate_limit_exceeded",
+            limit_type="burst",
+            client_ip="10.0.0.21",
+            burst_size=2,
+        )
 
     @pytest.mark.unit
     @pytest.mark.asyncio

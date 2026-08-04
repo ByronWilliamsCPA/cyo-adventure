@@ -487,6 +487,19 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
         # Check rate limit
         if len(self.requests[client_ip]) >= self.requests_per_minute:
+            # #CRITICAL: security: OPS-005 -- a rate-limit trip is itself an
+            # abuse/attack signal (credential stuffing, brute force, DoS
+            # probing); prior to this the only logged rate-limit event was the
+            # Redis-outage fail-open path, so an actual sustained trip against
+            # a healthy backend left no trace to detect or reconstruct it from.
+            # #VERIFY: TestRateLimitMiddleware in test_security.py asserts
+            # this event on a tripped memory-backend request.
+            _struct_logger.warning(
+                "security_rate_limit_exceeded",
+                limit_type="rpm",
+                client_ip=client_ip,
+                requests_per_minute=self.requests_per_minute,
+            )
             return JSONResponse(
                 status_code=429,
                 content={
@@ -502,6 +515,16 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             1 for req_time in self.requests[client_ip] if current_time - req_time < 1
         )
         if recent_requests >= self.burst_size:
+            # #CRITICAL: security: OPS-005 -- see the rpm-limit branch above;
+            # same rationale applies to a burst-limit trip.
+            # #VERIFY: TestRateLimitMiddleware in test_security.py asserts
+            # this event on a tripped memory-backend burst.
+            _struct_logger.warning(
+                "security_rate_limit_exceeded",
+                limit_type="burst",
+                client_ip=client_ip,
+                burst_size=self.burst_size,
+            )
             return JSONResponse(
                 status_code=429,
                 content={
@@ -582,6 +605,18 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         )
         del count  # returned for observability/debugging only, unused here
         if code == 1:
+            # #CRITICAL: security: OPS-005 -- see RateLimitMiddleware._check_memory's
+            # rpm-limit branch for the full rationale; this is the Redis-backend
+            # equivalent, which previously logged nothing on an actual trip
+            # (only the Redis-unavailable fallback below it was logged).
+            # #VERIFY: test_security.py::TestRedisBackedRateLimitMiddleware
+            # asserts this event fires on a tripped Redis-backend request.
+            _struct_logger.warning(
+                "security_rate_limit_exceeded",
+                limit_type="rpm",
+                client_ip=client_ip,
+                requests_per_minute=self.requests_per_minute,
+            )
             return JSONResponse(
                 status_code=429,
                 content={
@@ -592,6 +627,15 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 headers={"Retry-After": "60"},
             )
         if code == 2:
+            # #CRITICAL: security: OPS-005 -- see the code==1 branch above.
+            # #VERIFY: test_security.py::TestRedisBackedRateLimitMiddleware
+            # asserts this event fires on a tripped Redis-backend burst.
+            _struct_logger.warning(
+                "security_rate_limit_exceeded",
+                limit_type="burst",
+                client_ip=client_ip,
+                burst_size=self.burst_size,
+            )
             return JSONResponse(
                 status_code=429,
                 content={
