@@ -3368,7 +3368,7 @@
   <h1>Breach Notification Runbook</h1>
 
 <p>Status: living document. Owner: Byron Williams (byronawilliams@gmail.com). Last reviewed:
-2026-07-20.</p>
+2026-08-04.</p>
 <p>This is the internal incident-response procedure required by GDPR Articles 33-34 and referenced
 by <code>docs/compliance/information-security-program.md</code> Section 5 (remediation plan Phase 6c,
 resolving <code>gdpr-compliance-review.md</code> finding G-09). It is distinct from <code>SECURITY.md</code>'s
@@ -3449,7 +3449,10 @@ is written down anyway so the steps are not improvised mid-incident, and so it h
 place to extend once the team grows.</p>
 <ol>
 <li><strong>Detection.</strong> Any of: a <code>SECURITY.md</code>-channel report, a monitoring/Sentry alert, a processor
-   notification, or a self-discovered anomaly (a code-review finding, an unexpected log pattern).</li>
+   notification, or a self-discovered anomaly (a code-review finding, an unexpected log pattern
+   -- concretely, the <code>security_auth_failed</code>, <code>security_authz_denied</code>, and
+   <code>security_rate_limit_exceeded</code> structured log events emitted by <code>app.py::_handle_project_error</code>
+   and <code>middleware/security.py::RateLimitMiddleware</code>, OPS-005).</li>
 <li><strong>Triage (target: within 4 hours of detection during business hours, within 24 hours
    otherwise).</strong> The security coordinator (<code>information-security-program.md</code> Section 2)
    classifies per Section 2 above, and starts a written incident record (see Section 6) with a
@@ -3460,7 +3463,12 @@ place to extend once the team grows.</p>
    not gated on finishing the investigation.</li>
 <li><strong>Investigation.</strong> Determine scope: which data, how many data subjects (and specifically,
    how many are children, since that drives severity and the notification content in Section 5),
-   what caused it, whether it is ongoing.</li>
+   what caused it, whether it is ongoing. For an incident involving authentication/authorization
+   abuse or a rate-limit-evading probe, the <code>security_event</code> table (OPS-005 follow-up; written by
+   <code>security_audit.py::record_security_event</code>, the durable counterpart to the structured log
+   events named in step 1) is queryable by <code>event_type</code>, <code>occurred_at</code>, and <code>client_ip</code> for as
+   long as its rows are retained, independent of how long the log stream itself is kept -- use it
+   to reconstruct a timeline once the live log has rolled off.</li>
 <li><strong>Notification decision (Section 4).</strong></li>
 <li><strong>Remediation and post-incident review.</strong> Fix the root cause, not just the symptom; feed the
    review back into <code>information-security-program.md</code> Section 3's risk-assessment cadence per
@@ -3584,7 +3592,7 @@ their timestamps, and the post-incident remediation items. This record is what
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 18:08:50 UTC">July 20, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 4, 2026 16:30:12 UTC">August 4, 2026</span>
   </span>
 
     
