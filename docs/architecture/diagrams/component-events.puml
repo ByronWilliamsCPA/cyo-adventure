@@ -4,7 +4,7 @@
 ' CYO Adventure
 '
 ' Source files:
-'   src/cyo_adventure/events/models.py   (EventType: 21-value StrEnum;
+'   src/cyo_adventure/events/models.py   (EventType: 28-value StrEnum;
 '                                          Actor: system() / from_principal();
 '                                          D2 invariant: system actor <-> no
 '                                          user id, enforced at construction)
@@ -18,35 +18,63 @@
 '                                          enforces append-only, no UPDATE/
 '                                          DELETE from the ORM)
 '
-'   Call sites (every record_event() invocation in the codebase, grep-verified):
+'   Call sites: all 42 record_event() invocations under src/, across 21 files
+'   (verified by `grep -rn "record_event(" --include=*.py src`, excluding the
+'   definition in events/writer.py). Counts below are per file.
 '   src/cyo_adventure/generation/worker.py           (GENERATION_STARTED,
 '                                                      GENERATION_FINISHED x2)
+'   src/cyo_adventure/generation/queue.py             (GENERATION_FINISHED;
+'                                                      failure path)
 '   src/cyo_adventure/moderation/pipeline.py          (MODERATION_COMPLETED,
 '                                                      REPAIR_APPLIED)
-'   src/cyo_adventure/publishing/service.py           (RELEASED, SENT_BACK)
+'   src/cyo_adventure/publishing/service.py           (RELEASED, SENT_BACK,
+'                                                      STORYBOOK_ARCHIVED, A5)
 '   src/cyo_adventure/story_requests/service.py       (REQUEST_CREATED,
 '                                                      REQUEST_APPROVED,
 '                                                      REQUEST_DECLINED)
-'   src/cyo_adventure/story_requests/authoring_plan.py (PLAN_ASSIGNED)
+'   src/cyo_adventure/story_requests/authoring_plan.py (PLAN_ASSIGNED,
+'                                                      CELL_SATURATED, WS-8)
 '   src/cyo_adventure/api/story_requests.py           (REQUEST_CREATED)
 '   src/cyo_adventure/api/moderation_thresholds.py    (THRESHOLD_CHANGED x2,
 '                                                      NOISE_FLOOR_CHANGED)
-'   src/cyo_adventure/api/assignments.py              (BOOK_ASSIGNED)
+'   src/cyo_adventure/api/assignments.py              (BOOK_ASSIGNED,
+'                                                      BOOK_UNASSIGNED)
 '   src/cyo_adventure/api/ratings.py                  (RATED)
 '   src/cyo_adventure/api/admin_users.py              (USER_MANAGED x2, WS-J)
 '   src/cyo_adventure/api/families.py                 (FAMILY_MANAGED x2, WS-J)
-'   src/cyo_adventure/api/family_connections.py       (FAMILY_CONNECTION_CHANGED x2, WS-J)
+'   src/cyo_adventure/api/family_connections.py       (FAMILY_CONNECTION_CHANGED x4, WS-J)
+'   src/cyo_adventure/api/generation.py               (GENERATION_FINISHED)
+'   src/cyo_adventure/api/me.py                       (FAMILY_MANAGED,
+'                                                      USER_MANAGED)
 '   src/cyo_adventure/api/flags.py                    (KID_FLAGGED, FLAG_RESOLVED)
 '   src/cyo_adventure/api/node_edit.py                (NODE_EDITED)
 '   src/cyo_adventure/moderation/rescreen.py          (MODERATION_COMPLETED, per swept book)
 '   src/cyo_adventure/api/admin_profiles.py           (PROFILE_VIEWED, Phase 8a
 '                                                      GDPR Art. 30 accountability;
 '                                                      the only READ this taxonomy audits)
+'   src/cyo_adventure/api/personalization.py          (ADR-023 P3/P4:
+'                                                      PERSONALIZATION_TOGGLED,
+'                                                      RING2_CONSENT_GRANTED,
+'                                                      RING2_CONSENT_REVOKED,
+'                                                      FAMILY_MANAGED)
+'   src/cyo_adventure/api/remoderate.py               (STORYBOOK_REMODERATED;
+'                                                      moderation review redesign)
 '
-'   Downstream reader:
+'   Downstream readers:
 '   src/cyo_adventure/api/moderation_dashboard.py     (admin dashboard reads
 '                                                      THRESHOLD_CHANGED /
 '                                                      NOISE_FLOOR_CHANGED rows)
+'   src/cyo_adventure/notifications/service.py        (S9/G10: read-only
+'                                                      family-scoped projection
+'                                                      of pipeline_event rows;
+'                                                      never writes)
+'   src/cyo_adventure/notifications/registry.py       (pure EventType ->
+'                                                      composer registry, no DB)
+'   src/cyo_adventure/notifications/models.py         (RawNotification /
+'                                                      NotificationItem value types)
+'   src/cyo_adventure/api/notifications.py            (GET /notifications poll
+'                                                      + /notifications/stream SSE;
+'                                                      see component-api-persistence.puml)
 '   docs/planning/story-lifecycle-redesign-plan.md (spec: "Event taxonomy",
 '     decisions D1-D3, WS-D capture layer)
 ' ============================================================
@@ -63,7 +91,7 @@ skinparam component {
 
 package "Pipeline Event Log (WS-D)" #FFF8E1 {
 
-  component "EventType\nevents/models.py\n21-value StrEnum:\nREQUEST_CREATED/APPROVED/DECLINED,\nPLAN_ASSIGNED, GENERATION_STARTED/\nFINISHED, MODERATION_COMPLETED,\nREPAIR_APPLIED, SENT_BACK, RELEASED,\nTHRESHOLD_CHANGED, NOISE_FLOOR_CHANGED,\nBOOK_ASSIGNED, RATED,\nUSER_MANAGED, FAMILY_MANAGED,\nFAMILY_CONNECTION_CHANGED,\nKID_FLAGGED, FLAG_RESOLVED, NODE_EDITED,\nPROFILE_VIEWED" as event_type #FFECB3
+  component "EventType\nevents/models.py\n28-value StrEnum:\nREQUEST_CREATED/APPROVED/DECLINED,\nPLAN_ASSIGNED, GENERATION_STARTED/\nFINISHED, MODERATION_COMPLETED,\nREPAIR_APPLIED, SENT_BACK, RELEASED,\nSTORYBOOK_ARCHIVED, THRESHOLD_CHANGED,\nNOISE_FLOOR_CHANGED, BOOK_ASSIGNED,\nBOOK_UNASSIGNED, RATED,\nUSER_MANAGED, FAMILY_MANAGED,\nFAMILY_CONNECTION_CHANGED,\nKID_FLAGGED, FLAG_RESOLVED, NODE_EDITED,\nPROFILE_VIEWED, CELL_SATURATED,\nPERSONALIZATION_TOGGLED [ADR-023 P3],\nRING2_CONSENT_GRANTED/REVOKED [ADR-023 P4],\nSTORYBOOK_REMODERATED" as event_type #FFECB3
 
   component "Actor\nevents/models.py\nsystem() -- worker/moderation,\nno principal\nfrom_principal(acting_role?) -- HTTP caller;\nadmin-gated calls stamp actor_role='admin'\nD2: system <-> actor_id is None" as actor #FFECB3
 
@@ -89,6 +117,7 @@ mod_pipeline ==> record_event : "MODERATION_COMPLETED\n(always; overall_verdict,
 component "Publishing Service\npublishing/service.py\n[see component-publishing.puml]" as pub_service #F3E5F5
 pub_service ==> record_event : "RELEASED\n(approve -> published;\nvisibility payload)"
 pub_service ==> record_event : "SENT_BACK\n(in_review -> needs_revision;\nempty payload, D3)"
+pub_service ==> record_event : "STORYBOOK_ARCHIVED\n(A5 admin pull-everywhere;\npublished -> archived, empty payload)"
 
 ' --- Writers: story-request lifecycle (not generation/moderation/publishing,
 '     but every other actual call site, grep-verified) ---
@@ -97,12 +126,14 @@ story_req --> record_event : "REQUEST_CREATED\nREQUEST_APPROVED\nREQUEST_DECLINE
 
 component "Authoring Plan\nstory_requests/authoring_plan.py" as authoring_plan #DCEDC8
 authoring_plan --> record_event : "PLAN_ASSIGNED\n(job_status, plan_kind)"
+authoring_plan --> record_event : "CELL_SATURATED\n(WS-8 flywheel signal;\nage_band, length, style,\nlevel only, no theme text)"
 
 component "Moderation Thresholds\napi/moderation_thresholds.py [admin]\n[see component-moderation.puml]" as mod_thresholds #E1BEE7
 mod_thresholds --> record_event : "THRESHOLD_CHANGED\n(upsert / delete)\nNOISE_FLOOR_CHANGED"
 
 component "Assignments\napi/assignments.py [guardian-only]" as assignments #DCEDC8
 assignments --> record_event : "BOOK_ASSIGNED\n(child_profile_id)"
+assignments --> record_event : "BOOK_UNASSIGNED\n(child_profile_id;\nG8 per-child kill switch)"
 
 component "Ratings\napi/ratings.py" as ratings #DCEDC8
 ratings --> record_event : "RATED\n(value, is_update)"
@@ -130,14 +161,26 @@ rescreen_ev --> record_event : "MODERATION_COMPLETED\n(one per swept book)"
 component "Admin Profiles\napi/admin_profiles.py [admin]\nPhase 8a GDPR Art. 30" as admin_profiles_ev #E1BEE7
 admin_profiles_ev --> record_event : "PROFILE_VIEWED\n(one per cross-family read,\nnot per row returned)"
 
+' --- Writers: ADR-023 P3/P4 personalization + moderation review redesign ---
+component "Personalization\napi/personalization.py [guardian;\nring2 sharer]" as personalization_ev #DDEEFF
+personalization_ev --> record_event : "PERSONALIZATION_TOGGLED\n(slot_type, ring, action)"
+personalization_ev --> record_event : "RING2_CONSENT_GRANTED\n(connected_family_id,\nslot_type count)"
+personalization_ev --> record_event : "RING2_CONSENT_REVOKED\n(connected_family_id)"
+
+component "Admin Remoderate\napi/remoderate.py [admin]" as remoderate_ev #E1BEE7
+remoderate_ev --> record_event : "STORYBOOK_REMODERATED\n(published-only re-run;\nstatus never changes, ADR-005)"
+
 ' --- Internal ---
 record_event --> event_type : "coerce + validate"
 record_event --> actor : "actor_id, actor_role"
 record_event --> pipeline_event_table : "session.add()\n+ flush\n(no commit)"
 
-' --- Downstream reader ---
+' --- Downstream readers ---
 component "Moderation Dashboard\napi/moderation_dashboard.py [admin]\n[see component-moderation.puml]" as mod_dashboard #E1BEE7
 pipeline_event_table --> mod_dashboard : "read THRESHOLD_CHANGED /\nNOISE_FLOOR_CHANGED\n(recent_changes list)"
+
+component "Notifications\nnotifications/service.py\nnotifications/registry.py\nnotifications/models.py\napi/notifications.py [guardian-only,\nsee component-api-persistence.puml]\nS9/G10: read-only, family-scoped\nprojection; never writes" as notifications_ev #DDEEFF
+pipeline_event_table --> notifications_ev : "read guardian-relevant\nevent types (candidate cap,\nfamily-scoped join-back)"
 
 note right of record_event
   Spec decisions enforced here:
@@ -175,14 +218,28 @@ note bottom of pipeline_event_table
   this diagram was scoped to trace
   (generation, moderation, publishing);
   the remaining call sites (story
-  requests, threshold admin, assignments,
-  ratings, the WS-J admin surfaces (user
-  management, families, family connections),
-  #270's kid flags, passage editor, and
-  admin re-screen, and Phase 8a's admin
-  profile-view audit) are the complete,
-  grep-verified set of every other
-  record_event() site in the codebase.
+  requests, threshold admin, assignments
+  (+ unassign, G8), ratings, the WS-J admin
+  surfaces (user management, families,
+  family connections), #270's kid flags,
+  passage editor, admin re-screen, Phase 8a's
+  admin profile-view audit, WS-8's cell
+  saturation signal, ADR-023 P3/P4
+  personalization + ring-2 consent, the
+  moderation-review-redesign remoderation
+  endpoint, the generation status endpoint
+  and RQ failure path (api/generation.py,
+  generation/queue.py), and self-service
+  account changes (api/me.py)) complete the
+  42-site total enumerated in this file's
+  header. Re-derive that total with:
+  grep -rn "record_event(" --include=*.py src
+  (excluding events/writer.py's definition).
+  Downstream readers: the admin
+  moderation dashboard and the guardian
+  notification feed (notifications/ package)
+  both project pipeline_event rows read-only;
+  neither ever writes one.
 end note
 
 @enduml

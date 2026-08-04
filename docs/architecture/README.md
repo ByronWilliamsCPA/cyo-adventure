@@ -22,7 +22,7 @@ deterministic validation gate and mandatory admin approval (ADR-005).
 | [System Overview](system-overview.md) | C4 context and container diagrams; publish state machine |
 | [Generation Pipeline](generation-pipeline.md) | Staged LLM generation (Structure/Prose/Repair), provider fallback |
 | [Validation and Player](validation-and-player.md) | Validator gate, story engine, offline sync |
-| [Data Model](data-model.md) | 22 ORM tables, ER diagram, relationships |
+| [Data Model](data-model.md) | 26 ORM tables, ER diagram, relationships |
 | [Story Skeletons](story-skeletons.md) | Preset skeleton structure diagrams and metadata data dictionary |
 | [Deployment](deployment.md) | Homelab Docker stack, Pangolin, Supabase auth, MinIO (deferred Phase 5) |
 
@@ -89,7 +89,7 @@ FastAPI backend (Python 3.14)
   - publishing/: approve -> publish state machine
   - middleware/: CorrelationMiddleware (first), SecurityMiddleware (OWASP)
   |
-  +-- PostgreSQL 16 (async SQLAlchemy 2, 22 tables, Supabase CLI SQL migrations)
+  +-- PostgreSQL 16 (async SQLAlchemy 2, 26 tables, Supabase CLI SQL migrations)
   +-- Redis 7 (RQ job queue)
   |
   +-- [worker container] RQ worker

@@ -1,7 +1,8 @@
-# Deploys the Supabase migration chain to PRODUCTION. Manual dispatch only,
-# gated by the `production` GitHub Environment's required-reviewer approval.
-# RUN POLICY: only dispatch after the staging deploy of the same migration
-# set is green (see docs/guides/supabase-environments.md).
+# Deploys the Supabase migration chain AND the project config to PRODUCTION.
+# Manual dispatch only, gated by the `production` GitHub Environment's
+# required-reviewer approval.
+# RUN POLICY: only dispatch after the staging deploy of the same migration and
+# config set is green (see docs/guides/supabase-environments.md).
 name: Deploy Supabase Migrations (production)
 
 on:
@@ -9,6 +10,17 @@ on:
 
 permissions:
   contents: read
+
+# #CRITICAL: concurrency: this job now performs TWO stateful writes against the
+# live project, `config push` (auth policy) and `db push` (migration history).
+# Two dispatches that overlap can interleave those writes. cancel-in-progress
+# stays false for the same reason as staging: an aborted run leaves partially
+# applied state, which is worse than a queued one.
+# #VERIFY: this group is deliberately separate from supabase-staging-migrations
+# so a production dispatch is never queued behind a staging deploy.
+concurrency:
+  group: supabase-production-deploy
+  cancel-in-progress: false
 
 jobs:
   deploy-production:
@@ -36,6 +48,79 @@ jobs:
 
       - name: Link production project
         run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
+
+      # #CRITICAL: security: this deploys supabase/config.toml's [auth] policy to
+      # the LIVE project that real guardians sign in to. `config push` is a
+      # DEFAULTING writer: for any table it sends, keys omitted from config.toml
+      # are filled with the CLI's own defaults and asserted on the remote, so
+      # deleting a key from [auth] silently reverts that setting to the Supabase
+      # default rather than leaving it alone. Two specific traps, both verified
+      # against the live API on 2026-08-04 and documented in config.toml:
+      #   - Google OAuth is the guardian login path and is deliberately NOT
+      #     declared in config.toml. Adding a [auth.external.google] block
+      #     without also wiring its client_id and secret pushes an empty
+      #     client_id and breaks production login.
+      #   - Omitting [auth.captcha] leaves remote captcha unmanaged; writing
+      #     `enabled = false` would actively assert "off" on every push.
+      # #VERIFY: --project-ref is REQUIRED, not redundant with `link`: it is the
+      # key the CLI matches against [remotes.*].project_id, and production's
+      # site_url comes from [remotes.production]. Confirm the run log's first
+      # line reads "Loading config override: [remotes.production]". If that line
+      # is absent the override did not match and the push used the base config,
+      # whose site_url is localhost; treat that as an incident and restore from
+      # the snapshot procedure in docs/guides/supabase-environments.md section 4.
+      # That confirmation is asserted below rather than left to a human reading
+      # the log, because `config push` exits 0 either way.
+      # #CRITICAL: security: two controls guard this push, and they are not
+      # interchangeable. The pre-flight comparison below is PREVENTION: it
+      # refuses to invoke the CLI at all unless the ref this job is about to
+      # push to is the same ref [remotes.production] declares, so a wrong or
+      # empty SUPABASE_PROJECT_ID never reaches a live project. The log
+      # assertion after the push is DETECTION only: by the time its line can be
+      # read the push has landed, so a miss there means an incident to restore
+      # from. Detection is kept as a second control because it also catches a
+      # CLI whose matching behaviour changes under a version bump, which the
+      # pre-flight check cannot see.
+      # #VERIFY: the pre-flight check is deliberately in this step rather than a
+      # step of its own, so it cannot be reordered away from the push it guards.
+      # It parses the TOML rather than grepping: a grep would match the ref
+      # inside a comment and wave through a config the CLI would reject.
+      # #VERIFY: `set -o pipefail` is load-bearing. The default shell is
+      # `bash -e`, which does not set it, so without this line a failing
+      # `config push` would be masked by tee's exit status.
+      - name: Push project config
+        run: |
+          set -o pipefail
+          expected=$(python3 <<'PY'
+          import tomllib
+
+          with open("supabase/config.toml", "rb") as fh:
+              print(tomllib.load(fh)["remotes"]["production"]["project_id"])
+          PY
+          )
+          if [ -z "$SUPABASE_PROJECT_ID" ]; then
+            echo "::error::SUPABASE_PROJECT_ID is empty. Refusing to run config push:" \
+                 "the CLI would match no [remotes.*] block and send the base config" \
+                 "(site_url = http://localhost:5173) to whatever project is linked."
+            exit 1
+          fi
+          if [ "$SUPABASE_PROJECT_ID" != "$expected" ]; then
+            echo "::error::SUPABASE_PROJECT_ID does not match [remotes.production].project_id" \
+                 "in supabase/config.toml. config push would have sent the base config" \
+                 "(site_url = http://localhost:5173) to a live project. Refusing to push." \
+                 "Reconcile the production environment secret with config.toml before retrying."
+            exit 1
+          fi
+          supabase config push --project-ref "$SUPABASE_PROJECT_ID" --yes 2>&1 \
+            | tee "$RUNNER_TEMP/config-push.log"
+          if ! grep -qF 'Loading config override: [remotes.production]' \
+              "$RUNNER_TEMP/config-push.log"; then
+            echo "::error::config push did not load [remotes.production]; the base config" \
+                 "(site_url = http://localhost:5173) went out to this project instead." \
+                 "Restore from the pre-push snapshot per" \
+                 "docs/guides/supabase-environments.md section 4."
+            exit 1
+          fi
 
       - name: Push migrations
         run: supabase db push

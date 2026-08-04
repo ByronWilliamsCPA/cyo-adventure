@@ -3,7 +3,7 @@
 # UV uses standard PEP 621 pyproject.toml format with uv.lock for reproducible builds.
 [project]
 name = "cyo-adventure"
-version = "0.61.2"
+version = "0.63.0"
 description = "A choose-your-own-adventure reading app for kids"
 authors = [
     {name = "Byron Williams", email = "byronawilliams@gmail.com"}
@@ -495,6 +495,15 @@ known-first-party = ["cyo_adventure"]
 # self-invite (G14), so a config object here would obscure the contract both
 # call sites need to fill in explicitly.
 "**/api/admin_users.py" = ["PLR0913"]
+
+# record_security_event carries event_type, reason, client_ip, code, path,
+# method, status_code, and resource; all keyword-only, each a distinct
+# SecurityEvent column with its own per-event-type availability (code/path/
+# method/status_code unset for a rate-limit trip; resource set only for an
+# authz denial). A config object would obscure which fields a given call
+# site actually has, mirroring events/writer.py::record_event's identical
+# rationale.
+"**/cyo_adventure/security_audit.py" = ["PLR0913"]
 
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [

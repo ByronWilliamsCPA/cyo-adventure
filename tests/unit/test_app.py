@@ -8,8 +8,8 @@ create_app() returning a configured FastAPI instance.
 from __future__ import annotations
 
 import json
-from typing import Any, cast
-from unittest.mock import MagicMock
+from typing import Any, ClassVar, cast
+from unittest.mock import MagicMock, patch
 
 import pytest
 from fastapi import FastAPI, Request
@@ -85,29 +85,35 @@ class TestStatusFor:
 
 
 class TestHandleProjectError:
+    # Local to this class only (tests/CLAUDE.md's mixed-module convention):
+    # _handle_project_error is async (it awaits the security-event DB write),
+    # so every test here must be too; TestStatusFor above and TestCreateApp
+    # below stay sync and are unaffected.
+    pytestmark: ClassVar = [pytest.mark.asyncio]
+
     @pytest.mark.unit
-    def test_project_base_error_returns_mapped_status(self) -> None:
+    async def test_project_base_error_returns_mapped_status(self) -> None:
         """A ProjectBaseError subclass gets the correct status from _status_for."""
         request = MagicMock()
         exc = ResourceNotFoundError("no such item")
-        response = _handle_project_error(request, exc)
+        response = await _handle_project_error(request, exc)
         assert response.status_code == 404
 
     @pytest.mark.unit
-    def test_project_base_error_body_contains_error_key(self) -> None:
+    async def test_project_base_error_body_contains_error_key(self) -> None:
         """The response body contains the error type key."""
         request = MagicMock(spec=Request)
         exc = ValidationError("bad value", field="email", value="x")
-        response = _handle_project_error(request, exc)
+        response = await _handle_project_error(request, exc)
         body = json.loads(response.body)
         assert "error" in body
 
     @pytest.mark.unit
-    def test_handle_project_error_omits_validation_value(self) -> None:
+    async def test_handle_project_error_omits_validation_value(self) -> None:
         """Raw caller input in `value` must not appear in the client response body."""
         request = MagicMock(spec=Request)
         exc = ValidationError("bad email", field="email", value="secret@example.com")
-        resp = _handle_project_error(request, exc)
+        resp = await _handle_project_error(request, exc)
         assert resp.status_code == 422
         body = json.loads(bytes(resp.body))
         details = body.get("details", {})
@@ -115,7 +121,7 @@ class TestHandleProjectError:
         assert details.get("field") == "email"
 
     @pytest.mark.unit
-    def test_handle_project_error_omits_business_context(self) -> None:
+    async def test_handle_project_error_omits_business_context(self) -> None:
         """Internal lifecycle `context` must not appear in the client response body."""
         request = MagicMock(spec=Request)
         exc = StateTransitionError(
@@ -123,7 +129,7 @@ class TestHandleProjectError:
             rule="invalid_state_transition",
             context={"from": "draft", "action": "approve"},
         )
-        resp = _handle_project_error(request, exc)
+        resp = await _handle_project_error(request, exc)
         assert resp.status_code == 409
         body = json.loads(bytes(resp.body))
         details = body.get("details", {})
@@ -132,32 +138,287 @@ class TestHandleProjectError:
         assert body["message"] == "cannot approve"
 
     @pytest.mark.unit
-    def test_non_project_error_returns_500_internal(self) -> None:
+    async def test_non_project_error_returns_500_internal(self) -> None:
         """A plain Exception that is not a ProjectBaseError returns 500."""
         request = MagicMock()
         exc = RuntimeError("unexpected")
-        response = _handle_project_error(request, exc)
+        response = await _handle_project_error(request, exc)
         assert response.status_code == 500
 
     @pytest.mark.unit
-    def test_non_project_error_body_is_internal_error(self) -> None:
+    async def test_non_project_error_body_is_internal_error(self) -> None:
         """The 500 body contains the generic InternalError key."""
         request = MagicMock()
-        response = _handle_project_error(request, RuntimeError("boom"))
+        response = await _handle_project_error(request, RuntimeError("boom"))
         body = json.loads(response.body)
         assert body["error"] == "InternalError"
 
     @pytest.mark.unit
-    def test_authentication_error_returns_401(self) -> None:
+    async def test_authentication_error_returns_401(self) -> None:
         request = MagicMock()
-        response = _handle_project_error(request, AuthenticationError("unauth"))
+        # record_security_event opens a real DB session when unmocked
+        # (tests/CLAUDE.md: unit tests must not hit a live database).
+        with patch("cyo_adventure.app.record_security_event"):
+            response = await _handle_project_error(
+                request, AuthenticationError("unauth")
+            )
         assert response.status_code == 401
 
     @pytest.mark.unit
-    def test_authorization_error_returns_403(self) -> None:
+    async def test_authorization_error_returns_403(self) -> None:
         request = MagicMock()
-        response = _handle_project_error(request, AuthorizationError("denied"))
+        with patch("cyo_adventure.app.record_security_event"):
+            response = await _handle_project_error(
+                request, AuthorizationError("denied")
+            )
         assert response.status_code == 403
+
+
+# ---------------------------------------------------------------------------
+# _handle_project_error: OPS-005 security event logging
+#
+# AuthenticationError/AuthorizationError is raised from 89 call sites across
+# 35 files (api/deps.py, most of api/*, core/child_session.py,
+# core/device_grant.py, publishing/, covers/); every one passes through this
+# single handler
+# on the way to a response, so it is the one choke point that can emit a
+# distinctly-named, attributable security event for all of them without
+# instrumenting each raise site individually.
+# ---------------------------------------------------------------------------
+
+
+class TestSecurityEventLogging:
+    # See TestHandleProjectError's pytestmark note: local to this class only.
+    pytestmark: ClassVar = [pytest.mark.asyncio]
+
+    @staticmethod
+    def _mock_request(
+        *,
+        ip: str | None = "203.0.113.5",
+        path: str = "/v1/profiles",
+        method: str = "GET",
+    ) -> MagicMock:
+        request = MagicMock(spec=Request)
+        request.client = MagicMock(host=ip) if ip is not None else None
+        request.url = MagicMock(path=path)
+        request.method = method
+        return request
+
+    @pytest.mark.unit
+    async def test_authentication_error_emits_security_auth_failed(self) -> None:
+        request = self._mock_request()
+        exc = AuthenticationError("unknown subject")
+        with (
+            patch("cyo_adventure.app.logger") as mock_logger,
+            patch("cyo_adventure.app.record_security_event") as mock_record,
+        ):
+            await _handle_project_error(request, exc)
+        mock_logger.warning.assert_any_call(
+            "security_auth_failed",
+            reason="unknown subject",
+            code="AUTH_FAILED",
+            client_ip="203.0.113.5",
+            path="/v1/profiles",
+            method="GET",
+        )
+        mock_record.assert_awaited_once_with(
+            event_type="security_auth_failed",
+            reason="unknown subject",
+            code="AUTH_FAILED",
+            client_ip="203.0.113.5",
+            path="/v1/profiles",
+            method="GET",
+            status_code=401,
+        )
+
+    @pytest.mark.unit
+    async def test_authorization_error_emits_security_authz_denied(self) -> None:
+        request = self._mock_request(path="/v1/story-requests/abc", method="POST")
+        exc = AuthorizationError("resource belongs to another family")
+        with (
+            patch("cyo_adventure.app.logger") as mock_logger,
+            patch("cyo_adventure.app.record_security_event") as mock_record,
+        ):
+            await _handle_project_error(request, exc)
+        mock_logger.warning.assert_any_call(
+            "security_authz_denied",
+            reason="resource belongs to another family",
+            code="FORBIDDEN",
+            client_ip="203.0.113.5",
+            path="/v1/story-requests/abc",
+            method="POST",
+            details=exc.to_dict().get("details"),
+        )
+        mock_record.assert_awaited_once_with(
+            event_type="security_authz_denied",
+            reason="resource belongs to another family",
+            code="FORBIDDEN",
+            client_ip="203.0.113.5",
+            path="/v1/story-requests/abc",
+            method="POST",
+            status_code=403,
+            resource=None,
+        )
+
+    @pytest.mark.unit
+    async def test_authorization_error_details_survive_into_security_event(
+        self,
+    ) -> None:
+        """A resource-scoped denial (e.g. authorize_profile) keeps its
+        `resource`/`required_permission` context in the security event, not
+        just the generic project_error log -- and the DB row's `resource`
+        column carries the same value.
+        """
+        request = self._mock_request()
+        exc = AuthorizationError(
+            "profile is not accessible to this principal", resource="profile-123"
+        )
+        with (
+            patch("cyo_adventure.app.logger") as mock_logger,
+            patch("cyo_adventure.app.record_security_event") as mock_record,
+        ):
+            await _handle_project_error(request, exc)
+        mock_logger.warning.assert_any_call(
+            "security_authz_denied",
+            reason="profile is not accessible to this principal",
+            code="FORBIDDEN",
+            client_ip="203.0.113.5",
+            path="/v1/profiles",
+            method="GET",
+            details={"resource": "profile-123"},
+        )
+        mock_record.assert_awaited_once_with(
+            event_type="security_authz_denied",
+            reason="profile is not accessible to this principal",
+            code="FORBIDDEN",
+            client_ip="203.0.113.5",
+            path="/v1/profiles",
+            method="GET",
+            status_code=403,
+            resource="profile-123",
+        )
+
+    @pytest.mark.unit
+    async def test_authorization_error_security_event_omits_sensitive_detail_keys(
+        self,
+    ) -> None:
+        """`value`/`context` never reach the security event, even if a future
+        AuthorizationError call site passes them via `details=`.
+
+        `_client_safe_error` exists specifically to keep these two keys out
+        of anything that leaves the process boundary of trust; the security
+        event must use that same pruned view, not the raw payload the
+        (server-log-only) generic `project_error` line retains.
+        """
+        request = self._mock_request()
+        exc = AuthorizationError(
+            "forbidden",
+            resource="profile-123",
+            details={"value": "raw-caller-input", "context": {"internal": "state"}},
+        )
+        with (
+            patch("cyo_adventure.app.logger") as mock_logger,
+            patch("cyo_adventure.app.record_security_event") as mock_record,
+        ):
+            await _handle_project_error(request, exc)
+        mock_logger.warning.assert_any_call(
+            "security_authz_denied",
+            reason="forbidden",
+            code="FORBIDDEN",
+            client_ip="203.0.113.5",
+            path="/v1/profiles",
+            method="GET",
+            details={"resource": "profile-123"},
+        )
+        recorded_kwargs = mock_record.await_args.kwargs
+        assert "value" not in str(recorded_kwargs)
+        assert "raw-caller-input" not in str(recorded_kwargs)
+        assert recorded_kwargs["resource"] == "profile-123"
+
+    @pytest.mark.unit
+    async def test_missing_client_yields_none_client_ip(self) -> None:
+        """`request.client` is `None` for a directly-hit ASGI request with no
+        transport-level peer; the security event carries `client_ip=None`
+        rather than raising.
+        """
+        request = self._mock_request(ip=None)
+        with (
+            patch("cyo_adventure.app.logger") as mock_logger,
+            patch("cyo_adventure.app.record_security_event") as mock_record,
+        ):
+            await _handle_project_error(
+                request, AuthenticationError("missing or malformed bearer token")
+            )
+        mock_logger.warning.assert_any_call(
+            "security_auth_failed",
+            reason="missing or malformed bearer token",
+            code="AUTH_FAILED",
+            client_ip=None,
+            path="/v1/profiles",
+            method="GET",
+        )
+        assert mock_record.await_args.kwargs["client_ip"] is None
+
+    @pytest.mark.unit
+    async def test_custom_error_code_reaches_security_event(self) -> None:
+        """A call site that overrides `error_code=` propagates that value into
+        the security event, which is the whole point of carrying `code`.
+
+        `api/child_sessions.py` raises `AuthorizationError(..., error_code=
+        "PIN_MISMATCH")` on a failed child PIN. A detection rule keying on
+        `code == "PIN_MISMATCH"` can alert on PIN brute force specifically,
+        without string-matching the human-readable `reason`. Both the log
+        line and the durable row carry it.
+        """
+        request = self._mock_request(path="/v1/child-sessions", method="POST")
+        exc = AuthorizationError("incorrect PIN", error_code="PIN_MISMATCH")
+        with (
+            patch("cyo_adventure.app.logger") as mock_logger,
+            patch("cyo_adventure.app.record_security_event") as mock_record,
+        ):
+            await _handle_project_error(request, exc)
+        mock_logger.warning.assert_any_call(
+            "security_authz_denied",
+            reason="incorrect PIN",
+            code="PIN_MISMATCH",
+            client_ip="203.0.113.5",
+            path="/v1/child-sessions",
+            method="POST",
+            details=None,
+        )
+        assert mock_record.await_args.kwargs["code"] == "PIN_MISMATCH"
+
+    @pytest.mark.unit
+    async def test_non_auth_project_error_does_not_emit_security_event(self) -> None:
+        """A ValidationError (or any non-auth ProjectBaseError) only logs the
+        generic `project_error` event, and never calls record_security_event;
+        it is not a security event.
+        """
+        request = self._mock_request()
+        with (
+            patch("cyo_adventure.app.logger") as mock_logger,
+            patch("cyo_adventure.app.record_security_event") as mock_record,
+        ):
+            await _handle_project_error(
+                request, ValidationError("bad value", field="email")
+            )
+        events = [call.args[0] for call in mock_logger.warning.call_args_list]
+        assert events == ["project_error"]
+        mock_record.assert_not_awaited()
+
+    @pytest.mark.unit
+    async def test_non_project_error_does_not_emit_security_event(self) -> None:
+        """A plain, non-ProjectBaseError exception (mapped to 500) never
+        reaches the security-event branch at all.
+        """
+        request = self._mock_request()
+        with (
+            patch("cyo_adventure.app.logger") as mock_logger,
+            patch("cyo_adventure.app.record_security_event") as mock_record,
+        ):
+            await _handle_project_error(request, RuntimeError("boom"))
+        mock_logger.warning.assert_not_called()
+        mock_record.assert_not_awaited()
 
 
 # ---------------------------------------------------------------------------
