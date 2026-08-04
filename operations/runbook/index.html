@@ -4195,14 +4195,21 @@ them in order:</p>
    assignment (IndexedDB offline cache, <code>frontend/src/offline/</code>).</li>
 </ol>
 <h2 id="6-backup-and-restore">6. Backup and restore<a class="headerlink" href="#6-backup-and-restore" title="Permanent link">&para;</a></h2>
-<p><strong>Partially closed 2026-08-02</strong> (issue #558 / <code>UW-D27</code>). A scheduled backup now exists; the
-restore side is documented below but <strong>not yet drilled against a live project</strong> -- see the
+<p><strong>Partially closed on merge of the <code>feat/database-backups-r2</code> branch</strong> (issue #558 / <code>UW-D27</code>);
+replace this line with the merge date once it lands. A scheduled backup exists as of that merge;
+the restore side is documented below but <strong>not yet drilled against a live project</strong> -- see the
 <code>#VERIFY</code> note at the end of this section before relying on it in a real incident.</p>
 <h3 id="what-runs-today">What runs today<a class="headerlink" href="#what-runs-today" title="Permanent link">&para;</a></h3>
 <p><code>.github/workflows/supabase-backup.yml</code> runs
 <code>scripts/backup_database.py</code> daily at 08:00 UTC (and on
 <code>workflow_dispatch</code>). Each run:</p>
 <ol>
+<li>Verifies the destination bucket carries a <code>.cyo-backup-bucket</code> marker object before doing
+   anything else, and refuses to run if it does not. Every destructive step in the script is
+   scoped by bucket <strong>name</strong> alone, and the lifecycle write in step 5 fully REPLACES whatever
+   configuration the named bucket already has, so a mistyped or rotated <code>R2_BACKUP_BUCKET</code>
+   (the public covers bucket is one typo away) would otherwise be silently accepted. Initialize
+   a brand-new bucket once with <code>--init-bucket</code>; never as part of the scheduled run.</li>
 <li>Executes <code>supabase db dump</code> three times (roles, schema, data-via-COPY) against
    <code>SUPABASE_DB_URL</code>, which <strong>must be the direct (non-pooler) connection string</strong> --
    <a href="../../planning/adr/adr-009-supabase-platform/">ADR-009</a>'s Supavisor pooling constraints
@@ -4214,18 +4221,35 @@ restore side is documented below but <strong>not yet drilled against a live proj
 <li>Uploads to a <strong>dedicated</strong> R2 bucket (<code>R2_BACKUP_BUCKET</code>, distinct from the public covers
    bucket, using a scoped R2 token distinct from the covers-upload token) under a tiered
    prefix: <code>daily/</code> always, <code>weekly/</code> on ISO Sunday, <code>monthly/</code> on the 1<sup>st</sup>.</li>
-<li>Asserts a per-prefix R2 lifecycle expiration rule on every run (self-healing if the bucket
-   configuration ever drifts): daily 7 days, weekly 28 days, monthly 180 days by default,
-   tunable via <code>workflow_dispatch</code> inputs. This bounds total retained storage to roughly
-   7 + 4 + 6 = 17 backup sets at any time, sized for limited R2 space rather than unbounded
-   growth -- re-tune the day counts once real dump sizes are known (see the <code>#ASSUME</code> in the
-   script's module docstring).</li>
+<li>Asserts that a recent <strong>pre-existing</strong> backup still exists: lists the date prefixes under
+   <code>daily/</code>, excludes today's, and fails the run if the newest survivor is more than 3 days old
+   (or if none survives at all). The workflow's failure alert fires on a run that HAPPENS and
+   fails; it cannot fire for a run that never happens, and GitHub disables scheduled workflows
+   after 60 days of repository inactivity. Without this, a stopped schedule would let retention
+   quietly empty the bucket with zero red runs. It also doubles as the only exercise of the R2
+   <strong>read</strong> path, so a token scoped without list permission is caught here rather than during a
+   restore. An empty bucket is accepted only under <code>--init-bucket</code>.</li>
+<li>Asserts a per-prefix R2 lifecycle expiration rule (self-healing if the bucket configuration
+   ever drifts): daily 7 days, weekly 28 days, monthly 180 days by default, tunable via
+   <code>workflow_dispatch</code> inputs. This bounds total retained storage to roughly 7 + 4 + 6 = 17
+   backup sets at any time, sized for limited R2 space rather than unbounded growth -- re-tune
+   the day counts once real dump sizes are known (see the <code>#ASSUME</code> in the script's module
+   docstring). Retention values are validated before anything else runs, against per-tier floors
+   (daily &gt;= 3, weekly &gt;= 14, monthly &gt;= 90) and a <code>daily &lt;= weekly &lt;= monthly</code> ordering rule;
+   a deliberate shrink below a floor needs <code>--force-retention</code>, and the ordering rule is never
+   waived.</li>
 </ol>
+<p>The step order is deliberate: nothing is expired or mutated until a good backup is positively
+confirmed. The lifecycle write is last, so a run that fails its dump cannot leave a bad retention
+value behind; the staleness check sits between the upload and the lifecycle write, so today's
+backup is safely stored before the alarm fires and an incident starts with one more good backup,
+not one fewer.</p>
 <p>A failed run opens or comments on a <code>ci-failure</code>-labelled issue titled <code>[db-backup] scheduled
-database backup failing</code>, per the "Alert on failure" step in the workflow: see Section 7 for the
-general convention. Cover art in R2 is <strong>not</strong> covered by this workflow; it remains unbacked-up
-separately, since no export tooling for object storage exists in this repo (tracked as its own
-gap, distinct from <code>UW-D27</code>).</p>
+database backup failing</code>, per the "Alert on failure" step in the workflow (a separate job holding
+<code>issues: write</code>, so the job that handles the six production secrets never holds it): see Section 7
+for the general convention. Cover art in R2 is <strong>not</strong> covered by this workflow; it remains
+unbacked-up separately, since no export tooling for object storage exists in this repo (tracked as
+its own gap, distinct from <code>UW-D27</code>).</p>
 <h3 id="restore-procedure">Restore procedure<a class="headerlink" href="#restore-procedure" title="Permanent link">&para;</a></h3>
 <ol>
 <li>Identify the backup to restore from: list objects under <code>daily/</code>, <code>weekly/</code>, or <code>monthly/</code>
@@ -4519,7 +4543,7 @@ because that test is currently the only thing that would notice.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 21:16:11 UTC">August 3, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 4, 2026 00:31:19 UTC">August 4, 2026</span>
   </span>
 
     
