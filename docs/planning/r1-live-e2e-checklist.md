@@ -25,19 +25,56 @@ smoke tier (`frontend/e2e-real/`, `npm run test:e2e:real`, local-only, `--worker
 pre-deploy gate against a local stack; this checklist is the manual post-deploy verification against prod.
 
 **Accounts** (prod seeding is manual; NEVER run `scripts/seed_dev_data.py` in prod).
-Both accounts below are real Supabase email/password logins. `User.role` is an
-exclusive enum, so one account cannot be both roles: author with the guardian
-account, then switch to the admin account to approve. Values current as of
-2026-07-05:
+Both accounts below are real Supabase email/password logins. Role columns verified
+directly against the production database on 2026-08-04:
 
-| Role | Email | Supabase sub | Sign-in |
-| --- | --- | --- | --- |
-| Guardian (author, assign) | `byron.a.williams@gmail.com` | `c1f33430` | email/password |
-| Admin (content approver) | `byronawilliams@gmail.com` | `21985c35` | email/password |
+| Capability | Email | Supabase sub | `role` | `is_admin` | Family |
+| --- | --- | --- | --- | --- | --- |
+| Guardian (author, assign) | `byron.a.williams@gmail.com` | `c1f33430` | `guardian` | `false` | `3a152319` |
+| Guardian + admin (approver) | `byronawilliams@gmail.com` | `21985c35` | `guardian` | `true` | `3a152319` |
+
+**Correction, 2026-08-04.** This section previously stated that `User.role` is an
+exclusive enum so "one account cannot be both roles", and labelled the second
+account's role as `admin`. Neither holds against the live schema. `role` is the
+base enum; `is_admin` is an **orthogonal boolean capability**. Sub `21985c35` is
+therefore a guardian in family `3a152319` *and* an admin at the same time, and no
+account in production has `role = 'admin'` at all. Two consequences for the steps
+below: switching accounts to approve is a convenience rather than a requirement,
+because the approving account sits in the same family and can both author and
+approve (the four-eyes collapse this project accepted for a single family); and
+Section 1a's "lands on a review queue, not the guardian console" expectation needs
+re-deriving, because a `role='guardian'` account lands on the guardian console by
+design and reaches `/admin` as an added capability.
+
+A third adult account exists that this checklist does not use and must not
+disturb: sub `774ea02b` (`test_admin@williamshome.family`), also dual-role, in its
+own isolated "E2E Test Family" (`84b96700`). It belongs to the automated
+`e2e-prod` tier described below.
 
 The real read gate is `approved_by` + an assignment, not `published_at` alone.
-Approval is admin-only per ADR-005 (`storybook_version.approved_by`); the guardian
-account will correctly get a 403 on approve.
+Approval requires `is_admin` per ADR-005 (`storybook_version.approved_by`); the
+guardian-only account (`c1f33430`) will correctly get a 403 on approve.
+
+### What the automated `e2e-prod` tier already covers
+
+`.github/workflows/e2e-prod.yml` runs `frontend/e2e-prod/` against this same live
+host on a daily cron, using the isolated `774ea02b` test account. As of run
+[30918192801](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/30918192801)
+(2026-08-04, success, 2m50s) that tier is green again, having been queue-starved
+from 2026-07-18 to 2026-08-02 by the `waiting`-run defect its own workflow comments
+describe. It asserts, unattended and every day:
+
+- The landing page renders its `h1` and both audience doors.
+- The guardian sign-in form renders its email, password, and submit controls.
+- A dual-role adult reaches all nine `/guardian/*` and `/admin/*` pages with the
+  expected `h1` and no error boundary.
+- A real device grant round-trips: authorize, open the kid library on the
+  authorized device, revoke.
+
+None of those steps is ticked below, because the tier drives a *different* account
+in a *different* family and asserts renders rather than the journeys this checklist
+specifies. Treat it as reducing the risk that Sections 1, 1a, and the device-grant
+leg of Section 4 are broken, not as evidence that they passed.
 
 ### Known blockers (resolve before running this checklist end to end)
 
@@ -50,25 +87,50 @@ account will correctly get a 403 on approve.
 
 ## 0. Infrastructure probes
 
-- [ ] `https://cyo.williamshome.family` resolves through Pangolin to docker-host:443 with a valid TLS cert
-- [ ] Frontend loads (React shell renders, no console errors about missing Supabase config; this proves the
-      image was built with `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` build args)
-- [ ] `GET /health/live` and `/health/ready` return 200 (ready proves DB connectivity; verified
-      live 2026-07-07: both 200. The `/api/v1/health/*` paths this checklist previously documented
-      return 404; the health router is mounted without the `/api/v1` prefix.)
-- [ ] Redis and the RQ worker containers are up (`docker ps` on docker-host; worker listens on queue
-      `generation`)
-- [ ] Migrations current (migrate profile ran; `supabase migration list --linked` shows no pending
+- [x] `https://cyo.williamshome.family` resolves through Pangolin to docker-host:443 with a valid TLS cert
+      (2026-08-04: HTTP 200, OpenSSL verify result 0, wildcard `CN=*.williamshome.family` issued by
+      ZeroSSL RSA DV SSL CA 2, valid 2026-06-23 to 2026-09-21)
+- [x] Frontend loads (React shell renders, no console errors about missing Supabase config; this proves the
+      image was built with `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` build args). Verified 2026-08-04
+      by fetching all 75 served chunks: `assets/supabaseClient-UGD8VVQK.js` carries both the
+      `cvrnaydpzijtszfbsraq.supabase.co` project URL and an anon-key JWT, so the build args were present at
+      image build time. That is the direct form of this check; absence of console errors is only its proxy.
+      `sw.js` and `registerSW.js` also return `Cache-Control: no-store, no-cache, must-revalidate`, so the
+      stale-service-worker login loop that `frontend/nginx.conf` guards against cannot recur.
+- [ ] `GET /health/live` and `/health/ready` return 200. **This step is not runnable against the public
+      host and its prior "verified live 2026-07-07: both 200" note was a false pass.** Established
+      2026-08-04: every backend router except `health` carries its own `/api/v1` prefix, and
+      `frontend/nginx.conf` proxies only `location /api/`. `health.router` is declared
+      `APIRouter(prefix="/health")`, so it sits outside the proxied prefix and is unreachable through the
+      ingress. Meanwhile nginx defines `location /health { return 200 'OK'; }` for its own container
+      probe, which shadows the path entirely. So `GET /health/ready` returns a two-byte `text/plain` `OK`
+      from nginx (note the duplicated `Content-Type` header, and `server: nginx`) while FastAPI's
+      readiness logic never executes. The 200 proves nothing about database connectivity, and any uptime
+      monitor pointed at this URL would report healthy with the database completely down. Contrast
+      `GET /api/v1/me`, which correctly returns `401 application/json` from FastAPI. Until this is fixed,
+      check readiness from inside the container network, not from the public host. Tracked as `UW-L04`.
+- [x] Redis and the RQ worker containers are up (`docker ps` on docker-host; worker listens on queue
+      `generation`). Verified 2026-08-04: `cyo-adventure-redis` up 3h (healthy), `cyo-adventure-worker`
+      up 2h (healthy), and worker logs show repeated `BLMOVE` polling on `rq:queue:generation`.
+- [x] Migrations current (migrate profile ran; `supabase migration list --linked` shows no pending
       migrations). As of 2026-07-10 this replaces the prior `alembic current` check: schema migrations
-      moved from Alembic to Supabase CLI SQL migrations (ADR-012).
-- [ ] Backups confirmed: the local `db-backup` container is healthy (`docker ps` on docker-host)
+      moved from Alembic to Supabase CLI SQL migrations (ADR-012). Verified 2026-08-04 against the live
+      project: 49 files in `supabase/migrations/` and 49 applied versions, an exact set match in both
+      directions (nothing pending, nothing applied that is missing locally), newest
+      `20260804070000_add_security_event_table`.
+- [x] Backups confirmed: the local `db-backup` container is healthy (`docker ps` on docker-host)
       AND a fresh `.dump` file is present under
       `/mnt/unraid/appdata/cyo-adventure/backups`. As of 2026-07-07 this container runs a daily
       `pg_dump -Fc` of the LIVE Supabase database's `public` schema (14-day retention), fixed via
       homelab-infra #585/#586; Supabase-side backups/PITR also exist independently. Do not assume
-      Supabase backups alone satisfy this check: verify the local dump too.
+      Supabase backups alone satisfy this check: verify the local dump too. Verified 2026-08-04:
+      `cyo-adventure-db-backup` up 3h (healthy); newest dump `cyo_adventure_20260804_185541.dump`
+      (1,189,372 bytes) written the same day, with an unbroken daily series behind it and `.last_success`
+      also stamped that day.
 - [ ] Worker survives a restart (`docker compose restart worker`; queued/in-flight jobs resume or
-      re-queue rather than being lost)
+      re-queue rather than being lost). NOT RUN on 2026-08-04: this is the only Section 0 step that
+      mutates production, so it was deliberately left for an authorized maintenance window rather than
+      bounced during an unattended verification pass.
 
 ## 1. Guardian sign-in and profiles
 
@@ -79,10 +141,17 @@ account will correctly get a 403 on approve.
 
 ## 1a. Admin sign-in and review queue access
 
-Admin account: `byronawilliams@gmail.com` (role `admin`, sub `21985c35`).
+Approving account: `byronawilliams@gmail.com` (sub `21985c35`, `role='guardian'` with
+`is_admin=true`, family `3a152319`). It is not `role='admin'`; see the Correction in
+the Accounts section above.
 
 - [ ] Admin email/password sign-in succeeds
-- [ ] Sign-in lands on a review queue that loads (not the guardian console)
+- [ ] Sign-in lands on a review queue that loads (not the guardian console). **Re-derive this
+      expectation before ticking it.** Because this account is `role='guardian'`, the shells route it to
+      the guardian console by design and expose `/admin` as an additional capability, so "not the guardian
+      console" is likely the wrong assertion for the current role model rather than a defect. Decide what
+      the correct landing surface is for a dual-role adult, then either fix this line or file the routing
+      behaviour as a defect.
 
 ## 2. Guardian authoring path (intake to published book)
 
@@ -135,4 +204,53 @@ Admin account: `byronawilliams@gmail.com` (role `admin`, sub `21985c35`).
 
 | Run date | Image tags (backend/frontend) | Result | Notes |
 | --- | --- | --- | --- |
-|  |  |  |  |
+| 2026-08-04 | both at revision `f1b561b6` (v0.63.0); backend `@sha256:de9a9f6a`, frontend `@sha256:4d608898` | PARTIAL, 5 of 38 steps | Section 0 only. Sections 1 to 6 not run. Detail below. |
+
+### 2026-08-04 partial run
+
+This checklist has 38 steps, not the 39 the work register long claimed; the register row
+has been corrected.
+
+**Deployed revision.** Established from image labels on `docker-host`, not from an HTTP
+probe: `/openapi.json` at the public host returns the SPA shell rather than the schema, so
+it cannot identify the backend. Both `cyo-adventure-backend` and `cyo-adventure-frontend`
+carry `org.opencontainers.image.revision=f1b561b6156b1f68177ca472fa042a40fbaea445`, which
+is `chore(release): v0.63.0 (#606)`. Production is one release behind `main`, which reached
+v0.64.0 (`b53cd765`) the same day. Note that `org.opencontainers.image.version` reads
+`0.1.0` on both images and does not track releases, so the revision SHA is the only
+reliable deployed-version identifier here.
+
+**What ran.** Section 0 only, from this repository plus `docker-host` and the live Supabase
+project. 5 of its 7 steps are ticked. The two that are not fail for different reasons: the
+health-probe step is not runnable as written and turned out to be a false pass (`UW-L04`),
+and the worker-restart step mutates production, so it was left for an authorized
+maintenance window rather than bounced during an unattended pass.
+
+**What did not run.** Sections 1, 1a, 2, 3, 4, 5, and 6, all 31 remaining steps. Every one
+needs interactive sign-in as `c1f33430` or `21985c35`, whose credentials this pass did not
+have. Sections 2 and 4 additionally spend real OpenRouter and classifier quota and write
+real content into the live family, so they need explicit authorization rather than just
+credentials. Sections 5 and 6 also need a second device, a real offline transition, and a
+second seeded family that production does not currently have: the live database holds only
+two families, the real one (`3a152319`) and the isolated e2e test family (`84b96700`), so
+Section 6's cross-family check has no third party to test against and needs its premise
+revisited before it can be run at all.
+
+**Confirmed alongside this run, closing the one leg `UW-A03` left open.** The RQ worker
+authenticates to production as `cyo_worker`. Proof is read-only and was taken from inside
+the running `cyo-adventure-worker` container through the application's own
+`get_worker_session()`: `current_user` and `session_user` both return `cyo_worker`,
+`rolbypassrls` is `false` so the ADR-022 Tier 1 policies bind, and `pg_stat_activity`
+observed from that same connection showed `cyo_api` on 5 connections, `cyo_worker` on 1,
+and `postgres` on none. No generation job was triggered and no LLM quota was spent: the
+credential path was what needed proving, not the pipeline.
+
+One nuance to carry forward from that check. `WORKER_DATABASE_URL` is **unset** on the
+deployed worker container. `worker_database_url_effective` falls back to `database_url`,
+and the homelab stack sets that container's own `DATABASE_URL` to the `cyo_worker` DSN, so
+the correct role is reached by container-level environment rather than by the
+`WORKER_DATABASE_URL` split that this repository's `docker-compose.prod.yml` configures.
+The outcome is right and the ADR-021 goal is met, but the mechanism differs from the
+compose file, and inside the worker process `get_session()` and `get_worker_session()`
+resolve to the same identity. A regression in which worker code calls `get_session()`
+would therefore be invisible in production. Tracked as `UW-A44`.
