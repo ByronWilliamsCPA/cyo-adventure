@@ -3375,20 +3375,20 @@ cataloged in <a href="../../story-skeletons/">../story-skeletons.md</a>.</p>
 <tr>
 <td>Generation Pipeline</td>
 <td><a href="../component-generation.puml">component-generation.puml</a> / <a href="../component-generation.svg">.svg</a></td>
-<td><code>generation/orchestrator.py</code>, <code>prompts.py</code>, <code>pii.py</code>, <code>guarded.py</code>, <code>provider.py</code>, <code>allowlist.py</code>, <code>skeleton_catalog.py</code></td>
-<td>Orchestrator, prompts, providers, PII guard</td>
+<td><code>generation/orchestrator.py</code>, <code>prompts.py</code>, <code>pii.py</code>, <code>guarded.py</code>, <code>provider.py</code>, <code>allowlist.py</code>, <code>skeleton_catalog.py</code>, <code>binding.py</code>, <code>fidelity_gate.py</code>, <code>fidelity.py</code></td>
+<td>Orchestrator, prompts, providers, PII guard, WS-2 theme binding, Stage-1 fidelity gate</td>
 </tr>
 <tr>
 <td>Validator Gate</td>
 <td><a href="../component-validator.puml">component-validator.puml</a> / <a href="../component-validator.svg">.svg</a></td>
-<td><code>validator/gate.py</code>, <code>layer1.py</code>, <code>policy.py</code>, <code>band_profile.py</code>, <code>layer2.py</code>, <code>reading_level.py</code>, <code>safety.py</code></td>
-<td>L1 / Policy / L2 / RL / SAFE layers</td>
+<td><code>validator/gate.py</code>, <code>layer1.py</code>, <code>policy.py</code>, <code>band_profile.py</code>, <code>layer2.py</code>, <code>reading_level.py</code>, <code>safety.py</code>, <code>choice_grammar.py</code></td>
+<td>L1 / Policy / L2 / RL / CG / SAFE layers; also notes sentinel_integrity.py, slots.py, theme_leak.py, series.py as siblings not called by run_gate()</td>
 </tr>
 <tr>
 <td>Player Engine</td>
 <td><a href="../component-player.puml">component-player.puml</a> / <a href="../component-player.svg">.svg</a></td>
-<td><code>player/engine.py</code>, <code>state.py</code>, <code>replay.py</code>, <code>storybook/models.py</code>, <code>evaluator.py</code>, <code>condition.py</code></td>
-<td>StoryEngine, evaluator, condition DSL</td>
+<td><code>player/engine.py</code>, <code>state.py</code>, <code>replay.py</code>, <code>stops.py</code>, <code>storybook/models.py</code>, <code>evaluator.py</code>, <code>condition.py</code></td>
+<td>StoryEngine, evaluator, condition DSL, ADR-026 stop composition, ADR-023 personalization modules</td>
 </tr>
 <tr>
 <td>API and Persistence</td>
@@ -3399,14 +3399,14 @@ cataloged in <a href="../../story-skeletons/">../story-skeletons.md</a>.</p>
 <tr>
 <td>Moderation Pipeline</td>
 <td><a href="../component-moderation.puml">component-moderation.puml</a> / <a href="../component-moderation.svg">.svg</a></td>
-<td><code>moderation/pipeline.py</code>, <code>classifiers.py</code>, <code>stages.py</code>, <code>repair.py</code>, <code>report.py</code>, <code>review_provider.py</code>, <code>thresholds.py</code></td>
-<td>Stage 0-4 review, auto-repair, thresholds</td>
+<td><code>moderation/pipeline.py</code>, <code>classifiers.py</code>, <code>stages.py</code>, <code>repair.py</code>, <code>report.py</code>, <code>review_provider.py</code>, <code>thresholds.py</code>, <code>leaf_diversity.py</code>, <code>personalizable_slots.py</code>, <code>synthesis.py</code></td>
+<td>Stage 0-4 review, auto-repair, thresholds, WS-1 leaf-diversity guard, findings synthesis</td>
 </tr>
 <tr>
 <td>Publishing</td>
 <td><a href="../component-publishing.puml">component-publishing.puml</a> / <a href="../component-publishing.svg">.svg</a></td>
-<td><code>publishing/state_machine.py</code>, <code>service.py</code>, <code>api/approval.py</code>, <code>review_surface.py</code>, <code>events/writer.py</code></td>
-<td>Approval state machine, admin-only approve (ADR-005)</td>
+<td><code>publishing/state_machine.py</code>, <code>service.py</code>, <code>catalog_publish.py</code>, <code>api/approval.py</code>, <code>review_surface.py</code>, <code>events/writer.py</code></td>
+<td>Approval state machine, admin-only approve (ADR-005), standalone catalog-publish CLI</td>
 </tr>
 <tr>
 <td>Pipeline Event Log</td>
@@ -3448,7 +3448,7 @@ cataloged in <a href="../../story-skeletons/">../story-skeletons.md</a>.</p>
 <tr>
 <td>Device Grant Sequence</td>
 <td><a href="../seq-device-grant.puml">seq-device-grant.puml</a> / <a href="../seq-device-grant.svg">.svg</a></td>
-<td><code>core/device_grant.py</code>, <code>api/device_grants.py</code>, <code>deps.py</code>, <code>child_sessions.py</code>, <code>frontend/src/auth/deviceGrant.ts</code>, <code>DeviceAuthorizedRoute.tsx</code></td>
+<td><code>core/device_grant.py</code>, <code>core/child_session.py</code>, <code>core/pin.py</code>, <code>core/token_audience.py</code>, <code>api/device_grants.py</code>, <code>deps.py</code>, <code>child_sessions.py</code>, <code>frontend/src/auth/deviceGrant.ts</code>, <code>DeviceAuthorizedRoute.tsx</code></td>
 <td>ADR-014: mint / verify / revoke</td>
 </tr>
 </tbody>
@@ -3468,13 +3468,13 @@ cataloged in <a href="../../story-skeletons/">../story-skeletons.md</a>.</p>
 <td>ER Diagram</td>
 <td><a href="../er-diagram.puml">er-diagram.puml</a> / <a href="../er-diagram.svg">.svg</a></td>
 <td><code>db/models.py</code></td>
-<td>All 22 ORM tables and FK relationships</td>
+<td>All 26 ORM tables and FK relationships</td>
 </tr>
 <tr>
 <td>ER Diagram (Mermaid)</td>
 <td><a href="../er-diagram.mmd">er-diagram.mmd</a>, embedded in <a href="../../data-model/">../data-model.md</a></td>
 <td><code>db/models.py</code></td>
-<td>Same 22 tables/relationships as <code>er-diagram.puml</code>, in Mermaid for inline rendering on GitHub. Hand-maintained companion, not covered by <code>tools/generate_diagram_svgs.py</code>; update alongside <code>er-diagram.puml</code> when the schema changes.</td>
+<td>Same 26 tables/relationships as <code>er-diagram.puml</code>, in Mermaid for inline rendering on GitHub. Hand-maintained companion, not covered by <code>tools/generate_diagram_svgs.py</code>; update alongside <code>er-diagram.puml</code> when the schema changes.</td>
 </tr>
 </tbody>
 </table>
@@ -3535,16 +3535,20 @@ cataloged in <a href="../../story-skeletons/">../story-skeletons.md</a>.</p>
 <tr>
 <td>Journey Test Coverage</td>
 <td><a href="../journey-dev-coverage.puml">journey-dev-coverage.puml</a> / <a href="../journey-dev-coverage.svg">.svg</a></td>
-<td><code>frontend/src/**/*.test.tsx</code> (Vitest)</td>
-<td>Journey recolored by e2e / unit / none coverage</td>
+<td><code>frontend/e2e/*.spec.ts</code> (Playwright), <code>frontend/src/**/*.test.tsx</code> (Vitest)</td>
+<td>Journey recolored by e2e / unit / none coverage. The colours are a point-in-time snapshot re-verified by hand on 2026-08-04; no tool checks that date, and the diagram's own header carries the dated spec inventory. Per-element uncertainty belongs in a <code>&lt;&lt;unverified&gt;&gt;</code> stereotype (<a href="../STYLE_GUIDE/#status-stereotypes">STYLE_GUIDE.md</a>), which an audit can actually find.</td>
 </tr>
 </tbody>
 </table>
 <h2 id="maintenance">Maintenance<a class="headerlink" href="#maintenance" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Regenerate SVGs after editing any <code>.puml</code> with <code>python tools/generate_diagram_svgs.py</code>
-  (or <code>--all</code> to force, <code>--check</code> as a freshness gate). See
+  (or <code>--all</code> to force, <code>--check</code> to report staleness). See
   <a href="../STYLE_GUIDE/#regenerating-svgs">STYLE_GUIDE.md</a>.</li>
+<li><code>--check</code> needs no PlantUML jar and is designed to run in CI, but nothing invokes it
+  today: <code>grep -rn generate_diagram_svgs .github/ .pre-commit-config.yaml noxfile.py</code>
+  returns nothing. Treat it as a command you run by hand, not a gate that will catch you.
+  Wiring it into a workflow is the open follow-up.</li>
 <li>The <code>Primary sources</code> column is a maintenance aid, not an exhaustive list; each
   <code>.puml</code> carries a full <code>' Source files:</code> traceability block. A source path that no
   longer exists is drift the diagram audit will flag.</li>
@@ -3571,7 +3575,7 @@ cataloged in <a href="../../story-skeletons/">../story-skeletons.md</a>.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 01:45:11 UTC">July 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 4, 2026 20:02:02 UTC">August 4, 2026</span>
   </span>
 
     
