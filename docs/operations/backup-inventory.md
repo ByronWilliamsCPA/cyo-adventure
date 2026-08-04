@@ -91,4 +91,9 @@ which has never been restored cannot pass by proximity to one that has.
 - [Operator runbook](runbook.md), section 6: backup and restore procedures as they exist in this
   repository.
 - [`restore-drill-log.md`](restore-drill-log.md): the dated record of restores actually performed.
+- [`../security/assurance-register.md`](../security/assurance-register.md), row **O-33**: the
+  assertion that backups are "demonstrably restorable, not merely taken." This inventory is the
+  "taken" half and cannot satisfy O-33 on its own; the drill log holds the date O-33 is asserted
+  from. O-33 runs on a quarterly trigger while this inventory's cadence is 365 days, which is not
+  a conflict: the two documents attest different things on different schedules.
 - [`README.md`](README.md) in this directory: the index of attestation artifacts.

@@ -47,6 +47,19 @@ is a different result from the document being missing: the control was recorded 
 record has aged out. Re-confirming and re-dating is part of owning the control, not a separate
 project.
 
+Where the [assurance register](../security/assurance-register.md) sets a tighter cadence for the
+same subject matter than the manifest does, the tighter one governs. The register and the manifest
+are independent schedules over overlapping controls, and taking the looser of two is how a control
+ages out while both files report satisfied.
+
+**Two front-matter conventions in this directory.** This index carries `status: published` while
+every artifact it lists carries `status: draft`, and it carries no `review_cycle_days` while most
+of them do. Both are deliberate. The index is complete as written: it asserts nothing about the
+deployed environment, so there is nothing in it for an operator to verify and nothing to go stale
+on its own schedule. The artifacts are the opposite, which is why they stay `draft` until a human
+has filled and dated them. Read `status` on an artifact in this directory as "has this been
+attested", not as "is this file finished".
+
 ## Two rules that apply to all of them
 
 **Record artifacts, not intentions.** Each check names a durable thing: a dated row, a named role,
@@ -62,6 +75,11 @@ result that describes the wrong side of the thing being checked. Where the only 
 is inside the boundary, record that as unverified with the vantage named, rather than recording
 the inside measurement as a result.
 
+This second rule is not new here. It is the **Verification vantage rule** already adopted in
+[`../security/control-inheritance.md`](../security/control-inheritance.md), which is where it is
+written down and where any change to it belongs; the artifacts in this directory apply it rather
+than redefine it.
+
 ## What may not be written in these files
 
 This repository is public. These documents carry names, classes, and booleans only:
@@ -72,6 +90,30 @@ This repository is public. These documents carry names, classes, and booleans on
   than to someone maintaining it.
 - No narrative describing where a control is incomplete. Track incomplete items by issue ID and
   reference the ID, which keeps the item reviewable without publishing its shape.
+
+## How this relates to the assurance register
+
+These artifacts do not open a second register. The
+[assurance register](../security/assurance-register.md) states what this project asserts and the
+oracle each assertion fails on; the artifacts here are the dated evidence some of those assertions
+are made from. The register describes its own set as three layers, the spine saying what to assert,
+the register saying what we assert, and control-inheritance saying where the asserted thing lives.
+This directory is not a fourth layer beside them; it is where the evidence for the deployed-only
+subset is kept, so a register row can point at a dated record instead of at a recollection.
+
+Four rows overlap directly, and each one has a single owner for its date:
+
+| Register row | Artifact holding the evidence |
+| --- | --- |
+| O-33, backups demonstrably restorable | [`restore-drill-log.md`](restore-drill-log.md) |
+| O-77, connection identity asserted from the deployed session | [`service-credentials.md`](service-credentials.md) |
+| O-85, control-plane settings match an approved baseline | [`runtime-config.md`](runtime-config.md) |
+| O-86, production has debug behaviour and permissive CORS disabled | [`runtime-config.md`](runtime-config.md) |
+
+The rule that keeps them from drifting apart: **the artifact holds the date, the register holds the
+verdict.** Where a register row and an artifact both carry a `verified_on`, the artifact's is the
+measurement and the register's is a restatement of it, so updating one without the other is a
+defect rather than a difference of opinion.
 
 ## Controls provided by another plane
 
@@ -86,5 +128,10 @@ control there and reference it from the relevant artifact here, rather than desc
 
 - [Operator runbook](runbook.md): day-to-day operations, health checks, incident diagnosis,
   secrets and keys inventory, and the content kill switch.
+- [Security event catalog](security-events.md): which security-relevant events the application
+  emits, their retention, and the durable `security_event` table behind them. Read section 6
+  before filling in [`alert-test-fire-log.md`](alert-test-fire-log.md); it records that no alert
+  rules ship in this repository yet, which changes that artifact's first operator step from
+  recording a rule to building one.
 - [Authoring guide](authoring-guide.md): the guardian- and admin-facing description of how a
   story reaches a child's shelf.

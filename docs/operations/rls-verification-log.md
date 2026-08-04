@@ -69,6 +69,14 @@ reconstruct it.
 | --- | --- | --- | --- |
 | _(no entry recorded)_ | | | |
 
+A test recorded here should also be able to fail. Row **O-78** of the
+[assurance register](../security/assurance-register.md) states the stronger property this section
+does not test on its own: dropping an RLS policy must turn at least one test red. A suite that
+stays green after a policy is removed is passing on something other than the policy, which is the
+inert-isolation case described above wearing a green check. When filling this section, note
+whether the recorded test has been exercised against a dropped policy, and if not, that O-78 is
+still unproven for it.
+
 ## 3. Not-applicable verdict
 
 If this repository does not claim row-level security or an equivalent tenant isolation model,
@@ -108,4 +116,10 @@ This scaffold is not a control until a human completes it.
 
 - [`service-credentials.md`](service-credentials.md): the connection half of the same control,
   which records the role these queries must run as.
+- [`../security/assurance-register.md`](../security/assurance-register.md), rows **O-77** and
+  **O-78**: the same subject matter stated as assertions. O-77 requires the connection identity to
+  be asserted from the deployed session rather than from a fixture, which is why section 1 records
+  an observed role rather than a configured one; O-78 requires each policy to have a test that
+  fails when the policy is dropped. Section 1 of this document is the evidence O-77 is asserted
+  from.
 - [`README.md`](README.md) in this directory: the index of attestation artifacts.
