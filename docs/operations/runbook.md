@@ -550,15 +550,23 @@ it, not a replacement for it.
   Supavisor transaction-pooler connection mode (ADR-009).
 - `CYO_ADVENTURE_REDIS_URL` (`REDIS_URL` alias in compose): RQ queue and rate-limiter Redis
   connection. Needed by the backend and the worker.
-- `ANTHROPIC_API_KEY`: direct Anthropic generation leg. Worker only.
-- `OPENROUTER_API_KEY`: OpenRouter generation legs (primary + fallback). Worker only.
+- `ANTHROPIC_API_KEY`: direct Anthropic generation leg. Backend and worker (see the note below).
+- `OPENROUTER_API_KEY`: OpenRouter generation legs (primary + fallback). Backend and worker.
 - `OLLAMA_BASE_URL` / `OLLAMA_AUTH` / `OLLAMA_CA_BUNDLE`: local/homelab Ollama fallback leg;
-  `OLLAMA_AUTH` is HTTP Basic for the Traefik+Authentik-fronted homelab instance. Worker only.
+  `OLLAMA_AUTH` is HTTP Basic for the Traefik+Authentik-fronted homelab instance. Backend and
+  worker.
 - `MODAL_BASE_URL` / `MODAL_PROXY_KEY` / `MODAL_PROXY_SECRET`: experimental Modal generation leg
-  (offline-only, never a production fallback). Worker only.
-- `GEMINI_API_KEY`: cover-art generation (nano banana). Worker only.
+  (offline-only, never a production fallback). Backend and worker.
+- `GEMINI_API_KEY`: cover-art generation (nano banana). Backend and worker.
 - `R2_ACCOUNT_ID` / `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` / `R2_BUCKET` /
-  `R2_PUBLIC_BASE_URL`: Cloudflare R2 object storage for optimized cover images. Worker only.
+  `R2_PUBLIC_BASE_URL`: Cloudflare R2 object storage for optimized cover images. Backend and
+  worker.
+- `CYO_ADVENTURE_WORKER_DATABASE_URL` (`WORKER_DATABASE_URL` alias): the queue path's own
+  connection string, connecting as `cyo_worker` rather than `cyo_api` (ADR-021, Section 11).
+  Optional; falls back to `CYO_ADVENTURE_DATABASE_URL` when unset. **Set on the worker only, and
+  deliberately left unset on the API**, because `core/database.py` builds both engines in every
+  process: an API container that has this variable set holds the `cyo_worker` credential in memory
+  without ever using it, which narrows the blast-radius separation the split exists to create.
 - `OPENAI_API_KEY`: Stage-0 moderation classifier (OpenAI Moderation API). Backend and worker.
 - `PERSPECTIVE_API_KEY`: Stage-0 moderation classifier (Google Perspective API). Backend and
   worker.
@@ -576,6 +584,16 @@ it, not a replacement for it.
 - `SENTRY_DSN`: backend error tracking (Section 4). Optional; a documented no-op when unset.
 - `FORWARDED_ALLOW_IPS`: trust boundary for `X-Forwarded-For`/`-Proto` behind the reverse proxy;
   never `*`. Backend process env / uvicorn CLI flag.
+
+The generation, cover-art, and object-storage credentials above read "Backend and worker" rather
+than "Worker only" because the backend builds those clients in-request, not only in queued jobs.
+`POST /v1/admin/storybook-versions/{id}/remoderate` constructs a generation provider inside the
+request (`api/remoderate.py` via `generation/provider.py`), the node-edit rescreen path constructs
+a review provider the same way (`api/node_edit.py`), and three routers presign cover URLs through
+`covers/storage.py` (`api/covers.py`, `api/library.py`, `api/recommendations.py`). This matters
+when scoping which credentials are resident in which container: attributing them to the worker
+alone understates the API container's exposure. `docs/operations/runtime-config.md` records the
+same fact per setting, and traces each call site.
 
 **GitHub Actions secrets** (CI/CD, not runtime):
 
