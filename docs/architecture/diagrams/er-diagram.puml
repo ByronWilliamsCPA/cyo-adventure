@@ -349,6 +349,22 @@ entity "pipeline_event" as pipeline_event #ECEFF1 {
   append-only (DB trigger enforced)
 }
 
+entity "security_event" as security_event #ECEFF1 {
+  * id : UUID <<PK>>
+  --
+  occurred_at : TIMESTAMPTZ
+  event_type : VARCHAR(48) [security_auth_failed|security_authz_denied|security_rate_limit_exceeded]
+  reason : VARCHAR(200)
+  client_ip : VARCHAR(45) NULL
+  code : VARCHAR(64) NULL
+  path : VARCHAR(255) NULL
+  method : VARCHAR(10) NULL
+  status_code : SMALLINT NULL
+  resource : VARCHAR(255) NULL [authz-denial rows only]
+  --
+  append-only (DB trigger enforced)
+}
+
 entity "provider_model_allowlist" as provider_model_allowlist #D1C4E9 {
   * id : UUID <<PK>>
   --
