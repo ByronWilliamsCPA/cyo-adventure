@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.63.0] - 2026-08-04
+
+### Features
+
+- **ops**: Deploy supabase/config.toml to staging and production
+  ([#604](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/604),
+  [`a88ff60`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/a88ff60faba48663d9395c8896a4c1e72388c807))
+
+
 ## [0.62.0] - 2026-08-04
 
 ### Features
@@ -3116,6 +3125,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.63.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.62.0...v0.63.0
 [0.62.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.61.3...v0.62.0
 [0.61.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.61.2...v0.61.3
 [0.61.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.61.1...v0.61.2
