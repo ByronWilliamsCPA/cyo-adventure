@@ -1,6 +1,6 @@
 @startuml er-diagram
 ' ============================================================
-' Entity-Relationship Diagram: all 25 ORM Tables
+' Entity-Relationship Diagram: all 26 ORM Tables
 ' CYO Adventure
 '
 ' Source file:
@@ -11,7 +11,7 @@
 ' backed by a CHECK constraint (plain Supabase CLI SQL migrations; the closed
 ' vocabulary is enforced at rest as well as at the application boundary).
 '
-' This diagram draws every table in models.py (25 total). See
+' This diagram draws every table in models.py (26 total). See
 ' docs/architecture/data-model.md for the full, authoritative column
 ' dictionary.
 ' ============================================================
@@ -189,7 +189,7 @@ entity "storybook_version" as storybook_version #F3E5F5 {
   cover_object_salt : VARCHAR(32) NULL [UW-M07; folded into the R2 object\nkey; NULL rows use the legacy unsalted key]
   cover_approved_by : UUID <<FK user.id, NULL>>
   cover_approved_at : TIMESTAMPTZ NULL
-  personalization_eligible : BOOLEAN [ADR-023; default false;\nwritten by generation/persistence.py,\norchestrator.py, worker.py,\nimport_story.py, api/node_edit.py,\nmoderation/pipeline.py]
+  personalization_eligible : BOOLEAN [ADR-023; default false;\n3 paths write the column: persistence.py:168\n(the only INSERT; StorybookVersion is\nconstructed nowhere else), then node_edit.py:672\nand moderation/pipeline.py:586 as later UPDATEs.\nworker.py, import_story.py and orchestrator.py\nCOMPUTE the value and hand it to persistence.py;\nthey never touch the row]
   pronoun_parameterized : BOOLEAN [ADR-023; default false;\ndeclared, not yet written by any path]
   sentinel_manifest : JSONB NULL [ADR-023; token manifest DERIVED\nfrom the blob after the fill]
   --

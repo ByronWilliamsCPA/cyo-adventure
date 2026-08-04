@@ -39,7 +39,11 @@
 '     reader/ReaderRoute.tsx
 '   frontend/src/guardian/ConsolePage.tsx, IntakePage.tsx, RequestsPage.tsx,
 '     BooksPage.tsx, ProfilesPage.tsx, DevicesPage.tsx, ReadingPage.tsx,
-'     ConnectionsPage.tsx
+'     ConnectionsPage.tsx, PrivacyPage.tsx, PreviewAsChildPage.tsx,
+'     GuardianReviewDetailPage.tsx
+'   frontend/src/guardian/GuardianShell.tsx (footer link to /guardian/privacy)
+'   frontend/src/routes.ts                  (previewAsChildPath(),
+'                                            guardianReviewPath())
 '   frontend/src/admin/AdminConsolePage.tsx, AdminLibraryPage.tsx,
 '     AdminRequestsPage.tsx, ReviewDetailPage.tsx, ModerationDashboardPage.tsx,
 '     ModerationThresholdsPage.tsx, AuthoringQueuePage.tsx,
@@ -78,9 +82,12 @@ package "Adult Zone\nAdultGate: one Supabase-session + warm step-up boundary" #E
     component "RequestsPage\n/guardian/requests\nApprove/decline a child's idea" as requests #C8E6C9
     component "BooksPage\n/guardian/books\nCatalog browse + assign (WS-E)" as books #C8E6C9
     component "ProfilesPage\n/guardian/profiles\nChild profiles" as profiles #C8E6C9
-    component "DevicesPage\n/guardian/devices\nDevice authorization: list +\nrevoke a child profile's\ndevice grants" as devices #C8E6C9
+    component "DevicesPage\n/guardian/devices\nDevice authorization: list +\nrevoke the FAMILY's device\ngrants (list_device_grants\naccepts no profile filter)" as devices #C8E6C9
     component "ReadingPage\n/guardian/reading\nFamily reading-visibility\n(G9 engagement summary)" as g_reading #C8E6C9
     component "ConnectionsPage\n/guardian/connections\nCross-family connection consent\n(ADR-016 ring-2 dual consent)" as g_connections #C8E6C9
+    component "PrivacyPage\n/guardian/privacy\nG11 trust surface; reached from\nthe GuardianShell footer, so it\nhangs off every guardian page" as g_privacy #C8E6C9
+    component "PreviewAsChildPage\n/guardian/preview/:profileId\nRead-only preview of a child's\nshelf; deliberately OUTSIDE the\nkid-token-gated /library, /read" as g_preview #C8E6C9
+    component "GuardianReviewDetailPage\n/guardian/review/:storybookId\nG6 edit half: a family's own\npassage edits, separate from\nthe admin review route" as g_review #C8E6C9
   }
 
   package "Admin Console (nested)\nProtectedRoute(allowedRoles=[admin])" #A5D6A7 {
@@ -109,6 +116,9 @@ console --> profiles : "nav"
 console --> devices : "nav"
 console --> g_reading : "nav"
 console --> g_connections : "nav"
+console --> g_privacy : "shell footer link\n(on every guardian page)"
+profiles --> g_preview : "preview as this child"
+intake --> g_review : "open a finished job\nto edit a passage"
 intake --> console : "back"
 requests --> console : "back"
 books --> console : "back"

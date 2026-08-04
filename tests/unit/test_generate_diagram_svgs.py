@@ -1,9 +1,11 @@
 """Unit tests for the top-level architecture-diagram SVG generator.
 
 Covers the pure helpers (``_is_renderable``, ``top_level_pumls``, ``is_stale``,
-``find_duplicate_svgs``) and the ``main`` CLI in ``--check`` mode, which needs
-no PlantUML jar. Git-backed staleness is exercised by monkeypatching
-``_git_commit_time`` so the tests stay hermetic and fast.
+``find_duplicate_svgs``) and the ``main`` CLI in both modes: ``--check``, which
+needs no PlantUML jar, and the render branch, where ``resolve_jar`` and
+``render_svgs`` are patched so no jar is downloaded and no subprocess runs.
+Git-backed staleness is exercised by monkeypatching ``_git_commit_time`` so the
+tests stay hermetic and fast.
 """
 
 from __future__ import annotations
@@ -183,3 +185,122 @@ def test_main_check_and_all_are_mutually_exclusive(tmp_path: Path) -> None:
 
 def test_main_errors_when_no_pumls(tmp_path: Path) -> None:
     assert main(["--check", "--diagrams-dir", str(tmp_path)]) == 1
+
+
+# --- main render branch ----------------------------------------------------
+#
+# ``render_svgs`` and ``resolve_jar`` are patched on the ``gds`` module rather
+# than at their definition site: the tool imports them by name at module load,
+# so its module globals are the only binding ``main`` actually reads. Patching
+# ``scripts.render_skeleton_diagrams`` would leave the tool's copies untouched
+# and the test would silently shell out to a real PlantUML jar.
+
+
+def _jar(tmp_path: Path) -> Path:
+    """Return a stand-in jar path; it is never executed, only truthiness-checked."""
+    return tmp_path / "plantuml.jar"
+
+
+def test_main_render_fails_when_jar_unavailable(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _puml(tmp_path, "a")
+    monkeypatch.setattr(gds, "is_stale", lambda _p: True)
+    monkeypatch.setattr(gds, "resolve_jar", lambda: None)
+    assert main(["--diagrams-dir", str(tmp_path)]) == 1
+
+
+def test_main_render_succeeds_when_every_target_rendered(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    a = _puml(tmp_path, "a")
+    _svg(a, b"<svg>a</svg>")
+    monkeypatch.setattr(gds, "is_stale", lambda _p: True)
+    monkeypatch.setattr(gds, "resolve_jar", lambda: _jar(tmp_path))
+
+    def _render(
+        puml_paths: list[Path], *, jar: Path | None
+    ) -> tuple[list[Path], list[Path]]:
+        assert jar is not None
+        return [p.with_suffix(".svg") for p in puml_paths], []
+
+    monkeypatch.setattr(gds, "render_svgs", _render)
+    assert main(["--diagrams-dir", str(tmp_path)]) == 0
+
+
+def test_main_render_fails_and_names_the_file_on_corrupt_svg(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    a = _puml(tmp_path, "a")
+    # PlantUML wrote an error card: the SVG exists, so it is not "missing".
+    svg = _svg(a, b"<svg>error card</svg>")
+    monkeypatch.setattr(gds, "is_stale", lambda _p: True)
+    monkeypatch.setattr(gds, "resolve_jar", lambda: _jar(tmp_path))
+
+    def _render(
+        puml_paths: list[Path], *, jar: Path | None
+    ) -> tuple[list[Path], list[Path]]:
+        assert jar is not None
+        return [], [p.with_suffix(".svg") for p in puml_paths]
+
+    monkeypatch.setattr(gds, "render_svgs", _render)
+
+    assert main(["--diagrams-dir", str(tmp_path)]) == 1
+    err = capsys.readouterr().err
+    assert "corrupt SVG" in err
+    assert svg.name in err
+    # The bad file is on disk and newer than its source, so it would sail
+    # through a later --check. "did not render" names the wrong remedy.
+    assert "did not render" not in err
+
+
+def test_main_render_reports_unrendered_targets_separately_from_corrupt(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    a = _puml(tmp_path, "a")
+    _puml(tmp_path, "b")
+    _svg(a, b"<svg>a</svg>")
+    monkeypatch.setattr(gds, "is_stale", lambda _p: True)
+    monkeypatch.setattr(gds, "resolve_jar", lambda: _jar(tmp_path))
+
+    def _render(
+        puml_paths: list[Path], *, jar: Path | None
+    ) -> tuple[list[Path], list[Path]]:
+        assert jar is not None
+        # b hard-failed: no output was written at all, and nothing is corrupt.
+        return [puml_paths[0].with_suffix(".svg")], []
+
+    monkeypatch.setattr(gds, "render_svgs", _render)
+
+    assert main(["--diagrams-dir", str(tmp_path)]) == 1
+    err = capsys.readouterr().err
+    assert "did not render" in err
+    assert "corrupt SVG" not in err
+
+
+def test_main_all_renders_every_diagram_even_when_fresh(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    a = _puml(tmp_path, "a")
+    b = _puml(tmp_path, "b")
+    _svg(a, b"<svg>a</svg>")
+    _svg(b, b"<svg>b</svg>")
+    monkeypatch.setattr(gds, "is_stale", lambda _p: False)
+    monkeypatch.setattr(gds, "resolve_jar", lambda: _jar(tmp_path))
+    seen: list[list[Path]] = []
+
+    def _render(
+        puml_paths: list[Path], *, jar: Path | None
+    ) -> tuple[list[Path], list[Path]]:
+        assert jar is not None
+        seen.append(list(puml_paths))
+        return [p.with_suffix(".svg") for p in puml_paths], []
+
+    monkeypatch.setattr(gds, "render_svgs", _render)
+
+    assert main(["--all", "--diagrams-dir", str(tmp_path)]) == 0
+    assert seen == [[a, b]]

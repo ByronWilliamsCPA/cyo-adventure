@@ -61,7 +61,7 @@ rectangle "FastAPI Backend\n[Python 3.14, FastAPI, Pydantic v2]\nsrc/cyo_adventu
 rectangle "Generation Worker\n[RQ worker process]\ngeneration/worker.py" as worker #FFF3E0
 
 ' --- Data stores ---
-database "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nSession pooler :5432 (session mode)\n25 ORM tables:\nFamily, FamilyConnection, Series, User,\nChildProfile, ChildProfilePersonalization,\nPersonalizationDisclosureConsent,\nStorybook, StorybookVersion,\nReadingState, Completion, Rating,\nReadingActivityDay, StorybookAssignment, Concept,\nStoryRequest, ModerationThreshold(+Audit),\nModerationSetting, PipelineEvent,\nProviderModelAllowlist(+Audit),\nGenerationJob, DeviceGrant, KidFlag" as postgres #E0F7FA
+database "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nSession pooler :5432 (session mode)\n26 ORM tables:\nFamily, FamilyConnection, Series, User,\nChildProfile, ChildProfilePersonalization,\nPersonalizationDisclosureConsent,\nStorybook, StorybookVersion,\nReadingState, Completion, Rating,\nReadingActivityDay, StorybookAssignment, Concept,\nStoryRequest, ModerationThreshold(+Audit),\nModerationSetting, PipelineEvent, SecurityEvent,\nProviderModelAllowlist(+Audit),\nGenerationJob, DeviceGrant, KidFlag" as postgres #E0F7FA
 
 database "Redis\n[Job broker]\nRQ queue for generation jobs" as redis #E0E0E0
 

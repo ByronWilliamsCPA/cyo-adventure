@@ -47,7 +47,12 @@
 '                                              published version, status unchanged)
 '   src/cyo_adventure/api/flags.py           (K15/ADR-016 kid flags: submit +
 '                                              admin list/resolve)
-'   src/cyo_adventure/api/notifications.py   (guardian-only pipeline_event feed)
+'   src/cyo_adventure/api/notifications.py   (guardian-only pipeline_event feed;
+'                                              two routes, not one: GET
+'                                              /notifications polls, GET
+'                                              /notifications/stream is an
+'                                              additive SSE push transport over
+'                                              the same family-scoped query)
 '   src/cyo_adventure/api/recommendations.py (K17/ADR-016 rings 1-2 rec feed)
 '   src/cyo_adventure/api/personalization.py (ADR-023 P3/P4: ring-1/ring-2
 '                                              personalization slot CRUD +
@@ -70,7 +75,7 @@
 '   src/cyo_adventure/core/config.py         (Pydantic Settings)
 '   src/cyo_adventure/core/database.py       (async engine, Base, get_session)
 '   src/cyo_adventure/core/exceptions.py     (exception hierarchy)
-'   src/cyo_adventure/db/models.py           (25 ORM tables)
+'   src/cyo_adventure/db/models.py           (26 ORM tables)
 '   src/cyo_adventure/events/writer.py       (append-only pipeline_event log, WS-D)
 '   docs/planning/authorization-matrix.md
 '   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik;
@@ -178,10 +183,10 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
 
 }
 
-package "ORM Models\nsrc/cyo_adventure/db/models.py (25 tables)" #FFF8E1 {
+package "ORM Models\nsrc/cyo_adventure/db/models.py (26 tables)" #FFF8E1 {
   component "Family\nSeries\nUser\nChildProfile\nFamilyConnection\nStorybook\nStorybookVersion" as models_a #FFF8E1
   component "ReadingState\nCompletion\nRating\nStorybookAssignment\nConcept\nStoryRequest\nReadingActivityDay [W3.3]" as models_b #FFF8E1
-  component "ModerationThreshold(+Audit)\nModerationSetting\nPipelineEvent\nProviderModelAllowlist(+Audit)\nGenerationJob\nKidFlag [K15]" as models_c #FFF8E1
+  component "ModerationThreshold(+Audit)\nModerationSetting\nPipelineEvent\nSecurityEvent [OPS-005]\nProviderModelAllowlist(+Audit)\nGenerationJob\nKidFlag [K15]" as models_c #FFF8E1
   component "DeviceGrant [ADR-014]\nfamily_id, authorized_by, jti\n(unique), revoked_at" as models_d #FFF8E1
   component "ChildProfilePersonalization\nPersonalizationDisclosureConsent\n[ADR-023 P3/P4]" as models_e #FFF8E1
 }

@@ -32,11 +32,19 @@
 '                                                     advisory, fail-open; runs
 '                                                     after Stage 0/1/3-4, gated
 '                                                     on not has_hard_block)
-'   src/cyo_adventure/moderation/personalizable_slots.py (personalizable_slot_ids_for_story():
-'                                                     tri-state slot resolution
-'                                                     shared with generation/
-'                                                     import_story.py and
-'                                                     api/node_edit.py)
+'   src/cyo_adventure/moderation/personalizable_slots.py (tri-state slot
+'                                                     resolution, two entry
+'                                                     points that are NOT
+'                                                     interchangeable:
+'                                                     personalizable_slot_ids_for_story()
+'                                                     (async, resolves the job
+'                                                     itself; called by this
+'                                                     pipeline and api/node_edit.py)
+'                                                     and personalizable_slot_ids_for_job()
+'                                                     (sync, caller already holds
+'                                                     the job; called by
+'                                                     generation/import_story.py
+'                                                     and moderation/rescreen.py))
 '   src/cyo_adventure/moderation/synthesis.py        (merge_findings(): deterministic
 '                                                     post-review merge that collapses
 '                                                     interchangeable findings before

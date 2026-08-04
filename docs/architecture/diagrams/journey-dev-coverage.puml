@@ -68,7 +68,7 @@ repeat :a new story is wanted;
 
 |Child|
 #BFE3C6:Open app, pick avatar;
-note right: GREEN  •  e2e: profiles.spec (picker renders / empty)\n+ responsive.spec / cross-device.spec / mobile-viewport.spec\n(no horizontal overflow, incl. the weekly-ring/badge-case nav cluster)\nunit: ProfilePickerPage.test
+note right: GREEN  •  e2e: profiles.spec (picker renders / empty)\n+ responsive.spec / cross-device.spec / mobile-viewport.spec\n("kid profile picker (/kids)" block: no horizontal overflow)\nunit: ProfilePickerPage.test
 #BFE3C6:Request a story
 (library page);
 note right: GREEN  •  e2e: story-requests-kid.spec (idea, proposed series,\nanchor to a series book)\ne2e-real: authored-request.spec (real backend)\nunit: RequestStory.test
@@ -107,7 +107,7 @@ note right: GREEN  •  e2e: assignments.spec (sibling add)\n+ keyboard-nav.spec
 note right: AMBER  •  unit: ProfilePickerPage.test\npill state not asserted in e2e
 
 #BFE3C6:Open Library (hero + shelf);
-note right: GREEN  •  e2e: library.spec (hero+shelf, tap->reader, empty, mobile)\n+ responsive.spec / cross-device.spec (no horizontal overflow,\nincl. single-book shelf, at desktop/tablet/mobile widths and\nreal device projects)\nunit: LibraryPage.test, pickHero.test
+note right: GREEN  •  e2e: library.spec (hero+shelf, tap->reader, empty, mobile)\n+ responsive.spec / cross-device.spec (no horizontal overflow,\nincl. single-book shelf, at desktop/tablet/mobile widths and\nreal device projects)\n+ mobile-viewport.spec "kid library (/library/:profileId)" block\n(no overflow; the weekly-ring/badge-case nav cluster)\nunit: LibraryPage.test, pickHero.test
 #BFE3C6:Read passages, make choices;
 note right: GREEN  •  e2e: reader.spec (play-to-ending US-101,\nstate-gated US-102, malformed->exit, missing->not-found, a11y)\n+ responsive.spec / cross-device.spec (no horizontal overflow)\n+ kid-touch-targets.spec (choice buttons meet the 44x44 WCAG 2.5.5 floor)
 if (Online?) then (yes)

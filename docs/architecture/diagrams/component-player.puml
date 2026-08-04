@@ -10,10 +10,13 @@
 '                                              save gate; replays the choice path)
 '   src/cyo_adventure/player/stops.py         (ADR-026: rendered-stop composition,
 '                                              compose_stop(); mirrors stops.ts;
-'                                              today its only real caller is
-'                                              validator/choice_grammar.py's
-'                                              CG-3 words-per-stop check, not
-'                                              a live reader API route)
+'                                              nothing under src/ imports it
+'                                              today. Its only importer is
+'                                              tests/unit/test_stop_conformance.py.
+'                                              validator/choice_grammar.py
+'                                              re-implements the same stop shape
+'                                              for its CG-3 words-per-stop check
+'                                              rather than calling it)
 '   src/cyo_adventure/storybook/models.py     (Storybook, Node, Choice, Effect)
 '   src/cyo_adventure/storybook/evaluator.py  (evaluate(), VarState, whitelisted ops)
 '   src/cyo_adventure/storybook/condition.py  (condition DSL validator)
@@ -28,10 +31,15 @@
 '
 '   Personalization (ADR-023, storybook/): sentinels.py, reinsertion.py,
 '   personalization_values.py, slotted_surfaces.py, theme_contract.py. These
-'   are NOT called by StoryEngine; their real callers are generation/
-'   (binding.py, worker.py, orchestrator.py), moderation/ (pipeline.py,
-'   fidelity_review.py, personalizable_slots.py, rescreen.py), and api/
-'   (node_edit.py, personalization.py, sentinel_log.py).
+'   are NOT called by StoryEngine. Their importers are spread across nine
+'   packages, so the list below is illustrative rather than exhaustive:
+'   generation/ (binding.py, worker.py, prompts.py, import_story.py),
+'   moderation/ (pipeline.py, fidelity_review.py, personalizable_slots.py,
+'   rescreen.py), api/ (node_edit.py, personalization.py, sentinel_log.py),
+'   plus validator/, mutation/, measurement/, flywheel/, story_requests/,
+'   diversity/, and covers/. generation/orchestrator.py is NOT a caller: it
+'   imports nothing from storybook/ and only names reinsertion.build_manifest's
+'   return shape in a docstring.
 ' ============================================================
 
 skinparam defaultFontName "Roboto"
@@ -136,23 +144,31 @@ note bottom of stops
   StoryEngine.choose() output. No edge
   is drawn to StoryEngine here because
   no live reader API route invokes
-  compose_stop() yet; its only current
-  caller is validator/choice_grammar.py
-  (CG-3 words-per-stop check), which
-  runs at generation time, not read time.
+  compose_stop() yet. Nothing under src/
+  imports it either; its only importer is
+  tests/unit/test_stop_conformance.py.
+  validator/choice_grammar.py re-implements
+  the same stop shape for its CG-3
+  words-per-stop check (at generation time,
+  not read time) rather than calling it.
 end note
 
 note bottom of theme_contract
   ADR-023 personalization: none of the
   five modules in this package are
-  called by StoryEngine. Real callers
-  span generation/ (binding.py,
-  worker.py, orchestrator.py),
+  called by StoryEngine. Importers span
+  nine packages; illustrative, not
+  exhaustive: generation/ (binding.py,
+  worker.py, prompts.py, import_story.py),
   moderation/ (pipeline.py,
   fidelity_review.py,
   personalizable_slots.py, rescreen.py),
-  and api/ (node_edit.py,
-  personalization.py, sentinel_log.py).
+  api/ (node_edit.py, personalization.py,
+  sentinel_log.py), plus validator/,
+  mutation/, measurement/, flywheel/,
+  story_requests/, diversity/, covers/.
+  generation/orchestrator.py is NOT a
+  caller (docstring reference only).
 end note
 
 @enduml

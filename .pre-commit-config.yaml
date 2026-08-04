@@ -25,12 +25,19 @@ repos:
         stages: [pre-commit]
       - id: end-of-file-fixer
         stages: [pre-commit]
-        # Skeleton SVGs are PlantUML output, which ends at "</svg>" with no
+        # Diagram SVGs are PlantUML output, which ends at "</svg>" with no
         # trailing newline. Without this exclusion the hook appends one to every
-        # skeleton SVG a commit happens to stage, so any PR touching one diagram
-        # silently acquires one-byte diffs on the other 60-odd, and the next
-        # regeneration reverts them again.
-        exclude: ^docs/architecture/diagrams/skeletons/.*\.svg$
+        # SVG a commit happens to stage, so any PR touching one diagram silently
+        # acquires one-byte diffs on the other 60-odd, and the next regeneration
+        # reverts them again.
+        #
+        # This covers the hand-authored top-level diagrams as well as the
+        # generated skeletons/ ones. It was scoped to skeletons/ alone until
+        # 2026-08-04, which left the top-level diagrams exposed to the exact
+        # failure this comment describes: 71 of the 81 committed SVGs under
+        # docs/architecture/diagrams/ have no trailing newline, so the hook
+        # rewrote every one it saw and then lost the change on re-render.
+        exclude: ^docs/architecture/diagrams/.*\.svg$
       - id: check-yaml
         stages: [pre-commit]
         exclude: mkdocs.yml  # Exclude mkdocs.yml due to !ENV custom tags

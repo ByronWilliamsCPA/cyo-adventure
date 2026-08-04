@@ -52,8 +52,8 @@ cataloged in [../story-skeletons.md](../story-skeletons.md).
 
 | Diagram | Files | Primary sources | Description |
 | ------- | ----- | --------------- | ----------- |
-| ER Diagram | [er-diagram.puml](er-diagram.puml) / [.svg](er-diagram.svg) | `db/models.py` | All 25 ORM tables and FK relationships |
-| ER Diagram (Mermaid) | [er-diagram.mmd](er-diagram.mmd), embedded in [../data-model.md](../data-model.md) | `db/models.py` | Same 25 tables/relationships as `er-diagram.puml`, in Mermaid for inline rendering on GitHub. Hand-maintained companion, not covered by `tools/generate_diagram_svgs.py`; update alongside `er-diagram.puml` when the schema changes. |
+| ER Diagram | [er-diagram.puml](er-diagram.puml) / [.svg](er-diagram.svg) | `db/models.py` | All 26 ORM tables and FK relationships |
+| ER Diagram (Mermaid) | [er-diagram.mmd](er-diagram.mmd), embedded in [../data-model.md](../data-model.md) | `db/models.py` | Same 26 tables/relationships as `er-diagram.puml`, in Mermaid for inline rendering on GitHub. Hand-maintained companion, not covered by `tools/generate_diagram_svgs.py`; update alongside `er-diagram.puml` when the schema changes. |
 
 ## Deployment and routing
 
@@ -69,13 +69,17 @@ cataloged in [../story-skeletons.md](../story-skeletons.md).
 | End-to-End Journey | [journey-end-to-end.puml](journey-end-to-end.puml) / [.svg](journey-end-to-end.svg) | `frontend/src/router.tsx`, `landing/LandingPage.tsx`, `auth/DeviceAuthorizedRoute.tsx`, `AdultGate.tsx`, `library/RequestStory.tsx`, `guardian/RequestsPage.tsx` | Target-state UX across Child/Guardian/Admin/System lanes |
 | Kid-Surface Journey | [journey-kid.puml](journey-kid.puml) / [.svg](journey-kid.svg) | `frontend/src/router.tsx`, `auth/DeviceAuthorizedRoute.tsx`, `deviceGrant.ts`, `kid/ProfilePickerPage.tsx`, `library/LibraryPage.tsx`, `reader/Reader.tsx` | Zoomed child-facing flow |
 | Guardian + Admin Journey | [journey-guardian.puml](journey-guardian.puml) / [.svg](journey-guardian.svg) | `frontend/src/router.tsx`, `auth/AdultGate.tsx`, `guardian/LoginPage.tsx`, `ConsolePage.tsx`, `admin/AdminConsolePage.tsx`, `IntakePage.tsx`, `RequestsPage.tsx`, `BooksPage.tsx` | Zoomed parent + admin flow (approve is admin-only, ADR-005) |
-| Journey Test Coverage | [journey-dev-coverage.puml](journey-dev-coverage.puml) / [.svg](journey-dev-coverage.svg) | `frontend/e2e/*.spec.ts` (Playwright), `frontend/src/**/*.test.tsx` (Vitest) | Journey recolored by e2e / unit / none coverage; last re-verified 2026-08-04 |
+| Journey Test Coverage | [journey-dev-coverage.puml](journey-dev-coverage.puml) / [.svg](journey-dev-coverage.svg) | `frontend/e2e/*.spec.ts` (Playwright), `frontend/src/**/*.test.tsx` (Vitest) | Journey recolored by e2e / unit / none coverage. The colours are a point-in-time snapshot re-verified by hand on 2026-08-04; no tool checks that date, and the diagram's own header carries the dated spec inventory. Per-element uncertainty belongs in a `<<unverified>>` stereotype ([STYLE_GUIDE.md](STYLE_GUIDE.md#status-stereotypes)), which an audit can actually find. |
 
 ## Maintenance
 
 - Regenerate SVGs after editing any `.puml` with `python tools/generate_diagram_svgs.py`
-  (or `--all` to force, `--check` as a freshness gate). See
+  (or `--all` to force, `--check` to report staleness). See
   [STYLE_GUIDE.md](STYLE_GUIDE.md#regenerating-svgs).
+- `--check` needs no PlantUML jar and is designed to run in CI, but nothing invokes it
+  today: `grep -rn generate_diagram_svgs .github/ .pre-commit-config.yaml noxfile.py`
+  returns nothing. Treat it as a command you run by hand, not a gate that will catch you.
+  Wiring it into a workflow is the open follow-up.
 - The `Primary sources` column is a maintenance aid, not an exhaustive list; each
   `.puml` carries a full `' Source files:` traceability block. A source path that no
   longer exists is drift the diagram audit will flag.

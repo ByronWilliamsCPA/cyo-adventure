@@ -36,8 +36,13 @@
 '   src/cyo_adventure/generation/fidelity_gate.py (run_stage1_gate(): the
 '                                                   skeleton_fill path's own
 '                                                   bounded Stage-1 fidelity
-'                                                   gate, shared by worker.py
-'                                                   and import_story.py)
+'                                                   gate, called by
+'                                                   orchestrator.py:492 and
+'                                                   import_story.py:541.
+'                                                   worker.py does NOT call it;
+'                                                   it reaches the gate only
+'                                                   indirectly, through the
+'                                                   orchestrator)
 '   src/cyo_adventure/generation/fidelity.py      (pure-code Stage-1 checks
 '                                                   run_stage1_gate calls
 '                                                   before any paid semantic
@@ -74,7 +79,11 @@
 '     filled story JSON, or resume an awaiting_manual_fill job; see the
 '     orchestrator note below)
 '   src/cyo_adventure/generation/skeleton.py      (skeleton-loading utilities
-'     shared by worker.py, binding.py, and the CLI tools above)
+'     imported by eight modules under src/: generation/ (worker.py,
+'     import_story.py, skeleton_match.py, fidelity.py),
+'     moderation/personalizable_slots.py, flywheel/strategy.py, and
+'     mutation/ (floors.py, sample_fill.py), plus five scripts/ CLI tools.
+'     binding.py is NOT among them: it imports nothing from skeleton.py)
 '   src/cyo_adventure/generation/variation.py     (A7 variation-axis library:
 '     one authored craft axis drawn per request)
 '   src/cyo_adventure/generation/worker_main.py   (process entry point for
@@ -110,7 +119,7 @@ package "Generation Pipeline" #FFF3E0 {
 
   component "Generation Orchestrator\ngeneration/orchestrator.py\ngenerate_story() [fresh_generation:\nStage A -> B -> C]\nfill_skeleton() [skeleton_fill method]" as orchestrator #FFE0B2
 
-  component "Stage-1 Fidelity Gate\ngeneration/fidelity_gate.py + fidelity.py\nrun_stage1_gate(): pure-code checks\n(fidelity.py), then one semantic\nbeats-check; shared by worker.py's\nskeleton_fill path and\nimport_story.py's resume path" as fidelity_gate #FFE0B2
+  component "Stage-1 Fidelity Gate\ngeneration/fidelity_gate.py + fidelity.py\nrun_stage1_gate(): pure-code checks\n(fidelity.py), then one semantic\nbeats-check; called by orchestrator.py\n(skeleton_fill path) and\nimport_story.py's resume path" as fidelity_gate #FFE0B2
 
   component "Series Continuation\ngeneration/series_link.py\nAnchorContext, book_index\nassignment (WS-G)" as series_link #FFE0B2
 

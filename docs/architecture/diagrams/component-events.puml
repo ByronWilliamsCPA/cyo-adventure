@@ -18,9 +18,13 @@
 '                                          enforces append-only, no UPDATE/
 '                                          DELETE from the ORM)
 '
-'   Call sites (every record_event() invocation in the codebase, grep-verified):
+'   Call sites: all 42 record_event() invocations under src/, across 21 files
+'   (verified by `grep -rn "record_event(" --include=*.py src`, excluding the
+'   definition in events/writer.py). Counts below are per file.
 '   src/cyo_adventure/generation/worker.py           (GENERATION_STARTED,
 '                                                      GENERATION_FINISHED x2)
+'   src/cyo_adventure/generation/queue.py             (GENERATION_FINISHED;
+'                                                      failure path)
 '   src/cyo_adventure/moderation/pipeline.py          (MODERATION_COMPLETED,
 '                                                      REPAIR_APPLIED)
 '   src/cyo_adventure/publishing/service.py           (RELEASED, SENT_BACK,
@@ -38,7 +42,10 @@
 '   src/cyo_adventure/api/ratings.py                  (RATED)
 '   src/cyo_adventure/api/admin_users.py              (USER_MANAGED x2, WS-J)
 '   src/cyo_adventure/api/families.py                 (FAMILY_MANAGED x2, WS-J)
-'   src/cyo_adventure/api/family_connections.py       (FAMILY_CONNECTION_CHANGED x2, WS-J)
+'   src/cyo_adventure/api/family_connections.py       (FAMILY_CONNECTION_CHANGED x4, WS-J)
+'   src/cyo_adventure/api/generation.py               (GENERATION_FINISHED)
+'   src/cyo_adventure/api/me.py                       (FAMILY_MANAGED,
+'                                                      USER_MANAGED)
 '   src/cyo_adventure/api/flags.py                    (KID_FLAGGED, FLAG_RESOLVED)
 '   src/cyo_adventure/api/node_edit.py                (NODE_EDITED)
 '   src/cyo_adventure/moderation/rescreen.py          (MODERATION_COMPLETED, per swept book)
@@ -48,7 +55,8 @@
 '   src/cyo_adventure/api/personalization.py          (ADR-023 P3/P4:
 '                                                      PERSONALIZATION_TOGGLED,
 '                                                      RING2_CONSENT_GRANTED,
-'                                                      RING2_CONSENT_REVOKED)
+'                                                      RING2_CONSENT_REVOKED,
+'                                                      FAMILY_MANAGED)
 '   src/cyo_adventure/api/remoderate.py               (STORYBOOK_REMODERATED;
 '                                                      moderation review redesign)
 '
@@ -217,11 +225,17 @@ note bottom of pipeline_event_table
   passage editor, admin re-screen, Phase 8a's
   admin profile-view audit, WS-8's cell
   saturation signal, ADR-023 P3/P4
-  personalization + ring-2 consent, and the
+  personalization + ring-2 consent, the
   moderation-review-redesign remoderation
-  endpoint) are the complete, grep-verified
-  set of every other record_event() site in
-  the codebase. Downstream readers: the admin
+  endpoint, the generation status endpoint
+  and RQ failure path (api/generation.py,
+  generation/queue.py), and self-service
+  account changes (api/me.py)) complete the
+  42-site total enumerated in this file's
+  header. Re-derive that total with:
+  grep -rn "record_event(" --include=*.py src
+  (excluding events/writer.py's definition).
+  Downstream readers: the admin
   moderation dashboard and the guardian
   notification feed (notifications/ package)
   both project pipeline_event rows read-only;

@@ -23,16 +23,29 @@
 '   Validator siblings NOT called by run_gate() (each has its own real
 '   caller elsewhere; kept out of the Validator Gate package below so this
 '   diagram does not imply they are part of run_gate()'s call graph):
-'     src/cyo_adventure/validator/sentinel_integrity.py (real callers:
-'       generation/worker.py, moderation/pipeline.py, moderation/rescreen.py,
-'       api/node_edit.py, generation/import_story.py, storybook/reinsertion.py)
-'     src/cyo_adventure/validator/slots.py (real callers: generation/binding.py,
+'   Importers below are counted by import statement, not by name mention: a
+'   docstring that cites a module reads identically to a call and must not be
+'   credited as one. Reproduce with, e.g.,
+'   `grep -rn "validator.slots import" --include=*.py src scripts`.
+'
+'     src/cyo_adventure/validator/sentinel_integrity.py (8 importers under
+'       src/: generation/worker.py, generation/import_story.py,
+'       moderation/pipeline.py, moderation/rescreen.py, api/node_edit.py,
+'       storybook/reinsertion.py, measurement/reinsertion.py,
+'       measurement/taxonomy.py)
+'     src/cyo_adventure/validator/slots.py (10 importers under src/; 8 at
+'       runtime: generation/binding.py, generation/worker.py, api/profiles.py,
 '       storybook/theme_contract.py, storybook/personalization_values.py,
-'       api/profiles.py, api/personalization.py)
+'       story_requests/interpretation.py, flywheel/reguide_draft.py,
+'       mutation/contract_gate.py. 2 are TYPE_CHECKING-only imports of
+'       SlotViolation and never call it: generation/prompts.py,
+'       api/personalization.py. Also scripts/bind_theme.py and
+'       scripts/check_theme_contract.py)
 '     src/cyo_adventure/validator/theme_leak.py (real caller: only
 '       scripts/check_theme_contract.py, an offline catalog-integrity CLI)
-'     src/cyo_adventure/validator/series.py (real caller: only
-'       publishing/service.py's approve(), NOT generation/binding.py)
+'     src/cyo_adventure/validator/series.py (2 callers: publishing/service.py's
+'       approve() and scripts/build_series_book.py:40, NOT generation/binding.py;
+'       validator/__init__.py re-exports validate_series but does not call it)
 ' ============================================================
 
 skinparam defaultFontName "Roboto"
@@ -140,20 +153,24 @@ note bottom of series
   validator/gate.py; each is a sibling
   with its own real, distinct caller:
 
-  sentinel_integrity.py -> generation/worker.py,
-    moderation/pipeline.py, moderation/rescreen.py,
-    api/node_edit.py, generation/import_story.py
+  Counts only; the header's "Validator siblings"
+  block carries the enumerated importer lists.
+  Two lists drift apart, so only one is kept.
 
-  slots.py -> generation/binding.py,
-    storybook/theme_contract.py,
-    api/personalization.py
+  sentinel_integrity.py -> 8 importers under src/
+    (generation, moderation, api, storybook,
+    measurement)
+
+  slots.py -> 10 importers under src/, 8 of them
+    at runtime, plus 2 scripts
 
   theme_leak.py -> scripts/check_theme_contract.py
     (offline catalog-integrity CLI only)
 
   series.py -> publishing/service.py's approve()
-    (series-chain validation before publish;
-    NOT generation/binding.py)
+    (series-chain validation before publish) and
+    scripts/build_series_book.py; NOT
+    generation/binding.py
 end note
 
 @enduml
