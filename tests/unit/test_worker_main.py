@@ -16,6 +16,7 @@ import pytest
 from rq import Queue, Worker
 from sqlalchemy.ext.asyncio import AsyncEngine
 
+from cyo_adventure.core.rls_posture import RolePosture
 from cyo_adventure.generation import worker_main
 
 if TYPE_CHECKING:
@@ -50,10 +51,10 @@ def _install_fake_engine(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_reclaim_stranded_jobs_uses_a_fresh_session(
+async def test_run_worker_startup_uses_a_fresh_session(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """_reclaim_stranded_jobs opens a session and returns requeue_stranded_jobs' count.
+    """_run_worker_startup opens a session and returns requeue_stranded_jobs' count.
 
     Kept as a direct private-function test deliberately: the return-value
     contract (the requeued count) is consumed by main() only as a structlog
@@ -74,7 +75,7 @@ async def test_reclaim_stranded_jobs_uses_a_fresh_session(
     monkeypatch.setattr(worker_main, "requeue_stranded_jobs", _fake_requeue)
     fake_engine = _install_fake_engine(monkeypatch)
 
-    count = await worker_main._reclaim_stranded_jobs()
+    count = await worker_main._run_worker_startup()
 
     assert count == 3
     fake_engine.dispose.assert_awaited_once()
@@ -87,7 +88,7 @@ def test_sweep_failure_disposes_engine_and_never_starts_the_worker(
     """A sweep failure still disposes the engine pool, and the worker never starts.
 
     Driven through the public entry point main() (not a direct call to the
-    private ``_reclaim_stranded_jobs``): the sweep's exception propagates out
+    private ``_run_worker_startup``): the sweep's exception propagates out
     of ``asyncio.run`` and out of ``main()``, so the public path reaches this
     case deterministically. This also pins the fail-fast contract that a
     process whose reclaim sweep crashed does not go on to pull new jobs.
@@ -125,7 +126,7 @@ def test_main_sweeps_before_starting_the_worker(
     before this same process would otherwise sit idle waiting for new work;
     this test locks in that ordering.
 
-    Runs the REAL ``_reclaim_stranded_jobs`` (mocking only its session/queue
+    Runs the REAL ``_run_worker_startup`` (mocking only its session/queue
     boundaries) instead of patching the private function, so the ordering
     contract is exercised through the public ``main()`` path end to end.
     """
@@ -237,7 +238,7 @@ def test_main_disposes_engine_after_sweep_and_before_worker_work(
     horse forks).
 
     Unlike the ordering test above, this one runs the REAL
-    _reclaim_stranded_jobs so the dispose calls inside it are exercised.
+    _run_worker_startup so the dispose calls inside it are exercised.
     """
     calls: list[str] = []
 
@@ -288,3 +289,210 @@ def test_main_disposes_engine_after_sweep_and_before_worker_work(
     assert calls == ["sweep", "dispose_worker", "dispose_api", "worker_work"]
     fake_worker_engine.dispose.assert_awaited_once()
     fake_engine.dispose.assert_awaited_once()
+
+
+class TestWorkerRolePosture:
+    """The worker's own ADR-021 cutover signal (issue #559).
+
+    A worker process serves no HTTP, so ``/health/ready``'s
+    ``database_privilege`` check cannot see it, and
+    ``CYO_ADVENTURE_WORKER_DATABASE_URL`` falls back to the API DSN in silence
+    when unset. Before this probe existed, "the worker is on ``cyo_worker``"
+    and "the worker still shares the API credential" were indistinguishable
+    without catching a generation job mid-flight and reading
+    ``pg_stat_activity``. These tests pin the standing signal that replaced
+    that.
+    """
+
+    @staticmethod
+    def _fake_posture(
+        *, via_role_attribute: bool = False, via_table_ownership: bool = False
+    ) -> RolePosture:
+        return RolePosture(
+            role_name="cyo_worker",
+            via_role_attribute=via_role_attribute,
+            via_table_ownership=via_table_ownership,
+        )
+
+    @pytest.mark.unit
+    @pytest.mark.security
+    @pytest.mark.asyncio
+    async def test_probe_runs_against_the_worker_session(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The probe gets the WORKER engine's session, not the API engine's.
+
+        #CRITICAL: security: probing the wrong engine answers a different
+        question than the operator asked and reports a clean verdict about a
+        connection the worker never makes.
+        """
+        seen: list[object] = []
+        session_sentinel = _FakeSession()
+
+        @asynccontextmanager
+        async def _fake_get_session() -> AsyncGenerator[_FakeSession]:
+            yield session_sentinel
+
+        async def _fake_measure(session: object) -> RolePosture:
+            seen.append(session)
+            return self._fake_posture()
+
+        async def _fake_requeue(session: object, **_kwargs: object) -> int:
+            _ = session
+            return 0
+
+        monkeypatch.setattr(worker_main, "get_worker_session", _fake_get_session)
+        monkeypatch.setattr(worker_main, "measure_role_posture", _fake_measure)
+        monkeypatch.setattr(worker_main, "requeue_stranded_jobs", _fake_requeue)
+        _install_fake_engine(monkeypatch)
+
+        await worker_main._run_worker_startup()
+
+        assert seen == [session_sentinel]
+
+    @pytest.mark.unit
+    @pytest.mark.security
+    @pytest.mark.asyncio
+    async def test_bypassing_worker_role_logs_a_warning_with_both_paths(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A worker role that defeats RLS warns, naming which path fired."""
+        fake_logger = MagicMock()
+
+        @asynccontextmanager
+        async def _fake_get_session() -> AsyncGenerator[_FakeSession]:
+            yield _FakeSession()
+
+        async def _fake_measure(session: object) -> RolePosture:
+            _ = session
+            return self._fake_posture(via_table_ownership=True)
+
+        async def _fake_requeue(session: object, **_kwargs: object) -> int:
+            _ = session
+            return 0
+
+        monkeypatch.setattr(worker_main, "get_worker_session", _fake_get_session)
+        monkeypatch.setattr(worker_main, "measure_role_posture", _fake_measure)
+        monkeypatch.setattr(worker_main, "requeue_stranded_jobs", _fake_requeue)
+        monkeypatch.setattr(worker_main, "logger", fake_logger)
+        _install_fake_engine(monkeypatch)
+
+        await worker_main._run_worker_startup()
+
+        fake_logger.warning.assert_called_once()
+        event, kwargs = (
+            fake_logger.warning.call_args.args[0],
+            fake_logger.warning.call_args.kwargs,
+        )
+        assert event == "generation_worker.role_bypasses_rls"
+        assert kwargs["role"] == "cyo_worker"
+        assert kwargs["via_table_ownership"] is True
+        assert kwargs["via_role_attribute"] is False
+
+    @pytest.mark.unit
+    @pytest.mark.security
+    @pytest.mark.asyncio
+    async def test_least_privileged_worker_role_logs_the_positive_signal(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A cut-over worker logs an affirmative line, not silence.
+
+        Silence on success would make "cut over" and "probe never ran"
+        identical in the log, which is the exact ambiguity this replaces.
+        """
+        fake_logger = MagicMock()
+
+        @asynccontextmanager
+        async def _fake_get_session() -> AsyncGenerator[_FakeSession]:
+            yield _FakeSession()
+
+        async def _fake_measure(session: object) -> RolePosture:
+            _ = session
+            return self._fake_posture()
+
+        async def _fake_requeue(session: object, **_kwargs: object) -> int:
+            _ = session
+            return 0
+
+        monkeypatch.setattr(worker_main, "get_worker_session", _fake_get_session)
+        monkeypatch.setattr(worker_main, "measure_role_posture", _fake_measure)
+        monkeypatch.setattr(worker_main, "requeue_stranded_jobs", _fake_requeue)
+        monkeypatch.setattr(worker_main, "logger", fake_logger)
+        _install_fake_engine(monkeypatch)
+
+        await worker_main._run_worker_startup()
+
+        fake_logger.warning.assert_not_called()
+        events = [call.args[0] for call in fake_logger.info.call_args_list]
+        assert "generation_worker.role_least_privileged" in events
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_probe_failure_never_stops_the_worker(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A broken probe degrades to a warning; the sweep and worker proceed.
+
+        The posture probe is an observability signal, not a gate. A
+        pre-cutover worker is an open security finding, but a worker that
+        refuses to start is an outage, and refusing to process stories because
+        a diagnostic query failed trades a smaller problem for a larger one.
+        """
+        fake_logger = MagicMock()
+        swept: list[str] = []
+
+        @asynccontextmanager
+        async def _fake_get_session() -> AsyncGenerator[_FakeSession]:
+            yield _FakeSession()
+
+        async def _fake_measure(session: object) -> RolePosture:
+            _ = session
+            msg = "relation pg_roles does not exist"
+            raise RuntimeError(msg)
+
+        async def _fake_requeue(session: object, **_kwargs: object) -> int:
+            _ = session
+            swept.append("sweep")
+            return 0
+
+        monkeypatch.setattr(worker_main, "get_worker_session", _fake_get_session)
+        monkeypatch.setattr(worker_main, "measure_role_posture", _fake_measure)
+        monkeypatch.setattr(worker_main, "requeue_stranded_jobs", _fake_requeue)
+        monkeypatch.setattr(worker_main, "logger", fake_logger)
+        _install_fake_engine(monkeypatch)
+
+        assert await worker_main._run_worker_startup() == 0
+        assert swept == ["sweep"]
+        events = [call.args[0] for call in fake_logger.warning.call_args_list]
+        assert "generation_worker.rls_posture_unknown" in events
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_posture_is_probed_before_the_reclaim_sweep(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Ordering: a sweep that crashes still leaves the posture recorded."""
+        order: list[str] = []
+
+        @asynccontextmanager
+        async def _fake_get_session() -> AsyncGenerator[_FakeSession]:
+            yield _FakeSession()
+
+        async def _fake_measure(session: object) -> RolePosture:
+            _ = session
+            order.append("posture")
+            return self._fake_posture()
+
+        async def _fake_requeue(session: object, **_kwargs: object) -> int:
+            _ = session
+            order.append("sweep")
+            return 0
+
+        monkeypatch.setattr(worker_main, "get_worker_session", _fake_get_session)
+        monkeypatch.setattr(worker_main, "measure_role_posture", _fake_measure)
+        monkeypatch.setattr(worker_main, "requeue_stranded_jobs", _fake_requeue)
+        _install_fake_engine(monkeypatch)
+
+        await worker_main._run_worker_startup()
+
+        assert order == ["posture", "sweep"]

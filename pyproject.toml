@@ -594,6 +594,15 @@ known-first-party = ["cyo_adventure"]
     "PLC0415", # Local imports to avoid circular dependencies
 ]
 
+# RQ worker entry point - the ADR-021 role-posture probe is a diagnostic that
+# must never be able to stop the worker from starting, the same resilience
+# property that earns api/health.py its BLE001 exemption above. The probe is
+# the only blind catch in this module; the reclaim sweep deliberately still
+# fails fast (test_sweep_failure_disposes_engine_and_never_starts_the_worker).
+"src/*/generation/worker_main.py" = [
+    "BLE001",  # Blind except in the role-posture probe for maximum resilience
+]
+
 # Security middleware - SSRF protection with intentional patterns
 "src/*/middleware/security.py" = [
     "S104",    # 0.0.0.0 in BLOCKED_HOSTS list is intentional

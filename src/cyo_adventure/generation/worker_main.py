@@ -7,12 +7,18 @@ stranded-job reclaim sweep (:func:`~cyo_adventure.generation.queue.requeue_stran
 never ran on a worker restart; this module runs it once, logs the count, and
 then starts the same blocking work loop.
 
+It also uses that hook for the worker half of the ADR-021 cutover signal: the
+worker's own database role posture is probed once and logged before the sweep,
+because nothing outside this process can observe which credential the worker
+connects with (see :func:`_log_worker_role_posture`).
+
 See ``docs/architecture/generation-pipeline.md`` for the pipeline this feeds.
 """
 
 from __future__ import annotations
 
 import asyncio
+from typing import TYPE_CHECKING
 
 from rq import Worker
 
@@ -22,16 +28,74 @@ from cyo_adventure.core.database import (
     get_worker_engine,
     get_worker_session,
 )
+from cyo_adventure.core.rls_posture import measure_role_posture
 from cyo_adventure.generation.queue import get_queue, requeue_stranded_jobs
 from cyo_adventure.utils.logging import get_logger, setup_logging
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = get_logger(__name__)
 
 __all__ = ["main"]
 
 
-async def _reclaim_stranded_jobs() -> int:
-    """Run the stranded-job reclaim sweep once, against a fresh worker session.
+async def _log_worker_role_posture(session: AsyncSession) -> None:
+    """Record which database role this worker actually connects as (ADR-021).
+
+    The worker is the half of the cutover nothing else can see. ``/health/ready``'s
+    ``database_privilege`` check runs in the API process against the API engine,
+    the worker serves no HTTP, and ``CYO_ADVENTURE_WORKER_DATABASE_URL`` falls
+    back to ``CYO_ADVENTURE_DATABASE_URL`` in silence when unset
+    (``core/config.py::worker_database_url_effective``). A forgotten worker
+    credential is therefore indistinguishable from a completed cutover by
+    inspection; before this line existed the only way to tell was to catch a
+    generation job mid-flight and read ``pg_stat_activity``.
+
+    Logs on BOTH outcomes on purpose. A probe that is silent on success makes
+    "cut over" and "probe never ran" the same log, which is the ambiguity this
+    is here to remove.
+
+    #CRITICAL: security: never gates startup. A pre-cutover worker is an open
+    security finding, but a worker that refuses to start is an outage, and
+    refusing to process stories because a diagnostic query failed trades a
+    smaller problem for a larger one. Alert on the warning event instead.
+    #VERIFY: tests/unit/test_worker_main.py::TestWorkerRolePosture::
+    test_probe_failure_never_stops_the_worker pins the non-gating contract.
+
+    Args:
+        session: A session on the WORKER engine. Passing an API-engine session
+            silently answers a different question than the operator asked.
+    """
+    try:
+        posture = await measure_role_posture(session)
+    except Exception as exc:
+        # The posture is unmeasured, not known-good. Distinct event name from
+        # the known-bad case below so an alert on "bypasses" stays actionable
+        # and is not diluted by broken probes.
+        logger.warning("generation_worker.rls_posture_unknown", error=str(exc))
+        return
+
+    if posture.bypasses_rls:
+        logger.warning(
+            "generation_worker.role_bypasses_rls",
+            role=posture.role_name,
+            # An operator fixes role attributes and table ownership
+            # differently, so "it bypasses" alone is not actionable.
+            via_role_attribute=posture.via_role_attribute,
+            via_table_ownership=posture.via_table_ownership,
+        )
+        return
+
+    logger.info("generation_worker.role_least_privileged", role=posture.role_name)
+
+
+async def _run_worker_startup() -> int:
+    """Probe the worker's role posture, then run the reclaim sweep once.
+
+    Both run against the same fresh worker session, inside one event loop, so
+    the posture reported is the identity the sweep and every subsequent job
+    actually use.
 
     Disposes BOTH the worker engine's and the API engine's connection pools
     on the way out, while this coroutine's event loop is still alive, so the
@@ -42,6 +106,9 @@ async def _reclaim_stranded_jobs() -> int:
     """
     try:
         async with get_worker_session() as session:
+            # Posture first: a sweep that crashes still leaves the cutover
+            # verdict in the log for the deploy that caused the crash.
+            await _log_worker_role_posture(session)
             return await requeue_stranded_jobs(session)
     finally:
         # #CRITICAL: concurrency: the sweep checks asyncpg connections out of
@@ -95,7 +162,7 @@ def main() -> None:
         json_logs=_default_settings.json_logs,
         include_timestamp=_default_settings.include_timestamp,
     )
-    requeued = asyncio.run(_reclaim_stranded_jobs())
+    requeued = asyncio.run(_run_worker_startup())
     logger.info("generation_worker.reclaim_sweep_complete", requeued_count=requeued)
 
     queue = get_queue(_default_settings)

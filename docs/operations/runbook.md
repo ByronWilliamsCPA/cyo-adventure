@@ -257,8 +257,8 @@ returned: `/health/ready` is unauthenticated, so the response carries only the p
 Like cache and generation_queue, **`database_privilege` never flips `/health/ready`'s HTTP code**:
 a pre-cutover environment is an open security finding, not an outage, so it must not pull pods out
 of rotation. One limit matters when reading this field: it covers the **API process only**. The
-worker has no HTTP surface and is never probed, so a forgotten `CYO_ADVENTURE_WORKER_DATABASE_URL`
-is invisible here. Use Section 11.2's `pg_stat_activity` query for the worker.
+worker has no HTTP surface, so a forgotten `CYO_ADVENTURE_WORKER_DATABASE_URL` is invisible here.
+The worker reports itself at startup instead; see Section 11.2.
 
 ## 4. Logs and correlation IDs
 
@@ -759,10 +759,25 @@ running process. Two sources are authoritative:
 - `SELECT usename, count(*) FROM pg_stat_activity WHERE datname = 'postgres' GROUP BY 1;`
   against the target project shows which roles actually hold connections.
 
-The worker needs its own check: `CYO_ADVENTURE_WORKER_DATABASE_URL` silently falls back to
-`CYO_ADVENTURE_DATABASE_URL` when unset (`core/config.py::worker_database_url_effective`), so
-a forgotten worker variable is indistinguishable from a completed cutover by inspection. Confirm
-a `cyo_worker` connection appears in `pg_stat_activity` while a real generation job runs.
+The worker reports itself separately, because `CYO_ADVENTURE_WORKER_DATABASE_URL` silently falls
+back to `CYO_ADVENTURE_DATABASE_URL` when unset (`core/config.py::worker_database_url_effective`),
+so a forgotten worker variable is indistinguishable from a completed cutover by inspection.
+`generation/worker_main.py` runs the same role probe against the **worker** engine once per
+process start and logs the verdict:
+
+| Log event | Meaning |
+| --- | --- |
+| `generation_worker.role_least_privileged` | Cut over. `role` names the connected role. |
+| `generation_worker.role_bypasses_rls` | Not cut over. `via_role_attribute` and `via_table_ownership` say which path. |
+| `generation_worker.rls_posture_unknown` | The probe itself failed; posture unmeasured, not clean. |
+
+Like the API check, none of these gate anything: the worker starts either way. Alert on
+`generation_worker.role_bypasses_rls`, and treat a deploy that emits no posture line at all as
+running an image older than PR #608.
+
+The verdict is emitted once at startup, so restart the worker after changing its DSN rather than
+waiting for the next job. To confirm from the database side instead, check that a `cyo_worker`
+connection appears in `pg_stat_activity` while a real generation job runs.
 
 ### 11.3 Operator scripts must not run as `cyo_api`
 
