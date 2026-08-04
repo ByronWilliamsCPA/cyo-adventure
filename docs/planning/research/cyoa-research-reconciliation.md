@@ -19,10 +19,13 @@ purpose: "Give the architecture-revision team a reconciled, confidence-graded se
   pacing constants from four independent CYOA research sources, ahead of calibrating the generator's
   depth, node-size, and ending-count budgets."
 component: Strategy
-source: "Four sources cross-checked 2026-06-23: JHM (Adams, Beckelhymer & Marr, 2019, J. Humanistic
-  Mathematics 9(2):44-59, DOI 10.5642/jhummath.201902.05), and three deep-research reports R1, R2, R3
-  (full citations in Section 9). Rule applied: measured sources win over estimate-based reports on
-  structural metrics where they conflict."
+source: "Four sources cross-checked 2026-06-23. One is fully citable: JHM (Adams, Beckelhymer & Marr,
+  2019, J. Humanistic Mathematics 9(2):44-59, DOI 10.5642/jhummath.201902.05). The other three are
+  commissioned deep-research reports R1, R2, R3, held only as gitignored local artifacts with no URL or
+  DOI; Section 9 lists their paths and states plainly that they cannot be re-fetched. The four are not
+  fully independent: all three reports cite JHM and/or UCSB, so some of their agreement is restatement
+  of shared underlying data rather than corroboration (Section 2). Rule applied: measured sources win
+  over estimate-based reports on structural metrics where they conflict."
 ---
 
 # CYOA Research Reconciliation: Four Sources Cross-Checked
@@ -40,9 +43,11 @@ add beyond the graph-theory paper. Read this before treating any single number f
 truth; several disagree, and one (R2) mislabels a metric in a way that would directly miscalibrate the
 generator's depth budget.
 
-Bottom line up front: four independent sources now converge on one thesis. **Commercial kids' CYOA is short,
-shallow, and binary; its many endings come from many short reconvergent leaves, not deep trees; and the
-genre raises age by escalating theme and tone, not branch depth.** Calibrate the generator to that shape.
+Bottom line up front: all four sources converge on one thesis, though not independently (all three reports
+cite JHM and/or UCSB, so part of the convergence is shared data restated; see Section 2). **Commercial kids'
+CYOA is short, shallow, and binary; its many endings come from many short reconvergent leaves, not deep
+trees; and the genre raises age by escalating theme and tone, not branch depth.** Calibrate the generator to
+that shape.
 
 **Correction pointer (2026-08-03):** the "reconvergent leaves" clause above is what the four sources found
 about the commercial corpus, and is left as written for that reason. It is **refuted as a design target for
@@ -54,7 +59,7 @@ spine, not from folding paths into shared endings.
 
 | ID | Source | Tier | Trust for... |
 | --- | --- | --- | --- |
-| **JHM** | Adams, Beckelhymer & Marr (2019), *J. Humanistic Mathematics* 9(2):44-59 | Primary, measured (40 books, hand-computed digraphs, ages 9-12) | Corpus-level structural distributions for 8-11 / 10-13 |
+| **JHM** | Adams, Beckelhymer & Marr (2019), *J. Humanistic Mathematics* 9(2):44-59 | Primary, measured (40 books, hand-computed digraphs, ages 9-12) | Corpus-level structural distributions, applied to 8-11 / 10-13 as an **adjacent-band proxy**: the measured cohort is 9-12, which straddles both bands and matches neither exactly |
 | **R3** | `tmp/deep-research-report (7).md` | Secondary, but cites a second measured source (UCSB Transverse Reading Gallery graph logs + Boyles path stats) | Per-title measured node counts, path lengths, reading-level framing, edition conflicts |
 | **R1** | `tmp/compass_artifact_wf-7721d44d-...text_markdown.md` | Secondary synthesis | Themes, digital tier, exposure ratio, per-title CYOA specifics |
 | **R2** | `tmp/CYOA Gamebook Structural Analysis.md` | Secondary synthesis | Age-band matrix shape, fail-state design, reconvergence/state tiering |
@@ -173,9 +178,12 @@ implication:
    gate (`BandProfile.reconvergence_ceiling` stays `None`); choices-per-decision 2-3 remains an authoring
    guideline, not a hard gate. The original claim above is left in place, not deleted, because this
    document's purpose is cross-checking sources; treat this item's "Action" sentence as refuted for this
-   repo. Four other passages restate this same claim and the correction applies to each: the **"Bottom line
-   up front" summary** at the top of this note (the most prominent of them, and the one a skimmer hits
-   first), Section 7 items 3 and 5, and the Section 8 "Reconvergence rate" bullet.
+   repo. **Two other passages actually restate the refuted claim** and are corrected by this note: the
+   **"Bottom line up front" summary** at the top (the most prominent, and the one a skimmer hits first) and
+   **Section 7 item 3**. Two further passages are about reconvergence as *topology* and never assert that
+   endings arise from reconvergent leaves, so they are not restatements and carry a pointer only for
+   context: Section 7 item 5 (a general topology guideline) and the Section 8 "Reconvergence rate" bullet
+   (the unresolved per-tier rate, and the decision to leave `reconvergence_ceiling` unset).
 4. **Reading level tracks age, not branch complexity; education lines are hi-lo** (R1, R2, R3). R3's rule:
    "branch density can increase before sentence difficulty needs to increase," and "prose grade and graph
    complexity should not scale in lockstep." Lexile national bands for reference: grade 1 ~190-530L, grades

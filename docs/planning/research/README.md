@@ -13,8 +13,10 @@ owner: core-maintainer
 purpose: "Give ADR-011's citations a committed, re-examinable home, per the stale-citation note in
   ADR-011 and design-review-kid-appeal-2026-08-01.md section 6 item 5."
 component: Strategy
-source: "Index only; it makes no claims of its own. Every substantive claim lives in the three notes it
-  indexes, cyoa-structure-measurements.md (external research pass, 2026-08-02),
+source: "An index plus a provenance summary. The Provenance section below makes claims of its own, the
+  verified JHM 2019 citation and the per-constant verdicts against that paper's Table 4, and those are
+  sourced to the paper (DOI 10.5642/jhummath.201902.05). Every other substantive claim lives in the three
+  notes it indexes, cyoa-structure-measurements.md (external research pass, 2026-08-02),
   choice-agency-pacing-and-failure.md (external literature pass, 2026-08-02), and
   cyoa-research-reconciliation.md (four-source cross-check written 2026-06-23, committed 2026-08-03),
   each of which carries its own grading scheme. Provenance for the rebuild itself: ADR-011's stale
