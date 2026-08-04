@@ -215,5 +215,8 @@ in stacked PRs off `main`.
    and resumes on top of this staging environment.
 2. File an issue for the delayed naive-ux-check scenario redesign referencing
    both specs.
-3. Consider Supabase config-as-code push (`supabase config push`) for remote
-   auth settings once the CLI feature is stable enough to trust.
+3. **Done.** Supabase config-as-code push (`supabase config push`) for remote auth settings,
+   issue #601 / register row UW-D28, landed on branch `claude/supabase-config-push-issue-1kbz39`:
+   `config push` is wired into both deploy workflows after `link` and before `db push`, with
+   `[remotes.staging]` / `[remotes.production]` blocks in `config.toml` supplying the
+   per-environment `site_url` and `additional_redirect_urls`.

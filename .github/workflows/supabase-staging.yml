@@ -1,6 +1,6 @@
-# Deploys the Supabase migration chain to the STAGING project on every merge
-# to main that touches migrations. Secrets come from the `staging` GitHub
-# Environment (set up per docs/guides/supabase-environments.md).
+# Deploys the Supabase migration chain AND the project config to the STAGING
+# project on every merge to main that touches either. Secrets come from the
+# `staging` GitHub Environment (set up per docs/guides/supabase-environments.md).
 name: Deploy Supabase Migrations (staging)
 
 on:
@@ -8,6 +8,11 @@ on:
     branches: [main]
     paths:
       - "supabase/migrations/**"
+      # config.toml must be in this filter or a config-only change would never
+      # deploy, which is the exact gap this workflow closed (issue #601).
+      # A config-only change still runs `db push`; with no new migrations that
+      # is a no-op, so the wider filter costs nothing.
+      - "supabase/config.toml"
   workflow_dispatch:
     inputs:
       include_all:
@@ -58,6 +63,23 @@ jobs:
 
       - name: Link staging project
         run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
+
+      # #CRITICAL: security: this deploys supabase/config.toml's [auth] policy to
+      # the live project. `config push` is a DEFAULTING writer: for any table it
+      # sends, keys omitted from config.toml are filled with the CLI's own
+      # defaults and asserted on the remote, so an omission means "overwrite with
+      # the default", not "leave alone". Removing a key from [auth] is therefore
+      # a live policy change, not a no-op. Blast radius covers site_url,
+      # uri_allow_list, the password floor, MFA, and the email confirmation and
+      # throttle settings.
+      # #VERIFY: --project-ref is REQUIRED, not redundant with `link`: it is the
+      # key the CLI matches against [remotes.*].project_id. Without the right
+      # ref, the base config (site_url = localhost) is what gets pushed. Confirm
+      # the run log's first line reads "Loading config override: [remotes.staging]";
+      # if that line is absent, the override did not match and the push used
+      # local dev values. --yes is required because the CLI prompts per service.
+      - name: Push project config
+        run: supabase config push --project-ref "$SUPABASE_PROJECT_ID" --yes
 
       # `supabase db push` refuses a migration whose filename timestamp sorts
       # BEFORE the last one already applied remotely, because inserting into

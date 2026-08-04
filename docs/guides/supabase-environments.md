@@ -106,18 +106,80 @@ merge.
 
 ## 4. Promotion
 
-Promotion is a one-way ratchet: local, then staging, then production, in that order.
+Promotion is a one-way ratchet: local, then staging, then production, in that order. Both
+workflows now promote two things, not one: the migration chain and `supabase/config.toml`.
+In each job the order is fixed: link the project, then `supabase config push`, then
+`supabase db push`.
 
-1. Merge a PR containing new migrations to `main`. **Deploy Supabase Migrations (staging)**
-   (`.github/workflows/supabase-staging.yml`) triggers automatically on `push` to `main` when
-   the change touches `supabase/migrations/**`, links the staging project, and runs
-   `supabase db push` against it.
+1. Merge a PR containing new migrations, a config.toml change, or both to `main`. **Deploy
+   Supabase Migrations (staging)** (`.github/workflows/supabase-staging.yml`) triggers
+   automatically on `push` to `main` when the change touches `supabase/migrations/**` or
+   `supabase/config.toml`, links the staging project, runs `supabase config push`, then runs
+   `supabase db push` against it. A config-only change still runs `db push`; with no new
+   migrations pending, that step is a no-op.
 2. Confirm the staging workflow run is green before promoting further.
 3. Dispatch **Deploy Supabase Migrations (production)**
    (`.github/workflows/supabase-production.yml`) manually (`workflow_dispatch`) once staging is
-   green for the same migration set. The job is bound to the `production` GitHub Environment,
-   which requires an approving reviewer before the job runs; this is the human gate between a
-   rehearsed migration and the live database.
+   green for the same migration and config set. The job is bound to the `production` GitHub
+   Environment, which requires an approving reviewer before the job runs; this is the human gate
+   between a rehearsed change and the live database. This gate is unchanged by config push: it
+   still applies to the whole job, config included.
+
+### Promoting a config.toml change
+
+`supabase config push` (CLI 2.109.1) pushes three surfaces: API (PostgREST), DB (pgbouncer /
+network restrictions), and Auth; it also reports on Storage. In this repo the API, DB, and
+Storage surfaces are already in sync with the dashboard, so in practice the entire blast radius
+of a config push is the `[auth]` block.
+
+Two properties make this a change to treat with more care than a migration:
+
+- **It is a defaulting writer, not a diff.** For any TOML table it sends, keys the file omits
+  are filled with the CLI's own defaults and asserted on the remote. Omitting a key does not
+  mean "leave the remote alone"; it means "overwrite with the CLI default". Deleting a key from
+  `[auth]` is a live policy change, the same as setting it explicitly.
+- **There is no dry run.** The only flag `config push` takes besides `--project-ref` is `--yes`
+  (required in CI, since the CLI otherwise prompts per service). The staging rehearsal below is
+  the closest thing to a preview this CLI version offers.
+
+Per-environment values live in `[remotes.staging]` and `[remotes.production]` blocks at the
+bottom of `config.toml`, keyed by `project_id`. The CLI matches `--project-ref` against those
+blocks and merges the matching block over the base config; only `site_url` and
+`additional_redirect_urls` differ per environment, so those are the only two fields the
+`[remotes.*]` blocks carry. A successful match prints `Loading config override: [remotes.staging]`
+(or `[remotes.production]`) as the first line of the run log. If that line is absent, the
+override did not match and the base config went out instead, whose `site_url` is
+`http://localhost:5173`; treat a missing override line as a failed push even if the job
+otherwise reports success.
+
+Some settings stay dashboard-managed and are deliberately absent from config.toml: Google OAuth
+(declaring it without a client_id and secret would push an empty client_id and break guardian
+login), captcha (the `[auth.captcha]` block is a pointer in this CLI; absent means unmanaged,
+whereas `enabled = false` would actively assert "off"), and `password_hibp_enabled` (no
+config.toml key exists at 2.109.1, and the setting is Pro-plan-only; this org is on the free
+plan, where the API call returns HTTP 402).
+
+**Snapshot before any push, including a rehearsal.** Capture the current auth config:
+
+    curl -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+      https://api.supabase.com/v1/projects/<ref>/config/auth
+
+Save the response. If a push produces an unintended change, restore it by PATCHing the same
+endpoint with the same auth header, sending back only the fields that moved. A snapshot taken
+before the push is what makes a bad push a reversible mistake instead of an irreversible one.
+
+**Verify a config change on staging before dispatching production.** Reading the workflow run
+log is not sufficient evidence on its own, because `config push` reports success whether or not
+the `[remotes.*]` override matched:
+
+1. Snapshot staging's auth config with the `curl` command above.
+2. Merge the change (or dispatch the staging workflow) and let it deploy.
+3. Re-fetch the same endpoint.
+4. Diff the two JSON payloads field by field and confirm only the fields the config.toml change
+   intended to touch actually moved.
+
+Only once that diff is clean should the production dispatch run, itself preceded by its own
+pre-push snapshot.
 
 ### Repairing an out-of-order divergence
 
