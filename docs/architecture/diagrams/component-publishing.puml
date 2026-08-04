@@ -12,6 +12,15 @@
 '                                                   send_back, archive: each wraps
 '                                                   a transition + ORM writes +
 '                                                   record_event, one flush)
+'   src/cyo_adventure/publishing/catalog_publish.py (promote_catalog_story():
+'                                                   standalone CLI, delegates
+'                                                   entirely to service.py's
+'                                                   approve(); outside the
+'                                                   api/deps.py auth layer;
+'                                                   CATALOG_FAMILY_ID scope only,
+'                                                   distinct from generation/
+'                                                   import_catalog.py, which
+'                                                   never publishes)
 '   src/cyo_adventure/api/approval.py             (admin-only HTTP surface:
 '                                                   submit/approve/send-back/
 '                                                   archive/review/review-queue)
@@ -55,6 +64,8 @@ package "Publishing" #F3E5F5 {
 
   component "auto_reject()\npublishing/service.py\nmachine-side rejection;\nActor.system(), no principal" as auto_reject #CE93D8
 
+  component "Catalog Publish CLI\npublishing/catalog_publish.py\npromote_catalog_story()\nstandalone; outside api/deps.py auth;\nCATALOG_FAMILY_ID scope only" as catalog_publish #CE93D8
+
 }
 
 database "PostgreSQL" as pg #E0F7FA {
@@ -87,6 +98,22 @@ service --> version_row : "approved_by,\npublished_at"
 auto_reject --> storybook_row : "status = needs_revision"
 
 service --> events_log : "RELEASED (approve)\nSENT_BACK (send_back)"
+
+catalog_publish ==> service : "approve(...)  [standalone CLI path,\nsame approve() as the admin HTTP path]"
+
+note bottom of catalog_publish
+  Runs outside the api/deps.py auth
+  layer entirely (no HTTP request, no
+  session-scoped Principal). Requires
+  --approved-by resolving to an admin
+  user id, and only Storybooks owned by
+  CATALOG_FAMILY_ID are eligible. Kept
+  separate from generation/
+  import_catalog.py, which imports the
+  pre-authored draft-story catalog into
+  the review pipeline but never itself
+  publishes.
+end note
 
 note right of state_machine
   LEGAL_TRANSITIONS (the single source

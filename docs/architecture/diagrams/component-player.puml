@@ -8,6 +8,12 @@
 '   src/cyo_adventure/player/state.py         (ReadingState dataclass)
 '   src/cyo_adventure/player/replay.py        (validate_reading_state: server-side
 '                                              save gate; replays the choice path)
+'   src/cyo_adventure/player/stops.py         (ADR-026: rendered-stop composition,
+'                                              compose_stop(); mirrors stops.ts;
+'                                              today its only real caller is
+'                                              validator/choice_grammar.py's
+'                                              CG-3 words-per-stop check, not
+'                                              a live reader API route)
 '   src/cyo_adventure/storybook/models.py     (Storybook, Node, Choice, Effect)
 '   src/cyo_adventure/storybook/evaluator.py  (evaluate(), VarState, whitelisted ops)
 '   src/cyo_adventure/storybook/condition.py  (condition DSL validator)
@@ -15,8 +21,17 @@
 '   frontend/src/player/engine.ts             (TS mirror of engine.py)
 '   frontend/src/player/evaluator.ts          (TS mirror of evaluator.py)
 '   frontend/src/player/machine.ts            (XState machine)
+'   frontend/src/player/stops.ts              (TS mirror of player/stops.py)
 '   docs/planning/runtime-semantics.md
 '   docs/planning/adr/adr-006-conditions-inhouse-evaluator.md
+'   docs/planning/adr/adr-026-rendered-stop-flow.md
+'
+'   Personalization (ADR-023, storybook/): sentinels.py, reinsertion.py,
+'   personalization_values.py, slotted_surfaces.py, theme_contract.py. These
+'   are NOT called by StoryEngine; their real callers are generation/
+'   (binding.py, worker.py, orchestrator.py), moderation/ (pipeline.py,
+'   fidelity_review.py, personalizable_slots.py, rescreen.py), and api/
+'   (node_edit.py, personalization.py, sentinel_log.py).
 ' ============================================================
 
 skinparam defaultFontName "Roboto"
@@ -43,6 +58,16 @@ package "Backend Player (Python)" #E3F2FD {
 
   component "Save Validator\nplayer/replay.py\nvalidate_reading_state(): structural\nfloor + replays the saved choice path\nthrough StoryEngine (server-side\nreading-state save gate)" as replay #BBDEFB
 
+  component "Stop Composition\nplayer/stops.py (ADR-026)\ncompose_stop(): rendered-stop flow\nof linear passages; mirrors\nfrontend/src/player/stops.ts" as stops #90CAF9
+
+}
+
+package "Personalization (ADR-023, storybook/)" #E3F2FD {
+  component "sentinels.py\nstorybook/sentinels.py" as sentinels #BBDEFB
+  component "reinsertion.py\nstorybook/reinsertion.py" as reinsertion #BBDEFB
+  component "personalization_values.py\nstorybook/personalization_values.py" as pers_values #BBDEFB
+  component "slotted_surfaces.py\nstorybook/slotted_surfaces.py" as slotted_surfaces #BBDEFB
+  component "theme_contract.py\nstorybook/theme_contract.py" as theme_contract #BBDEFB
 }
 
 package "Frontend Player (TypeScript)" #FFF3E0 {
@@ -104,6 +129,30 @@ note bottom of reading_state
   visit_set drives once: true effects.
   state_revision: server-owned counter
   for optimistic concurrency.
+end note
+
+note bottom of stops
+  ADR-026: pure composition over
+  StoryEngine.choose() output. No edge
+  is drawn to StoryEngine here because
+  no live reader API route invokes
+  compose_stop() yet; its only current
+  caller is validator/choice_grammar.py
+  (CG-3 words-per-stop check), which
+  runs at generation time, not read time.
+end note
+
+note bottom of theme_contract
+  ADR-023 personalization: none of the
+  five modules in this package are
+  called by StoryEngine. Real callers
+  span generation/ (binding.py,
+  worker.py, orchestrator.py),
+  moderation/ (pipeline.py,
+  fidelity_review.py,
+  personalizable_slots.py, rescreen.py),
+  and api/ (node_edit.py,
+  personalization.py, sentinel_log.py).
 end note
 
 @enduml

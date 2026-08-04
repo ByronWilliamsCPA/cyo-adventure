@@ -27,6 +27,21 @@
 '   src/cyo_adventure/generation/series_link.py   (series continuation
 '                                                   chaining: book_index,
 '                                                   AnchorContext, WS-G)
+'   src/cyo_adventure/generation/binding.py       (WS-2 parameterized catalog:
+'                                                   contract discovery,
+'                                                   LLM theme binding, and
+'                                                   bound-skeleton render;
+'                                                   imported directly by
+'                                                   worker.py)
+'   src/cyo_adventure/generation/fidelity_gate.py (run_stage1_gate(): the
+'                                                   skeleton_fill path's own
+'                                                   bounded Stage-1 fidelity
+'                                                   gate, shared by worker.py
+'                                                   and import_story.py)
+'   src/cyo_adventure/generation/fidelity.py      (pure-code Stage-1 checks
+'                                                   run_stage1_gate calls
+'                                                   before any paid semantic
+'                                                   review call)
 '   src/cyo_adventure/generation/providers/openrouter.py
 '   src/cyo_adventure/generation/providers/anthropic.py
 '   src/cyo_adventure/generation/providers/modal.py
@@ -43,6 +58,32 @@
 '                                                   after the validator gate;
 '                                                   see component-validator.puml)
 '   docs/planning/adr/adr-003-frontier-llm-generation.md
+'
+' Supporting / offline-adjacent generation/ modules (no dedicated box; cited
+' here for traceability only):
+'   src/cyo_adventure/generation/authoring_metadata.py (GenerationJob
+'     .authoring_metadata shared key constants + typed shape, written by
+'     story_requests/authoring_plan.py, read back by worker.py)
+'   src/cyo_adventure/generation/diagram.py       (renders a validated
+'     skeleton as a PlantUML state diagram; offline authoring tool, not in
+'     the live request path)
+'   src/cyo_adventure/generation/import_catalog.py (batch-imports the
+'     pre-authored draft-story catalog into the review pipeline; offline
+'     authoring tool, run via CLI)
+'   src/cyo_adventure/generation/import_cli.py    (CLI: validate + import a
+'     filled story JSON, or resume an awaiting_manual_fill job; see the
+'     orchestrator note below)
+'   src/cyo_adventure/generation/skeleton.py      (skeleton-loading utilities
+'     shared by worker.py, binding.py, and the CLI tools above)
+'   src/cyo_adventure/generation/variation.py     (A7 variation-axis library:
+'     one authored craft axis drawn per request)
+'   src/cyo_adventure/generation/worker_main.py   (process entry point for
+'     the RQ "generation" worker; wraps queue.py's bare CLI form)
+'
+' diversity/ cross-reference: generation/binding.py and generation/worker.py
+' both consume diversity/ (the anti-template / structural-similarity guard)
+' at request time; see docs/architecture/diagrams/component-moderation.puml
+' for the post-gate leaf_diversity.py check.
 ' ============================================================
 
 skinparam defaultFontName "Roboto"
@@ -65,7 +106,11 @@ package "Generation Pipeline" #FFF3E0 {
 
   component "Prompt Builder\ngeneration/prompts.py\nbuild_structure_prompt()\nbuild_prose_prompt()\nbuild_repair_prompt()" as prompts #FFF3E0
 
+  component "Theme Binding\ngeneration/binding.py\nload_contract_for() + interpret_and_bind()\n+ render_bound_skeleton()\nWS-2: contract discovery, LLM theme\nbind, bound-skeleton render" as binding #FFE0B2
+
   component "Generation Orchestrator\ngeneration/orchestrator.py\ngenerate_story() [fresh_generation:\nStage A -> B -> C]\nfill_skeleton() [skeleton_fill method]" as orchestrator #FFE0B2
+
+  component "Stage-1 Fidelity Gate\ngeneration/fidelity_gate.py + fidelity.py\nrun_stage1_gate(): pure-code checks\n(fidelity.py), then one semantic\nbeats-check; shared by worker.py's\nskeleton_fill path and\nimport_story.py's resume path" as fidelity_gate #FFE0B2
 
   component "Series Continuation\ngeneration/series_link.py\nAnchorContext, book_index\nassignment (WS-G)" as series_link #FFE0B2
 
@@ -113,7 +158,9 @@ database "PostgreSQL\nGenerationJob row\nstatus: queued->running->\npassed|needs
 ' --- Flow ---
 concept --> orchestrator : "brief"
 worker_comp --> skeleton_match : "resolve_skeleton_path + load\n(skeleton_fill jobs; cell-aware\nSELECTION ran earlier at plan time,\nstory_requests/authoring_plan.py)"
-skeleton_match --> orchestrator : "loaded skeleton -> fill_skeleton()"
+skeleton_match ..> orchestrator : "legacy no-contract path:\nload_contract_for() finds no sidecar\n<slug>.contract.json -> fill_skeleton()\nunchanged (WS-1 free-text fill)"
+skeleton_match --> binding : "contract-bearing skeleton:\nload_contract_for() finds a sidecar\n<slug>.contract.json"
+binding --> orchestrator : "bound skeleton\n(interpret_and_bind +\nrender_bound_skeleton)\n-> fill_skeleton()"
 orchestrator --> prompts : "build stage prompt\n(fresh_generation only)"
 prompts --> pii : "StagePrompt"
 worker_comp --> build_provider : "resolve provider\n(provider_override/model_override\nor settings default)"
@@ -133,6 +180,8 @@ modal_prov --> modal_api : "POST (httpx, retries)"
 fallback --> orchestrator : "raw text"
 orchestrator --> gate : "parsed JSON doc\nrun_gate(doc)"
 gate --> orchestrator : "GateResult\n(blocked, safety_flagged)"
+orchestrator --> fidelity_gate : "run_stage1_gate(original, filled, ...)\n(inside the shared repair loop,\nskeleton_fill/authoring path only,\nstructurally-clean doc, not\nsafety_flagged)"
+fidelity_gate --> orchestrator : "violation list\n(empty = clean)"
 
 note right of orchestrator
   fresh_generation (generate_story()):
@@ -149,8 +198,14 @@ note right of orchestrator
 
   skeleton_fill (fill_skeleton()): fills a matched
   skeleton library file's <<FILL ...>> directives
-  instead of building a story from scratch; runs
-  its own bounded Stage-1 fidelity repair loop.
+  instead of building a story from scratch. On a
+  structurally-clean, non-safety-flagged fill it
+  additionally runs generation/fidelity_gate.py's
+  run_stage1_gate(): pure-code checks
+  (generation/fidelity.py) first, then one paid
+  semantic beats-check, sharing the SAME
+  max_repairs budget as structural repair above
+  (no separate outer loop).
 
   Outcome (either method):
     gate clean, not safety_flagged  -> "passed"
