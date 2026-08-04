@@ -155,14 +155,32 @@ max_indexes = 5
 # Vector Buckets is available to Supabase Pro plan.
 # [storage.vector.buckets.documents-openai]
 
+# This [auth] block is BOTH the local dev stack's config AND the base that `supabase config push`
+# sends to a remote project (see the [remotes.*] blocks at the end of this file, and section 4 of
+# docs/guides/supabase-environments.md).
+#
+# #CRITICAL: security: every value here is asserted against the remote on push. The CLI hydrates
+# its own defaults for any key you omit inside a table it is going to send, so an omission is an
+# assertion of the CLI default, not "leave the remote alone". That is why this block carries
+# PRODUCTION-GRADE values and the [remotes.*] blocks override only the two URL fields that
+# genuinely differ per environment. Keep it that way: if a security-relevant field is ever
+# relaxed here for local convenience, a remote that forgets to override it is silently loosened.
+# #VERIFY: after changing anything in [auth], run the staging no-op check in section 4 of
+# docs/guides/supabase-environments.md before promoting to production.
 [auth]
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
-# in emails.
+# in emails. Localhost is correct for the LOCAL stack only; both remotes override it.
 site_url = "http://localhost:5173"
 # The public URL that Auth serves on. Defaults to the API external URL with `/auth/v1` appended.
 # external_url = ""
-# A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
+# The list of URLs that auth providers are permitted to redirect to post authentication. Supabase
+# matches these as patterns rather than by string equality: `*` matches within a path segment and
+# `**` matches across segments, which is what lets the [remotes.*] blocks below use `/**`.
+# Supabase's own guidance is to prefer exact paths in production and reserve wildcards for
+# preview deploys, so each remote block lists its exact post-login return URL first and keeps
+# `/**` only as a fallback for flows that redirect elsewhere (an email-change confirmation, say).
+# Local stack only; both remotes override it. Pushed as the comma-joined `uri_allow_list`.
 additional_redirect_urls = ["http://localhost:5173", "http://localhost:3000"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
@@ -175,6 +193,17 @@ enable_refresh_token_rotation = true
 # Allows refresh tokens to be reused after expiry, up to the specified interval in seconds.
 # Requires enable_refresh_token_rotation = true.
 refresh_token_reuse_interval = 10
+# [auth.sessions] is deliberately absent for now, which means no `timebox` and no
+# `inactivity_timeout`: with rotation on, a signed-in adult session renews indefinitely. That is
+# the Supabase default rather than something this file loosened, and it is left alone here so the
+# scope of the first production config push stays the hardening set that was diffed against both
+# live projects on 2026-08-04.
+# #ASSUME: security: an indefinitely-renewing session is acceptable because the sensitive adult
+# actions behind it (approve, publish, device grant) sit behind AdultGate's password re-entry
+# challenge rather than behind session age alone.
+# #VERIFY: revisit before R2 (public launch). Adding [auth.sessions] is a live policy change that
+# signs adults out, so rehearse it on staging and announce it rather than folding it into an
+# unrelated push.
 # Allow/disallow new user signups to your project.
 enable_signup = true
 # Allow/disallow anonymous sign-ins to your project.
@@ -182,10 +211,32 @@ enable_anonymous_sign_ins = false
 # Allow/disallow testing manual linking of accounts
 enable_manual_linking = false
 # Passwords shorter than this value will be rejected as weak. Minimum 6, recommended 8 or more.
-minimum_password_length = 6
+# 10, not the Supabase default of 6: these accounts hold children's names, photos, and reading
+# history. Length is deliberately the only composition control, per NIST SP 800-63B, which
+# advises against mandated character classes because they push users toward predictable
+# substitutions. Applies to newly set passwords only; existing ones keep working until changed.
+minimum_password_length = 10
 # Passwords that do not meet the following requirements will be rejected as weak. Supported values
 # are: `letters_digits`, `lower_upper_letters_digits`, `lower_upper_letters_digits_symbols`
+# Deliberately empty. See the length rationale above.
 password_requirements = ""
+# Breach-corpus checking (`password_hibp_enabled`) was chosen as policy but is NOT deployable
+# today, for two independent reasons, both verified against the live API on 2026-08-04:
+#   1. Plan gating. `PATCH /v1/projects/<ref>/config/auth` with `password_hibp_enabled: true`
+#      returns HTTP 402: "Configuring leaked password protection via HaveIBeenPwned.org is
+#      available on Pro Plans and up." This org is on the free plan.
+#   2. No config key. Even on Pro it could not live here: the CLI has no config.toml key for it at
+#      the pinned version 2.109.1 (`pkg/config/auth.go` never sets `PasswordHibpEnabled` on the
+#      PATCH body), so `config push` neither sets nor clears it and the dashboard value always
+#      survives a push.
+# It reads false on both projects today. The compensating control is the 10-character floor above.
+# #ASSUME: security: no breach-corpus rejection on guardian passwords; a guardian may reuse a
+# password already present in a public breach dump.
+# #VERIFY: revisit if this project moves to Pro (for reason 1) and when the pinned CLI version
+# changes (for reason 2, since a later release adding the key would bring it under config push
+# control). Check with:
+#   curl -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+#     https://api.supabase.com/v1/projects/<ref>/config/auth | jq .password_hibp_enabled
 
 # Configure passkey sign-ins.
 # [auth.passkey]
@@ -197,8 +248,26 @@ password_requirements = ""
 # rp_id = "localhost"
 # rp_origins = ["http://127.0.0.1:3000"]
 
+# These are the throttles on the UNAUTHENTICATED auth surface, including
+# `resetPasswordForEmail` (frontend/src/auth/AuthContext.tsx). Config-key -> API-field mapping,
+# from `rateLimit.toAuthConfigBody` in the CLI's pkg/config/auth.go at the pinned version, because
+# three of the six names do not match their API counterparts:
+#   sms_sent            -> rate_limit_sms_sent
+#   anonymous_users     -> rate_limit_anonymous_users
+#   token_refresh       -> rate_limit_token_refresh
+#   sign_in_sign_ups    -> rate_limit_otp      <- name differs
+#   token_verifications -> rate_limit_verify   <- name differs
+#   web3                -> rate_limit_web3
 [auth.rate_limit]
 # Number of emails that can be sent per hour. Requires auth.email.smtp to be enabled.
+# #CRITICAL: external resources: this value is NOT deployed. The CLI pushes `rate_limit_email_sent`
+# only when `[auth.email.smtp]` is enabled, and no custom SMTP is configured on either project, so
+# auth email currently goes through Supabase's built-in service under that service's own
+# project-wide cap. The real throttles on the password-reset path today are `smtp_max_frequency`
+# (see [auth.email].max_frequency below) plus that built-in cap, NOT this number. Editing it has
+# no effect until a real SMTP provider is wired up; tracked as its own item, see UW-D29.
+# #VERIFY: `jq .smtp_host` on the Management API auth config returns null for both refs today.
+# Once SMTP lands, confirm this value starts appearing in `rate_limit_email_sent`.
 email_sent = 2
 # Number of SMS messages that can be sent per hour. Requires auth.sms to be enabled.
 sms_sent = 30
@@ -214,6 +283,20 @@ token_verifications = 30
 web3 = 30
 
 # Configure one of the supported captcha providers: `hcaptcha`, `turnstile`.
+#
+# DELIBERATELY LEFT COMMENTED OUT, and the comment is load-bearing. `auth.Captcha` is a POINTER in
+# the CLI's config struct, guarded by `if a.Captcha != nil` in `ToUpdateAuthConfigBody`; the CLI's
+# own comment there reads "When local config is not set, we assume platform defaults should not
+# change". So an absent block leaves the remote captcha setting UNMANAGED, whereas writing
+# `enabled = false` here would actively assert "off" on every push. Captcha is off on both
+# projects today and we are choosing not to manage it, not choosing to disable it.
+#
+# Enabling it is not a one-line change: it needs an hCaptcha account, a per-environment secret,
+# and a matching frontend change to pass `captchaToken` into every signIn / signUp /
+# resetPasswordForEmail call, or the auth surface starts rejecting real users. Until then the
+# compensating control is the [auth.rate_limit] block above plus `max_frequency` below.
+# #EDGE: security: no anti-automation on the unauthenticated reset/signup paths beyond rate limits.
+# #VERIFY: revisit before R2 (public TestFlight), when the exposure stops being family-only.
 # [auth.captcha]
 # enabled = true
 # provider = "hcaptcha"
@@ -226,13 +309,37 @@ enable_signup = true
 # addresses. If disabled, only the new email is required to confirm.
 double_confirm_changes = true
 # If enabled, users need to confirm their email address before signing in.
-enable_confirmations = false
+# True, matching what staging and production already enforce. Pushed INVERTED as
+# `mailer_autoconfirm`, so `false` here would deploy `mailer_autoconfirm = true` and let an
+# unverified address sign in. The local stack now also requires confirmation; collect the link
+# from the local mail UI on port 54324.
+enable_confirmations = true
 # If enabled, users will need to reauthenticate or have logged in recently to change their password.
-secure_password_change = false
+# True, a change from the Supabase default. Pushed as
+# `security_update_password_require_reauthentication`. GoTrue demands a reauthentication nonce
+# only when the session is missing or older than 24 hours (`internal/api/user.go`:
+# `session == nil || now.After(session.CreatedAt.Add(24*time.Hour))`), so the one caller of
+# `supabase.auth.updateUser({ password })` in this app, AuthContext.tsx::updatePassword, is
+# unaffected: it runs on the recovery session the password-reset link just created.
+# #CRITICAL: security: at `false`, a stolen or borrowed session can set a new password without
+# proving knowledge of the current one, locking the account holder out of their own account and
+# their children's data. `true` bounds that to sessions under 24 hours old.
+# #VERIFY: after any config push, `jq .security_update_password_require_reauthentication` on the
+# Management API auth config must read true for both refs, and the guardian reset flow (request
+# link, follow it, set a new password) must still complete end to end on staging.
+secure_password_change = true
 # Controls the minimum amount of time that must pass before sending another signup confirmation or password reset email.
-max_frequency = "1s"
+# 60 seconds, matching both live projects. Pushed as `smtp_max_frequency` in whole seconds.
+# #CRITICAL: security: with no custom SMTP configured, this is the primary per-address throttle on
+# the unauthenticated `resetPasswordForEmail` path (frontend/src/auth/AuthContext.tsx). The
+# previous value here was "1s", which would have loosened it 60x on both environments.
+# #VERIFY: `jq .smtp_max_frequency` on the Management API auth config must read 60 for both refs
+# after any config push.
+max_frequency = "1m"
 # Number of characters used in the email OTP.
-otp_length = 6
+# 8, matching both live projects. Lowering this to the Supabase default of 6 would cut OTP
+# entropy by two digits on every environment.
+otp_length = 8
 # Number of seconds before the email OTP expires (defaults to 1 hour).
 otp_expiry = 3600
 
@@ -263,7 +370,7 @@ enable_signup = false
 # If enabled, users need to confirm their phone number before signing in.
 enable_confirmations = false
 # Template for sending OTP to users
-template = "Your code is {{ `{{ .Code }}` }}"
+template = "Your code is {{ .Code }}"
 # Controls the minimum amount of time that must pass before sending another sms otp.
 max_frequency = "5s"
 
@@ -302,16 +409,23 @@ auth_token = "env(SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN)"
 max_enrolled_factors = 10
 
 # Control MFA via App Authenticator (TOTP)
+# Both true, matching staging and production.
+# #CRITICAL: security: `mfa.toAuthConfigBody` is called unconditionally, so these two are asserted
+# on every push. Leaving them at the Supabase default of false would REVOKE TOTP from every adult
+# who has already enrolled a factor, silently downgrading those accounts to a single factor
+# without notifying anyone.
+# #VERIFY: `jq '.mfa_totp_enroll_enabled, .mfa_totp_verify_enabled'` on the Management API auth
+# config must both read true for both refs after any config push.
 [auth.mfa.totp]
-enroll_enabled = false
-verify_enabled = false
+enroll_enabled = true
+verify_enabled = true
 
 # Configure MFA via Phone Messaging
 [auth.mfa.phone]
 enroll_enabled = false
 verify_enabled = false
 otp_length = 6
-template = "Your code is {{ `{{ .Code }}` }}"
+template = "Your code is {{ .Code }}"
 max_frequency = "5s"
 
 # Configure MFA via WebAuthn
@@ -322,6 +436,17 @@ max_frequency = "5s"
 # Use an external OAuth provider. The full list of providers are: `apple`, `azure`, `bitbucket`,
 # `discord`, `facebook`, `github`, `gitlab`, `google`, `keycloak`, `linkedin_oidc`, `notion`, `twitch`,
 # `twitter`, `x`, `slack`, `spotify`, `workos`, `zoom`.
+#
+# #CRITICAL: security: GOOGLE IS INTENTIONALLY ABSENT FROM THIS FILE. Google sign-in is ENABLED on
+# both staging and production and is the guardian login path; its client_id and secret are managed
+# in the Supabase dashboard. `external.toAuthConfigBody` iterates a map and touches only providers
+# that appear here (`if p, ok := e["google"]; ok`), so omitting Google leaves it untouched, which
+# is exactly what we want. Do NOT "complete" this section by adding a [auth.external.google]
+# block: declaring it without also supplying a valid client_id and the
+# SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET env var in BOTH deploy workflows would push an empty
+# client_id and break guardian login in production.
+# #VERIFY: `jq .external_google_enabled` on the Management API auth config must stay true for both
+# refs after any config push.
 [auth.external.apple]
 enabled = false
 client_id = ""
@@ -415,3 +540,56 @@ enabled = true
 # declarative_schema_path = "./database"
 # JSON string passed through to pg-delta SQL formatting.
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":80,\"commaStyle\":\"trailing\"}"
+
+# ---------------------------------------------------------------------------
+# Per-environment overrides
+# ---------------------------------------------------------------------------
+# `supabase config push --project-ref <ref>` looks up the [remotes.*] block whose `project_id`
+# matches that ref (`GetRemoteByProjectRef`), merges it OVER everything above, and pushes the
+# result. A ref with no matching block gets the base config unchanged, which for `site_url` would
+# mean pushing localhost to a live project; both live refs are therefore declared below.
+#
+# Keep these blocks minimal. Everything except the two URL fields is identical across
+# environments and belongs in the base [auth] block, so that hardening it once hardens it
+# everywhere rather than in one environment only.
+#
+# `project_id` must be a literal ref: the CLI validates it against `^[a-z]{20}$` at load time and
+# does not expand env vars here, so it cannot be sourced from SUPABASE_PROJECT_ID. That is not a
+# secret leak. A project ref is the public hostname the browser already talks to
+# (`https://<ref>.supabase.co`), and each environment ships its own ref to every visitor in the
+# frontend bundle as VITE_SUPABASE_URL. Production's ref is additionally committed elsewhere in
+# this repo; staging's ref is first committed here, which changes nothing about its exposure but
+# is worth stating accurately rather than claiming prior disclosure it does not have. Access
+# still requires SUPABASE_ACCESS_TOKEN, which stays in the GitHub Environment secrets.
+#
+# #EDGE: external resources: that `^[a-z]{20}$` pattern accepts no digits, yet Supabase project
+# refs are not guaranteed to be twenty lowercase letters. A future project whose ref contains a
+# digit could not be declared here at all, and the CLI's failure mode for a ref that matches no
+# block is to fall through to the base config rather than to error.
+# #VERIFY: if either project is ever re-provisioned, check the new ref against that pattern BEFORE
+# pointing a workflow at it, and confirm the "Loading config override" assertion in
+# .github/workflows/supabase-*.yml still fires on the first run.
+
+[remotes.staging]
+project_id = "lbhyjcykbamjtghcidgp"
+
+[remotes.staging.auth]
+site_url = "https://cyo-staging.williamshome.family"
+additional_redirect_urls = [
+  "https://cyo-staging.williamshome.family/**",
+  "https://cyo-dev.williamshome.family/**",
+]
+
+[remotes.production]
+project_id = "cvrnaydpzijtszfbsraq"
+
+[remotes.production.auth]
+# The exact post-login return URL, plus the bare origin, so that future flows which redirect
+# somewhere other than the login page (an email-change confirmation, for example) are not
+# rejected. `site_url` stays the exact path because that is what the live project already uses
+# and what `${window.location.origin}${GUARDIAN_LOGIN_PATH}` in AuthContext.tsx produces.
+site_url = "https://cyo.williamshome.family/guardian/login"
+additional_redirect_urls = [
+  "https://cyo.williamshome.family/guardian/login",
+  "https://cyo.williamshome.family/**",
+]

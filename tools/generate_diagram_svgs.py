@@ -249,8 +249,9 @@ def main(argv: list[str] | None = None) -> int:
 
     Returns:
         Process exit code: 0 on success, 1 when ``--check`` finds a stale
-        diagram, when a duplicate-SVG corruption is detected, or when a
-        requested render did not complete.
+        diagram, when a duplicate-SVG corruption is detected, when a render
+        produced a corrupt SVG (an error card), or when a requested render did
+        not complete.
     """
     args = _build_parser().parse_args(argv)
     pumls = top_level_pumls(args.diagrams_dir)
@@ -284,17 +285,34 @@ def main(argv: list[str] | None = None) -> int:
                 " Set PLANTUML_JAR to a verified jar or allow network access.\n"
             )
             return 1
-        rendered = render_svgs(targets, jar=jar)
+        rendered, corrupt = render_svgs(targets, jar=jar)
         sys.stdout.write(
             f"Rendered {len(rendered)}/{len(targets)} diagram(s) to SVG.\n"
         )
     else:
         rendered = []
+        corrupt = []
         sys.stdout.write("Nothing to render; all diagrams are up to date.\n")
 
     # Verify no two diagrams share an SVG even when nothing rendered this run:
     # a previously-committed corruption should still be caught.
     if _report_duplicates(pumls):
+        return 1
+
+    # A corrupt output is one PlantUML *did* write: an error card sitting next to
+    # its source, newer than it, which makes `is_stale` report the diagram fresh
+    # and lets the bad SVG survive a later `--check`. It is excluded from
+    # `rendered`, so the count check below would fail the run anyway, but only
+    # with a "did not render" message that sends the reader hunting for a file
+    # that is in fact on disk. Name it separately, and say to delete it.
+    if corrupt:
+        sys.stderr.write(
+            f"{len(corrupt)} diagram(s) rendered to a corrupt SVG. Delete each one"
+            " and re-render once the cause above is fixed; leaving it in the tree"
+            " defeats the --check freshness gate:\n"
+            + "\n".join(f"  {_rel(p)}" for p in corrupt)
+            + "\n"
+        )
         return 1
 
     if targets and len(rendered) != len(targets):

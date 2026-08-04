@@ -334,6 +334,19 @@ erDiagram
         jsonb payload "PII-free, allowlisted fields only"
     }
 
+    security_event {
+        uuid id PK
+        timestamptz occurred_at
+        varchar(48) event_type "security_auth_failed, security_authz_denied, or security_rate_limit_exceeded"
+        varchar(200) reason
+        varchar(45) client_ip "NULL"
+        varchar(64) code "NULL"
+        varchar(255) path "NULL"
+        varchar(10) method "NULL"
+        smallint status_code "NULL"
+        varchar(255) resource "NULL; authz-denial rows only"
+    }
+
     provider_model_allowlist {
         uuid id PK
         varchar(32) provider "anthropic, openrouter, modal, or ollama"

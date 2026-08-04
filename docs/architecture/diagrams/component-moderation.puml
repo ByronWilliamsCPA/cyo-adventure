@@ -27,6 +27,28 @@
 '                                                     invoked from
 '                                                     generation/fidelity_gate.py,
 '                                                     not from pipeline.py)
+'   src/cyo_adventure/moderation/leaf_diversity.py   (WS-1 anti-template guard:
+'                                                     run_leaf_diversity_check(),
+'                                                     advisory, fail-open; runs
+'                                                     after Stage 0/1/3-4, gated
+'                                                     on not has_hard_block)
+'   src/cyo_adventure/moderation/personalizable_slots.py (tri-state slot
+'                                                     resolution, two entry
+'                                                     points that are NOT
+'                                                     interchangeable:
+'                                                     personalizable_slot_ids_for_story()
+'                                                     (async, resolves the job
+'                                                     itself; called by this
+'                                                     pipeline and api/node_edit.py)
+'                                                     and personalizable_slot_ids_for_job()
+'                                                     (sync, caller already holds
+'                                                     the job; called by
+'                                                     generation/import_story.py
+'                                                     and moderation/rescreen.py))
+'   src/cyo_adventure/moderation/synthesis.py        (merge_findings(): deterministic
+'                                                     post-review merge that collapses
+'                                                     interchangeable findings before
+'                                                     the report is persisted)
 '   src/cyo_adventure/moderation/insights.py         (WS-F: aggregate override
 '                                                     evidence + threshold suggestions)
 '   src/cyo_adventure/moderation/rescreen.py         (rescreen_published_books:
@@ -68,6 +90,8 @@ package "Moderation Pipeline" #E8F5E9 {
 
   component "Review Provider\nmoderation/review_provider.py\nbuild_review_provider()\nindependence tiers 1-3;\nwrapped in PiiGuardedProvider" as review_provider #C8E6C9
 
+  component "Personalizable Slots\nmoderation/personalizable_slots.py\npersonalizable_slot_ids_for_story()\ntri-state resolution, shared with\ngeneration/import_story.py and\napi/node_edit.py" as pslots #C8E6C9
+
   package "Stage 0: Classifier Pre-Filter" #DCEDC8 {
     component "run_classifiers()\nmoderation/classifiers.py\nOpenAI Moderation + Perspective\nbright-line category -> BLOCK\ngraded score >= 0.01 -> ADVISORY\n(missing key -> classifier skipped)" as stage0 #DCEDC8
   }
@@ -81,6 +105,10 @@ package "Moderation Pipeline" #E8F5E9 {
   component "ModerationReport\nmoderation/report.py\nFinding, Verdict\nhas_hard_block / has_soft_flag" as report #B2DFDB
 
   component "Auto-Repair\nmoderation/repair.py\nattempt_repair()\none bounded re-prompt of the generation\nprovider; re-moderated AND re-validated\nthrough the full validator gate (run_gate);\nadopted only if schema-valid AND the gate\ndoes not block" as repair #FFE0B2
+
+  component "Leaf Diversity Guard\nmoderation/leaf_diversity.py\nrun_leaf_diversity_check()\nWS-1 anti-template guard;\nadvisory, fail-open" as leaf_div #DCEDC8
+
+  component "Findings Synthesis\nmoderation/synthesis.py\nmerge_findings()\ncollapses interchangeable findings\nbefore persistence" as synthesis #B2DFDB
 
 }
 
@@ -110,6 +138,8 @@ component "Admin Re-Screen\napi/rescreen.py [admin]\nmoderation/rescreen.py\nPOS
 ' --- Primary moderation flow ---
 worker ==> entry : "run_moderation_pipeline(\nstory_id, version, ...)"
 entry --> review_provider : "resolve + guard\n(forbidden=pii)"
+entry --> pslots : "resolve slot ids\n(only if caller passed\nPERSONALIZABLE_SLOTS_UNSET)"
+pslots --> entry : "resolved slot id set"
 entry ==> stage0 : "Stage 0\n(always runs first)"
 stage0 --> report : "bright-line BLOCK /\nadvisory findings"
 entry ..> stage1 : "skip Stage 0->4 entirely\nif Stage 0 hard block"
@@ -122,11 +152,14 @@ stage3 --> report
 stage4 --> report
 
 report --> entry : "has_hard_block /\nhas_soft_flag"
+entry --> leaf_div : "not has_hard_block\n(runs after Stage 0/1/3-4)"
+leaf_div --> report : "advisory findings\n(fail-open on error)"
 entry --> repair : "soft flag AND\nno hard block\n(one bounded attempt)"
 repair --> review_provider : "re-moderate\nrevised blob"
 repair --> entry : "revised blob\n(adopted only if schema-valid\nAND run_gate does not block;\notherwise discarded)"
 
-entry --> version_row : "persist\nmoderation_report"
+entry --> synthesis : "merge_findings(report.findings)"
+synthesis --> version_row : "persist\nmoderation_report (merged)"
 entry ==> publishing : "clean or repaired ->\nsubmit() [draft/needs_revision\n-> in_review]"
 entry ..> publishing : "has_hard_block ->\nauto_reject() [draft\n-> needs_revision]"
 entry --> events_log : "MODERATION_COMPLETED (always)\nREPAIR_APPLIED (if adopted)"

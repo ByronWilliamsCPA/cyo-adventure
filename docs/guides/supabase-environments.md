@@ -65,6 +65,10 @@ Local stack ports:
 | Postgres | 54322 |
 | API (GoTrue, PostgREST, Storage) | 54321 |
 | Studio | 54323 |
+| Mail UI (Inbucket) | 54324 |
+
+The mail UI matters now that `enable_confirmations = true` applies to the local stack as well: a
+locally created account cannot sign in until its confirmation link is collected from port 54324.
 
 Point the backend at the local stack:
 
@@ -106,18 +110,161 @@ merge.
 
 ## 4. Promotion
 
-Promotion is a one-way ratchet: local, then staging, then production, in that order.
+Promotion is a one-way ratchet: local, then staging, then production, in that order. Both
+workflows now promote two things, not one: the migration chain and `supabase/config.toml`.
+In each job the order is fixed: link the project, then `supabase config push`, then
+`supabase db push`.
 
-1. Merge a PR containing new migrations to `main`. **Deploy Supabase Migrations (staging)**
-   (`.github/workflows/supabase-staging.yml`) triggers automatically on `push` to `main` when
-   the change touches `supabase/migrations/**`, links the staging project, and runs
-   `supabase db push` against it.
+1. Merge a PR containing new migrations, a config.toml change, or both to `main`. **Deploy
+   Supabase Migrations (staging)** (`.github/workflows/supabase-staging.yml`) triggers
+   automatically on `push` to `main` when the change touches `supabase/migrations/**` or
+   `supabase/config.toml`, links the staging project, runs `supabase config push`, then runs
+   `supabase db push` against it. A config-only change still runs `db push`; with no new
+   migrations pending, that step is a no-op.
 2. Confirm the staging workflow run is green before promoting further.
 3. Dispatch **Deploy Supabase Migrations (production)**
    (`.github/workflows/supabase-production.yml`) manually (`workflow_dispatch`) once staging is
-   green for the same migration set. The job is bound to the `production` GitHub Environment,
-   which requires an approving reviewer before the job runs; this is the human gate between a
-   rehearsed migration and the live database.
+   green for the same migration and config set. The job is bound to the `production` GitHub
+   Environment, which requires an approving reviewer before the job runs; this is the human gate
+   between a rehearsed change and the live database. This gate is unchanged by config push: it
+   still applies to the whole job, config included.
+
+### Promoting a config.toml change
+
+`supabase config push` (CLI 2.109.1) **writes five surfaces**, in this fixed order. Each one is
+gated twice: by a precondition in the config file, and then by a diff against the remote. The
+"snapshot endpoint" column is what section 4's recovery procedure captures, and it is the same
+endpoint the CLI itself reads to compute the diff.
+
+| Surface | What it covers | Writes only when | Snapshot `GET`, under `/v1/projects/<ref>/` |
+| --- | --- | --- | --- |
+| API | PostgREST exposed schemas, search path, max rows | always attempted | `postgrest` |
+| DB | `db.settings`, raw Postgres server config | always attempted | `config/database/postgres` |
+| DB | network restrictions | `[db.network_restrictions] enabled`; now `false` | `network-restrictions` |
+| DB | `ssl_enforcement`, a separate call | the key is present; now absent | see the Postgres row above |
+| Auth | the whole `[auth]` tree | `[auth] enabled`; now `true` | `config/auth` |
+| Storage | `[storage]` size limit, image transformation | `[storage] enabled`; now `true` | `config/storage` |
+| Experimental | enabling database webhooks | `[experimental.webhooks] enabled`; block absent | **none exists** |
+
+`db.settings` is raw Postgres server configuration, not pgbouncer configuration; `[db.pooler]` is
+never pushed at all.
+
+Two surfaces need their preconditions stated plainly rather than left in the table:
+
+- **Storage is a write surface, not a read-only report.** `UpdateRemoteConfig` calls
+  `UpdateStorageConfig` unconditionally, and it issues a real `PATCH` whenever `[storage] enabled
+  = true`, which is this repo's value. Treat it exactly like Auth.
+- **Experimental is inert here, and cannot be snapshotted.** `UpdateExperimentalConfig` does
+  nothing unless an `[experimental.webhooks]` block exists with `enabled = true`, and this file
+  has no such block. Its only action is a one-way `POST /v1/projects/<ref>/database/webhooks/enable`;
+  the Management API exposes no corresponding `GET`, so there is no before-state to capture and no
+  documented way back. Adding `[experimental.webhooks]` is therefore **out of scope for the
+  recovery procedure below** and must not ride along with an unrelated config change: it needs its
+  own change record stating that the enable is not reversible by this runbook.
+
+In practice the API, DB, Storage, and Experimental surfaces are already in sync with the
+dashboard, so a push whose only change is in `[auth]` moves only `[auth]`. That is an observation
+about the current state of the file, not a property of the command: any surface whose precondition
+holds is written the moment the file diverges from its remote.
+
+Three properties make this a change to treat with more care than a migration:
+
+- **It diffs, but it diffs against a fully-defaulted view of your file.** Each surface reads its
+  remote config, calls `DiffWithRemote`, and returns early with `Remote <surface> config is up to
+  date.` when nothing differs, so a genuine no-op push really is a no-op and says so in the log.
+  What makes it dangerous is what it diffs: keys the file omits are filled with the CLI's own
+  defaults first, so an omitted key whose remote value is non-default shows up as a difference and
+  gets overwritten. Omitting a key does not mean "leave the remote alone"; it means "assert the
+  CLI default". Deleting a key from `[auth]` is a live policy change, the same as setting it
+  explicitly.
+- **There is no dry run.** `config push` has no subcommand flags of its own beyond
+  `--project-ref`; `--yes` is one of the CLI-wide global flags, and is required in CI because the
+  CLI otherwise prompts per service. The staging rehearsal below is the closest thing to a preview
+  this CLI version offers.
+- **A failed push is safe to re-run.** Because each surface asserts the file's full desired state
+  rather than applying a delta, re-running after a partial failure converges on the same result.
+  What is never safe is re-running against a different `--project-ref`.
+
+Per-environment values live in `[remotes.staging]` and `[remotes.production]` blocks at the
+bottom of `config.toml`, keyed by `project_id`. The CLI matches `--project-ref` against those
+blocks and merges the matching block over the base config; only `site_url` and
+`additional_redirect_urls` differ per environment, so those are the only two fields the
+`[remotes.*]` blocks carry. A successful match prints `Loading config override: [remotes.staging]`
+(or `[remotes.production]`) as the first line of the run log. If that line is absent, the
+override did not match and the base config went out instead, whose `site_url` is
+`http://localhost:5173`.
+
+Both deploy workflows guard this with two controls, and the distinction between them matters when
+you are reading a red job:
+
+- **Prevention, before the push.** The `Push project config` step first compares its
+  `SUPABASE_PROJECT_ID` against the `project_id` declared by the matching `[remotes.*]` block in
+  `config.toml`, and exits non-zero when it is empty or different. On that failure the CLI is
+  never invoked, so nothing reached the project and there is nothing to restore. The comparison
+  parses the TOML rather than grepping it, so a ref that appears only in a comment cannot satisfy
+  it.
+- **Detection, after the push.** The step then pipes the push through `tee` and greps for the
+  expected `Loading config override:` line, failing the job when it is missing. This one is
+  **detection, not prevention**: the push has already been applied by the time its log can be
+  read, so a red job here means an incident to restore from using the snapshot procedure below.
+  It is kept because it catches what the pre-flight check cannot see, namely a CLI whose
+  `[remotes.*]` matching behaviour changes under a version bump.
+
+So a failure in this step is not one condition but two, and they call for opposite responses:
+check which message appeared before deciding whether a restore is needed.
+
+Some settings stay dashboard-managed and are deliberately absent from config.toml: Google OAuth
+(declaring it without a client_id and secret would push an empty client_id and break guardian
+login), captcha (the `[auth.captcha]` block is a pointer in this CLI; absent means unmanaged,
+whereas `enabled = false` would actively assert "off"), and `password_hibp_enabled` (no
+config.toml key exists at 2.109.1, and the setting is Pro-plan-only; this org is on the free
+plan, where the API call returns HTTP 402).
+
+`[auth.sessions]` is absent for a different reason: it is simply not set yet, so adult sessions
+renew indefinitely under refresh-token rotation. That is the Supabase default rather than
+something this file loosened, and adding `timebox` or `inactivity_timeout` later is a live policy
+change that signs adults out, so it belongs in its own rehearsed push rather than folded into an
+unrelated one.
+
+**Snapshot before any push, including a rehearsal.** Capture every surface the push can write, not
+only the one you intend to change. Auth is the one that moves in practice, but a surface with no
+snapshot has no documented way back, and which surface moves is decided by the diff, not by
+intent. These five `GET`s cover every writable surface that the Management API can read:
+
+    for path in \
+      postgrest \
+      config/database/postgres \
+      network-restrictions \
+      config/auth \
+      config/storage
+    do
+      curl -sS -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+        "https://api.supabase.com/v1/projects/<ref>/$path" \
+        > "snapshot-$(echo "$path" | tr / -).json"
+    done
+
+Save all five responses alongside the run they precede. If a push produces an unintended change,
+restore it by `PATCH`ing the same endpoint the change landed on, with the same auth header,
+sending back only the fields that moved. A snapshot taken before the push is what makes a bad push
+a reversible mistake instead of an irreversible one.
+
+The Experimental surface is the one gap, and it is bounded rather than covered: it has no `GET`,
+so it cannot be snapshotted. It is also inert for this repo, because no `[experimental.webhooks]`
+block exists. Those two facts have to stay true together. If a change ever adds that block, this
+procedure does not cover it, and the change is not recoverable by this runbook.
+
+**Verify a config change on staging before dispatching production.** Reading the workflow run
+log is not sufficient evidence on its own, because `config push` reports success whether or not
+the `[remotes.*]` override matched:
+
+1. Snapshot all five of staging's readable surfaces with the loop above.
+2. Merge the change (or dispatch the staging workflow) and let it deploy.
+3. Re-fetch the same endpoints.
+4. Diff the payloads field by field and confirm only the fields the config.toml change intended to
+   touch actually moved.
+
+Only once that diff is clean should the production dispatch run, itself preceded by its own
+pre-push snapshot.
 
 ### Repairing an out-of-order divergence
 
