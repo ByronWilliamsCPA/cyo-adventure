@@ -28,6 +28,7 @@ class _FakeSession:
     def __init__(self, *, child_names: list[str] | None = None) -> None:
         self.added: list[object] = []
         self._child_names = child_names or []
+        self.executed: list[str] = []
 
     def add(self, row: object) -> None:
         self.added.append(row)
@@ -35,8 +36,17 @@ class _FakeSession:
     async def flush(self) -> None:
         return None
 
-    async def execute(self, _stmt: object) -> _FakeResult:
-        """Stand in for the post-persist ChildProfile.display_name query."""
+    async def execute(self, stmt: object, params: object | None = None) -> _FakeResult:
+        """Stand in for every statement import_filled_story issues.
+
+        Two now: the ``set_config`` pair that establishes the ADR-022 RLS
+        context, then the ``ChildProfile.display_name`` read that context
+        exists for. Statements are recorded in order because the ordering IS
+        the invariant: applying the context after the read would leave the
+        read fail-closed post-cutover, and an empty result is indistinguishable
+        from a family with no children.
+        """
+        self.executed.append(str(stmt))
         return _FakeResult(self._child_names)
 
 
@@ -360,6 +370,46 @@ async def test_import_screens_the_persisted_story(
     assert kwargs["story_id"] == story_id
     assert kwargs["version"] == 1
     assert kwargs["pii"].child_names == frozenset({"Rosa"})
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_import_sets_rls_context_before_reading_child_profiles(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The ADR-022 family context is established before the Tier 1 read.
+
+    import_filled_story runs outside the request path, so nothing has set
+    app.family_id for it. Post-ADR-021-cutover the import CLIs connect as the
+    non-owner cyo_api role, where the family_scoped policy makes an
+    unscoped child_profile SELECT return zero rows rather than raise. The
+    import would still succeed, but the moderation pass would run with an
+    empty child_names set and could not recognize a real child's name in the
+    generated prose: fail-closed at the database becoming fail-open at the
+    safety gate.
+
+    Ordering is asserted, not just presence, because a context applied after
+    the read is worth exactly as much as no context at all.
+    """
+    monkeypatch.setattr(
+        "cyo_adventure.generation.import_story.run_moderation_pipeline", AsyncMock()
+    )
+    family_id = uuid.uuid4()
+    session = _FakeSession(child_names=["Rosa"])
+
+    await import_filled_story(
+        session, ImportRequest(blob=_filled_story(), family_id=family_id)
+    )
+
+    set_config_at = next(
+        i for i, stmt in enumerate(session.executed) if "set_config" in stmt
+    )
+    child_read_at = next(
+        i for i, stmt in enumerate(session.executed) if "child_profile" in stmt
+    )
+    assert set_config_at < child_read_at, session.executed
+    assert "app.family_id" in session.executed[set_config_at]
+    assert "app.is_admin" in session.executed[set_config_at]
 
 
 @pytest.mark.unit

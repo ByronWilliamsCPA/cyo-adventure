@@ -163,3 +163,20 @@ CVE-2026-64558
 # the host's kernel. Documented in docs/known-vulnerabilities.md; reassess
 # 2026-09-30.
 CVE-2026-63879
+
+# linux-libc-dev newly-disclosed CVE, confirmed via the PR #597 Container
+# Security run against ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13
+# (workflow run 30950314291, job 92130520302): empty Fixed Version, status
+# "affected", and the run's only finding (Total: 1, HIGH: 1, CRITICAL: 0). The
+# base-image version is unchanged at 6.12.100-1+dhi0, and the run on main 3.5
+# hours earlier was clean, so this is a Trivy feed refresh rather than anything
+# that PR introduced. Independently corroborated against the Debian security
+# tracker on 2026-08-04: trixie (6.12.94-1) and trixie-security (6.12.100-1)
+# both record "vulnerable"; the fix landed only in sid (7.1.6-1), which this
+# base image does not track. The defect is in KVM's x86 shadow-paging MMU,
+# reachable only by a host process driving /dev/kvm ioctls; this image contains
+# no hypervisor and requests no KVM device access. Same kernel-UAPI-headers
+# non-applicability rationale as the blocks above: compile-time headers, not a
+# running kernel binary, and the container runs on the host's kernel.
+# Documented in docs/known-vulnerabilities.md; reassess 2026-09-30.
+CVE-2026-64561

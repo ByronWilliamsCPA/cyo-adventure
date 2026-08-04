@@ -669,20 +669,6 @@ async def _device_principal(session: AsyncSession, token: str) -> Principal:
     # #VERIFY: test_device_grants.py asserts a revoked grant yields 401 on the
     # child-session mint and the profiles listing, and an unknown jti yields 401.
     #
-    # #CRITICAL: security: this read MUST go through auth_lookup_device_grant,
-    # never a plain select(DeviceGrant). device_grant is an ADR-022 Tier 1
-    # family_scoped table, and this is the one pre-principal read of such a
-    # table: apply_family_rls_context cannot have run yet, because the principal
-    # it derives app.family_id from is the thing being resolved. A direct select
-    # therefore runs with app.family_id unset, matches zero rows fail-closed,
-    # and every device request is rejected as unverifiable. The SECURITY DEFINER
-    # function (20260802000000) is the narrow, audited bypass: exact-match on
-    # the unguessable jti, returning revoked_at alone, EXECUTE granted only to
-    # cyo_api. Do not "simplify" this back to the ORM.
-    # #VERIFY: tests/integration/test_rls_tier1_enforcement.py runs this lookup
-    # as cyo_api with no RLS context and asserts the function finds the row
-    # while a direct device_grant select for the same row still returns nothing.
-    #
     # #CRITICAL: security: the RLS context MUST be established here, before the
     # lookup, not only at the end of require_principal. device_grant is an
     # ADR-022 Tier 1 family_scoped table and this is the ONLY pre-principal read

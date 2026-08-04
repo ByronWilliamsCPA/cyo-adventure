@@ -95,6 +95,25 @@ services:
       # below); rebuild the connection URL with the same required password so
       # worker can still reach it.
       CYO_ADVENTURE_REDIS_URL: redis://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis:6379/0
+      # ADR-021 cutover: set this to the cyo_worker DSN so the worker stops
+      # sharing the API's credential. Deliberately optional (`:-`) rather than
+      # required (`:?`): making it required would block the deploy in any
+      # environment where the cyo_worker role has no password yet, which is
+      # the state every environment starts in (the role ships NOLOGIN, see
+      # supabase/migrations/20260720170100_create_service_roles.sql). Leaving
+      # it unset silently falls back to DATABASE_URL.
+      # #CRITICAL: security: nothing automated catches that fallback.
+      # /health/ready's database_privilege check runs in the API process and
+      # inspects the API engine's connection (settings.database_url); the
+      # worker serves no HTTP and is never probed. An environment whose API is
+      # correctly on cyo_api reports state="ok" while the worker still shares
+      # the API credential, so this is a manual verification, not a gate.
+      # #VERIFY: confirm the worker's role with the pg_stat_activity query in
+      # docs/operations/runbook.md section 11.2 after every deploy that changes
+      # this value.
+      # Tighten to `:?` once production has cut over (docs/operations/runbook.md
+      # section 11).
+      WORKER_DATABASE_URL: ${WORKER_DATABASE_URL:-}
 
     # Same unrotated-json-file bound as `app` above. The worker serves no
     # requests, but it shares the host's disk with the API, so an unbounded

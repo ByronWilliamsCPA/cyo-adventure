@@ -16,8 +16,9 @@ from __future__ import annotations
 
 import sys
 import time
+from contextlib import asynccontextmanager
 from datetime import UTC, datetime, timedelta
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
@@ -27,6 +28,11 @@ from sqlalchemy import text
 from cyo_adventure import __version__
 from cyo_adventure.core.config import settings
 from cyo_adventure.utils.logging import get_logger
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator
+
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = get_logger(__name__)
 
@@ -69,6 +75,47 @@ _RECENT_FAILED_WINDOW = timedelta(hours=24)
 # threshold boundary (at the threshold vs. one above it).
 RECENT_FAILED_DEGRADED_THRESHOLD = 3
 
+# The identity this process actually connects as, plus every way that role can
+# bypass RLS (ADR-021). `current_user` is the effective role, so this reflects
+# the live connection rather than any configured DSN.
+#
+# #CRITICAL: security: PostgreSQL has three independent RLS bypass paths and a
+# check that tests only one reports "ok" for a connection that sees every row:
+#   1. the `rolbypassrls` role attribute;
+#   2. superuser (`rolsuper`), which bypasses regardless of `rolbypassrls`;
+#   3. TABLE OWNERSHIP. RLS never applies to a table's owner unless the table
+#      sets FORCE ROW LEVEL SECURITY, and this schema deliberately does not
+#      (20260711200745_enable_rls_all_tables.sql). The baseline migration sets
+#      `OWNER TO "postgres"` on the Tier 1 tables, so ownership, not
+#      `rolbypassrls`, is the bypass path an un-cut-over environment actually
+#      uses. The EXISTS clause below is what detects that state.
+# #VERIFY: tests/unit/test_health.py::TestCheckDatabasePrivilege covers each
+# bypass path independently, including ownership with rolbypassrls false.
+#
+# #CRITICAL: security: the COALESCE default is `true` (fail closed). A role
+# absent from pg_roles is a state this check cannot reason about, and the safe
+# answer to "can this connection bypass RLS" when the answer is unknown is yes.
+# Defaulting to false would report a reassuring "ok" for an unanalyzable role.
+# #VERIFY: tests/unit/test_health.py::TestCheckDatabasePrivilege asserts the
+# missing-pg_roles-row case reports degraded, not ok.
+_CONNECTED_ROLE_QUERY = """
+SELECT
+    current_user AS role_name,
+    COALESCE(
+        (SELECT rolbypassrls OR rolsuper FROM pg_roles WHERE rolname = current_user),
+        true
+    ) AS role_bypasses_rls,
+    EXISTS (
+        SELECT 1
+        FROM pg_class c
+        JOIN pg_namespace n ON n.oid = c.relnamespace
+        WHERE n.nspname = 'public'
+          AND c.relrowsecurity
+          AND NOT c.relforcerowsecurity
+          AND c.relowner = (SELECT oid FROM pg_roles WHERE rolname = current_user)
+    ) AS owns_rls_table
+"""
+
 
 class HealthStatus(BaseModel):
     """Health check response model."""
@@ -92,10 +139,15 @@ class ReadinessCheck(BaseModel):
     # Fine-grained state beyond the pass/fail `status` bool. "ok" and
     # "unconfigured" both report status=True (neither fails readiness);
     # "degraded" reports status=False for a check that is configured but
-    # unreachable. None for checks (database) that have no unconfigured
-    # concept. See check_cache's docstring for the cache check's use of this.
-    state: Literal["ok", "degraded", "unconfigured"] | None = Field(
-        default=None, description="Fine-grained state: ok, degraded, or unconfigured"
+    # unreachable. "unknown" reports status=False for a check that could not
+    # run at all, which is a different operator response than a check that
+    # ran and returned a bad answer: "degraded" on database_privilege means
+    # the role really can bypass RLS, "unknown" means the query failed and
+    # the posture is unmeasured. None for checks (database) that have no
+    # unconfigured concept. See check_cache's docstring for the cache check.
+    state: Literal["ok", "degraded", "unconfigured", "unknown"] | None = Field(
+        default=None,
+        description="Fine-grained state: ok, degraded, unconfigured, or unknown",
     )
 
 
@@ -127,20 +179,49 @@ async def liveness() -> HealthStatus:
     )
 
 
-async def check_database() -> ReadinessCheck:
+@asynccontextmanager
+async def _readiness_session(
+    session: AsyncSession | None,
+) -> AsyncGenerator[AsyncSession]:
+    """Yield a session for a readiness check, reusing a caller's if given.
+
+    ``readiness()`` opens one session and hands it to both database-backed
+    checks so a single probe takes one connection out of the pool instead of
+    one per check. A check called directly (the unit tests, or any future
+    standalone caller) passes ``None`` and gets its own session.
+
+    Args:
+        session: An open session to reuse, or ``None`` to open a new one.
+
+    Yields:
+        AsyncSession: The session the caller should execute against.
+    """
+    if session is not None:
+        yield session
+        return
+    # Import here to avoid circular dependencies.
+    from cyo_adventure.core.database import get_session
+
+    async with get_session() as owned:
+        yield owned
+
+
+async def check_database(session: AsyncSession | None = None) -> ReadinessCheck:
     """Check database connectivity.
+
+    Args:
+        session: An already-open session to reuse. ``readiness()`` passes one
+            so the two database-backed checks share a single pool checkout;
+            when omitted the check opens (and closes) its own.
 
     Returns:
         ReadinessCheck: database status and latency.
     """
     start = time.time()
     try:
-        # Import here to avoid circular dependencies
-        from cyo_adventure.core.database import get_session
-
-        async with get_session() as session:
+        async with _readiness_session(session) as db:
             # Simple query to check connectivity
-            await session.execute(text("SELECT 1"))
+            await db.execute(text("SELECT 1"))
 
         latency_ms = (time.time() - start) * 1000
         return ReadinessCheck(
@@ -161,6 +242,108 @@ async def check_database() -> ReadinessCheck:
             status=False,
             latency_ms=round(latency_ms, 2),
             error=_CHECK_FAILED_MESSAGE,
+        )
+
+
+async def check_database_privilege(
+    session: AsyncSession | None = None,
+) -> ReadinessCheck:
+    """Report whether the API's database role is least-privileged (ADR-021).
+
+    RLS never applies to a table's owner, and this schema deliberately does
+    not set ``FORCE ROW LEVEL SECURITY`` (see
+    ``20260711200745_enable_rls_all_tables.sql``). Every RLS policy shipped
+    since then, including ADR-022's Tier 1 per-family predicates, is therefore
+    inert in any environment still connecting as the ``postgres`` owner role.
+    The migrations alone never make that visible; this check does.
+
+    Covers all three bypass paths (see ``_CONNECTED_ROLE_QUERY``): the
+    ``rolbypassrls`` attribute, superuser, and table ownership. Ownership is
+    the one that matters in practice, since the baseline migration assigns the
+    Tier 1 tables to ``postgres``.
+
+    This check covers the **API** process only. The worker holds a separate
+    engine (``core/database.py``'s ``get_worker_session``) and serves no HTTP,
+    so a forgotten ``CYO_ADVENTURE_WORKER_DATABASE_URL`` is invisible here;
+    ``docs/operations/runbook.md`` section 11.2 has the worker-side query.
+
+    Deliberately non-gating (absent from ``_CRITICAL_READINESS_CHECKS``): a
+    pre-cutover environment is an open security finding, not an outage, and
+    must not pull pods out of the load-balancer rotation. ``readiness()``
+    computes its HTTP status from critical checks only, so ``status=False``
+    here is visible and alertable without being disruptive.
+
+    #CRITICAL: security: the connected role name is logged but never returned.
+    /health/ready is unauthenticated, so the response carries only the posture
+    bit; naming the role would hand an unauthenticated caller the database
+    identity the application connects as.
+    #VERIFY: tests/unit/test_health.py::TestCheckDatabasePrivilege asserts the
+    role name is absent from the serialized response on the degraded path.
+
+    Args:
+        session: An already-open session to reuse; see ``_readiness_session``.
+
+    Returns:
+        ReadinessCheck: ``status=True``/``state="ok"`` when the connected role
+        cannot bypass RLS by any path, ``status=False``/``state="degraded"``
+        when it can, and ``status=False``/``state="unknown"`` when the query
+        itself failed and the posture could not be measured at all.
+    """
+    start = time.time()
+    try:
+        async with _readiness_session(session) as db:
+            result = await db.execute(text(_CONNECTED_ROLE_QUERY))
+            row = result.one()
+
+        latency_ms = (time.time() - start) * 1000
+        # A NULL here means the query's COALESCE fail-closed default did not
+        # apply, so treat it the same way the SQL does: unknown is not ok. This
+        # duplicates the SQL guard on purpose, so editing one without the other
+        # cannot silently turn an unanalyzable role into a reassuring "ok".
+        role_attribute_bypass = row.role_bypasses_rls is None or bool(
+            row.role_bypasses_rls
+        )
+        bypasses_rls = role_attribute_bypass or bool(row.owns_rls_table)
+        role_name = str(row.role_name)
+        if bypasses_rls:
+            logger.warning(
+                "database role bypasses row-level security",
+                check="database_privilege",
+                role=role_name,
+                # Which path fired: an operator fixes ownership and role
+                # attributes differently, so "it bypasses" alone is not
+                # actionable. Both are booleans, never row data.
+                via_role_attribute=role_attribute_bypass,
+                via_table_ownership=bool(row.owns_rls_table),
+            )
+            return ReadinessCheck(
+                name="database_privilege",
+                status=False,
+                latency_ms=round(latency_ms, 2),
+                error="database role bypasses row-level security",
+                state="degraded",
+            )
+        return ReadinessCheck(
+            name="database_privilege",
+            status=True,
+            latency_ms=round(latency_ms, 2),
+            state="ok",
+        )
+    except Exception as exc:
+        # #EDGE: data-integrity: parens required, not redundant (Sonar
+        # S1110 false positive); see check_database's identical comment.
+        latency_ms = (time.time() - start) * 1000  # NOSONAR
+        logger.warning(_CHECK_FAILED_LOG, check="database_privilege", error=str(exc))
+        # state="unknown", not "degraded": the query never returned, so the
+        # posture is unmeasured rather than known-bad. An operator paging on
+        # "degraded" is responding to a real un-cut-over role; "unknown" is a
+        # broken probe. Conflating them makes the alert unactionable.
+        return ReadinessCheck(
+            name="database_privilege",
+            status=False,
+            latency_ms=round(latency_ms, 2),
+            error=_CHECK_FAILED_MESSAGE,
+            state="unknown",
         )
 
 
@@ -474,7 +657,35 @@ async def readiness() -> ReadinessStatus:
 
     # Run all checks in parallel for better performance
     # For now, run sequentially - can be optimized with asyncio.gather()
-    checks["database"] = await check_database()
+    #
+    # The two database-backed checks share one pool checkout. A readiness
+    # probe that took a connection per check would multiply pool pressure by
+    # the number of checks precisely when the pool is already stressed, which
+    # is when readiness matters most.
+    try:
+        # Import here to avoid circular dependencies, matching the checks.
+        from cyo_adventure.core.database import get_session
+
+        async with get_session() as db:
+            checks["database"] = await check_database(session=db)
+            checks["database_privilege"] = await check_database_privilege(session=db)
+    except Exception:
+        logger.warning(_CHECK_FAILED_LOG, check="database_session_checkout")
+
+    # #CRITICAL: external-resources: only genuinely-missing entries are re-run,
+    # never entries the shared checkout already produced. `database` is the one
+    # gating check, and the context manager's EXIT can raise (a close/rollback
+    # on a dropped connection) after both checks have already succeeded.
+    # Re-running unconditionally in the handler would overwrite those passes
+    # with failures and 503 a healthy process out of the load-balancer
+    # rotation, an outage manufactured by the probe itself.
+    # #VERIFY: tests/unit/test_health.py::TestReadinessSharedSession covers a
+    # failure on entry (both re-run) and on exit (results preserved).
+    if "database" not in checks:
+        checks["database"] = await check_database()
+    if "database_privilege" not in checks:
+        checks["database_privilege"] = await check_database_privilege()
+
     checks["cache"] = await check_cache()
     checks["generation_queue"] = await check_generation_queue()
 

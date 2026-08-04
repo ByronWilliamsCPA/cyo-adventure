@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, cast
 from sqlalchemy import select
 
 from cyo_adventure.core.config import settings as _default_settings
+from cyo_adventure.core.database import apply_family_rls_context
 from cyo_adventure.core.exceptions import (
     ResourceNotFoundError,
     StateTransitionError,
@@ -217,6 +218,24 @@ async def import_filled_story(
     # call is defense in depth, not the sole gate.
     # #VERIFY: test_import_screens_the_persisted_story /
     # test_import_propagates_moderation_failure.
+    #
+    # #CRITICAL: security: this reads child_profile, an ADR-022 Tier 1 table,
+    # from OUTSIDE the request path, so nothing has set the app.family_id GUC
+    # the family_scoped policy reads. Post-ADR-021-cutover the import CLIs run
+    # as a non-owner role, and without this context the SELECT returns zero
+    # rows: not an error, an EMPTY child_names set. The import then succeeds
+    # while the moderation pass runs with no PII context and cannot recognize
+    # a real child's name in the generated prose. Fail-closed at the database
+    # becomes fail-OPEN at the safety gate, silently.
+    # family_id is derived from the persisted request, never from story
+    # content, and set_config's is_local => true scopes the GUC to this
+    # transaction, so it reverts with the caller's COMMIT/ROLLBACK and cannot
+    # bleed into the next user of a pooled connection.
+    # #VERIFY: test_import_sets_rls_context_before_reading_child_profiles pins
+    # the ordering; tests/integration/test_rls_tier1_enforcement.py covers the
+    # unset (fail-closed) and set (per-family) paths as the cyo_api role;
+    # docs/operations/runbook.md section 11.3 lists the import CLIs.
+    await apply_family_rls_context(session, family_id=request.family_id, is_admin=False)
     child_result = await session.execute(
         select(ChildProfile.display_name).where(
             ChildProfile.family_id == request.family_id

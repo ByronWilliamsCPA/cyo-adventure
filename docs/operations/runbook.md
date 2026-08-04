@@ -236,6 +236,30 @@ never touch generation at all. Treat a nonzero `checks.generation_queue` count a
 signal on its own dashboard/alert, not as a 503; see Section 5.1 for the diagnosis and remediation
 steps this check is meant to trigger.
 
+**`check_database_privilege()` (ADR-021 cutover observability)** is wired into `/health/ready` as
+`checks.database_privilege` and reports whether the API's connected role can bypass row-level
+security. It covers all three bypass paths PostgreSQL actually has:
+
+1. the `rolbypassrls` role attribute;
+2. `rolsuper`, which bypasses regardless of `rolbypassrls`;
+3. **table ownership**. RLS never applies to a table's owner unless the table sets
+   `FORCE ROW LEVEL SECURITY`, and this schema deliberately does not. The baseline migration
+   assigns the Tier 1 tables to `postgres`, so ownership, not `rolbypassrls`, is the path an
+   un-cut-over environment actually uses.
+
+`"ok"` means no path applies; `"degraded"` means at least one does. The warning log names which
+one (`via_role_attribute`, `via_table_ownership`), because an operator fixes ownership and role
+attributes differently. A role with no `pg_roles` row reports `"degraded"`, not `"ok"`: an
+unanalyzable role fails closed. `"unknown"` is distinct from `"degraded"` and means the query
+itself failed, so the posture was never measured. The connected role name is logged, never
+returned: `/health/ready` is unauthenticated, so the response carries only the posture bit.
+
+Like cache and generation_queue, **`database_privilege` never flips `/health/ready`'s HTTP code**:
+a pre-cutover environment is an open security finding, not an outage, so it must not pull pods out
+of rotation. One limit matters when reading this field: it covers the **API process only**. The
+worker has no HTTP surface and is never probed, so a forgotten `CYO_ADVENTURE_WORKER_DATABASE_URL`
+is invisible here. Use Section 11.2's `pg_stat_activity` query for the worker.
+
 ## 4. Logs and correlation IDs
 
 All application logging goes through `structlog` (`utils/logging.py`); set `JSON_LOGS=true` in
@@ -704,7 +728,61 @@ migrations themselves are forward-only (ADR-012) and never need to be undone: `c
 nothing connects as them. There is no data migration involved in this cutover, only a
 connection-identity change, so rollback is immediate and has no data-loss risk.
 
-### 11.2 Future-table checklist
+### 11.2 Verifying the cutover actually happened
+
+Do not read a `.env*` file or a compose file to answer "which role is this environment on";
+those are the operator's local copy and the deployment's template, neither of which is the
+running process. Two sources are authoritative:
+
+- `/health/ready` reports a `database_privilege` check (`api/health.py`). `state: "ok"` means
+  the connected role cannot bypass RLS (cut over); `state: "degraded"` means it can (not cut
+  over). The check is deliberately non-gating, so a pre-cutover environment stays HTTP 200,
+  and it deliberately omits the role name because the endpoint is unauthenticated.
+- `SELECT usename, count(*) FROM pg_stat_activity WHERE datname = 'postgres' GROUP BY 1;`
+  against the target project shows which roles actually hold connections.
+
+The worker needs its own check: `CYO_ADVENTURE_WORKER_DATABASE_URL` silently falls back to
+`CYO_ADVENTURE_DATABASE_URL` when unset (`core/config.py::worker_database_url_effective`), so
+a forgotten worker variable is indistinguishable from a completed cutover by inspection. Confirm
+a `cyo_worker` connection appears in `pg_stat_activity` while a real generation job runs.
+
+### 11.3 Operator scripts must not run as `cyo_api`
+
+These entry points read or write the ADR-022 Tier 1 tables (`child_profile`, `story_request`,
+`device_grant`) outside the request path, where nothing sets the `app.family_id` GUC:
+
+**Seed and local-harness scripts:** `scripts/seed_dev_data.py`, `scripts/seed_staging.py`,
+`scripts/seed_moderation_qa.py`, `scripts/seed_series_catalog.py`,
+`scripts/seed_catalog_validation_states.py`, `scripts/series_e2e_local.py`.
+
+**Import CLIs:** `src/cyo_adventure/generation/import_cli.py` and
+`src/cyo_adventure/generation/import_catalog.py`. Both reach `import_filled_story()`, which reads
+`child_profile.display_name` for the family to build the moderation pass's `PiiContext`. These are
+the one exception to the owner-DSN rule below: `import_filled_story()` sets the family RLS context
+itself before that read (`apply_family_rls_context`, transaction-scoped), so it is correct under
+`cyo_api`. Any new code path added to these CLIs that touches a Tier 1 table must do the same.
+
+**Local-only reset:** `scripts/reset_e2e_real_state.py` deletes `story_request` rows by family.
+It self-guards with `_require_local_database()` and refuses any non-local host, so it cannot hit a
+deployed database, but it belongs on this list.
+
+This list is accurate as of PR #597 and is not self-maintaining. Before adding any new
+non-request-path entry point that touches a Tier 1 table, add it here.
+
+Run these with the **owner** (`postgres`) DSN, never the `cyo_api` DSN. Under `cyo_api` with no
+RLS context the Tier 1 predicate is unsatisfiable, so reads return zero rows and inserts are
+rejected by `WITH CHECK`. The read failure is silent: the script sees an empty result and
+reports "nothing to do" rather than an error. This is the same fail-closed-looks-like-empty
+failure mode that hid the device-grant defect in staging for two weeks (PR #560).
+
+The import CLIs carried a sharper version of that failure mode, which is why
+`import_filled_story()` now sets the context itself: an empty `child_profile` read does not stop
+the import, it produces an empty `child_names` set, so the moderation pass runs with no PII
+context and cannot recognize a real child's name in the generated prose. The import still reports
+success. That is fail-closed at the database becoming fail-open at the safety gate, and it is the
+shape to look for in any future non-request-path caller.
+
+### 11.4 Future-table checklist
 
 RLS enforcement for `cyo_api`/`cyo_worker` is an explicit, per-table `GRANT` plus an
 explicit, per-table `CREATE POLICY`; neither is inferred automatically from
