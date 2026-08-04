@@ -174,7 +174,12 @@ enabled = true
 site_url = "http://localhost:5173"
 # The public URL that Auth serves on. Defaults to the API external URL with `/auth/v1` appended.
 # external_url = ""
-# A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
+# The list of URLs that auth providers are permitted to redirect to post authentication. Supabase
+# matches these as patterns rather than by string equality: `*` matches within a path segment and
+# `**` matches across segments, which is what lets the [remotes.*] blocks below use `/**`.
+# Supabase's own guidance is to prefer exact paths in production and reserve wildcards for
+# preview deploys, so each remote block lists its exact post-login return URL first and keeps
+# `/**` only as a fallback for flows that redirect elsewhere (an email-change confirmation, say).
 # Local stack only; both remotes override it. Pushed as the comma-joined `uri_allow_list`.
 additional_redirect_urls = ["http://localhost:5173", "http://localhost:3000"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
@@ -188,6 +193,17 @@ enable_refresh_token_rotation = true
 # Allows refresh tokens to be reused after expiry, up to the specified interval in seconds.
 # Requires enable_refresh_token_rotation = true.
 refresh_token_reuse_interval = 10
+# [auth.sessions] is deliberately absent for now, which means no `timebox` and no
+# `inactivity_timeout`: with rotation on, a signed-in adult session renews indefinitely. That is
+# the Supabase default rather than something this file loosened, and it is left alone here so the
+# scope of the first production config push stays the hardening set that was diffed against both
+# live projects on 2026-08-04.
+# #ASSUME: security: an indefinitely-renewing session is acceptable because the sensitive adult
+# actions behind it (approve, publish, device grant) sit behind AdultGate's password re-entry
+# challenge rather than behind session age alone.
+# #VERIFY: revisit before R2 (public launch). Adding [auth.sessions] is a live policy change that
+# signs adults out, so rehearse it on staging and announce it rather than folding it into an
+# unrelated push.
 # Allow/disallow new user signups to your project.
 enable_signup = true
 # Allow/disallow anonymous sign-ins to your project.
@@ -299,7 +315,19 @@ double_confirm_changes = true
 # from the local mail UI on port 54324.
 enable_confirmations = true
 # If enabled, users will need to reauthenticate or have logged in recently to change their password.
-secure_password_change = false
+# True, a change from the Supabase default. Pushed as
+# `security_update_password_require_reauthentication`. GoTrue demands a reauthentication nonce
+# only when the session is missing or older than 24 hours (`internal/api/user.go`:
+# `session == nil || now.After(session.CreatedAt.Add(24*time.Hour))`), so the one caller of
+# `supabase.auth.updateUser({ password })` in this app, AuthContext.tsx::updatePassword, is
+# unaffected: it runs on the recovery session the password-reset link just created.
+# #CRITICAL: security: at `false`, a stolen or borrowed session can set a new password without
+# proving knowledge of the current one, locking the account holder out of their own account and
+# their children's data. `true` bounds that to sessions under 24 hours old.
+# #VERIFY: after any config push, `jq .security_update_password_require_reauthentication` on the
+# Management API auth config must read true for both refs, and the guardian reset flow (request
+# link, follow it, set a new password) must still complete end to end on staging.
+secure_password_change = true
 # Controls the minimum amount of time that must pass before sending another signup confirmation or password reset email.
 # 60 seconds, matching both live projects. Pushed as `smtp_max_frequency` in whole seconds.
 # #CRITICAL: security: with no custom SMTP configured, this is the primary per-address throttle on
@@ -381,9 +409,13 @@ auth_token = "env(SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN)"
 max_enrolled_factors = 10
 
 # Control MFA via App Authenticator (TOTP)
-# Both true, matching staging and production. `mfa.toAuthConfigBody` is called unconditionally, so
-# these are asserted on every push: leaving them at the Supabase default of false would REVOKE
-# TOTP from every adult who has already enrolled a factor.
+# Both true, matching staging and production.
+# #CRITICAL: security: `mfa.toAuthConfigBody` is called unconditionally, so these two are asserted
+# on every push. Leaving them at the Supabase default of false would REVOKE TOTP from every adult
+# who has already enrolled a factor, silently downgrading those accounts to a single factor
+# without notifying anyone.
+# #VERIFY: `jq '.mfa_totp_enroll_enabled, .mfa_totp_verify_enabled'` on the Management API auth
+# config must both read true for both refs after any config push.
 [auth.mfa.totp]
 enroll_enabled = true
 verify_enabled = true
@@ -504,6 +536,10 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 # Set enabled = false to fall back to the legacy migra engine.
 [experimental.pgdelta]
 enabled = true
+# Directory under `supabase/` where declarative files are written.
+# declarative_schema_path = "./database"
+# JSON string passed through to pg-delta SQL formatting.
+# format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":80,\"commaStyle\":\"trailing\"}"
 
 # ---------------------------------------------------------------------------
 # Per-environment overrides
@@ -520,9 +556,19 @@ enabled = true
 # `project_id` must be a literal ref: the CLI validates it against `^[a-z]{20}$` at load time and
 # does not expand env vars here, so it cannot be sourced from SUPABASE_PROJECT_ID. That is not a
 # secret leak. A project ref is the public hostname the browser already talks to
-# (`https://<ref>.supabase.co`, shipped in the frontend bundle as VITE_SUPABASE_URL), and both
-# refs are already committed elsewhere in this repo. Access still requires
-# SUPABASE_ACCESS_TOKEN, which stays in the GitHub Environment secrets.
+# (`https://<ref>.supabase.co`), and each environment ships its own ref to every visitor in the
+# frontend bundle as VITE_SUPABASE_URL. Production's ref is additionally committed elsewhere in
+# this repo; staging's ref is first committed here, which changes nothing about its exposure but
+# is worth stating accurately rather than claiming prior disclosure it does not have. Access
+# still requires SUPABASE_ACCESS_TOKEN, which stays in the GitHub Environment secrets.
+#
+# #EDGE: external resources: that `^[a-z]{20}$` pattern accepts no digits, yet Supabase project
+# refs are not guaranteed to be twenty lowercase letters. A future project whose ref contains a
+# digit could not be declared here at all, and the CLI's failure mode for a ref that matches no
+# block is to fall through to the base config rather than to error.
+# #VERIFY: if either project is ever re-provisioned, check the new ref against that pattern BEFORE
+# pointing a workflow at it, and confirm the "Loading config override" assertion in
+# .github/workflows/supabase-*.yml still fires on the first run.
 
 [remotes.staging]
 project_id = "lbhyjcykbamjtghcidgp"
@@ -547,7 +593,3 @@ additional_redirect_urls = [
   "https://cyo.williamshome.family/guardian/login",
   "https://cyo.williamshome.family/**",
 ]
-# Directory under `supabase/` where declarative files are written.
-# declarative_schema_path = "./database"
-# JSON string passed through to pg-delta SQL formatting.
-# format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":80,\"commaStyle\":\"trailing\"}"
