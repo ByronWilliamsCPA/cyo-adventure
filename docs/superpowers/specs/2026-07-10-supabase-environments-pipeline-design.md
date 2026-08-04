@@ -215,8 +215,14 @@ in stacked PRs off `main`.
    and resumes on top of this staging environment.
 2. File an issue for the delayed naive-ux-check scenario redesign referencing
    both specs.
-3. **Done.** Supabase config-as-code push (`supabase config push`) for remote auth settings,
-   issue #601 / register row UW-D28, landed on branch `claude/supabase-config-push-issue-1kbz39`:
-   `config push` is wired into both deploy workflows after `link` and before `db push`, with
-   `[remotes.staging]` / `[remotes.production]` blocks in `config.toml` supplying the
-   per-environment `site_url` and `additional_redirect_urls`.
+3. **Staging done; production wired and awaiting its first dispatch.** Supabase config-as-code
+   push (`supabase config push`) for remote auth settings, issue #601 / register row UW-D28,
+   delivered in PR #604: `config push` is wired into both deploy workflows after `link` and
+   before `db push`, with `[remotes.staging]` / `[remotes.production]` blocks in `config.toml`
+   supplying the per-environment `site_url` and `additional_redirect_urls`.
+
+   This follow-up deferred the work pending CLI stability. What actually cleared it was not
+   stability: it was reading the CLI source at the pinned tag and finding that `config push` is a
+   defaulting writer rather than a differ, then mitigating that. The version pin at 2.109.1 is
+   therefore load-bearing, and an unreviewed CLI bump is a change to auth policy. UW-D28 stays at
+   `verify` until the production dispatch runs.
