@@ -30,6 +30,8 @@
 '   supabase/migrations/20260720170100_create_service_roles.sql,
 '     20260720170200_add_service_role_policies.sql
 '   CLAUDE.md (Docker, Pangolin zero-trust, Dockge)
+'   src/cyo_adventure/core/observability.py (init_sentry(), called from
+'     app.py::create_app() before app construction; send_default_pii=False)
 '
 ' Note: MinIO shown as planned (deferred Phase 5).
 ' Note: homelab Authentik keeps its existing internal homelab-service roles
@@ -59,6 +61,7 @@ cloud "Supabase Auth\n[OIDC provider, ADR-009]\nGuardian + admin sign-in (Apple/
 cloud "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nSession pooler:\naws-0-us-east-1.pooler.supabase.com:5432\n(session mode; dedicated backend\nper connection, R1 Task 1.7)" as supabase_pg_cloud #E0F7FA
 
 cloud "Cloudflare\n[proxied DNS, edge TLS]\nOffers origins PQ groups only" as cloudflare_cloud #FFF8E1
+cloud "Sentry\n[Error tracking, SaaS]\ninit_sentry(), core/observability.py;\nsend_default_pii hardcoded False\n(no child/guardian PII)" as sentry_cloud #E0E0E0
 
 node "Charon VPS\n[public ingress, 66.42.78.207]" as charon #CCEECC {
   node "Traefik (Charon)\n[websecure :443]\nTerminates public TLS\nX25519MLKEM768" as charon_traefik #CCEECC {
@@ -120,6 +123,7 @@ rq_worker ..> ollama_svc : "HTTP\nLLM fallback"
 rq_worker ..> minio_db : "[Phase 5]\nS3 API"
 pwa_client --> supabase_cloud : "OIDC auth flow\n(Apple/Google via Supabase)"
 fastapi_app --> supabase_cloud : "OIDC token validation\n[non-local; local uses token-as-subject]"
+fastapi_app ..> sentry_cloud : "error events\n(no PII)"
 pwa_client ..> pwa_client : "ADR-014: kid chunk decodes its\nlocal device grant (exp/family_id)\nfor routing only -- NO network\nround-trip to Supabase or the\nbackend; signature is verified\nserver-side only when the grant\nis actually used (mint/list calls)"
 
 note right of postgres_container
