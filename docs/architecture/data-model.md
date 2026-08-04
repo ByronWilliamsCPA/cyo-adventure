@@ -3,7 +3,7 @@ title: "Data Model"
 schema_type: common
 status: published
 owner: core-maintainer
-purpose: "ER diagram and description of the 24 ORM tables backing CYO Adventure."
+purpose: "ER diagram and description of the 26 ORM tables backing CYO Adventure."
 tags:
   - architecture
   - reference
@@ -22,7 +22,7 @@ application boundary, which keeps schema migrations simple and avoids enum-type 
 The PlantUML source above (`diagrams/er-diagram.puml`) is authoritative: it carries the
 full CHECK constraint list, ON DELETE semantics, and a note on pure-attribution foreign
 keys to `user.id` that are deliberately not drawn as edges. The Mermaid version below is a
-hand-maintained companion (`diagrams/er-diagram.mmd`) covering the same 24 tables and
+hand-maintained companion (`diagrams/er-diagram.mmd`) covering the same 26 tables and
 relationships, kept for inline rendering directly on GitHub without opening the SVG.
 
 ```mermaid

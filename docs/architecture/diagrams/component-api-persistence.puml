@@ -5,7 +5,7 @@
 '
 ' Source files:
 '   src/cyo_adventure/app.py                 (FastAPI app, middleware order,
-'                                              wires all 28 routers)
+'                                              wires all 32 routers)
 '   src/cyo_adventure/api/health.py          (liveness/readiness/startup probes)
 '   src/cyo_adventure/api/library.py         (story library endpoints)
 '   src/cyo_adventure/api/reading.py         (reading-state + completions + series-next)
@@ -42,22 +42,40 @@
 '                                              re-review; admin or guardian-own-family)
 '   src/cyo_adventure/api/audit.py           (admin: filterable pipeline_event log)
 '   src/cyo_adventure/api/rescreen.py        (admin: synchronous re-screen sweep)
+'   src/cyo_adventure/api/remoderate.py      (admin: synchronous re-run of the
+'                                              full moderation pipeline on one
+'                                              published version, status unchanged)
 '   src/cyo_adventure/api/flags.py           (K15/ADR-016 kid flags: submit +
 '                                              admin list/resolve)
-'   src/cyo_adventure/api/notifications.py   (guardian-only pipeline_event feed)
+'   src/cyo_adventure/api/notifications.py   (guardian-only pipeline_event feed;
+'                                              two routes, not one: GET
+'                                              /notifications polls, GET
+'                                              /notifications/stream is an
+'                                              additive SSE push transport over
+'                                              the same family-scoped query)
 '   src/cyo_adventure/api/recommendations.py (K17/ADR-016 rings 1-2 rec feed)
+'   src/cyo_adventure/api/personalization.py (ADR-023 P3/P4: ring-1/ring-2
+'                                              personalization slot CRUD +
+'                                              ring-2 disclosure consent)
+'   src/cyo_adventure/api/progress.py        (W3.1: child-only badges/gallery/
+'                                              lifetime totals, derived read)
+'   src/cyo_adventure/api/reading_time.py    (W3.3: child-only idempotent
+'                                              active-reading-time flush)
 '   src/cyo_adventure/api/review_surface.py  (support: review-surface / queue /
 '                                              content-summary projections)
 '   src/cyo_adventure/api/schemas.py         (Pydantic request/response models)
 '   src/cyo_adventure/api/deps.py            (Principal, Context, auth seam;
 '                                              Role.DEVICE routing branch, ADR-014)
 '   src/cyo_adventure/core/device_grant.py   (HS256 token, aud cyo-device-grant, 90d)
-'   src/cyo_adventure/middleware/correlation.py (CorrelationMiddleware, added first)
-'   src/cyo_adventure/middleware/security.py (OWASP headers, SSRF)
+'   src/cyo_adventure/middleware/correlation.py (CorrelationMiddleware; added
+'     LAST in app.py so Starlette makes it the OUTERMOST layer, running first
+'     on the request path)
+'   src/cyo_adventure/middleware/security.py (OWASP headers, SSRF; added first,
+'     so it ends up innermost of the three)
 '   src/cyo_adventure/core/config.py         (Pydantic Settings)
 '   src/cyo_adventure/core/database.py       (async engine, Base, get_session)
 '   src/cyo_adventure/core/exceptions.py     (exception hierarchy)
-'   src/cyo_adventure/db/models.py           (22 ORM tables)
+'   src/cyo_adventure/db/models.py           (26 ORM tables)
 '   src/cyo_adventure/events/writer.py       (append-only pipeline_event log, WS-D)
 '   docs/planning/authorization-matrix.md
 '   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik;
@@ -78,9 +96,10 @@ skinparam component {
 
 package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
 
-  package "Middleware Stack (applied first)" #CCEECC {
-    component "CorrelationMiddleware\nmiddleware/correlation.py\nAttaches X-Correlation-ID;\nmust be first middleware" as corr_mw #CCEECC
-    component "SecurityMiddleware\nmiddleware/security.py\nOWASP headers, HSTS,\nCSP, SSRF protection" as sec_mw #CCEECC
+  package "Middleware Stack\n(registration order: security -> gzip -> correlation;\nexecution order is the reverse, correlation outermost)" #CCEECC {
+    component "SecurityMiddleware\nmiddleware/security.py\nOWASP headers, HSTS,\nCSP, SSRF protection\nregistered 1st (innermost)" as sec_mw #CCEECC
+    component "GZipMiddleware\n(Starlette stdlib)\nminimum_size=1024\ncompresslevel=6\nregistered 2nd" as gzip_mw #CCEECC
+    component "CorrelationMiddleware\nmiddleware/correlation.py\nAttaches X-Correlation-ID;\nregistered LAST so it is\nOUTERMOST (runs first)" as corr_mw #CCEECC
   }
 
   package "Dependencies\napi/deps.py" #DCEDC8 {
@@ -90,7 +109,7 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
     component "RequestContext\nContext = principal + session\nDependency-injected into\nevery route handler" as ctx #DCEDC8
   }
 
-  package "API Routers (27 under /api/v1 + health under /health; 28 total)" #B2DFDB {
+  package "API Routers (31 under /api/v1 + health under /health; 32 total)" #B2DFDB {
     component "health.py\nGET /health/ (root)\nGET /health/live\nGET /health/ready\nGET /health/startup" as health_router #B2DFDB
 
     component "library.py\nGET /library (profile-scoped listing)\nGET /storybooks/{id}/versions/{version}\n(immutable blob; admin/catalog cross-family,\nchild/device assignment-gated)" as library_router #B2DFDB
@@ -141,11 +160,19 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
 
     component "rescreen.py [admin]\nPOST /admin/rescreen\n(sync re-screen sweep; never auto-archives)" as rescreen_router #B2DFDB
 
+    component "remoderate.py [admin]\nPOST /admin/remoderate/{id}/{version}\n(sync full moderation pipeline re-run on a\npublished version; status unchanged, ADR-005)" as remoderate_router #B2DFDB
+
     component "flags.py [K15 / ADR-016]\nPOST /flags [kid own profile, assignment-gated]\nGET /admin/flags [admin]\nPOST /admin/flags/{id}/resolve [admin]" as flags_router #B2DFDB
 
     component "notifications.py [guardian-only]\nGET /notifications\n(read-only pipeline_event feed)" as notifications_router #B2DFDB
 
     component "recommendations.py [K17 / ADR-016]\nGET /recommendations/{profile_id}\n(rings 1-2: family + dual-consented connection)" as recommendations_router #B2DFDB
+
+    component "personalization.py [guardian; ring2 sharer]\nGET/PUT /profiles/{id}/personalization\nPOST/DELETE /profiles/{id}/ring2-consent\nGET/PUT /families/me/personalization-receive\nGET /storybooks/{id}/personalization-values\n(ADR-023 P3/P4)" as personalization_router #B2DFDB
+
+    component "progress.py [child-only]\nGET /me/progress\n(badges, gallery, lifetime totals;\nderived read, zero new tables, W3.1)" as progress_router #B2DFDB
+
+    component "reading_time.py [child-only]\nPOST /me/reading-time\n(idempotent flush + sanity clamp;\nwrites reading_activity_day, W3.3)" as reading_time_router #B2DFDB
   }
 
   package "Core" #A5D6A7 {
@@ -156,18 +183,20 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
 
 }
 
-package "ORM Models\nsrc/cyo_adventure/db/models.py (22 tables)" #FFF8E1 {
+package "ORM Models\nsrc/cyo_adventure/db/models.py (26 tables)" #FFF8E1 {
   component "Family\nSeries\nUser\nChildProfile\nFamilyConnection\nStorybook\nStorybookVersion" as models_a #FFF8E1
-  component "ReadingState\nCompletion\nRating\nStorybookAssignment\nConcept\nStoryRequest" as models_b #FFF8E1
-  component "ModerationThreshold(+Audit)\nModerationSetting\nPipelineEvent\nProviderModelAllowlist(+Audit)\nGenerationJob\nKidFlag [K15]" as models_c #FFF8E1
+  component "ReadingState\nCompletion\nRating\nStorybookAssignment\nConcept\nStoryRequest\nReadingActivityDay [W3.3]" as models_b #FFF8E1
+  component "ModerationThreshold(+Audit)\nModerationSetting\nPipelineEvent\nSecurityEvent [OPS-005]\nProviderModelAllowlist(+Audit)\nGenerationJob\nKidFlag [K15]" as models_c #FFF8E1
   component "DeviceGrant [ADR-014]\nfamily_id, authorized_by, jti\n(unique), revoked_at" as models_d #FFF8E1
+  component "ChildProfilePersonalization\nPersonalizationDisclosureConsent\n[ADR-023 P3/P4]" as models_e #FFF8E1
 }
 
 database "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nAsync SQLAlchemy 2 sessions\nSession pooler :5432 (session mode)\nSupabase CLI SQL migrations (ADR-012)" as pg #E0F7FA
 
 ' --- Relationships ---
-corr_mw --> sec_mw : "request chain"
-sec_mw --> auth_seam : "request chain"
+corr_mw --> sec_mw : "request chain\n(outermost runs first)"
+sec_mw --> gzip_mw : "request chain"
+gzip_mw --> auth_seam : "request chain"
 auth_seam --> principal
 db_session_dep --> database
 principal --> ctx
@@ -199,6 +228,10 @@ ctx --> rescreen_router
 ctx --> flags_router
 ctx --> notifications_router
 ctx --> recommendations_router
+ctx --> remoderate_router
+ctx --> personalization_router
+ctx --> progress_router
+ctx --> reading_time_router
 auth_seam --> onboarding_router : "OnboardingIdentityDep\n(own identity check, not Context:\nno Principal/User row exists yet)"
 
 reading_router --> models_a
@@ -227,11 +260,21 @@ rescreen_router --> models_c
 flags_router --> models_c : "KidFlag"
 notifications_router --> models_c
 recommendations_router --> models_a
+remoderate_router --> models_a : "Storybook/StorybookVersion"
+remoderate_router --> models_c : "PipelineEvent\n(STORYBOOK_REMODERATED)"
+personalization_router --> models_a : "ChildProfile, Family,\nFamilyConnection, Storybook"
+personalization_router --> models_e
+personalization_router --> models_c : "PipelineEvent\n(PERSONALIZATION_TOGGLED,\nRING2_CONSENT_GRANTED/REVOKED)"
+progress_router --> models_a : "ChildProfile, Storybook,\nStorybookVersion (read-only)"
+progress_router --> models_b : "Completion, Rating,\nStoryRequest, ReadingActivityDay\n(read-only)"
+reading_time_router --> models_a : "ChildProfile"
+reading_time_router --> models_b : "ReadingActivityDay"
 
 models_a --> pg
 models_b --> pg
 models_c --> pg
 models_d --> pg
+models_e --> pg
 
 exceptions --> reading_router : "raised -> mapped to HTTP\nby exception handlers"
 exceptions --> gen_router
