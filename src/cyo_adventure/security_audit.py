@@ -74,7 +74,9 @@ async def record_security_event(
         path: The request path, when the caller has one (unset for a
             rate-limit trip, which has no route-level request context).
         method: The request method, same availability as ``path``.
-        status_code: The mapped HTTP status, for auth/authz rows only.
+        status_code: The mapped HTTP status: 401/403 for an auth/authz row,
+            429 for a rate-limit row (RateLimitMiddleware passes this too;
+            unset only if a future call site has no fixed status to report).
         resource: The denied resource identifier, for authz-denial rows only
             (already pruned of ``value``/``context`` by the caller).
     """
