@@ -148,26 +148,44 @@ def _handle_project_error(request: Request, exc: Exception) -> JSONResponse:
         details=payload.get("details"),
     )
     # #CRITICAL: security: OPS-005 -- AuthenticationError/AuthorizationError is
-    # raised from 35+ call sites (api/deps.py, api/*, core/child_session.py,
-    # core/device_grant.py, publishing/, covers/) and every one of them passes
-    # through this single handler, so this is the one choke point that emits a
-    # security-relevant event for all of them without instrumenting each raise
-    # site (and without changing require_principal's signature to thread a
-    # Request through it). The event name is deliberately distinct from
-    # "project_error" so a log-based alert/detection rule can key on it
-    # directly instead of parsing status_code out of a generic line, and it
-    # carries the client address/path/method the raise site itself never has
-    # access to. `reason` is always one of this codebase's fixed,
+    # raised from 89 call sites across 35 files (api/deps.py, most of api/*,
+    # core/child_session.py, core/device_grant.py, publishing/, covers/) and
+    # every one of them passes through this single handler, so this is the one
+    # choke point that emits a security-relevant event for all of them without
+    # instrumenting each raise site (and without changing require_principal's
+    # signature to thread a Request through it). The event name is deliberately
+    # distinct from "project_error" so a log-based alert/detection rule can key
+    # on it directly instead of parsing status_code out of a generic line, and
+    # it carries the client address/path/method the raise site itself never has
+    # access to. `code` carries the machine-readable error_code, which is
+    # the class default at every site except api/child_sessions.py:181, which
+    # passes error_code="PIN_MISMATCH", so a detection rule can key on
+    # child-PIN brute force without string-matching `reason`; any future call
+    # site that passes error_code= is picked up for free.
+    # `reason` is always one of this codebase's fixed,
     # developer-authored `msg = "..."` literals -- never caller input -- so
     # logging it verbatim carries no injection or PII risk.
     # #VERIFY: tests/unit/test_app.py::TestSecurityEventLogging asserts both
     # event names, their fields, and that a non-auth ProjectBaseError (e.g.
     # ValidationError) does NOT emit either one.
+    #
+    # #ASSUME: security: `path` IS caller-controlled, unlike `reason`. Log
+    # forgery through an embedded newline is currently blocked twice over:
+    # Starlette's URL.path drops CR/LF/TAB (urlsplit strips them), and both
+    # JSONRenderer and ConsoleRenderer escape control characters in a value.
+    # Neither layer is this module's to guarantee, so the safety is inherited,
+    # not enforced here.
+    # #VERIFY: if `path` ever switches to request.scope["path"] or
+    # request.url.raw_path (both of which retain a decoded newline), or if
+    # utils/logging.py::setup_logging gains a renderer that is neither
+    # JSONRenderer nor ConsoleRenderer, add a test asserting that a newline in
+    # `path` cannot terminate a rendered log record.
     client_ip = request.client.host if request.client is not None else None
     if isinstance(exc, AuthenticationError):
         logger.warning(
             "security_auth_failed",
             reason=payload.get("message"),
+            code=payload.get("code"),
             client_ip=client_ip,
             path=request.url.path,
             method=request.method,
@@ -180,11 +198,14 @@ def _handle_project_error(request: Request, exc: Exception) -> JSONResponse:
         # _client_safe_error exists to withhold; reusing the pruned view
         # also means a future AuthorizationError(details={"value": ...})
         # call site can't accidentally widen what this event discloses.
-        # #VERIFY: tests/unit/test_app.py::
-        # test_authorization_error_security_event_omits_sensitive_detail_keys.
+        # #VERIFY: tests/unit/test_app.py::TestSecurityEventLogging::
+        # test_authorization_error_security_event_omits_sensitive_detail_keys
+        # (the class qualifier is required; the bare function name does not
+        # resolve as a pytest node id).
         logger.warning(
             "security_authz_denied",
             reason=payload.get("message"),
+            code=payload.get("code"),
             client_ip=client_ip,
             path=request.url.path,
             method=request.method,

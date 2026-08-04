@@ -402,6 +402,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         redis_timeout_seconds: float = 0.5,
         redis_retry_cooldown_seconds: float = 5.0,
         redis_key_prefix: str = "cyo:ratelimit",
+        trip_log_interval_seconds: float = 60.0,
     ) -> None:
         """Initialize rate limiter."""
         super().__init__(app)
@@ -423,6 +424,62 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         # startup always attempts Redis rather than skipping straight to the
         # fallback.
         self._redis_unavailable_until: float = 0.0
+
+        # Per-IP throttle for the `security_rate_limit_exceeded` event. Maps
+        # client_ip -> (timestamp of last emitted line, trips suppressed since).
+        self._trip_log_interval_seconds = trip_log_interval_seconds
+        self._trip_log_state: dict[str, tuple[float, int]] = {}
+
+    def _tally_trip(self, client_ip: str, current_time: float) -> int | None:
+        """Decide whether this rate-limit trip should be logged.
+
+        Returns the number of trips suppressed since the previous emitted line
+        (0 on the first trip for an IP) when the caller should log, or ``None``
+        when the caller should stay silent.
+
+        #CRITICAL: security: a rejected request never enters the sliding
+        window (``_check_memory`` returns before appending to
+        ``self.requests``), so the request-per-minute cap does NOT bound how
+        many trips a flooding client can produce: at N requests/second a
+        sustained attack yields roughly N trips/second, and logging each one
+        turns the limiter into a log-volume amplifier against the host's disk.
+        Throttling to one line per IP per ``trip_log_interval_seconds``, with
+        a tally of what was suppressed, keeps the signal (an alert still
+        fires, and the count shows the true intensity) while restoring an
+        upper bound on write volume.
+        #VERIFY: tests/unit/test_security.py::TestRateLimitMiddleware::
+        test_repeated_trips_within_interval_log_once_with_suppressed_tally.
+        """
+        last_logged, suppressed = self._trip_log_state.get(client_ip, (0.0, 0))
+        if current_time - last_logged >= self._trip_log_interval_seconds:
+            self._trip_log_state[client_ip] = (current_time, 0)
+            self._prune_trip_log_state(current_time)
+            return suppressed
+        self._trip_log_state[client_ip] = (last_logged, suppressed + 1)
+        return None
+
+    def _prune_trip_log_state(self, current_time: float) -> None:
+        """Bound ``_trip_log_state`` so it cannot itself become the leak.
+
+        #CRITICAL: security: this dict is keyed by attacker-chosen client IP,
+        exactly like ``self.requests``. Unlike ``self.requests`` it cannot
+        rely on ``_cleanup_stale_entries``, which runs only from
+        ``_check_memory``; the Redis backend reaches the trip path without
+        ever calling it. Pruning here keeps the bound on every code path.
+        #VERIFY: tests/unit/test_security.py::TestRateLimitMiddleware::
+        test_trip_log_state_is_bounded_by_max_tracked_ips.
+        """
+        if len(self._trip_log_state) <= self.max_tracked_ips:
+            return
+        cutoff = current_time - self._trip_log_interval_seconds
+        self._trip_log_state = {
+            ip: state for ip, state in self._trip_log_state.items() if state[0] > cutoff
+        }
+        if len(self._trip_log_state) > self.max_tracked_ips:
+            newest = sorted(
+                self._trip_log_state.items(), key=lambda kv: kv[1][0], reverse=True
+            )
+            self._trip_log_state = dict(newest[: self.max_tracked_ips])
 
     def _cleanup_stale_entries(self, current_time: float) -> None:
         """Remove stale IP entries to prevent memory leaks.
@@ -494,12 +551,15 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             # a healthy backend left no trace to detect or reconstruct it from.
             # #VERIFY: TestRateLimitMiddleware in test_security.py asserts
             # this event on a tripped memory-backend request.
-            _struct_logger.warning(
-                "security_rate_limit_exceeded",
-                limit_type="rpm",
-                client_ip=client_ip,
-                requests_per_minute=self.requests_per_minute,
-            )
+            suppressed = self._tally_trip(client_ip, current_time)
+            if suppressed is not None:
+                _struct_logger.warning(
+                    "security_rate_limit_exceeded",
+                    limit_type="rpm",
+                    client_ip=client_ip,
+                    requests_per_minute=self.requests_per_minute,
+                    suppressed_since_last=suppressed,
+                )
             return JSONResponse(
                 status_code=429,
                 content={
@@ -519,12 +579,15 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             # same rationale applies to a burst-limit trip.
             # #VERIFY: TestRateLimitMiddleware in test_security.py asserts
             # this event on a tripped memory-backend burst.
-            _struct_logger.warning(
-                "security_rate_limit_exceeded",
-                limit_type="burst",
-                client_ip=client_ip,
-                burst_size=self.burst_size,
-            )
+            suppressed = self._tally_trip(client_ip, current_time)
+            if suppressed is not None:
+                _struct_logger.warning(
+                    "security_rate_limit_exceeded",
+                    limit_type="burst",
+                    client_ip=client_ip,
+                    burst_size=self.burst_size,
+                    suppressed_since_last=suppressed,
+                )
             return JSONResponse(
                 status_code=429,
                 content={
@@ -611,12 +674,15 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             # (only the Redis-unavailable fallback below it was logged).
             # #VERIFY: test_security.py::TestRedisBackedRateLimitMiddleware
             # asserts this event fires on a tripped Redis-backend request.
-            _struct_logger.warning(
-                "security_rate_limit_exceeded",
-                limit_type="rpm",
-                client_ip=client_ip,
-                requests_per_minute=self.requests_per_minute,
-            )
+            suppressed = self._tally_trip(client_ip, current_time)
+            if suppressed is not None:
+                _struct_logger.warning(
+                    "security_rate_limit_exceeded",
+                    limit_type="rpm",
+                    client_ip=client_ip,
+                    requests_per_minute=self.requests_per_minute,
+                    suppressed_since_last=suppressed,
+                )
             return JSONResponse(
                 status_code=429,
                 content={
@@ -630,12 +696,15 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             # #CRITICAL: security: OPS-005 -- see the code==1 branch above.
             # #VERIFY: test_security.py::TestRedisBackedRateLimitMiddleware
             # asserts this event fires on a tripped Redis-backend burst.
-            _struct_logger.warning(
-                "security_rate_limit_exceeded",
-                limit_type="burst",
-                client_ip=client_ip,
-                burst_size=self.burst_size,
-            )
+            suppressed = self._tally_trip(client_ip, current_time)
+            if suppressed is not None:
+                _struct_logger.warning(
+                    "security_rate_limit_exceeded",
+                    limit_type="burst",
+                    client_ip=client_ip,
+                    burst_size=self.burst_size,
+                    suppressed_since_last=suppressed,
+                )
             return JSONResponse(
                 status_code=429,
                 content={

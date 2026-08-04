@@ -36,6 +36,27 @@ services:
       # core/config.py's forwarded_allow_ips docstring.
       FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-172.16.0.0/12}
 
+    # Bound the on-disk log store (OPS-005). Docker's default `json-file`
+    # driver never rotates, so an unauthenticated caller who can drive
+    # WARNING-level events can grow the log file until the host disk fills.
+    # That mattered less when a rejected request logged nothing; now that
+    # rate-limit trips and auth failures each emit a WARNING line, the 60 rpm
+    # limiter no longer caps log growth on its own. 50MB x 5 files caps this
+    # service at 250MB per replica.
+    #
+    # #CRITICAL: security: this bound applies ONLY to deployments driven by
+    # this compose file. homelab-infra is the deployment orchestrator of
+    # record for the live environment (see the `redis:` service comment
+    # below), so production stays unbounded until the equivalent logging
+    # options are set there.
+    # #VERIFY: `docker inspect -f '{{.HostConfig.LogConfig}}' <prod-app-ctr>`
+    # on the live host must report max-size/max-file, not `{json-file map[]}`.
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
     # Production replicas (for load balancing)
     deploy:
       replicas: ${REPLICAS:-2}
@@ -74,6 +95,15 @@ services:
       # below); rebuild the connection URL with the same required password so
       # worker can still reach it.
       CYO_ADVENTURE_REDIS_URL: redis://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis:6379/0
+
+    # Same unrotated-json-file bound as `app` above. The worker serves no
+    # requests, but it shares the host's disk with the API, so an unbounded
+    # worker log undermines the cap set on `app`.
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
 
     deploy:
       replicas: 1

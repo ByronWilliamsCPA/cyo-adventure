@@ -364,6 +364,7 @@ class TestRateLimitMiddleware:
             limit_type="rpm",
             client_ip="testclient",
             requests_per_minute=1,
+            suppressed_since_last=0,
         )
 
     @pytest.mark.unit
@@ -390,7 +391,86 @@ class TestRateLimitMiddleware:
             limit_type="burst",
             client_ip="testclient",
             burst_size=2,
+            suppressed_since_last=0,
         )
+
+    @pytest.mark.unit
+    def test_repeated_trips_within_interval_log_once_with_suppressed_tally(
+        self,
+    ) -> None:
+        """A flood produces ONE log line per IP per interval, not one per
+        rejected request.
+
+        This is the bound that makes `security_rate_limit_exceeded` safe to
+        emit at all. A rejected request returns before it is appended to the
+        sliding window (`_check_memory` returns above the `append`), so the
+        requests-per-minute cap does not limit how many trips a flooding
+        client can generate: without this throttle, log volume tracks the
+        attacker's raw request rate against the host's disk.
+        """
+        from unittest.mock import MagicMock, patch
+
+        from cyo_adventure.middleware.security import RateLimitMiddleware
+
+        middleware = RateLimitMiddleware(
+            app=MagicMock(), requests_per_minute=1, burst_size=100
+        )
+        t0 = 1_000_000.0
+        assert middleware._check_memory("198.51.100.7", t0) is None
+
+        with patch("cyo_adventure.middleware.security._struct_logger") as mock_logger:
+            for offset in range(1, 51):
+                response = middleware._check_memory("198.51.100.7", t0 + offset * 0.01)
+                assert response is not None
+                assert response.status_code == 429
+
+        trips = [
+            call
+            for call in mock_logger.warning.call_args_list
+            if call.args[0] == "security_rate_limit_exceeded"
+        ]
+        assert len(trips) == 1
+        assert trips[0].kwargs["suppressed_since_last"] == 0
+
+        # Once the interval rolls, the next trip logs again and reports how
+        # many were swallowed in between, so the suppression is auditable
+        # rather than silent data loss.
+        with patch("cyo_adventure.middleware.security._struct_logger") as mock_logger:
+            # The original request has aged out of the 60s window by now, so
+            # this one is admitted and re-primes the window; the next trips.
+            assert middleware._check_memory("198.51.100.7", t0 + 61) is None
+            assert middleware._check_memory("198.51.100.7", t0 + 61.01) is not None
+        trips = [
+            call
+            for call in mock_logger.warning.call_args_list
+            if call.args[0] == "security_rate_limit_exceeded"
+        ]
+        assert len(trips) == 1
+        assert trips[0].kwargs["suppressed_since_last"] == 49
+
+    @pytest.mark.unit
+    def test_trip_log_state_is_bounded_by_max_tracked_ips(self) -> None:
+        """The throttle's own bookkeeping cannot become the memory leak.
+
+        `_trip_log_state` is keyed by attacker-chosen client IP, exactly like
+        `self.requests`. Unlike `self.requests` it cannot rely on
+        `_cleanup_stale_entries`, which only runs from `_check_memory`; the
+        Redis backend reaches the trip path without ever calling it.
+        """
+        from unittest.mock import MagicMock
+
+        from cyo_adventure.middleware.security import RateLimitMiddleware
+
+        middleware = RateLimitMiddleware(
+            app=MagicMock(), requests_per_minute=1, burst_size=100, max_tracked_ips=10
+        )
+        t0 = 2_000_000.0
+        for i in range(200):
+            # Each IP trips once; every entry is fresh, so the age-based sweep
+            # cannot help and the LRU cap is what has to hold.
+            middleware._tally_trip(f"203.0.113.{i}", t0 + i * 0.001)
+
+        assert len(middleware._trip_log_state) <= middleware.max_tracked_ips
 
     @pytest.mark.unit
     def test_rate_limiter_cleanup_stale_entries(self) -> None:
@@ -690,6 +770,7 @@ class TestRedisBackedRateLimitMiddleware:
             limit_type="rpm",
             client_ip="10.0.0.20",
             requests_per_minute=1,
+            suppressed_since_last=0,
         )
 
     @pytest.mark.unit
@@ -724,6 +805,7 @@ class TestRedisBackedRateLimitMiddleware:
             limit_type="burst",
             client_ip="10.0.0.21",
             burst_size=2,
+            suppressed_since_last=0,
         )
 
     @pytest.mark.unit

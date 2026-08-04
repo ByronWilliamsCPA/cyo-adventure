@@ -4,7 +4,7 @@ What IS logged on an auth failure (verified by reading the source; OPS-005):
 
 * ``src/cyo_adventure/api/deps.py`` contains **no** logger calls, and that is
   deliberate: ``AuthenticationError``/``AuthorizationError`` is raised from
-  35+ call sites across the app (``api/deps.py``, most of ``api/*``,
+  89 call sites across 35 files (``api/deps.py``, most of ``api/*``,
   ``core/child_session.py``, ``core/device_grant.py``, ``publishing/``,
   ``covers/``), and every one of them passes through the single global
   handler below on its way to a response. Rather than instrument each raise
@@ -309,8 +309,9 @@ def test_deps_module_has_no_dedicated_auth_event_logging() -> None:
 
     ``api/deps.py`` (the auth seam) neither imports a logger nor calls one,
     and that is deliberate rather than an oversight: every
-    ``AuthenticationError``/``AuthorizationError`` it raises (and the 30+
-    other raise sites across the app) already passes through the single
+    ``AuthenticationError``/``AuthorizationError`` it raises (12 of the 89
+    sites, the other 77 being spread across 34 further files) already passes
+    through the single
     global handler (``app.py::_handle_project_error``), which is where
     ``security_auth_failed``/``security_authz_denied`` are emitted with the
     request's client address, path, and method. Logging directly in
