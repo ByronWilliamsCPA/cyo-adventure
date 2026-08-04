@@ -69,8 +69,30 @@ jobs:
       # is absent the override did not match and the push used the base config,
       # whose site_url is localhost; treat that as an incident and restore from
       # the snapshot procedure in docs/guides/supabase-environments.md section 4.
+      # That confirmation is asserted below rather than left to a human reading
+      # the log, because `config push` exits 0 either way.
+      # #CRITICAL: security: this assertion is DETECTION, not prevention. The
+      # push has already been applied by the time its log can be read, so a
+      # missing override line means an incident to restore from, not a push that
+      # was stopped. Without it, a ref that matches no [remotes.*] block would
+      # leave site_url = http://localhost:5173 on the live project real guardians
+      # sign in to, behind a green check.
+      # #VERIFY: `set -o pipefail` is load-bearing. The default shell is
+      # `bash -e`, which does not set it, so without this line a failing
+      # `config push` would be masked by tee's exit status.
       - name: Push project config
-        run: supabase config push --project-ref "$SUPABASE_PROJECT_ID" --yes
+        run: |
+          set -o pipefail
+          supabase config push --project-ref "$SUPABASE_PROJECT_ID" --yes 2>&1 \
+            | tee "$RUNNER_TEMP/config-push.log"
+          if ! grep -qF 'Loading config override: [remotes.production]' \
+              "$RUNNER_TEMP/config-push.log"; then
+            echo "::error::config push did not load [remotes.production]; the base config" \
+                 "(site_url = http://localhost:5173) went out to this project instead." \
+                 "Restore from the pre-push snapshot per" \
+                 "docs/guides/supabase-environments.md section 4."
+            exit 1
+          fi
 
       - name: Push migrations
         run: supabase db push
