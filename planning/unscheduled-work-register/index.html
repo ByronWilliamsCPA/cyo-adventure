@@ -3780,24 +3780,24 @@ validator treats a missing entry there as a build failure.</p>
 </tr>
 <tr>
 <td>UW-A03</td>
-<td><strong>Production cutover</strong>: provision <code>cyo_api</code> / <code>cyo_worker</code> role passwords in staging and prod, retire <code>postgres</code>-role traffic. Until this lands, RLS is enabled but disarmed. The ADR names M4.1 as its review gate; M4.1 carries no ADR-021 content.</td>
+<td><strong>Production cutover</strong> (issue #559): retire <code>postgres</code>-role traffic. <strong>Closed 2026-08-04, verified live against production</strong> (<code>cvrnaydpzijtszfbsraq</code>): <code>pg_authid</code> shows <code>cyo_api</code>/<code>cyo_worker</code> both <code>LOGIN</code>, password set, <code>rolbypassrls=f</code>; <code>pg_stat_activity</code> shows 5 active app connections as <code>cyo_api</code> and <strong>zero</strong> as <code>postgres</code>, so the switch is observed in traffic, not just provisioned. Sequenced safely: PR #560 (<code>eb96f687</code>, sets Tier 1 RLS context before the device-grant lookup) was merged and re-verified green on <code>e2e-staging.yml</code> (multiple 2026-08-03 runs) before the homelab team rotated the production passwords, so the cutover did not reproduce the device-grant 401 that first surfaced on staging. One leg unconfirmed by direct observation: <code>cyo_worker</code> has login+password provisioned but showed 0 active connections in this snapshot (workers connect on demand, not continuously); recommend confirming with a real generation job. The ADR names M4.1 as its review gate; M4.1 carries no ADR-021 content.</td>
 <td>021</td>
 <td>M4.1</td>
-<td>unscheduled</td>
+<td>done</td>
 </tr>
 <tr>
 <td>UW-A04</td>
-<td><code>worker_database_url</code> + <code>get_worker_session()</code> + the three worker entrypoints</td>
+<td><code>worker_database_url</code> + <code>get_worker_session()</code> + the three worker entrypoints. Delivered in <code>c393baba</code> (PR #334): <code>core/config.py</code> <code>worker_database_url</code>, <code>core/database.py::get_worker_session</code>, pinned against regression by <code>tests/unit/test_worker.py:1045</code>.</td>
 <td>021</td>
 <td>5</td>
-<td>unscheduled</td>
+<td>done</td>
 </tr>
 <tr>
 <td>UW-A05</td>
-<td><code>worker</code> service in docker-compose; uncomment the dev Redis leg</td>
+<td><code>worker</code> service in docker-compose; uncomment the dev Redis leg. Delivered in <code>d4afda05</code> (PR #333): the <code>worker:</code> service in <code>docker-compose.yml</code>.</td>
 <td>021</td>
 <td>5</td>
-<td>unscheduled</td>
+<td>done</td>
 </tr>
 <tr>
 <td>UW-A06</td>
@@ -5565,9 +5565,9 @@ complete; each is filed as a GitHub issue.</p>
 </tr>
 <tr>
 <td>UW-M08</td>
-<td><strong>ADR-022 Tier 1 RLS is inert on production.</strong> The prod backend connects as <code>postgres.cvrnaydpzijtszfbsraq</code>, and the <code>postgres</code> role has <code>rolbypassrls = true</code> (verified against the prod database 2026-08-02), so every <code>family_scoped</code> policy created by <code>20260724120000_scoped_rls_tier1_family_scoping.sql</code> is bypassed and the family-isolation backstop enforces nothing in production. The least-privilege roles the migration was written for (<code>cyo_api</code>, <code>cyo_worker</code>, both <code>rolbypassrls = false</code>) already EXIST on the prod project but are unused by the API. Staging is correctly cut over to <code>cyo_api</code>, which is the only reason UW-M01's device-grant defect surfaced at all: prod cannot fail that way because it enforces no policy. Remedy is the ADR-021 least-privilege cutover on prod, pointing the backend at <code>cyo_api</code> and the worker at <code>cyo_worker</code>. Do NOT cut over until UW-M01's code fix has merged and been verified on staging, or the same device-grant 401 will land on production the moment the role changes.</td>
+<td><strong>ADR-022 Tier 1 RLS is inert on production.</strong> The prod backend connects as <code>postgres.cvrnaydpzijtszfbsraq</code>, and the <code>postgres</code> role has <code>rolbypassrls = true</code> (verified against the prod database 2026-08-02), so every <code>family_scoped</code> policy created by <code>20260724120000_scoped_rls_tier1_family_scoping.sql</code> is bypassed and the family-isolation backstop enforces nothing in production. The least-privilege roles the migration was written for (<code>cyo_api</code>, <code>cyo_worker</code>, both <code>rolbypassrls = false</code>) already EXIST on the prod project but are unused by the API. Staging is correctly cut over to <code>cyo_api</code>, which is the only reason UW-M01's device-grant defect surfaced at all: prod cannot fail that way because it enforces no policy. Remedy is the ADR-021 least-privilege cutover on prod, pointing the backend at <code>cyo_api</code> and the worker at <code>cyo_worker</code>. Do NOT cut over until UW-M01's code fix has merged and been verified on staging, or the same device-grant 401 will land on production the moment the role changes. <strong>Resolved 2026-08-04, closed by the same cutover as <code>UW-A03</code></strong>: the precondition (PR #560 merged and green on staging) was satisfied before the production role switch, so the family-isolation backstop is now enforced live, not just present in migrations.</td>
 <td>homelab-infra</td>
-<td>unscheduled</td>
+<td>done</td>
 </tr>
 </tbody>
 </table>
@@ -5655,7 +5655,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 4, 2026 17:16:38 UTC">August 4, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 4, 2026 21:53:11 UTC">August 4, 2026</span>
   </span>
 
     

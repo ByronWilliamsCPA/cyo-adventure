@@ -3778,6 +3778,78 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cve-2026-64561-linux-libc-dev-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CVE-2026-64561 | linux-libc-dev | High
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CVE-2026-64561 | linux-libc-dev | High">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#description_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Description
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact-on-this-project_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Impact on This Project
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remediation-plan_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remediation Plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-not-fixed-yet_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Not Fixed Yet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#references_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#resolved-entries" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4697,6 +4769,121 @@ closes the release until the entry is reassessed against fresh evidence.</p>
   branch changes no dependency, lockfile, or Dockerfile, which is what
   identifies this as a feed refresh rather than a change introduced by that PR.</li>
 </ul>
+<h2 id="cve-2026-64561-linux-libc-dev-high">CVE-2026-64561 | linux-libc-dev | High<a class="headerlink" href="#cve-2026-64561-linux-libc-dev-high" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CVE ID</strong></td>
+<td>CVE-2026-64561</td>
+</tr>
+<tr>
+<td><strong>Package</strong></td>
+<td>linux-libc-dev (Debian binary package from the <code>linux</code> kernel source package)</td>
+</tr>
+<tr>
+<td><strong>Affected Version</strong></td>
+<td>6.12.100-1+dhi0 (Debian 13 "trixie", DHI mirror build)</td>
+</tr>
+<tr>
+<td><strong>Fixed Version</strong></td>
+<td>No fix on the trixie track. Trivy reports an empty Fixed Version with status <code>affected</code>; the Debian tracker records <code>trixie</code> (6.12.94-1) and <code>trixie-security</code> (6.12.100-1) as <code>vulnerable</code>, with the fix only in sid (7.1.6-1)</td>
+</tr>
+<tr>
+<td><strong>Severity</strong></td>
+<td>High (per Trivy/Aqua feed)</td>
+</tr>
+<tr>
+<td><strong>CVSS Score</strong></td>
+<td>Not assigned in the scan output as of 2026-08-04</td>
+</tr>
+<tr>
+<td><strong>Discovered</strong></td>
+<td>2026-08-04</td>
+</tr>
+<tr>
+<td><strong>Reassessment Due</strong></td>
+<td>2026-09-30</td>
+</tr>
+<tr>
+<td><strong>Blocking Release</strong></td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<h3 id="description_7">Description<a class="headerlink" href="#description_7" title="Permanent link">&para;</a></h3>
+<p>A KVM defect in the x86 MMU: the root-validity check for an invalid or obsolete
+root runs <em>before</em> pages are made available rather than after, per the CVE
+title reported in the scan output ("KVM: x86: Check for invalid/obsolete root
+<em>after</em> making MMU pages available"). It reached this image the same way the
+entries above did, through a Trivy vulnerability-database refresh rather than
+any change in the image: the base image version is unchanged at
+6.12.100-1+dhi0, the same build PR #547 introduced on 2026-08-02.</p>
+<p><strong>Why this is a feed refresh and not a regression introduced by PR #597.</strong> The
+Container Security run on <code>main</code> at 2026-08-04T17:28:49Z passed with no
+findings. The run on the PR branch roughly three and a half hours later
+reported <code>Total: 1 (HIGH: 1, CRITICAL: 0)</code>. The branch changes no dependency,
+no lockfile, and no Dockerfile, so the same finding will appear on <code>main</code> at its
+next scheduled scan. This is the same discrimination test applied to the
+CVE-2026-63879 entry above.</p>
+<h3 id="impact-on-this-project_7">Impact on This Project<a class="headerlink" href="#impact-on-this-project_7" title="Permanent link">&para;</a></h3>
+<p>The same structural argument as every <code>linux-libc-dev</code> entry in this document,
+which is a statement about what the package <em>is</em> rather than a judgement about
+severity: it ships kernel UAPI headers used at compile time by userspace
+programs, contains no kernel binary, and executes no kernel code at runtime. The
+container serves a FastAPI web application under whatever kernel the Docker host
+provides. Patching or removing this package would not change which kernel
+actually runs.</p>
+<p>Being specific rather than waving at the general rule: this defect is in KVM's
+shadow-paging MMU, code that only executes when the host is running virtual
+machines through <code>/dev/kvm</code>. This deployment runs application containers on a
+homelab Docker host; the image neither contains a hypervisor nor requests KVM
+device access. Exploitation requires the ability to drive KVM ioctls from a
+process on the host, which is a host-privilege boundary this container does not
+sit on either side of. Exposure through the application surface is nil.</p>
+<h3 id="remediation-plan_7">Remediation Plan<a class="headerlink" href="#remediation-plan_7" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Confirm the CVE's status on the <a href="https://security-tracker.debian.org/tracker/source-package/linux">Debian security tracker</a>
+  for the <code>trixie</code> and <code>trixie-security</code> tracks before accepting it into
+  <code>.trivyignore</code>. <strong>Done 2026-08-04</strong>: <code>bookworm</code> (6.1.176-1) vulnerable,
+  <code>bookworm-security</code> (6.1.180-1) vulnerable, <code>trixie</code> (6.12.94-1) vulnerable,
+  <code>trixie-security</code> (6.12.100-1) vulnerable, <code>sid</code> (7.1.6-1) fixed. This
+  satisfies the <code>.trivyignore</code> precondition that no fix be reachable on this
+  base image's track.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Reassess by 2026-09-30, checking whether the sid fix (7.1.6-1) has been
+  backported to <code>trixie-security</code>. Deliberately aligned with the
+  CVE-2026-63879 date above so one review pass covers both of this image's
+  open kernel-header findings, and comfortably inside the 60-day ceiling from
+  the 2026-08-04 discovery.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Fold into <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/535">issue #535</a>
+  at reassessment, which already tracks the open <code>linux-libc-dev</code> set.</li>
+</ul>
+<h3 id="why-not-fixed-yet_7">Why Not Fixed Yet<a class="headerlink" href="#why-not-fixed-yet_7" title="Permanent link">&para;</a></h3>
+<p>No fix exists on the trixie track, confirmed above rather than inferred from
+Trivy's empty Fixed Version field. Even once one lands, this project cannot
+apply it directly: the package is provided by the hardened base image
+(<code>ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13</code>), not by this project's
+dependency set, and the DHI runtime image ships no shell and no package manager,
+so it cannot upgrade itself. The only path in is a base-image digest refresh
+from the <code>ByronWilliamsCPA/container-images</code> mirror pipeline, which this project
+consumes rather than controls.</p>
+<p>Per the Release Gate Policy above, <code>Blocking Release | No</code> here is a dated
+verdict, not a standing exemption: it expires on 2026-09-30, at which point the
+process gate closes the release until the entry is reassessed against fresh
+evidence.</p>
+<h3 id="references_7">References<a class="headerlink" href="#references_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://avd.aquasec.com/nvd/cve-2026-64561">Aqua AVD CVE-2026-64561</a></li>
+<li><a href="https://security-tracker.debian.org/tracker/source-package/linux">Debian security tracker: linux</a></li>
+<li>Discovered by the Container Security workflow (Trivy) on
+  <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/597">PR #597</a>,
+  <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/30950314291">workflow run 30950314291</a>.</li>
+</ul>
 <h2 id="resolved-entries">Resolved Entries<a class="headerlink" href="#resolved-entries" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -4889,6 +5076,11 @@ re-verified rather than carried forward:</p>
 <td>Byron Williams</td>
 <td>Suppressed the 7 new CVEs in .trivyignore per that file's stated scope (base-image OS-package CVEs with no upstream fix, each paired with an entry here). Resolved CVE-2026-53399/64600: removed their .trivyignore block, whose own removal condition (base ships 6.12.96-1) is met; verified fixed in trixie-security 6.12.96-1 on the Debian tracker rather than inferred from scan absence, which suppression would have masked.</td>
 </tr>
+<tr>
+<td>2026-08-04</td>
+<td>Byron Williams</td>
+<td>Added linux-libc-dev CVE-2026-64561 (KVM x86 MMU) from the PR #597 Trivy run; High, empty Fixed Version, base version unchanged at 6.12.100-1+dhi0, so a feed refresh rather than an image change (main's run 3.5h earlier was clean). Verified on the Debian tracker before accepting into .trivyignore: trixie and trixie-security both vulnerable at 6.12.100-1, fix is sid-only (7.1.6-1). Reassessment aligned to 2026-09-30 with CVE-2026-63879.</td>
+</tr>
 </tbody>
 </table>
 
@@ -4913,7 +5105,7 @@ re-verified rather than carried forward:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 15:53:14 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 4, 2026 21:53:11 UTC">August 4, 2026</span>
   </span>
 
     

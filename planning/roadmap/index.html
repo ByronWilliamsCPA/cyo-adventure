@@ -5419,7 +5419,7 @@ The old wording stands in historical sections above; this table governs.</p>
 <td>M4.1: R1-alpha sign-off</td>
 <td>Funded provider keys; merged PRs + safety fixes redeployed; live E2E checklist executed once with a sign-off row; Now-queue items 1-4; <strong>plus, added 2026-07-28: the ADR-021 production cutover (<code>UW-A03</code>), which the ADR itself names M4.1 as the review gate for</strong></td>
 <td>~1 wk</td>
-<td>⏸️ Next up. The cutover provisions <code>cyo_api</code>/<code>cyo_worker</code> role passwords in staging and prod and retires <code>postgres</code>-role traffic; until it lands, RLS is enabled but disarmed and ADR-022 (<code>UW-A01</code>) cannot start</td>
+<td>🟡 Cutover done. Funded provider keys confirmed 2026-08-04; the ADR-021 production cutover (<code>UW-A03</code>) verified live 2026-08-04 (<code>cyo_api</code> holds all active production connections, <code>rolbypassrls=false</code>; see <code>UW-A03</code>/<code>UW-M08</code>); merged PRs and safety fixes redeployed (verified 2026-07-30). <strong>Still open</strong>: the live E2E checklist (<code>UW-F17</code>, 0/38 steps, no sign-off row) and re-verification of Now-queue items 1-4, last checked 2026-07-20</td>
 </tr>
 <tr>
 <td>M4b: Editor + engagement</td>
@@ -6198,7 +6198,7 @@ and Tier-2 corpora.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 4, 2026 00:31:19 UTC">August 4, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 4, 2026 21:53:11 UTC">August 4, 2026</span>
   </span>
 
     

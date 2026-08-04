@@ -1278,10 +1278,32 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#112-future-table-checklist" class="md-nav__link">
+  <a href="#112-verifying-the-cutover-actually-happened" class="md-nav__link">
     <span class="md-ellipsis">
       
-        11.2 Future-table checklist
+        11.2 Verifying the cutover actually happened
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#113-operator-scripts-must-not-run-as-cyo_api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.3 Operator scripts must not run as cyo_api
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#114-future-table-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.4 Future-table checklist
       
     </span>
   </a>
@@ -3849,10 +3871,32 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#112-future-table-checklist" class="md-nav__link">
+  <a href="#112-verifying-the-cutover-actually-happened" class="md-nav__link">
     <span class="md-ellipsis">
       
-        11.2 Future-table checklist
+        11.2 Verifying the cutover actually happened
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#113-operator-scripts-must-not-run-as-cyo_api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.3 Operator scripts must not run as cyo_api
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#114-future-table-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.4 Future-table checklist
       
     </span>
   </a>
@@ -4067,6 +4111,28 @@ generation pipeline must not pull API pods out of the load-balancer rotation for
 never touch generation at all. Treat a nonzero <code>checks.generation_queue</code> count as a page-worthy
 signal on its own dashboard/alert, not as a 503; see Section 5.1 for the diagnosis and remediation
 steps this check is meant to trigger.</p>
+<p><strong><code>check_database_privilege()</code> (ADR-021 cutover observability)</strong> is wired into <code>/health/ready</code> as
+<code>checks.database_privilege</code> and reports whether the API's connected role can bypass row-level
+security. It covers all three bypass paths PostgreSQL actually has:</p>
+<ol>
+<li>the <code>rolbypassrls</code> role attribute;</li>
+<li><code>rolsuper</code>, which bypasses regardless of <code>rolbypassrls</code>;</li>
+<li><strong>table ownership</strong>. RLS never applies to a table's owner unless the table sets
+   <code>FORCE ROW LEVEL SECURITY</code>, and this schema deliberately does not. The baseline migration
+   assigns the Tier 1 tables to <code>postgres</code>, so ownership, not <code>rolbypassrls</code>, is the path an
+   un-cut-over environment actually uses.</li>
+</ol>
+<p><code>"ok"</code> means no path applies; <code>"degraded"</code> means at least one does. The warning log names which
+one (<code>via_role_attribute</code>, <code>via_table_ownership</code>), because an operator fixes ownership and role
+attributes differently. A role with no <code>pg_roles</code> row reports <code>"degraded"</code>, not <code>"ok"</code>: an
+unanalyzable role fails closed. <code>"unknown"</code> is distinct from <code>"degraded"</code> and means the query
+itself failed, so the posture was never measured. The connected role name is logged, never
+returned: <code>/health/ready</code> is unauthenticated, so the response carries only the posture bit.</p>
+<p>Like cache and generation_queue, <strong><code>database_privilege</code> never flips <code>/health/ready</code>'s HTTP code</strong>:
+a pre-cutover environment is an open security finding, not an outage, so it must not pull pods out
+of rotation. One limit matters when reading this field: it covers the <strong>API process only</strong>. The
+worker has no HTTP surface and is never probed, so a forgotten <code>CYO_ADVENTURE_WORKER_DATABASE_URL</code>
+is invisible here. Use Section 11.2's <code>pg_stat_activity</code> query for the worker.</p>
 <h2 id="4-logs-and-correlation-ids">4. Logs and correlation IDs<a class="headerlink" href="#4-logs-and-correlation-ids" title="Permanent link">&para;</a></h2>
 <p>All application logging goes through <code>structlog</code> (<code>utils/logging.py</code>); set <code>JSON_LOGS=true</code> in
 any deployed environment (the <code>docker-compose.prod.yml</code> override does this) to get structured
@@ -4530,7 +4596,51 @@ migrations themselves are forward-only (ADR-012) and never need to be undone: <c
 <code>cyo_worker</code> and their policies are additive and harmless to leave in place even while
 nothing connects as them. There is no data migration involved in this cutover, only a
 connection-identity change, so rollback is immediate and has no data-loss risk.</p>
-<h3 id="112-future-table-checklist">11.2 Future-table checklist<a class="headerlink" href="#112-future-table-checklist" title="Permanent link">&para;</a></h3>
+<h3 id="112-verifying-the-cutover-actually-happened">11.2 Verifying the cutover actually happened<a class="headerlink" href="#112-verifying-the-cutover-actually-happened" title="Permanent link">&para;</a></h3>
+<p>Do not read a <code>.env*</code> file or a compose file to answer "which role is this environment on";
+those are the operator's local copy and the deployment's template, neither of which is the
+running process. Two sources are authoritative:</p>
+<ul>
+<li><code>/health/ready</code> reports a <code>database_privilege</code> check (<code>api/health.py</code>). <code>state: "ok"</code> means
+  the connected role cannot bypass RLS (cut over); <code>state: "degraded"</code> means it can (not cut
+  over). The check is deliberately non-gating, so a pre-cutover environment stays HTTP 200,
+  and it deliberately omits the role name because the endpoint is unauthenticated.</li>
+<li><code>SELECT usename, count(*) FROM pg_stat_activity WHERE datname = 'postgres' GROUP BY 1;</code>
+  against the target project shows which roles actually hold connections.</li>
+</ul>
+<p>The worker needs its own check: <code>CYO_ADVENTURE_WORKER_DATABASE_URL</code> silently falls back to
+<code>CYO_ADVENTURE_DATABASE_URL</code> when unset (<code>core/config.py::worker_database_url_effective</code>), so
+a forgotten worker variable is indistinguishable from a completed cutover by inspection. Confirm
+a <code>cyo_worker</code> connection appears in <code>pg_stat_activity</code> while a real generation job runs.</p>
+<h3 id="113-operator-scripts-must-not-run-as-cyo_api">11.3 Operator scripts must not run as <code>cyo_api</code><a class="headerlink" href="#113-operator-scripts-must-not-run-as-cyo_api" title="Permanent link">&para;</a></h3>
+<p>These entry points read or write the ADR-022 Tier 1 tables (<code>child_profile</code>, <code>story_request</code>,
+<code>device_grant</code>) outside the request path, where nothing sets the <code>app.family_id</code> GUC:</p>
+<p><strong>Seed and local-harness scripts:</strong> <code>scripts/seed_dev_data.py</code>, <code>scripts/seed_staging.py</code>,
+<code>scripts/seed_moderation_qa.py</code>, <code>scripts/seed_series_catalog.py</code>,
+<code>scripts/seed_catalog_validation_states.py</code>, <code>scripts/series_e2e_local.py</code>.</p>
+<p><strong>Import CLIs:</strong> <code>src/cyo_adventure/generation/import_cli.py</code> and
+<code>src/cyo_adventure/generation/import_catalog.py</code>. Both reach <code>import_filled_story()</code>, which reads
+<code>child_profile.display_name</code> for the family to build the moderation pass's <code>PiiContext</code>. These are
+the one exception to the owner-DSN rule below: <code>import_filled_story()</code> sets the family RLS context
+itself before that read (<code>apply_family_rls_context</code>, transaction-scoped), so it is correct under
+<code>cyo_api</code>. Any new code path added to these CLIs that touches a Tier 1 table must do the same.</p>
+<p><strong>Local-only reset:</strong> <code>scripts/reset_e2e_real_state.py</code> deletes <code>story_request</code> rows by family.
+It self-guards with <code>_require_local_database()</code> and refuses any non-local host, so it cannot hit a
+deployed database, but it belongs on this list.</p>
+<p>This list is accurate as of PR #597 and is not self-maintaining. Before adding any new
+non-request-path entry point that touches a Tier 1 table, add it here.</p>
+<p>Run these with the <strong>owner</strong> (<code>postgres</code>) DSN, never the <code>cyo_api</code> DSN. Under <code>cyo_api</code> with no
+RLS context the Tier 1 predicate is unsatisfiable, so reads return zero rows and inserts are
+rejected by <code>WITH CHECK</code>. The read failure is silent: the script sees an empty result and
+reports "nothing to do" rather than an error. This is the same fail-closed-looks-like-empty
+failure mode that hid the device-grant defect in staging for two weeks (PR #560).</p>
+<p>The import CLIs carried a sharper version of that failure mode, which is why
+<code>import_filled_story()</code> now sets the context itself: an empty <code>child_profile</code> read does not stop
+the import, it produces an empty <code>child_names</code> set, so the moderation pass runs with no PII
+context and cannot recognize a real child's name in the generated prose. The import still reports
+success. That is fail-closed at the database becoming fail-open at the safety gate, and it is the
+shape to look for in any future non-request-path caller.</p>
+<h3 id="114-future-table-checklist">11.4 Future-table checklist<a class="headerlink" href="#114-future-table-checklist" title="Permanent link">&para;</a></h3>
 <p>RLS enforcement for <code>cyo_api</code>/<code>cyo_worker</code> is an explicit, per-table <code>GRANT</code> plus an
 explicit, per-table <code>CREATE POLICY</code>; neither is inferred automatically from
 <code>ENABLE ROW LEVEL SECURITY</code>. Any migration that adds a new application table and enables RLS
@@ -4580,7 +4690,7 @@ because that test is currently the only thing that would notice.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 4, 2026 00:31:19 UTC">August 4, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 4, 2026 21:53:11 UTC">August 4, 2026</span>
   </span>
 
     
