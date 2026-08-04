@@ -80,8 +80,16 @@ services:
       # environment where the cyo_worker role has no password yet, which is
       # the state every environment starts in (the role ships NOLOGIN, see
       # supabase/migrations/20260720170100_create_service_roles.sql). Leaving
-      # it unset silently falls back to DATABASE_URL, so /health/ready's
-      # database_privilege check, not this file, is the compliance signal.
+      # it unset silently falls back to DATABASE_URL.
+      # #CRITICAL: security: nothing automated catches that fallback.
+      # /health/ready's database_privilege check runs in the API process and
+      # inspects the API engine's connection (settings.database_url); the
+      # worker serves no HTTP and is never probed. An environment whose API is
+      # correctly on cyo_api reports state="ok" while the worker still shares
+      # the API credential, so this is a manual verification, not a gate.
+      # #VERIFY: confirm the worker's role with the pg_stat_activity query in
+      # docs/operations/runbook.md section 11.2 after every deploy that changes
+      # this value.
       # Tighten to `:?` once production has cut over (docs/operations/runbook.md
       # section 11).
       WORKER_DATABASE_URL: ${WORKER_DATABASE_URL:-}
