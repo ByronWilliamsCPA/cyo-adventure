@@ -237,6 +237,35 @@ class TestSecurityEventLogging:
         )
 
     @pytest.mark.unit
+    def test_authorization_error_security_event_omits_sensitive_detail_keys(
+        self,
+    ) -> None:
+        """`value`/`context` never reach the security event, even if a future
+        AuthorizationError call site passes them via `details=`.
+
+        `_client_safe_error` exists specifically to keep these two keys out
+        of anything that leaves the process boundary of trust; the security
+        event must use that same pruned view, not the raw payload the
+        (server-log-only) generic `project_error` line retains.
+        """
+        request = self._mock_request()
+        exc = AuthorizationError(
+            "forbidden",
+            resource="profile-123",
+            details={"value": "raw-caller-input", "context": {"internal": "state"}},
+        )
+        with patch("cyo_adventure.app.logger") as mock_logger:
+            _handle_project_error(request, exc)
+        mock_logger.warning.assert_any_call(
+            "security_authz_denied",
+            reason="forbidden",
+            client_ip="203.0.113.5",
+            path="/v1/profiles",
+            method="GET",
+            details={"resource": "profile-123"},
+        )
+
+    @pytest.mark.unit
     def test_missing_client_yields_none_client_ip(self) -> None:
         """`request.client` is `None` for a directly-hit ASGI request with no
         transport-level peer; the security event carries `client_ip=None`

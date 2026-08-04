@@ -173,13 +173,22 @@ def _handle_project_error(request: Request, exc: Exception) -> JSONResponse:
             method=request.method,
         )
     elif isinstance(exc, AuthorizationError):
+        # #CRITICAL: security: use the CLIENT-SAFE details (value/context
+        # pruned), not the raw payload the project_error log above retains.
+        # This event is for security alerting/forensics, not debugging a
+        # specific request, so it has no need for the raw internal state
+        # _client_safe_error exists to withhold; reusing the pruned view
+        # also means a future AuthorizationError(details={"value": ...})
+        # call site can't accidentally widen what this event discloses.
+        # #VERIFY: tests/unit/test_app.py::
+        # test_authorization_error_security_event_omits_sensitive_detail_keys.
         logger.warning(
             "security_authz_denied",
             reason=payload.get("message"),
             client_ip=client_ip,
             path=request.url.path,
             method=request.method,
-            details=payload.get("details"),
+            details=_client_safe_error(payload).get("details"),
         )
     return JSONResponse(status_code=status, content=_client_safe_error(payload))
 
