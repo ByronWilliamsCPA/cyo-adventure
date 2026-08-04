@@ -1,19 +1,28 @@
 """Auth-event and secrets logging tests (org standard §14.8b/c, §14.9).
 
-What IS logged on an auth failure today (verified by reading the source):
+What IS logged on an auth failure (verified by reading the source; OPS-005):
 
-* ``src/cyo_adventure/api/deps.py`` contains **no** logger calls. A missing/
-  malformed token, a failed OIDC verification, and an unknown subject all
-  raise ``AuthenticationError`` without any dedicated auth-event log at the
-  point of failure (no subject, no failure reason taxonomy, no client
-  address). This is a production gap reported by this test batch; the tests
-  below pin the behavior that DOES exist rather than inventing one.
-* The one structured log an auth failure produces is the generic
-  ``project_error`` warning in ``src/cyo_adventure/app.py::
-  _handle_project_error``, which fires for every ``ProjectBaseError``
-  (``AuthenticationError`` -> 401, ``AuthorizationError`` -> 403) with
-  ``error``/``message``/``status_code``/``details`` fields. Correlation ids
-  reach that event via ``correlation_context_processor``
+* ``src/cyo_adventure/api/deps.py`` contains **no** logger calls, and that is
+  deliberate: ``AuthenticationError``/``AuthorizationError`` is raised from
+  89 call sites across 35 files (``api/deps.py``, most of ``api/*``,
+  ``core/child_session.py``, ``core/device_grant.py``, ``publishing/``,
+  ``covers/``), and every one of them passes through the single global
+  handler below on its way to a response. Rather than instrument each raise
+  site (and risk a future one forgetting to), the auth-event logging is
+  centralized there. ``test_deps_module_has_no_dedicated_auth_event_logging``
+  below pins that ``deps.py`` stays logger-free by design.
+* ``src/cyo_adventure/app.py::_handle_project_error`` emits the generic
+  ``project_error`` warning for every ``ProjectBaseError``
+  (``error``/``message``/``status_code``/``details``), same as before, AND
+  now additionally emits a distinctly-named security event for auth
+  failures specifically: ``security_auth_failed`` for an
+  ``AuthenticationError`` (401), ``security_authz_denied`` for an
+  ``AuthorizationError`` (403). Each carries ``reason`` (the exception
+  message; always a fixed, developer-authored string, never caller input),
+  ``client_ip``, ``path``, and ``method`` -- the actor/source context the
+  generic line lacked, and the distinct name a log-based alert rule can key
+  on without parsing ``status_code`` out of ``project_error``. Correlation
+  ids reach every one of these events via ``correlation_context_processor``
   (``middleware/correlation.py``), fed by the request-scoped contextvars
   ``CorrelationMiddleware`` sets.
 
@@ -28,7 +37,6 @@ logger with an explicitly wrapped logger whose chain is exactly
 
 from __future__ import annotations
 
-import contextvars
 from typing import TYPE_CHECKING
 from unittest import mock
 
@@ -45,6 +53,7 @@ from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import (
     AuthenticationError,
     AuthorizationError,
+    ProjectBaseError,
 )
 from cyo_adventure.middleware.correlation import (
     correlation_context_processor,
@@ -112,60 +121,91 @@ async def unit_client() -> AsyncIterator[AsyncClient]:
 
 
 @pytest.mark.parametrize(
-    ("exc", "expected_status"),
+    ("exc", "expected_status", "expected_security_event"),
     [
-        (AuthenticationError("missing or malformed bearer token"), 401),
-        (AuthorizationError("admin role required"), 403),
+        (
+            AuthenticationError("missing or malformed bearer token"),
+            401,
+            "security_auth_failed",
+        ),
+        (
+            AuthorizationError("admin role required"),
+            403,
+            "security_authz_denied",
+        ),
     ],
     ids=["authentication_error_401", "authorization_error_403"],
 )
-def test_handle_project_error_auth_failure_logs_outcome_and_correlation_id(
+@pytest.mark.asyncio
+async def test_handle_project_error_auth_failure_logs_outcome_and_correlation_id(
     log_capture: LogCapture,
-    exc: Exception,
+    exc: ProjectBaseError,
     expected_status: int,
+    expected_security_event: str,
 ) -> None:
-    """The app's error handler logs a structured event with status + correlation.
+    """The app's error handler logs both the generic and the security event.
 
-    This is the ONLY structured log an auth failure produces today (see the
-    module docstring); it must carry the outcome (error class + mapped status
-    code) and the request's correlation id.
+    Every auth failure now produces TWO structured log entries: the generic
+    ``project_error`` (unchanged) and a distinctly-named security event
+    (OPS-005) carrying the client address, path, and method alongside the
+    outcome and the request's correlation id.
     """
-    # Arrange: a request object the handler ignores (parameter is unused), and
-    # an isolated context so the correlation contextvar never leaks out.
-    request = mock.Mock(spec=["headers", "url", "method"])
+    # Arrange: a request object exposing exactly what the handler reads
+    # (headers/url/method for the generic path, client for the security
+    # event's client_ip). No contextvars.copy_context().run() indirection
+    # needed here: each async test function already runs in its own asyncio
+    # Task, and a Task's context is a COPY taken at creation, so
+    # set_correlation_id below can never leak into a sibling test.
+    request = mock.Mock(spec=["headers", "url", "method", "client"])
+    request.url.path = "/api/v1/me"
+    request.method = "GET"
+    request.client.host = "203.0.113.7"
     correlation_id = "authz-log-test-correlation-id"
-
-    def _invoke() -> object:
-        set_correlation_id(correlation_id)
-        return app_module._handle_project_error(request, exc)
+    set_correlation_id(correlation_id)
 
     # Act
-    response = contextvars.copy_context().run(_invoke)
+    # record_security_event opens a real DB session when unmocked
+    # (tests/CLAUDE.md: unit tests must not hit a live database).
+    with mock.patch("cyo_adventure.app.record_security_event"):
+        response = await app_module._handle_project_error(request, exc)
 
-    # Assert: mapped status code, plus one structured event with outcome
-    # fields and the correlation id attached by the correlation processor.
+    # Assert: mapped status code, the generic project_error event, and the
+    # new security event, both carrying the correlation id.
     assert getattr(response, "status_code", None) == expected_status
-    assert len(log_capture.entries) == 1
-    entry = log_capture.entries[0]
-    assert entry["event"] == "project_error"
-    assert entry["status_code"] == expected_status
-    assert entry["error"] == type(exc).__name__
-    assert entry["correlation_id"] == correlation_id
+    assert len(log_capture.entries) == 2
+    generic_entry = log_capture.entries[0]
+    assert generic_entry["event"] == "project_error"
+    assert generic_entry["status_code"] == expected_status
+    assert generic_entry["error"] == type(exc).__name__
+    assert generic_entry["correlation_id"] == correlation_id
+
+    security_entry = log_capture.entries[1]
+    assert security_entry["event"] == expected_security_event
+    assert security_entry["reason"] == exc.message
+    assert security_entry["client_ip"] == "203.0.113.7"
+    assert security_entry["path"] == "/api/v1/me"
+    assert security_entry["method"] == "GET"
+    assert security_entry["correlation_id"] == correlation_id
 
 
 @pytest.mark.asyncio
 async def test_request_without_token_returns_401_and_logs_correlated_event(
     unit_client: AsyncClient, log_capture: LogCapture
 ) -> None:
-    """End-to-end through the middleware: 401 + one correlated project_error log.
+    """End-to-end through the middleware: 401 logs project_error + the security event.
 
-    Drives a real request (no DB touched: ``_extract_subject`` raises before
-    the first query) so the correlation id in the log line is the one
-    ``CorrelationMiddleware`` echoes in the response headers, proving the
-    contextvar plumbing rather than a manually seeded value.
+    Drives a real request (no DB touched by the ROUTE: ``_extract_subject``
+    raises before the first query) so the correlation id in the log lines is
+    the one ``CorrelationMiddleware`` echoes in the response headers, proving
+    the contextvar plumbing rather than a manually seeded value.
+    record_security_event IS patched, though: unlike the route itself, the
+    security-event audit write always opens its own session regardless of
+    which raise site failed, and unit tests must not hit a live database
+    (tests/CLAUDE.md).
     """
     # Act
-    response = await unit_client.get("/api/v1/me")
+    with mock.patch("cyo_adventure.app.record_security_event") as mock_record:
+        response = await unit_client.get("/api/v1/me")
 
     # Assert
     assert response.status_code == 401
@@ -175,6 +215,23 @@ async def test_request_without_token_returns_401_and_logs_correlated_event(
     assert entry["status_code"] == 401
     assert entry["error"] == "AuthenticationError"
     assert entry["correlation_id"] == response.headers["X-Correlation-ID"]
+
+    # OPS-005: the same real request also produces the distinct security
+    # event, through the real ASGI request (not a hand-built mock), carrying
+    # the path/method and the same correlation id as the generic log line.
+    security_events = [
+        e for e in log_capture.entries if e["event"] == "security_auth_failed"
+    ]
+    assert len(security_events) == 1
+    security_entry = security_events[0]
+    assert security_entry["path"] == "/api/v1/me"
+    assert security_entry["method"] == "GET"
+    assert security_entry["correlation_id"] == response.headers["X-Correlation-ID"]
+
+    # And the durable audit write was attempted with the same path/method.
+    mock_record.assert_awaited_once()
+    assert mock_record.await_args.kwargs["path"] == "/api/v1/me"
+    assert mock_record.await_args.kwargs["method"] == "GET"
 
 
 # ---------------------------------------------------------------------------
@@ -205,9 +262,10 @@ async def test_auth_failure_with_token_in_header_never_logs_token(
     in the client-facing response body.
     """
     # Act
-    response = await unit_client.get(
-        "/api/v1/me", headers={"Authorization": authorization_header}
-    )
+    with mock.patch("cyo_adventure.app.record_security_event"):
+        response = await unit_client.get(
+            "/api/v1/me", headers={"Authorization": authorization_header}
+        )
 
     # Assert
     assert response.status_code == 401
@@ -260,15 +318,21 @@ async def test_readiness_check_db_failure_logs_generic_error_without_dsn(
 
 
 def test_deps_module_has_no_dedicated_auth_event_logging() -> None:
-    """Pin the production gap: deps.py performs no auth-event logging.
+    """Pin the design choice: deps.py stays logger-free by design (OPS-005).
 
-    ``api/deps.py`` (the auth seam) neither imports a logger nor calls one:
-    a failed authentication is observable only through the generic
-    ``project_error`` handler log tested above, which lacks an auth-specific
-    taxonomy (no subject, no failure-reason code, no client address). This
-    test documents that gap explicitly; when dedicated auth-event logging is
-    added (closing §14.8b properly), this test should be REPLACED by tests
-    asserting the new events, not deleted silently.
+    ``api/deps.py`` (the auth seam) neither imports a logger nor calls one,
+    and that is deliberate rather than an oversight: every
+    ``AuthenticationError``/``AuthorizationError`` it raises (12 of the 89
+    sites, the other 77 being spread across 34 further files) already passes
+    through the single
+    global handler (``app.py::_handle_project_error``), which is where
+    ``security_auth_failed``/``security_authz_denied`` are emitted with the
+    request's client address, path, and method. Logging directly in
+    ``deps.py`` as well would duplicate that event (and risk a
+    differently-shaped one) for no benefit; this test guards against that
+    drift. If a future change moves auth-event emission out of the central
+    handler and into ``deps.py`` itself, update this test to assert the new
+    call site's shape rather than deleting it silently.
     """
     # Arrange / Act: inspect the module's namespace for logging seams.
     import cyo_adventure.api.deps as deps_module
@@ -279,9 +343,10 @@ def test_deps_module_has_no_dedicated_auth_event_logging() -> None:
         if "logger" in name.lower() or "Logger" in type(value).__name__
     ]
 
-    # Assert: no logger exists in the auth seam today (the documented gap).
+    # Assert: no logger in the auth seam; security-event emission lives
+    # centrally in app.py::_handle_project_error instead (see docstring).
     assert logger_like == [], (
-        "api/deps.py now has a logger; dedicated auth-event logging may have "
-        "been added. Replace this gap-documenting test with assertions on the "
-        f"new auth events. Found: {logger_like}"
+        "api/deps.py now has a logger; auth-event logging may have moved out "
+        "of the central app.py::_handle_project_error handler. Update this "
+        f"test to match the new call site. Found: {logger_like}"
     )

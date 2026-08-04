@@ -62,6 +62,7 @@ from cyo_adventure.core.exceptions import (
 )
 from cyo_adventure.core.observability import init_sentry
 from cyo_adventure.middleware import CorrelationMiddleware, add_security_middleware
+from cyo_adventure.security_audit import record_security_event
 from cyo_adventure.utils.logging import get_logger, setup_logging
 
 if TYPE_CHECKING:
@@ -112,15 +113,31 @@ def _status_for(exc: ProjectBaseError) -> int:
     return 400
 
 
-def _handle_project_error(_request: Request, exc: Exception) -> JSONResponse:
+async def _handle_project_error(request: Request, exc: Exception) -> JSONResponse:
     """Render a core exception as a JSON error response.
 
     The full error payload (including caller `value` and internal `context`)
     is logged server-side; the client body is sanitized so it never discloses
-    raw input or internal lifecycle state.
+    raw input or internal lifecycle state. An `AuthenticationError` or
+    `AuthorizationError` additionally emits a distinctly-named security event
+    (see below), since this handler is the one place every such failure in
+    the app passes through on its way to a response.
+
+    # #CRITICAL: timing dependencies: async (not sync) specifically so the
+    # security-event DB write below can be awaited before the response is
+    # sent, rather than fired via asyncio.create_task and risked being
+    # cancelled when the ASGI request scope tears down. FastAPI/Starlette's
+    # exception middleware awaits an async handler directly; no change is
+    # needed at the app.add_exception_handler registration site.
+    # #VERIFY: tests/unit/test_app.py's TestHandleProjectError and
+    # TestSecurityEventLogging classes are async (pytestmark inside the
+    # class body, per tests/CLAUDE.md's mixed-module convention) and await
+    # this handler directly.
 
     Args:
-        _request: The incoming request (unused).
+        request: The incoming request; read only for the client address,
+            path, and method attached to a security event, never for
+            business logic.
         exc: The exception raised during handling.
 
     Returns:
@@ -142,6 +159,101 @@ def _handle_project_error(_request: Request, exc: Exception) -> JSONResponse:
         status_code=status,
         details=payload.get("details"),
     )
+    # #CRITICAL: security: OPS-005 -- AuthenticationError/AuthorizationError is
+    # raised from 89 call sites across 35 files (api/deps.py, most of api/*,
+    # core/child_session.py, core/device_grant.py, publishing/, covers/) and
+    # every one of them passes through this single handler, so this is the one
+    # choke point that emits a security-relevant event for all of them without
+    # instrumenting each raise site (and without changing require_principal's
+    # signature to thread a Request through it). The event name is deliberately
+    # distinct from "project_error" so a log-based alert/detection rule can key
+    # on it directly instead of parsing status_code out of a generic line, and
+    # it carries the client address/path/method the raise site itself never has
+    # access to. `code` carries the machine-readable error_code, which is
+    # the class default at every site except api/child_sessions.py:181, which
+    # passes error_code="PIN_MISMATCH", so a detection rule can key on
+    # child-PIN brute force without string-matching `reason`; any future call
+    # site that passes error_code= is picked up for free.
+    # `reason` is always one of this codebase's fixed,
+    # developer-authored `msg = "..."` literals -- never caller input -- so
+    # logging it verbatim carries no injection or PII risk.
+    # #VERIFY: tests/unit/test_app.py::TestSecurityEventLogging asserts both
+    # event names, their fields, and that a non-auth ProjectBaseError (e.g.
+    # ValidationError) does NOT emit either one.
+    #
+    # #ASSUME: security: `path` IS caller-controlled, unlike `reason`. Log
+    # forgery through an embedded newline is currently blocked twice over:
+    # Starlette's URL.path drops CR/LF/TAB (urlsplit strips them), and both
+    # JSONRenderer and ConsoleRenderer escape control characters in a value.
+    # Neither layer is this module's to guarantee, so the safety is inherited,
+    # not enforced here.
+    # #VERIFY: if `path` ever switches to request.scope["path"] or
+    # request.url.raw_path (both of which retain a decoded newline), or if
+    # utils/logging.py::setup_logging gains a renderer that is neither
+    # JSONRenderer nor ConsoleRenderer, add a test asserting that a newline in
+    # `path` cannot terminate a rendered log record.
+    client_ip = request.client.host if request.client is not None else None
+    if isinstance(exc, AuthenticationError):
+        reason = payload.get("message")
+        code = payload.get("code")
+        logger.warning(
+            "security_auth_failed",
+            reason=reason,
+            code=code,
+            client_ip=client_ip,
+            path=request.url.path,
+            method=request.method,
+        )
+        # #CRITICAL: external resources: record_security_event never raises
+        # (it swallows and logs its own DB failures internally); a security
+        # audit-trail outage must not turn this 401 into a 500.
+        # #VERIFY: security_audit.py's own #CRITICAL note and test suite.
+        await record_security_event(
+            event_type="security_auth_failed",
+            reason=str(reason) if reason is not None else "",
+            code=str(code) if code is not None else None,
+            client_ip=client_ip,
+            path=request.url.path,
+            method=request.method,
+            status_code=status,
+        )
+    elif isinstance(exc, AuthorizationError):
+        # #CRITICAL: security: use the CLIENT-SAFE details (value/context
+        # pruned), not the raw payload the project_error log above retains.
+        # This event is for security alerting/forensics, not debugging a
+        # specific request, so it has no need for the raw internal state
+        # _client_safe_error exists to withhold; reusing the pruned view
+        # also means a future AuthorizationError(details={"value": ...})
+        # call site can't accidentally widen what this event discloses.
+        # #VERIFY: tests/unit/test_app.py::TestSecurityEventLogging::
+        # test_authorization_error_security_event_omits_sensitive_detail_keys
+        # (the class qualifier is required; the bare function name does not
+        # resolve as a pytest node id).
+        reason = payload.get("message")
+        code = payload.get("code")
+        safe_details = _client_safe_error(payload).get("details")
+        logger.warning(
+            "security_authz_denied",
+            reason=reason,
+            code=code,
+            client_ip=client_ip,
+            path=request.url.path,
+            method=request.method,
+            details=safe_details,
+        )
+        resource = (
+            safe_details.get("resource") if isinstance(safe_details, dict) else None
+        )
+        await record_security_event(
+            event_type="security_authz_denied",
+            reason=str(reason) if reason is not None else "",
+            code=str(code) if code is not None else None,
+            client_ip=client_ip,
+            path=request.url.path,
+            method=request.method,
+            status_code=status,
+            resource=str(resource) if resource is not None else None,
+        )
     return JSONResponse(status_code=status, content=_client_safe_error(payload))
 
 

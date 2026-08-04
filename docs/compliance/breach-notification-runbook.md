@@ -13,7 +13,7 @@ source: "Internal procedure cross-referenced from information-security-program.m
 ---
 
 Status: living document. Owner: Byron Williams (byronawilliams@gmail.com). Last reviewed:
-2026-07-20.
+2026-08-04.
 
 This is the internal incident-response procedure required by GDPR Articles 33-34 and referenced
 by `docs/compliance/information-security-program.md` Section 5 (remediation plan Phase 6c,
@@ -81,7 +81,10 @@ is written down anyway so the steps are not improvised mid-incident, and so it h
 place to extend once the team grows.
 
 1. **Detection.** Any of: a `SECURITY.md`-channel report, a monitoring/Sentry alert, a processor
-   notification, or a self-discovered anomaly (a code-review finding, an unexpected log pattern).
+   notification, or a self-discovered anomaly (a code-review finding, an unexpected log pattern
+   -- concretely, the `security_auth_failed`, `security_authz_denied`, and
+   `security_rate_limit_exceeded` structured log events emitted by `app.py::_handle_project_error`
+   and `middleware/security.py::RateLimitMiddleware`, OPS-005).
 2. **Triage (target: within 4 hours of detection during business hours, within 24 hours
    otherwise).** The security coordinator (`information-security-program.md` Section 2)
    classifies per Section 2 above, and starts a written incident record (see Section 6) with a
@@ -92,7 +95,12 @@ place to extend once the team grows.
    not gated on finishing the investigation.
 4. **Investigation.** Determine scope: which data, how many data subjects (and specifically,
    how many are children, since that drives severity and the notification content in Section 5),
-   what caused it, whether it is ongoing.
+   what caused it, whether it is ongoing. For an incident involving authentication/authorization
+   abuse or a rate-limit-evading probe, the `security_event` table (OPS-005 follow-up; written by
+   `security_audit.py::record_security_event`, the durable counterpart to the structured log
+   events named in step 1) is queryable by `event_type`, `occurred_at`, and `client_ip` for as
+   long as its rows are retained, independent of how long the log stream itself is kept -- use it
+   to reconstruct a timeline once the live log has rolled off.
 5. **Notification decision (Section 4).**
 6. **Remediation and post-incident review.** Fix the root cause, not just the symptom; feed the
    review back into `information-security-program.md` Section 3's risk-assessment cadence per

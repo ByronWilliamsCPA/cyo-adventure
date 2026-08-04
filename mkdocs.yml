@@ -168,6 +168,7 @@ nav:
   - Operations:
       - Operator Runbook: operations/runbook.md
       - Authoring Guide: operations/authoring-guide.md
+      - Security Event Catalog: operations/security-events.md
 
   - Architecture:
       - Overview: architecture/README.md

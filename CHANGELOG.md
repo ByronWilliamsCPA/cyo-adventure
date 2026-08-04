@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.62.0] - 2026-08-04
+
+### Features
+
+- **security**: Add a durable security_event audit table (OPS-005 follow-up)
+  ([#600](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/600),
+  [`ae2405a`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/ae2405af2574eb77942f74010bd8e0220b2aaaba))
+
+
+## [0.61.3] - 2026-08-04
+
+### Bug Fixes
+
+- **security**: Emit structured security events for auth failures and rate-limit trips
+  ([#599](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/599),
+  [`aa44386`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/aa443862daeabf39623e732ab3e9f886137cec02))
+
+
 ## [0.61.2] - 2026-08-04
 
 ### Bug Fixes
@@ -3098,6 +3116,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.62.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.61.3...v0.62.0
+[0.61.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.61.2...v0.61.3
 [0.61.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.61.1...v0.61.2
 [0.61.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.61.0...v0.61.1
 [0.61.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.60.3...v0.61.0
