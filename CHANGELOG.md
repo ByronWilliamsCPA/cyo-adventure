@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.64.0] - 2026-08-04
+
+### Features
+
+- **security**: Make the ADR-021 role cutover observable and split the worker credential
+  ([#597](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/597),
+  [`2ca6f2a`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/2ca6f2a1c18330548927da5969327fda45278555))
+
+
 ## [0.63.0] - 2026-08-04
 
 ### Features
@@ -3125,6 +3134,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.64.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.63.0...v0.64.0
 [0.63.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.62.0...v0.63.0
 [0.62.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.61.3...v0.62.0
 [0.61.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.61.2...v0.61.3
