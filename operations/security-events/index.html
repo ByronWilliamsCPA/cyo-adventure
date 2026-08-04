@@ -12,27 +12,31 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/phase0-decisions/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/operations/security-events/">
       
       
+        <link rel="prev" href="../authoring-guide/">
+      
+      
+        <link rel="next" href="../../architecture/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Phase 0 Decision Log - CYO Adventure</title>
+        <title>Security Event Catalog - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,9 +55,9 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -88,7 +92,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#overview" class="md-skip">
+        <a href="#1-why-these-events-exist-separately-from-project_error" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +106,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -122,7 +126,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Phase 0 Decision Log
+              Security Event Catalog
             
           </span>
         </div>
@@ -235,7 +239,7 @@
   
   
     <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -256,7 +260,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../guides/overview/" class="md-tabs__link">
+        <a href="../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -278,7 +282,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../api-reference/" class="md-tabs__link">
+        <a href="../../api-reference/" class="md-tabs__link">
           
   
   
@@ -296,11 +300,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../operations/runbook/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../runbook/" class="md-tabs__link">
           
   
   
@@ -322,7 +328,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../architecture/" class="md-tabs__link">
+        <a href="../../architecture/" class="md-tabs__link">
           
   
   
@@ -344,7 +350,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../security/assurance-spine/" class="md-tabs__link">
+        <a href="../../security/assurance-spine/" class="md-tabs__link">
           
   
   
@@ -366,7 +372,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../development/architecture/" class="md-tabs__link">
+        <a href="../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -388,7 +394,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../project/roadmap/" class="md-tabs__link">
+        <a href="../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -410,7 +416,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../planning/" class="md-tabs__link">
+        <a href="../../planning/" class="md-tabs__link">
           
   
   
@@ -432,7 +438,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -454,7 +460,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../ADRs/" class="md-tabs__link">
+        <a href="../../ADRs/" class="md-tabs__link">
           
   
   
@@ -490,7 +496,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -520,7 +526,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -618,7 +624,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/overview/" class="md-nav__link">
+      <a href="../../guides/overview/" class="md-nav__link">
         
   
   
@@ -653,7 +659,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/configuration/" class="md-nav__link">
+      <a href="../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -688,7 +694,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/usage/" class="md-nav__link">
+      <a href="../../guides/usage/" class="md-nav__link">
         
   
   
@@ -723,7 +729,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/supabase-environments/" class="md-nav__link">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
         
   
   
@@ -823,7 +829,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/" class="md-nav__link">
+      <a href="../../api-reference/" class="md-nav__link">
         
   
   
@@ -862,8 +868,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -877,21 +885,22 @@
     
     
       
+        
+        
+      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
-        
-          
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
@@ -909,7 +918,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -927,7 +936,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../operations/runbook/" class="md-nav__link">
+      <a href="../runbook/" class="md-nav__link">
         
   
   
@@ -962,7 +971,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../operations/authoring-guide/" class="md-nav__link">
+      <a href="../authoring-guide/" class="md-nav__link">
         
   
   
@@ -994,10 +1003,42 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../operations/security-events/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Event Catalog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1020,6 +1061,129 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-why-these-events-exist-separately-from-project_error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Why these events exist separately from project_error
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-event-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Event catalog
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Event catalog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#security_auth_failed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        security_auth_failed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security_authz_denied" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        security_authz_denied
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security_rate_limit_exceeded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        security_rate_limit_exceeded
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rate_limit_backend_unavailable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rate_limit_backend_unavailable
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-what-is-deliberately-not-an-event" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. What is deliberately NOT an event
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-retention-rotation-and-the-log-store" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Retention, rotation, and the log store
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-alerting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Alerting
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1076,7 +1240,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../architecture/" class="md-nav__link ">
+            <a href="../../architecture/" class="md-nav__link ">
               
   
   
@@ -1127,7 +1291,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/user-journeys/" class="md-nav__link">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
         
   
   
@@ -1162,7 +1326,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/system-overview/" class="md-nav__link">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -1197,7 +1361,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -1232,7 +1396,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -1267,7 +1431,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/data-model/" class="md-nav__link">
+      <a href="../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1302,7 +1466,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/deployment/" class="md-nav__link">
+      <a href="../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1410,7 +1574,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../security/assurance-spine/" class="md-nav__link">
+      <a href="../../security/assurance-spine/" class="md-nav__link">
         
   
   
@@ -1445,7 +1609,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../security/assurance-register/" class="md-nav__link">
+      <a href="../../security/assurance-register/" class="md-nav__link">
         
   
   
@@ -1480,7 +1644,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../security/control-inheritance/" class="md-nav__link">
+      <a href="../../security/control-inheritance/" class="md-nav__link">
         
   
   
@@ -1515,7 +1679,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../security/crypto-inventory/" class="md-nav__link">
+      <a href="../../security/crypto-inventory/" class="md-nav__link">
         
   
   
@@ -1550,7 +1714,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../security/red-team-design-review-2026-07/" class="md-nav__link">
+      <a href="../../security/red-team-design-review-2026-07/" class="md-nav__link">
         
   
   
@@ -1625,7 +1789,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../api/" class="md-nav__link ">
+            <a href="../../api/" class="md-nav__link ">
               
   
   
@@ -1674,7 +1838,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/architecture/" class="md-nav__link">
+      <a href="../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1709,7 +1873,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/testing/" class="md-nav__link">
+      <a href="../../development/testing/" class="md-nav__link">
         
   
   
@@ -1746,7 +1910,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/code-quality/" class="md-nav__link">
+      <a href="../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1781,7 +1945,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/contributing/" class="md-nav__link">
+      <a href="../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1885,7 +2049,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project/roadmap/" class="md-nav__link">
+      <a href="../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1920,7 +2084,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project/changelog/" class="md-nav__link">
+      <a href="../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1955,7 +2119,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project/license/" class="md-nav__link">
+      <a href="../../project/license/" class="md-nav__link">
         
   
   
@@ -2034,7 +2198,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../planning/" class="md-nav__link ">
+            <a href="../../planning/" class="md-nav__link ">
               
   
   
@@ -2085,7 +2249,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/project-vision/" class="md-nav__link">
+      <a href="../../planning/project-vision/" class="md-nav__link">
         
   
   
@@ -2120,7 +2284,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/tech-spec/" class="md-nav__link">
+      <a href="../../planning/tech-spec/" class="md-nav__link">
         
   
   
@@ -2155,7 +2319,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/PROJECT-PLAN/" class="md-nav__link">
+      <a href="../../planning/PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -2190,7 +2354,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/roadmap/" class="md-nav__link">
+      <a href="../../planning/roadmap/" class="md-nav__link">
         
   
   
@@ -2272,7 +2436,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../planning/adr/" class="md-nav__link ">
+            <a href="../../planning/adr/" class="md-nav__link ">
               
   
   
@@ -2323,7 +2487,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -2358,7 +2522,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-002-client-pwa/" class="md-nav__link">
+      <a href="../../planning/adr/adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -2393,7 +2557,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -2428,7 +2592,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -2463,7 +2627,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -2498,7 +2662,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2533,7 +2697,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-007-raw-output-retention/" class="md-nav__link">
+      <a href="../../planning/adr/adr-007-raw-output-retention/" class="md-nav__link">
         
   
   
@@ -2568,7 +2732,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-008-public-app-store-launch/" class="md-nav__link">
+      <a href="../../planning/adr/adr-008-public-app-store-launch/" class="md-nav__link">
         
   
   
@@ -2603,7 +2767,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-009-supabase-platform/" class="md-nav__link">
+      <a href="../../planning/adr/adr-009-supabase-platform/" class="md-nav__link">
         
   
   
@@ -2638,7 +2802,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+      <a href="../../planning/adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
         
   
   
@@ -2673,7 +2837,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-011-story-scale-framework/" class="md-nav__link">
+      <a href="../../planning/adr/adr-011-story-scale-framework/" class="md-nav__link">
         
   
   
@@ -2747,7 +2911,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../planning/research/" class="md-nav__link ">
+            <a href="../../planning/research/" class="md-nav__link ">
               
   
   
@@ -2796,7 +2960,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/story-structure-diversity-critical-analysis/" class="md-nav__link">
+      <a href="../../planning/story-structure-diversity-critical-analysis/" class="md-nav__link">
         
   
   
@@ -2831,7 +2995,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/story-structure-improvement-plan/" class="md-nav__link">
+      <a href="../../planning/story-structure-improvement-plan/" class="md-nav__link">
         
   
   
@@ -2866,7 +3030,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/story-structure-implementation-briefs/" class="md-nav__link">
+      <a href="../../planning/story-structure-implementation-briefs/" class="md-nav__link">
         
   
   
@@ -2980,7 +3144,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -3015,7 +3179,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -3050,7 +3214,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -3119,7 +3283,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../ADRs/" class="md-nav__link ">
+            <a href="../../ADRs/" class="md-nav__link ">
               
   
   
@@ -3170,7 +3334,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -3230,10 +3394,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#1-why-these-events-exist-separately-from-project_error" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Overview
+        1. Why these events exist separately from project_error
       
     </span>
   </a>
@@ -3241,10 +3405,71 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#decision-1-custom-json-storybook-format" class="md-nav__link">
+  <a href="#2-event-catalog" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Decision 1: Custom JSON Storybook Format
+        2. Event catalog
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Event catalog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#security_auth_failed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        security_auth_failed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security_authz_denied" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        security_authz_denied
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security_rate_limit_exceeded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        security_rate_limit_exceeded
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rate_limit_backend_unavailable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rate_limit_backend_unavailable
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-what-is-deliberately-not-an-event" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. What is deliberately NOT an event
       
     </span>
   </a>
@@ -3252,10 +3477,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#decision-2-frontier-provider-claude-as-primary-with-local-fallback" class="md-nav__link">
+  <a href="#4-retention-rotation-and-the-log-store" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Decision 2: Frontier Provider (Claude) as Primary with Local Fallback
+        4. Retention, rotation, and the log store
       
     </span>
   </a>
@@ -3263,54 +3488,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#decision-3-homelab-first-hosting" class="md-nav__link">
+  <a href="#5-alerting" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Decision 3: Homelab-First Hosting
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#decision-4-family-only-reach" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Decision 4: Family-Only Reach
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#decision-5-tier-2-mechanics-cap-no-tier-3-dice-or-luck-checks-in-v1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Decision 5: Tier-2 Mechanics Cap (No Tier-3 Dice or Luck Checks in v1)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#decision-6-lightweight-node-editor-deferred-to-phase-4b" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Decision 6: Lightweight Node Editor Deferred to Phase 4b
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#decision-7-generation-ships-in-the-first-release" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Decision 7: Generation Ships in the First Release
+        5. Alerting
       
     </span>
   </a>
@@ -3337,124 +3518,201 @@
   
 
 
-  <h1>Phase 0 Decision Log</h1>
+  <h1>Security Event Catalog</h1>
 
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>This page records the seven decisions ratified as "Part V" of the CYO Adventure scoping
-handoff. These decisions are locked before any app code is written (Phase 0 exit gate).
-Each entry states the decision, the one-line rationale, and the authoritative source.</p>
+<p>This is the catalog of security-relevant structured log events the backend emits, and the
+operational contract around them: what fires each event, what an operator should do about it,
+how long the lines are kept, and what stops an attacker from using them to fill a disk.</p>
+<p>It documents what exists in this repository today. Where a piece of the chain is not built yet
+(a shipped alert rule, a retention job on the live host), that gap is called out rather than
+described as if it were in place. This closes the observability half of the <code>OPS-005</code> control;
+the emission side lives in <code>app.py::_handle_project_error</code> and
+<code>middleware/security.py::RateLimitMiddleware</code>.</p>
+<h2 id="1-why-these-events-exist-separately-from-project_error">1. Why these events exist separately from <code>project_error</code><a class="headerlink" href="#1-why-these-events-exist-separately-from-project_error" title="Permanent link">&para;</a></h2>
+<p>Every <code>ProjectBaseError</code> that reaches the global handler already logs a generic <code>project_error</code>
+line carrying the error class, message, and status code. That line is a debugging aid, not a
+detection surface: keying an alert on it means parsing <code>status_code</code> out of a stream that is
+dominated by ordinary 404s and validation failures.</p>
+<p>The security events below are named distinctly so a detection rule can match on the event name
+alone. They also carry request attribution (client address, path, method) that the raise site
+itself never has access to, because auth errors are raised deep in service code that holds no
+<code>Request</code>.</p>
+<p>Both lines are emitted for the same auth failure. That is deliberate duplication: the generic
+line keeps the full internal payload for debugging, the security line carries the pruned,
+alertable view. Do not "deduplicate" them by removing one.</p>
+<h2 id="2-event-catalog">2. Event catalog<a class="headerlink" href="#2-event-catalog" title="Permanent link">&para;</a></h2>
+<h3 id="security_auth_failed"><code>security_auth_failed</code><a class="headerlink" href="#security_auth_failed" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Level</td>
+<td><code>warning</code></td>
+</tr>
+<tr>
+<td>Emitted by</td>
+<td><code>app.py::_handle_project_error</code></td>
+</tr>
+<tr>
+<td>Fires on</td>
+<td>Any <code>AuthenticationError</code> reaching the global handler (HTTP 401)</td>
+</tr>
+<tr>
+<td>Fields</td>
+<td><code>reason</code>, <code>code</code>, <code>client_ip</code>, <code>path</code>, <code>method</code></td>
+</tr>
+</tbody>
+</table>
+<p>A caller presented no credential, a malformed one, or one that failed verification. <code>reason</code> is
+always a fixed, developer-authored literal from this codebase, never caller input. <code>code</code> is the
+machine-readable <code>error_code</code>, <code>AUTH_FAILED</code> unless a call site overrides it.</p>
+<p><strong>Alert on</strong>: a sustained rate from a single <code>client_ip</code> (credential stuffing), or a broad
+low-rate spread across many IPs against the same <code>path</code> (password spraying). A handful of these
+per hour is normal: expired sessions and stale service-worker caches produce them.</p>
+<h3 id="security_authz_denied"><code>security_authz_denied</code><a class="headerlink" href="#security_authz_denied" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Level</td>
+<td><code>warning</code></td>
+</tr>
+<tr>
+<td>Emitted by</td>
+<td><code>app.py::_handle_project_error</code></td>
+</tr>
+<tr>
+<td>Fires on</td>
+<td>Any <code>AuthorizationError</code> reaching the global handler (HTTP 403)</td>
+</tr>
+<tr>
+<td>Fields</td>
+<td><code>reason</code>, <code>code</code>, <code>client_ip</code>, <code>path</code>, <code>method</code>, <code>details</code></td>
+</tr>
+</tbody>
+</table>
+<p>An authenticated caller was denied a resource. This is the higher-signal of the two: a
+successfully authenticated principal repeatedly reaching for resources outside its family is
+the shape of an account takeover or an enumeration sweep, not a user mistake.</p>
+<p><code>details</code> is the <strong>client-safe</strong> projection (<code>_client_safe_error</code>), with the <code>value</code> and
+<code>context</code> keys pruned. That pruning is not cosmetic: it is what stops a future
+<code>AuthorizationError(details={"value": &lt;caller input&gt;})</code> call site from silently widening what
+this event discloses.</p>
+<p><code>code</code> is <code>FORBIDDEN</code> at every call site except <code>api/child_sessions.py</code>, which raises
+<code>error_code="PIN_MISMATCH"</code> on a failed child PIN. <strong>Alert separately on <code>PIN_MISMATCH</code></strong>: a
+repeated PIN mismatch against one profile is a child-account brute force, and it is the one
+case where the generic 403 rate would bury the signal.</p>
+<h3 id="security_rate_limit_exceeded"><code>security_rate_limit_exceeded</code><a class="headerlink" href="#security_rate_limit_exceeded" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Level</td>
+<td><code>warning</code></td>
+</tr>
+<tr>
+<td>Emitted by</td>
+<td><code>middleware/security.py::RateLimitMiddleware</code></td>
+</tr>
+<tr>
+<td>Fires on</td>
+<td>An rpm or burst limit trip, on either the memory or Redis backend</td>
+</tr>
+<tr>
+<td>Fields</td>
+<td><code>limit_type</code> (<code>rpm</code>/<code>burst</code>), <code>client_ip</code>, <code>requests_per_minute</code> or <code>burst_size</code>, <code>suppressed_since_last</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>This event is throttled to one line per client IP per 60 seconds.</strong> <code>suppressed_since_last</code>
+carries how many trips were swallowed since the previous emitted line, so the true intensity is
+still recoverable from a single record.</p>
+<p>The throttle is load-bearing, not a tidiness measure. A rejected request returns before it is
+appended to the sliding window, so the requests-per-minute cap does <strong>not</strong> bound how many trips
+a flooding client can generate: at N requests/second a sustained flood produces roughly N
+trips/second. Logging each one unthrottled would turn the rate limiter into a log-volume
+amplifier pointed at the host's disk. If you widen or remove the throttle, you must first
+confirm the log store is rotated (section 4).</p>
+<p><strong>Alert on</strong>: <code>suppressed_since_last</code> above a few hundred (a real flood, not a chatty client),
+or any trip from an IP that has also produced <code>security_auth_failed</code> lines.</p>
+<h3 id="rate_limit_backend_unavailable"><code>rate_limit_backend_unavailable</code><a class="headerlink" href="#rate_limit_backend_unavailable" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Level</td>
+<td><code>warning</code></td>
+</tr>
+<tr>
+<td>Emitted by</td>
+<td><code>middleware/security.py::RateLimitMiddleware.dispatch</code></td>
+</tr>
+<tr>
+<td>Fires on</td>
+<td>Redis being unreachable, sending the limiter to its in-memory fallback</td>
+</tr>
+</tbody>
+</table>
+<p>A degraded-mode signal rather than an attack signal. The in-memory fallback is per-process, so
+with more than one replica the effective limit is multiplied by the replica count. <strong>Alert on
+any occurrence</strong>: it means the rate limit is weaker than configured for as long as it persists.</p>
+<h2 id="3-what-is-deliberately-not-an-event">3. What is deliberately NOT an event<a class="headerlink" href="#3-what-is-deliberately-not-an-event" title="Permanent link">&para;</a></h2>
+<p>Input validation rejections (HTTP 422, <code>ValidationError</code>) do <strong>not</strong> emit a security event, and
+a test pins that they do not. They are attacker-drivable at unbounded rate from an
+unauthenticated caller, and they are overwhelmingly generated by ordinary client bugs. Adding
+them would reintroduce exactly the amplification the rate-limit throttle above exists to close,
+in exchange for a signal with a near-100% false-positive rate. If a specific validation path
+turns out to carry real attack signal, instrument that path with its own named event and its
+own throttle, rather than making the generic handler chatty.</p>
+<p><code>api/deps.py</code>, the auth seam, contains no logger calls by design. All 89
+<code>AuthenticationError</code>/<code>AuthorizationError</code> raise sites across 35 files pass through the single
+global handler, which is where attribution is available. Logging in <code>deps.py</code> as well would
+duplicate the event in a differently-shaped form.</p>
+<h2 id="4-retention-rotation-and-the-log-store">4. Retention, rotation, and the log store<a class="headerlink" href="#4-retention-rotation-and-the-log-store" title="Permanent link">&para;</a></h2>
+<p>Security events are WARNING-level, so they are emitted at the production <code>LOG_LEVEL=WARNING</code>
+default. They go to stdout as JSON (<code>JSON_LOGS=true</code>) and are captured by the container runtime.</p>
+<p><strong>Rotation is a hard requirement, not a nicety.</strong> Docker's default <code>json-file</code> driver never
+rotates. <code>docker-compose.prod.yml</code> now sets <code>max-size: 50m</code> / <code>max-file: 5</code> on the <code>app</code> and
+<code>worker</code> services, capping each at 250MB per replica.</p>
 <blockquote>
-<p><strong>Status note (2026-07-03):</strong> This is a historical Phase 0 record. Three of these decisions
-have since evolved; the current position lives in later ADRs. The LLM provider is now
-OpenRouter-primary with an Ollama fallback (ADR-003 as amended, not Anthropic-direct). App
-authentication is now Supabase OIDC (ADR-009 supersedes Authentik as the app identity
-provider; Authentik remains only for homelab-internal ingress under ADR-004). The "first
-usable release" is the R1 internal-web rung of the R1/R2/R3 release ladder. The entries
-below are preserved as ratified; follow the linked ADRs for the current state.</p>
+<p><strong>Gap</strong>: that bound applies only to deployments driven by this compose file. <code>homelab-infra</code>
+is the deployment orchestrator of record for the live environment, so <strong>production remains
+unbounded until the equivalent logging options are set there.</strong> Verify with
+<code>docker inspect -f '{{.HostConfig.LogConfig}}' &lt;container&gt;</code> on the live host; a result of
+<code>{json-file map[]}</code> means no bound is in effect.</p>
 </blockquote>
-<p>Provider data-handling confirmation status is tracked as an OPEN BLOCKER; see
-<code>docs/planning/privacy-model.md</code>.</p>
-<hr />
-<h2 id="decision-1-custom-json-storybook-format">Decision 1: Custom JSON Storybook Format<a class="headerlink" href="#decision-1-custom-json-storybook-format" title="Permanent link">&para;</a></h2>
-<p><strong>Decision</strong>: Stories are authored and stored in a custom versioned JSON schema called the
-"Storybook format," defined once in Pydantic v2 and exported to
-<code>schema/storybook.schema.json</code>. Tier 1 covers simple branching (no state). Tier 2 adds a
-small bounded-variable state layer.</p>
-<p><strong>Rationale</strong>: A purpose-built schema is the most reliable LLM generation target; static
-safety properties (reachability, termination, no trap loops, state-space size) are
-checkable by a deterministic validator; and the format is client-agnostic, so the reader,
-the pipeline, and any future native app share one artifact without coupling.</p>
-<p><strong>Source</strong>: <a href="../planning/adr/adr-001-story-format-json-storybook/">ADR-001</a></p>
-<hr />
-<h2 id="decision-2-frontier-provider-claude-as-primary-with-local-fallback">Decision 2: Frontier Provider (Claude) as Primary with Local Fallback<a class="headerlink" href="#decision-2-frontier-provider-claude-as-primary-with-local-fallback" title="Permanent link">&para;</a></h2>
-<p><strong>Decision</strong>: Anthropic Claude is the primary LLM for staged story generation, accessed
-behind a <code>GenerationProvider</code> interface. Ollama (local Tesla P40) and OpenRouter are
-fallback and development targets inside the same interface. A provider swap requires only
-a configuration change.</p>
-<p><strong>Rationale</strong>: Frontier models hold branching structure and state-callback coherence far
-better than smaller local models. Generation is infrequent, so per-call API cost is small
-relative to the quality gain. The provider interface keeps switching cheap and retains the
-local path for in-house iteration.</p>
-<p><strong>Source</strong>: <a href="../planning/adr/adr-003-frontier-llm-generation/">ADR-003</a></p>
-<p><strong>Note</strong>: The provider's data-handling terms (standard API retention vs a
-zero-data-retention path) must be confirmed with the provider in writing before the first
-real generation call in Phase 2. This is a Phase-0 hard blocker. See
-<code>docs/planning/privacy-model.md</code> for the open blocker tracking entry.</p>
-<p><strong>Superseded 2026-07-28</strong> (this record is kept as the Phase-0 historical position). The
-dispatch gate above no longer applies to the generation leg: ADR-003's 2026-07-28 amendment
-re-scopes the restriction from vendor identity to PII-guarded content plus an allowlisted,
-no-retention route, and privacy-model.md's Blocker 1 is correspondingly split. Written
-confirmation is still owed, now as a P7-08 processor-record item rather than a gate, and the
-blocker's remaining force moves to the Stage-0 classifier leg, which receives child-typed
-free text. Note also that the Phase-0 framing was already overtaken by events: generation has
-been shipping since Phase 2b without the confirmation being obtained.</p>
-<hr />
-<h2 id="decision-3-homelab-first-hosting">Decision 3: Homelab-First Hosting<a class="headerlink" href="#decision-3-homelab-first-hosting" title="Permanent link">&para;</a></h2>
-<p><strong>Decision</strong>: The system deploys to the family homelab behind Pangolin (zero-trust ingress)
-and Authentik (OIDC), using Docker containers managed by Dockge. Azure Container Apps is
-a documented, tested drop-in alternative. Container images are pinned by tag; <code>latest</code> is
-never used.</p>
-<p><strong>Rationale</strong>: Minors' data stays on hardware the family controls. The homelab already
-runs Pangolin, Authentik, Postgres, Redis, and compatible storage; reusing it avoids a
-new cost center. Cloud portability means the deployment is not locked to the homelab if
-requirements change.</p>
-<p><strong>Source</strong>: <a href="../planning/adr/adr-004-homelab-first-deployment/">ADR-004</a></p>
-<p><strong>Note</strong>: The bare environment must be reachable through Pangolin as a Phase-0 exit
-condition (plan item P0-10). See <code>docs/planning/privacy-model.md</code> for the associated open
-blocker.</p>
-<hr />
-<h2 id="decision-4-family-only-reach">Decision 4: Family-Only Reach<a class="headerlink" href="#decision-4-family-only-reach" title="Permanent link">&para;</a></h2>
-<p><strong>Decision</strong>: CYO Adventure is built for private use by one family. It serves four
-children (Briella 9-10, Xander 12-13, Bayden 14-15, Ariannah 17) and their parents
-(Byron and possibly Veronica). No accounts are created for outside users. No
-user-to-user features are included.</p>
-<p><strong>Rationale</strong>: The privacy posture, data model, and moderation design are calibrated for
-a known set of people on hardware the family controls. Expanding beyond the family
-requires a new review: COPPA and state equivalents, age assurance, verifiable parental
-consent, retention and deletion policy, vendor terms, incident response, and a published
-privacy notice.</p>
-<p><strong>Source</strong>: <a href="../planning/project-vision/#scope-definition">Project Vision: Scope Definition</a>;
-<a href="../planning/tech-spec/#privacy-controls-family-only">Tech Spec: Privacy controls</a></p>
-<hr />
-<h2 id="decision-5-tier-2-mechanics-cap-no-tier-3-dice-or-luck-checks-in-v1">Decision 5: Tier-2 Mechanics Cap (No Tier-3 Dice or Luck Checks in v1)<a class="headerlink" href="#decision-5-tier-2-mechanics-cap-no-tier-3-dice-or-luck-checks-in-v1" title="Permanent link">&para;</a></h2>
-<p><strong>Decision</strong>: The story format supports Tier 1 (branching only) and Tier 2 (bounded
-variables: booleans, small integers with <code>min</code>/<code>max</code>). Tier 3 (dice rolls, skill checks,
-luck mechanics) is out of scope for v1.</p>
-<p><strong>Rationale</strong>: Randomness makes "every path reaches an ending" unprovable by the
-deterministic validation gate. The Layer-2 state-space validator walks the configuration
-closure and proves termination; that proof requires the state space to be finite and
-enumerable. Dice and luck introduce probability that the validator cannot certify. Revisit
-only if explicitly requested.</p>
-<p><strong>Source</strong>: <a href="../planning/PROJECT-PLAN/#out-of-scope-v1">Project Plan: Section 2 Out of Scope</a>;
-<a href="../planning/tech-spec/#layer-2-state-space-tier-2-only">Tech Spec: Validation Gate Layer 2</a></p>
-<hr />
-<h2 id="decision-6-lightweight-node-editor-deferred-to-phase-4b">Decision 6: Lightweight Node Editor Deferred to Phase 4b<a class="headerlink" href="#decision-6-lightweight-node-editor-deferred-to-phase-4b" title="Permanent link">&para;</a></h2>
-<p><strong>Decision</strong>: The first release ships without a story editing UI. A lightweight node
-editor (read a story as a passage list, edit a single passage, re-roll a single branch to
-trigger a repair pass, re-run validation) lands in Phase 4b after the first release. A
-full visual graph canvas editor has no target phase.</p>
-<p><strong>Rationale</strong>: The reader, the generation pipeline, the validation gate, the moderation
-pass, the approval workflow, and the library form the critical path to a first usable
-release. An editing UI adds surface area and complexity that is not needed to prove the
-system works. Deferring it reduces the risk that editor scope delays the first release.</p>
-<p><strong>Source</strong>: <a href="../planning/PROJECT-PLAN/#out-of-scope-v1">Project Plan: Section 2 Out of Scope</a>;
-<a href="../planning/PROJECT-PLAN/#phase-4b-editor-engagement-and-ux-post-first-release">Project Plan: Phase 4b</a></p>
-<hr />
-<h2 id="decision-7-generation-ships-in-the-first-release">Decision 7: Generation Ships in the First Release<a class="headerlink" href="#decision-7-generation-ships-in-the-first-release" title="Permanent link">&para;</a></h2>
-<p><strong>Decision</strong>: The LLM-powered staged generation pipeline (concept brief to validated,
-moderated, guardian-approved story) ships as part of the first usable release, not as a
-post-launch addition. Phases 0 through 3 plus the Phase 4a library-and-profiles slice
-constitute the first usable release.</p>
-<p><strong>Rationale</strong>: The core value of the system is that a parent can generate a new story
-for their child without writing it by hand. Deferring generation to a later release would
-ship a reader with only hand-authored stories, which does not validate the core product
-hypothesis. This decision elevates two items to Phase-0 hard blockers: the LLM provider
-data-handling decision and the privacy controls (no real child PII in prompts; admin-only
-short-lived raw outputs).</p>
-<p><strong>Source</strong>: <a href="../planning/PROJECT-PLAN/#1-executive-summary">Project Plan: Section 1 Executive Summary</a>;
-<a href="../planning/PROJECT-PLAN/#phase-0-foundations-1-2-weeks">Project Plan: Phase 0 hard blockers</a>;
-<a href="../planning/adr/adr-003-frontier-llm-generation/">ADR-003</a>;
-<a href="../planning/adr/adr-005-mandatory-human-approval/">ADR-005</a></p>
+<p>These events contain <code>client_ip</code>, which is personal data, and <code>path</code>, which can embed a profile
+identifier. They are therefore subject to the same handling as any other child-linked data
+under <a href="../../planning/privacy-model/">the privacy model</a> and
+<a href="../../planning/adr/adr-018-childrens-privacy-compliance/">ADR-018</a>. The <code>max-file</code> cap above
+gives a size-based bound but <strong>not</strong> a time-based deletion guarantee; ADR-018 requires a hard
+deletion timeline per data class, and the container log store does not yet have one.</p>
+<h2 id="5-alerting">5. Alerting<a class="headerlink" href="#5-alerting" title="Permanent link">&para;</a></h2>
+<p>No alert rules ship in this repository today. The events above are shaped to be alertable
+(distinct names, structured fields, bounded volume), but wiring them to a notification channel
+is a deployment-side task in <code>homelab-infra</code> and is not yet done. Treat section 2's "Alert on"
+guidance as the specification for those rules, not a description of rules that exist.</p>
+<p>Until they exist, the events are useful for post-incident reconstruction only.</p>
 
 
 
@@ -3477,7 +3735,7 @@ short-lived raw outputs).</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 21:05:21 UTC">July 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 4, 2026 14:21:15 UTC">August 4, 2026</span>
   </span>
 
     
@@ -3487,7 +3745,7 @@ short-lived raw outputs).</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 00:17:31 UTC">June 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 4, 2026 14:21:15 UTC">August 4, 2026</span>
   </span>
 
     
@@ -3564,10 +3822,10 @@ short-lived raw outputs).</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
