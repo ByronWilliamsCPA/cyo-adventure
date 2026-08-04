@@ -44,6 +44,12 @@ Bottom line up front: four independent sources now converge on one thesis. **Com
 shallow, and binary; its many endings come from many short reconvergent leaves, not deep trees; and the
 genre raises age by escalating theme and tone, not branch depth.** Calibrate the generator to that shape.
 
+**Correction pointer (2026-08-03):** the "reconvergent leaves" clause above is what the four sources found
+about the commercial corpus, and is left as written for that reason. It is **refuted as a design target for
+this repository's own corpus.** Read the Section 5 item 3 correction before calibrating anything from this
+summary: our endings are single-parent terminals, and the ending share comes from breadth off a branchy
+spine, not from folding paths into shared endings.
+
 ## 2. The four sources and their evidence tiers
 
 | ID | Source | Tier | Trust for... |
@@ -59,6 +65,14 @@ reading levels, themes, fail-state policy, exposure economics, edition history).
 and/or UCSB, so several "findings" are restatements of the same underlying data, occasionally imprecise.
 
 ## 3. Conflicts resolved (core 8-11 / middle-grade band)
+
+**Tagging scheme used by this note.** The "Conf." column below, and the per-row confidences in Section 6,
+grade **measurement support**, a third scheme alongside the provenance and evidence-strength schemes the
+directory README describes. **Very high** = two or more independent measured sources agree. **High** = one
+measured source, corroborated in direction by the estimate-based reports. **Medium-High** = measured on a
+narrow sample, or measured for one metric and inferred for a neighbouring one. **Medium** = no measurement
+at all; reconciled from estimate-based reports only. Every grade refers only to the four sources in
+Section 2; nothing here draws on a source outside them.
 
 | Metric | JHM (measured) | UCSB via R3 (measured) | R1 | R2 | Reconciled | Conf. |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -87,10 +101,30 @@ are "page-read counts, not raw node totals." The genuine decisions-per-path figu
 longest**, now triangulated by three independent derivations (JHM-derived ~5/7-8; R1 Silk King 4.68; R3/Boyles
 8.7-14.5 pages divided by ~3.3 pages-between-decisions).
 
-Why it matters: the generator's `max_depth` budget (6 / 8 / 10) is calibrated in decisions and is already
-correct against the genre, sitting near the genre's longest-path end. If the team reads R2's "8-15 decisions"
-or "42," they will conclude the budget is 2-7x too shallow and inflate it. Do not. **Path length in nodes and
-decisions per path are different metrics.**
+Why it matters: if the team reads R2's "8-15 decisions" or "42," they will conclude the generator's depth
+budget is 2-7x too shallow and inflate it. Do not. **Path length in nodes and decisions per path are
+different metrics.**
+
+**Status (2026-08-03).** This paragraph originally continued: "the generator's `max_depth` budget
+(6 / 8 / 10) is calibrated in decisions and is already correct against the genre, sitting near the genre's
+longest-path end." That sentence was wrong on all three of its claims, and it committed the very conflation
+the rest of this section warns against, so it is corrected here rather than left to mislead:
+
+- **Unit: hops, not decisions.** `validator/layer1.py::_branch_depth` returns `nx.dag_longest_path_length`
+  over the subgraph reachable from the start node, which is an **edge count** on the longest start-to-ending
+  path (nodes minus one). Nothing in the gate counts decisions.
+- **Layer: 6 / 8 / 10 is the fallback, not the enforced budget.** Those are band-level values in
+  `validator/band_profile.py::_PROFILES` (8-11, 10-13, 13-16). For any matrix cell ADR-011 actually offers,
+  `_PRODUCTION_CELLS` supersedes them; its `max_depth` runs 15 to 93, and 8-11 prose is 23 / 30 / 35 for
+  short / medium / long.
+- **Provenance: not research-derived.** `band_profile.py` says of `max_depth` in terms: "It is NOT from
+  research; treat it as tunable." It is a product guardrail set near 2.5x the cell's fastest-finish floor,
+  chosen to catch a runaway near-linear chain. Calling it "confirmed correct against the genre" asserted a
+  validation that was never performed.
+
+Compared like with like the production budgets do land in the genre's range: 8-11 prose at 23-35 hops is
+24-36 nodes, against JHM's measured longest path of mean 27.6 and max 45 nodes. Note that as agreement of
+scale, not as the calibration the original sentence claimed.
 
 ### 4.2 Physical pages vs text nodes are conflated
 
@@ -118,6 +152,11 @@ implication:
    adventure-forward. 10-13 horror: ending-variety and jump-scares (Goosebumps). 13-16: lethal,
    resource-based. **Action:** enforce a per-band fail-state rule, especially a no-death constraint on the
    youngest tier. Not currently a structural gate.
+
+   **Status (2026-08-03): landed.** It is a structural gate now.
+   `BandProfile.forbidden_ending_kinds` holds `{DEATH, CAPTURE}` for 3-5 and 5-8 and `{DEATH}` for 8-11,
+   enforced as a blocking ERROR by PL-15 (`validator/policy.py`). 10-13 and 13-16 are unrestricted, which
+   matches the horror-variety and lethal rows of the Section 6 matrix.
 3. **Reconvergent bottlenecks are the coherence and ending-inflation tool** (R2, R3). R3's key structural
    finding: the large ending counts that "make covers sparkle" come from **many short reconvergent leaves**,
    not deep trees. **Action:** to get a bigger-feeling story, add more short leaves and reconvergence, not
@@ -134,8 +173,9 @@ implication:
    gate (`BandProfile.reconvergence_ceiling` stays `None`); choices-per-decision 2-3 remains an authoring
    guideline, not a hard gate. The original claim above is left in place, not deleted, because this
    document's purpose is cross-checking sources; treat this item's "Action" sentence as refuted for this
-   repo. Section 7 items 3 and 5, and the Section 8 "Reconvergence rate" bullet, restate this same claim;
-   the correction applies there too.
+   repo. Four other passages restate this same claim and the correction applies to each: the **"Bottom line
+   up front" summary** at the top of this note (the most prominent of them, and the one a skimmer hits
+   first), Section 7 items 3 and 5, and the Section 8 "Reconvergence rate" bullet.
 4. **Reading level tracks age, not branch complexity; education lines are hi-lo** (R1, R2, R3). R3's rule:
    "branch density can increase before sentence difficulty needs to increase," and "prose grade and graph
    complexity should not scale in lockstep." Lexile national bands for reference: grade 1 ~190-530L, grades
@@ -172,13 +212,34 @@ and gamebooks are a different product class).
 
 ## 7. Net deltas to the project parameters (vs the JHM-only handoff)
 
+**Read the status notes before acting on any item here.** Sections 2 through 6 record what the sources say
+and age well. This section does not: it is six claims about *this repository* and six instructions to the
+team, written 2026-06-23 against the generator as it stood before ADR-011. Four of the six now describe a
+codebase that no longer exists, and following them as written would mean re-deciding settled questions or
+building gates that already exist. Each item keeps its original text, with a dated status note appended, so
+that the 2026-06-23 recommendation and its actual outcome both stay legible.
+
 1. **Depth budgets: unchanged and confirmed correct, now triangulated three ways.** Ignore R2's inflated
    "decisions" figures. Do not lengthen paths.
+
+   **Status (2026-08-03): the recommendation stands, its stated basis does not.** "Do not lengthen paths"
+   is still right. But the budget this item claims to confirm is enforced in hops rather than decisions, the
+   6 / 8 / 10 values are a band-level fallback superseded by `_PRODUCTION_CELLS` for every offered cell, and
+   `band_profile.py` states the number is not research-derived. Full correction in the Section 4.1 status
+   note.
 2. **Reconsider node word-size (stronger now).** The genre beat is ~100-150 words, not 250; the orchestrator's
    250-word node is roughly **1.7-2.5x the genre's readable beat**, spacing choices much further apart than
    classic CYOA. Decide deliberately: keep 250 (fewer, longer, richer beats, a modern-prose choice) or move
    toward ~150 (genre-faithful flip-and-choose cadence). This interacts with endings: smaller nodes at the
    same word budget yield more nodes, hence room for more leaves.
+
+   **Status (2026-08-03): decided, past both options this item offered.** There is no 250-word node;
+   `generation/prompts.py` contains no such constant, and reads its budget from
+   `band_profile.words_per_node_profile`. `_WORDS_PER_NODE` (recorded in ADR-011 section 3) sets 8-11 and
+   10-13 prose to `(mean 100, advisory 70-135, per-node max 220)`, enforced by PL-19: the per-node wall as a
+   blocking ERROR on every story, the story mean as a WARNING on scale-classified stories. The choice posed
+   here, keep 250 or move toward ~150, resolved past both to a mean of 100, at the low end of the ~100-150
+   band Section 3 reconciled.
 3. **Endings floor remains the key recommendation, now quadruple-confirmed.** All four sources agree endings
    are a defining, commercially-valued property achieved through many shallow reconvergent leaves, exactly
    what the genre traded away over time under the pressure your yield loop faces. Confirm whether any
@@ -186,8 +247,19 @@ and gamebooks are a different product class).
    when raising it. **See the Section 5 item 3 correction (2026-08-03):** the "reconvergent leaves" mechanism
    is refuted for this repo's corpus; raise the floor by breadth off single-parent endings, per ADR-011
    section 7.
+
+   **Status (2026-08-03): landed; the confirmation this item asks for is done.** A validator layer does gate
+   ending count. PL-17 (`validator/policy.py`) checks endings and decision nodes against
+   `BandProfile.min_endings` and `min_decisions`, breadth-scaled for larger stories, as a blocking ERROR.
+   The floors run from 2 endings / 1 decision at 3-5 to 3 / 3 from 8-11 upward. Do not re-open this as an
+   open question; raising the floors is a tuning decision, not a missing gate.
 4. **Add exposure ratio to the cost model and an age-gated no-death rule for the 5-8 tier.** Neither exists in
    the current validator/budget design.
+
+   **Status (2026-08-03): half landed, and the open half is the only still-actionable item in this
+   section.** The no-death rule exists: `forbidden_ending_kinds` is `{DEATH, CAPTURE}` for both 3-5 and 5-8
+   (and `{DEATH}` for 8-11), enforced by PL-15. **Exposure ratio is still absent** from the cost model, and
+   remains genuinely open as written.
 5. **Introduce more reconvergence at 10-13+, keep 8-11 tree-dominant.** Per the Section 5 item 3 correction,
    this is a general topology guideline, not an endings mechanism; see ADR-011 section 7.
 6. **Tag any imported structural number with its edition family** (R3's caveat); modern Chooseco and vintage
@@ -215,8 +287,21 @@ and gamebooks are a different product class).
 
 - JHM paper: Adams, D., Beckelhymer, D., & Marr, A. (2019). DOI 10.5642/jhummath.201902.05.
   <https://scholarship.claremont.edu/jhm/vol9/iss2/5>
-- R1: `tmp/compass_artifact_wf-7721d44d-abcd-4de7-8cb2-d99406f9eba5_text_markdown.md`
-- R2: `tmp/CYOA Gamebook Structural Analysis.md`
-- R3: `tmp/deep-research-report (7).md` (cites UCSB Transverse Reading Gallery graph logs and S. Boyles's
-  CYOA statistics: <https://sboyles.github.io/cyoa/cyoa.html>)
-- Companion handoff (JHM data, unmodified): `docs/planning/research/commercial-cyoa-graph-theory-handoff.md`
+- R1: commissioned deep-research report, local artifact only:
+  `tmp/compass_artifact_wf-7721d44d-abcd-4de7-8cb2-d99406f9eba5_text_markdown.md`
+- R2: commissioned deep-research report, local artifact only: `tmp/CYOA Gamebook Structural Analysis.md`
+- R3: commissioned deep-research report, local artifact only: `tmp/deep-research-report (7).md`. Cites two
+  sources that ARE retrievable: UCSB Transverse Reading Gallery graph logs, and S. Boyles's CYOA statistics
+  (<https://sboyles.github.io/cyoa/cyoa.html>).
+- Companion handoff (JHM data, unmodified): `commercial-cyoa-graph-theory-handoff.md`. **Not a resolvable
+  path.** As the note under the title says, that file was never committed here and no copy exists in git
+  history; the reference names the document, it does not link to one.
+
+**Retrievability of R1, R2, and R3 (read before citing any of them).** All three are commissioned
+deliverables that exist only as local files under `tmp/`, which is gitignored. Those paths resolve on no
+clone but the machine that ran the research, and none of the three carries a URL or DOI, so they cannot be
+re-fetched or independently re-examined. This directory's standing rule that every claim carry a source with
+URL or DOI is therefore **unmet for R1-R3 by construction**, and cannot be met retroactively. That gap is
+the reason the Section 2 evidence tiers exist and the reason the "measured sources win over estimate-based
+reports" rule is applied throughout. Treat any figure sourced only to R1, R2, or R3 as unverifiable
+secondary synthesis; a figure traceable to JHM or to Boyles/UCSB is not affected.
