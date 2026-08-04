@@ -10,6 +10,20 @@
 ' Source files:
 '   src/cyo_adventure/core/device_grant.py       (mint_device_grant_token,
 '                                                  verify_device_grant_token)
+'   src/cyo_adventure/core/child_session.py       (mints the backend-signed,
+'                                                  guardian-issued child
+'                                                  session token minted in the
+'                                                  "tap avatar + enter PIN"
+'                                                  step below)
+'   src/cyo_adventure/core/pin.py                  (hash_pin / verify_pin:
+'                                                  at-rest PIN hashing checked
+'                                                  by child_sessions_router
+'                                                  before a child session mints)
+'   src/cyo_adventure/core/token_audience.py       (TokenAudience registry:
+'                                                  source of the distinct
+'                                                  cyo-device-grant /
+'                                                  cyo-child-session audiences
+'                                                  used throughout this flow)
 '   src/cyo_adventure/api/device_grants.py        (POST/GET/DELETE /device-grants)
 '   src/cyo_adventure/api/deps.py                 (Role.DEVICE routing branch,
 '                                                  _device_principal)
@@ -101,6 +115,15 @@ api_client -> child_sessions_router : "POST /child-sessions"
 child_sessions_router -> deps : "require_principal(token)\n-> Principal(role=DEVICE, ...)"
 deps --> child_sessions_router : "Principal(role=DEVICE)"
 child_sessions_router -> child_sessions_router : "check: principal.family_id owns\nthe target profile; verify PIN\n(per-profile enforcement unchanged)"
+note right of child_sessions_router
+  PIN check: **core/pin.py**'s
+  ``verify_pin`` (constant-time,
+  pbkdf2_sha256).
+  Token mint: **core/child_session.py**'s
+  ``mint_child_session_token``
+  (aud=cyo-child-session, from the
+  **core/token_audience.py** registry).
+end note
 child_sessions_router --> api_client : "201 child session token\n(HS256, aud=cyo-child-session, 12h)"
 api_client --> picker : "child session stored;\nchild starts reading"
 

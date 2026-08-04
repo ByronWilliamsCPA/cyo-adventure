@@ -46,7 +46,7 @@ cataloged in [../story-skeletons.md](../story-skeletons.md).
 | Generation Sequence | [seq-generation.puml](seq-generation.puml) / [.svg](seq-generation.svg) | `generation/orchestrator.py`, `provider.py`, `providers/fallback.py`, `core/config.py`, `pii.py`, `guarded.py` | Stage A/B/C with provider fallback |
 | Reading-State PUT | [seq-reading-state.puml](seq-reading-state.puml) / [.svg](seq-reading-state.svg) | `api/reading.py`, `api/schemas.py`, `db/models.py` | Optimistic concurrency, 409 reconciliation |
 | Offline and Reconnect | [seq-offline.puml](seq-offline.puml) / [.svg](seq-offline.svg) | `frontend/src/offline/sync.ts`, `db.ts`, `reader/ReaderPage.tsx`, `hooks/useReplayOnReconnect.ts` | IndexedDB queue, replay, conflict |
-| Device Grant Sequence | [seq-device-grant.puml](seq-device-grant.puml) / [.svg](seq-device-grant.svg) | `core/device_grant.py`, `api/device_grants.py`, `deps.py`, `child_sessions.py`, `frontend/src/auth/deviceGrant.ts`, `DeviceAuthorizedRoute.tsx` | ADR-014: mint / verify / revoke |
+| Device Grant Sequence | [seq-device-grant.puml](seq-device-grant.puml) / [.svg](seq-device-grant.svg) | `core/device_grant.py`, `core/child_session.py`, `core/pin.py`, `core/token_audience.py`, `api/device_grants.py`, `deps.py`, `child_sessions.py`, `frontend/src/auth/deviceGrant.ts`, `DeviceAuthorizedRoute.tsx` | ADR-014: mint / verify / revoke |
 
 ## Data
 
@@ -69,7 +69,7 @@ cataloged in [../story-skeletons.md](../story-skeletons.md).
 | End-to-End Journey | [journey-end-to-end.puml](journey-end-to-end.puml) / [.svg](journey-end-to-end.svg) | `frontend/src/router.tsx`, `landing/LandingPage.tsx`, `auth/DeviceAuthorizedRoute.tsx`, `AdultGate.tsx`, `library/RequestStory.tsx`, `guardian/RequestsPage.tsx` | Target-state UX across Child/Guardian/Admin/System lanes |
 | Kid-Surface Journey | [journey-kid.puml](journey-kid.puml) / [.svg](journey-kid.svg) | `frontend/src/router.tsx`, `auth/DeviceAuthorizedRoute.tsx`, `deviceGrant.ts`, `kid/ProfilePickerPage.tsx`, `library/LibraryPage.tsx`, `reader/Reader.tsx` | Zoomed child-facing flow |
 | Guardian + Admin Journey | [journey-guardian.puml](journey-guardian.puml) / [.svg](journey-guardian.svg) | `frontend/src/router.tsx`, `auth/AdultGate.tsx`, `guardian/LoginPage.tsx`, `ConsolePage.tsx`, `admin/AdminConsolePage.tsx`, `IntakePage.tsx`, `RequestsPage.tsx`, `BooksPage.tsx` | Zoomed parent + admin flow (approve is admin-only, ADR-005) |
-| Journey Test Coverage | [journey-dev-coverage.puml](journey-dev-coverage.puml) / [.svg](journey-dev-coverage.svg) | `frontend/src/**/*.test.tsx` (Vitest) | Journey recolored by e2e / unit / none coverage |
+| Journey Test Coverage | [journey-dev-coverage.puml](journey-dev-coverage.puml) / [.svg](journey-dev-coverage.svg) | `frontend/e2e/*.spec.ts` (Playwright), `frontend/src/**/*.test.tsx` (Vitest) | Journey recolored by e2e / unit / none coverage; last re-verified 2026-08-04 |
 
 ## Maintenance
 

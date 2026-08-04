@@ -18,11 +18,22 @@
 '   story-requests-kid, story-requests-authored, series-continue, landing,
 '   admin-user-management (#267), authoring-queue (#268), device-authorization,
 '   moderation, provider-allowlist, a11y, visual, and e2e/naive-user/*
+'   Added 2026-07-23 to 2026-07-27 (backfill + Task A7/A12 mobile-web
+'   readiness; see below for per-node mapping):
+'     admin-read-heavy, guardian-connections, guardian-consent,
+'     guardian-password-reset, review-edit (2026-07-23); cross-device,
+'     responsive (2026-07-24); admin-touch-targets, mobile-viewport
+'     (2026-07-25); keyboard-nav, kid-touch-targets (2026-07-27)
 '   frontend/e2e-real/{approval-flow,authored-request,kid-reads,
 '     naive-kid-misuse-real,series-continue-real,authoring-plan-real,
 '     moderation-real,ratings-real}.spec.ts  (real-backend smoke, zero mocks)
 '   frontend/e2e-prod/ and frontend/e2e-staging/ (deployed-env smoke, own configs)
 '   frontend/src/**/*.test.ts(x)  (Vitest component + unit)
+'
+' Coverage classification last verified: 2026-08-04 (re-audited the eleven
+' specs added 2026-07-23 to 2026-07-27 against this backbone; see per-node
+' notes and the legend's "Not yet recolored" entry for what changed and what
+' did not).
 ' ============================================================
 
 title Developer View: Journey x Test Coverage\n(green = e2e, amber = unit-only [e2e backlog], red = none, grey = backend/pytest)
@@ -49,15 +60,15 @@ skinparam swimlaneWidth same
 |Guardian|
 start
 #BFE3C6:Guardian signs in;
-note right: GREEN  •  e2e: guardian-auth.spec (successful sign-in, not just the redirect)\nunit: AuthContext.test, ProtectedRoute.test
+note right: GREEN  •  e2e: guardian-auth.spec (successful sign-in, not just the redirect)\n+ guardian-password-reset.spec (request-reset, set-new-password, cross-tab\nhand-off, real GoTrue auth/v1/* contract)\n+ responsive.spec / cross-device.spec (guardian console /guardian,\nno horizontal overflow)\nunit: AuthContext.test, ProtectedRoute.test
 #BFE3C6:Create child profiles;
-note right: GREEN  •  e2e: guardian-profiles.spec (create/edit, preset-only avatars)\nunit: ProfilesPage.test, profilesApi.test
+note right: GREEN  •  e2e: guardian-profiles.spec (create/edit, preset-only avatars)\n+ keyboard-nav.spec (Profile form dialog focus trap)\nunit: ProfilesPage.test, profilesApi.test
 
 repeat :a new story is wanted;
 
 |Child|
 #BFE3C6:Open app, pick avatar;
-note right: GREEN  •  e2e: profiles.spec (picker renders / empty)\nunit: ProfilePickerPage.test
+note right: GREEN  •  e2e: profiles.spec (picker renders / empty)\n+ responsive.spec / cross-device.spec / mobile-viewport.spec\n(no horizontal overflow, incl. the weekly-ring/badge-case nav cluster)\nunit: ProfilePickerPage.test
 #BFE3C6:Request a story
 (library page);
 note right: GREEN  •  e2e: story-requests-kid.spec (idea, proposed series,\nanchor to a series book)\ne2e-real: authored-request.spec (real backend)\nunit: RequestStory.test
@@ -79,26 +90,26 @@ note right: GREEN  •  e2e: intake.spec (submit, PII-free brief, status polling
 repeat :take the top item;
   #BFE3C6:Open the review queue
   (Flagged / Ready / Processing);
-  note right: GREEN  •  e2e: guardian-console.spec (queue + Flagged-first ordering)\nunit: ConsolePage.test, FlagBadge.test
+  note right: GREEN  •  e2e: guardian-console.spec (queue + Flagged-first ordering)\n+ responsive.spec / cross-device.spec (admin console /admin,\nno horizontal overflow, incl. user-management table)\nunit: ConsolePage.test, FlagBadge.test
   #BFE3C6:Review a story
   (flags first, then full text);
-  note right: GREEN  •  e2e: guardian-review.spec (review detail)\nunit: ReviewDetailPage.test, reviewApi.test
+  note right: GREEN  •  e2e: guardian-review.spec (review detail)\n+ review-edit.spec (Edit passage save path, reachable + unreachable\nsections, re-screen verdict, 422 gate rejection)\n+ admin-read-heavy.spec (version-compare panel)\n+ keyboard-nav.spec (Send Back + Edit passage dialogs, keyboard reachable)\nunit: ReviewDetailPage.test, reviewApi.test
 backward:Send back (e2e: guardian-review.spec revision loop);
 repeat while (Safe for a child?) is (no) not (yes -> approve)
 #BFE3C6:Approve  (ADR-005 gate);
-note right: GREEN  •  e2e: guardian-review.spec (approve, incl. guardian-403 fail-closed)\n+ e2e-real: approval-flow.spec (real backend smoke, zero mocks)\nunit: reviewApi.test, ReviewDetailPage.test
+note right: GREEN  •  e2e: guardian-review.spec (approve, incl. guardian-403 fail-closed)\n+ e2e-real: approval-flow.spec (real backend smoke, zero mocks)\n+ keyboard-nav.spec (Approve dialog focus trap)\nunit: reviewApi.test, ReviewDetailPage.test
 
 |Guardian|
 #BFE3C6:Assign / "Assign more";
-note right: GREEN  •  e2e: assignments.spec (sibling add)\nunit: AssignChildrenDialog.test, assignApi.test
+note right: GREEN  •  e2e: assignments.spec (sibling add)\n+ keyboard-nav.spec (Assign-children dialog focus trap)\nunit: AssignChildrenDialog.test, assignApi.test
 |Child|
 #F6E1B0:Avatar shows "new story ready!";
 note right: AMBER  •  unit: ProfilePickerPage.test\npill state not asserted in e2e
 
 #BFE3C6:Open Library (hero + shelf);
-note right: GREEN  •  e2e: library.spec (hero+shelf, tap->reader, empty, mobile)\nunit: LibraryPage.test, pickHero.test
+note right: GREEN  •  e2e: library.spec (hero+shelf, tap->reader, empty, mobile)\n+ responsive.spec / cross-device.spec (no horizontal overflow,\nincl. single-book shelf, at desktop/tablet/mobile widths and\nreal device projects)\nunit: LibraryPage.test, pickHero.test
 #BFE3C6:Read passages, make choices;
-note right: GREEN  •  e2e: reader.spec (play-to-ending US-101,\nstate-gated US-102, malformed->exit, missing->not-found, a11y)
+note right: GREEN  •  e2e: reader.spec (play-to-ending US-101,\nstate-gated US-102, malformed->exit, missing->not-found, a11y)\n+ responsive.spec / cross-device.spec (no horizontal overflow)\n+ kid-touch-targets.spec (choice buttons meet the 44x44 WCAG 2.5.5 floor)
 if (Online?) then (yes)
   #BFE3C6:Progress saves;
   note right: GREEN  •  covered within reader.spec happy path
@@ -137,8 +148,19 @@ legend bottom
   AdultGate steps and the WS-J admin surfaces (user management #267, authoring
   queue #268, moderation dashboard/thresholds, provider allowlist) now have their
   own e2e specs (listed above), but this journey's step nodes have not been
-  re-drawn to include them. Treat this map as current only for the
-  request -> approve -> read loop it depicts.
+  re-drawn to include them. The same applies to four more surfaces backfilled
+  2026-07-23 to 2026-07-25 that also fall outside this backbone: the ADR-018 D1
+  guardian consent gate (guardian-consent.spec), the ADR-016 ring-2 family
+  connections consent (guardian-connections.spec), two admin read-heavy
+  surfaces outside the review queue (admin-read-heavy.spec's audit-log and
+  admin-library lifecycle-filter cases; its review version-compare case IS
+  folded into "Review a story" above, since that step is on this backbone),
+  and the WS-J admin CRUD tab touch targets (admin-touch-targets.spec).
+  guardian-password-reset.spec is the one exception among the 2026-07-23
+  backfill specs: it is folded straight into the "Guardian signs in" note
+  above, since it is the same sign-in surface rather than a new step. Treat
+  this map as current only for the request -> approve -> read loop it
+  depicts.
 endlegend
 
 @enduml

@@ -38,7 +38,8 @@
 '   frontend/src/kid/ProfilePickerPage.tsx, library/LibraryPage.tsx,
 '     reader/ReaderRoute.tsx
 '   frontend/src/guardian/ConsolePage.tsx, IntakePage.tsx, RequestsPage.tsx,
-'     BooksPage.tsx, ProfilesPage.tsx, ReadingPage.tsx, ConnectionsPage.tsx
+'     BooksPage.tsx, ProfilesPage.tsx, DevicesPage.tsx, ReadingPage.tsx,
+'     ConnectionsPage.tsx
 '   frontend/src/admin/AdminConsolePage.tsx, AdminLibraryPage.tsx,
 '     AdminRequestsPage.tsx, ReviewDetailPage.tsx, ModerationDashboardPage.tsx,
 '     ModerationThresholdsPage.tsx, AuthoringQueuePage.tsx,
@@ -76,7 +77,8 @@ package "Adult Zone\nAdultGate: one Supabase-session + warm step-up boundary" #E
     component "IntakePage\n/guardian/intake\nAuthor a request directly" as intake #C8E6C9
     component "RequestsPage\n/guardian/requests\nApprove/decline a child's idea" as requests #C8E6C9
     component "BooksPage\n/guardian/books\nCatalog browse + assign (WS-E)" as books #C8E6C9
-    component "ProfilesPage\n/guardian/profiles\nChild profiles + device grants" as profiles #C8E6C9
+    component "ProfilesPage\n/guardian/profiles\nChild profiles" as profiles #C8E6C9
+    component "DevicesPage\n/guardian/devices\nDevice authorization: list +\nrevoke a child profile's\ndevice grants" as devices #C8E6C9
     component "ReadingPage\n/guardian/reading\nFamily reading-visibility\n(G9 engagement summary)" as g_reading #C8E6C9
     component "ConnectionsPage\n/guardian/connections\nCross-family connection consent\n(ADR-016 ring-2 dual consent)" as g_connections #C8E6C9
   }
@@ -104,12 +106,14 @@ console --> intake : "nav"
 console --> requests : "nav"
 console --> books : "nav"
 console --> profiles : "nav"
+console --> devices : "nav"
 console --> g_reading : "nav"
 console --> g_connections : "nav"
 intake --> console : "back"
 requests --> console : "back"
 books --> console : "back"
 profiles --> console : "back"
+devices --> console : "back"
 
 admin_console --> admin_requests : "nav"
 admin_console --> review_detail : "open a story"
