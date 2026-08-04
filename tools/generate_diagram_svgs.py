@@ -284,7 +284,7 @@ def main(argv: list[str] | None = None) -> int:
                 " Set PLANTUML_JAR to a verified jar or allow network access.\n"
             )
             return 1
-        rendered = render_svgs(targets, jar=jar)
+        rendered, _corrupt = render_svgs(targets, jar=jar)
         sys.stdout.write(
             f"Rendered {len(rendered)}/{len(targets)} diagram(s) to SVG.\n"
         )
