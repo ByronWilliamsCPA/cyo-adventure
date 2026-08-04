@@ -165,7 +165,31 @@
          <lastmod>2026-08-04</lastmod>
     </url>
     <url>
+         <loc>https://cyo-adventure.readthedocs.io/operations/</loc>
+         <lastmod>2026-08-04</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/operations/alert-test-fire-log/</loc>
+         <lastmod>2026-08-04</lastmod>
+    </url>
+    <url>
          <loc>https://cyo-adventure.readthedocs.io/operations/authoring-guide/</loc>
+         <lastmod>2026-08-04</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/operations/backup-inventory/</loc>
+         <lastmod>2026-08-04</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/operations/public-write-paths/</loc>
+         <lastmod>2026-08-04</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/operations/restore-drill-log/</loc>
+         <lastmod>2026-08-04</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/operations/rls-verification-log/</loc>
          <lastmod>2026-08-04</lastmod>
     </url>
     <url>
@@ -173,7 +197,15 @@
          <lastmod>2026-08-04</lastmod>
     </url>
     <url>
+         <loc>https://cyo-adventure.readthedocs.io/operations/runtime-config/</loc>
+         <lastmod>2026-08-04</lastmod>
+    </url>
+    <url>
          <loc>https://cyo-adventure.readthedocs.io/operations/security-events/</loc>
+         <lastmod>2026-08-04</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/operations/service-credentials/</loc>
          <lastmod>2026-08-04</lastmod>
     </url>
     <url>
