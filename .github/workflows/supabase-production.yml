@@ -71,18 +71,46 @@ jobs:
       # the snapshot procedure in docs/guides/supabase-environments.md section 4.
       # That confirmation is asserted below rather than left to a human reading
       # the log, because `config push` exits 0 either way.
-      # #CRITICAL: security: this assertion is DETECTION, not prevention. The
-      # push has already been applied by the time its log can be read, so a
-      # missing override line means an incident to restore from, not a push that
-      # was stopped. Without it, a ref that matches no [remotes.*] block would
-      # leave site_url = http://localhost:5173 on the live project real guardians
-      # sign in to, behind a green check.
+      # #CRITICAL: security: two controls guard this push, and they are not
+      # interchangeable. The pre-flight comparison below is PREVENTION: it
+      # refuses to invoke the CLI at all unless the ref this job is about to
+      # push to is the same ref [remotes.production] declares, so a wrong or
+      # empty SUPABASE_PROJECT_ID never reaches a live project. The log
+      # assertion after the push is DETECTION only: by the time its line can be
+      # read the push has landed, so a miss there means an incident to restore
+      # from. Detection is kept as a second control because it also catches a
+      # CLI whose matching behaviour changes under a version bump, which the
+      # pre-flight check cannot see.
+      # #VERIFY: the pre-flight check is deliberately in this step rather than a
+      # step of its own, so it cannot be reordered away from the push it guards.
+      # It parses the TOML rather than grepping: a grep would match the ref
+      # inside a comment and wave through a config the CLI would reject.
       # #VERIFY: `set -o pipefail` is load-bearing. The default shell is
       # `bash -e`, which does not set it, so without this line a failing
       # `config push` would be masked by tee's exit status.
       - name: Push project config
         run: |
           set -o pipefail
+          expected=$(python3 <<'PY'
+          import tomllib
+
+          with open("supabase/config.toml", "rb") as fh:
+              print(tomllib.load(fh)["remotes"]["production"]["project_id"])
+          PY
+          )
+          if [ -z "$SUPABASE_PROJECT_ID" ]; then
+            echo "::error::SUPABASE_PROJECT_ID is empty. Refusing to run config push:" \
+                 "the CLI would match no [remotes.*] block and send the base config" \
+                 "(site_url = http://localhost:5173) to whatever project is linked."
+            exit 1
+          fi
+          if [ "$SUPABASE_PROJECT_ID" != "$expected" ]; then
+            echo "::error::SUPABASE_PROJECT_ID does not match [remotes.production].project_id" \
+                 "in supabase/config.toml. config push would have sent the base config" \
+                 "(site_url = http://localhost:5173) to a live project. Refusing to push." \
+                 "Reconcile the production environment secret with config.toml before retrying."
+            exit 1
+          fi
           supabase config push --project-ref "$SUPABASE_PROJECT_ID" --yes 2>&1 \
             | tee "$RUNNER_TEMP/config-push.log"
           if ! grep -qF 'Loading config override: [remotes.production]' \
