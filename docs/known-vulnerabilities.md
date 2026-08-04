@@ -645,6 +645,97 @@ closes the release until the entry is reassessed against fresh evidence.
   branch changes no dependency, lockfile, or Dockerfile, which is what
   identifies this as a feed refresh rather than a change introduced by that PR.
 
+## CVE-2026-64561 | linux-libc-dev | High
+
+| Field | Value |
+|-------|-------|
+| **CVE ID** | CVE-2026-64561 |
+| **Package** | linux-libc-dev (Debian binary package from the `linux` kernel source package) |
+| **Affected Version** | 6.12.100-1+dhi0 (Debian 13 "trixie", DHI mirror build) |
+| **Fixed Version** | No fix on the trixie track. Trivy reports an empty Fixed Version with status `affected`; the Debian tracker records `trixie` (6.12.94-1) and `trixie-security` (6.12.100-1) as `vulnerable`, with the fix only in sid (7.1.6-1) |
+| **Severity** | High (per Trivy/Aqua feed) |
+| **CVSS Score** | Not assigned in the scan output as of 2026-08-04 |
+| **Discovered** | 2026-08-04 |
+| **Reassessment Due** | 2026-09-30 |
+| **Blocking Release** | No |
+
+### Description
+
+A KVM defect in the x86 MMU: the root-validity check for an invalid or obsolete
+root runs *before* pages are made available rather than after, per the CVE
+title reported in the scan output ("KVM: x86: Check for invalid/obsolete root
+*after* making MMU pages available"). It reached this image the same way the
+entries above did, through a Trivy vulnerability-database refresh rather than
+any change in the image: the base image version is unchanged at
+6.12.100-1+dhi0, the same build PR #547 introduced on 2026-08-02.
+
+**Why this is a feed refresh and not a regression introduced by PR #597.** The
+Container Security run on `main` at 2026-08-04T17:28:49Z passed with no
+findings. The run on the PR branch roughly three and a half hours later
+reported `Total: 1 (HIGH: 1, CRITICAL: 0)`. The branch changes no dependency,
+no lockfile, and no Dockerfile, so the same finding will appear on `main` at its
+next scheduled scan. This is the same discrimination test applied to the
+CVE-2026-63879 entry above.
+
+### Impact on This Project
+
+The same structural argument as every `linux-libc-dev` entry in this document,
+which is a statement about what the package *is* rather than a judgement about
+severity: it ships kernel UAPI headers used at compile time by userspace
+programs, contains no kernel binary, and executes no kernel code at runtime. The
+container serves a FastAPI web application under whatever kernel the Docker host
+provides. Patching or removing this package would not change which kernel
+actually runs.
+
+Being specific rather than waving at the general rule: this defect is in KVM's
+shadow-paging MMU, code that only executes when the host is running virtual
+machines through `/dev/kvm`. This deployment runs application containers on a
+homelab Docker host; the image neither contains a hypervisor nor requests KVM
+device access. Exploitation requires the ability to drive KVM ioctls from a
+process on the host, which is a host-privilege boundary this container does not
+sit on either side of. Exposure through the application surface is nil.
+
+### Remediation Plan
+
+- [x] Confirm the CVE's status on the [Debian security tracker](https://security-tracker.debian.org/tracker/source-package/linux)
+  for the `trixie` and `trixie-security` tracks before accepting it into
+  `.trivyignore`. **Done 2026-08-04**: `bookworm` (6.1.176-1) vulnerable,
+  `bookworm-security` (6.1.180-1) vulnerable, `trixie` (6.12.94-1) vulnerable,
+  `trixie-security` (6.12.100-1) vulnerable, `sid` (7.1.6-1) fixed. This
+  satisfies the `.trivyignore` precondition that no fix be reachable on this
+  base image's track.
+- [ ] Reassess by 2026-09-30, checking whether the sid fix (7.1.6-1) has been
+  backported to `trixie-security`. Deliberately aligned with the
+  CVE-2026-63879 date above so one review pass covers both of this image's
+  open kernel-header findings, and comfortably inside the 60-day ceiling from
+  the 2026-08-04 discovery.
+- [ ] Fold into [issue #535](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/535)
+  at reassessment, which already tracks the open `linux-libc-dev` set.
+
+### Why Not Fixed Yet
+
+No fix exists on the trixie track, confirmed above rather than inferred from
+Trivy's empty Fixed Version field. Even once one lands, this project cannot
+apply it directly: the package is provided by the hardened base image
+(`ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13`), not by this project's
+dependency set, and the DHI runtime image ships no shell and no package manager,
+so it cannot upgrade itself. The only path in is a base-image digest refresh
+from the `ByronWilliamsCPA/container-images` mirror pipeline, which this project
+consumes rather than controls.
+
+Per the Release Gate Policy above, `Blocking Release | No` here is a dated
+verdict, not a standing exemption: it expires on 2026-09-30, at which point the
+process gate closes the release until the entry is reassessed against fresh
+evidence.
+
+### References
+
+- [Aqua AVD CVE-2026-64561](https://avd.aquasec.com/nvd/cve-2026-64561)
+- [Debian security tracker: linux](https://security-tracker.debian.org/tracker/source-package/linux)
+- Discovered by the Container Security workflow (Trivy) on
+  [PR #597](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/597),
+  [workflow run 30950314291](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/30950314291).
+
 ## Resolved Entries
 
 | CVE              | Package        | Resolved Date | Resolution                                             |
@@ -768,3 +859,4 @@ re-verified rather than carried forward:
 | 2026-07-29  | Byron Williams | Reassessed 2 overdue entries; resolved both; added gate ruling.       |
 | 2026-07-30  | Byron Williams | Added 7 further linux-libc-dev kernel-header CVEs from the PR #494 Trivy run (64287/64364/64375/64434/64534/64552/64558); all High, none fixed on the trixie track (fix only in sid 7.1.5-1). Tracked in issue #505. Base advanced to 6.12.96-1+dhi0, which clears CVE-2026-53399/64600 from the prior entry. |
 | 2026-07-30  | Byron Williams | Suppressed the 7 new CVEs in .trivyignore per that file's stated scope (base-image OS-package CVEs with no upstream fix, each paired with an entry here). Resolved CVE-2026-53399/64600: removed their .trivyignore block, whose own removal condition (base ships 6.12.96-1) is met; verified fixed in trixie-security 6.12.96-1 on the Debian tracker rather than inferred from scan absence, which suppression would have masked. |
+| 2026-08-04  | Byron Williams | Added linux-libc-dev CVE-2026-64561 (KVM x86 MMU) from the PR #597 Trivy run; High, empty Fixed Version, base version unchanged at 6.12.100-1+dhi0, so a feed refresh rather than an image change (main's run 3.5h earlier was clean). Verified on the Debian tracker before accepting into .trivyignore: trixie and trixie-security both vulnerable at 6.12.100-1, fix is sid-only (7.1.6-1). Reassessment aligned to 2026-09-30 with CVE-2026-63879. |
