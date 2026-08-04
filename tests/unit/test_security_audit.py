@@ -14,6 +14,8 @@ exceeding its own timeout budget -- is logged (by TYPE only, never
 from __future__ import annotations
 
 import asyncio
+import re
+from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import asyncpg
@@ -31,7 +33,13 @@ from cyo_adventure.security_audit import (
     record_security_event,
 )
 
-pytestmark = [pytest.mark.unit, pytest.mark.asyncio]
+# Marked per-test rather than with a bare module-level
+# `pytest.mark.asyncio`: this module mixes async tests with one sync
+# test (the migration-width contract below), and a module-level async
+# mark applied to a sync test raises a PytestWarning, which this
+# project's `filterwarnings = ["error"]` turns into a failure
+# (tests/CLAUDE.md, pytest conventions).
+pytestmark = [pytest.mark.unit]
 
 
 class _FakeSessionCM:
@@ -69,6 +77,7 @@ def _mock_session() -> tuple[MagicMock, _FakeSessionCM]:
     return session, _FakeSessionCM(session)
 
 
+@pytest.mark.asyncio
 async def test_writes_a_security_event_row_with_all_fields() -> None:
     session, cm = _mock_session()
     with patch("cyo_adventure.security_audit.get_session", return_value=cm):
@@ -100,6 +109,7 @@ async def test_writes_a_security_event_row_with_all_fields() -> None:
     assert cm.exited
 
 
+@pytest.mark.asyncio
 async def test_writes_a_resource_for_authz_denial() -> None:
     session, cm = _mock_session()
     with patch("cyo_adventure.security_audit.get_session", return_value=cm):
@@ -118,6 +128,7 @@ async def test_writes_a_resource_for_authz_denial() -> None:
     assert row.resource == "profile-123"
 
 
+@pytest.mark.asyncio
 async def test_rate_limit_event_has_no_path_method_or_code() -> None:
     """A rate-limit trip has no route-level request context and no exception
     to draw `code` from (middleware/security.py's call site never passes
@@ -150,6 +161,7 @@ async def test_rate_limit_event_has_no_path_method_or_code() -> None:
         ("resource", _MAX_RESOURCE_LEN),
     ],
 )
+@pytest.mark.asyncio
 async def test_every_string_column_is_truncated_to_its_bound(
     field: str, max_len: int
 ) -> None:
@@ -181,6 +193,7 @@ async def test_every_string_column_is_truncated_to_its_bound(
     assert len(getattr(row, field)) == max_len
 
 
+@pytest.mark.asyncio
 async def test_missing_client_yields_none_client_ip_column() -> None:
     session, cm = _mock_session()
     with patch("cyo_adventure.security_audit.get_session", return_value=cm):
@@ -194,6 +207,7 @@ async def test_missing_client_yields_none_client_ip_column() -> None:
     assert row.client_ip is None
 
 
+@pytest.mark.asyncio
 async def test_database_error_is_logged_and_swallowed_not_raised() -> None:
     """A properly-wrapped SQLAlchemy failure (e.g. a constraint violation, or
     a connection error surfaced through SQLAlchemy's own error-translation
@@ -218,6 +232,7 @@ async def test_database_error_is_logged_and_swallowed_not_raised() -> None:
     assert mock_logger.error.call_args.args[0] == "security_event_write_failed"
 
 
+@pytest.mark.asyncio
 async def test_connection_refused_is_logged_and_swallowed_not_raised() -> None:
     """A raw OSError (e.g. asyncpg's ConnectionRefusedError at pool checkout)
     is caught too, not just SQLAlchemyError: SQLAlchemy does NOT wrap a
@@ -252,6 +267,7 @@ async def test_connection_refused_is_logged_and_swallowed_not_raised() -> None:
         asyncpg.InterfaceError("connection is closed"),
     ],
 )
+@pytest.mark.asyncio
 async def test_asyncpg_connect_time_error_is_logged_and_swallowed_not_raised(
     exc: Exception,
 ) -> None:
@@ -280,6 +296,7 @@ async def test_asyncpg_connect_time_error_is_logged_and_swallowed_not_raised(
     assert mock_logger.error.call_args.kwargs["error_type"] == type(exc).__name__
 
 
+@pytest.mark.asyncio
 async def test_write_timeout_is_logged_and_swallowed_not_raised() -> None:
     """A write that exceeds `_WRITE_TIMEOUT_SECONDS` (e.g. blocked on pool
     checkout under contention) fails open rather than blocking the caller's
@@ -309,6 +326,7 @@ async def test_write_timeout_is_logged_and_swallowed_not_raised() -> None:
     assert mock_logger.error.call_args.kwargs["error_type"] == "TimeoutError"
 
 
+@pytest.mark.asyncio
 async def test_database_error_never_logs_exception_string_or_traceback() -> None:
     """The failure log carries the exception TYPE only, never `str(exc)` or a
     traceback: a DBAPI-level SQLAlchemy error's `__str__` includes
@@ -343,3 +361,54 @@ async def test_database_error_never_logs_exception_string_or_traceback() -> None
     call = mock_logger.error.call_args
     assert secret_marker not in str(call)
     assert set(call.kwargs) == {"event_type", "error_type"}
+
+
+def test_clip_bounds_match_the_migration() -> None:
+    """The _MAX_*_LEN constants and the CREATE TABLE widths are one contract.
+
+    security_audit.py's own comment says the truncation bounds match "the
+    migration's VARCHAR widths exactly", but nothing enforced that: the
+    clipping happens in Python and the widths live in SQL, so the two can
+    drift silently. A bound that is WIDER than its column turns an oversized
+    attacker-supplied `path` back into a StringDataRightTruncation, which the
+    fail-open handler swallows -- the audit row an attacker would most want
+    dropped is exactly the one that disappears.
+
+    `event_type` is deliberately absent from the writer's bounds: it is not
+    caller input but a fixed vocabulary pinned by the table's own CHECK
+    constraint, so this test asserts that it is the ONLY unclipped VARCHAR
+    column rather than ignoring the gap. A future migration that adds a
+    caller-reachable VARCHAR column without a matching bound fails here.
+    """
+    migration = (
+        Path(__file__).resolve().parents[2]
+        / "supabase"
+        / "migrations"
+        / "20260804070000_add_security_event_table.sql"
+    ).read_text(encoding="utf-8")
+
+    declared = {
+        column: int(width)
+        for column, width in re.findall(
+            r'^\s*"(\w+)"\s+VARCHAR\((\d+)\)', migration, flags=re.MULTILINE
+        )
+    }
+    clipped = {
+        "reason": _MAX_REASON_LEN,
+        "client_ip": _MAX_CLIENT_IP_LEN,
+        "code": _MAX_CODE_LEN,
+        "path": _MAX_PATH_LEN,
+        "method": _MAX_METHOD_LEN,
+        "resource": _MAX_RESOURCE_LEN,
+    }
+
+    assert declared, "parsed no VARCHAR columns; the migration's shape changed"
+    for column, bound in clipped.items():
+        assert declared[column] == bound, (
+            f"{column}: the writer clips to {bound} "
+            f"but the migration declares VARCHAR({declared[column]})"
+        )
+    assert set(declared) - set(clipped) == {"event_type"}, (
+        "a VARCHAR column exists that record_security_event does not clip; "
+        "add a bound for it or justify it the way event_type is justified"
+    )

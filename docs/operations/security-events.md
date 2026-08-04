@@ -116,6 +116,31 @@ A degraded-mode signal rather than an attack signal. The in-memory fallback is p
 with more than one replica the effective limit is multiplied by the replica count. **Alert on
 any occurrence**: it means the rate limit is weaker than configured for as long as it persists.
 
+### `security_event_write_failed`
+
+| | |
+| --- | --- |
+| Level | `error` |
+| Emitted by | `security_audit.py::record_security_event` |
+| Fires on | The durable `security_event` row (section 5) failing to write |
+| Fields | `event_type`, `error_type` |
+
+The other side of section 5's fail-open contract. The durable write is deliberately allowed to
+fail rather than turn a real 401/403/429 into a 500, so this line is the **only** signal that
+the audit table is missing rows. Left unmonitored, fail-open is indistinguishable from
+nothing-happened: the table simply goes quiet and looks like an absence of attacks.
+
+`event_type` is the event whose row was lost, so a burst of these correlates directly with
+which detection surface has gone blind. `error_type` is the exception's class name and nothing
+else. Neither `str(exc)` nor a traceback is ever attached, because a DBAPI-level SQLAlchemy
+error renders its bound parameters into its own `__str__`, which would put `client_ip` and the
+rest of the row straight into the log store this table exists to reduce reliance on.
+
+**Alert on any occurrence.** Unlike the events above, this one has no legitimate steady-state
+rate: a healthy deployment emits zero. A sustained run of them means the database is
+unreachable, the service role has lost its `INSERT` grant on `security_event`, or the write is
+exceeding its timeout under load.
+
 ## 3. What is deliberately NOT an event
 
 Input validation rejections (HTTP 422, `ValidationError`) do **not** emit a security event, and
@@ -191,4 +216,10 @@ No alert rules ship in this repository today. The events above are shaped to be 
 is a deployment-side task in `homelab-infra` and is not yet done. Treat section 2's "Alert on"
 guidance as the specification for those rules, not a description of rules that exist.
 
-Until they exist, the events are useful for post-incident reconstruction only.
+Until they exist, the events are useful for post-incident reconstruction only. That gap is
+tracked as [`UW-D28`](../planning/unscheduled-work-register.md) against issue
+[#557](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/557), along with the two
+follow-ups this document raises but does not close: an alert rule for
+`security_event_write_failed` (without one, the fail-open write in section 5 makes a silent
+audit gap look identical to an absence of attacks), and a retention or purge mechanism for the
+`security_event` table's IP-bearing rows.

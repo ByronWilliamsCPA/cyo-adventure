@@ -638,6 +638,60 @@ class TestRateLimitMiddleware:
         assert "2.2.2.2" in middleware.requests
         assert "1.1.1.1" not in middleware.requests
 
+    @pytest.mark.unit
+    def test_trip_reaches_the_real_writer_with_an_accepted_signature(self) -> None:
+        """One test drives the real writer, not the autouse AsyncMock.
+
+        Every other test in this module runs against
+        ``_mock_security_event_writer``, and an ``AsyncMock`` accepts any
+        keyword argument at all. That makes the rest of the file blind to
+        signature drift: rename a parameter on ``record_security_event`` and
+        every ``assert_awaited_once_with`` here still passes while production
+        raises ``TypeError`` inside the ASGI middleware on the first 429.
+        Restoring the real function for this one test closes that gap; only
+        the database session is mocked out.
+        """
+        from unittest.mock import MagicMock
+
+        from cyo_adventure.db.models import SecurityEvent
+        from cyo_adventure.security_audit import record_security_event
+
+        session = MagicMock()
+        session.commit = AsyncMock()
+
+        class _CM:
+            async def __aenter__(self) -> MagicMock:
+                return session
+
+            async def __aexit__(
+                self, exc_type: object, exc: object, tb: object
+            ) -> bool:
+                return False
+
+        app = self._rate_limited_app(requests_per_minute=1, burst_size=100)
+        client = TestClient(app, raise_server_exceptions=False)
+
+        client.get("/")
+        with (
+            # Overrides this module's autouse patch for this test only.
+            patch(
+                "cyo_adventure.middleware.security.record_security_event",
+                record_security_event,
+            ),
+            patch("cyo_adventure.security_audit.get_session", return_value=_CM()),
+        ):
+            response = client.get("/")
+
+        assert response.status_code == 429
+        session.add.assert_called_once()
+        row = session.add.call_args.args[0]
+        assert isinstance(row, SecurityEvent)
+        assert row.event_type == "security_rate_limit_exceeded"
+        assert row.reason == "rpm"
+        assert row.client_ip == "testclient"
+        assert row.status_code == 429
+        session.commit.assert_awaited_once()
+
 
 # ---------------------------------------------------------------------------
 # RateLimitMiddleware: Redis backend (M5 / Phase 5)
