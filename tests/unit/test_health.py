@@ -223,18 +223,31 @@ class TestCheckDatabase:
 
 
 def _fake_session_with_connected_role(
-    role_name: str, *, bypasses_rls: bool
+    role_name: str,
+    *,
+    role_bypasses_rls: bool | None,
+    owns_rls_table: bool = False,
 ) -> Callable[[], AsyncGenerator[AsyncMock, None]]:
     """Build a mock AsyncSession whose execute() resolves the connected-role row.
 
     Mirrors ``_fake_session_with_queue_counts``: one round trip returning the
-    identity ``check_database_privilege`` reads (``current_user`` and whether
-    that role carries BYPASSRLS).
+    identity ``check_database_privilege`` reads. The query reports the two
+    bypass signals separately, so each can be exercised on its own:
+
+    - ``role_bypasses_rls``: the ``rolbypassrls OR rolsuper`` attribute pair,
+      already COALESCEd to ``true`` in SQL when the role has no ``pg_roles``
+      row. ``None`` models that COALESCE failing to apply.
+    - ``owns_rls_table``: the role owns at least one RLS-enabled ``public``
+      table that does not FORCE RLS, which bypasses every policy on it.
     """
     mock_session = AsyncMock(spec=AsyncSession)
     mock_result = Mock()
     mock_result.one = Mock(
-        return_value=SimpleNamespace(role_name=role_name, bypasses_rls=bypasses_rls)
+        return_value=SimpleNamespace(
+            role_name=role_name,
+            role_bypasses_rls=role_bypasses_rls,
+            owns_rls_table=owns_rls_table,
+        )
     )
     mock_session.execute = AsyncMock(return_value=mock_result)
 
@@ -266,7 +279,7 @@ class TestCheckDatabasePrivilege:
         from cyo_adventure.api.health import check_database_privilege
 
         fake_get_session = _fake_session_with_connected_role(
-            "cyo_api", bypasses_rls=False
+            "cyo_api", role_bypasses_rls=False, owns_rls_table=False
         )
 
         with patch(
@@ -284,15 +297,16 @@ class TestCheckDatabasePrivilege:
     @pytest.mark.unit
     @pytest.mark.asyncio
     async def test_bypassrls_role_reports_degraded(self) -> None:
-        """status=False, state='degraded' when the connected role bypasses RLS.
+        """status=False, state='degraded' via the rolbypassrls/rolsuper path.
 
-        This is the pre-cutover production state: connecting as the table
-        owner makes every RLS policy inert.
+        The first of the three bypass paths: the role attribute itself. The
+        ownership path is exercised separately below, because an environment
+        can be caught by either one alone.
         """
         from cyo_adventure.api.health import check_database_privilege
 
         fake_get_session = _fake_session_with_connected_role(
-            "postgres", bypasses_rls=True
+            "postgres", role_bypasses_rls=True, owns_rls_table=False
         )
 
         with patch(
@@ -307,17 +321,19 @@ class TestCheckDatabasePrivilege:
 
     @pytest.mark.unit
     @pytest.mark.asyncio
-    async def test_connected_role_name_is_never_in_the_response(self) -> None:
-        """The role name must not reach this unauthenticated endpoint.
+    async def test_ownership_bypass_alone_reports_degraded(self) -> None:
+        """Table ownership alone is a bypass, even with rolbypassrls false.
 
-        /health/ready is unauthenticated, so the response carries only the
-        posture bit. The role name is operator-facing detail and belongs in
-        the (access-controlled, redaction-aware) logs instead.
+        The path an un-cut-over environment actually uses: the baseline
+        migration assigns the Tier 1 tables to ``postgres``, RLS never applies
+        to a table's owner, and this schema does not FORCE RLS. A check that
+        read only the role attribute would report "ok" for a connection that
+        still sees every family's rows.
         """
         from cyo_adventure.api.health import check_database_privilege
 
         fake_get_session = _fake_session_with_connected_role(
-            "postgres", bypasses_rls=True
+            "cyo_api", role_bypasses_rls=False, owns_rls_table=True
         )
 
         with patch(
@@ -326,12 +342,88 @@ class TestCheckDatabasePrivilege:
         ):
             result = await check_database_privilege()
 
-        assert "postgres" not in str(result.model_dump())
+        assert result.status is False
+        assert result.state == "degraded"
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_role_missing_from_pg_roles_fails_closed(self) -> None:
+        """An unanalyzable role reports degraded, never ok.
+
+        The query COALESCEs a missing ``pg_roles`` row to ``true``; ``None``
+        here models that default failing to apply. "Can this connection bypass
+        RLS?" answered with "cannot tell" must not render as a reassuring
+        state="ok" on an alertable check.
+        """
+        from cyo_adventure.api.health import check_database_privilege
+
+        fake_get_session = _fake_session_with_connected_role(
+            "ghost_role", role_bypasses_rls=None, owns_rls_table=False
+        )
+
+        with patch(
+            "cyo_adventure.core.database.get_session",
+            side_effect=fake_get_session,
+        ):
+            result = await check_database_privilege()
+
+        assert result.status is False
+        assert result.state == "degraded"
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_role_name_is_logged_but_never_in_the_response(self) -> None:
+        """The role name reaches the logs and nothing else.
+
+        /health/ready is unauthenticated, so the response carries only the
+        posture bit. The role name is operator-facing detail and belongs in
+        the (access-controlled, redaction-aware) logs instead. Both halves are
+        asserted here: a check that stopped logging the role would still pass
+        a leak-only assertion while silently making the finding untriageable.
+        """
+        from cyo_adventure.api.health import check_database_privilege
+
+        fake_get_session = _fake_session_with_connected_role(
+            "postgres", role_bypasses_rls=True, owns_rls_table=True
+        )
+
+        with (
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=fake_get_session,
+            ),
+            patch("cyo_adventure.api.health.logger") as mock_logger,
+        ):
+            result = await check_database_privilege()
+
+        # Every serialized field, not just the concatenated repr: a role name
+        # landing in `error` would be caught by both, but one landing in a
+        # field added later is only caught by checking them individually.
+        dumped = result.model_dump()
+        for field, value in dumped.items():
+            assert "postgres" not in str(value), f"role name leaked via {field}"
+        assert "postgres" not in str(dumped)
+
+        # ...and the operator-facing half: the role name, plus which of the
+        # two bypass paths fired, must actually be logged.
+        warning_kwargs = [call.kwargs for call in mock_logger.warning.call_args_list]
+        assert any(
+            kwargs.get("role") == "postgres"
+            and kwargs.get("via_role_attribute") is True
+            and kwargs.get("via_table_ownership") is True
+            for kwargs in warning_kwargs
+        ), f"role name and bypass paths not logged; saw {warning_kwargs}"
 
     @pytest.mark.unit
     @pytest.mark.asyncio
     async def test_failure_returns_generic_error(self) -> None:
-        """A database error yields status=False and no raw exception text."""
+        """A database error yields status=False, state='unknown', no raw text.
+
+        state distinguishes the two failure modes on purpose: "degraded" is a
+        measured, real un-cut-over role an operator can fix, "unknown" is a
+        probe that never returned. Collapsing them makes the alert
+        unactionable.
+        """
         from cyo_adventure.api.health import check_database_privilege
 
         @asynccontextmanager
@@ -346,6 +438,7 @@ class TestCheckDatabasePrivilege:
             result = await check_database_privilege()
 
         assert result.status is False
+        assert result.state == "unknown"
         # Must NOT leak the raw exception text (OWASP A09)
         assert result.error == "dependency unavailable"
         assert "connection refused" not in (result.error or "")
@@ -1055,7 +1148,9 @@ class TestReadinessPrivilegeDoesNotGate:
                 privilege_result = Mock()
                 privilege_result.one = Mock(
                     return_value=SimpleNamespace(
-                        role_name="postgres", bypasses_rls=True
+                        role_name="postgres",
+                        role_bypasses_rls=True,
+                        owns_rls_table=True,
                     )
                 )
                 return privilege_result
@@ -1088,6 +1183,150 @@ class TestReadinessPrivilegeDoesNotGate:
         assert body["checks"]["database_privilege"]["state"] == "degraded"
         # The unauthenticated payload must not name the role (OWASP A01).
         assert "postgres" not in str(body)
+
+    @pytest.mark.unit
+    def test_privilege_query_failure_is_unknown_and_does_not_gate(self) -> None:
+        """A failing privilege query reports state='unknown' and stays HTTP 200.
+
+        readiness() opens one session and hands it to both database checks, so
+        this also pins the isolation that sharing implies: a failure inside the
+        second check must not take out the first, and the probe must not
+        conflate "could not measure" with "measured and bad".
+        """
+        mock_session = AsyncMock(spec=AsyncSession)
+
+        async def _execute(statement: Any) -> Any:
+            if "rolbypassrls" in str(statement):
+                msg = "permission denied for table pg_class"
+                raise RuntimeError(msg)
+            return _make_queue_result(0, 0, 0)
+
+        mock_session.execute = AsyncMock(side_effect=_execute)
+
+        @asynccontextmanager
+        async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
+            yield mock_session
+
+        app = _make_app()
+        with (
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=_fake_get_session,
+            ),
+            patch(
+                "cyo_adventure.api.health.settings.rate_limit_backend",
+                "memory",
+            ),
+        ):
+            client = TestClient(app, raise_server_exceptions=True)
+            response = client.get("/health/ready")
+
+        body = response.json()
+        assert response.status_code == 200
+        assert body["status"] == "ok"
+        assert body["checks"]["database"]["status"] is True
+        assert body["checks"]["database_privilege"]["status"] is False
+        assert body["checks"]["database_privilege"]["state"] == "unknown"
+        assert "permission denied" not in str(body)
+
+
+class TestReadinessSharedSession:
+    """readiness() hands one pool checkout to both database-backed checks.
+
+    A probe that took a connection per check would multiply pool pressure by
+    the number of checks exactly when the pool is stressed, which is when
+    readiness matters most. Sharing introduces one failure mode worth pinning:
+    the context manager's exit can raise after both checks have already
+    succeeded.
+    """
+
+    @pytest.mark.unit
+    def test_both_checks_share_a_single_session_checkout(self) -> None:
+        """One /health/ready call opens one session for the two db checks."""
+        mock_session = AsyncMock(spec=AsyncSession)
+        mock_session.execute = AsyncMock(return_value=_make_queue_result(0, 0, 0))
+        checkouts = {"count": 0}
+
+        @asynccontextmanager
+        async def _counting_get_session() -> AsyncGenerator[AsyncMock, None]:
+            checkouts["count"] += 1
+            yield mock_session
+
+        app = _make_app()
+        with (
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=_counting_get_session,
+            ),
+            patch("cyo_adventure.api.health.settings.rate_limit_backend", "memory"),
+        ):
+            client = TestClient(app, raise_server_exceptions=True)
+            response = client.get("/health/ready")
+
+        assert response.status_code == 200
+        # One for the shared database pair, one for check_generation_queue,
+        # which is not part of the pair. Three would mean the pair split.
+        assert checkouts["count"] == 2
+
+    @pytest.mark.unit
+    def test_teardown_failure_does_not_discard_completed_checks(self) -> None:
+        """A raising session exit must not turn two passes into a 503.
+
+        ``database`` is the only gating check. Re-running both checks
+        unconditionally after any exception would overwrite results the shared
+        checkout already produced, manufacturing an outage out of a failed
+        close on an otherwise healthy process.
+        """
+        mock_session = AsyncMock(spec=AsyncSession)
+
+        async def _execute(statement: Any) -> Any:
+            if "rolbypassrls" in str(statement):
+                privilege_result = Mock()
+                privilege_result.one = Mock(
+                    return_value=SimpleNamespace(
+                        role_name="cyo_api",
+                        role_bypasses_rls=False,
+                        owns_rls_table=False,
+                    )
+                )
+                return privilege_result
+            return _make_queue_result(0, 0, 0)
+
+        mock_session.execute = AsyncMock(side_effect=_execute)
+        entries = {"count": 0}
+
+        @asynccontextmanager
+        async def _exit_failing_get_session() -> AsyncGenerator[AsyncMock, None]:
+            entries["count"] += 1
+            msg = "connection reset on close"
+            # The shared pair's checkout serves both checks, then fails on the
+            # way out. Every later checkout fails outright: the connection is
+            # genuinely gone, so a standalone re-run cannot succeed. That is
+            # what makes this test non-vacuous -- re-running unconditionally
+            # turns two passing checks into a 503.
+            if entries["count"] == 1:
+                yield mock_session
+                raise RuntimeError(msg)
+            raise RuntimeError(msg)
+            yield mock_session  # pragma: no cover
+
+        app = _make_app()
+        with (
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=_exit_failing_get_session,
+            ),
+            patch("cyo_adventure.api.health.settings.rate_limit_backend", "memory"),
+        ):
+            client = TestClient(app, raise_server_exceptions=True)
+            response = client.get("/health/ready")
+
+        body = response.json()
+        assert response.status_code == 200
+        assert body["checks"]["database"]["status"] is True
+        assert body["checks"]["database_privilege"]["status"] is True
+        assert body["checks"]["database_privilege"]["state"] == "ok"
+        assert "connection reset on close" not in str(body)
 
 
 # ---------------------------------------------------------------------------

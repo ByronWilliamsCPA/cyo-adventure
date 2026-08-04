@@ -3245,9 +3245,9 @@ export type ReadinessCheck = {
     /**
      * State
      *
-     * Fine-grained state: ok, degraded, or unconfigured
+     * Fine-grained state: ok, degraded, unconfigured, or unknown
      */
-    state?: 'ok' | 'degraded' | 'unconfigured' | null;
+    state?: 'ok' | 'degraded' | 'unconfigured' | 'unknown' | null;
 };
 
 /**
