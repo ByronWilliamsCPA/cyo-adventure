@@ -17,12 +17,17 @@ Tiered retention (GFS rotation), sized for limited R2 space rather than kept for
 # measurement of this project's actual dump size or R2 budget -- nobody has run this
 # against the live database yet. #VERIFY: after the first real run, check the object
 # sizes reported in R2 and tune --daily-days/--weekly-days/--monthly-days (or the
-# workflow_dispatch inputs that pass them through) to fit the available space.
+# workflow_dispatch inputs that pass them through) to fit the available space; values
+# below the documented per-tier floors need --force-retention and destroy history.
 #
 # Retention is enforced by an R2 bucket LIFECYCLE RULE per prefix (server-side expiry),
 # not by this script deleting objects itself: ensure_lifecycle_rules() asserts the
 # current three rules on every run, which is both idempotent and self-healing if the
-# bucket configuration ever drifts.
+# bucket configuration ever drifts. Because that call REPLACES the target bucket's whole
+# lifecycle configuration, it is guarded on both sides: verify_backup_bucket() proves
+# the bucket is this script's bucket before anything is written, and the lifecycle write
+# itself happens only after every upload has succeeded and
+# assert_recent_backup_exists() has confirmed the bucket still holds recent history.
 
 Run recipe (mirrors scripts/backfill_covers_r2.py's dry-run convention)::
 
@@ -48,17 +53,23 @@ Required environment variables (see .github/workflows/supabase-backup.yml):
 # SUPABASE_DB_URL embeds a password too, and that one previously WAS exposed: it was
 # passed as a `--db-url` argv element to the `supabase` subprocess, readable from
 # `/proc/<pid>/cmdline` by any co-resident process for up to _DUMP_TIMEOUT_SECONDS.
-# run_dump_leg now strips the password out of the URL before it ever becomes an argv
-# element (see `_strip_password_from_db_url`) and exports it to the subprocess only via
-# `PGPASSWORD` in `env=`, which the Supabase CLI's underlying libpq connection honors
-# (verified manually against a live Supabase CLI 2.109.1 / local Postgres 17.6 stack:
-# an otherwise-identical dump with the password moved from the URL to `PGPASSWORD`
-# produced byte-identical output). `env=` values are not visible in `/proc/<pid>/cmdline`
-# the way argv is.
-# #VERIFY: test_backup_database.py::test_run_dump_leg_never_puts_password_in_argv and
-# ::test_strip_password_from_db_url_moves_password_out_of_the_url pin this; grep for
-# `_logger` call sites here before adding new ones and confirm none interpolate
-# `encryption_key`, `raw`, the R2 secret, or a raw (unsanitized) db_url.
+# run_dump_leg now strips the credential out of the URL before it ever becomes an argv
+# element (see `_strip_credentials_from_db_url`, which covers BOTH the `://user:pw@`
+# userinfo form and libpq's `?password=` query-parameter form) and exports it to the
+# subprocess only via `PGPASSWORD` in `env=`, which the Supabase CLI's underlying libpq
+# connection honors (verified manually against a live Supabase CLI 2.109.1 / local
+# Postgres 17.6 stack: an otherwise-identical dump with the password moved from the URL
+# to `PGPASSWORD` produced byte-identical output). `env=` values are not visible in
+# `/proc/<pid>/cmdline` the way argv is, and that `env=` is an explicit allowlist rather
+# than a copy of this process's environment, so the CLI never sees the encryption key,
+# either R2 credential, or the raw SUPABASE_DB_URL.
+# #VERIFY: test_backup_database.py::test_run_dump_leg_never_puts_password_in_argv,
+# ::test_strip_credentials_moves_password_out_of_the_url,
+# ::test_strip_credentials_moves_query_parameter_password_out_of_the_url and
+# ::test_run_dump_leg_env_excludes_unrelated_secrets pin this; grep for `_logger` call
+# sites here before adding new ones and confirm none interpolate `encryption_key`,
+# `raw`, the R2 secret, or a raw (unsanitized) db_url, and route every `print` of an
+# exception through `_redact_secrets`.
 
 This is a real one-shot/scheduled operator script that dumps a live database and uploads
 to a live bucket. It is NOT covered by integration tests against live infrastructure;
@@ -75,11 +86,12 @@ import re
 import subprocess
 import sys
 import tempfile
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
-from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import parse_qsl, unquote, urlencode, urlsplit, urlunsplit
 
 import boto3
 import structlog
@@ -109,7 +121,92 @@ _DEFAULT_DAILY_RETENTION_DAYS = 7
 _DEFAULT_WEEKLY_RETENTION_DAYS = 28
 _DEFAULT_MONTHLY_RETENTION_DAYS = 180
 
+# Floors below which a retention value stops being a policy and becomes a deletion
+# order. An R2 lifecycle rule applies to the WHOLE prefix, not just to objects this run
+# wrote, so `--monthly-days 1` (a plausible typo for 180) tells R2 to expire every
+# object under `monthly/` older than a day, destroying roughly six months of history
+# that correct earlier runs produced. The rule also PERSISTS on the bucket after the run
+# that set it, so the deletion continues after the operator's session ends.
+_MIN_DAILY_RETENTION_DAYS = 3
+_MIN_WEEKLY_RETENTION_DAYS = 14
+_MIN_MONTHLY_RETENTION_DAYS = 90
+
+# Sentinel object proving a bucket is THIS script's backup bucket. Checked before any
+# write, because every destructive operation here (the lifecycle replace especially) is
+# scoped by bucket name alone, and a bucket name is one environment variable away from
+# being the public covers bucket.
+_BUCKET_SENTINEL_KEY = ".cyo-backup-bucket"
+_BUCKET_SENTINEL_BODY = (
+    b"Marker for scripts/backup_database.py. Its presence authorizes that script to\n"
+    b"write encrypted database dumps here and to REPLACE this bucket's lifecycle\n"
+    b"configuration with expire-daily/expire-weekly/expire-monthly rules.\n"
+    b"Delete this object only if this bucket is no longer the backup bucket.\n"
+)
+
+# The lifecycle rule IDs this script owns. Anything else already on the bucket belongs
+# to someone (or something) else and is reported before it gets overwritten.
+_OWNED_LIFECYCLE_RULE_IDS = frozenset(
+    {"expire-daily", "expire-weekly", "expire-monthly"}
+)
+
+# S3/R2 error codes that mean "the thing you asked about is not there", as opposed to
+# "you may not ask". A missing sentinel is a refusal-to-proceed; a 403 is a credential
+# problem and must propagate rather than be mistaken for an uninitialized bucket.
+_NOT_FOUND_ERROR_CODES = frozenset({"404", "NoSuchKey", "NoSuchBucket", "NotFound"})
+_NO_LIFECYCLE_ERROR_CODES = frozenset(
+    {"NoSuchLifecycleConfiguration", "NoSuchConfiguration"}
+)
+
+# Environment variables the Supabase CLI subprocess is allowed to inherit. Everything
+# else is dropped, including BACKUP_ENCRYPTION_KEY, both R2 keys, and the raw
+# password-bearing SUPABASE_DB_URL: none of them is anything the CLI needs, and a
+# subprocess that cannot read a secret cannot leak it through a crash dump, a --debug
+# trace, or a grandchild process.
+#
+# #ASSUME: external resources: this allowlist is what a `supabase db dump` against a
+# remote --db-url needs (PATH to find the binary and its bundled pg_dump, HOME/XDG for
+# the CLI's config dir, TMPDIR for its scratch files, SSL_CERT_* for TLS trust, and the
+# SUPABASE_* pair the CLI documents for non-interactive use). It is a deliberate
+# allowlist, not a measurement of every variable the CLI might ever read.
+# #VERIFY: if a live run fails with a CLI error that names a missing setting rather
+# than a database problem, add that variable here rather than reverting to
+# os.environ.copy(); reverting re-exposes all six secrets.
+_SUBPROCESS_ENV_ALLOWLIST: tuple[str, ...] = (
+    "PATH",
+    "HOME",
+    "TMPDIR",
+    "TMP",
+    "TEMP",
+    "LANG",
+    "LC_ALL",
+    "LC_CTYPE",
+    "XDG_CONFIG_HOME",
+    "XDG_CACHE_HOME",
+    "XDG_DATA_HOME",
+    "SSL_CERT_FILE",
+    "SSL_CERT_DIR",
+    "SUPABASE_ACCESS_TOKEN",
+    "SUPABASE_WORKDIR",
+)
+
 _ISO_SUNDAY = 7
+
+# The prefix whose history proves the schedule is still running. `daily/` is the right
+# one to measure: it is written on EVERY run, so its newest date is the last time this
+# job did anything at all, whereas `weekly/` and `monthly/` are legitimately days or
+# weeks stale by design.
+_HISTORY_PREFIX = "daily/"
+_BACKUP_DATE_FORMAT = "%Y-%m-%d"
+
+# How stale the newest PRE-EXISTING daily backup may be before a run fails.
+#
+# Three days, chosen against two boundaries. Upper: it must be comfortably below the
+# 7-day default (and the 3-day hard floor) for daily retention, so that when the alarm
+# fires there is still history left to restore from rather than an already-empty
+# prefix. Lower: it must tolerate ordinary noise, and one missed night is ordinary (a
+# GitHub Actions incident, a Supabase maintenance window, a transient R2 error). Three
+# days means two consecutive misses are tolerated and the third is a pattern.
+_MAX_BACKUP_GAP_DAYS = 3
 
 # A dump leg below this many bytes is rejected outright, no marker check needed: real
 # legs (even a roles.sql from a project with zero custom roles) run into the hundreds
@@ -119,7 +216,7 @@ _ISO_SUNDAY = 7
 # well-formed boilerplate.
 _MIN_LEG_BYTES = 40
 
-# Leg-appropriate structural markers, verified empirically (2026-08-04) against a live
+# Leg-appropriate structural markers, verified empirically (2026-08-03) against a live
 # local Supabase stack (CLI 2.109.1, Postgres 17.6) rather than assumed:
 #
 # - roles.sql (`supabase db dump --role-only`): pg_dumpall's own sed pipeline comments
@@ -154,13 +251,74 @@ _LEG_REQUIREMENTS: dict[str, tuple[str, re.Pattern[str]]] = {
 _ERROR_OUTPUT_TRUNCATE_CHARS = 4000
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class RetentionPolicy:
-    """Day counts each tier's R2 lifecycle rule expires objects after."""
+    """Day counts each tier's R2 lifecycle rule expires objects after.
+
+    # #CRITICAL: data integrity: these numbers are not a preference, they are a
+    # standing instruction to R2 to DELETE objects. The rule is applied to the whole
+    # prefix and survives the run that set it, so an unvalidated value is a data-loss
+    # primitive: `--monthly-days 1` in place of 180 expires every object under
+    # `monthly/`, including history no later run can regenerate. `__post_init__`
+    # therefore rejects sub-floor and out-of-order values here, at construction, rather
+    # than trusting each call site to check. ``force`` (``--force-retention``) is the
+    # deliberate-shrink escape hatch and waives ONLY the floors; a positive-days check
+    # and the daily <= weekly <= monthly ordering are structural and never waived,
+    # since a GFS rotation whose coarser tier expires first has no meaning.
+    # #VERIFY: test_backup_database.py::test_retention_policy_rejects_sub_floor_days,
+    # ::test_retention_policy_rejects_inverted_ordering,
+    # ::test_retention_policy_force_waives_floors_but_not_ordering.
+    #
+    # Fields are keyword-only by construction (``kw_only=True``): three same-typed ints
+    # in a row are silently swappable positionally, and a swap of daily_days and
+    # monthly_days would type-check, lint, and pass every behavioural test while
+    # setting `monthly/` to expire in 7 days.
+
+    Args:
+        daily_days: Expiry for the ``daily/`` prefix.
+        weekly_days: Expiry for the ``weekly/`` prefix.
+        monthly_days: Expiry for the ``monthly/`` prefix.
+        force: Waive the per-tier floors for a deliberate shrink.
+    """
 
     daily_days: int = _DEFAULT_DAILY_RETENTION_DAYS
     weekly_days: int = _DEFAULT_WEEKLY_RETENTION_DAYS
     monthly_days: int = _DEFAULT_MONTHLY_RETENTION_DAYS
+    force: bool = False
+
+    def __post_init__(self) -> None:
+        """Reject any value that would turn a retention rule into a deletion order.
+
+        Raises:
+            ValueError: If any tier is below one day, below its documented floor
+                without ``force``, or if the tiers are not in non-decreasing order.
+        """
+        problems: list[str] = []
+        for flag, value, floor in (
+            ("--daily-days", self.daily_days, _MIN_DAILY_RETENTION_DAYS),
+            ("--weekly-days", self.weekly_days, _MIN_WEEKLY_RETENTION_DAYS),
+            ("--monthly-days", self.monthly_days, _MIN_MONTHLY_RETENTION_DAYS),
+        ):
+            if value < 1:
+                problems.append(
+                    f"{flag}={value} is not a positive number of days; R2 expiration "
+                    "requires at least 1"
+                )
+            elif value < floor and not self.force:
+                problems.append(
+                    f"{flag}={value} is below the {floor}-day floor for that tier; "
+                    "pass --force-retention if the shrink is deliberate and you "
+                    "accept that R2 will expire existing objects under that prefix"
+                )
+        if not self.daily_days <= self.weekly_days <= self.monthly_days:
+            problems.append(
+                f"tiers must be non-decreasing, got daily={self.daily_days} "
+                f"weekly={self.weekly_days} monthly={self.monthly_days}; a coarser "
+                "tier that expires sooner than a finer one cannot retain more history"
+            )
+        if problems:
+            msg = "invalid retention policy: " + "; ".join(problems)
+            raise ValueError(msg)
 
 
 def tiers_for_date(today: datetime) -> tuple[str, ...]:
@@ -302,40 +460,89 @@ def decrypt_bytes(blob: bytes, key: bytes) -> bytes:
     return AESGCM(key).decrypt(nonce, ciphertext, associated_data=None)
 
 
-def _strip_password_from_db_url(db_url: str) -> tuple[str, str | None]:
-    """Split a Postgres connection URL into a password-free URL and its password.
+def _strip_credentials_from_db_url(db_url: str) -> tuple[str, dict[str, str]]:
+    """Split a Postgres connection URL into a credential-free URL and libpq env vars.
 
     # #CRITICAL: security: this is what keeps the database password out of argv (and
     # therefore out of `/proc/<pid>/cmdline`, readable by any co-resident process for
-    # the subprocess's lifetime). Manually verified against a live Supabase CLI 2.109.1
-    # / local Postgres 17.6 stack: dumping with the password left in `--db-url` and
-    # dumping with the password stripped from the URL and exported as `PGPASSWORD`
-    # instead produced byte-identical roles.sql output, confirming the CLI's underlying
-    # libpq connection honors `PGPASSWORD` from the environment when the URL's userinfo
-    # omits a password. No Supabase-CLI-specific env var was needed or invented.
-    # #VERIFY: test_backup_database.py::test_strip_password_from_db_url_moves_password_out_of_the_url.
+    # the subprocess's lifetime) and out of any error text that renders that argv.
+    # Manually verified against a live Supabase CLI 2.109.1 / local Postgres 17.6
+    # stack: dumping with the password left in `--db-url` and dumping with the password
+    # stripped from the URL and exported as `PGPASSWORD` instead produced
+    # byte-identical roles.sql output, confirming the CLI's underlying libpq connection
+    # honors `PGPASSWORD` from the environment when the URL's userinfo omits a
+    # password. No Supabase-CLI-specific env var was needed or invented.
+    #
+    # TWO credential locations are handled, not one. libpq accepts the password in the
+    # userinfo (`://user:pw@host`) AND as a URI query parameter: a `password` key in the
+    # query string, alongside ordinary connection parameters such as `sslmode`. That
+    # second form is spelled out in words rather than shown as a literal
+    # `key=value` pair, because a secret scanner's generic-password detector matches the
+    # assignment SHAPE and cannot tell an illustrative token in a comment apart from a
+    # real credential; written literally here it raised a false-positive incident
+    # against this file. `urlsplit().password` is None for the second
+    # form, so a query-parameter password used to survive this function untouched,
+    # reach argv, and get echoed verbatim by the failure path in main(). The same
+    # applies to `passfile`, which is moved to PGPASSFILE rather than dropped, since
+    # dropping it would break authentication for anyone using that form.
+    #
+    # #CRITICAL: security: the userinfo password is PERCENT-DECODED before export.
+    # `urlsplit().password` is the raw encoded substring, so `p%40ss` is the four
+    # characters libpq would decode to `p@ss`; exporting the encoded form as PGPASSWORD
+    # sends the wrong password and fails every dump leg with an auth error that points
+    # at the credential rather than at this transform. The username is deliberately
+    # NOT decoded: it is re-embedded in the URL, where libpq does its own decoding.
+    # #VERIFY: test_backup_database.py::test_strip_credentials_percent_decodes_the_password,
+    # ::test_strip_credentials_moves_query_parameter_password_out_of_the_url,
+    # ::test_strip_credentials_brackets_ipv6_hosts.
 
     Args:
-        db_url: A (possibly password-bearing) Postgres connection URL, e.g.
+        db_url: A (possibly credential-bearing) Postgres connection URL, e.g.
             ``postgresql://<user>:<password>@<host>:5432/<dbname>``.
 
     Returns:
-        A tuple of ``(sanitized_url, password)``. ``password`` is ``None`` when the
-        input URL had no embedded password (nothing to strip, nothing to export);
+        A tuple of ``(sanitized_url, env_overrides)``. ``env_overrides`` carries the
+        libpq environment variables (``PGPASSWORD``, ``PGPASSFILE``) that replace what
+        was removed, and is empty when the URL carried no credential;
         ``sanitized_url`` is always safe to pass as a CLI argument.
     """
     parsed = urlsplit(db_url)
-    if parsed.password is None:
-        return db_url, None
-    netloc = parsed.username or ""
-    if parsed.hostname:
-        netloc += f"@{parsed.hostname}"
+    overrides: dict[str, str] = {}
+
+    kept_query: list[tuple[str, str]] = []
+    for name, value in parse_qsl(parsed.query, keep_blank_values=True):
+        lowered = name.lower()
+        if lowered == "password":
+            overrides["PGPASSWORD"] = value
+        elif lowered == "passfile":
+            overrides["PGPASSFILE"] = value
+        else:
+            kept_query.append((name, value))
+
+    # Userinfo wins over the query parameter when a URL somehow carries both: it is the
+    # form the runbook documents and the one libpq's own URI parser reads first.
+    if parsed.password is not None:
+        overrides["PGPASSWORD"] = unquote(parsed.password)
+
+    if not overrides:
+        # Nothing to strip: return the URL byte-identical rather than round-tripping it
+        # through urlunsplit, which would rewrite forms like `postgresql://direct`.
+        return db_url, overrides
+
+    host = parsed.hostname or ""
+    if ":" in host:
+        # An IPv6 literal loses its brackets via `.hostname`; without them the rebuilt
+        # URL is unparseable and the dump fails on a host that was always valid.
+        host = f"[{host}]"
+    netloc = host
     if parsed.port:
-        netloc += f":{parsed.port}"
+        netloc = f"{netloc}:{parsed.port}"
+    if parsed.username:
+        netloc = f"{parsed.username}@{netloc}"
     sanitized = urlunsplit(
-        (parsed.scheme, netloc, parsed.path, parsed.query, parsed.fragment)
+        (parsed.scheme, netloc, parsed.path, urlencode(kept_query), parsed.fragment)
     )
-    return sanitized, parsed.password
+    return sanitized, overrides
 
 
 # The password class is `[^/\s]+`, NOT `[^/\s@]+`: a password may legitimately
@@ -347,7 +554,12 @@ _URL_CREDENTIALS_RE = re.compile(r"://[^/\s:@]+:[^/\s]+@")
 
 # libpq also accepts keyword/value conninfo strings, and some client error paths echo
 # that form instead of a URL. The URL pattern above cannot see a bare `password=...`.
-_CONNINFO_PASSWORD_RE = re.compile(r"(?i)\bpassword\s*=\s*\S+")
+# The value class stops at `&` as well as whitespace: the same `password=` shape occurs
+# in a URI query string, where the password and a following `sslmode` are two separate
+# parameters, and a `\S+` class swallowed the `sslmode` diagnostic along with the secret.
+# (Spelled out rather than shown as a literal pair, for the scanner reason given at
+# _strip_credentials_from_db_url.)
+_CONNINFO_PASSWORD_RE = re.compile(r"(?i)\bpassword\s*=\s*[^\s&]+")
 
 
 def _redact_secrets(text: str) -> str:
@@ -421,10 +633,19 @@ def run_dump_leg(db_url: str, out_path: Path, extra_args: tuple[str, ...]) -> No
         subprocess.TimeoutExpired: If the dump does not finish within
             ``_DUMP_TIMEOUT_SECONDS``.
     """
-    sanitized_url, password = _strip_password_from_db_url(db_url)
-    env = os.environ.copy()
-    if password is not None:
-        env["PGPASSWORD"] = password
+    sanitized_url, credential_env = _strip_credentials_from_db_url(db_url)
+    # #CRITICAL: security: an allowlisted env, NOT os.environ.copy(). A copy handed the
+    # CLI subprocess BACKUP_ENCRYPTION_KEY, both R2 keys, and the raw password-bearing
+    # SUPABASE_DB_URL, which contradicts this module's least-exposure rationale: the
+    # password is carefully kept out of argv and then re-exposed in full to the same
+    # process through its environment.
+    # #VERIFY: test_backup_database.py::test_run_dump_leg_env_excludes_unrelated_secrets.
+    env = {
+        name: value
+        for name in _SUBPROCESS_ENV_ALLOWLIST
+        if (value := os.environ.get(name)) is not None
+    }
+    env.update(credential_env)
     subprocess.run(
         [
             "supabase",
@@ -443,20 +664,137 @@ def run_dump_leg(db_url: str, out_path: Path, extra_args: tuple[str, ...]) -> No
     )
 
 
+def _client_error_code(exc: ClientError) -> str:
+    """Extract the S3/R2 error code from a ``ClientError``, or ``""`` if absent.
+
+    Read defensively rather than by indexing: botocore builds this payload from the
+    wire response, so a malformed or truncated error body must degrade to "no code I
+    recognize" (and therefore to re-raising) rather than to a KeyError that replaces
+    the real failure.
+
+    Args:
+        exc: The exception boto3 raised.
+
+    Returns:
+        The ``Error.Code`` string, or an empty string when the response has no usable
+        code.
+    """
+    response: Mapping[str, object] = exc.response
+    error = response.get("Error")
+    if not isinstance(error, Mapping):
+        return ""
+    code: object = error.get("Code")  # pyright: ignore[reportUnknownMemberType]
+    return code if isinstance(code, str) else ""
+
+
+def verify_backup_bucket(
+    client: S3Client, bucket: str, *, init_bucket: bool = False
+) -> None:
+    """Refuse to touch a bucket that is not provably this script's backup bucket.
+
+    # #CRITICAL: data integrity: every destructive operation in this script is scoped
+    # by bucket NAME alone, and the lifecycle write below fully REPLACES whatever
+    # configuration the named bucket already has. If R2_BACKUP_BUCKET is ever set or
+    # rotated to another bucket (the public covers bucket is one typo away), the first
+    # run would discard that bucket's lifecycle rules, apply expire-after-N-days to any
+    # pre-existing daily/weekly/monthly prefixes there, and write encrypted dumps into
+    # a public bucket. Prefix matching is tight; bucket SELECTION was the unguarded
+    # step. A sentinel object turns "the name in the env var" into "a bucket somebody
+    # deliberately initialized for backups".
+    # #VERIFY: test_backup_database.py::test_verify_backup_bucket_refuses_a_bucket_without_the_sentinel,
+    # ::test_verify_backup_bucket_creates_the_sentinel_under_init_bucket,
+    # ::test_run_backup_aborts_before_dumping_when_the_sentinel_is_missing.
+
+    Args:
+        client: R2 S3-compatible client.
+        bucket: The backup bucket name.
+        init_bucket: When True, create the sentinel instead of refusing. This is the
+            explicit one-time ``--init-bucket`` opt-in, never the default.
+
+    Raises:
+        RuntimeError: If the sentinel is absent and ``init_bucket`` is False.
+        ClientError: On any other R2 API failure, including a 403, which means a
+            credential problem and must not be mistaken for an uninitialized bucket.
+    """
+    try:
+        client.head_object(Bucket=bucket, Key=_BUCKET_SENTINEL_KEY)
+    except ClientError as exc:
+        if _client_error_code(exc) not in _NOT_FOUND_ERROR_CODES:
+            raise
+        if not init_bucket:
+            msg = (
+                f"bucket {bucket!r} has no {_BUCKET_SENTINEL_KEY} marker object, so "
+                "this script cannot confirm it is the backup bucket; refusing to "
+                "write dumps or replace its lifecycle configuration. Re-run once "
+                "with --init-bucket if this really is the (empty, non-public) backup "
+                "bucket, or fix R2_BACKUP_BUCKET."
+            )
+            raise RuntimeError(msg) from exc
+        client.put_object(
+            Bucket=bucket,
+            Key=_BUCKET_SENTINEL_KEY,
+            Body=_BUCKET_SENTINEL_BODY,
+            ContentType="text/plain",
+        )
+        _logger.info("backup_bucket_sentinel_created", bucket=bucket)
+    else:
+        _logger.info("backup_bucket_verified", bucket=bucket)
+
+
+def _report_foreign_lifecycle_rules(client: S3Client, bucket: str) -> None:
+    """Log any lifecycle rule already on the bucket that this script does not own.
+
+    ``put_bucket_lifecycle_configuration`` replaces the whole configuration, so a rule
+    written by someone else disappears without a trace. This read-before-write turns
+    that into a logged, greppable event rather than a silent loss.
+
+    Args:
+        client: R2 S3-compatible client.
+        bucket: The backup bucket name.
+    """
+    try:
+        current = client.get_bucket_lifecycle_configuration(Bucket=bucket)
+    except ClientError as exc:
+        if _client_error_code(exc) in _NO_LIFECYCLE_ERROR_CODES:
+            return
+        raise
+    existing = [str(rule.get("ID", "")) for rule in current.get("Rules", [])]
+    foreign = sorted(set(existing) - _OWNED_LIFECYCLE_RULE_IDS)
+    if foreign:
+        _logger.warning(
+            "backup_lifecycle_replacing_foreign_rules",
+            bucket=bucket,
+            foreign_rule_ids=foreign,
+            owned_rule_ids=sorted(_OWNED_LIFECYCLE_RULE_IDS),
+        )
+
+
 def ensure_lifecycle_rules(
     client: S3Client, bucket: str, policy: RetentionPolicy
 ) -> None:
     """Assert the three tiered expiration rules on the backup bucket.
 
-    Idempotent and self-healing: called on every run rather than once at setup time,
-    so a bucket configuration that drifts (or a bucket that is recreated) is corrected
-    on the next scheduled backup instead of silently growing unbounded.
+    Idempotent and self-healing FOR THE BACKUP BUCKET: called on every run rather than
+    once at setup time, so a bucket configuration that drifts (or a bucket that is
+    recreated) is corrected on the next scheduled backup instead of silently growing
+    unbounded. That claim depends entirely on the bucket being the right one, which is
+    ``verify_backup_bucket``'s job and must have run first.
+
+    # #CRITICAL: data integrity: called only AFTER the upload loop succeeds. When it
+    # ran first, a run that passed a bad retention value and then failed its dump still
+    # left the destructive lifecycle change on the bucket: the operator saw a red run,
+    # went debugging the dump, and R2 deleted good backups underneath them. Ordering it
+    # last means no failed run can mutate retention.
+    # #VERIFY: test_backup_database.py::test_run_backup_does_not_touch_lifecycle_when_a_leg_fails,
+    # ::test_run_backup_sets_lifecycle_only_after_every_upload_succeeds.
 
     Args:
         client: R2 S3-compatible client.
         bucket: The backup bucket name.
-        policy: Retention day counts per tier.
+        policy: Retention day counts per tier, already validated by
+            ``RetentionPolicy.__post_init__``.
     """
+    _report_foreign_lifecycle_rules(client, bucket)
     client.put_bucket_lifecycle_configuration(
         Bucket=bucket,
         LifecycleConfiguration={
@@ -484,7 +822,7 @@ def upload_encrypted(
     date_str: str,
     filename: str,
     ciphertext: bytes,
-) -> str:
+) -> tuple[str, str | None]:
     """Upload one encrypted dump leg to ``{tier}/{date_str}/{filename}.enc``.
 
     Args:
@@ -496,20 +834,24 @@ def upload_encrypted(
         ciphertext: The output of ``encrypt_bytes``.
 
     Returns:
-        The object key written.
+        ``(key, etag)``: the object key written and the ETag R2 reported for it, or
+        ``None`` when the response carried no ETag. The ETag is what lets a rollback
+        prove an object is still the one THIS run wrote before deleting it.
     """
     key = f"{tier}/{date_str}/{filename}.enc"
-    client.put_object(
+    response = client.put_object(
         Bucket=bucket,
         Key=key,
         Body=ciphertext,
         ContentType="application/octet-stream",
     )
-    return key
+    return key, response.get("ETag")
 
 
-def _rollback_uploads(client: S3Client, bucket: str, keys: list[str]) -> None:
-    """Best-effort delete of the keys this run already wrote, newest first.
+def _rollback_uploads(
+    client: S3Client, bucket: str, written: list[tuple[str, str | None]]
+) -> None:
+    """Best-effort delete of the objects this run already wrote, newest first.
 
     Called only from the upload loop's failure path, to keep R2 from holding a
     partial set for a date.
@@ -520,15 +862,34 @@ def _rollback_uploads(client: S3Client, bucket: str, keys: list[str]) -> None:
     # replacing it would hide the cause and send an operator chasing the cleanup
     # instead of the outage. Failures are logged individually so a surviving object is
     # still nameable from the run's logs.
-    # #VERIFY: test_backup_database.py::test_rollback_uploads_continues_after_a_failed_delete.
+    #
+    # #CRITICAL: concurrency: each delete is guarded by the ETag this run received for
+    # that key. Object keys are date-derived, not run-derived, so two overlapping runs
+    # (a delayed schedule plus a manual dispatch) compute IDENTICAL keys. Without the
+    # guard, run A's rollback deletes run B's freshly uploaded objects, and run B has
+    # already exited 0 reporting a complete backup: an incomplete set for a date a
+    # successful run called complete, with nothing red anywhere. The workflow's
+    # `concurrency:` group is the first line of defense; this is the one that does not
+    # depend on GitHub scheduling.
+    # #VERIFY: test_backup_database.py::test_rollback_uploads_continues_after_a_failed_delete,
+    # ::test_rollback_uploads_skips_an_object_another_run_replaced.
 
     Args:
         client: R2 S3-compatible client.
         bucket: The backup bucket name.
-        keys: Object keys written earlier in this run, in write order.
+        written: ``(key, etag)`` pairs written earlier in this run, in write order.
     """
-    for key in reversed(keys):
+    for key, etag in reversed(written):
         try:
+            if etag is not None:
+                current = client.head_object(Bucket=bucket, Key=key)
+                if current.get("ETag") != etag:
+                    _logger.error(
+                        "backup_rollback_skipped_replaced_object",
+                        key=key,
+                        reason="etag_mismatch",
+                    )
+                    continue
             client.delete_object(Bucket=bucket, Key=key)
         except (BotoCoreError, ClientError) as exc:
             _logger.error(
@@ -538,6 +899,138 @@ def _rollback_uploads(client: S3Client, bucket: str, keys: list[str]) -> None:
             )
         else:
             _logger.info("backup_rollback_deleted", key=key)
+
+
+def assert_recent_backup_exists(
+    client: S3Client,
+    bucket: str,
+    *,
+    today: datetime,
+    exclude_date: str,
+    allow_empty: bool,
+) -> None:
+    """Fail the run unless a recent PRE-EXISTING daily backup is still in the bucket.
+
+    Retention expires objects on an age-based schedule unconditionally, but until this
+    check nothing ever asserted that a recent good backup exists. The workflow's
+    alert-on-failure step fires on ``failure()``, meaning on a run that HAPPENS and
+    fails; it cannot fire for a run that never happens at all. GitHub disables
+    scheduled workflows after 60 days of repository inactivity, and a disabled
+    ``production`` environment gate or a deleted secret stops dispatch just as
+    silently. In that scenario the schedule stops on day 0, every ``daily/`` object
+    expires by day 7, ``weekly/`` by day 28 and ``monthly/`` by day 180, and the bucket
+    empties with zero red runs and zero issues filed. This check is what converts the
+    next run that DOES happen into a loud failure.
+
+    It doubles as the only exercise of the R2 READ path anywhere in this script: every
+    other call is a write (put_object, put_bucket_lifecycle_configuration), so a token
+    scoped without list/read permission, or pointed at the wrong bucket, would
+    otherwise go undetected until a restore.
+
+    # #CRITICAL: data integrity: a list call that fails is a FAILURE, never a pass.
+    # BotoCoreError/ClientError are deliberately not caught here: "I could not tell
+    # whether backups exist" must never be reported as "backups are fine", which is
+    # the exact silent-failure shape this whole check exists to close.
+    # #CRITICAL: external resources: the empty-prefix case is a real first run only
+    # when the operator says so (``--init-bucket``). Left to pass silently in the
+    # general path it would rebuild the same blind spot, since a bucket emptied by
+    # runaway retention also lists zero objects.
+    # #VERIFY: test_backup_database.py::test_assert_recent_backup_exists_accepts_a_fresh_prior_backup,
+    # ::test_assert_recent_backup_exists_rejects_a_stale_newest_backup,
+    # ::test_assert_recent_backup_exists_rejects_an_empty_bucket_without_init,
+    # ::test_assert_recent_backup_exists_allows_an_empty_bucket_under_init_bucket,
+    # ::test_assert_recent_backup_exists_propagates_a_list_failure.
+
+    Args:
+        client: R2 S3-compatible client.
+        bucket: The backup bucket name.
+        today: This run's clock, used to measure the gap.
+        exclude_date: This run's own ``YYYY-MM-DD``, skipped so the check measures the
+            history that existed BEFORE this run rather than the objects it just wrote.
+        allow_empty: When True (``--init-bucket``), a bucket with no prior backup is
+            accepted as a genuine first run.
+
+    Raises:
+        RuntimeError: If no prior backup exists and ``allow_empty`` is False, or if the
+            newest prior backup is more than ``_MAX_BACKUP_GAP_DAYS`` days old.
+        BotoCoreError: If the list call fails at the client/network level.
+        ClientError: If the list call fails at the R2 API level (bad credentials, no
+            list permission, missing bucket).
+    """
+    dates = sorted(_list_backup_dates(client, bucket) - {exclude_date})
+    if not dates:
+        if allow_empty:
+            _logger.info("backup_history_empty_first_run", bucket=bucket)
+            return
+        msg = (
+            f"bucket {bucket!r} holds no backup under {_HISTORY_PREFIX!r} other than "
+            f"today's ({exclude_date}); either this is a genuine first run, in which "
+            "case re-run once with --init-bucket, or every prior backup has been "
+            "expired or deleted, which is a data-loss incident and not something this "
+            "run may pass over silently"
+        )
+        raise RuntimeError(msg)
+
+    newest = datetime.strptime(dates[-1], _BACKUP_DATE_FORMAT).replace(tzinfo=UTC)
+    gap_days = (today.date() - newest.date()).days
+    if gap_days > _MAX_BACKUP_GAP_DAYS:
+        msg = (
+            f"the newest backup preceding today under {_HISTORY_PREFIX!r} is "
+            f"{dates[-1]} ({gap_days} days old), past the {_MAX_BACKUP_GAP_DAYS}-day "
+            "gap threshold; the schedule stopped running at some point (a disabled "
+            "workflow, a revoked secret, or a blocked environment gate) and retention "
+            "has been expiring objects the whole time"
+        )
+        raise RuntimeError(msg)
+    _logger.info(
+        "backup_history_verified",
+        bucket=bucket,
+        newest_prior_backup=dates[-1],
+        gap_days=gap_days,
+    )
+
+
+def _list_backup_dates(client: S3Client, bucket: str) -> set[str]:
+    """Collect the ``YYYY-MM-DD`` date segments present under the daily prefix.
+
+    Uses a delimited list so R2 returns one common prefix per backup date rather than
+    one entry per object, which keeps the response small regardless of leg count.
+
+    Args:
+        client: R2 S3-compatible client.
+        bucket: The backup bucket name.
+
+    Returns:
+        Every date segment that parses as an ISO date. Unparseable segments are
+        ignored rather than treated as backups.
+    """
+    dates: set[str] = set()
+    token: str | None = None
+    while True:
+        response = (
+            client.list_objects_v2(
+                Bucket=bucket,
+                Prefix=_HISTORY_PREFIX,
+                Delimiter="/",
+                ContinuationToken=token,
+            )
+            if token
+            else client.list_objects_v2(
+                Bucket=bucket, Prefix=_HISTORY_PREFIX, Delimiter="/"
+            )
+        )
+        for entry in response.get("CommonPrefixes", []):
+            segment = (
+                str(entry.get("Prefix", "")).removeprefix(_HISTORY_PREFIX).strip("/")
+            )
+            try:
+                datetime.strptime(segment, _BACKUP_DATE_FORMAT).replace(tzinfo=UTC)
+            except ValueError:
+                continue
+            dates.add(segment)
+        token = response.get("NextContinuationToken")
+        if not response.get("IsTruncated") or not token:
+            return dates
 
 
 def run_backup(
@@ -550,9 +1043,29 @@ def run_backup(
     encryption_key: bytes,
     policy: RetentionPolicy,
     dry_run: bool,
+    init_bucket: bool = False,
     now: datetime | None = None,
 ) -> dict[str, object]:
     """Dump, encrypt, and upload today's backup to every applicable tier.
+
+    # #CRITICAL: data integrity: the order of R2 operations is deliberate and is the
+    # fix for two separate data-loss findings. It is:
+    #
+    #   1. verify the bucket is the backup bucket (read; cheap, before a 300s dump)
+    #   2. dump and validate all three legs locally (no R2 involvement at all)
+    #   3. upload every leg to every tier, rolling back this run's own objects on
+    #      failure
+    #   4. assert a recent PRE-EXISTING backup still exists (read)
+    #   5. assert the lifecycle rules (the only destructive, persistent write)
+    #
+    # The governing principle is that nothing is expired or mutated until a good
+    # backup has been positively confirmed. Step 5 last means a run that fails its
+    # dump can no longer leave a bad retention value on the bucket behind it; step 4
+    # before step 5 means a bucket whose history has already been destroyed fails the
+    # run instead of having its expiry schedule refreshed on the way out. Step 4 after
+    # step 3 (rather than at the very start) is what makes the run fail loudly WITHOUT
+    # losing today's backup: today's objects are safely written before the alarm goes
+    # off, so the incident starts with one more good backup, not one fewer.
 
     Args:
         db_url: Direct Postgres connection string for ``supabase db dump``.
@@ -561,9 +1074,11 @@ def run_backup(
         r2_secret_access_key: Scoped backup-bucket R2 secret key.
         r2_bucket: Destination bucket name.
         encryption_key: 32-byte AES-256 key from ``load_encryption_key``.
-        policy: Tiered retention day counts.
+        policy: Tiered retention day counts, already validated on construction.
         dry_run: When True, report the plan (tiers, would-be keys) without running
             ``supabase db dump`` or making any network call.
+        init_bucket: One-time opt-in for a brand-new bucket: creates the marker object
+            instead of refusing, and accepts an empty backup history as a first run.
         now: Injectable clock for tests; defaults to ``datetime.now(UTC)``.
 
     Returns:
@@ -571,9 +1086,10 @@ def run_backup(
         empty in dry-run mode).
 
     Raises:
-        RuntimeError: If any dump leg is too small or missing its structural marker
-            (see the #CRITICAL note below); nothing is uploaded to any tier for any
-            leg, including legs that already passed validation earlier in this run.
+        RuntimeError: If the bucket carries no backup marker, if any dump leg is too
+            small or missing its structural marker (nothing is uploaded to any tier
+            for any leg in that case, including legs that already passed validation),
+            or if no recent prior backup survives in the bucket.
         subprocess.CalledProcessError: If a ``supabase db dump`` leg exits non-zero.
         subprocess.TimeoutExpired: If a dump leg does not finish within
             ``_DUMP_TIMEOUT_SECONDS``.
@@ -600,7 +1116,7 @@ def run_backup(
         }
 
     client = _build_client(r2_account_id, r2_access_key_id, r2_secret_access_key)
-    ensure_lifecycle_rules(client, r2_bucket, policy)
+    verify_backup_bucket(client, r2_bucket, init_bucket=init_bucket)
 
     # #CRITICAL: data integrity: dump and validate every leg into this run's temp
     # directory FIRST, uploading nothing until all three pass (chosen over a
@@ -659,25 +1175,38 @@ def run_backup(
                 raise RuntimeError(msg)
             ciphertexts[filename] = encrypt_bytes(plaintext, encryption_key)
 
-        # All three legs dumped and validated: only now does anything touch R2.
-        uploaded: list[str] = []
+        # All three legs dumped and validated: only now does anything write to R2.
+        written: list[tuple[str, str | None]] = []
         try:
             for filename, _extra_args in _DUMP_LEGS:
                 ciphertext = ciphertexts[filename]
                 for tier in tiers:
-                    key = upload_encrypted(
+                    key, etag = upload_encrypted(
                         client, r2_bucket, tier, date_str, filename, ciphertext
                     )
-                    uploaded.append(key)
+                    written.append((key, etag))
                     _logger.info("backup_uploaded", key=key, bytes=len(ciphertext))
         # Deliberately broader than the (BotoCoreError, ClientError) pair this loop is
         # documented to raise: the trigger for rollback is "this run wrote part of a
         # set and then stopped", which is true for any exception, not just the ones
         # boto names. The error is re-raised unchanged, so nothing is swallowed.
         except Exception:
-            _rollback_uploads(client, r2_bucket, uploaded)
+            _rollback_uploads(client, r2_bucket, written)
             raise
 
+    # Today's set is safely in R2. Confirm the HISTORY is intact before refreshing the
+    # expiry schedule, so a bucket that retention has already emptied fails the run
+    # rather than getting its deletion clock wound forward one more time.
+    assert_recent_backup_exists(
+        client,
+        r2_bucket,
+        today=today,
+        exclude_date=date_str,
+        allow_empty=init_bucket,
+    )
+    ensure_lifecycle_rules(client, r2_bucket, policy)
+
+    uploaded = [key for key, _etag in written]
     return {"date": date_str, "tiers": list(tiers), "uploaded": uploaded}
 
 
@@ -707,6 +1236,28 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=_DEFAULT_MONTHLY_RETENTION_DAYS,
         help="R2 lifecycle expiry for the monthly/ prefix (default: 180).",
     )
+    parser.add_argument(
+        "--force-retention",
+        action="store_true",
+        help=(
+            "Waive the per-tier retention floors "
+            f"(daily >= {_MIN_DAILY_RETENTION_DAYS}, "
+            f"weekly >= {_MIN_WEEKLY_RETENTION_DAYS}, "
+            f"monthly >= {_MIN_MONTHLY_RETENTION_DAYS}) for a DELIBERATE shrink. "
+            "R2 will expire existing objects under the shrunk prefix, irreversibly. "
+            "The daily <= weekly <= monthly ordering is never waived."
+        ),
+    )
+    parser.add_argument(
+        "--init-bucket",
+        action="store_true",
+        help=(
+            "One-time initialization of a brand-new, empty backup bucket: write the "
+            f"{_BUCKET_SENTINEL_KEY} marker object instead of refusing when it is "
+            "absent, and accept an empty backup history as a genuine first run "
+            "rather than as evidence that retention destroyed it."
+        ),
+    )
     return parser.parse_args(argv)
 
 
@@ -720,6 +1271,20 @@ def main() -> None:
     """
     args = _parse_args()
 
+    # Built before anything else, and before the dry-run branch, so an out-of-range
+    # retention value is rejected by the cheapest possible run rather than by the one
+    # that has already written a lifecycle rule.
+    try:
+        policy = RetentionPolicy(
+            daily_days=args.daily_days,
+            weekly_days=args.weekly_days,
+            monthly_days=args.monthly_days,
+            force=args.force_retention,
+        )
+    except ValueError as exc:
+        print(f"[ERROR] {exc}")
+        sys.exit(1)
+
     if args.dry_run:
         result = run_backup(
             db_url="",
@@ -728,9 +1293,7 @@ def main() -> None:
             r2_secret_access_key="",
             r2_bucket="",
             encryption_key=b"\x00" * _AES_256_KEY_LENGTH_BYTES,
-            policy=RetentionPolicy(
-                args.daily_days, args.weekly_days, args.monthly_days
-            ),
+            policy=policy,
             dry_run=True,
         )
         print(f"[DRY RUN] would back up: {result}")
@@ -758,10 +1321,9 @@ def main() -> None:
             r2_secret_access_key=r2_secret_access_key,
             r2_bucket=r2_bucket,
             encryption_key=encryption_key,
-            policy=RetentionPolicy(
-                args.daily_days, args.weekly_days, args.monthly_days
-            ),
+            policy=policy,
             dry_run=False,
+            init_bucket=args.init_bucket,
         )
     except (
         subprocess.CalledProcessError,
@@ -778,8 +1340,18 @@ def main() -> None:
         # capture_output=True and then silently discarded. stdout/stderr are only
         # present on the two subprocess exception types; BotoCoreError/ClientError/
         # RuntimeError have no such attributes, hence getattr with a None default.
-        # #VERIFY: test_backup_database.py::test_main_prints_redacted_stderr_on_dump_failure.
-        print(f"[ERROR] backup failed: {exc}")
+        #
+        # #CRITICAL: security: str(exc) goes through _redact_secrets like every other
+        # output path here. It was the ONE path that did not, and it is the one
+        # guaranteed to carry the database URL: str() of a CalledProcessError or
+        # TimeoutExpired renders the whole argv list, which includes the `--db-url`
+        # element. This repository is public and its Actions logs are public with it.
+        # _strip_credentials_from_db_url now keeps the password out of that argv in the
+        # first place; this is the second, independent layer, because a shape-based
+        # scrub and a structural strip fail in different ways.
+        # #VERIFY: test_backup_database.py::test_main_prints_redacted_stderr_on_dump_failure,
+        # ::test_main_redacts_a_query_parameter_password_in_the_exception_text.
+        print(f"[ERROR] backup failed: {_redact_secrets(str(exc))}")
         stdout = _decode_process_output(getattr(exc, "stdout", None))
         stderr = _decode_process_output(getattr(exc, "stderr", None))
         if stdout:

@@ -976,7 +976,7 @@ uv run pytest tests/unit/test_example.py::test_function_name -v
 
 ## CI/CD Pipeline
 
-**GitHub Actions Workflows** (`.github/workflows/`, 35 files):
+**GitHub Actions Workflows** (`.github/workflows/`, 36 files):
 
 - **Quality gate**: `ci.yml` (tests/lint/typecheck on Python 3.14, includes the
   frontend contract-drift check), `python-compatibility.yml` (3.11-3.14 Ubuntu
@@ -1010,6 +1010,13 @@ uv run pytest tests/unit/test_example.py::test_function_name -v
   `GITHUB_TOKEN`-created PRs do not trigger required CI workflows.
   `publish-pypi.yml` was deleted: this is a deployed app, not a PyPI
   package)
+- **Ops / data**: `supabase-backup.yml` (nightly 08:00 UTC `supabase db dump` ->
+  AES-256-GCM encrypt -> tiered `daily/weekly/monthly` R2 upload via
+  `scripts/backup_database.py`, issue #558 / `UW-D27`; refuses any bucket without
+  a `.cyo-backup-bucket` marker, fails the run when no recent pre-existing backup
+  survives, and files/comments on a `ci-failure` issue from a separate `alert` job
+  so the secret-bearing job never holds `issues: write`). Restore procedure:
+  `docs/operations/runbook.md` section 6
 - **Docs / review**: `docs.yml`, `claude-baseline-review.yml`
 
 **Quality Gates** (must pass):
