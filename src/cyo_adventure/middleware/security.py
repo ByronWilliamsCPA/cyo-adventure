@@ -36,6 +36,8 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.responses import JSONResponse, RedirectResponse, Response
 
+from cyo_adventure.security_audit import record_security_event
+
 logger = logging.getLogger(__name__)
 # Structured logger for the Redis-backed rate limiter's fail-open path: an
 # operator alerting rule should be able to key on the `event` field
@@ -467,13 +469,24 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 dict(sorted_ips[: self.max_tracked_ips]),
             )
 
-    def _check_memory(self, client_ip: str, current_time: float) -> Response | None:
+    async def _check_memory(
+        self, client_ip: str, current_time: float
+    ) -> Response | None:
         """Evaluate the in-memory sliding-window counters for one request.
 
         Returns a 429 ``JSONResponse`` if either limit is exceeded, else
         records the request and returns ``None`` so the caller proceeds. Used
         both as the ``"memory"`` backend and as the fail-open fallback path
         for ``"redis"`` (see ``dispatch``).
+
+        # #CRITICAL: timing dependencies: async (not sync) specifically so
+        # the security-event DB write below can be awaited before this
+        # method returns its 429, rather than fired off unawaited from a
+        # sync context. Both call sites in dispatch already await this
+        # method.
+        # #VERIFY: test_security.py's trip-logging tests drive this through
+        # TestClient, which requires the awaited response to have already
+        # completed.
         """
         # Periodic cleanup to prevent memory leaks
         self._cleanup_stale_entries(current_time)
@@ -500,6 +513,12 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 client_ip=client_ip,
                 requests_per_minute=self.requests_per_minute,
             )
+            await record_security_event(
+                event_type="security_rate_limit_exceeded",
+                reason="rpm",
+                client_ip=client_ip,
+                status_code=429,
+            )
             return JSONResponse(
                 status_code=429,
                 content={
@@ -524,6 +543,12 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 limit_type="burst",
                 client_ip=client_ip,
                 burst_size=self.burst_size,
+            )
+            await record_security_event(
+                event_type="security_rate_limit_exceeded",
+                reason="burst",
+                client_ip=client_ip,
+                status_code=429,
             )
             return JSONResponse(
                 status_code=429,
@@ -617,6 +642,12 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 client_ip=client_ip,
                 requests_per_minute=self.requests_per_minute,
             )
+            await record_security_event(
+                event_type="security_rate_limit_exceeded",
+                reason="rpm",
+                client_ip=client_ip,
+                status_code=429,
+            )
             return JSONResponse(
                 status_code=429,
                 content={
@@ -635,6 +666,12 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 limit_type="burst",
                 client_ip=client_ip,
                 burst_size=self.burst_size,
+            )
+            await record_security_event(
+                event_type="security_rate_limit_exceeded",
+                reason="burst",
+                client_ip=client_ip,
+                status_code=429,
             )
             return JSONResponse(
                 status_code=429,
@@ -678,9 +715,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                     client_ip=client_ip,
                     cooldown_seconds=cooldown_seconds,
                 )
-                decision = self._check_memory(client_ip, current_time)
+                decision = await self._check_memory(client_ip, current_time)
         else:
-            decision = self._check_memory(client_ip, current_time)
+            decision = await self._check_memory(client_ip, current_time)
 
         if decision is not None:
             return decision

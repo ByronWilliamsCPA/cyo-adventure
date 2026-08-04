@@ -37,7 +37,6 @@ logger with an explicitly wrapped logger whose chain is exactly
 
 from __future__ import annotations
 
-import contextvars
 from typing import TYPE_CHECKING
 from unittest import mock
 
@@ -137,7 +136,8 @@ async def unit_client() -> AsyncIterator[AsyncClient]:
     ],
     ids=["authentication_error_401", "authorization_error_403"],
 )
-def test_handle_project_error_auth_failure_logs_outcome_and_correlation_id(
+@pytest.mark.asyncio
+async def test_handle_project_error_auth_failure_logs_outcome_and_correlation_id(
     log_capture: LogCapture,
     exc: ProjectBaseError,
     expected_status: int,
@@ -152,20 +152,23 @@ def test_handle_project_error_auth_failure_logs_outcome_and_correlation_id(
     """
     # Arrange: a request object exposing exactly what the handler reads
     # (headers/url/method for the generic path, client for the security
-    # event's client_ip), and an isolated context so the correlation
-    # contextvar never leaks out.
+    # event's client_ip). No contextvars.copy_context().run() indirection
+    # needed here (unlike the old sync version): each async test function
+    # already runs in its own asyncio Task, and a Task's context is a COPY
+    # taken at creation, so set_correlation_id below can never leak into a
+    # sibling test.
     request = mock.Mock(spec=["headers", "url", "method", "client"])
     request.url.path = "/api/v1/me"
     request.method = "GET"
     request.client.host = "203.0.113.7"
     correlation_id = "authz-log-test-correlation-id"
-
-    def _invoke() -> object:
-        set_correlation_id(correlation_id)
-        return app_module._handle_project_error(request, exc)
+    set_correlation_id(correlation_id)
 
     # Act
-    response = contextvars.copy_context().run(_invoke)
+    # record_security_event opens a real DB session when unmocked
+    # (tests/CLAUDE.md: unit tests must not hit a live database).
+    with mock.patch("cyo_adventure.app.record_security_event"):
+        response = await app_module._handle_project_error(request, exc)
 
     # Assert: mapped status code, the generic project_error event, and the
     # new security event, both carrying the correlation id.
@@ -192,13 +195,18 @@ async def test_request_without_token_returns_401_and_logs_correlated_event(
 ) -> None:
     """End-to-end through the middleware: 401 logs project_error + the security event.
 
-    Drives a real request (no DB touched: ``_extract_subject`` raises before
-    the first query) so the correlation id in the log lines is the one
-    ``CorrelationMiddleware`` echoes in the response headers, proving the
-    contextvar plumbing rather than a manually seeded value.
+    Drives a real request (no DB touched by the ROUTE: ``_extract_subject``
+    raises before the first query) so the correlation id in the log lines is
+    the one ``CorrelationMiddleware`` echoes in the response headers, proving
+    the contextvar plumbing rather than a manually seeded value.
+    record_security_event IS patched, though: unlike the route itself, the
+    security-event audit write always opens its own session regardless of
+    which raise site failed, and unit tests must not hit a live database
+    (tests/CLAUDE.md).
     """
     # Act
-    response = await unit_client.get("/api/v1/me")
+    with mock.patch("cyo_adventure.app.record_security_event") as mock_record:
+        response = await unit_client.get("/api/v1/me")
 
     # Assert
     assert response.status_code == 401
@@ -220,6 +228,11 @@ async def test_request_without_token_returns_401_and_logs_correlated_event(
     assert security_entry["path"] == "/api/v1/me"
     assert security_entry["method"] == "GET"
     assert security_entry["correlation_id"] == response.headers["X-Correlation-ID"]
+
+    # And the durable audit write was attempted with the same path/method.
+    mock_record.assert_awaited_once()
+    assert mock_record.await_args.kwargs["path"] == "/api/v1/me"
+    assert mock_record.await_args.kwargs["method"] == "GET"
 
 
 # ---------------------------------------------------------------------------
@@ -250,9 +263,10 @@ async def test_auth_failure_with_token_in_header_never_logs_token(
     in the client-facing response body.
     """
     # Act
-    response = await unit_client.get(
-        "/api/v1/me", headers={"Authorization": authorization_header}
-    )
+    with mock.patch("cyo_adventure.app.record_security_event"):
+        response = await unit_client.get(
+            "/api/v1/me", headers={"Authorization": authorization_header}
+        )
 
     # Assert
     assert response.status_code == 401

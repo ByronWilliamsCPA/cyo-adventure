@@ -496,6 +496,14 @@ known-first-party = ["cyo_adventure"]
 # call sites need to fill in explicitly.
 "**/api/admin_users.py" = ["PLR0913"]
 
+# record_security_event carries event_type, reason, client_ip, path, method,
+# status_code, and resource; all keyword-only, each a distinct SecurityEvent
+# column with its own per-event-type availability (path/method/status_code
+# unset for a rate-limit trip; resource set only for an authz denial). A
+# config object would obscure which fields a given call site actually has,
+# mirroring events/writer.py::record_event's identical rationale.
+"**/security_audit.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests

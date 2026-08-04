@@ -23,6 +23,7 @@ from sqlalchemy import (
     ForeignKey,
     ForeignKeyConstraint,
     Index,
+    SmallInteger,
     String,
     Text,
     UniqueConstraint,
@@ -166,6 +167,18 @@ _PIPELINE_ENTITY_TYPE_VALUES = (
     # 'personalization_disclosure_consent') so the value fits entity_type's
     # String(32) column.
     "'child_profile_personalization', 'personalization_consent'"
+)
+
+# OPS-005 follow-up: the security_event.event_type CHECK vocabulary. Values
+# are the exact structlog event names app.py::_handle_project_error and
+# middleware/security.py::RateLimitMiddleware already emit (security_audit.py
+# is the single writer for both), so a responder greps a log line and queries
+# the matching row (or vice versa) with no separate vocabulary to translate.
+# Hand-maintained here rather than imported (would create a circular import
+# from db/models.py into security_audit.py, mirroring the _PIPELINE_EVENT_TYPE_VALUES
+# note above); tests/unit/test_security_event_check_vocab.py guards drift.
+_SECURITY_EVENT_TYPE_VALUES = (
+    "'security_auth_failed', 'security_authz_denied', 'security_rate_limit_exceeded'"
 )
 
 # The five admin-user lifecycle states (WS-J admin user management, plus the
@@ -1884,6 +1897,54 @@ class PipelineEvent(UUIDPrimaryKeyMixin, Base):
     payload: Mapped[dict[str, object]] = mapped_column(
         JSONB, nullable=False, server_default=text("'{}'::jsonb")
     )
+
+
+class SecurityEvent(UUIDPrimaryKeyMixin, Base):
+    """Append-only audit trail for auth failures, denials, and rate-limit trips.
+
+    Written by ``security_audit.py::record_security_event``, the durable
+    counterpart to the ``security_auth_failed``/``security_authz_denied``/
+    ``security_rate_limit_exceeded`` structured log events
+    ``app.py::_handle_project_error`` and
+    ``middleware/security.py::RateLimitMiddleware`` emit (OPS-005 follow-up).
+    Rows are enforced append-only by a DB trigger created in the migration,
+    like ``PipelineEvent``; the ORM never updates or deletes them.
+
+    Deliberately has no actor column (unlike ``PipelineEvent``): many rows
+    have no authenticated principal at all -- an auth failure has no
+    ``Principal`` to attribute it to, only a ``client_ip``. See the
+    migration's header comment for why this is a separate table rather than
+    a ``PipelineEvent`` extension.
+    """
+
+    __tablename__ = "security_event"
+    __table_args__ = (
+        CheckConstraint(
+            f"event_type IN ({_SECURITY_EVENT_TYPE_VALUES})",
+            name="ck_security_event_event_type",
+        ),
+        Index("ix_security_event_event_type", "event_type"),
+        Index("ix_security_event_occurred_at", "occurred_at"),
+        Index("ix_security_event_client_ip", "client_ip"),
+    )
+
+    occurred_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    event_type: Mapped[str] = mapped_column(String(48))
+    # #ASSUME: data-integrity: reason is always one of this codebase's fixed,
+    # developer-authored `msg = "..."` literals (AuthenticationError/
+    # AuthorizationError messages) or a rate-limit `limit_type` token, never
+    # caller input; security_audit.py truncates to this bound as a backstop
+    # only, matching events/writer.py's _MAX_PAYLOAD_STR_LEN convention.
+    # #VERIFY: tests/unit/test_security_audit.py.
+    reason: Mapped[str] = mapped_column(String(200))
+    client_ip: Mapped[str | None] = mapped_column(String(45), nullable=True)
+    path: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    method: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    status_code: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)
+    # The authz-denial resource identifier only (already pruned of value/
+    # context by app.py's _client_safe_error before it reaches this writer);
+    # unset for auth-failure and rate-limit rows.
+    resource: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
 
 class ModerationSetting(UpdatedAtMixin, Base):
