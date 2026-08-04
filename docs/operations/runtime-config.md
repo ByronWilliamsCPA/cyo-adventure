@@ -71,10 +71,12 @@ secrets, while this check asks for every runtime-affecting setting. The authorit
 is the `Settings` model in `src/cyo_adventure/core/config.py`, which sets
 `env_prefix="cyo_adventure_"` and therefore binds an environment variable for every field it
 declares, not only the fields carrying an explicit alias. At the time this scaffold was written
-that model declared 70 fields and the tables below carry rows for 30 of them, so completing the
-enumeration is the first operator step rather than a formality. Settings absent from the seed are
-mostly timeouts, model selectors, and sizing knobs; the security-relevant ones found during review
-have been added to the feature-flag table below.
+that model declared 70 fields; the runbook seed supplied 30, and the tables below now carry 37
+rows (31 process-configuration rows plus 6 feature flags) after the settings found during review
+were added. Roughly half the declared surface therefore still has no row, which makes completing
+the enumeration the first operator step rather than a formality. What is missing is mostly
+timeouts, model selectors, and sizing knobs; the security-relevant ones found during review are
+already in the feature-flag table below.
 
 ### Backend and worker process configuration
 
@@ -237,7 +239,7 @@ This scaffold is not a control until a human completes it.
 
 - [ ] Reconcile section 1 against the `Settings` model in `src/cyo_adventure/core/config.py`,
       remembering that `env_prefix="cyo_adventure_"` binds a variable for every declared field and
-      not only for the fields carrying an explicit alias. The seed covers 30 of 70 fields; the
+      not only for the fields carrying an explicit alias. The tables cover 37 of 70 fields; the
       remainder need a row or a recorded reason for not having one.
 - [ ] Enumerate every runtime-affecting setting the deployed process reads, add any missing row
       to section 1, and record each setting's value class in production. Record classes, never

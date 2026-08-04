@@ -38,19 +38,31 @@ step is completed and dated, the document is a placeholder and reads as one.
 | [`rls-verification-log.md`](rls-verification-log.md) | OPS-003 | 90 days | Dated two-direction tenant isolation runs against the deployed role: the cross-tenant read outcome and the same-tenant read outcome. |
 | [`alert-test-fire-log.md`](alert-test-fire-log.md) | OPS-006 | 180 days | Each deliberate firing of a security alert rule, and the delivery result observed at the destination channel. |
 | [`backup-inventory.md`](backup-inventory.md) | OPS-007 | 365 days | Every stateful store the application depends on, with its backup schedule, retention window, destination, and whether that destination sits in a different failure domain than the primary. |
-| [`restore-drill-log.md`](restore-drill-log.md) | OPS-008 | 180 days | Restores actually performed from a real backup: source backup, target environment, elapsed time, and the verification that confirmed the restored data was usable. |
+| [`restore-drill-log.md`](restore-drill-log.md) | OPS-008 | 90 days | Restores actually performed from a real backup: source backup, target environment, elapsed time, and the verification that confirmed the restored data was usable. |
 | [`public-write-paths.md`](public-write-paths.md) | OPS-009 | on public-surface change | Every unauthenticated endpoint that creates state, mapped to the anti-automation control protecting it and the place that control is enforced. |
 
-Review cadences are drawn from each check's `max_evidence_age_days` in the standards manifest. A
-document whose `verified_on` date is older than its cadence fails its check on staleness, which
-is a different result from the document being missing: the control was recorded once and the
-record has aged out. Re-confirming and re-dating is part of owning the control, not a separate
-project.
+Two kinds of trigger appear in that column, and they fail differently.
+
+**Age-based cadences** are drawn from each check's `max_evidence_age_days` in the standards
+manifest. A document whose `verified_on` date is older than its cadence fails its check on
+staleness, which is a different result from the document being missing: the control was recorded
+once and the record has aged out. Re-confirming and re-dating is part of owning the control, not a
+separate project.
+
+**Event-triggered reviews** have no staleness window at all. `public-write-paths.md` is the one
+here: OPS-009 sets no `max_evidence_age_days`, because an unauthenticated write surface does not
+decay with time, it changes when someone adds a route. A months-old enumeration of an unchanged
+surface is still accurate; a week-old one taken before a new public endpoint shipped is not. The
+obligation is to re-run the enumeration on a public-surface change, and the enumeration date
+recorded in that file is what lets the next reviewer tell which case they are in.
 
 Where the [assurance register](../security/assurance-register.md) sets a tighter cadence for the
-same subject matter than the manifest does, the tighter one governs. The register and the manifest
-are independent schedules over overlapping controls, and taking the looser of two is how a control
-ages out while both files report satisfied.
+same subject than the manifest does, the tighter one governs, and the column above shows the
+governing figure rather than the manifest's. `restore-drill-log.md` is the current instance: the
+manifest allows 180 days, register row O-33 fails on "no restore record within the last quarter",
+and the artifact states 90 throughout. The register and the manifest are independent schedules
+over overlapping controls, and taking the looser of two is how a control ages out while both files
+report satisfied.
 
 **Two front-matter conventions in this directory.** This index carries `status: published` while
 every artifact it lists carries `status: draft`, and it carries no `review_cycle_days` while most
@@ -82,14 +94,26 @@ than redefine it.
 
 ## What may not be written in these files
 
-This repository is public. These documents carry names, classes, and booleans only:
+This repository is public. What these documents carry is bounded evidence: names, classes,
+booleans, dates, elapsed times, counts, and observed outcomes. That list is deliberately wider
+than "names and booleans", because several checks are not satisfiable without it. A restore drill
+is not evidence without its date and elapsed time, and a verification outcome recorded as a
+boolean loses the detail that distinguishes `0 rows returned` from `permission denied`. Record the
+measurement.
+
+What may not be written is narrower and specific:
 
 - No connection string, DSN, host, port, credential, key, token, or webhook address, in a table
   cell, an example, or pasted command output.
 - No threshold, exemption, or bypass condition that is more useful to someone probing the service
-  than to someone maintaining it.
-- No narrative describing where a control is incomplete. Track incomplete items by issue ID and
-  reference the ID, which keeps the item reviewable without publishing its shape.
+  than to someone maintaining it. Record that a limit is in force and the key it is scoped to;
+  the number stays where it is configured.
+- No narrative describing the **shape** of an incomplete control: which request would slip
+  through, which path is unguarded, what an attacker would try first. Stating that a control is
+  absent is required rather than forbidden, and belongs here alongside its tracking ID; the ID is
+  what keeps the item reviewable without publishing an exploit sketch. `alert-test-fire-log.md`
+  is the worked example: it records that no alert rules exist and cites `UW-D28` and #557, and
+  says nothing about which events would therefore go unnoticed.
 
 ## How this relates to the assurance register
 

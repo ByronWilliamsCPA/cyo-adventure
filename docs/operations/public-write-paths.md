@@ -71,10 +71,23 @@ memory:
    unauthenticated route is out of scope here.
 4. Every route surviving step 3 gets a row in section 1.
 
-Categories the check expects to see considered, whether or not this service exposes each:
-account signup, password reset request, contact and feedback submission, invite acceptance, and
-any public API write. A category this service does not expose is not a finding, but recording
-that it is not exposed is what makes the exclusion checkable later.
+Categories the check expects to see considered, whether this service exposes each or not. A
+category this service does not expose is not a finding, but recording that it is not exposed is
+what makes the exclusion checkable later, so each one gets a row here rather than being passed
+over in silence:
+
+| Category | Exposed by this service | If not exposed, the precondition that makes it so | Confirmed on |
+| --- | --- | --- | --- |
+| Account signup | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| Password reset request | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| Contact or feedback submission | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| Invite acceptance | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| Any other public API write | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+
+State the precondition so it can be proven false. "No unauthenticated signup route exists; adult
+accounts are provisioned just-in-time from an authenticated `POST /v1/onboarding`" is a
+precondition a future reviewer can re-test in one request. "Not applicable" is not, and reads
+identically whether the category was examined or skipped.
 
 Record the date of the enumeration and the number of routes reviewed, so the next review can tell
 whether the surface has grown:

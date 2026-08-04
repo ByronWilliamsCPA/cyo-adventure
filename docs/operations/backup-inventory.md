@@ -54,9 +54,20 @@ Field meanings:
   dependency if the answer is `no`. A backup that shares an account, a region, or a provider with
   the primary shares that dependency's failure.
 
-Where a store deliberately carries no backup, record the reasoning in the row and the decision
-date, so a deliberate choice is distinguishable from an unreviewed one. Reconstructible or
-ephemeral state is a legitimate answer; recording nothing is not.
+Where a store deliberately carries no backup, `Backup schedule` reads `none` and the decision goes
+in the table below, so a deliberate choice is distinguishable from an unreviewed one.
+Reconstructible or ephemeral state is a legitimate answer; recording nothing is not, and a row
+whose schedule is `none` with no matching entry here is an unreviewed store rather than an
+exempt one.
+
+| Store | Reason no backup is taken | Decided on | Decided by | What would change this |
+| --- | --- | --- | --- | --- |
+| _(no entry recorded)_ | | | | |
+
+**What would change this** is the field that keeps the exemption falsifiable. "Holds only queue
+and rate-limiter state, all of it reconstructible" stops being true the day something durable is
+written to that store, so the exemption should name the condition that retires it rather than
+standing indefinitely on the reasoning that was true when it was written.
 
 ## 2. Backup integrity properties
 

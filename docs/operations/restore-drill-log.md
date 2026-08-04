@@ -3,7 +3,7 @@ title: "Restore Drill Log"
 schema_type: common
 status: draft
 owner: core-maintainer
-review_cycle_days: 180
+review_cycle_days: 90
 purpose: >-
   Dated record of restores actually performed from a real backup, with the source backup, the
   target environment, the elapsed time, and the verification that confirmed the restored data was
