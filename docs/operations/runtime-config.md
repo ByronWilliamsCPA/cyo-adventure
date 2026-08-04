@@ -56,9 +56,25 @@ does with it.
 class in production. A setting the deployed process reads that has no row here leaves this
 section incomplete.
 
-The `Setting` and `Consumed by` columns are pre-populated from the secrets and keys inventory in
-[the operator runbook](runbook.md), which is the naming source of record. The remaining columns
-are for a human to complete against the deployed environment.
+One exclusion is deliberate and stated so it is not mistaken for an oversight: the runbook's
+inventory also lists CI-only secrets under its **GitHub Actions secrets** heading
+(`RELEASE_TOKEN`, `CODECOV_TOKEN`, `SONAR_TOKEN`, `INFISICAL_CLIENT_ID`,
+`INFISICAL_CLIENT_SECRET`, the `E2E_PROD_*` credentials). None of them is read by the deployed
+process, so none gets a row here. The filter is "read by the running service", not "is a secret".
+
+The `Setting` and `Consumed by` columns are seeded from the secrets and keys inventory in
+[the operator runbook](runbook.md), which is the naming source of record for secrets. The
+remaining columns are for a human to complete against the deployed environment.
+
+**That seed is a starting point, not the inventory.** The runbook section it comes from indexes
+secrets, while this check asks for every runtime-affecting setting. The authoritative enumeration
+is the `Settings` model in `src/cyo_adventure/core/config.py`, which sets
+`env_prefix="cyo_adventure_"` and therefore binds an environment variable for every field it
+declares, not only the fields carrying an explicit alias. At the time this scaffold was written
+that model declared 70 fields and the tables below carry rows for 30 of them, so completing the
+enumeration is the first operator step rather than a formality. Settings absent from the seed are
+mostly timeouts, model selectors, and sizing knobs; the security-relevant ones found during review
+have been added to the feature-flag table below.
 
 ### Backend and worker process configuration
 
@@ -66,21 +82,22 @@ are for a human to complete against the deployed environment.
 | --- | --- | --- | --- | --- |
 | `CYO_ADVENTURE_DATABASE_URL` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | `CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `CYO_ADVENTURE_WORKER_DATABASE_URL` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | `CYO_ADVENTURE_REDIS_URL` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
-| `ANTHROPIC_API_KEY` | worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
-| `OPENROUTER_API_KEY` | worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
-| `OLLAMA_BASE_URL` | worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
-| `OLLAMA_AUTH` | worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
-| `OLLAMA_CA_BUNDLE` | worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
-| `MODAL_BASE_URL` | worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
-| `MODAL_PROXY_KEY` | worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
-| `MODAL_PROXY_SECRET` | worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
-| `GEMINI_API_KEY` | worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
-| `R2_ACCOUNT_ID` | worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
-| `R2_ACCESS_KEY_ID` | worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
-| `R2_SECRET_ACCESS_KEY` | worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
-| `R2_BUCKET` | worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
-| `R2_PUBLIC_BASE_URL` | worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `ANTHROPIC_API_KEY` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `OPENROUTER_API_KEY` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `OLLAMA_BASE_URL` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `OLLAMA_AUTH` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `OLLAMA_CA_BUNDLE` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `MODAL_BASE_URL` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `MODAL_PROXY_KEY` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `MODAL_PROXY_SECRET` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `GEMINI_API_KEY` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `R2_ACCOUNT_ID` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `R2_ACCESS_KEY_ID` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `R2_SECRET_ACCESS_KEY` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `R2_BUCKET` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `R2_PUBLIC_BASE_URL` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | `OPENAI_API_KEY` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | `PERSPECTIVE_API_KEY` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | `CYO_ADVENTURE_REVIEW_PROVIDER` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
@@ -95,14 +112,44 @@ are for a human to complete against the deployed environment.
 | `SENTRY_DSN` | backend | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | `FORWARDED_ALLOW_IPS` | backend | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 
+Two `Consumed by` entries above are easy to get wrong in the direction that understates exposure,
+so both are recorded here with the code path that settles them:
+
+- **The generation, cover-art, and object-storage credentials are read by the backend too**, not
+  by the worker alone. `POST /v1/admin/storybook-versions/{id}/remoderate` builds a generation
+  provider in-request (`api/remoderate.py`, via `generation/provider.py`), the node-edit rescreen
+  path builds a review provider the same way (`api/node_edit.py`), and three routers presign cover
+  URLs through `covers/storage.py` (`api/covers.py`, `api/library.py`, `api/recommendations.py`).
+  An operator scoping container-level credential exposure needs this: those keys are resident in
+  the backend container's memory, not only the worker's.
+- **`CYO_ADVENTURE_WORKER_DATABASE_URL` is read by both processes**, because
+  `core/database.py` constructs the API engine and the worker engine at import time in every
+  process. The API process therefore holds the `cyo_worker` DSN without ever using it. The code
+  carries this as a standing `#ASSUME: security` note, and the mitigation is configuration rather
+  than code: the API container leaves this variable unset so it falls back to the API DSN. Whether
+  that mitigation is actually in force in each environment is exactly what this row records.
+
 ### Feature flags and connection targets
 
 Any deployed feature flag, provider selector, or connection target not covered above belongs
-here, one row each.
+here, one row each. The rows below are the security-relevant settings found during review; each
+one's `Consumed by` was confirmed against its call sites, and the enumeration is still incomplete
+by the count given above.
 
 | Setting | Consumed by | Value class in production | Supply mechanism | verified_on |
 | --- | --- | --- | --- | --- |
-| _(no entry recorded)_ | | | | |
+| `ENVIRONMENT` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `CYO_ADVENTURE_ALLOWED_HOSTS` | backend | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `CYO_ADVENTURE_RATE_LIMIT_BACKEND` | backend | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `CYO_ADVENTURE_GENERATION_PROVIDER` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `MODAL_MODEL` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+| `CYO_ADVENTURE_SENTRY_TRACES_SAMPLE_RATE` | backend | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+
+`ENVIRONMENT` earns its row because several authorization and publishing behaviours branch on it
+(`api/deps.py`, `publishing/service.py`, `moderation/pipeline.py`), so its deployed value is a
+security-relevant fact rather than a label. `CYO_ADVENTURE_ALLOW_MOCK_REVIEW` deliberately has no
+row: the field is declared in `config.py` but read nowhere in the package, so setting it changes
+nothing today. Recording it as a live setting would assert an effect the code does not have.
 
 ### Frontend build-time configuration
 
@@ -144,17 +191,28 @@ exposes, drawn from four candidates. An endpoint the service does not expose is 
 but the exclusion has to be recorded rather than assumed, which is why every candidate gets a row
 and an explicit exposed yes/no.
 
-Record the configured limit as requests per window plus the key the limit is scoped to (per IP,
-per account identifier, per session). Where the limit is enforced by the managed auth provider
-rather than by application code, name the provider setting in `Where enforced` and note that
-OPS-012 governs whether that setting is versioned and applied by CI.
+**Record that a limit is in force, not what the limit is.** This repository is public, and an
+exact requests-per-window figure is worth more to someone tuning an attack against these endpoints
+than to anyone maintaining them, which the disclosure rule in [`README.md`](README.md) forbids
+publishing. Record instead that a limit exists, the key it is scoped to (per IP, per account
+identifier, per session), where it is enforced, and the dated result of confirming it from
+outside. The numeric value stays where it is configured; what this table attests is that somebody
+observed the limit take effect. [`public-write-paths.md`](public-write-paths.md) records its
+controls on the same terms.
 
-| Endpoint class | Exposed by this service | Requests per window | Window | Scope key | Where enforced | verified_on |
+Where the limit is enforced by the managed auth provider rather than by application code, name the
+provider setting in `Where enforced` and note that OPS-012 governs whether that setting is
+versioned and applied by CI.
+
+| Endpoint class | Exposed by this service | Limit in force | Scope key | Where enforced | Confirmed from | verified_on |
 | --- | --- | --- | --- | --- | --- | --- |
 | Login | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | Token refresh | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | Password reset request | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | MFA verification | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
+
+**Limit in force** is `yes` or `no`, the observed outcome of exceeding the limit from outside the
+boundary, not a number. **Confirmed from** is the vantage the observation was made from.
 
 If all four rows record `no` under `Exposed by this service`, OPS-011 is not applicable. Record
 the precondition and a command that re-tests it, so the verdict un-asserts itself if an
@@ -177,14 +235,18 @@ next review.
 
 This scaffold is not a control until a human completes it.
 
+- [ ] Reconcile section 1 against the `Settings` model in `src/cyo_adventure/core/config.py`,
+      remembering that `env_prefix="cyo_adventure_"` binds a variable for every declared field and
+      not only for the fields carrying an explicit alias. The seed covers 30 of 70 fields; the
+      remainder need a row or a recorded reason for not having one.
 - [ ] Enumerate every runtime-affecting setting the deployed process reads, add any missing row
       to section 1, and record each setting's value class in production. Record classes, never
       values.
 - [ ] Record, for every secret in section 1, the mechanism that supplies it at runtime, and
       complete the artifact review in section 2.
 - [ ] Record which of the four authentication endpoint classes this service exposes, and for
-      each exposed one, the configured limit and the scope key, measured from outside the
-      deployed boundary.
+      each exposed one, that a limit is in force and the key it is scoped to, observed from
+      outside the deployed boundary. Record the outcome, never the threshold.
 - [ ] Set the `verified_on` date at the top of this document, and change the front matter
       `status` from `draft` to `published`.
 
@@ -192,5 +254,11 @@ This scaffold is not a control until a human completes it.
 
 - [Operator runbook](runbook.md), sections 1 and 8: service topology, and the names-only secrets
   and keys inventory this document's setting names are drawn from.
+- [`../security/assurance-register.md`](../security/assurance-register.md), rows **O-85** and
+  **O-86**: the same subject matter stated as assertions rather than as evidence. O-85 covers
+  control-plane settings held in vendor dashboards, and O-86 names `ENVIRONMENT`'s effect on rate
+  limiting as a verification target, which is why that setting carries a row above. Sections 1 and
+  3 of this document are the evidence those rows are asserted from; keep the two in step when
+  either changes.
 - [`README.md`](README.md) in this directory: the index of attestation artifacts and their
   review cadences.
