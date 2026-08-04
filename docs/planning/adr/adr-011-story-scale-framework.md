@@ -387,7 +387,12 @@ bands, acknowledgment checks at the fill gate); specifics belong to the implemen
 - [ADR-001](./adr-001-story-format-json-storybook.md): the schema this extends.
 - [ADR-006](./adr-006-conditions-inhouse-evaluator.md): the evaluator series state-carry
   relies on.
-- `docs/planning/research/`: the empirical anchors (JHM 2019 + four-source reconciliation).
-  **Stale citation (noted 2026-08-01)**: this directory is not in the repo; the research notes
-  were never committed. See design-review-kid-appeal-2026-08-01.md section 6 item 5.
+- [`docs/planning/research/`](../research/README.md): the empirical anchors (JHM 2019 + four-source
+  reconciliation). **Citation resolved (2026-08-03)**; it was flagged stale on 2026-08-01 when the
+  directory did not exist. The base was rebuilt from primary sources on 2026-08-02, and the
+  four-source reconciliation itself was recovered and committed on 2026-08-03 as
+  [cyoa-research-reconciliation.md](../research/cyoa-research-reconciliation.md). Read that note with
+  its dated status notes: it predates this ADR, and several of its "net deltas to the project
+  parameters" were overtaken by what shipped. See design-review-kid-appeal-2026-08-01.md section 6
+  item 5 for the original flag.
 - [ADR-026](./adr-026-rendered-stop-flow.md): rendered-stop flow (companion to section 10).

@@ -61,14 +61,27 @@ def test_security_event_type_values_matches_expected_vocabulary() -> None:
     assert _parse_sql_string_list(_SECURITY_EVENT_TYPE_VALUES) == _EXPECTED_EVENT_TYPES
 
 
-def test_newest_event_type_check_migration_carries_full_vocab() -> None:
-    """The migration's CHECK constraint carries every expected event type.
+def test_newest_event_type_check_migration_carries_exactly_the_expected_vocab() -> None:
+    """The migration's CHECK constraint carries exactly the expected event types.
 
     Parsed from the migration text rather than from
     db/models.py::_SECURITY_EVENT_TYPE_VALUES (the separate hand-maintained
     mirror asserted above), so this proves the migration itself, not just
     the ORM's parallel constant, carries the vocabulary the application
     layer considers valid.
+
+    Scoped to the CHECK constraint's own ``ARRAY[...]`` fragment, not the
+    whole file: unlike pipeline_event's migrations (which touch nothing but
+    the CHECK constraint), this one also defines the append-only trigger
+    function, whose ``RAISE EXCEPTION 'security_event is append-only: ...'``
+    message is itself a single-quoted string literal. Parsing the whole file
+    would fold that message into the parsed set and make an exact-equality
+    assertion permanently fail on a string that was never part of the
+    vocabulary; pipeline_event's sibling test can compare its parse against
+    the whole file with ``<=`` (subset, since its own vocabulary only grows
+    over time via new migrations) precisely because it never has this
+    collision. This table's vocabulary is fixed at three values, so an exact
+    match here is both correct and achievable.
 
     # #EDGE: data-integrity: this project's SQL migration header comments are
     # prose and routinely contain apostrophes; --comment lines are stripped
@@ -80,5 +93,7 @@ def test_newest_event_type_check_migration_carries_full_vocab() -> None:
     ddl = "\n".join(
         line for line in sql.splitlines() if not line.strip().startswith("--")
     )
-    parsed = _parse_sql_string_list(ddl)
-    assert parsed >= _EXPECTED_EVENT_TYPES
+    array_match = re.search(r"ARRAY\[(.*?)\]", ddl, re.DOTALL)
+    assert array_match is not None, "no ARRAY[...] literal found in the migration"
+    parsed = _parse_sql_string_list(array_match.group(1))
+    assert parsed == _EXPECTED_EVENT_TYPES

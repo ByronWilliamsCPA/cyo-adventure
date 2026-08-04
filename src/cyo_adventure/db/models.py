@@ -172,8 +172,13 @@ _PIPELINE_ENTITY_TYPE_VALUES = (
 # OPS-005 follow-up: the security_event.event_type CHECK vocabulary. Values
 # are the exact structlog event names app.py::_handle_project_error and
 # middleware/security.py::RateLimitMiddleware already emit (security_audit.py
-# is the single writer for both), so a responder greps a log line and queries
-# the matching row (or vice versa) with no separate vocabulary to translate.
+# is the single writer for both), so the EVENT NAME a responder greps in the
+# log is the same string they filter on in a security_event query -- no
+# separate vocabulary to translate for that one join key. The two are not a
+# full field-for-field mirror, though: the log line carries richer per-type
+# detail (limit_type, requests_per_minute/burst_size, suppressed_since_last
+# for a rate-limit trip; docs/operations/security-events.md section 2 is the
+# authoritative field list) than the coarser durable row does.
 # Hand-maintained here rather than imported (would create a circular import
 # from db/models.py into security_audit.py, mirroring the _PIPELINE_EVENT_TYPE_VALUES
 # note above); tests/unit/test_security_event_check_vocab.py guards drift.
@@ -1938,6 +1943,13 @@ class SecurityEvent(UUIDPrimaryKeyMixin, Base):
     # #VERIFY: tests/unit/test_security_audit.py.
     reason: Mapped[str] = mapped_column(String(200))
     client_ip: Mapped[str | None] = mapped_column(String(45), nullable=True)
+    # The exception's machine-readable error_code (e.g. the AuthenticationError/
+    # AuthorizationError class default, or "PIN_MISMATCH" from
+    # api/child_sessions.py); unset for a rate-limit row, which has no
+    # exception to draw one from. Lets a detection rule key on e.g.
+    # PIN_MISMATCH without string-matching `reason`
+    # (docs/operations/security-events.md section 2).
+    code: Mapped[str | None] = mapped_column(String(64), nullable=True)
     path: Mapped[str | None] = mapped_column(String(255), nullable=True)
     method: Mapped[str | None] = mapped_column(String(10), nullable=True)
     status_code: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)

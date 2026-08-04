@@ -177,9 +177,10 @@ class TestHandleProjectError:
 # ---------------------------------------------------------------------------
 # _handle_project_error: OPS-005 security event logging
 #
-# AuthenticationError/AuthorizationError is raised from 35+ call sites across
-# the app (api/deps.py, api/*, core/child_session.py, core/device_grant.py,
-# publishing/, covers/); every one of them passes through this single handler
+# AuthenticationError/AuthorizationError is raised from 89 call sites across
+# 35 files (api/deps.py, most of api/*, core/child_session.py,
+# core/device_grant.py, publishing/, covers/); every one passes through this
+# single handler
 # on the way to a response, so it is the one choke point that can emit a
 # distinctly-named, attributable security event for all of them without
 # instrumenting each raise site individually.
@@ -215,6 +216,7 @@ class TestSecurityEventLogging:
         mock_logger.warning.assert_any_call(
             "security_auth_failed",
             reason="unknown subject",
+            code="AUTH_FAILED",
             client_ip="203.0.113.5",
             path="/v1/profiles",
             method="GET",
@@ -222,6 +224,7 @@ class TestSecurityEventLogging:
         mock_record.assert_awaited_once_with(
             event_type="security_auth_failed",
             reason="unknown subject",
+            code="AUTH_FAILED",
             client_ip="203.0.113.5",
             path="/v1/profiles",
             method="GET",
@@ -240,6 +243,7 @@ class TestSecurityEventLogging:
         mock_logger.warning.assert_any_call(
             "security_authz_denied",
             reason="resource belongs to another family",
+            code="FORBIDDEN",
             client_ip="203.0.113.5",
             path="/v1/story-requests/abc",
             method="POST",
@@ -248,6 +252,7 @@ class TestSecurityEventLogging:
         mock_record.assert_awaited_once_with(
             event_type="security_authz_denied",
             reason="resource belongs to another family",
+            code="FORBIDDEN",
             client_ip="203.0.113.5",
             path="/v1/story-requests/abc",
             method="POST",
@@ -276,6 +281,7 @@ class TestSecurityEventLogging:
         mock_logger.warning.assert_any_call(
             "security_authz_denied",
             reason="profile is not accessible to this principal",
+            code="FORBIDDEN",
             client_ip="203.0.113.5",
             path="/v1/profiles",
             method="GET",
@@ -284,6 +290,7 @@ class TestSecurityEventLogging:
         mock_record.assert_awaited_once_with(
             event_type="security_authz_denied",
             reason="profile is not accessible to this principal",
+            code="FORBIDDEN",
             client_ip="203.0.113.5",
             path="/v1/profiles",
             method="GET",
@@ -317,6 +324,7 @@ class TestSecurityEventLogging:
         mock_logger.warning.assert_any_call(
             "security_authz_denied",
             reason="forbidden",
+            code="FORBIDDEN",
             client_ip="203.0.113.5",
             path="/v1/profiles",
             method="GET",
@@ -344,11 +352,41 @@ class TestSecurityEventLogging:
         mock_logger.warning.assert_any_call(
             "security_auth_failed",
             reason="missing or malformed bearer token",
+            code="AUTH_FAILED",
             client_ip=None,
             path="/v1/profiles",
             method="GET",
         )
         assert mock_record.await_args.kwargs["client_ip"] is None
+
+    @pytest.mark.unit
+    async def test_custom_error_code_reaches_security_event(self) -> None:
+        """A call site that overrides `error_code=` propagates that value into
+        the security event, which is the whole point of carrying `code`.
+
+        `api/child_sessions.py` raises `AuthorizationError(..., error_code=
+        "PIN_MISMATCH")` on a failed child PIN. A detection rule keying on
+        `code == "PIN_MISMATCH"` can alert on PIN brute force specifically,
+        without string-matching the human-readable `reason`. Both the log
+        line and the durable row carry it.
+        """
+        request = self._mock_request(path="/v1/child-sessions", method="POST")
+        exc = AuthorizationError("incorrect PIN", error_code="PIN_MISMATCH")
+        with (
+            patch("cyo_adventure.app.logger") as mock_logger,
+            patch("cyo_adventure.app.record_security_event") as mock_record,
+        ):
+            await _handle_project_error(request, exc)
+        mock_logger.warning.assert_any_call(
+            "security_authz_denied",
+            reason="incorrect PIN",
+            code="PIN_MISMATCH",
+            client_ip="203.0.113.5",
+            path="/v1/child-sessions",
+            method="POST",
+            details=None,
+        )
+        assert mock_record.await_args.kwargs["code"] == "PIN_MISMATCH"
 
     @pytest.mark.unit
     async def test_non_auth_project_error_does_not_emit_security_event(self) -> None:

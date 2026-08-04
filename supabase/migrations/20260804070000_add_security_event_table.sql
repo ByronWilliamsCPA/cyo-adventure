@@ -2,9 +2,10 @@
 -- app.py::_handle_project_error and middleware/security.py::RateLimitMiddleware
 -- already log as structured events (security_auth_failed, security_authz_denied,
 -- security_rate_limit_exceeded). The log lines are the real-time/alerting
--- surface; this table is the durable/query-facing counterpart the breach-
--- notification runbook (docs/compliance/breach-notification-runbook.md) needs
--- to reconstruct an incident after the fact, once log retention has rolled off.
+-- surface (catalog: docs/operations/security-events.md); this table is the
+-- durable/query-facing counterpart the breach-notification runbook
+-- (docs/compliance/breach-notification-runbook.md) needs to reconstruct an
+-- incident after the fact, once log retention has rolled off.
 --
 -- Deliberately NOT an extension of pipeline_event (events/writer.py): that
 -- table's Actor value type requires either a real user_id (an authenticated
@@ -15,9 +16,25 @@
 -- into pipeline_event's accountability model, this is a separate, simpler,
 -- append-only table with no actor column at all.
 --
--- event_type values are the exact structlog event names, not a separate
--- vocabulary, so a responder can grep a log line and query the matching row
--- (or vice versa) without a mental mapping step.
+-- event_type values are the exact structlog event names, so the EVENT NAME a
+-- responder greps in the log is the same string they filter on in a query
+-- here -- no separate vocabulary to translate for that one join key. The two
+-- are not a full field-for-field mirror: the log line carries richer
+-- per-type detail (limit_type, requests_per_minute/burst_size,
+-- suppressed_since_last for a rate-limit trip) than this table's columns.
+--
+-- #CRITICAL: privacy: client_ip is personal data and path can embed a
+-- profile identifier (docs/operations/security-events.md section 4 makes the
+-- same call for the log line these rows mirror). The append-only trigger
+-- below means these rows have NO deletion path at all today: ADR-018
+-- requires a hard deletion timeline per data class, and this table does not
+-- yet have one. A retention/purge job (mirroring
+-- 20260720150000_add_retention_purge_jobs.sql's pattern for other retained
+-- data, or reading_activity_day's identical "table now, rollover job later"
+-- split) is explicitly OUT OF SCOPE for this migration; only the table and
+-- its cascade/RLS/append-only guarantee exist here.
+-- #VERIFY: tracked as a follow-up; do not treat this table as satisfying
+-- ADR-018 on its own.
 --
 -- Table and REFERENCES targets are schema-qualified ("public".*): see
 -- 20260729000000_add_child_profile_personalization.sql's header comment for
@@ -41,6 +58,7 @@ CREATE TABLE IF NOT EXISTS "public"."security_event" (
     "event_type" VARCHAR(48) NOT NULL,
     "reason" VARCHAR(200) NOT NULL,
     "client_ip" VARCHAR(45),
+    "code" VARCHAR(64),
     "path" VARCHAR(255),
     "method" VARCHAR(10),
     "status_code" SMALLINT,
@@ -57,9 +75,14 @@ CREATE TABLE IF NOT EXISTS "public"."security_event" (
 
 ALTER TABLE "public"."security_event" OWNER TO "postgres";
 
-CREATE INDEX "ix_security_event_event_type" ON "public"."security_event" USING "btree" ("event_type");
-CREATE INDEX "ix_security_event_occurred_at" ON "public"."security_event" USING "btree" ("occurred_at");
-CREATE INDEX "ix_security_event_client_ip" ON "public"."security_event" USING "btree" ("client_ip");
+-- IF NOT EXISTS on every statement below (including the indexes, easy to
+-- miss next to CREATE TABLE/TRIGGER's own guards): this migration has not
+-- shipped to any environment yet, but every other migration in this forward-
+-- only chain (ADR-012) is written re-runnable from a partial application, and
+-- this one should not be the first exception.
+CREATE INDEX IF NOT EXISTS "ix_security_event_event_type" ON "public"."security_event" USING "btree" ("event_type");
+CREATE INDEX IF NOT EXISTS "ix_security_event_occurred_at" ON "public"."security_event" USING "btree" ("occurred_at");
+CREATE INDEX IF NOT EXISTS "ix_security_event_client_ip" ON "public"."security_event" USING "btree" ("client_ip");
 
 CREATE OR REPLACE TRIGGER "trg_security_event_append_only"
     BEFORE DELETE OR UPDATE ON "public"."security_event"
