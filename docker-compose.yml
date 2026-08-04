@@ -137,6 +137,15 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       JSON_LOGS: ${JSON_LOGS:-false}
       DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://cyo_adventure:password@db:5432/cyo_adventure}
+      # ADR-021: the worker's own least-privilege credential (the cyo_worker
+      # role post-cutover). Left empty here on purpose: core/config.py's
+      # worker_database_url_effective treats "" exactly like unset and falls
+      # back to DATABASE_URL, so local dev keeps its single credential while
+      # a deployed environment can split the two by setting this alone. An
+      # operator who never sets it has NOT completed the ADR-021 cutover for
+      # the worker process, and the fallback makes that silent, so
+      # /health/ready's database_privilege check is what surfaces it.
+      WORKER_DATABASE_URL: ${WORKER_DATABASE_URL:-}
       CHILD_SESSION_SECRET: ${CHILD_SESSION_SECRET:-local-dev-child-session-secret-not-for-production}
       DEVICE_GRANT_SECRET: ${DEVICE_GRANT_SECRET:-local-dev-device-grant-secret-not-for-production}
       CYO_ADVENTURE_REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}

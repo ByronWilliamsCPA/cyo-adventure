@@ -218,6 +218,141 @@ class TestCheckDatabase:
 
 
 # ---------------------------------------------------------------------------
+# check_database_privilege helper
+# ---------------------------------------------------------------------------
+
+
+def _fake_session_with_connected_role(
+    role_name: str, *, bypasses_rls: bool
+) -> Callable[[], AsyncGenerator[AsyncMock, None]]:
+    """Build a mock AsyncSession whose execute() resolves the connected-role row.
+
+    Mirrors ``_fake_session_with_queue_counts``: one round trip returning the
+    identity ``check_database_privilege`` reads (``current_user`` and whether
+    that role carries BYPASSRLS).
+    """
+    mock_session = AsyncMock(spec=AsyncSession)
+    mock_result = Mock()
+    mock_result.one = Mock(
+        return_value=SimpleNamespace(role_name=role_name, bypasses_rls=bypasses_rls)
+    )
+    mock_session.execute = AsyncMock(return_value=mock_result)
+
+    @asynccontextmanager
+    async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
+        yield mock_session
+
+    return _fake_get_session
+
+
+class TestCheckDatabasePrivilege:
+    """Tests for the check_database_privilege() helper (ADR-021 cutover guard).
+
+    RLS never applies to a table's owner, so every RLS policy in this schema
+    is inert while the app connects as the ``postgres`` owner role. This check
+    makes the connected identity observable per environment, turning "no
+    application traffic connects as postgres" from a one-off manual query into
+    a standing, alertable signal.
+
+    The check is deliberately NOT in ``_CRITICAL_READINESS_CHECKS``: a
+    pre-cutover environment is a security finding, not an outage, and must not
+    pull pods out of the load-balancer rotation.
+    """
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_least_privilege_role_reports_ok(self) -> None:
+        """status=True, state='ok' when the connected role cannot bypass RLS."""
+        from cyo_adventure.api.health import check_database_privilege
+
+        fake_get_session = _fake_session_with_connected_role(
+            "cyo_api", bypasses_rls=False
+        )
+
+        with patch(
+            "cyo_adventure.core.database.get_session",
+            side_effect=fake_get_session,
+        ):
+            result = await check_database_privilege()
+
+        assert result.name == "database_privilege"
+        assert result.status is True
+        assert result.state == "ok"
+        assert result.error is None
+        assert result.latency_ms is not None
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_bypassrls_role_reports_degraded(self) -> None:
+        """status=False, state='degraded' when the connected role bypasses RLS.
+
+        This is the pre-cutover production state: connecting as the table
+        owner makes every RLS policy inert.
+        """
+        from cyo_adventure.api.health import check_database_privilege
+
+        fake_get_session = _fake_session_with_connected_role(
+            "postgres", bypasses_rls=True
+        )
+
+        with patch(
+            "cyo_adventure.core.database.get_session",
+            side_effect=fake_get_session,
+        ):
+            result = await check_database_privilege()
+
+        assert result.status is False
+        assert result.state == "degraded"
+        assert result.error is not None
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_connected_role_name_is_never_in_the_response(self) -> None:
+        """The role name must not reach this unauthenticated endpoint.
+
+        /health/ready is unauthenticated, so the response carries only the
+        posture bit. The role name is operator-facing detail and belongs in
+        the (access-controlled, redaction-aware) logs instead.
+        """
+        from cyo_adventure.api.health import check_database_privilege
+
+        fake_get_session = _fake_session_with_connected_role(
+            "postgres", bypasses_rls=True
+        )
+
+        with patch(
+            "cyo_adventure.core.database.get_session",
+            side_effect=fake_get_session,
+        ):
+            result = await check_database_privilege()
+
+        assert "postgres" not in str(result.model_dump())
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_failure_returns_generic_error(self) -> None:
+        """A database error yields status=False and no raw exception text."""
+        from cyo_adventure.api.health import check_database_privilege
+
+        @asynccontextmanager
+        async def _failing_get_session() -> AsyncGenerator[None, None]:
+            raise RuntimeError("connection refused")
+            yield  # pragma: no cover
+
+        with patch(
+            "cyo_adventure.core.database.get_session",
+            side_effect=_failing_get_session,
+        ):
+            result = await check_database_privilege()
+
+        assert result.status is False
+        # Must NOT leak the raw exception text (OWASP A09)
+        assert result.error == "dependency unavailable"
+        assert "connection refused" not in (result.error or "")
+        assert result.latency_ms is not None
+
+
+# ---------------------------------------------------------------------------
 # check_cache helper
 # ---------------------------------------------------------------------------
 
@@ -895,6 +1030,64 @@ class TestReadinessCacheDoesNotGate:
         assert response.status_code == 200
         assert body["checks"]["cache"]["status"] is True
         assert body["checks"]["cache"]["state"] == "unconfigured"
+
+
+# ---------------------------------------------------------------------------
+# Readiness endpoint: database privilege does not gate readiness (ADR-021)
+# ---------------------------------------------------------------------------
+
+
+class TestReadinessPrivilegeDoesNotGate:
+    """A degraded database_privilege check is reported but never flips readiness.
+
+    Pre-cutover (the app connected as the ``postgres`` owner) is an open
+    security finding, not an outage. It must be visible in the payload without
+    pulling pods out of the load-balancer rotation.
+    """
+
+    @pytest.mark.unit
+    def test_readiness_reports_degraded_privilege_and_still_returns_200(self) -> None:
+        """A BYPASSRLS role is surfaced in checks but readiness stays HTTP 200."""
+        mock_session = AsyncMock(spec=AsyncSession)
+
+        async def _execute(statement: Any) -> Any:
+            if "rolbypassrls" in str(statement):
+                privilege_result = Mock()
+                privilege_result.one = Mock(
+                    return_value=SimpleNamespace(
+                        role_name="postgres", bypasses_rls=True
+                    )
+                )
+                return privilege_result
+            return _make_queue_result(0, 0, 0)
+
+        mock_session.execute = AsyncMock(side_effect=_execute)
+
+        @asynccontextmanager
+        async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
+            yield mock_session
+
+        app = _make_app()
+        with (
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=_fake_get_session,
+            ),
+            patch(
+                "cyo_adventure.api.health.settings.rate_limit_backend",
+                "memory",
+            ),
+        ):
+            client = TestClient(app, raise_server_exceptions=True)
+            response = client.get("/health/ready")
+
+        body = response.json()
+        assert response.status_code == 200
+        assert body["status"] == "ok"
+        assert body["checks"]["database_privilege"]["status"] is False
+        assert body["checks"]["database_privilege"]["state"] == "degraded"
+        # The unauthenticated payload must not name the role (OWASP A01).
+        assert "postgres" not in str(body)
 
 
 # ---------------------------------------------------------------------------

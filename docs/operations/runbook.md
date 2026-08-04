@@ -704,7 +704,39 @@ migrations themselves are forward-only (ADR-012) and never need to be undone: `c
 nothing connects as them. There is no data migration involved in this cutover, only a
 connection-identity change, so rollback is immediate and has no data-loss risk.
 
-### 11.2 Future-table checklist
+### 11.2 Verifying the cutover actually happened
+
+Do not read a `.env*` file or a compose file to answer "which role is this environment on";
+those are the operator's local copy and the deployment's template, neither of which is the
+running process. Two sources are authoritative:
+
+- `/health/ready` reports a `database_privilege` check (`api/health.py`). `state: "ok"` means
+  the connected role cannot bypass RLS (cut over); `state: "degraded"` means it can (not cut
+  over). The check is deliberately non-gating, so a pre-cutover environment stays HTTP 200,
+  and it deliberately omits the role name because the endpoint is unauthenticated.
+- `SELECT usename, count(*) FROM pg_stat_activity WHERE datname = 'postgres' GROUP BY 1;`
+  against the target project shows which roles actually hold connections.
+
+The worker needs its own check: `CYO_ADVENTURE_WORKER_DATABASE_URL` silently falls back to
+`CYO_ADVENTURE_DATABASE_URL` when unset (`core/config.py::worker_database_url_effective`), so
+a forgotten worker variable is indistinguishable from a completed cutover by inspection. Confirm
+a `cyo_worker` connection appears in `pg_stat_activity` while a real generation job runs.
+
+### 11.3 Operator scripts must not run as `cyo_api`
+
+Six scripts read or write the ADR-022 Tier 1 tables (`child_profile`, `story_request`,
+`device_grant`) outside the request path, where nothing sets the `app.family_id` GUC:
+`scripts/seed_dev_data.py`, `scripts/seed_staging.py`, `scripts/seed_moderation_qa.py`,
+`scripts/seed_series_catalog.py`, `scripts/seed_catalog_validation_states.py`, and
+`scripts/series_e2e_local.py`.
+
+Run these with the **owner** (`postgres`) DSN, never the `cyo_api` DSN. Under `cyo_api` with no
+RLS context the Tier 1 predicate is unsatisfiable, so reads return zero rows and inserts are
+rejected by `WITH CHECK`. The read failure is silent: the script sees an empty result and
+reports "nothing to do" rather than an error. This is the same fail-closed-looks-like-empty
+failure mode that hid the device-grant defect in staging for two weeks (PR #560).
+
+### 11.4 Future-table checklist
 
 RLS enforcement for `cyo_api`/`cyo_worker` is an explicit, per-table `GRANT` plus an
 explicit, per-table `CREATE POLICY`; neither is inferred automatically from

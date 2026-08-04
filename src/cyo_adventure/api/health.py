@@ -69,6 +69,22 @@ _RECENT_FAILED_WINDOW = timedelta(hours=24)
 # threshold boundary (at the threshold vs. one above it).
 RECENT_FAILED_DEGRADED_THRESHOLD = 3
 
+# The identity this process actually connects as, plus whether that role can
+# bypass RLS (ADR-021). `current_user` is the effective role, so this reflects
+# the live connection rather than any configured DSN. COALESCE guards the case
+# where the role is absent from pg_roles, which is not a reason to claim the
+# connection is least-privileged: an unresolvable role reports False here and
+# the check treats that as "cannot confirm bypass", surfacing the query error
+# path instead if the row is missing entirely.
+_CONNECTED_ROLE_QUERY = """
+SELECT
+    current_user AS role_name,
+    COALESCE(
+        (SELECT rolbypassrls FROM pg_roles WHERE rolname = current_user),
+        false
+    ) AS bypasses_rls
+"""
+
 
 class HealthStatus(BaseModel):
     """Health check response model."""
@@ -161,6 +177,76 @@ async def check_database() -> ReadinessCheck:
             status=False,
             latency_ms=round(latency_ms, 2),
             error=_CHECK_FAILED_MESSAGE,
+        )
+
+
+async def check_database_privilege() -> ReadinessCheck:
+    """Report whether the API's database role is least-privileged (ADR-021).
+
+    RLS never applies to a table's owner, and this schema deliberately does
+    not set ``FORCE ROW LEVEL SECURITY`` (see
+    ``20260711200745_enable_rls_all_tables.sql``). Every RLS policy shipped
+    since then, including ADR-022's Tier 1 per-family predicates, is therefore
+    inert in any environment still connecting as the ``postgres`` owner role.
+    The migrations alone never make that visible; this check does.
+
+    Deliberately non-gating (absent from ``_CRITICAL_READINESS_CHECKS``): a
+    pre-cutover environment is an open security finding, not an outage, and
+    must not pull pods out of the load-balancer rotation. ``readiness()``
+    computes its HTTP status from critical checks only, so ``status=False``
+    here is visible and alertable without being disruptive.
+
+    #CRITICAL: security: the connected role name is logged but never returned.
+    /health/ready is unauthenticated, so the response carries only the posture
+    bit; naming the role would hand an unauthenticated caller the database
+    identity the application connects as.
+    #VERIFY: tests/unit/test_health.py::TestCheckDatabasePrivilege asserts the
+    role name is absent from the serialized response on the degraded path.
+
+    Returns:
+        ReadinessCheck: ``status=True``/``state="ok"`` when the connected role
+        cannot bypass RLS, ``status=False``/``state="degraded"`` when it can.
+    """
+    start = time.time()
+    try:
+        # Import here to avoid circular dependencies, matching check_database.
+        from cyo_adventure.core.database import get_session
+
+        async with get_session() as session:
+            result = await session.execute(text(_CONNECTED_ROLE_QUERY))
+            row = result.one()
+
+        latency_ms = (time.time() - start) * 1000
+        bypasses_rls = bool(row.bypasses_rls)
+        role_name = str(row.role_name)
+        if bypasses_rls:
+            logger.warning(
+                "database role bypasses row-level security",
+                check="database_privilege",
+                role=role_name,
+            )
+            return ReadinessCheck(
+                name="database_privilege",
+                status=False,
+                latency_ms=round(latency_ms, 2),
+                error="database role bypasses row-level security",
+                state="degraded",
+            )
+        return ReadinessCheck(
+            name="database_privilege",
+            status=True,
+            latency_ms=round(latency_ms, 2),
+            state="ok",
+        )
+    except Exception as exc:
+        latency_ms = (time.time() - start) * 1000  # NOSONAR
+        logger.warning(_CHECK_FAILED_LOG, check="database_privilege", error=str(exc))
+        return ReadinessCheck(
+            name="database_privilege",
+            status=False,
+            latency_ms=round(latency_ms, 2),
+            error=_CHECK_FAILED_MESSAGE,
+            state="degraded",
         )
 
 
@@ -475,6 +561,7 @@ async def readiness() -> ReadinessStatus:
     # Run all checks in parallel for better performance
     # For now, run sequentially - can be optimized with asyncio.gather()
     checks["database"] = await check_database()
+    checks["database_privilege"] = await check_database_privilege()
     checks["cache"] = await check_cache()
     checks["generation_queue"] = await check_generation_queue()
 
