@@ -1577,18 +1577,37 @@ Two mandatory subsections: vertical (role and capability) and horizontal (cross-
 - **Failure oracle:** a background worker's deployed session connects as the service key, the
   table owner, or any role with `rolbypassrls` set, rather than a scoped least-privilege role
   subject to RLS.
-- **Negative control:** not determined
+- **Negative control:** `tests/integration/test_worker_role_posture.py::
+  test_posture_on_a_migrated_schema_separates_the_bypass_paths[pre-cutover-table-owner]` connects
+  as the baseline dump's `postgres` owner role (no `rolsuper`, no `rolbypassrls`, owner of every
+  RLS-enabled table) and asserts the probe reports a bypass via the ownership path. That is the
+  failure oracle above, fired deliberately, so the measurement is known to be capable of
+  reporting the bad state rather than only ever reporting the good one.
 - **Trigger:** ADR-021 cutover (the Check text names this as the current blocker)
 - **Existing coverage:** the gate-coverage audit row "Privacy / RLS correctness" (PARTIAL: yes in
   CI, but RLS is a no-op in production); the cross-cutting gate defects list records that the
   application connects as the Postgres table owner pre-cutover, which is the specific gap this
-  row targets.
+  row targets. PR #608 adds the runtime half: the worker probes its own engine once per process
+  start and logs `generation_worker.role_least_privileged` /
+  `generation_worker.role_bypasses_rls` / `generation_worker.rls_posture_unknown`, so the
+  verification target is now observable from the deployed process itself instead of requiring a
+  `pg_stat_activity` snapshot timed to a live job.
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
 - **Last verified:** not verified
 - **Status:** finding open
 - **Check:** Background workers connect with a least-privilege role subject to RLS, not the
-  service key. Blocked on the ADR-021 cutover
+  service key. Blocked on the ADR-021 cutover.
+
+  Two reasons this stays open even though a runtime signal now exists. First, the signal is a log
+  line an operator has to read; nothing gates on it, by design, so an unread affirmative event is
+  not a verification. Second, and more specifically: `CYO_ADVENTURE_WORKER_DATABASE_URL` is unset
+  in production, so the worker reaches a least-privilege role only by falling back to the API DSN
+  and connecting as `cyo_api`. That satisfies the failure oracle's letter (not the owner, not a
+  superuser, no `rolbypassrls`) while leaving the queue path on the request path's credential,
+  which is the separation this row exists to assert. Closing it needs the worker DSN set
+  explicitly and a startup line showing `role=cyo_worker` with
+  `worker_dsn_explicitly_set=true`.
 
 #### O-77
 

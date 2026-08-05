@@ -765,15 +765,43 @@ so a forgotten worker variable is indistinguishable from a completed cutover by 
 `generation/worker_main.py` runs the same role probe against the **worker** engine once per
 process start and logs the verdict:
 
-| Log event | Meaning |
-| --- | --- |
-| `generation_worker.role_least_privileged` | Cut over. `role` names the connected role. |
-| `generation_worker.role_bypasses_rls` | Not cut over. `via_role_attribute` and `via_table_ownership` say which path. |
-| `generation_worker.rls_posture_unknown` | The probe itself failed; posture unmeasured, not clean. |
+| Log event | Level | Meaning |
+| --- | --- | --- |
+| `generation_worker.role_least_privileged` | `warning` | Cut over. `role` names the connected role; `worker_dsn_explicitly_set` says whether that happened by configuration or by fallback. |
+| `generation_worker.role_bypasses_rls` | `warning` | Not cut over. `via_role_attribute` and `via_table_ownership` say which path, and are fixed differently. |
+| `generation_worker.rls_posture_unknown` | `warning` | The probe itself failed; posture unmeasured, not clean. |
 
-Like the API check, none of these gate anything: the worker starts either way. Alert on
-`generation_worker.role_bypasses_rls`, and treat a deploy that emits no posture line at all as
-running an image older than PR #608.
+All three are WARNING-level, not INFO, because production runs `LOG_LEVEL=WARNING` and an INFO
+posture line is filtered out before it is written. That is the same rule
+[the security event catalog](security-events.md) applies to every security event, for the same
+reason. Do not "quiet down" the affirmative line to INFO: doing so turns a successful cutover
+back into silence and makes it indistinguishable from a worker running an image with no probe.
+
+**Alert on either of these, not just the bypass event:**
+
+```text
+event == "generation_worker.role_bypasses_rls"
+  OR (event == "generation_worker.role_least_privileged"
+      AND worker_dsn_explicitly_set == false)
+```
+
+The second clause is not redundant. When `CYO_ADVENTURE_WORKER_DATABASE_URL` is unset the worker
+falls back to the API DSN and connects as `cyo_api`, which has `rolbypassrls = false` and owns no
+Tier 1 table. The probe therefore emits the **affirmative** event, so an alert keyed only on
+`role_bypasses_rls` reports green for a worker that is still sharing the API credential. Alerting
+on `role != "cyo_worker"` works equally well and is easier to express in some backends.
+
+Treat a deploy that emits no posture line at all as running an image older than PR #608.
+
+None of these gate startup: the worker starts on all three outcomes, by design, because a
+pre-cutover worker is a security finding while a worker that refuses to start is an outage. That
+property depends on the probe rolling its transaction back when it fails. The probe and the
+stranded-job reclaim sweep share one transaction and the probe runs first, so a probe that failed
+without rolling back would leave the sweep unable to issue any statement (PostgreSQL SQLSTATE
+25P02) and, under `restart_policy: on-failure`, put the worker in an uncapped crash loop. If you
+ever see `rls_posture_unknown` followed by a worker that will not stay up, that is the regression
+to look for; it is pinned by
+`tests/integration/test_worker_role_posture.py::test_statement_error_in_probe_still_lets_the_sweep_run`.
 
 The verdict is emitted once at startup, so restart the worker after changing its DSN rather than
 waiting for the next job. To confirm from the database side instead, check that a `cyo_worker`
