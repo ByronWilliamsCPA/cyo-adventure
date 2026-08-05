@@ -5,7 +5,7 @@
 # Features:
 #   - Bandit static analysis for Python
 #   - OSV-Scanner dependency vulnerability scanning
-#   - Weekly scheduled scans
+#   - Daily scheduled scans of main, independent of push activity
 name: Security Analysis
 
 "on":
@@ -25,8 +25,15 @@ name: Security Analysis
   # access to fix.
   merge_group:
   schedule:
-    # Run security scans weekly on Monday at 9 AM UTC
-    - cron: '0 9 * * 1'
+    # Daily at 09:07 UTC, not weekly (issue #594). This is the only scan of
+    # main that does not depend on what triggered the last push, so its period
+    # is main's worst-case exposure to a newly-published advisory against an
+    # already-pinned dependency. That was a week; CVE-2026-69247 against
+    # cryptography 49.0.0 published mid-week and main's most recent CI run was
+    # a release commit that skipped the whole suite, so nothing on main was
+    # scanning at all. Offset 7 minutes past the hour to stay clear of the
+    # scheduler's on-the-hour contention.
+    - cron: '7 9 * * *'
   workflow_dispatch:
 
 # Cancel in-progress runs for same PR/branch

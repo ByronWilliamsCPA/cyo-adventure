@@ -39,9 +39,11 @@ jobs:
   # #ASSUME external-resource: the one real gap this leaves is `uv lock`
   # resolving a newly-published transitive dependency version the original
   # feature PR's tests never exercised. Accepted tradeoff: this is caught by
-  # the weekly scheduled scans (python-compatibility.yml, sbom.yml,
-  # container-security.yml) and the next feature PR's own full run, not left
-  # permanently unverified.
+  # the scheduled scans (security-analysis.yml daily, then
+  # python-compatibility.yml, sbom.yml and container-security.yml weekly) and
+  # the next feature PR's own full run, not left permanently unverified.
+  # security-analysis.yml moved from weekly to daily under issue #594
+  # precisely because its period is main's worst-case exposure window here.
   # #VERIFY: on a merge_group event, github.event.merge_group.head_ref is the
   # synthetic queue ref (refs/heads/gh-readonly-queue/main/pr-<N>-<sha>), NOT
   # the PR's own source branch -- confirmed against this repo's real queue
@@ -949,9 +951,20 @@ jobs:
         with:
           egress-policy: audit
 
+      # #CRITICAL: data-integrity: this gate is the required status check that
+      # stands in for the whole suite, so whatever it reports IS the repo's
+      # claim about a commit. It must never report a skip as a verification
+      # (issue #594): a `skipped` job means "we chose not to check", a
+      # `success` job means "we checked and it was fine", and collapsing the
+      # two makes an unverified `main` indistinguishable from a tested one.
+      # #VERIFY: tests/unit/test_ci_gate_contract.py parses this workflow and
+      # asserts every job in `needs:` is checked below, and that each job's
+      # skip allowance matches its own job-level `if:`.
       - name: Check CI results
         env:
+          EVENT_NAME: ${{ github.event_name }}
           RELEASE_PR: ${{ needs.detect-release-pr.outputs.release_pr }}
+          DETECT_RESULT: ${{ needs.detect-release-pr.result }}
           CI_RESULT: ${{ needs.ci.result }}
           FRONTEND_RESULT: ${{ needs.frontend.result }}
           FRONTEND_E2E_RESULT: ${{ needs.frontend-e2e.result }}
@@ -959,29 +972,127 @@ jobs:
           CONTRACT_RESULT: ${{ needs.contract.result }}
           SCHEMA_DOCS_RESULT: ${{ needs.schema-docs.result }}
         run: |
-          # A release-automation PR (see detect-release-pr) intentionally
-          # skips ci/frontend/frontend-e2e/design-system/contract entirely --
-          # there is nothing else to check here.
-          if [ "$RELEASE_PR" = "true" ]; then
-            echo "CI Gate passed (release-automation PR; full suite intentionally skipped)"
-            exit 0
-          fi
-          # frontend/frontend-e2e/design-system/contract intentionally report
-          # "skipped" on merge_group (see their job-level `if:`); ci never
-          # skips outside the release-automation case above, so a skipped ci
-          # result still fails the gate.
-          FAILED=false
-          [ "$CI_RESULT" != "success" ] && FAILED=true
-          [ "$FRONTEND_RESULT" != "success" ] && [ "$FRONTEND_RESULT" != "skipped" ] && FAILED=true
-          [ "$FRONTEND_E2E_RESULT" != "success" ] && [ "$FRONTEND_E2E_RESULT" != "skipped" ] && FAILED=true
-          [ "$DESIGN_SYSTEM_RESULT" != "success" ] && [ "$DESIGN_SYSTEM_RESULT" != "skipped" ] && FAILED=true
-          [ "$CONTRACT_RESULT" != "success" ] && [ "$CONTRACT_RESULT" != "skipped" ] && FAILED=true
-          # schema-docs carries no job-level `if:`, so unlike the jobs above it
-          # never legitimately reports "skipped"; the "skipped" arm below is
-          # defensive symmetry only.
-          [ "$SCHEMA_DOCS_RESULT" != "success" ] && [ "$SCHEMA_DOCS_RESULT" != "skipped" ] && FAILED=true
-          if [ "$FAILED" = "true" ]; then
-            echo "CI Gate failed"
+          set -euo pipefail
+
+          failed=0
+          skipped_jobs=()
+
+          # check_job <display name> <result> <is a skip expected here?>
+          #
+          # The third argument is the whole point. Accepting `skipped`
+          # unconditionally (the previous behaviour) accepts it for reasons
+          # nobody intended: an upstream `needs` failure, a mistyped
+          # job-level `if:`, or a condition someone adds later all surface as
+          # `skipped` and would read as a pass. A skip is only tolerated when
+          # this run's context is one that explains it.
+          check_job() {
+            label="$1"
+            result="$2"
+            skip_expected="$3"
+            case "$result" in
+              success)
+                echo "- ✅ ${label}: passed" >> "$GITHUB_STEP_SUMMARY"
+                ;;
+              skipped)
+                if [ "$skip_expected" = "true" ]; then
+                  echo "- ⏭️ ${label}: skipped, so NOT verified on this commit" \
+                    >> "$GITHUB_STEP_SUMMARY"
+                  skipped_jobs+=("$label")
+                else
+                  echo "- ❌ ${label}: skipped, and nothing in this run's context explains why" \
+                    >> "$GITHUB_STEP_SUMMARY"
+                  echo "::error::${label} was skipped unexpectedly on a ${EVENT_NAME} event. A skip here is a defect, not a policy."
+                  failed=1
+                fi
+                ;;
+              *)
+                echo "- ❌ ${label}: ${result}" >> "$GITHUB_STEP_SUMMARY"
+                failed=1
+                ;;
+            esac
+          }
+
+          # Every skip allowance below is derived from detect-release-pr's
+          # output, so if that job did not succeed the gate cannot tell a
+          # legitimate skip from a broken one and must not guess.
+          if [ "$DETECT_RESULT" != "success" ]; then
+            {
+              echo "## CI Gate failed"
+              echo ""
+              echo "\`Detect release-automation PR\` reported \`${DETECT_RESULT}\`."
+              echo "Without it the gate cannot establish which skips are expected."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::Detect release-automation PR reported ${DETECT_RESULT}; the skip policy is unevaluable."
             exit 1
           fi
-          echo "CI Gate passed"
+
+          # A release-automation commit (release/v* PR, or a chore(release):
+          # push) intentionally skips the entire suite: the content was
+          # already tested on the feature PR that produced it. That is a
+          # defensible policy and the gate honours it, but it says so out
+          # loud rather than reporting a bare pass.
+          if [ "$RELEASE_PR" = "true" ]; then
+            {
+              echo "## CI Gate passed WITHOUT running the suite"
+              echo ""
+              echo "Release-automation commit: every quality job was intentionally skipped,"
+              echo "so **this commit carries no verification from this workflow**. The tested"
+              echo "content is the feature PR that produced it."
+              echo ""
+              echo "See the scheduled scans (\`security-analysis.yml\`, \`python-compatibility.yml\`,"
+              echo "\`sbom.yml\`, \`container-security.yml\`) for coverage that does not depend on"
+              echo "what triggered the last push."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::CI Gate passed without running the suite (release-automation commit). This commit is unverified by this workflow."
+            exit 0
+          fi
+
+          # frontend, frontend-e2e, design-system and contract all carry
+          # `if: github.event_name != 'merge_group' && ...`, so merge_group is
+          # the one and only event on which their skip is by design. ci and
+          # schema-docs have no such exclusion, so for them a skip is always a
+          # defect. #VERIFY: test_ci_gate_contract.py asserts this mapping
+          # against the actual job-level `if:` expressions.
+          if [ "$EVENT_NAME" = "merge_group" ]; then
+            merge_queue_skip_ok=true
+          else
+            merge_queue_skip_ok=false
+          fi
+
+          {
+            echo "## CI Gate"
+            echo ""
+            echo "Event: \`${EVENT_NAME}\`"
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          check_job "CI (Python 3.14)" "$CI_RESULT" false
+          check_job "ER Diagram Drift" "$SCHEMA_DOCS_RESULT" false
+          check_job "Frontend (Node 22)" "$FRONTEND_RESULT" "$merge_queue_skip_ok"
+          check_job "Frontend E2E (Playwright, mocked tier)" "$FRONTEND_E2E_RESULT" "$merge_queue_skip_ok"
+          check_job "Design System (Node 22)" "$DESIGN_SYSTEM_RESULT" "$merge_queue_skip_ok"
+          check_job "OpenAPI Contract Drift" "$CONTRACT_RESULT" "$merge_queue_skip_ok"
+
+          if [ "${#skipped_jobs[@]}" -gt 0 ]; then
+            {
+              echo ""
+              echo "⚠️ ${#skipped_jobs[@]} required job(s) were not run on this commit:"
+              echo "\`${skipped_jobs[*]}\`."
+              echo "This gate is green because those skips are expected here, not because"
+              echo "those checks passed."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::CI Gate is green with ${#skipped_jobs[@]} required job(s) not run: ${skipped_jobs[*]}"
+          fi
+
+          if [ "$failed" -eq 1 ]; then
+            {
+              echo ""
+              echo "❌ **CI Gate failed.**"
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+          {
+            echo ""
+            echo "✅ **CI Gate passed.**"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -426,6 +426,7 @@ jobs:
     needs: [dead-code, link-check]
     if: always()
     env:
+      EVENT_NAME: ${{ github.event_name }}
       DEAD_CODE_RESULT: ${{ needs.dead-code.result }}
       LINK_CHECK_RESULT: ${{ needs.link-check.result }}
     steps:
@@ -442,29 +443,52 @@ jobs:
             echo ""
           } >> "$GITHUB_STEP_SUMMARY"
 
-          # Both jobs are skipped on merge_group by design (see their `if:`),
-          # so `skipped` is reported as such rather than dressed up as a pass.
-          # Only `failure` blocks, and only for link-check plus a dead-code
-          # job that broke on invocation (vulture findings are warnings, so a
-          # failed dead-code job means the tool or its config is broken).
+          # Both jobs carry `if: github.event_name != 'merge_group'`, so
+          # merge_group is the one and only event on which their skip is by
+          # design. Accepting `skipped` on any other event (and labelling it
+          # "merge queue" regardless) would accept a skip caused by an upstream
+          # failure or a mistyped condition, and report it as satisfied. That
+          # is the defect issue #594 records against ci.yml's CI Gate; the same
+          # blanket tolerance lived here.
+          #
+          # Otherwise: only `failure` blocks, and only for link-check plus a
+          # dead-code job that broke on invocation (vulture findings are
+          # warnings, so a failed dead-code job means the tool or its config is
+          # broken).
+          if [ "$EVENT_NAME" = "merge_group" ]; then
+            skip_expected=true
+          else
+            skip_expected=false
+          fi
+
+          failed=0
+
+          # summarize <label> <result>
           summarize() {
             case "$2" in
-              success) echo "✅ $1: Passed" ;;
-              skipped) echo "⏭️ $1: Skipped (merge queue)" ;;
-              *)       echo "❌ $1: $2" ;;
+              success)
+                echo "✅ $1: Passed" >> "$GITHUB_STEP_SUMMARY"
+                ;;
+              skipped)
+                if [ "$skip_expected" = "true" ]; then
+                  echo "⏭️ $1: Skipped (merge queue), so not verified here" \
+                    >> "$GITHUB_STEP_SUMMARY"
+                else
+                  echo "❌ $1: Skipped, and a ${EVENT_NAME} event does not explain why" \
+                    >> "$GITHUB_STEP_SUMMARY"
+                  echo "::error::$1 was skipped unexpectedly on a ${EVENT_NAME} event."
+                  failed=1
+                fi
+                ;;
+              *)
+                echo "❌ $1: $2" >> "$GITHUB_STEP_SUMMARY"
+                failed=1
+                ;;
             esac
           }
 
-          summarize "Dead Code Check" "$DEAD_CODE_RESULT" >> "$GITHUB_STEP_SUMMARY"
-          summarize "Link Check" "$LINK_CHECK_RESULT" >> "$GITHUB_STEP_SUMMARY"
-
-          failed=0
-          for result in "$DEAD_CODE_RESULT" "$LINK_CHECK_RESULT"; do
-            case "$result" in
-              success | skipped) ;;
-              *) failed=1 ;;
-            esac
-          done
+          summarize "Dead Code Check" "$DEAD_CODE_RESULT"
+          summarize "Link Check" "$LINK_CHECK_RESULT"
 
           if [ "$failed" -eq 1 ]; then
             {
