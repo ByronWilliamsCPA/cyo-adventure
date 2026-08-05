@@ -2383,6 +2383,55 @@ def test_main_against_the_real_repository_documents_exits_zero(
     assert out.startswith("ok:")
 
 
+# The cluster letter range lives in two decoupled places: `[namespaces.uw].pattern` in
+# plan-manifest.toml, and `_CLUSTER_HEADING_RE` in the checker. Opening a new cluster means
+# widening both, and forgetting one fails asymmetrically. Forgetting the heading regex is loud:
+# the rows are discovered and then rejected by the namespace pattern, so the run exits 1 with an
+# error per row. Forgetting the manifest is SILENT: the checker never discovers the heading, so
+# the cluster's whole table is never validated and the run still exits 0 with a lower cluster
+# count. Both real-repository tests above are structurally blind to that second case, because an
+# unvalidated cluster produces exactly what they assert: an empty problem set and exit 0. The
+# property that actually breaks is which clusters get discovered, so that is what this asserts.
+_ANY_CLUSTER_HEADING_RE = re.compile(r"^## Cluster ([A-Z]+):", re.MULTILINE)
+
+
+def _real_register_cluster_letters() -> frozenset[str]:
+    """Read the cluster letters the real register actually declares.
+
+    Returns:
+        frozenset[str]: Every letter appearing in a ``## Cluster <letter>:`` heading, found with
+            a deliberately permissive pattern so a cluster neither copy of the range admits is
+            still visible to this test.
+    """
+    text = Path(_MODULE._DEFAULT_REGISTER).read_text(encoding="utf-8")
+    return frozenset(_ANY_CLUSTER_HEADING_RE.findall(text))
+
+
+def test_cluster_heading_re_covers_every_manifest_uw_cluster() -> None:
+    """Both copies of the cluster letter range admit every cluster the register declares."""
+    letters = _real_register_cluster_letters()
+    assert letters, "no `## Cluster <letter>:` heading found in the real register"
+
+    undiscovered = sorted(
+        letter
+        for letter in letters
+        if not _MODULE._CLUSTER_HEADING_RE.match(f"## Cluster {letter}:")
+    )
+    assert not undiscovered, (
+        f"_CLUSTER_HEADING_RE in scripts/check_work_linkage.py does not discover cluster(s) "
+        f"{undiscovered}, so their rows are silently never validated and the run still exits 0. "
+        f"Widen the letter range there."
+    )
+
+    unadmitted = sorted(
+        letter for letter in letters if not _UW_ID_PATTERN.match(f"UW-{letter}01")
+    )
+    assert not unadmitted, (
+        f"plan-manifest.toml [namespaces.uw].pattern rejects ids in cluster(s) {unadmitted}. "
+        f"Widen the letter range there too."
+    )
+
+
 def test_main_never_calls_subprocess() -> None:
     """The CLI never shells out, so the pre-commit hook and CI run the identical check.
 
