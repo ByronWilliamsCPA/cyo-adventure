@@ -326,10 +326,11 @@ async def _run_one_stage(
 
     Returns:
         A tuple of ``(doc_or_none, gate_result)``. ``doc_or_none`` is the
-        parsed dict when JSON parsing succeeded; ``None`` on a parse error.
-        ``gate_result`` is always present: either the real gate result for a
-        successfully parsed dict, or a synthetic blocked result for parse
-        failures.
+        parsed dict when JSON parsing succeeded; ``None`` on a parse error,
+        which includes malformed JSON, a non-dict top level, and input nested
+        deeply enough to exhaust the parser's stack. ``gate_result`` is always
+        present: either the real gate result for a successfully parsed dict, or
+        a synthetic blocked result for parse failures.
 
     Raises:
         ValidationError: If either block contains forbidden PII (propagated
@@ -343,9 +344,19 @@ async def _run_one_stage(
     )
 
     # Parse: treat any non-dict or non-JSON as a synthetic blocked gate.
+    # #CRITICAL: data integrity: deeply nested input does not raise
+    # JSONDecodeError. `json.loads` raises RecursionError when the C scanner
+    # exhausts the stack, and under Python 3.14 that guard measures actual stack
+    # usage, so whether it raises at all depends on the executing thread: the
+    # same 100k-deep array raises at an 8MB stack and parses successfully at
+    # 64MB. Catching only JSONDecodeError therefore let a hostile or degenerate
+    # completion escape `generate_story` as a raw builtin on some stacks while
+    # routing to the blocked gate on others.
+    # #VERIFY: test_generate_story_deeply_nested_output_returns_failed pins the
+    # defined outcome, which now holds on any stack size.
     try:
         parsed: object = json.loads(raw)  # pyright: ignore[reportAny]
-    except json.JSONDecodeError:
+    except (json.JSONDecodeError, RecursionError):
         return None, _empty_blocked_gate()
 
     if not isinstance(parsed, dict):

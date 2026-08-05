@@ -344,23 +344,28 @@ async def test_generate_story_oversized_node_body_returns_needs_review() -> None
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_generate_story_deeply_nested_output_raises_recursion_error() -> None:
-    """A deeply nested JSON bomb currently escapes as a raw RecursionError."""
-    # ROBUSTNESS FINDING (pinned, src/ intentionally unchanged): the parse
-    # boundary in orchestrator._run_one_stage catches only
-    # json.JSONDecodeError, but json.loads raises RecursionError for deeply
-    # nested input, so a hostile or degenerate completion crashes
-    # generate_story with a raw builtin exception instead of routing to the
-    # synthetic blocked gate like every other malformed output. If this test
-    # ever fails because a defined outcome is returned instead, the fix
-    # landed: update this test to assert that outcome.
+async def test_generate_story_deeply_nested_output_returns_failed() -> None:
+    """A deeply nested JSON bomb is a defined parse failure on any stack size."""
+    # This test previously pinned the opposite behaviour, asserting that the
+    # bomb escaped as a raw RecursionError because the parse boundary caught
+    # only json.JSONDecodeError. That assertion was not stable, because under
+    # Python 3.14 the recursion guard measures actual stack usage rather than
+    # counting frames: the same 100k-deep array raises at an 8MB thread stack
+    # and parses successfully at 64MB, so the test passed locally and failed on
+    # CI's larger-stacked xdist workers. The finding was real, so the fix went
+    # into orchestrator._run_one_stage (which now catches RecursionError too)
+    # rather than into the assertion. Both stack regimes now converge here:
+    # raising routes to the synthetic blocked gate, and parsing yields a
+    # non-dict top level that was already routed there.
     nesting_bomb = "[" * 100_000 + "]" * 100_000
     provider = MockProvider(responses=[nesting_bomb])
-    brief = _make_brief()
-    pii = _empty_pii()
 
-    with pytest.raises(RecursionError):
-        await generate_story(brief, provider, pii, max_repairs=0)
+    outcome = await generate_story(_make_brief(), provider, _empty_pii(), max_repairs=0)
+
+    assert outcome.status == "failed"
+    assert outcome.storybook is None
+    assert outcome.stage_log[0] == "stage_a:parse_error"
+    assert "L1-1" in _error_rule_ids(outcome.report)
 
 
 # ---------------------------------------------------------------------------
