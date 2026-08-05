@@ -215,14 +215,25 @@ in stacked PRs off `main`.
    and resumes on top of this staging environment.
 2. File an issue for the delayed naive-ux-check scenario redesign referencing
    both specs.
-3. **Staging done; production wired and awaiting its first dispatch.** Supabase config-as-code
-   push (`supabase config push`) for remote auth settings, issue #601 / register row UW-D29,
-   delivered in PR #604: `config push` is wired into both deploy workflows after `link` and
-   before `db push`, with `[remotes.staging]` / `[remotes.production]` blocks in `config.toml`
-   supplying the per-environment `site_url` and `additional_redirect_urls`.
+3. **Done, both environments.** Supabase config-as-code push (`supabase config push`) for remote
+   auth settings, issue #601 / register row UW-D29, delivered in PR #604: `config push` is wired
+   into both deploy workflows after `link` and before `db push`, with `[remotes.staging]` /
+   `[remotes.production]` blocks in `config.toml` supplying the per-environment `site_url` and
+   `additional_redirect_urls`. Staging deployed on the merge of #604 (run 30933782746) and
+   production by human-approved dispatch (run 30934654664), both on 2026-08-04. UW-D29 is `done`
+   and records which four fields production actually moved, plus the field-by-field Management API
+   diff that established them; do not re-derive that list from a run log.
 
    This follow-up deferred the work pending CLI stability. What actually cleared it was not
-   stability: it was reading the CLI source at the pinned tag and finding that `config push` is a
-   defaulting writer rather than a differ, then mitigating that. The version pin at 2.109.1 is
-   therefore load-bearing, and an unreviewed CLI bump is a change to auth policy. UW-D29 stays at
-   `verify` until the production dispatch runs.
+   stability: it was reading the CLI source at the pinned tag. **Correcting an earlier draft of
+   this item, which called `config push` "a defaulting writer rather than a differ":** it does
+   diff. Each surface reads its remote, calls `DiffWithRemote`, and prints
+   `Remote <surface> config is up to date.` **without writing** when nothing differs, so a genuine
+   no-op push says so. Run 30972610902, a comment-only change to `config.toml`, confirmed that
+   empirically across all four live surfaces. The real hazard is narrower than the original claim
+   but no less sharp: the CLI diffs against a view of the file with omitted keys already replaced
+   by CLI defaults, so an omission still reads as a difference and still overwrites. A minimal
+   config file is therefore the most dangerous input, not the safest. There is no `--dry-run`, and
+   unknown keys are silently ignored, so a typo never validates and never applies. The version pin
+   at 2.109.1 is load-bearing for all of this, and an unreviewed CLI bump is a change to auth
+   policy.
