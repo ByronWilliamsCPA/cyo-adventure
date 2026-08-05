@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.65.2] - 2026-08-05
+
+### Bug Fixes
+
+- **health**: Make the readiness probe reachable and assert it by content type
+  ([#609](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/609),
+  [`f63c286`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/f63c28638e8d208da57e9e95450cf4b2b9600a38))
+
+
 ## [0.65.1] - 2026-08-05
 
 ### Bug Fixes
@@ -3152,6 +3161,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.65.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.65.1...v0.65.2
 [0.65.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.65.0...v0.65.1
 [0.65.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.64.0...v0.65.0
 [0.64.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.63.0...v0.64.0
