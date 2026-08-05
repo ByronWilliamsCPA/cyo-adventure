@@ -238,7 +238,10 @@ interface RecommendationItem {
   ring: 'family' | 'connection'
 }
 
-async function fetchRecommendations(bearer: string, profileId: string): Promise<RecommendationItem[]> {
+async function fetchRecommendations(
+  bearer: string,
+  profileId: string
+): Promise<RecommendationItem[]> {
   const res = await apiFetch(`/api/v1/recommendations/${profileId}`, bearer)
   expect(res.ok, `GET /recommendations/${profileId} failed (HTTP ${res.status})`).toBe(true)
   const body = (await res.json()) as { items: RecommendationItem[] }
@@ -406,9 +409,23 @@ test('the real rendered kid library shows the "Cousin" recommendation chip once 
     await expect(page.getByText(`Cousin ${sharerDisplayName} loved this`)).toBeVisible()
   } finally {
     if (grantId) {
-      await apiFetch(`/api/v1/device-grants/${grantId}`, viewer.bearer, {
-        method: 'DELETE',
-      }).catch(() => undefined)
+      // Best-effort, but never silent: a device grant that fails to revoke is a
+      // live credential left behind, so it must be visible in the run log rather
+      // than swallowed (mirrors the connection-delete warn in test.afterAll).
+      try {
+        const res = await apiFetch(`/api/v1/device-grants/${grantId}`, viewer.bearer, {
+          method: 'DELETE',
+        })
+        if (!res.ok && res.status !== 404) {
+          console.warn(
+            `[connections-enforcement] device-grant revoke did not confirm (HTTP ${res.status}) for ${grantId}`
+          )
+        }
+      } catch (err) {
+        console.warn(
+          `[connections-enforcement] device-grant revoke errored for ${grantId}: ${err instanceof Error ? err.message : String(err)}`
+        )
+      }
     }
     await context.close()
   }

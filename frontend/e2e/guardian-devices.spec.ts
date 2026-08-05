@@ -70,7 +70,9 @@ test('cancelling the revoke dialog leaves the device in place with no DELETE fir
   await page.route('**/api/v1/device-grants', (route) => route.fulfill({ json: [TABLET] }))
   let deleteFired = false
   await page.route('**/api/v1/device-grants/*', (route) => {
-    deleteFired = true
+    // Scoped to DELETE so an unrelated GET to the same path cannot fail this
+    // negative test for the wrong reason.
+    if (route.request().method() === 'DELETE') deleteFired = true
     return route.fulfill({ status: 204, body: '' })
   })
 
@@ -92,7 +94,12 @@ test('confirming the revoke dialog calls DELETE for that device and drops it fro
   await setUp(context, page)
   await page.route('**/api/v1/device-grants', (route) => route.fulfill({ json: [TABLET, PHONE] }))
   let deletedPath: string | null = null
+  let deletedMethod: string | null = null
   await page.route('**/api/v1/device-grants/*', (route: Route) => {
+    // Record the verb, not just the path: without this the test would still pass
+    // if revoke regressed to a different method (e.g. a soft-disable PATCH) on
+    // the same URL, which is a real change in revocation semantics.
+    deletedMethod = route.request().method()
     deletedPath = new URL(route.request().url()).pathname
     return route.fulfill({ status: 204, body: '' })
   })
@@ -111,6 +118,7 @@ test('confirming the revoke dialog calls DELETE for that device and drops it fro
 
   await expect(dialog).toBeHidden()
   await expect.poll(() => deletedPath).toBe('/api/v1/device-grants/device-1')
+  expect(deletedMethod).toBe('DELETE')
   await expect(page.getByText('Kitchen tablet')).toHaveCount(0)
   await expect(page.getByText('Unnamed device')).toBeVisible()
 })

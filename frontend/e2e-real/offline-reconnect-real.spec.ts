@@ -80,6 +80,7 @@ async function createAssignedProfile(displayName: string): Promise<string> {
     method: 'POST',
     headers: { Authorization: `Bearer ${DEV_GUARDIAN_BEARER}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ display_name: displayName, age_band: '8-11' }),
+    signal: AbortSignal.timeout(5000),
   })
   expect(createRes.ok, `POST /profiles failed (HTTP ${createRes.status})`).toBe(true)
   const { id } = (await createRes.json()) as { id: string }
@@ -88,6 +89,7 @@ async function createAssignedProfile(displayName: string): Promise<string> {
     method: 'POST',
     headers: { Authorization: `Bearer ${DEV_GUARDIAN_BEARER}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ profile_ids: [id] }),
+    signal: AbortSignal.timeout(5000),
   })
   expect(assignRes.ok, `POST /assignments failed (HTTP ${assignRes.status})`).toBe(true)
   return id
@@ -99,6 +101,7 @@ async function deleteProfile(profileId: string): Promise<void> {
     const res = await fetch(`${BACKEND}/api/v1/profiles/${profileId}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${DEV_GUARDIAN_BEARER}` },
+      signal: AbortSignal.timeout(5000),
     })
     if (!res.ok && res.status !== 404) {
       console.warn(
@@ -137,6 +140,7 @@ function waitForConflictPut(page: Page) {
 async function fetchServerRow(profileId: string): Promise<ReadingStateRow> {
   const res = await fetch(`${BACKEND}/api/v1/reading-state/${profileId}/${STORYBOOK_ID}`, {
     headers: { Authorization: `Bearer ${DEV_GUARDIAN_BEARER}` },
+    signal: AbortSignal.timeout(5000),
   })
   expect(res.ok, `GET /reading-state failed (HTTP ${res.status})`).toBe(true)
   return (await res.json()) as ReadingStateRow
@@ -176,38 +180,45 @@ test.describe.serial('Offline queue replay-on-reconnect via a real network toggl
     page,
   }) => {
     const grant = await authorizeDevice(context)
-    await context.addInitScript(() => {
-      window.localStorage.setItem('auth_token', 'dev-child')
-    })
+    // #CRITICAL: security: the grant is a live credential, so every path out of
+    // this test must revoke it. Without the finally, any assertion failure below
+    // leaves an unrevoked device grant behind, which is how a red run can still
+    // leak an authorized device (mirrors the sibling conflict test's pattern).
+    // #VERIFY: revokeDevice runs on both the pass and the fail path.
+    try {
+      await context.addInitScript(() => {
+        window.localStorage.setItem('auth_token', 'dev-child')
+      })
 
-    const mountSave = waitForSavedPut(page)
-    await openClockworkGarden(page, cleanProfileName)
-    await mountSave
+      const mountSave = waitForSavedPut(page)
+      await openClockworkGarden(page, cleanProfileName)
+      await mountSave
 
-    await context.setOffline(true)
+      await context.setOffline(true)
 
-    // Three choices made purely client-side while genuinely offline; each one
-    // enqueues a write (offline/sync.ts's saveProgress -> OfflineError ->
-    // enqueueWrite) and never reaches the network until reconnect.
-    for (const choiceId of ['c_hedge', 'c_squeeze', 'c_to_gate2'] as const) {
-      await page.getByTestId(`choice-${choiceId}`).click()
+      // Three choices made purely client-side while genuinely offline; each one
+      // enqueues a write (offline/sync.ts's saveProgress -> OfflineError ->
+      // enqueueWrite) and never reaches the network until reconnect.
+      for (const choiceId of ['c_hedge', 'c_squeeze', 'c_to_gate2'] as const) {
+        await page.getByTestId(`choice-${choiceId}`).click()
+      }
+      await expect(page.getByTestId('passage-body')).toContainText('The iron gate ticks')
+
+      // Reconnect: Playwright's setOffline(false) dispatches the browser
+      // 'online' event, which useReplayOnReconnect.ts listens for to flush the
+      // queue. Registering the wait BEFORE flipping back online, per this
+      // file's dependent-ordering rationale.
+      const replayed = waitForSavedPut(page)
+      await context.setOffline(false)
+      await replayed
+      await expect(page.getByText(SUCCESS_TOAST_TEXT)).toBeVisible({ timeout: 15_000 })
+
+      const row = await fetchServerRow(cleanProfileId)
+      expect(row.current_node).toBe('n_gate')
+      expect(row.var_state).toEqual({ has_key: false, courage: 2 })
+    } finally {
+      await revokeDevice(grant)
     }
-    await expect(page.getByTestId('passage-body')).toContainText('The iron gate ticks')
-
-    // Reconnect: Playwright's setOffline(false) dispatches the browser
-    // 'online' event, which useReplayOnReconnect.ts listens for to flush the
-    // queue. Registering the wait BEFORE flipping back online, per this
-    // file's dependent-ordering rationale.
-    const replayed = waitForSavedPut(page)
-    await context.setOffline(false)
-    await replayed
-    await expect(page.getByText(SUCCESS_TOAST_TEXT)).toBeVisible({ timeout: 15_000 })
-
-    const row = await fetchServerRow(cleanProfileId)
-    expect(row.current_node).toBe('n_gate')
-    expect(row.var_state).toEqual({ has_key: false, courage: 2 })
-
-    await revokeDevice(grant)
   })
 
   test('conflict on reconnect: a real second device advances the row while offline; the stale replay 409s and never clobbers it', async ({
