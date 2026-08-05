@@ -153,7 +153,7 @@ CYO_ADVENTURE_DATABASE_URL='postgresql+asyncpg://cyo_adventure:password@localhos
   uv run uvicorn cyo_adventure.app:app --port 8000 &
 
 # 4. Wait for readiness, then run the smoke tier
-curl --retry 15 --retry-delay 2 --retry-all-errors -fsS http://localhost:8000/health/ready
+curl --retry 15 --retry-delay 2 --retry-all-errors -fsS http://localhost:8000/api/v1/health/ready
 cd frontend && npm run test:e2e:real
 ```
 

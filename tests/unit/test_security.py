@@ -1486,12 +1486,18 @@ class TestAddSecurityMiddleware:
 
     @pytest.mark.unit
     def test_https_redirect_exempts_health_path(self) -> None:
-        """`/health/*` stays reachable over HTTP even with the redirect enabled.
+        """`/health/*` and `/api/v1/health/*` both stay reachable over HTTP
+        even with the redirect enabled.
 
         A direct liveness/uptime probe hitting this container over plain
         HTTP (rather than through the TLS-terminating reverse proxy) must
-        get a real 200, not a 307 that most probes treat as down. Every
-        other path still redirects.
+        get a real 200, not a 307 that most probes treat as down. app.py
+        mounts the health router at BOTH prefixes (UW-L04: the canonical
+        `/api/v1/health/*`, in the OpenAPI schema, and the un-prefixed
+        `/health/*` alias the production container healthcheck probes
+        directly), so `_HEALTH_PATH_PREFIXES` must exempt both, and this
+        test exercises both rather than only one. Every other path still
+        redirects.
         """
         from cyo_adventure.middleware.security import add_security_middleware
 
@@ -1505,12 +1511,19 @@ class TestAddSecurityMiddleware:
         async def health_live() -> dict[str, str]:
             return {"status": "ok"}
 
+        @app.get("/api/v1/health/live")
+        async def health_live_canonical() -> dict[str, str]:
+            return {"status": "ok"}
+
         add_security_middleware(app, enable_https_redirect=True)
         client = TestClient(app, raise_server_exceptions=True)
 
-        health_response = client.get("/health/live", follow_redirects=False)
-        assert health_response.status_code == 200
-        assert health_response.json() == {"status": "ok"}
+        for health_path in ("/health/live", "/api/v1/health/live"):
+            health_response = client.get(health_path, follow_redirects=False)
+            assert health_response.status_code == 200, (
+                f"{health_path} unexpectedly redirected instead of exempted"
+            )
+            assert health_response.json() == {"status": "ok"}
 
         root_response = client.get("/", follow_redirects=False)
         assert root_response.status_code == 307

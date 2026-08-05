@@ -97,7 +97,9 @@ services:
     healthcheck:
       # Use Python stdlib: the production image deliberately omits curl to avoid
       # its CVE surface. This matches the HEALTHCHECK in the Dockerfile exactly.
-      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health/live', timeout=2).status == 200 else 1)"]
+      # Canonical `/api/v1/health/live`; the un-prefixed alias is reserved for
+      # out-of-repo probes (see app.py's include_router calls).
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/api/v1/health/live', timeout=2).status == 200 else 1)"]
       interval: 30s
       timeout: 3s
       retries: 3

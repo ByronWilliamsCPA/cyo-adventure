@@ -49,11 +49,16 @@ def _time_raiser_on_nth_call(n: int, exc: Exception) -> Callable[[], float]:
 
 
 def _make_app() -> FastAPI:
-    """Build a minimal FastAPI app with the health router mounted."""
+    """Build a minimal FastAPI app with the health router mounted at its
+    canonical ``/api/v1`` prefix, matching how ``app.py`` mounts it in
+    production (UW-L04). The un-prefixed loopback alias app.py also mounts
+    is exercised separately by ``TestLegacyHealthPathAlias`` against the
+    real app, not this minimal one.
+    """
     from cyo_adventure.api.health import router
 
     app = FastAPI()
-    app.include_router(router)
+    app.include_router(router, prefix="/api/v1")
     return app
 
 
@@ -63,29 +68,29 @@ def _make_app() -> FastAPI:
 
 
 class TestLiveness:
-    """Tests for the /health/live endpoint."""
+    """Tests for the /api/v1/health/live endpoint."""
 
     @pytest.mark.unit
     def test_liveness_returns_200(self) -> None:
-        """GET /health/live returns HTTP 200."""
+        """GET /api/v1/health/live returns HTTP 200."""
         client = TestClient(_make_app(), raise_server_exceptions=True)
-        response = client.get("/health/live")
+        response = client.get("/api/v1/health/live")
 
         assert response.status_code == 200
 
     @pytest.mark.unit
     def test_liveness_status_is_ok(self) -> None:
-        """GET /health/live body has status 'ok'."""
+        """GET /api/v1/health/live body has status 'ok'."""
         client = TestClient(_make_app(), raise_server_exceptions=True)
-        data = client.get("/health/live").json()
+        data = client.get("/api/v1/health/live").json()
 
         assert data["status"] == "ok"
 
     @pytest.mark.unit
     def test_liveness_includes_uptime(self) -> None:
-        """GET /health/live body includes a non-negative uptime_seconds field."""
+        """GET /api/v1/health/live body includes a non-negative uptime_seconds field."""
         client = TestClient(_make_app(), raise_server_exceptions=True)
-        data = client.get("/health/live").json()
+        data = client.get("/api/v1/health/live").json()
 
         assert "uptime_seconds" in data
         assert data["uptime_seconds"] >= 0
@@ -97,21 +102,21 @@ class TestLiveness:
 
 
 class TestStartup:
-    """Tests for the /health/startup endpoint."""
+    """Tests for the /api/v1/health/startup endpoint."""
 
     @pytest.mark.unit
     def test_startup_returns_200(self) -> None:
-        """GET /health/startup returns HTTP 200."""
+        """GET /api/v1/health/startup returns HTTP 200."""
         client = TestClient(_make_app(), raise_server_exceptions=True)
-        response = client.get("/health/startup")
+        response = client.get("/api/v1/health/startup")
 
         assert response.status_code == 200
 
     @pytest.mark.unit
     def test_startup_status_is_started(self) -> None:
-        """GET /health/startup body has status 'started'."""
+        """GET /api/v1/health/startup body has status 'started'."""
         client = TestClient(_make_app(), raise_server_exceptions=True)
-        data = client.get("/health/startup").json()
+        data = client.get("/api/v1/health/startup").json()
 
         assert data["status"] == "started"
 
@@ -122,23 +127,74 @@ class TestStartup:
 
 
 class TestHealthAlias:
-    """Tests for the hidden /health/ alias endpoint."""
+    """Tests for the hidden /api/v1/health/ alias endpoint."""
 
     @pytest.mark.unit
     def test_health_alias_returns_200(self) -> None:
-        """GET /health/ returns HTTP 200 (alias for liveness)."""
+        """GET /api/v1/health/ returns HTTP 200 (alias for liveness)."""
         client = TestClient(_make_app(), raise_server_exceptions=True)
-        response = client.get("/health/")
+        response = client.get("/api/v1/health/")
 
         assert response.status_code == 200
 
     @pytest.mark.unit
     def test_health_alias_status_is_ok(self) -> None:
-        """GET /health/ has the same status as /health/live."""
+        """GET /api/v1/health/ has the same status as /api/v1/health/live."""
         client = TestClient(_make_app(), raise_server_exceptions=True)
-        data = client.get("/health/").json()
+        data = client.get("/api/v1/health/").json()
 
         assert data["status"] == "ok"
+
+
+# ---------------------------------------------------------------------------
+# Legacy (un-prefixed) health path alias (UW-L04, app.py's second mount)
+# ---------------------------------------------------------------------------
+
+
+class TestLegacyHealthPathAlias:
+    """The un-prefixed ``/health/*`` mount exists solely for an out-of-repo probe.
+
+    ``app.py`` mounts the health router twice: once at the canonical
+    ``/api/v1/health`` prefix (in the OpenAPI schema, reachable through
+    ``frontend/nginx.conf``'s ``location /api/`` proxy), and once with no
+    prefix and ``include_in_schema=False``. The second mount is not dead
+    duplication: the production container healthcheck is defined out of
+    repo, in homelab-infra's ``services/cyo-adventure/docker-compose.yml``,
+    and probes ``/health/live`` directly on port 8000, bypassing the proxy
+    entirely. Deleting this alias to "tidy up" app.py would make the
+    container fail its healthcheck on the next deploy, since that
+    out-of-repo probe path cannot be updated in the same change. This class
+    is the regression guard both `#VERIFY` markers on that mount (app.py and
+    middleware/security.py) point at.
+    """
+
+    @pytest.mark.unit
+    def test_legacy_alias_path_returns_200(self) -> None:
+        """GET /health/live (the un-prefixed alias) still returns HTTP 200."""
+        from cyo_adventure.app import create_app
+
+        app = create_app()
+        client = TestClient(app, raise_server_exceptions=True)
+        response = client.get("/health/live")
+
+        assert response.status_code == 200
+
+    @pytest.mark.unit
+    def test_legacy_alias_is_absent_from_openapi_schema(self) -> None:
+        """The alias never appears in the OpenAPI schema; the canonical path does.
+
+        This is what would catch someone deleting the canonical
+        ``/api/v1/health`` mount and keeping only the alias: a naive "health
+        responds" smoke test would still pass, but the documented,
+        schema-visible path every external monitor relies on would be gone.
+        """
+        from cyo_adventure.app import create_app
+
+        app = create_app()
+        paths = app.openapi()["paths"]
+
+        assert "/api/v1/health/live" in paths
+        assert "/health/live" not in paths
 
 
 # ---------------------------------------------------------------------------
@@ -375,7 +431,7 @@ class TestCheckDatabasePrivilege:
     async def test_role_name_is_logged_but_never_in_the_response(self) -> None:
         """The role name reaches the logs and nothing else.
 
-        /health/ready is unauthenticated, so the response carries only the
+        /api/v1/health/ready is unauthenticated, so the response carries only the
         posture bit. The role name is operator-facing detail and belongs in
         the (access-controlled, redaction-aware) logs instead. Both halves are
         asserted here: a check that stopped logging the role would still pass
@@ -949,7 +1005,7 @@ class TestCheckExternalService:
 
 
 class TestReadiness:
-    """Tests for the /health/ready endpoint via TestClient.
+    """Tests for the /api/v1/health/ready endpoint via TestClient.
 
     settings.rate_limit_backend is patched to "memory" in every test here
     (unrelated to what's under test) so check_cache short-circuits to
@@ -961,7 +1017,7 @@ class TestReadiness:
 
     @pytest.mark.unit
     def test_readiness_returns_200_when_database_healthy(self) -> None:
-        """GET /health/ready returns 200 when database check passes."""
+        """GET /api/v1/health/ready returns 200 when database check passes."""
         mock_session = AsyncMock(spec=AsyncSession)
         # check_generation_queue shares get_session; explicit zero counts
         # keep this test's intent (a fully healthy readiness probe) clear
@@ -986,14 +1042,21 @@ class TestReadiness:
             ),
         ):
             client = TestClient(app, raise_server_exceptions=True)
-            response = client.get("/health/ready")
+            response = client.get("/api/v1/health/ready")
 
         assert response.status_code == 200
         assert response.json()["status"] == "ok"
+        # A status code alone cannot distinguish FastAPI's real readiness
+        # response from a proxy stub that returns a hardcoded 200 (exactly
+        # how UW-L04 went unnoticed for a month: nginx's `location /health {
+        # return 200 'OK'; }` shadowed this endpoint and a documented
+        # "verified 200" pass was actually hitting the stub). The JSON
+        # content type is the discriminator a status-only check misses.
+        assert response.headers["content-type"].startswith("application/json")
 
     @pytest.mark.unit
     def test_readiness_returns_503_when_database_fails(self) -> None:
-        """GET /health/ready returns 503 when database check fails."""
+        """GET /api/v1/health/ready returns 503 when database check fails."""
 
         @asynccontextmanager
         async def _failing_get_session() -> AsyncGenerator[None, None]:
@@ -1012,13 +1075,18 @@ class TestReadiness:
             ),
         ):
             client = TestClient(app, raise_server_exceptions=False)
-            response = client.get("/health/ready")
+            response = client.get("/api/v1/health/ready")
 
         assert response.status_code == 503
+        # Same discriminator as the 200 case above: a status code alone
+        # cannot tell FastAPI's real response apart from a static proxy
+        # stub, which is exactly how UW-L04's anti-oracle "verified 200"
+        # survived undetected. The JSON content type is what a stub lacks.
+        assert response.headers["content-type"].startswith("application/json")
 
     @pytest.mark.unit
     def test_readiness_503_detail_does_not_leak_exception_text(self) -> None:
-        """GET /health/ready 503 body must not contain raw exception text."""
+        """GET /api/v1/health/ready 503 body must not contain raw exception text."""
 
         @asynccontextmanager
         async def _failing_get_session() -> AsyncGenerator[None, None]:
@@ -1037,7 +1105,7 @@ class TestReadiness:
             ),
         ):
             client = TestClient(app, raise_server_exceptions=False)
-            body = client.get("/health/ready").text
+            body = client.get("/api/v1/health/ready").text
 
         assert "db-conn-error: connection timeout" not in body
         assert "dependency unavailable" in body
@@ -1049,7 +1117,7 @@ class TestReadiness:
 
 
 class TestReadinessCacheDoesNotGate:
-    """A down or unconfigured cache is reported but never flips /health/ready.
+    """A down or unconfigured cache is reported but never flips /api/v1/health/ready.
 
     Only ``database`` is in ``_CRITICAL_READINESS_CHECKS``; see readiness()'s
     #ASSUME docstring note for why cache is deliberately excluded.
@@ -1087,7 +1155,7 @@ class TestReadinessCacheDoesNotGate:
             ),
         ):
             client = TestClient(app, raise_server_exceptions=True)
-            response = client.get("/health/ready")
+            response = client.get("/api/v1/health/ready")
 
         body = response.json()
         assert response.status_code == 200
@@ -1117,7 +1185,7 @@ class TestReadinessCacheDoesNotGate:
             ),
         ):
             client = TestClient(app, raise_server_exceptions=True)
-            response = client.get("/health/ready")
+            response = client.get("/api/v1/health/ready")
 
         body = response.json()
         assert response.status_code == 200
@@ -1174,7 +1242,7 @@ class TestReadinessPrivilegeDoesNotGate:
             ),
         ):
             client = TestClient(app, raise_server_exceptions=True)
-            response = client.get("/health/ready")
+            response = client.get("/api/v1/health/ready")
 
         body = response.json()
         assert response.status_code == 200
@@ -1219,7 +1287,7 @@ class TestReadinessPrivilegeDoesNotGate:
             ),
         ):
             client = TestClient(app, raise_server_exceptions=True)
-            response = client.get("/health/ready")
+            response = client.get("/api/v1/health/ready")
 
         body = response.json()
         assert response.status_code == 200
@@ -1242,7 +1310,7 @@ class TestReadinessSharedSession:
 
     @pytest.mark.unit
     def test_both_checks_share_a_single_session_checkout(self) -> None:
-        """One /health/ready call opens one session for the two db checks."""
+        """One /api/v1/health/ready call opens one session for the two db checks."""
         mock_session = AsyncMock(spec=AsyncSession)
         mock_session.execute = AsyncMock(return_value=_make_queue_result(0, 0, 0))
         checkouts = {"count": 0}
@@ -1261,7 +1329,7 @@ class TestReadinessSharedSession:
             patch("cyo_adventure.api.health.settings.rate_limit_backend", "memory"),
         ):
             client = TestClient(app, raise_server_exceptions=True)
-            response = client.get("/health/ready")
+            response = client.get("/api/v1/health/ready")
 
         assert response.status_code == 200
         # One for the shared database pair, one for check_generation_queue,
@@ -1319,7 +1387,7 @@ class TestReadinessSharedSession:
             patch("cyo_adventure.api.health.settings.rate_limit_backend", "memory"),
         ):
             client = TestClient(app, raise_server_exceptions=True)
-            response = client.get("/health/ready")
+            response = client.get("/api/v1/health/ready")
 
         body = response.json()
         assert response.status_code == 200
@@ -1335,7 +1403,7 @@ class TestReadinessSharedSession:
 
 
 class TestReadinessQueueDoesNotGate:
-    """A degraded generation_queue check is reported but never flips /health/ready.
+    """A degraded generation_queue check is reported but never flips /api/v1/health/ready.
 
     Only ``database`` is in ``_CRITICAL_READINESS_CHECKS``; a stuck or failing
     worker must not pull API pods out of the load-balancer rotation for
@@ -1367,7 +1435,7 @@ class TestReadinessQueueDoesNotGate:
             ),
         ):
             client = TestClient(app, raise_server_exceptions=True)
-            response = client.get("/health/ready")
+            response = client.get("/api/v1/health/ready")
 
         body = response.json()
         assert response.status_code == 200
@@ -1404,7 +1472,7 @@ class TestReadinessQueueDoesNotGate:
             ),
         ):
             client = TestClient(app, raise_server_exceptions=False)
-            response = client.get("/health/ready")
+            response = client.get("/api/v1/health/ready")
 
         assert response.status_code == 503
 

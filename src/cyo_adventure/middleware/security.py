@@ -140,23 +140,37 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         return response
 
 
-_HEALTH_PATH_PREFIX: Final = "/health"
+# Both mount points of the health router (see `app.py`): the canonical
+# `/api/v1/health/*` and the schema-hidden `/health/*` loopback alias. A tuple
+# because `str.startswith` accepts one, so adding a mount point here is a
+# one-line change rather than a new boolean clause.
+#
+# #CRITICAL: security: this must list EVERY path the health router answers on.
+# A mount point missing from this tuple is not a broken health endpoint, it is a
+# 307 to https that a container healthcheck reads as a failed probe, so the
+# symptom is an unhealthy container rather than a 404.
+# #VERIFY: tests/unit/test_security.py::TestAddSecurityMiddleware::
+# test_https_redirect_exempts_health_path exercises both prefixes.
+_HEALTH_PATH_PREFIXES: Final = ("/health", "/api/v1/health")
 
 
 class HealthExemptHTTPSRedirectMiddleware(BaseHTTPMiddleware):
-    """Redirect HTTP to HTTPS, except for ``/health*`` liveness probes.
+    """Redirect HTTP to HTTPS, except for health probes.
 
     Starlette's stock ``HTTPSRedirectMiddleware`` has no path exemption, so
     it 307s any plain-HTTP request, including a liveness/uptime probe that
     hits this container directly rather than through the TLS-terminating
     reverse proxy. Most such probes (container orchestrator health checks,
     external uptime monitors) treat a redirect as a failed check, not a
-    live one. `/health/*` (see `api/health.py`) is read-only and returns
+    live one. The health router (see `api/health.py`) is read-only and returns
     nothing sensitive, so exempting it from the redirect is a narrow,
     deliberate carve-out; every other path still redirects.
 
+    Both of the router's mount points are exempt (``_HEALTH_PATH_PREFIXES``):
+    the canonical ``/api/v1/health/*`` and the ``/health/*`` loopback alias.
+
     #ASSUME: security: matches by path prefix only, not by verb or host, so
-    any HTTP method against `/health/*` is exempt. All health endpoints are
+    any HTTP method against a health path is exempt. All health endpoints are
     GET-only reads (see `api/health.py`), so this does not open a write
     path to plain HTTP.
     #VERIFY: tests/unit/test_security.py::TestAddSecurityMiddleware::
@@ -175,9 +189,9 @@ class HealthExemptHTTPSRedirectMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
-        """Redirect HTTP to HTTPS unless the request targets `/health/*`."""
+        """Redirect HTTP to HTTPS unless the request targets a health path."""
         if request.url.scheme == "https" or request.url.path.startswith(
-            _HEALTH_PATH_PREFIX
+            _HEALTH_PATH_PREFIXES
         ):
             return await call_next(request)
 

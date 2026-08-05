@@ -97,18 +97,33 @@ leg of Section 4 are broken, not as evidence that they passed.
       image build time. That is the direct form of this check; absence of console errors is only its proxy.
       `sw.js` and `registerSW.js` also return `Cache-Control: no-store, no-cache, must-revalidate`, so the
       stale-service-worker login loop that `frontend/nginx.conf` guards against cannot recur.
-- [ ] `GET /health/live` and `/health/ready` return 200. **This step is not runnable against the public
-      host and its prior "verified live 2026-07-07: both 200" note was a false pass.** Established
-      2026-08-04: every backend router except `health` carries its own `/api/v1` prefix, and
-      `frontend/nginx.conf` proxies only `location /api/`. `health.router` is declared
-      `APIRouter(prefix="/health")`, so it sits outside the proxied prefix and is unreachable through the
-      ingress. Meanwhile nginx defines `location /health { return 200 'OK'; }` for its own container
-      probe, which shadows the path entirely. So `GET /health/ready` returns a two-byte `text/plain` `OK`
-      from nginx (note the duplicated `Content-Type` header, and `server: nginx`) while FastAPI's
-      readiness logic never executes. The 200 proves nothing about database connectivity, and any uptime
-      monitor pointed at this URL would report healthy with the database completely down. Contrast
-      `GET /api/v1/me`, which correctly returns `401 application/json` from FastAPI. Until this is fixed,
-      check readiness from inside the container network, not from the public host. Tracked as `UW-L04`.
+- [ ] `GET /api/v1/health/live` and `/api/v1/health/ready` return 200 **with
+      `content-type: application/json`**. Assert the content type, not just the status: see the defect
+      below for why a bare 200 is not evidence here. **Blocked on a production redeploy**, not on a
+      verifier: the code fix is on this branch but the deployed frontend image still carries the old
+      nginx config. Tick this only after production runs an image built from this change, and prefer
+      running `frontend/e2e-prod/health-probe.spec.ts`, which asserts exactly this and is now part of the
+      daily tier.
+
+      **The prior "verified live 2026-07-07: both 200" note was a false pass, and the defect it hid is
+      worth understanding.** Established 2026-08-04: every backend router except `health` carried its own
+      `/api/v1` prefix, and `frontend/nginx.conf` proxies only `location /api/`. `health.router` was
+      declared `APIRouter(prefix="/health")`, so it sat outside the proxied prefix and was unreachable
+      through the ingress. Meanwhile nginx defined `location /health { return 200 'OK'; }` for its own
+      container probe, which shadowed the path entirely. So `GET /health/ready` returned a two-byte
+      `text/plain` `OK` from nginx (note the duplicated `Content-Type` header, and `server: nginx`)
+      while FastAPI's readiness logic never executed. The 200 proved nothing about database
+      connectivity, and any uptime monitor pointed at that URL would have reported healthy with the
+      database completely down. Contrast `GET /api/v1/me`, which correctly returned
+      `401 application/json` from FastAPI.
+
+      Fixed on this branch (`UW-L04`): the health router is now also mounted at `/api/v1/health/*`, which
+      is the canonical form and the only one reachable from outside; nginx's own stub moved to the exact
+      path `= /nginx-health`; and `location /health` now returns `404` so a stale probe fails loudly
+      instead of silently receiving the SPA shell. The un-prefixed `/health/*` still answers on port 8000
+      inside the container, because the production healthcheck lives out-of-repo in homelab-infra and
+      polls it. `/nginx-health` is the useful control: if it answers while `/api/v1/health/ready` does
+      not, the frontend is serving and the backend is unreachable behind it.
 - [x] Redis and the RQ worker containers are up (`docker ps` on docker-host; worker listens on queue
       `generation`). Verified 2026-08-04: `cyo-adventure-redis` up 3h (healthy), `cyo-adventure-worker`
       up 2h (healthy), and worker logs show repeated `BLMOVE` polling on `rq:queue:generation`.
@@ -196,9 +211,31 @@ the Accounts section above.
 
 ## 6. Cross-family isolation spot check
 
-- [ ] A second family's guardian (if seeded) cannot see the first family's requests, books, or children
-- [ ] Kid surfaces never expose guardian-only fields (spot check network tab: story-request responses
-      carry id/status only)
+The "if seeded" hedge below is obsolete, and resolving it makes this section cheaper to run than it
+looks. Verified by direct read-only query on 2026-08-04, production holds **three** families:
+
+| Family | Contents | Role here |
+| --- | --- | --- |
+| `3a152319` | 2 profiles, 6 assignments, 1 story request, 5 grants, 3 reading states | the real family |
+| `84b96700` | 1 profile, 5 assignments, 0 story requests, 4 grants, 0 reading states | E2E test family |
+| `0ca7a109` | nothing at all, and **no user rows** | orphan, see `UW-L05` |
+
+The automated test account already sits in `84b96700`, so it *is* the second family's guardian. That
+makes this section verifiable read-only with no extra seeding: the assertion is that the test account
+sees exactly its own 1 profile and 0 story requests while the real family has 2 and 1.
+
+- [ ] A second family's guardian cannot see the first family's requests, books, or children.
+      **Automated** in `frontend/e2e-prod/guardian-books-and-isolation.spec.ts`.
+      #ASSUME: data integrity: this is an emptiness assertion, so it passes vacuously against a page
+      that failed to render at all. #VERIFY: the spec asserts the heading and empty-state copy render
+      *before* asserting the count; keep that positive control if you edit it.
+- [ ] Kid surfaces never expose guardian-only fields. The concrete contract (`api/review_surface.py`)
+      is that guardian-facing responses are story-level and node-id-free: they carry `flagged_count`,
+      `node_count`, and merged concern rows, and never `flagged_passages` or raw node `prose`.
+      **Partially automated**: the spec above scans every observed `/api/v1/**` JSON body for those two
+      forbidden keys. The kid-surface half (story-request responses carrying id/status only) is NOT
+      automated, because the test family has 0 story requests, so the assertion would pass vacuously.
+      Creating one costs LLM spend, which is why this is still a manual step.
 
 ## Sign-off
 
@@ -230,11 +267,34 @@ maintenance window rather than bounced during an unattended pass.
 needs interactive sign-in as `c1f33430` or `21985c35`, whose credentials this pass did not
 have. Sections 2 and 4 additionally spend real OpenRouter and classifier quota and write
 real content into the live family, so they need explicit authorization rather than just
-credentials. Sections 5 and 6 also need a second device, a real offline transition, and a
-second seeded family that production does not currently have: the live database holds only
-two families, the real one (`3a152319`) and the isolated e2e test family (`84b96700`), so
-Section 6's cross-family check has no third party to test against and needs its premise
-revisited before it can be run at all.
+credentials. Sections 5 and 6 also need a second device and a real offline
+transition. Section 6's premise was revisited rather than assumed: the live database holds
+**three** `family` rows, not the two an earlier draft of this note claimed, but the third
+(`0ca7a109`) has no `user` rows and so cannot be signed into or used as a cross-family
+subject; it is recorded as a finding in its own right (`UW-L05`). The check is still
+meaningful with two usable families, because the test account sits in `84b96700` while
+`3a152319` holds data it must never see, which is what Section 6 below now asserts.
+
+**What was automated instead of left manual.** Rather than leaving 33 steps waiting on a
+human with credentials, the read-only remainder moved into the existing `frontend/e2e-prod/`
+tier, which already signs in as a real production account unattended on a daily cron. Three
+specs were added: `health-probe.spec.ts` (the Section 0 step this pass got wrong, now
+asserted by content type with an `/nginx-health` control so a failure distinguishes "backend
+unreachable through the ingress" from "site down"), `guardian-profiles.spec.ts` (Section 1's
+route guard, login surface, profile list, and sign-out), and
+`guardian-books-and-isolation.spec.ts` (Section 3's books and review surface, the guardian
+redaction contract enforced by scanning every `/api/v1` JSON body the suite sees, and
+Section 6's cross-family isolation). A count or empty-state assertion is only trustworthy
+if the page rendered at all, so each one is preceded by a positive control, and the
+redaction scan asserts the collector captured something before concluding it found no
+leaks.
+
+Two honest limits on that automation. It asserts the **post-fix** state of the ingress, so
+the daily cron will fail until production redeploys both the backend and frontend images;
+that failure is the redeploy reminder, not a regression. And assertions that depend on live
+moderation content are deliberately conditional, because a clean catalog at test time would
+otherwise make them vacuous, which means a break in the redacted-projection rendering path
+would be caught only by the response-body scan.
 
 **Confirmed alongside this run, closing the one leg `UW-A03` left open.** The RQ worker
 authenticates to production as `cyo_worker`. Proof is read-only and was taken from inside

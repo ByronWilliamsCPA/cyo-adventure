@@ -188,19 +188,43 @@ corrective roll-forward migration, rehearsed on staging first (ADR-012, Conseque
 
 ## 3. Health checks
 
-`api/health.py` exposes three Kubernetes-style probes plus a load-balancer alias:
+`api/health.py` exposes three Kubernetes-style probes plus a load-balancer alias. The router is
+mounted twice (`app.py`), and **which form you probe decides whether you learn anything**:
 
-**`GET /health/live`** (liveness: is the process up): checks nothing external; always returns
+- **`/api/v1/health/*`** is reachable from outside the cluster, through nginx's `location /api/`.
+  Use this form for everything external: uptime monitors, manual `curl`, the e2e tiers.
+- **`/health/*`** is reachable on the container's own port 8000 only. It exists for in-container
+  loopback probes that cannot be updated in the same deploy as this repo.
+
+> **Never probe `/health/*` from outside.** `frontend/nginx.conf` proxies only `location /api/`, so
+> the un-prefixed form never reaches FastAPI from the public host. Until 2026-08-04 nginx also
+> answered `location /health` with a hardcoded `200 'OK'`, so an external probe of
+> `/health/ready` returned success **with the database completely down**, and this runbook's own
+> "verified 200" note carried that false pass for a month (register item `UW-L04`). nginx now
+> returns `404` there instead. When probing by hand, assert the response is
+> `content-type: application/json` with a `checks` object, not merely a `200`: a static stub can
+> forge a status code, and it cannot forge FastAPI's response model.
+
+**`GET /api/v1/health/live`** (liveness: is the process up): checks nothing external; always returns
 `200 {"status": "ok", ...}` if the process is running. This is what the Dockerfile's own
-`HEALTHCHECK` and `docker-compose.yml`'s `healthcheck:` block poll.
+`HEALTHCHECK` and `docker-compose.yml`'s `healthcheck:` block poll. The **production** healthcheck
+lives out-of-repo (homelab-infra `services/cyo-adventure/docker-compose.yml`) and still polls the
+un-prefixed `/health/live`, which is exactly why the alias must not be retired until that file has
+moved and been redeployed.
 
-**`GET /health/ready`** (readiness: can it serve traffic): runs `SELECT 1` against the database
-(`check_database`). Returns `503` with per-check detail if the database is unreachable.
+**`GET /api/v1/health/ready`** (readiness: can it serve traffic): runs `SELECT 1` against the
+database (`check_database`). Returns `503` with per-check detail if the database is unreachable.
 
-**`GET /health/startup`** (startup probe): identical to `/health/live` today; no
+**`GET /api/v1/health/startup`** (startup probe): identical to `/api/v1/health/live` today; no
 migration-completion check is wired in.
 
-**`GET /health`** (undocumented alias, load-balancer compatibility): aliases `/health/live`.
+**`GET /api/v1/health/`** (undocumented alias, load-balancer compatibility): aliases
+`/api/v1/health/live`.
+
+**`GET /nginx-health`** is a different thing entirely: the frontend container's own two-byte stub,
+served by nginx and never reaching the backend. It answers whether nginx is up, nothing more. It is
+useful as a control: if `/nginx-health` succeeds while `/api/v1/health/ready` fails, the frontend
+is serving and the backend is unreachable behind it.
 
 **`check_cache()` (Redis)** is wired into `/health/ready` and performs a real `PING` against
 `CYO_ADVENTURE_REDIS_URL` (the same Redis instance and timeout the rate limiter uses;
@@ -301,7 +325,7 @@ configured for a given environment, logs remain the only observability surface t
 
 ### 5.1 A generation job is stuck in "queued"
 
-0. Check `GET /health/ready`'s `checks.generation_queue` first (Section 3): a nonzero
+0. Check `GET /api/v1/health/ready`'s `checks.generation_queue` first (Section 3): a nonzero
    `stale_queued`/`stale_running` count confirms a stopped or stalled worker, and a nonzero
    `recent_failed` count means the worker is running but every job is failing outright (check
    worker logs for the actual error before assuming this is a queue problem at all).
