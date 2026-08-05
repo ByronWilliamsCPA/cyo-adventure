@@ -91,7 +91,10 @@ place to extend once the team grows.
    timestamp for "discovery" — this timestamp is what starts the Article 33 clock in Section 4,
    not the time classification finishes.
 3. **Containment.** Stop ongoing exposure first: revoke a compromised credential, roll back a
-   bad deploy, take a misconfigured bucket private, disable an affected endpoint. Containment is
+   bad deploy, take a misconfigured bucket private, disable an affected endpoint. For a compromised
+   **guardian account** specifically, a password reset alone does not evict the other party: their
+   existing refresh token keeps working (`SECURITY.md`, "Known Infrastructure Limitations"), so
+   containment there needs a server-side session revocation that does not exist yet. Containment is
    not gated on finishing the investigation.
 4. **Investigation.** Determine scope: which data, how many data subjects (and specifically,
    how many are children, since that drives severity and the notification content in Section 5),
