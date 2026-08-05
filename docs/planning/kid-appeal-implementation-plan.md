@@ -42,6 +42,33 @@ audience: product-owner, engineering
 | D9 | Additive-minor schema versioning (ADR-025) |
 | D19 | Wave sequencing approved |
 
+## Status ledger (verified against code on main `42156d69` / v0.65.2, 2026-08-05)
+
+This plan shipped its first tranche in **PR #532** (`feat(kid): kid-appeal design decisions,
+rendered-stop reader, engagement v1, content and media groundwork`) before this ledger existed,
+so the wave sections below read as forward-looking for work that is already merged. The ledger is
+the authoritative execution state; the wave sections are intent. Verify against code, not against
+the wave prose.
+
+| Item | State | Evidence on main |
+|---|---|---|
+| W1.1 Stop-composition (ADR-026) | shipped | rendered-stop reader, PR #532 |
+| W1.2 Route-relative progress | shipped | `frontend/src/reader/readerProgress.ts::readerPositionCount`, `readerPositionLabel`; replaces the corpus-coverage percent |
+| W1.3 Celebration upgrade | shipped | `frontend/src/reader/endingsFraming.ts::trackerText` branches all three cases (first-find, repeat-find, all-found) via `allEndingsFoundLine`, `milestoneLine`; `EndingsProgress.tsx` |
+| W1.4 Close the kid request loop | shipped | all three pieces: `api/profiles.py::list_profile_story_status`, `frontend/src/kid/ProfilePickerPage.tsx` new-story pill, `frontend/src/library/RequestStory.tsx` "We heard you:" reflect-back |
+| W3.1 Progress projection | shipped | `api/progress.py::get_my_progress` at `GET /me/progress`, wired in `app.py`; returns badges, `found_endings_by_book`, `lifetime_days_read`, `days_read_this_week` |
+| W3.2 Gallery and ribbons UI | shipped | `frontend/src/library/EndingsGallery.tsx`, `reader/EndingsGalleryButton.tsx`, `kid/BadgeCase.tsx`, `reader/BadgeUnlockToast.tsx`, `library/EndingsBadge.tsx`, `kid/badgeCatalog.ts` (`BADGE_CATALOG`, 10 entries) |
+| W3.3 Active reading time | **partial** | read path shipped: `reading_activity_day` table in `db/models.py`, consumed by `get_my_progress`. Write path **absent**: no client accumulator, no 90s idle detector, no `POST /v1/me/reading-time` flush. Retention job also unbuilt (K23 residual) |
+| W3.4 Weekly ring | **partial** | data shipped (`days_read_this_week` computed server-side); **no frontend component renders it**, and the per-band defaults are unset pending the D17 ruling |
+| W3.5 Trailing badges | not started | `BADGE_CATALOG` holds 10 of the 12 proposed; badges 9 ("Wish Come True") and 12 ("Forty Days of Stories") absent |
+| W0.* Wave 0 content | unverified | the 23-book import has not been confirmed against catalog state in this pass |
+| W2.* Wave 2 content | not started | note `UW-C24`: CG-1..CG-4 are inert because `validator/gate.py::run_gate` defaults `enforce_grammar=False` and no production caller passes `True` |
+| W4.* Wave 4 media | not started | needs the new illustration ADR; UI SFX with mute did ship (`reader/soundPreference.ts`) |
+
+**Net remaining work in this plan**: the W3.3 client write path, the W3.4 ring UI, the two
+trailing badges, Wave 0 content, Wave 2 content, and Wave 4 media. Waves 1 and most of 3 are
+done. Anyone scheduling from the wave sections alone would rebuild shipped features.
+
 ## Wave 0: Unblockers (Content workstream, start immediately)
 
 **W0.1 Import and publish the 23 filled books** (`UW-G14`), grandfathered per D11. Run the import
