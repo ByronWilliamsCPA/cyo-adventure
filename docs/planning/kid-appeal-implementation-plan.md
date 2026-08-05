@@ -41,6 +41,14 @@ audience: product-owner, engineering
 | D8/D14 | Second person is the POV standard in all bands; third-person books phase out |
 | D9 | Additive-minor schema versioning (ADR-025) |
 | D19 | Wave sequencing approved |
+| D21 | Choice-grammar enforcement stays off; the flag flips in the same PR as the D11 `deprecated` marker (W2.4) |
+| D22 | v1 cut line approved with the request-loop fix pulled in, so badge 9 is v1 (11 of 12 badges) |
+| D23 | Weekly goal defaults per band per P-A (D17), not a flat 3; selectable goal capped at 6 |
+| D24 | Ring off at 3-5, on at 5-8 and above |
+| D25 | Purge `reading_activity_day` detail after 12 months, keep running totals (ADR-018) |
+| D26 | Badges are child-private by default, with an opt-in ring-1 family share toggle |
+| D27 | Surface two reading clocks ("this way" and "to see everything"), plainly labelled |
+| D28 | Media budget recommendation accepted as written; restates D20, adds no new constraint |
 
 ## Status ledger (verified against code on main `42156d69` / v0.65.2, 2026-08-05)
 
@@ -50,24 +58,32 @@ so the wave sections below read as forward-looking for work that is already merg
 the authoritative execution state; the wave sections are intent. Verify against code, not against
 the wave prose.
 
+Every row cites a file or symbol precisely so the claim is falsifiable. A row that cannot be
+re-derived from the cited evidence is a defect in this table, not a gap in the code: the failure
+mode this ledger exists to prevent is scheduling a rebuild of something already shipped, so an
+overstated "partial" costs more than an overstated "shipped". Any row marked `unverified` has not
+been checked at all and must not be read as "not started".
+
 | Item | State | Evidence on main |
 |---|---|---|
 | W1.1 Stop-composition (ADR-026) | shipped | rendered-stop reader, PR #532 |
 | W1.2 Route-relative progress | shipped | `frontend/src/reader/readerProgress.ts::readerPositionCount`, `readerPositionLabel`; replaces the corpus-coverage percent |
-| W1.3 Celebration upgrade | shipped | `frontend/src/reader/endingsFraming.ts::trackerText` branches all three cases (first-find, repeat-find, all-found) via `allEndingsFoundLine`, `milestoneLine`; `EndingsProgress.tsx` |
+| W1.3 Celebration upgrade | shipped | `frontend/src/reader/EndingsProgress.tsx::trackerText` branches all three cases (first-find, repeat-find, all-found) via `allEndingsFoundLine` and `milestoneLine`, both from `reader/endingsFraming.ts` |
 | W1.4 Close the kid request loop | shipped | all three pieces: `api/profiles.py::list_profile_story_status`, `frontend/src/kid/ProfilePickerPage.tsx` new-story pill, `frontend/src/library/RequestStory.tsx` "We heard you:" reflect-back |
-| W3.1 Progress projection | shipped | `api/progress.py::get_my_progress` at `GET /me/progress`, wired in `app.py`; returns badges, `found_endings_by_book`, `lifetime_days_read`, `days_read_this_week` |
+| W3.1 Progress projection | shipped | `api/progress.py::get_my_progress` at `GET /api/v1/me/progress` (the router carries `prefix="/api/v1"`), wired in `app.py`; returns badges, `found_endings_by_book`, `lifetime_days_read`, `days_read_this_week` |
 | W3.2 Gallery and ribbons UI | shipped | `frontend/src/library/EndingsGallery.tsx`, `reader/EndingsGalleryButton.tsx`, `kid/BadgeCase.tsx`, `reader/BadgeUnlockToast.tsx`, `library/EndingsBadge.tsx`, `kid/badgeCatalog.ts` (`BADGE_CATALOG`, 10 entries) |
-| W3.3 Active reading time | **partial** | read path shipped: `reading_activity_day` table in `db/models.py`, consumed by `get_my_progress`. Write path **absent**: no client accumulator, no 90s idle detector, no `POST /v1/me/reading-time` flush. Retention job also unbuilt (K23 residual) |
-| W3.4 Weekly ring | **partial** | data shipped (`days_read_this_week` computed server-side); **no frontend component renders it**, and the per-band defaults are unset pending the D17 ruling |
-| W3.5 Trailing badges | not started | `BADGE_CATALOG` holds 10 of the 12 proposed; badges 9 ("Wish Come True") and 12 ("Forty Days of Stories") absent |
+| W3.3 Active reading time | shipped (retention purge open) | read path: `reading_activity_day` table in `db/models.py`, consumed by `get_my_progress`. Write path also shipped: client accumulator `frontend/src/reader/useReadingTimeAccumulator.ts` with a 90s idle window (`IDLE_WINDOW_MS = 90_000`), flush via `frontend/src/offline/readingTimeSync.ts` (`accrueReadingTime`, `flushAllReadingTime`) to `POST /api/v1/me/reading-time` (`api/reading_time.py`, wired at `app.py:730`). Only the 12-month retention purge is unbuilt (K23 residual, D25) |
+| W3.4 Weekly ring | shipped | data (`days_read_this_week`, computed server-side) **and** UI: `frontend/src/kid/WeeklyRing.tsx`, rendered by `kid/KidNav.tsx`. Per-band defaults are implemented server-side in `api/progress.py` (`_RING_DEFAULT_ENABLED`, off at 3-5; `_RING_DEFAULT_GOAL_DAYS` 2/2/3/3/4/4), matching the P-A table ratified as D17 |
+| W3.5 Trailing badges | not started | `BADGE_CATALOG` holds 10 of the 12 proposed; badges 9 ("Wish Come True") and 12 ("Forty Days of Stories") absent. Badge 9's prerequisite (the W1.4 request loop) already landed in PR #532, so per D22 it is a v1 item rather than a dependency wait |
 | W0.* Wave 0 content | unverified | the 23-book import has not been confirmed against catalog state in this pass |
 | W2.* Wave 2 content | not started | note `UW-C24`: CG-1..CG-4 are inert because `validator/gate.py::run_gate` defaults `enforce_grammar=False` and no production caller passes `True` |
 | W4.* Wave 4 media | not started | needs the new illustration ADR; UI SFX with mute did ship (`reader/soundPreference.ts`) |
 
-**Net remaining work in this plan**: the W3.3 client write path, the W3.4 ring UI, the two
-trailing badges, Wave 0 content, Wave 2 content, and Wave 4 media. Waves 1 and most of 3 are
-done. Anyone scheduling from the wave sections alone would rebuild shipped features.
+**Net remaining work in this plan**: the two trailing badges (W3.5), the 12-month
+`reading_activity_day` retention purge (D25), Wave 0 content, Wave 2 content, and Wave 4 media.
+Wave 1 and Wave 3 are otherwise complete: the reading-time write path and the weekly ring both
+shipped in PR #532 and are live. Anyone scheduling from the wave sections alone would rebuild
+shipped features.
 
 ## Wave 0: Unblockers (Content workstream, start immediately)
 
