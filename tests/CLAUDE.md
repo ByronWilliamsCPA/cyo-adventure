@@ -46,5 +46,11 @@ paths must include tests before merging; do not lower the threshold.
 
 ## Ruff and type checking in tests
 
-Ruff linting applies to test files. BasedPyright runs in strict mode over
-`tests/`; type annotations are required on all fixtures and helpers.
+Ruff linting applies to test files. BasedPyright does not: `include = ["src"]`
+in `pyproject.toml` and the `basedpyright src/` entry in `.pre-commit-config.yaml`
+both scope it to the package, so no gate type-checks `tests/`. Annotations on
+fixtures and helpers remain house style here, but nothing enforces them.
+
+Naming a test file explicitly on an ad-hoc run (`basedpyright tests/unit/x.py`)
+overrides `include`, so such a run reports real diagnostics that no gate
+observes. Treat those counts as informational, not as a gate you have broken.

@@ -358,6 +358,14 @@ repos:
         pass_filenames: false
         stages: [pre-commit]
 
+      - id: check-pytest-raises-scope
+        name: pytest.raises blocks invoke at most one non-safe call in their body
+        entry: python scripts/check_pytest_raises_scope.py
+        language: system
+        files: ^(tests/.*\.py|scripts/check_pytest_raises_scope\.py)$
+        pass_filenames: true
+        stages: [pre-commit]
+
 
   # ============================================================================
   # Python Docstring Coverage

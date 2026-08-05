@@ -686,10 +686,12 @@ async def test_prefetch_db_failure_aborts_the_sweep(
         versions={("s1", 1): _version_row("s1", 1, _blob())},
     )
     mock_async_session.scalars = AsyncMock(side_effect=RuntimeError("db down"))
+    settings = _settings()
+    actor = _actor()
 
     with pytest.raises(RuntimeError, match="db down"):
         await rescreen_mod.rescreen_published_books(
-            mock_async_session, settings=_settings(), actor=_actor()
+            mock_async_session, settings=settings, actor=actor
         )
 
     mock_async_session.get.assert_not_awaited()

@@ -495,7 +495,22 @@ Fifth round (owner, 2026-08-01):
 | D19 | The sequencing waves (P-C) are approved. | Q8 / P-C |
 | D20 | The media budget recommendation is adopted as appropriate: per-band budget table, WebP at 1536px, app-bundled UI SFX only for v1 with mute, 250MB default / 500MB hard offline cap, Add-to-Home-Screen gating of the offline promise on iOS. | media recommendation section 7 |
 
-With D15-D20 the decision set needed for an implementation plan is complete; the plan lives at
+Sixth round (owner, 2026-08-05), closing the residual questions the two commissioned
+recommendations left open:
+
+| ID | Decision (owner, 2026-08-05) | Answers |
+|---|---|---|
+| D21 | Keep `validator/gate.py::run_gate` at `enforce_grammar=False`; flip it in the same PR as the D11 `deprecated` per-skeleton marker (W2.4). Flipping earlier fails the entire grandfathered catalog, since every current skeleton predates the CG rules. | `UW-C24` |
+| D22 | The v1 cut line is approved WITH the W0.4 request-loop fix pulled in, so badge 9 ("Wish Come True") lands in v1: 11 of 12 badges. Its prerequisite shipped in PR #532. | gamification section 7 Q5 |
+| D23 | The weekly reading-goal default is **per age band per the P-A table (D17)**, not a flat 3 days/week, and the selectable goal is capped at 6 so one free day is always guaranteed. D17 stands unchanged; the flat "default 3" in the gamification recommendation was the stale side and is corrected. | gamification section 7 Q3 |
+| D24 | Ring off by default at 3-5, on at 5-8 and above, consistent with P-A. | gamification section 7 Q4 |
+| D25 | Purge `reading_activity_day` detail after 12 months, keeping running totals. Governed by ADR-018 (children's-privacy compliance); ADR-007 covers raw generation-output retention and does not apply. | gamification section 7 Q2 |
+| D26 | Badges are **child-private by default**, with an opt-in per-profile toggle by which the child shares them with the family inside ring 1. Nothing crosses ring 1 in either state. | gamification section 7 Q1 |
+| D27 | Surface two reading clocks, plainly labelled ("about 12 min this way, about 40 min to see everything"). A single clock misleads on a branching story, and the whole-world figure doubles as a discovery incentive at no compute cost. | `UW-C11` |
+| D28 | The media budget recommendation's four decision points are accepted as written. This restates and confirms D20 and introduces no new constraint. | media recommendation section 7 |
+
+With D15-D20 the decision set needed for an implementation plan is complete, and D21-D28 close
+the residuals the commissioned recommendations raised; the plan lives at
 [kid-appeal-implementation-plan.md](kid-appeal-implementation-plan.md).
 
 ### Proposals awaiting owner approval (fourth round)

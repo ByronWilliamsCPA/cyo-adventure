@@ -498,9 +498,10 @@ def test_non_empty_save_slots_rejected() -> None:
     anti-forgery intent stated two lines above the call site. No producer or
     consumer exists, so the field was attack surface with no function.
     """
+    blob = _blob()
     with pytest.raises(ValidationError, match="save_slots must be empty"):
         validate_reading_state(
-            _blob(),
+            blob,
             current_node="n_start",
             var_state={"courage": 0},
             path=["n_start"],
@@ -513,9 +514,10 @@ def test_non_empty_save_slots_rejected() -> None:
 @pytest.mark.unit
 def test_save_slots_rejection_names_the_offending_slot() -> None:
     """The error identifies a slot, so a client can tell which key was refused."""
+    blob = _blob()
     with pytest.raises(ValidationError) as excinfo:
         validate_reading_state(
-            _blob(),
+            blob,
             current_node="n_start",
             var_state={"courage": 0},
             path=["n_start"],
@@ -536,9 +538,10 @@ def test_a_forged_slot_is_refused_before_the_structural_floor_runs() -> None:
     and a bad node should be told about the slot, since that is the field with no
     legitimate non-empty value at all.
     """
+    blob = _blob()
     with pytest.raises(ValidationError, match="save_slots must be empty"):
         validate_reading_state(
-            _blob(),
+            blob,
             current_node="does_not_exist",
             var_state={"courage": 0},
             path=["does_not_exist"],
