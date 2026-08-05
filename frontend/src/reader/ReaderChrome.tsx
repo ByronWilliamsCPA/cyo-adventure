@@ -208,18 +208,34 @@ export function ReaderChrome({
   // #CRITICAL: timing dependencies: this MUST be a layout effect, not a
   // passive one. Each listener captures `effectiveMuted` from the render that
   // scheduled it, so the subscription is only correct once it has been
-  // re-established for the current value. Passive effects (`useEffect`) flush
-  // in a later scheduler macrotask, which leaves a real window in which the
-  // rendered DOM already says "sound is on" while the bus still holds the
-  // previous render's muted closure; a tap arriving in that window is silently
-  // swallowed. `useLayoutEffect` runs synchronously inside the same commit that
-  // produced the DOM, before the call stack unwinds, so the window never opens.
-  // This is what caused issue #588's CI flake, where the test's own
-  // MutationObserver-based wait resolved inside exactly that gap.
-  // #VERIFY: ReaderChrome.test.tsx, "has the playback subscription live at the
-  // microtask the DOM says sound is on (issue #588)", which reproduces the gap
-  // deterministically by clicking from inside a MutationObserver callback.
-  // Reverting this to useEffect fails that test 3/3.
+  // re-established for the current value. A layout effect runs synchronously
+  // inside the commit that produced the DOM, and entirely before any passive
+  // effect, which closes two distinct windows a passive subscription leaves
+  // open:
+  //   1. Microtask gap. When the mute value settles from an update React is
+  //      not already flushing synchronously (here: the deferred resolver
+  //      above, whose setMuted lands outside any act()/flushSync boundary),
+  //      the passive flush is scheduled in a later scheduler macrotask. The
+  //      rendered DOM already says "sound is on" while the bus still holds the
+  //      previous render's muted closure, so a tap arriving in between is
+  //      silently swallowed. This is specific to that trigger, not a property
+  //      of useEffect in general: React also flushes passive effects
+  //      synchronously inside act() and before a subsequent render.
+  //   2. Declaration-order gap. A single passive flush runs every cleanup
+  //      before any create, then the creates in hook order. Were this
+  //      subscription passive, a commit changing BOTH the mute value and the
+  //      position would run its cleanup (emptying the bus) and then reach the
+  //      page-turn and ending emitters declared ABOVE it, which would emit
+  //      into an empty bus and drop the sound outright. That is ordering
+  //      rather than timing, so act() cannot paper over it either.
+  // Issue #588's CI flake is consistent with window 1, where the test's own
+  // MutationObserver-based wait resolved inside exactly that gap; per that
+  // issue, causation was established by widening the race rather than by
+  // reproducing the original failure.
+  // #VERIFY: the three "(issue #588)" tests in ReaderChrome.test.tsx. All
+  // three fail when this is reverted to `useEffect`. The sibling page-turn and
+  // ending tests that do not also change the mute value in the same commit
+  // stay green either way, so they are not guards for this.
   useLayoutEffect(() => {
     const unsubscribe = [
       onReaderSoundEvent('page-turn', () => {
