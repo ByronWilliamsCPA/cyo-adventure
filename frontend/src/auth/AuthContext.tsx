@@ -467,6 +467,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // endpoint calling auth.admin.signOut with a scope, since
       // sessions_single_per_user would sign legitimate multi-device guardians
       // out of their own sessions.
+      // #VERIFY: this acceptance holds only while password change is
+      // recovery-only (reached via resetPasswordForEmail above). Re-open it if
+      // a logged-in change-password surface is ever added, since an attacker
+      // who already holds a session could then change the password and keep
+      // every other device signed in.
       updatePassword: async (newPassword) => {
         const { error } = await supabase.auth.updateUser({ password: newPassword })
         if (error) throw error
