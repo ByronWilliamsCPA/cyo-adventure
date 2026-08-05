@@ -102,15 +102,26 @@ services:
       # the state every environment starts in (the role ships NOLOGIN, see
       # supabase/migrations/20260720170100_create_service_roles.sql). Leaving
       # it unset silently falls back to DATABASE_URL.
-      # #CRITICAL: security: nothing automated catches that fallback.
-      # /health/ready's database_privilege check runs in the API process and
-      # inspects the API engine's connection (settings.database_url); the
-      # worker serves no HTTP and is never probed. An environment whose API is
-      # correctly on cyo_api reports state="ok" while the worker still shares
-      # the API credential, so this is a manual verification, not a gate.
-      # #VERIFY: confirm the worker's role with the pg_stat_activity query in
-      # docs/operations/runbook.md section 11.2 after every deploy that changes
-      # this value.
+      # #CRITICAL: security: /health/ready's database_privilege check cannot
+      # catch that fallback. It runs in the API process against the API
+      # engine's connection (settings.database_url), so an environment whose
+      # API is correctly on cyo_api reports state="ok" while the worker still
+      # shares the API credential. The worker reports its own role instead:
+      # generation/worker_main.py probes the worker engine once at startup and
+      # logs generation_worker.role_bypasses_rls (defeats RLS) or
+      # generation_worker.role_least_privileged (does not). Neither is a gate.
+      # The event name alone does NOT answer "was this variable set": the probe
+      # reports the connected role, and the fallback connects as cyo_api, which
+      # is also least-privileged, so an unset value emits the AFFIRMATIVE
+      # event. The worker_dsn_explicitly_set field (equivalently
+      # role != "cyo_worker") is what distinguishes a real cutover from the
+      # silent fallback.
+      # #VERIFY: after every deploy that changes this value, confirm the worker
+      # startup line reports role=cyo_worker AND
+      # worker_dsn_explicitly_set=true, or run the pg_stat_activity query in
+      # docs/operations/runbook.md section 11.2. All three posture events are
+      # WARNING-level so they survive the LOG_LEVEL default above; do not
+      # lower LOG_LEVEL here to see them.
       # Tighten to `:?` once production has cut over (docs/operations/runbook.md
       # section 11).
       WORKER_DATABASE_URL: ${WORKER_DATABASE_URL:-}
