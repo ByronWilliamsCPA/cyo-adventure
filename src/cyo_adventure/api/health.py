@@ -33,6 +33,7 @@ from sqlalchemy import text
 
 from cyo_adventure import __version__
 from cyo_adventure.core.config import settings
+from cyo_adventure.core.rls_posture import measure_role_posture
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -80,47 +81,6 @@ _RECENT_FAILED_WINDOW = timedelta(hours=24)
 # #VERIFY: tests/unit/test_health.py::TestCheckGenerationQueue covers the
 # threshold boundary (at the threshold vs. one above it).
 RECENT_FAILED_DEGRADED_THRESHOLD = 3
-
-# The identity this process actually connects as, plus every way that role can
-# bypass RLS (ADR-021). `current_user` is the effective role, so this reflects
-# the live connection rather than any configured DSN.
-#
-# #CRITICAL: security: PostgreSQL has three independent RLS bypass paths and a
-# check that tests only one reports "ok" for a connection that sees every row:
-#   1. the `rolbypassrls` role attribute;
-#   2. superuser (`rolsuper`), which bypasses regardless of `rolbypassrls`;
-#   3. TABLE OWNERSHIP. RLS never applies to a table's owner unless the table
-#      sets FORCE ROW LEVEL SECURITY, and this schema deliberately does not
-#      (20260711200745_enable_rls_all_tables.sql). The baseline migration sets
-#      `OWNER TO "postgres"` on the Tier 1 tables, so ownership, not
-#      `rolbypassrls`, is the bypass path an un-cut-over environment actually
-#      uses. The EXISTS clause below is what detects that state.
-# #VERIFY: tests/unit/test_health.py::TestCheckDatabasePrivilege covers each
-# bypass path independently, including ownership with rolbypassrls false.
-#
-# #CRITICAL: security: the COALESCE default is `true` (fail closed). A role
-# absent from pg_roles is a state this check cannot reason about, and the safe
-# answer to "can this connection bypass RLS" when the answer is unknown is yes.
-# Defaulting to false would report a reassuring "ok" for an unanalyzable role.
-# #VERIFY: tests/unit/test_health.py::TestCheckDatabasePrivilege asserts the
-# missing-pg_roles-row case reports degraded, not ok.
-_CONNECTED_ROLE_QUERY = """
-SELECT
-    current_user AS role_name,
-    COALESCE(
-        (SELECT rolbypassrls OR rolsuper FROM pg_roles WHERE rolname = current_user),
-        true
-    ) AS role_bypasses_rls,
-    EXISTS (
-        SELECT 1
-        FROM pg_class c
-        JOIN pg_namespace n ON n.oid = c.relnamespace
-        WHERE n.nspname = 'public'
-          AND c.relrowsecurity
-          AND NOT c.relforcerowsecurity
-          AND c.relowner = (SELECT oid FROM pg_roles WHERE rolname = current_user)
-    ) AS owns_rls_table
-"""
 
 
 class HealthStatus(BaseModel):
@@ -263,15 +223,18 @@ async def check_database_privilege(
     inert in any environment still connecting as the ``postgres`` owner role.
     The migrations alone never make that visible; this check does.
 
-    Covers all three bypass paths (see ``_CONNECTED_ROLE_QUERY``): the
-    ``rolbypassrls`` attribute, superuser, and table ownership. Ownership is
-    the one that matters in practice, since the baseline migration assigns the
-    Tier 1 tables to ``postgres``.
+    Covers all three bypass paths (see
+    ``core/rls_posture.py::CONNECTED_ROLE_QUERY``): the ``rolbypassrls``
+    attribute, superuser, and table ownership. Ownership is the one that
+    matters in practice, since the baseline migration assigns the Tier 1
+    tables to ``postgres``.
 
-    This check covers the **API** process only. The worker holds a separate
-    engine (``core/database.py``'s ``get_worker_session``) and serves no HTTP,
-    so a forgotten ``CYO_ADVENTURE_WORKER_DATABASE_URL`` is invisible here;
-    ``docs/operations/runbook.md`` section 11.2 has the worker-side query.
+    This check covers the **API** process only, and probing the worker engine
+    from here would report a false verdict: the sanctioned deployment leaves
+    ``WORKER_DATABASE_URL`` unset on the API container, so in this process the
+    worker engine resolves to the API's own DSN. The worker runs the same probe
+    against its own engine at startup (``generation/worker_main.py``) and logs
+    the result, because it serves no HTTP and cannot be probed from outside.
 
     Deliberately non-gating (absent from ``_CRITICAL_READINESS_CHECKS``): a
     pre-cutover environment is an open security finding, not an outage, and
@@ -298,29 +261,19 @@ async def check_database_privilege(
     start = time.time()
     try:
         async with _readiness_session(session) as db:
-            result = await db.execute(text(_CONNECTED_ROLE_QUERY))
-            row = result.one()
+            posture = await measure_role_posture(db)
 
         latency_ms = (time.time() - start) * 1000
-        # A NULL here means the query's COALESCE fail-closed default did not
-        # apply, so treat it the same way the SQL does: unknown is not ok. This
-        # duplicates the SQL guard on purpose, so editing one without the other
-        # cannot silently turn an unanalyzable role into a reassuring "ok".
-        role_attribute_bypass = row.role_bypasses_rls is None or bool(
-            row.role_bypasses_rls
-        )
-        bypasses_rls = role_attribute_bypass or bool(row.owns_rls_table)
-        role_name = str(row.role_name)
-        if bypasses_rls:
+        if posture.bypasses_rls:
             logger.warning(
                 "database role bypasses row-level security",
                 check="database_privilege",
-                role=role_name,
+                role=posture.role_name,
                 # Which path fired: an operator fixes ownership and role
                 # attributes differently, so "it bypasses" alone is not
                 # actionable. Both are booleans, never row data.
-                via_role_attribute=role_attribute_bypass,
-                via_table_ownership=bool(row.owns_rls_table),
+                via_role_attribute=posture.via_role_attribute,
+                via_table_ownership=posture.via_table_ownership,
             )
             return ReadinessCheck(
                 name="database_privilege",

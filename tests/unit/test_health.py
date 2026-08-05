@@ -21,6 +21,11 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
+# Safe at module scope: core.rls_posture holds a query constant and a frozen
+# dataclass, with no app or engine construction (unlike api.health, which the
+# helpers below import lazily on purpose).
+from cyo_adventure.core.rls_posture import CONNECTED_ROLE_QUERY
+
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Callable
 
@@ -667,6 +672,60 @@ def _make_queue_result(
     return result
 
 
+def _posture_dispatch(
+    *,
+    role_name: str = "cyo_api",
+    role_bypasses_rls: bool | None = False,
+    owns_rls_table: bool = False,
+    error: Exception | None = None,
+) -> tuple[Any, list[str]]:
+    """Build a ``session.execute`` side effect that answers the posture query.
+
+    ``readiness()`` shares one session between ``check_database`` and
+    ``check_database_privilege``, so a test that mocks the session has to route
+    two different statements to two different results.
+
+    Dispatch is by identity against ``CONNECTED_ROLE_QUERY`` rather than by
+    searching the rendered SQL for ``"rolbypassrls"``. A substring guess is a
+    silent gate: rewriting the query so that literal no longer appears (using
+    ``pg_authid``, or aliasing the column) would send the privilege check the
+    queue-count row instead, and the test would go on "passing" while measuring
+    nothing. The returned list records which statements were dispatched to the
+    posture branch, so a caller can assert the branch actually fired.
+
+    Args:
+        role_name: ``current_user`` to report.
+        role_bypasses_rls: The ``rolbypassrls OR rolsuper`` column; ``None``
+            exercises the fail-closed path.
+        owns_rls_table: The table-ownership bypass column.
+        error: When given, the posture query raises this instead of returning a
+            row, exercising the ``state="unknown"`` path.
+
+    Returns:
+        tuple: the ``side_effect`` callable, and a list appended to once per
+        posture-query dispatch.
+    """
+    dispatched: list[str] = []
+
+    async def _execute(statement: Any) -> Any:
+        if str(statement).strip() == CONNECTED_ROLE_QUERY.strip():
+            dispatched.append("posture")
+            if error is not None:
+                raise error
+            result = Mock()
+            result.one = Mock(
+                return_value=SimpleNamespace(
+                    role_name=role_name,
+                    role_bypasses_rls=role_bypasses_rls,
+                    owns_rls_table=owns_rls_table,
+                )
+            )
+            return result
+        return _make_queue_result(0, 0, 0)
+
+    return _execute, dispatched
+
+
 def _extract_updated_at_cutoff(stmt: Any, label: str) -> datetime:
     """Pull the bound ``updated_at`` cutoff literal out of one FILTER clause.
 
@@ -1210,21 +1269,10 @@ class TestReadinessPrivilegeDoesNotGate:
     def test_readiness_reports_degraded_privilege_and_still_returns_200(self) -> None:
         """A BYPASSRLS role is surfaced in checks but readiness stays HTTP 200."""
         mock_session = AsyncMock(spec=AsyncSession)
-
-        async def _execute(statement: Any) -> Any:
-            if "rolbypassrls" in str(statement):
-                privilege_result = Mock()
-                privilege_result.one = Mock(
-                    return_value=SimpleNamespace(
-                        role_name="postgres",
-                        role_bypasses_rls=True,
-                        owns_rls_table=True,
-                    )
-                )
-                return privilege_result
-            return _make_queue_result(0, 0, 0)
-
-        mock_session.execute = AsyncMock(side_effect=_execute)
+        execute, dispatched = _posture_dispatch(
+            role_name="postgres", role_bypasses_rls=True, owns_rls_table=True
+        )
+        mock_session.execute = AsyncMock(side_effect=execute)
 
         @asynccontextmanager
         async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
@@ -1251,6 +1299,9 @@ class TestReadinessPrivilegeDoesNotGate:
         assert body["checks"]["database_privilege"]["state"] == "degraded"
         # The unauthenticated payload must not name the role (OWASP A01).
         assert "postgres" not in str(body)
+        # Proves the degraded verdict came from the posture query and not from a
+        # mis-dispatched queue row that happened to look falsy.
+        assert dispatched == ["posture"]
 
     @pytest.mark.unit
     def test_privilege_query_failure_is_unknown_and_does_not_gate(self) -> None:
@@ -1262,14 +1313,10 @@ class TestReadinessPrivilegeDoesNotGate:
         conflate "could not measure" with "measured and bad".
         """
         mock_session = AsyncMock(spec=AsyncSession)
-
-        async def _execute(statement: Any) -> Any:
-            if "rolbypassrls" in str(statement):
-                msg = "permission denied for table pg_class"
-                raise RuntimeError(msg)
-            return _make_queue_result(0, 0, 0)
-
-        mock_session.execute = AsyncMock(side_effect=_execute)
+        execute, dispatched = _posture_dispatch(
+            error=RuntimeError("permission denied for table pg_class")
+        )
+        mock_session.execute = AsyncMock(side_effect=execute)
 
         @asynccontextmanager
         async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
@@ -1296,6 +1343,9 @@ class TestReadinessPrivilegeDoesNotGate:
         assert body["checks"]["database_privilege"]["status"] is False
         assert body["checks"]["database_privilege"]["state"] == "unknown"
         assert "permission denied" not in str(body)
+        # Without this, a dispatch that never reached the posture branch would
+        # also produce state="unknown" for the wrong reason.
+        assert dispatched == ["posture"]
 
 
 class TestReadinessSharedSession:
@@ -1346,21 +1396,8 @@ class TestReadinessSharedSession:
         close on an otherwise healthy process.
         """
         mock_session = AsyncMock(spec=AsyncSession)
-
-        async def _execute(statement: Any) -> Any:
-            if "rolbypassrls" in str(statement):
-                privilege_result = Mock()
-                privilege_result.one = Mock(
-                    return_value=SimpleNamespace(
-                        role_name="cyo_api",
-                        role_bypasses_rls=False,
-                        owns_rls_table=False,
-                    )
-                )
-                return privilege_result
-            return _make_queue_result(0, 0, 0)
-
-        mock_session.execute = AsyncMock(side_effect=_execute)
+        execute, _dispatched = _posture_dispatch()
+        mock_session.execute = AsyncMock(side_effect=execute)
         entries = {"count": 0}
 
         @asynccontextmanager

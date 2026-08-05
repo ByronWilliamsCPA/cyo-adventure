@@ -141,6 +141,40 @@ rate: a healthy deployment emits zero. A sustained run of them means the databas
 unreachable, the service role has lost its `INSERT` grant on `security_event`, or the write is
 exceeding its timeout under load.
 
+### `generation_worker.role_least_privileged` / `generation_worker.role_bypasses_rls` / `generation_worker.rls_posture_unknown`
+
+| | |
+| --- | --- |
+| Level | `warning` (all three) |
+| Emitted by | `generation/worker_main.py::_log_worker_role_posture` |
+| Fires on | Once per worker process start, before the stranded-job reclaim sweep |
+| Fields | `role`, `worker_dsn_explicitly_set`; plus `via_role_attribute` / `via_table_ownership` on the bypass event, `error` on the unknown event |
+
+The worker half of the ADR-021 least-privilege cutover signal. A worker process serves no HTTP, so
+`/health/ready`'s `database_privilege` check cannot see it, and
+`CYO_ADVENTURE_WORKER_DATABASE_URL` falls back to `CYO_ADVENTURE_DATABASE_URL` in silence when
+unset. Without these lines, "the worker is on `cyo_worker`" and "the worker still shares the API
+credential" are indistinguishable without catching a generation job mid-flight and reading
+`pg_stat_activity`.
+
+Unusually for this catalog, **the affirmative outcome is also an event**. Silence on success would
+make a completed cutover and a worker running an image with no probe at all produce identical
+logs, which is the exact ambiguity the probe exists to remove. That is also why all three are
+WARNING rather than INFO: at the production `LOG_LEVEL=WARNING` default (section 4) an INFO line
+is dropped before it is written, so an INFO affirmative event is not a quieter signal, it is no
+signal.
+
+**Alert on** `role_bypasses_rls`, and *also* on `role_least_privileged` carrying
+`worker_dsn_explicitly_set: false` (equivalently, `role != "cyo_worker"`). The fallback DSN
+connects as `cyo_api`, which has `rolbypassrls = false` and owns no Tier 1 table, so a forgotten
+worker credential emits the **affirmative** event; an alert keyed only on the bypass event reports
+green for it. `rls_posture_unknown` means the posture is unmeasured, not clean, and warrants the
+same follow-up as a bypass until proven otherwise.
+
+These three do **not** write a `security_event` row (section 5). They describe process
+configuration at startup, not an attributable request, and the table's columns (`client_ip`,
+`path`, `method`, `status_code`) have no meaning for them.
+
 ## 3. What is deliberately NOT an event
 
 Input validation rejections (HTTP 422, `ValidationError`) do **not** emit a security event, and

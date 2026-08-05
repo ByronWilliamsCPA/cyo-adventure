@@ -56,6 +56,25 @@ production deployment or horizontal scaling:
   OIDC verification is configured (`OIDC_ISSUER`/`OIDC_JWKS_URL`), so the
   unverified stub cannot silently reach staging or production.
 
+- **A password reset does not sign out the account's other devices.** The single
+  password-change path in the app (`auth/AuthContext.tsx: updatePassword`, reached
+  only from the emailed-recovery-link form) calls supabase-js's
+  `updateUser({ password })`, which has no session-scope parameter. Verified
+  against the live Management API auth config on 2026-08-04: Supabase exposes no
+  "revoke sessions on password change" setting to reconcile, and every session
+  control that does exist is off in production (`sessions_single_per_user` false,
+  `sessions_timebox` 0, `sessions_inactivity_timeout` 0; refresh-token rotation is
+  on, with a 10-second reuse interval). This is therefore a platform limitation
+  rather than an unset option. The practical consequence: a guardian who resets
+  their password because they suspect someone else has access has **not** evicted
+  that person, whose existing refresh token keeps working. The available remedies
+  are `sessions_single_per_user`, which would also sign a legitimate guardian out
+  of their phone whenever they use a laptop, or a server-side
+  `auth.admin.signOut` with a scope, which needs a backend endpoint that does not
+  exist yet. Neither is wired up. Password policy itself is managed as code in
+  `supabase/config.toml` and pushed by the deploy workflows, so it is reviewable
+  in git; this gap is about session invalidation, not policy.
+
 ## Organization Policy
 
 See also: [ByronWilliamsCPA organization Security Policy](https://github.com/ByronWilliamsCPA/.github/blob/main/SECURITY.md)

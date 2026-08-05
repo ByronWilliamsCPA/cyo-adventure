@@ -148,13 +148,18 @@ services:
       # the worker process, and the fallback makes that silent.
       # #CRITICAL: security: /health/ready's database_privilege check does NOT
       # surface a forgotten value here. That check runs in the API process and
-      # inspects the API engine's connection (settings.database_url); the
-      # worker serves no HTTP and is never probed. An environment whose API is
-      # correctly on cyo_api reports state="ok" while the worker still shares
-      # the API credential.
-      # #VERIFY: confirm the worker's role separately with the pg_stat_activity
-      # query in docs/operations/runbook.md section 11.2; that query, not this
-      # readiness check, is the worker-side cutover signal.
+      # inspects the API engine's connection (settings.database_url), so an
+      # environment whose API is correctly on cyo_api reports state="ok" while
+      # the worker still shares the API credential.
+      # #VERIFY: read the worker's own startup line instead
+      # (generation/worker_main.py probes the worker engine once at startup),
+      # or the pg_stat_activity query in docs/operations/runbook.md section
+      # 11.2. The readiness check is not the worker-side cutover signal.
+      # Read the FIELDS, not just the event name: the probe reports the
+      # connected role, and cyo_api is itself least-privileged, so a forgotten
+      # value here emits generation_worker.role_least_privileged rather than
+      # role_bypasses_rls. worker_dsn_explicitly_set: false (equivalently
+      # role != "cyo_worker") is what identifies the fallback.
       WORKER_DATABASE_URL: ${WORKER_DATABASE_URL:-}
       CHILD_SESSION_SECRET: ${CHILD_SESSION_SECRET:-local-dev-child-session-secret-not-for-production}
       DEVICE_GRANT_SECRET: ${DEVICE_GRANT_SECRET:-local-dev-device-grant-secret-not-for-production}

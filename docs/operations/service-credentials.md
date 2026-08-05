@@ -124,6 +124,16 @@ This scaffold is not a control until a human completes it.
 - [ ] Set the `verified_on` date at the top of this document, and change the front matter
       `status` from `draft` to `published`.
 
+Filling the worker row no longer requires a `pg_stat_activity` snapshot timed to a live generation
+job. The worker probes its own engine once per process start and logs the verdict, so a worker
+restart plus a log read is an observation from the process's own deployed session
+(`generation_worker.role_*` in [`security-events.md`](security-events.md)). Record the `role`
+field, and record `worker_dsn_explicitly_set` alongside it. When
+`CYO_ADVENTURE_WORKER_DATABASE_URL` is unset the worker falls back to the API DSN and connects as
+`cyo_api`, which satisfies all three confirmation columns above while still being the _backend's_
+credential: a filled worker row that is nonetheless not cut over. The event name alone does not
+distinguish that state, so a row filled from the event name only is not evidence of the split.
+
 Changing a role, a grant, or a policy is an operator decision with real consequences and is out
 of scope for a compliance sweep. This document records what is; changing what is belongs in a
 reviewed change of its own.
