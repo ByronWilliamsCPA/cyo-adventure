@@ -7,7 +7,7 @@ import { BadgeCase } from './BadgeCase'
 import { EMPTY_PROGRESS, makeProgressApi, type ProgressSummary } from './progressApi'
 import { useKidProfile } from './useKidProfile'
 import { WeeklyRing } from './WeeklyRing'
-import { KID_PICKER_PATH } from '../routes'
+import { GUARDIAN_LOGIN_PATH, KID_PICKER_PATH } from '../routes'
 
 export interface KidNavProps {
   /** The profile whose library/story is on screen. */
@@ -42,6 +42,24 @@ function prefersReducedMotionOS(): boolean {
  * The child's name/avatar is a best-effort touch (see useKidProfile); a
  * failure (offline, hiccup) degrades to the generic "Switch reader" control
  * rather than blocking the page.
+ *
+ * Also carries a persistent, low-key "Ask a grown-up" link to
+ * `/guardian/login` (product decision, 2026-08-04). Paths from the kid surface
+ * toward the guardian side already existed, but every one of them surfaced only
+ * in a degraded state: ProfilePickerPage's unauthenticated, forbidden, and
+ * load-error tiles, its PIN-failure escape hatch after three attempts, and
+ * LibraryPage's and ReaderPage's own unauthenticated states. On a
+ * normally-working Library page a child had no always-available way to reach a
+ * grown-up; this is the first persistent one.
+ *
+ * Scope: KidShell mounts KidNav on `/library/:profileId` only, so this link is
+ * a Library-header affordance. The Reader route is unchanged and still returns
+ * to Library via its own "Leave" control.
+ *
+ * This is a pure reachability fix, not a new door into the guardian console: it
+ * goes to the same login route those existing escapes already use, so the
+ * guardian still signs in and the AdultGate step-up still applies exactly as it
+ * would from any other entry point.
  */
 export function KidNav({ profileId }: KidNavProps) {
   const profile = useKidProfile(profileId)?.profile ?? null
@@ -126,6 +144,9 @@ export function KidNav({ profileId }: KidNavProps) {
             while the glyph beside it stays full size; a bare text node is
             not styleable. See .kid-nav__switch-label in kid.css. */}
         <span className="kid-nav__switch-label">Switch reader</span>
+      </Link>
+      <Link className="kid-nav__ask-grownup" to={GUARDIAN_LOGIN_PATH}>
+        Ask a grown-up
       </Link>
       {progress.settings.badges_enabled ? (
         <BadgeCase

@@ -329,7 +329,7 @@ Supabase endpoints rather than `/api/v1`.
 
 ## Guardian: manage child profiles
 
-- E2E-mocked: `frontend/e2e/guardian-profiles.spec.ts`, `frontend/e2e/naive-user/naive-guardian-misuse.spec.ts` (empty state), `frontend/e2e/story-requests-authored.spec.ts` (child selector)
+- E2E-mocked: `frontend/e2e/guardian-profiles.spec.ts`, `frontend/e2e/naive-user/naive-guardian-misuse.spec.ts` (empty state), `frontend/e2e/story-requests-authored.spec.ts` (child selector), `frontend/e2e/guardian-preview-as-child.spec.ts` (the guardian's read-only preview of a child's library: rating and request controls suppressed via `LibraryPage`'s `readOnly` prop, the generic banner when the profile lookup fails, and an unauthenticated visit redirected to guardian login)
 - E2E-real: `frontend/e2e-real/guardian-profile-crud-real.spec.ts` (a guardian creates and edits a child profile through the real `POST`/`PATCH /v1/profiles` endpoints, both states persisting across reload; `ProfilesPage.tsx` has no delete control by design, so the erasure path, `DELETE /v1/profiles/{id}`, GDPR Article 17 / COPPA 312.10, is exercised via a direct authenticated fetch and confirmed gone from the console on reload)
 - E2E-prod: `frontend/e2e-prod/guardian-admin-smoke.spec.ts` (render only),
   `frontend/e2e-prod/guardian-profiles.spec.ts` (profile count against the
@@ -376,9 +376,10 @@ guardian can revoke unilaterally and immediately. Both mutations are gated
 behind a confirmation dialog.
 
 - E2E-mocked: `frontend/e2e/guardian-connections.spec.ts` (allow gates the `POST /v1/family-connections/{id}/consent` behind the confirm dialog then flips the row to the waiting-on-counterpart state; revoke gates the `DELETE .../consent` behind its own dialog then reverts the row; both assert the mutation does NOT fire until the dialog is confirmed, at the network layer)
+- E2E-real: `frontend/e2e-real/connections-enforcement-real.spec.ts` (dual-consent enforcement proved through the K17 recommendation feed rather than the guardian UI: two real families are provisioned, and a cross-family recommendation becomes visible only once BOTH guardians have consented, disappearing again on unilateral revoke; includes one real rendered kid library assertion. Runs on the nightly `real-backend-pipeline` project, not on PRs)
 - Component: `frontend/src/guardian/ConnectionsPage.test.tsx`, `frontend/src/guardian/connectionsApi.test.ts`
 - **Note**: the admin-side of connections (creating the link) is covered separately under WS-J (`frontend/src/admin/ConnectionsTab.test.tsx`).
-- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet.
+- **Gap**: no `e2e-staging` or `e2e-prod` coverage yet.
 
 ## Guardian: data-privacy page (G11 trust surface)
 
@@ -390,7 +391,8 @@ the code behind it. That is the real risk for a trust surface, because a
 guardian acts on what it says.
 
 - Component: `frontend/src/guardian/PrivacyPage.test.tsx` (pins the load-bearing claims: the "not the legal privacy notice" disclaimer, "stops with an error rather than carrying on" for the PII guard's hard fail, the outside-classifier disclosure, AI authorship plus the human approval gate, no-training, and "stays with your family by default" rather than an absolute never-shared claim), `frontend/src/guardian/GuardianShell.test.tsx` (footer link present for guardian and admin, and deliberately NOT inside the main nav)
-- **Gap**: no E2E coverage at any tier. The page is static and its claims are pinned at the component tier; an E2E would only re-assert that a link navigates.
+- E2E-mocked: `frontend/e2e/guardian-privacy.spec.ts` (the page reached in the routed app: its load-bearing claims render, the guardian-shell nav links resolve to their real hrefs with Profiles click-tested through, and an unauthenticated visit redirects to guardian login)
+- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage. The page is static and its claims are pinned at the component tier, so the higher tiers would only re-assert that a link navigates.
 
 ## Guardian: invite a co-parent (self-serve)
 
@@ -491,9 +493,9 @@ browser-level journey until the 2026-07-22 audit backfill: the audit log
 review version-compare panel (`ReviewCompare`, reachable only from the review
 detail when a storybook has more than one version).
 
-- E2E-mocked: `frontend/e2e/admin-read-heavy.spec.ts` (audit-log event-kind filter refetches `GET /v1/admin/audit?kind=...` and next-page refetches with `offset=50`; admin-library lifecycle filter refetches `GET /v1/admin/storybooks?status=archived`; the version-compare panel loads the previous version via `GET /v1/storybooks/{id}/review?version=...` and renders the diff)
+- E2E-mocked: `frontend/e2e/admin-read-heavy.spec.ts` (audit-log event-kind filter refetches `GET /v1/admin/audit?kind=...` and next-page refetches with `offset=50`; admin-library lifecycle filter refetches `GET /v1/admin/storybooks?status=archived`; the version-compare panel loads the previous version via `GET /v1/storybooks/{id}/review?version=...` and renders the diff), `frontend/e2e/admin-audit.spec.ts` (the audit log at browser level plus its access control: a plain guardian visiting `/admin/audit` is redirected AND no request reaches the admin audit endpoint, and an unauthenticated visit redirects to guardian login)
 - Component: `frontend/src/admin/AuditPage.test.tsx`, `frontend/src/admin/auditApi.test.ts`, `frontend/src/admin/AdminLibraryPage.test.tsx`, `frontend/src/admin/adminLibraryApi.test.ts`, `frontend/src/admin/ReviewCompare.test.tsx` (owns the loading/error/404-unavailable compare branches the E2E leaves to it)
-- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet; these are read-only surfaces, so exposure is low.
+- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet; these are read-only surfaces, so exposure is low. Access control (non-admin and unauthenticated) is now covered at the mocked tier by `admin-audit.spec.ts`.
 
 ## Kid: profile picker
 
@@ -581,7 +583,7 @@ detail when a storybook has more than one version).
 ## Kid: offline reading + sync/conflict resolution
 
 - E2E-mocked: `frontend/e2e/reader.spec.ts` (fully-offline play), `frontend/e2e/reader-conflict.spec.ts`, `frontend/e2e/reader-reload-resume.spec.ts`, `frontend/e2e/naive-user/naive-kid-misuse.spec.ts` (reload resume)
-- E2E-real: `frontend/e2e-real/offline-conflict-real.spec.ts` (two real `BrowserContext`s race saves on "The Clockwork Garden": device A creates the row, device B resyncs and advances it, device A's next save gets a real 409 resolved via "Keep this device", device B's next gets a real 409 resolved via "Use the newest place"; picked up by the nightly `e2e-real-nightly.yml`), `frontend/e2e-real/offline-online-parity-real.spec.ts` (G3, Phase 7.3: on "The Clockwork Garden", a condition-gated story, the identical five-choice sequence is driven online through the real backend and, in a separate profile, offline through the client player engine then synced; both land on the same final node/path/visit_set/var_state and the same ending, proving offline/online branch parity; each pass also forces a real Python-engine replay of its own choice sequence via the `choice_path` field on the reading-state PUT, so the parity is confirmed cross-engine, not just client-vs-client)
+- E2E-real: `frontend/e2e-real/offline-conflict-real.spec.ts` (two real `BrowserContext`s race saves on "The Clockwork Garden": device A creates the row, device B resyncs and advances it, device A's next save gets a real 409 resolved via "Keep this device", device B's next gets a real 409 resolved via "Use the newest place"; picked up by the nightly `e2e-real-nightly.yml`), `frontend/e2e-real/offline-online-parity-real.spec.ts` (G3, Phase 7.3: on "The Clockwork Garden", a condition-gated story, the identical five-choice sequence is driven online through the real backend and, in a separate profile, offline through the client player engine then synced; both land on the same final node/path/visit_set/var_state and the same ending, proving offline/online branch parity; each pass also forces a real Python-engine replay of its own choice sequence via the `choice_path` field on the reading-state PUT, so the parity is confirmed cross-engine, not just client-vs-client), `frontend/e2e-real/offline-reconnect-real.spec.ts` (reconnect replay against the real backend: every queued offline choice replays and the server row lands on the expected `current_node`/`var_state`; and a conflict case where a real second device advances the row while device A is offline, so A's stale replay takes a real 409 and never clobbers it. Runs on the nightly `real-backend` project, not on PRs)
 - Component: `frontend/src/offline/db.test.ts`, `frontend/src/offline/sync.test.ts`, `frontend/src/offline/downloadBudget.test.ts` (W4.3 250MB/500MB storage.estimate gate + least-recently-opened eviction + kid-friendly refusal), `frontend/src/offline/readingTimeSync.test.ts` (K23 idempotent day-bucket flush: frozen flush_id/delta pairs, offline accrual), `frontend/src/offline/revocation.test.ts` (offline-copy revocation reconcile: shared-blob refcounting, cross-profile isolation, queue-drop, never-purge-on-failed-fetch, and the documented mid-read latency window), `frontend/src/reader/ReaderPage.test.tsx` (conflict dialog resolution paths), `frontend/src/reader/ReaderRoute.test.tsx` (replay-reconciliation suite), `frontend/src/reader/dialogs.test.tsx` (ConflictDialog UI), `frontend/src/hooks/useReplayOnReconnect.test.ts`, `frontend/src/hooks/useOnlineStatus.test.ts`, `frontend/src/library/LibraryPage.test.tsx` (the reconcile call-site: fires only on the success branch, re-fires on reconnect, logs a reconcile rejection)
 - **Gap**: no `e2e-staging` or `e2e-prod` coverage of conflict/sync against a real backend. Offline-copy revocation (register G8/A5) has a known mid-read latency window: a book pulled server-side is not purged from the device until the next successful library fetch drives a reconcile; closing it needs a revocation push channel or reader-route mid-session revalidation, both out of scope (pinned by the `revocation.test.ts` "mid-read latency window" characterization test).
 
@@ -593,7 +595,7 @@ detail when a storybook has more than one version).
 
 ## Device authorization flow (kid device pairing)
 
-- E2E-mocked: `frontend/e2e/device-authorization.spec.ts`, `frontend/e2e/landing.spec.ts`, `frontend/e2e/naive-user/naive-kid-misuse.spec.ts`
+- E2E-mocked: `frontend/e2e/device-authorization.spec.ts`, `frontend/e2e/landing.spec.ts`, `frontend/e2e/naive-user/naive-kid-misuse.spec.ts`, `frontend/e2e/guardian-devices.spec.ts` (the guardian's authorized-device list in the routed app: revoking is gated behind the confirm dialog and fires `DELETE /v1/device-grants/{id}` for that device only, cancelling sends nothing, and an unauthenticated visit redirects to guardian login)
 - E2E-real: `frontend/e2e-real/kid-reads.spec.ts`, `frontend/e2e-real/naive-kid-misuse-real.spec.ts`, `frontend/e2e-real/series-continue-real.spec.ts`, `frontend/e2e-real/real-stack.ts` (helper)
 - E2E-staging: `frontend/e2e-staging/kid-library-smoke.spec.ts` (one of two grant-writing staging specs, with `afterAll` cleanup, mirroring the prod pattern; `moderation-qa-invisibility.spec.ts` runs the same reversible mint/revoke pattern)
 - E2E-prod: `frontend/e2e-prod/kid-device-grant.spec.ts` (the one prod spec that writes, with `afterAll` cleanup)

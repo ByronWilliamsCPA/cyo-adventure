@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { GUARDIAN_LOGIN_PATH } from '../routes'
 import { KidNav } from './KidNav'
 import { _resetKidProfileFetch } from './useKidProfile'
 
@@ -87,6 +88,13 @@ describe('KidNav', () => {
     profilesGet.mockResolvedValue({ data: { profiles: PROFILES } })
     renderNav('p1')
     expect(await screen.findByText('Mia')).toBeInTheDocument()
+  })
+
+  it('always offers a persistent Ask a grown-up link to guardian login', async () => {
+    profilesGet.mockResolvedValue({ data: { profiles: PROFILES } })
+    renderNav()
+    const link = await screen.findByRole('link', { name: /ask a grown-up/i })
+    expect(link).toHaveAttribute('href', GUARDIAN_LOGIN_PATH)
   })
 
   it('still renders the Switch reader link when the profile lookup fails', async () => {
