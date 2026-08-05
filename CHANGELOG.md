@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.65.1] - 2026-08-05
+
+### Bug Fixes
+
+- **reader**: Subscribe sound playback in a layout effect so the mute state is never stale
+  ([#611](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/611),
+  [`37180e6`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/37180e6e3314e612939840babb9fbd659297f039))
+
+
 ## [0.65.0] - 2026-08-05
 
 ### Features
@@ -3143,6 +3152,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.65.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.65.0...v0.65.1
 [0.65.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.64.0...v0.65.0
 [0.64.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.63.0...v0.64.0
 [0.63.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.62.0...v0.63.0
