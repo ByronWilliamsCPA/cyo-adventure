@@ -3348,10 +3348,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#7-open-questions-for-the-owner" class="md-nav__link">
+  <a href="#7-questions-for-the-owner-all-closed-2026-08-05" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7. Open questions for the owner
+        7. Questions for the owner (all closed 2026-08-05)
       
     </span>
   </a>
@@ -3380,7 +3380,25 @@
 
 <h1 id="gamification-recommendation-cyo-adventure-v1">Gamification Recommendation: CYO Adventure v1<a class="headerlink" href="#gamification-recommendation-cyo-adventure-v1" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Recommendation for owner approval | <strong>Date</strong>: 2026-08-01
+<p><strong>Owner ruling (ratified 2026-08-05)</strong>, continuing the canonical decision sequence in
+<a href="../design-review-kid-appeal-2026-08-01/">design-review-kid-appeal-2026-08-01.md</a> section 8:</p>
+<ul>
+<li><strong>D22</strong>: the v1 cut line is approved WITH the W0.4 request-loop fix pulled in, so badge 9
+  lands in v1 (11 of 12 badges). Its prerequisite already shipped in PR #532.</li>
+<li><strong>D23</strong>: the weekly goal defaults <strong>per age band, per the P-A table already ratified as
+  D17</strong> (3-5 off, goal 2 if enabled; 5-8 goal 2; 8-11 goal 3; 10-13 goal 3; 13-16 goal 4;
+  16+ goal 4), not to a flat 3 days/week. The selectable goal is capped at 6 so one free day
+  is always guaranteed and a 7-day setting cannot quietly rebuild a daily streak. This
+  supersedes the flat "default 3" proposed in sections 4 and 6 below; D17 is unchanged and
+  remains correct.</li>
+<li><strong>D24</strong>: ring off at 3-5, on at 5-8 and above (consistent with P-A).</li>
+<li><strong>D25</strong>: purge <code>reading_activity_day</code> detail after 12 months, keeping running totals.
+  Retention and children's-data handling are governed by <strong>ADR-018</strong>, not ADR-007 (which
+  covers raw generation-output retention, a different subject).</li>
+<li><strong>D26</strong>: badges are <strong>kid-private</strong>, with an opt-in per-profile toggle that shares them with
+  the family inside ring 1. Nothing crosses ring 1 in either state.</li>
+</ul>
+<p><strong>Date</strong>: 2026-08-01
 <strong>Scope authority</strong>: owner decisions D6 and D12 in
 <a href="../design-review-kid-appeal-2026-08-01/">design-review-kid-appeal-2026-08-01.md</a> section 8:
 collection mechanics, badges, streaks, and total active reading time are in scope; engagement is
@@ -3575,8 +3593,9 @@ the design review); hold it until then.</p>
 <p><strong>Recommendation: reading-days-per-week ring plus a lifetime days-read total, and no
 consecutive-day streak anywhere.</strong> Concretely:</p>
 <ul>
-<li>A weekly ring: "You read on 3 days this week" toward a per-profile goal (default 3,
-  guardian-adjustable, or off).</li>
+<li>A weekly ring: "You read on 3 days this week" toward a per-profile goal (guardian-adjustable,
+  or off). <strong>Ruled D23</strong>: the default is per age band per the P-A table (D17), not a flat 3, and
+  the selectable goal is capped at 6.</li>
 <li>Filling the ring produces a one-time celebration that week (mascot moment). An unfilled ring at
   week's end produces <em>nothing</em>: no sad state, no "you lost it" copy, no partial-failure framing.
   Next week simply starts fresh.</li>
@@ -3649,7 +3668,7 @@ reader-path-engagement-design.md section 6 records; acceptable for a literacy si
 <tr>
 <td><strong>Badge case</strong> (new, off the library or <code>KidShell</code> nav)</td>
 <td>Earned badges in color, unearned as silhouettes with kid-readable earn hints</td>
-<td>Child; family-visible (below)</td>
+<td>Child-private by default; family-visible only if the child opts in (D26, below)</td>
 </tr>
 <tr>
 <td><strong>Profile picker</strong> (<code>ProfilePickerPage</code>)</td>
@@ -3663,8 +3682,10 @@ reader-path-engagement-design.md section 6 records; acceptable for a literacy si
 </tr>
 </tbody>
 </table>
-<p><strong>Family-visible vs child-private</strong>: badges and finished-shelf states are family-visible (a
-sibling browsing the shared device can see them, consistent with ring-1 rating chips today). The
+<p><strong>Family-visible vs child-private</strong>: <strong>ruled D26, badges are child-private by default</strong>, with an
+opt-in per-profile toggle by which the child chooses to share them with the family inside ring 1.
+With the toggle off, a sibling browsing the shared device sees nothing; with it on, badges behave
+like today's ring-1 rating chips. Finished-shelf states remain family-visible as before. The
 weekly ring, day counts, and all time data are child-plus-guardian only. The profile picker, the
 one surface where siblings appear side by side, carries no comparable numbers at all: that is the
 anti-leaderboard line inside ring 1 (P3). Nothing here crosses ring 2 or 3, ever; recommendation
@@ -3684,13 +3705,18 @@ guardian settings (ADR-018):</p>
 <tbody>
 <tr>
 <td>Weekly reading-days ring</td>
-<td><strong>On, goal 3 days/week</strong></td>
-<td>Off switch removes the ring entirely from the kid UI; guardian summary unaffected. Goal adjustable</td>
+<td><strong>On above 3-5; goal per band per P-A</strong> (2/&#8532;/&frac34;/4)</td>
+<td>Ruled D23. Off switch removes the ring entirely from the kid UI; guardian summary unaffected. Goal adjustable, capped at 6</td>
 </tr>
 <tr>
 <td>Badges</td>
 <td>On</td>
 <td>Off hides the badge case and suppresses unlock toasts; awards still compute (re-enabling restores everything, nothing lost)</td>
+</tr>
+<tr>
+<td>Share badges with the family</td>
+<td><strong>Off</strong> (child-private)</td>
+<td>Ruled D26. The child opts in to make their badge case visible to the family inside ring 1; never leaves ring 1 in either state</td>
 </tr>
 <tr>
 <td>Show weekly ring at 3-5 band</td>
@@ -3763,21 +3789,28 @@ in the same change or the <code>contract</code> CI job fails.</p>
   per-minute rewards or time-based unlocks; push/PWA notifications or emails to re-engage the
   child (D4); variable-ratio "mystery reward" mechanics; badges for speed or for time-of-day.</li>
 </ul>
-<h2 id="7-open-questions-for-the-owner">7. Open questions for the owner<a class="headerlink" href="#7-open-questions-for-the-owner" title="Permanent link">&para;</a></h2>
+<h2 id="7-questions-for-the-owner-all-closed-2026-08-05">7. Questions for the owner (all closed 2026-08-05)<a class="headerlink" href="#7-questions-for-the-owner-all-closed-2026-08-05" title="Permanent link">&para;</a></h2>
+<p>All five are ruled; the rulings are recorded at the top of this document and in the canonical
+decisions table (design review section 8). Nothing in this section is outstanding.</p>
 <ol>
 <li><strong>Badge visibility inside ring 1</strong>: family-visible as proposed (consistent with rating chips),
-   or kid-private with an explicit "show my badges to my family" per-profile choice?</li>
+   or kid-private with an explicit "show my badges to my family" per-profile choice?
+   <strong>Ruled D26: kid-private, with the opt-in share toggle.</strong></li>
 <li><strong>Retention for <code>reading_activity_day</code></strong>: keep day buckets indefinitely (they power the
    lifetime days-read total), or purge detail after 12 months keeping only running totals?
-   Determines the counsel-bundle retention entry.</li>
+   Determines the counsel-bundle retention entry.
+   <strong>Ruled D25: purge detail after 12 months, keep running totals (ADR-018).</strong></li>
 <li><strong>Default weekly goal</strong>: is 3 days/week the right default, and may guardians set 7 (which
    quietly rebuilds a daily streak)? Recommend capping the selectable goal at 6 to keep one
-   guaranteed free day.</li>
+   guaranteed free day.
+   <strong>Ruled D23: default per band per P-A (D17), not a flat 3; selectable goal capped at 6.</strong></li>
 <li><strong>3-5 band</strong>: confirm ring off by default at 3-5 (badges and gallery on). Same question for
-   5-8?</li>
+   5-8?
+   <strong>Ruled D24: off at 3-5, on at 5-8 and above.</strong></li>
 <li><strong>v1 cut line</strong>: gallery + badges 1-8/10/11 + ring + time tracking is the proposed v1; badges
    9 and 12 trail their dependencies (request-loop fix; time table). Approve that sequencing, or
-   pull the request-loop fix into this workstream?</li>
+   pull the request-loop fix into this workstream?
+   <strong>Ruled D22: pull the request-loop fix in, so badge 9 is v1 (11 of 12 badges).</strong></li>
 </ol>
 
 
@@ -3801,7 +3834,7 @@ in the same change or the <code>contract</code> CI job fails.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 22:15:48 UTC">August 5, 2026</span>
   </span>
 
     

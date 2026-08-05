@@ -4347,7 +4347,61 @@ words-per-node side (whichever way A4 lands).</p>
 </tr>
 </tbody>
 </table>
-<p>With D15-D20 the decision set needed for an implementation plan is complete; the plan lives at
+<p>Sixth round (owner, 2026-08-05), closing the residual questions the two commissioned
+recommendations left open:</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Decision (owner, 2026-08-05)</th>
+<th>Answers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D21</td>
+<td>Keep <code>validator/gate.py::run_gate</code> at <code>enforce_grammar=False</code>; flip it in the same PR as the D11 <code>deprecated</code> per-skeleton marker (W2.4). Flipping earlier fails the entire grandfathered catalog, since every current skeleton predates the CG rules.</td>
+<td><code>UW-C24</code></td>
+</tr>
+<tr>
+<td>D22</td>
+<td>The v1 cut line is approved WITH the W0.4 request-loop fix pulled in, so badge 9 ("Wish Come True") lands in v1: 11 of 12 badges. Its prerequisite shipped in PR #532.</td>
+<td>gamification section 7 Q5</td>
+</tr>
+<tr>
+<td>D23</td>
+<td>The weekly reading-goal default is <strong>per age band per the P-A table (D17)</strong>, not a flat 3 days/week, and the selectable goal is capped at 6 so one free day is always guaranteed. D17 stands unchanged; the flat "default 3" in the gamification recommendation was the stale side and is corrected.</td>
+<td>gamification section 7 Q3</td>
+</tr>
+<tr>
+<td>D24</td>
+<td>Ring off by default at 3-5, on at 5-8 and above, consistent with P-A.</td>
+<td>gamification section 7 Q4</td>
+</tr>
+<tr>
+<td>D25</td>
+<td>Purge <code>reading_activity_day</code> detail after 12 months, keeping running totals. Governed by ADR-018 (children's-privacy compliance); ADR-007 covers raw generation-output retention and does not apply.</td>
+<td>gamification section 7 Q2</td>
+</tr>
+<tr>
+<td>D26</td>
+<td>Badges are <strong>child-private by default</strong>, with an opt-in per-profile toggle by which the child shares them with the family inside ring 1. Nothing crosses ring 1 in either state.</td>
+<td>gamification section 7 Q1</td>
+</tr>
+<tr>
+<td>D27</td>
+<td>Surface two reading clocks, plainly labelled ("about 12 min this way, about 40 min to see everything"). A single clock misleads on a branching story, and the whole-world figure doubles as a discovery incentive at no compute cost.</td>
+<td><code>UW-C11</code></td>
+</tr>
+<tr>
+<td>D28</td>
+<td>The media budget recommendation's four decision points are accepted as written. This restates and confirms D20 and introduces no new constraint.</td>
+<td>media recommendation section 7</td>
+</tr>
+</tbody>
+</table>
+<p>With D15-D20 the decision set needed for an implementation plan is complete, and D21-D28 close
+the residuals the commissioned recommendations raised; the plan lives at
 <a href="../kid-appeal-implementation-plan/">kid-appeal-implementation-plan.md</a>.</p>
 <h3 id="proposals-awaiting-owner-approval-fourth-round">Proposals awaiting owner approval (fourth round)<a class="headerlink" href="#proposals-awaiting-owner-approval-fourth-round" title="Permanent link">&para;</a></h3>
 <p><strong>P-A. Per-band reading-ring defaults (implements D16).</strong> The ring's mechanics are identical at
@@ -4873,7 +4927,7 @@ answered by the decisions table above.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 22:15:48 UTC">August 5, 2026</span>
   </span>
 
     

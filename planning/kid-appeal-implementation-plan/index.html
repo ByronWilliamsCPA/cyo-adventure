@@ -3243,6 +3243,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#status-ledger-verified-against-code-on-main-42156d69-v0652-2026-08-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status ledger (verified against code on main 42156d69 / v0.65.2, 2026-08-05)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#wave-0-unblockers-content-workstream-start-immediately" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3422,8 +3433,127 @@ week-plus) and are planning aids, not commitments.</p>
 <td>D19</td>
 <td>Wave sequencing approved</td>
 </tr>
+<tr>
+<td>D21</td>
+<td>Choice-grammar enforcement stays off; the flag flips in the same PR as the D11 <code>deprecated</code> marker (W2.4)</td>
+</tr>
+<tr>
+<td>D22</td>
+<td>v1 cut line approved with the request-loop fix pulled in, so badge 9 is v1 (11 of 12 badges)</td>
+</tr>
+<tr>
+<td>D23</td>
+<td>Weekly goal defaults per band per P-A (D17), not a flat 3; selectable goal capped at 6</td>
+</tr>
+<tr>
+<td>D24</td>
+<td>Ring off at 3-5, on at 5-8 and above</td>
+</tr>
+<tr>
+<td>D25</td>
+<td>Purge <code>reading_activity_day</code> detail after 12 months, keep running totals (ADR-018)</td>
+</tr>
+<tr>
+<td>D26</td>
+<td>Badges are child-private by default, with an opt-in ring-1 family share toggle</td>
+</tr>
+<tr>
+<td>D27</td>
+<td>Surface two reading clocks ("this way" and "to see everything"), plainly labelled</td>
+</tr>
+<tr>
+<td>D28</td>
+<td>Media budget recommendation accepted as written; restates D20, adds no new constraint</td>
+</tr>
 </tbody>
 </table>
+<h2 id="status-ledger-verified-against-code-on-main-42156d69-v0652-2026-08-05">Status ledger (verified against code on main <code>42156d69</code> / v0.65.2, 2026-08-05)<a class="headerlink" href="#status-ledger-verified-against-code-on-main-42156d69-v0652-2026-08-05" title="Permanent link">&para;</a></h2>
+<p>This plan shipped its first tranche in <strong>PR #532</strong> (<code>feat(kid): kid-appeal design decisions,
+rendered-stop reader, engagement v1, content and media groundwork</code>) before this ledger existed,
+so the wave sections below read as forward-looking for work that is already merged. The ledger is
+the authoritative execution state; the wave sections are intent. Verify against code, not against
+the wave prose.</p>
+<p>Every row cites a file or symbol precisely so the claim is falsifiable. A row that cannot be
+re-derived from the cited evidence is a defect in this table, not a gap in the code: the failure
+mode this ledger exists to prevent is scheduling a rebuild of something already shipped, so an
+overstated "partial" costs more than an overstated "shipped". Any row marked <code>unverified</code> has not
+been checked at all and must not be read as "not started".</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>State</th>
+<th>Evidence on main</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>W1.1 Stop-composition (ADR-026)</td>
+<td>shipped</td>
+<td>rendered-stop reader, PR #532</td>
+</tr>
+<tr>
+<td>W1.2 Route-relative progress</td>
+<td>shipped</td>
+<td><code>frontend/src/reader/readerProgress.ts::readerPositionCount</code>, <code>readerPositionLabel</code>; replaces the corpus-coverage percent</td>
+</tr>
+<tr>
+<td>W1.3 Celebration upgrade</td>
+<td>shipped</td>
+<td><code>frontend/src/reader/EndingsProgress.tsx::trackerText</code> branches all three cases (first-find, repeat-find, all-found) via <code>allEndingsFoundLine</code> and <code>milestoneLine</code>, both from <code>reader/endingsFraming.ts</code></td>
+</tr>
+<tr>
+<td>W1.4 Close the kid request loop</td>
+<td>shipped</td>
+<td>all three pieces: <code>api/profiles.py::list_profile_story_status</code>, <code>frontend/src/kid/ProfilePickerPage.tsx</code> new-story pill, <code>frontend/src/library/RequestStory.tsx</code> "We heard you:" reflect-back</td>
+</tr>
+<tr>
+<td>W3.1 Progress projection</td>
+<td>shipped</td>
+<td><code>api/progress.py::get_my_progress</code> at <code>GET /api/v1/me/progress</code> (the router carries <code>prefix="/api/v1"</code>), wired in <code>app.py</code>; returns badges, <code>found_endings_by_book</code>, <code>lifetime_days_read</code>, <code>days_read_this_week</code></td>
+</tr>
+<tr>
+<td>W3.2 Gallery and ribbons UI</td>
+<td>shipped</td>
+<td><code>frontend/src/library/EndingsGallery.tsx</code>, <code>reader/EndingsGalleryButton.tsx</code>, <code>kid/BadgeCase.tsx</code>, <code>reader/BadgeUnlockToast.tsx</code>, <code>library/EndingsBadge.tsx</code>, <code>kid/badgeCatalog.ts</code> (<code>BADGE_CATALOG</code>, 10 entries)</td>
+</tr>
+<tr>
+<td>W3.3 Active reading time</td>
+<td>shipped (retention purge open)</td>
+<td>read path: <code>reading_activity_day</code> table in <code>db/models.py</code>, consumed by <code>get_my_progress</code>. Write path also shipped: client accumulator <code>frontend/src/reader/useReadingTimeAccumulator.ts</code> with a 90s idle window (<code>IDLE_WINDOW_MS = 90_000</code>), flush via <code>frontend/src/offline/readingTimeSync.ts</code> (<code>accrueReadingTime</code>, <code>flushAllReadingTime</code>) to <code>POST /api/v1/me/reading-time</code> (<code>api/reading_time.py</code>, wired at <code>app.py:730</code>). Only the 12-month retention purge is unbuilt (K23 residual, D25)</td>
+</tr>
+<tr>
+<td>W3.4 Weekly ring</td>
+<td>shipped</td>
+<td>data (<code>days_read_this_week</code>, computed server-side) <strong>and</strong> UI: <code>frontend/src/kid/WeeklyRing.tsx</code>, rendered by <code>kid/KidNav.tsx</code>. Per-band defaults are implemented server-side in <code>api/progress.py</code> (<code>_RING_DEFAULT_ENABLED</code>, off at 3-5; <code>_RING_DEFAULT_GOAL_DAYS</code> 2/&#8532;/&frac34;/4), matching the P-A table ratified as D17</td>
+</tr>
+<tr>
+<td>W3.5 Trailing badges</td>
+<td>not started</td>
+<td><code>BADGE_CATALOG</code> holds 10 of the 12 proposed; badges 9 ("Wish Come True") and 12 ("Forty Days of Stories") absent. Badge 9's prerequisite (the W1.4 request loop) already landed in PR #532, so per D22 it is a v1 item rather than a dependency wait</td>
+</tr>
+<tr>
+<td>W0.* Wave 0 content</td>
+<td>unverified</td>
+<td>the 23-book import has not been confirmed against catalog state in this pass</td>
+</tr>
+<tr>
+<td>W2.* Wave 2 content</td>
+<td>not started</td>
+<td>note <code>UW-C24</code>: CG-1..CG-4 are inert because <code>validator/gate.py::run_gate</code> defaults <code>enforce_grammar=False</code> and no production caller passes <code>True</code></td>
+</tr>
+<tr>
+<td>W4.* Wave 4 media</td>
+<td>not started</td>
+<td>needs the new illustration ADR; UI SFX with mute did ship (<code>reader/soundPreference.ts</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Net remaining work in this plan</strong>: the two trailing badges (W3.5), the 12-month
+<code>reading_activity_day</code> retention purge (D25), Wave 0 content, Wave 2 content, and Wave 4 media.
+Wave 1 and Wave 3 are otherwise complete: the reading-time write path and the weekly ring both
+shipped in PR #532 and are live. Anyone scheduling from the wave sections alone would rebuild
+shipped features.</p>
 <h2 id="wave-0-unblockers-content-workstream-start-immediately">Wave 0: Unblockers (Content workstream, start immediately)<a class="headerlink" href="#wave-0-unblockers-content-workstream-start-immediately" title="Permanent link">&para;</a></h2>
 <p><strong>W0.1 Import and publish the 23 filled books</strong> (<code>UW-G14</code>), grandfathered per D11. Run the import
 path, take each through the normal admin approve-and-publish gate, assign to the reference
@@ -3591,7 +3721,7 @@ future push); PWA push in any form (D4).</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 22:15:48 UTC">August 5, 2026</span>
   </span>
 
     
