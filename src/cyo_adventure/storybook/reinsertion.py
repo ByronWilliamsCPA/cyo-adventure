@@ -465,12 +465,11 @@ def _normalize_document(document: Mapping[str, object]) -> dict[str, object]:
         doc["title"] = strip_model_sentinels(title)
 
     nodes = _as_list(doc.get("nodes"))
-    if nodes is None:
-        return doc
-    for raw_node in nodes:
-        node = _as_dict(raw_node)
-        if node is not None:
-            _normalize_node(node)
+    if nodes is not None:
+        for raw_node in nodes:
+            node = _as_dict(raw_node)
+            if node is not None:
+                _normalize_node(node)
     return doc
 
 
