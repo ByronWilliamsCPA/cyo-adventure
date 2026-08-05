@@ -5862,19 +5862,37 @@ of AC.3.3 and AC.11.1; the published requirements are stricter and are the bette
 <li><strong>Failure oracle:</strong> a background worker's deployed session connects as the service key, the
   table owner, or any role with <code>rolbypassrls</code> set, rather than a scoped least-privilege role
   subject to RLS.</li>
-<li><strong>Negative control:</strong> not determined</li>
+<li><strong>Negative control:</strong> <code>tests/integration/test_worker_role_posture.py::
+  test_posture_on_a_migrated_schema_separates_the_bypass_paths[pre-cutover-table-owner]</code> connects
+  as the baseline dump's <code>postgres</code> owner role (no <code>rolsuper</code>, no <code>rolbypassrls</code>, owner of every
+  RLS-enabled table) and asserts the probe reports a bypass via the ownership path. That is the
+  failure oracle above, fired deliberately, so the measurement is known to be capable of
+  reporting the bad state rather than only ever reporting the good one.</li>
 <li><strong>Trigger:</strong> ADR-021 cutover (the Check text names this as the current blocker)</li>
 <li><strong>Existing coverage:</strong> the gate-coverage audit row "Privacy / RLS correctness" (PARTIAL: yes in
   CI, but RLS is a no-op in production); the cross-cutting gate defects list records that the
   application connects as the Postgres table owner pre-cutover, which is the specific gap this
-  row targets.</li>
+  row targets. PR #608 adds the runtime half: the worker probes its own engine once per process
+  start and logs <code>generation_worker.role_least_privileged</code> /
+  <code>generation_worker.role_bypasses_rls</code> / <code>generation_worker.rls_posture_unknown</code>, so the
+  verification target is now observable from the deployed process itself instead of requiring a
+  <code>pg_stat_activity</code> snapshot timed to a live job.</li>
 <li><strong>Phase home:</strong> unassigned</li>
 <li><strong>Owner:</strong> core-maintainer</li>
 <li><strong>Last verified:</strong> not verified</li>
 <li><strong>Status:</strong> finding open</li>
 <li><strong>Check:</strong> Background workers connect with a least-privilege role subject to RLS, not the
-  service key. Blocked on the ADR-021 cutover</li>
+  service key. Blocked on the ADR-021 cutover.</li>
 </ul>
+<p>Two reasons this stays open even though a runtime signal now exists. First, the signal is a log
+  line an operator has to read; nothing gates on it, by design, so an unread affirmative event is
+  not a verification. Second, and more specifically: <code>CYO_ADVENTURE_WORKER_DATABASE_URL</code> is unset
+  in production, so the worker reaches a least-privilege role only by falling back to the API DSN
+  and connecting as <code>cyo_api</code>. That satisfies the failure oracle's letter (not the owner, not a
+  superuser, no <code>rolbypassrls</code>) while leaving the queue path on the request path's credential,
+  which is the separation this row exists to assert. Closing it needs the worker DSN set
+  explicitly and a startup line showing <code>role=cyo_worker</code> with
+  <code>worker_dsn_explicitly_set=true</code>.</p>
 <h4 id="o-77">O-77<a class="headerlink" href="#o-77" title="Permanent link">&para;</a></h4>
 <ul>
 <li><strong>Category:</strong> SP-02</li>
@@ -7741,7 +7759,7 @@ duties in SP-12.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 3, 2026 15:03:13 UTC">August 3, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 03:32:06 UTC">August 5, 2026</span>
   </span>
 
     

@@ -1153,6 +1153,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#generation_workerrole_least_privileged-generation_workerrole_bypasses_rls-generation_workerrls_posture_unknown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        generation_worker.role_least_privileged / generation_worker.role_bypasses_rls / generation_worker.rls_posture_unknown
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3493,6 +3504,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#generation_workerrole_least_privileged-generation_workerrole_bypasses_rls-generation_workerrls_posture_unknown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        generation_worker.role_least_privileged / generation_worker.role_bypasses_rls / generation_worker.rls_posture_unknown
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3760,6 +3782,54 @@ rest of the row straight into the log store this table exists to reduce reliance
 rate: a healthy deployment emits zero. A sustained run of them means the database is
 unreachable, the service role has lost its <code>INSERT</code> grant on <code>security_event</code>, or the write is
 exceeding its timeout under load.</p>
+<h3 id="generation_workerrole_least_privileged-generation_workerrole_bypasses_rls-generation_workerrls_posture_unknown"><code>generation_worker.role_least_privileged</code> / <code>generation_worker.role_bypasses_rls</code> / <code>generation_worker.rls_posture_unknown</code><a class="headerlink" href="#generation_workerrole_least_privileged-generation_workerrole_bypasses_rls-generation_workerrls_posture_unknown" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Level</td>
+<td><code>warning</code> (all three)</td>
+</tr>
+<tr>
+<td>Emitted by</td>
+<td><code>generation/worker_main.py::_log_worker_role_posture</code></td>
+</tr>
+<tr>
+<td>Fires on</td>
+<td>Once per worker process start, before the stranded-job reclaim sweep</td>
+</tr>
+<tr>
+<td>Fields</td>
+<td><code>role</code>, <code>worker_dsn_explicitly_set</code>; plus <code>via_role_attribute</code> / <code>via_table_ownership</code> on the bypass event, <code>error</code> on the unknown event</td>
+</tr>
+</tbody>
+</table>
+<p>The worker half of the ADR-021 least-privilege cutover signal. A worker process serves no HTTP, so
+<code>/health/ready</code>'s <code>database_privilege</code> check cannot see it, and
+<code>CYO_ADVENTURE_WORKER_DATABASE_URL</code> falls back to <code>CYO_ADVENTURE_DATABASE_URL</code> in silence when
+unset. Without these lines, "the worker is on <code>cyo_worker</code>" and "the worker still shares the API
+credential" are indistinguishable without catching a generation job mid-flight and reading
+<code>pg_stat_activity</code>.</p>
+<p>Unusually for this catalog, <strong>the affirmative outcome is also an event</strong>. Silence on success would
+make a completed cutover and a worker running an image with no probe at all produce identical
+logs, which is the exact ambiguity the probe exists to remove. That is also why all three are
+WARNING rather than INFO: at the production <code>LOG_LEVEL=WARNING</code> default (section 4) an INFO line
+is dropped before it is written, so an INFO affirmative event is not a quieter signal, it is no
+signal.</p>
+<p><strong>Alert on</strong> <code>role_bypasses_rls</code>, and <em>also</em> on <code>role_least_privileged</code> carrying
+<code>worker_dsn_explicitly_set: false</code> (equivalently, <code>role != "cyo_worker"</code>). The fallback DSN
+connects as <code>cyo_api</code>, which has <code>rolbypassrls = false</code> and owns no Tier 1 table, so a forgotten
+worker credential emits the <strong>affirmative</strong> event; an alert keyed only on the bypass event reports
+green for it. <code>rls_posture_unknown</code> means the posture is unmeasured, not clean, and warrants the
+same follow-up as a bypass until proven otherwise.</p>
+<p>These three do <strong>not</strong> write a <code>security_event</code> row (section 5). They describe process
+configuration at startup, not an attributable request, and the table's columns (<code>client_ip</code>,
+<code>path</code>, <code>method</code>, <code>status_code</code>) have no meaning for them.</p>
 <h2 id="3-what-is-deliberately-not-an-event">3. What is deliberately NOT an event<a class="headerlink" href="#3-what-is-deliberately-not-an-event" title="Permanent link">&para;</a></h2>
 <p>Input validation rejections (HTTP 422, <code>ValidationError</code>) do <strong>not</strong> emit a security event, and
 a test pins that they do not. They are attacker-drivable at unbounded rate from an
@@ -3851,7 +3921,7 @@ audit gap look identical to an absence of attacks), and a retention or purge mec
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 4, 2026 16:30:12 UTC">August 4, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 03:32:06 UTC">August 5, 2026</span>
   </span>
 
     

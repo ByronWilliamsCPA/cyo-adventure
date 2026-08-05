@@ -4131,8 +4131,8 @@ returned: <code>/health/ready</code> is unauthenticated, so the response carries
 <p>Like cache and generation_queue, <strong><code>database_privilege</code> never flips <code>/health/ready</code>'s HTTP code</strong>:
 a pre-cutover environment is an open security finding, not an outage, so it must not pull pods out
 of rotation. One limit matters when reading this field: it covers the <strong>API process only</strong>. The
-worker has no HTTP surface and is never probed, so a forgotten <code>CYO_ADVENTURE_WORKER_DATABASE_URL</code>
-is invisible here. Use Section 11.2's <code>pg_stat_activity</code> query for the worker.</p>
+worker has no HTTP surface, so a forgotten <code>CYO_ADVENTURE_WORKER_DATABASE_URL</code> is invisible here.
+The worker reports itself at startup instead; see Section 11.2.</p>
 <h2 id="4-logs-and-correlation-ids">4. Logs and correlation IDs<a class="headerlink" href="#4-logs-and-correlation-ids" title="Permanent link">&para;</a></h2>
 <p>All application logging goes through <code>structlog</code> (<code>utils/logging.py</code>); set <code>JSON_LOGS=true</code> in
 any deployed environment (the <code>docker-compose.prod.yml</code> override does this) to get structured
@@ -4625,10 +4625,65 @@ running process. Two sources are authoritative:</p>
 <li><code>SELECT usename, count(*) FROM pg_stat_activity WHERE datname = 'postgres' GROUP BY 1;</code>
   against the target project shows which roles actually hold connections.</li>
 </ul>
-<p>The worker needs its own check: <code>CYO_ADVENTURE_WORKER_DATABASE_URL</code> silently falls back to
-<code>CYO_ADVENTURE_DATABASE_URL</code> when unset (<code>core/config.py::worker_database_url_effective</code>), so
-a forgotten worker variable is indistinguishable from a completed cutover by inspection. Confirm
-a <code>cyo_worker</code> connection appears in <code>pg_stat_activity</code> while a real generation job runs.</p>
+<p>The worker reports itself separately, because <code>CYO_ADVENTURE_WORKER_DATABASE_URL</code> silently falls
+back to <code>CYO_ADVENTURE_DATABASE_URL</code> when unset (<code>core/config.py::worker_database_url_effective</code>),
+so a forgotten worker variable is indistinguishable from a completed cutover by inspection.
+<code>generation/worker_main.py</code> runs the same role probe against the <strong>worker</strong> engine once per
+process start and logs the verdict:</p>
+<table>
+<thead>
+<tr>
+<th>Log event</th>
+<th>Level</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>generation_worker.role_least_privileged</code></td>
+<td><code>warning</code></td>
+<td>Cut over. <code>role</code> names the connected role; <code>worker_dsn_explicitly_set</code> says whether that happened by configuration or by fallback.</td>
+</tr>
+<tr>
+<td><code>generation_worker.role_bypasses_rls</code></td>
+<td><code>warning</code></td>
+<td>Not cut over. <code>via_role_attribute</code> and <code>via_table_ownership</code> say which path, and are fixed differently.</td>
+</tr>
+<tr>
+<td><code>generation_worker.rls_posture_unknown</code></td>
+<td><code>warning</code></td>
+<td>The probe itself failed; posture unmeasured, not clean.</td>
+</tr>
+</tbody>
+</table>
+<p>All three are WARNING-level, not INFO, because production runs <code>LOG_LEVEL=WARNING</code> and an INFO
+posture line is filtered out before it is written. That is the same rule
+<a href="../security-events/">the security event catalog</a> applies to every security event, for the same
+reason. Do not "quiet down" the affirmative line to INFO: doing so turns a successful cutover
+back into silence and makes it indistinguishable from a worker running an image with no probe.</p>
+<p><strong>Alert on either of these, not just the bypass event:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>event == &quot;generation_worker.role_bypasses_rls&quot;
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>  OR (event == &quot;generation_worker.role_least_privileged&quot;
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>      AND worker_dsn_explicitly_set == false)
+</span></code></pre></div>
+<p>The second clause is not redundant. When <code>CYO_ADVENTURE_WORKER_DATABASE_URL</code> is unset the worker
+falls back to the API DSN and connects as <code>cyo_api</code>, which has <code>rolbypassrls = false</code> and owns no
+Tier 1 table. The probe therefore emits the <strong>affirmative</strong> event, so an alert keyed only on
+<code>role_bypasses_rls</code> reports green for a worker that is still sharing the API credential. Alerting
+on <code>role != "cyo_worker"</code> works equally well and is easier to express in some backends.</p>
+<p>Treat a deploy that emits no posture line at all as running an image older than PR #608.</p>
+<p>None of these gate startup: the worker starts on all three outcomes, by design, because a
+pre-cutover worker is a security finding while a worker that refuses to start is an outage. That
+property depends on the probe rolling its transaction back when it fails. The probe and the
+stranded-job reclaim sweep share one transaction and the probe runs first, so a probe that failed
+without rolling back would leave the sweep unable to issue any statement (PostgreSQL SQLSTATE
+25P02) and, under <code>restart_policy: on-failure</code>, put the worker in an uncapped crash loop. If you
+ever see <code>rls_posture_unknown</code> followed by a worker that will not stay up, that is the regression
+to look for; it is pinned by
+<code>tests/integration/test_worker_role_posture.py::test_statement_error_in_probe_still_lets_the_sweep_run</code>.</p>
+<p>The verdict is emitted once at startup, so restart the worker after changing its DSN rather than
+waiting for the next job. To confirm from the database side instead, check that a <code>cyo_worker</code>
+connection appears in <code>pg_stat_activity</code> while a real generation job runs.</p>
 <h3 id="113-operator-scripts-must-not-run-as-cyo_api">11.3 Operator scripts must not run as <code>cyo_api</code><a class="headerlink" href="#113-operator-scripts-must-not-run-as-cyo_api" title="Permanent link">&para;</a></h3>
 <p>These entry points read or write the ADR-022 Tier 1 tables (<code>child_profile</code>, <code>story_request</code>,
 <code>device_grant</code>) outside the request path, where nothing sets the <code>app.family_id</code> GUC:</p>
@@ -4669,9 +4724,9 @@ PR, also add:</p>
    migration following the same shape if that file has already shipped to production).</li>
 <li>A matching <code>service_rw</code> policy:</li>
 </ol>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">DROP</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">service_rw</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="n">new_table</span><span class="o">&gt;</span><span class="p">;</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="n">service_rw</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="n">new_table</span><span class="o">&gt;</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="k">FOR</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">cyo_api</span><span class="p">,</span><span class="w"> </span><span class="n">cyo_worker</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="k">true</span><span class="p">)</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">DROP</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">service_rw</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="n">new_table</span><span class="o">&gt;</span><span class="p">;</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="n">service_rw</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="n">new_table</span><span class="o">&gt;</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="k">FOR</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">cyo_api</span><span class="p">,</span><span class="w"> </span><span class="n">cyo_worker</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="k">true</span><span class="p">)</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
 </span></code></pre></div>
 <ol>
 <li>No <code>anon</code>/<code>authenticated</code> grant or policy, matching the deny-by-default posture
@@ -4707,7 +4762,7 @@ because that test is currently the only thing that would notice.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 4, 2026 21:58:15 UTC">August 4, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 03:32:06 UTC">August 5, 2026</span>
   </span>
 
     
