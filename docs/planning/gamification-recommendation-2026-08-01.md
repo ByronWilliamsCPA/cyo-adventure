@@ -1,7 +1,7 @@
 ---
 title: "Gamification Recommendation: Collection, Badges, Streaks, Reading Time (v1)"
 schema_type: planning
-status: draft
+status: active
 owner: core-maintainer
 purpose: "Agent-developed recommendation commissioned by owner decision D12 (kid-appeal design
   review): a kid-kind, ring-1-only gamification design covering collection mechanics, badges, a
@@ -14,6 +14,8 @@ audience: product-owner, engineering
 ---
 
 # Gamification Recommendation: CYO Adventure v1
+
+> **Owner ruling**: Ratified 2026-08-05: D-2 v1 cut line approved WITH the W0.4 request-loop fix pulled in (badge 9 therefore lands in v1, 11 of 12 badges); D-3 default 3 days/week with the selectable goal capped at 6; D-4 ring off at 3-5, on at 5-8 and above; D-5 purge `reading_activity_day` detail after 12 months keeping running totals; D-6 badges are kid-private with an opt-in per-profile share toggle.
 
 > **Status**: Recommendation for owner approval | **Date**: 2026-08-01
 > **Scope authority**: owner decisions D6 and D12 in

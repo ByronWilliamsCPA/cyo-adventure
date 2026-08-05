@@ -1,7 +1,7 @@
 ---
 title: "Media Budget Recommendation: Offline-First Media Sizing (v1)"
 schema_type: planning
-status: draft
+status: active
 owner: core-maintainer
 purpose: "Best-practice research and per-band media budget recommendation commissioned by owner
   decision D13 (kid-appeal design review): image formats and sizes for in-story illustration,
@@ -15,6 +15,8 @@ audience: product-owner, engineering
 ---
 
 # Media Budget Recommendation (2026-08-01)
+
+> **Owner ruling**: Ratified 2026-08-05 (D-8): all four decision points accepted as written, the per-band budget table, WebP with AVIF deferred, audio v1 limited to app-bundled UI SFX with mute, and the 250MB default / 500MB hard offline cap with Add-to-Home-Screen gating on iOS.
 
 > **Status**: Recommendation for owner approval | commissioned under decision D13 in
 > [design-review-kid-appeal-2026-08-01.md](design-review-kid-appeal-2026-08-01.md) section 8 (Q6).
