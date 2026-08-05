@@ -446,12 +446,13 @@ class TestDigestIdentifier:
     def test_digest_is_stable_for_the_same_input(self) -> None:
         """Two calls on one value correlate, which is the point of the digest.
 
-        The two calls are bound to names before being compared. Comparing the
-        call expressions directly makes both sides of the ``==`` textually
-        identical, which is true for every implementation whatsoever, including
-        a salted or time-varying digest that would destroy correlation. Binding
-        first is what makes this assertion about the function rather than about
-        the shape of the expression.
+        The two calls are bound to names solely to satisfy ``S5863``, which
+        flags two syntactically identical operands around ``==`` without
+        executing the code, so it fires on ``f(x) == f(x)`` whether or not
+        ``f`` is deterministic. Binding changes nothing at runtime: both forms
+        evaluate two independent calls and compare the results, and both would
+        equally catch a salted or time-varying digest. Do not collapse this
+        back into a self-comparison, or the rule fires again.
         """
         identifier = "s1/2-abc.webp"
 
