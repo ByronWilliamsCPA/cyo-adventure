@@ -4770,60 +4770,60 @@ export type ValidatorFindingView = {
  */
 export type Verdict = 'block' | 'flag' | 'advisory' | 'pass';
 
-export type LivenessHealthLiveGetData = {
+export type LivenessApiV1HealthLiveGetData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/health/live';
+    url: '/api/v1/health/live';
 };
 
-export type LivenessHealthLiveGetResponses = {
+export type LivenessApiV1HealthLiveGetResponses = {
     /**
      * Successful Response
      */
     200: HealthStatus;
 };
 
-export type LivenessHealthLiveGetResponse = LivenessHealthLiveGetResponses[keyof LivenessHealthLiveGetResponses];
+export type LivenessApiV1HealthLiveGetResponse = LivenessApiV1HealthLiveGetResponses[keyof LivenessApiV1HealthLiveGetResponses];
 
-export type ReadinessHealthReadyGetData = {
+export type ReadinessApiV1HealthReadyGetData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/health/ready';
+    url: '/api/v1/health/ready';
 };
 
-export type ReadinessHealthReadyGetErrors = {
+export type ReadinessApiV1HealthReadyGetErrors = {
     /**
      * Application is not ready (dependencies unavailable)
      */
     503: unknown;
 };
 
-export type ReadinessHealthReadyGetResponses = {
+export type ReadinessApiV1HealthReadyGetResponses = {
     /**
      * Application is ready to serve traffic
      */
     200: ReadinessStatus;
 };
 
-export type ReadinessHealthReadyGetResponse = ReadinessHealthReadyGetResponses[keyof ReadinessHealthReadyGetResponses];
+export type ReadinessApiV1HealthReadyGetResponse = ReadinessApiV1HealthReadyGetResponses[keyof ReadinessApiV1HealthReadyGetResponses];
 
-export type StartupHealthStartupGetData = {
+export type StartupApiV1HealthStartupGetData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/health/startup';
+    url: '/api/v1/health/startup';
 };
 
-export type StartupHealthStartupGetResponses = {
+export type StartupApiV1HealthStartupGetResponses = {
     /**
      * Successful Response
      */
     200: HealthStatus;
 };
 
-export type StartupHealthStartupGetResponse = StartupHealthStartupGetResponses[keyof StartupHealthStartupGetResponses];
+export type StartupApiV1HealthStartupGetResponse = StartupApiV1HealthStartupGetResponses[keyof StartupApiV1HealthStartupGetResponses];
 
 export type ListLibraryApiV1LibraryGetData = {
     body?: never;

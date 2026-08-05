@@ -83,12 +83,25 @@ export async function requireBackend(): Promise<void> {
   try {
     // A hung backend must not block for the full Playwright timeout; a 5s
     // deadline keeps the "fails fast" promise even when the TCP connect
-    // succeeds but /health/ready never responds (e.g. an exhausted DB pool).
-    const res = await fetch(`${BACKEND}/health/ready`, {
+    // succeeds but readiness never responds (e.g. an exhausted DB pool).
+    const res = await fetch(`${BACKEND}/api/v1/health/ready`, {
       signal: AbortSignal.timeout(5000),
     })
-    ready = res.ok
-    if (!ready) detail = ` (HTTP ${res.status})`
+    // #CRITICAL: external resources: `res.ok` alone is not proof the BACKEND
+    // answered. Point E2E_BACKEND_URL at anything fronted by a proxy with an
+    // SPA fallback and a 200 means "some server replied", which is how the
+    // production readiness probe read healthy for a month with an unreachable
+    // route behind it (UW-L04). FastAPI answers JSON here, so content type is
+    // the discriminator that a static stub cannot forge.
+    // #VERIFY: frontend/e2e-prod/health-probe.spec.ts asserts the same
+    // property against the deployed ingress.
+    const contentType = res.headers.get('content-type') ?? ''
+    ready = res.ok && contentType.includes('application/json')
+    if (!ready) {
+      detail = res.ok
+        ? ` (HTTP ${res.status} but content-type "${contentType}", not JSON: something other than the backend answered)`
+        : ` (HTTP ${res.status})`
+    }
   } catch (err) {
     // Surface the underlying cause (DNS failure, connection refused, timeout)
     // so a wrong E2E_BACKEND_URL is distinguishable from a stopped backend.

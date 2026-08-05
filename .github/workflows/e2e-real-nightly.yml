@@ -204,9 +204,16 @@ jobs:
           uv run uvicorn cyo_adventure.app:app --host 0.0.0.0 --port 8000 > backend.log 2>&1 &
           echo $! > backend.pid
 
+      # Canonical `/api/v1/health/ready`, not the un-prefixed alias (UW-L04).
+      # The alias would answer today, which is precisely why this had to change:
+      # it would keep answering right up until the alias is retired, then fail
+      # here for a reason unrelated to anything this workflow tests.
+      # No content-type assertion here, unlike the prod/real-stack probes: this
+      # hits the uvicorn process directly on loopback with no proxy in front, so
+      # there is nothing that could answer 200 in the backend's place.
       - name: Wait for backend readiness
         run: |
-          curl --retry 15 --retry-delay 2 --retry-all-errors -fsS http://localhost:8000/health/ready
+          curl --retry 15 --retry-delay 2 --retry-all-errors -fsS http://localhost:8000/api/v1/health/ready
 
       - name: Install frontend dependencies
         working-directory: ./frontend

@@ -88,6 +88,13 @@ ALL_ROLES: frozenset[Role] = frozenset({Role.GUARDIAN, Role.CHILD, Role.ADMIN})
 # Public routes that require no bearer token at all (FastAPI's own docs/schema
 # endpoints, plus the k8s health probes in api/health.py). Excluded from
 # ROUTE_TABLE and from the completeness check below.
+#
+# The health router is mounted TWICE (UW-L04): the canonical
+# ``/api/v1/health/*`` (in the OpenAPI schema, reachable through
+# `frontend/nginx.conf`'s ``location /api/`` proxy) and the un-prefixed
+# ``/health/*`` loopback alias the production container healthcheck still
+# probes directly. Both sets of paths are genuinely unauthenticated routes
+# the app serves, so both stay listed here.
 _PUBLIC_ROUTES: frozenset[tuple[str, str]] = frozenset(
     {
         ("GET", "/docs"),
@@ -102,6 +109,10 @@ _PUBLIC_ROUTES: frozenset[tuple[str, str]] = frozenset(
         ("GET", "/health/live"),
         ("GET", "/health/ready"),
         ("GET", "/health/startup"),
+        ("GET", "/api/v1/health/"),
+        ("GET", "/api/v1/health/live"),
+        ("GET", "/api/v1/health/ready"),
+        ("GET", "/api/v1/health/startup"),
     }
 )
 
@@ -1092,15 +1103,38 @@ def _discover_routes() -> set[tuple[str, str]]:
     walk return too few routes, which the minimum-count assertion below
     turns into a loud failure instead of a silently-empty (falsely passing)
     completeness check.
+
+    ``route.path`` on a leaf route only reflects the prefix baked into the
+    router's OWN declaration (e.g. ``APIRouter(prefix="/api/v1/admin")`` in
+    ``admin_users.py``); a prefix supplied at the ``include_router(...,
+    prefix=...)`` call site instead lives on the ``_IncludedRouter`` node's
+    ``include_context.prefix`` and is applied lazily at request-dispatch
+    time, never written back onto the leaf route. Every router except
+    ``health`` bakes its full ``/api/v1/...`` prefix into its own
+    declaration and is included with no extra prefix, so this was invisible
+    until ``health.router`` (declared with only ``prefix="/health"``) became
+    the first router mounted with an include-time prefix
+    (``app.include_router(health.router, prefix="/api/v1")``, UW-L04): without
+    accumulating ``include_context.prefix`` while walking, this function
+    could never discover ``/api/v1/health/*`` at all, silently failing the
+    completeness check the moment those routes were added to
+    ``_PUBLIC_ROUTES`` below.
     """
 
-    def walk(routes: object) -> list[tuple[str, str]]:
+    def walk(routes: object, prefix: str = "") -> list[tuple[str, str]]:
         out: list[tuple[str, str]] = []
         for route in routes:  # type: ignore[attr-defined]
             if type(route).__name__ == "_IncludedRouter":
-                out.extend(walk(route.original_router.routes))
+                out.extend(
+                    walk(
+                        route.original_router.routes,
+                        prefix + route.include_context.prefix,
+                    )
+                )
             elif hasattr(route, "path") and hasattr(route, "methods"):
-                out.extend((method, route.path) for method in route.methods or [])
+                out.extend(
+                    (method, prefix + route.path) for method in route.methods or []
+                )
         return out
 
     return set(walk(app.routes))

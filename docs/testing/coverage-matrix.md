@@ -195,6 +195,32 @@ relate to the Supabase project constraints.
   fluid-layout overflow only; Playwright device profiles do not emulate
   `env(safe-area-inset-*)`, so notch/home-indicator overlap (Task A8) needs a
   real device or the Capacitor build.
+- **Guardian-facing redaction contract, live production**:
+  `frontend/e2e-prod/guardian-books-and-isolation.spec.ts` installs a
+  whole-suite response collector before sign-in, capturing every `/api/v1`
+  JSON response body fetched anywhere in the suite, then asserts none of them
+  ever carries `flagged_passages` or a bare `prose` key at any depth: the
+  exact admin-only fields `review_surface.py::build_content_summary` must
+  redact out of a guardian-facing `ContentSummaryView`. A positive control
+  fails the run if the collector captured zero bodies, so the assertion
+  cannot pass vacuously. Spans every request the suite makes rather than one
+  journey, so it is registered here.
+- **Platform health and ingress routing (register item UW-L04)**:
+  `frontend/e2e-prod/health-probe.spec.ts`, unauthenticated and
+  credential-free (Playwright's `request` fixture, no browser page), against
+  live production: the canonical `GET /api/v1/health/ready` returns real
+  FastAPI JSON (status 200, `content-type: application/json`, `status` and
+  `checks` keys); the previously-shadowed `GET /health/ready` returns exactly
+  404, asserted as 404 rather than as "not 200" so a whole-site outage cannot
+  satisfy it, because nginx's stub moved to `location = /nginx-health` and
+  `/health` now answers an explicit `return 404` (deleting the block instead
+  would have let the path fall through to the SPA `try_files` fallback and
+  answer `200 text/html`, the same false pass in a new disguise); and `GET
+  /nginx-health` (a plain-text, nginx-only control) still answers 200, so a
+  failure of the canonical check can be told apart from the whole ingress
+  being down. Not a user journey: this guards the ingress and health-router
+  wiring itself, the regression behind the month-long UW-L04 false pass where
+  nginx silently shadowed FastAPI's real readiness logic.
 
 ---
 
@@ -210,7 +236,9 @@ relate to the Supabase project constraints.
 - E2E-mocked: `frontend/e2e/guardian-auth.spec.ts`, `frontend/e2e/guardian-console.spec.ts` (redirect matrix), `frontend/e2e/intake.spec.ts` (unauth redirect), `frontend/e2e/naive-user/naive-misuse-shared.spec.ts` (expired-session redirect)
 - E2E-real: `frontend/e2e-real/approval-flow.spec.ts` (access-control checks)
 - E2E-staging: `frontend/e2e-staging/guardian-admin-smoke.spec.ts` (real Supabase sign-in as both seeded guardian and admin accounts)
-- E2E-prod: `frontend/e2e-prod/landing-login.spec.ts`, `frontend/e2e-prod/guardian-admin-smoke.spec.ts`
+- E2E-prod: `frontend/e2e-prod/landing-login.spec.ts`, `frontend/e2e-prod/guardian-admin-smoke.spec.ts`,
+  `frontend/e2e-prod/guardian-profiles.spec.ts` (unauthenticated visit redirects to sign-in; login page shows
+  Google and hides Apple; sign-out returns to sign-in both client-side and after a fresh reload)
 - Component: `frontend/src/guardian/LoginPage.test.tsx`, `frontend/src/guardian/SetNewPasswordForm.test.tsx`, `frontend/src/auth/AuthContext.test.tsx`, `frontend/src/auth/AdultGate.test.tsx`, `frontend/src/auth/ProtectedRoute.test.tsx`, `frontend/src/auth/GuardianBackendUnavailablePage.test.tsx`, `frontend/src/auth/guardianToken.test.ts`, `frontend/src/auth/supabaseClient.test.ts`, `frontend/src/guardian/GuardianShell.test.tsx`, `frontend/src/guardian/ConsolePage.test.tsx`
 - Integration: `frontend/src/test/App.test.tsx`
 - **Backend-unreachable branch (issue #452):** when the Supabase session is
@@ -286,26 +314,37 @@ Supabase endpoints rather than `/api/v1`.
 ## Guardian: review family requests queue
 
 - E2E-mocked: `frontend/e2e/story-requests.spec.ts`, `frontend/e2e/naive-user/naive-guardian-misuse.spec.ts`, `frontend/e2e/naive-user/naive-misuse-shared.spec.ts`
-- E2E-prod: `frontend/e2e-prod/guardian-admin-smoke.spec.ts` (render only)
+- E2E-prod: `frontend/e2e-prod/guardian-admin-smoke.spec.ts` (render only),
+  `frontend/e2e-prod/guardian-books-and-isolation.spec.ts` (the queue's
+  empty-state heading and copy as a cross-family isolation signal, read only)
 - Component: `frontend/src/guardian/RequestsPage.test.tsx`, `frontend/src/guardian/storyRequestQueueApi.test.ts`, `frontend/src/guardian/AssignChildrenDialog.test.tsx` (tags)
 
 ## Guardian: manage books/library
 
 - E2E-mocked: `frontend/e2e/guardian-books.spec.ts`, `frontend/e2e/naive-user/naive-guardian-misuse.spec.ts` (empty state)
-- E2E-prod: `frontend/e2e-prod/guardian-admin-smoke.spec.ts` (render only)
+- E2E-prod: `frontend/e2e-prod/guardian-admin-smoke.spec.ts` (render only),
+  `frontend/e2e-prod/guardian-books-and-isolation.spec.ts` (populated books
+  list with a content-review flag badge on each row, read only)
 - Component: `frontend/src/guardian/BooksPage.test.tsx`, `frontend/src/guardian/assignApi.test.ts` (listBooks), `frontend/src/guardian/BookDetailsDialog.test.tsx` (book-detail popover: age band, themes, content flags, caller-supplied moderation badge, and the omit-when-absent branches)
 
 ## Guardian: manage child profiles
 
 - E2E-mocked: `frontend/e2e/guardian-profiles.spec.ts`, `frontend/e2e/naive-user/naive-guardian-misuse.spec.ts` (empty state), `frontend/e2e/story-requests-authored.spec.ts` (child selector)
 - E2E-real: `frontend/e2e-real/guardian-profile-crud-real.spec.ts` (a guardian creates and edits a child profile through the real `POST`/`PATCH /v1/profiles` endpoints, both states persisting across reload; `ProfilesPage.tsx` has no delete control by design, so the erasure path, `DELETE /v1/profiles/{id}`, GDPR Article 17 / COPPA 312.10, is exercised via a direct authenticated fetch and confirmed gone from the console on reload)
-- E2E-prod: `frontend/e2e-prod/guardian-admin-smoke.spec.ts` (render only)
+- E2E-prod: `frontend/e2e-prod/guardian-admin-smoke.spec.ts` (render only),
+  `frontend/e2e-prod/guardian-profiles.spec.ts` (profile count against the
+  isolated test family; create-profile dialog opened to confirm the avatar
+  picker renders and cancelled without submitting),
+  `frontend/e2e-prod/guardian-books-and-isolation.spec.ts` (profile count as
+  a cross-family isolation signal, read only)
 - Component: `frontend/src/guardian/ProfilesPage.test.tsx`, `frontend/src/guardian/ProfileFormDialog.test.tsx`, `frontend/src/profiles/AvatarCircle.test.tsx`, `frontend/src/profiles/profilesApi.test.ts`, `frontend/src/guardian/PreviewAsChildPage.test.tsx` (guardian preview-as-child: read-only `LibraryPage` render for a family profile, `data-age-band`/`data-reduce-motion` propagation, and the generic-banner fallback when the profile lookup fails)
 
 ## Guardian: assign children to books
 
 - E2E-mocked: `frontend/e2e/assignments.spec.ts`, `frontend/e2e/guardian-books.spec.ts`, `frontend/e2e/naive-user/naive-misuse-shared.spec.ts` (double-click guard)
 - E2E-real: `frontend/e2e-real/assign-visibility-real.spec.ts` (the full approve -> assign -> child-sees loop end to end: a guardian assigns an approved book via `/guardian/books` and the assigned child's real library gains it, while a never-assigned child's library never shows it; causal negative (same child empty before assignment) and concurrent negative (a second unassigned child) prove the assignment step is what makes the book visible, not approval alone)
+- E2E-prod: `frontend/e2e-prod/guardian-books-and-isolation.spec.ts` (opens the assign dialog and inspects its
+  redacted content-review tags, then cancels via Cancel only; nothing is assigned)
 - Component: `frontend/src/guardian/AssignChildrenDialog.test.tsx`, `frontend/src/guardian/assignApi.test.ts`
 
 ## Guardian: approve and publish a story

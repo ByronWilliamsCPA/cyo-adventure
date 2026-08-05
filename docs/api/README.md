@@ -109,7 +109,7 @@ in CI via `supabase/setup-cli`). From the repo root:
 ```bash
 docker compose down -v --remove-orphans          # fresh database (this project's stack only)
 docker compose up -d --build app db
-until curl -fsS http://localhost:8000/health/live >/dev/null 2>&1; do sleep 2; done
+until curl -fsS http://localhost:8000/api/v1/health/live >/dev/null 2>&1; do sleep 2; done
 
 export DATABASE_URL=postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
 PGSSLMODE=disable supabase db push \
@@ -147,7 +147,7 @@ a missing token degrades reporting only, never test execution.
 
 `.github/workflows/ci.yml` gates the `api-tests` job on this collection existing
 (`detect-api-collection`), then: builds and starts `app` + `db` from the repo compose file, waits on
-`/health/live`, installs the backend (`uv sync --extra api`), sets up the pinned Supabase CLI
+`/api/v1/health/live`, installs the backend (`uv sync --extra api`), sets up the pinned Supabase CLI
 (`supabase/setup-cli`, version 2.109.1) and applies the real migration chain with
 `PGSSLMODE=disable supabase db push --db-url ... --yes` (ADR-012; `PGSSLMODE=disable` works around the
 CLI's TLS-by-default driver against the plain compose Postgres) followed by `scripts/seed_dev_data.py`

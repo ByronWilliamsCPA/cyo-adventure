@@ -184,7 +184,7 @@ future image build were narrowed to copy just `src/`.
 - **Sentry:** error tracking (planned; configurable via `settings.sentry_dsn`).
 - **Correlation IDs:** every request carries `X-Correlation-ID`; the header propagates
   into all log lines for the request lifecycle.
-- **Generation-queue health (ADR-021):** `GET /health/ready`'s non-gating
+- **Generation-queue health (ADR-021):** `GET /api/v1/health/ready`'s non-gating
   `check_generation_queue` sub-check (`api/health.py`) counts stale `queued`/`running`
   `GenerationJob` rows and recent failures, so a stopped or misbehaving worker becomes
   an observable readiness signal instead of a silent stuck queue.
