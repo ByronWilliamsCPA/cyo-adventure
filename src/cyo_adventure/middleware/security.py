@@ -849,13 +849,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 # is an SSRF denylist entry, not a config value: hardcoding it is
 # intentional, it is the literal address every SSRF guard for this class of
 # attack must block.
-_CLOUD_METADATA_IPV4: Final = (
-    "169.254.169.254"  # NOSONAR: SSRF denylist entry, hardcoding is intentional
-)
+_CLOUD_METADATA_IPV4: Final = "169.254.169.254"  # NOSONAR(S1313)
 # IPv6 equivalent of the AWS metadata endpoint above; same rationale.
-_CLOUD_METADATA_IPV6: Final = (
-    "fd00:ec2::254"  # NOSONAR: SSRF denylist entry, hardcoding is intentional
-)
+_CLOUD_METADATA_IPV6: Final = "fd00:ec2::254"  # NOSONAR(S1313)
 
 
 class SSRFPreventionMiddleware(BaseHTTPMiddleware):
