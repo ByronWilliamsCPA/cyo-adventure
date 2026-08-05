@@ -455,9 +455,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // parameter for this; only the Supabase Auth server config ("revoke
       // sessions on password change") or the admin API (auth.admin.signOut with
       // a scope) can do it, and neither is wired up here.
-      // #VERIFY: confirm the Supabase project's Auth settings before R2
-      // (revoke-other-sessions-on-password-change), or accept this as a known
-      // limitation and document it in SECURITY.md.
+      // Settled 2026-08-04, taking the second branch of this note's original
+      // instruction (confirm the setting, or accept and document it): the live
+      // Management API auth config exposes NO
+      // revoke-sessions-on-password-change setting to turn on, and the session
+      // controls that do exist are all off in production
+      // (sessions_single_per_user false, sessions_timebox 0,
+      // sessions_inactivity_timeout 0). So this is a platform limitation, not a
+      // switch anyone forgot. Accepted and documented in SECURITY.md under
+      // "Known Infrastructure Limitations". Reopening this needs a backend
+      // endpoint calling auth.admin.signOut with a scope, since
+      // sessions_single_per_user would sign legitimate multi-device guardians
+      // out of their own sessions.
       updatePassword: async (newPassword) => {
         const { error } = await supabase.auth.updateUser({ password: newPassword })
         if (error) throw error

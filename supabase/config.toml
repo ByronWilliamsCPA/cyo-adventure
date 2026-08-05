@@ -325,8 +325,18 @@ enable_confirmations = true
 # proving knowledge of the current one, locking the account holder out of their own account and
 # their children's data. `true` bounds that to sessions under 24 hours old.
 # #VERIFY: after any config push, `jq .security_update_password_require_reauthentication` on the
-# Management API auth config must read true for both refs, and the guardian reset flow (request
-# link, follow it, set a new password) must still complete end to end on staging.
+# Management API auth config must read true for both refs. The end-to-end leg is DONE: the
+# guardian reset flow (request link, follow it, set a new password) was exercised against
+# PRODUCTION on 2026-08-04, after the first production config push set this true, and it
+# completed. The feared deadlock, where a guardian who forgot their password cannot recover
+# because recovery itself demands authentication, is not real. Two independent reasons, so a
+# future reader need not re-run it: the GoTrue 24-hour rule above, and the fact that this app
+# implements no `auth.reauthenticate()` nonce UI at all (see the #ASSUME at AdultGate.tsx
+# noting the method exists but is only for secure password updates), so a nonce demand would
+# have surfaced as a thrown error on the form rather than a prompt. Completion is only
+# reachable if the recovery session satisfied the requirement. Re-run this leg only if the
+# 24-hour rule changes upstream or a logged-in change-password surface is ever added, since
+# that second surface would NOT run on a fresh recovery session.
 secure_password_change = true
 # Controls the minimum amount of time that must pass before sending another signup confirmation or password reset email.
 # 60 seconds, matching both live projects. Pushed as `smtp_max_frequency` in whole seconds.
