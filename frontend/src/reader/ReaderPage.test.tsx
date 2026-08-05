@@ -877,10 +877,18 @@ describe('ReaderPage', () => {
     )
     await screen.findByTestId('reader')
     expect(screen.getByTestId('passage-body').textContent).toContain('chapter two starts')
-    const row = await getReadingState('p_seed', 's_continuation_seed')
-    expect(row?.current_node).toBe('n_two')
-    // seeded 2, then n_two's on_enter inc applies on top
-    expect(row?.var_state).toEqual({ courage: 3 })
+    // The seed persist is an async effect, so the reader painting chapter two
+    // does not mean the IndexedDB write has landed: on a loaded runner the row
+    // reads back `undefined` and the assertion fails (three unrelated PRs so
+    // far, #545/#598/#609). Retry the read rather than the render. This still
+    // fails if the product stops persisting at all, because waitFor exhausts
+    // its timeout on a row that never appears.
+    await waitFor(async () => {
+      const row = await getReadingState('p_seed', 's_continuation_seed')
+      expect(row?.current_node).toBe('n_two')
+      // seeded 2, then n_two's on_enter inc applies on top
+      expect(row?.var_state).toEqual({ courage: 3 })
+    })
   })
 
   it('ignores a continuation when saved progress exists', async () => {
@@ -912,9 +920,14 @@ describe('ReaderPage', () => {
     // Saved progress wins: resumes at n_one with the saved var_state, no
     // continuation jump to n_two and no seeding.
     expect(screen.getByTestId('passage-body').textContent).toContain('chapter one starts')
-    const row = await getReadingState('p_seed_saved', 's_continuation_seed')
-    expect(row?.current_node).toBe('n_one')
-    expect(row?.var_state).toEqual({ courage: 5 })
+    // Same async-persist race as the seeding test above: this row is mirrored
+    // from the server response, so it also starts nonexistent locally and can
+    // read back `undefined` before the write lands.
+    await waitFor(async () => {
+      const row = await getReadingState('p_seed_saved', 's_continuation_seed')
+      expect(row?.current_node).toBe('n_one')
+      expect(row?.var_state).toEqual({ courage: 5 })
+    })
   })
 
   it('ignores a continuation when local (IndexedDB) progress exists', async () => {
