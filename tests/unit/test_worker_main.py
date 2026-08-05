@@ -24,7 +24,18 @@ if TYPE_CHECKING:
 
 
 class _FakeSession:
-    """Marker object standing in for an AsyncSession; never touches a DB."""
+    """Stand-in for an AsyncSession; never touches a DB.
+
+    Carries a mocked ``rollback`` because the role-posture probe must roll the
+    shared transaction back on failure. A bare marker class would make that
+    call an ``AttributeError``, which is a *different* failure than the one the
+    probe guards against; see
+    ``tests/integration/test_worker_role_posture.py`` for the only proof that
+    reaches the real PostgreSQL 25P02 behaviour.
+    """
+
+    def __init__(self) -> None:
+        self.rollback = AsyncMock()
 
 
 def _install_fake_engine(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
@@ -392,13 +403,87 @@ class TestWorkerRolePosture:
     @pytest.mark.unit
     @pytest.mark.security
     @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        ("configured", "expected"),
+        [
+            ("postgresql+asyncpg://cyo_worker@db/cyo", True),
+            (None, False),
+            # Compose interpolation of an unset ${WORKER_DATABASE_URL:-}
+            # injects "" rather than leaving the variable unset, and
+            # Settings.worker_database_url_effective falls back on the empty
+            # string exactly as it does on None. Reporting True here (which
+            # `is not None` would do) would claim a cutover that did not
+            # happen.
+            ("", False),
+        ],
+        ids=["explicit-dsn", "unset", "empty-string-from-compose"],
+    )
+    async def test_posture_event_reports_whether_the_worker_dsn_was_set(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        configured: str | None,
+        expected: bool,
+    ) -> None:
+        """The affirmative event distinguishes cutover from a silent fallback.
+
+        #CRITICAL: security: the role name alone cannot tell "cut over to
+        cyo_worker" from "fell back to the API DSN". ``cyo_api`` also has
+        ``rolbypassrls = false`` and owns no Tier 1 table, so the fallback state
+        emits the POSITIVE event; an operator alerting only on
+        ``role_bypasses_rls`` therefore sees green while the worker still shares
+        the API credential. This field is what makes that state detectable.
+        #VERIFY: the empty-string case below is the one an ``is not None``
+        implementation gets wrong.
+        """
+        fake_logger = MagicMock()
+
+        @asynccontextmanager
+        async def _fake_get_session() -> AsyncGenerator[_FakeSession]:
+            yield _FakeSession()
+
+        async def _fake_measure(session: object) -> RolePosture:
+            _ = session
+            return self._fake_posture()
+
+        async def _fake_requeue(session: object, **_kwargs: object) -> int:
+            _ = session
+            return 0
+
+        monkeypatch.setattr(worker_main, "get_worker_session", _fake_get_session)
+        monkeypatch.setattr(worker_main, "measure_role_posture", _fake_measure)
+        monkeypatch.setattr(worker_main, "requeue_stranded_jobs", _fake_requeue)
+        monkeypatch.setattr(worker_main, "logger", fake_logger)
+        monkeypatch.setattr(
+            worker_main._default_settings, "worker_database_url", configured
+        )
+        _install_fake_engine(monkeypatch)
+
+        await worker_main._run_worker_startup()
+
+        kwargs = fake_logger.warning.call_args.kwargs
+        assert kwargs["worker_dsn_explicitly_set"] is expected
+
+    @pytest.mark.unit
+    @pytest.mark.security
+    @pytest.mark.asyncio
     async def test_least_privileged_worker_role_logs_the_positive_signal(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """A cut-over worker logs an affirmative line, not silence.
+        """A cut-over worker logs an affirmative line at WARNING, not silence.
 
         Silence on success would make "cut over" and "probe never ran"
         identical in the log, which is the exact ambiguity this replaces.
+
+        #CRITICAL: security: the level is part of the signal, not a stylistic
+        choice. Production runs ``LOG_LEVEL=WARNING``
+        (``docker-compose.prod.yml``), so an ``info`` posture line is filtered
+        out before it is written and the affirmative signal degrades back into
+        the silence it exists to break. ``docs/operations/security-events.md``
+        section 4 makes WARNING the house rule for security events for exactly
+        this reason.
+        #VERIFY: this test asserts on ``warning``, and asserts ``info`` was not
+        used for the posture event at all, so a revert to ``logger.info`` fails
+        here rather than passing locally and going quiet in production.
         """
         fake_logger = MagicMock()
 
@@ -422,28 +507,43 @@ class TestWorkerRolePosture:
 
         await worker_main._run_worker_startup()
 
-        fake_logger.warning.assert_not_called()
-        events = [call.args[0] for call in fake_logger.info.call_args_list]
-        assert "generation_worker.role_least_privileged" in events
+        warned = [call.args[0] for call in fake_logger.warning.call_args_list]
+        assert warned == ["generation_worker.role_least_privileged"]
+        # Negative half: the event must not ALSO be emitted at info, which is
+        # what a "log it twice to be safe" revert would look like.
+        infoed = [call.args[0] for call in fake_logger.info.call_args_list]
+        assert "generation_worker.role_least_privileged" not in infoed
 
     @pytest.mark.unit
     @pytest.mark.asyncio
-    async def test_probe_failure_never_stops_the_worker(
+    async def test_probe_failure_warns_rolls_back_and_lets_the_sweep_run(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """A broken probe degrades to a warning; the sweep and worker proceed.
+        """A broken probe warns, rolls back, and leaves the sweep reachable.
 
-        The posture probe is an observability signal, not a gate. A
-        pre-cutover worker is an open security finding, but a worker that
-        refuses to start is an outage, and refusing to process stories because
-        a diagnostic query failed trades a smaller problem for a larger one.
+        The posture probe is an observability signal, not a gate. A pre-cutover
+        worker is an open security finding, but a worker that refuses to start
+        is an outage, and refusing to process stories because a diagnostic
+        query failed trades a smaller problem for a larger one.
+
+        Scope limit, stated so this test is not mistaken for the whole proof:
+        the session here is a stub, so this pins only that the probe *calls*
+        ``rollback`` before returning and does not propagate. It cannot
+        reproduce the failure that made the rollback necessary, because
+        "PostgreSQL rejects every later statement on an aborted transaction"
+        (SQLSTATE 25P02) is server-side behaviour that no stub, and no SQLite
+        backend, implements. ``tests/integration/
+        test_worker_role_posture.py::
+        test_statement_error_in_probe_still_lets_the_sweep_run`` is the test
+        that would actually fail if the rollback were removed.
         """
         fake_logger = MagicMock()
         swept: list[str] = []
+        session_sentinel = _FakeSession()
 
         @asynccontextmanager
         async def _fake_get_session() -> AsyncGenerator[_FakeSession]:
-            yield _FakeSession()
+            yield session_sentinel
 
         async def _fake_measure(session: object) -> RolePosture:
             _ = session
@@ -465,6 +565,43 @@ class TestWorkerRolePosture:
         assert swept == ["sweep"]
         events = [call.args[0] for call in fake_logger.warning.call_args_list]
         assert "generation_worker.rls_posture_unknown" in events
+        session_sentinel.rollback.assert_awaited_once()
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_a_successful_probe_does_not_roll_the_sweep_back(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The rollback is scoped to the failure path only.
+
+        Positive control for the test above. A ``rollback`` moved out of the
+        ``except`` and onto the happy path would discard whatever the sweep's
+        shared transaction had already done, so "rollback is awaited" on its
+        own is not the property worth pinning; "rollback is awaited *only* when
+        the probe failed" is.
+        """
+        session_sentinel = _FakeSession()
+
+        @asynccontextmanager
+        async def _fake_get_session() -> AsyncGenerator[_FakeSession]:
+            yield session_sentinel
+
+        async def _fake_measure(session: object) -> RolePosture:
+            _ = session
+            return self._fake_posture()
+
+        async def _fake_requeue(session: object, **_kwargs: object) -> int:
+            _ = session
+            return 0
+
+        monkeypatch.setattr(worker_main, "get_worker_session", _fake_get_session)
+        monkeypatch.setattr(worker_main, "measure_role_posture", _fake_measure)
+        monkeypatch.setattr(worker_main, "requeue_stranded_jobs", _fake_requeue)
+        _install_fake_engine(monkeypatch)
+
+        await worker_main._run_worker_startup()
+
+        session_sentinel.rollback.assert_not_awaited()
 
     @pytest.mark.unit
     @pytest.mark.asyncio
