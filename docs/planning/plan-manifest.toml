@@ -137,7 +137,11 @@ locator_basis = "resolved against main at v0.59.0 on 2026-08-02; all 36 path:lin
 [namespaces.uw]
 prefix = "UW"
 source = "docs/planning/unscheduled-work-register.md"
-pattern = "^UW-(?P<cluster>[A-M])\\d{2}$"
+# Extended A-M to A-N on 2026-08-05 to admit Cluster N (external scope-comparison findings),
+# the first new cluster added since the manifest's 2026-08-01 baseline. Extend the letter
+# range again, deliberately, the next time a new cluster is opened; do not widen it further
+# than the clusters that actually exist.
+pattern = "^UW-(?P<cluster>[A-N])\\d{2}$"
 
 [namespaces.debt]
 prefix = "debt"

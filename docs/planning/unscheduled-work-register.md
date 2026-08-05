@@ -523,6 +523,28 @@ Work this repository cannot complete on its own.
 | UW-M07 | **R2 cover bucket is publicly served, contradicting the code's own invariant.** `covers/storage.py` asserts as `#CRITICAL: security` that the bucket must have no public custom domain or r2.dev access bound to it, because covers are served only as short-lived presigned GET URLs. It did. Verified 2026-07-28: `GET https://cyo-bucket.williamshome.family/sk_ashfall_expedition/1.webp` returned 200 `image/webp`, 86,732 bytes, with no credentials. Because `cover_object_key` is deterministic (`{storybook_id}/{version}.webp`), anyone who could guess a storybook id could read any cover, including one still at `pending_review` under the H2 approval gate shipped in PR #469, so that gate bound the API read paths only. Fix was unbinding the public custom domain in the Cloudflare dashboard, outside this repository. Resolved 2026-07-30: the project owner disconnected the custom domain and cleared the DNS record; re-verified this session with `dig cyo-bucket.williamshome.family` failing to resolve (`Could not resolve host`) against a working general-egress sanity check (`curl https://example.com` returned 200 from the same environment), so the negative is genuine, not a local network gap. The bucket is no longer reachable at that hostname at all; the H2 cover gate is again a real reachability control, not only an API-surface one. | project owner | done |
 | UW-M08 | **ADR-022 Tier 1 RLS is inert on production.** The prod backend connects as `postgres.cvrnaydpzijtszfbsraq`, and the `postgres` role has `rolbypassrls = true` (verified against the prod database 2026-08-02), so every `family_scoped` policy created by `20260724120000_scoped_rls_tier1_family_scoping.sql` is bypassed and the family-isolation backstop enforces nothing in production. The least-privilege roles the migration was written for (`cyo_api`, `cyo_worker`, both `rolbypassrls = false`) already EXIST on the prod project but are unused by the API. Staging is correctly cut over to `cyo_api`, which is the only reason UW-M01's device-grant defect surfaced at all: prod cannot fail that way because it enforces no policy. Remedy is the ADR-021 least-privilege cutover on prod, pointing the backend at `cyo_api` and the worker at `cyo_worker`. Do NOT cut over until UW-M01's code fix has merged and been verified on staging, or the same device-grant 401 will land on production the moment the role changes. **Resolved 2026-08-04, closed by the same cutover as `UW-A03`**: the precondition (PR #560 merged and green on staging) was satisfied before the production role switch, so the family-isolation backstop is now enforced live, not just present in migrations. | homelab-infra | done |
 
+## Cluster N: external scope-comparison findings
+
+Sourced from a 2026-08-05 comparison of two externally-authored, LLM-generated planning
+documents (a project scope and a product/requirements document, both produced from a
+one-paragraph description with no visibility into this repository) against the live project.
+Most of what those documents assumed was either already decided differently here or is
+irrelevant to this project's actual delivery model; these seven rows are the concrete mechanics
+and reference material worth retaining. Full detail, citations, and field-level tables for each
+row live in [external-scope-comparison-2026-08-05.md](./external-scope-comparison-2026-08-05.md),
+since the source `.docx` files themselves live outside this repository and are not expected to
+persist.
+
+| ID | Item | Phase | Status |
+|----|------|-------|--------|
+| UW-N01 | Adopt the external document's append-only entitlement-ledger design (grant/reserve/release/consume/expire/reverse events, never a mutable balance) as the starting design for commerce once Phase 8 (Capacitor + IAP) begins. Zero commerce/billing code exists in this repository today. | 8 | unscheduled |
+| UW-N02 | Feed ADR-018's still-open VPC method decision with the external document's cited sources (FTC COPPA Rule 90 FR 16918, compliance date **already passed** as of 2026-08-05; ROSCA; Oregon ORS 646A.293-295 and 646A.570-589) and its required consent-record field list. Decision, not implementation; waits on the counsel engagement [UW-M03](#cluster-m-external-and-owner-gated) already names. | 7 | decision |
+| UW-N03 | Replace the hardcoded `CLOSED_VOCABULARIES` dict (`storybook/personalization_values.py`) with a versioned, schema-pinned `VariableDefinition`-style registry, so a historical story renders reproducibly after the variable catalog changes shape. Blocked on the same ADR-023 Stage A G1 STOP that blocks [UW-H01](#cluster-h-story-personalization-adr-023): do not start ahead of that re-plan. | 4b | blocked |
+| UW-N04 | Widen the axe-core e2e a11y suite's tag scope from WCAG 2.1 AA (`wcag2a/wcag2aa/wcag21a/wcag21aa`) to include WCAG 2.2 AA (target size, focus appearance, dragging movements, consistent help, redundant entry, accessible authentication), matching the external document's NFR-A11Y-01 baseline. | 5 | unscheduled |
+| UW-N05 | Decide, before Track 2 phases 6-9 open intake to outside families, whether to keep ADR-005's admin-only-approves-every-story model or move to the external document's guardian-primary-approval-with-staff-escalation model. Admin-only review does not scale headcount-wise to a multi-family product; the alternative is only as safe as the moderation-calibration work already tracked under `GS2`/`GS3`. | 7 | decision |
+| UW-N06 | Adopt OWASP ASVS 5.0 Level 2 and the OWASP Top 10 for LLM Applications 2026 by reference as the named scope boundary for Phase 5's penetration test and security control matrix (Cluster E), rather than an ad hoc list. Scoping reference only; the actual gap closure is the existing Cluster E rows. | 5 | unscheduled |
+| UW-N07 | Draft ADR-018's still-missing category-by-category retention schedule from the external document's planning-default table (adult account, consent evidence, child profile, generation inputs, reading progress, analytics, logs, financial records, support cases, backups), pending privacy-counsel and finance sign-off on every row. Feeds the same ADR-018 gate as `UW-N02`. | 7 | decision |
+
 ---
 
 ## Deletion and archive candidates
@@ -550,3 +572,5 @@ have to re-derive them.
 - [capability-register.md](./capability-register.md) - persona capability contract (`K`/`G`/`A`/`S`)
 - [r1-deferred-debt-register.md](./r1-deferred-debt-register.md) - R1 deferrals (`C`/`GS`/`U`/`T`/`P`/`SL`)
 - [authoring-lessons-log.md](./authoring-lessons-log.md) - authoring and validator lessons (`AL-*`)
+- [external-scope-comparison-2026-08-05.md](./external-scope-comparison-2026-08-05.md) - detail
+  and citations behind Cluster N

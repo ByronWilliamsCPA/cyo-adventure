@@ -367,7 +367,7 @@ _MILESTONE_RE = re.compile(r"^M[0-7](\.\d+)?$")
 _EXTERNAL_RE = re.compile(r"^external:.+$")
 _ISSUE_RE = re.compile(r"^issue:\d+$")
 
-_CLUSTER_HEADING_RE = re.compile(r"^## Cluster ([A-M]):")
+_CLUSTER_HEADING_RE = re.compile(r"^## Cluster ([A-N]):")
 
 # Debt, AL, and capability id row/citation patterns used to live here as hardcoded module-level
 # constants (_DEBT_ROW_ID_RE, _DEBT_ID_RE, _AL_ROW_ID_RE, _AL_ID_RE, _CAP_ROW_ID_RE, _CAP_ID_RE).
