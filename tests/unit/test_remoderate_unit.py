@@ -211,19 +211,21 @@ async def test_non_admin_rejected_with_403_before_any_query(
 
 async def test_unknown_storybook_raises_404(mock_async_session: AsyncMock) -> None:
     _wire_session(mock_async_session, None, None)
+    ctx = _remod_ctx()
 
     with pytest.raises(ResourceNotFoundError):
         await remoderate_api.remoderate_storybook_version(
-            mock_async_session, "missing", 1, _remod_ctx()
+            mock_async_session, "missing", 1, ctx
         )
 
 
 async def test_unknown_version_raises_404(mock_async_session: AsyncMock) -> None:
     _wire_session(mock_async_session, _story(), None)
+    ctx = _remod_ctx()
 
     with pytest.raises(ResourceNotFoundError):
         await remoderate_api.remoderate_storybook_version(
-            mock_async_session, "s1", 99, _remod_ctx()
+            mock_async_session, "s1", 99, ctx
         )
 
 
@@ -235,10 +237,11 @@ async def test_non_published_status_rejected(
     _wire_session(mock_async_session, _story(status=status), _version_row())
     pipeline = AsyncMock()
     monkeypatch.setattr(remoderate_api, "run_moderation_pipeline", pipeline)
+    ctx = _remod_ctx()
 
     with pytest.raises(BusinessLogicError, match="not 'published'"):
         await remoderate_api.remoderate_storybook_version(
-            mock_async_session, "s1", 1, _remod_ctx()
+            mock_async_session, "s1", 1, ctx
         )
     pipeline.assert_not_awaited()
 
@@ -771,13 +774,14 @@ async def test_provider_failure_logs_and_propagates(
     )
     logger = MagicMock()
     monkeypatch.setattr(remoderate_api, "_logger", logger)
+    ctx = _remod_ctx(actor=Actor.from_principal(_ADMIN))
 
     with pytest.raises(RuntimeError, match="provider timeout"):
         await remoderate_api.remoderate_storybook_version(
             mock_async_session,
             "s1",
             1,
-            _remod_ctx(actor=Actor.from_principal(_ADMIN)),
+            ctx,
         )
 
     # No event was recorded: record_event's only write path is session.add.

@@ -734,6 +734,8 @@ async def test_authored_create_rejects_confirmation_band_above_profile_band() ->
         narrative_style=NarrativeStyle.PROSE,
     )
 
+    screening = _FakeScreening(blocked=False)
+
     with pytest.raises(ValidationError, match="age band"):
         await service.create_authored_request(
             session,
@@ -742,7 +744,7 @@ async def test_authored_create_rejects_confirmation_band_above_profile_band() ->
             profile=profile,
             request_text="a story about a brave fox",
             confirmation=confirmation,
-            screening=_FakeScreening(blocked=False),
+            screening=screening,
         )
     assert not session.added
 

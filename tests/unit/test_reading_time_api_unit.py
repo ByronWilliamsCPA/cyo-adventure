@@ -197,8 +197,9 @@ def test_require_child_profile_returns_singleton_for_child() -> None:
 
 @pytest.mark.unit
 def test_require_child_profile_rejects_guardian() -> None:
+    principal = _guardian_principal()
     with pytest.raises(AuthorizationError):
-        _require_child_profile(_guardian_principal())
+        _require_child_profile(principal)
 
 
 # ---------------------------------------------------------------------------
@@ -218,8 +219,9 @@ class TestValidateActivityDate:
         _validate_activity_date(_TODAY + timedelta(days=1), _NOW)  # does not raise
 
     def test_far_future_is_rejected(self) -> None:
+        too_far_ahead = _TODAY + timedelta(days=2)
         with pytest.raises(ValidationError):
-            _validate_activity_date(_TODAY + timedelta(days=2), _NOW)
+            _validate_activity_date(too_far_ahead, _NOW)
 
     def test_recent_past_within_the_window_is_valid(self) -> None:
         # A device offline for a long stretch drains real accrued buckets, so
@@ -230,8 +232,9 @@ class TestValidateActivityDate:
         # Unbounded on the past side, a tampered client can mint an arbitrary
         # number of historical rows, each with a fresh flush_id and a full-day
         # elapsed ceiling.
+        too_far_back = _TODAY - timedelta(days=_MAX_PAST_DAYS + 1)
         with pytest.raises(ValidationError):
-            _validate_activity_date(_TODAY - timedelta(days=_MAX_PAST_DAYS + 1), _NOW)
+            _validate_activity_date(too_far_back, _NOW)
 
 
 # ---------------------------------------------------------------------------
@@ -379,8 +382,10 @@ class TestAccumulateStmt:
 class TestFlushReadingTime:
     async def test_guardian_and_admin_rejected(self) -> None:
         session = _FakeSession(profile=_unpaused())
+        body = _body()
+        principal = _guardian_principal()
         with pytest.raises(AuthorizationError):
-            await flush_reading_time(_body(), _guardian_principal(), session)
+            await flush_reading_time(body, principal, session)
 
     async def test_creates_a_new_bucket(self) -> None:
         session = _FakeSession(existing=None, profile=_unpaused())

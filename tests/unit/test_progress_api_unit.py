@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, date, datetime, timedelta
+from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import pytest
@@ -35,6 +36,9 @@ from cyo_adventure.db.models import (
 )
 from cyo_adventure.storybook.models import Valence
 from cyo_adventure.storybook.sentinels import wrap
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 _T1 = datetime(2026, 1, 1, tzinfo=UTC)
 
@@ -101,9 +105,12 @@ def test_require_child_profile_returns_singleton() -> None:
 
 @pytest.mark.unit
 @pytest.mark.parametrize("build", [_guardian_principal, _admin_principal])
-def test_require_child_profile_rejects_non_child(build: object) -> None:
+def test_require_child_profile_rejects_non_child(
+    build: Callable[[], Principal],
+) -> None:
+    principal = build()
     with pytest.raises(AuthorizationError):
-        _require_child_profile(build())
+        _require_child_profile(principal)
 
 
 @pytest.mark.unit
@@ -111,8 +118,9 @@ def test_require_child_profile_rejects_non_child(build: object) -> None:
 class TestGetMyProgress:
     async def test_guardian_rejected(self) -> None:
         session = _FakeSession([])
+        principal = _guardian_principal()
         with pytest.raises(AuthorizationError):
-            await get_my_progress(_guardian_principal(), session)
+            await get_my_progress(principal, session)
 
     async def test_empty_profile_returns_empty_projection(self) -> None:
         # completions, ratings, story_requests all empty -> no book/version

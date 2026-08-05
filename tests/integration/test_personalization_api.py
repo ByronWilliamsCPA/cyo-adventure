@@ -1053,10 +1053,11 @@ async def test_values_ring2_restricted_subject_is_refused_before_any_value_read(
 
     async with sessions() as session:
         live_book_id, live_token = await _build_ring2_scenario(session)
+    live_headers = auth(live_token)
     with pytest.raises(AssertionError, match="processing-restricted subject"):
         await client.get(
             f"/api/v1/storybooks/{live_book_id}/personalization-values",
-            headers=auth(live_token),
+            headers=live_headers,
         )
 
 
