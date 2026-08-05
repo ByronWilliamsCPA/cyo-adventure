@@ -343,9 +343,19 @@ async def _run_one_stage(
     )
 
     # Parse: treat any non-dict or non-JSON as a synthetic blocked gate.
+    # #CRITICAL: data integrity: `raw` is untrusted model output, and a deeply
+    # nested payload does not fail as a JSONDecodeError. CPython 3.14 bounds
+    # JSON nesting by C stack bytes consumed, so `json.loads` raises
+    # RecursionError instead, and whether it fires at a given depth varies by
+    # interpreter patch release (3.14.6 raised where 3.14.7 did not).
+    # #VERIFY: catch both so a hostile or degenerate completion routes to the
+    # synthetic blocked gate like every other malformed output, rather than
+    # escaping generate_story as a raw builtin exception. Covered by
+    # test_generation_malformed_output.py::
+    # test_generate_story_deeply_nested_output_returns_failed.
     try:
         parsed: object = json.loads(raw)  # pyright: ignore[reportAny]
-    except json.JSONDecodeError:
+    except (json.JSONDecodeError, RecursionError):
         return None, _empty_blocked_gate()
 
     if not isinstance(parsed, dict):

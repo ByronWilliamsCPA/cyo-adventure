@@ -775,6 +775,29 @@ describe('useApi request interceptor device-grant bearer selection (ADR-014 Phas
     expect(getDeviceGrant()).toBeNull()
   })
 
+  it('attaches the device-grant bearer to GET /v1/profiles/story-status on the picker path', () => {
+    // Regression test: the "new story ready!" pill (W1.4) silently 401'd on a
+    // kid-only device (device grant, no guardian session) because this URL was
+    // missing from DEVICE_GRANT_AUTH_URLS even though the backend's
+    // list_profile_story_status route already accepted a DEVICE principal.
+    // Found via live local verification, not a mock: the same bearer that
+    // succeeded against GET /v1/profiles 401'd through the frontend on this
+    // path while a direct curl with the identical token returned 200.
+    setPathname('/kids')
+    setDeviceGrant({
+      token: 'device-token',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    const { result } = renderHook(() => useApi())
+    const { fulfilled } = getRequestHandlers(result.current)
+
+    const config = fulfilled(makeRequestConfig('/v1/profiles/story-status'))
+
+    expect(config.headers.Authorization).toBe('Bearer device-token')
+  })
+
   it('does not attach the device-grant bearer to an unrelated endpoint, even on the picker path', () => {
     setPathname('/kids')
     setDeviceGrant({

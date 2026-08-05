@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.66.1] - 2026-08-05
+
+### Bug Fixes
+
+- **quality**: Clear the SonarCloud gate, both BLOCKERs, and the SECURITY dimension
+  ([#619](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/619),
+  [`055ea36`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/055ea360241fa74860007b2a8b4702724c7bd62b))
+
+
+## [0.66.0] - 2026-08-05
+
+### Features
+
+- **kid**: Add a persistent guardian escape hatch and authorize the story-status pill
+  ([#618](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/618),
+  [`797ced7`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/797ced757ad0551a540eba7365b93b9ebebc0f82))
+
+
 ## [0.65.2] - 2026-08-05
 
 ### Bug Fixes
@@ -3161,6 +3179,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.66.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.0...v0.66.1
+[0.66.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.65.2...v0.66.0
 [0.65.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.65.1...v0.65.2
 [0.65.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.65.0...v0.65.1
 [0.65.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.64.0...v0.65.0

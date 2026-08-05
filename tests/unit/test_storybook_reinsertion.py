@@ -261,6 +261,55 @@ def test_no_expected_tokens_yields_no_outcomes() -> None:
     assert outcome.manifest == {"tokens": {}}
 
 
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("filled", "expected_document"),
+    [
+        pytest.param({}, {}, id="nodes-key-absent"),
+        pytest.param(
+            {"nodes": "not-a-list"}, {"nodes": "not-a-list"}, id="nodes-not-a-list"
+        ),
+        pytest.param(
+            {"title": "A {~PET:Buddy~} Tale"},
+            {"title": "A Buddy Tale"},
+            id="title-still-normalized",
+        ),
+    ],
+)
+def test_filled_document_without_a_node_list_is_tolerated(
+    filled: dict[str, object],
+    expected_document: dict[str, object],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A `nodes` field that never narrows to a list is tolerated silently.
+
+    `_normalize_document` still normalizes the top-level title but skips all
+    per-node work, and `_index_nodes` then yields no nodes, so every expected
+    token lands as `not_found` and the aggregate warning is the only signal
+    (schema validity is the validation gate's job, not this module's).
+
+    This is the only test that reaches the false side of the `nodes is not
+    None` guard; every other fixture goes through `_skeleton`, which always
+    supplies a list. Verified by mutation: replacing that guard with `if True`
+    fails these three cases and leaves the other 88 tests across this file and
+    `test_measurement_reinsertion.py` green. (Fully inverting the guard to
+    `nodes is None` is caught more widely, because it also skips per-node
+    normalization for the ordinary list case, but nothing except this test
+    catches the guard simply going missing.)
+    """
+    pre_fill = _skeleton([{"id": "n1", "body": "{~PET:Buddy~} slept."}])
+
+    with caplog.at_level("WARNING"):
+        outcome = reinsert_storybook(pre_fill, filled)
+
+    assert outcome.document == expected_document
+    assert [entry.status for entry in outcome.token_outcomes] == ["not_found"]
+    assert outcome.manifest == {"tokens": {}}
+    assert "reinsertion.tokens_not_reinserted" in caplog.text
+    # The child's personalization VALUE must never reach a log line.
+    assert "Buddy" not in caplog.text
+
+
 # ---------------------------------------------------------------------------
 # Widening 1: sentence-start capitalization matching
 # ---------------------------------------------------------------------------

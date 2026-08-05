@@ -338,29 +338,36 @@ async def test_generate_story_oversized_node_body_returns_needs_review() -> None
 
 
 # ---------------------------------------------------------------------------
-# Class 4: pathological JSON nesting (pinned robustness finding)
+# Class 4: pathological JSON nesting
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_generate_story_deeply_nested_output_raises_recursion_error() -> None:
-    """A deeply nested JSON bomb currently escapes as a raw RecursionError."""
-    # ROBUSTNESS FINDING (pinned, src/ intentionally unchanged): the parse
-    # boundary in orchestrator._run_one_stage catches only
-    # json.JSONDecodeError, but json.loads raises RecursionError for deeply
-    # nested input, so a hostile or degenerate completion crashes
-    # generate_story with a raw builtin exception instead of routing to the
-    # synthetic blocked gate like every other malformed output. If this test
-    # ever fails because a defined outcome is returned instead, the fix
-    # landed: update this test to assert that outcome.
+async def test_generate_story_deeply_nested_output_returns_failed() -> None:
+    """A deeply nested JSON bomb is a defined parse failure, not a crash."""
+    # This was previously pinned as a robustness FINDING: the parse boundary
+    # in orchestrator._run_one_stage caught only json.JSONDecodeError, so a
+    # nesting bomb escaped generate_story as a raw RecursionError. That is
+    # fixed; the boundary now catches RecursionError too.
+    #
+    # Do not reintroduce an assertion on RecursionError itself. CPython 3.14
+    # bounds JSON nesting by C stack BYTES consumed rather than by a fixed
+    # counter, so whether this payload raises at all is a property of the
+    # interpreter build: 3.14.6 raised, 3.14.7 did not, on identical source.
+    # Both paths are asserted here through the one outcome they share, which
+    # is what makes this test stable across patch releases:
+    #   raises  -> caught by the parse boundary -> stage_a:parse_error
+    #   parses  -> a nested list, so not a dict -> stage_a:parse_error
     nesting_bomb = "[" * 100_000 + "]" * 100_000
     provider = MockProvider(responses=[nesting_bomb])
-    brief = _make_brief()
-    pii = _empty_pii()
 
-    with pytest.raises(RecursionError):
-        await generate_story(brief, provider, pii, max_repairs=0)
+    outcome = await generate_story(_make_brief(), provider, _empty_pii(), max_repairs=0)
+
+    assert outcome.status == "failed"
+    assert outcome.storybook is None
+    assert outcome.stage_log[0] == "stage_a:parse_error"
+    assert "L1-1" in _error_rule_ids(outcome.report)
 
 
 # ---------------------------------------------------------------------------

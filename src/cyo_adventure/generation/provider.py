@@ -297,17 +297,24 @@ class MockProvider:
     responses: list[str | Callable[[str], str]]
     calls: list[str] = field(default_factory=list)
 
-    # NOSONAR(S7503): stays async to satisfy the GenerationProvider structural
-    # protocol (line 196 above); every real provider awaits network I/O here,
-    # and callers (orchestrator.py, worker.py) uniformly `await
-    # provider.complete(...)` regardless of concrete type, so a sync override
-    # on this one test double would break that uniform call contract.
-    async def complete(
+    # Stays async to satisfy the GenerationProvider structural protocol (line 196
+    # above); every real provider awaits network I/O here, and callers
+    # (orchestrator.py, worker.py) uniformly `await provider.complete(...)`
+    # regardless of concrete type, so a sync override on this one test double
+    # would break that uniform call contract. ``system`` and ``max_tokens`` are
+    # accepted-but-unused to match that fixed protocol signature.
+    #
+    # The suppression markers below carry a bare rule key and no trailing prose,
+    # and each sits on the line its own rule is reported against. Both properties
+    # are required: a language-prefixed key or a trailing `: reason` makes the
+    # marker unparseable (python:S7632), and a marker only ever suppresses the
+    # line it sits on, so the rationale has to live up here.
+    async def complete(  # NOSONAR(S7503)
         self,
         *,
-        system: str,  # noqa: ARG002  # NOSONAR(S1172): fixed protocol kwarg name
+        system: str,  # noqa: ARG002  # NOSONAR(S1172)
         prompt: str,
-        max_tokens: int,  # noqa: ARG002  # NOSONAR(S1172): fixed protocol kwarg name
+        max_tokens: int,  # noqa: ARG002  # NOSONAR(S1172)
     ) -> str:
         """Return the next queued response, recording the prompt in ``calls``.
 

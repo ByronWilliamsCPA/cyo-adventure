@@ -78,6 +78,22 @@ test('hero shows the in-progress book and shelf shows the rest', async ({ page }
   await expect(shelf).toContainText('Not started')
 })
 
+// Persistent kid-to-guardian escape hatch (product decision, 2026-08-04):
+// KidNav's "Ask a grown-up" link, always visible on the library route
+// alongside "Switch reader", goes to the same /guardian/login destination as
+// ProfilePickerPage's PIN-failure escape hatch. Pure reachability, not a new
+// door into the console: the assertion is on the link's presence/name/target,
+// not on what guardian login itself does once there (covered by
+// guardian-auth.spec.ts).
+test('KidNav offers a persistent Ask a grown-up link to guardian login', async ({ page }) => {
+  await page.route('**/api/v1/library*', (route) => route.fulfill({ json: STORIES }))
+  await page.goto('/library/p1')
+  const askGrownup = page.getByRole('link', { name: 'Ask a grown-up' })
+  await expect(askGrownup).toBeVisible()
+  await askGrownup.click()
+  await expect(page).toHaveURL(/\/guardian\/login$/)
+})
+
 test('tapping the hero opens the reader route', async ({ page }) => {
   await page.route('**/api/v1/library*', (route) => route.fulfill({ json: STORIES }))
   await page.route('**/api/v1/storybooks/**', (route) =>
@@ -121,7 +137,10 @@ test('empty library shows the no-books state', async ({ page }) => {
   await page.route('**/api/v1/library*', (route) => route.fulfill({ json: { stories: [] } }))
   await page.goto('/library/p1')
   await expect(page.getByText('No books yet')).toBeVisible()
-  await expect(page.getByText(/ask a grown-up/i)).toBeVisible()
+  // Exact copy, not a broad /ask a grown-up/i match: KidNav's persistent
+  // "Ask a grown-up" link (present on every library visit, not just this
+  // empty state) now also matches that looser pattern.
+  await expect(page.getByText('Ask a grown-up to add one!')).toBeVisible()
 })
 
 test('shelf shows a cover image when set and the letter-tile fallback when absent (K8)', async ({
