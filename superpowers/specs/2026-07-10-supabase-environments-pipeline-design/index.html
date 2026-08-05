@@ -3547,11 +3547,14 @@ ADR-012.</p>
   <code>supabase db push --db-url postgresql://cyo_adventure:password@localhost:5432/cyo_adventure</code>.
   The <code>seed_dev_data.py</code> step is unchanged. A migration-validation step (fresh
   <code>supabase db start</code> + apply) guards PRs that touch <code>supabase/migrations/**</code>.</li>
-<li><strong><code>supabase-staging.yml</code> (new):</strong> trigger <code>push</code> to <code>main</code> with path filter
-  <code>supabase/migrations/**</code>; steps: checkout, setup-cli,
-  <code>supabase link --project-ref $SUPABASE_PROJECT_ID</code>, <code>supabase db push</code>.
-  Secrets (<code>SUPABASE_ACCESS_TOKEN</code>, <code>SUPABASE_PROJECT_ID</code>,
-  <code>SUPABASE_DB_PASSWORD</code>) come from a <code>staging</code> GitHub Environment.</li>
+<li><strong><code>supabase-staging.yml</code> (new):</strong> trigger <code>push</code> to <code>main</code> with path filters
+  <code>supabase/migrations/**</code> and <code>supabase/config.toml</code>; steps: checkout, setup-cli,
+  <code>supabase link --project-ref $SUPABASE_PROJECT_ID</code>, <code>supabase config push</code>,
+  <code>supabase db push</code>. Secrets (<code>SUPABASE_ACCESS_TOKEN</code>, <code>SUPABASE_PROJECT_ID</code>,
+  <code>SUPABASE_DB_PASSWORD</code>) come from a <code>staging</code> GitHub Environment. (The <code>config.toml</code>
+  path filter and the <code>config push</code> step are later additions, from follow-up 3 below and
+  issue #601; the original design covered migrations only. Recorded here so this section
+  matches the shipped workflows.)</li>
 <li><strong><code>supabase-production.yml</code> (new):</strong> trigger <code>workflow_dispatch</code>; the job is
   bound to a <code>production</code> GitHub Environment configured with required-reviewer
   approval; same steps against the production project's secrets. The dispatch
@@ -3612,17 +3615,35 @@ in stacked PRs off <code>main</code>.</p>
    and resumes on top of this staging environment.</li>
 <li>File an issue for the delayed naive-ux-check scenario redesign referencing
    both specs.</li>
-<li><strong>Staging done; production wired and awaiting its first dispatch.</strong> Supabase config-as-code
-   push (<code>supabase config push</code>) for remote auth settings, issue #601 / register row UW-D29,
-   delivered in PR #604: <code>config push</code> is wired into both deploy workflows after <code>link</code> and
-   before <code>db push</code>, with <code>[remotes.staging]</code> / <code>[remotes.production]</code> blocks in <code>config.toml</code>
-   supplying the per-environment <code>site_url</code> and <code>additional_redirect_urls</code>.</li>
+<li><strong>Done, both environments.</strong> Supabase config-as-code push (<code>supabase config push</code>) for remote
+   auth settings, issue #601 / register row UW-D29, delivered in PR #604: <code>config push</code> is wired
+   into both deploy workflows after <code>link</code> and before <code>db push</code>, with <code>[remotes.staging]</code> /
+   <code>[remotes.production]</code> blocks in <code>config.toml</code> supplying the per-environment <code>site_url</code> and
+   <code>additional_redirect_urls</code>. Staging deployed on the merge of #604 (run 30933782746) and
+   production by human-approved dispatch (run 30934654664), both on 2026-08-04. UW-D29 is <code>done</code>
+   and records which four fields production actually moved, plus the field-by-field Management API
+   diff that established them; do not re-derive that list from a run log.</li>
 </ol>
 <p>This follow-up deferred the work pending CLI stability. What actually cleared it was not
-   stability: it was reading the CLI source at the pinned tag and finding that <code>config push</code> is a
-   defaulting writer rather than a differ, then mitigating that. The version pin at 2.109.1 is
-   therefore load-bearing, and an unreviewed CLI bump is a change to auth policy. UW-D29 stays at
-   <code>verify</code> until the production dispatch runs.</p>
+   stability: it was reading the CLI source at the pinned tag. <strong>Correcting an earlier draft of
+   this item, which called <code>config push</code> "a defaulting writer rather than a differ":</strong> it does
+   diff. Each config surface, meaning one settings group the Management API exposes separately
+   (API, DB settings, DB network restrictions, Auth, Storage), reads its remote, calls the CLI's
+   <code>DiffWithRemote</code> helper, and prints
+   <code>Remote &lt;surface&gt; config is up to date.</code> <strong>without writing</strong> when nothing differs, so a genuine
+   no-op push says so. Run 30972610902, a comment-only change to <code>config.toml</code>, confirmed that
+   empirically across all four live surfaces. The real hazard is narrower than the original claim
+   but no less sharp: the CLI diffs against a view of the file with omitted keys already replaced
+   by CLI defaults, so an omission still reads as a difference and still overwrites. A minimal
+   config file is therefore the most dangerous input, not the safest. There is no <code>--dry-run</code>.
+   Unknown keys behave in the opposite way: the CLI parses <code>config.toml</code> through viper's
+   <code>UnmarshalExact</code>, which forces <code>ErrorUnused = true</code> after applying the caller's decoder
+   options, so an unrecognized key aborts the whole push with <code>failed to parse config</code> instead of
+   being ignored. A typo is therefore a <strong>loud</strong> failure and an omission is a <strong>silent</strong> one, which
+   are opposite risk profiles; conflating them sends a reader looking in the wrong place. The
+   version pin at 2.109.1 is load-bearing for all of this, and an unreviewed CLI bump is a change
+   to auth policy. The operator-facing statement of the same model lives in
+   <a href="../../../guides/supabase-environments/">the Supabase environments guide</a>.</p>
 
 
 
@@ -3645,7 +3666,7 @@ in stacked PRs off <code>main</code>.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 4, 2026 17:16:38 UTC">August 4, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 14:06:58 UTC">August 5, 2026</span>
   </span>
 
     
