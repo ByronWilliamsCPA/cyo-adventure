@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.66.1] - 2026-08-05
+
+### Bug Fixes
+
+- **quality**: Clear the SonarCloud gate, both BLOCKERs, and the SECURITY dimension
+  ([#619](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/619),
+  [`055ea36`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/055ea360241fa74860007b2a8b4702724c7bd62b))
+
+
 ## [0.66.0] - 2026-08-05
 
 ### Features
@@ -3170,6 +3179,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.66.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.0...v0.66.1
 [0.66.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.65.2...v0.66.0
 [0.65.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.65.1...v0.65.2
 [0.65.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.65.0...v0.65.1
