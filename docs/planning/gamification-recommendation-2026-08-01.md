@@ -1,7 +1,7 @@
 ---
 title: "Gamification Recommendation: Collection, Badges, Streaks, Reading Time (v1)"
 schema_type: planning
-status: draft
+status: active
 owner: core-maintainer
 purpose: "Agent-developed recommendation commissioned by owner decision D12 (kid-appeal design
   review): a kid-kind, ring-1-only gamification design covering collection mechanics, badges, a
@@ -15,7 +15,25 @@ audience: product-owner, engineering
 
 # Gamification Recommendation: CYO Adventure v1
 
-> **Status**: Recommendation for owner approval | **Date**: 2026-08-01
+> **Owner ruling (ratified 2026-08-05)**, continuing the canonical decision sequence in
+> [design-review-kid-appeal-2026-08-01.md](design-review-kid-appeal-2026-08-01.md) section 8:
+>
+> - **D22**: the v1 cut line is approved WITH the W0.4 request-loop fix pulled in, so badge 9
+>   lands in v1 (11 of 12 badges). Its prerequisite already shipped in PR #532.
+> - **D23**: the weekly goal defaults **per age band, per the P-A table already ratified as
+>   D17** (3-5 off, goal 2 if enabled; 5-8 goal 2; 8-11 goal 3; 10-13 goal 3; 13-16 goal 4;
+>   16+ goal 4), not to a flat 3 days/week. The selectable goal is capped at 6 so one free day
+>   is always guaranteed and a 7-day setting cannot quietly rebuild a daily streak. This
+>   supersedes the flat "default 3" proposed in sections 4 and 6 below; D17 is unchanged and
+>   remains correct.
+> - **D24**: ring off at 3-5, on at 5-8 and above (consistent with P-A).
+> - **D25**: purge `reading_activity_day` detail after 12 months, keeping running totals.
+>   Retention and children's-data handling are governed by **ADR-018**, not ADR-007 (which
+>   covers raw generation-output retention, a different subject).
+> - **D26**: badges are **kid-private**, with an opt-in per-profile toggle that shares them with
+>   the family inside ring 1. Nothing crosses ring 1 in either state.
+
+> **Date**: 2026-08-01
 > **Scope authority**: owner decisions D6 and D12 in
 > [design-review-kid-appeal-2026-08-01.md](design-review-kid-appeal-2026-08-01.md) section 8:
 > collection mechanics, badges, streaks, and total active reading time are in scope; engagement is
@@ -155,8 +173,9 @@ the design review); hold it until then.
 **Recommendation: reading-days-per-week ring plus a lifetime days-read total, and no
 consecutive-day streak anywhere.** Concretely:
 
-- A weekly ring: "You read on 3 days this week" toward a per-profile goal (default 3,
-  guardian-adjustable, or off).
+- A weekly ring: "You read on 3 days this week" toward a per-profile goal (guardian-adjustable,
+  or off). **Ruled D23**: the default is per age band per the P-A table (D17), not a flat 3, and
+  the selectable goal is capped at 6.
 - Filling the ring produces a one-time celebration that week (mascot moment). An unfilled ring at
   week's end produces *nothing*: no sad state, no "you lost it" copy, no partial-failure framing.
   Next week simply starts fresh.
@@ -218,12 +237,14 @@ reader-path-engagement-design.md section 6 records; acceptable for a literacy si
 |---|---|---|
 | **Ending screen** (Reader) | "NEW ending!" moment from the `{is_new, found, total}` response; gallery progress for this book; badge-unlock toast when a completion triggers one | Child |
 | **Library** (`LibraryPage`/`BookCard`) | Finished/Every-Path ribbons; endings chip (exists); entry to the badge case and gallery; the weekly ring, small, in the shell header | Child |
-| **Badge case** (new, off the library or `KidShell` nav) | Earned badges in color, unearned as silhouettes with kid-readable earn hints | Child; family-visible (below) |
+| **Badge case** (new, off the library or `KidShell` nav) | Earned badges in color, unearned as silhouettes with kid-readable earn hints | Child-private by default; family-visible only if the child opts in (D26, below) |
 | **Profile picker** (`ProfilePickerPage`) | Nothing numeric. At most a small celebratory sparkle on a profile with an unseen new badge. No counts, rings, or totals here | Family screen, hence the restraint |
 | **Guardian console** (reading summary) | Minutes/day, days/week, badges earned, per-profile toggles | Guardian |
 
-**Family-visible vs child-private**: badges and finished-shelf states are family-visible (a
-sibling browsing the shared device can see them, consistent with ring-1 rating chips today). The
+**Family-visible vs child-private**: **ruled D26, badges are child-private by default**, with an
+opt-in per-profile toggle by which the child chooses to share them with the family inside ring 1.
+With the toggle off, a sibling browsing the shared device sees nothing; with it on, badges behave
+like today's ring-1 rating chips. Finished-shelf states remain family-visible as before. The
 weekly ring, day counts, and all time data are child-plus-guardian only. The profile picker, the
 one surface where siblings appear side by side, carries no comparable numbers at all: that is the
 anti-leaderboard line inside ring 1 (P3). Nothing here crosses ring 2 or 3, ever; recommendation
@@ -237,8 +258,9 @@ guardian settings (ADR-018):
 
 | Control | Default | Notes |
 |---|---|---|
-| Weekly reading-days ring | **On, goal 3 days/week** | Off switch removes the ring entirely from the kid UI; guardian summary unaffected. Goal adjustable |
+| Weekly reading-days ring | **On above 3-5; goal per band per P-A** (2/2/3/3/4/4) | Ruled D23. Off switch removes the ring entirely from the kid UI; guardian summary unaffected. Goal adjustable, capped at 6 |
 | Badges | On | Off hides the badge case and suppresses unlock toasts; awards still compute (re-enabling restores everything, nothing lost) |
+| Share badges with the family | **Off** (child-private) | Ruled D26. The child opts in to make their badge case visible to the family inside ring 1; never leaves ring 1 in either state |
 | Show weekly ring at 3-5 band | **Off by default at 3-5** | Habit mechanics on pre-readers reward the parent's schedule, not the child; badges and gallery remain on |
 | Reading-time capture | On (it is the substrate) | A guardian who disables *all* of the above still gets the reading summary; a separate "pause time capture" toggle is offered for families who want none of it recorded |
 
@@ -310,18 +332,26 @@ in the same change or the `contract` CI job fails.
   per-minute rewards or time-based unlocks; push/PWA notifications or emails to re-engage the
   child (D4); variable-ratio "mystery reward" mechanics; badges for speed or for time-of-day.
 
-## 7. Open questions for the owner
+## 7. Questions for the owner (all closed 2026-08-05)
+
+All five are ruled; the rulings are recorded at the top of this document and in the canonical
+decisions table (design review section 8). Nothing in this section is outstanding.
 
 1. **Badge visibility inside ring 1**: family-visible as proposed (consistent with rating chips),
    or kid-private with an explicit "show my badges to my family" per-profile choice?
+   **Ruled D26: kid-private, with the opt-in share toggle.**
 2. **Retention for `reading_activity_day`**: keep day buckets indefinitely (they power the
    lifetime days-read total), or purge detail after 12 months keeping only running totals?
    Determines the counsel-bundle retention entry.
+   **Ruled D25: purge detail after 12 months, keep running totals (ADR-018).**
 3. **Default weekly goal**: is 3 days/week the right default, and may guardians set 7 (which
    quietly rebuilds a daily streak)? Recommend capping the selectable goal at 6 to keep one
    guaranteed free day.
+   **Ruled D23: default per band per P-A (D17), not a flat 3; selectable goal capped at 6.**
 4. **3-5 band**: confirm ring off by default at 3-5 (badges and gallery on). Same question for
    5-8?
+   **Ruled D24: off at 3-5, on at 5-8 and above.**
 5. **v1 cut line**: gallery + badges 1-8/10/11 + ring + time tracking is the proposed v1; badges
    9 and 12 trail their dependencies (request-loop fix; time table). Approve that sequencing, or
    pull the request-loop fix into this workstream?
+   **Ruled D22: pull the request-loop fix in, so badge 9 is v1 (11 of 12 badges).**
