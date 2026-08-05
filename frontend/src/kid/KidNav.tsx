@@ -44,14 +44,22 @@ function prefersReducedMotionOS(): boolean {
  * rather than blocking the page.
  *
  * Also carries a persistent, low-key "Ask a grown-up" link to
- * `/guardian/login` (product decision, 2026-08-04): previously the only way
- * from the kid surface toward the guardian side was ProfilePickerPage's
- * PIN-failure escape hatch, so a child on the Library or Reader page (which
- * returns to Library via its own "Leave" control) had no persistent way to
- * reach a grown-up. This is a pure reachability fix, not a new door into the
- * guardian console: it goes to the same login route the PIN-failure escape
- * already uses, so the guardian still signs in and the AdultGate step-up
- * still applies exactly as it would from any other entry point.
+ * `/guardian/login` (product decision, 2026-08-04). Paths from the kid surface
+ * toward the guardian side already existed, but every one of them surfaced only
+ * in a degraded state: ProfilePickerPage's unauthenticated, forbidden, and
+ * load-error tiles, its PIN-failure escape hatch after three attempts, and
+ * LibraryPage's and ReaderPage's own unauthenticated states. On a
+ * normally-working Library page a child had no always-available way to reach a
+ * grown-up; this is the first persistent one.
+ *
+ * Scope: KidShell mounts KidNav on `/library/:profileId` only, so this link is
+ * a Library-header affordance. The Reader route is unchanged and still returns
+ * to Library via its own "Leave" control.
+ *
+ * This is a pure reachability fix, not a new door into the guardian console: it
+ * goes to the same login route those existing escapes already use, so the
+ * guardian still signs in and the AdultGate step-up still applies exactly as it
+ * would from any other entry point.
  */
 export function KidNav({ profileId }: KidNavProps) {
   const profile = useKidProfile(profileId)?.profile ?? null

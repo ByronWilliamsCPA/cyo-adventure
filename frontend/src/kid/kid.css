@@ -133,9 +133,11 @@
 }
 
 /* Persistent, low-key reachability link (product decision, 2026-08-04): the
-   only prior path from the kid surface to the guardian side was
-   ProfilePickerPage's PIN-failure escape hatch, so this bar now always
-   offers "Ask a grown-up" too. Deliberately NOT styled as a pill like
+   kid surface already had several paths toward the guardian side, but all of
+   them appeared only in a degraded state (ProfilePickerPage's unauthenticated,
+   forbidden, and load-error tiles, its PIN-failure escape hatch, and the
+   Library/Reader unauthenticated states), so this bar now always offers
+   "Ask a grown-up" too. Deliberately NOT styled as a pill like
    .kid-nav__switch: this is a way OUT for a grown-up, not a primary kid
    control, so it reads as quiet underlined text rather than competing for a
    child's attention. Still meets the 44px tap floor and gets its own visible

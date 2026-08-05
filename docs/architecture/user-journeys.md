@@ -232,16 +232,17 @@ onboarding in Act 1 is not repeated.
 | Guardian/admin approves the child's request | `/guardian/requests`, `/admin/requests` | Shipped |
 | Generation + safety validation | generation pipeline | Shipped |
 | Guardian-initiated request | `/guardian/intake` | Shipped |
-| Admin review + approve/send-back | `/admin`, `/admin/review/:id` | Shipped |
+| Admin review + approve/send-back | `/admin`, `/admin/review/:storybookId` | Shipped |
 | Assign / assign more | Intake / assign | Shipped |
-| "New story ready!" pill | Profile Picker (`/`) | Shipped |
+| "New story ready!" pill | Profile Picker (`/kids`) | Shipped |
 | Library and Reader | `/library/...`, `/read/...` | Shipped |
 | Offline read + reconnect sync | Reader | Shipped |
 | Rate a book | Library shelf (`BookCard`) | Shipped |
-| Awaiting-approval / consent / unavailable interstitials | `/guardian/awaiting-approval`, `/guardian/consent`, `/guardian/unavailable` | Shipped (redirect-only) |
+| Auth interstitials | `/guardian/{awaiting-approval,consent,unavailable}` | Shipped (redirect-only) |
 | Guardian notification bell | Guardian shell nav | Shipped |
 | Family reading visibility | `/guardian/reading` | Shipped |
 | Cross-family connection consent | `/guardian/connections` | Shipped |
+| Guardian book library (approved books, assign) | `/guardian/books` | Shipped |
 | Device grant management | `/guardian/devices` | Shipped |
 | Guardian privacy page | `/guardian/privacy` | Shipped |
 | Guardian preview-as-child | `/guardian/preview/:profileId` | Shipped |
@@ -252,7 +253,7 @@ onboarding in Act 1 is not repeated.
 | Kid PIN-gated picker (wrong-PIN retry + "Ask a grown-up") | Profile Picker (`/kids`) | Shipped |
 | Read-aloud / TTS toggle | Reader (`tts_enabled` profiles only) | Shipped |
 | Series continuation (lands on `series_entry_node`) | Reader ending -> next book | Shipped |
-| Kid-to-guardian "Ask a grown-up" nav link | Kid nav bar -> `/guardian/login` | Shipped |
+| Kid-to-guardian "Ask a grown-up" nav link | Library header nav only -> `/guardian/login` | Shipped |
 
 ## Zoomed journeys (per surface)
 

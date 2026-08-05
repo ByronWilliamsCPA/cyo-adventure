@@ -26,7 +26,10 @@ import { logApiError } from './logApiError'
 // accepted; this client-side set only decides which OUTGOING requests
 // PREFER the device-grant bearer, it is not itself a security boundary. A
 // route added here that the backend does not also accept for a DEVICE
-// principal just 401s, exactly as if this set had never changed.
+// principal simply fails closed, exactly as if this set had never changed:
+// require_principal still verifies the token, so the refusal comes back as a
+// 403 (AuthorizationError) for a role mismatch, and only as a 401 when the
+// credential itself is rejected.
 const DEVICE_GRANT_AUTH_URLS = new Set([
   '/v1/child-sessions',
   '/v1/profiles',
@@ -276,8 +279,9 @@ export function useApi(config?: AxiosRequestConfig): AxiosInstance {
           return config
         }
         // #ASSUME: security: on the profile picker (`/kids`), a valid device
-        // grant authorizes exactly the two calls the picker needs (list
-        // profiles, mint a child session) and is PREFERRED over the guardian
+        // grant authorizes exactly the three calls the picker needs (list
+        // profiles, mint a child session, read the "new story ready!" pill
+        // status) and is PREFERRED over the guardian
         // bearer so the kid flow keeps working after the guardian's Supabase
         // session has expired (ADR-014 Phase 3). A guardian testing the
         // picker inline with no device grant yet still falls through to the

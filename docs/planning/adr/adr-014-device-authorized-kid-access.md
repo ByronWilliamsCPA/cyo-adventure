@@ -88,7 +88,7 @@ now" (ephemeral), which is the property that makes the kid-to-adult boundary enf
 | Token | Means | Lifetime | Signing | Audience | Scope |
 | --- | --- | --- | --- | --- | --- |
 | Supabase JWT | a grown-up is present now | short (auto-refresh) | RS256/ES256 (JWKS) | `authenticated` | full guardian/admin per role |
-| **Device grant (new)** | a grown-up authorized this device for their family | 90 days, revocable | HS256 | `cyo-device-grant` | list this family's profiles + mint child sessions, nothing else |
+| **Device grant (new)** | a grown-up authorized this device for their family | 90 days, revocable | HS256 | `cyo-device-grant` | list this family's profiles + their story-status pills + mint child sessions, nothing else |
 | Child session | this profile is reading | 12 hours, no refresh | HS256 | `cyo-child-session` | one profile's library/reading |
 
 The device grant carries `family_id`, `authorized_by` (the guardian's user id), and a `jti`. It
@@ -102,7 +102,11 @@ enforced offline, which is an accepted limitation bounded by the grant TTL.
 ### 2. The child-session mint accepts the device grant
 
 `POST /v1/child-sessions` and the picker's `GET /v1/profiles` accept a device principal scoped
-to the matching `family_id`, in addition to guardian/admin. Per-profile PIN enforcement is
+to the matching `family_id`, in addition to guardian/admin. `GET /v1/profiles/story-status` was
+added to the same set later (W1.4, the picker's "new story ready!" pill): it derives its scope
+from the identical `_listable_profiles` helper `GET /v1/profiles` uses and returns booleans
+only, so it widens what the picker can read about profiles it can already list, not which
+profiles it can reach. Per-profile PIN enforcement is
 unchanged (`child_sessions.py:100-113`). `api/deps.py` gains a third routing branch on the
 unverified `aud` claim (mirroring the child-session branch at `deps.py:442`), and the device
 principal is refused on every other route via an explicit allowlist, not a denylist.
