@@ -4881,6 +4881,12 @@ needs to become these named actions.</p>
 <td>5</td>
 <td>unscheduled</td>
 </tr>
+<tr>
+<td>UW-F26</td>
+<td><code>.github/workflows/sonarcloud.yml</code>'s trigger block (the <code>on:</code> stanza around lines 13-23) fires only on <code>push</code> to <code>main</code>/<code>develop</code> and on <code>workflow_dispatch</code>; it carries no <code>pull_request</code> trigger and no <code>merge_group</code> trigger. Consequence: no pull request ever receives SonarCloud analysis, and the gap reads as success rather than absence: querying Sonar for a PR's issues returns an empty list, and the PR quality-gate endpoint 404s, so both signals look "clean" when they actually mean "no analysis ran," letting a reviewer certify a PR against a signal that does not exist. The trigger set is not an oversight; the workflow already carries a comment block explaining a prior attempt at <code>no-build: true</code> on <code>pull_request</code> failed every run with <code>error: Distribution cyo-adventure==... @ editable+. can't be installed because it is marked as --no-build but has no binary distribution</code>, so someone has already been in this file. Flagged in review of PR #619, and again in review of PR #621 on 2026-08-05; no open GitHub issue and no other row in this register cites it. Left unscheduled rather than fixed inline, and the in-repo comment names the real blocker rather than the obvious one: no known input on the org reusable workflow (<code>ByronWilliamsCPA/.github/python-sonarcloud.yml</code>, not readable from this repo) installs dependencies without also running the full coverage-generating test suite, and <code>fail-on-quality-gate</code> is already forced off outside <code>push</code>, so a PR-time run was advisory with no way to act on its result. The workflow's own <code>#VERIFY</code> marker sets the next step: read <code>python-sonarcloud.yml</code> for a skip-tests-but-still-install input before trying <code>no-build</code> again. The actionable residual is therefore review hygiene rather than a missing gate: a reviewer must not read an empty PR issue queue or a 404 quality gate as a clean result, which is exactly the mistake #621's review had to guard against.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-g-content-diversity-and-catalog-workstream">Cluster G: content diversity and catalog workstream<a class="headerlink" href="#cluster-g-content-diversity-and-catalog-workstream" title="Permanent link">&para;</a></h2>
@@ -5680,7 +5686,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 22:15:48 UTC">August 5, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 22:34:51 UTC">August 5, 2026</span>
   </span>
 
     
