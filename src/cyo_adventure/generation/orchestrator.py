@@ -346,8 +346,13 @@ async def _run_one_stage(
     # #CRITICAL: data integrity: `raw` is untrusted model output, and a deeply
     # nested payload does not fail as a JSONDecodeError. CPython 3.14 bounds
     # JSON nesting by C stack bytes consumed, so `json.loads` raises
-    # RecursionError instead, and whether it fires at a given depth varies by
-    # interpreter patch release (3.14.6 raised where 3.14.7 did not).
+    # RecursionError instead, and whether it fires at a given depth varies with
+    # the executing thread's stack budget: the same 100k-deep array raises at an
+    # 8MB stack and parses successfully at 64MB. `addopts` carries `-n=auto`, so
+    # unit runs sit under xdist workers whose budget varies by runner, which is
+    # why the two paths must converge. A patch-release correlation (3.14.6 vs
+    # 3.14.7) was investigated and NOT established; do not reintroduce it as an
+    # explanation, and do not pin or avoid a patch release on its strength.
     # #VERIFY: catch both so a hostile or degenerate completion routes to the
     # synthetic blocked gate like every other malformed output, rather than
     # escaping generate_story as a raw builtin exception. Covered by

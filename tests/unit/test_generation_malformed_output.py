@@ -354,9 +354,18 @@ async def test_generate_story_deeply_nested_output_returns_failed() -> None:
     # Do not reintroduce an assertion on RecursionError itself. CPython 3.14
     # bounds JSON nesting by C stack BYTES consumed rather than by a fixed
     # counter, so whether this payload raises at all is a property of the
-    # interpreter build: 3.14.6 raised, 3.14.7 did not, on identical source.
-    # Both paths are asserted here through the one outcome they share, which
-    # is what makes this test stable across patch releases:
+    # executing thread's stack budget, not of the input. Reproduced across four
+    # threading.stack_size values on one interpreter: raises at 8MB (used 8156
+    # kB), parses successfully at 64MB and above. `addopts` carries `-n=auto`,
+    # so this runs under xdist workers whose budget varies by runner, and the
+    # local and CI environments land on opposite branches.
+    #
+    # A patch-release correlation (3.14.6 raised, 3.14.7 did not) was proposed
+    # while diagnosing this and was NOT established; the version was never
+    # controlled for against stack size. Do not restate it here.
+    #
+    # Both paths are asserted through the one outcome they share, which is what
+    # makes this test stable on any runner:
     #   raises  -> caught by the parse boundary -> stage_a:parse_error
     #   parses  -> a nested list, so not a dict -> stage_a:parse_error
     nesting_bomb = "[" * 100_000 + "]" * 100_000
