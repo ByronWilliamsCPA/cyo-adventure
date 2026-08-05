@@ -504,6 +504,8 @@ def test_run_backup_does_not_touch_lifecycle_when_a_leg_fails() -> None:
         backup_database, "_build_client", return_value=mock_client
     )
     patched_dump_leg = patch.object(backup_database, "run_dump_leg", side_effect=writer)
+    # Deliberately not the defaults: if the call happened at all, it would
+    # apply these.
     policy = backup_database.RetentionPolicy(
         daily_days=3, weekly_days=14, monthly_days=90
     )
@@ -521,8 +523,6 @@ def test_run_backup_does_not_touch_lifecycle_when_a_leg_fails() -> None:
             r2_secret_access_key="secret",
             r2_bucket="backup-bucket",
             encryption_key=b"0" * 32,
-            # Deliberately not the defaults: if the call happened at all, it would
-            # apply these.
             policy=policy,
             dry_run=False,
             now=now,
