@@ -525,25 +525,28 @@ Work this repository cannot complete on its own.
 
 ## Cluster N: external scope-comparison findings
 
-Sourced from a 2026-08-05 comparison of two externally-authored, LLM-generated planning
-documents (a project scope and a product/requirements document, both produced from a
-one-paragraph description with no visibility into this repository) against the live project.
-Most of what those documents assumed was either already decided differently here or is
-irrelevant to this project's actual delivery model; these seven rows are the concrete mechanics
-and reference material worth retaining. Full detail, citations, and field-level tables for each
-row live in [external-scope-comparison-2026-08-05.md](./external-scope-comparison-2026-08-05.md),
-since the source `.docx` files themselves live outside this repository and are not expected to
-persist.
+Sourced from a 2026-08-05 comparison of three externally-authored, LLM-generated planning
+documents (a project scope, a product/requirements document, and a commercial/revenue viability
+report, all produced from a one-paragraph description with no visibility into this repository)
+against the live project. Most of what those documents assumed was either already decided
+differently here or is irrelevant to this project's actual delivery model; these rows are the
+concrete mechanics and reference material worth retaining. Full detail, citations, and
+field-level tables for each row live in
+[external-scope-comparison-2026-08-05.md](./external-scope-comparison-2026-08-05.md), since the
+source `.docx` files themselves live outside this repository and are not expected to persist.
 
 | ID | Item | Phase | Status |
 |----|------|-------|--------|
-| UW-N01 | Adopt the external document's append-only entitlement-ledger design (grant/reserve/release/consume/expire/reverse events, never a mutable balance) as the starting design for commerce once Phase 8 (Capacitor + IAP) begins. Zero commerce/billing code exists in this repository today. | 8 | unscheduled |
+| UW-N01 | Adopt the external document's append-only entitlement-ledger design (grant/reserve/release/consume/expire/reverse events, never a mutable balance) as the starting design for commerce once Phase 8 (Capacitor + IAP) begins. Zero commerce/billing code exists in this repository today. Further informed by the companion Commercial and Revenue Viability Report's offer ladder ($9.99 one-time / $9.99 monthly / $69.99-79.99 annual test) and $0.90 per-story direct-cost stack. | 8 | unscheduled |
 | UW-N02 | Feed ADR-018's still-open VPC method decision with the external document's cited sources (FTC COPPA Rule 90 FR 16918, compliance date **already passed** as of 2026-08-05; ROSCA; Oregon ORS 646A.293-295 and 646A.570-589) and its required consent-record field list. Decision, not implementation; waits on the counsel engagement [UW-M03](#cluster-m-external-and-owner-gated) already names. | 7 | decision |
 | UW-N03 | Replace the hardcoded `CLOSED_VOCABULARIES` dict (`storybook/personalization_values.py`) with a versioned, schema-pinned `VariableDefinition`-style registry, so a historical story renders reproducibly after the variable catalog changes shape. Blocked on the same ADR-023 Stage A G1 STOP that blocks [UW-H01](#cluster-h-story-personalization-adr-023): do not start ahead of that re-plan. | 4b | blocked |
 | UW-N04 | Widen the axe-core e2e a11y suite's tag scope from WCAG 2.1 AA (`wcag2a/wcag2aa/wcag21a/wcag21aa`) to include WCAG 2.2 AA (target size, focus appearance, dragging movements, consistent help, redundant entry, accessible authentication), matching the external document's NFR-A11Y-01 baseline. | 5 | unscheduled |
 | UW-N05 | Decide, before Track 2 phases 6-9 open intake to outside families, whether to keep ADR-005's admin-only-approves-every-story model or move to the external document's guardian-primary-approval-with-staff-escalation model. Admin-only review does not scale headcount-wise to a multi-family product; the alternative is only as safe as the moderation-calibration work already tracked under `GS2`/`GS3`. | 7 | decision |
 | UW-N06 | Adopt OWASP ASVS 5.0 Level 2 and the OWASP Top 10 for LLM Applications 2026 by reference as the named scope boundary for Phase 5's penetration test and security control matrix (Cluster E), rather than an ad hoc list. Scoping reference only; the actual gap closure is the existing Cluster E rows. | 5 | unscheduled |
 | UW-N07 | Draft ADR-018's still-missing category-by-category retention schedule from the external document's planning-default table (adult account, consent evidence, child profile, generation inputs, reading progress, analytics, logs, financial records, support cases, backups), pending privacy-counsel and finance sign-off on every row. Feeds the same ADR-018 gate as `UW-N02`. | 7 | decision |
+| UW-N08 | ADR-027 decision 5's automated image-moderation classifier (the precondition for expanding per-node art past the seven-skeleton pilot) has no register home; its own text says only "tracked as follow-on work," which is the unscheduled-deferral pattern this register exists to close. Found while backfilling ADR-027's required Follow-on work section. | 4b | unscheduled |
+| UW-N09 | Cite the Commercial and Revenue Viability Report's generated-image cost estimate (8-12 scenes ≈ $0.27-$2.40/story, public per-image rates) in ADR-027, whose own budget section priced storage and delivery only, never generation spend. **Done**: landed directly in ADR-027's new Follow-on work section on branch `claude/scope-comparison-llm-design-keqcgh`. | 4b | done |
+| UW-N10 | Adopt the Commercial and Revenue Viability Report's "30-day Family Story Value Rate" north-star metric and its anti-gaming metric definitions (a completion requires a validated ending, not scrolling; a replay requires a deliberate alternate-path pick, not an accidental reload; unit cost includes support minutes) as this project's engagement/analytics measurement framework. Unblocked by commerce: no equivalent event-taxonomy or KPI doc exists in `docs/planning/` today, and the framework is usable at the current family-tier, pre-monetization scale. | 4c | unscheduled |
 
 ---
 
