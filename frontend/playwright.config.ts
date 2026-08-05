@@ -111,12 +111,14 @@ export default defineConfig({
       name: 'real-backend',
       testDir: './e2e-real',
       dependencies: ['real-backend-setup'],
-      // full-pipeline-real.spec.ts drives a real RQ worker end-to-end; it runs
-      // in its own `real-backend-pipeline` project (npm run test:e2e:real:pipeline)
-      // that additionally requires a running generation worker, so this project
-      // must not pick it up. Every other e2e-real spec has no such dependency
-      // and stays here.
-      testIgnore: ['full-pipeline-real.spec.ts'],
+      // full-pipeline-real.spec.ts and connections-enforcement-real.spec.ts
+      // both drive a real RQ worker end-to-end (the latter to mint a fresh
+      // catalog-visible storybook); they run in their own
+      // `real-backend-pipeline` project (npm run test:e2e:real:pipeline) that
+      // additionally requires a running generation worker, so this project
+      // must not pick either up. Every other e2e-real spec has no such
+      // dependency and stays here.
+      testIgnore: ['full-pipeline-real.spec.ts', 'connections-enforcement-real.spec.ts'],
       fullyParallel: false,
       // #EDGE: data-integrity: the approve test mutates the database, so a CI
       // retry after a post-mutation failure re-enters an already-approved
@@ -137,13 +139,19 @@ export default defineConfig({
       // wherever no worker is up. Same deterministic reset dependency as
       // `real-backend` (the reset also purges worker-generated storybooks so
       // consecutive runs stay clean). Run via npm run test:e2e:real:pipeline.
+      // connections-enforcement-real.spec.ts joins this project (not
+      // `real-backend`) for the same reason: it needs a fresh CATALOG-visible
+      // storybook, and approving one to catalog visibility requires generating
+      // it first (no seeded story is catalog-visible), which needs the same
+      // live worker as full-pipeline-real.spec.ts.
       // #CRITICAL: external-resources: this project is meaningless without a
-      // live worker consuming the "generation" queue; the spec's poll deadline
-      // fails with an explicit "worker not running" message if none is up.
+      // live worker consuming the "generation" queue; each spec's poll
+      // deadline fails with an explicit "worker not running" message if none
+      // is up.
       // #VERIFY: the nightly job must start the worker before invoking this.
       name: 'real-backend-pipeline',
       testDir: './e2e-real',
-      testMatch: /full-pipeline-real\.spec\.ts/,
+      testMatch: /(full-pipeline-real|connections-enforcement-real)\.spec\.ts/,
       dependencies: ['real-backend-setup'],
       fullyParallel: false,
       retries: process.env.CI ? 1 : 0,

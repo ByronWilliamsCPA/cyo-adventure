@@ -1,0 +1,451 @@
+import { expect, test } from '@playwright/test'
+
+import { BACKEND, requireBackend } from './real-stack'
+
+/**
+ * Real-API ADR-016 (register G17) family-connection ENFORCEMENT: not just
+ * the guardian consent UI in isolation (guardian-connections.spec.ts already
+ * covers that against a MOCKED backend), but whether an admin-created
+ * connection plus dual-guardian consent actually changes what a DIFFERENT
+ * family's guardian can see, against the real backend, end to end.
+ *
+ * #ASSUME (corrected from the task brief this spec was requested against):
+ * "visibility" here is NOT a guardian-facing reading-history surface.
+ * /guardian/reading (ReadingPage.tsx) is scoped entirely to the CALLING
+ * guardian's own family ("We could not load your family's reading
+ * activity") and is never gated by FamilyConnection at all --
+ * api/family_connections.py and api/recommendations.py are the only two
+ * backend modules that read that table. The real cross-family visibility
+ * surface ADR-016 gates is the K17 RECOMMENDATION feed,
+ * GET /api/v1/recommendations/{profile_id}
+ * (src/cyo_adventure/api/recommendations.py), rendered on the KID's own
+ * library page as a "Cousin <name> loved this" chip
+ * (frontend/src/library/RecommendationChip.tsx). This spec proves that
+ * mechanism end to end: first at the wire boundary through every gating
+ * state, then once through the real rendered UI at full consent.
+ *
+ * Setup, entirely through the real API (zero route mocks anywhere here):
+ * - A fresh CATALOG-visible storybook, created via the real concept ->
+ *   generate -> approve(visibility=catalog) pipeline (mirrors
+ *   full-pipeline-real.spec.ts; the mock provider still runs the full staged
+ *   pipeline through a real RQ worker). A catalog book is required because
+ *   ring 2 needs BOTH families to be able to assign/see the SAME book
+ *   (api/recommendations.py::_visible_books: same family OR catalog), and no
+ *   seeded dev story is catalog-visible -- approving one is the only real
+ *   HTTP path that sets it. Consequently this file shares
+ *   full-pipeline-real.spec.ts's `real-backend-pipeline` project (it needs a
+ *   live RQ worker too), not the plain `real-backend` one; see
+ *   playwright.config.ts's testMatch for that project.
+ * - Two brand-new guardian families, JIT-provisioned via
+ *   POST /api/v1/onboarding with fresh, never-seen bearer subjects
+ *   (ENVIRONMENT=local trusts the bearer as the verified subject; see
+ *   api/deps.py::require_onboarding_identity), then admin-approved from
+ *   "awaiting_approval" to "active" (api/admin_users.py) so each can
+ *   authenticate for everything else below. Neither is the seeded "Dev
+ *   Family", so this file cannot collide with any other real-backend spec's
+ *   fixture state.
+ * - Each guardian creates one child profile and assigns the catalog book to
+ *   it; the "sharer" guardian's profile then rates it 5 stars.
+ *
+ * The enforcement sequence: the viewer's recommendation feed is asserted
+ * EMPTY at every gate that has not yet been cleared (no connection at all;
+ * a connection with zero consent; a connection with only the viewer's OWN
+ * consent) and populated only once BOTH guardians have actively consented --
+ * proving dual consent is enforced, not merely connection existence. A
+ * final revoke proves ADR-016's "revoking is unilateral and immediate"
+ * against the real backend too.
+ *
+ * #CRITICAL: security: every step below is scoped through each family's OWN
+ * guardian bearer (never dev-admin standing in for a guardian consent, and
+ * never one family's bearer touching the other's resources); the admin
+ * bearer is used ONLY for the two operations that are genuinely admin-only
+ * (creating the connection row, approving the two new accounts), per
+ * family_connections.py's "admin action never substitutes for consent"
+ * (register A15).
+ * #VERIFY: the recommendation feed is asserted `toEqual([])` (not merely
+ * "missing the expected item") at every unconsented gate, so a regression
+ * that leaked SOME ring-2 data early would fail this spec even if it did
+ * not leak the exact expected item.
+ */
+
+test.describe.configure({ mode: 'serial' })
+
+// api/deps.py::Principal.is_guardian is `role == Role.GUARDIAN` exactly;
+// dev-admin's role is "admin", so it cannot create concepts or generate
+// (is_guardian is False for it) -- only dev-guardian may drive that part of
+// the pipeline. dev-admin is used everywhere admin authority is genuinely
+// required (approve, admin/family-connections, admin/users).
+const GUARDIAN_BEARER = 'dev-guardian'
+const ADMIN_BEARER = 'dev-admin'
+
+// The mock provider ignores the brief's content (generation/provider.py's
+// _CANNED_STORY), so only its shape/validity matters; copied from
+// full-pipeline-real.spec.ts's CONCEPT_BRIEF.
+const CONCEPT_BRIEF = {
+  title: 'E2E connections-enforcement probe (ignored by the mock provider)',
+  premise: 'A young hero explores a quiet harbor town at low tide.',
+  protagonist: { name: 'Robin', age: 9, role: 'young explorer' },
+  point_of_view: 'second',
+  age_band: '8-11',
+  reading_level_target: 4.0,
+  tier: 1,
+  tone: 'adventurous',
+  themes_allowed: ['friendship', 'curiosity'],
+  content_nogo: [],
+  target_node_count: 5,
+  ending_count: 2,
+  structure_pattern: 'branch_and_bottleneck',
+  desired_variables: [],
+  special_constraints: [],
+}
+const CANNED_TITLE = 'The Forest Path'
+
+const POLL_DEADLINE_MS = 30_000
+const POLL_INTERVAL_MS = 1_000
+
+async function apiFetch(path: string, bearer: string, init: RequestInit = {}): Promise<Response> {
+  return fetch(`${BACKEND}${path}`, {
+    ...init,
+    headers: {
+      Authorization: `Bearer ${bearer}`,
+      ...(init.body ? { 'Content-Type': 'application/json' } : {}),
+      ...init.headers,
+    },
+    signal: AbortSignal.timeout(10_000),
+  })
+}
+
+async function createConcept(): Promise<string> {
+  const res = await apiFetch('/api/v1/concepts', GUARDIAN_BEARER, {
+    method: 'POST',
+    body: JSON.stringify({ brief: CONCEPT_BRIEF }),
+  })
+  if (!res.ok) {
+    throw new Error(`POST /concepts failed (HTTP ${res.status}): ${await res.text()}`)
+  }
+  const body = (await res.json()) as { concept_id: string }
+  return body.concept_id
+}
+
+async function enqueueGeneration(conceptId: string): Promise<string> {
+  // Mirrors full-pipeline-real.spec.ts's retry-on-409: MAX_ACTIVE_JOBS_PER_FAMILY
+  // is a per-family throttle, and that other spec's own concept for the same
+  // seeded family may still be "active" when this one enqueues moments later.
+  const maxAttempts = 4
+  let lastStatus = 0
+  let lastBody = ''
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const res = await apiFetch(`/api/v1/concepts/${conceptId}/generate`, GUARDIAN_BEARER, {
+      method: 'POST',
+    })
+    if (res.ok) {
+      const body = (await res.json()) as { job_id: string }
+      return body.job_id
+    }
+    lastStatus = res.status
+    lastBody = await res.text()
+    if (res.status === 409 && attempt < maxAttempts) {
+      await new Promise((resolve) => setTimeout(resolve, 3_000))
+      continue
+    }
+    break
+  }
+  throw new Error(`POST /concepts/${conceptId}/generate failed (HTTP ${lastStatus}): ${lastBody}`)
+}
+
+async function pollGenerationJob(jobId: string): Promise<string> {
+  const deadline = Date.now() + POLL_DEADLINE_MS
+  let lastStatus = 'queued'
+  let storybookId: string | null = null
+  while (Date.now() < deadline) {
+    const res = await apiFetch(`/api/v1/generation-jobs/${jobId}`, GUARDIAN_BEARER)
+    expect(res.ok, `GET /generation-jobs/${jobId} failed (HTTP ${res.status})`).toBe(true)
+    const body = (await res.json()) as { status: string; storybook_id: string | null }
+    lastStatus = body.status
+    storybookId = body.storybook_id
+    if (lastStatus !== 'queued' && lastStatus !== 'running') break
+    await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS))
+  }
+  expect(
+    lastStatus,
+    `generation job ${jobId} ended in "${lastStatus}", not "passed" (or the real RQ ` +
+      'generation worker is not consuming the "generation" queue; it should already ' +
+      'be running per the task brief -- do not start a fresh one from this spec, ' +
+      'report this as the real blocker)'
+  ).toBe('passed')
+  expect(storybookId, 'a passed job must carry a storybook id').toBeTruthy()
+  return storybookId as string
+}
+
+interface OnboardResult {
+  bearer: string
+  familyId: string
+  userId: string
+}
+
+/** JIT-provisions a fresh guardian family (POST /onboarding), then admin-approves it to "active". */
+async function provisionActiveGuardian(label: string): Promise<OnboardResult> {
+  // #ASSUME: security: this bearer is trusted as the verified subject ONLY
+  // because the real backend runs with ENVIRONMENT=local for this whole
+  // real-backend e2e tier (see api/deps.py's dev/test auth seam); the random
+  // suffix keeps two concurrent runs (or two calls in the same run) from
+  // colliding on the unique authn_subject index.
+  const bearer = `e2e-conn-${label}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+  const onboardRes = await apiFetch('/api/v1/onboarding', bearer, { method: 'POST' })
+  expect(onboardRes.ok, `POST /onboarding failed (HTTP ${onboardRes.status})`).toBe(true)
+  const onboarded = (await onboardRes.json()) as {
+    family_id: string
+    user_id: string
+    status: string
+  }
+  expect(onboarded.status).toBe('awaiting_approval')
+
+  const approveRes = await apiFetch(`/api/v1/admin/users/${onboarded.user_id}`, ADMIN_BEARER, {
+    method: 'PATCH',
+    body: JSON.stringify({ status: 'active' }),
+  })
+  expect(
+    approveRes.ok,
+    `PATCH /admin/users/${onboarded.user_id} failed (HTTP ${approveRes.status})`
+  ).toBe(true)
+
+  return { bearer, familyId: onboarded.family_id, userId: onboarded.user_id }
+}
+
+async function createProfile(bearer: string, displayName: string): Promise<string> {
+  const res = await apiFetch('/api/v1/profiles', bearer, {
+    method: 'POST',
+    body: JSON.stringify({ display_name: displayName, age_band: '8-11' }),
+  })
+  expect(res.ok, `POST /profiles failed (HTTP ${res.status})`).toBe(true)
+  const { id } = (await res.json()) as { id: string }
+  return id
+}
+
+async function assignBook(bearer: string, storybookId: string, profileId: string): Promise<void> {
+  const res = await apiFetch(`/api/v1/storybooks/${storybookId}/assignments`, bearer, {
+    method: 'POST',
+    body: JSON.stringify({ profile_ids: [profileId] }),
+  })
+  expect(res.ok, `POST /assignments failed (HTTP ${res.status}): ${await res.text()}`).toBe(true)
+}
+
+interface RecommendationItem {
+  storybook_id: string
+  title: string
+  recommender_name: string
+  rating: number
+  ring: 'family' | 'connection'
+}
+
+async function fetchRecommendations(bearer: string, profileId: string): Promise<RecommendationItem[]> {
+  const res = await apiFetch(`/api/v1/recommendations/${profileId}`, bearer)
+  expect(res.ok, `GET /recommendations/${profileId} failed (HTTP ${res.status})`).toBe(true)
+  const body = (await res.json()) as { items: RecommendationItem[] }
+  return body.items
+}
+
+interface FamilyConnectionMineItem {
+  id: string
+  active: boolean
+  my_consent: boolean
+}
+
+test.beforeAll(async () => {
+  await requireBackend()
+})
+
+let storybookId: string
+let viewer: OnboardResult
+let sharer: OnboardResult
+let viewerProfileId: string
+let sharerProfileId: string
+const sharerDisplayName = `E2E Cousin ${Date.now()}`
+let connectionId = ''
+
+test('a fresh catalog-visible storybook is generated and approved through the real pipeline', async () => {
+  // Raised from the default 30s: this drives a real worker across several
+  // real HTTP round trips (mirrors full-pipeline-real.spec.ts).
+  test.setTimeout(90_000)
+
+  const conceptId = await createConcept()
+  const jobId = await enqueueGeneration(conceptId)
+  storybookId = await pollGenerationJob(jobId)
+
+  const approveRes = await apiFetch(`/api/v1/storybooks/${storybookId}/approve`, ADMIN_BEARER, {
+    method: 'POST',
+    body: JSON.stringify({ visibility: 'catalog' }),
+  })
+  expect(
+    approveRes.ok,
+    `POST /approve failed (HTTP ${approveRes.status}): ${await approveRes.text()}`
+  ).toBe(true)
+  const approved = (await approveRes.json()) as { visibility: string }
+  expect(approved.visibility).toBe('catalog')
+})
+
+test('two brand-new families are provisioned, each with a profile assigned the catalog book', async () => {
+  viewer = await provisionActiveGuardian('viewer')
+  sharer = await provisionActiveGuardian('sharer')
+  expect(viewer.familyId).not.toBe(sharer.familyId)
+
+  viewerProfileId = await createProfile(viewer.bearer, `E2E Viewer Kid ${Date.now()}`)
+  sharerProfileId = await createProfile(sharer.bearer, sharerDisplayName)
+
+  await assignBook(viewer.bearer, storybookId, viewerProfileId)
+  await assignBook(sharer.bearer, storybookId, sharerProfileId)
+
+  const rateRes = await apiFetch('/api/v1/ratings', sharer.bearer, {
+    method: 'POST',
+    body: JSON.stringify({ profile_id: sharerProfileId, storybook_id: storybookId, value: 5 }),
+  })
+  expect(rateRes.ok, `POST /ratings failed (HTTP ${rateRes.status}): ${await rateRes.text()}`).toBe(
+    true
+  )
+})
+
+test('with no connection at all, the viewer sees nothing from the sharer family', async () => {
+  const items = await fetchRecommendations(viewer.bearer, viewerProfileId)
+  expect(items).toEqual([])
+})
+
+test('an admin-created connection alone, with zero consent, still shows nothing', async () => {
+  const createRes = await apiFetch('/api/v1/admin/family-connections', ADMIN_BEARER, {
+    method: 'POST',
+    body: JSON.stringify({ family_id: viewer.familyId, connected_family_id: sharer.familyId }),
+  })
+  expect(
+    createRes.ok,
+    `POST /admin/family-connections failed (HTTP ${createRes.status}): ${await createRes.text()}`
+  ).toBe(true)
+  const created = (await createRes.json()) as { id: string }
+  connectionId = created.id
+
+  const items = await fetchRecommendations(viewer.bearer, viewerProfileId)
+  expect(items).toEqual([])
+})
+
+test('only the viewer guardian consenting (the sharer has not) still shows nothing', async () => {
+  const res = await apiFetch(`/api/v1/family-connections/${connectionId}/consent`, viewer.bearer, {
+    method: 'POST',
+  })
+  expect(res.ok, `POST .../consent (viewer) failed (HTTP ${res.status})`).toBe(true)
+  const updated = (await res.json()) as FamilyConnectionMineItem
+  expect(updated.my_consent).toBe(true)
+  expect(updated.active).toBe(false)
+
+  const items = await fetchRecommendations(viewer.bearer, viewerProfileId)
+  expect(items).toEqual([])
+})
+
+test('once BOTH guardians have consented, the viewer sees the real ring-2 recommendation', async () => {
+  const res = await apiFetch(`/api/v1/family-connections/${connectionId}/consent`, sharer.bearer, {
+    method: 'POST',
+  })
+  expect(res.ok, `POST .../consent (sharer) failed (HTTP ${res.status})`).toBe(true)
+  const updated = (await res.json()) as FamilyConnectionMineItem
+  expect(updated.active).toBe(true)
+
+  const items = await fetchRecommendations(viewer.bearer, viewerProfileId)
+  expect(items).toHaveLength(1)
+  expect(items[0]).toMatchObject({
+    storybook_id: storybookId,
+    title: CANNED_TITLE,
+    recommender_name: sharerDisplayName,
+    rating: 5,
+    ring: 'connection',
+  })
+})
+
+test('the real rendered kid library shows the "Cousin" recommendation chip once fully consented', async ({
+  browser,
+}) => {
+  const context = await browser.newContext()
+  let grantId = ''
+  try {
+    // A real child-session JWT for the viewer's own profile, minted by the
+    // viewer's own guardian bearer (api/child_sessions.py: callable by a
+    // guardian for a profile in its own family), plus a real device grant so
+    // DeviceAuthorizedRoute (ADR-014) lets `/library/:profileId` load at all.
+    const sessionRes = await apiFetch('/api/v1/child-sessions', viewer.bearer, {
+      method: 'POST',
+      body: JSON.stringify({ profile_id: viewerProfileId }),
+    })
+    expect(sessionRes.ok, `POST /child-sessions failed (HTTP ${sessionRes.status})`).toBe(true)
+    const session = (await sessionRes.json()) as { token: string }
+
+    const grantRes = await apiFetch('/api/v1/device-grants', viewer.bearer, {
+      method: 'POST',
+      body: JSON.stringify({ label: 'e2e-connections-enforcement' }),
+    })
+    expect(grantRes.ok, `POST /device-grants failed (HTTP ${grantRes.status})`).toBe(true)
+    const grant = (await grantRes.json()) as {
+      token: string
+      expires_at: string
+      family_id: string
+      id: string
+    }
+    grantId = grant.id
+    const deviceGrantValue = JSON.stringify({
+      token: grant.token,
+      expiresAt: grant.expires_at,
+      familyId: grant.family_id,
+      id: grant.id,
+    })
+
+    await context.addInitScript(
+      ([grantKey, grantValue, authKey, tokenValue]) => {
+        window.localStorage.setItem(grantKey, grantValue)
+        window.localStorage.setItem(authKey, tokenValue)
+      },
+      ['device_grant', deviceGrantValue, 'auth_token', session.token] as const
+    )
+
+    const page = await context.newPage()
+    await page.goto(`/library/${viewerProfileId}`)
+    await expect(page.getByText(`Cousin ${sharerDisplayName} loved this`)).toBeVisible()
+  } finally {
+    if (grantId) {
+      await apiFetch(`/api/v1/device-grants/${grantId}`, viewer.bearer, {
+        method: 'DELETE',
+      }).catch(() => undefined)
+    }
+    await context.close()
+  }
+})
+
+test('revoking the sharer side is immediate: the recommendation disappears on the very next fetch', async () => {
+  const res = await apiFetch(`/api/v1/family-connections/${connectionId}/consent`, sharer.bearer, {
+    method: 'DELETE',
+  })
+  expect(res.ok, `DELETE .../consent (sharer) failed (HTTP ${res.status})`).toBe(true)
+  const updated = (await res.json()) as FamilyConnectionMineItem
+  expect(updated.active).toBe(false)
+
+  const items = await fetchRecommendations(viewer.bearer, viewerProfileId)
+  expect(items).toEqual([])
+})
+
+test.afterAll(async () => {
+  // Best-effort: an admin hard-delete of the connection row, so a reused dev
+  // stack does not accumulate one connection per run. Never throws (mirrors
+  // real-stack.ts's revokeDevice); the two provisioned families and their
+  // profiles are left in place, exactly as other real-backend specs leave
+  // their minted fixtures (a disposable local dev stack, not identity data
+  // worth cleaning up here).
+  if (!connectionId) return
+  try {
+    const res = await apiFetch(`/api/v1/admin/family-connections/${connectionId}`, ADMIN_BEARER, {
+      method: 'DELETE',
+    })
+    if (!res.ok && res.status !== 404) {
+      console.warn(
+        `[connections-enforcement] connection delete did not confirm (HTTP ${res.status}) for ${connectionId}`
+      )
+    }
+  } catch (err) {
+    console.warn(
+      `[connections-enforcement] connection delete errored for ${connectionId}: ${err instanceof Error ? err.message : String(err)}`
+    )
+  }
+})
