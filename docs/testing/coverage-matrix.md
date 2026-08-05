@@ -210,8 +210,9 @@ relate to the Supabase project constraints.
   credential-free (Playwright's `request` fixture, no browser page), against
   live production: the canonical `GET /api/v1/health/ready` returns real
   FastAPI JSON (status 200, `content-type: application/json`, `status` and
-  `checks` keys); the previously-shadowed `GET /health/ready` no longer
-  returns 200, because nginx's stub moved to `location = /nginx-health` and
+  `checks` keys); the previously-shadowed `GET /health/ready` returns exactly
+  404, asserted as 404 rather than as "not 200" so a whole-site outage cannot
+  satisfy it, because nginx's stub moved to `location = /nginx-health` and
   `/health` now answers an explicit `return 404` (deleting the block instead
   would have let the path fall through to the SPA `try_files` fallback and
   answer `200 text/html`, the same false pass in a new disguise); and `GET

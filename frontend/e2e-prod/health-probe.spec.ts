@@ -38,14 +38,24 @@ test.describe('platform health, unauthenticated', () => {
     const body = (await res.json()) as Record<string, unknown>
     expect(body).toHaveProperty('status')
     expect(body).toHaveProperty('checks')
-    expect(typeof body.checks).toBe('object')
+    // Not `typeof body.checks === 'object'`, which is also true of null: a
+    // handler returning `{"checks": null}` would satisfy that and prove
+    // nothing about the readiness payload's shape.
+    expect(body.checks).toBeInstanceOf(Object)
   })
 
-  test('the old shadowed path no longer returns 200 (nginx now 404s it)', async ({ request }) => {
+  test('the old shadowed path returns exactly 404 (nginx no longer stubs it)', async ({
+    request,
+  }) => {
     const res = await request.get('/health/ready')
-    // A 200 here would mean the pre-fix nginx stub (or an equivalent shadow)
-    // is back in front of the canonical path, silently reintroducing UW-L04.
-    expect(res.status()).not.toBe(200)
+    // Assert 404 exactly, not merely "not 200". `not.toBe(200)` would be
+    // satisfied by a 502 or a 301, neither of which shows nginx replaced the
+    // stub with the `return 404` the fix installed: a whole-site outage would
+    // pass this test while proving nothing. 404 is what frontend/nginx.conf's
+    // `location /health` block returns, so if that block is ever deleted this
+    // fails on the SPA fallback's 200 text/html rather than quietly accepting
+    // it.
+    expect(res.status()).toBe(404)
   })
 
   test('the nginx-only diagnostic control answers, proving nginx itself is up', async ({

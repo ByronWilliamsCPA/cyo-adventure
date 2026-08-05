@@ -47,9 +47,13 @@ re-deriving, because a `role='guardian'` account lands on the guardian console b
 design and reaches `/admin` as an added capability.
 
 A third adult account exists that this checklist does not use and must not
-disturb: sub `774ea02b` (`test_admin@williamshome.family`), also dual-role, in its
-own isolated "E2E Test Family" (`84b96700`). It belongs to the automated
-`e2e-prod` tier described below.
+disturb: sub `774ea02b`, also dual-role, in its own isolated "E2E Test Family"
+(`84b96700`). It belongs to the automated `e2e-prod` tier described below. Its
+login is the `E2E_PROD_TEST_EMAIL` secret in the `production-e2e` environment,
+named here rather than written out: this repository is public, and an address
+that signs in with `is_admin` should not be published as a phishing or
+credential-stuffing target. The secret is also the authoritative source, so a
+literal copy here could go stale against the account the workflow actually uses.
 
 The real read gate is `approved_by` + an assignment, not `published_at` alone.
 Approval requires `is_admin` per ADR-005 (`storybook_version.approved_by`); the
@@ -275,8 +279,11 @@ subject; it is recorded as a finding in its own right (`UW-L05`). The check is s
 meaningful with two usable families, because the test account sits in `84b96700` while
 `3a152319` holds data it must never see, which is what Section 6 below now asserts.
 
-**What was automated instead of left manual.** Rather than leaving 33 steps waiting on a
-human with credentials, the read-only remainder moved into the existing `frontend/e2e-prod/`
+**What was automated instead of left manual.** The 33 unticked steps are two populations
+with different gates, not one: 31 in Sections 1 to 6 that need interactive credentials, plus
+the 2 Section 0 blockers, which needed a code fix (the health probe, `UW-L04`) and an
+authorized maintenance window (the worker restart) rather than a sign-in. Rather than leaving
+all of them waiting on a human, the read-only remainder moved into the existing `frontend/e2e-prod/`
 tier, which already signs in as a real production account unattended on a daily cron. Three
 specs were added: `health-probe.spec.ts` (the Section 0 step this pass got wrong, now
 asserted by content type with an `/nginx-health` control so a failure distinguishes "backend

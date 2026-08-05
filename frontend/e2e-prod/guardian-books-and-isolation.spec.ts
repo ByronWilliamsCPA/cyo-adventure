@@ -63,6 +63,31 @@ test.describe('guardian books, assignment, and cross-family isolation', () => {
   // installed BEFORE sign-in so the /v1/me call and everything after it is
   // covered too.
   const capturedResponses: { url: string; body: unknown }[] = []
+  // #CRITICAL: timing dependency: body parsing starts off the SYNCHRONOUS
+  // 'response' event and finishes later, so the scan must await these before
+  // reading capturedResponses. Discarding them (the original `void
+  // response.json()`) left a real hole: a forbidden key in a body still being
+  // parsed would never be scanned, and the length > 0 positive control would
+  // NOT catch it, because that only proves some body landed, never that every
+  // body did. A weaker-than-advertised security assertion is exactly the
+  // silent gate this suite exists to prevent.
+  // #VERIFY: drainCaptures() below, called before any scan.
+  const captureSettled: Promise<void>[] = []
+
+  /**
+   * Wait until every observed response body has finished parsing.
+   *
+   * Loops rather than awaiting once, because awaiting can itself yield long
+   * enough for another response to arrive and push a new promise; the array is
+   * drained until its length stops growing.
+   */
+  const drainCaptures = async (): Promise<void> => {
+    let seen = -1
+    while (seen < captureSettled.length) {
+      seen = captureSettled.length
+      await Promise.all(captureSettled)
+    }
+  }
 
   test.beforeAll(async ({ browser }) => {
     sharedPage = await browser.newPage()
@@ -71,22 +96,16 @@ test.describe('guardian books, assignment, and cross-family isolation', () => {
       if (!url.includes('/api/v1/')) return
       const contentType = response.headers()['content-type'] ?? ''
       if (!contentType.includes('application/json')) return
-      // #ASSUME: timing dependency: response bodies are read asynchronously
-      // off the synchronous 'response' event; a body that fails to parse (a
-      // truncated stream, an already-consumed body) is dropped rather than
-      // failing the run, since this collector is a passive observer, not
-      // something any test awaits directly.
-      // #VERIFY: the positive-control assertion in the redaction test below
-      // (capturedResponses.length > 0) is what would catch a collector that
-      // silently captured nothing.
-      void response
-        .json()
-        .then((body: unknown) => {
-          capturedResponses.push({ url, body })
-        })
-        .catch(() => {
-          /* non-JSON or unreadable body; nothing to scan */
-        })
+      captureSettled.push(
+        response
+          .json()
+          .then((body: unknown) => {
+            capturedResponses.push({ url, body })
+          })
+          .catch(() => {
+            /* non-JSON or unreadable body; nothing to scan */
+          })
+      )
     })
     await signInAsProdTestAdmin(sharedPage)
   })
@@ -150,24 +169,6 @@ test.describe('guardian books, assignment, and cross-family isolation', () => {
     await expect(dialog).not.toBeVisible()
   })
 
-  test('no /api/v1 response body in this suite ever carries flagged_passages or raw prose', () => {
-    // Positive control against a vacuous pass: if the collector captured
-    // nothing (a wiring mistake, every response failing to parse, or the
-    // suite issuing no requests at all), the scan below would trivially find
-    // zero violations, indistinguishable from the redaction guarantee
-    // actually holding.
-    expect(
-      capturedResponses.length,
-      'the response collector captured no /api/v1 JSON bodies in this suite; ' +
-        'the redaction assertion below would otherwise pass vacuously'
-    ).toBeGreaterThan(0)
-
-    const violations = capturedResponses.flatMap(({ url, body }) =>
-      findForbiddenKeys(body).map((path) => `${url} -> ${path}`)
-    )
-    expect(violations).toEqual([])
-  })
-
   test('the requests queue and profiles list both prove cross-family isolation', async () => {
     await gotoResilient(sharedPage, '/guardian/requests')
     await unlockParentalGateIfPresent(sharedPage)
@@ -201,5 +202,32 @@ test.describe('guardian books, assignment, and cross-family isolation', () => {
     // database) is the same cross-family isolation signal as the zero
     // requests above.
     await expect(sharedPage.locator('.profiles__list > li')).toHaveCount(1)
+  })
+
+  // Deliberately the LAST test in this serial describe. It asserts over every
+  // /api/v1 body the whole suite produced, so it has to run after the tests
+  // that produce them; sitting mid-file it silently excluded the isolation
+  // test's responses while still claiming suite-wide coverage. If a test is
+  // ever added below this one, move this block down with it.
+  test('no /api/v1 response body in this suite ever carries flagged_passages or raw prose', async () => {
+    await drainCaptures()
+
+    // Positive control against a vacuous pass: if the collector captured
+    // nothing (a wiring mistake, every response failing to parse, or the
+    // suite issuing no requests at all), the scan below would trivially find
+    // zero violations, indistinguishable from the redaction guarantee
+    // actually holding. Note this control is necessary but NOT sufficient on
+    // its own: it proves some body was captured, never that every body was,
+    // which is why drainCaptures() above closes the parse race separately.
+    expect(
+      capturedResponses.length,
+      'the response collector captured no /api/v1 JSON bodies in this suite; ' +
+        'the redaction assertion below would otherwise pass vacuously'
+    ).toBeGreaterThan(0)
+
+    const violations = capturedResponses.flatMap(({ url, body }) =>
+      findForbiddenKeys(body).map((path) => `${url} -> ${path}`)
+    )
+    expect(violations).toEqual([])
   })
 })
