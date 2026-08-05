@@ -62,6 +62,13 @@
 # baselines but its createCommitOnBranch raced a concurrent push (b517604,
 # coverage-matrix registration) and was rejected on expectedHeadOid; bump to
 # regenerate and commit them on the current head.
+#
+# Baseline bump 2026-08-05: KidNav gained a persistent "Ask a grown-up" link in
+# the kid Library header (PR #618), so exactly one baseline legitimately moves.
+# The mocked tier failed with 1769 pixels (ratio 0.01) different on
+# library-page.png and no other baseline changed, which is the signature of a
+# single control added to a header rather than a layout shift. Review the diff
+# for the new link appearing in the library header and nothing else moving.
 name: Update Visual Snapshots
 
 on:

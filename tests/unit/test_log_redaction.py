@@ -444,8 +444,22 @@ class TestRedactingLogFilter:
 
 class TestDigestIdentifier:
     def test_digest_is_stable_for_the_same_input(self) -> None:
-        """Two calls on one value correlate, which is the point of the digest."""
-        assert digest_identifier("s1/2-abc.webp") == digest_identifier("s1/2-abc.webp")
+        """Two calls on one value correlate, which is the point of the digest.
+
+        The two calls are bound to names solely to satisfy ``S5863``, which
+        flags two syntactically identical operands around ``==`` without
+        executing the code, so it fires on ``f(x) == f(x)`` whether or not
+        ``f`` is deterministic. Binding changes nothing at runtime: both forms
+        evaluate two independent calls and compare the results, and both would
+        equally catch a salted or time-varying digest. Do not collapse this
+        back into a self-comparison, or the rule fires again.
+        """
+        identifier = "s1/2-abc.webp"
+
+        first = digest_identifier(identifier)
+        second = digest_identifier(identifier)
+
+        assert first == second
 
     def test_digest_differs_for_different_inputs(self) -> None:
         """Distinct secrets stay distinguishable in logs."""

@@ -44,7 +44,7 @@ _SUPAVISOR_TRANSACTION_POOLER_PORT = 6543
 # narrowed). Not a target address or secret: it is the legitimate default
 # CIDR uvicorn's --forwarded-allow-ips trusts, hardcoding it here is
 # intentional.
-_DEFAULT_FORWARDED_ALLOW_IPS_CIDR = "172.16.0.0/12"  # NOSONAR: legitimate default trusted-proxy CIDR (RFC 1918), not a sensitive literal
+_DEFAULT_FORWARDED_ALLOW_IPS_CIDR = "172.16.0.0/12"  # NOSONAR(S1313)
 
 
 def _check_pooler_port_requires_disabled_cache(
