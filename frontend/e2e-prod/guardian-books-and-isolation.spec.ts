@@ -73,6 +73,14 @@ test.describe('guardian books, assignment, and cross-family isolation', () => {
   // silent gate this suite exists to prevent.
   // #VERIFY: drainCaptures() below, called before any scan.
   const captureSettled: Promise<void>[] = []
+  // Every body that announced `application/json` and then failed to parse or
+  // read. A body that never parsed is a body the scan never saw, and the
+  // `capturedResponses.length > 0` control cannot detect that: it proves SOME
+  // body landed, never that EVERY body did, so nine dropped bodies plus one
+  // clean one reads identically to ten clean ones. Swallowing these in the
+  // `.catch()` is what made the guarantee weaker than it advertised.
+  // #VERIFY: asserted empty in the redaction test below, alongside the count.
+  const captureFailures: string[] = []
 
   /**
    * Wait until every observed response body has finished parsing.
@@ -102,8 +110,12 @@ test.describe('guardian books, assignment, and cross-family isolation', () => {
           .then((body: unknown) => {
             capturedResponses.push({ url, body })
           })
-          .catch(() => {
-            /* non-JSON or unreadable body; nothing to scan */
+          .catch((error: unknown) => {
+            // Recorded, not swallowed. The content-type filter above already
+            // restricted this to bodies that claimed JSON, so a parse failure
+            // here is an anomaly worth failing on rather than a body to skip:
+            // silently skipping it is what let the scan narrow its own scope.
+            captureFailures.push(`${url} -> ${String(error)}`)
           })
       )
     })
@@ -216,14 +228,30 @@ test.describe('guardian books, assignment, and cross-family isolation', () => {
     // nothing (a wiring mistake, every response failing to parse, or the
     // suite issuing no requests at all), the scan below would trivially find
     // zero violations, indistinguishable from the redaction guarantee
-    // actually holding. Note this control is necessary but NOT sufficient on
-    // its own: it proves some body was captured, never that every body was,
-    // which is why drainCaptures() above closes the parse race separately.
+    // actually holding. This control is necessary but NOT sufficient on its
+    // own: it quantifies over SOME body, never EVERY body. Two separate
+    // assertions close that gap, and both are required: drainCaptures() above
+    // settles bodies still parsing, and captureFailures below proves none was
+    // dropped. Without the second, a suite where every body but one failed to
+    // parse satisfies this count and scans almost nothing.
     expect(
       capturedResponses.length,
       'the response collector captured no /api/v1 JSON bodies in this suite; ' +
         'the redaction assertion below would otherwise pass vacuously'
     ).toBeGreaterThan(0)
+
+    // The EVERY half of the control. Each entry is a body that announced JSON
+    // and then could not be read, so the scan below silently excluded it.
+    // #EDGE: timing dependency: a body can also become unreadable benignly, if
+    // its request is aborted by a navigation that outruns it. No spec here
+    // navigates away from an in-flight /api/v1 call, so treat any entry as a
+    // real narrowing of scope; if this ever flakes, narrow the capture filter
+    // rather than restoring the silent skip, which is the defect this replaces.
+    expect(
+      captureFailures,
+      'some /api/v1 JSON response bodies never parsed, so the redaction scan ' +
+        'below never inspected them and its coverage is narrower than it claims'
+    ).toEqual([])
 
     const violations = capturedResponses.flatMap(({ url, body }) =>
       findForbiddenKeys(body).map((path) => `${url} -> ${path}`)

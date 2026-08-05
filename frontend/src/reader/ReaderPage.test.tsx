@@ -471,9 +471,20 @@ describe('ReaderPage', () => {
     // path). The remounted Reader immediately re-saves the adopted state, so
     // the stored revision may already have advanced past the server's 5; the
     // position, not the exact revision, is the adopted-state invariant.
-    const mirrored = await getReadingState('p_adopt', 's_lantern_cave')
-    expect(mirrored?.current_node).toBe('n_cave_fork')
-    expect(mirrored?.state_revision).toBeGreaterThanOrEqual(5)
+    //
+    // Retried for the same async-persist reason as the two continuation-seed
+    // reads below. Correcting the reasoning recorded when those were fixed:
+    // this is the THIRD sibling read, not one of "two that both pre-seed their
+    // row". `p_adopt` is never passed to putReadingState, so this row starts
+    // nonexistent locally and can read back `undefined` exactly like they can.
+    // It has only been getting away with it: the render awaited above happens
+    // after resolveConflict initiates the mirror write, which buys a longer
+    // head start on the same race rather than immunity to it.
+    await waitFor(async () => {
+      const mirrored = await getReadingState('p_adopt', 's_lantern_cave')
+      expect(mirrored?.current_node).toBe('n_cave_fork')
+      expect(mirrored?.state_revision).toBeGreaterThanOrEqual(5)
+    })
   })
 
   it('issues one save and no false 409 under StrictMode double-invoke (#86)', async () => {

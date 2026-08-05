@@ -141,9 +141,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 
 # Both mount points of the health router (see `app.py`): the canonical
-# `/api/v1/health/*` and the schema-hidden `/health/*` loopback alias. A tuple
-# because `str.startswith` accepts one, so adding a mount point here is a
-# one-line change rather than a new boolean clause.
+# `/api/v1/health/*` and the schema-hidden `/health/*` loopback alias. Adding a
+# mount point here is a one-line change; `_is_health_path` below does the
+# matching.
 #
 # #CRITICAL: security: this must list EVERY path the health router answers on.
 # A mount point missing from this tuple is not a broken health endpoint, it is a
@@ -152,6 +152,29 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 # #VERIFY: tests/unit/test_security.py::TestAddSecurityMiddleware::
 # test_https_redirect_exempts_health_path exercises both prefixes.
 _HEALTH_PATH_PREFIXES: Final = ("/health", "/api/v1/health")
+
+
+def _is_health_path(path: str) -> bool:
+    """Whether a request path is served by one of the health router's mounts.
+
+    Matched at a segment boundary rather than with a bare ``str.startswith``
+    over the tuple. A bare prefix test also swallows any future sibling whose
+    name merely begins with one of these, ``/healthcare`` or
+    ``/api/v1/health-report``, and the failure is silent and in the unsafe
+    direction: the path is handed a blanket exemption from the HTTPS redirect
+    without anyone having decided that. Bare ``/health`` still matches, because
+    the router answers it (FastAPI redirects it to ``/health/``).
+
+    Args:
+        path: The request's URL path.
+
+    Returns:
+        bool: True when the path is a mount point itself or sits beneath one.
+    """
+    return any(
+        path == prefix or path.startswith(f"{prefix}/")
+        for prefix in _HEALTH_PATH_PREFIXES
+    )
 
 
 class HealthExemptHTTPSRedirectMiddleware(BaseHTTPMiddleware):
@@ -190,9 +213,7 @@ class HealthExemptHTTPSRedirectMiddleware(BaseHTTPMiddleware):
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         """Redirect HTTP to HTTPS unless the request targets a health path."""
-        if request.url.scheme == "https" or request.url.path.startswith(
-            _HEALTH_PATH_PREFIXES
-        ):
+        if request.url.scheme == "https" or _is_health_path(request.url.path):
             return await call_next(request)
 
         redirect_url = request.url.replace(scheme="https")

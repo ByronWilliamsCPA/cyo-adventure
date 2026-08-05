@@ -823,6 +823,12 @@ jobs:
       - name: Start API stack
         run: docker compose up -d --build app db
 
+      # No content-type assertion here, unlike the prod and real-stack probes.
+      # That asymmetry is deliberate, not an oversight: the false pass UW-L04
+      # documents needed a proxy in front of the app to forge a 200 in its
+      # place, and this hits the published app port with no proxy in the path,
+      # so a status code alone cannot be forged here. Keep it that way; if this
+      # ever moves behind nginx, it needs the content-type check.
       - name: Wait for API readiness
         run: |
           for i in $(seq 1 30); do

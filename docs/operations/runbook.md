@@ -226,19 +226,19 @@ served by nginx and never reaching the backend. It answers whether nginx is up, 
 useful as a control: if `/nginx-health` succeeds while `/api/v1/health/ready` fails, the frontend
 is serving and the backend is unreachable behind it.
 
-**`check_cache()` (Redis)** is wired into `/health/ready` and performs a real `PING` against
+**`check_cache()` (Redis)** is wired into `/api/v1/health/ready` and performs a real `PING` against
 `CYO_ADVENTURE_REDIS_URL` (the same Redis instance and timeout the rate limiter uses;
 `middleware/security.py`). It reports one of three states in the response's `checks.cache`: `"ok"`
 (ping succeeded), `"degraded"` (configured for Redis but the ping failed), or `"unconfigured"`
 (`CYO_ADVENTURE_RATE_LIMIT_BACKEND=memory`, so nothing in the request path depends on Redis).
-**Deliberately, cache status never flips `/health/ready`'s HTTP code**: the app fails open without
+**Deliberately, cache status never flips `/api/v1/health/ready`'s HTTP code**: the app fails open without
 Redis (the rate limiter falls back to an in-memory counter on any Redis error), so a `200` can
 still be paired with `checks.cache.status: false` when Redis is down; watch that field, or the
 queue-depth and worker-log checks in Section 5.1, rather than relying on the top-level status
 alone. `check_external_service()` remains an unwired placeholder: LLM/story-generation providers
 are optional and provider-specific, so there is no single external dependency to ping generically.
 
-**`check_generation_queue()` (ADR-021 Phase 1)** is wired into `/health/ready` as
+**`check_generation_queue()` (ADR-021 Phase 1)** is wired into `/api/v1/health/ready` as
 `checks.generation_queue` and is the worker-down/worker-failing alarm: a stopped or crash-looping
 worker, or a worker whose jobs are failing outright (e.g. the schema-drift incident that motivated
 this check), is visible here well before anyone notices a specific story stuck. It reports
@@ -254,13 +254,13 @@ this check), is visible here well before anyone notices a specific story stuck. 
   signal that catches a *running* worker whose jobs are all failing (the schema-drift case); the
   first two counts alone only catch a *stopped* worker.
 
-Like cache, **`generation_queue` never flips `/health/ready`'s HTTP code**: a stuck or failing
+Like cache, **`generation_queue` never flips `/api/v1/health/ready`'s HTTP code**: a stuck or failing
 generation pipeline must not pull API pods out of the load-balancer rotation for endpoints that
 never touch generation at all. Treat a nonzero `checks.generation_queue` count as a page-worthy
 signal on its own dashboard/alert, not as a 503; see Section 5.1 for the diagnosis and remediation
 steps this check is meant to trigger.
 
-**`check_database_privilege()` (ADR-021 cutover observability)** is wired into `/health/ready` as
+**`check_database_privilege()` (ADR-021 cutover observability)** is wired into `/api/v1/health/ready` as
 `checks.database_privilege` and reports whether the API's connected role can bypass row-level
 security. It covers all three bypass paths PostgreSQL actually has:
 
@@ -276,9 +276,9 @@ one (`via_role_attribute`, `via_table_ownership`), because an operator fixes own
 attributes differently. A role with no `pg_roles` row reports `"degraded"`, not `"ok"`: an
 unanalyzable role fails closed. `"unknown"` is distinct from `"degraded"` and means the query
 itself failed, so the posture was never measured. The connected role name is logged, never
-returned: `/health/ready` is unauthenticated, so the response carries only the posture bit.
+returned: `/api/v1/health/ready` is unauthenticated, so the response carries only the posture bit.
 
-Like cache and generation_queue, **`database_privilege` never flips `/health/ready`'s HTTP code**:
+Like cache and generation_queue, **`database_privilege` never flips `/api/v1/health/ready`'s HTTP code**:
 a pre-cutover environment is an open security finding, not an outage, so it must not pull pods out
 of rotation. One limit matters when reading this field: it covers the **API process only**. The
 worker has no HTTP surface and is never probed, so a forgotten `CYO_ADVENTURE_WORKER_DATABASE_URL`
@@ -776,7 +776,7 @@ Do not read a `.env*` file or a compose file to answer "which role is this envir
 those are the operator's local copy and the deployment's template, neither of which is the
 running process. Two sources are authoritative:
 
-- `/health/ready` reports a `database_privilege` check (`api/health.py`). `state: "ok"` means
+- `/api/v1/health/ready` reports a `database_privilege` check (`api/health.py`). `state: "ok"` means
   the connected role cannot bypass RLS (cut over); `state: "degraded"` means it can (not cut
   over). The check is deliberately non-gating, so a pre-cutover environment stays HTTP 200,
   and it deliberately omits the role name because the endpoint is unauthenticated.

@@ -766,8 +766,15 @@ class TestOpenApiContract:
         than a missed probe: every probe silently moves into the "must require
         bearer auth" set. The ``assert`` on non-emptiness in each test is what
         turns that into a visible failure instead of two vacuous passes.
+
+        Bounded at a segment boundary, because this predicate fails unsafely in
+        the other direction too. A bare prefix test also matches a future
+        ``/api/v1/health-report``, which would sort a real, sensitive operation
+        into the "probes, exempt from bearer auth" half of the partition; the
+        authz test would then certify it as correctly unauthenticated. Guarding
+        the boundary keeps a new route's default classification "needs auth".
         """
-        return path.startswith("/api/v1/health")
+        return path == "/api/v1/health" or path.startswith("/api/v1/health/")
 
     @pytest.mark.unit
     def test_bearer_scheme_is_declared(self, schema: dict[str, Any]) -> None:

@@ -20,9 +20,15 @@ import { gotoResilient } from '../e2e-support/rate-limit'
  *
  * The first two tests run against the default `page` fixture (a fresh,
  * unauthenticated context each), not the shared authenticated page below:
- * they must observe a signed-out visitor, and `signInAsProdTestAdmin` has not
- * run yet regardless, since Playwright's `beforeAll` executes once before the
- * whole describe block, not before the first test body.
+ * they must observe a signed-out visitor, and a fresh context carries none of
+ * the shared page's session regardless of ordering.
+ *
+ * The isolation is the context boundary, and only that. `beforeAll` does NOT
+ * run after the first test: Playwright runs it once before every test in the
+ * describe block, so `signInAsProdTestAdmin` has already completed by the time
+ * test one executes. It simply signed in a different browser context. Do not
+ * reintroduce an ordering argument here; moving these tests, or letting them
+ * touch `sharedPage`, breaks them for the real reason.
  */
 test.describe('guardian auth and profile management (read-only)', () => {
   test.describe.configure({ mode: 'serial' })
