@@ -3242,6 +3242,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#what-the-automated-e2e-prod-tier-already-covers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the automated e2e-prod tier already covers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#known-blockers-resolve-before-running-this-checklist-end-to-end" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3354,6 +3365,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Sign-off">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2026-08-04-partial-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2026-08-04 partial run
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -3383,17 +3411,17 @@
 smoke tier (<code>frontend/e2e-real/</code>, <code>npm run test:e2e:real</code>, local-only, <code>--workers=1</code>) is the automated
 pre-deploy gate against a local stack; this checklist is the manual post-deploy verification against prod.</p>
 <p><strong>Accounts</strong> (prod seeding is manual; NEVER run <code>scripts/seed_dev_data.py</code> in prod).
-Both accounts below are real Supabase email/password logins. <code>User.role</code> is an
-exclusive enum, so one account cannot be both roles: author with the guardian
-account, then switch to the admin account to approve. Values current as of
-2026-07-05:</p>
+Both accounts below are real Supabase email/password logins. Role columns verified
+directly against the production database on 2026-08-04:</p>
 <table>
 <thead>
 <tr>
-<th>Role</th>
+<th>Capability</th>
 <th>Email</th>
 <th>Supabase sub</th>
-<th>Sign-in</th>
+<th><code>role</code></th>
+<th><code>is_admin</code></th>
+<th>Family</th>
 </tr>
 </thead>
 <tbody>
@@ -3401,19 +3429,62 @@ account, then switch to the admin account to approve. Values current as of
 <td>Guardian (author, assign)</td>
 <td><code>byron.a.williams@gmail.com</code></td>
 <td><code>c1f33430</code></td>
-<td>email/password</td>
+<td><code>guardian</code></td>
+<td><code>false</code></td>
+<td><code>3a152319</code></td>
 </tr>
 <tr>
-<td>Admin (content approver)</td>
+<td>Guardian + admin (approver)</td>
 <td><code>byronawilliams@gmail.com</code></td>
 <td><code>21985c35</code></td>
-<td>email/password</td>
+<td><code>guardian</code></td>
+<td><code>true</code></td>
+<td><code>3a152319</code></td>
 </tr>
 </tbody>
 </table>
+<p><strong>Correction, 2026-08-04.</strong> This section previously stated that <code>User.role</code> is an
+exclusive enum so "one account cannot be both roles", and labelled the second
+account's role as <code>admin</code>. Neither holds against the live schema. <code>role</code> is the
+base enum; <code>is_admin</code> is an <strong>orthogonal boolean capability</strong>. Sub <code>21985c35</code> is
+therefore a guardian in family <code>3a152319</code> <em>and</em> an admin at the same time, and no
+account in production has <code>role = 'admin'</code> at all. Two consequences for the steps
+below: switching accounts to approve is a convenience rather than a requirement,
+because the approving account sits in the same family and can both author and
+approve (the four-eyes collapse this project accepted for a single family); and
+Section 1a's "lands on a review queue, not the guardian console" expectation needs
+re-deriving, because a <code>role='guardian'</code> account lands on the guardian console by
+design and reaches <code>/admin</code> as an added capability.</p>
+<p>A third adult account exists that this checklist does not use and must not
+disturb: sub <code>774ea02b</code>, also dual-role, in its own isolated "E2E Test Family"
+(<code>84b96700</code>). It belongs to the automated <code>e2e-prod</code> tier described below. Its
+login is the <code>E2E_PROD_TEST_EMAIL</code> secret in the <code>production-e2e</code> environment,
+named here rather than written out: this repository is public, and an address
+that signs in with <code>is_admin</code> should not be published as a phishing or
+credential-stuffing target. The secret is also the authoritative source, so a
+literal copy here could go stale against the account the workflow actually uses.</p>
 <p>The real read gate is <code>approved_by</code> + an assignment, not <code>published_at</code> alone.
-Approval is admin-only per ADR-005 (<code>storybook_version.approved_by</code>); the guardian
-account will correctly get a 403 on approve.</p>
+Approval requires <code>is_admin</code> per ADR-005 (<code>storybook_version.approved_by</code>); the
+guardian-only account (<code>c1f33430</code>) will correctly get a 403 on approve.</p>
+<h3 id="what-the-automated-e2e-prod-tier-already-covers">What the automated <code>e2e-prod</code> tier already covers<a class="headerlink" href="#what-the-automated-e2e-prod-tier-already-covers" title="Permanent link">&para;</a></h3>
+<p><code>.github/workflows/e2e-prod.yml</code> runs <code>frontend/e2e-prod/</code> against this same live
+host on a daily cron, using the isolated <code>774ea02b</code> test account. As of run
+<a href="https://github.com/ByronWilliamsCPA/cyo-adventure/actions/runs/30918192801">30918192801</a>
+(2026-08-04, success, 2m50s) that tier is green again, having been queue-starved
+from 2026-07-18 to 2026-08-02 by the <code>waiting</code>-run defect its own workflow comments
+describe. It asserts, unattended and every day:</p>
+<ul>
+<li>The landing page renders its <code>h1</code> and both audience doors.</li>
+<li>The guardian sign-in form renders its email, password, and submit controls.</li>
+<li>A dual-role adult reaches all nine <code>/guardian/*</code> and <code>/admin/*</code> pages with the
+  expected <code>h1</code> and no error boundary.</li>
+<li>A real device grant round-trips: authorize, open the kid library on the
+  authorized device, revoke.</li>
+</ul>
+<p>None of those steps is ticked below, because the tier drives a <em>different</em> account
+in a <em>different</em> family and asserts renders rather than the journeys this checklist
+specifies. Treat it as reducing the risk that Sections 1, 1a, and the device-grant
+leg of Section 4 are broken, not as evidence that they passed.</p>
 <h3 id="known-blockers-resolve-before-running-this-checklist-end-to-end">Known blockers (resolve before running this checklist end to end)<a class="headerlink" href="#known-blockers-resolve-before-running-this-checklist-end-to-end" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>API keys must be funded before Sections 2 and 4.</strong> Both OpenRouter
@@ -3425,25 +3496,65 @@ account will correctly get a 403 on approve.</p>
 </ul>
 <h2 id="0-infrastructure-probes">0. Infrastructure probes<a class="headerlink" href="#0-infrastructure-probes" title="Permanent link">&para;</a></h2>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>https://cyo.williamshome.family</code> resolves through Pangolin to docker-host:443 with a valid TLS cert</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Frontend loads (React shell renders, no console errors about missing Supabase config; this proves the
-      image was built with <code>VITE_SUPABASE_URL</code> / <code>VITE_SUPABASE_ANON_KEY</code> build args)</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>GET /health/live</code> and <code>/health/ready</code> return 200 (ready proves DB connectivity; verified
-      live 2026-07-07: both 200. The <code>/api/v1/health/*</code> paths this checklist previously documented
-      return 404; the health router is mounted without the <code>/api/v1</code> prefix.)</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Redis and the RQ worker containers are up (<code>docker ps</code> on docker-host; worker listens on queue
-      <code>generation</code>)</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Migrations current (migrate profile ran; <code>supabase migration list --linked</code> shows no pending
-      migrations). As of 2026-07-10 this replaces the prior <code>alembic current</code> check: schema migrations
-      moved from Alembic to Supabase CLI SQL migrations (ADR-012).</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Backups confirmed: the local <code>db-backup</code> container is healthy (<code>docker ps</code> on docker-host)
-      AND a fresh <code>.dump</code> file is present under
-      <code>/mnt/unraid/appdata/cyo-adventure/backups</code>. As of 2026-07-07 this container runs a daily
-      <code>pg_dump -Fc</code> of the LIVE Supabase database's <code>public</code> schema (14-day retention), fixed via
-      homelab-infra #585/#586; Supabase-side backups/PITR also exist independently. Do not assume
-      Supabase backups alone satisfy this check: verify the local dump too.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Worker survives a restart (<code>docker compose restart worker</code>; queued/in-flight jobs resume or
-      re-queue rather than being lost)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <code>https://cyo.williamshome.family</code> resolves through Pangolin to docker-host:443 with a valid TLS cert
+      (2026-08-04: HTTP 200, OpenSSL verify result 0, wildcard <code>CN=*.williamshome.family</code> issued by
+      ZeroSSL RSA DV SSL CA 2, valid 2026-06-23 to 2026-09-21)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Frontend loads (React shell renders, no console errors about missing Supabase config; this proves the
+      image was built with <code>VITE_SUPABASE_URL</code> / <code>VITE_SUPABASE_ANON_KEY</code> build args). Verified 2026-08-04
+      by fetching all 75 served chunks: <code>assets/supabaseClient-UGD8VVQK.js</code> carries both the
+      <code>cvrnaydpzijtszfbsraq.supabase.co</code> project URL and an anon-key JWT, so the build args were present at
+      image build time. That is the direct form of this check; absence of console errors is only its proxy.
+      <code>sw.js</code> and <code>registerSW.js</code> also return <code>Cache-Control: no-store, no-cache, must-revalidate</code>, so the
+      stale-service-worker login loop that <code>frontend/nginx.conf</code> guards against cannot recur.</li>
+<li class="task-list-item">
+<p><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>GET /api/v1/health/live</code> and <code>/api/v1/health/ready</code> return 200 <strong>with
+      <code>content-type: application/json</code></strong>. Assert the content type, not just the status: see the defect
+      below for why a bare 200 is not evidence here. <strong>Blocked on a production redeploy</strong>, not on a
+      verifier: the code fix is on this branch but the deployed frontend image still carries the old
+      nginx config. Tick this only after production runs an image built from this change, and prefer
+      running <code>frontend/e2e-prod/health-probe.spec.ts</code>, which asserts exactly this and is now part of the
+      daily tier.</p>
+<p><strong>The prior "verified live 2026-07-07: both 200" note was a false pass, and the defect it hid is
+  worth understanding.</strong> Established 2026-08-04: every backend router except <code>health</code> carried its own
+  <code>/api/v1</code> prefix, and <code>frontend/nginx.conf</code> proxies only <code>location /api/</code>. <code>health.router</code> was
+  declared <code>APIRouter(prefix="/health")</code>, so it sat outside the proxied prefix and was unreachable
+  through the ingress. Meanwhile nginx defined <code>location /health { return 200 'OK'; }</code> for its own
+  container probe, which shadowed the path entirely. So <code>GET /health/ready</code> returned a two-byte
+  <code>text/plain</code> <code>OK</code> from nginx (note the duplicated <code>Content-Type</code> header, and <code>server: nginx</code>)
+  while FastAPI's readiness logic never executed. The 200 proved nothing about database
+  connectivity, and any uptime monitor pointed at that URL would have reported healthy with the
+  database completely down. Contrast <code>GET /api/v1/me</code>, which correctly returned
+  <code>401 application/json</code> from FastAPI.</p>
+<p>Fixed on this branch (<code>UW-L04</code>): the health router is now also mounted at <code>/api/v1/health/*</code>, which
+  is the canonical form and the only one reachable from outside; nginx's own stub moved to the exact
+  path <code>= /nginx-health</code>; and <code>location /health</code> now returns <code>404</code> so a stale probe fails loudly
+  instead of silently receiving the SPA shell. The un-prefixed <code>/health/*</code> still answers on port 8000
+  inside the container, because the production healthcheck lives out-of-repo in homelab-infra and
+  polls it. <code>/nginx-health</code> is the useful control: if it answers while <code>/api/v1/health/ready</code> does
+  not, the frontend is serving and the backend is unreachable behind it.
+- [x] Redis and the RQ worker containers are up (<code>docker ps</code> on docker-host; worker listens on queue
+  <code>generation</code>). Verified 2026-08-04: <code>cyo-adventure-redis</code> up 3h (healthy), <code>cyo-adventure-worker</code>
+  up 2h (healthy), and worker logs show repeated <code>BLMOVE</code> polling on <code>rq:queue:generation</code>.
+- [x] Migrations current (migrate profile ran; <code>supabase migration list --linked</code> shows no pending
+  migrations). As of 2026-07-10 this replaces the prior <code>alembic current</code> check: schema migrations
+  moved from Alembic to Supabase CLI SQL migrations (ADR-012). Verified 2026-08-04 against the live
+  project: 49 files in <code>supabase/migrations/</code> and 49 applied versions, an exact set match in both
+  directions (nothing pending, nothing applied that is missing locally), newest
+  <code>20260804070000_add_security_event_table</code>.
+- [x] Backups confirmed: the local <code>db-backup</code> container is healthy (<code>docker ps</code> on docker-host)
+  AND a fresh <code>.dump</code> file is present under
+  <code>/mnt/unraid/appdata/cyo-adventure/backups</code>. As of 2026-07-07 this container runs a daily
+  <code>pg_dump -Fc</code> of the LIVE Supabase database's <code>public</code> schema (14-day retention), fixed via
+  homelab-infra #585/#586; Supabase-side backups/PITR also exist independently. Do not assume
+  Supabase backups alone satisfy this check: verify the local dump too. Verified 2026-08-04:
+  <code>cyo-adventure-db-backup</code> up 3h (healthy); newest dump <code>cyo_adventure_20260804_185541.dump</code>
+  (1,189,372 bytes) written the same day, with an unbroken daily series behind it and <code>.last_success</code>
+  also stamped that day.
+- [ ] Worker survives a restart (<code>docker compose restart worker</code>; queued/in-flight jobs resume or
+  re-queue rather than being lost). NOT RUN on 2026-08-04: this is the only Section 0 step that
+  mutates production, so it was deliberately left for an authorized maintenance window rather than
+  bounced during an unattended verification pass.</p>
+</li>
 </ul>
 <h2 id="1-guardian-sign-in-and-profiles">1. Guardian sign-in and profiles<a class="headerlink" href="#1-guardian-sign-in-and-profiles" title="Permanent link">&para;</a></h2>
 <ul class="task-list">
@@ -3453,10 +3564,17 @@ account will correctly get a 403 on approve.</p>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Sign out and back in; session resumes</li>
 </ul>
 <h2 id="1a-admin-sign-in-and-review-queue-access">1a. Admin sign-in and review queue access<a class="headerlink" href="#1a-admin-sign-in-and-review-queue-access" title="Permanent link">&para;</a></h2>
-<p>Admin account: <code>byronawilliams@gmail.com</code> (role <code>admin</code>, sub <code>21985c35</code>).</p>
+<p>Approving account: <code>byronawilliams@gmail.com</code> (sub <code>21985c35</code>, <code>role='guardian'</code> with
+<code>is_admin=true</code>, family <code>3a152319</code>). It is not <code>role='admin'</code>; see the Correction in
+the Accounts section above.</p>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Admin email/password sign-in succeeds</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Sign-in lands on a review queue that loads (not the guardian console)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Sign-in lands on a review queue that loads (not the guardian console). <strong>Re-derive this
+      expectation before ticking it.</strong> Because this account is <code>role='guardian'</code>, the shells route it to
+      the guardian console by design and expose <code>/admin</code> as an additional capability, so "not the guardian
+      console" is likely the wrong assertion for the current role model rather than a defect. Decide what
+      the correct landing surface is for a dual-role adult, then either fix this line or file the routing
+      behaviour as a defect.</li>
 </ul>
 <h2 id="2-guardian-authoring-path-intake-to-published-book">2. Guardian authoring path (intake to published book)<a class="headerlink" href="#2-guardian-authoring-path-intake-to-published-book" title="Permanent link">&para;</a></h2>
 <ul class="task-list">
@@ -3500,10 +3618,50 @@ account will correctly get a 403 on approve.</p>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Rate a finished book</li>
 </ul>
 <h2 id="6-cross-family-isolation-spot-check">6. Cross-family isolation spot check<a class="headerlink" href="#6-cross-family-isolation-spot-check" title="Permanent link">&para;</a></h2>
+<p>The "if seeded" hedge below is obsolete, and resolving it makes this section cheaper to run than it
+looks. Verified by direct read-only query on 2026-08-04, production holds <strong>three</strong> families:</p>
+<table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Contents</th>
+<th>Role here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>3a152319</code></td>
+<td>2 profiles, 6 assignments, 1 story request, 5 grants, 3 reading states</td>
+<td>the real family</td>
+</tr>
+<tr>
+<td><code>84b96700</code></td>
+<td>1 profile, 5 assignments, 0 story requests, 4 grants, 0 reading states</td>
+<td>E2E test family</td>
+</tr>
+<tr>
+<td><code>0ca7a109</code></td>
+<td>nothing at all, and <strong>no user rows</strong></td>
+<td>orphan, see <code>UW-L05</code></td>
+</tr>
+</tbody>
+</table>
+<p>The automated test account already sits in <code>84b96700</code>, so it <em>is</em> the second family's guardian. That
+makes this section verifiable read-only with no extra seeding: the assertion is that the test account
+sees exactly its own 1 profile and 0 story requests while the real family has 2 and 1.</p>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A second family's guardian (if seeded) cannot see the first family's requests, books, or children</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Kid surfaces never expose guardian-only fields (spot check network tab: story-request responses
-      carry id/status only)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A second family's guardian cannot see the first family's requests, books, or children.
+      <strong>Automated</strong> in <code>frontend/e2e-prod/guardian-books-and-isolation.spec.ts</code>.
+      #ASSUME: data integrity: this is an emptiness assertion, so it passes vacuously against a page
+      that failed to render at all. #VERIFY: the spec asserts the heading and empty-state copy render
+      <em>before</em> asserting the count; keep that positive control if you edit it.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Kid surfaces never expose guardian-only fields. The concrete contract (<code>api/review_surface.py</code>)
+      is that guardian-facing responses are story-level and node-id-free: they carry <code>flagged_count</code>,
+      <code>node_count</code>, and merged concern rows, and never <code>flagged_passages</code> or raw node <code>prose</code>.
+      <strong>Partially automated</strong>: the spec above scans every observed <code>/api/v1/**</code> JSON body for those two
+      forbidden keys. The kid-surface half (story-request responses carrying id/status only) is NOT
+      automated, because the test family has 0 story requests, so the assertion would pass vacuously.
+      Creating one costs LLM spend, which is why this is still a manual step.</li>
 </ul>
 <h2 id="sign-off">Sign-off<a class="headerlink" href="#sign-off" title="Permanent link">&para;</a></h2>
 <table>
@@ -3517,13 +3675,79 @@ account will correctly get a 403 on approve.</p>
 </thead>
 <tbody>
 <tr>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
+<td>2026-08-04</td>
+<td>both at revision <code>f1b561b6</code> (v0.63.0); backend <code>@sha256:de9a9f6a</code>, frontend <code>@sha256:4d608898</code></td>
+<td>PARTIAL, 5 of 38 steps</td>
+<td>Section 0 only. Sections 1 to 6 not run. Detail below.</td>
 </tr>
 </tbody>
 </table>
+<h3 id="2026-08-04-partial-run">2026-08-04 partial run<a class="headerlink" href="#2026-08-04-partial-run" title="Permanent link">&para;</a></h3>
+<p>This checklist has 38 steps, not the 39 the work register long claimed; the register row
+has been corrected.</p>
+<p><strong>Deployed revision.</strong> Established from image labels on <code>docker-host</code>, not from an HTTP
+probe: <code>/openapi.json</code> at the public host returns the SPA shell rather than the schema, so
+it cannot identify the backend. Both <code>cyo-adventure-backend</code> and <code>cyo-adventure-frontend</code>
+carry <code>org.opencontainers.image.revision=f1b561b6156b1f68177ca472fa042a40fbaea445</code>, which
+is <code>chore(release): v0.63.0 (#606)</code>. Production is one release behind <code>main</code>, which reached
+v0.64.0 (<code>b53cd765</code>) the same day. Note that <code>org.opencontainers.image.version</code> reads
+<code>0.1.0</code> on both images and does not track releases, so the revision SHA is the only
+reliable deployed-version identifier here.</p>
+<p><strong>What ran.</strong> Section 0 only, from this repository plus <code>docker-host</code> and the live Supabase
+project. 5 of its 7 steps are ticked. The two that are not fail for different reasons: the
+health-probe step is not runnable as written and turned out to be a false pass (<code>UW-L04</code>),
+and the worker-restart step mutates production, so it was left for an authorized
+maintenance window rather than bounced during an unattended pass.</p>
+<p><strong>What did not run.</strong> Sections 1, 1a, 2, 3, 4, 5, and 6, all 31 remaining steps. Every one
+needs interactive sign-in as <code>c1f33430</code> or <code>21985c35</code>, whose credentials this pass did not
+have. Sections 2 and 4 additionally spend real OpenRouter and classifier quota and write
+real content into the live family, so they need explicit authorization rather than just
+credentials. Sections 5 and 6 also need a second device and a real offline
+transition. Section 6's premise was revisited rather than assumed: the live database holds
+<strong>three</strong> <code>family</code> rows, not the two an earlier draft of this note claimed, but the third
+(<code>0ca7a109</code>) has no <code>user</code> rows and so cannot be signed into or used as a cross-family
+subject; it is recorded as a finding in its own right (<code>UW-L05</code>). The check is still
+meaningful with two usable families, because the test account sits in <code>84b96700</code> while
+<code>3a152319</code> holds data it must never see, which is what Section 6 below now asserts.</p>
+<p><strong>What was automated instead of left manual.</strong> The 33 unticked steps are two populations
+with different gates, not one: 31 in Sections 1 to 6 that need interactive credentials, plus
+the 2 Section 0 blockers, which needed a code fix (the health probe, <code>UW-L04</code>) and an
+authorized maintenance window (the worker restart) rather than a sign-in. Rather than leaving
+all of them waiting on a human, the read-only remainder moved into the existing <code>frontend/e2e-prod/</code>
+tier, which already signs in as a real production account unattended on a daily cron. Three
+specs were added: <code>health-probe.spec.ts</code> (the Section 0 step this pass got wrong, now
+asserted by content type with an <code>/nginx-health</code> control so a failure distinguishes "backend
+unreachable through the ingress" from "site down"), <code>guardian-profiles.spec.ts</code> (Section 1's
+route guard, login surface, profile list, and sign-out), and
+<code>guardian-books-and-isolation.spec.ts</code> (Section 3's books and review surface, the guardian
+redaction contract enforced by scanning every <code>/api/v1</code> JSON body the suite sees, and
+Section 6's cross-family isolation). A count or empty-state assertion is only trustworthy
+if the page rendered at all, so each one is preceded by a positive control, and the
+redaction scan asserts the collector captured something before concluding it found no
+leaks.</p>
+<p>Two honest limits on that automation. It asserts the <strong>post-fix</strong> state of the ingress, so
+the daily cron will fail until production redeploys both the backend and frontend images;
+that failure is the redeploy reminder, not a regression. And assertions that depend on live
+moderation content are deliberately conditional, because a clean catalog at test time would
+otherwise make them vacuous, which means a break in the redacted-projection rendering path
+would be caught only by the response-body scan.</p>
+<p><strong>Confirmed alongside this run, closing the one leg <code>UW-A03</code> left open.</strong> The RQ worker
+authenticates to production as <code>cyo_worker</code>. Proof is read-only and was taken from inside
+the running <code>cyo-adventure-worker</code> container through the application's own
+<code>get_worker_session()</code>: <code>current_user</code> and <code>session_user</code> both return <code>cyo_worker</code>,
+<code>rolbypassrls</code> is <code>false</code> so the ADR-022 Tier 1 policies bind, and <code>pg_stat_activity</code>
+observed from that same connection showed <code>cyo_api</code> on 5 connections, <code>cyo_worker</code> on 1,
+and <code>postgres</code> on none. No generation job was triggered and no LLM quota was spent: the
+credential path was what needed proving, not the pipeline.</p>
+<p>One nuance to carry forward from that check. <code>WORKER_DATABASE_URL</code> is <strong>unset</strong> on the
+deployed worker container. <code>worker_database_url_effective</code> falls back to <code>database_url</code>,
+and the homelab stack sets that container's own <code>DATABASE_URL</code> to the <code>cyo_worker</code> DSN, so
+the correct role is reached by container-level environment rather than by the
+<code>WORKER_DATABASE_URL</code> split that this repository's <code>docker-compose.prod.yml</code> configures.
+The outcome is right and the ADR-021 goal is met, but the mechanism differs from the
+compose file, and inside the worker process <code>get_session()</code> and <code>get_worker_session()</code>
+resolve to the same identity. A regression in which worker code calls <code>get_session()</code>
+would therefore be invisible in production. Tracked as <code>UW-A44</code>.</p>
 
 
 
@@ -3546,7 +3770,7 @@ account will correctly get a 403 on approve.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 11, 2026 11:00:23 UTC">July 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 04:02:38 UTC">August 5, 2026</span>
   </span>
 
     

@@ -4070,27 +4070,52 @@ SQL in <code>supabase/migrations/*.sql</code>, applied by the pinned Supabase CL
 <p>Migrations are forward-only: there are no downgrade scripts. Recovery from a bad migration is a
 corrective roll-forward migration, rehearsed on staging first (ADR-012, Consequences).</p>
 <h2 id="3-health-checks">3. Health checks<a class="headerlink" href="#3-health-checks" title="Permanent link">&para;</a></h2>
-<p><code>api/health.py</code> exposes three Kubernetes-style probes plus a load-balancer alias:</p>
-<p><strong><code>GET /health/live</code></strong> (liveness: is the process up): checks nothing external; always returns
+<p><code>api/health.py</code> exposes three Kubernetes-style probes plus a load-balancer alias. The router is
+mounted twice (<code>app.py</code>), and <strong>which form you probe decides whether you learn anything</strong>:</p>
+<ul>
+<li><strong><code>/api/v1/health/*</code></strong> is reachable from outside the cluster, through nginx's <code>location /api/</code>.
+  Use this form for everything external: uptime monitors, manual <code>curl</code>, the e2e tiers.</li>
+<li><strong><code>/health/*</code></strong> is reachable on the container's own port 8000 only. It exists for in-container
+  loopback probes that cannot be updated in the same deploy as this repo.</li>
+</ul>
+<blockquote>
+<p><strong>Never probe <code>/health/*</code> from outside.</strong> <code>frontend/nginx.conf</code> proxies only <code>location /api/</code>, so
+the un-prefixed form never reaches FastAPI from the public host. Until 2026-08-04 nginx also
+answered <code>location /health</code> with a hardcoded <code>200 'OK'</code>, so an external probe of
+<code>/health/ready</code> returned success <strong>with the database completely down</strong>, and this runbook's own
+"verified 200" note carried that false pass for a month (register item <code>UW-L04</code>). nginx now
+returns <code>404</code> there instead. When probing by hand, assert the response is
+<code>content-type: application/json</code> with a <code>checks</code> object, not merely a <code>200</code>: a static stub can
+forge a status code, and it cannot forge FastAPI's response model.</p>
+</blockquote>
+<p><strong><code>GET /api/v1/health/live</code></strong> (liveness: is the process up): checks nothing external; always returns
 <code>200 {"status": "ok", ...}</code> if the process is running. This is what the Dockerfile's own
-<code>HEALTHCHECK</code> and <code>docker-compose.yml</code>'s <code>healthcheck:</code> block poll.</p>
-<p><strong><code>GET /health/ready</code></strong> (readiness: can it serve traffic): runs <code>SELECT 1</code> against the database
-(<code>check_database</code>). Returns <code>503</code> with per-check detail if the database is unreachable.</p>
-<p><strong><code>GET /health/startup</code></strong> (startup probe): identical to <code>/health/live</code> today; no
+<code>HEALTHCHECK</code> and <code>docker-compose.yml</code>'s <code>healthcheck:</code> block poll. The <strong>production</strong> healthcheck
+lives out-of-repo (homelab-infra <code>services/cyo-adventure/docker-compose.yml</code>) and still polls the
+un-prefixed <code>/health/live</code>, which is exactly why the alias must not be retired until that file has
+moved and been redeployed.</p>
+<p><strong><code>GET /api/v1/health/ready</code></strong> (readiness: can it serve traffic): runs <code>SELECT 1</code> against the
+database (<code>check_database</code>). Returns <code>503</code> with per-check detail if the database is unreachable.</p>
+<p><strong><code>GET /api/v1/health/startup</code></strong> (startup probe): identical to <code>/api/v1/health/live</code> today; no
 migration-completion check is wired in.</p>
-<p><strong><code>GET /health</code></strong> (undocumented alias, load-balancer compatibility): aliases <code>/health/live</code>.</p>
-<p><strong><code>check_cache()</code> (Redis)</strong> is wired into <code>/health/ready</code> and performs a real <code>PING</code> against
+<p><strong><code>GET /api/v1/health/</code></strong> (undocumented alias, load-balancer compatibility): aliases
+<code>/api/v1/health/live</code>.</p>
+<p><strong><code>GET /nginx-health</code></strong> is a different thing entirely: the frontend container's own two-byte stub,
+served by nginx and never reaching the backend. It answers whether nginx is up, nothing more. It is
+useful as a control: if <code>/nginx-health</code> succeeds while <code>/api/v1/health/ready</code> fails, the frontend
+is serving and the backend is unreachable behind it.</p>
+<p><strong><code>check_cache()</code> (Redis)</strong> is wired into <code>/api/v1/health/ready</code> and performs a real <code>PING</code> against
 <code>CYO_ADVENTURE_REDIS_URL</code> (the same Redis instance and timeout the rate limiter uses;
 <code>middleware/security.py</code>). It reports one of three states in the response's <code>checks.cache</code>: <code>"ok"</code>
 (ping succeeded), <code>"degraded"</code> (configured for Redis but the ping failed), or <code>"unconfigured"</code>
 (<code>CYO_ADVENTURE_RATE_LIMIT_BACKEND=memory</code>, so nothing in the request path depends on Redis).
-<strong>Deliberately, cache status never flips <code>/health/ready</code>'s HTTP code</strong>: the app fails open without
+<strong>Deliberately, cache status never flips <code>/api/v1/health/ready</code>'s HTTP code</strong>: the app fails open without
 Redis (the rate limiter falls back to an in-memory counter on any Redis error), so a <code>200</code> can
 still be paired with <code>checks.cache.status: false</code> when Redis is down; watch that field, or the
 queue-depth and worker-log checks in Section 5.1, rather than relying on the top-level status
 alone. <code>check_external_service()</code> remains an unwired placeholder: LLM/story-generation providers
 are optional and provider-specific, so there is no single external dependency to ping generically.</p>
-<p><strong><code>check_generation_queue()</code> (ADR-021 Phase 1)</strong> is wired into <code>/health/ready</code> as
+<p><strong><code>check_generation_queue()</code> (ADR-021 Phase 1)</strong> is wired into <code>/api/v1/health/ready</code> as
 <code>checks.generation_queue</code> and is the worker-down/worker-failing alarm: a stopped or crash-looping
 worker, or a worker whose jobs are failing outright (e.g. the schema-drift incident that motivated
 this check), is visible here well before anyone notices a specific story stuck. It reports
@@ -4106,12 +4131,12 @@ this check), is visible here well before anyone notices a specific story stuck. 
   signal that catches a <em>running</em> worker whose jobs are all failing (the schema-drift case); the
   first two counts alone only catch a <em>stopped</em> worker.</li>
 </ul>
-<p>Like cache, <strong><code>generation_queue</code> never flips <code>/health/ready</code>'s HTTP code</strong>: a stuck or failing
+<p>Like cache, <strong><code>generation_queue</code> never flips <code>/api/v1/health/ready</code>'s HTTP code</strong>: a stuck or failing
 generation pipeline must not pull API pods out of the load-balancer rotation for endpoints that
 never touch generation at all. Treat a nonzero <code>checks.generation_queue</code> count as a page-worthy
 signal on its own dashboard/alert, not as a 503; see Section 5.1 for the diagnosis and remediation
 steps this check is meant to trigger.</p>
-<p><strong><code>check_database_privilege()</code> (ADR-021 cutover observability)</strong> is wired into <code>/health/ready</code> as
+<p><strong><code>check_database_privilege()</code> (ADR-021 cutover observability)</strong> is wired into <code>/api/v1/health/ready</code> as
 <code>checks.database_privilege</code> and reports whether the API's connected role can bypass row-level
 security. It covers all three bypass paths PostgreSQL actually has:</p>
 <ol>
@@ -4127,8 +4152,8 @@ one (<code>via_role_attribute</code>, <code>via_table_ownership</code>), because
 attributes differently. A role with no <code>pg_roles</code> row reports <code>"degraded"</code>, not <code>"ok"</code>: an
 unanalyzable role fails closed. <code>"unknown"</code> is distinct from <code>"degraded"</code> and means the query
 itself failed, so the posture was never measured. The connected role name is logged, never
-returned: <code>/health/ready</code> is unauthenticated, so the response carries only the posture bit.</p>
-<p>Like cache and generation_queue, <strong><code>database_privilege</code> never flips <code>/health/ready</code>'s HTTP code</strong>:
+returned: <code>/api/v1/health/ready</code> is unauthenticated, so the response carries only the posture bit.</p>
+<p>Like cache and generation_queue, <strong><code>database_privilege</code> never flips <code>/api/v1/health/ready</code>'s HTTP code</strong>:
 a pre-cutover environment is an open security finding, not an outage, so it must not pull pods out
 of rotation. One limit matters when reading this field: it covers the <strong>API process only</strong>. The
 worker has no HTTP surface, so a forgotten <code>CYO_ADVENTURE_WORKER_DATABASE_URL</code> is invisible here.
@@ -4187,7 +4212,7 @@ configured for a given environment, logs remain the only observability surface t
 <h2 id="5-common-incidents">5. Common incidents<a class="headerlink" href="#5-common-incidents" title="Permanent link">&para;</a></h2>
 <h3 id="51-a-generation-job-is-stuck-in-queued">5.1 A generation job is stuck in "queued"<a class="headerlink" href="#51-a-generation-job-is-stuck-in-queued" title="Permanent link">&para;</a></h3>
 <ol>
-<li>Check <code>GET /health/ready</code>'s <code>checks.generation_queue</code> first (Section 3): a nonzero
+<li>Check <code>GET /api/v1/health/ready</code>'s <code>checks.generation_queue</code> first (Section 3): a nonzero
    <code>stale_queued</code>/<code>stale_running</code> count confirms a stopped or stalled worker, and a nonzero
    <code>recent_failed</code> count means the worker is running but every job is failing outright (check
    worker logs for the actual error before assuming this is a queue problem at all).</li>
@@ -4618,7 +4643,7 @@ connection-identity change, so rollback is immediate and has no data-loss risk.<
 those are the operator's local copy and the deployment's template, neither of which is the
 running process. Two sources are authoritative:</p>
 <ul>
-<li><code>/health/ready</code> reports a <code>database_privilege</code> check (<code>api/health.py</code>). <code>state: "ok"</code> means
+<li><code>/api/v1/health/ready</code> reports a <code>database_privilege</code> check (<code>api/health.py</code>). <code>state: "ok"</code> means
   the connected role cannot bypass RLS (cut over); <code>state: "degraded"</code> means it can (not cut
   over). The check is deliberately non-gating, so a pre-cutover environment stays HTTP 200,
   and it deliberately omits the role name because the endpoint is unauthenticated.</li>
@@ -4762,7 +4787,7 @@ because that test is currently the only thing that would notice.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 03:32:06 UTC">August 5, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 04:02:38 UTC">August 5, 2026</span>
   </span>
 
     
