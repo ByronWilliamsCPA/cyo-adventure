@@ -199,6 +199,52 @@ describe('ReaderChrome', () => {
       expect(playChoiceTapSound).toHaveBeenCalledTimes(1)
     })
 
+    it('has the playback subscription live at the microtask the DOM says sound is on (issue #588)', async () => {
+      // The deterministic form of the flake that made the sibling test above
+      // fail in CI twice on branches that changed no reader code. That test
+      // waits with `findByRole` and then clicks, which only fails when CI
+      // timing happens to open the window; this one opens the window on
+      // purpose, so it fails 100% of the time when the bug is present.
+      //
+      // The window: `findByRole`/`waitFor` resolve from a MutationObserver
+      // callback, which runs at the microtask checkpoint right after React
+      // mutates the DOM. React's PASSIVE effects (`useEffect`) flush later, in
+      // a scheduler macrotask. So between "the toggle's label says sound is on"
+      // and "the playback subscription reflects sound being on" there is a real
+      // gap, and a tap landing inside it hits the stale mount-time closure
+      // (`effectiveMuted === true`) and plays nothing.
+      //
+      // Registering our own MutationObserver puts this click in exactly that
+      // checkpoint. The fix is that the subscription is a LAYOUT effect, which
+      // runs synchronously inside the commit that changed the label, before
+      // the call stack unwinds and any microtask can run.
+      render(
+        <div>
+          <ReaderChrome position={{ label: 'Page 1' }} />
+          <button type="button" data-testid="choice-abc">
+            Open the door
+          </button>
+        </div>
+      )
+      // Pre-resolution the toggle reads "on" (fail-safe-silent muted state);
+      // the attribute flips in place on the same element when the default
+      // resolves, which is the mutation observed below.
+      const toggle = screen.getByRole('button', { name: 'Turn sound effects on' })
+      await new Promise<void>((resolve) => {
+        const observer = new MutationObserver(() => {
+          if (toggle.getAttribute('aria-label') !== 'Turn sound effects off') return
+          observer.disconnect()
+          // Deliberately synchronous inside the callback: deferring by even one
+          // microtask here would start letting the passive flush win and make
+          // this test flaky in the same way as the one it is replacing.
+          fireEvent.click(screen.getByTestId('choice-abc'))
+          resolve()
+        })
+        observer.observe(toggle, { attributes: true, attributeFilter: ['aria-label'] })
+      })
+      expect(playChoiceTapSound).toHaveBeenCalledTimes(1)
+    })
+
     it('does not play the choice-tap sound while muted', async () => {
       render(
         <div>

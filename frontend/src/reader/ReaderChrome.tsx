@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 
 import { ProgressBar } from '@ds/components/ProgressBar'
 import { StatusBadge } from '@ds/components/StatusBadge'
@@ -204,7 +204,23 @@ export function ReaderChrome({
   // The single playback subscription: every sound moment, muted or not,
   // funnels through here so there is exactly one place that decides
   // whether a sound actually plays.
-  useEffect(() => {
+  //
+  // #CRITICAL: timing dependencies: this MUST be a layout effect, not a
+  // passive one. Each listener captures `effectiveMuted` from the render that
+  // scheduled it, so the subscription is only correct once it has been
+  // re-established for the current value. Passive effects (`useEffect`) flush
+  // in a later scheduler macrotask, which leaves a real window in which the
+  // rendered DOM already says "sound is on" while the bus still holds the
+  // previous render's muted closure; a tap arriving in that window is silently
+  // swallowed. `useLayoutEffect` runs synchronously inside the same commit that
+  // produced the DOM, before the call stack unwinds, so the window never opens.
+  // This is what caused issue #588's CI flake, where the test's own
+  // MutationObserver-based wait resolved inside exactly that gap.
+  // #VERIFY: ReaderChrome.test.tsx, "has the playback subscription live at the
+  // microtask the DOM says sound is on (issue #588)", which reproduces the gap
+  // deterministically by clicking from inside a MutationObserver callback.
+  // Reverting this to useEffect fails that test 3/3.
+  useLayoutEffect(() => {
     const unsubscribe = [
       onReaderSoundEvent('page-turn', () => {
         if (!effectiveMuted) playPageTurnSound()
