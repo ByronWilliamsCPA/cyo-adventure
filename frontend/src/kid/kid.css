@@ -132,6 +132,42 @@
   white-space: nowrap;
 }
 
+/* Persistent, low-key reachability link (product decision, 2026-08-04): the
+   only prior path from the kid surface to the guardian side was
+   ProfilePickerPage's PIN-failure escape hatch, so this bar now always
+   offers "Ask a grown-up" too. Deliberately NOT styled as a pill like
+   .kid-nav__switch: this is a way OUT for a grown-up, not a primary kid
+   control, so it reads as quiet underlined text rather than competing for a
+   child's attention. Still meets the 44px tap floor and gets its own visible
+   focus state, matching every other interactive control in this bar.
+   --color-ink-secondary (not ink-muted): same 4.5:1 AA rationale as
+   .kid-nav__label span above, both rendering on --color-parchment-dark. */
+.kid-nav__ask-grownup {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: var(--space-2, 0.5rem);
+  flex-shrink: 0;
+  color: var(--color-ink-secondary, #5a3e28);
+  font-family: var(--font-sans, 'Segoe UI', sans-serif);
+  font-weight: var(--weight-semibold, 600);
+  font-size: var(--text-xs, 0.75rem);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.kid-nav__ask-grownup:focus-visible {
+  color: var(--color-amber-text, #87561d);
+  outline: 2px solid var(--color-amber, #e07f2e);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .kid-nav__ask-grownup:hover {
+    color: var(--color-amber-text, #87561d);
+  }
+}
+
 /* Narrow phones: give the child's name and avatar their own row so the
    gamification cluster and the switch link get the full width below it,
    rather than competing with the avatar for ~236px. Without this the shrink

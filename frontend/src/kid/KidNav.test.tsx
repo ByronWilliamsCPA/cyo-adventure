@@ -89,6 +89,13 @@ describe('KidNav', () => {
     expect(await screen.findByText('Mia')).toBeInTheDocument()
   })
 
+  it('always offers a persistent Ask a grown-up link to guardian login', async () => {
+    profilesGet.mockResolvedValue({ data: { profiles: PROFILES } })
+    renderNav()
+    const link = await screen.findByRole('link', { name: /ask a grown-up/i })
+    expect(link).toHaveAttribute('href', '/guardian/login')
+  })
+
   it('still renders the Switch reader link when the profile lookup fails', async () => {
     profilesGet.mockRejectedValue(new Error('offline'))
     renderNav()
