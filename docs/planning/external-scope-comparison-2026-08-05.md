@@ -69,13 +69,15 @@ work starts or closes.
 
 ---
 
-## N01 — Entitlement ledger design for commerce (Phase 8)
+## N01: Entitlement ledger design for commerce (Phase 8)
 
 **Register row**: UW-N01. **Status**: unscheduled.
 
-This project has zero commerce/billing/subscription code today (confirmed by a full-repo grep:
-no `billing/`, `payments/`, `subscription/`, or `entitlement/` module, no payment-provider SDK
-dependency). Track 2 Phase 8 (Capacitor shell + IAP) is the first phase that needs this, and it
+This project has no payment-processing or entitlement-ledger implementation today (confirmed by
+a full-repo grep: no `billing/`, `payments/`, `subscription/`, or `entitlement/` module, and no
+payment-provider SDK dependency). The words "billing" and "subscription" do occur in the codebase
+in unrelated senses, cost-control plumbing for the provider/model allowlist and event subscription
+respectively, so what is absent is commerce, not the vocabulary. Track 2 Phase 8 (Capacitor shell + IAP) is the first phase that needs this, and it
 has not started. When it does, the external document's entitlement model is a reasonable
 starting design rather than something to invent from scratch, because it maps cleanly onto this
 project's existing event-sourced style (`PipelineEvent`, `GenerationJob`).
@@ -87,7 +89,7 @@ project's existing event-sourced style (`PipelineEvent`, `GenerationJob`).
   is *derived* from the event stream and periodically reconciled against the payment provider,
   not stored directly.
 - A story request **reserves** exactly one credit, using an idempotency key, before generation
-  begins. The credit is **consumed only when a publishable version is approved** — not when
+  begins. The credit is **consumed only when a publishable version is approved**, not when
   generation starts and not on a failed attempt. System failure or an exhausted safety-retry
   path **releases** the reservation with no loss of value.
 - Every event links to its source (a specific financial event, request, or story) and carries an
@@ -129,7 +131,7 @@ which prices the same offer shape rather than just its mechanics:
   cancellation; purchased credits never expire.
 - **A per-story direct-cost stack** they use as a planning allowance, not a measured fact:
   generation + repair $0.20, moderation + deterministic validation $0.10, curated media/storage
-  $0.10, expected rejection/retry reserve $0.25, safety/quality operations reserve $0.25 — **$0.90
+  $0.10, expected rejection/retry reserve $0.25, safety/quality operations reserve $0.25, summing to **$0.90
   total** for a text-first story. Their own token-rate math (10k input / 12k output tokens, public
   vendor tiers) puts raw text generation at $0.016-$0.41 depending on model tier, which is *not*
   the dominant cost component; the retry and safety-operations reserves are larger than the token
@@ -152,7 +154,7 @@ which prices the same offer shape rather than just its mechanics:
 
 ---
 
-## N02 — Verifiable parental consent (VPC) method and statutory citations (Phase 7)
+## N02: Verifiable parental consent (VPC) method and statutory citations (Phase 7)
 
 **Register row**: UW-N02. **Status**: decision (owner: project owner + counsel, per
 [UW-M03](./unscheduled-work-register.md)).
@@ -161,34 +163,43 @@ ADR-018 (children's-privacy compliance) is still `Proposed`, not `Accepted`, and
 already flags the VPC method as the highest legal-risk open item: whether a signature-capture
 step (canvas signature or typed full-legal-name attestation) plus a checkbox satisfies COPPA
 §312.5(b)(2)(i)'s "signed" requirement. The external document does not resolve that question
-either — it is not legal advice — but it names the specific current sources counsel will need,
+either (it is not legal advice), but it names the specific current sources counsel will need,
 which is worth having in hand before that engagement starts rather than re-researching it then.
 
 **Citations the external document supplied** (each is the external document's own citation;
-verify currency before relying on it, since rules and effective dates change):
+verify currency before relying on it, since rules and effective dates change). Each entry carries a
+durable pinpoint identifier (Federal Register volume and page, CFR part, U.S.C. chapter, or ORS
+section range) rather than a URL, deliberately: a citation stays resolvable for counsel long after
+any given agency URL moves, and this repository's link check runs against every external URL in the
+tree, so one rotted legal link would block unrelated pull requests. Resolve each through an official
+source (eCFR for 16 CFR Part 312, the Federal Register for 90 FR 16918, the Oregon Legislature for
+the ORS ranges):
 
-- FTC / Federal Register, **Children's Online Privacy Protection Rule, 90 FR 16918** — amended
-  rule effective April 22, 2025, with a stated general compliance date of **April 22, 2026**.
+- FTC / Federal Register, **Children's Online Privacy Protection Rule, 90 FR 16918** (codified at
+  **16 CFR Part 312**): amended rule *published* April 22, 2025 and *effective* **June 23, 2025**,
+  with a stated general full-compliance date of **April 22, 2026**. The external document gave
+  April 22, 2025 as the effective date; that is the Federal Register publication date, and the two
+  are about eight weeks apart, so deadline arithmetic should start from the June 23 effective date.
   As of this document's date (2026-08-05), that compliance date has already passed. This alone
   is worth flagging to whoever schedules ADR-018's counsel gate: this is not purely forward
   planning once any child data exists outside a single private family's homelab use.
-- FTC, "FTC Finalizes Changes to Children's Privacy Rule" (Jan 16, 2025) — summarizes separate
+- FTC, "FTC Finalizes Changes to Children's Privacy Rule" (Jan 16, 2025): summarizes separate
   consent for third-party advertising/disclosures, retention limits, and revised
   personal-information definitions.
-- FTC, **COPPA Age-Verification Enforcement Policy Statement** (Feb 25, 2026) — current
+- FTC, **COPPA Age-Verification Enforcement Policy Statement** (Feb 25, 2026): current
   conditions for privacy-preserving age-verification data collection.
-- **ROSCA**, 15 U.S.C. Chapter 110 — clear material terms, express informed consent, and simple
+- **ROSCA**, 15 U.S.C. Chapter 110: clear material terms, express informed consent, and simple
   cancellation for online negative-option (auto-renewing) offers.
-- Oregon **ORS 646A.293-646A.295** (Automatic Renewal and Continuous Service) — affirmative
+- Oregon **ORS 646A.293-646A.295** (Automatic Renewal and Continuous Service): affirmative
   consent, retained acknowledgment, timely and easy cancellation.
-- Oregon **ORS 646A.570-646A.589** (Oregon Consumer Privacy Act) — data minimization,
+- Oregon **ORS 646A.570-646A.589** (Oregon Consumer Privacy Act): data minimization,
   safeguards, notices, consumer rights, and provisions specific to consumers under 16.
 
 **Required consent-record fields, as specified externally** (for comparison against whatever
 this project's `User` VPC columns / `PersonalizationDisclosureConsent` model end up capturing):
 notice and policy version, stated purposes, child reference, consenting authority, VPC method,
 verification-evidence reference, timestamp, jurisdiction context, status, and withdrawal
-history — sufficient, in their words, to "reconstruct exactly what was agreed, by whom, how, for
+history: sufficient, in their words, to "reconstruct exactly what was agreed, by whom, how, for
 which child and purposes, and under which text versions."
 
 **Before implementing**: this is drafting input for counsel, not a ruling. ADR-018's own open
@@ -198,7 +209,7 @@ segregation) are unaffected by this document and still need the counsel engageme
 
 ---
 
-## N03 — Versioned, schema-pinned personalization variable registry (Phase 4b)
+## N03: Versioned, schema-pinned personalization variable registry (Phase 4b)
 
 **Register row**: UW-N03. **Status**: blocked (same blocker as
 [UW-H01](./unscheduled-work-register.md): ADR-023 Stage A's G1 gate fired STOP at 3.3% sentinel
@@ -210,29 +221,29 @@ registry. The external document's `VariableDefinition` contract is more complete
 in particular addresses a real, current problem: **schema versioning so a historical story
 renders reproducibly** even after the variable catalog changes shape. That property matters here
 independent of this comparison, since ADR-023 personalization is already blocked on a fill-time
-reliability failure — a versioned registry would not fix that defect directly, but the class of
+reliability failure; a versioned registry would not fix that defect directly, but the class of
 regression it is designed to catch (a rendered story silently drifting from what was approved) is
 exactly the failure mode ADR-023's own gate is trying to guard against.
 
-**The contract, as specified externally** — each variable definition carries:
+**The contract, as specified externally.** Each variable definition carries:
 
-- `key` — a namespaced, immutable identifier (e.g. `reader.first_name`, `pet.name`); never
+- `key`: a namespaced, immutable identifier (e.g. `reader.first_name`, `pet.name`); never
   executable syntax.
-- `display label and explanation` — guardian-facing, plain language.
-- `type` — name, short text, enum, color, place label, relationship label, pronoun set, number
+- `display label and explanation`: guardian-facing, plain language.
+- `type`: name, short text, enum, color, place label, relationship label, pronoun set, number
   band, or an approved composite.
-- `scope` — system, template, household, child profile, or a single story request.
-- `default and fallback` — an editorial default plus a guaranteed-safe generic fallback; an
+- `scope`: system, template, household, child profile, or a single story request.
+- `default and fallback`: an editorial default plus a guaranteed-safe generic fallback; an
   unresolved slot may never publish.
-- `constraints` — length, Unicode categories, allow/deny patterns, normalization, banned
+- `constraints`: length, Unicode categories, allow/deny patterns, normalization, banned
   markup/control characters, PII policy.
-- `transforms` — an **allowlisted** set of functions only (title case, possessive,
+- `transforms`: an **allowlisted** set of functions only (title case, possessive,
   subject/object/possessive pronoun, article); explicitly no general expression engine.
-- `sensitivity and purpose` — data classification, collection purpose, AI-disclosure rule,
+- `sensitivity and purpose`: data classification, collection purpose, AI-disclosure rule,
   retention class, export/delete behavior.
-- `approval behavior` — whether a change requires guardian preview/reapproval, and whether
+- `approval behavior`: whether a change requires guardian preview/reapproval, and whether
   existing story editions may be rebound to a new value without a new canonical generation.
-- `schema version` — the version used to validate a snapshot and re-render a historical story
+- `schema version`: the version used to validate a snapshot and re-render a historical story
   edition reproducibly.
 
 Their sample catalog (`reader.first_name`, `reader.pronouns`, `pet.name`, `pet.species`,
@@ -248,33 +259,41 @@ rework.
 
 ---
 
-## N04 — WCAG 2.2 AA conformance target (Phase 5)
+## N04: WCAG 2.2 AA conformance target (Phase 5)
 
 **Register row**: UW-N04. **Status**: unscheduled.
 
 This project's e2e accessibility suite (`frontend/e2e/a11y.spec.ts`) scopes axe-core to
-`wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa` tags — WCAG **2.1** AA, one revision behind the
+`wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa` tags, which is WCAG **2.1** AA, one revision behind the
 external document's NFR-A11Y-01 target of WCAG **2.2** AA. The suite's own docstring already
 calls itself "a floor, not a substitute for manual testing," and a prior internal review
 (`frontend-test-review-2026-07-27.md`) separately flagged accessibility as "a happy-path smoke,"
 so this is a genuine, if modest, gap rather than a nitpick.
 
 **What 2.2 adds over 2.1** that is relevant to a touch-heavy, child-facing, form-heavy (consent,
-checkout, export/delete) product: **target size** (2.5.8, minimum 24×24 CSS px — already exceeded
-by this project's own 44×44 child-product target, so likely a pass once scoped), **focus
-appearance** (2.4.11/2.4.13), **dragging movements** (2.5.7), **consistent help** (3.2.6),
-**redundant entry** (3.3.7), and **accessible authentication** (3.3.8) — the last three are the
-criteria most relevant to guardian consent, checkout, and rights (export/delete) flows, which is
-exactly the surface this project's own accessibility debt review flagged as under-tested.
+checkout, export/delete) product: **target size (minimum)** (2.5.8, minimum 24×24 CSS px, already
+exceeded by this project's own 44×44 child-product target, so likely a pass once scoped), **focus
+not obscured (minimum)** (2.4.11), **dragging movements** (2.5.7), **consistent help** (3.2.6),
+**redundant entry** (3.3.7), and **accessible authentication (minimum)** (3.3.8). The last three
+are the criteria most relevant to guardian consent, checkout, and rights (export/delete) flows,
+which is exactly the surface this project's own accessibility debt review flagged as under-tested.
 
-**Before implementing**: widen the axe-core tag scope
-(`.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])` or equivalent) and treat
-any new finding as a normal accessibility defect, not a blocking rewrite — most of this project's
-existing design already targets larger touch sizes and simpler flows than the AA floor requires.
+Mind the conformance levels, because they decide what an AA target actually obliges: 3.2.6 and
+3.3.7 are Level **A** additions, while 2.4.11, 2.5.7, 2.5.8, and 3.3.8 are Level **AA**. The other
+two new focus criteria, 2.4.12 (focus not obscured, enhanced) and 2.4.13 (focus appearance), are
+Level **AAA** and therefore sit outside an AA conformance target entirely.
+
+**Before implementing**: widen the axe-core tag scope to
+`.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa'])`. Both 2.2 tags
+are required, not just the AA one: axe's WCAG tags are additive per level, so `wcag22aa` alone
+covers only the 2.2 Level AA additions and would silently skip 3.2.6 and 3.3.7, the two criteria
+this section calls most relevant. Then treat any new finding as a normal accessibility defect, not
+a blocking rewrite; most of this project's existing design already targets larger touch sizes and
+simpler flows than the AA floor requires.
 
 ---
 
-## N05 — Approval-model scaling decision: guardian-primary vs. admin-only (Phase 7)
+## N05: Approval-model scaling decision: guardian-primary vs. admin-only (Phase 7)
 
 **Register row**: UW-N05. **Status**: decision (owner: project owner + safety operator, before
 Track 2 phases 6-9 scale to multiple families).
@@ -289,55 +308,72 @@ with hard policy blocks never overridable by anyone below staff.
 Admin-only review is sound and deliberate at this project's current one-admin, one-family scale.
 It does not scale to a multi-family paid product (Track 2, phases 6-9) without a moderation
 staff sized to review 100% of every story from every family by hand. The external document's
-model — guardian approves their own family's stories, with automatic escalation to staff review
-for flagged/high-risk categories — is the more standard pattern for a product intending to admit
+model, under which a guardian approves their own family's stories with automatic escalation to
+staff review for flagged/high-risk categories, is the more standard pattern for a product intending to admit
 outside families, and is worth deciding on *before* Phase 6-9 opens intake rather than
 discovering the staffing cost after the fact.
 
 **Before deciding**: this interacts with the 3-layer moderation calibration work already
-tracked elsewhere in the register (`GS2`/`GS3`, moderation review-model redesign) — the
+tracked elsewhere in the register (`GS2`/`GS3`, moderation review-model redesign): the
 guardian-primary model is only as safe as the automated gates that decide what gets escalated,
 so this decision likely wants to wait until that calibration work has a real false-negative
 rate to reason about.
 
 ---
 
-## N06 — Named security-verification framework: ASVS 5.0 Level 2 + OWASP LLM Top 10:2026 (Phase 5)
+## N06: Pin an ASVS level and a pentest surface onto the existing ASVS 5.0.0 spine (Phase 5)
 
 **Register row**: UW-N06. **Status**: unscheduled.
 
 This project already does a considerable amount of the *substance* the external document asks
-for (a PII egress guard, a provider/model allowlist, tiered RLS, append-only security events),
-but has no named, external control framework to scope a penetration test or a control matrix
-against — CLAUDE.md's security section is a set of practices, not a cited standard. The external
-document's NFR-SEC-01 and NFR-SEC-16 target **OWASP ASVS 5.0 Level 2**, tailored to child data,
-commerce, staff administration, and AI components, plus an independent penetration test covering
+for (a PII egress guard, a provider/model allowlist, tiered RLS, append-only security events), and
+it already has the named framework the external document assumes is missing:
+[assurance-spine.md](../security/assurance-spine.md) records **OWASP ASVS 5.0.0** (17 chapters,
+about 350 requirements, released 30 May 2025) as the "Primary spine for application security."
+Anything below that claims this project has no cited standard is wrong; that document is the
+standard, and Phase 5 planning should start from it.
+
+What the external document adds is narrower and still useful. Its NFR-SEC-01 and NFR-SEC-16
+independently land on **OWASP ASVS 5.0 Level 2**, tailored to child data, commerce, staff
+administration, and AI components, plus an independent penetration test covering
 guardian/child/admin surfaces, API authorization, tenant isolation, payment/entitlement,
-export/deletion, and AI-specific abuse. NFR-SEC-12 separately points at the **OWASP Top 10 for
-LLM Applications 2026** for prompt-injection/data-exfiltration-resistance requirements
-specifically (treat model output as untrusted, separate instructions from data, allowlist
-tools/models).
+export/deletion, and AI-specific abuse. Two things there are not yet pinned down in
+`assurance-spine.md`: a specific ASVS **level**, and a concrete **pentest surface list**. That an
+outside document with no view of this repository converged on the same spine is a mild positive
+signal about the choice; the level and the surface list are the actual open items.
 
-Adopting these two by reference gives Phase 5's security-hardening work (Cluster E in the
-register) a recognized scope boundary to plan a pentest and a control matrix against, rather
-than an ad hoc list assembled per review.
+NFR-SEC-12 separately points at the **OWASP Top 10 for LLM Applications 2026** as a control
+target. Do not adopt that part. `assurance-spine.md`'s source hierarchy has already ruled on it:
+the OWASP LLM Top 10, the API Top 10, and MITRE ATLAS are listed there as "Threat enumeration for
+corpus building," with the explicit note "Not control catalogs. Do not spine on them." Its
+prompt-injection substance (treat model output as untrusted, separate instructions from data,
+allowlist tools and models) is still worth reading as threat input, which is exactly the role the
+existing spine already assigns it.
 
-**Before implementing**: this is a scoping reference, not new work by itself — the actual gap
-closure is whatever Cluster E rows (UW-E04 review-model allowlist, UW-E05 real PII detector,
-etc.) already track. Treat this as "name the framework these already serve," not a new
-workstream.
+**Before implementing**: this is a scoping refinement of an existing decision, not a new framework
+adoption, and the actual gap closure is whatever Cluster E rows (UW-E04 review-model allowlist,
+UW-E05 real PII detector, etc.) already track. The two decidable questions are whether to pin ASVS
+**Level 2** explicitly in `assurance-spine.md`, and whether to adopt the external document's
+pentest surface list as the scope statement for that engagement.
 
 ---
 
-## N07 — Concrete data-retention schedule defaults (Phase 7)
+## N07: Concrete data-retention schedule defaults (Phase 7)
 
 **Register row**: UW-N07. **Status**: decision (owner: privacy/counsel + project owner, feeds
 the same ADR-018 gate as N02).
 
-ADR-018 is still `Proposed` and does not yet commit to a category-by-category retention
-schedule. The external document's planning retention table is a reasonable first-draft input —
-explicitly **planning defaults, not legal conclusions** in their own words — for whoever closes
-that gap, rather than something to derive from scratch:
+ADR-018 itself is still `Proposed`, but the category-by-category retention schedule it gates is
+**already resolved**, so this is a reconciliation rather than a blank page:
+[coppa-gdpr-remediation-plan.md](../compliance/coppa-gdpr-remediation-plan.md) carries an
+owner-accepted table, marked "Resolved 2026-07-20: accepted as drafted" and kept "as the actual
+policy, not a proposal, and now what Phase 4b publishes and Phase 4c's purge jobs build against."
+ADR-018 cites that document directly. The external table is still worth keeping for two specific
+reasons: it covers several categories the resolved schedule does not (adult account and household,
+consent evidence, product analytics, application logs, financial records, backups), and it
+contradicts the resolved schedule on at least one row that is already settled, which is better
+resolved deliberately than by whichever document a future reader happens to open first. Their table
+is explicitly **planning defaults, not legal conclusions** in their own words:
 
 | Data set | Their planning default |
 |---|---|
@@ -355,14 +391,20 @@ that gap, rather than something to derive from scratch:
 | Support / moderation cases | Target 2 years; child-content attachments shorter where possible |
 | Backups | Target rolling expiry ≤ 90 days |
 
-**Before implementing**: every row above needs privacy-counsel and finance sign-off on the
-purpose, trigger, active-store period, backup horizon, legal-hold behavior, and vendor-deletion
-commitment before it becomes a real policy — the table above is a drafting starting point, not
-an approved schedule.
+**Known conflict with the resolved schedule: reading progress.** The resolved 2026-07-20 policy
+keeps reading data for the "life of the active profile, plus 30-90 days after deactivation before
+purge"; the external default above is "target 12 months' inactivity." The resolved policy governs
+unless and until it is deliberately changed, so do not let the table above silently override it.
+
+**Before implementing**: the rows above that introduce *new* categories need privacy-counsel and
+finance sign-off on the purpose, trigger, active-store period, backup horizon, legal-hold behavior,
+and vendor-deletion
+commitment before they become real policy: the table above is a drafting starting point, not an
+approved schedule. Rows that duplicate the resolved schedule need no re-litigation.
 
 ---
 
-## N08 — ADR-027's image-moderation classifier has no register home (Phase 4b)
+## N08: ADR-027's image-moderation classifier has no register home (Phase 4b)
 
 **Register row**: UW-N08. **Status**: unscheduled.
 
@@ -371,28 +413,35 @@ names an automated image-moderation classifier as the explicit precondition for 
 per-node art past the seven-skeleton pilot, then says only that it is "tracked as follow-on work
 when the pilot's results justify scaling." That is exactly the unscheduled-deferral pattern the
 [adr/README.md](./adr/README.md#follow-on-work-is-part-of-the-adr-required-for-new-and-amended-adrs)
-Follow-on-work rule exists to close — ADR-027 postdates the 2026-07-28 rule cutoff, so it is
+Follow-on-work rule exists to close; ADR-027 postdates the 2026-07-28 rule cutoff, so it is
 bound by it, and had no Follow-on work section until this change added one. Not part of what was
 asked for in this round; recorded because leaving it uncited immediately next to a properly-cited
 item would repeat the exact defect the rule targets.
 
-**Before implementing**: this is a real gate, not busywork — ADR-027 itself treats it as the
+**Before implementing**: this is a real gate, not busywork: ADR-027 itself treats it as the
 condition for any expansion beyond the pilot, and building the classifier ahead of the pilot's
 own results would be speculative, per that ADR's own "Alternative 3" reasoning.
 
 ---
 
-## N09 — Generated in-story-illustration cost citation for ADR-027 (Phase 4b)
+## N09: Generated in-story-illustration cost citation for ADR-027 (Phase 4b)
 
-**Register row**: UW-N09. **Status**: done (landed on branch `claude/scope-comparison-llm-design-keqcgh`).
+**Register row**: UW-N09. **Status**: done (landed in PR #620, the same change that added this
+document).
 
 ADR-027 (accepted 2026-08-01) authorizes per-node illustration at the 3-5 band and prices its
 own storage/delivery budget (WebP, 1536px, 150KB target/200KB ceiling per image, 8MB per 3-5
-book) — but never prices *generation* itself. The Commercial and Revenue Viability Report
-supplies the missing number: **8-12 generated scenes add roughly $0.27-$2.40 in raw per-image
-generation cost**, using public per-image rates for a previous-generation image model, before
-retries, consistency work, moderation, or human review. Their own source flags this is
-illustrative of order-of-magnitude only, not a current-model quote.
+book), but never prices *generation* itself. The Commercial and Revenue Viability Report supplies
+the missing number: **a set of 8-12 generated scenes adds roughly $0.27-$2.40 per story in raw
+image-generation cost**. That range is a per-*story* total derived from public per-image rates, not
+the price of a single image, and it uses a previous-generation image model, before retries,
+consistency work, moderation, or human review. Their own source flags it as illustrative of
+order-of-magnitude only, not a current-model quote.
+
+**Scale caveat, and why the figure cannot be carried over as-is**: 8-12 scenes is the external
+document's own assumption, not ADR-027's. ADR-027 scopes its pilot at **10-45 node images per
+book**, so at the top of that range the imported figure understates generation spend by roughly
+4x. Re-derive against 10-45 before the number informs any expand/don't-expand call.
 
 This has been added directly to ADR-027's new Follow-on work section rather than only recorded
 here, since the whole point is that the number needs to live where the pilot's future
@@ -400,26 +449,26 @@ expand/don't-expand call will actually look for it.
 
 **Before relying on this number**: it is a stale, previous-model per-image rate. Re-price against
 whatever image model is actually in production (Gemini via `covers/provider.py`, per ADR-017)
-before using it in any real go/no-go decision — it is an order-of-magnitude placeholder, not a
+before using it in any real go/no-go decision: it is an order-of-magnitude placeholder, not a
 budget line.
 
 ---
 
-## N10 — Engagement/analytics north-star framework (Phase 4c)
+## N10: Engagement/analytics north-star framework (Phase 4c)
 
 **Register row**: UW-N10. **Status**: unscheduled.
 
-Unlike N01-N07, this one is not gated on commerce, ADR-023, or counsel — it is a measurement
+Unlike N01-N07, this one is not gated on commerce, ADR-023, or counsel; it is a measurement
 framework usable at the current family-tier, pre-monetization scale, and there is no equivalent
 document anywhere in `docs/planning/` today (checked; zero hits for "north star," "event
 taxonomy," or "KPI" outside two unrelated mentions).
 
 **The framework, as specified externally:**
 
-- **North-star metric**: "30-day Family Story Value Rate" — the percentage of first-time
+- **North-star metric**: "30-day Family Story Value Rate": the percentage of first-time
   households that approve a story and then either reach an ending, deliberately replay an
   alternate path, or start an approved next adventure within 30 days, with no critical safety or
-  isolation incident. It measures delivered family value, not screen time or session count —
+  isolation incident. It measures delivered family value, not screen time or session count,
   consistent with this project's own existing stance against optimizing time-on-screen
   (`project-vision.md`, ADR-004's no-third-party-telemetry-on-children posture).
 - **Anti-gaming metric definitions**, worth adopting verbatim regardless of which north-star
@@ -431,7 +480,7 @@ taxonomy," or "KPI" outside two unrelated mentions).
     disclosed benefit; email opens do not count.
   - Approval rate is reported with rejection reasons and excludes technical duplicate candidates.
   - Unit cost includes generation, moderation, retries, worker time, media, and directly
-    attributable support time — not only the model call.
+    attributable support time, not only the model call.
   - Retention cohorts are grouped by acquisition/offer date, not calendar averages, so a
     deteriorating new cohort cannot hide inside an aggregate.
 - **A five-domain KPI tree** (Acquire, Activate, Deliver value, Retain, Monetize, Operate, Trust)
@@ -439,7 +488,7 @@ taxonomy," or "KPI" outside two unrelated mentions).
   optimize minutes or late-night use"; Retain's is "easy cancel; no child pressure").
 
 **Before implementing**: this needs an owner decision on which specific event taxonomy and
-storage this project's existing (and still fairly minimal) telemetry should grow into — it is a
+storage this project's existing (and still fairly minimal) telemetry should grow into; it is a
 design framework to adapt, not a schema to import directly. It should also stay proportionate to
 this project's current non-commercial scale; several of the report's specific domains (Monetize,
 CAC) are not yet relevant here and can be adopted later, if and when Phase 8 makes them so.
@@ -452,28 +501,28 @@ For completeness, things the external documents recommended were considered and 
 future reader does not re-propose them:
 
 - **Azure-first / large dedicated-team delivery framing** ($900K-2.2M, 32-40 week, ~10-person
-  team) — irrelevant to this project's actual homelab-first, small-team execution model
+  team), irrelevant to this project's actual homelab-first, small-team execution model
   (ADR-004). Not tracked as a register row; there is nothing to schedule.
-- **Commerce-as-MVP-blocking framing** — this project's v1 is live and family-usable without any
+- **Commerce-as-MVP-blocking framing**: this project's v1 is live and family-usable without any
   commerce code, by deliberate design (`project-vision.md`). The external document's urgency
   does not apply; N01 above captures only the *design pattern* for when Phase 8 actually starts.
-- **"No cycles in MVP" story-graph constraint** — this project's validator already permits
+- **"No cycles in MVP" story-graph constraint**: this project's validator already permits
   controlled cycles for the `loop_and_grow`/`open_map` topologies (ADR-011, gated by validator
   rule PL-18), which is a deliberate capability the external document did not anticipate, not a
   gap to close.
 - **The Commercial and Revenue Viability Report's break-even scale and 90-day validation/go-no-go
-  apparatus** (Sections 8, 12, 15) — calibrated to the same funded-startup build cost as the
+  apparatus** (Sections 8, 12, 15), calibrated to the same funded-startup build cost as the
   other two source documents. This project's Phase 8 has not started and v1 is deliberately
   non-commercial; that scale question is not one this project faces today. Not tracked as a
   register row.
-- **"Exclude open child chat / free prompting" as a launch posture** — the report treats this as
+- **"Exclude open child chat / free prompting" as a launch posture**: the report treats this as
   a categorical exclusion on safety/abuse/moderation grounds. This project's actual decision
   (ADR-015) already allows a short, rate-limited, guardian-cost-gated child-typed wish, screened
   by the same PII/injection controls as guardian text. Recorded as a considered tension, not a
   gap: the report's caution is a reasonable outside view of that surface's risk, and the existing
   prompt-injection gap already tracked at [UW-D20](./unscheduled-work-register.md) is the more
   concrete place that risk shows up today, not a reason to reverse ADR-015.
-- **"Generated character/scene art" as something to defer entirely** — the report scores this
+- **"Generated character/scene art" as something to defer entirely**: the report scores this
   5/5 risk and recommends deferring until "text value is proven." This project has already
   shipped cover art (ADR-017) and accepted per-node art at the 3-5 band (ADR-027), both with the
   human-per-item review gate the report would itself want if it knew this project was doing it.
@@ -481,14 +530,14 @@ future reader does not re-propose them:
 
 ## Related documents
 
-- [unscheduled-work-register.md](./unscheduled-work-register.md) — Cluster N holds the
+- [unscheduled-work-register.md](./unscheduled-work-register.md): Cluster N holds the
   phase/status tracking for all ten items above
-- [adr-027-in-story-illustration.md](./adr/adr-027-in-story-illustration.md) — N08 and N09's home
-- [adr-018-childrens-privacy-compliance.md](./adr/adr-018-childrens-privacy-compliance.md) — N02
+- [adr-027-in-story-illustration.md](./adr/adr-027-in-story-illustration.md): N08 and N09's home
+- [adr-018-childrens-privacy-compliance.md](./adr/adr-018-childrens-privacy-compliance.md): N02
   and N07 both feed this ADR's still-open counsel gate
-- [adr-023-story-personalization-slots.md](./adr/adr-023-story-personalization-slots.md) — N03's
+- [adr-023-story-personalization-slots.md](./adr/adr-023-story-personalization-slots.md): N03's
   blocker
-- [adr-005-mandatory-human-approval.md](./adr/adr-005-mandatory-human-approval.md) — N05's
+- [adr-005-mandatory-human-approval.md](./adr/adr-005-mandatory-human-approval.md): N05's
   baseline
-- [roadmap.md](./roadmap.md) / [PROJECT-PLAN.md](./PROJECT-PLAN.md) — Phase 7/8 homes for N01,
+- [roadmap.md](./roadmap.md) / [PROJECT-PLAN.md](./PROJECT-PLAN.md): Phase 7/8 homes for N01,
   N02, N05, N07

@@ -235,16 +235,20 @@ prompt) is small enough to be an extension, which decisions 3 and 6 make explici
   target/200KB ceiling per image, 8MB per 3-5 book) price *storage and delivery* only. A
   2026-08-05 external commercial-viability review
   ([external-scope-comparison-2026-08-05.md](../external-scope-comparison-2026-08-05.md), UW-N09)
-  estimates 8-12 generated scenes add roughly $0.27-$2.40 in raw per-image generation cost
-  (public per-image rates, before retries,
-  consistency work, or moderation), which this ADR's pilot never had to reason about because its
-  gating question was review volume, not spend. **Landed in this change** (this ADR now cites the
-  figure); the cost line should be folded into any future per-story cost ledger
-  (`UW-J20`/`UW-N01`) once the pilot has real generation counts to price against.
+  estimates that a set of 8-12 generated scenes adds roughly **$0.27-$2.40 per story** in raw
+  image-generation cost (a per-story total derived from public per-image rates, not a per-image
+  price, and before retries, consistency work, or moderation), which this ADR's pilot never had to
+  reason about because its gating question was review volume, not spend. **Landed in this change**
+  (this ADR now cites the figure); the cost line should be folded into any future per-story cost
+  ledger (`UW-J20`/`UW-N01`) once the pilot has real generation counts to price against.
+  **Do not carry the number over unadjusted**: 8-12 scenes is the external review's own assumption,
+  while section 7 above scopes this pilot at 10-45 node images per book, so at the top of that
+  range the estimate understates generation spend by roughly 4x. Re-derive against 10-45 before it
+  informs an expand/don't-expand call.
 - **Decision 5's automated-moderation precondition has no register home.** The decision text says
   the classifier is "tracked as follow-on work when the pilot's results justify scaling," which is
   exactly the kind of unscheduled deferral this rule exists to catch. Given a real home:
-  `UW-N08` (Phase 4b, unscheduled, blocked in effect on the pilot's own results per decision 5).
+  `UW-N08` (Phase 4b, status `blocked`, on the pilot's own results per decision 5).
 
 ## Related
 
