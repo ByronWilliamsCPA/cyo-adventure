@@ -372,16 +372,22 @@ item P0-10 and a Phase 0 exit condition.
 production since 2026-07-05 at `https://cyo.williamshome.family` (Cloudflare, Pangolin
 VPS, WireGuard tunnel, docker-host Traefik). R1 (the internal web release) is
 feature-complete as of 2026-07-03 and has been exercised end to end against this live
-URL, including guardian email/password sign-in through Supabase (ADR-009), `/health/live`
-and `/health/ready` returning 200 (verified 2026-07-07), and the full guardian-authoring
-to kid-reading journey. See `docs/planning/roadmap.md` (Phase 5 success criteria: "✅
+URL, including guardian email/password sign-in through Supabase (ADR-009) and the full
+guardian-authoring to kid-reading journey. The 2026-07-07 record also cited `/health/live`
+and `/health/ready` "returning 200"; that leg of the evidence is withdrawn as of 2026-08-04
+(`UW-L04`). Those requests were answered by an nginx stub rather than by the application, so
+the 200 proved nothing about database connectivity. This does not change the blocker's
+disposition, which rests on the sign-in and reading journey above, but the probe evidence
+itself must not be cited: readiness became genuinely reachable only once the canonical
+`/api/v1/health/ready` path existed. See `docs/planning/roadmap.md` (Phase 5 success criteria: "✅
 Deployed behind Pangolin with Supabase guardian login (ADR-009)") and
 `docs/planning/r1-live-e2e-checklist.md` for the live verification record. Note this
 blocker was scoped to the homelab / family tier only; on the public tier, Supabase is the
 identity provider (Supabase OIDC, ADR-009) and Supabase-managed Postgres is the
 datastore, so Pangolin ingress and a self-hosted IdP do not apply there.
 
-**Status**: RESOLVED (2026-07-05, verified live 2026-07-07).
+**Status**: RESOLVED (2026-07-05, verified live 2026-07-07; the health-probe leg of that
+verification was withdrawn 2026-08-04, see `UW-L04`).
 
 ---
 

@@ -441,10 +441,19 @@ class TestCreateApp:
 
     @pytest.mark.unit
     def test_health_endpoint_responds(self) -> None:
-        """The /health/live liveness probe is reachable on the created app."""
+        """The canonical /api/v1/health/live liveness probe is reachable.
+
+        Deliberately the canonical path, not the un-prefixed alias this used to
+        request. Both mounts answer, so either would pass, but only the
+        canonical one is reachable through the reverse proxy: asserting the
+        alias here would let someone delete the canonical mount without any
+        test in this file noticing. The alias has its own explicit coverage in
+        ``tests/unit/test_health.py::TestLegacyHealthPathAlias``, which is
+        where a claim about the alias belongs.
+        """
         app = create_app()
         client = TestClient(app, raise_server_exceptions=False)
-        response = client.get("/health/live")
+        response = client.get("/api/v1/health/live")
         assert response.status_code == 200
 
     @pytest.mark.unit
@@ -739,6 +748,34 @@ class TestOpenApiContract:
             if method in methods
         ]
 
+    @staticmethod
+    def _is_health_path(path: str) -> bool:
+        """Whether a schema path is one of the health probes.
+
+        The single place that knows how to tell a probe from an API operation,
+        because the two tests below partition the schema on exactly this
+        predicate and a disagreement between them would leave operations
+        unchecked by both rather than failing.
+
+        Health probes live at ``/api/v1/health/*`` since UW-L04; the
+        un-prefixed ``/health/*`` alias ``app.py`` also mounts is
+        ``include_in_schema=False`` and so never reaches this schema at all.
+        Matching on the canonical prefix is therefore both necessary and
+        sufficient. Note that a plain ``startswith("/health")`` (what this
+        used to be) now matches nothing, which is a partition failure rather
+        than a missed probe: every probe silently moves into the "must require
+        bearer auth" set. The ``assert`` on non-emptiness in each test is what
+        turns that into a visible failure instead of two vacuous passes.
+
+        Bounded at a segment boundary, because this predicate fails unsafely in
+        the other direction too. A bare prefix test also matches a future
+        ``/api/v1/health-report``, which would sort a real, sensitive operation
+        into the "probes, exempt from bearer auth" half of the partition; the
+        authz test would then certify it as correctly unauthenticated. Guarding
+        the boundary keeps a new route's default classification "needs auth".
+        """
+        return path == "/api/v1/health" or path.startswith("/api/v1/health/")
+
     @pytest.mark.unit
     def test_bearer_scheme_is_declared(self, schema: dict[str, Any]) -> None:
         """components.securitySchemes carries one HTTP bearer scheme."""
@@ -755,7 +792,7 @@ class TestOpenApiContract:
         api_ops = [
             (path, method, op)
             for path, method, op in self._operations(schema)
-            if not path.startswith("/health")
+            if not self._is_health_path(path)
         ]
 
         assert api_ops, "expected /api/v1 operations in the schema"
@@ -788,10 +825,10 @@ class TestOpenApiContract:
         health_ops = [
             (path, method, op)
             for path, method, op in self._operations(schema)
-            if path.startswith("/health")
+            if self._is_health_path(path)
         ]
 
-        assert health_ops, "expected /health operations in the schema"
+        assert health_ops, "expected /api/v1/health operations in the schema"
         for path, method, op in health_ops:
             assert "security" not in op, (
                 f"{method.upper()} {path} must stay unauthenticated"

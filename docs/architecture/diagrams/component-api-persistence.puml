@@ -109,8 +109,8 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
     component "RequestContext\nContext = principal + session\nDependency-injected into\nevery route handler" as ctx #DCEDC8
   }
 
-  package "API Routers (31 under /api/v1 + health under /health; 32 total)" #B2DFDB {
-    component "health.py\nGET /health/ (root)\nGET /health/live\nGET /health/ready\nGET /health/startup" as health_router #B2DFDB
+  package "API Routers (all 32 under /api/v1; health.py also mounted at /health as a schema-hidden alias)" #B2DFDB {
+    component "health.py\nGET /health/ (root)\nGET /health/live\nGET /health/ready\nGET /health/startup\n(paths relative to /api/v1, as elsewhere;\nalso answered at /health/* on the container\nport only, alias retires with UW-L06)" as health_router #B2DFDB
 
     component "library.py\nGET /library (profile-scoped listing)\nGET /storybooks/{id}/versions/{version}\n(immutable blob; admin/catalog cross-family,\nchild/device assignment-gated)" as library_router #B2DFDB
 

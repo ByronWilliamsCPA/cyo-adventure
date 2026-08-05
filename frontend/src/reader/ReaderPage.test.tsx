@@ -471,9 +471,20 @@ describe('ReaderPage', () => {
     // path). The remounted Reader immediately re-saves the adopted state, so
     // the stored revision may already have advanced past the server's 5; the
     // position, not the exact revision, is the adopted-state invariant.
-    const mirrored = await getReadingState('p_adopt', 's_lantern_cave')
-    expect(mirrored?.current_node).toBe('n_cave_fork')
-    expect(mirrored?.state_revision).toBeGreaterThanOrEqual(5)
+    //
+    // Retried for the same async-persist reason as the two continuation-seed
+    // reads below. Correcting the reasoning recorded when those were fixed:
+    // this is the THIRD sibling read, not one of "two that both pre-seed their
+    // row". `p_adopt` is never passed to putReadingState, so this row starts
+    // nonexistent locally and can read back `undefined` exactly like they can.
+    // It has only been getting away with it: the render awaited above happens
+    // after resolveConflict initiates the mirror write, which buys a longer
+    // head start on the same race rather than immunity to it.
+    await waitFor(async () => {
+      const mirrored = await getReadingState('p_adopt', 's_lantern_cave')
+      expect(mirrored?.current_node).toBe('n_cave_fork')
+      expect(mirrored?.state_revision).toBeGreaterThanOrEqual(5)
+    })
   })
 
   it('issues one save and no false 409 under StrictMode double-invoke (#86)', async () => {
@@ -877,10 +888,18 @@ describe('ReaderPage', () => {
     )
     await screen.findByTestId('reader')
     expect(screen.getByTestId('passage-body').textContent).toContain('chapter two starts')
-    const row = await getReadingState('p_seed', 's_continuation_seed')
-    expect(row?.current_node).toBe('n_two')
-    // seeded 2, then n_two's on_enter inc applies on top
-    expect(row?.var_state).toEqual({ courage: 3 })
+    // The seed persist is an async effect, so the reader painting chapter two
+    // does not mean the IndexedDB write has landed: on a loaded runner the row
+    // reads back `undefined` and the assertion fails (three unrelated PRs so
+    // far, #545/#598/#609). Retry the read rather than the render. This still
+    // fails if the product stops persisting at all, because waitFor exhausts
+    // its timeout on a row that never appears.
+    await waitFor(async () => {
+      const row = await getReadingState('p_seed', 's_continuation_seed')
+      expect(row?.current_node).toBe('n_two')
+      // seeded 2, then n_two's on_enter inc applies on top
+      expect(row?.var_state).toEqual({ courage: 3 })
+    })
   })
 
   it('ignores a continuation when saved progress exists', async () => {
@@ -912,9 +931,14 @@ describe('ReaderPage', () => {
     // Saved progress wins: resumes at n_one with the saved var_state, no
     // continuation jump to n_two and no seeding.
     expect(screen.getByTestId('passage-body').textContent).toContain('chapter one starts')
-    const row = await getReadingState('p_seed_saved', 's_continuation_seed')
-    expect(row?.current_node).toBe('n_one')
-    expect(row?.var_state).toEqual({ courage: 5 })
+    // Same async-persist race as the seeding test above: this row is mirrored
+    // from the server response, so it also starts nonexistent locally and can
+    // read back `undefined` before the write lands.
+    await waitFor(async () => {
+      const row = await getReadingState('p_seed_saved', 's_continuation_seed')
+      expect(row?.current_node).toBe('n_one')
+      expect(row?.var_state).toEqual({ courage: 5 })
+    })
   })
 
   it('ignores a continuation when local (IndexedDB) progress exists', async () => {

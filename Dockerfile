@@ -112,8 +112,12 @@ USER 1000:1000
 EXPOSE 8000
 
 # Health check - uses the Python stdlib (urllib) so the image does not need curl.
+# Probes the canonical `/api/v1/health/live`, not the `/health/live` alias: the
+# alias exists only for out-of-repo probes that cannot be updated in lockstep
+# (see app.py's include_router calls), and anything this repo controls should
+# exercise the path an external monitor can actually reach.
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-    CMD ["python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health/live', timeout=2).status == 200 else 1)"]
+    CMD ["python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/api/v1/health/live', timeout=2).status == 200 else 1)"]
 
 # Default command - run web server. The application module is
 # cyo_adventure.app (create_app() at import time); there is no main.py.

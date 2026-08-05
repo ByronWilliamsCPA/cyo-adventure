@@ -10,6 +10,12 @@ Implements:
 - Graceful degradation
 - Detailed diagnostic information
 - OWASP A09 (Security Logging) compliance
+
+Paths: this router declares `/health/...` relative to wherever it is mounted,
+and `app.py` mounts it twice. `/api/v1/health/...` is canonical and is the only
+form reachable through the reverse proxy; `/health/...` is a schema-hidden alias
+kept for in-container loopback probes. See `app.py`'s `include_router` calls for
+why both exist, and never document or monitor the un-prefixed form.
 """
 
 from __future__ import annotations
@@ -720,7 +726,14 @@ async def health() -> HealthStatus:
 # Kubernetes Probe Configuration Examples
 # =============================================================================
 """
-Add to your Kubernetes Deployment YAML:
+Add to your Kubernetes Deployment YAML.
+
+Use the canonical `/api/v1/health/*` paths below, not the un-prefixed
+`/health/*` alias. Both answer on port 8000, so a probe against either would
+pass today, but the alias exists only to keep already-deployed out-of-repo
+probes working until they migrate (see `app.py`'s `include_router` calls) and
+is scheduled to be retired. A new probe written against it would be the reason
+it can never go away.
 
 apiVersion: apps/v1
 kind: Deployment
@@ -738,7 +751,7 @@ spec:
         # Liveness probe - restart if fails
         livenessProbe:
           httpGet:
-            path: /health/live
+            path: /api/v1/health/live
             port: 8000
           initialDelaySeconds: 30
           periodSeconds: 10
@@ -748,7 +761,7 @@ spec:
         # Readiness probe - stop traffic if fails
         readinessProbe:
           httpGet:
-            path: /health/ready
+            path: /api/v1/health/ready
             port: 8000
           initialDelaySeconds: 10
           periodSeconds: 5
@@ -758,7 +771,7 @@ spec:
         # Startup probe - delay other probes during startup
         startupProbe:
           httpGet:
-            path: /health/startup
+            path: /api/v1/health/startup
             port: 8000
           initialDelaySeconds: 0
           periodSeconds: 5

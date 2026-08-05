@@ -673,7 +673,30 @@ def create_app() -> FastAPI:
     app.add_exception_handler(
         ResponseValidationError, _handle_response_validation_error
     )
-    app.include_router(health.router)
+    # Health is mounted TWICE, and the duplication is the point (UW-L04).
+    #
+    # `/api/v1/health/*` is canonical: every other router carries the `/api/v1`
+    # prefix and `frontend/nginx.conf` proxies only `location /api/`, so a
+    # health route outside that prefix is unreachable from outside the cluster.
+    # This is the copy that appears in the OpenAPI schema and the one any
+    # external monitor or uptime check must use.
+    #
+    # `/health/*` survives as an undocumented alias for probes that reach this
+    # container directly on port 8000 and that this repo cannot update in the
+    # same deploy.
+    #
+    # #CRITICAL: external resources: the PRODUCTION backend healthcheck is
+    # defined out-of-repo in homelab-infra `services/cyo-adventure/
+    # docker-compose.yml` and probes `/health/live`, exiting non-zero on any
+    # status >= 400. Removing this alias makes the container unhealthy as soon
+    # as this repo deploys ahead of that one, and `depends_on:
+    # condition: service_healthy` turns that into an outage rather than a
+    # degraded probe. Retire the alias only after that compose file has moved
+    # to the canonical path and been redeployed.
+    # #VERIFY: tests/unit/test_health.py::TestLegacyHealthPathAlias asserts the
+    # alias answers and stays out of the schema.
+    app.include_router(health.router, prefix="/api/v1")
+    app.include_router(health.router, include_in_schema=False)
     app.include_router(library.router)
     app.include_router(reading.router)
     app.include_router(reading_history.router)
