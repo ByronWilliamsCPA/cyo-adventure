@@ -52,16 +52,37 @@ async def _log_worker_role_posture(session: AsyncSession) -> None:
     inspection; before this line existed the only way to tell was to catch a
     generation job mid-flight and read ``pg_stat_activity``.
 
-    Logs on BOTH outcomes on purpose. A probe that is silent on success makes
-    "cut over" and "probe never ran" the same log, which is the ambiguity this
-    is here to remove.
+    Logs on ALL THREE outcomes on purpose (least-privileged, bypasses,
+    unmeasurable). A probe that is silent on success makes "cut over" and
+    "probe never ran" the same log, which is the ambiguity this is here to
+    remove. All three are WARNING-level so they survive the production
+    ``LOG_LEVEL=WARNING`` default, per ``docs/operations/security-events.md``
+    section 4; an ``info`` posture line is dropped in production, which turns a
+    successful cutover back into the silence this function exists to break.
 
-    #CRITICAL: security: never gates startup. A pre-cutover worker is an open
-    security finding, but a worker that refuses to start is an outage, and
-    refusing to process stories because a diagnostic query failed trades a
-    smaller problem for a larger one. Alert on the warning event instead.
-    #VERIFY: tests/unit/test_worker_main.py::TestWorkerRolePosture::
-    test_probe_failure_never_stops_the_worker pins the non-gating contract.
+    Every role-bearing event carries ``worker_dsn_explicitly_set``, because the
+    role name alone cannot distinguish "cut over to cyo_worker" from "fell back
+    to the API DSN and happens to be least-privileged too". ``cyo_api`` also has
+    ``rolbypassrls = false`` and owns no Tier 1 table, so the fallback state
+    emits the *affirmative* event; without this field an operator alerting on
+    the bypass event sees green while the worker still shares the API
+    credential.
+
+    #CRITICAL: security: the probe never gates startup. A pre-cutover worker is
+    an open security finding, but a worker that refuses to start is an outage,
+    and refusing to process stories because a diagnostic query failed trades a
+    smaller problem for a larger one. Alert on the warning events instead.
+    A failed probe MUST roll the session back before returning: the probe and
+    the reclaim sweep share one transaction, and PostgreSQL refuses every later
+    statement on an aborted one (SQLSTATE 25P02
+    ``InFailedSQLTransactionError``), so swallowing the error without a
+    rollback converts a failed diagnostic into a worker that never starts, and
+    with ``restart_policy: on-failure`` into an uncapped crash loop.
+    #VERIFY: tests/integration/test_worker_role_posture.py::
+    test_statement_error_in_probe_still_lets_the_sweep_run drives a real
+    aborted transaction against PostgreSQL. A stubbed session cannot reach this
+    failure mode, and neither can SQLite, so the unit test is not sufficient
+    proof of the non-gating contract on its own.
 
     Args:
         session: A session on the WORKER engine. Passing an API-engine session
@@ -69,12 +90,27 @@ async def _log_worker_role_posture(session: AsyncSession) -> None:
     """
     try:
         posture = await measure_role_posture(session)
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 -- diagnostic must not gate startup
+        # Line-scoped, not a per-file-ignores entry: this is the only blind
+        # catch this module is entitled to. The reclaim sweep below it must keep
+        # failing fast, pinned by test_sweep_failure_disposes_engine_and_never_
+        # starts_the_worker, and a file-scoped exemption would silently cover a
+        # future blind catch there too.
+        #
         # The posture is unmeasured, not known-good. Distinct event name from
         # the known-bad case below so an alert on "bypasses" stays actionable
         # and is not diluted by broken probes.
         logger.warning("generation_worker.rls_posture_unknown", error=str(exc))
+        # A statement error has already aborted the shared transaction; without
+        # this the caller's sweep dies on 25P02 and the worker never starts.
+        # A no-op when the transaction was never begun or is still clean.
+        await session.rollback()
         return
+
+    # Truthiness, not "is not None": compose interpolation of an unset
+    # ${WORKER_DATABASE_URL:-} injects "", which config.py's
+    # worker_database_url_effective also treats as "no DSN configured".
+    dsn_set = bool(_default_settings.worker_database_url)
 
     if posture.bypasses_rls:
         logger.warning(
@@ -84,10 +120,15 @@ async def _log_worker_role_posture(session: AsyncSession) -> None:
             # differently, so "it bypasses" alone is not actionable.
             via_role_attribute=posture.via_role_attribute,
             via_table_ownership=posture.via_table_ownership,
+            worker_dsn_explicitly_set=dsn_set,
         )
         return
 
-    logger.info("generation_worker.role_least_privileged", role=posture.role_name)
+    logger.warning(
+        "generation_worker.role_least_privileged",
+        role=posture.role_name,
+        worker_dsn_explicitly_set=dsn_set,
+    )
 
 
 async def _run_worker_startup() -> int:
@@ -107,7 +148,10 @@ async def _run_worker_startup() -> int:
     try:
         async with get_worker_session() as session:
             # Posture first: a sweep that crashes still leaves the cutover
-            # verdict in the log for the deploy that caused the crash.
+            # verdict in the log for the deploy that caused the crash. This
+            # ordering is safe only because the probe rolls back on failure;
+            # without that, a failed probe poisons this shared transaction and
+            # takes the sweep (and the worker's startup) with it.
             await _log_worker_role_posture(session)
             return await requeue_stranded_jobs(session)
     finally:
