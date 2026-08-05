@@ -3536,7 +3536,7 @@ now" (ephemeral), which is the property that makes the kid-to-adult boundary enf
 <td>90 days, revocable</td>
 <td>HS256</td>
 <td><code>cyo-device-grant</code></td>
-<td>list this family's profiles + mint child sessions, nothing else</td>
+<td>list this family's profiles + their story-status pills + mint child sessions, nothing else</td>
 </tr>
 <tr>
 <td>Child session</td>
@@ -3557,7 +3557,11 @@ devices. Revocation is enforced on online calls (jti checked against the table);
 enforced offline, which is an accepted limitation bounded by the grant TTL.</p>
 <h3 id="2-the-child-session-mint-accepts-the-device-grant">2. The child-session mint accepts the device grant<a class="headerlink" href="#2-the-child-session-mint-accepts-the-device-grant" title="Permanent link">&para;</a></h3>
 <p><code>POST /v1/child-sessions</code> and the picker's <code>GET /v1/profiles</code> accept a device principal scoped
-to the matching <code>family_id</code>, in addition to guardian/admin. Per-profile PIN enforcement is
+to the matching <code>family_id</code>, in addition to guardian/admin. <code>GET /v1/profiles/story-status</code> was
+added to the same set later (W1.4, the picker's "new story ready!" pill): it derives its scope
+from the identical <code>_listable_profiles</code> helper <code>GET /v1/profiles</code> uses and returns booleans
+only, so it widens what the picker can read about profiles it can already list, not which
+profiles it can reach. Per-profile PIN enforcement is
 unchanged (<code>child_sessions.py:100-113</code>). <code>api/deps.py</code> gains a third routing branch on the
 unverified <code>aud</code> claim (mirroring the child-session branch at <code>deps.py:442</code>), and the device
 principal is refused on every other route via an explicit allowlist, not a denylist.</p>
@@ -3662,7 +3666,7 @@ enters the <code>AdultGate</code>.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 29, 2026 22:54:46 UTC">July 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 16:25:46 UTC">August 5, 2026</span>
   </span>
 
     

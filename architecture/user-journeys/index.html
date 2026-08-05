@@ -1428,6 +1428,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#known-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Known gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#admin-only-adults-have-no-nav-link-back-to-guardian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin-only adults have no nav link back to /guardian
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#related-pages" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3744,6 +3772,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#known-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known gaps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Known gaps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#admin-only-adults-have-no-nav-link-back-to-guardian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin-only adults have no nav link back to /guardian
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#related-pages" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3826,11 +3882,23 @@ a more mechanical altitude.</p>
 <h3 id="how-to-read-it">How to read it<a class="headerlink" href="#how-to-read-it" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Columns are who is acting.</strong> The journey deliberately crosses four lanes:
-  the <strong>Child</strong> and <strong>Guardian</strong> each drive their own disjoint surface (the kid
-  app and the guardian console share no navigation; see
-  <code>frontend/src/router.tsx</code>), the <strong>Admin</strong> holds the mandatory
-  approval gate, and <strong>System</strong> collapses the behind-the-scenes generation and
-  safety work into user-facing waits.</li>
+  the <strong>Child</strong> and <strong>Guardian</strong> each drive their own disjoint route tree (the
+  kid app and the guardian console are separate lazy chunks with no shared
+  in-app navigation state; see <code>frontend/src/router.tsx</code>), the <strong>Admin</strong> holds
+  the mandatory approval gate, and <strong>System</strong> collapses the behind-the-scenes
+  generation and safety work into user-facing waits. Since 2026-08-04 the kid
+  surface does carry one persistent, low-key link toward the guardian side:
+  <code>KidNav</code>'s "Ask a grown-up" (shown on the Library header only; <code>KidShell</code>
+  does not mount <code>KidNav</code> on the Reader route, so a child mid-story reaches it
+  via Reader's existing "Leave" button back to the Library first) and
+  <code>ProfilePickerPage</code>'s PIN-failure escape hatch both navigate to
+  <code>/guardian/login</code>, the same route any adult reaches directly. This is a
+  reachability improvement, not a new door: it still lands on ordinary
+  guardian sign-in and the <code>AdultGate</code> step-up applies exactly as it would
+  from any other entry point. So "share no navigation" above now holds only
+  in the stronger sense (no direct, unauthenticated jump into the guardian
+  console), not in the older sense of no link between the two surfaces at
+  all; see the Kid surface section below for both escape hatches.</li>
 <li><strong>Node fill marks maturity.</strong> White nodes are shipped in the app today; rose
   is the key for a planned, not-yet-built step. Every step in the current
   end-to-end loop is shipped, so the diagram carries no rose nodes now; the key
@@ -3859,6 +3927,17 @@ dropped back to the kid picker. From then on that device needs no further
 guardian sign-in for a child to read, online or offline. Post-login, a guardian
 lands on <code>/guardian</code>, an admin-only adult on <code>/admin</code>, and a dual-role adult on
 <code>/guardian</code> (with a one-hop link into <code>/admin</code>).</p>
+<p><strong>Sign-in can detour through an interstitial (shipped).</strong> Three routes
+intercept a guardian's sign-in before they reach the console, each reached
+only via <code>ProtectedRoute</code>'s redirect rather than a direct nav link: a
+self-signed-up guardian who is not yet admin-approved lands on
+<code>/guardian/awaiting-approval</code> and waits there with no further in-app action
+(WS-J); a guardian who is approved but has not yet completed the Phase 2 /
+ADR-018 D1 parental-consent attestation lands on <code>/guardian/consent</code> instead;
+and a guardian whose session is real but whose backend is unreachable lands
+on <code>/guardian/unavailable</code> rather than looping back through login (#452). All
+three are real routes in <code>frontend/src/router.tsx</code>; being redirect-only, not
+nav-linked, is by design, not an omission.</p>
 <p><strong>The single kid-to-adult boundary (ADR-014).</strong> The two former per-page
 "Grown-ups only" gates collapsed into one <code>AdultGate</code> at the root of the whole
 adult subtree, wrapping both <code>/guardian</code> and <code>/admin</code>. A signed-in adult
@@ -3907,16 +3986,42 @@ operational surfaces this journey does not draw: the master library
 (<code>/admin/library</code>: every storybook in any status, cross-family, #277), user
 management (<code>/admin/users</code>: guardians/admins, child profiles, families, and
 directional family connections; WS-J #267), the authoring queue
-(<code>/admin/authoring-queue</code>), the moderation dashboard and thresholds, the
-provider allowlist (<code>/admin/provider-allowlist</code>), and the audit log
-(<code>/admin/audit</code>). See <a href="../diagrams/sitemap-and-flows.svg">sitemap-and-flows</a> for
-the full admin map.</p>
-<p>Newer family-facing surfaces (ADR-015/016/017, #270) that the acts above do not
-yet trace: a guardian notification bell and a <code>/guardian/reading</code> visibility
-page, cross-family connection consent (<code>/guardian/connections</code>), recommendation
-chips on the kid library, kid passage flagging in the reader (which files a
-<code>kid_flag</code> for admin review), and a prose-only passage editor on the admin
-review surface that re-runs the validation gate and moderation on every edit.</p>
+(<code>/admin/authoring-queue</code>), moderation thresholds
+(<code>/admin/moderation-thresholds</code>) and, as a distinct page, the moderation
+dashboard (<code>/admin/moderation-dashboard</code>, <code>ModerationDashboardPage.tsx</code>), the
+provider allowlist (<code>/admin/provider-allowlist</code>), and a filterable audit log
+over <code>GET /api/v1/admin/audit</code> (<code>/admin/audit</code>, <code>AuditPage.tsx</code>). See
+<a href="../diagrams/sitemap-and-flows.svg">sitemap-and-flows</a> for the full admin map.</p>
+<p><strong>Family-facing surfaces beyond the acts above (ADR-015/016/017, #270) are
+shipped and e2e-tested, not planned</strong>, even though Acts 1-6 do not trace each
+one as its own step: a guardian notification bell (nav bar bell,
+<code>frontend/e2e/guardian-notifications.spec.ts</code>), a <code>/guardian/reading</code> family
+visibility page (<code>ReadingPage.tsx</code>, <code>frontend/e2e/guardian-reading.spec.ts</code>),
+cross-family connection consent at <code>/guardian/connections</code>
+(<code>ConnectionsPage.tsx</code>, <code>frontend/e2e/guardian-connections.spec.ts</code>: consent,
+dual-consent, and revoke), recommendation chips on the kid library, and kid
+passage flagging in the reader (<code>frontend/e2e/reader-flag.spec.ts</code>: flag with
+a reason, a confirmation toast, and the cap response). Three more guardian
+pages round out the console but sit outside this journey's acts entirely:
+device grant management (<code>/guardian/devices</code>, <code>DevicesPage.tsx</code>, ADR-014:
+list and revoke the family's device grants), a privacy trust page reached
+from the <code>GuardianShell</code> footer on every guardian page (<code>/guardian/privacy</code>,
+<code>PrivacyPage.tsx</code>, G11), and a read-only preview of a given child's shelf
+reached from Profiles (<code>/guardian/preview/:profileId</code>,
+<code>PreviewAsChildPage.tsx</code>), deliberately outside the kid-token-gated
+<code>/library/*</code>/<code>/read/*</code> paths.</p>
+<p>The passage editor is more nuanced than a plain "shipped" label. Its <strong>edit
+half is shipped</strong>: <code>PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}</code>
+(<code>api/node_edit.py</code>) re-runs the validation gate and moderation on every
+edit, and a guardian now reaches it from their own console at
+<code>GuardianReviewDetailPage.tsx</code> (<code>/guardian/review/:storybookId</code>), per
+capability-register row G6. Its <strong>reject/veto half is still open</strong>: every
+mutating admin review handler (submit/approve/send-back/archive) hard-requires
+the admin capability, so a guardian has no API path to reject or veto a
+generated story. Whether guardians should get a veto at all, versus admin
+remaining the sole ADR-005 safety gate, is an open product/ADR decision, not
+an engineering ticket; capability-register G6 stays partial (🟡), not fully
+done.</p>
 <h3 id="act-5-assignment">Act 5: Assignment<a class="headerlink" href="#act-5-assignment" title="Permanent link">&para;</a></h3>
 <p>An approved story is assigned to the child it was written for; "Assign more"
 widens it to siblings without re-requesting. On the kid surface, the child's
@@ -3978,7 +4083,7 @@ onboarding in Act 1 is not repeated.</p>
 </tr>
 <tr>
 <td>Admin review + approve/send-back</td>
-<td><code>/admin</code>, <code>/admin/review/:id</code></td>
+<td><code>/admin</code>, <code>/admin/review/:storybookId</code></td>
 <td>Shipped</td>
 </tr>
 <tr>
@@ -3988,7 +4093,7 @@ onboarding in Act 1 is not repeated.</p>
 </tr>
 <tr>
 <td>"New story ready!" pill</td>
-<td>Profile Picker (<code>/</code>)</td>
+<td>Profile Picker (<code>/kids</code>)</td>
 <td>Shipped</td>
 </tr>
 <tr>
@@ -4004,6 +4109,86 @@ onboarding in Act 1 is not repeated.</p>
 <tr>
 <td>Rate a book</td>
 <td>Library shelf (<code>BookCard</code>)</td>
+<td>Shipped</td>
+</tr>
+<tr>
+<td>Auth interstitials</td>
+<td><code>/guardian/{awaiting-approval,consent,unavailable}</code></td>
+<td>Shipped (redirect-only)</td>
+</tr>
+<tr>
+<td>Guardian notification bell</td>
+<td>Guardian shell nav</td>
+<td>Shipped</td>
+</tr>
+<tr>
+<td>Family reading visibility</td>
+<td><code>/guardian/reading</code></td>
+<td>Shipped</td>
+</tr>
+<tr>
+<td>Cross-family connection consent</td>
+<td><code>/guardian/connections</code></td>
+<td>Shipped</td>
+</tr>
+<tr>
+<td>Guardian book library (approved books, assign)</td>
+<td><code>/guardian/books</code></td>
+<td>Shipped</td>
+</tr>
+<tr>
+<td>Device grant management</td>
+<td><code>/guardian/devices</code></td>
+<td>Shipped</td>
+</tr>
+<tr>
+<td>Guardian privacy page</td>
+<td><code>/guardian/privacy</code></td>
+<td>Shipped</td>
+</tr>
+<tr>
+<td>Guardian preview-as-child</td>
+<td><code>/guardian/preview/:profileId</code></td>
+<td>Shipped</td>
+</tr>
+<tr>
+<td>Passage editor, edit half</td>
+<td><code>/guardian/review/:storybookId</code>, <code>/admin/review/:storybookId</code></td>
+<td>Shipped</td>
+</tr>
+<tr>
+<td>Passage editor, reject/veto half</td>
+<td>admin review surface</td>
+<td>Open product/ADR decision (capability-register G6)</td>
+</tr>
+<tr>
+<td>Admin audit log</td>
+<td><code>/admin/audit</code></td>
+<td>Shipped</td>
+</tr>
+<tr>
+<td>Admin moderation dashboard</td>
+<td><code>/admin/moderation-dashboard</code></td>
+<td>Shipped</td>
+</tr>
+<tr>
+<td>Kid PIN-gated picker (wrong-PIN retry + "Ask a grown-up")</td>
+<td>Profile Picker (<code>/kids</code>)</td>
+<td>Shipped</td>
+</tr>
+<tr>
+<td>Read-aloud / TTS toggle</td>
+<td>Reader (<code>tts_enabled</code> profiles only)</td>
+<td>Shipped</td>
+</tr>
+<tr>
+<td>Series continuation (lands on <code>series_entry_node</code>)</td>
+<td>Reader ending -&gt; next book</td>
+<td>Shipped</td>
+</tr>
+<tr>
+<td>Kid-to-guardian "Ask a grown-up" nav link</td>
+<td>Library header nav only -&gt; <code>/guardian/login</code></td>
 <td>Shipped</td>
 </tr>
 </tbody>
@@ -4023,6 +4208,24 @@ a friendly exit, a missing story shows not-found rather than the offline copy),
 the read-loop with its online/offline and 409-conflict branches, and rating as
 a library-shelf action reached after the ending returns the child to their
 books.</p>
+<p>It also covers three shipped surfaces the diagram source has not yet been
+redrawn to include (see the interim diagram note below): the PIN-gated
+profile picker's wrong-PIN retry, which offers an "Ask a grown-up" escape
+after three consecutive wrong tries (<code>PIN_ATTEMPTS_BEFORE_HELP</code> in
+<code>ProfilePickerPage.tsx</code>, UX-K6); the read-aloud/TTS toggle in the reader
+chrome, shown only when the profile's <code>tts_enabled</code> flag is on and the
+browser's <code>speechSynthesis</code> is actually usable (<code>ReaderChrome.tsx</code>,
+<code>useReadAloud.ts</code>); and series continuation, where "Continue the series" on
+the ending screen carries the series' <code>series_entry_node</code> (plus any carried
+variables) so the next book opens there instead of at its default start node
+(<code>ContinueSeries.tsx</code>, <code>player/series.ts</code>,
+<code>frontend/e2e/series-continue.spec.ts</code>). A persistent "Ask a grown-up" link in
+<code>KidNav</code> (shown on the Library header only, not the Reader, which has its own
+"Leave" button back to the Library instead) is a second, always-visible way
+from the kid surface toward <code>/guardian/login</code>, alongside the PIN-failure
+escape hatch above; both land on ordinary guardian sign-in and the
+<code>AdultGate</code> step-up, so this is a reachability improvement, not a new door
+(see "How to read it" above).</p>
 <h3 id="guardian-and-admin-surface">Guardian and admin surface<a class="headerlink" href="#guardian-and-admin-surface" title="Permanent link">&para;</a></h3>
 <p><img alt="Guardian and admin surface journey" src="../diagrams/journey-guardian.svg" /></p>
 <p>The parent-facing console (<code>/guardian</code> and <code>/admin</code>, both behind a single
@@ -4033,7 +4236,11 @@ role-based landing (admin-only to <code>/admin</code>, guardian-only or dual-rol
 <code>/guardian</code>), profile management, the Intake request with its "Generating..."
 status, the review queue ordered Flagged then Ready then processing, the
 approve/send-back revision loop, and the assign / "Assign more" sub-flow.
-Approve is the admin-only ADR-005 gate.</p>
+Approve is the admin-only ADR-005 gate. Beyond this pipeline, the console
+also holds device-grant management, the privacy page, and preview-as-child,
+and the admin side adds the audit log and the moderation dashboard (distinct
+from moderation thresholds); see Act 4 above and
+<a href="../diagrams/sitemap-and-flows.svg">sitemap-and-flows</a> for the full set.</p>
 <h3 id="device-authorization-adr-014">Device authorization (ADR-014)<a class="headerlink" href="#device-authorization-adr-014" title="Permanent link">&para;</a></h3>
 <p><img alt="Device grant sequence" src="../diagrams/seq-device-grant.svg" /></p>
 <p>The mechanical sequence behind the journey-level device-authorization notes
@@ -4073,6 +4280,28 @@ surfaces (user management #267, authoring queue #268, moderation
 dashboard/thresholds, provider allowlist). Those surfaces now have their own
 e2e specs (see the diagram's coverage-sources note); refresh the backbone
 alongside the next e2e coverage pass rather than as part of this update.</p>
+<p><strong>Interim (updated 2026-08-04):</strong> the three top-level journey/sitemap
+<code>.puml</code> sources (<code>journey-guardian.puml</code>, <code>journey-kid.puml</code>,
+<code>sitemap-and-flows.puml</code>) already reference most of the ADR-015/016/017
+surfaces this page now documents as shipped: the notification bell,
+<code>/guardian/reading</code>, <code>/guardian/connections</code>, <code>/guardian/devices</code>,
+<code>/guardian/privacy</code>, <code>/guardian/preview/:profileId</code>, the three auth
+interstitials, <code>/admin/audit</code>, and <code>/admin/moderation-dashboard</code> are all
+named in <code>sitemap-and-flows.puml</code>'s component list and/or the other two
+<code>.puml</code> legends. But the rendered <code>.svg</code> files predate that source text:
+<code>journey-guardian.svg</code> and <code>sitemap-and-flows.svg</code> contain none of those
+page names today, so a reader looking only at the pictures still sees the
+old, narrower diagram. None of the three sources yet draw the kid
+PIN-retry escape hatch, the read-aloud/TTS toggle, series continuation, the
+new <code>KidNav</code> "Ask a grown-up" bridge (commit <code>9387ba48</code>), or the
+<code>AdminShell</code> admin-only nav gap documented below in "Known gaps". Two
+follow-ups are needed, not one: regenerate with
+<code>python tools/generate_diagram_svgs.py --all</code> to pick up the text already
+in the <code>.puml</code> sources (with a visual proofread, per the layout caveat in
+<code>journey-kid.puml</code>'s own 2026-07-15 note), and separately author the four
+newer surfaces above into the diagrams, the same way the 2026-07-17 note
+above scoped out the ADR-014/WS-J backbone gap as its own follow-up rather
+than folding it into this update.</p>
 </blockquote>
 <ul>
 <li><strong>Green</strong> steps are exercised end-to-end by a Playwright spec under
@@ -4144,6 +4373,30 @@ alongside the next e2e coverage pass rather than as part of this update.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="known-gaps">Known gaps<a class="headerlink" href="#known-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="admin-only-adults-have-no-nav-link-back-to-guardian">Admin-only adults have no nav link back to <code>/guardian</code><a class="headerlink" href="#admin-only-adults-have-no-nav-link-back-to-guardian" title="Permanent link">&para;</a></h3>
+<p><code>AdminShell.tsx</code> shows its "Guardian console" cross-link only when
+<code>principal?.role === 'guardian'</code>:</p>
+<div class="language-tsx highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span><span class="nx">principal</span><span class="o">?</span><span class="p">.</span><span class="nx">role</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">&#39;guardian&#39;</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="p">&lt;</span><span class="nt">NavLink</span><span class="w"> </span><span class="na">to</span><span class="o">=</span><span class="p">{</span><span class="nx">GUARDIAN_CONSOLE_PATH</span><span class="p">}&gt;</span><span class="nx">Guardian</span><span class="w"> </span><span class="nx">console</span><span class="p">&lt;/</span><span class="nt">NavLink</span><span class="p">&gt;</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kc">null</span><span class="p">}</span>
+</span></code></pre></div>
+<p>The data model supports a real, constrained pure-admin account as a
+first-class case, not a hypothetical one: <code>db/models.py</code> enforces <code>role IN
+('guardian', 'child', 'admin')</code> and <code>role &lt;&gt; 'admin' OR is_admin = true</code>
+(<code>ck_user_role</code>, <code>ck_user_admin_role_flag</code>), so a <code>role='admin'</code> account with
+no guardian role at all is a valid row shape. Such an admin-only user has no
+nav link back to <code>/guardian</code> anywhere in the admin shell; they would have to
+type the URL directly. <code>ProtectedRoute</code>'s <code>allowedRoles={['guardian',
+'admin']}</code> guard on the guardian console would actually accept that direct
+visit, so this is a <strong>reachability gap, not a security hole</strong>.</p>
+<p>This contradicts a stated consequence of
+<a href="../../planning/adr/adr-014-device-authorized-kid-access/">ADR-014</a>:
+"Role-based navigation (guardian-only, admin-only, dual-role cross-links) is
+made consistent as part of the same change." The dual-role cross-link is
+consistent: each shell shows a "Guardian console" or "Admin console" link to
+a dual-role adult. The pure admin-only case is not; this is flagged here,
+not fixed, for a future navigation pass to pick up.</p>
 <h2 id="related-pages">Related pages<a class="headerlink" href="#related-pages" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../system-overview/">System Overview</a>: the same three actors as C4 boxes
@@ -4181,7 +4434,7 @@ alongside the next e2e coverage pass rather than as part of this update.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 22, 2026 01:47:57 UTC">July 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 16:25:46 UTC">August 5, 2026</span>
   </span>
 
     
