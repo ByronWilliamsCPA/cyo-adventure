@@ -451,6 +451,11 @@ def _normalize_document(document: Mapping[str, object]) -> dict[str, object]:
     tokens" is that a model-emitted sentinel is never counted as a match,
     wherever in the document it landed.
 
+    A `nodes` field that is absent or not a list is tolerated silently, the
+    same as in `_index_nodes`: schema validity is the validation gate's job,
+    not this module's. The backstop is `_log_unreinserted`, which reports
+    every expected token as `not_found` when the node list never materializes.
+
     Args:
         document: The raw filled-blob mapping (or any raw story mapping).
 
