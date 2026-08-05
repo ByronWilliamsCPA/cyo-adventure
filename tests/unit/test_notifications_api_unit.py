@@ -721,11 +721,13 @@ class TestStreamNotifications:
             raise AuthenticationError("missing or invalid token")
 
         monkeypatch.setattr(notifications, "require_principal", fake_require_principal)
+        request = cast("object", object())
+        session_factory = _as_factory(_FakeSession)
 
         with pytest.raises(AuthenticationError):
             await notifications.stream_notifications(
-                cast("object", object()),
-                _as_factory(_FakeSession),
+                request,
+                session_factory,
                 authorization=None,
             )
 
@@ -740,11 +742,13 @@ class TestStreamNotifications:
             return _principal("child")
 
         monkeypatch.setattr(notifications, "require_principal", fake_require_principal)
+        request = cast("object", object())
+        session_factory = _as_factory(_FakeSession)
 
         with pytest.raises(AuthorizationError):
             await notifications.stream_notifications(
-                cast("object", object()),
-                _as_factory(_FakeSession),
+                request,
+                session_factory,
                 authorization="Bearer token",
             )
 

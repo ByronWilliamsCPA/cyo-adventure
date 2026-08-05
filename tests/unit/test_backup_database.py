@@ -302,13 +302,16 @@ def test_run_backup_rejects_empty_dump(tmp_path: Path) -> None:
     ) -> None:
         out_path.write_text("")
 
-    with (
-        patch.object(
-            backup_database, "_build_client", return_value=_mock_backup_client()
-        ),
-        patch.object(backup_database, "run_dump_leg", side_effect=_write_empty),
-        pytest.raises(RuntimeError, match="empty"),
-    ):
+    patched_client = patch.object(
+        backup_database, "_build_client", return_value=_mock_backup_client()
+    )
+    patched_dump_leg = patch.object(
+        backup_database, "run_dump_leg", side_effect=_write_empty
+    )
+    policy = backup_database.RetentionPolicy()
+    now = datetime(2026, 8, 4, tzinfo=UTC)
+
+    with patched_client, patched_dump_leg, pytest.raises(RuntimeError, match="empty"):
         backup_database.run_backup(
             db_url="postgresql://example",
             r2_account_id="acct",
@@ -316,9 +319,9 @@ def test_run_backup_rejects_empty_dump(tmp_path: Path) -> None:
             r2_secret_access_key="secret",
             r2_bucket="backup-bucket",
             encryption_key=b"0" * 32,
-            policy=backup_database.RetentionPolicy(),
+            policy=policy,
             dry_run=False,
-            now=datetime(2026, 8, 4, tzinfo=UTC),
+            now=now,
         )
 
 
@@ -347,11 +350,16 @@ def test_run_backup_rejects_boilerplate_only_roles_dump() -> None:
             "data.sql": _REAL_DATA_SQL,
         }
     )
+    patched_client = patch.object(
+        backup_database, "_build_client", return_value=_mock_backup_client()
+    )
+    patched_dump_leg = patch.object(backup_database, "run_dump_leg", side_effect=writer)
+    policy = backup_database.RetentionPolicy()
+    now = datetime(2026, 8, 4, tzinfo=UTC)
+
     with (
-        patch.object(
-            backup_database, "_build_client", return_value=_mock_backup_client()
-        ),
-        patch.object(backup_database, "run_dump_leg", side_effect=writer),
+        patched_client,
+        patched_dump_leg,
         pytest.raises(RuntimeError, match=r"roles\.sql"),
     ):
         backup_database.run_backup(
@@ -361,9 +369,9 @@ def test_run_backup_rejects_boilerplate_only_roles_dump() -> None:
             r2_secret_access_key="secret",
             r2_bucket="backup-bucket",
             encryption_key=b"0" * 32,
-            policy=backup_database.RetentionPolicy(),
+            policy=policy,
             dry_run=False,
-            now=datetime(2026, 8, 4, tzinfo=UTC),
+            now=now,
         )
 
 
@@ -376,11 +384,16 @@ def test_run_backup_rejects_boilerplate_only_schema_dump() -> None:
             "data.sql": _REAL_DATA_SQL,
         }
     )
+    patched_client = patch.object(
+        backup_database, "_build_client", return_value=_mock_backup_client()
+    )
+    patched_dump_leg = patch.object(backup_database, "run_dump_leg", side_effect=writer)
+    policy = backup_database.RetentionPolicy()
+    now = datetime(2026, 8, 4, tzinfo=UTC)
+
     with (
-        patch.object(
-            backup_database, "_build_client", return_value=_mock_backup_client()
-        ),
-        patch.object(backup_database, "run_dump_leg", side_effect=writer),
+        patched_client,
+        patched_dump_leg,
         pytest.raises(RuntimeError, match=r"schema\.sql"),
     ):
         backup_database.run_backup(
@@ -390,9 +403,9 @@ def test_run_backup_rejects_boilerplate_only_schema_dump() -> None:
             r2_secret_access_key="secret",
             r2_bucket="backup-bucket",
             encryption_key=b"0" * 32,
-            policy=backup_database.RetentionPolicy(),
+            policy=policy,
             dry_run=False,
-            now=datetime(2026, 8, 4, tzinfo=UTC),
+            now=now,
         )
 
 
@@ -405,11 +418,16 @@ def test_run_backup_rejects_boilerplate_only_data_dump() -> None:
             "data.sql": _BOILERPLATE_DATA_SQL,
         }
     )
+    patched_client = patch.object(
+        backup_database, "_build_client", return_value=_mock_backup_client()
+    )
+    patched_dump_leg = patch.object(backup_database, "run_dump_leg", side_effect=writer)
+    policy = backup_database.RetentionPolicy()
+    now = datetime(2026, 8, 4, tzinfo=UTC)
+
     with (
-        patch.object(
-            backup_database, "_build_client", return_value=_mock_backup_client()
-        ),
-        patch.object(backup_database, "run_dump_leg", side_effect=writer),
+        patched_client,
+        patched_dump_leg,
         pytest.raises(RuntimeError, match=r"data\.sql"),
     ):
         backup_database.run_backup(
@@ -419,9 +437,9 @@ def test_run_backup_rejects_boilerplate_only_data_dump() -> None:
             r2_secret_access_key="secret",
             r2_bucket="backup-bucket",
             encryption_key=b"0" * 32,
-            policy=backup_database.RetentionPolicy(),
+            policy=policy,
             dry_run=False,
-            now=datetime(2026, 8, 4, tzinfo=UTC),
+            now=now,
         )
 
 
@@ -440,9 +458,16 @@ def test_run_backup_uploads_nothing_when_a_later_leg_fails() -> None:
         }
     )
     mock_client = _mock_backup_client()
+    patched_client = patch.object(
+        backup_database, "_build_client", return_value=mock_client
+    )
+    patched_dump_leg = patch.object(backup_database, "run_dump_leg", side_effect=writer)
+    policy = backup_database.RetentionPolicy()
+    now = datetime(2026, 8, 4, tzinfo=UTC)
+
     with (
-        patch.object(backup_database, "_build_client", return_value=mock_client),
-        patch.object(backup_database, "run_dump_leg", side_effect=writer),
+        patched_client,
+        patched_dump_leg,
         pytest.raises(RuntimeError, match=r"data\.sql"),
     ):
         backup_database.run_backup(
@@ -452,9 +477,9 @@ def test_run_backup_uploads_nothing_when_a_later_leg_fails() -> None:
             r2_secret_access_key="secret",
             r2_bucket="backup-bucket",
             encryption_key=b"0" * 32,
-            policy=backup_database.RetentionPolicy(),
+            policy=policy,
             dry_run=False,
-            now=datetime(2026, 8, 4, tzinfo=UTC),
+            now=now,
         )
     mock_client.put_object.assert_not_called()
 
@@ -475,9 +500,20 @@ def test_run_backup_does_not_touch_lifecycle_when_a_leg_fails() -> None:
         }
     )
     mock_client = _mock_backup_client()
+    patched_client = patch.object(
+        backup_database, "_build_client", return_value=mock_client
+    )
+    patched_dump_leg = patch.object(backup_database, "run_dump_leg", side_effect=writer)
+    # Deliberately not the defaults: if the call happened at all, it would
+    # apply these.
+    policy = backup_database.RetentionPolicy(
+        daily_days=3, weekly_days=14, monthly_days=90
+    )
+    now = datetime(2026, 8, 4, tzinfo=UTC)
+
     with (
-        patch.object(backup_database, "_build_client", return_value=mock_client),
-        patch.object(backup_database, "run_dump_leg", side_effect=writer),
+        patched_client,
+        patched_dump_leg,
         pytest.raises(RuntimeError, match=r"data\.sql"),
     ):
         backup_database.run_backup(
@@ -487,13 +523,9 @@ def test_run_backup_does_not_touch_lifecycle_when_a_leg_fails() -> None:
             r2_secret_access_key="secret",
             r2_bucket="backup-bucket",
             encryption_key=b"0" * 32,
-            # Deliberately not the defaults: if the call happened at all, it would
-            # apply these.
-            policy=backup_database.RetentionPolicy(
-                daily_days=3, weekly_days=14, monthly_days=90
-            ),
+            policy=policy,
             dry_run=False,
-            now=datetime(2026, 8, 4, tzinfo=UTC),
+            now=now,
         )
     mock_client.put_bucket_lifecycle_configuration.assert_not_called()
 
@@ -595,12 +627,14 @@ def test_run_backup_rolls_back_uploaded_keys_when_a_later_upload_fails() -> None
     # Upload order is leg-major, tier-minor: roles/daily, roles/weekly, schema/daily,
     # then schema/weekly, which is the one that fails here.
     mock_client = _mock_backup_client(fail_upload_after=3)
+    patched_client = patch.object(
+        backup_database, "_build_client", return_value=mock_client
+    )
+    patched_dump_leg = patch.object(backup_database, "run_dump_leg", side_effect=writer)
+    policy = backup_database.RetentionPolicy()
+    now = datetime(2026, 8, 2, tzinfo=UTC)
 
-    with (
-        patch.object(backup_database, "_build_client", return_value=mock_client),
-        patch.object(backup_database, "run_dump_leg", side_effect=writer),
-        pytest.raises(ClientError),
-    ):
+    with patched_client, patched_dump_leg, pytest.raises(ClientError):
         backup_database.run_backup(
             db_url="postgresql://example",
             r2_account_id="acct",
@@ -608,10 +642,10 @@ def test_run_backup_rolls_back_uploaded_keys_when_a_later_upload_fails() -> None
             r2_secret_access_key="secret",
             r2_bucket="backup-bucket",
             encryption_key=b"0" * 32,
-            policy=backup_database.RetentionPolicy(),
+            policy=policy,
             dry_run=False,
             # 2026-08-02 is a Sunday: daily + weekly tiers, so 6 planned uploads.
-            now=datetime(2026, 8, 2, tzinfo=UTC),
+            now=now,
         )
 
     deleted = [call.kwargs["Key"] for call in mock_client.delete_object.call_args_list]
@@ -1036,9 +1070,14 @@ def test_run_backup_aborts_before_dumping_when_the_sentinel_is_missing() -> None
     client = _mock_backup_client(sentinel_present=False)
     dump = MagicMock()
 
+    patched_client = patch.object(backup_database, "_build_client", return_value=client)
+    patched_dump_leg = patch.object(backup_database, "run_dump_leg", dump)
+    policy = backup_database.RetentionPolicy()
+    now = datetime(2026, 8, 4, tzinfo=UTC)
+
     with (
-        patch.object(backup_database, "_build_client", return_value=client),
-        patch.object(backup_database, "run_dump_leg", dump),
+        patched_client,
+        patched_dump_leg,
         pytest.raises(RuntimeError, match="marker object"),
     ):
         backup_database.run_backup(
@@ -1048,9 +1087,9 @@ def test_run_backup_aborts_before_dumping_when_the_sentinel_is_missing() -> None
             r2_secret_access_key="secret",
             r2_bucket="backup-bucket",
             encryption_key=b"0" * 32,
-            policy=backup_database.RetentionPolicy(),
+            policy=policy,
             dry_run=False,
-            now=datetime(2026, 8, 4, tzinfo=UTC),
+            now=now,
         )
 
     dump.assert_not_called()
@@ -1072,12 +1111,13 @@ def test_assert_recent_backup_exists_accepts_a_fresh_prior_backup() -> None:
 def test_assert_recent_backup_exists_rejects_a_stale_newest_backup() -> None:
     """A gap wider than the threshold means the schedule stopped and nobody noticed."""
     client = _mock_backup_client(prior_dates=("2026-07-20",))
+    today = datetime(2026, 8, 4, tzinfo=UTC)
 
     with pytest.raises(RuntimeError, match="gap threshold"):
         backup_database.assert_recent_backup_exists(
             client,
             "backup-bucket",
-            today=datetime(2026, 8, 4, tzinfo=UTC),
+            today=today,
             exclude_date="2026-08-04",
             allow_empty=False,
         )
@@ -1090,12 +1130,13 @@ def test_assert_recent_backup_exists_ignores_this_runs_own_date() -> None:
     including the one where retention had already destroyed everything else.
     """
     client = _mock_backup_client(prior_dates=("2026-08-04",))
+    today = datetime(2026, 8, 4, tzinfo=UTC)
 
     with pytest.raises(RuntimeError, match="holds no backup"):
         backup_database.assert_recent_backup_exists(
             client,
             "backup-bucket",
-            today=datetime(2026, 8, 4, tzinfo=UTC),
+            today=today,
             exclude_date="2026-08-04",
             allow_empty=False,
         )
@@ -1104,12 +1145,13 @@ def test_assert_recent_backup_exists_ignores_this_runs_own_date() -> None:
 def test_assert_recent_backup_exists_rejects_an_empty_bucket_without_init() -> None:
     """An empty bucket is either a first run or a data-loss incident, never a pass."""
     client = _mock_backup_client(prior_dates=())
+    today = datetime(2026, 8, 4, tzinfo=UTC)
 
     with pytest.raises(RuntimeError, match="--init-bucket"):
         backup_database.assert_recent_backup_exists(
             client,
             "backup-bucket",
-            today=datetime(2026, 8, 4, tzinfo=UTC),
+            today=today,
             exclude_date="2026-08-04",
             allow_empty=False,
         )
@@ -1132,12 +1174,13 @@ def test_assert_recent_backup_exists_propagates_a_list_failure() -> None:
     """A failed list means "I could not check", which is never "backups are fine"."""
     client = _mock_backup_client()
     client.list_objects_v2.side_effect = _client_error("403", "ListObjectsV2")
+    today = datetime(2026, 8, 4, tzinfo=UTC)
 
     with pytest.raises(ClientError):
         backup_database.assert_recent_backup_exists(
             client,
             "backup-bucket",
-            today=datetime(2026, 8, 4, tzinfo=UTC),
+            today=today,
             exclude_date="2026-08-04",
             allow_empty=True,
         )
@@ -1166,13 +1209,18 @@ def test_run_backup_checks_history_before_writing_lifecycle_rules() -> None:
     """
     client = _mock_backup_client(prior_dates=("2026-07-01",))
 
+    patched_client = patch.object(backup_database, "_build_client", return_value=client)
+    patched_dump_leg = patch.object(
+        backup_database,
+        "run_dump_leg",
+        side_effect=_leg_writer(dict(_ALL_LEGS_REAL)),
+    )
+    policy = backup_database.RetentionPolicy()
+    now = datetime(2026, 8, 4, tzinfo=UTC)
+
     with (
-        patch.object(backup_database, "_build_client", return_value=client),
-        patch.object(
-            backup_database,
-            "run_dump_leg",
-            side_effect=_leg_writer(dict(_ALL_LEGS_REAL)),
-        ),
+        patched_client,
+        patched_dump_leg,
         pytest.raises(RuntimeError, match="gap threshold"),
     ):
         backup_database.run_backup(
@@ -1182,9 +1230,9 @@ def test_run_backup_checks_history_before_writing_lifecycle_rules() -> None:
             r2_secret_access_key="secret",
             r2_bucket="backup-bucket",
             encryption_key=b"0" * 32,
-            policy=backup_database.RetentionPolicy(),
+            policy=policy,
             dry_run=False,
-            now=datetime(2026, 8, 4, tzinfo=UTC),
+            now=now,
         )
 
     # Today's three objects stay: an incident should start with MORE good backups.

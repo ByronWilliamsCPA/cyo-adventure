@@ -1426,8 +1426,9 @@ class TestCompletionRecordedViewInvariants:
         assert view.found == view.total
 
     def test_found_above_total_is_rejected(self) -> None:
+        kwargs = self._kwargs(found=9, total=3)
         with pytest.raises(PydanticValidationError, match="cannot exceed"):
-            CompletionRecordedView(**self._kwargs(found=9, total=3))  # pyright: ignore[reportAny]
+            CompletionRecordedView(**kwargs)  # pyright: ignore[reportAny]
 
     def test_a_new_find_with_a_zero_tally_is_rejected(self) -> None:
         # Structurally unreachable through the route: record_completion
@@ -1435,8 +1436,9 @@ class TestCompletionRecordedViewInvariants:
         # visible to the count query. That flush is what this invariant
         # protects; drop it and the count runs blind, which this catches at
         # the type rather than in a child-facing "0 endings found" celebration.
+        kwargs = self._kwargs(is_new=True, found=0, total=3)
         with pytest.raises(PydanticValidationError, match="a new find must be counted"):
-            CompletionRecordedView(**self._kwargs(is_new=True, found=0, total=3))  # pyright: ignore[reportAny]
+            CompletionRecordedView(**kwargs)  # pyright: ignore[reportAny]
 
     def test_a_repeat_visit_with_a_zero_tally_is_still_rejected_only_by_found(
         self,
