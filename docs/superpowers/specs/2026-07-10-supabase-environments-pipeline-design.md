@@ -149,11 +149,14 @@ ADR-012.
   `supabase db push --db-url postgresql://cyo_adventure:password@localhost:5432/cyo_adventure`.
   The `seed_dev_data.py` step is unchanged. A migration-validation step (fresh
   `supabase db start` + apply) guards PRs that touch `supabase/migrations/**`.
-- **`supabase-staging.yml` (new):** trigger `push` to `main` with path filter
-  `supabase/migrations/**`; steps: checkout, setup-cli,
-  `supabase link --project-ref $SUPABASE_PROJECT_ID`, `supabase db push`.
-  Secrets (`SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_ID`,
-  `SUPABASE_DB_PASSWORD`) come from a `staging` GitHub Environment.
+- **`supabase-staging.yml` (new):** trigger `push` to `main` with path filters
+  `supabase/migrations/**` and `supabase/config.toml`; steps: checkout, setup-cli,
+  `supabase link --project-ref $SUPABASE_PROJECT_ID`, `supabase config push`,
+  `supabase db push`. Secrets (`SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_ID`,
+  `SUPABASE_DB_PASSWORD`) come from a `staging` GitHub Environment. (The `config.toml`
+  path filter and the `config push` step are later additions, from follow-up 3 below and
+  issue #601; the original design covered migrations only. Recorded here so this section
+  matches the shipped workflows.)
 - **`supabase-production.yml` (new):** trigger `workflow_dispatch`; the job is
   bound to a `production` GitHub Environment configured with required-reviewer
   approval; same steps against the production project's secrets. The dispatch
@@ -227,13 +230,20 @@ in stacked PRs off `main`.
    This follow-up deferred the work pending CLI stability. What actually cleared it was not
    stability: it was reading the CLI source at the pinned tag. **Correcting an earlier draft of
    this item, which called `config push` "a defaulting writer rather than a differ":** it does
-   diff. Each surface reads its remote, calls `DiffWithRemote`, and prints
+   diff. Each config surface, meaning one settings group the Management API exposes separately
+   (API, DB settings, DB network restrictions, Auth, Storage), reads its remote, calls the CLI's
+   `DiffWithRemote` helper, and prints
    `Remote <surface> config is up to date.` **without writing** when nothing differs, so a genuine
    no-op push says so. Run 30972610902, a comment-only change to `config.toml`, confirmed that
    empirically across all four live surfaces. The real hazard is narrower than the original claim
    but no less sharp: the CLI diffs against a view of the file with omitted keys already replaced
    by CLI defaults, so an omission still reads as a difference and still overwrites. A minimal
-   config file is therefore the most dangerous input, not the safest. There is no `--dry-run`, and
-   unknown keys are silently ignored, so a typo never validates and never applies. The version pin
-   at 2.109.1 is load-bearing for all of this, and an unreviewed CLI bump is a change to auth
-   policy.
+   config file is therefore the most dangerous input, not the safest. There is no `--dry-run`.
+   Unknown keys behave in the opposite way: the CLI parses `config.toml` through viper's
+   `UnmarshalExact`, which forces `ErrorUnused = true` after applying the caller's decoder
+   options, so an unrecognized key aborts the whole push with `failed to parse config` instead of
+   being ignored. A typo is therefore a **loud** failure and an omission is a **silent** one, which
+   are opposite risk profiles; conflating them sends a reader looking in the wrong place. The
+   version pin at 2.109.1 is load-bearing for all of this, and an unreviewed CLI bump is a change
+   to auth policy. The operator-facing statement of the same model lives in
+   [the Supabase environments guide](../../guides/supabase-environments.md).
