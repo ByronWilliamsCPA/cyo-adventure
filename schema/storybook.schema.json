@@ -15,15 +15,29 @@
     },
     "CharacterRange": {
       "additionalProperties": false,
-      "description": "One variable's accepted range in a book's character envelope.\n\nBounds are inclusive on both ends, matching ``Variable.min``/``Variable.max``.\nCH-2 requires this range to *equal* the declared variable's bounds rather\nthan merely sit inside them: G3's runtime clamp is to declared bounds, so a\nnarrower envelope would let the runtime admit states the validator never\nwalked, invisibly.",
+      "description": "One variable's accepted range in a book's character envelope.\n\nBounds are inclusive on both ends, matching ``Variable.min``/``Variable.max``,\nincluding at the type level: ``min``/``max`` are typed ``bool | int`` (not\nplain ``int``) and checked with the same ``_check_story_int_bound`` helper\n``Variable`` uses, so a declared JSON ``true``/``false`` is rejected\nexplicitly instead of being silently coerced to ``1``/``0``, and the\n``MAX_ABS_STORY_INT`` magnitude cap applies here exactly as it does to\n``Variable``. CH-2 requires this range to *equal* the declared variable's\nbounds rather than merely sit inside them: G3's runtime clamp is to\ndeclared bounds, so a narrower envelope would let the runtime admit states\nthe validator never walked, invisibly.",
       "properties": {
         "max": {
-          "title": "Max",
-          "type": "integer"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "title": "Max"
         },
         "min": {
-          "title": "Min",
-          "type": "integer"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "title": "Min"
         }
       },
       "required": [

@@ -263,3 +263,54 @@ def test_a_range_rejects_an_extra_key() -> None:
     data["accepts_character"] = {"might": {"min": 0, "max": 2, "step": 1}}
     with pytest.raises(PydanticValidationError):
         Storybook.model_validate(data)
+
+
+def test_accepts_character_none_vs_empty_dict_survive_round_trip() -> None:
+    """CH-6 needs None (opted out) and {} (opted in, declared nothing) to stay
+    distinguishable through a full construct/serialize/reparse cycle, not just
+    at construction. A future default_factory=dict, an exclude_none dump, or a
+    "| None" cleanup would each collapse the two with the suite still green if
+    nothing pins the round trip; this test would fail under any of them.
+    """
+    absent = Storybook.model_validate(_story_data_at("2.1"))
+    assert absent.accepts_character is None
+
+    opted_in_data = _story_data_at("2.1")
+    opted_in_data["accepts_character"] = {}
+    opted_in_empty = Storybook.model_validate(opted_in_data)
+    assert opted_in_empty.accepts_character is not None
+    assert opted_in_empty.accepts_character == {}
+
+    # Round trip both through an actual JSON string, not just model_dump(),
+    # since a real producer/consumer boundary goes through JSON.
+    reparsed_absent = Storybook.model_validate(
+        json.loads(json.dumps(absent.model_dump(mode="json")))
+    )
+    reparsed_opted_in = Storybook.model_validate(
+        json.loads(json.dumps(opted_in_empty.model_dump(mode="json")))
+    )
+
+    assert reparsed_absent.accepts_character is None
+    assert reparsed_opted_in.accepts_character is not None
+    assert reparsed_opted_in.accepts_character == {}
+
+
+def test_character_range_rejects_boolean_bound() -> None:
+    """A declared JSON true/false must not be silently coerced to 1/0.
+
+    Mirrors Variable's own bool-bound rejection (test_storybook_schema.py); CH-2
+    will later require this range to equal a Variable's declared bounds, and a
+    coerced bool bound would compare unequal in ways that are hard to trace.
+    """
+    data = _story_data_at("2.1")
+    data["accepts_character"] = {"might": {"min": True, "max": 2}}
+    with pytest.raises(PydanticValidationError, match="must not be boolean"):
+        Storybook.model_validate(data)
+
+
+def test_character_range_rejects_out_of_range_bound() -> None:
+    """A bound beyond MAX_ABS_STORY_INT must be rejected, matching Variable."""
+    data = _story_data_at("2.1")
+    data["accepts_character"] = {"might": {"min": 0, "max": 1_000_000_000_001}}
+    with pytest.raises(PydanticValidationError, match="magnitude must be"):
+        Storybook.model_validate(data)

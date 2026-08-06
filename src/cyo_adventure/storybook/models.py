@@ -30,6 +30,15 @@ from cyo_adventure.storybook.condition import (
 # ADR-025 minor 1 (2026-08-06) adds Storybook.accepts_character. Every field
 # introduced at a minor must be registered in storybook/field_minors.py, which
 # is what L1-8 checks a document's declared version against.
+# #CRITICAL: data integrity: a field added here without a matching
+# storybook/field_minors.py entry lets a document under-declare its
+# schema_version while still using the field; L1-8 (not yet implemented)
+# reads that registry to catch exactly this, so a missed registration is
+# silently unenforceable rather than merely undertested.
+# #VERIFY: tracked by UW-A45 in docs/planning/unscheduled-work-register.md;
+# L1-8 ships with its own tests per that row (see
+# docs/superpowers/plans/2026-08-06-character-vocabulary-and-ch-rules.md
+# Task 4) before this build relies on the registry for enforcement.
 SCHEMA_MAJOR = 2
 SCHEMA_MINOR = 1
 SCHEMA_VERSION = f"{SCHEMA_MAJOR}.{SCHEMA_MINOR}"
@@ -350,6 +359,43 @@ class StoryMetadata(BaseModel):
     series: Series | None = None
 
 
+def _check_story_int_bound(value: bool | int, *, subject: str, label: str) -> None:
+    """Reject a boolean-typed bound and enforce the story-wide int magnitude cap.
+
+    Shared by ``Variable._check_int`` and ``CharacterRange`` so both apply the
+    same two invariants to every declared int: a bound typed ``bool | int``
+    (not plain ``int``) lets a JSON ``true``/``false`` survive Pydantic's
+    coercion as an actual bool instead of being silently collapsed to
+    ``1``/``0``, so it can be rejected explicitly here rather than admitted as
+    an integer; and every declared int must stay within ``MAX_ABS_STORY_INT``.
+
+    Args:
+        value: The declared bound, typed ``bool | int`` so a boolean literal
+            is distinguishable from an integer one.
+        subject: Human-readable name of the field being validated; used only
+            to compose the raised message.
+        label: Which bound this is (for example ``"min"`` or ``"initial"``);
+            used only to compose the raised message.
+
+    Raises:
+        ValueError: If ``value`` is a bool, or its magnitude exceeds
+            ``MAX_ABS_STORY_INT``.
+    """
+    if isinstance(value, bool):
+        msg = f"{subject} {label} must not be boolean"
+        raise ValueError(msg)  # noqa: TRY004 - Pydantic needs ValueError
+    # #CRITICAL: data integrity: exact Python arithmetic and the client's
+    # IEEE-754 doubles can never disagree about a declared int bound's value
+    # if every caller of this shared check (Variable's initial/min/max and
+    # CharacterRange's min/max) is bounded against MAX_ABS_STORY_INT here.
+    # #VERIFY: tests/unit/test_storybook_schema.py::
+    # test_int_variable_rejects_out_of_range_declaration and
+    # tests/unit/test_models.py::test_character_range_rejects_out_of_range_bound.
+    if abs(value) > MAX_ABS_STORY_INT:
+        msg = f"{subject} {label} magnitude must be <= {MAX_ABS_STORY_INT}, got {value}"
+        raise ValueError(msg)
+
+
 class Variable(BaseModel):
     """A declared story state variable with a type-consistent initial value."""
 
@@ -411,26 +457,11 @@ class Variable(BaseModel):
         if isinstance(self.initial, bool):
             msg = f"int variable '{self.name}' needs an integer initial value"
             raise ValueError(msg)  # noqa: TRY004 - Pydantic needs ValueError
-        for bound_label, bound_value in (("min", self.min), ("max", self.max)):
-            if isinstance(bound_value, bool):
-                msg = f"int variable '{self.name}' {bound_label} must not be boolean"
-                raise ValueError(msg)  # noqa: TRY004 - Pydantic needs ValueError
-        # #CRITICAL: data integrity: exact Python arithmetic and the client's
-        # IEEE-754 doubles can never disagree about a declared int bound if
-        # every declared int is checked against MAX_ABS_STORY_INT here.
-        # #VERIFY: tests/unit/test_storybook_schema.py::
-        # test_int_variable_rejects_out_of_range_declaration.
-        for label, declared in (
-            ("initial", self.initial),
-            ("min", self.min),
-            ("max", self.max),
-        ):
-            if declared is not None and abs(declared) > MAX_ABS_STORY_INT:
-                msg = (
-                    f"int variable '{self.name}' {label} magnitude must be "
-                    f"<= {MAX_ABS_STORY_INT}, got {declared}"
-                )
-                raise ValueError(msg)
+        subject = f"int variable '{self.name}'"
+        _check_story_int_bound(self.initial, subject=subject, label="initial")
+        for label, bound in (("min", self.min), ("max", self.max)):
+            if bound is not None:
+                _check_story_int_bound(bound, subject=subject, label=label)
         self._check_int_bounds()
 
     def _check_int_bounds(self) -> None:
@@ -569,20 +600,32 @@ class Node(BaseModel):
 class CharacterRange(BaseModel):
     """One variable's accepted range in a book's character envelope.
 
-    Bounds are inclusive on both ends, matching ``Variable.min``/``Variable.max``.
-    CH-2 requires this range to *equal* the declared variable's bounds rather
-    than merely sit inside them: G3's runtime clamp is to declared bounds, so a
-    narrower envelope would let the runtime admit states the validator never
-    walked, invisibly.
+    Bounds are inclusive on both ends, matching ``Variable.min``/``Variable.max``,
+    including at the type level: ``min``/``max`` are typed ``bool | int`` (not
+    plain ``int``) and checked with the same ``_check_story_int_bound`` helper
+    ``Variable`` uses, so a declared JSON ``true``/``false`` is rejected
+    explicitly instead of being silently coerced to ``1``/``0``, and the
+    ``MAX_ABS_STORY_INT`` magnitude cap applies here exactly as it does to
+    ``Variable``. CH-2 requires this range to *equal* the declared variable's
+    bounds rather than merely sit inside them: G3's runtime clamp is to
+    declared bounds, so a narrower envelope would let the runtime admit states
+    the validator never walked, invisibly.
     """
 
     model_config = ConfigDict(extra="forbid")
 
-    min: int
-    max: int
+    # `bool` is included in the union (not just `int`) for the same reason as
+    # `Variable.min`/`Variable.max`: it lets a declared `true`/`false` bound
+    # survive Pydantic's coercion as an actual bool so `_check_bounds` can
+    # reject it explicitly instead of silently admitting `1`/`0`.
+    min: bool | int
+    max: bool | int
 
     @model_validator(mode="after")
-    def _check_bounds_are_ordered(self) -> Self:
+    def _check_bounds(self) -> Self:
+        subject = "accepts_character range"
+        for label, bound in (("min", self.min), ("max", self.max)):
+            _check_story_int_bound(bound, subject=subject, label=label)
         if self.min > self.max:
             msg = f"accepts_character range min {self.min} exceeds max {self.max}"
             raise ValueError(msg)
@@ -605,6 +648,13 @@ class Storybook(BaseModel):
     # not opted in cannot be seeded by G3 name-match through an accidental
     # collision. ``None`` and ``{}`` are therefore different states and the
     # default must not be a factory.
+    # #CRITICAL: data integrity: a default_factory=dict, a
+    # model_dump(exclude_none=True) added to some future serializer, or a
+    # "| None" cleanup would each silently collapse the None-vs-{} states
+    # CH-6 depends on, with the test suite still green if nothing pins the
+    # round trip.
+    # #VERIFY: tests/unit/test_models.py::
+    # test_accepts_character_none_vs_empty_dict_survive_round_trip.
     accepts_character: dict[str, CharacterRange] | None = None
     start_node: str = Field(min_length=1)
     nodes: list[Node] = Field(min_length=1)
