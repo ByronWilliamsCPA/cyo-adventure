@@ -438,6 +438,16 @@ jobs:
 
       - name: Check validation results
         run: |
+          # #CRITICAL: data-integrity: without `set -e` every `>>` redirect
+          # failure is swallowed and the script's exit status is whatever its
+          # LAST statement happened to return. This gate previously failed
+          # closed on an unwritable summary only by that accident, so
+          # appending any trailing statement would have silently turned it
+          # into a false pass on a required check.
+          # #VERIFY: tests/unit/test_pr_validation_gate_contract.py runs this
+          # script with an unwritable GITHUB_STEP_SUMMARY and asserts non-zero.
+          set -euo pipefail
+
           {
             echo "## Dependency & Standards Validation"
             echo ""
@@ -451,10 +461,12 @@ jobs:
           # is the defect issue #594 records against ci.yml's CI Gate; the same
           # blanket tolerance lived here.
           #
-          # Otherwise: only `failure` blocks, and only for link-check plus a
-          # dead-code job that broke on invocation (vulture findings are
-          # warnings, so a failed dead-code job means the tool or its config is
-          # broken).
+          # Otherwise the gate blocks on any result that is neither `success`
+          # nor an explained `skipped`: `failure`, `cancelled`, `timed_out`
+          # and anything else GitHub adds later all fall through to the
+          # catch-all below. For dead-code specifically a `failure` means the
+          # tool or its config broke on invocation, since vulture findings are
+          # warnings rather than a non-zero exit.
           if [ "$EVENT_NAME" = "merge_group" ]; then
             skip_expected=true
           else
@@ -462,6 +474,7 @@ jobs:
           fi
 
           failed=0
+          skipped_jobs=()
 
           # summarize <label> <result>
           summarize() {
@@ -473,6 +486,7 @@ jobs:
                 if [ "$skip_expected" = "true" ]; then
                   echo "⏭️ $1: Skipped (merge queue), so not verified here" \
                     >> "$GITHUB_STEP_SUMMARY"
+                  skipped_jobs+=("$1")
                 else
                   echo "❌ $1: Skipped, and a ${EVENT_NAME} event does not explain why" \
                     >> "$GITHUB_STEP_SUMMARY"
@@ -487,8 +501,11 @@ jobs:
             esac
           }
 
+          # Labels are the jobs' own display names, so a reader who sees one
+          # of these lines fail can find that job in the checks UI. "Link
+          # Check" was not a name anything reports under.
           summarize "Dead Code Check" "$DEAD_CODE_RESULT"
-          summarize "Link Check" "$LINK_CHECK_RESULT"
+          summarize "Documentation Links" "$LINK_CHECK_RESULT"
 
           if [ "$failed" -eq 1 ]; then
             {
@@ -498,7 +515,24 @@ jobs:
             exit 1
           fi
 
-          {
-            echo ""
-            echo "✅ All validation checks passed!"
-          } >> "$GITHUB_STEP_SUMMARY"
+          # A run where a job legitimately skipped verified less than a full
+          # run did, so it must not sign off as "all checks passed". Same rule
+          # as ci.yml's CI Gate: a skip is its own outcome, never a pass.
+          if [ "${#skipped_jobs[@]}" -gt 0 ]; then
+            {
+              echo ""
+              echo "⚠️ ${#skipped_jobs[@]} check(s) were not run on this commit:"
+              echo "\`${skipped_jobs[*]}\`."
+              echo "This gate is green because those skips are expected here, not because"
+              echo "those checks passed."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::Dependency & Standards Validation is green with ${#skipped_jobs[@]} check(s) not run: ${skipped_jobs[*]}"
+          else
+            {
+              echo ""
+              echo "✅ All validation checks passed!"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          # Explicit, so success never depends on which statement is last.
+          exit 0
