@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.66.2] - 2026-08-06
+
+### Bug Fixes
+
+- **ci**: Stop the CI Gate reporting a skipped job as a verification
+  ([#626](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/626),
+  [`4629c1a`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/4629c1a55fdd31a18b2dbf04e5ee6af3e31451a7))
+
+### Refactoring
+
+- **tests**: Bind setup calls before asserting the raise
+  ([#621](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/621),
+  [`1099f8b`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/1099f8b22017b49b476e30f5fa42497e67454d58))
+
+
 ## [0.66.1] - 2026-08-05
 
 ### Bug Fixes
@@ -3179,6 +3194,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.66.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.1...v0.66.2
 [0.66.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.0...v0.66.1
 [0.66.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.65.2...v0.66.0
 [0.65.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.65.1...v0.65.2
