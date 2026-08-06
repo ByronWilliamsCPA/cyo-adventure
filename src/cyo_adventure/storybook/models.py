@@ -31,7 +31,7 @@ SCHEMA_MAJOR = 2
 SCHEMA_MINOR = 0
 SCHEMA_VERSION = f"{SCHEMA_MAJOR}.{SCHEMA_MINOR}"
 
-_SCHEMA_VERSION_RE = re.compile(r"(\d+)\.(\d+)", re.ASCII)
+_SCHEMA_VERSION_RE = re.compile(r"(0|[1-9]\d*)\.(0|[1-9]\d*)", re.ASCII)
 
 
 def parse_schema_version(value: str) -> tuple[int, int]:

@@ -311,18 +311,19 @@ def _load_blob(repo_root: Path, rel_path: str) -> dict[str, object]:
 def _needs_legacy_normalization(blob: dict[str, object]) -> bool:
     """Detect the older Storybook shape structurally, not by filename.
 
-    A blob needs normalization when its ``schema_version`` is missing,
-    unparseable, or names a major below :data:`SCHEMA_MAJOR`, or when
-    ``metadata.topology`` is absent. A same-major version at or above the
-    current minor (including a future minor such as "2.1") is deliberately
-    NOT treated as legacy: it must reach :func:`cyo_adventure.validator.gate.run_gate`
-    unmodified and be rejected there by
-    :meth:`cyo_adventure.storybook.models.Storybook._check_schema_version`,
+    A blob is legacy when its ``schema_version`` is missing, unparseable, or
+    names a major below :data:`SCHEMA_MAJOR`. A version above the current
+    major, or above the current minor (including a future minor such as
+    "2.1"), is deliberately NOT legacy: it must reach
+    :func:`cyo_adventure.validator.gate.run_gate` unmodified and be rejected
+    there by :meth:`cyo_adventure.storybook.models.Storybook._check_schema_version`,
     rather than be silently rewritten to "2.0" and admitted as if it were the
-    document this build actually implements. Detecting the legacy shape
-    structurally (rather than hardcoding the 3 known filenames) means any
-    future manifest entry with the same stale shape is caught automatically
-    instead of silently failing the gate.
+    document this build actually implements. Only for a version this build
+    implements does the absence of ``metadata.topology`` decide the outcome:
+    a same-major, same-minor document with no ``metadata.topology`` is legacy.
+    Detecting the legacy shape structurally (rather than hardcoding the 3
+    known filenames) means any future manifest entry with the same stale
+    shape is caught automatically instead of silently failing the gate.
 
     Args:
         blob: The parsed filled story JSON.
@@ -348,7 +349,7 @@ def _needs_legacy_normalization(blob: dict[str, object]) -> bool:
     # present; test_a_future_minor_without_topology_is_not_legacy and
     # test_higher_major_without_topology_is_not_legacy assert False with it
     # absent; test_malformed_version_is_legacy asserts True for an
-    # unparseable version. All four in
+    # unparseable version. All five in
     # tests/unit/test_import_catalog.py::TestNeedsLegacyNormalization.
     try:
         major, doc_minor = parse_schema_version(version)

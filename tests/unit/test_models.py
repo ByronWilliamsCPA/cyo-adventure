@@ -124,7 +124,20 @@ def test_parse_schema_version_splits_major_and_minor():
 
 @pytest.mark.parametrize(
     "value",
-    ["2", "2.0.1", "2.x", "", "v2.0", "2. 0", "-1.0", "2.-1", "2.0\n"],
+    [
+        "2",
+        "2.0.1",
+        "2.x",
+        "",
+        "v2.0",
+        "2. 0",
+        "-1.0",
+        "2.-1",
+        "2.0\n",
+        "\u0662.\u0660",
+        "02.0",
+        "2.00",
+    ],
 )
 def test_parse_schema_version_rejects_malformed(value: str):
     with pytest.raises(ValueError, match="malformed schema_version"):
