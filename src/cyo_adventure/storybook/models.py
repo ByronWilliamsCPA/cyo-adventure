@@ -14,6 +14,7 @@ loops, termination) are the validator's job in later phases, not the schema's.
 
 from __future__ import annotations
 
+import re
 from enum import StrEnum
 from typing import Self
 
@@ -26,7 +27,59 @@ from cyo_adventure.storybook.condition import (
     referenced_vars,
 )
 
-SCHEMA_VERSION = "2.0"
+SCHEMA_MAJOR = 2
+SCHEMA_MINOR = 0
+SCHEMA_VERSION = f"{SCHEMA_MAJOR}.{SCHEMA_MINOR}"
+
+_SCHEMA_VERSION_RE = re.compile(r"^(\d+)\.(\d+)$")
+
+
+def parse_schema_version(value: str) -> tuple[int, int]:
+    """Split a ``MAJOR.MINOR`` schema version into its integer parts.
+
+    Args:
+        value: The raw ``schema_version`` string from a document.
+
+    Returns:
+        tuple[int, int]: The major and minor components.
+
+    Raises:
+        ValueError: If ``value`` is not exactly two dot-separated
+            non-negative integers.
+    """
+    match = _SCHEMA_VERSION_RE.match(value)
+    if match is None:
+        msg = f"malformed schema_version {value!r}; expected MAJOR.MINOR"
+        raise ValueError(msg)
+    return int(match.group(1)), int(match.group(2))
+
+
+def is_supported_schema_version(
+    value: str, *, major: int = SCHEMA_MAJOR, minor: int = SCHEMA_MINOR
+) -> bool:
+    """Report whether this build can parse a document at ``value``.
+
+    ADR-025 accepts any same-major version whose minor is at or below the
+    deployed minor. A newer minor is refused rather than parsed leniently:
+    its added fields would be silently dropped by ``extra="forbid"``
+    enumeration, which is a data-integrity failure, not a compatibility one.
+
+    Args:
+        value: The raw ``schema_version`` string from a document.
+        major: The major version this build implements.
+        minor: The highest minor version this build implements.
+
+    Returns:
+        bool: True if the document can be parsed by this build.
+    """
+    # #CRITICAL: data integrity: a malformed version must never be treated as
+    # supported, or an unparseable document reaches the model as if valid.
+    # #VERIFY: covered by test_supported_version_rejects_malformed_without_raising
+    try:
+        doc_major, doc_minor = parse_schema_version(value)
+    except ValueError:
+        return False
+    return doc_major == major and doc_minor <= minor
 
 
 class AgeBand(StrEnum):

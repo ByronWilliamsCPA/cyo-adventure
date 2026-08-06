@@ -7,6 +7,8 @@ import pytest
 from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.storybook.models import (
+    SCHEMA_MAJOR,
+    SCHEMA_MINOR,
     SCHEMA_VERSION,
     Choice,
     ContentFlagLevel,
@@ -17,7 +19,9 @@ from cyo_adventure.storybook.models import (
     StoryMetadata,
     Topology,
     Valence,
+    is_supported_schema_version,
     level_rank,
+    parse_schema_version,
 )
 from cyo_adventure.storybook.schema_export import build_schema
 
@@ -106,3 +110,42 @@ def test_exported_schema_file_matches_model():
     path = Path(__file__).resolve().parents[2] / "schema" / "storybook.schema.json"
     on_disk = json.loads(path.read_text(encoding="utf-8"))
     assert on_disk == build_schema()
+
+
+def test_schema_version_is_composed_from_major_and_minor():
+    assert f"{SCHEMA_MAJOR}.{SCHEMA_MINOR}" == SCHEMA_VERSION
+
+
+def test_parse_schema_version_splits_major_and_minor():
+    assert parse_schema_version("2.0") == (2, 0)
+    assert parse_schema_version("2.7") == (2, 7)
+
+
+@pytest.mark.parametrize(
+    "value",
+    ["2", "2.0.1", "2.x", "", "v2.0", "2. 0", "-1.0", "2.-1"],
+)
+def test_parse_schema_version_rejects_malformed(value: str):
+    with pytest.raises(ValueError, match="malformed schema_version"):
+        parse_schema_version(value)
+
+
+def test_supported_version_accepts_current_and_earlier_minors():
+    assert is_supported_schema_version("2.0", major=2, minor=2)
+    assert is_supported_schema_version("2.1", major=2, minor=2)
+    assert is_supported_schema_version("2.2", major=2, minor=2)
+
+
+def test_supported_version_rejects_a_newer_minor():
+    # The rolling-deploy rule in ADR-025 decision 5: an old replica must never
+    # be asked to parse a newer minor.
+    assert not is_supported_schema_version("2.3", major=2, minor=2)
+
+
+def test_supported_version_rejects_a_different_major():
+    assert not is_supported_schema_version("3.0", major=2, minor=2)
+    assert not is_supported_schema_version("1.9", major=2, minor=2)
+
+
+def test_supported_version_rejects_malformed_without_raising():
+    assert not is_supported_schema_version("banana", major=2, minor=2)
