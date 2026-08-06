@@ -218,6 +218,23 @@ applies the rules below; `publishing/service.py` raises
 
 ---
 
+## Character Envelope (Participating Books Only)
+
+Rules proving that a book declaring `accepts_character` is safe across exactly the states a seeded reader can
+arrive in. Enforced by `validator/character.py`; specified in
+[ADR-028](./adr/adr-028-persistent-reader-characters.md) decision 5. Like the `SR` family these prove a
+cross-artifact handoff rather than a within-story property. All are ERROR severity and all set `blocked`.
+
+| Rule ID | Layer | Description | Failure Message Template |
+|---------|-------|-------------|--------------------------|
+| CH-1 | Character | **Vocabulary and declaration**: every `accepts_character` name is in the canonical vocabulary and is declared in `variables` with a matching type. | `CH-1 character: accepts_character declares '{name}', which is not in the canonical vocabulary {names}` / `CH-1 character: accepts_character declares '{name}' but the story declares no variable of that name` / `CH-1 character: '{name}' is declared as {actual} but the canonical vocabulary defines it as {expected}` |
+| CH-2 | Character | **Range equality**: each envelope range equals the declared variable's `min`/`max`. Equality, not containment: G3's runtime clamp is to declared bounds, so a narrower envelope would silently admit states the validator never walked. | `CH-2 character: accepts_character range for '{name}' is {a}-{b} but the variable declares {c}-{d}; they must be equal` |
+| CH-5 | Character | **Envelope size**: the envelope admits no more entry states than `_MAX_ENTRY_STATES`. An ERROR rather than SR-9's truncate-and-warn, because an envelope is declared rather than emergent. | `CH-5 character: accepts_character admits {n} entry states, above the {cap} cap; narrow a range or declare fewer variables` |
+| CH-6 | Character | **Namespace reservation**: a book that declares no `accepts_character` may not declare a variable whose name is in the canonical vocabulary. G3 carry is name-match, so without this a book that never opted in can still be seeded. | `CH-6 character: '{name}' is a reserved canonical character variable, but this story declares no accepts_character envelope; rename the variable or opt in` |
+| CH-7 | Character | **Series exclusivity**: a book declaring `accepts_character` is not a non-first book of a `carries_state` series. Two independent sources of carried state in one book is unproved in v1. | `CH-7 character: book {index} of state-carrying series '{series_id}' may not also declare accepts_character` |
+
+---
+
 ## Rule Application Order
 
 The validator applies rules in this order:

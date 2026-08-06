@@ -7,25 +7,30 @@ API validate endpoint call.
 Rule application order (per ``docs/planning/validator-rules.md``
 "Rule Application Order" and tech-spec "Validation gate"):
 
-1. Layer 1 (L1-1..L1-7): graph structure, schema conformance, logic.
+1. Layer 1 (L1-1..L1-8): graph structure, schema conformance, logic.
 2. **Early return on any L1 ERROR**: the graph must be sound before a
    state-space walk is meaningful, and the document may not even parse.
 3. Policy (PL-15..PL-18): age-safety and shape invariants on the parsed
    model (forbidden ending kinds, content ceilings, floors, topology).
 4. Layer 2 (L2-9..L2-13): state-space walk, Tier-2 only (Tier-1 skips). L2-13
    is a WARNING-only scale advisory and never sets ``blocked``.
-5. RL-13: advisory reading-level check (WARNING, never blocks).
-6. CG-1..CG-4: advisory choice-grammar checks (WARNING, never blocks),
+5. CH-*: character envelope rules (ADR-028), participating books only (a
+   book that neither declares ``accepts_character`` nor uses a reserved
+   canonical name gets an empty report from this step). Not every CH-* id
+   has landed yet; see ``validator/character.py``.
+6. RL-13: advisory reading-level check (WARNING, never blocks).
+7. CG-1..CG-4: advisory choice-grammar checks (WARNING, never blocks),
    gated behind ``enforce_grammar`` (default False; D3/D11 grandfathering,
    see ``validator/choice_grammar.py``).
-7. SAFE-14: safety content check (Phase-2 stub, always empty).
+8. SAFE-14: safety content check (Phase-2 stub, always empty).
 
 Blocking semantics
 ------------------
 ``blocked`` is ``True`` when any ERROR-severity finding whose ``rule_id``
-starts with ``"L1"``, ``"L2"``, or ``"PL"`` is present in the merged report.
-RL-13 findings are WARNING and must not set ``blocked``. SAFE-14 findings
-route to human review and are tracked separately via ``safety_flagged``.
+starts with ``"CH"``, ``"L1"``, ``"L2"``, or ``"PL"`` is present in the merged
+report. RL-13 findings are WARNING and must not set ``blocked``. SAFE-14
+findings route to human review and are tracked separately via
+``safety_flagged``.
 
 ``safety_flagged`` is ``True`` when any finding with ``rule_id == "SAFE-14"``
 exists in the merged report. In Phase 2 the safety stub is empty, so this
@@ -41,6 +46,7 @@ from typing import TYPE_CHECKING
 from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.storybook.models import Storybook
+from cyo_adventure.validator.character import validate_character
 from cyo_adventure.validator.choice_grammar import check_choice_grammar
 from cyo_adventure.validator.layer1 import Scale, validate_layer1
 from cyo_adventure.validator.layer2 import validate_layer2
@@ -63,10 +69,10 @@ class GateResult:
 
     Attributes:
         report: Merged findings across all layers run, in order: L1, L2,
-            RL, SAFE.
+            CH, RL, SAFE.
         blocked: ``True`` when any ERROR-severity finding whose rule_id
-            starts with ``"L1"``, ``"L2"``, or ``"PL"`` is present. RL-13
-            warnings and SAFE-14 findings never set this flag.
+            starts with ``"CH"``, ``"L1"``, ``"L2"``, or ``"PL"`` is present.
+            RL-13 warnings and SAFE-14 findings never set this flag.
         safety_flagged: ``True`` when any finding with rule_id ``"SAFE-14"``
             is present. Always ``False`` in Phase 2 (stub is empty), but
             computed honestly so Phase 3 does not require changes here.
@@ -141,6 +147,13 @@ def run_gate(
     for finding in l2_report.findings:
         merged.add(finding)
 
+    # --- CH-*: character envelope rules (ADR-028), participating books only;
+    # validate_character returns an empty report for a book that neither opts
+    # in nor uses a reserved name. ---
+    ch_report = validate_character(story)
+    for finding in ch_report.findings:
+        merged.add(finding)
+
     # --- RL-13: advisory reading-level check (WARNING, never blocks) ---
     rl_report = check_reading_level(story)
     for finding in rl_report.findings:
@@ -159,7 +172,7 @@ def run_gate(
 
     # --- Compute blocked and safety_flagged from the merged report ---
     blocked = any(
-        f.severity is Severity.ERROR and f.rule_id.startswith(("L1", "L2", "PL"))
+        f.severity is Severity.ERROR and f.rule_id.startswith(("CH", "L1", "L2", "PL"))
         for f in merged.findings
     )
     safety_flagged = any(f.rule_id == "SAFE-14" for f in merged.findings)
