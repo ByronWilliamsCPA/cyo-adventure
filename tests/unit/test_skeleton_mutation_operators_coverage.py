@@ -600,8 +600,15 @@ def _tier1_story(**meta_over: object) -> dict[str, object]:
     metadata.update(meta_over)
     return {
         "metadata": metadata,
-        "start_node": "s",
+        "start_node": "n_open",
+        # ``n_open`` is the establishing stop PL-25's floor requires, and it is
+        # here so that ``s`` sits deep enough to be a legal graft host. Without
+        # it a graft onto ``s`` turns the START node into a decision, which
+        # ``_pl25_opening_reason`` rejects FIRST, so every test below aiming at a
+        # later rung of the precondition ladder would stop short of its target
+        # and pass or fail for the wrong reason.
         "nodes": [
+            {"id": "n_open", "choices": [{"id": "c0", "target": "s"}]},
             {"id": "s", "choices": [{"id": "c1", "target": "a"}]},
             {"id": "a", "is_ending": True, "ending": {"id": "ae", "kind": "success"}},
         ],
@@ -1311,8 +1318,11 @@ def test_evaluate_graft_rejects_a_non_self_contained_donor_subtree() -> None:
     """A donor subtree with an external in-edge to an internal node is rejected."""
     host = {
         "metadata": {"age_band": "8-11"},
-        "start_node": "h",
+        "start_node": "ho",
         "nodes": [
+            # Establishing stop, so grafting onto ``h`` does not trip PL-25's
+            # opening floor before the donor-side check under test is reached.
+            {"id": "ho", "choices": [{"id": "hoc", "target": "h"}]},
             {"id": "h", "choices": [{"id": "hc", "target": "he"}]},
             {"id": "he", "is_ending": True, "ending": {"id": "hee", "kind": "success"}},
         ],

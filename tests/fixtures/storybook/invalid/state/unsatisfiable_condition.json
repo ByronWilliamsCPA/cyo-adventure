@@ -33,8 +33,20 @@
       "description": "Player courage, clamped at 2"
     }
   ],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
+    {
+      "id": "n_open",
+      "body": "You stop here for a while to look around at the new place you have come to, and you wait.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_open",
+          "label": "Go on.",
+          "target": "n_start"
+        }
+      ]
+    },
     {
       "id": "n_start",
       "body": "You stand before a champion's gate. Two paths lead onward.",

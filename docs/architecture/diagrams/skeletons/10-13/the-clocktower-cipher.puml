@@ -6,9 +6,11 @@ skinparam backgroundColor #FAFAFA
 skinparam roundCorner 8
 hide empty description
 
-[*] --> n_start
-state n_start #BBDEFB
-n_start : setup · 175w
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 110w
+state n_start #FFF9C4
+n_start : choice · 70w
 state n_note #D1C4E9
 n_note : rising · 175w
 state n_door #D1C4E9
@@ -65,6 +67,7 @@ n_end_keepsake : "A Secret Kept"
 state n_end_caught #FFCDD2
 n_end_caught : setback (negative)
 n_end_caught : "Caught Red-Handed"
+n_open --> n_start : Read the note again, together.
 n_start --> n_note : Examine the {CIPHER} note pinned to the ...
 n_start --> n_door : Search the building for another way in.
 n_start --> n_keeper : Find {KEEPER} and ask for help.
@@ -112,7 +115,7 @@ legend right
   The Clocktower Cipher
   Band 10-13 · Tier 1 · ~18 min
   Topology: branch_and_bottleneck
-  25 nodes · 8 endings (3+ / 1n / 4-)
+  26 nodes · 8 endings (3+ / 1n / 4-)
   MVP/Test tier (not production-eligible)
 endlegend
 @enduml

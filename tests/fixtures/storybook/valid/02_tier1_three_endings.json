@@ -25,8 +25,20 @@
     "topology": "time_cave"
   },
   "variables": [],
-  "start_node": "n_hall",
+  "start_node": "n_open",
   "nodes": [
+    {
+      "id": "n_open",
+      "body": "You stop here for a while and look around at the new place you have come to.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_open",
+          "label": "Go on.",
+          "target": "n_hall"
+        }
+      ]
+    },
     {
       "id": "n_hall",
       "body": "You stand in a hallway before three doors: red, green, and blue.",

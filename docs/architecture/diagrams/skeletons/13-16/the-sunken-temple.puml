@@ -6,9 +6,11 @@ skinparam backgroundColor #FAFAFA
 skinparam roundCorner 8
 hide empty description
 
-[*] --> n_start
-state n_start #BBDEFB
-n_start : setup · 90w
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 60w
+state n_start #FFF9C4
+n_start : choice · 45w
 state g0_notice #FFF9C4
 g0_notice : choice · 80w
 state g0_watchman #D1C4E9
@@ -1259,6 +1261,7 @@ state w7_harvest #D1C4E9
 w7_harvest : rising · 75w
 state w7_drumcount #D1C4E9
 w7_drumcount : rising · 75w
+n_open --> n_start : Cross into the square.
 n_start --> g0_notice : Read the summons under the sign.
 n_start --> g0_market : See to supplies in the market first.
 n_start --> g0_inn_early : Go straight in to the taproom.
@@ -2217,7 +2220,7 @@ legend right
   The Sunken Temple
   Band 13-16 · Tier 2 · ~30 min
   Topology: branch_and_bottleneck
-  550 nodes · 152 endings (4+ / 3n / 145-)
+  551 nodes · 152 endings (4+ / 3n / 145-)
   Production-eligible
   Scale: long · gamebook
 endlegend

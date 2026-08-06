@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "<<FILL role=setup words=130 beats='{HERO} arrives as new keeper of {THRESHOLD} above {TOWN} on {OPENING_MOMENT}'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Take the keys and go down.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "<<FILL role=setup words=210 beats='{HERO} arrives as new keeper of {THRESHOLD} above {TOWN} on {OPENING_MOMENT} and the oldest vaults begin to drink {DEADLINE_SIGN}, and four ways to meet the drowning open before her'>>",
+      "body": "<<FILL role=choice words=90 beats='the oldest vaults begin to drink {DEADLINE_SIGN}, and four ways to meet the drowning open before her'>>",
       "is_ending": false,
       "choices": [
         {

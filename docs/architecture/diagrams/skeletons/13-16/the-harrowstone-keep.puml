@@ -6,9 +6,11 @@ skinparam backgroundColor #FAFAFA
 skinparam roundCorner 8
 hide empty description
 
-[*] --> n_start
-state n_start #BBDEFB
-n_start : setup · 90w
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 60w
+state n_start #FFF9C4
+n_start : choice · 45w
 state a0_notice #FFF9C4
 a0_notice : choice · 80w
 state a0_watchman #D1C4E9
@@ -1259,6 +1261,7 @@ state w7_harvest #D1C4E9
 w7_harvest : rising · 75w
 state w7_drumcount #D1C4E9
 w7_drumcount : rising · 75w
+n_open --> n_start : Come in under the gate lamp.
 n_start --> a0_notice : Read the notice board.
 n_start --> a0_market : Walk the market row before the stalls cl...
 n_start --> a0_inn_early : Go straight into the Gull and Lantern.
@@ -2217,7 +2220,7 @@ legend right
   The Harrowstone Keep
   Band 13-16 · Tier 2 · ~30 min
   Topology: branch_and_bottleneck
-  550 nodes · 152 endings (4+ / 3n / 145-)
+  551 nodes · 152 endings (4+ / 3n / 145-)
   Production-eligible
   Scale: long · gamebook
 endlegend

@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "<<FILL role=setup words=70 beats='{HERO} has dreamed of the sky her whole life, so when {THRESHOLD} casts off from {ENTRANCE} she is already aboard, hidden in a coil of rope, {OPENING_MOMENT}; the humming boarding deck stretches around her and nobody has spotted her yet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Slip out of the rope coil.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "<<FILL role=setup words=115 beats='{HERO} has dreamed of the sky her whole life, so when {THRESHOLD} casts off from {ENTRANCE} she is already aboard, hidden in a coil of rope, {OPENING_MOMENT}; the humming boarding deck stretches around her and nobody has spotted her yet; four passages lead away into the belly of the ship, and she must choose one before a crewman turns around'>>",
+      "body": "<<FILL role=choice words=50 beats='four passages lead away into the belly of the ship, and she must choose one before a crewman turns around'>>",
       "is_ending": false,
       "choices": [
         {

@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "Nadia bent down to retie her shoe. When she looked up, the school group was gone. So was the guard, and so were most of the lights, leaving only a few dim bulbs on the walls of the Ellery Museum. She ran to the main doors and pushed, but they would not move. In her coat pocket she found a note she did not remember keeping. Folded inside it was a half-torn map of the museum, its paper soft and gray with age and one corner marked with a small brass symbol, a circle crossed by two lines. Someone had circled a wing that no longer stood and scrawled a line about a hidden collection from the old founder.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Feel your way to the hub.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "Nadia bent down to retie her shoe. When she looked up, the school group was gone. So was the guard, and so were most of the lights, leaving only a few dim bulbs on the walls of the Ellery Museum. She ran to the main doors and pushed, but they would not move. In her coat pocket she found a note she did not remember keeping. Folded inside it was a half-torn map of the museum, its paper soft and gray with age and one corner marked with a small brass symbol, a circle crossed by two lines. Someone had circled a wing that no longer stood and scrawled a line about a hidden collection from the old founder. Nadia stood alone in the dark, round rotunda, where moonlight through the dome caught three brass signs above three archways: the Gallery of Gems, the Egyptian Wing, and the Archive. She had all night. She had better start walking.",
+      "body": "Nadia stood alone in the dark, round rotunda, where moonlight through the dome caught three brass signs above three archways: the Gallery of Gems, the Egyptian Wing, and the Archive. She had all night. She had better start walking.",
       "is_ending": false,
       "choices": [
         {

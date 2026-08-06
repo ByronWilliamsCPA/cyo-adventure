@@ -379,8 +379,16 @@ def _check_first_decision_depth(story: Storybook, report: ValidationReport) -> N
       slow. This is the long unbranching prologue the rule exists to catch, and
       the shape an LLM generator produces most readily.
 
-    Under the floor is a WARNING: a story that opens on its first choice gives
-    the reader no situation to choose about.
+    Under the floor is an **ERROR**, and unlike the ceiling it grades in one
+    tier. A story that opens on its first choice asks the reader to pick before
+    any situation exists, which is a correctness failure in the same sense as
+    PL-20's floor rather than a matter of pacing degree: there is no "slightly
+    too little establishing" the way there is a slightly-too-long prologue. The
+    drafting guide states the same constraint from the other side (max choiceless
+    stops in a row is at least 1 in every band), and the whole committed catalog
+    satisfies it, so the tier costs no legitimate work. It was introduced as a
+    WARNING only because 20 skeletons predated the rule; those were fixed first
+    (AL-086), and the escalation followed a clean sweep.
 
     Applies to every story with a configured band, scale-classified or not,
     because a buried first choice is a band-level pacing defect rather than a
@@ -424,7 +432,7 @@ def _check_first_decision_depth(story: Storybook, report: ValidationReport) -> N
         report.add(
             ValidationFinding(
                 rule_id="PL-25",
-                severity=Severity.WARNING,
+                severity=Severity.ERROR,
                 story_id=story.id,
                 message=(
                     f"PL-25 opening: first decision is {depth} node(s) in, under the "

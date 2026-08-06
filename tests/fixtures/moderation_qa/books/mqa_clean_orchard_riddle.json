@@ -11,7 +11,10 @@
       "tolerance": 1.0
     },
     "tier": 1,
-    "themes": ["mystery", "friendship"],
+    "themes": [
+      "mystery",
+      "friendship"
+    ],
     "estimated_minutes": 4,
     "ending_count": 3,
     "content_flags": {
@@ -22,15 +25,35 @@
     "topology": "branch_and_bottleneck"
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
+    {
+      "id": "n_open",
+      "body": "You stop here for a while and look around at the new place you have come to.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_open",
+          "label": "Go on.",
+          "target": "n_start"
+        }
+      ]
+    },
     {
       "id": "n_start",
       "body": "The old orchard is famous for its riddle tree, said to grant a wish to whoever solves its puzzle. Your friend Sam is already there with a notebook. Do you examine the carved riddle first, or ask the groundskeeper for a hint?",
       "is_ending": false,
       "choices": [
-        {"id": "c_riddle", "label": "Examine the carved riddle.", "target": "n_riddle"},
-        {"id": "c_hint", "label": "Ask the groundskeeper for a hint.", "target": "n_hint"}
+        {
+          "id": "c_riddle",
+          "label": "Examine the carved riddle.",
+          "target": "n_riddle"
+        },
+        {
+          "id": "c_hint",
+          "label": "Ask the groundskeeper for a hint.",
+          "target": "n_hint"
+        }
       ]
     },
     {
@@ -38,8 +61,16 @@
       "body": "The bark is carved with looping letters: 'I have branches but grow no leaves in winter, and I count every year I have lived. What am I?' Sam grins, already guessing. Do you think it over together, or call out the first answer that comes to mind?",
       "is_ending": false,
       "choices": [
-        {"id": "c_continue_riddle", "label": "Think it over together.", "target": "n_middle"},
-        {"id": "c_guess", "label": "Call out your first answer.", "target": "n_end_guess"}
+        {
+          "id": "c_continue_riddle",
+          "label": "Think it over together.",
+          "target": "n_middle"
+        },
+        {
+          "id": "c_guess",
+          "label": "Call out your first answer.",
+          "target": "n_end_guess"
+        }
       ]
     },
     {
@@ -59,7 +90,11 @@
       "body": "The groundskeeper chuckles and points at the tree's own rings without saying a word. You and Sam count them together, and the answer starts to dawn on you both.",
       "is_ending": false,
       "choices": [
-        {"id": "c_continue_hint", "label": "Follow the hint.", "target": "n_middle"}
+        {
+          "id": "c_continue_hint",
+          "label": "Follow the hint.",
+          "target": "n_middle"
+        }
       ]
     },
     {
@@ -67,8 +102,16 @@
       "body": "Whichever way you found it, the answer clicks into place: the tree itself! A small door at its base creaks open, revealing a woven basket of apples. Do you take an apple, or leave a note of thanks instead?",
       "is_ending": false,
       "choices": [
-        {"id": "c_apple", "label": "Take an apple.", "target": "n_end_apple"},
-        {"id": "c_note", "label": "Leave a note of thanks.", "target": "n_end_note"}
+        {
+          "id": "c_apple",
+          "label": "Take an apple.",
+          "target": "n_end_apple"
+        },
+        {
+          "id": "c_note",
+          "label": "Leave a note of thanks.",
+          "target": "n_end_note"
+        }
       ]
     },
     {

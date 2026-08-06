@@ -55,13 +55,33 @@ _CANNED_STORY: dict[str, object] = {
         "content_flags": {"violence": "none", "scariness": "none", "peril": "none"},
     },
     "variables": [],
-    "start_node": "n_start",
+    "start_node": "n_open",
     "nodes": [
+        # PL-25 floors the first decision at the second node for this band, so
+        # the opening establishes the situation before anything is chosen. The
+        # mock story is held to the same rule as a real one on purpose: it is
+        # what most of the pipeline tests run through, so letting it violate a
+        # gate rule would hide that rule from nearly every end-to-end test.
+        {
+            "id": "n_open",
+            "body": (
+                "You step onto the forest path. Sunlight filters through the leaves, "
+                "and the air smells of pine and warm earth."
+            ),
+            "is_ending": False,
+            "choices": [
+                {
+                    "id": "c_open",
+                    "label": "Walk on down the path.",
+                    "target": "n_start",
+                },
+            ],
+        },
         {
             "id": "n_start",
             "body": (
-                "You step onto the forest path. Sunlight filters through the leaves. "
-                "A small rabbit hops across the trail ahead of you."
+                "A small rabbit hops across the trail ahead of you and stops. It "
+                "turns one ear your way and waits to see what you will do."
             ),
             "is_ending": False,
             "choices": [

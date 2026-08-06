@@ -11,7 +11,10 @@
       "tolerance": 1.0
     },
     "tier": 1,
-    "themes": ["adventure", "the sea"],
+    "themes": [
+      "adventure",
+      "the sea"
+    ],
     "estimated_minutes": 4,
     "ending_count": 4,
     "content_flags": {
@@ -22,26 +25,59 @@
     "topology": "branch_and_bottleneck"
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
+    {
+      "id": "n_open",
+      "body": "You stop here for a while and look around at the new place.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_open",
+          "label": "Go on.",
+          "target": "n_start"
+        }
+      ]
+    },
     {
       "id": "n_start",
       "body": "You are sailing your little boat when black clouds roll in fast. The wind howls and the sea turns the color of iron. Do you try to turn back to shore, or ride out the storm where you are?",
       "is_ending": false,
-      "safety_scope": ["peril"],
+      "safety_scope": [
+        "peril"
+      ],
       "choices": [
-        {"id": "c_turn", "label": "Turn back to shore.", "target": "n_turn"},
-        {"id": "c_ride", "label": "Ride out the storm.", "target": "n_ride"}
+        {
+          "id": "c_turn",
+          "label": "Turn back to shore.",
+          "target": "n_turn"
+        },
+        {
+          "id": "c_ride",
+          "label": "Ride out the storm.",
+          "target": "n_ride"
+        }
       ]
     },
     {
       "id": "n_turn",
       "body": "You spin the tiller hard, but a wave slams the boat sideways and knocks you into the freezing water. Nobody on shore can see you out here. Do you fire the flare from your vest pocket, or try to stay afloat?",
       "is_ending": false,
-      "safety_scope": ["peril", "scary_imagery"],
+      "safety_scope": [
+        "peril",
+        "scary_imagery"
+      ],
       "choices": [
-        {"id": "c_flare", "label": "Fire the flare.", "target": "n_end_flare"},
-        {"id": "c_float_turn", "label": "Try to stay afloat.", "target": "n_water"}
+        {
+          "id": "c_flare",
+          "label": "Fire the flare.",
+          "target": "n_end_flare"
+        },
+        {
+          "id": "c_float_turn",
+          "label": "Try to stay afloat.",
+          "target": "n_water"
+        }
       ]
     },
     {
@@ -60,10 +96,21 @@
       "id": "n_ride",
       "body": "You grip the mast as the boat is thrown up and over a huge wave, then it flips, dumping you into the churning dark sea. Do you blow the whistle clipped to your vest, or try to stay afloat?",
       "is_ending": false,
-      "safety_scope": ["peril", "scary_imagery"],
+      "safety_scope": [
+        "peril",
+        "scary_imagery"
+      ],
       "choices": [
-        {"id": "c_whistle", "label": "Blow the whistle.", "target": "n_end_whistle"},
-        {"id": "c_float_ride", "label": "Try to stay afloat.", "target": "n_water"}
+        {
+          "id": "c_whistle",
+          "label": "Blow the whistle.",
+          "target": "n_end_whistle"
+        },
+        {
+          "id": "c_float_ride",
+          "label": "Try to stay afloat.",
+          "target": "n_water"
+        }
       ]
     },
     {
@@ -82,10 +129,21 @@
       "id": "n_water",
       "body": "The water is cold and black, and you cannot see the shore anymore. Your arms are getting tired, and no one is coming. Do you keep swimming toward where you think land is, or hold onto a floating plank and wait?",
       "is_ending": false,
-      "safety_scope": ["peril", "scary_imagery"],
+      "safety_scope": [
+        "peril",
+        "scary_imagery"
+      ],
       "choices": [
-        {"id": "c_swim", "label": "Keep swimming.", "target": "n_end_swim"},
-        {"id": "c_plank", "label": "Hold onto a floating plank.", "target": "n_end_plank"}
+        {
+          "id": "c_swim",
+          "label": "Keep swimming.",
+          "target": "n_end_swim"
+        },
+        {
+          "id": "c_plank",
+          "label": "Hold onto a floating plank.",
+          "target": "n_end_plank"
+        }
       ]
     },
     {

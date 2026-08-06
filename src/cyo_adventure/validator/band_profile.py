@@ -114,14 +114,30 @@ def profile_for(age_band: str) -> BandProfile | None:
 MVP_MIN_NODES = 8
 MVP_MAX_NODES = 45
 
+# PL-25 requires every story to establish its situation before the first
+# decision (its floor is 2: the first decision is no earlier than the second
+# node). That stop costs one node of branch depth, and the two depth budgets
+# account for it differently:
+#   - A production cell's max_depth is ~2.5x its min_complete floor, and those
+#     floors are JHM *page* counts for a whole playthrough, which already
+#     include the pages before the first decision (corpus median 4). The
+#     establishing stop is therefore inside the cell budget already.
+#   - The band-level max_depth triple predates ADR-011 and derives from nothing
+#     measured. It survives only as the MVP fallback, so the stop PL-25 now
+#     mandates has to be granted explicitly.
+# Without this allowance PL-25 and L1-7 contradict each other for any MVP shell
+# authored to its band depth cap: satisfying the opening rule puts it one node
+# over budget. See AL-087.
+ESTABLISHING_STOP_DEPTH = 1
+
 
 def mvp_node_budget(age_band: str) -> tuple[int, int, int] | None:
     """Return the MVP/Test ``(min_nodes, max_nodes, max_depth)`` for a band.
 
     The node-count envelope is band-independent (``MVP_MIN_NODES`` ..
-    ``MVP_MAX_NODES``); the branch-depth cap is inherited from the band's
-    production profile so an MVP shell stays within its band's structural
-    depth.
+    ``MVP_MAX_NODES``); the branch-depth cap stays anchored to the band's
+    production profile so an MVP shell keeps its band's structural depth, plus
+    ``ESTABLISHING_STOP_DEPTH`` for the opening stop PL-25 requires.
 
     Args:
         age_band: The story age band value (for example ``"10-13"``).
@@ -133,7 +149,7 @@ def mvp_node_budget(age_band: str) -> tuple[int, int, int] | None:
     profile = profile_for(age_band)
     if profile is None:
         return None
-    return (MVP_MIN_NODES, MVP_MAX_NODES, profile.max_depth)
+    return (MVP_MIN_NODES, MVP_MAX_NODES, profile.max_depth + ESTABLISHING_STOP_DEPTH)
 
 
 # Genre-faithful production node envelopes, keyed on the ADR-011 story-scale

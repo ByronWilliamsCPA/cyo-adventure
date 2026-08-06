@@ -6,9 +6,11 @@ skinparam backgroundColor #FAFAFA
 skinparam roundCorner 8
 hide empty description
 
-[*] --> n_start
-state n_start #BBDEFB
-n_start : setup · 170w
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 110w
+state n_start #FFF9C4
+n_start : choice · 75w
 state rec_entry #D1C4E9
 rec_entry : rising · 150w
 state rec_a_p1 #D1C4E9
@@ -394,6 +396,7 @@ e_trade_keeper_light : "{TRADE_KEEPER_OUTCOME}"
 state e_trade_photo #FFCDD2
 e_trade_photo : setback (negative)
 e_trade_photo : "{TRADE_PHOTO_SETBACK}"
+n_open --> n_start : Stand a moment in the square.
 n_start --> rec_entry : Search the {REC_LOCATION} for the missin...
 n_start --> kee_entry : Climb {KEE_LOCATION} to the last {ORCHAR...
 n_start --> pho_entry : Lay out the family {PHO_MEDIUM}s that ke...
@@ -621,7 +624,7 @@ legend right
   The Vanishing Orchard
   Band 13-16 · Tier 1 · ~18 min
   Topology: branch_and_bottleneck
-  177 nodes · 33 endings (5+ / 5n / 23-)
+  178 nodes · 33 endings (5+ / 5n / 23-)
   Production-eligible
   Scale: long · prose
 endlegend

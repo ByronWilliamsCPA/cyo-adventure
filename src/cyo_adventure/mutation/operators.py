@@ -62,6 +62,7 @@ from cyo_adventure.storybook.theme_contract import (
 )
 from cyo_adventure.validator.band_profile import (
     breadth_scaled_floors,
+    first_decision_window,
     min_complete_floor,
     profile_for,
     words_per_node_profile,
@@ -352,6 +353,59 @@ def _pl20_floor(story: Mapping[str, object]) -> int | None:
     if band is None or length is None or meta.get("production_eligible") is False:
         return None
     return min_complete_floor(band, length, style)
+
+
+def _pl25_opening_reason(
+    host: Mapping[str, object], host_decision: str, post_choices: int
+) -> str | None:
+    """Reject a graft that would put the host's first decision under PL-25's floor.
+
+    A graft hangs one new choice off its host, so grafting onto a single-choice
+    node converts that node into a decision. When the node sits inside the band's
+    establishing run, the mutant opens on a choice the reader has no situation
+    for, which PL-25's floor blocks (an ERROR since AL-086).
+
+    Nothing else in the operator notices: an establishing stop is non-ending and
+    lands inside the ADR-011 2-3 choices window after the add, so every other
+    precondition passes it. The flywheel planner enumerates hosts in document
+    order and the establishing stop is now the first single-choice node in every
+    skeleton, which made this the *first* host tried rather than a rare one.
+
+    Checked in the operator rather than in the planner because the planner is one
+    caller of several: ``scripts/mutate_skeleton.py`` passes a hand-chosen
+    ``host_decision`` and would bypass a planner-side filter entirely.
+
+    Args:
+        host: The raw host story document.
+        host_decision: The host node the new choice would hang from.
+        post_choices: The host's choice count after the graft.
+
+    Returns:
+        str | None: A rejection reason, or None when the graft is clear.
+    """
+    if post_choices > _MIN_CHOICES_PER_DECISION:
+        # Already a decision before the graft, so the graft does not create one.
+        # Any floor violation is then the host's own, not this operator's doing.
+        return None
+    band = _str_field(_metadata_of(host), "age_band")
+    window = first_decision_window(band) if band is not None else None
+    start = _str_field(host, "start_node")
+    if window is None or start is None:
+        return None
+    graph = _parent_graph(host)
+    if start not in graph or host_decision not in graph:
+        return None
+    if not nx.has_path(graph, start, host_decision):
+        return None
+    # Nodes, not hops, matching validator.policy._shortest_path_nodes.
+    depth = int(nx.shortest_path_length(graph, start, host_decision)) + 1
+    floor = window[0]
+    if depth >= floor:
+        return None
+    return (
+        f"grafting onto '{host_decision}' makes it a decision {depth} node(s) in, "
+        f"under the band '{band}' PL-25 opening floor {floor}"
+    )
 
 
 def _resolve_swap_refs(
@@ -2153,6 +2207,39 @@ def _clamp_position(position: int | None, current_len: int) -> int:
     return max(0, position)
 
 
+def _donor_subtree_or_reason(
+    donor: Mapping[str, object], subtree_root: str
+) -> tuple[Subtree | None, str | None]:
+    """Extract the donor subtree, or say why it cannot be grafted.
+
+    The donor-side half of the graft precondition ladder: the subtree root
+    exists, the subtree is closed and self-contained, and the region it spans is
+    state-free. Split out of :func:`_evaluate_graft` so each function carries one
+    side of the check; the host-side conditions ask about the graft's
+    destination and these ask about its cargo, and they share nothing but the
+    reason-string protocol.
+
+    Args:
+        donor: The donor story document.
+        subtree_root: The donor subtree root to copy.
+
+    Returns:
+        tuple[Subtree | None, str | None]: ``(subtree, None)`` when the donor
+            subtree is graftable, else ``(None, reason)``.
+    """
+    if subtree_root not in node_ids(donor):
+        return None, f"donor subtree root '{subtree_root}' does not exist"
+    subtree = extract_subtree(donor, subtree_root)
+    if not subtree.self_contained:
+        return None, f"donor subtree '{subtree_root}' is not self-contained"
+    if not subtree.closed:
+        return None, f"donor subtree '{subtree_root}' is not closed"
+    clean_reason = _region_cleanliness_reason(donor, subtree.node_ids)
+    if clean_reason is not None:
+        return None, clean_reason
+    return subtree, None
+
+
 # One cohesive precondition ladder, one reason each (PLR0911, PLR0913).
 def _evaluate_graft(  # noqa: PLR0911, PLR0913
     host: Mapping[str, object],
@@ -2200,6 +2287,9 @@ def _evaluate_graft(  # noqa: PLR0911, PLR0913
             f"grafting a choice onto '{host_decision}' yields {post_choices} "
             f"choices, outside the ADR-011 2-3 window"
         )
+    opening_reason = _pl25_opening_reason(host, host_decision, post_choices)
+    if opening_reason is not None:
+        return None, opening_reason
     # #CRITICAL: security: donor band MUST equal host band. Same-band donors mean
     # every grafted ending kind is band-legal by the donor's own PL-15 history and
     # its beats were authored to the same band's content posture, so no
@@ -2216,16 +2306,9 @@ def _evaluate_graft(  # noqa: PLR0911, PLR0913
         )
     if _metadata_of(donor).get("series") is not None:
         return None, f"donor '{donor_slug}' is a series book; out of scope"
-    if subtree_root not in node_ids(donor):
-        return None, f"donor subtree root '{subtree_root}' does not exist"
-    subtree = extract_subtree(donor, subtree_root)
-    if not subtree.self_contained:
-        return None, f"donor subtree '{subtree_root}' is not self-contained"
-    if not subtree.closed:
-        return None, f"donor subtree '{subtree_root}' is not closed"
-    clean_reason = _region_cleanliness_reason(donor, subtree.node_ids)
-    if clean_reason is not None:
-        return None, clean_reason
+    subtree, subtree_reason = _donor_subtree_or_reason(donor, subtree_root)
+    if subtree is None:
+        return None, subtree_reason
     return _build_graft_plan(
         host,
         donor,

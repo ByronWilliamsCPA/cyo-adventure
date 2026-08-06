@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "The last bus left Rowan Ashby at the edge of Alderwick and rattled away into the dusk. She stood a moment in the orchard town where she was born. It felt like half a stranger to itself. At the war memorial she read the carved names, and not one person nearby could place a single one. Her cousin Teo waved from across the road, grinning. He stood in front of a house she was certain had once been a bakery. When she said the word bakery aloud, three neighbours gave her the same polite, blank look. It was as if she had spoken a foreign language.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Stand a moment in the square.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "The last bus left Rowan Ashby at the edge of Alderwick and rattled away into the dusk. She stood a moment in the orchard town where she was born. It felt like half a stranger to itself. At the war memorial she read the carved names, and not one person nearby could place a single one. Her cousin Teo waved from across the road, grinning. He stood in front of a house she was certain had once been a bakery. When she said the word bakery aloud, three neighbours gave her the same polite, blank look. It was as if she had spoken a foreign language. Only Rowan seemed to carry the missing years and the vanished shopfronts. Only she saw the empty chairs still pulled up to kitchen tables no one bothered to set. Four separate threads tugged at her at once. There was the deed hall and its records, and the last living orchard-keeper up on Mabb Hill. There were the family photographs that refused to stay the same, and the sealed cellar beneath the old cider house.",
+      "body": "Only Rowan seemed to carry the missing years and the vanished shopfronts. Only she saw the empty chairs still pulled up to kitchen tables no one bothered to set. Four separate threads tugged at her at once. There was the deed hall and its records, and the last living orchard-keeper up on Mabb Hill. There were the family photographs that refused to stay the same, and the sealed cellar beneath the old cider house.",
       "is_ending": false,
       "choices": [
         {

@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "<<FILL role=setup words=85 beats='{HERO} misses the last bus home at {OPENING_MOMENT}; {THRESHOLD} has stood dark since {KEEPER} vanished a year ago; tonight {LIGHT_MOTIF} flickers though no one lives there'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Walk down toward the light.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "<<FILL role=setup words=130 beats='{HERO} misses the last bus home at {OPENING_MOMENT}; {THRESHOLD} has stood dark since {KEEPER} vanished a year ago; tonight {LIGHT_MOTIF} flickers though no one lives there; four ways lead in from the mist, {ROUTE_A_PLACE}, {ROUTE_B_PLACE}, {ROUTE_C_PLACE}, and {ROUTE_D_PLACE}'>>",
+      "body": "<<FILL role=choice words=55 beats='four ways lead in from the mist, {ROUTE_A_PLACE}, {ROUTE_B_PLACE}, {ROUTE_C_PLACE}, and {ROUTE_D_PLACE}'>>",
       "is_ending": false,
       "choices": [
         {

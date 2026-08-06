@@ -4,6 +4,7 @@ from cyo_adventure.storybook.models import AgeBand, ContentFlagLevel, EndingKind
 from cyo_adventure.validator.band_profile import (
     _PROFILES,
     ARC_CEILING_MULTIPLE,
+    ESTABLISHING_STOP_DEPTH,
     MVP_MAX_NODES,
     MVP_MIN_NODES,
     BandProfile,
@@ -69,8 +70,31 @@ def test_mvp_node_budget_is_band_independent_with_band_depth():
         assert mvp_node_budget(band) == (
             MVP_MIN_NODES,
             MVP_MAX_NODES,
-            profile.max_depth,
+            profile.max_depth + ESTABLISHING_STOP_DEPTH,
         )
+
+
+def test_mvp_depth_budget_admits_the_opening_stop_pl25_requires():
+    """L1-7 and PL-25 must not contradict each other on the MVP path.
+
+    PL-25's floor puts the first decision no earlier than the second node, so
+    every compliant story spends one node of branch depth establishing itself.
+    The band-level max_depth predates that rule; without the allowance, an MVP
+    shell authored to its band cap becomes unpublishable the moment it obeys
+    the opening rule. This is the regression guard for that interaction, caught
+    live on the-clocktower-cipher and the-sunken-signal (AL-087).
+    """
+    for band in AgeBand:
+        profile = profile_for(band.value)
+        budget = mvp_node_budget(band.value)
+        window = first_decision_window(band.value)
+        assert profile is not None
+        assert budget is not None
+        assert window is not None
+        # Depth headroom over the legacy band cap must cover the floor's cost:
+        # a floor of N puts the first decision N nodes in, i.e. N-1 lead-in
+        # stops, of which the legacy cap assumed none.
+        assert budget[2] - profile.max_depth >= window[0] - 1, band.value
 
 
 def test_mvp_node_budget_unknown_band_is_none():

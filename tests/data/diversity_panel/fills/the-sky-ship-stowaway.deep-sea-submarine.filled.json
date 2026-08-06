@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "Kai had begged to see the ocean floor since before he could properly talk, and now here he was, actually going down into it. The little submarine Selkie thumped and hissed as the team sealed the last hatch, and Kai pressed himself into a coil of spare cable, tucked out of sight behind a bank of dials. Nobody had noticed him climb aboard. Boots thudded past just an arm's length away.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Slip out of the rope coil.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "Kai had begged to see the ocean floor since before he could properly talk, and now here he was, actually going down into it. The little submarine Selkie thumped and hissed as the team sealed the last hatch, and Kai pressed himself into a coil of spare cable, tucked out of sight behind a bank of dials. Nobody had noticed him climb aboard. Boots thudded past just an arm's length away. Four openings led off the entry bay: one buzzing with heavy machinery, one stacked deep in shadow with stores, one rising toward a lit dome overhead, and one ringing with laughter and the clink of plates. He needed to pick fast, before a sharp-eyed diver spun around and caught him.",
+      "body": "Four openings led off the entry bay: one buzzing with heavy machinery, one stacked deep in shadow with stores, one rising toward a lit dome overhead, and one ringing with laughter and the clink of plates. He needed to pick fast, before a sharp-eyed diver spun around and caught him.",
       "is_ending": false,
       "choices": [
         {

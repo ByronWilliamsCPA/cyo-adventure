@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "You are Wren, and today you mean to become a warden of the Thornwood, so when the Trial horn sounds long and low at the eaves of the enchanted forest, you are ready for it: one single day, dawn to dusk, to cross the whole wood and reach the far gate before the light dies.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Step in under the eaves.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "You are Wren, and today you mean to become a warden of the Thornwood, so when the Trial horn sounds long and low at the eaves of the enchanted forest, you are ready for it: one single day, dawn to dusk, to cross the whole wood and reach the far gate before the light dies. Four separate ways lead in. The old deer track runs quiet beneath the first thorns, the dry stream bed offers easier footing, the charcoal-burners road is wide and ancient, and the broken boundary wall lets you slip in behind the thorns. Choose your way in.",
+      "body": "Four separate ways lead in. The old deer track runs quiet beneath the first thorns, the dry stream bed offers easier footing, the charcoal-burners road is wide and ancient, and the broken boundary wall lets you slip in behind the thorns. Choose your way in.",
       "is_ending": false,
       "choices": [
         {

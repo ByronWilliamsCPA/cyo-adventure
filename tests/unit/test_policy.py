@@ -880,18 +880,28 @@ def test_pl25_allows_first_decision_at_the_ceiling():
     assert not any(f.rule_id == "PL-25" for f in report.findings)
 
 
-def test_pl25_warns_on_cold_open():
-    """A start node that already branches is under the floor, so it warns."""
+def test_pl25_blocks_a_cold_open():
+    """A start node that already branches is under the floor, so it blocks."""
     report = validate_policy(_branch_at_depth(lead_in=0))
-    findings = [f for f in report.warnings if f.rule_id == "PL-25"]
+    findings = [f for f in report.errors if f.rule_id == "PL-25"]
     assert len(findings) == 1
     assert "under the band" in findings[0].message
 
 
-def test_pl25_cold_open_is_never_an_error():
-    """The floor is advisory: a cold open must not block a story."""
-    report = validate_policy(_branch_at_depth(lead_in=0))
-    assert not any(f.rule_id == "PL-25" for f in report.errors)
+def test_pl25_grades_its_floor_and_ceiling_differently():
+    """The floor blocks in one tier; the ceiling warns until the hard limit.
+
+    Guards the asymmetry deliberately, because the two directions are not the
+    same kind of defect. Opening on the first choice leaves the reader nothing
+    to choose about, which no amount of degree makes acceptable. Burying it is a
+    pacing fault that only becomes fatal well past the window.
+    """
+    cold = validate_policy(_branch_at_depth(lead_in=0))
+    buried = validate_policy(_branch_at_depth(lead_in=9))
+    assert any(f.rule_id == "PL-25" for f in cold.errors)
+    assert not any(f.rule_id == "PL-25" for f in cold.warnings)
+    assert any(f.rule_id == "PL-25" for f in buried.warnings)
+    assert not any(f.rule_id == "PL-25" for f in buried.errors)
 
 
 def test_pl25_allows_cold_open_at_3_5():

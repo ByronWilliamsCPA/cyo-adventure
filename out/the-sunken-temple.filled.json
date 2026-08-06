@@ -65,11 +65,23 @@
    "description": "The pale singers coral key, key to the drowned choir."
   }
  ],
- "start_node": "n_start",
+ "start_node": "n_open",
  "nodes": [
   {
+   "id": "n_open",
+   "body": "Barrowmere wears its three weeks of peace like a new coat, and the Brass Lantern sign creaks over the inn door with your companys name on it.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "Cross into the square.",
+     "target": "n_start"
+    }
+   ]
+  },
+  {
    "id": "n_start",
-   "body": "Barrowmere wears its three weeks of peace like a new coat, and the Brass Lantern sign creaks over the inn door with your companys name on it. Under the sign, nailed to the post this morning, hangs a marshals summons with Heddas seal pressed deep. The square hums with south road talk, pale strangers buying rope and salt, wagons that travel only at night. Bram is at his forge wagon, Sable is on a roof somewhere, Elowen is shelving simples, and the summons is addressed to all of you.",
+   "body": "Under the sign, nailed to the post this morning, hangs a marshals summons with Heddas seal pressed deep. The square hums with south road talk, pale strangers buying rope and salt, wagons that travel only at night. Bram is at his forge wagon, Sable is on a roof somewhere, Elowen is shelving simples, and the summons is addressed to all of you.",
    "is_ending": false,
    "choices": [
     {

@@ -78,8 +78,19 @@ def _filled_story() -> dict[str, object]:
             "topology": "time_cave",
         },
         "variables": [],
-        "start_node": "start",
+        "start_node": "open",
         "nodes": [
+            # PL-25 floors the first decision at the second node for this band,
+            # so the fixture establishes its situation before branching. Held to
+            # the real rule rather than exempted: the point of this suite is
+            # that a genuine filled story imports, and a fixture the gate would
+            # block is not one.
+            {
+                "id": "open",
+                "body": "The wood is quiet here, and the moss is soft underfoot.",
+                "is_ending": False,
+                "choices": [{"id": "c0", "label": "Walk on", "target": "start"}],
+            },
             {
                 "id": "start",
                 "body": "You step onto the mossy path as a rabbit darts past.",

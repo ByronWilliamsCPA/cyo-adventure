@@ -40,8 +40,20 @@
       "description": "Whether the player carries the rope"
     }
   ],
-  "start_node": "n_riverbank",
+  "start_node": "n_open",
   "nodes": [
+    {
+      "id": "n_open",
+      "body": "You stop here for a while to look around at the new place you have come to, and you wait.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_open",
+          "label": "Go on.",
+          "target": "n_riverbank"
+        }
+      ]
+    },
     {
       "id": "n_riverbank",
       "body": "A rushing river blocks your path. Logs and rope scraps lie nearby.",

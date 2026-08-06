@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "<<FILL role=setup words=80 beats='{OPENING_MOMENT} leaves {HERO} shut in overnight in {THRESHOLD}, a wonderland of brass and tin and copper creatures that have all wound down and gone perfectly still; {COMPANION} rides on her shoulder, ticking softly as if to say come on, come on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Step out into the hall.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "<<FILL role=setup words=128 beats='{OPENING_MOMENT} leaves {HERO} shut in overnight in {THRESHOLD}, a wonderland of brass and tin and copper creatures that have all wound down and gone perfectly still; {COMPANION} rides on her shoulder, ticking softly as if to say come on, come on; four great wings open off {ENTRANCE}, {ROUTE_A_ZONE}, {ROUTE_B_ZONE}, {ROUTE_C_ZONE}, and {ROUTE_D_ZONE}, and {HERO} must pick one to explore before {DEADLINE}'>>",
+      "body": "<<FILL role=choice words=55 beats='four great wings open off {ENTRANCE}, {ROUTE_A_ZONE}, {ROUTE_B_ZONE}, {ROUTE_C_ZONE}, and {ROUTE_D_ZONE}, and {HERO} must pick one to explore before {DEADLINE}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1482,7 +1494,7 @@
         },
         {
           "id": "c_hub_sec",
-          "label": "Follow {CARETAKER}’s secret.",
+          "label": "Follow {CARETAKER}\u2019s secret.",
           "target": "fh_sec1"
         },
         {
@@ -1509,7 +1521,7 @@
         },
         {
           "id": "c_rw_cl",
-          "label": "Try {CARETAKER}’s clever trick.",
+          "label": "Try {CARETAKER}\u2019s clever trick.",
           "target": "fh_rw_cl1"
         }
       ]

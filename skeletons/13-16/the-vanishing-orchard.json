@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "<<FILL role=setup words=110 beats='{HERO_FULL} steps off the last bus into {TOWN}, the {ORCHARD} town where she was born, and finds it half a stranger to itself; the {WAR_MEMORIAL} lists names no one in the {TOWN_SQUARE} can place, her cousin {COUSIN} waves at a house {HERO} remembers as a {BAKERY}, and when she says the word {BAKERY} three people give her the same polite blank look'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Stand a moment in the square.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "<<FILL role=setup words=170 beats='{HERO_FULL} steps off the last bus into {TOWN}, the {ORCHARD} town where she was born, and finds it half a stranger to itself; the {WAR_MEMORIAL} lists names no one in the {TOWN_SQUARE} can place, her cousin {COUSIN} waves at a house {HERO} remembers as a {BAKERY}, and when she says the word {BAKERY} three people give her the same polite blank look; only {HERO} seems to carry the missing years, the vanished shopfronts, the empty chairs still pulled up to kitchen tables, and four threads tug at her at once, the {REC_LOCATION} records, the last living {ORCHARD}-{KEEPER_ROLE} on {KEE_LOCATION}, the family {PHO_MEDIUM}s that will not stay the same, and the sealed {CELLAR} beneath the old {CIDER_HOUSE}'>>",
+      "body": "<<FILL role=choice words=75 beats='only {HERO} seems to carry the missing years, the vanished shopfronts, the empty chairs still pulled up to kitchen tables, and four threads tug at her at once, the {REC_LOCATION} records, the last living {ORCHARD}-{KEEPER_ROLE} on {KEE_LOCATION}, the family {PHO_MEDIUM}s that will not stay the same, and the sealed {CELLAR} beneath the old {CIDER_HOUSE}'>>",
       "is_ending": false,
       "choices": [
         {

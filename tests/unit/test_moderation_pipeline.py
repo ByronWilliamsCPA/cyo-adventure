@@ -64,6 +64,17 @@ _BLOB: dict[str, object] = dict(_CANNED_STORY)
 
 _NODE_COUNT = len(cast("list[object]", _CANNED_STORY["nodes"]))
 
+# Batch size for the partial-final-chunk test: derived so the last chunk always
+# holds exactly one node, whatever the mock story's node count happens to be.
+# That remainder of one is what drives ``run_safety_stage``'s single-node path
+# (stages.py, ``len(batch) == 1``), so the test covers both prompt shapes.
+#
+# It was a literal 3 against a 7-node story, which is a relationship that holds
+# by coincidence rather than by construction: the story grew to 8 nodes when
+# PL-25's floor forced an establishing opening, the remainder became 2, and the
+# single-node path silently stopped being exercised at all.
+_PARTIAL_CHUNK_BATCH_SIZE = _NODE_COUNT - 1
+
 # Review calls per moderation pass: safety per node (review_batch_size=1,
 # pinned by _settings() below, so every chunk is one node), coherence +
 # engagement once each. A repair run makes two passes; pad the budget so an
@@ -2481,17 +2492,22 @@ async def test_review_batch_size_covers_partial_final_chunk(
 
     The two tests above both put every node in one full chunk, so neither can
     tell a correct chunker from one that drops or duplicates the remainder.
-    With 7 nodes at batch_size=3 the run is 3 + 3 + 1: two full batches plus a
-    remainder, and the remainder of one node takes ``run_safety_stage``'s
-    single-node path (stages.py, ``len(batch) == 1``) rather than the batch
-    path, so this covers both prompt shapes in a single pipeline run.
+    ``_PARTIAL_CHUNK_BATCH_SIZE`` splits the story into one full batch plus a
+    remainder of exactly one node, and that remainder takes
+    ``run_safety_stage``'s single-node path (stages.py, ``len(batch) == 1``)
+    rather than the batch path, so this covers both prompt shapes in a single
+    pipeline run.
     """
-    assert _NODE_COUNT % 3 != 0, "fixture must not divide evenly by the batch size"
+    assert _NODE_COUNT % _PARTIAL_CHUNK_BATCH_SIZE != 0, (
+        "fixture must not divide evenly by the batch size"
+    )
     story, version = _story(), _version()
     _load(mock_session, story, version)
     provider = _batched_verdict_review_provider()
     review_seam(provider)
-    settings = Settings(review_provider="mock", review_batch_size=3)
+    settings = Settings(
+        review_provider="mock", review_batch_size=_PARTIAL_CHUNK_BATCH_SIZE
+    )
     submit = AsyncMock()
     monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
 
@@ -2506,14 +2522,14 @@ async def test_review_batch_size_covers_partial_final_chunk(
 
     submit.assert_awaited_once()
     safety_calls = [c for c in provider.calls if c.startswith("Age band:")]
-    assert len(safety_calls) == math.ceil(_NODE_COUNT / 3)
+    assert len(safety_calls) == math.ceil(_NODE_COUNT / _PARTIAL_CHUNK_BATCH_SIZE)
     # Exactly one call is the single-node shape (the remainder), the rest are
     # batch shape. Node coverage is the real assertion: every node once.
     batch_calls = [c for c in safety_calls if "Nodes:" in c]
-    assert len(batch_calls) == _NODE_COUNT // 3
+    assert len(batch_calls) == _NODE_COUNT // _PARTIAL_CHUNK_BATCH_SIZE
     reviewed: list[str] = []
     for call in batch_calls:
         reviewed.extend(_extract_batch_node_ids(call))
-    assert len(reviewed) == len(batch_calls) * 3
+    assert len(reviewed) == len(batch_calls) * _PARTIAL_CHUNK_BATCH_SIZE
     assert len(set(reviewed)) == len(reviewed)  # no node reviewed twice
     assert _aggregate(version)["nodes_reviewed"] == _NODE_COUNT
