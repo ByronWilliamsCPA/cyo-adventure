@@ -1,0 +1,4018 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/external-scope-comparison-2026-08-05/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>External Scope Comparison: LLM-Generated Scope and Requirements Docs (2026-08-05) - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#external-scope-comparison-llm-generated-scope-and-requirements-docs" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              External Scope Comparison: LLM-Generated Scope and Requirements Docs (2026-08-05)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../security/assurance-spine/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Security
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/security-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Event Catalog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/assurance-spine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Spine
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/assurance-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Register
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/control-inheritance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Inheritance Map
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/crypto-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cryptographic Inventory
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/red-team-design-review-2026-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Team Design Review
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../research/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Story Structure Diversity
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_7" id="__nav_9_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Story Structure Diversity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-diversity-critical-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Critical Analysis
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-improvement-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Improvement Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-implementation-briefs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Briefs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-this-document-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why this document exists
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-this-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to use this document
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#n01-entitlement-ledger-design-for-commerce-phase-8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N01: Entitlement ledger design for commerce (Phase 8)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#n02-verifiable-parental-consent-vpc-method-and-statutory-citations-phase-7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N02: Verifiable parental consent (VPC) method and statutory citations (Phase 7)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#n03-versioned-schema-pinned-personalization-variable-registry-phase-4b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N03: Versioned, schema-pinned personalization variable registry (Phase 4b)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#n04-wcag-22-aa-conformance-target-phase-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N04: WCAG 2.2 AA conformance target (Phase 5)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#n05-approval-model-scaling-decision-guardian-primary-vs-admin-only-phase-7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N05: Approval-model scaling decision: guardian-primary vs. admin-only (Phase 7)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#n06-pin-an-asvs-level-and-a-pentest-surface-onto-the-existing-asvs-500-spine-phase-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N06: Pin an ASVS level and a pentest surface onto the existing ASVS 5.0.0 spine (Phase 5)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#n07-concrete-data-retention-schedule-defaults-phase-7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N07: Concrete data-retention schedule defaults (Phase 7)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#n08-adr-027s-image-moderation-classifier-has-no-register-home-phase-4b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N08: ADR-027's image-moderation classifier has no register home (Phase 4b)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#n09-generated-in-story-illustration-cost-citation-for-adr-027-phase-4b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N09: Generated in-story-illustration cost citation for ADR-027 (Phase 4b)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#n10-engagementanalytics-north-star-framework-phase-4c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N10: Engagement/analytics north-star framework (Phase 4c)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-was-deliberately-not-carried-forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What was deliberately not carried forward
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related documents
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="external-scope-comparison-llm-generated-scope-and-requirements-docs">External Scope Comparison: LLM-Generated Scope and Requirements Docs<a class="headerlink" href="#external-scope-comparison-llm-generated-scope-and-requirements-docs" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Status</strong>: Active | <strong>Created</strong>: 2026-08-05</p>
+<p>Companion to the <a href="../unscheduled-work-register/">unscheduled work register</a> Cluster N, which
+gives each adoption candidate below a phase and a status. This document is the detail; the
+register is the schedule. Do not duplicate content between them: when a UW-N row is closed,
+update this document's own status line rather than restating the mechanics in the register.</p>
+</blockquote>
+<h2 id="why-this-document-exists">Why this document exists<a class="headerlink" href="#why-this-document-exists" title="Permanent link">&para;</a></h2>
+<p>Three <code>.docx</code> files were generated by another LLM from a one-paragraph description of this
+project, with no visibility into this repository's ADRs, roadmap, or code: a project scope and a
+product/requirements document (both v0.1, dated 2026-08-04), and a commercial and revenue
+viability report (v1.0, dated 2026-08-05) built on top of the first two. Each was compared against
+the actual project as it arrived. That comparison surfaced two kinds of finding each time:</p>
+<ol>
+<li><strong>Places the external documents guessed wrong</strong> about what this project actually decided
+   (age bands, approver identity, deployment target, graph-cycle policy, generated-art posture,
+   and more), or that assumed a funded-startup context (a <code>$0.9M-$2.2M</code> build, a ~10-person team,
+   a 107,000-137,000-payer break-even scale) this project's homelab-first, pre-commerce reality
+   does not share. Those are recorded in full in the conversations that produced this document,
+   not here; they are not actionable and are not the point of this file.</li>
+<li><strong>Concrete mechanics or reference materials worth retaining</strong>, because either this project has
+   a real, still-open gap in the same area (commerce, ADR-018 compliance, personalization
+   versioning, accessibility conformance, a named security framework, in-story-illustration cost,
+   engagement analytics) or the external document's specific numbers, citations, or field lists
+   are more complete than what this project has drafted so far.</li>
+</ol>
+<p>The source <code>.docx</code> files live in a per-session upload directory outside this repository and are
+not expected to persist. This document is the durable record of all ten items; the source files
+should be treated as gone.</p>
+<h2 id="how-to-use-this-document">How to use this document<a class="headerlink" href="#how-to-use-this-document" title="Permanent link">&para;</a></h2>
+<p>Each section below is self-contained: what the external document specifies, why it is relevant
+here, and what to check before treating it as ready to implement (none of these are legal advice
+or a committed design; they are drafting inputs). The corresponding
+<a href="../unscheduled-work-register/">unscheduled-work-register.md</a> Cluster N row gives each one a
+phase and a status; update both the row's <code>Status</code> and this document's status line together when
+work starts or closes.</p>
+<hr />
+<h2 id="n01-entitlement-ledger-design-for-commerce-phase-8">N01: Entitlement ledger design for commerce (Phase 8)<a class="headerlink" href="#n01-entitlement-ledger-design-for-commerce-phase-8" title="Permanent link">&para;</a></h2>
+<p><strong>Register row</strong>: UW-N01. <strong>Status</strong>: unscheduled.</p>
+<p>This project has no payment-processing or entitlement-ledger implementation today (confirmed by
+a full-repo grep: no <code>billing/</code>, <code>payments/</code>, <code>subscription/</code>, or <code>entitlement/</code> module, and no
+payment-provider SDK dependency). The words "billing" and "subscription" do occur in the codebase
+in unrelated senses, cost-control plumbing for the provider/model allowlist and event subscription
+respectively, so what is absent is commerce, not the vocabulary. Track 2 Phase 8 (Capacitor shell + IAP) is the first phase that needs this, and it
+has not started. When it does, the external document's entitlement model is a reasonable
+starting design rather than something to invent from scratch, because it maps cleanly onto this
+project's existing event-sourced style (<code>PipelineEvent</code>, <code>GenerationJob</code>).</p>
+<p><strong>The model, as specified externally:</strong></p>
+<ul>
+<li>Credits are <strong>append-only ledger events</strong>, never a mutable balance field. Event kinds:
+  <code>Granted</code>, <code>Reserved</code>, <code>Released</code>, <code>Consumed</code>, <code>Expired</code>, <code>Reversed/suspended</code>. Current balance
+  is <em>derived</em> from the event stream and periodically reconciled against the payment provider,
+  not stored directly.</li>
+<li>A story request <strong>reserves</strong> exactly one credit, using an idempotency key, before generation
+  begins. The credit is <strong>consumed only when a publishable version is approved</strong>, not when
+  generation starts and not on a failed attempt. System failure or an exhausted safety-retry
+  path <strong>releases</strong> the reservation with no loss of value.</li>
+<li>Every event links to its source (a specific financial event, request, or story) and carries an
+  idempotency key so duplicate/replayed webhooks cannot double-grant or double-consume.</li>
+<li>Offer catalog is itself versioned and decoupled from code deploys: every transaction references
+  an immutable offer/price/term snapshot, so a later price or policy change never rewrites what a
+  past purchaser was actually promised.</li>
+<li>Billing webhooks are signature-verified, replay-resistant, idempotent, and reconciled daily
+  against the payment provider's own report of money movement.</li>
+<li>No commerce surface of any kind is child-facing: no prices, no locked-choice teasers, no
+  countdown, no payment-failure banners in the child zone.</li>
+</ul>
+<p><strong>Offer catalog they proposed</strong> (names/quantities are their placeholders, not a commitment):
+a one-time <strong>Starter Purchase</strong> (core account + one durable credit), an optional recurring
+<strong>Adventure Subscription</strong> (recurring credit grant + expanded catalog), and a standalone
+<strong>Story Credit Pack</strong> add-on. Published stories remain readable after subscription cancellation
+in every case; only subscription-gated <em>creation</em> capability ends at the paid-through date.</p>
+<p><strong>Unit-economics guardrails they proposed</strong> (their own numbers are Expert-Judgment planning
+bands, not measured facts about this project, but the <em>shape</em> of each guardrail is worth keeping
+as a design target once real numbers exist): variable generation+moderation cost at or below
+10-15% of net revenue per consumed credit; gross margin ≥ 70% after direct variable costs;
+generation success before guardian review ≥ 95%; refund/credit-dispute rate below 2% of paid
+requests; self-service cancellation completing in under two minutes with no agent contact.</p>
+<p><strong>Before implementing</strong>: confirm against whatever payment provider is actually chosen (their
+document is provider-neutral) and re-derive the unit-economics numbers from this project's real
+provider/model costs rather than reusing their placeholder bands.</p>
+<p><strong>Further detail from the companion Commercial and Revenue Viability Report v1.0</strong> (2026-08-05),
+which prices the same offer shape rather than just its mechanics:</p>
+<ul>
+<li><strong>A concrete starting price ladder</strong>: Free proof scene ($0, no card) → <strong>Starter Adventure</strong>
+  $9.99 one-time (1 complete branching adventure, fair regeneration, permanent library access) →
+  <strong>Adventure Club Monthly</strong> $9.99/month (2 credits/month, series continuity, read-aloud, premium
+  themes, up to 3 profiles, credits roll to a cap of 6) → <strong>Adventure Club Annual</strong>, price-tested
+  at $69.99 vs. $79.99/year → a standalone <strong>Adventure Pack</strong> add-on, $9.99 for 3 durable,
+  non-expiring credits. Subscription credits roll to a disclosed cap and remain usable after
+  cancellation; purchased credits never expire.</li>
+<li><strong>A per-story direct-cost stack</strong> they use as a planning allowance, not a measured fact:
+  generation + repair $0.20, moderation + deterministic validation $0.10, curated media/storage
+  $0.10, expected rejection/retry reserve $0.25, safety/quality operations reserve $0.25, summing to <strong>$0.90
+  total</strong> for a text-first story. Their own token-rate math (10k input / 12k output tokens, public
+  vendor tiers) puts raw text generation at $0.016-$0.41 depending on model tier, which is <em>not</em>
+  the dominant cost component; the retry and safety-operations reserves are larger than the token
+  cost itself. Worth keeping as a starting shape for whatever real per-story cost ledger
+  <code>UW-J20</code>/<code>UW-N01</code> eventually builds, once this project has real generation counts to price
+  against.</li>
+<li><strong>A CAC-ceiling framing worth keeping independent of their specific numbers</strong>: they size a
+  "3:1 contribution-to-CAC" ceiling (max acceptable customer-acquisition cost = one-third of
+  12-month contribution per payer) and explicitly warn against scaling paid acquisition before
+  observed cohort economics support the chosen ratio. The ratio itself and their ~$7.26 example
+  ceiling are Expert-Judgment placeholders calibrated to their assumed break-even scale, not
+  numbers this project should reuse, but the discipline (do not scale paid acquisition ahead of
+  a measured ratio) is a reasonable one to carry forward whenever this project has real cohorts.</li>
+<li><strong>What NOT to carry forward from this companion report</strong>: its central verdict (needing
+  ~107,000-137,000 annual paying households to self-fund a <code>$0.9M-$2.2M</code> build against a <code>$1.25M</code>
+  annual operating envelope) and its entire 90-day validation/go-no-go-gate apparatus assume the
+  same funded-startup context as the other two source documents. This project's Phase 8 has not
+  started and v1 is a private, non-commercial, single-family product by design; that scale
+  question is not one this project faces today.</li>
+</ul>
+<hr />
+<h2 id="n02-verifiable-parental-consent-vpc-method-and-statutory-citations-phase-7">N02: Verifiable parental consent (VPC) method and statutory citations (Phase 7)<a class="headerlink" href="#n02-verifiable-parental-consent-vpc-method-and-statutory-citations-phase-7" title="Permanent link">&para;</a></h2>
+<p><strong>Register row</strong>: UW-N02. <strong>Status</strong>: decision (owner: project owner + counsel, per
+<a href="../unscheduled-work-register/">UW-M03</a>).</p>
+<p>ADR-018 (children's-privacy compliance) is still <code>Proposed</code>, not <code>Accepted</code>, and its own text
+already flags the VPC method as the highest legal-risk open item: whether a signature-capture
+step (canvas signature or typed full-legal-name attestation) plus a checkbox satisfies COPPA
+§312.5(b)(2)(i)'s "signed" requirement. The external document does not resolve that question
+either (it is not legal advice), but it names the specific current sources counsel will need,
+which is worth having in hand before that engagement starts rather than re-researching it then.</p>
+<p><strong>Citations the external document supplied</strong> (each is the external document's own citation;
+verify currency before relying on it, since rules and effective dates change). Each entry carries a
+durable pinpoint identifier (Federal Register volume and page, CFR part, U.S.C. chapter, or ORS
+section range) rather than a URL, deliberately: a citation stays resolvable for counsel long after
+any given agency URL moves, and this repository's link check runs against every external URL in the
+tree, so one rotted legal link would block unrelated pull requests. Resolve each through an official
+source (eCFR for 16 CFR Part 312, the Federal Register for 90 FR 16918, the Oregon Legislature for
+the ORS ranges):</p>
+<ul>
+<li>FTC / Federal Register, <strong>Children's Online Privacy Protection Rule, 90 FR 16918</strong> (codified at
+  <strong>16 CFR Part 312</strong>): amended rule <em>published</em> April 22, 2025 and <em>effective</em> <strong>June 23, 2025</strong>,
+  with a stated general full-compliance date of <strong>April 22, 2026</strong>. The external document gave
+  April 22, 2025 as the effective date; that is the Federal Register publication date, and the two
+  are about eight weeks apart, so deadline arithmetic should start from the June 23 effective date.
+  As of this document's date (2026-08-05), that compliance date has already passed. This alone
+  is worth flagging to whoever schedules ADR-018's counsel gate: this is not purely forward
+  planning once any child data exists outside a single private family's homelab use.</li>
+<li>FTC, "FTC Finalizes Changes to Children's Privacy Rule" (Jan 16, 2025): summarizes separate
+  consent for third-party advertising/disclosures, retention limits, and revised
+  personal-information definitions.</li>
+<li>FTC, <strong>COPPA Age-Verification Enforcement Policy Statement</strong> (Feb 25, 2026): current
+  conditions for privacy-preserving age-verification data collection.</li>
+<li><strong>ROSCA</strong>, 15 U.S.C. Chapter 110: clear material terms, express informed consent, and simple
+  cancellation for online negative-option (auto-renewing) offers.</li>
+<li>Oregon <strong>ORS 646A.293-646A.295</strong> (Automatic Renewal and Continuous Service): affirmative
+  consent, retained acknowledgment, timely and easy cancellation.</li>
+<li>Oregon <strong>ORS 646A.570-646A.589</strong> (Oregon Consumer Privacy Act): data minimization,
+  safeguards, notices, consumer rights, and provisions specific to consumers under 16.</li>
+</ul>
+<p><strong>Required consent-record fields, as specified externally</strong> (for comparison against whatever
+this project's <code>User</code> VPC columns / <code>PersonalizationDisclosureConsent</code> model end up capturing):
+notice and policy version, stated purposes, child reference, consenting authority, VPC method,
+verification-evidence reference, timestamp, jurisdiction context, status, and withdrawal
+history: sufficient, in their words, to "reconstruct exactly what was agreed, by whom, how, for
+which child and purposes, and under which text versions."</p>
+<p><strong>Before implementing</strong>: this is drafting input for counsel, not a ruling. ADR-018's own open
+decisions (audience classification, launch geography, public artifacts/WISP, AI-training consent
+segregation) are unaffected by this document and still need the counsel engagement
+<a href="../unscheduled-work-register/">UW-M03</a> already names.</p>
+<hr />
+<h2 id="n03-versioned-schema-pinned-personalization-variable-registry-phase-4b">N03: Versioned, schema-pinned personalization variable registry (Phase 4b)<a class="headerlink" href="#n03-versioned-schema-pinned-personalization-variable-registry-phase-4b" title="Permanent link">&para;</a></h2>
+<p><strong>Register row</strong>: UW-N03. <strong>Status</strong>: blocked (same blocker as
+<a href="../unscheduled-work-register/">UW-H01</a>: ADR-023 Stage A's G1 gate fired STOP at 3.3% sentinel
+survival, so Stages B-D, including any registry rework, are void pending a re-plan).</p>
+<p>This project's personalization variable catalog is a hardcoded Python dict
+(<code>CLOSED_VOCABULARIES</code> in <code>storybook/personalization_values.py</code>), not a versioned, DB-backed
+registry. The external document's <code>VariableDefinition</code> contract is more complete, and one field
+in particular addresses a real, current problem: <strong>schema versioning so a historical story
+renders reproducibly</strong> even after the variable catalog changes shape. That property matters here
+independent of this comparison, since ADR-023 personalization is already blocked on a fill-time
+reliability failure; a versioned registry would not fix that defect directly, but the class of
+regression it is designed to catch (a rendered story silently drifting from what was approved) is
+exactly the failure mode ADR-023's own gate is trying to guard against.</p>
+<p><strong>The contract, as specified externally.</strong> Each variable definition carries:</p>
+<ul>
+<li><code>key</code>: a namespaced, immutable identifier (e.g. <code>reader.first_name</code>, <code>pet.name</code>); never
+  executable syntax.</li>
+<li><code>display label and explanation</code>: guardian-facing, plain language.</li>
+<li><code>type</code>: name, short text, enum, color, place label, relationship label, pronoun set, number
+  band, or an approved composite.</li>
+<li><code>scope</code>: system, template, household, child profile, or a single story request.</li>
+<li><code>default and fallback</code>: an editorial default plus a guaranteed-safe generic fallback; an
+  unresolved slot may never publish.</li>
+<li><code>constraints</code>: length, Unicode categories, allow/deny patterns, normalization, banned
+  markup/control characters, PII policy.</li>
+<li><code>transforms</code>: an <strong>allowlisted</strong> set of functions only (title case, possessive,
+  subject/object/possessive pronoun, article); explicitly no general expression engine.</li>
+<li><code>sensitivity and purpose</code>: data classification, collection purpose, AI-disclosure rule,
+  retention class, export/delete behavior.</li>
+<li><code>approval behavior</code>: whether a change requires guardian preview/reapproval, and whether
+  existing story editions may be rebound to a new value without a new canonical generation.</li>
+<li><code>schema version</code>: the version used to validate a snapshot and re-render a historical story
+  edition reproducibly.</li>
+</ul>
+<p>Their sample catalog (<code>reader.first_name</code>, <code>reader.pronouns</code>, <code>pet.name</code>, <code>pet.species</code>,
+<code>relative.display_name</code>, <code>relative.kinship</code>, <code>home.place_label</code>, <code>reader.favorite_color</code>,
+<code>reader.interest</code>) is close in shape to what <code>CLOSED_VOCABULARIES</code> already enumerates; the
+delta worth adopting is the <strong>registry mechanism</strong> (versioned, queryable, schema-pinned), not
+the field list itself.</p>
+<p><strong>Before implementing</strong>: this is explicitly blocked behind ADR-023's re-plan
+(<a href="../unscheduled-work-register/">UW-H01</a>). Do not start this ahead of that re-plan; a versioned
+registry built against a personalization design that is itself about to change would likely need
+rework.</p>
+<hr />
+<h2 id="n04-wcag-22-aa-conformance-target-phase-5">N04: WCAG 2.2 AA conformance target (Phase 5)<a class="headerlink" href="#n04-wcag-22-aa-conformance-target-phase-5" title="Permanent link">&para;</a></h2>
+<p><strong>Register row</strong>: UW-N04. <strong>Status</strong>: unscheduled.</p>
+<p>This project's e2e accessibility suite (<code>frontend/e2e/a11y.spec.ts</code>) scopes axe-core to
+<code>wcag2a</code>, <code>wcag2aa</code>, <code>wcag21a</code>, <code>wcag21aa</code> tags, which is WCAG <strong>2.1</strong> AA, one revision behind the
+external document's NFR-A11Y-01 target of WCAG <strong>2.2</strong> AA. The suite's own docstring already
+calls itself "a floor, not a substitute for manual testing," and a prior internal review
+(<code>frontend-test-review-2026-07-27.md</code>) separately flagged accessibility as "a happy-path smoke,"
+so this is a genuine, if modest, gap rather than a nitpick.</p>
+<p><strong>What 2.2 adds over 2.1</strong> that is relevant to a touch-heavy, child-facing, form-heavy (consent,
+checkout, export/delete) product: <strong>target size (minimum)</strong> (2.5.8, minimum 24×24 CSS px, already
+exceeded by this project's own 44×44 child-product target, so likely a pass once scoped), <strong>focus
+not obscured (minimum)</strong> (2.4.11), <strong>dragging movements</strong> (2.5.7), <strong>consistent help</strong> (3.2.6),
+<strong>redundant entry</strong> (3.3.7), and <strong>accessible authentication (minimum)</strong> (3.3.8). The last three
+are the criteria most relevant to guardian consent, checkout, and rights (export/delete) flows,
+which is exactly the surface this project's own accessibility debt review flagged as under-tested.</p>
+<p>Mind the conformance levels, because they decide what an AA target actually obliges: 3.2.6 and
+3.3.7 are Level <strong>A</strong> additions, while 2.4.11, 2.5.7, 2.5.8, and 3.3.8 are Level <strong>AA</strong>. The other
+two new focus criteria, 2.4.12 (focus not obscured, enhanced) and 2.4.13 (focus appearance), are
+Level <strong>AAA</strong> and therefore sit outside an AA conformance target entirely.</p>
+<p><strong>Before implementing</strong>: widen the axe-core tag scope to
+<code>.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa'])</code>. Both 2.2 tags
+are required, not just the AA one: axe's WCAG tags are additive per level, so <code>wcag22aa</code> alone
+covers only the 2.2 Level AA additions and would silently skip 3.2.6 and 3.3.7, the two criteria
+this section calls most relevant. Then treat any new finding as a normal accessibility defect, not
+a blocking rewrite; most of this project's existing design already targets larger touch sizes and
+simpler flows than the AA floor requires.</p>
+<hr />
+<h2 id="n05-approval-model-scaling-decision-guardian-primary-vs-admin-only-phase-7">N05: Approval-model scaling decision: guardian-primary vs. admin-only (Phase 7)<a class="headerlink" href="#n05-approval-model-scaling-decision-guardian-primary-vs-admin-only-phase-7" title="Permanent link">&para;</a></h2>
+<p><strong>Register row</strong>: UW-N05. <strong>Status</strong>: decision (owner: project owner + safety operator, before
+Track 2 phases 6-9 scale to multiple families).</p>
+<p>This is a design comparison worth a conscious decision, not a defect. ADR-005's 2026-06-30
+amendment makes the <strong>global admin</strong> the sole approver of every published story; the guardian's
+control point is upstream, as the cost/consent gate on generation spend (ADR-015), not the
+content gate. The external document instead assumes <strong>guardian-primary approval</strong>, with internal
+moderator/staff review required only for designated warning categories or high-risk themes, and
+with hard policy blocks never overridable by anyone below staff.</p>
+<p>Admin-only review is sound and deliberate at this project's current one-admin, one-family scale.
+It does not scale to a multi-family paid product (Track 2, phases 6-9) without a moderation
+staff sized to review 100% of every story from every family by hand. The external document's
+model, under which a guardian approves their own family's stories with automatic escalation to
+staff review for flagged/high-risk categories, is the more standard pattern for a product intending to admit
+outside families, and is worth deciding on <em>before</em> Phase 6-9 opens intake rather than
+discovering the staffing cost after the fact.</p>
+<p><strong>Before deciding</strong>: this interacts with the 3-layer moderation calibration work already
+tracked elsewhere in the register (<code>GS2</code>/<code>GS3</code>, moderation review-model redesign): the
+guardian-primary model is only as safe as the automated gates that decide what gets escalated,
+so this decision likely wants to wait until that calibration work has a real false-negative
+rate to reason about.</p>
+<hr />
+<h2 id="n06-pin-an-asvs-level-and-a-pentest-surface-onto-the-existing-asvs-500-spine-phase-5">N06: Pin an ASVS level and a pentest surface onto the existing ASVS 5.0.0 spine (Phase 5)<a class="headerlink" href="#n06-pin-an-asvs-level-and-a-pentest-surface-onto-the-existing-asvs-500-spine-phase-5" title="Permanent link">&para;</a></h2>
+<p><strong>Register row</strong>: UW-N06. <strong>Status</strong>: unscheduled.</p>
+<p>This project already does a considerable amount of the <em>substance</em> the external document asks
+for (a PII egress guard, a provider/model allowlist, tiered RLS, append-only security events), and
+it already has the named framework the external document assumes is missing:
+<a href="../../security/assurance-spine/">assurance-spine.md</a> records <strong>OWASP ASVS 5.0.0</strong> (17 chapters,
+about 350 requirements, released 30 May 2025) as the "Primary spine for application security."
+Anything below that claims this project has no cited standard is wrong; that document is the
+standard, and Phase 5 planning should start from it.</p>
+<p>What the external document adds is narrower and still useful. Its NFR-SEC-01 and NFR-SEC-16
+independently land on <strong>OWASP ASVS 5.0 Level 2</strong>, tailored to child data, commerce, staff
+administration, and AI components, plus an independent penetration test covering
+guardian/child/admin surfaces, API authorization, tenant isolation, payment/entitlement,
+export/deletion, and AI-specific abuse. Two things there are not yet pinned down in
+<code>assurance-spine.md</code>: a specific ASVS <strong>level</strong>, and a concrete <strong>pentest surface list</strong>. That an
+outside document with no view of this repository converged on the same spine is a mild positive
+signal about the choice; the level and the surface list are the actual open items.</p>
+<p>NFR-SEC-12 separately points at the <strong>OWASP Top 10 for LLM Applications 2026</strong> as a control
+target. Do not adopt that part. <code>assurance-spine.md</code>'s source hierarchy has already ruled on it:
+the OWASP LLM Top 10, the API Top 10, and MITRE ATLAS are listed there as "Threat enumeration for
+corpus building," with the explicit note "Not control catalogs. Do not spine on them." Its
+prompt-injection substance (treat model output as untrusted, separate instructions from data,
+allowlist tools and models) is still worth reading as threat input, which is exactly the role the
+existing spine already assigns it.</p>
+<p><strong>Before implementing</strong>: this is a scoping refinement of an existing decision, not a new framework
+adoption, and the actual gap closure is whatever Cluster E rows (UW-E04 review-model allowlist,
+UW-E05 real PII detector, etc.) already track. The two decidable questions are whether to pin ASVS
+<strong>Level 2</strong> explicitly in <code>assurance-spine.md</code>, and whether to adopt the external document's
+pentest surface list as the scope statement for that engagement.</p>
+<hr />
+<h2 id="n07-concrete-data-retention-schedule-defaults-phase-7">N07: Concrete data-retention schedule defaults (Phase 7)<a class="headerlink" href="#n07-concrete-data-retention-schedule-defaults-phase-7" title="Permanent link">&para;</a></h2>
+<p><strong>Register row</strong>: UW-N07. <strong>Status</strong>: decision (owner: privacy/counsel + project owner, feeds
+the same ADR-018 gate as N02).</p>
+<p>ADR-018 itself is still <code>Proposed</code>, but the category-by-category retention schedule it gates is
+<strong>already resolved</strong>, so this is a reconciliation rather than a blank page:
+<a href="../../compliance/coppa-gdpr-remediation-plan/">coppa-gdpr-remediation-plan.md</a> carries an
+owner-accepted table, marked "Resolved 2026-07-20: accepted as drafted" and kept "as the actual
+policy, not a proposal, and now what Phase 4b publishes and Phase 4c's purge jobs build against."
+ADR-018 cites that document directly. The external table is still worth keeping for two specific
+reasons: it covers several categories the resolved schedule does not (adult account and household,
+consent evidence, product analytics, application logs, financial records, backups), and it
+contradicts the resolved schedule on at least one row that is already settled, which is better
+resolved deliberately than by whichever document a future reader happens to open first. Their table
+is explicitly <strong>planning defaults, not legal conclusions</strong> in their own words:</p>
+<table>
+<thead>
+<tr>
+<th>Data set</th>
+<th>Their planning default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Adult account / household</td>
+<td>Active account; 30-day closure recovery; backup expiry ≤ 90 days</td>
+</tr>
+<tr>
+<td>Consent evidence</td>
+<td>Account life plus a counsel-approved limitations period</td>
+</tr>
+<tr>
+<td>Child profile / personalization</td>
+<td>While enabled; active-deletion target ≤ 30 days; backups ≤ 90 days</td>
+</tr>
+<tr>
+<td>Unsubmitted guardian free text</td>
+<td>Session or ≤ 24 hours; never used for training/analytics</td>
+</tr>
+<tr>
+<td>Generation inputs / provider payload</td>
+<td>Operational need only; target ≤ 30 days; shortest provider-available retention</td>
+</tr>
+<tr>
+<td>Failed / rejected candidates</td>
+<td>Target 30 days; severe-safety evidence may retain a minimal excerpt/hash only</td>
+</tr>
+<tr>
+<td>Published canonical story</td>
+<td>While entitled and account active; closure/deletion workflow applies</td>
+</tr>
+<tr>
+<td>Reading progress</td>
+<td>Active use; target 12 months' inactivity or earlier child/account deletion</td>
+</tr>
+<tr>
+<td>Product analytics raw events</td>
+<td>30-90 days; aggregates longer only if non-identifying</td>
+</tr>
+<tr>
+<td>Application logs / traces</td>
+<td>30-90 days ordinary; up to 12 months for security telemetry by approved need</td>
+</tr>
+<tr>
+<td>Financial / tax records</td>
+<td>Planning assumption: 7 years or jurisdictional requirement</td>
+</tr>
+<tr>
+<td>Support / moderation cases</td>
+<td>Target 2 years; child-content attachments shorter where possible</td>
+</tr>
+<tr>
+<td>Backups</td>
+<td>Target rolling expiry ≤ 90 days</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Known conflict with the resolved schedule: reading progress.</strong> The resolved 2026-07-20 policy
+keeps reading data for the "life of the active profile, plus 30-90 days after deactivation before
+purge"; the external default above is "target 12 months' inactivity." The resolved policy governs
+unless and until it is deliberately changed, so do not let the table above silently override it.</p>
+<p><strong>Before implementing</strong>: the rows above that introduce <em>new</em> categories need privacy-counsel and
+finance sign-off on the purpose, trigger, active-store period, backup horizon, legal-hold behavior,
+and vendor-deletion
+commitment before they become real policy: the table above is a drafting starting point, not an
+approved schedule. Rows that duplicate the resolved schedule need no re-litigation.</p>
+<hr />
+<h2 id="n08-adr-027s-image-moderation-classifier-has-no-register-home-phase-4b">N08: ADR-027's image-moderation classifier has no register home (Phase 4b)<a class="headerlink" href="#n08-adr-027s-image-moderation-classifier-has-no-register-home-phase-4b" title="Permanent link">&para;</a></h2>
+<p><strong>Register row</strong>: UW-N08. <strong>Status</strong>: unscheduled.</p>
+<p>Found incidentally while adding N09's citation to ADR-027 (in-story illustration): its decision 5
+names an automated image-moderation classifier as the explicit precondition for expanding
+per-node art past the seven-skeleton pilot, then says only that it is "tracked as follow-on work
+when the pilot's results justify scaling." That is exactly the unscheduled-deferral pattern the
+<a href="../adr/#follow-on-work-is-part-of-the-adr-required-for-new-and-amended-adrs">adr/README.md</a>
+Follow-on-work rule exists to close; ADR-027 postdates the 2026-07-28 rule cutoff, so it is
+bound by it, and had no Follow-on work section until this change added one. Not part of what was
+asked for in this round; recorded because leaving it uncited immediately next to a properly-cited
+item would repeat the exact defect the rule targets.</p>
+<p><strong>Before implementing</strong>: this is a real gate, not busywork: ADR-027 itself treats it as the
+condition for any expansion beyond the pilot, and building the classifier ahead of the pilot's
+own results would be speculative, per that ADR's own "Alternative 3" reasoning.</p>
+<hr />
+<h2 id="n09-generated-in-story-illustration-cost-citation-for-adr-027-phase-4b">N09: Generated in-story-illustration cost citation for ADR-027 (Phase 4b)<a class="headerlink" href="#n09-generated-in-story-illustration-cost-citation-for-adr-027-phase-4b" title="Permanent link">&para;</a></h2>
+<p><strong>Register row</strong>: UW-N09. <strong>Status</strong>: done (landed in PR #620, the same change that added this
+document).</p>
+<p>ADR-027 (accepted 2026-08-01) authorizes per-node illustration at the 3-5 band and prices its
+own storage/delivery budget (WebP, 1536px, 150KB target/200KB ceiling per image, 8MB per 3-5
+book), but never prices <em>generation</em> itself. The Commercial and Revenue Viability Report supplies
+the missing number: <strong>a set of 8-12 generated scenes adds roughly $0.27-$2.40 per story in raw
+image-generation cost</strong>. That range is a per-<em>story</em> total derived from public per-image rates, not
+the price of a single image, and it uses a previous-generation image model, before retries,
+consistency work, moderation, or human review. Their own source flags it as illustrative of
+order-of-magnitude only, not a current-model quote.</p>
+<p><strong>Scale caveat, and why the figure cannot be carried over as-is</strong>: 8-12 scenes is the external
+document's own assumption, not ADR-027's. ADR-027 scopes its pilot at <strong>10-45 node images per
+book</strong>, so at the top of that range the imported figure understates generation spend by roughly
+4x. Re-derive against 10-45 before the number informs any expand/don't-expand call.</p>
+<p>This has been added directly to ADR-027's new Follow-on work section rather than only recorded
+here, since the whole point is that the number needs to live where the pilot's future
+expand/don't-expand call will actually look for it.</p>
+<p><strong>Before relying on this number</strong>: it is a stale, previous-model per-image rate. Re-price against
+whatever image model is actually in production (Gemini via <code>covers/provider.py</code>, per ADR-017)
+before using it in any real go/no-go decision: it is an order-of-magnitude placeholder, not a
+budget line.</p>
+<hr />
+<h2 id="n10-engagementanalytics-north-star-framework-phase-4c">N10: Engagement/analytics north-star framework (Phase 4c)<a class="headerlink" href="#n10-engagementanalytics-north-star-framework-phase-4c" title="Permanent link">&para;</a></h2>
+<p><strong>Register row</strong>: UW-N10. <strong>Status</strong>: unscheduled.</p>
+<p>Unlike N01-N07, this one is not gated on commerce, ADR-023, or counsel; it is a measurement
+framework usable at the current family-tier, pre-monetization scale, and there is no equivalent
+document anywhere in <code>docs/planning/</code> today (checked; zero hits for "north star," "event
+taxonomy," or "KPI" outside two unrelated mentions).</p>
+<p><strong>The framework, as specified externally:</strong></p>
+<ul>
+<li><strong>North-star metric</strong>: "30-day Family Story Value Rate": the percentage of first-time
+  households that approve a story and then either reach an ending, deliberately replay an
+  alternate path, or start an approved next adventure within 30 days, with no critical safety or
+  isolation incident. It measures delivered family value, not screen time or session count,
+  consistent with this project's own existing stance against optimizing time-on-screen
+  (<code>project-vision.md</code>, ADR-004's no-third-party-telemetry-on-children posture).</li>
+<li><strong>Anti-gaming metric definitions</strong>, worth adopting verbatim regardless of which north-star
+  metric this project ultimately picks:</li>
+<li>A completed story reaches a <em>validated ending</em>; scrolling or leaving the tab open does not
+    count.</li>
+<li>A replay begins from an <em>intentional</em> alternate-path selection, not an accidental reload.</li>
+<li>Subscriber/benefit value use includes creating, replaying, listening, or downloading a
+    disclosed benefit; email opens do not count.</li>
+<li>Approval rate is reported with rejection reasons and excludes technical duplicate candidates.</li>
+<li>Unit cost includes generation, moderation, retries, worker time, media, and directly
+    attributable support time, not only the model call.</li>
+<li>Retention cohorts are grouped by acquisition/offer date, not calendar averages, so a
+    deteriorating new cohort cannot hide inside an aggregate.</li>
+<li><strong>A five-domain KPI tree</strong> (Acquire, Activate, Deliver value, Retain, Monetize, Operate, Trust)
+  with a named guardrail per domain (e.g. Deliver-value's guardrail is explicitly "do not
+  optimize minutes or late-night use"; Retain's is "easy cancel; no child pressure").</li>
+</ul>
+<p><strong>Before implementing</strong>: this needs an owner decision on which specific event taxonomy and
+storage this project's existing (and still fairly minimal) telemetry should grow into; it is a
+design framework to adapt, not a schema to import directly. It should also stay proportionate to
+this project's current non-commercial scale; several of the report's specific domains (Monetize,
+CAC) are not yet relevant here and can be adopted later, if and when Phase 8 makes them so.</p>
+<hr />
+<h2 id="what-was-deliberately-not-carried-forward">What was deliberately not carried forward<a class="headerlink" href="#what-was-deliberately-not-carried-forward" title="Permanent link">&para;</a></h2>
+<p>For completeness, things the external documents recommended were considered and rejected, so a
+future reader does not re-propose them:</p>
+<ul>
+<li><strong>Azure-first / large dedicated-team delivery framing</strong> ($900K-2.2M, 32-40 week, ~10-person
+  team), irrelevant to this project's actual homelab-first, small-team execution model
+  (ADR-004). Not tracked as a register row; there is nothing to schedule.</li>
+<li><strong>Commerce-as-MVP-blocking framing</strong>: this project's v1 is live and family-usable without any
+  commerce code, by deliberate design (<code>project-vision.md</code>). The external document's urgency
+  does not apply; N01 above captures only the <em>design pattern</em> for when Phase 8 actually starts.</li>
+<li><strong>"No cycles in MVP" story-graph constraint</strong>: this project's validator already permits
+  controlled cycles for the <code>loop_and_grow</code>/<code>open_map</code> topologies (ADR-011, gated by validator
+  rule PL-18), which is a deliberate capability the external document did not anticipate, not a
+  gap to close.</li>
+<li><strong>The Commercial and Revenue Viability Report's break-even scale and 90-day validation/go-no-go
+  apparatus</strong> (Sections 8, 12, 15), calibrated to the same funded-startup build cost as the
+  other two source documents. This project's Phase 8 has not started and v1 is deliberately
+  non-commercial; that scale question is not one this project faces today. Not tracked as a
+  register row.</li>
+<li><strong>"Exclude open child chat / free prompting" as a launch posture</strong>: the report treats this as
+  a categorical exclusion on safety/abuse/moderation grounds. This project's actual decision
+  (ADR-015) already allows a short, rate-limited, guardian-cost-gated child-typed wish, screened
+  by the same PII/injection controls as guardian text. Recorded as a considered tension, not a
+  gap: the report's caution is a reasonable outside view of that surface's risk, and the existing
+  prompt-injection gap already tracked at <a href="../unscheduled-work-register/">UW-D20</a> is the more
+  concrete place that risk shows up today, not a reason to reverse ADR-015.</li>
+<li><strong>"Generated character/scene art" as something to defer entirely</strong>: the report scores this
+  5/5 risk and recommends deferring until "text value is proven." This project has already
+  shipped cover art (ADR-017) and accepted per-node art at the 3-5 band (ADR-027), both with the
+  human-per-item review gate the report would itself want if it knew this project was doing it.
+  Good validation of the gating approach already in place, not a gap.</li>
+</ul>
+<h2 id="related-documents">Related documents<a class="headerlink" href="#related-documents" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../unscheduled-work-register/">unscheduled-work-register.md</a>: Cluster N holds the
+  phase/status tracking for all ten items above</li>
+<li><a href="../adr/adr-027-in-story-illustration/">adr-027-in-story-illustration.md</a>: N08 and N09's home</li>
+<li><a href="../adr/adr-018-childrens-privacy-compliance/">adr-018-childrens-privacy-compliance.md</a>: N02
+  and N07 both feed this ADR's still-open counsel gate</li>
+<li><a href="../adr/adr-023-story-personalization-slots/">adr-023-story-personalization-slots.md</a>: N03's
+  blocker</li>
+<li><a href="../adr/adr-005-mandatory-human-approval/">adr-005-mandatory-human-approval.md</a>: N05's
+  baseline</li>
+<li><a href="../roadmap/">roadmap.md</a> / <a href="../PROJECT-PLAN/">PROJECT-PLAN.md</a>: Phase &#8542; homes for N01,
+  N02, N05, N07</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 6, 2026 01:36:42 UTC">August 6, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 6, 2026 01:36:42 UTC">August 6, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
