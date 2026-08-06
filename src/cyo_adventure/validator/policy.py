@@ -2,9 +2,10 @@
 
 Runs after Layer 1 passes and the Storybook parses, on the typed model plus the
 choice graph. Most findings are ERROR-severity and blocking; the PL-19 story-mean
-words-per-node check, the PL-20 arc ceiling, PL-25 other than its hard limit, and
-all of PL-26 are advisory (WARNING). These rules convert age-safety, shape, and
-story-scale judgments into deterministic invariants.
+words-per-node check, the PL-20 arc ceiling, PL-25's *ceiling* short of its hard
+limit, and all of PL-26 are advisory (WARNING). PL-25's floor is an unconditional
+ERROR. These rules convert age-safety, shape, and story-scale judgments into
+deterministic invariants.
 
 Path-length rules grade in two tiers on purpose. A *floor* violation (PL-20: too
 short to be a story) is a correctness failure and blocks. A *ceiling* violation
@@ -400,9 +401,7 @@ def _check_first_decision_depth(story: Storybook, report: ValidationReport) -> N
     if window is None:
         return
     floor, ceiling = window
-    decisions = {
-        node.id for node in story.nodes if not node.is_ending and len(node.choices) >= 2
-    }
+    decisions = _decision_node_ids(story)
     if not decisions:
         return
     depth = _shortest_path_nodes(_build_graph(story), story.start_node, decisions)
@@ -446,18 +445,25 @@ def _check_min_to_complete(story: Storybook, report: ValidationReport) -> None:
     """PL-20 arc length and PL-26 decision density on the fastest-finish path.
 
     Only a scale-classified production story (one that declares a ``length``) has
-    a fastest-finish floor, taken from the ADR-011 cell. Three checks share the
-    one computed path so they can never disagree about which walk that is:
+    a fastest-finish floor, taken from the ADR-011 cell. All three checks read one
+    walk, but that walk is chosen for PL-26's sake alone: it is the equally fast
+    finish carrying the FEWEST decisions. PL-20 is indifferent to the choice
+    because it reads only the walk's length, and every fewest-node walk has the
+    same length by definition; PL-26 is not, because equally fast walks can carry
+    different decision counts. See :func:`_fewest_decision_shortest_path` for why
+    a rule that reads a per-node property of a walk must not inherit another
+    rule's tie-break:
 
     - **PL-20 floor (ERROR).** The shortest path in nodes from ``start_node`` to
       any success/completion ending must be at least the cell floor; a hollow
       quick win blocks.
     - **PL-20 ceiling (WARNING).** That path running past
       ``ARC_CEILING_MULTIPLE`` times the floor is a slog to the nearest win.
-    - **PL-26 density (WARNING).** Nodes per decision along the same path must
-      not exceed ``nodes_per_decision_ceiling``. This is the axis PL-17 cannot
-      see: PL-17 counts decision nodes across the whole graph, so a story can
-      meet every breadth floor while the reader walks a corridor.
+    - **PL-26 density (WARNING).** Nodes per decision along the *worst* equally
+      fast walk (the one carrying the fewest decisions) must not exceed
+      ``nodes_per_decision_ceiling``. This is the axis PL-17 cannot see: PL-17
+      counts decision nodes across the whole graph, so a story can meet every
+      breadth floor while the reader walks a corridor.
 
     Fail-fast negative endings are unaffected, and a story with no satisfying
     ending is left to PL-17. See ADR-011 section 4.
@@ -477,9 +483,13 @@ def _check_min_to_complete(story: Storybook, report: ValidationReport) -> None:
     }
     if not satisfying:
         return
-    path = _shortest_path_to(_build_graph(story), story.start_node, satisfying)
+    path = _fewest_decision_shortest_path(
+        _build_graph(story), story.start_node, satisfying, _decision_node_ids(story)
+    )
     if path is None:
         return
+    # Every fewest-node walk has the same length, so PL-20's two tiers read the
+    # same number they read before PL-26 began choosing among those walks.
     shortest = len(path)
     if shortest < floor:
         report.add(
@@ -522,9 +532,14 @@ def _check_decision_density(
     bound density from below, because a shortest path is biased toward decision
     nodes by construction; see ``band_profile._NODES_PER_DECISION_CEILING``.
 
+    Because it is a ceiling, the path handed in must be the *fewest-decision*
+    fastest finish (see :func:`_fewest_decision_shortest_path`), so the density
+    reported is the worst case among equally fast walks rather than whichever
+    walk a tie-break happened to pick.
+
     Args:
         story: The parsed story.
-        path: The fastest-finish node path PL-20 measured.
+        path: The fewest-decision fastest-finish node path.
         report: The report to append findings to.
     """
     on_path = set(path)
@@ -790,10 +805,18 @@ def _shortest_path_to(
 ) -> list[str] | None:
     """Return the fewest-node path from ``start`` to any of ``targets``.
 
-    Ties between equally short paths are broken by target id, so the chosen path
-    is stable under ``PYTHONHASHSEED``. PL-20 and PL-26 both read this one
-    result, so the arc-length rule and the decision-density rule can never
-    disagree about which walk is "the fastest finish".
+    Ties between equally short paths are broken by target id and then by
+    successor id, so the chosen path is stable under ``PYTHONHASHSEED``. That
+    tie-break is safe for a caller that reads only the path *length*, because
+    every fewest-node path has the same length by definition; PL-25 (through
+    :func:`_shortest_path_nodes`) is such a caller.
+
+    It is NOT safe for a caller that reads a per-node property of the walk.
+    Equally short paths can carry different decision counts, so PL-26 deliberately
+    consumes a different result derived from the same breadth-first search:
+    :func:`_fewest_decision_shortest_path` picks, among the equally fast walks,
+    the one with the fewest decisions on it. Sharing this function's arbitrary
+    tie-break with PL-26 made its verdict flip on node renaming alone.
 
     Args:
         graph: The story's directed choice graph.
@@ -842,6 +865,136 @@ def _walk_back(parents: dict[str, str], start: str, target: str) -> list[str]:
         path.append(parents[path[-1]])
     path.reverse()
     return path
+
+
+def _decision_node_ids(story: Storybook) -> set[str]:
+    """Return the ids of every decision node in a story.
+
+    A decision node is a non-ending node offering two or more choices. This is
+    the single definition PL-25, PL-26 and the fewest-decision path search all
+    read, so they cannot drift apart on what "a decision" is.
+
+    Args:
+        story: The parsed story.
+
+    Returns:
+        The set of decision-node ids (empty when the story offers no choice).
+    """
+    return {
+        node.id for node in story.nodes if not node.is_ending and len(node.choices) >= 2
+    }
+
+
+def _breadth_first_levels(
+    graph: nx.DiGraph[str], start: str
+) -> tuple[dict[str, int], list[list[str]]]:
+    """Return each reachable node's hop distance from ``start``, and by-level ids.
+
+    Step 1 of :func:`_fewest_decision_shortest_path`, split out because the
+    layered dynamic program that follows reads both results and because the two
+    phases fail differently: this one is a plain BFS with no tie-break at all,
+    while the DP's every choice is a tie-break that has to be justified.
+
+    Args:
+        graph: The story's directed choice graph; ``start`` must be a node in it.
+        start: The node to measure from.
+
+    Returns:
+        ``(level, by_level)`` where ``level[node]`` is the fewest hops from
+        ``start`` and ``by_level[k]`` lists the ids at distance ``k``, sorted so
+        the caller's sweep order is stable under ``PYTHONHASHSEED``.
+    """
+    level: dict[str, int] = {start: 0}
+    by_level: list[list[str]] = [[start]]
+    frontier: list[str] = [start]
+    while frontier:
+        following: list[str] = []
+        for node in frontier:
+            for successor in graph.successors(node):
+                if successor not in level:
+                    level[successor] = level[node] + 1
+                    following.append(successor)
+        if not following:
+            break
+        by_level.append(sorted(following))
+        frontier = following
+    return level, by_level
+
+
+def _fewest_decision_shortest_path(
+    graph: nx.DiGraph[str],
+    start: str,
+    targets: set[str],
+    decisions: set[str],
+) -> list[str] | None:
+    """Return a fewest-node path to a target carrying the fewest decisions.
+
+    Among every path of the minimum node length from ``start`` to any of
+    ``targets``, this returns one holding as few nodes from ``decisions`` as
+    possible, which is the *highest* nodes-per-decision case among equally fast
+    finishes. PL-26 is a ceiling, so reporting the worst equally fast walk is the
+    only choice that makes its verdict a property of the graph rather than of the
+    node ids: equally short paths can carry different decision counts, and an
+    arbitrary tie-break flipped the verdict on renaming alone.
+
+    Runs in O(V+E) via a layered dynamic program over the shortest-path DAG, not
+    by enumerating shortest paths. That matters because the number of shortest
+    paths is exponential in the graph size in the worst case (a chain of parallel
+    two-way detours doubles it per link) and this code sits in the request path
+    behind the generation gate.
+    #ASSUME: timing-dependencies: the layered DP visits each node and edge at
+    most once, so gate cost stays linear in graph size even for the largest
+    offered cell (a 750-node 16+ long gamebook).
+    #VERIFY: see ``test_pl26_density_scales_past_exponential_path_counts`` in
+    tests/unit/test_policy.py, which gates a graph holding 2**20 equally short
+    satisfying paths and asserts the report still comes back.
+
+    Ties are broken deterministically: candidate targets by ``(decisions, id)``
+    and predecessors by id, so the chosen walk is stable under
+    ``PYTHONHASHSEED``. Unlike :func:`_shortest_path_to`'s tie-break, the choice
+    here is semantic first (fewest decisions) and lexical only to settle a
+    genuine tie, so renaming nodes cannot change the reported density.
+
+    Args:
+        graph: The story's directed choice graph.
+        start: The start node id.
+        targets: Candidate destination node ids; unreachable ones are ignored.
+        decisions: Ids of the nodes that count as a decision.
+
+    Returns:
+        The node-id path including both endpoints, or ``None`` when no target is
+        reachable from ``start``.
+    """
+    if start not in graph:
+        return None
+    level, by_level = _breadth_first_levels(graph, start)
+    depths = [level[target] for target in targets if target in level]
+    if not depths:
+        return None
+    distance = min(depths)
+    # 2/3. Layered DP over the shortest-path DAG: an edge u -> v belongs to it
+    # exactly when level[v] == level[u] + 1, and every in-edge of a level-k node
+    # comes from level k-1, so one forward sweep settles each level in turn.
+    fewest: dict[str, int] = {start: int(start in decisions)}
+    parents: dict[str, str] = {}
+    for depth in range(distance):
+        for node in by_level[depth]:
+            if node not in fewest:
+                continue
+            for successor in sorted(graph.successors(node)):
+                if level.get(successor) != depth + 1:
+                    continue
+                cost = fewest[node] + int(successor in decisions)
+                if successor not in fewest or cost < fewest[successor]:
+                    fewest[successor] = cost
+                    parents[successor] = node
+    # 4. Recover the argmin path; ``distance`` came from a reachable target, so
+    # at least one candidate exists and each was reached through the layered DAG.
+    chosen = min(
+        (target for target in targets if level.get(target) == distance),
+        key=lambda target: (fewest[target], target),
+    )
+    return _walk_back(parents, start, chosen)
 
 
 def _shortest_path_nodes(

@@ -27,8 +27,11 @@ import { test } from '@playwright/test'
  *     resetRealState() call of its own. Reading it here would race that
  *     file's approval lifecycle in the same no-file-ordering-guarantee tier.
  *   - The Ember Trail series' only gated choice (`c_n_e2_carried`, proven by
- *     series-continue-real.spec.ts) is reachable ONLY through a continuation
- *     read (startContinuation, not start): player/engine.ts's back() and
+ *     series-continue-real.spec.ts) sits three clicks into book 2, on the
+ *     shared hub node (n_e2_hub), not on the book's landing passage as
+ *     before; that move does not change the reasoning below, since the
+ *     choice is reachable ONLY through a continuation read
+ *     (startContinuation, not start): player/engine.ts's back() and
  *     replayRecordedPath() explicitly, permanently fail closed for any
  *     continuation-state read (an #EDGE-tagged, intentional architectural
  *     limit, not a bug: replaying from start(story) can never reproduce
@@ -54,9 +57,6 @@ import { test } from '@playwright/test'
  * reverted `var_state` and `current_node`, exactly as kid-go-back-real.spec.ts
  * confirms cross-device via a direct fetch today.
  */
-test.skip(
-  'going back past a variable-gated choice replays the gate correctly against the real backend',
-  () => {
-    // Intentionally not implemented; see the TODO(seed) above.
-  }
-)
+test.skip('going back past a variable-gated choice replays the gate correctly against the real backend', () => {
+  // Intentionally not implemented; see the TODO(seed) above.
+})

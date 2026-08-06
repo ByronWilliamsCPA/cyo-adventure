@@ -40,6 +40,7 @@ from cyo_adventure.mutation.operators import (
     _clamp_position,  # pyright: ignore[reportPrivateUsage]
     _decision_window_reason,  # pyright: ignore[reportPrivateUsage]
     _depth_reason,  # pyright: ignore[reportPrivateUsage]
+    _donor_subtree_or_reason,  # pyright: ignore[reportPrivateUsage]
     _ending_leaves,  # pyright: ignore[reportPrivateUsage]
     _ending_ratio_advisory,  # pyright: ignore[reportPrivateUsage]
     _evaluate_graft,  # pyright: ignore[reportPrivateUsage]
@@ -56,6 +57,7 @@ from cyo_adventure.mutation.operators import (
     _min_decisions_floor,  # pyright: ignore[reportPrivateUsage]
     _node_body,  # pyright: ignore[reportPrivateUsage]
     _node_count_reason,  # pyright: ignore[reportPrivateUsage]
+    _pl25_opening_reason,  # pyright: ignore[reportPrivateUsage]
     _post_graft_graph,  # pyright: ignore[reportPrivateUsage]
     _post_swap_graph,  # pyright: ignore[reportPrivateUsage]
     _post_swap_reason,  # pyright: ignore[reportPrivateUsage]
@@ -1342,6 +1344,148 @@ def test_evaluate_graft_rejects_a_non_self_contained_donor_subtree() -> None:
     reason = _evaluate_graft(
         host, leaky_donor, "d", "g", host_decision="h", position=None
     )[1]
+    assert "not self-contained" in cast("str", reason)
+
+
+def _depth_chain_story(band: str) -> dict[str, object]:
+    """Return a linear ``d0 -> d1 -> d2 -> d3(ending)`` chain for PL-25 depth tests.
+
+    ``d0`` is the start node (depth 1, one node), ``d1`` is depth 2, ``d2`` is
+    depth 3; depth counts nodes from the start inclusive, matching
+    ``validator.policy._shortest_path_nodes``.
+    """
+    return {
+        "metadata": {"age_band": band},
+        "start_node": "d0",
+        "nodes": [
+            {"id": "d0", "choices": [{"id": "d0c", "target": "d1"}]},
+            {"id": "d1", "choices": [{"id": "d1c", "target": "d2"}]},
+            {"id": "d2", "choices": [{"id": "d2c", "target": "d3"}]},
+            {"id": "d3", "is_ending": True, "ending": {"id": "d3e", "kind": "success"}},
+        ],
+    }
+
+
+@pytest.mark.unit
+def test_pl25_opening_reason_rejects_below_the_bands_floor() -> None:
+    """8-11's PL-25 floor is 2 nodes deep; grafting onto the depth-1 start fails.
+
+    If this assertion were removed, a defect that let a too-shallow graft
+    through (or that returned None unconditionally) would go unnoticed.
+    """
+    host = _depth_chain_story("8-11")
+    reason = _pl25_opening_reason(host, "d0", 2)
+    assert reason == (
+        "grafting onto 'd0' makes it a decision 1 node(s) in, under the band "
+        "'8-11' PL-25 opening floor 2"
+    )
+
+
+@pytest.mark.unit
+def test_pl25_opening_reason_accepts_exactly_at_the_bands_floor() -> None:
+    """Depth 2 is 8-11's PL-25 floor exactly; the graft is clear (None).
+
+    If this assertion were removed, an off-by-one that rejected the floor
+    depth itself (instead of only depths under it) would go unnoticed.
+    """
+    host = _depth_chain_story("8-11")
+    assert _pl25_opening_reason(host, "d1", 2) is None
+
+
+@pytest.mark.unit
+def test_pl25_opening_reason_boundary_one_node_shallower_is_rejected() -> None:
+    """One node shallower than the floor (d0, depth 1) is rejected while the
+    floor itself (d1, depth 2) is accepted, pinning the exact boundary.
+
+    If this assertion were removed, the off-by-one direction of the floor
+    comparison (``>=`` vs ``>``) could flip without any test catching it.
+    """
+    host = _depth_chain_story("8-11")
+    assert _pl25_opening_reason(host, "d1", 2) is None
+    assert _pl25_opening_reason(host, "d0", 2) is not None
+
+
+@pytest.mark.unit
+def test_pl25_opening_reason_post_choices_three_bypasses_the_floor() -> None:
+    """post_choices=3 means the node was already a decision before the graft, so
+    the floor check is skipped even at a depth that would fail for
+    post_choices=2 on the same node.
+
+    If this assertion were removed, the "already a decision" bypass branch
+    (``post_choices > _MIN_CHOICES_PER_DECISION``) could be deleted or
+    inverted without any test catching it.
+    """
+    host = _depth_chain_story("8-11")
+    assert _pl25_opening_reason(host, "d0", 2) is not None
+    assert _pl25_opening_reason(host, "d0", 3) is None
+
+
+@pytest.mark.unit
+def test_pl25_opening_reason_reads_the_floor_from_the_band_table() -> None:
+    """3-5's PL-25 floor is 1 (not 2), per ``_FIRST_DECISION_DEPTH``: the same
+    depth-1 start node that 8-11 rejects is accepted for 3-5.
+
+    If this assertion were removed, a hardcoded floor of 2 (instead of a
+    per-band table lookup) would go unnoticed, since 8-11 alone cannot
+    distinguish the two.
+    """
+    host_8_11 = _depth_chain_story("8-11")
+    host_3_5 = _depth_chain_story("3-5")
+    assert _pl25_opening_reason(host_8_11, "d0", 2) is not None
+    assert _pl25_opening_reason(host_3_5, "d0", 2) is None
+
+
+@pytest.mark.unit
+def test_evaluate_graft_honours_the_pl25_opening_reason() -> None:
+    """``_evaluate_graft`` returns the exact PL-25 reason for a too-shallow host
+    decision; grafting onto the start node of a Tier-1 story is rejected.
+
+    If the ``_pl25_opening_reason`` call in ``_evaluate_graft`` were deleted,
+    this graft would fall through to the band/series/donor-subtree checks,
+    which all pass for a same-story self-graft onto an ending leaf, so the
+    call would return a plan (``reason is None``) instead of this string.
+    """
+    host = _tier1_story()
+    expected = _pl25_opening_reason(host, "n_open", 2)
+    assert expected is not None
+    reason = _evaluate_graft(
+        host, host, "<self>", "a", host_decision="n_open", position=None
+    )[1]
+    assert reason == expected
+
+
+@pytest.mark.unit
+def test_donor_subtree_or_reason_accepts_a_closed_self_contained_root() -> None:
+    """A leaf ending node is trivially closed and self-contained.
+
+    If this assertion were removed, a regression that rejected every donor
+    subtree (or returned the wrong root) would go unnoticed.
+    """
+    subtree, reason = _donor_subtree_or_reason(_tier1_story(), "a")
+    assert reason is None
+    assert subtree is not None
+    assert subtree.root == "a"
+
+
+@pytest.mark.unit
+def test_donor_subtree_or_reason_rejects_a_non_self_contained_subtree() -> None:
+    """An external in-edge into an internal subtree node is rejected.
+
+    If this assertion were removed, a donor subtree that leaks host content
+    through an internal external in-edge would be silently accepted.
+    """
+    leaky_donor = {
+        "metadata": {"age_band": "8-11"},
+        "start_node": "g",
+        "nodes": [
+            {"id": "g", "choices": [{"id": "gc", "target": "m"}]},
+            {"id": "m", "choices": [{"id": "mc", "target": "ge"}]},
+            {"id": "ge", "is_ending": True, "ending": {"id": "gee", "kind": "success"}},
+            {"id": "x", "choices": [{"id": "xc", "target": "m"}]},  # external -> m
+        ],
+    }
+    subtree, reason = _donor_subtree_or_reason(leaky_donor, "g")
+    assert subtree is None
     assert "not self-contained" in cast("str", reason)
 
 

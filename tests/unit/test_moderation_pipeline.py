@@ -73,7 +73,25 @@ _NODE_COUNT = len(cast("list[object]", _CANNED_STORY["nodes"]))
 # by coincidence rather than by construction: the story grew to 8 nodes when
 # PL-25's floor forced an establishing opening, the remainder became 2, and the
 # single-node path silently stopped being exercised at all.
+#
+# At the current _NODE_COUNT (8), this evaluates to 7 and produces ONE full
+# batch of 7 nodes plus a remainder of exactly 1: a single full batch, not two,
+# so it cannot exercise the loop iterating between full batches before it hits
+# the remainder. See ``_TWO_FULL_BATCHES_BATCH_SIZE`` below for that seam. If
+# the story's node count moves again, recheck what split this derivation
+# yields; it is coupled to ``_NODE_COUNT`` by construction, not by coincidence,
+# but the split it produces can still change shape.
 _PARTIAL_CHUNK_BATCH_SIZE = _NODE_COUNT - 1
+
+# Batch size for the two-full-batches test: a literal, NOT derived from
+# _NODE_COUNT, so growing the story cannot silently collapse it back to a
+# single-batch split the way ``_PARTIAL_CHUNK_BATCH_SIZE`` did when the story
+# grew from 7 to 8 nodes (see above). At the current _NODE_COUNT (8), a batch
+# size of 3 chunks as 3+3+2: two full batches of 3 followed by a remainder of
+# 2, which exercises the loop actually iterating between two full batches
+# (rather than entering the loop body once, as the partial-chunk test above
+# does). The test asserts this split explicitly rather than assuming it.
+_TWO_FULL_BATCHES_BATCH_SIZE = 3
 
 # Review calls per moderation pass: safety per node (review_batch_size=1,
 # pinned by _settings() below, so every chunk is one node), coherence +
@@ -2531,5 +2549,65 @@ async def test_review_batch_size_covers_partial_final_chunk(
     for call in batch_calls:
         reviewed.extend(_extract_batch_node_ids(call))
     assert len(reviewed) == len(batch_calls) * _PARTIAL_CHUNK_BATCH_SIZE
+    assert len(set(reviewed)) == len(reviewed)  # no node reviewed twice
+    assert _aggregate(version)["nodes_reviewed"] == _NODE_COUNT
+
+
+@pytest.mark.unit
+async def test_review_batch_size_covers_two_full_batches_plus_remainder(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """A split with TWO full batches before the remainder still reviews every
+    node exactly once.
+
+    ``test_review_batch_size_covers_partial_final_chunk`` above enters
+    ``run_safety_stage``'s chunking loop once and then hits the remainder; it
+    cannot tell a chunker that only handles "one batch, then stop" from one
+    that correctly keeps iterating across several full batches, because at
+    the current node count its own batch size produces exactly one full
+    batch. ``_TWO_FULL_BATCHES_BATCH_SIZE`` is a literal chosen so the split
+    holds at least two full batches ahead of the remainder, which is the seam
+    that exercises the loop actually advancing from one full batch to the
+    next rather than just entering the loop body once.
+    """
+    full_batches, remainder = divmod(_NODE_COUNT, _TWO_FULL_BATCHES_BATCH_SIZE)
+    assert full_batches >= 2, "fixture must produce at least two full batches"
+    assert remainder != 0, "fixture must produce a non-empty remainder"
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    provider = _batched_verdict_review_provider()
+    review_seam(provider)
+    settings = Settings(
+        review_provider="mock", review_batch_size=_TWO_FULL_BATCHES_BATCH_SIZE
+    )
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=settings,
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    safety_calls = [c for c in provider.calls if c.startswith("Age band:")]
+    assert len(safety_calls) == full_batches + 1
+    # Every chunk of more than one node takes the batch shape ("Nodes:"); a
+    # remainder of exactly one node would take the single-node shape instead
+    # (covered separately above), so count batch-shaped calls accordingly.
+    expected_batch_shaped = full_batches + (1 if remainder > 1 else 0)
+    batch_calls = [c for c in safety_calls if "Nodes:" in c]
+    assert len(batch_calls) == expected_batch_shaped
+    reviewed: list[str] = []
+    for call in batch_calls:
+        reviewed.extend(_extract_batch_node_ids(call))
+    assert len(reviewed) == full_batches * _TWO_FULL_BATCHES_BATCH_SIZE + (
+        remainder if remainder > 1 else 0
+    )
     assert len(set(reviewed)) == len(reviewed)  # no node reviewed twice
     assert _aggregate(version)["nodes_reviewed"] == _NODE_COUNT

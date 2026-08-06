@@ -123,8 +123,17 @@ MVP_MAX_NODES = 45
 #     include the pages before the first decision (corpus median 4). The
 #     establishing stop is therefore inside the cell budget already.
 #   - The band-level max_depth triple predates ADR-011 and derives from nothing
-#     measured. It survives only as the MVP fallback, so the stop PL-25 now
-#     mandates has to be granted explicitly.
+#     measured. ``mvp_node_budget`` below is the ONLY consumer that grants it
+#     the establishing-stop allowance: ``resolve_node_budget``'s step-3
+#     band-level fallback (a production-eligible story with no length, or an
+#     off-matrix length), ``layer1._COMPACT_BUDGETS``, and
+#     ``generation.prompts._budget_block`` (which reads ``resolve_node_budget``
+#     transitively) all use the same band-level max_depth with no allowance.
+#     The validator therefore allows ``max_depth + 1`` on the MVP path only,
+#     while those three other consumers state and enforce the un-allowanced
+#     max_depth; a production story that lands on the band-level fallback is
+#     told one less depth than an MVP shell gets for the identical
+#     opening-stop cost.
 # Without this allowance PL-25 and L1-7 contradict each other for any MVP shell
 # authored to its band depth cap: satisfying the opening rule puts it one node
 # over budget. See AL-087.
@@ -368,15 +377,21 @@ def min_complete_floor(age_band: str, length: str, narrative_style: str) -> int 
 # of 4 and a range of 2 to 8.25. That corpus sits in the 8-11/10-13 reading
 # range, so those bands take the measured window directly; the outer bands are
 # product-defined scalings and are tunable, like the ADR-011 3-5/16+ budgets.
-#   - Below the floor is a WARNING, not an ERROR: a story that opens on a choice
-#     gives the reader no situation to choose about. No book in the JHM corpus
-#     branches before page 2, which is what puts the floor at 2 for every band
-#     that has measured backing. 3-5 keeps a floor of 1 because a pre-reader
-#     picture book can legitimately open on its first choice and no evidence
-#     covers that band.
-#   - Above the ceiling is an ERROR: a long unbranching prologue is the failure
-#     this rule exists to catch, and it is the one the LLM generator produces
-#     most readily.
+#   - Below the floor is an unconditional ERROR, graded in one tier: a story
+#     that opens on its first choice asks the reader to pick before any
+#     situation exists, a correctness failure rather than a matter of pacing
+#     degree. No book in the JHM corpus branches before page 2, which is what
+#     puts the floor at 2 for every band that has measured backing. 3-5 keeps
+#     a floor of 1 because a pre-reader picture book can legitimately open on
+#     its first choice and no evidence covers that band.
+#   - Above the ceiling is a WARNING: a buried first choice is a craft defect,
+#     not an unpublishable one. Past ``ARC_CEILING_MULTIPLE`` times the
+#     ceiling (the JHM corpus's own longest-to-shortest playthrough ratio) it
+#     escalates to an ERROR: a story that far past the window sits outside the
+#     observed genre rather than merely slow, which is the long unbranching
+#     prologue this rule exists to catch and the shape an LLM generator
+#     produces most readily. See ``policy._check_first_decision_depth`` for
+#     the full tiering.
 # #ASSUME: data-integrity: this table is the single source for the PL-25 window.
 # #VERIFY: test_band_profile.py::test_first_decision_window_covers_every_band.
 #   - No ceiling sits below the corpus median of 4, and the two bands the corpus
@@ -435,6 +450,17 @@ def first_decision_window(age_band: str) -> tuple[int, int] | None:
 # 340-node long-form world and a 23-node picture book are judged on one axis.
 # This is the density companion to PL-20, which bounds the same path's length but
 # says nothing about how often the reader actually steers along it.
+# #ASSUME: data-integrity: this table is the single source for the PL-26
+# nodes-per-decision ceiling, keyed on narrative_style, anchored on Adams,
+# Beckelhymer and Marr, Journal of Humanistic Mathematics 9(2), 2019, Table 4
+# (mean 3.28 pages between decisions). An unrecognized narrative_style is not
+# an error: nodes_per_decision_ceiling below silently falls back to the prose
+# value, so a typo'd or new style is graded against the wrong genre convention
+# rather than failing loudly.
+# #VERIFY: test_band_profile.py::
+# test_prose_density_ceiling_sits_above_the_measured_anchor,
+# ::test_gamebook_density_ceiling_is_tighter_than_prose, and
+# ::test_unknown_style_density_falls_back_to_prose (the silent-default case).
 _NODES_PER_DECISION_CEILING: dict[str, float] = {
     "prose": 6.0,
     "gamebook": 4.0,
@@ -461,6 +487,14 @@ def nodes_per_decision_ceiling(narrative_style: str) -> float:
 # multiple used here, applied against the cell floor rather than as an absolute
 # node count so it stays meaningful from a 10-node picture book to a 750-node
 # gamebook. Tunable.
+# #ASSUME: data-integrity: this is the single source for the ceiling multiple
+# PL-20's arc ceiling, PL-25's ceiling escalation, and PL-25's hard limit all
+# read; a change here moves all three at once. Anchored on Adams, Beckelhymer
+# and Marr, Journal of Humanistic Mathematics 9(2), 2019, Table 4: the
+# longest-vs-shortest playthrough ratio in the 40-book corpus is exactly
+# 27.5 / 11 = 2.5.
+# #VERIFY: test_band_profile.py::
+# test_arc_ceiling_multiple_matches_the_measured_playthrough_ratio.
 ARC_CEILING_MULTIPLE = 2.5
 
 
