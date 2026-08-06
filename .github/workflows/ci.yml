@@ -38,12 +38,15 @@ jobs:
   # correctness, only that a version string edit didn't break anything.
   # #ASSUME external-resource: the one real gap this leaves is `uv lock`
   # resolving a newly-published transitive dependency version the original
-  # feature PR's tests never exercised. Accepted tradeoff: this is caught by
-  # the scheduled scans (security-analysis.yml daily, then
-  # python-compatibility.yml, sbom.yml and container-security.yml weekly) and
-  # the next feature PR's own full run, not left permanently unverified.
-  # security-analysis.yml moved from weekly to daily under issue #594
-  # precisely because its period is main's worst-case exposure window here.
+  # feature PR's tests never exercised. That gap has two halves, and the
+  # scheduled scans cover only one of them. A newly-disclosed CVE in the
+  # re-resolved tree is caught within a day by security-analysis.yml, which
+  # moved from weekly to daily under issue #594. A plain BEHAVIOURAL
+  # regression is not: security-analysis.yml runs Bandit and OSV-Scanner and
+  # never invokes pytest, so the first thing that actually exercises the new
+  # tree is python-compatibility.yml (weekly) or the next feature PR's own
+  # full run, whichever comes first. Accepted tradeoff, but the exposure
+  # window for a behavioural break is up to a week, not up to a day.
   # #VERIFY: on a merge_group event, github.event.merge_group.head_ref is the
   # synthetic queue ref (refs/heads/gh-readonly-queue/main/pr-<N>-<sha>), NOT
   # the PR's own source branch -- confirmed against this repo's real queue
@@ -958,8 +961,12 @@ jobs:
       # `success` job means "we checked and it was fine", and collapsing the
       # two makes an unverified `main` indistinguishable from a tested one.
       # #VERIFY: tests/unit/test_ci_gate_contract.py parses this workflow and
-      # asserts every job in `needs:` is checked below, and that each job's
-      # skip allowance matches its own job-level `if:`.
+      # asserts every job in `needs:` other than `detect-release-pr` is passed
+      # to check_job below (that job's result is guarded separately by the
+      # early exit, see test_the_policy_job_gates_the_whole_evaluation), that
+      # each job's skip allowance matches its own job-level `if:`, and that
+      # this job keeps `if: always()` so an upstream failure cannot turn the
+      # required check itself into a silent skip.
       - name: Check CI results
         env:
           EVENT_NAME: ${{ github.event_name }}
@@ -1026,8 +1033,29 @@ jobs:
             exit 1
           fi
 
+          # #CRITICAL: data-integrity: schema-docs carries no job-level `if:`
+          # and no `needs:`, so unlike every other job in this gate it really
+          # runs on a release-automation commit. Its result must be evaluated
+          # BEFORE the release-skip branch below returns 0, or a genuine
+          # `ER Diagram Drift` failure is discarded and reported as an
+          # intentional skip.
+          # #VERIFY: test_ci_gate_contract.py asserts a release commit with
+          # SCHEMA_DOCS_RESULT=failure fails the gate, and asserts schema-docs
+          # still has no job-level `if:` so this branch stays necessary.
+          if [ "$RELEASE_PR" = "true" ] && [ "$SCHEMA_DOCS_RESULT" != "success" ]; then
+            {
+              echo "## CI Gate failed"
+              echo ""
+              echo "\`ER Diagram Drift\` reported \`${SCHEMA_DOCS_RESULT}\` on a"
+              echo "release-automation commit. That job runs unconditionally, so its"
+              echo "result is real here even though the rest of the suite did not run."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::ER Diagram Drift reported ${SCHEMA_DOCS_RESULT} on a release-automation commit. That job runs unconditionally, so this is a real failure, not an expected skip."
+            exit 1
+          fi
+
           # A release-automation commit (release/v* PR, or a chore(release):
-          # push) intentionally skips the entire suite: the content was
+          # push) intentionally skips the rest of the suite: the content was
           # already tested on the feature PR that produced it. That is a
           # defensible policy and the gate honours it, but it says so out
           # loud rather than reporting a bare pass.
@@ -1035,9 +1063,10 @@ jobs:
             {
               echo "## CI Gate passed WITHOUT running the suite"
               echo ""
-              echo "Release-automation commit: every quality job was intentionally skipped,"
-              echo "so **this commit carries no verification from this workflow**. The tested"
-              echo "content is the feature PR that produced it."
+              echo "Release-automation commit: every quality job except \`ER Diagram Drift\`"
+              echo "was intentionally skipped, so **beyond that one check this commit carries**"
+              echo "**no verification from this workflow**. The tested content is the feature"
+              echo "PR that produced it."
               echo ""
               echo "See the scheduled scans (\`security-analysis.yml\`, \`python-compatibility.yml\`,"
               echo "\`sbom.yml\`, \`container-security.yml\`) for coverage that does not depend on"
@@ -1073,15 +1102,28 @@ jobs:
           check_job "Design System (Node 22)" "$DESIGN_SYSTEM_RESULT" "$merge_queue_skip_ok"
           check_job "OpenAPI Contract Drift" "$CONTRACT_RESULT" "$merge_queue_skip_ok"
 
+          # The disclosure below must not assert greenness in a run that is
+          # about to fail: the ::warning:: is often the only line a reviewer
+          # reads in the checks UI, and "CI Gate is green" printed above a
+          # real failure sends them looking in the wrong place.
           if [ "${#skipped_jobs[@]}" -gt 0 ]; then
             {
               echo ""
               echo "⚠️ ${#skipped_jobs[@]} required job(s) were not run on this commit:"
               echo "\`${skipped_jobs[*]}\`."
-              echo "This gate is green because those skips are expected here, not because"
-              echo "those checks passed."
             } >> "$GITHUB_STEP_SUMMARY"
-            echo "::warning::CI Gate is green with ${#skipped_jobs[@]} required job(s) not run: ${skipped_jobs[*]}"
+            if [ "$failed" -eq 0 ]; then
+              {
+                echo "This gate is green because those skips are expected here, not because"
+                echo "those checks passed."
+              } >> "$GITHUB_STEP_SUMMARY"
+              echo "::warning::CI Gate is green with ${#skipped_jobs[@]} required job(s) not run: ${skipped_jobs[*]}"
+            else
+              {
+                echo "Those skips are expected on this event. The gate is failing for a"
+                echo "different reason: see the ❌ entries in the job list above."
+              } >> "$GITHUB_STEP_SUMMARY"
+            fi
           fi
 
           if [ "$failed" -eq 1 ]; then
@@ -1096,3 +1138,6 @@ jobs:
             echo ""
             echo "✅ **CI Gate passed.**"
           } >> "$GITHUB_STEP_SUMMARY"
+
+          # Explicit, so success never depends on which statement is last.
+          exit 0
