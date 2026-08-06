@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from cyo_adventure.storybook.character_vocabulary import (
     ARCHETYPE_CODES,
     ARCHETYPE_ROSTER,
@@ -79,3 +81,19 @@ def test_stat_envelope_is_twenty_seven_states() -> None:
         canonical = CANONICAL_CHARACTER_VARIABLES[stat]
         span *= canonical.max - canonical.min + 1
     assert span == 27
+
+
+def test_archetype_codes_is_genuinely_read_only_at_runtime() -> None:
+    """``Final`` only stops rebinding the module name, not mutating contents.
+
+    ``ARCHETYPE_CODES`` is backed by ``MappingProxyType`` so that assigning
+    into it raises at runtime, not merely at type-check time.
+    """
+    with pytest.raises(TypeError):
+        ARCHETYPE_CODES["rogue"] = 7  # pyright: ignore[reportIndexIssue]
+
+
+def test_canonical_character_variables_is_genuinely_read_only_at_runtime() -> None:
+    """Same runtime-immutability guarantee for the other module-level mapping."""
+    with pytest.raises(TypeError):
+        del CANONICAL_CHARACTER_VARIABLES["might"]  # pyright: ignore[reportArgumentType]

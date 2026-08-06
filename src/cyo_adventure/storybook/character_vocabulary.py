@@ -14,9 +14,13 @@ infer it from.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Final
+from types import MappingProxyType
+from typing import TYPE_CHECKING, Final
 
 from cyo_adventure.storybook.models import VariableType
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 # The six archetypes, in roster order. Codes are assigned by position starting
 # at 1; see ARCHETYPE_CODES.
@@ -42,9 +46,9 @@ ARCHETYPE_ROSTER: Final[tuple[str, ...]] = (
 # in-story build node then sets 1-6. See ADR-028 decision 3.
 ARCHETYPE_UNCHOSEN: Final[int] = 0
 
-ARCHETYPE_CODES: Final[dict[str, int]] = {
-    name: index for index, name in enumerate(ARCHETYPE_ROSTER, start=1)
-}
+ARCHETYPE_CODES: Final[Mapping[str, int]] = MappingProxyType(
+    {name: index for index, name in enumerate(ARCHETYPE_ROSTER, start=1)}
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -74,9 +78,15 @@ def _canonical(name: str, low: int, high: int) -> CanonicalVariable:
 # stats at 0-3 is 64 states, which is exactly the _MAX_ENTRY_STATES ceiling, and
 # at 0-2 it is 27. A four-band degrees-of-success ladder still fits: >= 2 crit,
 # == 1 pass, == 0 with a local resource = scrape, == 0 without = fail.
-CANONICAL_CHARACTER_VARIABLES: Final[dict[str, CanonicalVariable]] = {
-    "archetype": _canonical("archetype", ARCHETYPE_UNCHOSEN, len(ARCHETYPE_ROSTER)),
-    "might": _canonical("might", 0, 2),
-    "wits": _canonical("wits", 0, 2),
-    "nerve": _canonical("nerve", 0, 2),
-}
+CANONICAL_CHARACTER_VARIABLES: Final[Mapping[str, CanonicalVariable]] = (
+    MappingProxyType(
+        {
+            "archetype": _canonical(
+                "archetype", ARCHETYPE_UNCHOSEN, len(ARCHETYPE_ROSTER)
+            ),
+            "might": _canonical("might", 0, 2),
+            "wits": _canonical("wits", 0, 2),
+            "nerve": _canonical("nerve", 0, 2),
+        }
+    )
+)
