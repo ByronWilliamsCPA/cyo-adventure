@@ -96,4 +96,4 @@ def test_archetype_codes_is_genuinely_read_only_at_runtime() -> None:
 def test_canonical_character_variables_is_genuinely_read_only_at_runtime() -> None:
     """Same runtime-immutability guarantee for the other module-level mapping."""
     with pytest.raises(TypeError):
-        del CANONICAL_CHARACTER_VARIABLES["might"]  # pyright: ignore[reportArgumentType]
+        del CANONICAL_CHARACTER_VARIABLES["might"]  # pyright: ignore[reportIndexIssue]
