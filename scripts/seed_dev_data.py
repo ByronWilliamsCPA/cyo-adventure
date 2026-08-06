@@ -27,6 +27,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from cyo_adventure.core.database import Base, get_engine, get_session
+from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.models import (
     ChildProfile,
     Family,
@@ -38,9 +39,11 @@ from cyo_adventure.db.models import (
     User,
 )
 from cyo_adventure.generation.allowlist import DEFAULT_ALLOWLIST
+from cyo_adventure.validator.gate import run_gate
+from cyo_adventure.validator.report import Severity
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Mapping
 
     from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
@@ -71,6 +74,10 @@ _SERIES_BOOKS = (
     ("s_dev_ember_2", "Ember Trail 2", 2),
 )
 
+# Every _series_blob ending shares this title; a single constant avoids the
+# repeated literal (SonarCloud S1192) across the 3-4 endings per book.
+_ENDING_TITLE = "The End"
+
 
 def _flagged_moderation_report(node_id: str) -> dict[str, object]:
     """A minimal soft-flag report so the review surface shows a flagged passage."""
@@ -100,21 +107,88 @@ def _flagged_moderation_report(node_id: str) -> dict[str, object]:
     }
 
 
+def _assert_gate_clean(blob: Mapping[str, object]) -> None:
+    """Raise if a story about to be seeded as published fails the validator gate.
+
+    # #CRITICAL: data-integrity: a Storybook row inserted here with
+    # ``status="published"`` is immediately readable by a child; unlike the
+    # real generation pipeline (``generation/worker.py``), nothing else in
+    # this script runs the deterministic ``validator.gate.run_gate`` two-layer
+    # gate before that insert. This is the sole check standing between a
+    # regression in this seed data (or in the validator rules themselves) and
+    # a child reading a story the gate would have rejected.
+    # #VERIFY: this task's manual verification run over every blob this
+    # script seeds (see the commit message / PR discussion) proves zero
+    # ERROR-severity findings; there is no repo test pinning this today.
+
+    Args:
+        blob: The raw story JSON mapping about to be inserted as a published
+            ``StorybookVersion``.
+
+    Raises:
+        ValidationError: If ``run_gate`` reports any ERROR-severity finding,
+            naming the story id and every failing rule id so the failure is
+            actionable from the raised message alone.
+    """
+    story_id_raw = blob.get("id")
+    story_id = story_id_raw if isinstance(story_id_raw, str) else "<unknown>"
+    result = run_gate(dict(blob))
+    errors = [f for f in result.report.findings if f.severity is Severity.ERROR]
+    if not errors:
+        return
+    rule_summary = "; ".join(f"{f.rule_id}: {f.message}" for f in errors)
+    message = (
+        f"seed_dev_data: refusing to seed story '{story_id}' as published: "
+        f"the validator gate reported {len(errors)} ERROR finding(s) "
+        f"[{rule_summary}]"
+    )
+    raise ValidationError(message, field="status", value="published")
+
+
 def _series_blob(
     story_id: str, title: str, book_index: int, series_id: str
 ) -> dict[str, object]:
-    """Build a three-node story blob for a series book.
+    """Build an eleven-or-thirteen-node story blob for a series book.
 
-    Mirrors the two-node ``_blob`` helper in
-    ``tests/integration/test_series_next.py`` but adds a middle node so the
-    start node offers a real choice (one branch sets ``courage`` via an
-    effect, the other is plain) before the reader reaches the ending; both
-    branches converge on the middle node so the book resolves in at most two
-    clicks. The metadata carries every field ``StoryMetadata`` requires
-    (reading_level, tier, estimated_minutes, ending_count, topology): the
-    reading-state PUT path re-runs ``Storybook.model_validate`` on the pinned
-    blob (api/reading.py -> player/replay.py), so a blob missing any of them
-    would 422 every progress save.
+    Shaped to pass the full validator gate (``validator.gate.run_gate``) for
+    the "10-13" band, not just to parse: PL-25 requires the first decision to
+    land at least 2 nodes in (an establishing ``start`` node with a single,
+    unconditional choice precedes the first real fork), PL-17 requires at
+    least 3 endings and 3 decision nodes, and PL-18's declared
+    ``branch_and_bottleneck`` topology requires genuine reconvergence (two
+    distinct fork nodes both targeting one ``hub``, which a networkx
+    ``DiGraph`` only registers when the predecessors are actually distinct
+    nodes; two choices on the same node aimed at the same target collapse to
+    one edge and read as a linear spine).
+
+    # #ASSUME: data-integrity: growing this blob to satisfy PL-25 means the
+    # reader's first decision is no longer the very first node shown, which
+    # is an observable behavior change for any consumer that clicked a choice
+    # immediately after landing on a book. `frontend/e2e-real/
+    # series-continue-real.spec.ts` does exactly that (it clicks
+    # `choice-c_n_e1_brave` right after the reader becomes visible, and
+    # asserts `choice-c_n_e2_carried` visible with zero intervening clicks
+    # after following "Continue the series"); it will need updating to click
+    # through the new prelude node first. This script owns only the seed
+    # data, not the e2e spec, so the update is a separate, tracked follow-up.
+    # #VERIFY: run the real-backend e2e suite after this change lands and
+    # update series-continue-real.spec.ts's click sequence and node-id
+    # references to match this shape.
+    #
+    # #ASSUME: data-integrity: book 2's courage-gated bonus choice (on
+    # ``hub``, book_index >= 2 only) is now reachable two ways: a carried
+    # courage >= 2 from book 1, or taking this book's own "brave" fork, which
+    # also sets courage = 3. The single-book validator walk (Layer 2) has no
+    # notion of carried state from a prior book, so a choice reachable ONLY
+    # via carry is an unconditional L2-11 dead-branch finding in isolation;
+    # giving book 2 its own in-story path to the same threshold is what makes
+    # the gate pass while keeping the condition genuinely state-gated rather
+    # than always-visible.
+    # #VERIFY: test_seed_dev_data_seeds_series_chain covers structural
+    # invariants (series id, book_index, entry node); the L2-11 reachability
+    # claim itself is proven directly in this task's verification run of
+    # ``run_gate`` over the built blob (see PR discussion / commit message),
+    # not by a repo test, since scripts/ has no such gate-on-seed test today.
 
     Args:
         story_id: Fixed storybook id embedded in the blob (``blob["id"]``).
@@ -124,45 +198,210 @@ def _series_blob(
             ``metadata.series.series_id`` so the book links to a real row.
 
     Returns:
-        A ``Storybook.model_validate``-clean blob whose ``metadata.series``
-        block declares the start node as the series entry node and marks the
-        book as state-carrying.
+        A ``Storybook.model_validate``-clean, gate-clean blob whose
+        ``metadata.series`` block declares the start node as the series entry
+        node and marks the book as state-carrying.
     """
     prefix = f"n_e{book_index}"
     start = f"{prefix}_start"
-    middle = f"{prefix}_middle"
-    end = f"{prefix}_end"
-    # Every book's start node offers a courage-setting brave choice and a plain
-    # one. A book that can carry state from a prior book (book_index >= 2) also
-    # offers a THIRD choice gated on carried ``courage`` (>= 2): it is hidden on
-    # a fresh play (courage starts at 0) and only unlocks when book 1's brave
-    # path (which sets courage = 3) carried its state into this book. This is
-    # what ``series-continue-real.spec.ts`` asserts: carried var_state, the
-    # defining behavior of ``carries_state: true``, actually gates a choice. All
-    # three choices converge on the middle node, so the book stays completable
-    # in at most two clicks whether or not the gated choice is visible.
-    start_choices: list[dict[str, object]] = [
+    decision1 = f"{prefix}_decision1"
+    fork_brave = f"{prefix}_fork_brave"
+    fork_plain = f"{prefix}_fork_plain"
+    hub = f"{prefix}_hub"
+    path_explore = f"{prefix}_explore"
+    path_rush = f"{prefix}_rush"
+    decision3 = f"{prefix}_decision3"
+    end_explore = f"{prefix}_end_explore"
+    end_careful = f"{prefix}_end_careful"
+    end_hasty = f"{prefix}_end_hasty"
+    bonus = f"{prefix}_bonus"
+    end_bonus = f"{prefix}_end_bonus"
+
+    # hub is the PL-18 bottleneck: fork_brave and fork_plain are two distinct
+    # predecessor nodes that both target it, so it has in-degree 2 (genuine
+    # reconvergence), unlike two same-source choices aimed at one target.
+    hub_choices: list[dict[str, object]] = [
         {
-            "id": f"c_{prefix}_brave",
-            "label": "Face it with courage",
-            "target": middle,
-            "effects": [{"op": "set", "var": "courage", "value": 3}],
+            "id": f"c_{prefix}_explore",
+            "label": "Explore the ridge",
+            "target": path_explore,
         },
         {
-            "id": f"c_{prefix}_plain",
-            "label": "Walk on carefully",
-            "target": middle,
+            "id": f"c_{prefix}_rush",
+            "label": "Rush along the trail",
+            "target": path_rush,
         },
     ]
     if book_index >= 2:
-        start_choices.append(
+        hub_choices.append(
             {
+                # Named "_carried", not "_courage": this id is the load-bearing
+                # test id of the carries_state proof in
+                # frontend/e2e-real/series-continue-real.spec.ts, whose negative
+                # half asserts toHaveCount(0). Renaming it makes that assertion
+                # pass vacuously (a missing id has count 0 too), so the id is
+                # part of the contract and not free to change.
                 "id": f"c_{prefix}_carried",
                 "label": "Draw on your carried courage",
-                "target": middle,
+                "target": bonus,
                 "condition": {">=": [{"var": "courage"}, 2]},
             }
         )
+
+    nodes: list[dict[str, object]] = [
+        {
+            "id": start,
+            "body": f"{title}: the trail begins.",
+            "is_ending": False,
+            "choices": [
+                {"id": f"c_{prefix}_start_on", "label": "Set out", "target": decision1}
+            ],
+        },
+        {
+            "id": decision1,
+            "body": f"{title}: a fork in the path demands a choice.",
+            "is_ending": False,
+            "choices": [
+                {
+                    "id": f"c_{prefix}_brave",
+                    "label": "Face it with courage",
+                    "target": fork_brave,
+                    "effects": [{"op": "set", "var": "courage", "value": 3}],
+                },
+                {
+                    "id": f"c_{prefix}_plain",
+                    "label": "Walk on carefully",
+                    "target": fork_plain,
+                },
+            ],
+        },
+        {
+            "id": fork_brave,
+            "body": f"{title}: courage steadies your steps.",
+            "is_ending": False,
+            "choices": [
+                {"id": f"c_{prefix}_fork_brave_on", "label": "Onward", "target": hub}
+            ],
+        },
+        {
+            "id": fork_plain,
+            "body": f"{title}: careful steps carry you onward.",
+            "is_ending": False,
+            "choices": [
+                {"id": f"c_{prefix}_fork_plain_on", "label": "Onward", "target": hub}
+            ],
+        },
+        {
+            "id": hub,
+            "body": f"{title}: the trail opens onto a ridge.",
+            "is_ending": False,
+            "choices": hub_choices,
+        },
+        {
+            "id": path_explore,
+            "body": f"{title}: the ridge reveals a hidden view.",
+            "is_ending": False,
+            "choices": [
+                {
+                    "id": f"c_{prefix}_explore_on",
+                    "label": "Onward",
+                    "target": end_explore,
+                }
+            ],
+        },
+        {
+            "id": path_rush,
+            "body": f"{title}: the trail narrows ahead.",
+            "is_ending": False,
+            "choices": [
+                {"id": f"c_{prefix}_rush_on", "label": "Onward", "target": decision3}
+            ],
+        },
+        {
+            "id": decision3,
+            "body": f"{title}: the last stretch offers one more choice.",
+            "is_ending": False,
+            "choices": [
+                {
+                    "id": f"c_{prefix}_careful",
+                    "label": "Take the careful way",
+                    "target": end_careful,
+                },
+                {
+                    "id": f"c_{prefix}_hasty",
+                    "label": "Take the hasty way",
+                    "target": end_hasty,
+                },
+            ],
+        },
+        {
+            "id": end_explore,
+            "body": f"{title}: the view makes the whole journey worth it.",
+            "is_ending": True,
+            "ending": {
+                "id": f"e_{prefix}_explore",
+                "valence": "positive",
+                "kind": "success",
+                "title": _ENDING_TITLE,
+            },
+            "choices": [],
+        },
+        {
+            "id": end_careful,
+            "body": f"{title}: journey's end, safely reached.",
+            "is_ending": True,
+            "ending": {
+                "id": f"e_{prefix}_careful",
+                "valence": "positive",
+                "kind": "completion",
+                "title": _ENDING_TITLE,
+            },
+            "choices": [],
+        },
+        {
+            "id": end_hasty,
+            "body": f"{title}: haste costs you a scraped knee, but you make it.",
+            "is_ending": True,
+            "ending": {
+                "id": f"e_{prefix}_hasty",
+                "valence": "negative",
+                "kind": "setback",
+                "title": _ENDING_TITLE,
+            },
+            "choices": [],
+        },
+    ]
+    if book_index >= 2:
+        nodes.append(
+            {
+                "id": bonus,
+                "body": f"{title}: your courage opens a hidden shortcut.",
+                "is_ending": False,
+                "choices": [
+                    {
+                        "id": f"c_{prefix}_bonus_on",
+                        "label": "Take it",
+                        "target": end_bonus,
+                    }
+                ],
+            }
+        )
+        nodes.append(
+            {
+                "id": end_bonus,
+                "body": f"{title}: the shortcut leads to a triumphant finish.",
+                "is_ending": True,
+                "ending": {
+                    "id": f"e_{prefix}_bonus",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": _ENDING_TITLE,
+                },
+                "choices": [],
+            }
+        )
+
+    ending_count = 4 if book_index >= 2 else 3
     return {
         "schema_version": "2.0",
         "id": story_id,
@@ -175,7 +414,7 @@ def _series_blob(
             # (_check_tier_variables), and this blob declares "courage".
             "tier": 2,
             "estimated_minutes": 2,
-            "ending_count": 1,
+            "ending_count": ending_count,
             "topology": "branch_and_bottleneck",
             "series": {
                 "series_id": series_id,
@@ -189,38 +428,7 @@ def _series_blob(
             {"name": "courage", "type": "int", "initial": 0, "min": 0, "max": 5}
         ],
         "start_node": start,
-        "nodes": [
-            {
-                "id": start,
-                "body": f"{title}: the trail begins.",
-                "is_ending": False,
-                "choices": start_choices,
-            },
-            {
-                "id": middle,
-                "body": f"{title}: onward through the woods.",
-                "is_ending": False,
-                "choices": [
-                    {
-                        "id": f"c_{prefix}_onward",
-                        "label": "Keep going",
-                        "target": end,
-                    }
-                ],
-            },
-            {
-                "id": end,
-                "body": f"{title}: journey's end.",
-                "is_ending": True,
-                "ending": {
-                    "id": f"e_{prefix}_done",
-                    "valence": "positive",
-                    "kind": "success",
-                    "title": "The End",
-                },
-                "choices": [],
-            },
-        ],
+        "nodes": nodes,
     }
 
 
@@ -277,6 +485,8 @@ async def _seed_series_chain(session: AsyncSession) -> bool:
     await session.flush()
 
     for story_id, title, book_index in _SERIES_BOOKS:
+        blob = _series_blob(story_id, title, book_index, str(series.id))
+        _assert_gate_clean(blob)
         session.add(
             Storybook(
                 id=story_id,
@@ -291,7 +501,7 @@ async def _seed_series_chain(session: AsyncSession) -> bool:
             StorybookVersion(
                 storybook_id=story_id,
                 version=1,
-                blob=_series_blob(story_id, title, book_index, str(series.id)),
+                blob=blob,
                 approved_by=guardian.id,
                 published_at=published_at,
             )
@@ -584,6 +794,7 @@ async def seed_dev_data(
             blob = json.loads((_VALID / filename).read_text(encoding="utf-8"))
             story_id = str(blob["id"])
             version = int(blob["version"])
+            _assert_gate_clean(blob)
             session.add(
                 Storybook(
                     id=story_id,

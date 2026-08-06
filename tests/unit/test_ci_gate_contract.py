@@ -370,6 +370,7 @@ ALL_SUCCESS: dict[str, str] = {
     "DESIGN_SYSTEM_RESULT": "success",
     "CONTRACT_RESULT": "success",
     "SCHEMA_DOCS_RESULT": "success",
+    "FORMAT_TREE_RESULT": "success",
 }
 
 
@@ -638,6 +639,33 @@ class TestGateDecisions:
 
         assert "if" not in schema_docs
         assert "needs" not in schema_docs
+
+    def test_the_tree_wide_format_check_runs_in_every_context(self) -> None:
+        """``format-tree`` is only a gate while it cannot be skipped.
+
+        It exists because no other job runs the formatter over the whole tree:
+        the delegated ``ci`` job scopes its check to the code directories and
+        the pre-commit hook sees staged files only. That coverage argument
+        collapses the moment the job gains a job-level ``if:`` or a ``needs:``,
+        which is exactly why it was not made a step inside ``contract`` (which
+        skips on merge_group and on release PRs). Pinned here so narrowing it
+        fails loudly instead of quietly shrinking what the gate covers.
+        """
+        format_tree = JOBS["format-tree"]
+
+        assert "if" not in format_tree
+        assert "needs" not in format_tree
+
+    def test_a_skipped_format_check_fails_the_gate(self, run_gate) -> None:
+        """A skip must not read as "formatted".
+
+        The companion to the premise above: the workflow allows no skip, and
+        the gate must reject one if it ever arrives anyway.
+        """
+        run = run_gate(FORMAT_TREE_RESULT="skipped")
+
+        assert not run.passed
+        assert "::error::Format (tree-wide) was skipped unexpectedly" in run.stdout
 
     def test_a_failure_alongside_expected_skips_is_not_called_green(
         self, run_gate

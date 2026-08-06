@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "<<FILL role=setup words=75 beats='{HERO} realises the school trip left without her and {THRESHOLD} has locked its doors for the night; a note in her pocket, {MAP}, hints at {FOUNDER}'s {GOAL} left behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Feel your way to the hub.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "<<FILL role=setup words=120 beats='{HERO} realises the school trip left without her and {THRESHOLD} has locked its doors for the night; a note in her pocket, {MAP}, hints at {FOUNDER}'s {GOAL} left behind; three ways lead off {HUB} in the dark'>>",
+      "body": "<<FILL role=choice words=50 beats='three ways lead off {HUB} in the dark'>>",
       "is_ending": false,
       "choices": [
         {

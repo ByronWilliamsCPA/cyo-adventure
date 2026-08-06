@@ -6,9 +6,11 @@ skinparam backgroundColor #FAFAFA
 skinparam roundCorner 8
 hide empty description
 
-[*] --> n_start
-state n_start #BBDEFB
-n_start : setup · 250w
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 150w
+state n_start #FFF9C4
+n_start : choice · 110w
 state n_signal_recon #D1C4E9
 n_signal_recon : rising · 240w
 state n_locker #D1C4E9
@@ -85,6 +87,7 @@ n_end_data : "One Thing Too Many"
 state n_end_listen #FFCDD2
 n_end_listen : death (negative)
 n_end_listen : "Lost in the Signal"
+n_open --> n_start : Check the gauge and go over.
 n_start --> n_corridor : Plunge straight down the access shaft.
 n_start --> n_locker : Descend past the external equipment lock...
 n_start --> n_signal_recon : Hover and study the signal's pattern fir...
@@ -149,7 +152,7 @@ legend right
   The Sunken Signal
   Band 16+ · Tier 2 · ~30 min
   Topology: branch_and_bottleneck
-  32 nodes · 14 endings (1+ / 1n / 12-)
+  33 nodes · 14 endings (1+ / 1n / 12-)
   MVP/Test tier (not production-eligible)
 endlegend
 @enduml

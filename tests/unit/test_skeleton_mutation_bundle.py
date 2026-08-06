@@ -255,7 +255,7 @@ def test_derive_mutant_contract_imports_graft_slots() -> None:
                 OpParams.of(
                     mode="graft",
                     donor="the-robot-fair-sabotage",
-                    subtree_root="n_lockup",
+                    subtree_root="n_plan",
                     host_decision="la_crystal_take",
                 ),
                 0,

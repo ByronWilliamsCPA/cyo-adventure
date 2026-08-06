@@ -6,9 +6,11 @@ skinparam backgroundColor #FAFAFA
 skinparam roundCorner 8
 hide empty description
 
-[*] --> n_start
-state n_start #BBDEFB
-n_start : setup · 135w
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 85w
+state n_start #FFF9C4
+n_start : choice · 55w
 state mg_enter #D1C4E9
 mg_enter : rising · 110w
 state mg_bridge #D1C4E9
@@ -527,6 +529,7 @@ tf_marker : discovery · 100w
 state e_tf_marker #E0E0E0
 e_tf_marker : discovery (neutral)
 e_tf_marker : "{E3_TITLE3}"
+n_open --> n_start : Shoulder the kit and start inland.
 n_start --> mg_enter : Wade into {ROUTE_A_CHAR}.
 n_start --> cf_enter : Climb toward {ROUTE_B_CHAR}.
 n_start --> cv_enter : Descend into {ROUTE_C_CHAR}.
@@ -904,7 +907,7 @@ legend right
   The Mapmaker's Island
   Band 10-13 · Tier 1 · ~22 min
   Topology: branch_and_bottleneck
-  224 nodes · 72 endings (11+ / 32n / 29-)
+  225 nodes · 72 endings (11+ / 32n / 29-)
   Production-eligible
   Scale: long · prose
 endlegend

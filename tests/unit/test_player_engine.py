@@ -13,16 +13,35 @@ from pathlib import Path
 import pytest
 
 from cyo_adventure.core.exceptions import BusinessLogicError
-from cyo_adventure.player import StoryEngine
+from cyo_adventure.player import ReadingState, StoryEngine
 from cyo_adventure.storybook.models import Storybook
 
 _FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "storybook" / "valid"
 _LANTERN = _FIXTURES / "03_tier2_lantern.json"
 
+# The single choice off ``n_open``, the establishing stop PL-25's floor requires
+# the lantern fixture to open on.
+_OPEN = "c_n_open"
+
 
 def _lantern() -> Storybook:
     """Load the Tier-2 lantern story."""
     return Storybook.model_validate(json.loads(_LANTERN.read_text(encoding="utf-8")))
+
+
+def _entrance(engine: StoryEngine) -> ReadingState:
+    """Return the lantern story's state at ``n_entrance``, past the opening stop.
+
+    Every lantern test below wants to begin at the first node that offers a
+    real choice, which stopped being the start node when PL-25's floor gave the
+    fixture an establishing opening. Clicking through it is setup here rather
+    than a literal step in each walk: these tests assert engine mechanics, not
+    the fixture's shape, so the one node that offers no decision is not part of
+    what any of them is about. ``test_start_initializes_state`` is the
+    exception and deliberately calls :meth:`StoryEngine.start` itself, since
+    where a read begins is exactly its subject.
+    """
+    return engine.choose(engine.start(), _OPEN)
 
 
 def _meta(tier: int = 2, ending_count: int = 1) -> dict[str, object]:
@@ -85,10 +104,10 @@ def test_start_initializes_state() -> None:
     """A fresh read starts at start_node with initial variables and visit set."""
     engine = StoryEngine(_lantern())
     state = engine.start()
-    assert state.current_node == "n_entrance"
+    assert state.current_node == "n_open"
     assert state.var_state == {"has_lantern": False}
-    assert state.path == ["n_entrance"]
-    assert state.visit_set == {"n_entrance"}
+    assert state.path == ["n_open"]
+    assert state.visit_set == {"n_open"}
     assert state.version == 1
 
 
@@ -96,8 +115,7 @@ def test_start_initializes_state() -> None:
 def test_take_lantern_unlocks_dark_passage_to_treasure() -> None:
     """Taking the lantern makes the dark passage visible and leads to treasure."""
     engine = StoryEngine(_lantern())
-    state = engine.start()
-    state = engine.choose(state, "c_take_lantern")
+    state = engine.choose(_entrance(engine), "c_take_lantern")
     assert state.var_state["has_lantern"] is True
     visible = {c.id for c in engine.visible_choices(state)}
     assert visible == {"c_dark_passage", "c_bright_tunnel"}
@@ -110,8 +128,7 @@ def test_take_lantern_unlocks_dark_passage_to_treasure() -> None:
 def test_ignore_lantern_hides_dark_passage() -> None:
     """Without the lantern, the conditional dark-passage choice is hidden."""
     engine = StoryEngine(_lantern())
-    state = engine.start()
-    state = engine.choose(state, "c_ignore_lantern")
+    state = engine.choose(_entrance(engine), "c_ignore_lantern")
     assert state.var_state["has_lantern"] is False
     visible = {c.id for c in engine.visible_choices(state)}
     assert visible == {"c_bright_tunnel"}
@@ -123,7 +140,7 @@ def test_ignore_lantern_hides_dark_passage() -> None:
 def test_choose_hidden_choice_raises() -> None:
     """Selecting a hidden (false-condition) choice is rejected."""
     engine = StoryEngine(_lantern())
-    state = engine.choose(engine.start(), "c_ignore_lantern")
+    state = engine.choose(_entrance(engine), "c_ignore_lantern")
     with pytest.raises(BusinessLogicError, match="not visible"):
         engine.choose(state, "c_dark_passage")
 
@@ -141,7 +158,7 @@ def test_choose_unknown_choice_raises() -> None:
 def test_choose_from_ending_raises() -> None:
     """No choice may be made from an ending node."""
     engine = StoryEngine(_lantern())
-    state = engine.choose(engine.start(), "c_ignore_lantern")
+    state = engine.choose(_entrance(engine), "c_ignore_lantern")
     state = engine.choose(state, "c_bright_tunnel")
     with pytest.raises(BusinessLogicError, match="ending node"):
         engine.choose(state, "c_anything")
@@ -151,7 +168,7 @@ def test_choose_from_ending_raises() -> None:
 def test_choose_does_not_mutate_input_state() -> None:
     """choose returns a new state and leaves the prior state intact (purity)."""
     engine = StoryEngine(_lantern())
-    start = engine.start()
+    start = _entrance(engine)
     _ = engine.choose(start, "c_take_lantern")
     assert start.current_node == "n_entrance"
     assert start.var_state == {"has_lantern": False}
@@ -163,8 +180,7 @@ def test_deterministic_replay_reproduces_state() -> None:
     engine = StoryEngine(_lantern())
 
     def play() -> dict[str, object]:
-        state = engine.start()
-        state = engine.choose(state, "c_take_lantern")
+        state = engine.choose(_entrance(engine), "c_take_lantern")
         state = engine.choose(state, "c_dark_passage")
         return state.to_dict()
 
@@ -421,9 +437,9 @@ def test_choose_to_missing_target_raises() -> None:
 def test_snapshot_serializes_visit_set_as_sorted_list() -> None:
     """A snapshot serializes its visit set as a sorted list."""
     engine = StoryEngine(_lantern())
-    snap = engine.choose(engine.start(), "c_take_lantern").snapshot()
+    snap = engine.choose(_entrance(engine), "c_take_lantern").snapshot()
     payload = snap.to_dict()
-    assert payload["visit_set"] == ["n_cave_fork", "n_entrance"]
+    assert payload["visit_set"] == ["n_cave_fork", "n_entrance", "n_open"]
     assert payload["current_node"] == "n_cave_fork"
 
 
@@ -431,7 +447,7 @@ def test_snapshot_serializes_visit_set_as_sorted_list() -> None:
 def test_save_slot_snapshot_is_independent() -> None:
     """A snapshot stored in a save slot is not affected by later progress."""
     engine = StoryEngine(_lantern())
-    state = engine.start()
+    state = _entrance(engine)
     state.save_slots["slot1"] = state.snapshot()
     advanced = engine.choose(state, "c_take_lantern")
     assert advanced.save_slots["slot1"].current_node == "n_entrance"

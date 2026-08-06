@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "Tansy is a young hedgehog. Her spines are soft and brown. She lives in a cozy stump home. Tonight is the big Lantern Festival.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Count what is still needed.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "Tansy is a young hedgehog. Her spines are soft and brown. She lives in a cozy stump home. Tonight is the big Lantern Festival. Tansy stands in her clearing and counts on her paws. She needs glowberries for light. She needs reeds to make frames. She needs to find her friends and invite them. She needs honey cakes for the feast. She needs the old paper lanterns from the shed. She needs the cricket band to play music. Her heart feels warm and excited. What should she do now?",
+      "body": "Tansy stands in her clearing and counts on her paws. She needs glowberries for light. She needs reeds to make frames. She needs to find her friends and invite them. She needs honey cakes for the feast. She needs the old paper lanterns from the shed. She needs the cricket band to play music. Her heart feels warm and excited. What should she do now?",
       "is_ending": false,
       "choices": [
         {

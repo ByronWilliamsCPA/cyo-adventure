@@ -11,8 +11,8 @@ state n_start #BBDEFB
 n_start : setup · 85w
 state n_walk #D1C4E9
 n_walk : rising · 75w
-state n_meet #D1C4E9
-n_meet : rising · 80w
+state n_meet #FFF9C4
+n_meet : choice · 80w
 state st_scene #D1C4E9
 st_scene : rising · 70w
 state st_meet #D1C4E9
@@ -45,8 +45,8 @@ state fi_gran #FFF9C4
 fi_gran : choice · 65w
 state fi_win #D1C4E9
 fi_win : rising · 75w
-state fi_thanks #D1C4E9
-fi_thanks : rising · 60w
+state fi_thanks #FFF9C4
+fi_thanks : choice · 60w
 state t_fi_cr #D1C4E9
 t_fi_cr : rising · 60w
 state cr_scene #D1C4E9
@@ -81,8 +81,8 @@ state pw_gran #FFF9C4
 pw_gran : choice · 65w
 state pw_win #D1C4E9
 pw_win : rising · 75w
-state pw_thanks #D1C4E9
-pw_thanks : rising · 60w
+state pw_thanks #FFF9C4
+pw_thanks : choice · 60w
 state n_alldone #D1C4E9
 n_alldone : rising · 80w
 state n_tide #FFF9C4
@@ -136,6 +136,9 @@ e_patrol : "{PATROL_PRIZE}"
 n_start --> n_walk : Follow {COMPANION} down the sandy path.
 n_walk --> n_meet : Step out onto the flat low-tide rocks.
 n_meet --> st_scene : Hurry to the {Q1_SPECIES} on the high le...
+n_meet --> t_st_fi : Follow {Q2_SIGN} across the rocks.
+n_meet --> t_fi_cr : Follow {Q3_SIGN} to the seaweed patch.
+n_meet --> t_cr_pw : Climb toward {Q4_SIGN} on the dry rock.
 st_scene --> st_meet : Climb the low steps for a closer look.
 st_meet --> st_plan : Think up a rescue plan for {Q1_NAME}.
 st_plan --> st_flop_hands : Toss water up with your cupped hands.
@@ -148,7 +151,8 @@ st_flop_bucket --> st_gran : Ask {COMPANION} for a tip.
 st_gran --> st_win : Try {COMPANION}'s gentle sliding idea.
 st_gran --> st_plan : Look over the plans once more.
 st_win --> st_thanks : Watch {Q1_NAME} settle into her pool.
-st_thanks --> t_st_fi : Hurry toward the flappy splashing sound.
+st_thanks --> n_meet : Pick your way back out to the pools.
+st_thanks --> n_alldone : Watch {TIDE} come in over the pools.
 st_thanks --> e_tide_star : Sit with {COMPANION} and let the tide fi...
 t_st_fi --> fi_scene : Kneel beside the shrinking puddle.
 fi_scene --> fi_meet : Lean in and say hello to the little {Q2_...
@@ -163,7 +167,8 @@ fi_flop_dig --> fi_gran : Ask {COMPANION} for a tip.
 fi_gran --> fi_win : Scoop water and {Q2_NAME} up together, {...
 fi_gran --> fi_plan : Look over the plans once more.
 fi_win --> fi_thanks : Watch {Q2_NAME} zoom around his big new ...
-fi_thanks --> t_fi_cr : Follow the clack-clack sound to the seaw...
+fi_thanks --> n_meet : Head back out toward the calling.
+fi_thanks --> n_alldone : Watch {TIDE} come in over the pools.
 t_fi_cr --> cr_scene : Cross the rocks to the seaweed patch.
 cr_scene --> cr_meet : Crouch down beside the tangled {Q3_SPECI...
 cr_meet --> cr_plan : Think up a plan to untangle {Q3_NAME}.
@@ -177,7 +182,8 @@ cr_flop_spoon --> cr_gran : Ask {COMPANION} for a tip.
 cr_gran --> cr_win : Untangle one ribbon at a time, {COMPANIO...
 cr_gran --> cr_plan : Look over the plans once more.
 cr_win --> cr_thanks : Watch {Q3_NAME} scuttle into the cool po...
-cr_thanks --> t_cr_pw : Head for the tiny shell far up the rock.
+cr_thanks --> n_meet : Go and find who is calling.
+cr_thanks --> n_alldone : Watch {TIDE} come in over the pools.
 cr_thanks --> e_tide_snail : Watch from {COMPANION}'s {TOWEL} while {...
 t_cr_pw --> pw_scene : Tiptoe up the dry rock to the tiny shell...
 pw_scene --> pw_meet : Bend down and greet the little {Q4_SPECI...
@@ -192,7 +198,8 @@ pw_flop_cheer --> pw_gran : Ask {COMPANION} for a tip.
 pw_gran --> pw_win : Offer {Q4_NAME} a wet-palm ride, {COMPAN...
 pw_gran --> pw_plan : Look over the plans once more.
 pw_win --> pw_thanks : Lower {Q4_NAME} into her cool pool.
-pw_thanks --> n_alldone : Look up at the sparkling line of {TIDE}.
+pw_thanks --> n_meet : Look back across the rocks for anyone el...
+pw_thanks --> n_alldone : Watch {TIDE} come in over the pools.
 n_alldone --> n_tide : Watch the first wave-finger slide in.
 n_tide --> n_fill : Follow {TIDE} from pool to pool.
 n_tide --> n_wave : Climb up beside {COMPANION} on {ENTRANCE...
@@ -224,7 +231,7 @@ e_patrol --> [*]
 
 legend right
   The Tide Pool Rescue
-  Band 5-8 · Tier 1 · ~7 min
+  Band 5-8 · Tier 1 · ~10 min
   Topology: loop_and_grow
   57 nodes · 12 endings (10+ / 2n / 0-)
   Production-eligible

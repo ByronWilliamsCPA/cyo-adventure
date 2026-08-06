@@ -30,7 +30,7 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
       "id": "n_ap_moat",
@@ -80,8 +80,20 @@
       }
     },
     {
+      "id": "n_open",
+      "body": "<<FILL role=setup words=55 beats='codename {HERO} reaches the black water over the sunken royal {COURT} at {OPENING_MOMENT}, the {RIVAL} expedition lights already burning on the far reef'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Check the rig and go over the side.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "<<FILL role=setup words=92 beats='codename {HERO} reaches the black water over the sunken royal {COURT} at {OPENING_MOMENT}, the {RIVAL} expedition lights already burning on the far reef; three ways lead down to the {TIDEGATE}, {ROUTE_A_CHAR}, {ROUTE_B_CHAR}, and {ROUTE_C_CHAR}, plus one more, {ROUTE_D_CHAR}, that looks quick and wrong'>>",
+      "body": "<<FILL role=choice words=45 beats='three ways lead down to the {TIDEGATE}, {ROUTE_A_CHAR}, {ROUTE_B_CHAR}, and {ROUTE_C_CHAR}, plus one more, {ROUTE_D_CHAR}, that looks quick and wrong'>>",
       "is_ending": false,
       "choices": [
         {

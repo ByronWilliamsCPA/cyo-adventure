@@ -11,7 +11,10 @@
       "tolerance": 1.0
     },
     "tier": 1,
-    "themes": ["school", "feelings"],
+    "themes": [
+      "school",
+      "feelings"
+    ],
     "estimated_minutes": 3,
     "ending_count": 4,
     "content_flags": {
@@ -22,26 +25,58 @@
     "topology": "sorting_hat"
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
+    {
+      "id": "n_open",
+      "body": "You stop here for a while and look around at the new place you have come to.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_open",
+          "label": "Go on.",
+          "target": "n_start"
+        }
+      ]
+    },
     {
       "id": "n_start",
       "body": "Ever since the big test, everything has felt too heavy to carry. Do you talk to your teacher about it, or go straight home instead?",
       "is_ending": false,
-      "safety_scope": ["sad_moment"],
+      "safety_scope": [
+        "sad_moment"
+      ],
       "choices": [
-        {"id": "c_teacher", "label": "Talk to your teacher.", "target": "n_teacher"},
-        {"id": "c_home", "label": "Go straight home.", "target": "n_home"}
+        {
+          "id": "c_teacher",
+          "label": "Talk to your teacher.",
+          "target": "n_teacher"
+        },
+        {
+          "id": "c_home",
+          "label": "Go straight home.",
+          "target": "n_home"
+        }
       ]
     },
     {
       "id": "n_teacher",
       "body": "You wait by the desk until the room is empty. Your teacher puts down her pen and asks how you are really doing. Do you tell her about the heavy feeling, or ask to see the school counselor?",
       "is_ending": false,
-      "safety_scope": ["sad_moment"],
+      "safety_scope": [
+        "sad_moment"
+      ],
       "choices": [
-        {"id": "c_tell", "label": "Tell her about the heavy feeling.", "target": "n_end_teacher"},
-        {"id": "c_counselor", "label": "Ask to see the counselor.", "target": "n_end_counselor"}
+        {
+          "id": "c_tell",
+          "label": "Tell her about the heavy feeling.",
+          "target": "n_end_teacher"
+        },
+        {
+          "id": "c_counselor",
+          "label": "Ask to see the counselor.",
+          "target": "n_end_counselor"
+        }
       ]
     },
     {
@@ -72,10 +107,21 @@
       "id": "n_home",
       "body": "At home, alone, the heavy feeling does not go away. For the first time a thought arrives that frightens you: that you could hurt yourself. You do not know what to do with a thought like that. Do you call the helpline number taped inside your notebook, or keep it to yourself?",
       "is_ending": false,
-      "safety_scope": ["sad_moment", "peril"],
+      "safety_scope": [
+        "sad_moment",
+        "peril"
+      ],
       "choices": [
-        {"id": "c_helpline", "label": "Call the helpline number.", "target": "n_end_helpline"},
-        {"id": "c_keep", "label": "Keep it to yourself.", "target": "n_end_sister"}
+        {
+          "id": "c_helpline",
+          "label": "Call the helpline number.",
+          "target": "n_end_helpline"
+        },
+        {
+          "id": "c_keep",
+          "label": "Keep it to yourself.",
+          "target": "n_end_sister"
+        }
       ]
     },
     {

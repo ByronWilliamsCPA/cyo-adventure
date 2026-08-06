@@ -621,6 +621,66 @@ jobs:
       - name: ER diagram matches the ORM (and both Mermaid copies agree)
         run: uv run python scripts/check_er_diagram.py
 
+  # Nothing else runs the formatter over the WHOLE tree, so nothing else can
+  # see a formatting defect in a file no commit touched. Python CI is delegated
+  # to the org-level reusable workflow (the `ci` job), whose format check scopes
+  # to the code directories: empirically `ruff format --check src tests scripts`
+  # passes on a tree where `ruff format --check .` fails. The pre-commit
+  # `ruff-format` hook closes no part of that gap, because it only sees STAGED
+  # files. Ruff formats Python inside markdown fences, so a planning document is
+  # a formattable artifact, and one sat unformatted indefinitely with every gate
+  # green.
+  #
+  # The frontend has the SAME gap and this job does NOT close it: `format:check`
+  # (frontend/package.json) is scoped to `src/**`, so `e2e/`, `e2e-real/`, and
+  # the root config files are unchecked, and 130 files under frontend/ are
+  # unformatted as of this commit. Widening that glob is a 130-file mechanical
+  # reformat, deliberately not bundled into a validator change; it is scheduled
+  # as UW-C33 (AL-100). Do not read this job as covering the frontend: ruff does
+  # not format TypeScript.
+  #
+  # Its own job rather than a step inside `contract` or `schema-docs`: those two
+  # are required checks whose NAMES are the repo's claim about what was
+  # verified, and a format failure surfacing as "OpenAPI Contract Drift" makes
+  # the check say something other than what it checked. `contract` also skips on
+  # merge_group and on release-automation PRs, which would silently narrow this
+  # gate's coverage to a subset of runs.
+  #
+  # #ASSUME: external-resources: the pinned ruff release here and the one in
+  # .pre-commit-config.yaml (v0.16.0) define the same formatting, so a commit
+  # that satisfies the local hook satisfies this gate.
+  # #VERIFY: tests/unit/test_ci_gate_contract.py asserts this job is gated and
+  # allowed no skip; if the hook's ruff pin moves, move this pin in the same
+  # commit or the two can disagree about what "formatted" means.
+  format-tree:
+    name: Format (tree-wide)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+
+      # No `uv sync`: `uv tool run` fetches the pinned ruff into an isolated
+      # environment, so this needs neither the project's dependencies nor a
+      # matching interpreter. `--no-build` (S8541) refuses source distributions,
+      # so resolution cannot land on an sdist whose build backend runs arbitrary
+      # code in CI; ruff publishes wheels for every platform this runs on.
+      - name: Every file ruff formats is formatted, docs included
+        run: uv tool run --no-build ruff@0.16.0 format --check .
+
   # Uploads the backend's per-test-type coverage + JUnit to Codecov, INLINE so
   # it runs on PRs (the old workflow_run codecov.yml only ran on main). The
   # reusable `ci` job publishes coverage-{unit,integration,security}.xml and
@@ -943,7 +1003,17 @@ jobs:
     name: CI Gate
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [detect-release-pr, ci, frontend, frontend-e2e, design-system, contract, schema-docs]
+    needs:
+      [
+        detect-release-pr,
+        ci,
+        frontend,
+        frontend-e2e,
+        design-system,
+        contract,
+        schema-docs,
+        format-tree,
+      ]
     if: always()
     permissions:
       contents: read
@@ -978,6 +1048,7 @@ jobs:
           DESIGN_SYSTEM_RESULT: ${{ needs.design-system.result }}
           CONTRACT_RESULT: ${{ needs.contract.result }}
           SCHEMA_DOCS_RESULT: ${{ needs.schema-docs.result }}
+          FORMAT_TREE_RESULT: ${{ needs.format-tree.result }}
         run: |
           set -euo pipefail
 
@@ -1097,6 +1168,9 @@ jobs:
 
           check_job "CI (Python 3.14)" "$CI_RESULT" false
           check_job "ER Diagram Drift" "$SCHEMA_DOCS_RESULT" false
+          # No skip allowance: this job has no job-level `if:`, so a skip here
+          # can only mean an unintended condition crept in.
+          check_job "Format (tree-wide)" "$FORMAT_TREE_RESULT" false
           check_job "Frontend (Node 22)" "$FRONTEND_RESULT" "$merge_queue_skip_ok"
           check_job "Frontend E2E (Playwright, mocked tier)" "$FRONTEND_E2E_RESULT" "$merge_queue_skip_ok"
           check_job "Design System (Node 22)" "$DESIGN_SYSTEM_RESULT" "$merge_queue_skip_ok"

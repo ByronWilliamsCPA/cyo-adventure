@@ -1,5 +1,9 @@
 """Unit tests for the age-policy gate layer (PL-15..PL-18)."""
 
+import random
+import time
+
+import networkx as nx
 import pytest
 
 from cyo_adventure.storybook.models import (
@@ -17,7 +21,14 @@ from cyo_adventure.storybook.models import (
     Topology,
     Valence,
 )
-from cyo_adventure.validator.policy import node_word_count, validate_policy
+from cyo_adventure.validator.band_profile import ARC_CEILING_MULTIPLE
+from cyo_adventure.validator.policy import (
+    _build_graph,
+    _decision_node_ids,
+    _fewest_decision_shortest_path,
+    node_word_count,
+    validate_policy,
+)
 from cyo_adventure.validator.report import Severity
 
 
@@ -760,3 +771,897 @@ def test_pl24_prose_uses_a_share_floor() -> None:
     report = validate_policy(_mix_story(kinds=kinds, style=NarrativeStyle.PROSE))
     share = [f for f in report.findings if "below the prose floor" in f.message]
     assert len(share) == 1, "1 positive in 20 (5%) is below the 10% prose floor"
+
+
+# --- PL-25 depth to first decision and PL-26 decision density -----------------
+
+
+def _branch_at_depth(
+    *,
+    lead_in: int,
+    age_band: AgeBand = AgeBand.BAND_8_11,
+    length: Length | None = None,
+) -> Storybook:
+    """Build a lead-in corridor whose last node offers the first decision.
+
+    ``n0 -> ... -> n{lead_in}``, where ``n{lead_in}`` branches to a success and a
+    discovery ending. The first decision therefore sits exactly ``lead_in + 1``
+    nodes in, which is what PL-25 measures. ``length`` defaults to ``None`` so
+    the story is not scale-classified and PL-20/PL-26 stay silent, isolating the
+    rule under test.
+
+    Args:
+        lead_in: Single-choice nodes before the decision node.
+        age_band: The band whose PL-25 window applies.
+        length: Declared length, or ``None`` to skip the scale-classified rules.
+
+    Returns:
+        The assembled Storybook.
+    """
+    body = _fill(100)
+    nodes: list[Node] = [
+        Node(
+            id=f"n{i}",
+            body=body,
+            choices=[Choice(id=f"c{i}", label="on", target=f"n{i + 1}")],
+        )
+        for i in range(lead_in)
+    ]
+    nodes.append(
+        Node(
+            id=f"n{lead_in}",
+            body=body,
+            choices=[
+                Choice(id="cw", label="win", target="n_win"),
+                Choice(id="ca", label="look", target="n_alt"),
+            ],
+        )
+    )
+    nodes += [
+        Node(
+            id="n_win",
+            body=body,
+            is_ending=True,
+            ending=Ending(
+                id="e1", valence=Valence.POSITIVE, kind=EndingKind.SUCCESS, title="W"
+            ),
+        ),
+        Node(
+            id="n_alt",
+            body=body,
+            is_ending=True,
+            ending=Ending(
+                id="e2", valence=Valence.NEUTRAL, kind=EndingKind.DISCOVERY, title="A"
+            ),
+        ),
+    ]
+    return Storybook(
+        id="s",
+        version=1,
+        title="T",
+        start_node="n0",
+        nodes=nodes,
+        metadata=StoryMetadata(
+            age_band=age_band,
+            reading_level=ReadingLevel(target=2.0),
+            tier=1,
+            estimated_minutes=5,
+            ending_count=2,
+            topology=Topology.TIME_CAVE,
+            length=length,
+        ),
+    )
+
+
+def test_pl25_warns_on_first_decision_past_band_ceiling():
+    """One node past the 8-11 ceiling of 9 warns rather than blocks.
+
+    A ceiling overshoot is a craft defect, and the ERROR tier means the story is
+    unpublishable. Grading a narrow overshoot as fatal would block work on a
+    margin narrower than the calibration's own confidence.
+    """
+    report = validate_policy(_branch_at_depth(lead_in=9))
+    assert any(f.rule_id == "PL-25" for f in report.warnings)
+    assert not any(f.rule_id == "PL-25" for f in report.errors)
+
+
+def test_pl25_blocks_first_decision_past_the_hard_limit():
+    """Past ``ARC_CEILING_MULTIPLE`` x the ceiling, the shape does block."""
+    hard = int(9 * ARC_CEILING_MULTIPLE)
+    report = validate_policy(_branch_at_depth(lead_in=hard))
+    assert any(f.rule_id == "PL-25" for f in report.errors)
+
+
+def test_pl25_hard_limit_derives_from_the_measured_arc_multiple():
+    """The blocking tier tracks the constant, not a hand-copied number.
+
+    Guards the linkage: re-deriving ``ARC_CEILING_MULTIPLE`` from new corpus data
+    must move this threshold with it, so the two cannot drift apart silently.
+    """
+    hard = int(9 * ARC_CEILING_MULTIPLE)
+    at_limit = validate_policy(_branch_at_depth(lead_in=hard - 1))
+    assert not any(f.rule_id == "PL-25" for f in at_limit.errors)
+    assert any(f.rule_id == "PL-25" for f in at_limit.warnings)
+
+
+def test_pl25_allows_first_decision_at_the_ceiling():
+    """A first decision exactly at the band ceiling passes."""
+    report = validate_policy(_branch_at_depth(lead_in=8))
+    assert not any(f.rule_id == "PL-25" for f in report.findings)
+
+
+def test_pl25_blocks_a_cold_open():
+    """A start node that already branches is under the floor, so it blocks."""
+    report = validate_policy(_branch_at_depth(lead_in=0))
+    findings = [f for f in report.errors if f.rule_id == "PL-25"]
+    assert len(findings) == 1
+    assert "under the band" in findings[0].message
+
+
+def test_pl25_grades_its_floor_and_ceiling_differently():
+    """The floor blocks in one tier; the ceiling warns until the hard limit.
+
+    Guards the asymmetry deliberately, because the two directions are not the
+    same kind of defect. Opening on the first choice leaves the reader nothing
+    to choose about, which no amount of degree makes acceptable. Burying it is a
+    pacing fault that only becomes fatal well past the window.
+    """
+    cold = validate_policy(_branch_at_depth(lead_in=0))
+    buried = validate_policy(_branch_at_depth(lead_in=9))
+    assert any(f.rule_id == "PL-25" for f in cold.errors)
+    assert not any(f.rule_id == "PL-25" for f in cold.warnings)
+    assert any(f.rule_id == "PL-25" for f in buried.warnings)
+    assert not any(f.rule_id == "PL-25" for f in buried.errors)
+
+
+def test_pl25_allows_cold_open_at_3_5():
+    """3-5 has a floor of 1, so a pre-reader story may open on its choice."""
+    report = validate_policy(_branch_at_depth(lead_in=0, age_band=AgeBand.BAND_3_5))
+    assert not any(f.rule_id == "PL-25" for f in report.findings)
+
+
+def test_pl25_silent_when_story_has_no_decision():
+    """A story with no decision node is left to PL-17, not double-reported."""
+    report = validate_policy(_linear_scale_story(middles=7))
+    assert not any(f.rule_id == "PL-25" for f in report.findings)
+
+
+def _dense_spine(
+    *,
+    spine: int,
+    decision_every: int,
+    age_band: AgeBand = AgeBand.BAND_8_11,
+    length: Length = Length.SHORT,
+    narrative_style: NarrativeStyle = NarrativeStyle.PROSE,
+    words: int = 100,
+) -> Storybook:
+    """Build a spine to a win where every Nth node also offers an escape choice.
+
+    The fastest-finish path is ``spine + 1`` nodes and carries
+    ``ceil(spine / decision_every)`` decisions, so the PL-26 density is
+    controllable directly.
+
+    Args:
+        spine: Non-ending nodes on the winning path.
+        decision_every: Offer a second choice on every Nth spine node.
+        age_band: The story band.
+        length: The declared length (scale-classifies the story).
+        narrative_style: ``prose`` or ``gamebook``; selects the PL-26 window.
+        words: Per-node declared word budget.
+
+    Returns:
+        The assembled Storybook.
+    """
+    body = _fill(words)
+    nodes: list[Node] = []
+    for i in range(spine):
+        target = f"s{i + 1}" if i + 1 < spine else "n_win"
+        choices = [Choice(id=f"c{i}", label="on", target=target)]
+        if i % decision_every == 0:
+            choices.append(Choice(id=f"x{i}", label="aside", target="n_alt"))
+        nodes.append(Node(id=f"s{i}", body=body, choices=choices))
+    nodes += [
+        Node(
+            id="n_win",
+            body=body,
+            is_ending=True,
+            ending=Ending(
+                id="e1", valence=Valence.POSITIVE, kind=EndingKind.SUCCESS, title="W"
+            ),
+        ),
+        Node(
+            id="n_alt",
+            body=body,
+            is_ending=True,
+            ending=Ending(
+                id="e2", valence=Valence.NEUTRAL, kind=EndingKind.DISCOVERY, title="A"
+            ),
+        ),
+    ]
+    return Storybook(
+        id="s",
+        version=1,
+        title="T",
+        start_node="s0",
+        nodes=nodes,
+        metadata=StoryMetadata(
+            age_band=age_band,
+            reading_level=ReadingLevel(target=2.0),
+            tier=1,
+            estimated_minutes=5,
+            ending_count=2,
+            topology=Topology.BRANCH_AND_BOTTLENECK,
+            length=length,
+            narrative_style=narrative_style,
+        ),
+    )
+
+
+def test_pl26_warns_when_choices_come_too_rarely():
+    """A near-corridor warns: one decision over a 12-node fastest finish."""
+    report = validate_policy(_dense_spine(spine=11, decision_every=11))
+    assert any(f.rule_id == "PL-26" for f in report.warnings)
+
+
+def test_pl26_accepts_prose_density_near_the_measured_anchor():
+    """A choice roughly every third node sits under the prose ceiling."""
+    # 12-node fastest finish carrying 4 decisions is 3.0, near the JHM 3.28 mean.
+    report = validate_policy(_dense_spine(spine=11, decision_every=3))
+    assert not any(f.rule_id == "PL-26" for f in report.findings)
+
+
+def test_pl26_does_not_bound_density_from_below():
+    """A choice on every node is dense, not a corridor, so PL-26 stays silent.
+
+    PL-26 is a ceiling only. A shortest path is biased toward decision nodes by
+    construction (out-degree >= 2 makes a node likelier to sit on a fast route),
+    so a low measured density is an artifact of the measurement rather than
+    evidence of a defect.
+    """
+    report = validate_policy(_dense_spine(spine=11, decision_every=1))
+    assert not any(f.rule_id == "PL-26" for f in report.findings)
+
+
+def test_pl26_gamebook_ceiling_is_tighter_than_prose():
+    """One density, two verdicts: fine as prose, a corridor as a gamebook.
+
+    26-node fastest finish over 5 decisions is 5.2, under the prose ceiling of
+    6.0 and over the gamebook ceiling of 4.0. A gamebook that steers this rarely
+    has abandoned the genre's own section-by-section pacing.
+    """
+    kwargs = {
+        "spine": 25,
+        "decision_every": 5,
+        "age_band": AgeBand.BAND_13_16,
+        "length": Length.MEDIUM,
+        "words": 65,
+    }
+    as_prose = validate_policy(
+        _dense_spine(narrative_style=NarrativeStyle.PROSE, **kwargs)
+    )
+    as_gamebook = validate_policy(
+        _dense_spine(narrative_style=NarrativeStyle.GAMEBOOK, **kwargs)
+    )
+    assert not any(f.rule_id == "PL-26" for f in as_prose.findings)
+    assert any(f.rule_id == "PL-26" for f in as_gamebook.warnings)
+
+
+def test_pl26_warns_when_fastest_finish_offers_no_decision():
+    """A corridor to a win reports the absence of any decision distinctly."""
+    report = validate_policy(_linear_scale_story(middles=7))
+    findings = [f for f in report.warnings if f.rule_id == "PL-26"]
+    assert len(findings) == 1
+    assert "no decision at all" in findings[0].message
+
+
+def test_pl26_is_never_an_error():
+    """Density is advisory only; it must not block a story."""
+    report = validate_policy(_dense_spine(spine=11, decision_every=11))
+    assert not any(f.rule_id == "PL-26" for f in report.errors)
+
+
+def test_pl26_skipped_without_length():
+    """An unclassified story has no cell, so density is not judged."""
+    report = validate_policy(_branch_at_depth(lead_in=3))
+    assert not any(f.rule_id == "PL-26" for f in report.findings)
+
+
+def test_pl20_warns_when_shortest_win_runs_past_the_ceiling():
+    """8-11 short floors at 9 nodes, so the 2.5x advisory ceiling is 22."""
+    report = validate_policy(_linear_scale_story(middles=21))
+    findings = [f for f in report.warnings if f.rule_id == "PL-20"]
+    assert len(findings) == 1
+    assert "advisory ceiling" in findings[0].message
+
+
+def test_pl20_ceiling_allows_a_path_exactly_at_the_limit():
+    """A 22-node fastest finish sits on the ceiling and must not warn."""
+    report = validate_policy(_linear_scale_story(middles=20))
+    assert not any(f.rule_id == "PL-20" for f in report.warnings)
+
+
+def test_pl20_ceiling_is_advisory_not_blocking():
+    """Overrunning the arc ceiling warns; only the floor blocks."""
+    report = validate_policy(_linear_scale_story(middles=21))
+    assert not any(f.rule_id == "PL-20" for f in report.errors)
+
+
+# ---------------------------------------------------------------------------
+# PL-26 regression: PL-20 and PL-26 must not share a tie-break (PR #635)
+#
+# ``_check_min_to_complete`` used to hand ``_shortest_path_to``'s single result
+# to both PL-20 (which reads only path length, safe under any tie-break) and
+# PL-26 (which reads decision count along the path, NOT safe: equally short
+# paths can carry different decision counts). The shared tie-break was BFS
+# discovery order, i.e. node-id alphabetical order, so renaming the two
+# equally fast routes flipped PL-26's verdict with zero structural change.
+# The fix adds ``_decision_node_ids`` (one shared definition of "a decision")
+# and ``_fewest_decision_shortest_path`` (an O(V+E) DP that picks, among
+# equally short paths, the one with the fewest decisions, i.e. the worst
+# density case, deliberately rather than by node-id order).
+# ---------------------------------------------------------------------------
+
+
+def _tiebreak_story(*, corridor: str, branchy: str) -> Storybook:
+    """Two equally-short (7-node) routes from a fork to the same win.
+
+    ``corridor`` and ``branchy`` are id prefixes for the two routes: the
+    corridor route is a straight walk to the SUCCESS ending; the branchy
+    route is the same length but carries one extra decision partway along
+    (an escape to a SETBACK ending). Swapping which prefix sorts first (so a
+    node-id alphabetical tie-break would land on a different route) must not
+    change which route the search reports on, since only decision count
+    should drive the PL-26 verdict.
+
+    Args:
+        corridor: Id prefix for the decision-free route.
+        branchy: Id prefix for the route carrying an extra decision.
+
+    Returns:
+        The assembled Storybook.
+    """
+    body = _fill(100)
+    nodes: list[Node] = [
+        Node(id="p0", body=body, choices=[Choice(id="c0", label="on", target="D")]),
+        Node(
+            id="D",
+            body=body,
+            choices=[
+                Choice(id="cA", label="a", target=f"{corridor}1"),
+                Choice(id="cB", label="b", target=f"{branchy}1"),
+            ],
+        ),
+    ]
+    for i in (1, 2, 3, 4):
+        target = f"{corridor}{i + 1}" if i < 4 else "n_win"
+        nodes.append(
+            Node(
+                id=f"{corridor}{i}",
+                body=body,
+                choices=[Choice(id=f"c{corridor}{i}", label="on", target=target)],
+            )
+        )
+    for i in (1, 2, 4):
+        target = f"{branchy}{i + 1}" if i < 4 else "n_win"
+        nodes.append(
+            Node(
+                id=f"{branchy}{i}",
+                body=body,
+                choices=[Choice(id=f"c{branchy}{i}", label="on", target=target)],
+            )
+        )
+    nodes.append(
+        Node(
+            id=f"{branchy}3",
+            body=body,
+            choices=[
+                Choice(id=f"c{branchy}3x", label="on", target=f"{branchy}4"),
+                Choice(id=f"c{branchy}3y", label="aside", target="n_alt"),
+            ],
+        )
+    )
+    nodes += [
+        Node(
+            id="n_win",
+            body=body,
+            is_ending=True,
+            ending=Ending(
+                id="e_win",
+                valence=Valence.POSITIVE,
+                kind=EndingKind.SUCCESS,
+                title="Win",
+            ),
+        ),
+        Node(
+            id="n_alt",
+            body=body,
+            is_ending=True,
+            ending=Ending(
+                id="e_alt",
+                valence=Valence.NEGATIVE,
+                kind=EndingKind.SETBACK,
+                title="Alt",
+            ),
+        ),
+    ]
+    return Storybook(
+        id="s_tie",
+        version=1,
+        title="T",
+        start_node="p0",
+        nodes=nodes,
+        metadata=StoryMetadata(
+            age_band=AgeBand.BAND_3_5,
+            reading_level=ReadingLevel(target=2.0),
+            tier=1,
+            estimated_minutes=5,
+            ending_count=2,
+            topology=Topology.BRANCH_AND_BOTTLENECK,
+            length=Length.SHORT,
+            narrative_style=NarrativeStyle.PROSE,
+        ),
+    )
+
+
+def test_pl26_verdict_is_invariant_to_node_id_alphabetical_order():
+    """Renaming the two equally-fast routes must not change PL-26's verdict.
+
+    Before the fix, whichever route's ids sorted first was fed to PL-26
+    unconditionally: the corridor route (1 decision over 7 nodes, density
+    7.0, over the 6.0 prose ceiling) warned when it sorted first, but the
+    exact same story stayed SILENT when the branchy route (2 decisions,
+    density 3.5, under the ceiling) sorted first instead. Removing either
+    assertion below would let that asymmetry (a real defect, not merely two
+    runs disagreeing) back in.
+    """
+    corridor_first = validate_policy(_tiebreak_story(corridor="aa", branchy="zz"))
+    branchy_first = validate_policy(_tiebreak_story(corridor="zz", branchy="aa"))
+    density_a = [f for f in corridor_first.warnings if f.rule_id == "PL-26"]
+    density_b = [f for f in branchy_first.warnings if f.rule_id == "PL-26"]
+    assert len(density_a) == 1
+    assert len(density_b) == 1
+    assert "7.0" in density_a[0].message
+    assert density_a[0].message == density_b[0].message
+
+
+def test_pl26_reports_the_worst_equally_fast_walk_not_its_average():
+    """PL-26 must report the fewest-decision (highest-density) equal walk.
+
+    Two 7-node routes reach the win: one with one decision (density 7.0) and
+    one with two (density 3.5). ``branchy`` sorts first here, so a naive
+    alphabetical tie-break would have picked the *denser-in-decisions* route
+    and reported 3.5 (silent, under the 6.0 ceiling); an averaging
+    implementation would report 5.25. Only 7.0, the deliberate worst case, is
+    correct.
+    """
+    report = validate_policy(_tiebreak_story(corridor="zz", branchy="aa"))
+    findings = [f for f in report.warnings if f.rule_id == "PL-26"]
+    assert len(findings) == 1
+    assert "7.0" in findings[0].message
+    assert "3.5" not in findings[0].message
+    assert "5.2" not in findings[0].message  # would-be average of 7.0 and 3.5
+
+
+def _length_priority_story() -> Storybook:
+    """A story where the shortest path carries MORE decisions than a longer one.
+
+    The 5-node route (through decision node ``d1``) reaches the win fastest but
+    carries 2 decisions (``n0`` and ``d1``); a 7-node alternate route reaches a
+    different SUCCESS ending with only 1 decision (``n0``). If the fewest-
+    decision search were not first constrained to minimum-length paths, it
+    could wrongly prefer the longer, decision-sparser route and report a
+    shortest length of 7 instead of the true 5.
+    """
+    body = _fill(100)
+    nodes = [
+        Node(
+            id="n0",
+            body=body,
+            choices=[
+                Choice(id="c_a", label="short", target="a1"),
+                Choice(id="c_b", label="long", target="b1"),
+            ],
+        ),
+        Node(id="a1", body=body, choices=[Choice(id="ca1", label="on", target="a2")]),
+        Node(id="a2", body=body, choices=[Choice(id="ca2", label="on", target="d1")]),
+        Node(
+            id="d1",
+            body=body,
+            choices=[
+                Choice(id="cd1w", label="win", target="a_win"),
+                Choice(id="cd1x", label="aside", target="d1_alt"),
+            ],
+        ),
+        Node(
+            id="a_win",
+            body=body,
+            is_ending=True,
+            ending=Ending(
+                id="e_a", valence=Valence.POSITIVE, kind=EndingKind.SUCCESS, title="A"
+            ),
+        ),
+        Node(
+            id="d1_alt",
+            body=body,
+            is_ending=True,
+            ending=Ending(
+                id="e_alt",
+                valence=Valence.NEGATIVE,
+                kind=EndingKind.SETBACK,
+                title="Alt",
+            ),
+        ),
+    ]
+    for i in range(1, 6):
+        target = f"b{i + 1}" if i < 5 else "b_win"
+        nodes.append(
+            Node(
+                id=f"b{i}",
+                body=body,
+                choices=[Choice(id=f"cb{i}", label="on", target=target)],
+            )
+        )
+    nodes.append(
+        Node(
+            id="b_win",
+            body=body,
+            is_ending=True,
+            ending=Ending(
+                id="e_b", valence=Valence.POSITIVE, kind=EndingKind.SUCCESS, title="B"
+            ),
+        )
+    )
+    return Storybook(
+        id="s",
+        version=1,
+        title="T",
+        start_node="n0",
+        nodes=nodes,
+        metadata=StoryMetadata(
+            age_band=AgeBand.BAND_3_5,
+            reading_level=ReadingLevel(target=2.0),
+            tier=1,
+            estimated_minutes=5,
+            ending_count=3,
+            topology=Topology.BRANCH_AND_BOTTLENECK,
+            length=Length.SHORT,
+            narrative_style=NarrativeStyle.PROSE,
+        ),
+    )
+
+
+def test_pl20_reads_the_true_shortest_length_not_the_fewest_decision_length():
+    """PL-20 must not move when a longer, decision-sparser route exists.
+
+    The true shortest satisfying completion is 5 nodes (below the 3-5 short
+    prose floor of 6, so PL-20 must block). A DP that dropped the minimum-
+    length constraint and globally minimized decisions would instead report
+    the 7-node route (1 decision, 7 >= floor 6) and stay silent: this is
+    exactly the future "optimization" bug the DP's docstring warns against.
+    """
+    report = validate_policy(_length_priority_story())
+    findings = [f for f in report.errors if f.rule_id == "PL-20"]
+    assert len(findings) == 1
+    assert "shortest satisfying completion is 5 node(s)" in findings[0].message
+
+
+def _diamond_chain_story(*, diamonds: int = 20) -> Storybook:
+    """A chain of ``diamonds`` two-way diamonds, doubling the path count each.
+
+    Each ``c{i}`` is a decision (2 choices) into ``u{i}``/``v{i}``, which both
+    rejoin at ``c{i + 1}``, before a final win. With ``diamonds=20`` there are
+    ``2**20`` (over a million) equally short satisfying paths from the start to
+    the win, over ~60 total nodes: a path-enumerating search would need to walk
+    all of them, but the layered DP this guards touches each node/edge once.
+
+    Args:
+        diamonds: Number of chained two-way diamonds.
+
+    Returns:
+        The assembled Storybook.
+    """
+    body = _fill(50)
+    nodes: list[Node] = []
+    for i in range(diamonds):
+        nodes.append(
+            Node(
+                id=f"c{i}",
+                body=body,
+                choices=[
+                    Choice(id=f"c{i}u", label="up", target=f"u{i}"),
+                    Choice(id=f"c{i}v", label="down", target=f"v{i}"),
+                ],
+            )
+        )
+        nodes.append(
+            Node(
+                id=f"u{i}",
+                body=body,
+                choices=[Choice(id=f"u{i}c", label="on", target=f"c{i + 1}")],
+            )
+        )
+        nodes.append(
+            Node(
+                id=f"v{i}",
+                body=body,
+                choices=[Choice(id=f"v{i}c", label="on", target=f"c{i + 1}")],
+            )
+        )
+    nodes.append(
+        Node(
+            id=f"c{diamonds}",
+            body=body,
+            choices=[Choice(id="c_final", label="win", target="n_win")],
+        )
+    )
+    nodes.append(
+        Node(
+            id="n_win",
+            body=body,
+            is_ending=True,
+            ending=Ending(
+                id="e_win",
+                valence=Valence.POSITIVE,
+                kind=EndingKind.SUCCESS,
+                title="Win",
+            ),
+        )
+    )
+    return Storybook(
+        id="s_diamond",
+        version=1,
+        title="T",
+        start_node="c0",
+        nodes=nodes,
+        metadata=StoryMetadata(
+            age_band=AgeBand.BAND_8_11,
+            reading_level=ReadingLevel(target=2.0),
+            tier=1,
+            estimated_minutes=5,
+            ending_count=1,
+            topology=Topology.BRANCH_AND_BOTTLENECK,
+            length=Length.SHORT,
+            narrative_style=NarrativeStyle.PROSE,
+        ),
+    )
+
+
+def test_pl26_density_scales_past_exponential_path_counts():
+    """The fastest-finish search must stay O(V+E), not enumerate paths.
+
+    20 chained diamonds carry 2**20 (over a million) equally short satisfying
+    paths over ~60 nodes. A shortest-path-enumerating implementation would need
+    to visit each one and would take far longer than this bound, or hang
+    outright; the layered DP visits each node and edge once. Dropping either
+    assertion would let a return to enumeration pass silently (slow but not
+    "wrong") until it hangs on a real large skeleton.
+    """
+    story = _diamond_chain_story(diamonds=20)
+    start = time.perf_counter()
+    report = validate_policy(story)
+    elapsed = time.perf_counter() - start
+    assert report is not None
+    assert elapsed < 5.0, "fastest-finish search must not enumerate exponential paths"
+
+
+def test_decision_node_ids_and_density_handle_a_story_with_no_decisions():
+    """Zero decision nodes must not divide by zero and must read as absence.
+
+    ``_decision_node_ids`` returns an empty set for a purely linear story, and
+    feeding that empty set through the search and the density check must not
+    raise ZeroDivisionError; ``_check_decision_density``'s ``decisions == 0``
+    guard is what stands between this and a crash.
+    """
+    story = _linear_scale_story(middles=3)
+    assert _decision_node_ids(story) == set()
+    graph = _build_graph(story)
+    path = _fewest_decision_shortest_path(graph, story.start_node, {"n_end"}, set())
+    assert path is not None
+    assert path[-1] == "n_end"
+    # A real run through the public gate must not raise, and must report the
+    # explicit "no decision" case rather than silently computing 0/0.
+    report = validate_policy(story)
+    findings = [f for f in report.warnings if f.rule_id == "PL-26"]
+    assert len(findings) == 1
+    assert "no decision at all" in findings[0].message
+
+
+def test_fewest_decision_shortest_path_returns_none_for_unreachable_targets():
+    """An unreachable target set yields ``None``, not a ``min()`` on empty.
+
+    If the DP's early return on an empty ``depths`` list were dropped, ``min()``
+    over that empty sequence would raise ``ValueError`` instead of this clean
+    ``None``.
+    """
+    graph: nx.DiGraph[str] = nx.DiGraph()
+    graph.add_nodes_from(["a", "b", "isolated"])
+    graph.add_edge("a", "b")
+    result = _fewest_decision_shortest_path(graph, "a", {"isolated"}, set())
+    assert result is None
+
+
+def test_fewest_decision_shortest_path_returns_none_when_start_is_absent():
+    """A ``start`` id absent from the graph is handled, not ``KeyError``'d.
+
+    Guards the ``if start not in graph`` guard at the top of the function;
+    removing it would make the BFS level-seeding loop over ``graph.successors``
+    of a nonexistent node raise instead of returning ``None`` cleanly.
+    """
+    graph: nx.DiGraph[str] = nx.DiGraph()
+    graph.add_node("only")
+    result = _fewest_decision_shortest_path(graph, "missing", {"only"}, set())
+    assert result is None
+
+
+def test_fewest_decision_shortest_path_counts_a_decision_start_node():
+    """The start node's own decision status must be seeded, not skipped.
+
+    Both of the start node's choices land on the same win, so the fastest
+    finish is forced through the start node alone. If ``fewest[start]`` were
+    seeded at 0 instead of ``int(start in decisions)``, this story's only
+    decision would be missed entirely, and PL-26 would wrongly report "no
+    decision at all" instead of staying silent (density 2.0, under ceiling).
+    """
+    body = _fill(50)
+    story = Storybook(
+        id="s",
+        version=1,
+        title="T",
+        start_node="n0",
+        nodes=[
+            Node(
+                id="n0",
+                body=body,
+                choices=[
+                    Choice(id="c1", label="a", target="n_end"),
+                    Choice(id="c2", label="b", target="n_end"),
+                ],
+            ),
+            Node(
+                id="n_end",
+                body=body,
+                is_ending=True,
+                ending=Ending(
+                    id="e1",
+                    valence=Valence.POSITIVE,
+                    kind=EndingKind.SUCCESS,
+                    title="W",
+                ),
+            ),
+        ],
+        metadata=StoryMetadata(
+            age_band=AgeBand.BAND_3_5,
+            reading_level=ReadingLevel(target=2.0),
+            tier=1,
+            estimated_minutes=5,
+            ending_count=1,
+            topology=Topology.GAUNTLET,
+            length=Length.SHORT,
+        ),
+    )
+    report = validate_policy(story)
+    assert not any(f.rule_id == "PL-26" for f in report.findings)
+
+
+def test_fewest_decision_shortest_path_includes_an_unavoidable_decision():
+    """A mandatory decision on the sole route must be counted, not routed around.
+
+    The only path from ``start`` to ``target`` passes through ``mid``, a
+    decision node whose second choice is a dead end. "Fewest decisions" must
+    not be read as license to avoid a decision that every shortest path is
+    forced to carry.
+    """
+    graph: nx.DiGraph[str] = nx.DiGraph()
+    graph.add_edge("start", "mid")
+    graph.add_edge("mid", "target")
+    graph.add_edge("mid", "dead_end")
+    path = _fewest_decision_shortest_path(graph, "start", {"target"}, {"mid"})
+    assert path == ["start", "mid", "target"]
+
+
+# ---------------------------------------------------------------------------
+# PL-26 brute-force cross-check: an exhaustive oracle beats any hand-built
+# graph, and is the test that would catch a future refactor that breaks
+# optimality without breaking any specific case above.
+#
+# The 9-node cap below is a property of the ORACLE (``nx.all_simple_paths``
+# enumerates every simple path, which is exponential in graph size), not of
+# ``_fewest_decision_shortest_path`` itself; the large-graph, linear-time case
+# is covered from the other direction by
+# ``test_pl26_density_scales_past_exponential_path_counts`` above, which the
+# oracle could never check in reasonable time.
+# ---------------------------------------------------------------------------
+
+
+def _brute_force_best(
+    graph: nx.DiGraph[str], start: str, targets: set[str], decisions: set[str]
+) -> tuple[int, int] | None:
+    """Exhaustively find ``(min_len, min_decisions_among_min_len)`` by walking
+    every simple path from ``start`` to each target.
+
+    Args:
+        graph: The directed graph to search.
+        start: The start node id.
+        targets: Candidate destination node ids.
+        decisions: Ids of the nodes that count as a decision.
+
+    Returns:
+        The ``(length, decision count)`` of the best path, or ``None`` when no
+        target is reachable from ``start``.
+    """
+    best: tuple[int, int] | None = None
+    for target in targets:
+        if target not in graph:
+            continue
+        for candidate in nx.all_simple_paths(graph, start, target):
+            key = (len(candidate), sum(1 for node in candidate if node in decisions))
+            if best is None or key < best:
+                best = key
+    return best
+
+
+def _cross_check(
+    graph: nx.DiGraph[str], start: str, targets: set[str], decisions: set[str]
+) -> str | None:
+    """Return ``None`` when the DP agrees with the brute-force oracle.
+
+    Checks all four properties an optimality bug could break independently: a
+    real walk, correct endpoints, minimum length, and fewest decisions among
+    the minimum-length paths.
+
+    Args:
+        graph: The directed graph to search.
+        start: The start node id.
+        targets: Candidate destination node ids.
+        decisions: Ids of the nodes that count as a decision.
+
+    Returns:
+        ``None`` on agreement, or a failure message describing the mismatch.
+    """
+    best = _brute_force_best(graph, start, targets, decisions)
+    got = _fewest_decision_shortest_path(graph, start, targets, decisions)
+    if best is None:
+        return None if got is None else f"unreachable but DP returned {got}"
+    if got is None:
+        return f"brute found {best} but DP returned None"
+    if not all(graph.has_edge(got[i], got[i + 1]) for i in range(len(got) - 1)):
+        return f"DP returned a non-walk: {got}"
+    if got[0] != start or got[-1] not in targets:
+        return f"DP endpoints wrong: {got}"
+    got_key = (len(got), sum(1 for node in got if node in decisions))
+    if got_key != best:
+        return f"brute {best} vs DP {got_key} path={got}"
+    return None
+
+
+def test_fewest_decision_shortest_path_matches_brute_force_oracle():
+    """The DP must match exhaustive enumeration on every randomized small graph.
+
+    Generates 500 random directed graphs (3-9 nodes, ~28% edge density,
+    random target and decision sets) from a fixed seed, deterministic across
+    runs and independent of ``PYTHONHASHSEED``, and asserts the DP agrees with
+    ``_brute_force_best`` on all four properties every time. A hand-built graph
+    can only prove the DP right on the cases someone thought to write; this
+    proves it on hundreds it did not, which is what would catch a refactor
+    that breaks optimality without failing any single named case above.
+    """
+    rng = random.Random(20260806)
+    mismatches: list[str] = []
+    for _ in range(500):
+        node_count = rng.randint(3, 9)
+        ids = [f"n{i}" for i in range(node_count)]
+        graph: nx.DiGraph[str] = nx.DiGraph()
+        graph.add_nodes_from(ids)
+        for i in range(node_count):
+            for j in range(node_count):
+                if i != j and rng.random() < 0.28:
+                    graph.add_edge(ids[i], ids[j])
+        start = ids[0]
+        targets = set(rng.sample(ids, k=rng.randint(1, node_count)))
+        decisions = set(rng.sample(ids, k=rng.randint(0, node_count)))
+        failure = _cross_check(graph, start, targets, decisions)
+        if failure is not None:
+            mismatches.append(failure)
+    assert not mismatches, (
+        f"{len(mismatches)} DP/brute-force mismatch(es): {mismatches[:5]}"
+    )

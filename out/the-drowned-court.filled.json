@@ -30,8 +30,20 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
+    {
+      "id": "n_open",
+      "body": "Codename Sable, you reach the black water above the sunken royal court at slack tide, the one narrow hour when the sea holds its breath and the drowned halls lie still enough to enter. Across the reef the rival expedition's lights are already burning, so there is no margin left to waste on hesitation.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Check the rig and go over the side.",
+          "target": "n_start"
+        }
+      ]
+    },
     {
       "id": "n_ap_moat",
       "body": "You swim the drowned moat, the current dragging at your rebreather and humming through the old submerged stone, and ahead, the enormous tide-gate arch rises out of the green dark. Its old wards gutter faint and cold against your approach, and the chill works into your wrists as you steady your line and kick on toward the gate. The sunken court waits below you like a single held breath.",
@@ -81,7 +93,7 @@
     },
     {
       "id": "n_start",
-      "body": "Codename Sable, you reach the black water above the sunken royal court at slack tide, the one narrow hour when the sea holds its breath and the drowned halls lie still enough to enter. Across the reef the rival expedition's lights are already burning, so there is no margin left to waste on hesitation. Three ways lead down to the tide-gate: the drowned moat, the silted old sluice channel, and the rival's rotted scaffold. A fourth route, a seaward culvert, looks quick, and to your trained eye it looks badly, obviously wrong.",
+      "body": "Three ways lead down to the tide-gate: the drowned moat, the silted old sluice channel, and the rival's rotted scaffold. A fourth route, a seaward culvert, looks quick, and to your trained eye it looks badly, obviously wrong.",
       "is_ending": false,
       "choices": [
         {
