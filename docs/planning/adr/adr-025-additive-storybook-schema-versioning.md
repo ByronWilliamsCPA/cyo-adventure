@@ -23,12 +23,13 @@ tags:
 > **Cross-sign**: `storybook/models.py`, `storybook/schema_export.py`, `schema/storybook.schema.json`,
 > both player engines, and the conformance corpus. No database migration; published blobs are not
 > rewritten.
-> **Scope**: this ADR is a design record only. Nothing in it ships with the commit that accepts it:
-> `_check_schema_version` still requires exact equality with `SCHEMA_VERSION = "2.0"`, there is no
-> `SCHEMA_MINOR` constant, and no range check exists anywhere. The decision text below is written in
-> the present tense as a specification of the target state, in the same voice as
+> **Scope**: this ADR was a design record only when accepted. As of the commit that accepted it,
+> `_check_schema_version` still required exact equality with `SCHEMA_VERSION = "2.0"`, there was no
+> `SCHEMA_MINOR` constant, and no range check existed anywhere. The decision text below was written
+> in the present tense as a specification of the target state, in the same voice as
 > [ADR-027](./adr-027-in-story-illustration.md), which carries the identical disclaimer.
-> Implementation is separately scheduled work.
+> Implementation was separately scheduled work at that time; see "Implementation notes" below for
+> what is actually true in the tree now.
 
 ## TL;DR
 
