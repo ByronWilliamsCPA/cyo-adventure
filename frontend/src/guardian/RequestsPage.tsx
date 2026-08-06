@@ -1,4 +1,5 @@
 import { useAuth } from '../auth/useAuth'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { BudgetBanner } from './BudgetBanner'
 import { RequestStoryForm } from './RequestStoryForm'
 import { StoryRequestQueue } from './StoryRequestQueue'
@@ -12,6 +13,7 @@ import { StoryRequestQueue } from './StoryRequestQueue'
  * for every caller, including a dual-role adult.
  */
 export function RequestsPage() {
+  usePageTitle('Story Requests')
   const { principal } = useAuth()
 
   return (

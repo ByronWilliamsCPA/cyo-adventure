@@ -6,6 +6,7 @@ import { Dialog } from '@ds/components/Dialog'
 import { PassageText } from '@ds/components/PassageText'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { GUARDIAN_CONSOLE_PATH } from '../routes'
 import { FlagBadge } from './FlagBadge'
 import { makePassageEditApi } from './passageEditApi'
@@ -48,6 +49,7 @@ type LoadState =
  * renders as the standard forbidden message via classifyApiError.
  */
 export function GuardianReviewDetailPage() {
+  usePageTitle('Review Story')
   const { storybookId = '' } = useParams()
   const api = useApi()
   const reviewApi = useMemo(() => makeReviewApi(api), [api])

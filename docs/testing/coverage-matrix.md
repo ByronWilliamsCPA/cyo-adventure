@@ -722,7 +722,11 @@ in their journey sections instead.
   trap the helper exists to dodge, since Vite exposes every env var as a string)
   `frontend/src/notifications/ToastProvider.test.tsx`,
   `frontend/src/hooks/classifyApiError.test.ts`,
-  `frontend/src/hooks/logApiError.test.ts`
+  `frontend/src/hooks/logApiError.test.ts`,
+  `frontend/src/hooks/usePageTitle.test.ts` (the per-route `document.title`
+  hook every routed page calls: the app-name suffix, the `bare` opt-out the
+  landing page uses so its title is not doubled, and re-firing when the title
+  prop changes. Not tied to one journey because all 29 routed pages share it)
 - Theme system (light/dark/system, mounted app-wide at the root via
   ThemeProvider; every surface's chrome renders a ThemeToggle):
   `frontend/src/theme/theme.test.ts` (mode validation, stored-preference

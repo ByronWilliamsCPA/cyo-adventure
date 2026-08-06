@@ -7,6 +7,7 @@ import { EmptyState } from '@ds/components/EmptyState'
 import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
 import { guardianReviewPath } from '../routes'
 import { AssignChildrenDialog } from './AssignChildrenDialog'
@@ -91,6 +92,7 @@ function assignButtonLabel(count: number | undefined): string {
  * offer a Try again prefill and Approved rows open the assign dialog (C4a-6).
  */
 export function IntakePage() {
+  usePageTitle('Request a Story')
   const api = useApi()
   const intakeApi = useMemo(() => makeIntakeApi(api), [api])
   const profilesApi = useMemo(() => makeProfilesApi(api), [api])

@@ -9,6 +9,7 @@ import { getDeviceGrant } from '../auth/deviceGrant'
 import { makeDeviceGrantApi, type DeviceGrantApi } from '../auth/deviceGrantApi'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import type { DeviceGrantListItem } from '../client/types.gen'
 import { formatRelativeTime } from './intakeApi'
 import './guardian.css'
@@ -127,6 +128,7 @@ function DeviceRow({
  * client-side offline architecture; the register still lists it as open.
  */
 export function DevicesPage() {
+  usePageTitle('Devices')
   const api = useApi()
   const deviceGrantApi = useMemo(() => makeDeviceGrantApi(api), [api])
   const [state, setState] = useState<PageState>({ kind: 'loading' })

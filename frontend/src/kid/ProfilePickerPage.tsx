@@ -8,6 +8,7 @@ import { clearChildSession, setChildSession } from '../auth/childSession'
 import { hasGuardianSession } from '../auth/guardianToken'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { logApiError } from '../hooks/logApiError'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { useApi } from '../hooks/useApi'
 import { AvatarCircle } from '../profiles/AvatarCircle'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
@@ -75,6 +76,7 @@ function isPinMismatch(error: unknown): boolean {
  * title or count, only "something new happened".
  */
 export function ProfilePickerPage() {
+  usePageTitle("Who's Reading?")
   const api = useApi()
   const profilesApi = useMemo(() => makeProfilesApi(api), [api])
   const childSessionApi = useMemo(() => makeChildSessionApi(api), [api])

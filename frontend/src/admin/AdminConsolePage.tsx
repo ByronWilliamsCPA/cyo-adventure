@@ -11,6 +11,7 @@ import { formatRelativeTime } from '../guardian/intakeApi'
 import { ageBandLabel } from '../guardian/storyRequestOptions'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import {
   makeReviewApi,
   type ReviewQueueItem,
@@ -158,6 +159,7 @@ function QueueRow({
  * safety reviewer, not any guardian).
  */
 export function AdminConsolePage() {
+  usePageTitle('Admin Console')
   const api = useApi()
   const reviewApi = useMemo(() => makeReviewApi(api), [api])
   const [state, setState] = useState<LoadState>({ kind: 'loading' })

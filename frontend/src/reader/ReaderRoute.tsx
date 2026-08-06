@@ -4,6 +4,7 @@ import { useLocation, useNavigate, useParams } from 'react-router'
 import { EmptyState } from '@ds/components/EmptyState'
 import { Button } from '@ds/components/Button'
 import { getValidChildSession } from '../auth/childSession'
+import { usePageTitle } from '../hooks/usePageTitle'
 import {
   makeFetchReadingHistory,
   makeFetchServerState,
@@ -51,6 +52,12 @@ function parsePersonalizationEligibleState(state: unknown): boolean | undefined 
  * behavior it replaces.
  */
 export function ReaderRoute() {
+  // Generic, not the story's real title: the loaded story object lives in
+  // ReaderPage's own async state, one level down, and is not worth plumbing
+  // back up here just for the tab title. Still a real improvement over the
+  // prior "CYO Adventure" everywhere: the tab now distinguishes "reading a
+  // book" from every other surface.
+  usePageTitle('Reading')
   const { profileId, storybookId, version } = useParams<{
     profileId: string
     storybookId: string

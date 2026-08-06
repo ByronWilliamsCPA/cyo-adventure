@@ -4,6 +4,7 @@ import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import type { StoryRequestView } from '../guardian/storyRequestQueueApi'
 import { AuthoringPlanDialog } from './AuthoringPlanDialog'
 import { makeAuthoringPlanApi } from './authoringPlanApi'
@@ -24,6 +25,7 @@ type LoadState =
  * client method but no page ever called it (2026-07-16 audit).
  */
 export function AuthoringQueuePage() {
+  usePageTitle('Authoring Queue')
   const api = useApi()
   const authoringPlanApi = useMemo(() => makeAuthoringPlanApi(api), [api])
   const allowlistApi = useMemo(() => makeProviderAllowlistApi(api), [api])

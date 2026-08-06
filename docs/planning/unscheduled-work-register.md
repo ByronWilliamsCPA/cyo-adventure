@@ -439,6 +439,7 @@ not scheduled: that is its accurate state.
 | UW-I08 | `Mascot.tsx` ships placeholder vector glyphs pending the curated illustrated set | code | 4b | unscheduled |
 | UW-I09 | Sibling-visibility wireframe 4.1 deferred: a child principal cannot read sibling profiles | code | 4b | unscheduled |
 | UW-I10 | `apiContractParity.ts:125`: backend `status` gained `awaiting_manual_fill`, absent from the frontend `JobStatus` union, "left for a maintainer decision" | code | 4b | decision |
+| UW-I11 | The favicon (`frontend/public/favicon.svg`) and the OG/Twitter share image (`og:image`/`twitter:image` in `index.html`) are both hand-coded/reused placeholders, not designed or generated art: the favicon is an inline SVG open-book glyph in the app's brand palette, matching `Mascot.tsx`'s own placeholder-glyph pattern (`UW-I08`), and the share image reuses the existing 512x512 PWA icon (square, not the 1200x630 landscape link-preview surfaces prefer). Both were coded by hand in-session because no image-generation tool was available then. Replace with real generated/designed art once one is: a proper book-themed favicon and a dedicated 1200x630 og-image. Sibling deferral to `UW-I08`. | code | 4b | unscheduled |
 
 ## Cluster J: remediation-plan and console gaps
 

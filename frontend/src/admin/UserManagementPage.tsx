@@ -5,6 +5,7 @@ import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { ConnectionsTab } from './ConnectionsTab'
 import { FamiliesTab } from './FamiliesTab'
 import { KidsTab } from './KidsTab'
@@ -46,6 +47,7 @@ type LoadState =
  * since a family rename/create affects the dropdowns on every other tab.
  */
 export function UserManagementPage() {
+  usePageTitle('User Management')
   const api = useApi()
   const userManagementApi = useMemo(() => makeUserManagementApi(api), [api])
 
