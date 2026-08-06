@@ -3,6 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- PNG fallback, declared after the SVG deliberately: a browser that
+         understands `image/svg+xml` picks the vector one, and a browser that
+         does not (older Safari/iOS) ignores the unrecognized type and falls
+         back to this. Reuses the existing PWA icon rather than adding an
+         asset. Note the pre-existing favicon (/vite.svg) was SVG-only too,
+         so this closes a gap that predates the favicon swap. -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa-icon-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
