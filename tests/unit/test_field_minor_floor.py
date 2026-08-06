@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from cyo_adventure.storybook.field_minors import BASELINE_FIELDS, FIELD_MINORS
+from cyo_adventure.storybook.models import Storybook
 from cyo_adventure.validator.gate import run_gate
 from cyo_adventure.validator.layer1 import validate_layer1
 from cyo_adventure.validator.report import Severity
@@ -164,4 +166,44 @@ def test_l1_8_alone_sets_blocked_true_through_the_gate() -> None:
     assert any(
         f.rule_id == "L1-8" and f.severity is Severity.ERROR
         for f in result.report.findings
+    )
+
+
+def test_every_storybook_field_is_registered_or_baselined() -> None:
+    """Lockstep guard: an unregistered field gets no L1-8 floor at all.
+
+    Mirrors tests/unit/test_validator_rules_catalog.py's shape: enumerate the
+    real thing (Storybook.model_fields, never a hand-copied literal list, so
+    this test cannot drift the same way the registry could), compare against
+    the declared thing (FIELD_MINORS union BASELINE_FIELDS), and fail on
+    either direction of mismatch.
+
+    A field in neither set is what happens when a future minor-2 field's
+    author forgets to add a FIELD_MINORS entry: L1-8 would silently apply no
+    floor to it. This assertion is what would catch that.
+    """
+    real_fields = frozenset(Storybook.model_fields)
+    declared_fields = frozenset(FIELD_MINORS) | BASELINE_FIELDS
+    unregistered = sorted(real_fields - declared_fields)
+    assert not unregistered, (
+        "Storybook field(s) declared in neither field_minors.FIELD_MINORS nor "
+        f"field_minors.BASELINE_FIELDS: {unregistered}. If the field existed "
+        "at schema minor 0, add it to BASELINE_FIELDS; if it was introduced "
+        "at a later minor, add it to FIELD_MINORS with that minor so L1-8 can "
+        "enforce a floor on it."
+    )
+
+
+def test_no_field_minors_entry_names_a_field_that_does_not_exist() -> None:
+    """A stale FIELD_MINORS entry must not silently enforce a floor on nothing.
+
+    A field rename (or removal) leaves a dangling FIELD_MINORS key unless
+    something checks it against the real model; this is that check.
+    """
+    real_fields = frozenset(Storybook.model_fields)
+    stale = sorted(frozenset(FIELD_MINORS) - real_fields)
+    assert not stale, (
+        f"field_minors.FIELD_MINORS name(s) not present on Storybook: {stale}. "
+        "This is a stale entry, likely left behind by a rename; remove it or "
+        "correct it to the field's current name."
     )
