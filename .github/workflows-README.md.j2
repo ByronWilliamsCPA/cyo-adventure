@@ -63,17 +63,23 @@ Comprehensive CI with:
 ---
 
 ### Security Analysis (`security-analysis.yml`)
-**Calls**: `williaby/.github/.github/workflows/python-security-analysis.yml@main`
+**Defined in this repository**, not delegated to an org-level reusable workflow.
 
-Comprehensive security scanning with:
-- CodeQL advanced analysis
-- Bandit static security analysis
-- Safety dependency CVE scanning
-- OSV Scanner
-- OWASP dependency check
-- Dependency review (PRs only)
+Security scanning with:
+- Bandit static security analysis (`src/`, JSON report artifact)
+- OSV-Scanner dependency scanning (recursive, JSON report artifact)
 
-**Triggers**: Push/PR to main, weekly schedule, manual dispatch
+A `Security Gate Validation` job fans in and is the required status check.
+
+CodeQL is not run here: it ran through GitHub code scanning **default setup**,
+which has no workflow file, and was disabled on 2026-08-03. Dependency review
+lives in its own `dependency-review.yml`. Safety and OWASP dependency check are
+not used in this repository.
+
+**Triggers**: Push/PR to main, merge queue, daily schedule (09:07 UTC), manual
+dispatch. Daily rather than weekly since issue #594: this schedule is the floor
+under push-triggered scanning, so its period bounds main's worst-case latency
+between an advisory being published and main being scanned against it.
 
 ---
 

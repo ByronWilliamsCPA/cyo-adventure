@@ -5,7 +5,7 @@
 # Features:
 #   - Bandit static analysis for Python
 #   - OSV-Scanner dependency vulnerability scanning
-#   - Weekly scheduled scans
+#   - Daily scheduled scans of main, independent of push activity
 name: Security Analysis
 
 "on":
@@ -25,8 +25,16 @@ name: Security Analysis
   # access to fix.
   merge_group:
   schedule:
-    # Run security scans weekly on Monday at 9 AM UTC
-    - cron: '0 9 * * 1'
+    # Daily at 09:07 UTC, not weekly (issue #594). The `security` job carries
+    # no gating `if:`, so this workflow has always scanned main on every push
+    # as well; the schedule is the floor under that, the one scan whose
+    # cadence does not depend on what triggered the last push. Its period is
+    # therefore main's worst-case LATENCY between an advisory being published
+    # and main being scanned against it. Weekly made that up to ~6 days;
+    # daily makes it ~1. The gap this closes is latency, not absence.
+    # Offset 7 minutes past the hour to stay clear of the scheduler's
+    # on-the-hour contention.
+    - cron: '7 9 * * *'
   workflow_dispatch:
 
 # Cancel in-progress runs for same PR/branch
