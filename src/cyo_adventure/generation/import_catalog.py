@@ -36,11 +36,22 @@ from cyo_adventure.core.exceptions import ProjectBaseError, ValidationError
 from cyo_adventure.db.models import CATALOG_FAMILY_ID, Storybook
 from cyo_adventure.generation.import_story import ImportRequest, import_filled_story
 from cyo_adventure.generation.skeleton_match import resolve_skeleton_path
+from cyo_adventure.storybook.models import (
+    SCHEMA_MAJOR,
+    parse_schema_version,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from sqlalchemy.ext.asyncio import AsyncSession
+
+# ADR-025 decision 3 (no backfill): a normalized legacy fill gains no field
+# beyond 2.0, so it is stamped at 2.0 rather than at the current minor.
+# Stamping it higher would claim semantics the document does not have. This
+# is deliberately NOT SCHEMA_VERSION and must not be changed when the minor
+# is bumped.
+LEGACY_NORMALIZED_SCHEMA_VERSION = "2.0"
 
 _DEFAULT_MODEL = "catalog-import"
 _PROMPT_VERSION = "catalog-import-v1"
@@ -313,8 +324,25 @@ def _needs_legacy_normalization(blob: dict[str, object]) -> bool:
         pass :func:`cyo_adventure.validator.gate.run_gate`.
     """
     metadata = blob.get("metadata")
-    if blob.get("schema_version") != "2.0":
+    version = blob.get("schema_version")
+
+    # If version is missing or not a string, treat as legacy
+    if not isinstance(version, str):
         return True
+
+    # Parse the version; if invalid, treat as legacy
+    try:
+        major, _ = parse_schema_version(version)
+    except ValueError:
+        return True
+
+    # Pre-2.0 documents are legacy and need normalization
+    if major < SCHEMA_MAJOR:
+        return True
+
+    # For major >= 2, check if topology exists (required field for non-legacy)
+    # Version 2.0 and future minors (2.1, etc.) should have topology;
+    # if missing, treat as legacy. If present, not legacy.
     return not (isinstance(metadata, dict) and "topology" in metadata)
 
 
@@ -408,7 +436,7 @@ def _normalize_legacy_fill(
             files (verified 0 mismatches), so it only guards a future
             manifest entry misclassified as legacy.
     """
-    blob["schema_version"] = "2.0"
+    blob["schema_version"] = LEGACY_NORMALIZED_SCHEMA_VERSION
     _normalize_legacy_metadata(blob, skeleton)
     _normalize_legacy_endings(blob, skeleton)
     return blob
