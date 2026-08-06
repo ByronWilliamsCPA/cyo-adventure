@@ -229,6 +229,27 @@ prompt) is small enough to be an extension, which decisions 3 and 6 make explici
 - [ ] Before any book beyond the seven pilot skeletons generates per-node or per-scene art, an
       automated image-moderation pass exists ahead of human review (this ADR's decision 5 gate).
 
+## Follow-on work
+
+- **Generation cost is unpriced in this ADR.** Section 7's budgets (WebP, 1536px, 150KB
+  target/200KB ceiling per image, 8MB per 3-5 book) price *storage and delivery* only. A
+  2026-08-05 external commercial-viability review
+  ([external-scope-comparison-2026-08-05.md](../external-scope-comparison-2026-08-05.md), UW-N09)
+  estimates that a set of 8-12 generated scenes adds roughly **$0.27-$2.40 per story** in raw
+  image-generation cost (a per-story total derived from public per-image rates, not a per-image
+  price, and before retries, consistency work, or moderation), which this ADR's pilot never had to
+  reason about because its gating question was review volume, not spend. **Landed in this change**
+  (this ADR now cites the figure); the cost line should be folded into any future per-story cost
+  ledger (`UW-J20`/`UW-N01`) once the pilot has real generation counts to price against.
+  **Do not carry the number over unadjusted**: 8-12 scenes is the external review's own assumption,
+  while section 7 above scopes this pilot at 10-45 node images per book, so at the top of that
+  range the estimate understates generation spend by roughly 4x. Re-derive against 10-45 before it
+  informs an expand/don't-expand call.
+- **Decision 5's automated-moderation precondition has no register home.** The decision text says
+  the classifier is "tracked as follow-on work when the pilot's results justify scaling," which is
+  exactly the kind of unscheduled deferral this rule exists to catch. Given a real home:
+  `UW-N08` (Phase 4b, status `blocked`, on the pilot's own results per decision 5).
+
 ## Related
 
 - [ADR-017](./adr-017-ai-cover-art.md): the cover-art subsystem this ADR amends and reuses.

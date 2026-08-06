@@ -137,7 +137,20 @@ locator_basis = "resolved against main at v0.59.0 on 2026-08-02; all 36 path:lin
 [namespaces.uw]
 prefix = "UW"
 source = "docs/planning/unscheduled-work-register.md"
-pattern = "^UW-(?P<cluster>[A-M])\\d{2}$"
+# Extended A-M to A-N on 2026-08-05 to admit Cluster N (external scope-comparison findings),
+# the first new cluster added since the manifest's 2026-08-01 baseline. Extend the letter
+# range again, deliberately, the next time a new cluster is opened; do not widen it further
+# than the clusters that actually exist.
+#
+# TWO SITES, and they fail asymmetrically. This pattern is one of two copies of the cluster
+# letter range; the other is `_CLUSTER_HEADING_RE` in `scripts/check_work_linkage.py`, which
+# decides which `## Cluster <letter>:` headings the checker even discovers. Widen BOTH.
+# Widening only the heading regex fails loudly (the new rows are validated and report errors
+# against a namespace that rejects them). Widening only this pattern is the silent path: the
+# checker never discovers the new cluster's table, so its rows are never validated and the run
+# still exits 0 with a lower cluster count. `test_cluster_heading_re_covers_every_manifest_uw_cluster`
+# in `tests/unit/test_check_work_linkage.py` fails when the two drift apart.
+pattern = "^UW-(?P<cluster>[A-N])\\d{2}$"
 
 [namespaces.debt]
 prefix = "debt"
