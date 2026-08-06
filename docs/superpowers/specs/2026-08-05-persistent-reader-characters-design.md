@@ -42,6 +42,7 @@ The owner ruled GO and widened scope beyond what the exploration doc proposed.
 | D9 | Fund ADR-025 implementation as step 0 | Owner choice, post-review |
 | D10 | Reader lifecycle (backtracking, restart, issue #460) is in scope | Owner choice, post-review |
 | D11 | Keep three stats; do not shrink the envelope | Owner choice, post-review |
+| D12 | Promote an 8-11 skeleton to Tier 2 for the prose pilot, rather than piloting prose at 10-13 | Owner choice, post-round-2 |
 
 This spec incorporates **two** adversarial review passes (`senior-architecture-reviewer`; round 1
 on the draft, verdict *material rework needed*; round 2 on this spec, verdict *needs revision*).
@@ -621,7 +622,8 @@ Then:
 5   API: character CRUD, activate, values-payload extension
 6   both engines: seed persistence + seed-aware replay; closes #460
 7   frontend: creator, picker, reader seed wiring
-8   pilot skeletons: one 13-16 medium gamebook; one prose book (see below)
+8a  promote 8-11/the-storm-chasers-club Tier 1 -> Tier 2 (see below)
+8b  pilot skeletons: one 13-16 medium gamebook; the promoted 8-11 prose book
 9   progression writeback (server-side, idempotent)
 10  authoring docs + cyo-author idiom
 --  restore Wyrmreach fixtures, then land the _l2_error_signatures choice_id fix (5.3)
@@ -631,18 +633,35 @@ Then:
 participating book; the split in section 5.1 is a prerequisite of the module, not a later
 refinement.
 
-**Step 8's prose pilot is unscheduled work, and this is a scope finding, not a detail.** All nine
-8-11 skeletons declare zero variables, consistent with Tier 1, and `L1-6` forbids Tier-1 books from
-declaring variables ([`layer1.py:478-490`](../../../src/cyo_adventure/validator/layer1.py)). **No
-Tier-2 8-11 book exists.** Two options, and the choice is the owner's:
+**Why step 8a exists (D12).** All nine 8-11 skeletons declare zero variables, consistent with Tier 1,
+and `L1-6` forbids a Tier-1 book from declaring any
+([`layer1.py:478-490`](../../../src/cyo_adventure/validator/layer1.py)); tier is `metadata.tier`.
+**No Tier-2 8-11 book exists**, so piloting prose at the band D3 names is real authoring work. It is
+scheduled as its own step rather than absorbed into the pilot step, because a promotion that turns
+out to be expensive should stall visibly rather than quietly enlarge step 8b.
 
-- Explicitly promote one 8-11 skeleton to Tier 2, which is real authoring work with its own gate
-  implications, and pilot at the band D3 actually named; or
-- Pilot the prose case at `10-13/the-glass-comet` (638 configs, the only Tier-2 prose book with
-  enough headroom under `CH-8`) and defer 8-11 to a second wave.
+Measured candidates (config count equals node count exactly, confirming zero variables):
 
-`the-flooded-quarter` and `the-winter-of-the-wolf-queen` are **not** eligible prose pilots: both cap
-out under the build-node idiom (section 4.3.2).
+| Skeleton | Nodes | Endings | Decisions | Length | Lineage variant |
+|---|---|---|---|---|---|
+| `the-storm-chasers-club` | 121 | 25 | 23 | medium | no |
+| `the-river-of-small-boats` | 127 | 26 | 24 | medium | no |
+| `the-clockwork-menagerie` | 166 | 27 | 29 | long | yes |
+| `the-hundred-door-hotel` | 176 | 31 | 118 | long | no |
+
+**Recommended: `the-storm-chasers-club`.** It has the most headroom inside the 8-11 medium prose
+node envelope of (100, 160, 30), so a gate node, a build node, and six flavour branches fit without
+approaching the ceiling. It carries no `.lineage.json`, so promoting it does not perturb mutation
+lineage. `the-hundred-door-hotel` is rejected despite its size: 118 decisions across 176 nodes is a
+hub topology that is expensive to retrofit archetype gating into.
+
+`CH-8` is not a constraint at this band. Post-promotion with a six-way build node these books land
+at roughly 6x their node count, so 384 to 1,146 configurations against a 16,600 threshold. The
+`CH-8` risk is a 10-13 and 13-16 problem, not an 8-11 one.
+
+For reference if the prose pilot ever moves bands: `10-13/the-glass-comet` (638 configs) is the only
+existing Tier-2 prose book with enough headroom. `the-flooded-quarter` and
+`the-winter-of-the-wolf-queen` both cap out under the build-node idiom (section 4.3.2).
 
 Steps 2-3 are validator-only and land before any data model exists, so the proof machinery is
 testable against hand-written fixtures before a character can be created.
@@ -685,5 +704,5 @@ Verdict on the two questions asked: Q1 **needs revision**, Q2 **sound with a mer
 | The draft's per-state `CH-3` rejects every participating book, because character-gated branches are correctly invisible in states that do not select them. 6-8 new errors per non-zero envelope state | **Accepted. Fatal, and fixed**: `CH-3` splits into union-quantified `CH-3a` (L2-11) and per-state `CH-3b` (L2-9/10/14). Section 10's original disposition of the round-1 finding is corrected above |
 | A build node that is always entered gives a returning reader a zero-button page, a runtime break, plus L2-9 and L2-10 | **Accepted.** The required shape is a bypass gate, specified in 4.3.1. The draft described the broken shape |
 | The build node makes `archetype` mutable, costing 6.00x on the *baseline* walk; two catalog books cap out | **Accepted.** 4.3.2 measures it, 4.5 is rescoped, and `CH-8` gates it. The draft validated 4.3 and 4.5 in isolation and never measured their composition |
-| No Tier-2 8-11 book exists (`L1-6` forbids Tier-1 variables), so the 8-11 prose pilot is unscheduled work | **Accepted, and escalated to an owner choice** in 9.2: promote an 8-11 skeleton, or pilot prose at `the-glass-comet` |
+| No Tier-2 8-11 book exists (`L1-6` forbids Tier-1 variables), so the 8-11 prose pilot is unscheduled work | **Accepted, escalated, and decided (D12)**: promote `8-11/the-storm-chasers-club` to Tier 2 as step 8a. Piloting prose at `the-glass-comet` was the alternative and was declined, because it would have tested the prose case at a band D3 did not name |
 | The `choice_id` signature change can only add findings, but the Wyrmreach fixtures are missing and `validate_series` runs on the approve path | **Accepted.** Merge-gated and moved out of step 3 (5.3, 9.2) |
