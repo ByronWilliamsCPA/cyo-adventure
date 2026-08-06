@@ -6,6 +6,7 @@ import { EmptyState } from '@ds/components/EmptyState'
 import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { useApi } from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
 import { AssignChildrenDialog } from './AssignChildrenDialog'
 import { makeAssignApi, type GuardianBookItem } from './assignApi'
@@ -63,6 +64,7 @@ function assignedNames(book: GuardianBookItem, nameById: Map<string, string>): s
  * rather than a broken page, mirroring ConsolePage's forbidden branch.
  */
 export function BooksPage() {
+  usePageTitle('Books')
   const api = useApi()
   const assignApi = useMemo(() => makeAssignApi(api), [api])
   const profilesApi = useMemo(() => makeProfilesApi(api), [api])

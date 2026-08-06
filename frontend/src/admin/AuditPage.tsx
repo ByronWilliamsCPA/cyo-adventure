@@ -5,6 +5,7 @@ import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { Button } from '@ds/components/Button'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { makeAuditApi, type AuditEventView, type AuditListView } from './auditApi'
 
 const PAGE_SIZE = 50
@@ -85,6 +86,7 @@ function transitionLabel(event: AuditEventView): string {
  * re-checks the admin role on every call regardless of what this page does.
  */
 export function AuditPage() {
+  usePageTitle('Audit Log')
   const api = useApi()
   const auditApi = useMemo(() => makeAuditApi(api), [api])
 

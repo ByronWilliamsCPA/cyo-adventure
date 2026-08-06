@@ -10,6 +10,7 @@ import { formatRelativeTime } from '../guardian/intakeApi'
 import { ageBandLabel } from '../guardian/storyRequestOptions'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { makeAdminLibraryApi, type StorybookSummary } from './adminLibraryApi'
 import './admin.css'
 
@@ -47,6 +48,7 @@ function statusLabel(status: string): string {
  * the existing review detail page, not only the in-review review queue.
  */
 export function AdminLibraryPage() {
+  usePageTitle('Library')
   const api = useApi()
   const libraryApi = useMemo(() => makeAdminLibraryApi(api), [api])
   const [state, setState] = useState<LoadState>({ kind: 'loading' })

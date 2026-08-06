@@ -6,6 +6,7 @@ import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { Button } from '@ds/components/Button'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { makeProviderAllowlistApi } from './providerAllowlistApi'
 import type { AllowlistListView } from '../client/types.gen'
 
@@ -29,6 +30,7 @@ type LoadState =
  * mirroring ModerationThresholdsPage.
  */
 export function ProviderAllowlistPage() {
+  usePageTitle('Provider Allowlist')
   const api = useApi()
   const allowlistApi = useMemo(() => makeProviderAllowlistApi(api), [api])
 

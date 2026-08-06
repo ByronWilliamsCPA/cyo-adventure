@@ -8,6 +8,7 @@ import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { AvatarCircle } from '../profiles/AvatarCircle'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
 import { previewAsChildPath } from '../routes'
@@ -29,6 +30,7 @@ type Editing = { mode: 'create' } | { mode: 'edit'; profile: ProfileView } | nul
  * confirm dialog names the child and states that this cannot be undone.
  */
 export function ProfilesPage() {
+  usePageTitle('Profiles')
   const api = useApi()
   const profilesApi = useMemo(() => makeProfilesApi(api), [api])
   const budgetApi = useMemo(() => makeBudgetApi(api), [api])

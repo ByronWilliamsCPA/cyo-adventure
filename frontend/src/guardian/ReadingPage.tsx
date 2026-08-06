@@ -6,6 +6,7 @@ import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { formatRelativeTime } from './intakeApi'
 import { makeReadingApi, type ChildEngagementItem, type ReadingHistoryItem } from './readingApi'
 import './guardian.css'
@@ -93,6 +94,7 @@ function BookRow({ book, syncedAt }: { book: ReadingHistoryItem; syncedAt: numbe
  * (the library listing, the Books page).
  */
 export function ReadingPage() {
+  usePageTitle('Reading History')
   const api = useApi()
   const readingApi = useMemo(() => makeReadingApi(api), [api])
   const [state, setState] = useState<PageState>({ kind: 'loading' })
