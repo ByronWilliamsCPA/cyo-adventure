@@ -5195,6 +5195,13 @@ not scheduled: that is its accurate state.</p>
 <td>4b</td>
 <td>decision</td>
 </tr>
+<tr>
+<td>UW-I11</td>
+<td>The favicon (<code>frontend/public/favicon.svg</code>) and the OG/Twitter share image (<code>og:image</code>/<code>twitter:image</code> in <code>index.html</code>) are both hand-coded/reused placeholders, not designed or generated art: the favicon is an inline SVG open-book glyph in the app's brand palette, matching <code>Mascot.tsx</code>'s own placeholder-glyph pattern (<code>UW-I08</code>), and the share image reuses the existing 512x512 PWA icon (square, not the 1200x630 landscape link-preview surfaces prefer). Both were coded by hand in-session because no image-generation tool was available then. Replace with real generated/designed art once one is: a proper book-themed favicon and a dedicated 1200x630 og-image. Sibling deferral to <code>UW-I08</code>.</td>
+<td>code</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-j-remediation-plan-and-console-gaps">Cluster J: remediation-plan and console gaps<a class="headerlink" href="#cluster-j-remediation-plan-and-console-gaps" title="Permanent link">&para;</a></h2>
@@ -5784,7 +5791,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 6, 2026 01:36:42 UTC">August 6, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 6, 2026 11:56:19 UTC">August 6, 2026</span>
   </span>
 
     
