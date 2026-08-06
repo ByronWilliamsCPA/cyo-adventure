@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.66.5] - 2026-08-06
+
+### Bug Fixes
+
+- **frontend**: Add favicon, social/canonical meta, and per-page titles
+  ([#632](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/632),
+  [`192557a`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/192557a3b5b29631e6f4a0c29dac1b46701a44a2))
+
+
 ## [0.66.4] - 2026-08-06
 
 ### Bug Fixes
@@ -3212,6 +3221,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.66.5]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.4...v0.66.5
 [0.66.4]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.3...v0.66.4
 [0.66.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.2...v0.66.3
 [0.66.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.1...v0.66.2
