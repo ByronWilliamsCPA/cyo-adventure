@@ -27,7 +27,7 @@ tags:
 > `_check_schema_version` still required exact equality with `SCHEMA_VERSION = "2.0"`, there was no
 > `SCHEMA_MINOR` constant, and no range check existed anywhere. The decision text below was written
 > in the present tense as a specification of the target state, in the same voice as
-> [ADR-027](./adr-027-in-story-illustration.md), which carries the identical disclaimer.
+> [ADR-027](./adr-027-in-story-illustration.md), which carries a similar disclaimer.
 > Implementation was separately scheduled work at that time; see "Implementation notes" below for
 > what is actually true in the tree now.
 
@@ -150,6 +150,20 @@ Three enforcement points carry the decision:
 
 This is the same accepted-range mechanism decision 2 describes; the importer's legacy-detection
 question is implementation detail decision 2's text did not need to anticipate.
+
+**Known gap: decision 2's stamping clause and decision 3's converse are not enforced.** None of
+the three enforcement points above ties the emitted `schema_version` stamp to `SCHEMA_VERSION`.
+`Storybook.schema_version` defaults to `SCHEMA_VERSION` only when the field is absent from the
+input; every real producer (all 61 committed `skeletons/*/*.json` files,
+`scripts/build_series_book.py`, `scripts/seed_dev_data.py`, `scripts/seed_series_catalog.py`)
+supplies the field explicitly, hardcoded at `"2.0"`. Outside `_normalize_legacy_fill`, nothing in
+`src/` ever assigns `blob["schema_version"]`. So decision 2's "It stamps newly-published blobs
+with the current version" and decision 3's converse ("A story only carries a new field if it was
+published... at the minor that defines it") are both unenforced today; they hold only because no
+minor beyond `0` has ever existed. The concrete open question for the next minor bump: after
+`SCHEMA_MINOR = 1`, what stamps a document `2.1`, given 61 skeletons hardcode `"2.0"` and nothing
+in `src/` rewrites the field? Recorded rather than fixed here, since fixing every producer was
+out of scope for this branch; see `UW-A45` in `unscheduled-work-register.md`.
 
 ## Consequences
 
