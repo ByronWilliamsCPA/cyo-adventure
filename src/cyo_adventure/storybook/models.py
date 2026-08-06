@@ -587,15 +587,24 @@ class Storybook(BaseModel):
         return self
 
     def _check_schema_version(self) -> None:
-        """Reject a schema_version this model does not implement.
+        """Reject a schema_version outside the range this build implements.
+
+        ADR-025: any same-major version at or below ``SCHEMA_MINOR`` parses.
+        A newer minor is refused because ``extra="forbid"`` would drop its
+        added fields rather than error on them.
 
         Raises:
-            ValueError: If ``schema_version`` is not the supported version.
+            ValueError: If ``schema_version`` is malformed, a different
+                major, or a newer minor than this build implements.
         """
-        if self.schema_version != SCHEMA_VERSION:
+        # #CRITICAL: data integrity: this is the only gate between an
+        # arbitrary JSON document and a Storybook the pipeline trusts.
+        # #VERIFY: covered by the test_storybook_rejects_* cases
+        if not is_supported_schema_version(self.schema_version):
             msg = (
                 f"unsupported schema_version '{self.schema_version}'; "
-                f"this model implements {SCHEMA_VERSION}"
+                f"this build implements {SCHEMA_MAJOR}.0 through "
+                f"{SCHEMA_VERSION}"
             )
             raise ValueError(msg)
 

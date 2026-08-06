@@ -16,6 +16,7 @@ from cyo_adventure.storybook.models import (
     EndingKind,
     Node,
     SafetyScope,
+    Storybook,
     StoryMetadata,
     Topology,
     Valence,
@@ -149,3 +150,57 @@ def test_supported_version_rejects_a_different_major():
 
 def test_supported_version_rejects_malformed_without_raising():
     assert not is_supported_schema_version("banana", major=2, minor=2)
+
+
+_VALID_FIXTURE = (
+    Path(__file__).resolve().parents[1]
+    / "fixtures"
+    / "storybook"
+    / "valid"
+    / "01_hello_world.json"
+)
+
+
+def _story_data_at(schema_version: str) -> dict[str, object]:
+    """Load the smallest valid fixture and restamp its schema version.
+
+    Args:
+        schema_version: The version string to write into the document.
+
+    Returns:
+        dict[str, object]: The parsed fixture with ``schema_version`` replaced.
+    """
+    data = json.loads(_VALID_FIXTURE.read_text(encoding="utf-8"))
+    data["schema_version"] = schema_version
+    return data
+
+
+def test_storybook_accepts_the_current_schema_version():
+    story = Storybook.model_validate(_story_data_at(SCHEMA_VERSION))
+    assert story.schema_version == SCHEMA_VERSION
+
+
+def test_storybook_rejects_a_newer_minor():
+    newer = f"{SCHEMA_MAJOR}.{SCHEMA_MINOR + 1}"
+    data = _story_data_at(newer)
+    with pytest.raises(PydanticValidationError, match="unsupported schema_version"):
+        Storybook.model_validate(data)
+
+
+def test_storybook_rejects_a_different_major():
+    data = _story_data_at("3.0")
+    with pytest.raises(PydanticValidationError, match="unsupported schema_version"):
+        Storybook.model_validate(data)
+
+
+def test_storybook_rejects_a_malformed_version():
+    data = _story_data_at("two-point-oh")
+    with pytest.raises(PydanticValidationError, match="unsupported schema_version"):
+        Storybook.model_validate(data)
+
+
+def test_unsupported_version_message_names_the_accepted_range():
+    data = _story_data_at("3.0")
+    with pytest.raises(PydanticValidationError) as excinfo:
+        Storybook.model_validate(data)
+    assert f"{SCHEMA_MAJOR}.0 through {SCHEMA_VERSION}" in str(excinfo.value)
