@@ -454,7 +454,12 @@ class RedactingLogFilter(logging.Filter):
         # record, so a malformed %-format pair must not become log loss. Both
         # failure modes of ``getMessage`` (a mismatched format string, a
         # non-formattable argument) are caught and the record passes through
-        # untouched, exactly as it would have without this filter.
+        # untouched, exactly as it would have without this filter. The
+        # ``else`` branch, rather than an early return from the handler, is
+        # what keeps that pass-through on the same single exit as the success
+        # path: ``logging.Filter.filter`` has one honest answer here, and two
+        # ``return True`` statements only invited a reader (and SonarCloud's
+        # S3516) to hunt for the falsy path that does not exist.
         # #VERIFY: tests/unit/test_log_redaction.py::TestRedactingLogFilter::
         # test_a_record_whose_message_cannot_be_formatted_still_passes.
 
@@ -467,9 +472,10 @@ class RedactingLogFilter(logging.Filter):
         try:
             message = record.getMessage()
         except (TypeError, ValueError):
-            return True
-        rewritten, changed = redact_credential_substrings(message)
-        if changed:
-            record.msg = rewritten
-            record.args = None
+            pass
+        else:
+            rewritten, changed = redact_credential_substrings(message)
+            if changed:
+                record.msg = rewritten
+                record.args = None
         return True
