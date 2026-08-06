@@ -25,14 +25,15 @@ name: Security Analysis
   # access to fix.
   merge_group:
   schedule:
-    # Daily at 09:07 UTC, not weekly (issue #594). This is the only scan of
-    # main that does not depend on what triggered the last push, so its period
-    # is main's worst-case exposure to a newly-published advisory against an
-    # already-pinned dependency. That was a week; CVE-2026-69247 against
-    # cryptography 49.0.0 published mid-week and main's most recent CI run was
-    # a release commit that skipped the whole suite, so nothing on main was
-    # scanning at all. Offset 7 minutes past the hour to stay clear of the
-    # scheduler's on-the-hour contention.
+    # Daily at 09:07 UTC, not weekly (issue #594). The `security` job carries
+    # no gating `if:`, so this workflow has always scanned main on every push
+    # as well; the schedule is the floor under that, the one scan whose
+    # cadence does not depend on what triggered the last push. Its period is
+    # therefore main's worst-case LATENCY between an advisory being published
+    # and main being scanned against it. Weekly made that up to ~6 days;
+    # daily makes it ~1. The gap this closes is latency, not absence.
+    # Offset 7 minutes past the hour to stay clear of the scheduler's
+    # on-the-hour contention.
     - cron: '7 9 * * *'
   workflow_dispatch:
 
