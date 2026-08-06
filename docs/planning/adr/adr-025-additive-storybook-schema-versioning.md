@@ -18,7 +18,8 @@ tags:
 
 > **Status**: Accepted (2026-08-01), on owner direction recorded in
 > [design-review-kid-appeal-2026-08-01.md](../design-review-kid-appeal-2026-08-01.md) section 8
-> (question F1).
+> (question F1). Implemented (2026-08-06) by the ADR-025 implementation plan (worktree
+> `feat/persistent-characters`); see "Implementation notes" below.
 > **Cross-sign**: `storybook/models.py`, `storybook/schema_export.py`, `schema/storybook.schema.json`,
 > both player engines, and the conformance corpus. No database migration; published blobs are not
 > rewritten.
@@ -120,6 +121,34 @@ with a deploy sequence and a compatibility window, for additions that by constru
 nothing about how an existing story reads. The decision keeps the major-bump discipline for
 changes that genuinely are breaking; it only declines to treat "one new optional field" as one of
 them.
+
+## Implementation notes (2026-08-06, first implementation)
+
+Three enforcement points carry the decision:
+
+1. `Storybook._check_schema_version` (`storybook/models.py`) delegates to
+   `is_supported_schema_version`, which accepts any `SCHEMA_MAJOR.x` with `x <= SCHEMA_MINOR` and
+   returns `False`, never raises, for a version outside that range or a malformed string.
+   `parse_schema_version` is the one function that parses a raw `MAJOR.MINOR` string and the one
+   that raises `ValueError` when it is malformed; `is_supported_schema_version` catches that and
+   turns it into a `False` result rather than propagating it.
+2. `import_catalog._needs_legacy_normalization` asks a narrower question than the parser does: "is
+   this pre-`SCHEMA_MAJOR`", via `parse_schema_version` directly, not `is_supported_schema_version`.
+   A same-major document at or above the current minor, including a future minor such as `2.1`, is
+   deliberately not treated as legacy and rewritten to `2.0`; it falls through to the
+   `metadata.topology` check and, if still unresolved, reaches `run_gate` unmodified to be rejected
+   loudly by `_check_schema_version`, rather than silently normalized and admitted as a document
+   this build does not actually implement. The importer's job is detecting the legacy pre-versioning
+   shape, not deciding what this build can parse; those are different questions on purpose, and
+   collapsing them into one call would let a same-major, unsupported document masquerade as `2.0`.
+3. `SCHEMA_MINOR` in `storybook/models.py` is the single place a minor is bumped.
+   `LEGACY_NORMALIZED_SCHEMA_VERSION = "2.0"` in `import_catalog.py` is a separate, deliberately
+   fixed constant pinning the stamp the legacy normalizer writes; it must never be changed to track
+   `SCHEMA_MINOR`, or a future minor bump would start rewriting legacy blobs to a version this build
+   never actually normalized them for.
+
+This is the same accepted-range mechanism decision 2 describes; the importer's legacy-detection
+question is implementation detail decision 2's text did not need to anticipate.
 
 ## Consequences
 
