@@ -1,5 +1,6 @@
 import { RequestStoryForm } from '../guardian/RequestStoryForm'
 import { StoryRequestQueue } from '../guardian/StoryRequestQueue'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 /**
  * Admin story-request review: the cross-family pending queue (backed by the
@@ -9,6 +10,7 @@ import { StoryRequestQueue } from '../guardian/StoryRequestQueue'
  * at /guardian/requests (RequestsPage).
  */
 export function AdminRequestsPage() {
+  usePageTitle('Requests')
   return (
     <>
       <RequestStoryForm mode="admin" />

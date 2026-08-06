@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 
 import { hasValidDeviceGrant, hydrateDeviceGrant } from '../auth/deviceGrant'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { Mascot } from '../kid/Mascot'
 import {
   AUTHORIZE_DEVICE_INTENT_PARAM,
@@ -32,6 +33,11 @@ const AUTHORIZE_DEVICE_PATH = `${GUARDIAN_LOGIN_PATH}?${AUTHORIZE_DEVICE_INTENT_
  * the device grant here does not pull Supabase into this page either.
  */
 export function LandingPage() {
+  // Bare: this IS the app's root page, so its title is the app name itself,
+  // matching index.html's static default rather than getting a redundant
+  // "Home - CYO Adventure" suffix.
+  usePageTitle('CYO Adventure', { bare: true })
+
   // Device-state-aware Kids door (ADR-014 section 5): an authorized device
   // sends a child straight to the profile picker; an unauthorized one routes
   // through guardian login carrying the authorize-device intent so the

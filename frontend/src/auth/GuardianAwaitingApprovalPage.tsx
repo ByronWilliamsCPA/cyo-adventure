@@ -5,6 +5,7 @@ import { EmptyState } from '@ds/components/EmptyState'
 import { Navigate } from 'react-router'
 
 import '../guardian/guardian.css'
+import { usePageTitle } from '../hooks/usePageTitle'
 import {
   ADMIN_CONSOLE_PATH,
   GUARDIAN_CONSENT_PATH,
@@ -41,6 +42,7 @@ const AUTO_RECHECK_INTERVAL_MS = 20_000
  * #VERIFY: GuardianAwaitingApprovalPage.test.tsx redirect cases.
  */
 export function GuardianAwaitingApprovalPage() {
+  usePageTitle('Awaiting Approval')
   const { status, principal, signOut, refreshStatus } = useAuth()
   const [checking, setChecking] = useState(false)
 

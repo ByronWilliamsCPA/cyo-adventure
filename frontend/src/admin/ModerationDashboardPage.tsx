@@ -12,6 +12,7 @@ import type {
 } from '../client/types.gen'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { makeModerationDashboardApi } from './moderationDashboardApi'
 import { makeThresholdsApi } from './moderationThresholdsApi'
 
@@ -68,6 +69,7 @@ function describeChange(change: ThresholdChangeView): string | null {
  * ModerationThresholdsPage.
  */
 export function ModerationDashboardPage() {
+  usePageTitle('Moderation Dashboard')
   const api = useApi()
   const dashboardApi = useMemo(() => makeModerationDashboardApi(api), [api])
   const thresholdsApi = useMemo(() => makeThresholdsApi(api), [api])

@@ -5,6 +5,7 @@ import { EmptyState } from '@ds/components/EmptyState'
 import { Navigate } from 'react-router'
 
 import '../guardian/guardian.css'
+import { usePageTitle } from '../hooks/usePageTitle'
 import {
   ADMIN_CONSOLE_PATH,
   GUARDIAN_AWAITING_APPROVAL_PATH,
@@ -52,6 +53,7 @@ const MAX_AUTO_RETRIES = 15
  * #VERIFY: GuardianBackendUnavailablePage.test.tsx redirect cases.
  */
 export function GuardianBackendUnavailablePage() {
+  usePageTitle('Connection Problem')
   const { status, principal, signOut, refreshStatus } = useAuth()
   const [checking, setChecking] = useState(false)
   const [autoRetriesExhausted, setAutoRetriesExhausted] = useState(false)

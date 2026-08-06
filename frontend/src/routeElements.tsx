@@ -19,6 +19,7 @@
 import { Link, useRouteError } from 'react-router'
 
 import { LoadingStatus } from '@ds/components/LoadingStatus'
+import { usePageTitle } from './hooks/usePageTitle'
 import { lazyWithReload } from './lazyWithReload'
 import { KID_PICKER_PATH } from './routes'
 import './routeElements.css'
@@ -69,6 +70,7 @@ export function RouteError() {
  * surface-specific module.
  */
 export function NotFoundPage() {
+  usePageTitle('Page Not Found')
   return (
     <main className="route-not-found">
       <h1 className="route-not-found__title">We can&apos;t find that page.</h1>

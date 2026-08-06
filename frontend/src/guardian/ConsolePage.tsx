@@ -15,6 +15,7 @@ import { makeDeviceGrantApi } from '../auth/deviceGrantApi'
 import { useAuth } from '../auth/useAuth'
 import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { ADMIN_CONSOLE_PATH, KID_PICKER_PATH } from '../routes'
 import { InviteCoParentSection } from './InviteCoParentSection'
 
@@ -31,6 +32,7 @@ type DeviceActionStatus = 'idle' | 'busy' | 'error'
  * pointer into the admin console.
  */
 export function ConsolePage() {
+  usePageTitle('Guardian Console')
   const api = useApi()
   const navigate = useNavigate()
   const deviceGrantApi = useMemo(() => makeDeviceGrantApi(api), [api])

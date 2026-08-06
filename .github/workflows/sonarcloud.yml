@@ -48,7 +48,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: ByronWilliamsCPA/.github/.github/workflows/python-sonarcloud.yml@7d12f5486ab5c856397ebaa4acd3c99ca385227c  # main
+    uses: ByronWilliamsCPA/.github/.github/workflows/python-sonarcloud.yml@50e3c9783a7f43613651d5c5688d99cb748a8a22  # main
     with:
       sonar-organization: 'byronwilliamscpa'
       sonar-project-key: 'ByronWilliamsCPA_cyo-adventure'
@@ -60,6 +60,19 @@ jobs:
       # 7.6/7.14). 3.14 records them correctly, so it is the truthful
       # measurement interpreter.
       python-version: '3.14'
+      # The interpreter the scan RUNS on (above) is not the version range the
+      # code must SUPPORT. `requires-python = ">=3.11"` and
+      # python-compatibility.yml runs a live 3.11 leg, so declaring 3.14 alone
+      # told the analyzer this is a 3.14-only project and it raised 5 PEP 695
+      # findings (S6794/S6796) proposing syntax that is a SyntaxError on 3.11.
+      # #ASSUME: data integrity: the version gate is allMatch over this list
+      # (PythonVersionUtils.areSourcePythonVersionsGreaterOrEqualThan), so the
+      # LOWEST entry decides whether a version-gated rule fires; an entry below
+      # the real floor would silence rules that should fire.
+      # #VERIFY: keep this list equal to the `requires-python` floor through
+      # the primary target, and read the first analysis after any change as a
+      # diff, since a wider declaration can also surface new findings.
+      sonar-python-version: '3.11,3.12,3.13,3.14'
       source-directory: 'src'
       coverage-paths: 'coverage.xml'
       # Advisory except on push to a protected branch (see the `on:` comment
