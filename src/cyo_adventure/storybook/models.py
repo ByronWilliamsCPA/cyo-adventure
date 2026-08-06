@@ -31,7 +31,7 @@ SCHEMA_MAJOR = 2
 SCHEMA_MINOR = 0
 SCHEMA_VERSION = f"{SCHEMA_MAJOR}.{SCHEMA_MINOR}"
 
-_SCHEMA_VERSION_RE = re.compile(r"^(\d+)\.(\d+)$")
+_SCHEMA_VERSION_RE = re.compile(r"(\d+)\.(\d+)", re.ASCII)
 
 
 def parse_schema_version(value: str) -> tuple[int, int]:
@@ -47,7 +47,7 @@ def parse_schema_version(value: str) -> tuple[int, int]:
         ValueError: If ``value`` is not exactly two dot-separated
             non-negative integers.
     """
-    match = _SCHEMA_VERSION_RE.match(value)
+    match = _SCHEMA_VERSION_RE.fullmatch(value)
     if match is None:
         msg = f"malformed schema_version {value!r}; expected MAJOR.MINOR"
         raise ValueError(msg)
@@ -60,9 +60,15 @@ def is_supported_schema_version(
     """Report whether this build can parse a document at ``value``.
 
     ADR-025 accepts any same-major version whose minor is at or below the
-    deployed minor. A newer minor is refused rather than parsed leniently:
-    its added fields would be silently dropped by ``extra="forbid"``
-    enumeration, which is a data-integrity failure, not a compatibility one.
+    deployed minor. A newer minor is refused explicitly here rather than
+    left for ``extra="forbid"`` to catch: with ``extra="forbid"`` everywhere,
+    a newer-minor document that actually uses one of its new fields already
+    fails at the model boundary, just with a confusing "extra fields not
+    permitted" error instead of a version-specific one. This check buys two
+    things ``extra="forbid"`` alone cannot: a clearer refusal that names the
+    version rather than a field, and rejection of a newer-minor document
+    that happens not to populate any new field, which is otherwise
+    indistinguishable from a valid document at the deployed minor.
 
     Args:
         value: The raw ``schema_version`` string from a document.
@@ -590,8 +596,13 @@ class Storybook(BaseModel):
         """Reject a schema_version outside the range this build implements.
 
         ADR-025: any same-major version at or below ``SCHEMA_MINOR`` parses.
-        A newer minor is refused because ``extra="forbid"`` would drop its
-        added fields rather than error on them.
+        A newer minor is refused explicitly here rather than left for
+        ``extra="forbid"`` to catch: that guard only fails a document that
+        actually populates a field the current minor does not define, and
+        even then with a confusing "extra fields not permitted" error. This
+        check gives a version-specific refusal and also catches a
+        newer-minor document that happens not to use any new field, which
+        ``extra="forbid"`` alone would let through.
 
         Raises:
             ValueError: If ``schema_version`` is malformed, a different

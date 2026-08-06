@@ -19,6 +19,8 @@ from cyo_adventure.storybook.evaluator import (
     evaluate,
 )
 from cyo_adventure.storybook.models import (
+    SCHEMA_MAJOR,
+    SCHEMA_MINOR,
     SCHEMA_VERSION,
     AgeBand,
     Choice,
@@ -33,9 +35,13 @@ from cyo_adventure.storybook.models import (
     StoryMetadata,
     Variable,
     VariableType,
+    is_supported_schema_version,
+    parse_schema_version,
 )
 
 __all__ = [
+    "SCHEMA_MAJOR",
+    "SCHEMA_MINOR",
     "SCHEMA_VERSION",
     "WHITELISTED_OPERATORS",
     "AgeBand",
@@ -55,7 +61,9 @@ __all__ = [
     "Variable",
     "VariableType",
     "evaluate",
+    "is_supported_schema_version",
     "ordering_var_refs",
+    "parse_schema_version",
     "referenced_vars",
     "validate_condition",
 ]

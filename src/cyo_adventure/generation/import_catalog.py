@@ -38,6 +38,7 @@ from cyo_adventure.generation.import_story import ImportRequest, import_filled_s
 from cyo_adventure.generation.skeleton_match import resolve_skeleton_path
 from cyo_adventure.storybook.models import (
     SCHEMA_MAJOR,
+    SCHEMA_MINOR,
     parse_schema_version,
 )
 
@@ -330,10 +331,8 @@ def _needs_legacy_normalization(blob: dict[str, object]) -> bool:
         True if the blob needs :func:`_normalize_legacy_fill` before it can
         pass :func:`cyo_adventure.validator.gate.run_gate`.
     """
-    metadata = blob.get("metadata")
     version = blob.get("schema_version")
 
-    # If version is missing or not a string, treat as legacy
     if not isinstance(version, str):
         return True
 
@@ -341,21 +340,33 @@ def _needs_legacy_normalization(blob: dict[str, object]) -> bool:
     # (e.g. "2.1") or a higher major (e.g. "3.0") as legacy would silently
     # rewrite the document's schema_version to "2.0" and admit it as if this
     # build implemented it, instead of letting the parser reject it loudly.
-    # #VERIFY: covered by test_a_future_minor_is_not_treated_as_legacy,
-    # test_higher_major_is_not_legacy, and test_malformed_version_is_legacy
-    # in tests/unit/test_import_catalog.py::TestNeedsLegacyNormalization.
+    # This holds whether or not metadata.topology happens to be present: the
+    # version bound below is checked before the topology fallthrough, not
+    # after it.
+    # #VERIFY: test_a_future_minor_is_not_treated_as_legacy and
+    # test_higher_major_is_not_legacy assert False with metadata.topology
+    # present; test_a_future_minor_without_topology_is_not_legacy and
+    # test_higher_major_without_topology_is_not_legacy assert False with it
+    # absent; test_malformed_version_is_legacy asserts True for an
+    # unparseable version. All four in
+    # tests/unit/test_import_catalog.py::TestNeedsLegacyNormalization.
     try:
-        major, _ = parse_schema_version(version)
+        major, doc_minor = parse_schema_version(version)
     except ValueError:
         return True
 
-    # Pre-2.0 documents are legacy and need normalization
+    # Pre-SCHEMA_MAJOR documents are the legacy shape and need normalization.
     if major < SCHEMA_MAJOR:
         return True
 
-    # For major >= 2, check if topology exists (required field for non-legacy)
-    # Version 2.0 and future minors (2.1, etc.) should have topology;
-    # if missing, treat as legacy. If present, not legacy.
+    # Anything this build cannot parse (a higher major, or a newer minor) is
+    # not legacy and must never be rewritten: it reaches run_gate unmodified
+    # so _check_schema_version refuses it by name. The topology check below
+    # applies only to documents this build actually implements.
+    if major > SCHEMA_MAJOR or doc_minor > SCHEMA_MINOR:
+        return False
+
+    metadata = blob.get("metadata")
     return not (isinstance(metadata, dict) and "topology" in metadata)
 
 
@@ -416,8 +427,10 @@ def _normalize_legacy_fill(
     clear the validation gate, each copied verbatim from the source skeleton
     rather than invented:
 
-    1. ``schema_version``: bumped to "2.0" (the current model only accepts
-       this value; the fills were serialized against a stale "1.0" writer).
+    1. ``schema_version``: stamped at "2.0" because a normalized legacy fill
+       gains no field beyond 2.0 (see
+       :data:`LEGACY_NORMALIZED_SCHEMA_VERSION`); deliberately not stamped
+       at the current minor.
     2. ``metadata.topology`` and ``metadata.production_eligible``: backfilled
        from the skeleton's own metadata. ``topology`` is a required field
        with no default. ``production_eligible`` is preserved as ``False``

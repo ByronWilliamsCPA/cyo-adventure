@@ -36,6 +36,7 @@ from cyo_adventure.generation.import_catalog import (
     _print_summary,
     build_arg_parser,
 )
+from cyo_adventure.storybook.models import SCHEMA_MAJOR, SCHEMA_MINOR, SCHEMA_VERSION
 from cyo_adventure.validator.gate import run_gate
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -188,44 +189,56 @@ class TestNeedsLegacyNormalization:
         assert _needs_legacy_normalization(blob) is True
 
     def test_current_version_with_topology_is_not_legacy(self) -> None:
-        from cyo_adventure.storybook.models import SCHEMA_VERSION
-
         blob = {"schema_version": SCHEMA_VERSION, "metadata": {"topology": "branching"}}
-        assert not _needs_legacy_normalization(blob)
+        assert _needs_legacy_normalization(blob) is False
 
     def test_pre_2_0_blob_is_legacy(self) -> None:
         blob = {"schema_version": "1.0", "metadata": {"topology": "branching"}}
-        assert _needs_legacy_normalization(blob)
+        assert _needs_legacy_normalization(blob) is True
 
     def test_missing_version_is_legacy(self) -> None:
         blob = {"metadata": {"topology": "branching"}}
-        assert _needs_legacy_normalization(blob)
+        assert _needs_legacy_normalization(blob) is True
 
     def test_a_future_minor_is_not_treated_as_legacy(self) -> None:
-        from cyo_adventure.storybook.models import SCHEMA_MAJOR, SCHEMA_MINOR
-
         # A newer minor is a document this build cannot parse. It must fail the
         # parser loudly, not be silently rewritten by the legacy normalizer.
         newer = f"{SCHEMA_MAJOR}.{SCHEMA_MINOR + 1}"
         blob = {"schema_version": newer, "metadata": {"topology": "branching"}}
-        assert not _needs_legacy_normalization(blob)
+        assert _needs_legacy_normalization(blob) is False
+
+    def test_a_future_minor_without_topology_is_not_legacy(self) -> None:
+        # Same boundary as test_a_future_minor_is_not_treated_as_legacy, but
+        # with metadata.topology absent entirely: this is the case C1 found
+        # falling through to the topology check and being misclassified as
+        # legacy. The version bound must reject it before the topology
+        # fallthrough is ever consulted.
+        newer = f"{SCHEMA_MAJOR}.{SCHEMA_MINOR + 1}"
+        blob = {"schema_version": newer}
+        assert _needs_legacy_normalization(blob) is False
 
     def test_higher_major_is_not_legacy(self) -> None:
-        from cyo_adventure.storybook.models import SCHEMA_MAJOR
-
         # A higher major is a future breaking schema revision this build has
         # never heard of. It must fail the parser loudly, not be silently
         # rewritten as 2.0.
         higher = f"{SCHEMA_MAJOR + 1}.0"
         blob = {"schema_version": higher, "metadata": {"topology": "branching"}}
-        assert not _needs_legacy_normalization(blob)
+        assert _needs_legacy_normalization(blob) is False
+
+    def test_higher_major_without_topology_is_not_legacy(self) -> None:
+        # Same boundary as test_higher_major_is_not_legacy, but with
+        # metadata.topology absent entirely; see
+        # test_a_future_minor_without_topology_is_not_legacy.
+        higher = f"{SCHEMA_MAJOR + 1}.0"
+        blob = {"schema_version": higher}
+        assert _needs_legacy_normalization(blob) is False
 
     def test_malformed_version_is_legacy(self) -> None:
         blob = {
             "schema_version": "not-a-version",
             "metadata": {"topology": "branching"},
         }
-        assert _needs_legacy_normalization(blob)
+        assert _needs_legacy_normalization(blob) is True
 
 
 @pytest.mark.unit
