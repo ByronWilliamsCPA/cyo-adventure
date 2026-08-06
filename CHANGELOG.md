@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.66.4] - 2026-08-06
+
+### Bug Fixes
+
+- **quality**: Declare the supported Python range to SonarCloud
+  ([#630](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/630),
+  [`850efdf`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/850efdf423996e966a0d1cff2972da8505a358a4))
+
+
 ## [0.66.3] - 2026-08-06
 
 ### Bug Fixes
@@ -3203,6 +3212,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.66.4]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.3...v0.66.4
 [0.66.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.2...v0.66.3
 [0.66.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.1...v0.66.2
 [0.66.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.0...v0.66.1
