@@ -1,15 +1,32 @@
-"""Age-policy gate layer (rules PL-15..PL-21, plus the PL-22 fail-closed guard).
+"""Age-policy gate layer (rules PL-15..PL-26, plus the PL-22 fail-closed guard).
 
 Runs after Layer 1 passes and the Storybook parses, on the typed model plus the
 choice graph. Most findings are ERROR-severity and blocking; the PL-19 story-mean
-words-per-node check is advisory (WARNING). These rules convert age-safety, shape,
-and story-scale judgments into deterministic invariants.
+words-per-node check, the PL-20 arc ceiling, PL-25 other than its hard limit, and
+all of PL-26 are advisory (WARNING). These rules convert age-safety, shape, and
+story-scale judgments into deterministic invariants.
+
+Path-length rules grade in two tiers on purpose. A *floor* violation (PL-20: too
+short to be a story) is a correctness failure and blocks. A *ceiling* violation
+(PL-20's long arc, PL-25's buried first choice) is a craft failure and warns,
+because the ERROR tier means unpublishable. PL-25 keeps one blocking tier past
+``ARC_CEILING_MULTIPLE`` times the band ceiling, where the shape has left the
+observed genre rather than merely run slow.
+
+Two axes are in play and are easy to confuse. PL-17 measures *breadth*: how many
+decision and ending nodes exist anywhere in the graph. PL-20, PL-25, and PL-26
+measure *depth along a walk*: how long the reader travels, how soon they first
+steer, and how often they steer after that. A story can satisfy every breadth
+floor while walking the reader down a corridor, which is the gap PL-26 closes.
 
 Rule sources: docs/planning/validator-rules.md (PL-15..PL-18);
 docs/planning/adr/adr-011-story-scale-framework.md (PL-19
 words-per-node, PL-20 fastest-finish arc floor, and PL-21 off-matrix rejection).
 PL-22 (band profile not configured, fail closed) is a runtime invariant added
-2026-07-16 and is not yet reflected in validator-rules.md.
+2026-07-16 and is not yet reflected in validator-rules.md. PL-25
+(depth to first decision) and PL-26 (decision density on the fastest finish) are
+anchored on Adams, Beckelhymer and Marr, Journal of Humanistic Mathematics 9(2),
+2019, DOI 10.5642/jhummath.201902.05; see band_profile for the measurements.
 """
 
 from __future__ import annotations
@@ -27,10 +44,13 @@ from cyo_adventure.storybook.models import (
     level_rank,
 )
 from cyo_adventure.validator.band_profile import (
+    ARC_CEILING_MULTIPLE,
     BandProfile,
     breadth_scaled_floors,
+    first_decision_window,
     is_offered_cell,
     min_complete_floor,
+    nodes_per_decision_ceiling,
     profile_for,
     reading_pace_wpm,
     words_per_node_profile,
@@ -109,6 +129,7 @@ def validate_policy(story: Storybook) -> ValidationReport:
     _check_topology(story, report)
     _check_words_per_node(story, report)
     _check_min_to_complete(story, report)
+    _check_first_decision_depth(story, report)
     _check_declared_read_time(story, report)
     _check_ending_mix(story, report)
     _check_off_matrix_cell(story, report)
@@ -339,24 +360,106 @@ def _check_words_per_node(story: Storybook, report: ValidationReport) -> None:
             )
 
 
+def _check_first_decision_depth(story: Storybook, report: ValidationReport) -> None:
+    """PL-25: the first decision must arrive inside the band's depth window.
+
+    Measures nodes on the shortest path from ``start_node`` up to and including
+    the first node offering two or more choices, then grades that depth in two
+    tiers:
+
+    - **Past the band ceiling: WARNING.** A buried first choice is a craft
+      defect, not an unpublishable one, and the gate's ERROR tier means
+      unpublishable. This mirrors PL-20, whose *floor* (too short to be a story)
+      errors while whose *ceiling* (a long arc) warns. Grading a one-node
+      overshoot as fatal would also retroactively unpublish committed work on a
+      margin narrower than the calibration's own confidence.
+    - **Past ``ARC_CEILING_MULTIPLE`` times the ceiling: ERROR.** That multiple
+      is the JHM corpus's own longest-to-shortest playthrough ratio, so a story
+      that far past the window is outside the observed genre rather than merely
+      slow. This is the long unbranching prologue the rule exists to catch, and
+      the shape an LLM generator produces most readily.
+
+    Under the floor is a WARNING: a story that opens on its first choice gives
+    the reader no situation to choose about.
+
+    Applies to every story with a configured band, scale-classified or not,
+    because a buried first choice is a band-level pacing defect rather than a
+    scale one. A story with no decision node at all is left to PL-17, which
+    already floors decision count. See ``band_profile._FIRST_DECISION_DEPTH``
+    for the JHM 2019 anchor.
+    """
+    window = first_decision_window(story.metadata.age_band.value)
+    if window is None:
+        return
+    floor, ceiling = window
+    decisions = {
+        node.id for node in story.nodes if not node.is_ending and len(node.choices) >= 2
+    }
+    if not decisions:
+        return
+    depth = _shortest_path_nodes(_build_graph(story), story.start_node, decisions)
+    if depth is None:
+        return
+    band = story.metadata.age_band.value
+    hard_ceiling = int(ceiling * ARC_CEILING_MULTIPLE)
+    if depth > ceiling:
+        blocking = depth > hard_ceiling
+        limits = (
+            f"ceiling {ceiling} and its hard limit {hard_ceiling}"
+            if blocking
+            else f"ceiling {ceiling}"
+        )
+        report.add(
+            ValidationFinding(
+                rule_id="PL-25",
+                severity=Severity.ERROR if blocking else Severity.WARNING,
+                story_id=story.id,
+                message=(
+                    f"PL-25 opening: first decision is {depth} node(s) in, past the "
+                    f"band '{band}' {limits} in story '{story.id}'"
+                ),
+            )
+        )
+    elif depth < floor:
+        report.add(
+            ValidationFinding(
+                rule_id="PL-25",
+                severity=Severity.WARNING,
+                story_id=story.id,
+                message=(
+                    f"PL-25 opening: first decision is {depth} node(s) in, under the "
+                    f"band '{band}' floor {floor} in story '{story.id}'"
+                ),
+            )
+        )
+
+
 def _check_min_to_complete(story: Storybook, report: ValidationReport) -> None:
-    """PL-20: the shortest satisfying-completion path must meet the arc floor.
+    """PL-20 arc length and PL-26 decision density on the fastest-finish path.
 
     Only a scale-classified production story (one that declares a ``length``) has
-    a fastest-finish floor, taken from the ADR-011 cell. The shortest path in
-    nodes from ``start_node`` to any success/completion ending must be at least
-    that floor; a too-short winning path (a hollow quick win) blocks. Fail-fast
-    negative endings are unaffected, and a story with no satisfying ending is
-    left to the ending-floor rules (PL-17). See ADR-011 section 4.
+    a fastest-finish floor, taken from the ADR-011 cell. Three checks share the
+    one computed path so they can never disagree about which walk that is:
+
+    - **PL-20 floor (ERROR).** The shortest path in nodes from ``start_node`` to
+      any success/completion ending must be at least the cell floor; a hollow
+      quick win blocks.
+    - **PL-20 ceiling (WARNING).** That path running past
+      ``ARC_CEILING_MULTIPLE`` times the floor is a slog to the nearest win.
+    - **PL-26 density (WARNING).** Nodes per decision along the same path must
+      not exceed ``nodes_per_decision_ceiling``. This is the axis PL-17 cannot
+      see: PL-17 counts decision nodes across the whole graph, so a story can
+      meet every breadth floor while the reader walks a corridor.
+
+    Fail-fast negative endings are unaffected, and a story with no satisfying
+    ending is left to PL-17. See ADR-011 section 4.
     """
     length = story.metadata.length
     if length is None or not story.metadata.production_eligible:
         return
-    floor = min_complete_floor(
-        story.metadata.age_band.value,
-        length.value,
-        story.metadata.narrative_style.value,
-    )
+    band = story.metadata.age_band.value
+    style = story.metadata.narrative_style.value
+    floor = min_complete_floor(band, length.value, style)
     if floor is None:
         return
     satisfying = {
@@ -366,9 +469,11 @@ def _check_min_to_complete(story: Storybook, report: ValidationReport) -> None:
     }
     if not satisfying:
         return
-    graph = _build_graph(story)
-    shortest = _shortest_path_nodes(graph, story.start_node, satisfying)
-    if shortest is not None and shortest < floor:
+    path = _shortest_path_to(_build_graph(story), story.start_node, satisfying)
+    if path is None:
+        return
+    shortest = len(path)
+    if shortest < floor:
         report.add(
             ValidationFinding(
                 rule_id="PL-20",
@@ -376,9 +481,75 @@ def _check_min_to_complete(story: Storybook, report: ValidationReport) -> None:
                 story_id=story.id,
                 message=(
                     f"PL-20 arc: shortest satisfying completion is {shortest} node(s), "
-                    f"below the '{story.metadata.age_band.value}' {length.value} "
-                    f"{story.metadata.narrative_style.value} floor {floor} in story "
+                    f"below the '{band}' {length.value} {style} floor {floor} in story "
                     f"'{story.id}'"
+                ),
+            )
+        )
+    ceiling = int(floor * ARC_CEILING_MULTIPLE)
+    if shortest > ceiling:
+        report.add(
+            ValidationFinding(
+                rule_id="PL-20",
+                severity=Severity.WARNING,
+                story_id=story.id,
+                message=(
+                    f"PL-20 arc: shortest satisfying completion is {shortest} node(s), "
+                    f"over the '{band}' {length.value} {style} advisory ceiling "
+                    f"{ceiling} ({ARC_CEILING_MULTIPLE}x the floor {floor}) in story "
+                    f"'{story.id}'"
+                ),
+            )
+        )
+    _check_decision_density(story, path, report)
+
+
+def _check_decision_density(
+    story: Storybook, path: list[str], report: ValidationReport
+) -> None:
+    """PL-26: nodes per decision along the fastest-finish path (WARNING).
+
+    A ceiling only. The rule guards the corridor shape (few or no choices on the
+    way through), which is the gap PL-17's breadth floors cannot see. It does not
+    bound density from below, because a shortest path is biased toward decision
+    nodes by construction; see ``band_profile._NODES_PER_DECISION_CEILING``.
+
+    Args:
+        story: The parsed story.
+        path: The fastest-finish node path PL-20 measured.
+        report: The report to append findings to.
+    """
+    on_path = set(path)
+    decisions = sum(
+        1
+        for node in story.nodes
+        if node.id in on_path and not node.is_ending and len(node.choices) >= 2
+    )
+    if decisions == 0:
+        report.add(
+            ValidationFinding(
+                rule_id="PL-26",
+                severity=Severity.WARNING,
+                story_id=story.id,
+                message=(
+                    f"PL-26 density: the {len(path)}-node fastest finish in story "
+                    f"'{story.id}' offers no decision at all"
+                ),
+            )
+        )
+        return
+    ceiling = nodes_per_decision_ceiling(story.metadata.narrative_style.value)
+    density = len(path) / decisions
+    if density > ceiling:
+        report.add(
+            ValidationFinding(
+                rule_id="PL-26",
+                severity=Severity.WARNING,
+                story_id=story.id,
+                message=(
+                    f"PL-26 density: fastest finish averages {density:.1f} node(s) per "
+                    f"decision ({decisions} decision(s) over {len(path)} nodes), "
+                    f"over the {ceiling} advisory ceiling in story '{story.id}'"
                 ),
             )
         )
@@ -606,6 +777,65 @@ def _check_ending_mix(story: Storybook, report: ValidationReport) -> None:
         )
 
 
+def _shortest_path_to(
+    graph: nx.DiGraph[str], start: str, targets: set[str]
+) -> list[str] | None:
+    """Return the fewest-node path from ``start`` to any of ``targets``.
+
+    Ties between equally short paths are broken by target id, so the chosen path
+    is stable under ``PYTHONHASHSEED``. PL-20 and PL-26 both read this one
+    result, so the arc-length rule and the decision-density rule can never
+    disagree about which walk is "the fastest finish".
+
+    Args:
+        graph: The story's directed choice graph.
+        start: The start node id.
+        targets: Candidate destination node ids; unreachable ones are ignored.
+
+    Returns:
+        The node-id path including both endpoints, or ``None`` when no target is
+        reachable from ``start``.
+    """
+    if start not in graph:
+        return None
+    parents: dict[str, str] = {}
+    seen: set[str] = {start}
+    frontier: list[str] = [start]
+    while frontier:
+        # A whole breadth-first level is settled before any of it is inspected,
+        # so the nearest target wins and equal-distance targets tie-break by id.
+        reached = sorted(node for node in frontier if node in targets)
+        if reached:
+            return _walk_back(parents, start, reached[0])
+        following: list[str] = []
+        for node in frontier:
+            for successor in sorted(graph.successors(node)):
+                if successor not in seen:
+                    seen.add(successor)
+                    parents[successor] = node
+                    following.append(successor)
+        frontier = following
+    return None
+
+
+def _walk_back(parents: dict[str, str], start: str, target: str) -> list[str]:
+    """Rebuild the ``start`` to ``target`` path from a BFS parent map.
+
+    Args:
+        parents: Each visited node mapped to the node it was reached from.
+        start: The node the search began at.
+        target: The node to walk back from.
+
+    Returns:
+        The node-id path in forward order, including both endpoints.
+    """
+    path = [target]
+    while path[-1] != start:
+        path.append(parents[path[-1]])
+    path.reverse()
+    return path
+
+
 def _shortest_path_nodes(
     graph: nx.DiGraph[str], start: str, targets: set[str]
 ) -> int | None:
@@ -614,14 +844,5 @@ def _shortest_path_nodes(
     Path length is measured in nodes (hops + 1). Unreachable targets are
     ignored; returns ``None`` when no target is reachable from ``start``.
     """
-    best: int | None = None
-    for target in targets:
-        if target not in graph or start not in graph:
-            continue
-        if not nx.has_path(graph, start, target):
-            continue
-        hops = int(nx.shortest_path_length(graph, start, target))
-        nodes = hops + 1
-        if best is None or nodes < best:
-            best = nodes
-    return best
+    path = _shortest_path_to(graph, start, targets)
+    return None if path is None else len(path)

@@ -3,13 +3,16 @@
 from cyo_adventure.storybook.models import AgeBand, ContentFlagLevel, EndingKind
 from cyo_adventure.validator.band_profile import (
     _PROFILES,
+    ARC_CEILING_MULTIPLE,
     MVP_MAX_NODES,
     MVP_MIN_NODES,
     BandProfile,
     breadth_scaled_floors,
+    first_decision_window,
     is_offered_cell,
     min_complete_floor,
     mvp_node_budget,
+    nodes_per_decision_ceiling,
     offered_cells,
     production_cell_budget,
     profile_for,
@@ -154,3 +157,98 @@ def test_is_offered_cell():
     assert not is_offered_cell("3-5", "long", "prose")
     assert not is_offered_cell("8-11", "short", "gamebook")
     assert not is_offered_cell("13-16", "short", "prose")
+
+
+# --- PL-25 first-decision window and PL-26 density window ---------------------
+
+# Adams, Beckelhymer and Marr, Journal of Humanistic Mathematics 9(2), 2019
+# (DOI 10.5642/jhummath.201902.05), Table 4: pages to the first decision across
+# the 40-book corpus have a median of 4 and a range of 2 to 8.25.
+JHM_FIRST_DECISION_MEDIAN = 4
+JHM_FIRST_DECISION_MAX = 8.25
+
+# Same table: pages between decisions have a mean of 3.28 corpus-wide. Note the
+# scope: corpus-wide, not along any one path. PL-26 measures a shortest path, so
+# this anchors its ceiling only; see _NODES_PER_DECISION_CEILING on why the
+# low side of that comparison does not hold.
+JHM_PAGES_BETWEEN_DECISIONS = 3.28
+
+
+def test_first_decision_window_covers_every_band():
+    """Every configured band has a PL-25 window (the band_profile #VERIFY)."""
+    for band in AgeBand:
+        assert first_decision_window(band.value) is not None, band.value
+
+
+def test_first_decision_window_is_ordered():
+    """Each window's floor must not exceed its ceiling."""
+    for band in AgeBand:
+        window = first_decision_window(band.value)
+        assert window is not None
+        floor, ceiling = window
+        assert floor <= ceiling, band.value
+
+
+def test_first_decision_ceiling_never_below_the_corpus_median():
+    """No band may block first-decision pacing the source corpus calls typical.
+
+    A ceiling under the JHM median of 4 would make median-paced storytelling a
+    PL-25 ERROR, which is miscalibrated by construction. This assertion is the
+    guard that caught exactly that mistake in the table's first draft, where the
+    3-5 and 5-8 ceilings sat at 3 and 4.
+    """
+    for band in AgeBand:
+        window = first_decision_window(band.value)
+        assert window is not None
+        assert window[1] > JHM_FIRST_DECISION_MEDIAN, band.value
+
+
+def test_first_decision_measured_bands_span_the_corpus_range():
+    """The bands the JHM corpus covers admit its full measured range."""
+    for band in ("8-11", "10-13"):
+        window = first_decision_window(band)
+        assert window is not None
+        floor, ceiling = window
+        assert floor <= 2, band
+        assert ceiling >= JHM_FIRST_DECISION_MAX, band
+
+
+def test_unknown_band_has_no_first_decision_window():
+    """An unconfigured band yields None so PL-25 skips rather than guesses."""
+    assert first_decision_window("not-a-band") is None
+
+
+def test_nodes_per_decision_ceilings_are_positive():
+    """Both style ceilings are well formed."""
+    for style in ("prose", "gamebook"):
+        assert nodes_per_decision_ceiling(style) > 0, style
+
+
+def test_prose_density_ceiling_sits_above_the_measured_anchor():
+    """A story at the JHM 3.28 mean pages-between-decisions must not warn.
+
+    The calibration invariant from AL-081 applied to PL-26: a threshold that
+    fires on corpus-median pacing is miscalibrated by construction.
+    """
+    assert nodes_per_decision_ceiling("prose") > JHM_PAGES_BETWEEN_DECISIONS
+
+
+def test_gamebook_density_ceiling_is_tighter_than_prose():
+    """A gamebook steers more often by genre, so its corridor bar sits lower.
+
+    Guards the direction of the style split: judging a numbered-section gamebook
+    against the prose ceiling would let a genuine gamebook corridor pass.
+    """
+    assert nodes_per_decision_ceiling("gamebook") < nodes_per_decision_ceiling("prose")
+
+
+def test_unknown_style_density_falls_back_to_prose():
+    """An unrecognised style is judged as prose rather than skipped."""
+    assert nodes_per_decision_ceiling("interpretive-dance") == (
+        nodes_per_decision_ceiling("prose")
+    )
+
+
+def test_arc_ceiling_multiple_matches_the_measured_playthrough_ratio():
+    """JHM records a longest playthrough of 27.5 pages against a shortest of 11."""
+    assert ARC_CEILING_MULTIPLE == 27.5 / 11

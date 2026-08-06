@@ -17,6 +17,7 @@ from cyo_adventure.storybook.models import (
     Topology,
     Valence,
 )
+from cyo_adventure.validator.band_profile import ARC_CEILING_MULTIPLE
 from cyo_adventure.validator.policy import node_word_count, validate_policy
 from cyo_adventure.validator.report import Severity
 
@@ -760,3 +761,306 @@ def test_pl24_prose_uses_a_share_floor() -> None:
     report = validate_policy(_mix_story(kinds=kinds, style=NarrativeStyle.PROSE))
     share = [f for f in report.findings if "below the prose floor" in f.message]
     assert len(share) == 1, "1 positive in 20 (5%) is below the 10% prose floor"
+
+
+# --- PL-25 depth to first decision and PL-26 decision density -----------------
+
+
+def _branch_at_depth(
+    *,
+    lead_in: int,
+    age_band: AgeBand = AgeBand.BAND_8_11,
+    length: Length | None = None,
+) -> Storybook:
+    """Build a lead-in corridor whose last node offers the first decision.
+
+    ``n0 -> ... -> n{lead_in}``, where ``n{lead_in}`` branches to a success and a
+    discovery ending. The first decision therefore sits exactly ``lead_in + 1``
+    nodes in, which is what PL-25 measures. ``length`` defaults to ``None`` so
+    the story is not scale-classified and PL-20/PL-26 stay silent, isolating the
+    rule under test.
+
+    Args:
+        lead_in: Single-choice nodes before the decision node.
+        age_band: The band whose PL-25 window applies.
+        length: Declared length, or ``None`` to skip the scale-classified rules.
+
+    Returns:
+        The assembled Storybook.
+    """
+    body = _fill(100)
+    nodes: list[Node] = [
+        Node(
+            id=f"n{i}",
+            body=body,
+            choices=[Choice(id=f"c{i}", label="on", target=f"n{i + 1}")],
+        )
+        for i in range(lead_in)
+    ]
+    nodes.append(
+        Node(
+            id=f"n{lead_in}",
+            body=body,
+            choices=[
+                Choice(id="cw", label="win", target="n_win"),
+                Choice(id="ca", label="look", target="n_alt"),
+            ],
+        )
+    )
+    nodes += [
+        Node(
+            id="n_win",
+            body=body,
+            is_ending=True,
+            ending=Ending(
+                id="e1", valence=Valence.POSITIVE, kind=EndingKind.SUCCESS, title="W"
+            ),
+        ),
+        Node(
+            id="n_alt",
+            body=body,
+            is_ending=True,
+            ending=Ending(
+                id="e2", valence=Valence.NEUTRAL, kind=EndingKind.DISCOVERY, title="A"
+            ),
+        ),
+    ]
+    return Storybook(
+        id="s",
+        version=1,
+        title="T",
+        start_node="n0",
+        nodes=nodes,
+        metadata=StoryMetadata(
+            age_band=age_band,
+            reading_level=ReadingLevel(target=2.0),
+            tier=1,
+            estimated_minutes=5,
+            ending_count=2,
+            topology=Topology.TIME_CAVE,
+            length=length,
+        ),
+    )
+
+
+def test_pl25_warns_on_first_decision_past_band_ceiling():
+    """One node past the 8-11 ceiling of 9 warns rather than blocks.
+
+    A ceiling overshoot is a craft defect, and the ERROR tier means the story is
+    unpublishable. Grading a narrow overshoot as fatal would block work on a
+    margin narrower than the calibration's own confidence.
+    """
+    report = validate_policy(_branch_at_depth(lead_in=9))
+    assert any(f.rule_id == "PL-25" for f in report.warnings)
+    assert not any(f.rule_id == "PL-25" for f in report.errors)
+
+
+def test_pl25_blocks_first_decision_past_the_hard_limit():
+    """Past ``ARC_CEILING_MULTIPLE`` x the ceiling, the shape does block."""
+    hard = int(9 * ARC_CEILING_MULTIPLE)
+    report = validate_policy(_branch_at_depth(lead_in=hard))
+    assert any(f.rule_id == "PL-25" for f in report.errors)
+
+
+def test_pl25_hard_limit_derives_from_the_measured_arc_multiple():
+    """The blocking tier tracks the constant, not a hand-copied number.
+
+    Guards the linkage: re-deriving ``ARC_CEILING_MULTIPLE`` from new corpus data
+    must move this threshold with it, so the two cannot drift apart silently.
+    """
+    hard = int(9 * ARC_CEILING_MULTIPLE)
+    at_limit = validate_policy(_branch_at_depth(lead_in=hard - 1))
+    assert not any(f.rule_id == "PL-25" for f in at_limit.errors)
+    assert any(f.rule_id == "PL-25" for f in at_limit.warnings)
+
+
+def test_pl25_allows_first_decision_at_the_ceiling():
+    """A first decision exactly at the band ceiling passes."""
+    report = validate_policy(_branch_at_depth(lead_in=8))
+    assert not any(f.rule_id == "PL-25" for f in report.findings)
+
+
+def test_pl25_warns_on_cold_open():
+    """A start node that already branches is under the floor, so it warns."""
+    report = validate_policy(_branch_at_depth(lead_in=0))
+    findings = [f for f in report.warnings if f.rule_id == "PL-25"]
+    assert len(findings) == 1
+    assert "under the band" in findings[0].message
+
+
+def test_pl25_cold_open_is_never_an_error():
+    """The floor is advisory: a cold open must not block a story."""
+    report = validate_policy(_branch_at_depth(lead_in=0))
+    assert not any(f.rule_id == "PL-25" for f in report.errors)
+
+
+def test_pl25_allows_cold_open_at_3_5():
+    """3-5 has a floor of 1, so a pre-reader story may open on its choice."""
+    report = validate_policy(_branch_at_depth(lead_in=0, age_band=AgeBand.BAND_3_5))
+    assert not any(f.rule_id == "PL-25" for f in report.findings)
+
+
+def test_pl25_silent_when_story_has_no_decision():
+    """A story with no decision node is left to PL-17, not double-reported."""
+    report = validate_policy(_linear_scale_story(middles=7))
+    assert not any(f.rule_id == "PL-25" for f in report.findings)
+
+
+def _dense_spine(
+    *,
+    spine: int,
+    decision_every: int,
+    age_band: AgeBand = AgeBand.BAND_8_11,
+    length: Length = Length.SHORT,
+    narrative_style: NarrativeStyle = NarrativeStyle.PROSE,
+    words: int = 100,
+) -> Storybook:
+    """Build a spine to a win where every Nth node also offers an escape choice.
+
+    The fastest-finish path is ``spine + 1`` nodes and carries
+    ``ceil(spine / decision_every)`` decisions, so the PL-26 density is
+    controllable directly.
+
+    Args:
+        spine: Non-ending nodes on the winning path.
+        decision_every: Offer a second choice on every Nth spine node.
+        age_band: The story band.
+        length: The declared length (scale-classifies the story).
+        narrative_style: ``prose`` or ``gamebook``; selects the PL-26 window.
+        words: Per-node declared word budget.
+
+    Returns:
+        The assembled Storybook.
+    """
+    body = _fill(words)
+    nodes: list[Node] = []
+    for i in range(spine):
+        target = f"s{i + 1}" if i + 1 < spine else "n_win"
+        choices = [Choice(id=f"c{i}", label="on", target=target)]
+        if i % decision_every == 0:
+            choices.append(Choice(id=f"x{i}", label="aside", target="n_alt"))
+        nodes.append(Node(id=f"s{i}", body=body, choices=choices))
+    nodes += [
+        Node(
+            id="n_win",
+            body=body,
+            is_ending=True,
+            ending=Ending(
+                id="e1", valence=Valence.POSITIVE, kind=EndingKind.SUCCESS, title="W"
+            ),
+        ),
+        Node(
+            id="n_alt",
+            body=body,
+            is_ending=True,
+            ending=Ending(
+                id="e2", valence=Valence.NEUTRAL, kind=EndingKind.DISCOVERY, title="A"
+            ),
+        ),
+    ]
+    return Storybook(
+        id="s",
+        version=1,
+        title="T",
+        start_node="s0",
+        nodes=nodes,
+        metadata=StoryMetadata(
+            age_band=age_band,
+            reading_level=ReadingLevel(target=2.0),
+            tier=1,
+            estimated_minutes=5,
+            ending_count=2,
+            topology=Topology.BRANCH_AND_BOTTLENECK,
+            length=length,
+            narrative_style=narrative_style,
+        ),
+    )
+
+
+def test_pl26_warns_when_choices_come_too_rarely():
+    """A near-corridor warns: one decision over a 12-node fastest finish."""
+    report = validate_policy(_dense_spine(spine=11, decision_every=11))
+    assert any(f.rule_id == "PL-26" for f in report.warnings)
+
+
+def test_pl26_accepts_prose_density_near_the_measured_anchor():
+    """A choice roughly every third node sits under the prose ceiling."""
+    # 12-node fastest finish carrying 4 decisions is 3.0, near the JHM 3.28 mean.
+    report = validate_policy(_dense_spine(spine=11, decision_every=3))
+    assert not any(f.rule_id == "PL-26" for f in report.findings)
+
+
+def test_pl26_does_not_bound_density_from_below():
+    """A choice on every node is dense, not a corridor, so PL-26 stays silent.
+
+    PL-26 is a ceiling only. A shortest path is biased toward decision nodes by
+    construction (out-degree >= 2 makes a node likelier to sit on a fast route),
+    so a low measured density is an artifact of the measurement rather than
+    evidence of a defect.
+    """
+    report = validate_policy(_dense_spine(spine=11, decision_every=1))
+    assert not any(f.rule_id == "PL-26" for f in report.findings)
+
+
+def test_pl26_gamebook_ceiling_is_tighter_than_prose():
+    """One density, two verdicts: fine as prose, a corridor as a gamebook.
+
+    26-node fastest finish over 5 decisions is 5.2, under the prose ceiling of
+    6.0 and over the gamebook ceiling of 4.0. A gamebook that steers this rarely
+    has abandoned the genre's own section-by-section pacing.
+    """
+    kwargs = {
+        "spine": 25,
+        "decision_every": 5,
+        "age_band": AgeBand.BAND_13_16,
+        "length": Length.MEDIUM,
+        "words": 65,
+    }
+    as_prose = validate_policy(
+        _dense_spine(narrative_style=NarrativeStyle.PROSE, **kwargs)
+    )
+    as_gamebook = validate_policy(
+        _dense_spine(narrative_style=NarrativeStyle.GAMEBOOK, **kwargs)
+    )
+    assert not any(f.rule_id == "PL-26" for f in as_prose.findings)
+    assert any(f.rule_id == "PL-26" for f in as_gamebook.warnings)
+
+
+def test_pl26_warns_when_fastest_finish_offers_no_decision():
+    """A corridor to a win reports the absence of any decision distinctly."""
+    report = validate_policy(_linear_scale_story(middles=7))
+    findings = [f for f in report.warnings if f.rule_id == "PL-26"]
+    assert len(findings) == 1
+    assert "no decision at all" in findings[0].message
+
+
+def test_pl26_is_never_an_error():
+    """Density is advisory only; it must not block a story."""
+    report = validate_policy(_dense_spine(spine=11, decision_every=11))
+    assert not any(f.rule_id == "PL-26" for f in report.errors)
+
+
+def test_pl26_skipped_without_length():
+    """An unclassified story has no cell, so density is not judged."""
+    report = validate_policy(_branch_at_depth(lead_in=3))
+    assert not any(f.rule_id == "PL-26" for f in report.findings)
+
+
+def test_pl20_warns_when_shortest_win_runs_past_the_ceiling():
+    """8-11 short floors at 9 nodes, so the 2.5x advisory ceiling is 22."""
+    report = validate_policy(_linear_scale_story(middles=21))
+    findings = [f for f in report.warnings if f.rule_id == "PL-20"]
+    assert len(findings) == 1
+    assert "advisory ceiling" in findings[0].message
+
+
+def test_pl20_ceiling_allows_a_path_exactly_at_the_limit():
+    """A 22-node fastest finish sits on the ceiling and must not warn."""
+    report = validate_policy(_linear_scale_story(middles=20))
+    assert not any(f.rule_id == "PL-20" for f in report.warnings)
+
+
+def test_pl20_ceiling_is_advisory_not_blocking():
+    """Overrunning the arc ceiling warns; only the floor blocks."""
+    report = validate_policy(_linear_scale_story(middles=21))
+    assert not any(f.rule_id == "PL-20" for f in report.errors)

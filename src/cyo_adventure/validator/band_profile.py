@@ -343,6 +343,111 @@ def min_complete_floor(age_band: str, length: str, narrative_style: str) -> int 
     return _MIN_COMPLETE.get((age_band, length, narrative_style))
 
 
+# PL-25 depth-to-first-decision window per band, in nodes: the count of nodes on
+# the shortest path from ``start_node`` up to and including the first node that
+# offers two or more choices. Anchored on Adams, Beckelhymer and Marr, "Choose
+# Your Own Adventure: An Analysis of Interactive Gamebooks Using Graph Theory",
+# Journal of Humanistic Mathematics 9(2), 2019 (DOI 10.5642/jhummath.201902.05),
+# Table 4: across the 40-book corpus, pages to the first decision have a median
+# of 4 and a range of 2 to 8.25. That corpus sits in the 8-11/10-13 reading
+# range, so those bands take the measured window directly; the outer bands are
+# product-defined scalings and are tunable, like the ADR-011 3-5/16+ budgets.
+#   - Below the floor is a WARNING, not an ERROR: a story that opens on a choice
+#     gives the reader no situation to choose about. No book in the JHM corpus
+#     branches before page 2, which is what puts the floor at 2 for every band
+#     that has measured backing. 3-5 keeps a floor of 1 because a pre-reader
+#     picture book can legitimately open on its first choice and no evidence
+#     covers that band.
+#   - Above the ceiling is an ERROR: a long unbranching prologue is the failure
+#     this rule exists to catch, and it is the one the LLM generator produces
+#     most readily.
+# #ASSUME: data-integrity: this table is the single source for the PL-25 window.
+# #VERIFY: test_band_profile.py::test_first_decision_window_covers_every_band.
+#   - No ceiling sits below the corpus median of 4, and the two bands the corpus
+#     actually covers admit its full measured range (ceiling 9 >= the 8.25 max).
+#     A threshold that blocks pacing the source corpus calls typical, or that
+#     blocks a book the corpus contains, is miscalibrated by construction; both
+#     defects were present in this table's first draft and both are now asserted
+#     in test_band_profile.py.
+_FIRST_DECISION_DEPTH: dict[str, tuple[int, int]] = {
+    "3-5": (1, 5),
+    "5-8": (2, 5),
+    "8-11": (2, 9),
+    "10-13": (2, 9),
+    "13-16": (2, 10),
+    "16+": (2, 10),
+}
+
+
+def first_decision_window(age_band: str) -> tuple[int, int] | None:
+    """Return the PL-25 ``(floor, ceiling)`` depth-to-first-decision for a band.
+
+    Args:
+        age_band: The story age band value (for example ``"8-11"``).
+
+    Returns:
+        The ``(floor, ceiling)`` node-count window, or ``None`` when the band is
+        not configured.
+    """
+    return _FIRST_DECISION_DEPTH.get(age_band)
+
+
+# PL-26 decision-density advisory on the fastest-finish path: the MAXIMUM nodes
+# per decision, keyed on narrative style. JHM 2019 Table 4 measures a mean of
+# 3.28 pages between decisions, but that corpus is CYOA prose paperbacks, so the
+# anchor is a prose anchor and applying it to a gamebook is a category error: a
+# numbered-section gamebook ends nearly every section in a choice by genre
+# convention. Style-keying follows _ENDINGS_FRACTION and _WORDS_PER_NODE, which
+# already split the same way.
+#   - prose: sits above the 3.28 anchor with room, because one corpus in one band
+#     cluster cannot justify a tight bound.
+#   - gamebook: product-defined and tunable. No measured gamebook corpus backs
+#     it; it exists so the rule stays silent on genre-faithful section density
+#     rather than firing on every gamebook in the library.
+#
+# A ceiling only, deliberately. PL-26 exists to catch the corridor: a story that
+# satisfies every PL-17 breadth floor while walking the reader past few or no
+# choices. The symmetric low bound this started as had to go, because measuring
+# density along a SHORTEST path is biased toward finding high density: a decision
+# node has out-degree >= 2, so it is likelier to sit on a fast route than a
+# linear node is, while JHM's 3.28 was measured corpus-wide. Comparing the two on
+# the low side compares different quantities, the same category error the
+# style-keying above fixes. A genuine "choice gauntlet" guard would have to
+# measure whole-graph density instead; see AL-084 / UW-C28.
+#
+# Scale-invariant by construction: it constrains a ratio, not a count, so a
+# 340-node long-form world and a 23-node picture book are judged on one axis.
+# This is the density companion to PL-20, which bounds the same path's length but
+# says nothing about how often the reader actually steers along it.
+_NODES_PER_DECISION_CEILING: dict[str, float] = {
+    "prose": 6.0,
+    "gamebook": 4.0,
+}
+
+
+def nodes_per_decision_ceiling(narrative_style: str) -> float:
+    """Return the PL-26 maximum nodes-per-decision for a narrative style.
+
+    Args:
+        narrative_style: ``"prose"`` or ``"gamebook"``.
+
+    Returns:
+        The advisory ceiling; an unknown style falls back to the prose ceiling.
+    """
+    return _NODES_PER_DECISION_CEILING.get(
+        narrative_style, _NODES_PER_DECISION_CEILING["prose"]
+    )
+
+
+# PL-20 companion ceiling: how far the shortest satisfying path may exceed the
+# cell's ``min_complete_floor`` before warning. JHM 2019 records a longest
+# playthrough of 27.5 pages against a shortest of 11; that 2.5 ratio is the
+# multiple used here, applied against the cell floor rather than as an absolute
+# node count so it stays meaningful from a 10-node picture book to a 750-node
+# gamebook. Tunable.
+ARC_CEILING_MULTIPLE = 2.5
+
+
 # Breadth-scaled PL-17 floors for a scale-classified production story. The band
 # profile floors (``min_endings`` / ``min_decisions``) are absolute minimums tuned
 # for band-scale stories; a large scale-classified world must not pass with a
