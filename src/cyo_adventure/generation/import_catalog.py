@@ -310,11 +310,18 @@ def _load_blob(repo_root: Path, rel_path: str) -> dict[str, object]:
 def _needs_legacy_normalization(blob: dict[str, object]) -> bool:
     """Detect the older Storybook shape structurally, not by filename.
 
-    A legacy blob is missing the (now-required) ``metadata.topology`` field,
-    or declares a ``schema_version`` other than the current "2.0". Detecting
-    this structurally (rather than hardcoding the 3 known filenames) means
-    any future manifest entry with the same stale shape is caught
-    automatically instead of silently failing the gate.
+    A blob needs normalization when its ``schema_version`` is missing,
+    unparseable, or names a major below :data:`SCHEMA_MAJOR`, or when
+    ``metadata.topology`` is absent. A same-major version at or above the
+    current minor (including a future minor such as "2.1") is deliberately
+    NOT treated as legacy: it must reach :func:`cyo_adventure.validator.gate.run_gate`
+    unmodified and be rejected there by
+    :meth:`cyo_adventure.storybook.models.Storybook._check_schema_version`,
+    rather than be silently rewritten to "2.0" and admitted as if it were the
+    document this build actually implements. Detecting the legacy shape
+    structurally (rather than hardcoding the 3 known filenames) means any
+    future manifest entry with the same stale shape is caught automatically
+    instead of silently failing the gate.
 
     Args:
         blob: The parsed filled story JSON.
@@ -330,7 +337,13 @@ def _needs_legacy_normalization(blob: dict[str, object]) -> bool:
     if not isinstance(version, str):
         return True
 
-    # Parse the version; if invalid, treat as legacy
+    # #CRITICAL: data integrity: misclassifying a same-major future minor
+    # (e.g. "2.1") or a higher major (e.g. "3.0") as legacy would silently
+    # rewrite the document's schema_version to "2.0" and admit it as if this
+    # build implemented it, instead of letting the parser reject it loudly.
+    # #VERIFY: covered by test_a_future_minor_is_not_treated_as_legacy,
+    # test_higher_major_is_not_legacy, and test_malformed_version_is_legacy
+    # in tests/unit/test_import_catalog.py::TestNeedsLegacyNormalization.
     try:
         major, _ = parse_schema_version(version)
     except ValueError:

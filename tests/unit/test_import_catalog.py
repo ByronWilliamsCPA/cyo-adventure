@@ -171,9 +171,6 @@ class TestLoadBlob:
 
 @pytest.mark.unit
 class TestNeedsLegacyNormalization:
-    def test_true_for_stale_schema_version(self) -> None:
-        assert _needs_legacy_normalization(_minimal_legacy_blob()) is True
-
     def test_true_for_missing_topology(self) -> None:
         blob = _minimal_current_blob()
         blob["schema_version"] = "2.0"
@@ -212,6 +209,23 @@ class TestNeedsLegacyNormalization:
         newer = f"{SCHEMA_MAJOR}.{SCHEMA_MINOR + 1}"
         blob = {"schema_version": newer, "metadata": {"topology": "branching"}}
         assert not _needs_legacy_normalization(blob)
+
+    def test_higher_major_is_not_legacy(self) -> None:
+        from cyo_adventure.storybook.models import SCHEMA_MAJOR
+
+        # A higher major is a future breaking schema revision this build has
+        # never heard of. It must fail the parser loudly, not be silently
+        # rewritten as 2.0.
+        higher = f"{SCHEMA_MAJOR + 1}.0"
+        blob = {"schema_version": higher, "metadata": {"topology": "branching"}}
+        assert not _needs_legacy_normalization(blob)
+
+    def test_malformed_version_is_legacy(self) -> None:
+        blob = {
+            "schema_version": "not-a-version",
+            "metadata": {"topology": "branching"},
+        }
+        assert _needs_legacy_normalization(blob)
 
 
 @pytest.mark.unit
