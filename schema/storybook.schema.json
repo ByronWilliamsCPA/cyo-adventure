@@ -13,6 +13,26 @@
       "title": "AgeBand",
       "type": "string"
     },
+    "CharacterRange": {
+      "additionalProperties": false,
+      "description": "One variable's accepted range in a book's character envelope.\n\nBounds are inclusive on both ends, matching ``Variable.min``/``Variable.max``.\nCH-2 requires this range to *equal* the declared variable's bounds rather\nthan merely sit inside them: G3's runtime clamp is to declared bounds, so a\nnarrower envelope would let the runtime admit states the validator never\nwalked, invisibly.",
+      "properties": {
+        "max": {
+          "title": "Max",
+          "type": "integer"
+        },
+        "min": {
+          "title": "Min",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "min",
+        "max"
+      ],
+      "title": "CharacterRange",
+      "type": "object"
+    },
     "Choice": {
       "additionalProperties": false,
       "description": "A reader-facing choice edge from one node to a target node.",
@@ -539,6 +559,21 @@
   "additionalProperties": false,
   "description": "A complete, versioned branching story graph.",
   "properties": {
+    "accepts_character": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/CharacterRange"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Accepts Character"
+    },
     "id": {
       "minLength": 1,
       "title": "Id",
@@ -556,7 +591,7 @@
       "type": "array"
     },
     "schema_version": {
-      "default": "2.0",
+      "default": "2.1",
       "title": "Schema Version",
       "type": "string"
     },

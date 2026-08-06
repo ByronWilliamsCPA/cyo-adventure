@@ -103,8 +103,21 @@ def test_node_safety_scope_defaults_empty_and_accepts_values():
     assert scoped.safety_scope == [SafetyScope.PERIL]
 
 
-def test_schema_version_is_2_0():
-    assert SCHEMA_VERSION == "2.0"
+def test_schema_version_is_derived_from_its_parts() -> None:
+    """The literal moved into SCHEMA_MAJOR/SCHEMA_MINOR in ADR-025 plan 1.
+
+    Pinning the composed string here rather than a literal is what lets a minor
+    bump be a one-line change; the value itself is pinned by
+    test_schema_minor_is_one_and_version_is_derived.
+    """
+    assert f"{SCHEMA_MAJOR}.{SCHEMA_MINOR}" == SCHEMA_VERSION
+
+
+def test_schema_minor_is_one_and_version_is_derived() -> None:
+    """ADR-025's first additive minor carries accepts_character."""
+    assert SCHEMA_MAJOR == 2
+    assert SCHEMA_MINOR == 1
+    assert SCHEMA_VERSION == "2.1"
 
 
 def test_exported_schema_file_matches_model():
@@ -217,3 +230,36 @@ def test_unsupported_version_message_names_the_accepted_range():
     with pytest.raises(PydanticValidationError) as excinfo:
         Storybook.model_validate(data)
     assert f"{SCHEMA_MAJOR}.0 through {SCHEMA_VERSION}" in str(excinfo.value)
+
+
+def test_a_two_zero_document_still_parses() -> None:
+    """The bump must not invalidate a single published document."""
+    story = Storybook.model_validate(_story_data_at("2.0"))
+    assert story.schema_version == "2.0"
+    assert story.accepts_character is None
+
+
+def test_accepts_character_parses_an_envelope() -> None:
+    data = _story_data_at("2.1")
+    data["accepts_character"] = {
+        "might": {"min": 0, "max": 2},
+        "wits": {"min": 0, "max": 2},
+    }
+    story = Storybook.model_validate(data)
+    assert story.accepts_character is not None
+    assert story.accepts_character["might"].max == 2
+
+
+def test_a_range_with_min_above_max_is_rejected() -> None:
+    data = _story_data_at("2.1")
+    data["accepts_character"] = {"might": {"min": 2, "max": 0}}
+    with pytest.raises(PydanticValidationError, match="min 2 exceeds max 0"):
+        Storybook.model_validate(data)
+
+
+def test_a_range_rejects_an_extra_key() -> None:
+    """extra='forbid' stays on the new model too (ADR-025 decision 2)."""
+    data = _story_data_at("2.1")
+    data["accepts_character"] = {"might": {"min": 0, "max": 2, "step": 1}}
+    with pytest.raises(PydanticValidationError):
+        Storybook.model_validate(data)

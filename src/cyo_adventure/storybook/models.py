@@ -27,8 +27,11 @@ from cyo_adventure.storybook.condition import (
     referenced_vars,
 )
 
+# ADR-025 minor 1 (2026-08-06) adds Storybook.accepts_character. Every field
+# introduced at a minor must be registered in storybook/field_minors.py, which
+# is what L1-8 checks a document's declared version against.
 SCHEMA_MAJOR = 2
-SCHEMA_MINOR = 0
+SCHEMA_MINOR = 1
 SCHEMA_VERSION = f"{SCHEMA_MAJOR}.{SCHEMA_MINOR}"
 
 _SCHEMA_VERSION_RE = re.compile(r"(0|[1-9]\d*)\.(0|[1-9]\d*)", re.ASCII)
@@ -563,6 +566,29 @@ class Node(BaseModel):
         return self
 
 
+class CharacterRange(BaseModel):
+    """One variable's accepted range in a book's character envelope.
+
+    Bounds are inclusive on both ends, matching ``Variable.min``/``Variable.max``.
+    CH-2 requires this range to *equal* the declared variable's bounds rather
+    than merely sit inside them: G3's runtime clamp is to declared bounds, so a
+    narrower envelope would let the runtime admit states the validator never
+    walked, invisibly.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    min: int
+    max: int
+
+    @model_validator(mode="after")
+    def _check_bounds_are_ordered(self) -> Self:
+        if self.min > self.max:
+            msg = f"accepts_character range min {self.min} exceeds max {self.max}"
+            raise ValueError(msg)
+        return self
+
+
 class Storybook(BaseModel):
     """A complete, versioned branching story graph."""
 
@@ -574,6 +600,12 @@ class Storybook(BaseModel):
     title: str = Field(min_length=1)
     metadata: StoryMetadata
     variables: list[Variable] = Field(default_factory=list)
+    # Absent means the book accepts no character. This is enforced rather than
+    # assumed: CH-6 reserves the canonical variable names so a book that has
+    # not opted in cannot be seeded by G3 name-match through an accidental
+    # collision. ``None`` and ``{}`` are therefore different states and the
+    # default must not be a factory.
+    accepts_character: dict[str, CharacterRange] | None = None
     start_node: str = Field(min_length=1)
     nodes: list[Node] = Field(min_length=1)
 
