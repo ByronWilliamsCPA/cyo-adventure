@@ -992,6 +992,38 @@ out of.
   exists. **Fixed in this same change**, since the table was already being edited to add ADR-023;
   the row records Accepted / 2026-07-20, matching that file's own status line.
 
+## Amendment (2026-08-06): the `character_name` personalization slot
+
+[ADR-028](./adr-028-persistent-reader-characters.md) adds a persistent reader character. Its name must be
+able to render in prose, which needs a personalization slot. Personalization is keyed
+`(child_profile_id, slot_type)` with one value per child forever, which does not fit a per-character mutable
+name.
+
+**Resolution: add the slot type, but source its value from the active character row.** `character.name` is a
+column; the per-profile values payload gains a `character_name` field resolved from whichever character is
+active. No primary-key change, no DB CHECK migration on `slot_type`, no change to three-shape validation.
+The resolver learns one new source.
+
+| Property | Value | Why |
+|---|---|---|
+| Slot | `character_name` | New entry in `PERSONALIZATION_FIELDS` (`src/cyo_adventure/storybook/theme_contract.py`) |
+| Shape | Free text | Same category as `pet_name`, the existing free-text precedent |
+| Ring ceiling | Ring 1 only, permanently | Profile-scoped; never renders on another household's device |
+| `REAL_PERSON_PERSONALIZATION_FIELDS` | **Included** | A kid can type their own name. Treating it as fictional would skip the `role_safety` audit; including it forces `role_safety: "protagonist"`, which is also true. |
+| Governance | Guardian-set toggle, **default off** | This ADR's governance model is guardian-controlled and opt-in. A kid-authored value inverts that, so the guardian holds an explicit per-profile enable, sees the current value, and can clear it. |
+| Validation | `validator/slots.py` structural plus band-mandatory denylist, at set time **and** at render time | This ADR's explicit requirement for promoting a stored value into rendered content |
+| Purge | `character.name` joins this ADR's purge paths | Must be confirmed against the concrete implementation rather than asserted; this ADR describes the requirement, not the wiring |
+
+With the toggle off a character still works: rendering falls back to the existing
+`protagonist_first_name` resolution. The character's mechanical and visual identity is unaffected.
+
+`look` is deliberately **not** a slot. It is an avatar in library and reader chrome, never substituted into
+prose, so it is an enum column with no compliance surface. Prose rendering of appearance would be a separate
+amendment.
+
+**Not implemented by this amendment.** The slot ships with the character API, not with the validator work in
+ADR-028 steps 2 and 3. This section records the ruling so the implementation has an authority to cite.
+
 ## Related
 
 - [Implementation plan](../story-personalization-implementation-plan.md): phasing, guard points,
