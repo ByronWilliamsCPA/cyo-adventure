@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.66.3] - 2026-08-06
+
+### Bug Fixes
+
+- **quality**: Clear the last open BLOCKER by giving the log filter one exit
+  ([#629](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/629),
+  [`9f70d75`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/9f70d75d0cd494e8cd6dd761485f8cc57fbcf58e))
+
+
 ## [0.66.2] - 2026-08-06
 
 ### Bug Fixes
@@ -3194,6 +3203,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.66.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.2...v0.66.3
 [0.66.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.1...v0.66.2
 [0.66.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.0...v0.66.1
 [0.66.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.65.2...v0.66.0
