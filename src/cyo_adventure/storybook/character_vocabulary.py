@@ -46,6 +46,11 @@ ARCHETYPE_ROSTER: Final[tuple[str, ...]] = (
 # in-story build node then sets 1-6. See ADR-028 decision 3.
 ARCHETYPE_UNCHOSEN: Final[int] = 0
 
+# The canonical variable name, factored out so CH-8's build-node presence
+# check and this module's own CANONICAL_CHARACTER_VARIABLES key cannot drift
+# apart into two different magic strings.
+ARCHETYPE_VARIABLE_NAME: Final[str] = "archetype"
+
 ARCHETYPE_CODES: Final[Mapping[str, int]] = MappingProxyType(
     {name: index for index, name in enumerate(ARCHETYPE_ROSTER, start=1)}
 )
@@ -81,8 +86,8 @@ def _canonical(name: str, low: int, high: int) -> CanonicalVariable:
 CANONICAL_CHARACTER_VARIABLES: Final[Mapping[str, CanonicalVariable]] = (
     MappingProxyType(
         {
-            "archetype": _canonical(
-                "archetype", ARCHETYPE_UNCHOSEN, len(ARCHETYPE_ROSTER)
+            ARCHETYPE_VARIABLE_NAME: _canonical(
+                ARCHETYPE_VARIABLE_NAME, ARCHETYPE_UNCHOSEN, len(ARCHETYPE_ROSTER)
             ),
             "might": _canonical("might", 0, 2),
             "wits": _canonical("wits", 0, 2),

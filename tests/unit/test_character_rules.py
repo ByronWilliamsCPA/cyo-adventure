@@ -33,8 +33,14 @@ def _load_skeleton(relative: str) -> Storybook:
     return Storybook.model_validate(json.loads(path.read_text(encoding="utf-8")))
 
 
-def _load_skeleton_with_archetype(relative: str) -> Storybook:
-    """Load a catalog skeleton and opt it in to a six-way archetype envelope."""
+def _skeleton_with_archetype_dict(relative: str) -> dict[str, Any]:
+    """Load a catalog skeleton's raw dict and opt it in to a six-way archetype envelope.
+
+    Returns the raw dict rather than a parsed :class:`Storybook`, because
+    ``run_gate`` validates raw JSON (Layer 1 must run before anything is
+    trusted to parse) while ``validate_character`` needs the parsed model;
+    keeping this as a dict lets both call paths share one fixture.
+    """
     path = _SKELETONS / f"{relative}.json"
     data: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
     data["schema_version"] = "2.1"
@@ -43,7 +49,108 @@ def _load_skeleton_with_archetype(relative: str) -> Storybook:
         {"name": "archetype", "type": "int", "initial": 0, "min": 0, "max": 6},
     ]
     data["accepts_character"] = {"archetype": {"min": 0, "max": 6}}
-    return Storybook.model_validate(data)
+    return data
+
+
+def _load_skeleton_with_archetype(relative: str) -> Storybook:
+    """Load a catalog skeleton and opt it in to a six-way archetype envelope."""
+    return Storybook.model_validate(_skeleton_with_archetype_dict(relative))
+
+
+def _flooded_quarter_with_narrow_archetype_dict() -> dict[str, Any]:
+    """C1 regression fixture: a declared ``1..6`` archetype span still means six.
+
+    Reproduces the exact bypass from the task-7 review. CH-2 only checks that
+    the envelope range equals the *declared variable's own* range, not that
+    either equals the canonical ``0..6``, so a book may declare both its
+    ``archetype`` variable and its envelope span as ``1..6``: schema-valid,
+    passes CH-1 and CH-2 cleanly, and an in-story build node can still set any
+    of the same six real archetype values (1-6) that a full ``0..6``
+    declaration would allow. It simply omits the ``0`` ("not yet chosen")
+    sentinel state; the build node never sets that state anyway, so nothing
+    about the real branching factor changed.
+
+    the-flooded-quarter measures 19,236 baseline configs: below the buggy
+    5-way threshold of 20,000 (a formula reading ``span.max - span.min``
+    would let this through silently) but above the true 6-way threshold of
+    16,666 (what a vocabulary-derived arity correctly rejects on).
+    """
+    path = _SKELETONS / "10-13/the-flooded-quarter.json"
+    data: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
+    data["schema_version"] = "2.1"
+    data["variables"] = [
+        *data.get("variables", []),
+        {"name": "archetype", "type": "int", "initial": 1, "min": 1, "max": 6},
+    ]
+    data["accepts_character"] = {"archetype": {"min": 1, "max": 6}}
+    return data
+
+
+def _linear_chain_story_dict(length: int) -> dict[str, Any]:
+    """Build a Tier-2 story whose baseline walk visits exactly ``length`` configs.
+
+    A straight, unbranching chain of ``length`` nodes with a declared-but-
+    never-set variable: the variable's state component of the walk's dedup
+    key never changes, so each node contributes exactly one distinct
+    ``(node_id, var_state, once_visit)`` triple, giving
+    ``len(walk_configurations(story).configs) == length`` exactly (see
+    ``validator/walk.py``'s ``ConfigKey``). This gives the I1 boundary tests
+    an exact, known baseline count to divide the walk cap against, without a
+    real (large, slow) catalog skeleton.
+    """
+    if length < 1:
+        msg = f"length must be at least 1, got {length}"
+        raise ValueError(msg)
+    nodes: list[dict[str, Any]] = []
+    for i in range(1, length + 1):
+        node_id = f"n{i}"
+        if i == length:
+            nodes.append(
+                {
+                    "id": node_id,
+                    "body": "The end.",
+                    "is_ending": True,
+                    "ending": {
+                        "id": "e1",
+                        "kind": "success",
+                        "valence": "positive",
+                        "title": "The End",
+                    },
+                }
+            )
+        else:
+            nodes.append(
+                {
+                    "id": node_id,
+                    "body": f"Passage {i}.",
+                    "choices": [
+                        {"id": f"c{i}", "label": "Continue", "target": f"n{i + 1}"}
+                    ],
+                }
+            )
+    return {
+        "schema_version": "2.1",
+        "id": "ch-test-linear-chain",
+        "version": 1,
+        "title": "CH Test Linear Chain",
+        "metadata": {
+            "age_band": "13-16",
+            "reading_level": {
+                "scheme": "flesch_kincaid",
+                "target": 6.0,
+                "tolerance": 1.0,
+            },
+            "tier": 2,
+            "estimated_minutes": 5,
+            "ending_count": 1,
+            "topology": "gauntlet",
+        },
+        "variables": [
+            {"name": "might", "type": "int", "initial": 0, "min": 0, "max": 2},
+        ],
+        "start_node": "n1",
+        "nodes": nodes,
+    }
 
 
 def _story_dict(**overrides: Any) -> dict[str, Any]:
@@ -779,10 +886,15 @@ def test_ch8_matches_the_measured_catalog_outcomes(skeleton: str, fits: bool) ->
 
 
 def test_ch8_reports_a_book_that_cannot_host_its_build_node() -> None:
-    story = _load_skeleton_with_archetype("10-13/the-flooded-quarter")
+    data = _skeleton_with_archetype_dict("10-13/the-flooded-quarter")
+    story = Storybook.model_validate(data)
     findings = [f for f in validate_character(story).findings if f.rule_id == "CH-8"]
     assert len(findings) == 1
     assert "16,666" in findings[0].message
+    # M1: a CH-8 ERROR must actually stop the gate, not just be reported.
+    result = run_gate(data)
+    assert result.blocked is True
+    assert any(f.rule_id == "CH-8" for f in result.report.findings)
 
 
 def test_ch8_is_silent_for_a_book_with_headroom() -> None:
@@ -809,11 +921,16 @@ def test_ch8_is_silent_when_the_envelope_has_no_archetype_span() -> None:
     assert findings == []
 
 
-def test_ch8_is_silent_for_a_single_value_archetype_span() -> None:
-    """A 0-0 archetype span is arity 0: never a build node, never a walk.
+def test_ch8_still_evaluates_a_single_value_declared_archetype_span() -> None:
+    """A declared 0-0 span no longer short-circuits CH-8; arity is a vocabulary constant.
 
-    Guards the ``arity < 1`` early return, the twin of
-    :func:`build_node_headroom`'s own ``ValueError`` guard for the same input.
+    Before the fix, ``arity = span.max - span.min`` read a single-value
+    declared span as arity 0 and returned before any walk. That early return
+    is gone: ``arity`` now always comes from ``len(ARCHETYPE_ROSTER)``
+    regardless of the declared span's width, because the declared width is
+    exactly the value C1 showed cannot be trusted. This tiny, single-node
+    fixture still clears CH-8 (ample headroom at arity 6), proving the walk
+    ran and stayed silent, not that it was skipped.
     """
     data = _story_dict()
     data["variables"] = [
@@ -828,8 +945,65 @@ def test_ch8_is_silent_for_a_single_value_archetype_span() -> None:
     assert findings == []
 
 
+def test_ch8_rejects_a_narrow_declared_span_that_still_means_six_archetypes() -> None:
+    """C1 regression: arity must come from the vocabulary, never the declared span.
+
+    Before the fix, ``arity = span.max - span.min`` read this book's declared
+    ``1..6`` span as arity 5, moving CH-8's threshold from 16,666 to 20,000
+    configurations and letting this exact 19,236-config book through with
+    zero findings from any rule, with ``run_gate`` returning
+    ``blocked=False``. Confirmed by running this exact assertion against the
+    pre-fix formula: it failed there (no CH-8 finding, ``blocked=False``) and
+    passes here.
+    """
+    data = _flooded_quarter_with_narrow_archetype_dict()
+    story = Storybook.model_validate(data)
+    findings = [f for f in validate_character(story).findings if f.rule_id == "CH-8"]
+    assert len(findings) == 1
+    assert "16,666" in findings[0].message
+
+    result = run_gate(data)
+    assert result.blocked is True
+    assert any(f.rule_id == "CH-8" for f in result.report.findings)
+
+
 def test_build_node_headroom_rejects_arity_below_one() -> None:
     data = _story_dict()
     story = Storybook.model_validate(data)
     with pytest.raises(ValueError, match="arity must be at least 1"):
         build_node_headroom(story, arity=0)
+
+
+def test_build_node_headroom_boundary_pins_the_inclusive_comparison() -> None:
+    """I1: pin the ``<=`` boundary in :func:`build_node_headroom` exactly.
+
+    An eight-node linear chain has exactly 8 baseline configs. At arity
+    12_500 the threshold is ``100_000 // 12_500 == 8``, exactly at the
+    boundary (must fit); at arity 14_285 the threshold is 7, one below (must
+    not fit); at arity 11_111 the threshold is 9, one above (must fit).
+    Mutating ``<=`` to ``<`` flips only the boundary case, so this pins it
+    without touching ``_WALK_CAP`` or needing a real catalog skeleton.
+    """
+    story = Storybook.model_validate(_linear_chain_story_dict(8))
+    assert build_node_headroom(story, arity=12_500) is True
+    assert build_node_headroom(story, arity=14_285) is False
+    assert build_node_headroom(story, arity=11_111) is True
+
+
+def test_build_node_headroom_is_fail_closed_on_a_capped_walk() -> None:
+    """I2: a capped baseline walk must reject, not silently pass.
+
+    :func:`build_node_headroom` returns ``False`` when the baseline walk hits
+    the cap, because a capped walk's ``len(configs)`` is a partial, truncated
+    count that could understate the real total. Mutating that branch to
+    ``return True`` would survive every other test in this module (none of
+    them caps the walk), so this test patches ``walk_configurations`` to
+    return a capped result directly and asserts the fail-closed outcome.
+    """
+    story = Storybook.model_validate(_story_dict())
+    capped = WalkResult(configs={}, edges={}, capped=True)
+    with patch(
+        "cyo_adventure.validator.character.walk_configurations",
+        return_value=capped,
+    ):
+        assert build_node_headroom(story, arity=6) is False

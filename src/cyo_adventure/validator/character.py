@@ -14,7 +14,14 @@ against the book's own declared initials (never an envelope entry state), to
 catch a build node whose branching would multiply that single baseline walk
 past the cap before ``L2-12`` does; it runs whenever the envelope declares an
 ``archetype`` span, independent of the CH-3a/CH-3b/CH-4 walk-rule tier and
-envelope-size gates below.
+envelope-size gates below. It fires on every book that declares an
+``archetype`` span at all, whether or not that book's own graph contains a
+build node: a later, carrier-only book in a series receives an already-built
+character and never sets ``archetype``, so the variable costs nothing in its
+own walk, yet CH-8 still pays for (and can still reject on) the pre-flight
+walk for it. That is a deliberate over-approximation rather than a claim the
+book contains a build node; see the CH-8 row in
+``docs/planning/validator-rules.md`` for the same statement.
 """
 
 from __future__ import annotations
@@ -24,6 +31,8 @@ from typing import TYPE_CHECKING, Final
 
 from cyo_adventure.player.engine import StoryEngine
 from cyo_adventure.storybook.character_vocabulary import (
+    ARCHETYPE_ROSTER,
+    ARCHETYPE_VARIABLE_NAME,
     CANONICAL_CHARACTER_VARIABLES,
 )
 from cyo_adventure.validator.layer2 import ever_visible_choice_ids, validate_layer2
@@ -641,32 +650,51 @@ def _check_ch8_build_node_cost(story: Storybook, report: ValidationReport) -> No
     """CH-8: a book too large to host its build node fails before L2-12.
 
     Without this the author meets the same wall as an opaque L2-12 cap ERROR,
-    which names the walk rather than the cause and offers no fix. The envelope
-    declares the arity, so the check is available pre-flight.
+    which names the walk rather than the cause and offers no fix.
 
-    #CRITICAL: data integrity: ``arity`` is derived from ``span.min``/
-    ``span.max``, both declared, schema-valid, attacker-influenced values from
-    a generation-pipeline artifact. ``CharacterRange`` enforces ``min <=
-    max``, so ``arity`` is never negative, and the ``arity < 1`` guard below
-    (matched by :func:`build_node_headroom`'s own ``ValueError`` guard) rules
-    out the one remaining value, zero, that would make the floor division
-    below a ``ZeroDivisionError``. Neither guard reads a walk; both run before
-    the one call that does (:func:`walk_configurations`, inside
-    :func:`build_node_headroom`), so a book with no archetype envelope, or an
-    envelope with a single-value archetype span, never pays for a walk it has
-    no possible finding from.
+    Fires whenever the envelope declares an ``archetype`` span at all, even
+    for a carrier-only later book in a series whose own graph never sets
+    ``archetype`` and so pays no real build-node cost; see the module
+    docstring above and the CH-8 row in ``docs/planning/validator-rules.md``
+    for the same over-approximation statement.
+
+    #CRITICAL: data integrity: ``arity`` must never be read from the
+    envelope's declared ``archetype`` span (``span.min``/``span.max``),
+    because those bounds are schema-valid, attacker-influenced values from a
+    generation-pipeline artifact, and nothing upstream ties either bound to
+    the canonical archetype count: CH-1 checks only the variable's *type*
+    against the vocabulary, and CH-2 checks only that the envelope equals
+    the *declared* variable, not that the declared variable equals the
+    canonical ``0..6``. A book can declare both its ``archetype`` variable
+    and its envelope span as ``1..6``, which is schema-valid, passes CH-1 and
+    CH-2, and still lets an in-story build node set any of the same six real
+    archetype values (1-6) that a full ``0..6`` declaration would; reading
+    ``span.max - span.min`` from that declaration computes 5, not 6, moving
+    this rule's threshold from 16,666 to 20,000 configurations and letting a
+    19,236-config book through with zero findings from any rule, with
+    ``run_gate`` then returning ``blocked=False``. Deriving ``arity`` from
+    ``len(ARCHETYPE_ROSTER)`` instead reads the one place the real count is
+    not document-controlled: the roster is a module-level ``Final`` tuple
+    this rule's caller cannot influence.
+    ``len(ARCHETYPE_ROSTER)`` is a CHOICES count (the build node sets one of
+    six real archetypes, values 1-6), not a STATES count: ``ARCHETYPE_UNCHOSEN``
+    (0) is a seventh legal *state* the variable can rest in before the build
+    node runs, but the build node itself never *sets* that state, so it does
+    not enter the branching factor this rule measures.
     #VERIFY: tests/unit/test_character_rules.py::
-    test_ch8_is_silent_for_a_single_value_archetype_span
+    test_ch8_rejects_a_narrow_declared_span_that_still_means_six_archetypes
     """
     envelope = story.accepts_character or {}
-    span = envelope.get("archetype")
-    if span is None:
+    if ARCHETYPE_VARIABLE_NAME not in envelope:
         # Only a mutable in-book variable multiplies the walk. Gamebook stats
         # are seeded and never set, so they stay constant and cost nothing.
         return
-    arity = span.max - span.min
-    if arity < 1:
-        return
+    arity = len(ARCHETYPE_ROSTER)
+    # Reruns its own baseline walk rather than reusing CH-3a's (measured at
+    # about 0.3s of a 4.8s gate run on the largest catalog book): the two
+    # rules stay independent modules that never need to agree on a shared
+    # walk's lifetime. Cheap enough at this scale that the coupling is not
+    # worth the cost of a shared cache.
     if build_node_headroom(story, arity=arity):
         return
     threshold = _WALK_CAP // arity
@@ -675,7 +703,7 @@ def _check_ch8_build_node_cost(story: Storybook, report: ValidationReport) -> No
             story,
             "CH-8",
             (
-                f"CH-8 character: a {arity}-way build node needs a base "
+                f"CH-8 character: a {arity:,}-way build node needs a base "
                 f"closure at or under {threshold:,} configurations, which "
                 f"this book exceeds; it cannot host the archetype "
                 f"build-node idiom"
