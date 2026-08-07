@@ -1394,6 +1394,54 @@ class TestRecordCompletion:
 
 
 # ---------------------------------------------------------------------------
+# CompletionBody contract
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+class TestCompletionBodyContract:
+    """The request body a client may send when claiming an ending.
+
+    ``api/reading.py::_ending_is_satisfying``'s ``#CRITICAL`` marker rests on
+    this: character progression is decided from the SERVER's pinned version
+    blob because the request body has no field that could say otherwise. That
+    holds only while ``CompletionBody`` both lacks such a field and refuses
+    unknown ones, so both halves are pinned here rather than left to the
+    model definition being read carefully.
+    """
+
+    def test_a_completion_body_carrying_an_extra_field_is_rejected(self) -> None:
+        """extra="forbid": an invented field is a 422, not a silently dropped one."""
+        payload = {
+            "profile_id": str(uuid.uuid4()),
+            "storybook_id": "story-1",
+            "version": 1,
+            "ending_id": "end-happy",
+            # A client asserting its own ending kind. If this were merely
+            # ignored instead of rejected, the field could later be wired up
+            # by accident without any test noticing.
+            "kind": "success",
+        }
+        # Validated from a dict, not constructed with a keyword, so the
+        # deliberately-invalid field needs no type-checker suppression.
+        with pytest.raises(PydanticValidationError, match="Extra inputs are not"):
+            CompletionBody.model_validate(payload)
+        del payload["kind"]
+        assert CompletionBody.model_validate(payload).ending_id == "end-happy"
+
+    def test_the_body_declares_no_ending_kind_or_var_state_field(self) -> None:
+        """The rejection above only matters while no such field is declared."""
+        declared = set(CompletionBody.model_fields)
+        assert declared == {
+            "profile_id",
+            "storybook_id",
+            "version",
+            "ending_id",
+            "event_id",
+        }
+
+
+# ---------------------------------------------------------------------------
 # get_series_next
 # ---------------------------------------------------------------------------
 

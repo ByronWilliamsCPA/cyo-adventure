@@ -895,9 +895,14 @@ def _ending_is_satisfying(blob: Mapping[str, object], ending_id: str) -> bool:
     # turn character progression into a self-service API, farming stats
     # across the whole library without ever reaching a real satisfying
     # ending.
-    # #VERIFY: tests/integration/test_character_progression.py::
+    # #VERIFY: tests/unit/test_reading_api_unit.py::
+    # TestCompletionBodyContract::
+    # test_a_completion_body_carrying_an_extra_field_is_rejected pins the
+    # "no such field for a client to assert" half (extra="forbid"), and
+    # tests/integration/test_character_progression.py::
     # test_a_satisfying_ending_raises_a_stat_and_counts_the_book and
-    # test_an_unsatisfying_ending_writes_nothing.
+    # test_an_unsatisfying_ending_writes_nothing pin that the server blob's
+    # kind is what actually decides.
 
     Args:
         blob: The pinned version's stored Storybook content blob.
@@ -1155,8 +1160,9 @@ def _completion_recorded_view(
     # the gate; a hand-edited or restored row is not). Widen total to the
     # count actually observed and log, so the ending screen reads "3 of 3"
     # rather than "3 of 2" and the bad version is findable.
-    # #VERIFY: tests/unit/test_completions_api.py::
-    # test_recorded_view_widens_a_understated_ending_total.
+    # #VERIFY: tests/unit/test_reading_api_unit.py::
+    # TestCompletionRecordedViewBoundary::
+    # test_recorded_view_widens_an_understated_ending_total.
     if found > total:
         _logger.warning(
             "completion_ending_total_understated",

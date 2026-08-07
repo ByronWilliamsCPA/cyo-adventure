@@ -18,6 +18,9 @@ a real PUT save and its replay validation) so each test controls the exit
 
 from __future__ import annotations
 
+import json
+from datetime import UTC, datetime
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
@@ -28,7 +31,11 @@ from cyo_adventure.db.models import (
     CharacterAttribute,
     CharacterBookCompletion,
     ReadingState,
+    Storybook,
+    StorybookAssignment,
+    StorybookVersion,
 )
+from cyo_adventure.storybook.character_vocabulary import ARCHETYPE_VARIABLE_NAME
 from tests.integration.conftest import Seed, auth
 
 if TYPE_CHECKING:
@@ -49,6 +56,7 @@ async def _seed_attributes(
     might: int,
     wits: int,
     nerve: int,
+    archetype: int | None = None,
 ) -> None:
     """Insert character_attribute rows directly.
 
@@ -56,6 +64,12 @@ async def _seed_attributes(
     _seed_attributes exactly: attributes are server-derived and no character
     route accepts them in a request body, so a test that needs a non-zero
     (or non-default) attribute must write the rows itself.
+
+    ``archetype`` defaults to None (no row written) because the integration
+    ``seed`` fixture inserts its Character straight through the ORM, never
+    through ``api/characters.py::create_character``, so no ``initial_attributes``
+    run and the character genuinely has no archetype row. Only the archetype
+    exclusion test needs one.
     """
     async with sessions() as session:
         session.add_all(
@@ -71,6 +85,14 @@ async def _seed_attributes(
                 ),
             ]
         )
+        if archetype is not None:
+            session.add(
+                CharacterAttribute(
+                    character_id=character_id,
+                    name=ARCHETYPE_VARIABLE_NAME,
+                    value_int=archetype,
+                )
+            )
         await session.commit()
 
 
@@ -147,13 +169,75 @@ def _completion_body(seed: Seed, ending_id: str) -> dict[str, object]:
     }
 
 
+_THREE_ENDINGS = (
+    Path(__file__).resolve().parents[1]
+    / "fixtures"
+    / "storybook"
+    / "valid"
+    / "02_tier1_three_endings.json"
+)
+# The lantern story the `seed` fixture publishes declares no ending harsher
+# than `discovery`, so the "death or setback grants nothing" half of the spec
+# needs a second book. This one is an EXISTING fixture, not authored for this
+# test: `e_fire_escape` is kind `setback`.
+_SETBACK_ENDING = "e_fire_escape"
+
+
+async def _publish_second_book(
+    sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> tuple[str, int]:
+    """Publish and assign the three-endings fixture to the seeded profile.
+
+    Mirrors the `seed` fixture's own publish block (Storybook +
+    StorybookVersion + StorybookAssignment), which is what
+    `record_completion`'s readable/assigned/current-published-approved gate
+    requires.
+
+    Returns:
+        tuple[str, int]: The second book's (storybook_id, version).
+    """
+    blob = json.loads(_THREE_ENDINGS.read_text(encoding="utf-8"))
+    story_id = str(blob["id"])
+    version = int(blob["version"])
+    async with sessions() as session:
+        session.add(
+            Storybook(
+                id=story_id,
+                family_id=seed.family_id,
+                current_published_version=version,
+                status="published",
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=version,
+                blob=blob,
+                approved_by=seed.admin_user_id,
+                published_at=datetime.now(UTC),
+            )
+        )
+        session.add(
+            StorybookAssignment(
+                child_profile_id=seed.child_profile_id, storybook_id=story_id
+            )
+        )
+        await session.commit()
+    return story_id, version
+
+
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_a_satisfying_ending_raises_a_stat_and_counts_the_book(
     client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
-    """A satisfying ending raises the exit-state stat and increments books_completed."""
-    await _seed_attributes(sessions, seed.character_id, might=0, wits=0, nerve=0)
+    """A satisfying ending raises the exit-state stat and increments books_completed.
+
+    wits and nerve are seeded at 1, not 0, deliberately: they are absent from
+    the exit var_state, and at 0 the assertion below could not tell "left
+    alone" apart from "zeroed by the writeback".
+    """
+    await _seed_attributes(sessions, seed.character_id, might=0, wits=1, nerve=1)
     await _seed_reading_state(
         sessions, seed, var_state={"might": 1}, character_id=seed.character_id
     )
@@ -169,8 +253,8 @@ async def test_a_satisfying_ending_raises_a_stat_and_counts_the_book(
     assert books_completed == 1
     assert values["might"] == 1
     # Stats absent from the exit var_state are untouched, not zeroed.
-    assert values["wits"] == 0
-    assert values["nerve"] == 0
+    assert values["wits"] == 1
+    assert values["nerve"] == 1
 
 
 @pytest.mark.integration
@@ -178,7 +262,16 @@ async def test_a_satisfying_ending_raises_a_stat_and_counts_the_book(
 async def test_an_unsatisfying_ending_writes_nothing(
     client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
-    """A non-satisfying ending (discovery) records the completion but grows nothing."""
+    """A non-satisfying ending records the completion but grows nothing.
+
+    Covers both ends of the non-satisfying range the spec names ("nothing is
+    granted on death or setback"), not just the mildest one: `xe_term` in the
+    lantern book is `discovery` (neutral), and `e_fire_escape` in the
+    three-endings book is `setback`. Only `discovery` is reachable in the
+    story the `seed` fixture publishes, so the second half publishes an
+    existing second fixture rather than reading the harsher case as covered
+    by the neutral one.
+    """
     await _seed_attributes(sessions, seed.character_id, might=0, wits=0, nerve=0)
     await _seed_reading_state(
         sessions, seed, var_state={"might": 2}, character_id=seed.character_id
@@ -196,6 +289,41 @@ async def test_an_unsatisfying_ending_writes_nothing(
     assert values["might"] == 0
     rows = await _completion_rows(sessions, seed)
     assert rows == []
+
+    setback_book, setback_version = await _publish_second_book(sessions, seed)
+    async with sessions() as session:
+        session.add(
+            ReadingState(
+                child_profile_id=seed.child_profile_id,
+                storybook_id=setback_book,
+                version=setback_version,
+                current_node="n_fire",
+                var_state={"might": 2},
+                path=["n_fire"],
+                visit_set=["n_fire"],
+                save_slots={},
+                state_revision=0,
+                character_id=seed.character_id,
+                seed_var_state=None,
+            )
+        )
+        await session.commit()
+
+    setback = await client.post(
+        "/api/v1/completions",
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": setback_book,
+            "version": setback_version,
+            "ending_id": _SETBACK_ENDING,
+        },
+        headers=auth(seed.child_token),
+    )
+    assert setback.status_code == 200, setback.text
+
+    books_completed, values = await _character_progress(sessions, seed.character_id)
+    assert books_completed == 0
+    assert values["might"] == 0
 
 
 @pytest.mark.integration
@@ -257,8 +385,15 @@ async def test_a_lower_exit_value_does_not_reduce_a_stat(
 async def test_a_stat_cannot_exceed_the_canonical_maximum(
     client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
-    """LEAST(:canonical_max, ...) in-statement: a mis-declared book cannot
-    write 5 (or 99) into a 0..2 vocabulary.
+    """A mis-declared book cannot leave a 0..2 stat holding 99.
+
+    What this isolates is the outcome, not the line that produced it: the
+    stat lands at the canonical maximum and the request still succeeds. It
+    cannot attribute that to ``LEAST``. Under a GREATEST-only implementation
+    it fails for a different reason, the database CHECK
+    ``ck_character_attribute_value_range`` rejects 99 and the POST 500s, so
+    the CHECK is defense in depth behind the clamp rather than a second
+    thing this test distinguishes.
     """
     await _seed_attributes(sessions, seed.character_id, might=0, wits=0, nerve=0)
     await _seed_reading_state(
@@ -314,3 +449,47 @@ async def test_books_completed_increments_only_when_a_row_was_inserted(
     rows = await _completion_rows(sessions, seed)
     assert len(rows) == 1
     assert rows[0].ending_id == _SATISFYING_ENDING
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_archetype_is_never_raised_by_a_completion(
+    client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """archetype is identity, not progression, so the writeback must skip it.
+
+    This is the only test that pins ``progression.py``'s explicit
+    ``_PROGRESSION_VARIABLES`` filter. It needs BOTH halves to discriminate:
+    an ``archetype`` row must exist for the character (the ``seed`` fixture
+    inserts its Character through the ORM, so no ``initial_attributes`` ever
+    ran and no such row exists by default), AND the exit var_state must carry
+    ``archetype`` at a value above the seeded one. Without both, deleting the
+    filter changes nothing, because the UPDATE would simply match zero rows.
+    """
+    await _seed_attributes(
+        sessions, seed.character_id, might=0, wits=0, nerve=0, archetype=2
+    )
+    await _seed_reading_state(
+        sessions,
+        seed,
+        var_state={"might": 1, ARCHETYPE_VARIABLE_NAME: 5},
+        character_id=seed.character_id,
+    )
+
+    resp = await client.post(
+        "/api/v1/completions",
+        json=_completion_body(seed, _SATISFYING_ENDING),
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 200, resp.text
+
+    async with sessions() as session:
+        archetype = await session.get(
+            CharacterAttribute, (seed.character_id, ARCHETYPE_VARIABLE_NAME)
+        )
+        assert archetype is not None
+        assert archetype.value_int == 2
+
+    # The writeback did run; archetype was skipped, not the whole loop.
+    _, values = await _character_progress(sessions, seed.character_id)
+    assert values["might"] == 1

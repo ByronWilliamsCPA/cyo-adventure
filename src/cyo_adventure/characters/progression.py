@@ -58,6 +58,18 @@ _INSERT_COMPLETION = text(
     """
 )
 
+# #EDGE: data integrity: this UPDATE raises an attribute row that already
+# exists; it never creates one. A character with no row for `name` therefore
+# takes a silent zero-row update: no error, no log, no growth for that stat.
+# Every character created through `api/characters.py::create_character` gets a
+# full set of rows from `initial_attributes`, so today this can only happen
+# for a character inserted some other way, as `tests/integration/conftest.py`
+# does when it adds a `Character` straight through the ORM. Documented rather
+# than handled: an UPSERT here would invent a starting value for a stat the
+# creation path deliberately owns.
+# #VERIFY: no test covers the missing-row case; the integration fixture's own
+# character reaches this statement only for the three stats that
+# `_seed_attributes` writes first.
 _RAISE_ATTRIBUTE = text(
     """
     UPDATE character_attribute
@@ -65,6 +77,16 @@ _RAISE_ATTRIBUTE = text(
     WHERE character_id = :character_id AND name = :name
     """
 )
+
+# #ASSUME: data integrity: every statement in this module is raw SQL, which
+# bypasses SQLAlchemy's identity map. A `Character` or `CharacterAttribute`
+# instance already loaded into `session` keeps its stale Python attribute
+# values for the rest of the transaction, even though the database row has
+# moved. `record_completion` loads neither, so this path is unaffected; a
+# future caller that reads either object after calling `record_progression`
+# must `await session.refresh(obj)` first.
+# #VERIFY: no test covers a caller that holds a loaded instance across this
+# call, because no such caller exists yet.
 
 # books_completed is incremented in-database for the same reason as the
 # attribute raise below: an application-side `character.books_completed += 1`
@@ -124,16 +146,33 @@ async def record_progression(
         exit_var_state: The reading state's persisted ``var_state`` at
             completion time; the source of the values a stat may be raised
             to. Never the request body: see the ``#CRITICAL`` marker at this
-            function's call site in ``api/reading.py``.
+            function's call site in ``api/reading.py``. Note that the caller
+            keys the reading state on ``(child_profile_id, storybook_id)``
+            only, because ``reading_state.version`` is a plain column and not
+            part of that primary key; a completion recorded against the
+            current published version can therefore clamp toward a
+            ``var_state`` persisted from a read of an older version of the
+            same book. Bounded by the same clamp as everything else here.
     """
-    # #CRITICAL: concurrency: the attribute update is computed IN the
-    # statement, not read-modify-written in Python. Two devices syncing
-    # the same completion concurrently would both read the old value and
-    # both write the same new one, losing one book's progress; LEAST and
-    # GREATEST make the update commutative and idempotent.
+    # #CRITICAL: data integrity: the attribute raise is monotone and capped.
+    # GREATEST never lowers a stat the child earned in another book, and
+    # LEAST never lets a mis-declared book push one past the vocabulary
+    # ceiling.
     # #VERIFY: tests/integration/test_character_progression.py::
     # test_a_lower_exit_value_does_not_reduce_a_stat and
     # test_a_stat_cannot_exceed_the_canonical_maximum
+    #
+    # #CRITICAL: concurrency: that same arithmetic is computed IN the UPDATE
+    # statement rather than read-modify-written in Python, so two devices
+    # syncing the same completion concurrently cannot both read the old value
+    # and both write the same new one, losing one book's progress. LEAST and
+    # GREATEST over the column itself make the update commutative.
+    # #VERIFY: no test proves the concurrency property. The two tests cited
+    # above are single-request and sequential; a Python read-modify-write
+    # carrying identical LEAST/GREATEST arithmetic would still pass both of
+    # them. Proving it needs a two-connection test that interleaves two
+    # transactions against the same character row, which this suite does not
+    # have and this task did not add.
     result = await session.execute(
         _INSERT_COMPLETION,
         {
