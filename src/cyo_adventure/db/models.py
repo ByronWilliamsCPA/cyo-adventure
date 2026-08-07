@@ -895,7 +895,7 @@ class Character(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
         ),
         CheckConstraint(
             "NOT (is_active AND retired_at IS NOT NULL)",
-            name="ck_character_active_xor_retired",
+            name="ck_character_not_active_and_retired",
         ),
         CheckConstraint(
             f"archetype IN ({_CHARACTER_ARCHETYPE_NAMES})",

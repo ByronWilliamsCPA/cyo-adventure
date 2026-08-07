@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS "public"."character" (
     CONSTRAINT character_pkey PRIMARY KEY (id),
     CONSTRAINT fk_character_profile_family FOREIGN KEY (child_profile_id, family_id)
         REFERENCES "public"."child_profile" (id, family_id) ON DELETE CASCADE,
-    CONSTRAINT ck_character_active_xor_retired CHECK (
+    CONSTRAINT ck_character_not_active_and_retired CHECK (
         NOT (is_active AND retired_at IS NOT NULL)),
     CONSTRAINT ck_character_archetype CHECK (archetype IN (
         'scout', 'guardian', 'trickster', 'scholar', 'healer', 'wildheart')),

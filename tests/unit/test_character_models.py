@@ -65,7 +65,7 @@ def test_only_one_character_per_profile_may_be_active() -> None:
 def test_active_and_retired_cannot_both_hold() -> None:
     """is_active and retired_at are two spellings of one fact; keep them agreeing."""
     names = {c.name for c in Character.__table__.constraints if c.name}
-    assert "ck_character_active_xor_retired" in names
+    assert "ck_character_not_active_and_retired" in names
 
 
 @pytest.mark.unit
