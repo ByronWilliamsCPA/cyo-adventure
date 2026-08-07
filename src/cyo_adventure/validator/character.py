@@ -6,16 +6,18 @@ namespace rather than extending ``L2-*`` because, like ``SR-*``, they prove a
 cross-artifact handoff rather than a within-story property: the character comes
 from outside the book.
 
-This module ships every CH-* rule except CH-8. CH-1, CH-2, CH-5, CH-6, and
-CH-7 need no state-space walk; CH-3a, CH-3b, and CH-4 below walk the story
-once per envelope entry state (plus once more for the book's own declared
-initial) to prove a property across the states a seeded reader can actually
-arrive in.
+CH-1, CH-2, CH-5, CH-6, and CH-7 need no state-space walk; CH-3a, CH-3b, and
+CH-4 below walk the story once per envelope entry state (plus once more for
+the book's own declared initial) to prove a property across the states a
+seeded reader can actually arrive in. The Character Envelope catalog section
+holds one further id in reserve for a rule this module does not implement;
+see its RESERVED row in ``docs/planning/validator-rules.md``.
 
-Deliberately not spelled out as literal rule ids: the catalog lockstep guard
-(``tests/unit/test_validator_rules_catalog.py``) scans this file's whole text,
-so naming an unimplemented id here would demand a catalog row for a rule that
-does not exist yet.
+That reserved id is deliberately not spelled out by number here: the catalog
+lockstep guard (``tests/unit/test_validator_rules_catalog.py``) scans this
+file's whole text for anything that looks like a rule id, so naming an
+unimplemented id in prose would make the guard treat it as shipped and skip
+the very RESERVED-row check that keeps it honest.
 """
 
 from __future__ import annotations
@@ -85,8 +87,26 @@ def validate_character(story: Storybook) -> ValidationReport:
     # name in `accepts_character` would already be a CH-1 "no variable of
     # that name" finding, since Tier-1 stories declare no variables at all),
     # so skipping the walk here costs nothing a Tier-1 book could use anyway.
-    if story.metadata.tier != 1:
-        states = envelope_states(story.accepts_character or {})
+    #
+    # #CRITICAL: data integrity: `envelope_states` materializes the full
+    # Cartesian product and its own docstring says it is "not safe to call on
+    # an envelope CH-5 has flagged without also checking CH-5's result".
+    # `_check_ch5_envelope_size` above only *reports* an oversized envelope;
+    # it does not stop this function from reaching `envelope_states` next. A
+    # schema-valid Tier-2 story can declare a huge range (nothing upstream
+    # bounds it beyond `MAX_ABS_STORY_INT`), so calling `envelope_states`
+    # unconditionally lets a single crafted-or-buggy generation output drive
+    # `run_gate` to a `MemoryError`, which in production is the generation
+    # worker process, not a request handler with a timeout. Recompute the
+    # size cheaply (`envelope_size` is O(#vars), never materializes a state)
+    # and skip straight past the walk block when it is already over the cap:
+    # CH-5 has fired and the book is blocked either way, so the walk below
+    # would prove nothing that is not already settled.
+    # #VERIFY: tests/unit/test_character_rules.py::
+    # test_ch_walk_rules_skip_an_oversized_envelope_instead_of_enumerating_it
+    envelope = story.accepts_character or {}
+    if story.metadata.tier != 1 and envelope_size(envelope) <= MAX_ENTRY_STATES:
+        states = envelope_states(envelope)
         _check_ch3a_union_dead_branches(story, states, report)
         _check_ch3b_per_state_regressions(story, states, report)
         _check_ch4_satisfying_ending_reachable(story, states, report)
@@ -378,13 +398,39 @@ def _check_ch3a_union_dead_branches(
     dead, it is state-gated exactly as its condition intends. Reporting it
     per state would rediscover every legitimately state-gated choice in a
     book like the six-way fixture as a false dead branch.
+
+    Iterates every node rather than restricting to walk-reachable ones the
+    way L2-11 does: a walk-unreachable node is already blocked by topology
+    rules, so the extra findings here are noise on an already-failing book,
+    not an unsound verdict on a clean one, and narrowing to reachable-only
+    would need its own reachable-node computation this rule does not
+    otherwise require.
     """
     engine = StoryEngine(story)
-    ever_visible = ever_visible_choice_ids(walk_configurations(story), engine)
+    baseline_result = walk_configurations(story)
+    ever_visible = ever_visible_choice_ids(baseline_result, engine)
+    capped = baseline_result.capped
     for state in states:
-        ever_visible |= ever_visible_choice_ids(
-            walk_configurations(story, carried=state), engine
-        )
+        state_result = walk_configurations(story, carried=state)
+        capped = capped or state_result.capped
+        ever_visible |= ever_visible_choice_ids(state_result, engine)
+
+    # #CRITICAL: data integrity: a capped walk yields a partial `configs` map
+    # (see `WalkResult.capped`'s docstring), so `ever_visible` is a partial
+    # union, not the true one, whenever any walk above capped. This rule's
+    # finding is a positive claim, "this choice is dead everywhere", which a
+    # partial union cannot prove; it can only under-report visibility. Fail
+    # OPEN here (stay silent) rather than raise a spurious ERROR off
+    # incomplete data, the mirror image of `_check_ch3b_per_state_
+    # regressions` below, which fails CLOSED on the same signal because its
+    # finding is a negative claim ("no new defect") that a capped walk
+    # equally cannot prove. `satisfying_ending_reachable` (CH-4's helper)
+    # makes this same fail-open choice for the same reason: "cannot prove the
+    # negative" defaults to "assume the positive holds", not to a report.
+    # #VERIFY: tests/unit/test_character_rules.py::
+    # test_ch3a_stays_silent_when_a_walk_caps
+    if capped:
+        return
 
     for node in story.nodes:
         for choice in node.choices:
@@ -463,16 +509,55 @@ def _check_ch3b_per_state_regressions(
     question (CH-3a's rule). A book may already carry one of these defects
     from its own declared initials; that is this book's own accepted
     baseline, not a regression the envelope introduced. This rule walks each
-    envelope state, and reports only the L2-9/L2-10/L2-14 findings that do
-    not also appear in the baseline walk, per :func:`_signature`.
+    envelope state, and reports the L2-9/L2-10/L2-14 findings that do not
+    also appear in the baseline walk, per :func:`_signature`. Because the
+    signature embeds the raising state's own values, a structurally
+    identical baseline defect is suppressed once per matching state rather
+    than once overall; a differing entry state re-reports it, which is
+    harmless (any baseline L2-9/L2-10/L2-14 ERROR already blocks the gate
+    through the ``"L2"`` prefix in ``gate.py``) but means "does not also
+    appear in the baseline walk" above is a per-state, not a global,
+    statement.
     """
+    baseline_errors = validate_layer2(story).errors
     baseline = {
         _signature(finding)
-        for finding in validate_layer2(story).errors
+        for finding in baseline_errors
         if finding.rule_id in _PER_STATE_RULES
     }
     for state in states:
-        for finding in validate_layer2(story, carried=state).errors:
+        state_errors = validate_layer2(story, carried=state).errors
+        # #CRITICAL: data integrity: `validate_layer2` returns *only* an
+        # L2-12 finding when its own walk caps (see its docstring), and
+        # L2-12 is not in `_PER_STATE_RULES`, so the loop below would
+        # otherwise drop a capped state silently: it would contribute no
+        # finding and read exactly like a state with no defect at all. Fail
+        # CLOSED here, unlike `_check_ch3a_union_dead_branches` above, which
+        # fails open on the same signal: that rule's finding is a positive
+        # claim a partial walk cannot prove, but this rule's whole job is to
+        # prove a negative ("no new defect"), and a capped walk cannot prove
+        # a negative either. Reporting a capped state as clean would be a
+        # silent false negative on exactly the case this rule exists to
+        # catch.
+        # #VERIFY: tests/unit/test_character_rules.py::
+        # test_ch3b_reports_a_capped_per_state_walk_instead_of_passing_it_clean
+        if any(finding.rule_id == "L2-12" for finding in state_errors):
+            report.add(
+                ValidationFinding(
+                    rule_id="CH-3b",
+                    severity=Severity.ERROR,
+                    story_id=story.id,
+                    message=(
+                        f"CH-3b character: accepts_character entry state "
+                        f"{_render_state(state)} could not be fully walked "
+                        f"(L2-12 configuration cap), so its L2-9/L2-10/"
+                        f"L2-14 safety cannot be proven, in story "
+                        f"'{story.id}'"
+                    ),
+                )
+            )
+            continue
+        for finding in state_errors:
             if finding.rule_id not in _PER_STATE_RULES:
                 continue
             if _signature(finding) in baseline:
@@ -499,7 +584,7 @@ def _check_ch4_satisfying_ending_reachable(
 ) -> None:
     """CH-4: every envelope entry state must still be able to reach a win.
 
-    Reuses SR-5's own reachability test
+    Reuses SR-9's own reachability test
     (:func:`~cyo_adventure.validator.series.satisfying_ending_reachable`)
     rather than a second implementation, so "the reader can still win" cannot
     silently drift between the series continuation case and the character

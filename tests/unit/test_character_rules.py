@@ -5,11 +5,14 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
 from cyo_adventure.storybook.models import Storybook
 from cyo_adventure.validator.character import validate_character
 from cyo_adventure.validator.gate import run_gate
-from cyo_adventure.validator.report import Severity
+from cyo_adventure.validator.layer2 import validate_layer2
+from cyo_adventure.validator.report import Severity, ValidationFinding, ValidationReport
+from cyo_adventure.validator.walk import WalkResult
 
 _VALID_TIER2_FIXTURE = (
     Path(__file__).resolve().parents[1]
@@ -277,6 +280,30 @@ def test_a_ch_error_blocks_the_gate() -> None:
     assert result.blocked is True
 
 
+def test_ch_walk_rules_skip_an_oversized_envelope_instead_of_enumerating_it() -> None:
+    """CH-5 blocking an oversized envelope must stop the walk rules from running.
+
+    ``envelope_states`` materializes the full Cartesian product and its own
+    docstring says it is unsafe to call on an envelope CH-5 has already
+    flagged. A schema-valid Tier-2 story can declare a range this wide,
+    nothing upstream bounds a variable's width beyond ``MAX_ABS_STORY_INT``,
+    so before the fix ``run_gate`` would build a 50,000,001-entry state list
+    for a single book, which is exactly the ``MemoryError`` reproduction that
+    drove this fix. CH-5 blocks the book either way, so nothing is lost by
+    skipping the walk; this test's own fast completion is the proof the walk
+    rules did not run.
+    """
+    data = _gate_clean_story_dict(
+        accepts_character={"might": {"min": 0, "max": 50_000_000}}
+    )
+    data["variables"][-1]["max"] = 50_000_000
+    result = run_gate(data)
+    assert result.blocked is True
+    ch_ids = {f.rule_id for f in result.report.findings if f.rule_id.startswith("CH-")}
+    assert "CH-5" in ch_ids
+    assert ch_ids.isdisjoint({"CH-3a", "CH-3b", "CH-4"})
+
+
 # ---------------------------------------------------------------------------
 # CH-3a / CH-3b / CH-4: the walk-based envelope rules
 # ---------------------------------------------------------------------------
@@ -415,7 +442,39 @@ def test_ch3a_reports_a_branch_invisible_in_every_state() -> None:
             "condition": {"==": [{"var": "archetype"}, 7]},
         }
     )
-    assert len(_ids(Storybook.model_validate(data), "CH-3a")) >= 1
+    story = Storybook.model_validate(data)
+    findings = [
+        f
+        for f in validate_character(story).findings
+        if f.rule_id == "CH-3a" and f.severity is Severity.ERROR
+    ]
+    assert len(findings) == 1
+    assert findings[0].choice_id == "to_secret"
+
+
+def test_ch3a_stays_silent_when_a_walk_caps() -> None:
+    """A capped walk must not be trusted as ground truth for a dead-branch claim.
+
+    Forces every ``walk_configurations`` call CH-3a makes to return an
+    empty, capped result, starving ``ever_visible`` of every choice,
+    including the six legitimate ones the six-way fixture proves are
+    visible once a walk actually completes (see
+    ``test_ch3a_accepts_what_a_per_state_check_would_reject``). Without the
+    capped check, that starved union would make all six conditional choices
+    in this fixture look dead and CH-3a would raise six spurious errors on a
+    book that is not actually broken; the fix must stay silent instead.
+    """
+    data = _six_way_archetype_story()
+    story = Storybook.model_validate(data)
+    empty_capped = WalkResult(configs={}, edges={}, capped=True)
+    with patch(
+        "cyo_adventure.validator.character.walk_configurations",
+        return_value=empty_capped,
+    ):
+        findings = [
+            f for f in validate_character(story).findings if f.rule_id == "CH-3a"
+        ]
+    assert findings == []
 
 
 def _masked_second_dead_end_story(**overrides: Any) -> dict[str, Any]:
@@ -507,9 +566,76 @@ def test_ch3b_distinguishes_two_dead_branches_on_one_node() -> None:
     visible); ``might == 2`` is a second, genuinely different dead end on the
     same node that a ``rule_id|node_id|choice_id``-only signature would wrongly
     collapse into the baseline one, because L2-9 never sets ``choice_id``.
+
+    The exact count is load bearing, not incidental: ``might == 2`` raises
+    both an L2-9 dead end at "hold" and an L2-10 unreachable-ending finding
+    at "start" (the config one hop upstream, which also can no longer reach
+    an ending), so a clean run reports 2. Deleting the baseline diff
+    entirely (an ``if False:`` mutation on its suppression guard) would also
+    let ``might == 0``'s matching pair through unsuppressed, for 4; a
+    ``>= 1`` assertion cannot distinguish those two worlds.
     """
     data = _masked_second_dead_end_story()
-    assert len(_ids(Storybook.model_validate(data), "CH-3b")) >= 1
+    assert len(_ids(Storybook.model_validate(data), "CH-3b")) == 2
+
+
+def test_ch3b_is_silent_for_the_state_that_matches_the_declared_initial() -> None:
+    """CH-3b's baseline diff must suppress the declared-initial state exactly.
+
+    ``might == 0`` is this book's declared initial, so it reproduces the
+    baseline's own known L2-9/L2-10 defects rather than introducing a new
+    one; the suppression must silence it. ``might == 2`` is a genuinely
+    different entry state and must NOT be suppressed. Asserting both
+    directions proves the suppression is targeted at the matching state, not
+    merely present somewhere: this is the test the review found missing,
+    the one that directly exercises the suppression's purpose rather than
+    only its absence-detectable side effect.
+    """
+    data = _masked_second_dead_end_story()
+    story = Storybook.model_validate(data)
+    findings = [f for f in validate_character(story).findings if f.rule_id == "CH-3b"]
+    assert not any("{might=0}" in f.message for f in findings)
+    assert any("{might=2}" in f.message for f in findings)
+
+
+def test_ch3b_reports_a_capped_per_state_walk_instead_of_passing_it_clean() -> None:
+    """A per-state walk that hits L2-12's cap must not read as clean.
+
+    ``validate_layer2`` returns only an L2-12 finding when its own walk
+    caps, and L2-12 is not in ``_PER_STATE_RULES``, so before the fix this
+    state silently contributed nothing: a state whose safety was never
+    actually proven read exactly like a state with no defect. Forces the
+    walk for ``might == 1`` (the one state the real fixture is clean at) to
+    look capped; the fix must report that state explicitly rather than
+    staying silent about it.
+    """
+    data = _masked_second_dead_end_story()
+    story = Storybook.model_validate(data)
+
+    def _fake_validate_layer2(
+        book: Storybook, *, cap: int = 100_000, carried: dict[str, int] | None = None
+    ) -> ValidationReport:
+        if carried == {"might": 1}:
+            capped_report = ValidationReport()
+            capped_report.add(
+                ValidationFinding(
+                    rule_id="L2-12",
+                    severity=Severity.ERROR,
+                    story_id=book.id,
+                    message="L2-12 forced cap for test",
+                )
+            )
+            return capped_report
+        return validate_layer2(book, cap=cap, carried=carried)
+
+    with patch(
+        "cyo_adventure.validator.character.validate_layer2",
+        side_effect=_fake_validate_layer2,
+    ):
+        findings = [
+            f for f in validate_character(story).findings if f.rule_id == "CH-3b"
+        ]
+    assert any("{might=1}" in f.message for f in findings)
 
 
 def _unreachable_win_for_one_state_story(**overrides: Any) -> dict[str, Any]:
