@@ -9,9 +9,14 @@ tags:
   - project
 ---
 
-> **Status**: Approved design, pre-implementation | **Date**: 2026-08-05
+> **Status**: Approved design | **Date**: 2026-08-05, revised 2026-08-06
 > **Gate**: SQ-22 / OG5 ruled **GO** by the owner
 > **Next ADR number**: ADR-028
+> **Build progress**: step 0 of section 9.2 (ADR-025 implementation) shipped 2026-08-06 in PR
+> [#636](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636). Steps 1 onward are
+> unstarted. Measurements and "ground truth" statements in section 2 were taken on 2026-08-05;
+> where step 0 has since falsified one, the item says so inline rather than being silently
+> rewritten, so the design's original reasoning stays auditable.
 
 A reader creates a character once, keeps it, and carries it through preset books. Books are
 never regenerated per character. Each book declares the character range it accepts, and the
@@ -56,18 +61,18 @@ what changed, what was falsified, and one round-1 disposition that round 2 prove
 Each claim below was verified by reading the code, not inferred. They drive the whole design.
 
 1. **The carried-state runtime already exists in both engines.**
-   [`player/engine.py:58`](../../../src/cyo_adventure/player/engine.py) `start_continuation(carried)`
+   `player/engine.py:58` `start_continuation(carried)`
    merges carried values into declared initials *before* the start node's `on_enter` runs.
    WS-G G3 carry rules: name-match against a declared variable, type-match or skip, int clamped
    to the receiving variable's declared bounds. `frontend/src/player/engine.ts` mirrors it;
    divergence is a conformance failure under `runtime-semantics.md` section 1.
 2. **The walk already accepts a carried entry.** `walk_configurations(story, cap=100_000, carried=...)`
-   in [`validator/walk.py:95-133`](../../../src/cyo_adventure/validator/walk.py).
+   in `validator/walk.py:95-133`.
 3. **`validate_layer2` already accepts `carried=`.** The gate simply never passes it:
-   [`validator/gate.py:140`](../../../src/cyo_adventure/validator/gate.py) calls `validate_layer2(story)`
+   `validator/gate.py:140` calls `validate_layer2(story)`
    with declared initials only. This makes the Layer-2 plumbing for envelope proofs cheap; the
    *semantics* change in section 5.2 is the real work.
-4. **SR-9 is the proof template.** [`validator/series.py`](../../../src/cyo_adventure/validator/series.py)
+4. **SR-9 is the proof template.** `validator/series.py`
    proves a receiving book safe when entered with each distinct satisfying exit state of the
    sending book: `_satisfying_exit_states`, an `_l2_error_signatures` baseline diff, and
    `_satisfying_ending_reachable`. Caps at `_MAX_ENTRY_STATES = 64` and warns when the cap bites.
@@ -77,7 +82,7 @@ Each claim below was verified by reading the code, not inferred. They drive the 
 6. **The frontend seed is one-shot.** `ReaderPage.tsx` applies a continuation only when no saved
    reading state exists. The saved `varState` is authoritative thereafter.
 7. **Backtracking is already disabled for seeded reads, deliberately.**
-   [`frontend/src/player/engine.ts:297-300`](../../../frontend/src/player/engine.ts) returns `null`
+   `frontend/src/player/engine.ts:297-300` returns `null`
    from the Go-back path when `live.path[0] !== story.start_node`, with a comment explaining that
    a non-start entry cannot be reproduced by replay. Open issue **#460** (RESTART discards carried
    state) is the same defect class.
@@ -85,21 +90,27 @@ Each claim below was verified by reading the code, not inferred. They drive the 
    marker: the seed arrives as router `location.state`, is shape-checked by `parseContinuation`, and
    every value is re-filtered by `startContinuation`.
 9. **`PERSONALIZATION_FIELDS` is a closed frozenset** of 11 slot fields
-   ([`storybook/theme_contract.py:74-97`](../../../src/cyo_adventure/storybook/theme_contract.py)).
+   (`storybook/theme_contract.py:74-97`).
    `REAL_PERSON_PERSONALIZATION_FIELDS` forces any slot naming a real person to declare `role_safety`.
    Free text is already permitted for `pet_name` and, via guardian `display_name`, for
    `protagonist_first_name`. Route A (self-naming disallowed) operates only at the
    request/generation layer and is orthogonal (ADR-023 section 4).
 10. **Personalization storage is one value per `(child_profile_id, slot_type)`**
-    ([`storybook/personalization_values.py`](../../../src/cyo_adventure/storybook/personalization_values.py)),
+    (`storybook/personalization_values.py`),
     in exactly one of three shapes, with a DB CHECK on `slot_type`.
-11. **ADR-025 is accepted but not implemented.** `_check_schema_version` requires exact equality
-    with `SCHEMA_VERSION = "2.0"`, there is no `SCHEMA_MINOR`, every model sets `extra="forbid"`,
-    and `schema/storybook.schema.json` sets `additionalProperties: false`. ADR-026 and ADR-027 are
-    parked behind the same gate.
+11. ~~**ADR-025 is accepted but not implemented.**~~ **Superseded 2026-08-06 by PR
+    [#636](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636)**, which implemented it.
+    As measured on 2026-08-05 this read: `_check_schema_version` requires exact equality with
+    `SCHEMA_VERSION = "2.0"` and there is no `SCHEMA_MINOR`. Both are now false. `SCHEMA_MAJOR`
+    and `SCHEMA_MINOR` exist, `SCHEMA_VERSION` is derived from them, and the check accepts any
+    same-major minor at or below `SCHEMA_MINOR`. Still true and still load-bearing for this
+    design: every model sets `extra="forbid"` and `schema/storybook.schema.json` sets
+    `additionalProperties: false`, so `accepts_character` must be added as an enumerated field at
+    a declared minor rather than slipped in as an unknown key. ADR-026 and ADR-027 were parked
+    behind the same gate and are now unblocked.
 12. **Rule namespaces in use**: `CG`, `L1`, `L2` (through `L2-14`), `PL`, `RL`, `SR`. `CH-*` is free.
 13. **The gamebook narrative style exists only at 13-16 and 16+**
-    ([`validator/band_profile.py`](../../../src/cyo_adventure/validator/band_profile.py) `_PRODUCTION_CELLS`).
+    (`validator/band_profile.py` `_PRODUCTION_CELLS`).
     Every 8-11 and 10-13 production cell is prose.
 
 ### 2.1 Catalog measurements (2026-08-05, `skeletons/`)
@@ -108,8 +119,9 @@ Measured, not estimated. These numbers replace the arithmetic in the draft, whic
 
 | Measure | Value |
 |---|---|
-| Skeletons total | 124 |
-| With non-empty `variables` (the backfill population) | 14 |
+| Skeletons total | **61** |
+| (`skeletons/*/*.json` file count, for reference) | 124 = 61 skeletons + 47 `.contract.json` + 16 `.lineage.json` sidecars |
+| With non-empty `variables` (the backfill population) | 14 of 61 (23%) |
 | Using `once: true` | 5, at 5-6 once-nodes each |
 | Canonical names (`might`/`wits`/`nerve`/`archetype`) already in use | **0** |
 | Largest config closure | `16+/the-longwinter-station.json`, **51,241** configs (51% of cap), 337ms |
@@ -127,7 +139,7 @@ Opening a book projects the active character into a `{name: value}` map and hand
 existing seed path. Books never learn characters exist; G3 name-match does the coupling. A book
 declaring `might` picks it up; a book that does not, ignores it.
 
-```
+```text
 kid taps a book
   -> client reads the active character
   -> projects to VarState  {might: 2, wits: 1, nerve: 0}
@@ -142,25 +154,34 @@ kid taps a book
 ```sql
 character
   id                uuid PK
-  child_profile_id  uuid NOT NULL REFERENCES child_profile   -- ADR-022 Tier 1 family_scoped
-  name              text NOT NULL       -- free text; ADR-023 slot, section 6
+  child_profile_id  uuid NOT NULL REFERENCES child_profile (id) ON DELETE CASCADE
+                                                          -- ADR-022 Tier 1 family_scoped
+  name              text NOT NULL CHECK (char_length(name) BETWEEN 1 AND 32)
+                                                          -- ADR-023 slot, section 6
   archetype         text NOT NULL CHECK (archetype IN (
                       'scout','guardian','trickster','scholar','healer','wildheart'))
   look              text NOT NULL CHECK (look IN (
                       'avatar_01', ..., 'avatar_12'))         -- closed illustrated set
   is_active         boolean NOT NULL DEFAULT false
-  books_completed   integer NOT NULL DEFAULT 0
+  books_completed   integer NOT NULL DEFAULT 0 CHECK (books_completed >= 0)
   created_at, updated_at, retired_at
+
+  CHECK (NOT (is_active AND retired_at IS NOT NULL))       -- see "Active and retired" below
 
 CREATE UNIQUE INDEX ON character (child_profile_id) WHERE is_active;
 
 character_attribute
-  character_id  uuid NOT NULL REFERENCES character ON DELETE CASCADE
-  name          text NOT NULL CHECK (name IN (<canonical vocabulary>))
-  value_int     integer NULL
-  value_bool    boolean NULL
+  character_id  uuid NOT NULL REFERENCES character (id) ON DELETE CASCADE
+  name          text NOT NULL CHECK (name IN ('archetype','might','wits','nerve'))
+  value_int     integer NOT NULL
   PRIMARY KEY (character_id, name)
-  CHECK (num_nonnulls(value_int, value_bool) = 1)
+
+  -- The vocabulary contract of section 4.2, enforced in the database rather
+  -- than only in application code. Per-name, because the ranges differ.
+  CHECK (
+       (name = 'archetype'               AND value_int BETWEEN 0 AND 6)
+    OR (name IN ('might','wits','nerve') AND value_int BETWEEN 0 AND 2)
+  )
 ```
 
 A partial unique index rather than a `child_profile.active_character_id` FK: an FK on the profile
@@ -170,8 +191,31 @@ character. The partial index gets uniqueness and ownership for free.
 `retired_at` is a soft delete. A saved reading state was seeded from a character; hard-deleting it
 orphans the provenance of an in-progress book (section 7.3).
 
-The shape deliberately mirrors `child_profile_personalization`'s (subject, key) plus multi-shape
-plus CHECK pattern rather than inventing a new one.
+**Active and retired is not a legal state.** Without the table CHECK above, a row can be both
+`is_active = true` and retired. Such a row still matches the partial unique index, so it silently
+blocks activating any replacement character while presenting to the reader as deleted: the profile
+has no usable character and no error explains why. The CHECK makes the state unrepresentable, which
+means retirement and activation must move together: **retiring the active character and activating
+its replacement is one transaction**, clearing `is_active` on the outgoing row before setting it on
+the incoming one. Retiring with no replacement simply leaves the profile with no active character,
+which is a legal state.
+
+**`value_bool` is deliberately absent in v1.** Every name in the canonical vocabulary (section 4.2)
+is an integer, so a nullable two-shape column plus `num_nonnulls(...) = 1` would buy nothing except
+a way to store an attribute no rule can read. A single `NOT NULL` integer column lets the range
+CHECK above be unconditional. This is the one place the shape does **not** mirror
+`child_profile_personalization`'s multi-shape pattern; adding a second shape later is an ordinary
+additive migration, and should be gated on a canonical name that actually needs it rather than
+provisioned in advance.
+
+Otherwise the shape deliberately mirrors `child_profile_personalization`'s (subject, key) plus
+CHECK pattern rather than inventing a new one.
+
+**Deletion and retention.** `child_profile_id` cascades: a character is meaningless without its
+profile, and ADR-018 children's-privacy deletion must not leave an orphan row holding a child-chosen
+name. `character_attribute` cascades from `character` for the same reason. Note what cascade does
+*not* cover: a `character_name` value already materialized into a published Storybook blob or a
+saved reading state is not reachable by FK. Section 6.1 owns that path.
 
 ### 3.2 Character and series are mutually exclusive in v1
 
@@ -192,17 +236,99 @@ The seed is untrusted client input (ground truth 8). A child can forge a within-
 sheet via history manipulation. **Accepted**: single-player, own book, no shared score, no unlock
 economy.
 
-The guarantee that *does* hold, stated precisely: `CH-2` (section 5.1) requires the declared
-variable bounds to **equal** the declared envelope, and G3 clamps every carried int to those
-declared bounds. Therefore a forged seed cannot reach a state outside the envelope the book was
-proven safe across. Cheating changes difficulty; it can never reach an unvalidated state.
+The guarantee that *does* hold, stated precisely, rests on **four** rules and fails if any one of
+them is weakened:
 
-To be recorded as a `#CRITICAL` marker. Must be revisited if rewards or cross-family visibility
-ever attach to a character.
+1. `CH-2` equality: the declared variable bounds **equal** the declared envelope, so the envelope
+   the validator walked is exactly the range the clamp permits.
+2. `CH-2` canonical containment: those bounds lie within the canonical range, so the clamp cannot
+   be widened past the vocabulary by an authoring mistake.
+3. `CH-1` set equality: no canonical variable is carried that the envelope did not vary, so there
+   is no unproven dimension for a forged seed to move in.
+4. `CH-6` namespace reservation: a book that does not opt in cannot declare a canonical name at
+   all, so it can never receive a carry it was not proven for.
+
+Given all four, G3's clamp to declared bounds is equivalent to a clamp to the proven envelope, and
+a forged seed cannot reach a state outside it. Cheating changes difficulty; it can never reach an
+unvalidated state.
+
+To be recorded as a `#CRITICAL` marker naming all four rules, so that weakening any one of them in
+future shows up as breaking a stated invariant rather than as a local rule change. Must be
+revisited if rewards or cross-family visibility ever attach to a character.
 
 > The draft claimed this guarantee came from an `accepts_character` clamp. No such clamp exists at
 > runtime; `_clamp` uses declared variable bounds only. The guarantee is real but it is `CH-2`'s
 > equality requirement that makes it so, which is why `CH-2` is containment-then-equality below.
+
+### 3.4 Authorization and RLS
+
+#### `character` cannot be Tier 1 as drawn
+
+Section 3.1 annotates `child_profile_id` with "ADR-022 Tier 1 family_scoped", but the table as
+drawn carries no `family_id` column, and ADR-022's Tier 1 policy shape is a flat
+`family_id::text = current_setting('app.family_id', true)` predicate. ADR-022's own technical-debt
+clause resolves the case explicitly: a table scoped by `child_profile_id` rather than a direct
+`family_id` needs either a denormalized `family_id` (preferred, keeps the predicate flat) or a
+join-based predicate (discouraged, per-row cost), and any table that cannot carry a flat
+`family_id` is **demoted to Tier 2 pending a denormalization migration** rather than given a
+subquery predicate.
+
+So this is a choice the design has to make, not an annotation it can assert:
+
+| Option | Consequence |
+| --- | --- |
+| **Denormalize `family_id` onto `character`** (preferred) | Tier 1 as claimed. Costs a column plus the invariant that it always matches `child_profile.family_id`, which needs an FK to `(family_id, id)` on `child_profile` or a trigger; a drifted denormalized key is an RLS bypass, not a stale cache. |
+| Leave it Tier 2 | The annotation in 3.1 is wrong and must be corrected. Application-layer `authorize_family()` scoping becomes the only control for this table, which is precisely the single-missed-`WHERE` exposure ADR-022 exists to reduce. |
+
+`character_attribute` is one further hop from `family_id` (via `character`), so it inherits the
+same decision and, if `character` is denormalized, is the stronger candidate for Tier 2: it holds
+no name, no free text, and is meaningless without the parent row.
+
+`character_book_completion` (section 7.3) is reachable from `reading_state`, which ADR-022 already
+lists as a Tier 1 candidate; it should follow whatever `reading_state` does rather than being
+decided separately.
+
+#### Authorization matrix
+
+The API step in the build order needs this settled before it is written, because "guardian-set
+toggle, default off" (section 6.1) and "a kid creates a character" are different principals acting
+on the same row:
+
+| Operation | Kid (device-granted session) | Guardian (own family) | Admin |
+| --- | --- | --- | --- |
+| Create character | Yes, for own profile | Yes, for a profile in own family | No (same posture as profile-create, which is 403 by design) |
+| Read own characters | Yes | Yes | Via the review surface only |
+| Rename (`character.name`) | Yes, subject to the `character_name` governance toggle and set-time validation (6.1) | Yes | No |
+| Change `look` / `archetype` | Yes | Yes | No |
+| Activate / retire | Yes | Yes | No |
+| Delete | No (retire only) | Yes | No |
+| Write attributes / `books_completed` | **No principal.** Server-side writeback only (7.3) | **No** | **No** |
+
+The last row is the load-bearing one: attributes are earned, never set. Exposing any write path for
+them, even to an admin, would make the monotone-up property a claim about the UI rather than an
+invariant, and section 5.1's proofs depend on it holding absolutely.
+
+### 3.5 What a character does not touch
+
+Stated as invariants rather than left to inference, because each is a place a reader of this spec
+could reasonably assume the opposite, and because two of them are what keep the feature cheap:
+
+- **Generation.** No character input reaches the LLM pipeline. A book is authored once, from its
+  skeleton and request brief, and is byte-identical for every character that opens it. The
+  character affects only the entry `var_state` handed to an already-published, already-validated
+  blob. This is the "preset books" half of the title and it is what makes the envelope proof
+  possible at all: the artifact being proven never varies.
+- **Cover art.** Covers are per-storybook, not per-character or per-reader. A character's `look` is
+  an avatar rendered in library and reader chrome (section 6.1) and is never composited into cover
+  art, which would multiply ADR-017 cover generation by the character population and put an
+  unreviewed image in front of a child.
+- **Moderation and approval.** Nothing about a character re-opens an approved book. The approval
+  gate ran against the blob, and the character changes no blob content. The one child-authored
+  string in the system, `character.name`, is governed at set time and render time by the ADR-023
+  slot rules (section 6.1) rather than by re-running the story through moderation.
+- **Other readers.** Ring 1 only, permanently (section 6.1). A character is never visible to
+  another household, so it carries no social surface, no leaderboard, and no shared score. Section
+  3.3's "accepted" verdict on seed forgery depends on this and must be revisited if it changes.
 
 ---
 
@@ -246,7 +372,7 @@ roster insertion cannot silently renumber live characters.
 A participating prose book keeps an **in-story build node** that sets `archetype` to 1-6. From the
 book's declared initials (`archetype: 0`) that node is reachable, so every archetype-gated flavour
 branch is visible to the existing declared-initials Layer-2 walk. This is verified, not reasoned:
-`_ever_visible_choice_ids` ([`layer2.py:628-642`](../../../src/cyo_adventure/validator/layer2.py))
+`_ever_visible_choice_ids` (`layer2.py:628-642`)
 accumulates a **global** set across all configurations and `_check_dead_branches` (:657-685) tests
 membership in it, so one visible configuration anywhere clears a choice permanently. Synthetic
 fixtures of this shape pass the declared-initials walk with zero errors.
@@ -264,7 +390,7 @@ reader builds in-story, a returning reader brings a character, same book and sam
 The build node's *own* choices must be gated on `archetype == 0`, so a reader arriving with 1-6
 does not rebuild. If the book always routes **through** the build node, that reader lands on a page
 where every choice is invisible: a zero-button page. This is a runtime break, not a validator
-artifact ([`player/engine.py:105-117`](../../../src/cyo_adventure/player/engine.py); `choose` raises
+artifact (`player/engine.py:105-117`; `choose` raises
 at :167-169), and it also raises `L2-9` (stateful dead end) and `L2-10`.
 
 **Required shape**: a *gate node* precedes the build node and routes past it when `archetype != 0`.
@@ -283,7 +409,7 @@ forks into six variable states. Measured by injecting the idiom into real catalo
 | `10-13/the-flooded-quarter` | 19,236 | **capped** |
 | `10-13/the-winter-of-the-wolf-queen` | 28,512 | **capped** |
 
-`L2-12` capping is an immediate ERROR ([`layer2.py:129-131`](../../../src/cyo_adventure/validator/layer2.py)),
+`L2-12` capping is an immediate ERROR (`layer2.py:129-131`),
 so a book whose base closure exceeds roughly 100,000 / 6 = **16,600 configurations cannot host a
 six-way build node at all**. `CH-8` (section 5.1) enforces this as a pre-flight check rather than
 letting authors discover it as an opaque L2-12.
@@ -350,8 +476,8 @@ handoff**, not a within-story property.
 
 | Rule | Severity | Check |
 |---|---|---|
-| `CH-1` | ERROR | Every `accepts_character` name is in the canonical vocabulary AND declared in `variables` with matching type |
-| `CH-2` | ERROR | Each envelope range **equals** the declared variable's `min`/`max` |
+| `CH-1` | ERROR | **Set equality, both directions.** Every `accepts_character` name is in the canonical vocabulary and declared in `variables` with matching type, **and** every canonical-vocabulary name appearing in `variables` also appears in `accepts_character` |
+| `CH-2` | ERROR | Each envelope range **equals** the declared variable's `min`/`max`, **and** that range satisfies `min <= max` and lies within the canonical range for that name (section 4.2) |
 | `CH-3a` | ERROR | **Union-quantified.** A conditional choice that is invisible in *every* configuration across the baseline walk and all envelope walks combined is a dead branch |
 | `CH-3b` | ERROR | **Per-state.** For every envelope state, entry raises no `L2-9`, `L2-10`, or `L2-14` error the book does not raise from its own declared initials |
 | `CH-4` | ERROR | For every envelope state, a satisfying ending remains reachable |
@@ -392,10 +518,40 @@ N" swapped for "states in the declared envelope". `CH-3a` needs the union of `_e
 across all walks, so all walks must complete before it can report. All three read one `WalkResult`
 per envelope state, so the cost is 27 walks, not 81.
 
-**`CH-2` is equality, not containment.** If the envelope were merely contained in the declared
-bounds, the two could differ, and G3's clamp to *declared bounds* would silently admit reachable
-states the validator never proved. The clamp makes that failure invisible at runtime. Equality is
-what makes section 3.3's integrity guarantee true.
+**`CH-1` is set equality, not one-way membership.** Checking only that each `accepts_character`
+name is declared in `variables` leaves the converse open, and the converse is the dangerous
+direction. G3 carry is name-match against *declared variables*, so a book that declares `wits` in
+`variables` but omits it from `accepts_character` still receives `wits` at runtime, from a
+dimension no envelope walk ever varied. The book would be proven safe across an envelope that does
+not describe the states it can actually enter, which is section 3.3's guarantee failing silently
+rather than loudly. `CH-6` does not close this: it governs books that do **not** opt in, and this
+is exactly the opted-in case. So for a book declaring `accepts_character`, the set of canonical
+names in `variables` and the set in `accepts_character` must be identical. Non-canonical variables
+are unaffected and may be declared freely; G3 never carries them.
+
+**An empty envelope is legal and means "declares the field, accepts nothing".** `accepts_character:
+{}` on a book with no canonical variables satisfies `CH-1` vacuously and produces exactly one
+envelope walk, the baseline. It is distinct from omitting `accepts_character` entirely, which
+leaves the book outside the feature and under `CH-6`. The distinction is worth keeping because it
+lets a book opt in structurally (and be listed as character-compatible) before it declares any
+stat. `CH-3a`, `CH-4`, and `CH-5` must each be defined on the one-walk case rather than assuming
+`n >= 1` non-baseline states; a regression test covers the empty envelope specifically.
+
+**`CH-2` is equality, not containment, *and* is bounded by the canonical range.** Two separate
+requirements that are easy to conflate:
+
+- *Envelope equals declared bounds.* If the envelope were merely contained in the declared bounds,
+  the two could differ, and G3's clamp to *declared bounds* would silently admit reachable states
+  the validator never proved. The clamp makes that failure invisible at runtime. Equality is what
+  makes section 3.3's integrity guarantee true.
+- *Declared bounds sit inside the canonical range.* Equality alone does not bound the pair. A book
+  could declare `might: -1..3` or `archetype: 0..7`, satisfy `CH-2` because the envelope matches,
+  and thereby prove itself safe across states the vocabulary does not define. The database CHECK in
+  section 3.1 stops a *stored* character holding such a value, but the seed is untrusted client
+  input (section 3.3) and G3 clamps to declared bounds, so a forged `might: 3` would survive into a
+  book that declared `0..3`. Requiring `canonical_min <= min <= max <= canonical_max` is what makes
+  the clamp equivalent to the vocabulary. A **narrower** per-book range stays legal and is expected:
+  a gentle 8-11 book may accept `might: 0..1` and be proven across two states rather than three.
 
 **`CH-5` is an ERROR, not a warning.** SR-9 warns because a series chain's entry-state count is
 *emergent* from the sending book and the author cannot directly control it. An envelope is
@@ -435,7 +591,7 @@ catalog chain is byte-identical under both with zero baseline L2-11 findings to 
 **Merge gate.** The four skipped Wyrmreach trilogy tests (`test_series.py:655-675`) depend on
 `out/*.filled.json` fixtures that are absent from the tree, and Wyrmreach is the only real live
 `carries_state` chain. `validate_series` runs on the approve path
-([`publishing/service.py:409-416`](../../../src/cyo_adventure/publishing/service.py)), so a chain
+(`publishing/service.py:409-416`), so a chain
 turned newly red would block approval of an already-published series at runtime. **The `choice_id`
 change lands only after those fixtures are restored and that chain is confirmed green under both
 signatures.**
@@ -469,10 +625,46 @@ three-shape validation. The resolver learns one new source.
 | `REAL_PERSON_PERSONALIZATION_FIELDS` | Included | A kid can type their own name. Treating it as fictional would skip the `role_safety` audit; including it forces `role_safety: "protagonist"`, which is also true. |
 | Governance | Guardian-set toggle, **default off** | ADR-023's governance model is guardian-controlled and opt-in. A kid-authored value inverts that, so the guardian holds an explicit per-profile enable, sees the current value, and can clear it. |
 | Validation | `validator/slots.py` structural plus band-mandatory denylist, at set time **and** at render time | ADR-023's explicit requirement for promoting a stored value into rendered content |
-| Purge | `character.name` joins the ADR-023 purge paths | Must be confirmed against the concrete implementation, not asserted; ADR-023:569-570 describes the requirement, not the wiring |
+| Purge | `character.name` joins the ADR-023 purge paths | Must be confirmed against the concrete implementation, not asserted; ADR-023:569-570 describes the requirement, not the wiring. See "Storage contract" below, which is why this cannot be left as an assertion. |
 
 With the toggle off, a character still works: rendering falls back to the existing
 `protagonist_first_name` resolution. The character's mechanical and visual identity is unaffected.
+
+#### Storage contract: `character_name` has no personalization row
+
+This is the consequence of "source its value from the active character row", and it needs stating
+because every other slot behaves the other way:
+
+- Every other slot in `PERSONALIZATION_FIELDS` stores its value as a
+  `child_profile_personalization` row keyed `(child_profile_id, slot_type)`.
+- `character_name` stores **nothing** there. The values payload synthesizes it at resolve time from
+  `character.name` of the active character. There is no row to find, update, or delete.
+
+Three consequences follow, and each is work rather than a note:
+
+1. **Any purge, export, or audit that enumerates `child_profile_personalization` rows will miss
+   `character_name` silently.** It will not error; it will report a clean sweep having never seen
+   the value. Under ADR-018 children's-privacy deletion that is the worst failure shape available:
+   a deletion path that reports success while a child-typed name survives in `character.name`. The
+   purge must therefore be extended to the `character` table explicitly, not assumed to be covered.
+   The `ON DELETE CASCADE` in section 3.1 covers profile deletion; it does **not** cover a
+   slot-level clear, where the profile stays and only the value must go.
+2. **A slot-level clear needs defined semantics.** Clearing `character_name` cannot delete a row,
+   so it means one of: turn the governance toggle off (value retained, not rendered), or blank
+   `character.name` (which the `char_length(name) >= 1` CHECK forbids). The design takes the first:
+   **clearing the slot turns the toggle off and rendering falls back to
+   `protagonist_first_name`.** A guardian who wants the name *gone* rather than unrendered retires
+   or deletes the character, which is a character operation, not a slot operation. The guardian UI
+   must say which of the two it is doing.
+3. **The set of slots a purge must visit is no longer derivable from `PERSONALIZATION_FIELDS`.**
+   That constant is the vocabulary, not the storage map, and `character_name` is the first member
+   whose storage lives outside the personalization table. Whatever enumerates purge targets needs
+   to be its own explicit list with a test that every `PERSONALIZATION_FIELDS` member is accounted
+   for by exactly one storage path, so the next externally-sourced slot fails loudly instead of
+   inheriting this gap.
+
+There is no `PURGEABLE_SLOT_TYPES` constant in the tree today (verified 2026-08-06), so item 3 is
+creating that map, not extending one.
 
 `look` is deliberately **not** a slot: it is an avatar in library and reader chrome, never
 substituted into prose, so it is an enum column with no compliance surface. Prose rendering of
@@ -507,12 +699,28 @@ section 7.3 needs for provenance. Both engines change, and the conformance corpu
 | Offline first open | The character is available locally, so the seed applies offline; the bound character id syncs with the reading state |
 | Book completed, reopened | Treated as a fresh read and re-seeded from the then-active character |
 
+**The binding is server-derived, never client-supplied.** Ground truth 8 says the seed *values* are
+attacker-shapeable and section 3.3 accepts that, because `CH-1`/`CH-2`/`CH-6` plus the clamp bound
+what a forged value can reach. The character *identity* is a different matter and is not covered by
+that argument: if `reading_state.character_id` were accepted from the request body, a kid could
+bind a read to another profile's character and, through the writeback in 7.3, credit progression
+onto a character they do not own. That crosses the profile boundary the whole envelope argument
+assumes.
+
+So on first open the server resolves the bound character itself, as
+`SELECT id FROM character WHERE child_profile_id = <authenticated profile> AND is_active`, and
+ignores any client-provided id. The client supplies *values* (which are re-filtered and clamped)
+and never an identity. The one place an id crosses the wire is offline sync, where the reading
+state carries the `character_id` the server itself assigned at first open; on sync the server
+re-validates that the id still belongs to the same profile before accepting the completion, rather
+than trusting the round trip.
+
 ### 7.3 Progression writeback
 
 On reaching a **satisfying** ending, project the final `var_state` back onto the bound character,
 filtered to canonical names, monotone-capped:
 
-```
+```text
 new_value        = min(canonical_max, max(current_value, exit_value))
 books_completed += 1
 ```
@@ -525,13 +733,62 @@ Locus, idempotency, and provenance, all of which the draft left undefined:
 
 - **Locus**: server-side, in the reading-completion path, transactionally with the completion record.
   The client never writes character attributes.
-- **Idempotency**: keyed on `(reading_state_id, character_id)`. A replayed or re-synced completion
-  must not increment `books_completed` twice. The attribute `max()` is naturally idempotent; the
-  counter is not, and the counter is the one that needs the key.
+- **Idempotency**: keyed on `(reading_state_id, character_id)`, **and the key must be a unique
+  database constraint, not a lookup**. See "Idempotency is a constraint, not a check" below.
 - **Provenance**: the reading state records the `character_id` it was seeded from. This is required
-  by 7.1, 7.2, and by the soft-delete rationale in section 3.1.
-- **Offline**: writeback happens on sync, through the same idempotency key, so an offline completion
-  that syncs twice credits once.
+  by 7.1, 7.2, and by the soft-delete rationale in section 3.1, and it needs schema of its own; see
+  "Reading-state columns" below.
+- **Offline**: writeback happens on sync, through the same constraint, so an offline completion that
+  syncs twice credits once.
+
+#### Idempotency is a constraint, not a check
+
+Reading `(reading_state_id, character_id)` and branching on "no prior completion found" is a
+read-modify-write, and two concurrent syncs (the common case: a device reconnecting while the same
+account has the book open elsewhere) can both observe no prior row and both increment. The key has
+to be enforced by the database:
+
+```sql
+character_book_completion
+  reading_state_id  uuid NOT NULL REFERENCES reading_state (id) ON DELETE CASCADE
+  character_id      uuid NOT NULL REFERENCES character (id)     ON DELETE CASCADE
+  completed_at      timestamptz NOT NULL DEFAULT now()
+  PRIMARY KEY (reading_state_id, character_id)
+```
+
+The writeback is then, in one transaction: `INSERT ... ON CONFLICT DO NOTHING`, and increment
+`books_completed` **only if that insert reported a row**. A duplicate sync inserts nothing and
+increments nothing.
+
+The attribute update has the same hazard in a quieter form. `new_value = min(canonical_max,
+max(current_value, exit_value))` is idempotent as a *function* but not as a read-then-write: two
+transactions reading `might = 0` and writing `1` and `2` respectively can interleave so the `2` is
+lost. Compute it in the statement rather than in application code:
+
+```sql
+UPDATE character_attribute
+   SET value_int = LEAST(:canonical_max, GREATEST(value_int, :exit_value))
+ WHERE character_id = :character_id AND name = :name;
+```
+
+Row-level locking then makes the monotone-up property hold under concurrency, which matters because
+section 5.1's proofs depend on it: a lost update is a character moving *down*, and a character that
+can move down breaks the "envelope stays permanently bounded" argument that `CH-3a`/`CH-3b`/`CH-4`
+rest on.
+
+#### Reading-state columns
+
+Sections 7.1, 7.2, and the provenance bullet above all require the reading state to persist what it
+was seeded from and with. That is schema on an existing table, and it is missing from the build
+order's migration step (section 9.2 step 4 creates only `character` and `character_attribute`):
+
+| Column | Purpose |
+| --- | --- |
+| `character_id uuid NULL REFERENCES character (id) ON DELETE SET NULL` | The bound character (7.2 "Restart", 7.3 provenance). `NULL` for an unseeded read, and `SET NULL` rather than `CASCADE` because losing the character must not delete a child's in-progress book. This is also why `retired_at` is a soft delete: an ordinary retirement keeps the row, and the FK, intact. |
+| `seed_var_state jsonb NULL` | The projected entry state actually applied, so seed-aware replay (7.1) can restart from it without re-projecting from a character that may since have changed. |
+
+Both are additive and nullable, so the migration is safe on existing rows: every current reading
+state is an unseeded read, which is exactly what `NULL` in both columns means.
 
 ### 7.4 Balance risk (recorded with a measurement, not solved)
 
@@ -594,10 +851,21 @@ The cases that carry real risk, as distinct from coverage:
 
 ### 9.1 Prerequisites
 
-**ADR-025 implementation is a hard blocker** (ground truth 11) and is scheduled nowhere: no register
-row, no roadmap entry, no issue. The owner has funded it as step 0 (D9). It is not wasted scope:
-ADR-026 and ADR-027 are parked behind the same gate. `accepts_character` is in the easy class of
-additive field, a catalog-time validation contract that no player reads.
+**ADR-025 implementation was a hard blocker** (ground truth 11) and, as written on 2026-08-05, was
+scheduled nowhere: no register row, no roadmap entry, no issue. The owner funded it as step 0 (D9).
+
+**Status as of 2026-08-06: step 0 is done.** PR
+[#636](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636) implemented the accepted range,
+so this prerequisite is discharged and ADR-026 and ADR-027 are unblocked along with it. Two
+residues of that work are scheduled rather than closed: `UW-A45` (nothing ties the emitted
+`schema_version` stamp to `SCHEMA_VERSION`; the owner ruled this ships as a validator rule
+alongside the first `SCHEMA_MINOR` bump) and `UW-C26` / `AL-080` (the importer's duplicate
+acceptance rule). Neither blocks the work below.
+
+`accepts_character` remains in the easy class of additive field, a catalog-time validation contract
+that no player reads. Note the interaction with `UW-A45`: under the ruled design, a book using
+`accepts_character` must declare a `schema_version` at or above the minor that introduces the
+field, so the field's minor bump and that validator rule land together.
 
 Then:
 
@@ -612,14 +880,16 @@ Then:
 
 ### 9.2 Build order
 
-```
-0   ADR-025 implementation                            [prereq; unblocks 026/027 too]
+```text
+0   ADR-025 implementation                            [DONE 2026-08-06, PR #636]
 1   ADR-028 + ADR-023 amendment + OG5 record          [decisions]
 2   canonical vocabulary constants + accepts_character field
 3   validator/character.py CH-1..CH-8 + tests
     (CH-3a union / CH-3b per-state, per 5.1; the signature fix is NOT here)
-4   migration: character, character_attribute, ADR-022 Tier 1 RLS
+4   migration: character, character_attribute, character_book_completion,
+    reading_state.character_id + .seed_var_state (7.3), ADR-022 Tier 1 RLS
 5   API: character CRUD, activate, values-payload extension
+    (authorization matrix in section 3.4; retire+activate is ONE transaction, 3.1)
 6   both engines: seed persistence + seed-aware replay; closes #460
 7   frontend: creator, picker, reader seed wiring
 8a  promote 8-11/the-storm-chasers-club Tier 1 -> Tier 2 (see below)
@@ -635,7 +905,7 @@ refinement.
 
 **Why step 8a exists (D12).** All nine 8-11 skeletons declare zero variables, consistent with Tier 1,
 and `L1-6` forbids a Tier-1 book from declaring any
-([`layer1.py:478-490`](../../../src/cyo_adventure/validator/layer1.py)); tier is `metadata.tier`.
+(`layer1.py:478-490`); tier is `metadata.tier`.
 **No Tier-2 8-11 book exists**, so piloting prose at the band D3 names is real authoring work. It is
 scheduled as its own step rather than absorbed into the pilot step, because a promotion that turns
 out to be expensive should stall visibly rather than quietly enlarge step 8b.
@@ -706,3 +976,29 @@ Verdict on the two questions asked: Q1 **needs revision**, Q2 **sound with a mer
 | The build node makes `archetype` mutable, costing 6.00x on the *baseline* walk; two catalog books cap out | **Accepted.** 4.3.2 measures it, 4.5 is rescoped, and `CH-8` gates it. The draft validated 4.3 and 4.5 in isolation and never measured their composition |
 | No Tier-2 8-11 book exists (`L1-6` forbids Tier-1 variables), so the 8-11 prose pilot is unscheduled work | **Accepted, escalated, and decided (D12)**: promote `8-11/the-storm-chasers-club` to Tier 2 as step 8a. Piloting prose at `the-glass-comet` was the alternative and was declined, because it would have tested the prose case at a band D3 did not name |
 | The `choice_id` signature change can only add findings, but the Wyrmreach fixtures are missing and `validate_series` runs on the approve path | **Accepted.** Merge-gated and moved out of step 3 (5.3, 9.2) |
+
+### Round 3 (PR review of #636, 2026-08-06)
+
+The PR under review implemented step 0 (ADR-025) and carried this spec as a new file. The review's
+findings against the spec itself are dispositioned here; the ADR-025 code findings are in that
+ADR's implementation notes and in `AL-080`/`UW-C26`.
+
+| Finding | Disposition |
+|---|---|
+| 13 markdown links pointed outside `docs/`, aborting `mkdocs build --strict` | **Accepted, and it was a live build break, not a lint nit.** Converted to plain code spans, matching the dominant `docs/planning/` convention. Absolute `blob/main` URLs were rejected as the fix: they would have traded a mkdocs failure for 13 new lychee targets that rot as lines move |
+| Ground truth 11 ("ADR-025 accepted but not implemented") and §9.1 ("scheduled nowhere") were falsified by the same PR that carried this file | **Accepted.** Both annotated in place rather than rewritten, so the design's original reasoning stays auditable; §9.2 step 0 marked done |
+| §2.1 "Skeletons total 124" counts sidecars | **Accepted.** 124 = 61 skeletons + 47 `.contract.json` + 16 `.lineage.json`. The real denominator is 61, which also moves the backfill population from an apparent 11% to 23% |
+| `is_active = true` with a non-null `retired_at` is representable, matches the partial unique index, and silently blocks activating a replacement | **Accepted.** Table CHECK added (3.1); retire-plus-activate specified as one transaction |
+| `character_attribute` accepts `value_bool` and any integer; `num_nonnulls` does not enforce the vocabulary contract | **Accepted.** `value_bool` dropped for v1 and the column made `NOT NULL`, with a per-name range CHECK (3.1). Recorded as a deliberate divergence from `child_profile_personalization`'s multi-shape pattern |
+| `CH-1` checks envelope-to-`variables` only; a book can declare a canonical variable it does not accept, and G3 carries it | **Accepted.** `CH-1` becomes set equality in both directions (5.1). `CH-6` does not cover this: it governs non-participating books, and this is the participating case |
+| `CH-2` equality does not bound the pair; `might: -1..3` would pass | **Accepted.** `CH-2` gains `min <= max` plus canonical-range containment, narrower per-book ranges still legal (5.1) |
+| The integrity guarantee in 3.3 was attributed to `CH-2` alone | **Accepted.** Restated as resting on four rules (`CH-1`, `CH-2` equality, `CH-2` containment, `CH-6`), so weakening any one reads as breaking a stated invariant |
+| The reading state must be bound to a character, but nothing said the binding is server-derived | **Accepted.** A client-supplied `character_id` would let a reader credit progression onto another profile's character; the server resolves it from the authenticated profile's active character (7.2) |
+| `character_name` has no `child_profile_personalization` row, so any purge enumerating that table misses it silently | **Accepted, and it is the worst failure shape available** under ADR-018: a deletion that reports success while a child-typed name survives. Storage contract, slot-clear semantics, and the need for an explicit storage map written up in 6.1. No `PURGEABLE_SLOT_TYPES` constant exists today, so this is creating that map |
+| Idempotency keyed on `(reading_state_id, character_id)` as a lookup, not a constraint | **Accepted.** Two concurrent syncs can both see no prior completion. Specified as a `character_book_completion` PK with insert-then-increment, plus the `max()` lost-update fixed by computing `GREATEST` in the statement (7.3) |
+| 7.1/7.3 require reading-state persistence the migration step never creates | **Accepted.** `reading_state.character_id` and `.seed_var_state` specified and added to build order step 4 (7.3, 9.2) |
+| `character` is annotated ADR-022 Tier 1 but carries no `family_id` | **Accepted.** ADR-022's own debt clause demotes such a table to Tier 2 pending denormalization rather than allowing a subquery predicate. Written up as an explicit choice with its consequences, not an annotation (3.4) |
+| No authorization matrix for a row that both a kid and a guardian act on | **Accepted.** Matrix added (3.4). The load-bearing row is that no principal may write attributes or `books_completed`; they are earned, never set |
+| Nothing stated whether characters reach generation, cover art, or moderation | **Accepted.** Written as invariants in 3.5. Two of them (byte-identical books, per-storybook covers) are what keep the feature cheap and the envelope proof possible |
+| Changed markdown must stay within 120 characters | **Declined.** `.markdownlint.json` sets `MD013: false` and `line-length: false`; no gate enforces a line length on markdown in this repo, and the surrounding tables already exceed it. Raising it here would reformat unrelated content to satisfy a rule the project has switched off |
+| Three fenced blocks lacked a language identifier (MD040) | **Accepted.** Labelled `text` |
