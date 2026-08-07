@@ -233,12 +233,47 @@ class TestNeedsLegacyNormalization:
         blob = {"schema_version": higher}
         assert _needs_legacy_normalization(blob) is False
 
-    def test_malformed_version_is_legacy(self) -> None:
-        blob = {
-            "schema_version": "not-a-version",
+    @pytest.mark.parametrize(
+        "version", ["not-a-version", "3.0.0", "v3.0", "03.0", "2", "2.1.0", ""]
+    )
+    def test_malformed_version_is_not_legacy(self, version: str) -> None:
+        # A version string this build cannot parse is a claim it must refuse,
+        # not a document it may repair. Rewriting it to "2.0" would admit an
+        # unparseable document as if it were parseable, destroying the very
+        # evidence the refusal rests on.
+        blob = {"schema_version": version, "metadata": {"topology": "branching"}}
+        assert _needs_legacy_normalization(blob) is False
+
+    @pytest.mark.parametrize("version", ["not-a-version", "3.0.0", "v3.0"])
+    def test_malformed_version_without_topology_is_not_legacy(
+        self, version: str
+    ) -> None:
+        # Same boundary with metadata.topology absent: the version check must
+        # decide the outcome before the topology fallthrough is consulted.
+        assert _needs_legacy_normalization({"schema_version": version}) is False
+
+    @pytest.mark.parametrize("version", [None, 2, 2.0, ["2.0"], {"major": 2}])
+    def test_non_string_version_is_not_legacy(self, version: object) -> None:
+        # An explicit JSON null or number is a malformed claim, not an absent
+        # one, so it is refused rather than repaired. Contrast
+        # test_missing_version_is_legacy, where the key is absent entirely.
+        blob = {"schema_version": version, "metadata": {"topology": "branching"}}
+        assert _needs_legacy_normalization(blob) is False
+
+    def test_earlier_minor_still_uses_the_topology_check(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # Once SCHEMA_MINOR advances, a same-major document BELOW the current
+        # minor is still supported, so it must reach the topology check rather
+        # than be short-circuited by the version bound.
+        monkeypatch.setattr(import_catalog_module, "SCHEMA_MINOR", 1)
+        supported = f"{SCHEMA_MAJOR}.0"
+        assert _needs_legacy_normalization({"schema_version": supported}) is True
+        with_topology = {
+            "schema_version": supported,
             "metadata": {"topology": "branching"},
         }
-        assert _needs_legacy_normalization(blob) is True
+        assert _needs_legacy_normalization(with_topology) is False
 
 
 @pytest.mark.unit

@@ -177,9 +177,13 @@ def _parse_storybook(
 ) -> Storybook | None:
     """Attempt to parse the raw data as a Storybook.
 
-    Layer 1 includes L1-1 (schema conformance), so a parse failure after a
-    clean L1 report should not occur in practice. This guard exists as a
-    defensive backstop; it does not duplicate L1-1 logic.
+    Layer 1 includes L1-1 (schema conformance), but a clean L1 report does
+    not imply a clean Pydantic parse. L1-1 validates against the exported
+    JSON Schema, which can express field shape and nothing else; the
+    ``model_validator(mode="after")`` checks on :class:`Storybook` (schema
+    version, unique ids, start node, variable references, ending count) have
+    no JSON Schema representation and therefore run only here. This is a
+    real, reachable path, not merely a defensive backstop.
 
     Args:
         data: The raw decoded story JSON mapping.
@@ -193,20 +197,21 @@ def _parse_storybook(
     try:
         return Storybook.model_validate(dict(data))
     except PydanticValidationError as exc:
-        # #EDGE: data integrity: L1-1 passed but Pydantic still rejects the
-        # document. This should not occur in practice because L1-1 validates
-        # against the schema exported from the same Pydantic models, but a
-        # schema-drift scenario could trigger it.
-        # #VERIFY: ensure schema_export.build_schema() stays in sync with the
-        # Pydantic model definitions (review whenever models.py changes).
+        # #ASSUME: data integrity: L1-1 passed but Pydantic still rejects the
+        # document. The common cause is a model_validator(mode="after") check
+        # that the exported JSON Schema cannot express, the most frequent
+        # being an unsupported schema_version: schema/storybook.schema.json
+        # constrains schema_version to {"type": "string"} with no pattern or
+        # enum, so "3.0" and "banana" both clear L1-1 and are refused here.
+        # Keeping build_schema() in sync with models.py cannot close that gap,
+        # because JSON Schema has no way to carry an after-validator.
+        # #VERIFY: the finding message below must carry Pydantic's own error
+        # text so the reader sees WHICH validator refused the document; see
+        # test_parse_storybook_reports_unsupported_schema_version in
+        # tests/unit/test_gate.py.
         story_id_raw = data.get("id")
         story_id = story_id_raw if isinstance(story_id_raw, str) else "<unknown>"
-        # Built as two single-line f-strings (rather than one
-        # continuation-paren-wrapped literal) so the enclosing parens, which
-        # fold away to nothing once adjacent string literals are joined, are
-        # never introduced (S1110).
-        detail = f"(schema drift?): {exc}"
-        message = f"L1-1 schema: document failed Pydantic parse after L1 {detail}"
+        message = f"L1-1 schema: document failed Pydantic parse after L1: {exc}"
         merged.add(
             ValidationFinding(
                 rule_id="L1-1",
