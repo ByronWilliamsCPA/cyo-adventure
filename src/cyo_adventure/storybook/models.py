@@ -32,13 +32,18 @@ from cyo_adventure.storybook.condition import (
 # is what L1-8 checks a document's declared version against.
 # #CRITICAL: data integrity: a field added here without a matching
 # storybook/field_minors.py entry lets a document under-declare its
-# schema_version while still using the field; L1-8 (not yet implemented)
-# reads that registry to catch exactly this, so a missed registration is
-# silently unenforceable rather than merely undertested.
-# #VERIFY: tracked by UW-A45 in docs/planning/unscheduled-work-register.md;
-# L1-8 ships with its own tests per that row (see
-# docs/superpowers/plans/2026-08-06-character-vocabulary-and-ch-rules.md
-# Task 4) before this build relies on the registry for enforcement.
+# schema_version while still using the field; L1-8
+# (validator/layer1.py::_check_field_minors, which ships on this same
+# change) reads that registry to catch exactly this, so a missed
+# registration is silently unenforceable rather than merely undertested.
+# #VERIFY: tests/unit/test_field_minor_floor.py covers L1-8 end to end,
+# including test_l1_8_alone_sets_blocked_true_through_the_gate. The
+# registration itself is held by the two-direction lockstep pair in that
+# file: test_every_storybook_field_is_registered_or_baselined (no field
+# escapes the registry) and test_no_field_minors_entry_names_a_field_that_
+# does_not_exist (no registry entry outlives its field). Adding a field
+# here without registering it fails the first of those. Tracked by UW-A45
+# in docs/planning/unscheduled-work-register.md.
 SCHEMA_MAJOR = 2
 SCHEMA_MINOR = 1
 SCHEMA_VERSION = f"{SCHEMA_MAJOR}.{SCHEMA_MINOR}"
