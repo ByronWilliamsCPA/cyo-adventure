@@ -3427,7 +3427,7 @@ to this document.</p>
 </tr>
 <tr>
 <td>Policy (PL)</td>
-<td>Pass/fail (PL-19 story-mean, PL-23 and PL-24 are advisory)</td>
+<td>Pass/fail (PL-19 story-mean, PL-23, PL-24, PL-26 and PL-25's ceiling short of its hard limit are advisory)</td>
 <td>Yes</td>
 </tr>
 <tr>
@@ -3464,8 +3464,9 @@ to this document.</p>
 </table>
 <p>Layer 1, Policy, and Layer 2 are hard gates, run in that order (<code>validator/gate.py::run_gate</code>):
 any failure fails the generation job (it lands in <code>failed</code>, not <code>passed</code>), so the story never
-advances to <code>in_review</code>. The Policy layer's PL-19 story-mean words-per-node sub-check is the
-one advisory exception; its per-node word-cap sub-check is still blocking. The reading-level
+advances to <code>in_review</code>. The Policy layer's advisory exceptions are PL-19's story-mean
+words-per-node sub-check (its per-node word-cap sub-check is still blocking), PL-23, PL-24,
+all of PL-26, and PL-25's ceiling short of its hard limit. The reading-level
 check warns and logs but does not block. A safety hit routes the generation job to
 <code>needs_review</code> for mandatory human review; the validator does not auto-reject, but no
 auto-publish path exists when the flag is set.</p>
@@ -3701,6 +3702,26 @@ advisory (WARNING). PL-15..PL-18 are defined below; PL-19 (words-per-node), PL-2
 <a href="../adr/adr-011-story-scale-framework/">ADR-011</a> rather than duplicated here. PL-22
 (band profile not configured, fail closed) is a runtime invariant rather than an
 age-safety rule in its own right; it is defined below.</p>
+<p><strong>Two axes, easily confused.</strong> PL-17 measures <em>breadth</em>: how many decision and ending
+nodes exist anywhere in the graph. PL-20, PL-25 and PL-26 measure <em>depth along a walk</em>:
+how far the reader travels to finish, how soon they first steer, and how often they
+steer after that. A story can satisfy every breadth floor while walking the reader down
+a corridor, because a corridor with a wide branching bulge at the end still counts
+plenty of decision nodes. That gap is what the depth rules close.</p>
+<p><strong>Path-length rules grade in two tiers on purpose.</strong> A <em>floor</em> violation (PL-20: too
+short to be a story) is a correctness failure and blocks. A <em>ceiling</em> violation (PL-20's
+long arc, PL-25's buried first choice) is a craft failure and warns, because the ERROR
+tier means unpublishable and a narrow ceiling overshoot is not. PL-25 keeps one blocking
+tier past <code>band_profile.ARC_CEILING_MULTIPLE</code> times the band ceiling, where the shape has
+left the observed genre rather than merely run slow.</p>
+<p>PL-25 and PL-26 are calibrated against Adams, Beckelhymer and Marr, "Choose Your Own
+Adventure: An Analysis of Interactive Gamebooks Using Graph Theory," <em>Journal of
+Humanistic Mathematics</em> 9(2), 2019 (<a href="https://doi.org/10.5642/jhummath.201902.05">DOI 10.5642/jhummath.201902.05</a>),
+which measured the original CYOA paperback corpus. The node-to-page equivalence that
+lets those page measurements govern our node counts is not an assumption: ADR-011's
+independently derived <code>_MIN_COMPLETE[("10-13", "short", "prose")]</code> is 11, matching the
+paper's measured 11-page shortest playthrough exactly. Measurements and the calibration
+invariants that guard them live in <code>validator/band_profile.py</code>.</p>
 <table>
 <thead>
 <tr>
@@ -3752,6 +3773,18 @@ age-safety rule in its own right; it is defined below.</p>
 <td>Policy</td>
 <td><strong>Ending mix</strong>: two advisory shape checks over the ending set, which PL-15 (forbidden kinds) and PL-17 (ending count) do not cover. (a) No single <code>ending.kind</code> may exceed 60% of endings. (b) A winnability floor that is <strong>style-aware</strong>: prose must have at least 10% positive-valence endings, while a gamebook must have at least 3 distinct positive-valence endings. The gamebook rule is an absolute count, not a share, because a share floor calibrated against the committed corpus would flag every gamebook (all sit at 2-5% positive against prose's 15-70%); that spread is ADR-011 section 5's declared 'few wins and many fails' shape, not nine defects.</td>
 <td><code>PL-24 mix: ending kind '{kind}' is {n} of {total} endings ({share}), above the {ceiling} share ceiling in story '{story_id}' (advisory only)</code></td>
+</tr>
+<tr>
+<td>PL-25</td>
+<td>Policy</td>
+<td><strong>Depth to first decision</strong>: nodes on the shortest path from <code>start_node</code> up to and including the first node offering &gt;= 2 choices must sit inside the band's <code>band_profile.first_decision_window</code>. Past the ceiling WARNS; past <code>ARC_CEILING_MULTIPLE</code> x ceiling is an ERROR. Under the floor is an ERROR in one tier: a story opening on its own first choice gives the reader no situation to choose about, and unlike a too-long prologue there is no degree of it that reads as merely slow. The drafting guide states the same constraint from the other side (max choiceless stops in a row is at least 1 in every band). Introduced as a WARNING because 20 committed skeletons predated the rule; escalated once those were fixed and the catalog swept clean (AL-086). Applies to every story with a configured band, scale-classified or not, because a buried first choice is a band-level pacing defect rather than a scale one. A story with no decision node at all is left to PL-17, which already floors decision count. Anchored on JHM 2019 Table 4 (pages to first decision: median 4, range 2-8.25).</td>
+<td><code>PL-25 opening: first decision is {depth} node(s) in, past the band '{age_band}' ceiling {ceiling}[ and its hard limit {hard}] in story '{story_id}'</code> (past ceiling: WARNING, or ERROR when also past the hard limit); <code>PL-25 opening: first decision is {depth} node(s) in, under the band '{age_band}' floor {floor} in story '{story_id}'</code> (under floor: ERROR, blocking)</td>
+</tr>
+<tr>
+<td>PL-26</td>
+<td>Policy</td>
+<td><strong>Decision density on the fastest finish</strong> (advisory): nodes per decision along the fastest satisfying finish must not exceed <code>band_profile.nodes_per_decision_ceiling</code>. PL-20 and PL-26 measure the same <em>minimum node count</em> but deliberately do not read the same walk. Equally short paths all share a length, so PL-20's tiers are indifferent to which one is picked; they can differ in decision count, so PL-26 reads <code>policy._fewest_decision_shortest_path</code>, the equally fast walk carrying the FEWEST decisions, i.e. the worst density among them. That is forced by the rule being a ceiling: it must fire when <em>any</em> equally fast walk is a corridor. Sharing PL-20's arbitrary tie-break instead made the verdict flip on node renaming alone, mismeasuring 19 of 58 eligible catalog skeletons (AL-094). A <strong>ceiling only</strong>, deliberately: the rule guards the corridor, a story that satisfies every PL-17 breadth floor while walking the reader past few or no choices. It does not bound density from below, because a shortest path is biased toward decision nodes by construction (out-degree &gt;= 2 makes a node likelier to sit on a fast route) while JHM's 3.28 was measured corpus-wide, so comparing them on the low side compares different quantities. A genuine 'choice gauntlet' guard would have to measure whole-graph density; see AL-084 / UW-C28. The ceiling is keyed by <code>narrative_style</code>, following the <code>_ENDINGS_FRACTION</code> and <code>_WORDS_PER_NODE</code> precedent: prose admits up to 6.0 nodes per decision (above the JHM 3.28 mean with room), a gamebook up to 4.0, because a numbered-section gamebook ends nearly every section in a choice by genre convention and judging it against a prose bar would let a real gamebook corridor pass. A fastest finish offering no decision at all also warns. Requires a declared <code>length</code> and <code>production_eligible</code>, so it is skipped for unclassified stories.</td>
+<td><code>PL-26 density: fastest finish averages {density} node(s) per decision ({n} decision(s) over {total} nodes), over the {ceiling} advisory ceiling in story '{story_id}'</code></td>
 </tr>
 </tbody>
 </table>
@@ -3902,10 +3935,14 @@ applies the rules below; <code>publishing/service.py</code> raises
 <p>The validator applies rules in this order:</p>
 <ol>
 <li>L1-1 through L1-7 (graph; all stories). Stop if any L1 rule fails.</li>
-<li>PL-15 through PL-21, the PL-22 fail-closed guard, and the PL-23/PL-24 advisories
-   (age-policy gate; all stories). PL-19's story-mean sub-check, PL-23 and PL-24 are
-   advisory; the rest block. PL-22 fires only when the band has no configured
-   profile, in which case it is the sole finding and PL-15..PL-21 do not run.</li>
+<li>PL-15 through PL-21, the PL-22 fail-closed guard, and PL-23 through PL-26
+   (age-policy gate; all stories). PL-19's story-mean sub-check, PL-23,
+   PL-24, PL-26 and PL-25's ceiling short of its hard limit are advisory;
+   the rest block, including PL-25's floor. PL-22
+   fires only when the band has no configured profile, in which case it is the sole
+   finding and PL-15..PL-21 do not run. PL-25 runs for any story with a configured
+   band; PL-20 and PL-26 additionally require a declared <code>length</code> and
+   <code>production_eligible</code>, so an unclassified story is measured on breadth only.</li>
 <li>L2-8 through L2-14 (state-space; Tier-2 only). Stop if any L2 rule fails; L2-13 is a
    non-blocking scale advisory and never stops the run.</li>
 <li>RL-13 (advisory; all stories). Log warnings; continue.</li>
@@ -3964,7 +4001,7 @@ to address only the flagged node ids and rule violations, changing nothing else.
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 6, 2026 23:55:16 UTC">August 6, 2026</span>
   </span>
 
     

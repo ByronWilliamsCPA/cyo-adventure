@@ -4174,6 +4174,216 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>open</td>
 <td></td>
 </tr>
+<tr>
+<td>AL-080</td>
+<td>2026-08-05</td>
+<td>Three blind deep-research reports reconciled against JHM 2019; validator gap analysis</td>
+<td>tooling</td>
+<td>The policy gate measured story shape on one axis only. PL-17 counts decision and ending nodes anywhere in the graph (breadth); nothing measured what a reader meets walking a path (depth). PL-20 came closest but counts NODES on the shortest satisfying path, not decisions along it, so a story could satisfy every floor while the reader walked a corridor. The sweep proved the gap was live, not theoretical: <code>the-tide-pool-rescue</code> opens with five consecutive single-choice nodes (385 words) before a 5-8 reader gets any agency, and eight prose skeletons offer a choice every 1.1-1.9 nodes against a measured corpus mean of 3.28. Both shapes passed every rule the gate had.</td>
+<td>Add the depth axis: PL-25 (nodes to the first decision, band-keyed) and PL-26 (nodes per decision on the fastest finish, style-keyed), plus an advisory ceiling companion to PL-20's floor. State the breadth/depth split in the policy module docstring so the next reader does not re-derive which rule sees which axis.</td>
+<td>applied</td>
+<td><code>validator/policy.py</code> PL-25/PL-26 + PL-20 ceiling; <code>validator/band_profile.py</code> <code>_FIRST_DECISION_DEPTH</code>, <code>_NODES_PER_DECISION</code>, <code>ARC_CEILING_MULTIPLE</code>; 27 tests in <code>tests/unit/test_policy.py</code> and <code>tests/unit/test_band_profile.py</code></td>
+</tr>
+<tr>
+<td>AL-081</td>
+<td>2026-08-05</td>
+<td>PL-25 calibration against JHM 2019 Table 4</td>
+<td>process</td>
+<td>The first draft of the PL-25 band table set the 3-5 ceiling at 3 and the 5-8 ceiling at 4, against a source corpus whose MEDIAN pages-to-first-decision is 4 and whose range runs to 8.25. Those thresholds would have made median-paced storytelling a blocking ERROR, and they blocked three skeletons on first run. The values were invented for the bands the research does not cover, then applied more strictly than the bands it does cover, which is backwards: the least-evidenced thresholds were the tightest. A second instance survived to the test-writing step, where the 8-11 ceiling of 8 still sat under the corpus maximum of 8.25.</td>
+<td>When a threshold is derived from a measured corpus, assert the calibration invariants as tests rather than trusting the table: no threshold may block the corpus median, and any band the corpus covers must admit its full measured range. Where a band is outside the corpus, say so in the table comment and set the threshold looser than the measured bands, not tighter.</td>
+<td>applied</td>
+<td><code>test_band_profile.py::test_first_decision_ceiling_never_below_the_corpus_median</code> and <code>::test_first_decision_measured_bands_span_the_corpus_range</code>, both of which failed against the first draft</td>
+</tr>
+<tr>
+<td>AL-082</td>
+<td>2026-08-05</td>
+<td>Validator gap analysis, <code>validator/band_profile.py</code></td>
+<td>tooling</td>
+<td><code>BandProfile.reconvergence_ceiling</code> is declared on the frozen dataclass, defaults to <code>None</code>, is set on no band, and is read only by <code>mutation/operators.py</code> (the offline catalog tool). No validator rule consults it, so the request path has no reconvergence constraint at all while the field's presence on the profile implies one. This is the same shape as an inert rule: a reader auditing <code>BandProfile</code> sees a reconvergence policy that does not exist.</td>
+<td>Either wire a reconvergence rule into <code>validate_policy</code> and populate the per-band values, or move the field out of <code>BandProfile</code> into the mutation layer that actually reads it. Deciding between them needs an owner ruling on whether reconvergence gets a floor as well as a ceiling; Fridkin and Hurry (2025, DOI 10.1007/s12144-025-07685-3) found perceived choice raised comprehension at d=0.52 with the same underlying text, which argues reconvergent structures are defensible on evidence rather than only on budget.</td>
+<td>open</td>
+<td></td>
+</tr>
+<tr>
+<td>AL-083</td>
+<td>2026-08-05</td>
+<td>Skeleton compliance sweep, <code>skeletons/5-8/the-tide-pool-rescue.json</code></td>
+<td>authoring-craft</td>
+<td>The skeleton is a strict <code>loop_and_grow</code> whose four rescue quests ran in a hardcoded order (<code>st</code> -&gt; <code>fi</code> -&gt; <code>cr</code> -&gt; <code>pw</code> via <code>t_st_fi</code>, <code>t_fi_cr</code>, <code>t_cr_pw</code>), so the reader never chose which stranded creature to help; <code>n_meet</code> introduced all four in prose and then offered one choice. That produced two findings at once, and only one was about ordering. PL-25 fired because the first real decision sat 6 nodes in. PL-20 fired because both rest endings are <code>neutral</code>/<code>setback</code>, so every SATISFYING ending sat past <code>n_alldone</code>, reachable only after all four rescues: a 30-node shortest satisfying completion against a ceiling of 22. Reordering alone would not have moved PL-20 by a single node.</td>
+<td>Rewritten as the hub the prose already described: <code>n_meet</code> offers one choice per creature, and every <code>*_thanks</code> ends on the same decision (go back out, or let the tide arrive), so the reader chooses both the order and the length and a satisfying ending is reachable after the first rescue. The transitions survive as the outbound travel legs and finally carry the <code>Q*_SIGN</code> cue slots. Both findings and the residual PL-23 clock drift cleared. Generalised check: read what a rule MEASURES, not what its name suggests, before assuming one fix clears two findings; 'shortest satisfying completion' and 'quest order' are independent quantities that happened to share a cause.</td>
+<td>applied</td>
+<td><code>skeletons/5-8/the-tide-pool-rescue.json</code></td>
+</tr>
+<tr>
+<td>AL-084</td>
+<td>2026-08-05</td>
+<td>PL-26 calibration review during the first full-library sweep</td>
+<td>validator</td>
+<td>PL-26 shipped as a symmetric window and every one of its 8 library hits was on the LOW side, the opposite of the corridor shape the rule was built to catch. The cause is a selection effect: density was measured along a SHORTEST path, which is biased toward decision nodes (out-degree &gt;= 2 makes a node likelier to sit on a fast route), while the JHM 3.28 anchor it was compared against was measured corpus-wide. Comparing them on the low side compares two different quantities, structurally the same category error as judging a gamebook by a prose window, which the same rule had already been fixed for once. A uniform sign across every hit is the tell: real defects scatter, artifacts do not.</td>
+<td>Low bound removed; PL-26 is a ceiling only and now fires on nothing in the library, which is correct for a guard aimed at generated stories rather than hand-authored ones. If a 'choice gauntlet' guard is wanted, it must measure WHOLE-GRAPH density, not path density. Generalised check: before trusting a new threshold's hits, look at whether they share a sign, and confirm the measurement scope matches the anchor's scope.</td>
+<td>applied</td>
+<td><code>UW-C28</code>, <code>src/cyo_adventure/validator/band_profile.py</code> <code>_NODES_PER_DECISION_CEILING</code></td>
+</tr>
+<tr>
+<td>AL-085</td>
+<td>2026-08-05</td>
+<td>PL-25 severity review after the first full-library sweep</td>
+<td>validator</td>
+<td>PL-25's ceiling shipped as a blocking ERROR and immediately unpublished a committed, production-eligible skeleton on a ONE-NODE margin (depth 6 against a ceiling of 5), breaking 6 tests across 4 files. The gate's ERROR tier means unpublishable, and the house precedent was already there to read: PL-20 blocks on its floor (too short to be a story) and only warns on its ceiling (a long arc). A new craft rule applied retroactively to an existing library should not block on a margin narrower than its own calibration confidence.</td>
+<td>PL-25 regraded to two tiers: WARNING past the band ceiling, ERROR only past <code>ARC_CEILING_MULTIPLE</code> x ceiling, reusing the measured constant rather than inventing a margin. Generalised check: when adding a rule to a gate that has a blocking tier, find the nearest existing rule on the same axis and match its severity split before choosing one; and treat 'my new rule breaks tests across several files' as evidence about the rule, not only about the data.</td>
+<td>applied</td>
+<td><code>src/cyo_adventure/validator/policy.py</code> <code>_check_first_decision_depth</code></td>
+</tr>
+<tr>
+<td>AL-086</td>
+<td>2026-08-05</td>
+<td>First full-library PL-25 sweep over all 61 skeletons</td>
+<td>authoring-craft</td>
+<td>20 of 61 committed skeletons opened ON their first decision: <code>start_node</code> itself offered two or more choices, so the reader picked before any situation had been established. It spanned five of six bands (5-8 x2, 8-11 x3, 10-13 x4, 13-16 x6, 16+ x5) and both narrative styles, which made it a house convention rather than 20 independent slips. It also sat outside the entire JHM 2019 corpus, whose measured pages-to-first-decision range starts at 2, so no book in the reference corpus opened this way.</td>
+<td>Ruled drift, not design (owner, 2026-08-05). Each skeleton was SPLIT rather than padded: the establishing beats moved to a new <code>n_open</code> node that became <code>start_node</code>, the original node kept its choices, and the word budget was divided rather than added so the fastest-finish clock barely moved. PL-25's floor was then escalated from WARNING to ERROR against a clean library. Generalised check: when a new rule flags a third of the library at once, the finding is about the library's conventions or the rule's calibration, never about 20 separate authors erring the same way; resolve which before touching either.</td>
+<td>applied</td>
+<td><code>src/cyo_adventure/validator/policy.py</code> <code>_check_first_decision_depth</code></td>
+</tr>
+<tr>
+<td>AL-087</td>
+<td>2026-08-06</td>
+<td>Cold-open fix sweep; two skeletons newly blocked by L1-7</td>
+<td>validator</td>
+<td>Adding the establishing node PL-25 requires pushed <code>the-clocktower-cipher</code> (8 -&gt; 9) and <code>the-sunken-signal</code> (12 -&gt; 13) past their L1-7 <code>branch_depth</code> cap, so the two rules contradicted each other: obeying the opening rule made the story unpublishable. Only these two were hit, and the reason is where their budget comes from. Both are the only skeletons with <code>length: None</code>, so they fall back to the band-level <code>max_depth</code> (a pre-ADR-011 legacy number, 4/6/6/8/10/12) instead of a production cell. A cell's depth cap is ~2.5x its <code>min_complete</code> floor, and those floors are JHM PAGE counts for a whole playthrough, which already include the pages before the first decision; the band numbers derive from nothing measured. Three other skeletons sat at exactly zero headroom and absorbed the same +1 without complaint.</td>
+<td><code>ESTABLISHING_STOP_DEPTH = 1</code> added to <code>band_profile</code>, granted on the MVP fallback path only, with the provenance argument recorded at the constant. Generalised check: a new structural rule spends budget that older budgets never allocated; before shipping it, ask which budgets were derived from data that already included the thing the rule now mandates, and which were not. Only the latter need widening.</td>
+<td>applied</td>
+<td><code>src/cyo_adventure/validator/band_profile.py</code> <code>mvp_node_budget</code></td>
+</tr>
+<tr>
+<td>AL-088</td>
+<td>2026-08-06</td>
+<td>Depth-headroom measurement across all 61 skeletons while fixing AL-087</td>
+<td>validator</td>
+<td>The MVP fallback depth cap is not calibrated to the MVP node envelope it governs. <code>mvp_node_budget</code> pairs a band-independent 8..45 node range with the band's legacy <code>max_depth</code>, so a 45-node MVP story in the 3-5 band is capped at depth 4 while ADR-011's own 3-5 cells allow 15 (10-23 nodes) and 18 (23-45 nodes) for the same sizes. A 45-node story at depth 4 is close to geometrically impossible unless it is a pure fan. The two skeletons on this path are both within one node of their cap, which is the symptom rather than a coincidence.</td>
+<td>Recalibrate the MVP depth cap against the MVP node envelope rather than inheriting a band number tuned for a different node range; the two ADR-011 cells whose node ranges bracket 8..45 both say 15-18, which is a citable anchor. Not done under AL-087, which deliberately granted only the one node PL-25 mandates rather than relitigating ADR-011 calibration inside a cold-open fix.</td>
+<td>open</td>
+<td><code>UW-C30</code></td>
+</tr>
+<tr>
+<td>AL-089</td>
+<td>2026-08-06</td>
+<td>Cold-open sweep fallout in the mutation compose and bundle tests</td>
+<td>tooling</td>
+<td>Three tests grafted ADR-020's worked-example subtree (<code>n_lockup</code>, 36 nodes) onto a 64-node host, landing the mutant at EXACTLY the 100-node cell maximum. The establishing node AL-086 added took the host to 65 and the graft became unconstructible, failing at chain step 0 rather than at the behaviour under test. The substitute is squeezed from both sides and the window is narrow: the cell envelope caps the graft at 35 nodes, while the anti-clone floor rejects small ones (a 13-node subtree lands 0.0368 from an in-cell tree against <code>TAU_CELL</code> 0.05 and is discarded as a near-duplicate), so only a 34-node subtree satisfies both, with one node of headroom.</td>
+<td>Switched the three tests to the 34-node <code>n_plan</code> subtree and recorded at the fixture why both bounds force it; ADR-020 keeps its original figures as dated evidence of a D8 run rather than a live fixture. Generalised check: a fixture sitting at exactly a documented maximum is a latent break, not a passing test, so treat zero headroom as a defect to fix while it is still green. Where two floors squeeze from opposite directions, record the arithmetic at the fixture, because the next person will otherwise pick the obvious smaller value and get a discard whose message names diversity, not size.</td>
+<td>applied</td>
+<td><code>tests/unit/test_skeleton_mutation_compose.py</code> <code>_GRAFT</code>; same constant in <code>test_flywheel_reguide_draft.py</code> and <code>test_skeleton_mutation_bundle.py</code></td>
+</tr>
+<tr>
+<td>AL-090</td>
+<td>2026-08-06</td>
+<td>Flywheel mutants blocked by PL-25 after the floor escalation</td>
+<td>validator</td>
+<td>A real defect, not fixture drift: M3 prune-graft could manufacture the exact shape PL-25 forbids. A graft hangs one new choice off its host, so grafting onto a single-choice node CONVERTS that node into a decision. Nothing in the operator noticed, because an establishing stop is non-ending and lands inside ADR-011's 2-3 choices window after the add, so every other precondition passed it. Worse, the new rule made the case common rather than rare: the establishing stop is now the first single-choice node in every skeleton and the planner enumerates hosts in document order, so it became the FIRST host tried.</td>
+<td><code>_pl25_opening_reason</code> added as a graft precondition, checked in the operator rather than the planner because <code>scripts/mutate_skeleton.py</code> passes a hand-chosen host and would bypass a planner-side filter. Generalised check: a new structural rule over documents creates a new way for every generator and mutation operator to violate it. Sweeping the committed corpus proves only that today's documents comply; also enumerate the operators that can manufacture the flagged shape, and ask whether the rule's own fix has made a previously rare host the first one tried.</td>
+<td>applied</td>
+<td><code>src/cyo_adventure/mutation/operators.py</code> <code>_pl25_opening_reason</code>, wired into <code>_graft_preconditions</code></td>
+</tr>
+<tr>
+<td>AL-091</td>
+<td>2026-08-06</td>
+<td>Test-fixture fallout across the pipeline suites</td>
+<td>tooling</td>
+<td>Adding one node to the mock story broke tests that had nothing to do with pacing, and every break was a literal standing in for a derived value: <code>assert len(book.nodes) == 7</code> (measuring the fixture, not the round-trip invariant it names), seven <code>blob['nodes'][0]</code> lookups that silently retargeted to a different node, and a <code>review_batch_size=3</code> chosen so 7 nodes would split 3+3+1 and exercise the single-node path. That last is the sharpest: the remainder became 2, the single-node path stopped being exercised entirely, and only an unrelated count assertion made it visible. A rule change is a fixture change, and a fixture coupled by literals fails far from its cause.</td>
+<td>Each literal replaced by the derived value: compare against <code>len(_CANNED_STORY['nodes'])</code>, look nodes up by id through a <code>_node()</code> helper, and set the batch size to <code>_NODE_COUNT - 1</code> so the remainder is one BY CONSTRUCTION. Generalised check: when a test depends on an arithmetic relationship with a fixture (divides evenly, leaves a remainder of one, has N nodes), derive the constant from the fixture instead of writing the number, or the relationship silently stops holding while the test stays green.</td>
+<td>applied</td>
+<td><code>tests/unit/test_moderation_pipeline.py</code> <code>_PARTIAL_CHUNK_BATCH_SIZE</code>; <code>tests/unit/test_node_edit.py</code> <code>_node</code>; <code>tests/unit/test_worker.py</code> node-count assertion</td>
+</tr>
+<tr>
+<td>AL-092</td>
+<td>2026-08-06</td>
+<td>Derived-artifact sweep after the 20-skeleton cold-open split</td>
+<td>process</td>
+<td>Changing 20 skeletons put 26 committed documents derived from them under the escalated PL-25 floor, and they surfaced one test failure at a time over several runs because only SOME derived artifacts are gated. Sweeping the whole derived tree through <code>run_gate</code> directly found the rest at once, and re-rendering it through the real producer found something the gate could not: of 45 WS2 bound theme-swaps, only 14 still reproduce from their own skeleton plus binding. 19 had drifted in nodes unrelated to any of this work, and 2 can no longer be rendered AT ALL because their skeleton gained slots (<code>COMPANION_NAME</code>, <code>ROUTE_C_KEEPER</code>/<code>ROUTE_D_KEEPER</code>) the committed binding cannot fill. That tree had been silently desynchronized from the catalog long before this change. Two fills were also missed on the first pass for a second reason: they sit in a strict-xfail quarantine, so a sweep keyed on a clean gate result skips them.</td>
+<td>Fixed only what is live: the gate-tested pilot parameterized skeleton, the two pilot fills (registered <code>CATALOG_ENTRIES</code>, and catalog import gates every entry), and the diversity panel corpus, re-baselined via <code>--update-baseline</code> because R5 is a deliberate fixture-tamper detector; every diversity delta landed in the third or fourth decimal, so the detector kept its calibration. <code>out/ws2/</code> was left frozen: re-rendering it would re-baseline a completed workstream's evidence against a catalog that has moved on, and 2 of them cannot be re-rendered without authoring new binding entries. Generalised check: reproducing a derived artifact through its real producer is a STRONGER test than gating it, because it catches drift in everything the gate does not measure; run it before deciding whether an evidence tree is stale or frozen.</td>
+<td>open</td>
+<td><code>UW-C31</code></td>
+</tr>
+<tr>
+<td>AL-093</td>
+<td>2026-08-06</td>
+<td>Regenerating skeleton diagrams rewrites 5 SVGs whose source did not change</td>
+<td>tooling</td>
+<td><code>scripts/render_skeleton_diagrams.py</code> regenerates every diagram, not only the stale ones, and its SVG step re-measures text with whatever fonts the running machine has. 21 <code>.puml</code> files changed because their skeletons gained an establishing node; 26 <code>.svg</code> files changed, and the extra 5 differed only in geometry (<code>textLength</code> 69.6035 -&gt; 61.0547, canvas 1507x1058 -&gt; 1360x1062) with no structural or label delta. <code>--check</code> compares committed <code>.puml</code> content only and inspects SVGs solely for a PlantUML error card, so byte drift in an SVG is invisible to the freshness gate in both directions: it never fails on it, and it never warns that a content commit is carrying it. Left alone, 5 files of pure environment noise would have shipped inside a semantic change, and the next author would have had to re-derive that they meant nothing.</td>
+<td>Revert the SVGs whose sibling <code>.puml</code> is unchanged before staging: <code>comm -23</code> the changed-SVG list against the changed-PUML list, then <code>git checkout HEAD --</code> the difference. Proposed change: teach the renderer a <code>--only-stale</code> mode that skips rendering when the <code>.puml</code> it would render is byte-identical to the committed one, so the noise is never produced rather than produced and reverted. Generalised check: when a generator emits two artifacts and the gate covers only one, assume the ungated one carries environment state, and diff it for semantic content before deciding it belongs in the commit.</td>
+<td>open</td>
+<td><code>UW-C31</code></td>
+</tr>
+<tr>
+<td>AL-094</td>
+<td>2026-08-06</td>
+<td>PR #635 review, the PL-26 corridor guard</td>
+<td>validator</td>
+<td>One computed shortest path was shared by two rules, and the sharing was documented as the safety property: "PL-20 and PL-26 both read this one result, so they can never disagree about which walk is the fastest finish". That reasoning WAS the defect. PL-20 reads only the path LENGTH, identical across every minimum-length path, so any tie-break is sound for it. PL-26 reads the DECISION COUNT along the path, which is not invariant, so <code>_shortest_path_to</code>'s tie-break (<code>sorted(graph.successors(...))</code>, i.e. node-id alphabetical order) silently became part of the rule's semantics: renaming two routes flipped the verdict from 7.0 nodes per decision (WARNING) to 3.5 and SILENT, with zero structural change. Determinism was mistaken for correctness; it guarantees the same arbitrary answer every run, not the right one. Blast radius measured by sweeping the catalog: 19 of 58 PL-26-eligible skeletons had their density mismeasured, a third of the corpus, and 2 were under-reported across the ceiling.</td>
+<td><code>_fewest_decision_shortest_path</code>, a layered dynamic program over the shortest-path DAG (BFS levels, then one forward sweep where edge u-&gt;v is in the DAG exactly when level[v] == level[u]+1), returning the minimum-decision path among the minimum-length ones. Worst case rather than canonical case, because PL-26 is a CEILING and must fire when ANY equally fast walk is a corridor. O(V+E), deliberately not enumeration: shortest-path count is exponential (a chain of parallel two-way detours doubles it per link) and this runs in the request path. <code>_decision_node_ids</code> extracted so PL-25, PL-26 and the search cannot drift on what a decision is. Generalised check: when two rules share one derived artifact, ask which PROPERTIES of it each reads. Sharing is safe only while every reader depends on an INVARIANT of the artifact; the moment one reader depends on a property that varies among equally valid artifacts, the tie-break has become that rule's semantics and must be chosen by the rule, not inherited from the search. State the invariant in the docstring instead of citing the sharing.</td>
+<td>applied</td>
+<td><code>validator/policy.py</code> <code>_fewest_decision_shortest_path</code> / <code>_decision_node_ids</code> / <code>_breadth_first_levels</code>; verified against a brute-force <code>nx.all_simple_paths</code> oracle over 2,614 random digraphs, 0 mismatches on walk validity, endpoints, minimum length, and minimum decisions</td>
+</tr>
+<tr>
+<td>AL-095</td>
+<td>2026-08-06</td>
+<td>PR #635 review, the band_profile PL-25 comment</td>
+<td>validator</td>
+<td>The block comment that declares itself the single source of truth for the PL-25 window documented BOTH tiers backwards: "Below the floor is a WARNING, not an ERROR" and "Above the ceiling is an ERROR", while the code does the exact opposite and <code>validator-rules.md</code> had it right. The comment sits directly above the table it describes, so it is what an author actually reads, and it carried an <code>#ASSUME: data-integrity</code> marker asserting its own authority. Nothing compares a comment's severity claim against the code that consumes the table, so the two-place split (comment near the data, catalog far from it) diverged with every gate green.</td>
+<td>Corrected both bullets with the real rationale per direction (a story opening on its first choice asks the reader to pick before a situation exists, a correctness failure, hence a blocking one-tier ERROR; a buried first choice is a craft defect, hence WARNING, escalating to ERROR only past <code>ARC_CEILING_MULTIPLE</code> times the ceiling) and named <code>policy._check_first_decision_depth</code> as the authority. Also added the missing <code>#ASSUME</code>/<code>#VERIFY</code> pairs to <code>ARC_CEILING_MULTIPLE</code> and <code>_NODES_PER_DECISION_CEILING</code>, whose documented sibling had them. Generalised check: a comment asserting a rule's SEVERITY is a testable claim living in an untested medium. When a rule grades in tiers, name the consuming function rather than restating its verdicts, so there is one statement of the tiering instead of two that can disagree.</td>
+<td>applied</td>
+<td><code>validator/band_profile.py</code> <code>_FIRST_DECISION_DEPTH</code> comment; every <code>#VERIFY</code> test name it now cites confirmed to exist</td>
+</tr>
+<tr>
+<td>AL-096</td>
+<td>2026-08-06</td>
+<td>PR #635 review, the dev and catalog seed builders</td>
+<td>process</td>
+<td><code>scripts/seed_dev_data.py</code> and <code>scripts/seed_series_catalog.py</code> insert stories at <code>status="published"</code>, the state a child can read, and neither file referenced <code>run_gate</code> or <code>validate_policy</code> at all. So the new PL-25 floor made the seeded corpus gate-failing while every gate stayed green, because the seeders are a write path that bypasses the gate entirely. The stories were ALREADY failing PL-17 (1 ending against a floor of 3, 1 decision against a floor of 3), PL-18 (a declared <code>branch_and_bottleneck</code> with no real reconvergence) and L2-11 before this PR; the new rule only added to a pile nothing was checking.</td>
+<td>Grew both blobs to be gate-clean and wired <code>validator.gate.run_gate</code> (the two-layer entry point the generation pipeline itself calls, not <code>validate_policy</code> alone) into all THREE <code>status="published"</code> insert sites, failing loudly on any ERROR with the story id and every failing rule id in the message. Generalised check: when adding a blocking rule, enumerate every writer that can put the gated artifact into a published state, not just the pipeline the rule was written for. Grep for the published-state literal, NOT for the gate: the defect is precisely the gate's absence, so grepping for the gate finds nothing and reads as clean.</td>
+<td>applied</td>
+<td><code>scripts/seed_dev_data.py</code> / <code>scripts/seed_series_catalog.py</code> <code>_assert_gate_clean</code>, wired at all 3 published inserts; gate output shows 0 ERROR findings for every seeded story</td>
+</tr>
+<tr>
+<td>AL-097</td>
+<td>2026-08-06</td>
+<td>PR #635 review, <code>_pl25_opening_reason</code> coverage</td>
+<td>tooling</td>
+<td>A new guard placed at the FRONT of a precondition ladder forces every existing fixture to be updated past it, and that same update is what leaves the guard itself uncovered. <code>_pl25_opening_reason</code> (AL-090's own fix) shipped with zero direct coverage while <code>_tier1_story()</code> and one inline host fixture both gained an establishing stop in the same change. The review's first reading, that the fixtures had been routed AROUND the new branch, is RETRACTED: the restructure was necessary and the PR documented why inline, since without the stop a graft onto the old start node trips PL-25 first and every test aiming at a LATER rung would stop short and pass for the wrong reason. The two facts share one cause rather than one being evidence of the other. Coverage thresholds hid the result because <code>mutation/</code> is offline-only tooling and the global 80% line gate absorbs one uncovered branch.</td>
+<td>8 tests covering the floor boundary in both directions, both live <code>post_choices</code> values, and a band whose floor is 1 rather than 2; crucially one test verified to FAIL if the call site in <code>_evaluate_graft</code> is removed, since a unit test of the helper alone passes against dead code. Generalised check: when a check goes in at the front of a precondition ladder, expect to update every fixture past it AND to write the check's own tests in the same commit, because those fixture updates guarantee nothing else reaches it. Conversely, do not read a fixture restructure as evasion without first checking whether a later rung of the same ladder is what the test was aiming at.</td>
+<td>applied</td>
+<td><code>tests/unit/test_skeleton_mutation_operators_coverage.py</code> lines 1370-1471, incl. <code>test_evaluate_graft_honours_the_pl25_opening_reason</code></td>
+</tr>
+<tr>
+<td>AL-098</td>
+<td>2026-08-06</td>
+<td>PR #635 review, the repo-wide ruff format gate</td>
+<td>tooling</td>
+<td><code>ruff format --check .</code> fails on <code>origin/main</code>, and has for some time, on a Python fence inside <code>docs/planning/story-personalization-stage-c-implementation-plan.md</code>: ruff formats Python inside markdown code fences, so a planning document is a formattable artifact. Nothing reports it, because no gate runs the formatter over the WHOLE tree. The pre-commit <code>ruff-format</code> hook sees only STAGED files, so a doc-only commit never presents the fence to it, and Python CI is delegated to the org-level reusable workflow, which scopes its format check to the code directories. The frontend was assumed to have closed the identical gap already; it has not, and its gap is larger (<code>AL-100</code>). The cost is asymmetric: the command CONTRIBUTING tells a contributor to run (<code>uv run ruff format .</code>) is broader than any gate, so the first person to run it picks up an unrelated file in their diff and has to work out whether it is theirs.</td>
+<td>Added a <code>format-tree</code> job running <code>uv tool run --no-build ruff@0.16.0 format --check .</code>, wired into <code>ci-gate</code> with NO skip allowance. The first draft of this row claimed the frontend had already closed the identical hole; checking that claim falsified it and produced <code>AL-100</code>, so this job is the FIRST tree-wide format gate in the repo, not a mirror of an existing one. The offending fence was NOT reformatted: it is a fragment shown at its real indentation inside a function body, and ruff's formatting of it dedents to column 0 and collapses the <code>await</code> call, turning in-function code into what reads as top-level code (verified by running the formatter on the fence in isolation). Retagged <code>python</code> to <code>text</code> instead, with prose stating the indentation is deliberate, so the fence is honestly declared an excerpt rather than silently mangled. Placement was moved out of the <code>contract</code> job a first pass had put it in, for two reasons: a format failure surfacing under the name "OpenAPI Contract Drift" makes a required check report something other than what it checked, and <code>contract</code> skips on merge_group and on release PRs, which would have narrowed the gate to a subset of runs. Generalised check: when a repo holds two language toolchains, a gap closed for one is a LIVE gap for the other until proven otherwise, and the thing to compare is SCOPE: if the gate runs over staged files or over code directories while the documented command runs over the tree, the difference is exactly the set of files that can drift with every gate green. Second check: before accepting a formatter's verdict on embedded code, ask whether the fence is a compilable unit or an excerpt, because the formatter cannot tell and will silently relocate an excerpt to column 0.</td>
+<td>applied</td>
+<td><code>.github/workflows/ci.yml</code> <code>format-tree</code> job + <code>check_job</code> entry; <code>tests/unit/test_ci_gate_contract.py</code> <code>test_the_tree_wide_format_check_runs_in_every_context</code> / <code>test_a_skipped_format_check_fails_the_gate</code>, both verified to fail under a workflow mutation; tree now reports <code>859 files already formatted</code></td>
+</tr>
+<tr>
+<td>AL-099</td>
+<td>2026-08-06</td>
+<td>PR #635 review, reshaping seed data renamed an e2e test id</td>
+<td>tooling</td>
+<td>Making the seed stories gate-clean (AL-096) restructured their graphs, and in doing so renamed the courage-gated choice <code>c_n_e2_carried</code> to <code>c_n_e2_courage</code>. That id is the load-bearing test id of the <code>carries_state</code> proof in <code>frontend/e2e-real/series-continue-real.spec.ts</code>, whose negative half asserts <code>toHaveCount(0)</code>. A count-0 assertion on a test id is satisfied both when the choice is correctly hidden AND when the id does not exist at all, so the rename would have turned the negative proof into a vacuous pass while the positive half failed loudly, i.e. green for the wrong reason on exactly the assertion that proves the feature. PL-25's floor also forbids the entry node from carrying choices, so the gated choice moved from the landing passage to a hub three clicks in, and book 2's own <code>brave</code> choice sets the same variable locally: walking to that hub via the brave fork would satisfy the gate with no carry at all, an AL-002 repeat.</td>
+<td>Restored the <code>_carried</code> id with an inline comment recording that it is part of the test contract and not free to rename, and reworked both nightly specs to reach the hub via the PLAIN fork so local acquisition cannot masquerade as a carry, strengthening the negative assertion to also prove which node it is standing on. Generalised check: a <code>toHaveCount(0)</code> or <code>not.toBe(...)</code> assertion keyed on an identifier is only a proof while that identifier is guaranteed to exist; pair every absence assertion with a positive assertion that the observer is in the right place, or renaming the subject silently converts the test into a tautology. Corollary: reshaping a fixture that a gate forces you to reshape is not a free refactor, so treat every id in it as an interface until proven otherwise.</td>
+<td>applied</td>
+<td><code>scripts/seed_dev_data.py</code> / <code>scripts/seed_series_catalog.py</code> <code>_carried</code> id restore; <code>frontend/e2e-real/series-continue-real.spec.ts</code> walk rework</td>
+</tr>
+<tr>
+<td>AL-100</td>
+<td>2026-08-06</td>
+<td>PR #635 review, closing the Python format gate exposed the same hole in the frontend</td>
+<td>tooling</td>
+<td>Writing AL-098's fix required a claim about the frontend, and checking it falsified it. The frontend's <code>format:check</code> is <code>prettier --check "src/**/*.{ts,tsx,css,json}"</code>, so it is NOT tree-wide: <code>e2e/</code>, <code>e2e-real/</code>, <code>eslint.config.js</code>, <code>index.html</code>, and <code>README.md</code> are all outside it, and <code>npx prettier --check .</code> under <code>frontend/</code> reports 130 unformatted files, 3 of them <code>e2e-real</code> specs this PR touches the directory of. So the repo has the SAME scope gap on both toolchains, and the frontend one is larger and has two loci: the pre-commit hook <code>frontend-prettier</code> is scoped to <code>^frontend/src/</code> as well, so staging an <code>e2e-real</code> spec reports "no files to check" and passes, which is how this commit's own frontend edits reached a commit unchecked. It stayed invisible for the same reason the Python one did: the gate's glob is narrower than the formatter's reach, and nobody runs the formatter over the tree because the documented command is the gate's command.</td>
+<td>Deliberately NOT fixed here: widening the glob is a 130-file mechanical reformat, and bundling it into a validator rule change would bury the review (this PR is already large enough that CodeRabbit skipped it at the 100-file limit). Scheduled as <code>UW-C33</code> instead, with the <code>format-tree</code> job's comment stating explicitly that it does not cover the frontend, so the new Python gate cannot be misread as having closed both. Generalised check: when writing the justification for a fix, treat every comparative claim in it ("the other side already does this") as a claim to VERIFY, not as context. Here the claim was the reason the fix looked like a mirror of existing practice, and it was false; verifying it found a defect four times the size of the one being fixed.</td>
+<td>open</td>
+<td><code>UW-C33</code></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -4213,7 +4423,7 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 18:08:08 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 6, 2026 23:55:16 UTC">August 6, 2026</span>
   </span>
 
     

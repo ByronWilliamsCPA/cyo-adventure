@@ -4377,6 +4377,54 @@ substantially the same work under different headings. Do not triple-book.</p>
 <td>doc</td>
 <td>unscheduled</td>
 </tr>
+<tr>
+<td>UW-C26</td>
+<td><code>AL-082</code> <code>BandProfile.reconvergence_ceiling</code> is declared, defaults to <code>None</code>, is set on no band, and is read only by the offline <code>mutation/</code> layer; no validator rule consults it, so the request path has no reconvergence constraint while the field implies one. Needs an owner ruling on whether reconvergence gets a floor as well as a ceiling (Fridkin and Hurry 2025, DOI 10.1007/s12144-025-07685-3, found perceived choice raised comprehension at d=0.52 on identical text, which argues reconvergent structures are evidence-backed rather than only cheap), then either wire a rule or move the field to <code>mutation/</code>.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C27</td>
+<td><code>AL-083</code> <code>skeletons/5-8/the-tide-pool-rescue.json</code> gave a 5-8 reader five single-choice nodes before the first decision, and its four mandatory rescues put every SATISFYING ending 30 nodes out against a PL-20 ceiling of 22. DONE: rewritten as the stateless hub its own prose already described (<code>n_meet</code> offers one choice per creature; every <code>*_thanks</code> ends on go-back-out or let-the-tide-arrive), so order and length are both reader-chosen. PL-25, PL-20 and the residual PL-23 clock drift all cleared; the <code>loop_and_grow</code> claim is now structurally true (12 cycles through the hub). Evidence: commit <code>7e33174b</code> rewrites this exact file with this exact <code>n_meet</code> shape; that commit sits on the open PR #635 (not yet merged to main as of 2026-08-06), and <code>authoring-lessons-log.md</code> already marks <code>AL-083</code> <code>applied</code> against <code>skeletons/5-8/the-tide-pool-rescue.json</code>.</td>
+<td>4b</td>
+<td>done</td>
+</tr>
+<tr>
+<td>UW-C28</td>
+<td><code>AL-084</code> PL-26 measures decision density along a SHORTEST path, which is biased toward decision nodes, so it can only ever be a corridor ceiling. If a 'choice gauntlet' guard is wanted (a story whose reader meets choices with no story between them), it needs a separate whole-graph density measure with its own anchor. Decide whether that guard is wanted at all before building it: no library skeleton currently motivates one.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C29</td>
+<td><code>AL-086</code> 20 of 61 committed skeletons opened ON their first decision (<code>start_node</code> itself offered &gt;= 2 choices), sitting under the PL-25 band floor. Ruled drift rather than convention (owner, 2026-08-05). DONE: each start node SPLIT into an establishing <code>n_open</code> plus the original decision node, word budget divided rather than added; PL-25's floor then escalated from WARNING to ERROR against a clean library. PL-25 findings across the catalog went 21 -&gt; 0. Evidence: commit <code>7e33174b</code> performs exactly this split across the catalog and escalates the floor in <code>validator/policy.py::_check_first_decision_depth</code>; that commit sits on the open PR #635 (not yet merged to main as of 2026-08-06), and <code>authoring-lessons-log.md</code> already marks <code>AL-086</code> <code>applied</code> against <code>validator/policy.py::_check_first_decision_depth</code>.</td>
+<td>4b</td>
+<td>done</td>
+</tr>
+<tr>
+<td>UW-C30</td>
+<td><code>AL-088</code> The MVP fallback depth cap is not calibrated to the MVP node envelope it governs: <code>mvp_node_budget</code> pairs a band-independent 8..45 node range with the band's pre-ADR-011 <code>max_depth</code>, so a 45-node MVP story in the 3-5 band is capped at depth 4 while ADR-011's own 3-5 cells allow 15-18 for the same node counts. Recalibrate against the envelope, using the two cells whose node ranges bracket 8..45 as the anchor. Deliberately out of scope for AL-087, which granted only the single node PL-25 mandates.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C31</td>
+<td><code>AL-092</code> The <code>out/ws2/</code> bound theme-swap tree no longer corresponds to the skeleton catalog and nothing detects it. Re-rendering all 45 through <code>render_bound_skeleton</code> reproduces only 14; 19 differ in nodes unrelated to the cold-open split (pre-existing drift, <code>the-pale-road</code> in 192 nodes), and 2 raise outright because their skeleton declares slots the committed binding lacks (<code>the-clockwork-menagerie</code>: <code>COMPANION_NAME</code>; <code>the-midnight-frequency</code>: <code>ROUTE_C_KEEPER</code>, <code>ROUTE_D_KEEPER</code>). <strong>GATE-FAILING, not merely drifted</strong>: running the policy gate over the tree finds 16 hard PL-25 ERRORs plus 1 PL-25 WARNING, both blocking-tier findings under the PL-25 rule this branch adds (<code>validator/policy.py::_check_first_decision_depth</code>, PR #635). The 16 ERRORs (first decision under the band floor) are: the-salt-archive, the-vanishing-orchard, the-signal-in-the-static, the-mapmakers-island, the-last-train-north, the-sunspire-ascent, the-thornwood-trial, the-clockwork-menagerie, cave-of-echoes, the-hollow-lighthouse, the-drowned-court, the-lantern-festival, the-midnight-museum, the-ashfall-expedition, the-sky-ship-stowaway, and the-backyard-treasure-map. The 1 WARNING is the-tide-pool-rescue (first decision 6 nodes in, against the <code>5-8</code> band ceiling of 5). So 16 of these 45 bound documents are unpublishable as committed, not only stale: any re-render of this tree must also clear PL-25, not just reproduce the old shape. Decide whether this tree is live (then re-render it, authoring the missing binding entries) or frozen evidence (then pin each directory with the catalog revision that produced it). Either way add a <code>--check</code> mode that reproduces the derived tree from its producer, mirroring <code>scripts/calibrate_mutation_floors.py --check</code>, since gating alone is blind to drift in everything the gate does not measure.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C32</td>
+<td><code>AL-093</code> <code>scripts/render_skeleton_diagrams.py</code> re-renders every SVG, not only the stale ones, and PlantUML measures text with the running machine's fonts, so a run on a different machine rewrites SVGs whose <code>.puml</code> is byte-identical (observed: 5 of 26, differing only in <code>textLength</code> and canvas geometry). <code>--check</code> compares <code>.puml</code> content and inspects SVGs only for an error card, so this drift is invisible to the gate in both directions. Add an <code>--only-stale</code> render mode that skips any <code>.puml</code> identical to its committed copy, so environment noise is never produced rather than produced and manually reverted before staging.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C33</td>
+<td><code>AL-100</code> The frontend format gate is scoped to <code>src/**</code>, not the tree: <code>format:check</code> runs <code>prettier --check "src/**/*.{ts,tsx,css,json}"</code> (frontend/package.json), so <code>e2e/</code>, <code>e2e-real/</code>, <code>eslint.config.js</code>, <code>index.html</code>, and <code>README.md</code> are unchecked, and <code>npx prettier --check .</code> reports 130 unformatted files under <code>frontend/</code>. This is the TypeScript twin of the Python gap PR #635 closed with the <code>format-tree</code> job, which deliberately does not cover it (ruff does not format TypeScript). The gap has TWO loci, not one: the pre-commit hook <code>frontend-prettier</code> is scoped the same way (<code>files: ^frontend/src/</code> plus the same four extensions), so staging an <code>e2e-real</code> spec reports "no files to check" and passes. Fixing only the npm script leaves the hook blind. Widen both, honouring <code>.prettierignore</code> (which already exempts <code>src/client/</code>, <code>dist/</code>, <code>coverage/</code>, <code>playwright-report/</code>, <code>test-results/</code>), and land the resulting mechanical reformat as its own commit so it is reviewable as formatting rather than mixed into a behaviour change.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-d-untracked-github-issues">Cluster D: untracked GitHub issues<a class="headerlink" href="#cluster-d-untracked-github-issues" title="Permanent link">&para;</a></h2>
@@ -5791,7 +5839,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 6, 2026 11:56:19 UTC">August 6, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 6, 2026 23:55:16 UTC">August 6, 2026</span>
   </span>
 
     
