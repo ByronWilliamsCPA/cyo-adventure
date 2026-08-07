@@ -58,6 +58,11 @@ def parse_schema_version(value: str) -> tuple[int, int]:
     Raises:
         ValueError: If ``value`` is not exactly two dot-separated
             non-negative integers.
+        TypeError: If ``value`` is not a string. This is deliberately not
+            caught here: a non-string reaching a parser typed ``str`` is a
+            caller bug, not a malformed document. Callers holding untrusted
+            JSON should use :func:`is_supported_schema_version`, which takes
+            ``object`` and folds both cases into ``False``.
     """
     match = _SCHEMA_VERSION_RE.fullmatch(value)
     if match is None:
@@ -67,7 +72,7 @@ def parse_schema_version(value: str) -> tuple[int, int]:
 
 
 def is_supported_schema_version(
-    value: str, *, major: int = SCHEMA_MAJOR, minor: int = SCHEMA_MINOR
+    value: object, *, major: int = SCHEMA_MAJOR, minor: int = SCHEMA_MINOR
 ) -> bool:
     """Report whether this build can parse a document at ``value``.
 
@@ -82,17 +87,27 @@ def is_supported_schema_version(
     that happens not to populate any new field, which is otherwise
     indistinguishable from a valid document at the deployed minor.
 
+    ``value`` is typed ``object`` rather than ``str`` on purpose. Callers hold
+    a raw JSON value whose type is not yet established (a document may carry
+    ``"schema_version": null`` or a bare number), and a total predicate that
+    answers False is more useful at a trust boundary than one that raises
+    ``TypeError``.
+
     Args:
-        value: The raw ``schema_version`` string from a document.
+        value: The raw ``schema_version`` value from a document, of any type.
         major: The major version this build implements.
         minor: The highest minor version this build implements.
 
     Returns:
         bool: True if the document can be parsed by this build.
     """
-    # #CRITICAL: data integrity: a malformed version must never be treated as
-    # supported, or an unparseable document reaches the model as if valid.
+    # #CRITICAL: data integrity: a malformed or non-string version must never
+    # be treated as supported, or an unparseable document reaches the model as
+    # if valid.
     # #VERIFY: covered by test_supported_version_rejects_malformed_without_raising
+    # and test_supported_version_rejects_non_string_without_raising
+    if not isinstance(value, str):
+        return False
     try:
         doc_major, doc_minor = parse_schema_version(value)
     except ValueError:
@@ -690,9 +705,16 @@ class Storybook(BaseModel):
             ValueError: If ``schema_version`` is malformed, a different
                 major, or a newer minor than this build implements.
         """
-        # #CRITICAL: data integrity: this is the only gate between an
-        # arbitrary JSON document and a Storybook the pipeline trusts.
-        # #VERIFY: covered by the test_storybook_rejects_* cases
+        # #CRITICAL: data integrity: this is the only check that refuses a
+        # document by VERSION. Field shape, unknown fields, and topology are
+        # each covered elsewhere (Pydantic field validation, extra="forbid",
+        # the sibling _check_* validators, and validator.gate.run_gate), so
+        # this is one gate among several, not the only one; what no other
+        # check does is refuse a document whose fields all happen to be
+        # well-formed but whose minor this build does not implement.
+        # #VERIFY: test_storybook_rejects_a_newer_minor,
+        # test_storybook_rejects_a_different_major, and
+        # test_storybook_rejects_a_malformed_version in tests/unit/test_models.py
         if not is_supported_schema_version(self.schema_version):
             msg = (
                 f"unsupported schema_version '{self.schema_version}'; "

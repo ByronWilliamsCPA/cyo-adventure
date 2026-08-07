@@ -178,6 +178,14 @@ def test_supported_version_rejects_malformed_without_raising():
     assert not is_supported_schema_version("banana", major=2, minor=2)
 
 
+@pytest.mark.parametrize("value", [None, 2, 2.0, True, ["2.0"], {"major": 2}])
+def test_supported_version_rejects_non_string_without_raising(value: object):
+    # The predicate sits at a trust boundary: a document may carry
+    # "schema_version": null or a bare number, and answering False is more
+    # useful there than raising TypeError out of the regex.
+    assert not is_supported_schema_version(value, major=2, minor=2)
+
+
 _VALID_FIXTURE = (
     Path(__file__).resolve().parents[1]
     / "fixtures"

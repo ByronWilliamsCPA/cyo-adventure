@@ -311,19 +311,30 @@ def _load_blob(repo_root: Path, rel_path: str) -> dict[str, object]:
 def _needs_legacy_normalization(blob: dict[str, object]) -> bool:
     """Detect the older Storybook shape structurally, not by filename.
 
-    A blob is legacy when its ``schema_version`` is missing, unparseable, or
-    names a major below :data:`SCHEMA_MAJOR`. A version above the current
-    major, or above the current minor (including a future minor such as
-    "2.1"), is deliberately NOT legacy: it must reach
+    Exactly two things make a blob legacy: a ``schema_version`` key that is
+    absent entirely (the pre-versioning shape), or one naming a major below
+    :data:`SCHEMA_MAJOR`. Everything else is either supported or refused, and
+    the difference matters because "legacy" here means "rewrite it".
+
+    A version this build cannot parse is deliberately NOT legacy. That covers
+    a higher major ("3.0"), a future same-major minor ("2.1" when
+    :data:`SCHEMA_MINOR` is 0), a present-but-unparseable string ("3.0.0",
+    "v3.0"), and a present-but-non-string value. Each must reach
     :func:`cyo_adventure.validator.gate.run_gate` unmodified and be rejected
     there by :meth:`cyo_adventure.storybook.models.Storybook._check_schema_version`,
     rather than be silently rewritten to "2.0" and admitted as if it were the
-    document this build actually implements. Only for a version this build
-    implements does the absence of ``metadata.topology`` decide the outcome:
-    a same-major, same-minor document with no ``metadata.topology`` is legacy.
-    Detecting the legacy shape structurally (rather than hardcoding the 3
-    known filenames) means any future manifest entry with the same stale
-    shape is caught automatically instead of silently failing the gate.
+    document this build actually implements. Note the asymmetry with an
+    absent key: absent means the document never claimed a version, so
+    stamping one on is a repair; present-but-wrong is a claim this build has
+    to refuse, and overwriting it destroys the evidence for the refusal.
+
+    Only for a version this build implements does the absence of
+    ``metadata.topology`` decide the outcome: any same-major document at or
+    below :data:`SCHEMA_MINOR` (not merely one at exactly the current minor)
+    reaches the topology check, and is legacy when ``metadata.topology`` is
+    missing. Detecting the legacy shape structurally (rather than hardcoding
+    the 3 known filenames) means any future manifest entry with the same
+    stale shape is caught automatically instead of silently failing the gate.
 
     Args:
         blob: The parsed filled story JSON.
@@ -332,29 +343,35 @@ def _needs_legacy_normalization(blob: dict[str, object]) -> bool:
         True if the blob needs :func:`_normalize_legacy_fill` before it can
         pass :func:`cyo_adventure.validator.gate.run_gate`.
     """
-    version = blob.get("schema_version")
-
-    if not isinstance(version, str):
+    # #CRITICAL: data integrity: every "not legacy" return below protects a
+    # document this build cannot parse from being rewritten to "2.0" and
+    # admitted as if it were parseable. That is the AL-101 defect class: a
+    # gate that rewrites the evidence it should have refused. The version
+    # bounds are therefore all checked BEFORE the topology fallthrough, so
+    # the outcome never depends on whether metadata.topology happens to be
+    # present.
+    # #VERIFY: tests/unit/test_import_catalog.py::TestNeedsLegacyNormalization
+    # asserts False for a future minor, a higher major, an unparseable
+    # string, and a non-string value, each both with and without
+    # metadata.topology; and True only for an absent key and a pre-2.0 major.
+    if "schema_version" not in blob:
+        # The pre-versioning shape: no claim was ever made, so normalization
+        # stamps one on rather than overwriting one.
         return True
 
-    # #CRITICAL: data integrity: misclassifying a same-major future minor
-    # (e.g. "2.1") or a higher major (e.g. "3.0") as legacy would silently
-    # rewrite the document's schema_version to "2.0" and admit it as if this
-    # build implemented it, instead of letting the parser reject it loudly.
-    # This holds whether or not metadata.topology happens to be present: the
-    # version bound below is checked before the topology fallthrough, not
-    # after it.
-    # #VERIFY: test_a_future_minor_is_not_treated_as_legacy and
-    # test_higher_major_is_not_legacy assert False with metadata.topology
-    # present; test_a_future_minor_without_topology_is_not_legacy and
-    # test_higher_major_without_topology_is_not_legacy assert False with it
-    # absent; test_malformed_version_is_legacy asserts True for an
-    # unparseable version. All five in
-    # tests/unit/test_import_catalog.py::TestNeedsLegacyNormalization.
+    version = blob.get("schema_version")
+
+    # A present but non-string value (a JSON number, or an explicit null) is
+    # a malformed claim, not an absent one. It is refused, not repaired.
+    if not isinstance(version, str):
+        return False
+
     try:
         major, doc_minor = parse_schema_version(version)
     except ValueError:
-        return True
+        # Syntactically unparseable ("3.0.0", "v3.0"). Same reasoning as the
+        # non-string case: a claim this build cannot read is refused.
+        return False
 
     # Pre-SCHEMA_MAJOR documents are the legacy shape and need normalization.
     if major < SCHEMA_MAJOR:
@@ -363,7 +380,8 @@ def _needs_legacy_normalization(blob: dict[str, object]) -> bool:
     # Anything this build cannot parse (a higher major, or a newer minor) is
     # not legacy and must never be rewritten: it reaches run_gate unmodified
     # so _check_schema_version refuses it by name. The topology check below
-    # applies only to documents this build actually implements.
+    # applies only to documents this build actually implements, which after a
+    # minor bump means any same-major version at or below SCHEMA_MINOR.
     if major > SCHEMA_MAJOR or doc_minor > SCHEMA_MINOR:
         return False
 

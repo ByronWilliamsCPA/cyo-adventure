@@ -18,8 +18,12 @@ tags:
 
 > **Status**: Accepted (2026-08-01), on owner direction recorded in
 > [design-review-kid-appeal-2026-08-01.md](../design-review-kid-appeal-2026-08-01.md) section 8
-> (question F1). Implemented (2026-08-06) by the ADR-025 implementation plan (worktree
-> `feat/persistent-characters`); see "Implementation notes" below.
+> (question F1). The frontmatter `status: accepted` refers to the decision, which is settled;
+> implementation is tracked separately and is not a frontmatter state in this repo.
+> First implemented (2026-08-06) by the ADR-025 implementation plan in PR
+> [#636](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636) (branch
+> `feat/persistent-characters`), **which had not merged when this line was written**; treat
+> "Implementation notes" below as describing that branch until #636 lands on `main`.
 > **Cross-sign**: `storybook/models.py`, `storybook/schema_export.py`, `schema/storybook.schema.json`,
 > both player engines, and the conformance corpus. No database migration; published blobs are not
 > rewritten.
@@ -125,45 +129,87 @@ them.
 
 ## Implementation notes (2026-08-06, first implementation)
 
-Three enforcement points carry the decision:
+Two enforcement points carry the decision, backed by one constant convention:
 
 1. `Storybook._check_schema_version` (`storybook/models.py`) delegates to
    `is_supported_schema_version`, which accepts any `SCHEMA_MAJOR.x` with `x <= SCHEMA_MINOR` and
-   returns `False`, never raises, for a version outside that range or a malformed string.
-   `parse_schema_version` is the one function that parses a raw `MAJOR.MINOR` string and the one
-   that raises `ValueError` when it is malformed; `is_supported_schema_version` catches that and
-   turns it into a `False` result rather than propagating it.
+   returns `False`, never raises, for a version outside that range, a malformed string, or a
+   non-string value. `parse_schema_version` is the one function that parses a raw `MAJOR.MINOR`
+   string and the one that raises `ValueError` when it is malformed; `is_supported_schema_version`
+   takes `object`, catches that, and turns both the malformed and the wrong-type case into a
+   `False` result rather than propagating an exception out of a trust boundary.
 2. `import_catalog._needs_legacy_normalization` asks a narrower question than the parser does: "is
-   this pre-`SCHEMA_MAJOR`", via `parse_schema_version` directly, not `is_supported_schema_version`.
-   A same-major document at or above the current minor, including a future minor such as `2.1`, is
-   deliberately not treated as legacy and rewritten to `2.0`; it falls through to the
-   `metadata.topology` check and, if still unresolved, reaches `run_gate` unmodified to be rejected
-   loudly by `_check_schema_version`, rather than silently normalized and admitted as a document
-   this build does not actually implement. The importer's job is detecting the legacy pre-versioning
-   shape, not deciding what this build can parse; those are different questions on purpose, and
-   collapsing them into one call would let a same-major, unsupported document masquerade as `2.0`.
-3. `SCHEMA_MINOR` in `storybook/models.py` is the single place a minor is bumped.
-   `LEGACY_NORMALIZED_SCHEMA_VERSION = "2.0"` in `import_catalog.py` is a separate, deliberately
-   fixed constant pinning the stamp the legacy normalizer writes; it must never be changed to track
-   `SCHEMA_MINOR`, or a future minor bump would start rewriting legacy blobs to a version this build
-   never actually normalized them for.
+   this the legacy shape I should rewrite", via `parse_schema_version` directly, not
+   `is_supported_schema_version`. Because "legacy" means "rewrite it", the predicate returns `True`
+   for exactly two inputs, and the three paths are distinct:
+   - **Legacy (rewritten).** The `schema_version` key is absent entirely (the pre-versioning
+     shape, where no claim was ever made so stamping one on is a repair), or it names a major
+     below `SCHEMA_MAJOR`.
+   - **Supported (topology decides).** Any same-major version at or below `SCHEMA_MINOR`, not
+     merely one at exactly the current minor, falls through to the `metadata.topology` check and
+     is legacy only if that key is missing.
+   - **Refused (never rewritten, returns before the topology check).** A higher major, a
+     same-major future minor such as `2.1`, an unparseable string such as `3.0.0` or `v3.0`, and
+     a present-but-non-string value. Each reaches `run_gate` unmodified to be rejected loudly by
+     `_check_schema_version`. This is decided by the version bound alone, so the outcome does not
+     depend on whether `metadata.topology` happens to be present.
+
+   The asymmetry between an absent key and a present-but-wrong one is the whole point: overwriting
+   a wrong claim destroys the evidence the refusal rests on. The importer's job is detecting the
+   legacy pre-versioning shape, not deciding what this build can parse; those are different
+   questions on purpose, and collapsing them into one call would let a same-major, unsupported
+   document masquerade as `2.0`.
+
+Backing both: `SCHEMA_MINOR` in `storybook/models.py` is the single place a minor is bumped, and
+`SCHEMA_VERSION` is derived from it so the two cannot drift.
+`LEGACY_NORMALIZED_SCHEMA_VERSION = "2.0"` in `import_catalog.py` is a separate, deliberately fixed
+constant pinning the stamp the legacy normalizer writes; it must never be changed to track
+`SCHEMA_MINOR`, or a future minor bump would start rewriting legacy blobs to a version this build
+never actually normalized them for.
+
+**The exported JSON Schema is deliberately not a third enforcement point.**
+`schema/storybook.schema.json` constrains `schema_version` to `{"type": "string"}` with no
+`pattern`, `enum`, or `const`, so L1-1 (schema conformance) accepts `"3.0"` and `"banana"` alike.
+The range check is a `model_validator(mode="after")`, which has no JSON Schema representation, so
+it can only run at the Pydantic boundary. A document with an unsupported version therefore passes
+L1-1 and is refused in `validator/gate.py::_parse_storybook`, which reports it as a normal L1-1
+finding carrying Pydantic's own message. That path is reachable by design, not a schema-drift
+anomaly, and no amount of keeping `schema_export.build_schema()` in sync with `models.py` would
+change it.
 
 This is the same accepted-range mechanism decision 2 describes; the importer's legacy-detection
 question is implementation detail decision 2's text did not need to anticipate.
 
-**Known gap: decision 2's stamping clause and decision 3's converse are not enforced.** None of
-the three enforcement points above ties the emitted `schema_version` stamp to `SCHEMA_VERSION`.
+**Known gap: decision 2's stamping clause and decision 3's converse are not enforced.** Neither
+enforcement point above ties the emitted `schema_version` stamp to `SCHEMA_VERSION`.
 `Storybook.schema_version` defaults to `SCHEMA_VERSION` only when the field is absent from the
-input; every real producer (all 61 committed `skeletons/*/*.json` files,
-`scripts/build_series_book.py`, `scripts/seed_dev_data.py`, `scripts/seed_series_catalog.py`)
-supplies the field explicitly, hardcoded at `"2.0"`. Outside `_normalize_legacy_fill`, nothing in
-`src/` ever assigns `blob["schema_version"]`. So decision 2's "It stamps newly-published blobs
-with the current version" and decision 3's converse ("A story only carries a new field if it was
-published... at the minor that defines it") are both unenforced today; they hold only because no
-minor beyond `0` has ever existed. The concrete open question for the next minor bump: after
-`SCHEMA_MINOR = 1`, what stamps a document `2.1`, given 61 skeletons hardcode `"2.0"` and nothing
-in `src/` rewrites the field? Recorded rather than fixed here, since fixing every producer was
-out of scope for this branch; see `UW-A45` in `unscheduled-work-register.md`.
+input, and every real producer supplies it explicitly. The full inventory, which is more varied
+than "hardcoded at `2.0`":
+
+| Producer | How the value is chosen |
+| --- | --- |
+| The 61 committed skeleton documents under `skeletons/` | Literal `"2.0"` in each. (`skeletons/*/*.json` matches 124 files; the other 63 are `.contract.json` and `.lineage.json` sidecars carrying their own `contract_version`/`lineage_version`, not the Storybook schema.) |
+| `scripts/seed_dev_data.py:167`, `scripts/seed_series_catalog.py:145` | Literal `"2.0"`. |
+| `scripts/build_series_book.py:315` | `str(spec.get("schema_version", "2.0"))`: spec-driven, with `"2.0"` only as a fallback, so a series spec can already declare any string. |
+| `generation/templates/structure.md:27` (Stage-A prompt) | **Unpinned.** The prompt lists `schema_version` among the required top-level fields but states no value, so an LLM-generated skeleton carries whatever the model emitted. |
+| `import_catalog._normalize_legacy_fill` | `LEGACY_NORMALIZED_SCHEMA_VERSION`, pinned at `"2.0"` on purpose (see above). |
+
+The Stage-A prompt is the significant omission: it is the primary production path, not a script,
+and it is the one producer with no pinned value at all. Note also that the scan behind this
+inventory is narrower than it first appears: outside `_normalize_legacy_fill`, no Python in `src/`
+assigns `blob["schema_version"]`, but that is a statement about Python assignment only, and the
+prompt template above determines an emitted version without ever performing one. (Unrelated
+namespace, listed so nobody "fixes" it: `diversity/panel.py` and
+`scripts/capture_stage0_baseline.py` each carry their own integer `schema_version` for
+diversity-panel and safety-baseline artifacts. Neither is the Storybook schema.)
+
+So decision 2's "It stamps newly-published blobs with the current version" and decision 3's
+converse ("A story only carries a new field if it was published... at the minor that defines it")
+are both unenforced today; they hold only because no minor beyond `0` has ever existed. The
+concrete open question for the next minor bump: after `SCHEMA_MINOR = 1`, what stamps a document
+`2.1`, given 61 skeletons hardcode `"2.0"`, the Stage-A prompt pins nothing, and nothing in `src/`
+rewrites the field? Recorded rather than fixed here, since fixing every producer was out of scope
+for this branch; see `UW-A45` in `unscheduled-work-register.md`.
 
 ## Consequences
 
@@ -176,3 +222,29 @@ out of scope for this branch; see `UW-A45` in `unscheduled-work-register.md`.
 - Cost accepted: two engines plus corpus per runtime-visible field (already the standing tax,
   design review 5.3), and a per-minor discipline that additions land in `models.py`,
   `schema_export.py`, the JSON schema, and the changelog together.
+
+## Follow-on work
+
+Per the [ADR follow-on rule](./README.md), every consequent item cites a phase, a `UW-*` row, or an
+issue. This ADR was accepted 2026-08-01, after the 2026-07-28 cutoff, so the rule applies to it.
+
+| Item | Home |
+| --- | --- |
+| Enforce decision 2's stamping clause and decision 3's converse. Per the owner ruling of 2026-08-06 this ships as a validator rule ("a document's declared minor must cover the fields it actually uses"), not a publish-path stamper, and lands alongside the first `SCHEMA_MINOR` bump to `1`. Includes pinning a value in the Stage-A prompt (`generation/templates/structure.md`), the one producer that pins none. | `UW-A45`, Phase 5 |
+| Reconcile `import_catalog._needs_legacy_normalization` with `_check_schema_version` so the two acceptance rules cannot disagree, and keep them documented as deliberately separate questions. | `UW-C34` / `AL-101`, delivered by PR [#636](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636) |
+
+Two clauses of this ADR create no schedulable item, and are recorded here so their absence from the
+table is a stated conclusion rather than an oversight:
+
+- **Decision 4 (corpus gating)** and **decision 5 (rolling-deploy sequencing)** are preconditions on
+  each future minor bump, not standalone work. There is nothing to schedule until a minor is
+  actually proposed, at which point both become acceptance criteria of that minor's own change.
+  They are restated in "Consequences" as the standing per-minor discipline.
+
+## Related
+
+- [ADR-001](./adr-001-story-format-json-storybook.md) chose the JSON Storybook format and recorded
+  "exactly one accepted version" as technical debt. This ADR supersedes that clause; ADR-001's
+  Technical Debt section is annotated accordingly.
+- [ADR-027](./adr-027-in-story-illustration.md) is one of the additions this ADR unblocks, and
+  shares the "design record written in the present tense" disclaimer in the status block above.
