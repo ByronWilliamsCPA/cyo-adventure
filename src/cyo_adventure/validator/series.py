@@ -36,7 +36,15 @@ if TYPE_CHECKING:
 
 # A satisfying continuation ending: a win the reader carries into the next book.
 # A fail-fast negative ending does not continue the campaign, matching PL-20.
-_SATISFYING_KINDS = frozenset({EndingKind.SUCCESS, EndingKind.COMPLETION})
+#
+# Public: characters/progression.py (via api/reading.py) imports this same
+# definition to decide whether a completed book grows a persistent character's
+# stats, rather than maintaining a second "was this ending satisfying" answer
+# that could silently drift from SR-9's. Exported under a public name for the
+# same reason as ``MAX_ENTRY_STATES`` and ``satisfying_ending_reachable``
+# below; ``_SATISFYING_KINDS`` keeps this module's own callers unchanged.
+SATISFYING_ENDING_KINDS = frozenset({EndingKind.SUCCESS, EndingKind.COMPLETION})
+_SATISFYING_KINDS = SATISFYING_ENDING_KINDS
 
 # Bands that must run episodic (no state carry) series, per ADR-011 section 8.
 _YOUNG_BANDS = frozenset({"3-5", "5-8"})

@@ -109,11 +109,16 @@ CREATE TABLE IF NOT EXISTS "public"."character_attribute" (
 -- already?" read.
 -- #VERIFY: the schema-level mechanism (this primary key shape) is pinned
 -- today by tests/unit/test_character_models.py::
--- test_completion_pk_is_what_makes_writeback_idempotent. Forward reference
--- (does not exist yet): the behavioral no-double-increment case is intended
--- to be covered by tests/integration/test_character_progression.py::
--- test_replayed_completion_does_not_increment_twice, added by the
--- progression-writeback task later in this plan.
+-- test_completion_pk_is_what_makes_writeback_idempotent. The behavioral
+-- no-double-increment case is covered by
+-- tests/integration/test_character_progression.py::
+-- test_a_replayed_completion_does_not_increment_twice.
+--
+-- ending_id is stored but deliberately NOT part of this key: a character can
+-- be credited for a given storybook exactly once, forever, including across
+-- a re-read and across a later version of the same book, and a completion
+-- recorded at a different ending for a pair already credited is a no-op
+-- rather than a conflict.
 --
 -- The spec names this key (reading_state_id, character_id), but reading_state
 -- has a composite key (child_profile_id, storybook_id) and no surrogate id,

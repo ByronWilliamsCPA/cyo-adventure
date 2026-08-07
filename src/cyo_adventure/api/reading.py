@@ -36,6 +36,7 @@ from cyo_adventure.api.schemas import (
     error_responses,
 )
 from cyo_adventure.api.sentinel_log import strip_and_log
+from cyo_adventure.characters.progression import record_progression
 from cyo_adventure.characters.seeding import character_seed
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
@@ -55,6 +56,7 @@ from cyo_adventure.db.models import (
 from cyo_adventure.player.replay import validate_reading_state
 from cyo_adventure.publishing.state_machine import Visibility
 from cyo_adventure.utils.logging import get_logger
+from cyo_adventure.validator.series import SATISFYING_ENDING_KINDS
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -857,6 +859,60 @@ def _version_ending_ids(blob: Mapping[str, object]) -> set[str]:
     return found
 
 
+def _ending_kind(blob: Mapping[str, object], ending_id: str) -> str | None:
+    """Return the declared ``kind`` of one ending in a stored Storybook blob.
+
+    Args:
+        blob: The pinned version's stored Storybook content blob.
+        ending_id: The ending to look up.
+
+    Returns:
+        str | None: The ending's ``kind`` string (e.g. ``"success"``), or
+        ``None`` if the ending id is not declared or the blob is malformed.
+    """
+    nodes = blob.get("nodes")
+    if not isinstance(nodes, list):
+        return None
+    for node in nodes:
+        if not isinstance(node, dict) or node.get("is_ending") is not True:
+            continue
+        ending = node.get("ending")
+        if isinstance(ending, dict) and ending.get("id") == ending_id:
+            kind = ending.get("kind")
+            return kind if isinstance(kind, str) else None
+    return None
+
+
+def _ending_is_satisfying(blob: Mapping[str, object], ending_id: str) -> bool:
+    """Whether ``ending_id`` is a satisfying ending, per CH-4's own definition.
+
+    # #CRITICAL: security: ``kind`` is read from ``blob``, the SERVER's pinned
+    # version content (``version_row.blob``, already loaded by
+    # ``record_completion`` to validate the ending id), never from the
+    # completion request body. ``CompletionBody`` has no kind/valence/
+    # "satisfying" field for a client to assert in the first place, so a
+    # child cannot claim a win for a book they did not finish: doing so would
+    # turn character progression into a self-service API, farming stats
+    # across the whole library without ever reaching a real satisfying
+    # ending.
+    # #VERIFY: tests/integration/test_character_progression.py::
+    # test_a_satisfying_ending_raises_a_stat_and_counts_the_book and
+    # test_an_unsatisfying_ending_writes_nothing.
+
+    Args:
+        blob: The pinned version's stored Storybook content blob.
+        ending_id: The ending reached, already validated to belong to this
+            version by the caller.
+
+    Returns:
+        bool: True when the ending's declared kind is one of
+        ``SATISFYING_ENDING_KINDS`` (SR-9's own definition, reused here
+        rather than duplicated; see ``validator/series.py``).
+    """
+    kind = _ending_kind(blob, ending_id)
+    return kind is not None and kind in SATISFYING_ENDING_KINDS
+
+
 def _completion_ending_count(
     blob: Mapping[str, object], storybook_id: str, version: int
 ) -> int:
@@ -1007,6 +1063,41 @@ async def record_completion(
         # which runs on the same (uncommitted) transaction.
         await ctx.session.flush()
         await ctx.session.refresh(row, ["found_at"])
+    # Attempted on EVERY call, not gated on `is_new`: the offline queue can
+    # replay this exact completion after a crash between the Completion
+    # insert above and this writeback, and `record_progression` is its own
+    # idempotent unit (see its module docstring), so re-attempting it here is
+    # always safe and is what makes a partial-crash recovery possible at all.
+    reading_state_row = await ctx.session.get(ReadingState, (parsed, body.storybook_id))
+    if (
+        reading_state_row is not None
+        and reading_state_row.character_id is not None
+        and _ending_is_satisfying(version_row.blob, body.ending_id)
+    ):
+        # #EDGE: data integrity: exit_var_state below is
+        # reading_state_row.var_state, which is only as trustworthy as replay
+        # validation, and replay only runs when a save carries a
+        # choice_path; today's frontend (frontend/src/offline/sync.ts::
+        # toPutPayload) sends none, so a client can already persist a
+        # var_state no legitimate play could reach (see the #CRITICAL marker
+        # above _create_reading_state's choice_path handling). This
+        # writeback turns that pre-existing per-read weakness into a
+        # durable, cross-book one instead of adding a new hole: the raise in
+        # record_progression is monotone and capped at
+        # CANONICAL_CHARACTER_VARIABLES[name].max, so the worst case is a
+        # child maxing their own character's stats, never a value beyond the
+        # vocabulary ceiling and never another profile's character.
+        # #VERIFY: no test in this suite proves this boundary; closing it is
+        # a hard prerequisite tracked for a later task (the player deriving
+        # its starting var_state from seed_var_state, per the choice_path
+        # note above), not attempted here.
+        await record_progression(
+            ctx.session,
+            reading_state=reading_state_row,
+            character_id=reading_state_row.character_id,
+            ending_id=body.ending_id,
+            exit_var_state=reading_state_row.var_state,
+        )
     found = await _distinct_endings_found(ctx, parsed, body.storybook_id, body.version)
     total = _completion_ending_count(version_row.blob, body.storybook_id, body.version)
     return _completion_recorded_view(row, is_new=is_new, found=found, total=total)

@@ -513,6 +513,15 @@ known-first-party = ["cyo_adventure"]
 # rationale.
 "**/cyo_adventure/security_audit.py" = ["PLR0913"]
 
+# record_progression carries session plus the four keyword-only fields
+# needed to raise a persistent character's stats and record a book
+# completion (reading_state, character_id, ending_id, exit_var_state); each
+# is a distinct concern (transaction, identity, the ending reached, the
+# values to raise stats to) with no sensible default. A config object would
+# obscure which fields the caller (api/reading.py::record_completion) must
+# supply explicitly.
+"**/characters/progression.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests
