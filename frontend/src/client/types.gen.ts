@@ -666,6 +666,117 @@ export type CategoryInsightView = {
 };
 
 /**
+ * CharacterCreateBody
+ *
+ * A request to create a character for one child profile.
+ */
+export type CharacterCreateBody = {
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Archetype
+     */
+    archetype: string;
+    /**
+     * Look
+     */
+    look: string;
+};
+
+/**
+ * CharacterListView
+ *
+ * All of one profile's characters, active first.
+ */
+export type CharacterListView = {
+    /**
+     * Characters
+     */
+    characters: Array<CharacterView>;
+};
+
+/**
+ * CharacterUpdateBody
+ *
+ * A partial update: name, look, and archetype are all re-choosable.
+ *
+ * Attributes and books_completed are absent by design. They are
+ * server-derived and no principal may write them (spec section 3.4);
+ * ``extra="forbid"`` turns an attempt into a 422 rather than a silent
+ * drop.
+ */
+export type CharacterUpdateBody = {
+    /**
+     * Name
+     */
+    name?: string | null;
+    /**
+     * Archetype
+     */
+    archetype?: string | null;
+    /**
+     * Look
+     */
+    look?: string | null;
+};
+
+/**
+ * CharacterView
+ *
+ * A character as returned to a kid or guardian.
+ */
+export type CharacterView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Archetype
+     */
+    archetype: string;
+    /**
+     * Look
+     */
+    look: string;
+    /**
+     * Is Active
+     */
+    is_active: boolean;
+    /**
+     * Books Completed
+     */
+    books_completed: number;
+    /**
+     * Attributes
+     */
+    attributes: {
+        [key: string]: number;
+    };
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Retired At
+     */
+    retired_at: string | null;
+};
+
+/**
  * ChildEngagementItem
  *
  * One child's engagement signals for a guardian's family reading summary.
@@ -5621,6 +5732,249 @@ export type UpdateProfileApiV1ProfilesProfileIdPatchResponses = {
 };
 
 export type UpdateProfileApiV1ProfilesProfileIdPatchResponse = UpdateProfileApiV1ProfilesProfileIdPatchResponses[keyof UpdateProfileApiV1ProfilesProfileIdPatchResponses];
+
+export type ListCharactersApiV1CharactersGetData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Profile Id
+         */
+        profile_id: string;
+    };
+    url: '/api/v1/characters';
+};
+
+export type ListCharactersApiV1CharactersGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListCharactersApiV1CharactersGetError = ListCharactersApiV1CharactersGetErrors[keyof ListCharactersApiV1CharactersGetErrors];
+
+export type ListCharactersApiV1CharactersGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: CharacterListView;
+};
+
+export type ListCharactersApiV1CharactersGetResponse = ListCharactersApiV1CharactersGetResponses[keyof ListCharactersApiV1CharactersGetResponses];
+
+export type CreateCharacterApiV1CharactersPostData = {
+    body: CharacterCreateBody;
+    path?: never;
+    query?: never;
+    url: '/api/v1/characters';
+};
+
+export type CreateCharacterApiV1CharactersPostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateCharacterApiV1CharactersPostError = CreateCharacterApiV1CharactersPostErrors[keyof CreateCharacterApiV1CharactersPostErrors];
+
+export type CreateCharacterApiV1CharactersPostResponses = {
+    /**
+     * Successful Response
+     */
+    201: CharacterView;
+};
+
+export type CreateCharacterApiV1CharactersPostResponse = CreateCharacterApiV1CharactersPostResponses[keyof CreateCharacterApiV1CharactersPostResponses];
+
+export type DeleteCharacterApiV1CharactersCharacterIdDeleteData = {
+    body?: never;
+    path: {
+        /**
+         * Character Id
+         */
+        character_id: string;
+    };
+    query?: never;
+    url: '/api/v1/characters/{character_id}';
+};
+
+export type DeleteCharacterApiV1CharactersCharacterIdDeleteErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteCharacterApiV1CharactersCharacterIdDeleteError = DeleteCharacterApiV1CharactersCharacterIdDeleteErrors[keyof DeleteCharacterApiV1CharactersCharacterIdDeleteErrors];
+
+export type DeleteCharacterApiV1CharactersCharacterIdDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type DeleteCharacterApiV1CharactersCharacterIdDeleteResponse = DeleteCharacterApiV1CharactersCharacterIdDeleteResponses[keyof DeleteCharacterApiV1CharactersCharacterIdDeleteResponses];
+
+export type UpdateCharacterApiV1CharactersCharacterIdPatchData = {
+    body: CharacterUpdateBody;
+    path: {
+        /**
+         * Character Id
+         */
+        character_id: string;
+    };
+    query?: never;
+    url: '/api/v1/characters/{character_id}';
+};
+
+export type UpdateCharacterApiV1CharactersCharacterIdPatchErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateCharacterApiV1CharactersCharacterIdPatchError = UpdateCharacterApiV1CharactersCharacterIdPatchErrors[keyof UpdateCharacterApiV1CharactersCharacterIdPatchErrors];
+
+export type UpdateCharacterApiV1CharactersCharacterIdPatchResponses = {
+    /**
+     * Successful Response
+     */
+    200: CharacterView;
+};
+
+export type UpdateCharacterApiV1CharactersCharacterIdPatchResponse = UpdateCharacterApiV1CharactersCharacterIdPatchResponses[keyof UpdateCharacterApiV1CharactersCharacterIdPatchResponses];
+
+export type ActivateCharacterApiV1CharactersCharacterIdActivatePostData = {
+    body?: never;
+    path: {
+        /**
+         * Character Id
+         */
+        character_id: string;
+    };
+    query?: never;
+    url: '/api/v1/characters/{character_id}/activate';
+};
+
+export type ActivateCharacterApiV1CharactersCharacterIdActivatePostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ActivateCharacterApiV1CharactersCharacterIdActivatePostError = ActivateCharacterApiV1CharactersCharacterIdActivatePostErrors[keyof ActivateCharacterApiV1CharactersCharacterIdActivatePostErrors];
+
+export type ActivateCharacterApiV1CharactersCharacterIdActivatePostResponses = {
+    /**
+     * Successful Response
+     */
+    200: CharacterView;
+};
+
+export type ActivateCharacterApiV1CharactersCharacterIdActivatePostResponse = ActivateCharacterApiV1CharactersCharacterIdActivatePostResponses[keyof ActivateCharacterApiV1CharactersCharacterIdActivatePostResponses];
+
+export type RetireCharacterApiV1CharactersCharacterIdRetirePostData = {
+    body?: never;
+    path: {
+        /**
+         * Character Id
+         */
+        character_id: string;
+    };
+    query?: never;
+    url: '/api/v1/characters/{character_id}/retire';
+};
+
+export type RetireCharacterApiV1CharactersCharacterIdRetirePostErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RetireCharacterApiV1CharactersCharacterIdRetirePostError = RetireCharacterApiV1CharactersCharacterIdRetirePostErrors[keyof RetireCharacterApiV1CharactersCharacterIdRetirePostErrors];
+
+export type RetireCharacterApiV1CharactersCharacterIdRetirePostResponses = {
+    /**
+     * Successful Response
+     */
+    200: CharacterView;
+};
+
+export type RetireCharacterApiV1CharactersCharacterIdRetirePostResponse = RetireCharacterApiV1CharactersCharacterIdRetirePostResponses[keyof RetireCharacterApiV1CharactersCharacterIdRetirePostResponses];
 
 export type ListFamiliesApiV1AdminFamiliesGetData = {
     body?: never;

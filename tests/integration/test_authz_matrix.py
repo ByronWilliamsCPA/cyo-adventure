@@ -346,6 +346,27 @@ def _profile_update_body(_seed: Seed) -> dict[str, Any]:
     return {}
 
 
+def _character_list_query(seed: Seed) -> dict[str, str]:
+    return {"profile_id": str(seed.child_profile_id)}
+
+
+def _character_create_body(seed: Seed) -> dict[str, Any]:
+    return {
+        "profile_id": str(seed.child_profile_id),
+        "name": "Authz Matrix Character",
+        "archetype": "scout",
+        "look": "avatar_03",
+    }
+
+
+def _character_path(seed: Seed) -> dict[str, str]:
+    return {"character_id": str(seed.character_id)}
+
+
+def _character_update_body(_seed: Seed) -> dict[str, Any]:
+    return {}
+
+
 def _admin_user_create_body(seed: Seed) -> dict[str, Any]:
     # A fresh random suffix per call: two RouteSpec resolutions for this
     # endpoint against the same schema (e.g. the base matrix plus the
@@ -740,6 +761,55 @@ _ROUTE_SPECS: list[RouteSpec] = [
         "/api/v1/profiles/{profile_id}",
         frozenset({Role.GUARDIAN}),
         path_params=_child_profile_path,
+    ),
+    # -- characters.py: ownership-scoped (authorize_profile), ADR-028.
+    # GET/create/update/activate/retire carry no role gate at all -- a child
+    # may manage their own characters exactly like a guardian can -- so
+    # ADMIN legitimately 403s via the empty profile_ids an admin principal
+    # resolves to, not via any role check in the handler. Only DELETE is
+    # guardian-only (_require_guardian): irreversible progression loss.
+    RouteSpec(
+        "GET",
+        "/api/v1/characters",
+        frozenset({Role.GUARDIAN, Role.CHILD}),
+        query_params=_character_list_query,
+    ),
+    RouteSpec(
+        "POST",
+        "/api/v1/characters",
+        frozenset({Role.GUARDIAN, Role.CHILD}),
+        json_body=_character_create_body,
+    ),
+    RouteSpec(
+        "PATCH",
+        "/api/v1/characters/{character_id}",
+        frozenset({Role.GUARDIAN, Role.CHILD}),
+        # A character the caller owns: load-then-authorize has no cheap
+        # pre-check, so a disallowed role's request must reach a REAL row
+        # to 403 rather than 404 first (see RouteSpec's own docs above).
+        path_params=_character_path,
+        json_body=_character_update_body,
+    ),
+    RouteSpec(
+        "POST",
+        "/api/v1/characters/{character_id}/activate",
+        frozenset({Role.GUARDIAN, Role.CHILD}),
+        path_params=_character_path,
+    ),
+    RouteSpec(
+        "POST",
+        "/api/v1/characters/{character_id}/retire",
+        frozenset({Role.GUARDIAN, Role.CHILD}),
+        path_params=_character_path,
+    ),
+    # _require_guardian runs first with no I/O, so a disallowed role legitimately
+    # 403s before any row lookup; a random id is safe here (mirrors
+    # delete_profile's own DELETE entry above).
+    RouteSpec(
+        "DELETE",
+        "/api/v1/characters/{character_id}",
+        frozenset({Role.GUARDIAN}),
+        path_params=_random_uuid_path("character_id"),
     ),
     # -- personalization.py: ring-1/ring-2 CRUD, guardian-only
     # (_require_guardian rejects admin-only too, same shape as profiles.py) --

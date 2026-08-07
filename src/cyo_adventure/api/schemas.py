@@ -26,6 +26,7 @@ from cyo_adventure.api.residence_countries import ASSIGNED_RESIDENCE_COUNTRY_COD
 from cyo_adventure.db.models import RING_GOAL_DAYS_MAX, RING_GOAL_DAYS_MIN
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
+from cyo_adventure.storybook.character_vocabulary import ARCHETYPE_ROSTER
 from cyo_adventure.storybook.evaluator import VarState
 from cyo_adventure.storybook.models import (
     AgeBand,
@@ -1554,6 +1555,74 @@ class ProfileUpdateBody(BaseModel):
     ring_goal_days: RingGoalDays | None = None
     badges_enabled: bool | None = None
     time_capture_paused: bool | None = None
+
+
+# ---------------------------------------------------------------------------
+# Character schemas (ADR-028)
+# ---------------------------------------------------------------------------
+
+# Built from ARCHETYPE_ROSTER rather than retyped: db/models.py already keeps
+# its own SQL-CHECK copy (_CHARACTER_ARCHETYPE_NAMES) honest against the same
+# roster via tests/unit/test_character_vocab_drift.py; deriving this pattern
+# from the roster directly avoids adding a third hand-maintained copy of the
+# six names.
+_CHARACTER_ARCHETYPE_PATTERN = "^(" + "|".join(ARCHETYPE_ROSTER) + ")$"
+
+CharacterName = Annotated[str, Field(min_length=1, max_length=32)]
+CharacterArchetype = Annotated[str, Field(pattern=_CHARACTER_ARCHETYPE_PATTERN)]
+CharacterLook = Annotated[str, Field(pattern=r"^avatar_(0[1-9]|1[0-2])$")]
+
+
+class CharacterCreateBody(BaseModel):
+    """A request to create a character for one child profile."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    profile_id: str
+    name: CharacterName
+    archetype: CharacterArchetype
+    look: CharacterLook
+
+
+class CharacterUpdateBody(BaseModel):
+    """A partial update: name, look, and archetype are all re-choosable.
+
+    Attributes and books_completed are absent by design. They are
+    server-derived and no principal may write them (spec section 3.4);
+    ``extra="forbid"`` turns an attempt into a 422 rather than a silent
+    drop.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: CharacterName | None = None
+    archetype: CharacterArchetype | None = None
+    look: CharacterLook | None = None
+
+
+class CharacterView(BaseModel):
+    """A character as returned to a kid or guardian."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    profile_id: str
+    name: str
+    archetype: str
+    look: str
+    is_active: bool
+    books_completed: int
+    attributes: dict[str, int]
+    created_at: datetime
+    retired_at: datetime | None
+
+
+class CharacterListView(BaseModel):
+    """All of one profile's characters, active first."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    characters: list[CharacterView]
 
 
 # ---------------------------------------------------------------------------

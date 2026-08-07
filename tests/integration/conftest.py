@@ -32,6 +32,7 @@ from cyo_adventure.core.database import Base
 from cyo_adventure.db.models import (
     CATALOG_FAMILY_ID,
     CATALOG_FAMILY_NAME,
+    Character,
     ChildProfile,
     Family,
     Storybook,
@@ -109,6 +110,7 @@ class Seed:
     other_child_profile_id: uuid.UUID
     storybook_id: str
     version: int
+    character_id: uuid.UUID
 
 
 def _seed_catalog_family_stmt() -> Insert:
@@ -406,6 +408,21 @@ async def seed(sessions: async_sessionmaker[AsyncSession]) -> Seed:
         )
         await session.flush()
 
+        # ADR-028: a pre-existing character on profile_a, owned by family A,
+        # for the authz matrix's load-then-authorize routes (PATCH/activate/
+        # retire), which need a real row in the path to exercise the
+        # "disallowed role gets exactly 403" invariant rather than a 404 from
+        # a random id that never reaches the ownership check.
+        character_a = Character(
+            child_profile_id=profile_a.id,
+            family_id=fam_a.id,
+            name="Route Matrix Rowan",
+            archetype="scout",
+            look="avatar_01",
+        )
+        session.add(character_a)
+        await session.flush()
+
         story_id = str(blob["id"])
         version = int(blob["version"])
         session.add(
@@ -446,6 +463,7 @@ async def seed(sessions: async_sessionmaker[AsyncSession]) -> Seed:
             other_child_profile_id=profile_b.id,
             storybook_id=story_id,
             version=version,
+            character_id=character_a.id,
         )
 
 
