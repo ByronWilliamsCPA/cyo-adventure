@@ -288,6 +288,64 @@ def test_ch2_rejects_a_variable_with_absent_bounds() -> None:
     assert _ids(Storybook.model_validate(data), "CH-2") == ["CH-2"]
 
 
+def test_ch2_rejects_a_range_wider_than_the_canonical_vocabulary() -> None:
+    """Equality alone cannot bound the document: both its operands are the document's.
+
+    A book that declares ``might: 0-3`` on the variable *and* in the envelope
+    satisfies the equality check above with zero findings, so without a
+    containment check the vocabulary is whatever the document says it is. The
+    canonical bounds are the only code-owned operand available.
+    """
+    data = _story_dict()
+    data["variables"] = [
+        {"name": "might", "type": "int", "initial": 0, "min": 0, "max": 3}
+    ]
+    data["accepts_character"] = {"might": {"min": 0, "max": 3}}
+    story = Storybook.model_validate(data)
+    assert _ids(story, "CH-2") == ["CH-2"]
+    message = next(
+        f.message for f in validate_character(story).findings if f.rule_id == "CH-2"
+    )
+    # The canonical range must appear in the message, so the check is provably
+    # reading CANONICAL_CHARACTER_VARIABLES rather than any document value.
+    assert "canonical vocabulary range 0-2" in message
+
+
+def test_ch2_rejects_a_lower_bound_below_the_canonical_vocabulary() -> None:
+    """Containment is two-sided; widening downward is the same defect."""
+    data = _story_dict()
+    data["variables"] = [
+        {"name": "might", "type": "int", "initial": 0, "min": -1, "max": 2}
+    ]
+    data["accepts_character"] = {"might": {"min": -1, "max": 2}}
+    assert _ids(Storybook.model_validate(data), "CH-2") == ["CH-2"]
+
+
+def test_ch2_allows_a_range_narrower_than_the_canonical_vocabulary() -> None:
+    """Narrowing stays legal, and that asymmetry is the whole point of the rule.
+
+    A book declaring ``might: 0-1`` walks exactly 0-1, and G3 clamps a reader
+    carrying 2 down to 1, so the reader lands in a state the validator proved.
+    Only widening puts a reader somewhere nothing was walked.
+    """
+    data = _story_dict()
+    data["variables"] = [
+        {"name": "might", "type": "int", "initial": 0, "min": 0, "max": 1}
+    ]
+    data["accepts_character"] = {"might": {"min": 0, "max": 1}}
+    assert _ids(Storybook.model_validate(data), "CH") == []
+
+
+def test_ch2_reports_one_finding_when_the_range_is_both_unequal_and_wide() -> None:
+    """A single defect earns a single finding.
+
+    ``0-3`` in the envelope against ``0-2`` on the variable violates equality;
+    reporting containment as well would make an author fix one range twice.
+    """
+    data = _story_dict(accepts_character={"might": {"min": 0, "max": 3}})
+    assert _ids(Storybook.model_validate(data), "CH-2") == ["CH-2"]
+
+
 def test_ch5_rejects_an_envelope_above_the_entry_state_cap() -> None:
     """Four 0-6 variables is 2,401 states against a 64 cap.
 

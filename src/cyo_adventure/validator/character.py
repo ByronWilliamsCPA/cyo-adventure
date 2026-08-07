@@ -196,12 +196,29 @@ def _check_ch1_names_and_types(
 def _check_ch2_range_equality(
     story: Storybook, declared: dict[str, Variable], report: ValidationReport
 ) -> None:
-    """CH-2: each envelope range equals the declared variable's bounds.
+    """CH-2: each envelope range equals its variable's bounds and fits the vocabulary.
 
-    Equality rather than containment, because G3's runtime clamp is to
-    *declared* bounds. A narrower envelope would let the runtime silently admit
-    a state the validator never walked, and the clamp is what makes that
-    failure invisible.
+    Two requirements that are easy to conflate, with different jobs.
+
+    **Equality** with the declared bounds, not containment, because G3's runtime
+    clamp is to *declared* bounds. A narrower envelope would let the runtime
+    silently admit a state the validator never walked, and the clamp is what
+    makes that failure invisible.
+
+    **Containment** within the canonical vocabulary range. This one is not part
+    of ADR-028's "every state a reader can arrive in has been walked"
+    guarantee, and it is worth being precise about why, so it is not later
+    mistaken for a load-bearing part of it and relaxed on that basis. A book
+    declaring ``archetype: 0..3`` walks exactly ``0..3`` and clamps a reader
+    carrying ``5`` down to ``3``, so narrowing is already safe by the equality
+    rule above. Containment earns its place against the *wider* direction, on
+    two other grounds: CH-8 derives arity from ``len(ARCHETYPE_ROSTER)`` rather
+    than from the document, so a wider-than-canonical declaration silently
+    under-measures the real configuration count and falls through to L2-12
+    blowing the walk cap, which is the opaque failure CH-8 exists to replace;
+    and it keeps the proven state space inside the vocabulary, which the
+    character writer path will assume when it projects a walked value back onto
+    a persistent character.
     """
     envelope = story.accepts_character or {}
     for name in sorted(envelope):
@@ -239,6 +256,34 @@ def _check_ch2_range_equality(
                         f"CH-2 character: accepts_character range for '{name}' "
                         f"is {span.min}-{span.max} but the variable declares "
                         f"{variable.min}-{variable.max}; they must be equal"
+                    ),
+                )
+            )
+            continue
+        canonical = CANONICAL_CHARACTER_VARIABLES.get(name)
+        if canonical is None:
+            # CH-1 already reported a non-canonical name; there is no
+            # vocabulary range to contain it to.
+            continue
+        # #CRITICAL: data integrity: the canonical bounds are the only
+        # code-owned bound on the envelope. Every other operand here comes
+        # from the document, so a rule that compares only document values to
+        # each other cannot bound the document at all: `archetype: 0..9`
+        # declared consistently on both sides satisfies the equality check
+        # above with zero findings.
+        # #VERIFY: tests/unit/test_character_rules.py::
+        # test_ch2_rejects_a_range_wider_than_the_canonical_vocabulary and
+        # test_canonical_bounds_are_read_by_the_validator
+        if not (canonical.min <= span.min and span.max <= canonical.max):
+            report.add(
+                _finding(
+                    story,
+                    "CH-2",
+                    (
+                        f"CH-2 character: accepts_character range for '{name}' "
+                        f"is {span.min}-{span.max}, outside the canonical "
+                        f"vocabulary range {canonical.min}-{canonical.max}; a "
+                        f"book may narrow a canonical range but never widen it"
                     ),
                 )
             )
