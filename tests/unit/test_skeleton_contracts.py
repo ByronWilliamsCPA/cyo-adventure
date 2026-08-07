@@ -85,8 +85,9 @@ def test_skeleton_gates_clean(contract_path: Path) -> None:
     """Check 1: the parameterized skeleton itself passes the blocking gate."""
     skeleton, _ = _load_skeleton(contract_path)
     result = run_gate(skeleton)
-    assert not result.blocked, f"{contract_path.stem} is gate-blocked: " + "; ".join(
-        finding.message for finding in result.report.errors
+    assert not result.report.errors, (
+        f"{contract_path.stem} is gate-blocked: "
+        + "; ".join(finding.message for finding in result.report.errors)
     )
 
 

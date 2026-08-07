@@ -4,6 +4,7 @@ import { Navigate } from 'react-router'
 import { Button } from '@ds/components/Button'
 import '../guardian/guardian.css'
 import { classifyApiError } from '../hooks/classifyApiError'
+import { usePageTitle } from '../hooks/usePageTitle'
 import {
   ADMIN_CONSOLE_PATH,
   GUARDIAN_AWAITING_APPROVAL_PATH,
@@ -39,6 +40,7 @@ const SUBMIT_ERROR = 'That did not go through. Please try again.'
  * #VERIFY: GuardianConsentPage.test.tsx redirect cases.
  */
 export function GuardianConsentPage() {
+  usePageTitle('Consent Required')
   const { status, principal, recordConsent } = useAuth()
   const [signerName, setSignerName] = useState('')
   const [agreed, setAgreed] = useState(false)

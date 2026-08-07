@@ -1,5 +1,7 @@
 import { Link } from 'react-router'
 
+import { usePageTitle } from '../hooks/usePageTitle'
+
 /**
  * Guardian-facing plain-language account of how family data is handled
  * (capability register G11, "plain-language trust surface").
@@ -104,6 +106,7 @@ import { Link } from 'react-router'
  * personalization language here before the client-side resolver exists.
  */
 export function PrivacyPage() {
+  usePageTitle('Privacy')
   return (
     <section className="privacy">
       <h1>How we handle your family&apos;s data</h1>

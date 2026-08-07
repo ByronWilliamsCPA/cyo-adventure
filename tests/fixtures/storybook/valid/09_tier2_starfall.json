@@ -41,8 +41,20 @@
       "description": "Whether the broken telescope has been repaired"
     }
   ],
-  "start_node": "n_entrance",
+  "start_node": "n_open",
   "nodes": [
+    {
+      "id": "n_open",
+      "body": "You stop here for a while to look around at the new place you have come to, and you wait.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_open",
+          "label": "Go on.",
+          "target": "n_entrance"
+        }
+      ]
+    },
     {
       "id": "n_entrance",
       "body": "The hilltop observatory is dark and dusty. A broken telescope points at the cloudy sky.",

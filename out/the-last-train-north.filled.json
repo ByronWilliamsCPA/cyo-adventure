@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "Vera Lindqvist swings her case onto the last carriage of the last northbound train of the season. The whistle that sends it off sounds thin against a sky that cannot decide between sleet and snow. Behind her on the platform, the station clock has stopped at an hour she does not recognize, its hands fixed as if caught mid-breath. No one else seems to notice or to mind. The train pulls out anyway, past a signboard she has no time to read. The dark outside thickens with every mile, thickens and then something in it changes. Inside, the carriages are strangely empty for a night like this one, a scattering of passengers in cars built for hundreds, each keeping to some private errand the cold has not managed to freeze out of them. Vera settles into her seat and takes the measure of the compartment the way a person takes the measure of changing weather, sensing before she can name it that this ordinary journey is not going to stay ordinary.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Find a seat and take it in.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "Vera Lindqvist swings her case onto the last carriage of the last northbound train of the season. The whistle that sends it off sounds thin against a sky that cannot decide between sleet and snow. Behind her on the platform, the station clock has stopped at an hour she does not recognize, its hands fixed as if caught mid-breath. No one else seems to notice or to mind. The train pulls out anyway, past a signboard she has no time to read. The dark outside thickens with every mile, thickens and then something in it changes. Inside, the carriages are strangely empty for a night like this one, a scattering of passengers in cars built for hundreds, each keeping to some private errand the cold has not managed to freeze out of them. Vera settles into her seat and takes the measure of the compartment the way a person takes the measure of changing weather, sensing before she can name it that this ordinary journey is not going to stay ordinary. Down the corridor, a conductor she has not yet met is calling an hour that does not match her watch. Past the curtains of the sleeper cars, made-up berths wait in a silence that feels deliberate, arranged. On the seat across from her, someone has left a letter, folded once, addressed to no one she can name. And past the glass, the whole black country is sliding by, changing its shape mile on mile, as though the season itself cannot decide what it wants to become tonight.",
+      "body": "Down the corridor, a conductor she has not yet met is calling an hour that does not match her watch. Past the curtains of the sleeper cars, made-up berths wait in a silence that feels deliberate, arranged. On the seat across from her, someone has left a letter, folded once, addressed to no one she can name. And past the glass, the whole black country is sliding by, changing its shape mile on mile, as though the season itself cannot decide what it wants to become tonight.",
       "is_ending": false,
       "choices": [
         {

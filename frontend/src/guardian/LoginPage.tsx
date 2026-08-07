@@ -11,6 +11,7 @@ import type { Principal } from '../auth/types'
 import { useAuth } from '../auth/useAuth'
 import { flagEnabled } from '../env'
 import { logApiError } from '../hooks/logApiError'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { useApi } from '../hooks/useApi'
 import {
   ADMIN_CONSOLE_PATH,
@@ -183,9 +184,7 @@ export function LoginPage() {
   // always rendered; it is the only always-on provider, Apple the only gated one.
   const appleEnabled = flagEnabled(import.meta.env.VITE_ENABLE_APPLE_OAUTH)
 
-  useEffect(() => {
-    document.title = 'Sign in - CYO Adventure'
-  }, [])
+  usePageTitle('Sign in')
 
   // ADR-014 section 5: authorize-then-return. Gated on a RESOLVED principal
   // (not just a Supabase session) so this never races AuthProvider's /me

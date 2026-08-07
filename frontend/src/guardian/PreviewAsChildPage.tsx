@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router'
 
 import { LibraryPage } from '../library/LibraryPage'
 import { useApi } from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
 import { GUARDIAN_CONSOLE_PATH } from '../routes'
 import './guardian.css'
@@ -30,6 +31,7 @@ type LoadState =
  * child.
  */
 export function PreviewAsChildPage() {
+  usePageTitle('Preview')
   const { profileId } = useParams()
   const api = useApi()
   const profilesApi = useMemo(() => makeProfilesApi(api), [api])

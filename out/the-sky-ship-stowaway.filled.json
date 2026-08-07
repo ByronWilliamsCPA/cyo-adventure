@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "Wren had always dreamed of the sky, and now she was really flying in it. The great airship Cirrus had just cast off, with creaking ropes and hissing steam curling past the rail. Wren was already on board, curled up small inside a coil of rope, a real stowaway at last. The busy deck hummed with far-off engines, and boots thumped past her hiding place, but no one had spotted her yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Slip out of the rope coil.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "Wren had always dreamed of the sky, and now she was really flying in it. The great airship Cirrus had just cast off, with creaking ropes and hissing steam curling past the rail. Wren was already on board, curled up small inside a coil of rope, a real stowaway at last. The busy deck hummed with far-off engines, and boots thumped past her hiding place, but no one had spotted her yet. Four passages led away from the deck. One rumbled with loud, heavy machines. One was dark and full of crates. One climbed up toward the open sky. And one was bright with music and laughing voices. Wren had only a moment to choose, before some sharp-eyed sailor turned around.",
+      "body": "Four passages led away from the deck. One rumbled with loud, heavy machines. One was dark and full of crates. One climbed up toward the open sky. And one was bright with music and laughing voices. Wren had only a moment to choose, before some sharp-eyed sailor turned around.",
       "is_ending": false,
       "choices": [
         {

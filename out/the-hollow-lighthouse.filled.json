@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "Mira missed the last bus by four minutes. The fog rolled in fast, thick enough to swallow the whole headland. Somewhere ahead stood the Hollow Lighthouse. It had stood dark and empty since old keeper Ferris vanished, a year ago now, without a word. Nobody had lived there since. Nobody wanted to. But tonight, through the drifting grey, a pale light flickered in the lamp room. It blinked on, then off, like something breathing that should not be awake. Mira's feet carried her closer before her head decided anything.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Walk down toward the light.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "Mira missed the last bus by four minutes. The fog rolled in fast, thick enough to swallow the whole headland. Somewhere ahead stood the Hollow Lighthouse. It had stood dark and empty since old keeper Ferris vanished, a year ago now, without a word. Nobody had lived there since. Nobody wanted to. But tonight, through the drifting grey, a pale light flickered in the lamp room. It blinked on, then off, like something breathing that should not be awake. Mira's feet carried her closer before her head decided anything. Four ways opened out of the mist around the old tower. The keeper's cottage crouched low against the rock. The tower stair spiraled up toward that strange glow. A black mouth of sea caves gaped beneath the cliff. And the old boathouse leaned, half sunk in the shingle, waiting for her to choose.",
+      "body": "Four ways opened out of the mist around the old tower. The keeper's cottage crouched low against the rock. The tower stair spiraled up toward that strange glow. A black mouth of sea caves gaped beneath the cliff. And the old boathouse leaned, half sunk in the shingle, waiting for her to choose.",
       "is_ending": false,
       "choices": [
         {

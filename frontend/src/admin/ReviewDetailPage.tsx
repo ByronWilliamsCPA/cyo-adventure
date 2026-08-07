@@ -6,6 +6,7 @@ import { Dialog } from '@ds/components/Dialog'
 import { PassageText } from '@ds/components/PassageText'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { makeCoverApi } from '../guardian/coverApi'
 import { makeRescreenApi, type BookVerdictView } from './rescreenApi'
 import { FlagBadge } from '../guardian/FlagBadge'
@@ -48,6 +49,7 @@ type RescreenState =
  * deliberate, recorded human action).
  */
 export function ReviewDetailPage() {
+  usePageTitle('Review')
   const { storybookId = '' } = useParams()
   const api = useApi()
   const reviewApi = useMemo(() => makeReviewApi(api), [api])

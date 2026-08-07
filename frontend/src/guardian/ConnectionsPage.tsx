@@ -7,6 +7,7 @@ import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import {
   makeConnectionsApi,
   type ConnectionDirection,
@@ -74,6 +75,7 @@ function StatusChip({ connection }: { connection: FamilyConnectionMineItem }) {
  * side may revoke at any time, which deactivates the connection immediately.
  */
 export function ConnectionsPage() {
+  usePageTitle('Family Connections')
   const api = useApi()
   const connectionsApi = useMemo(() => makeConnectionsApi(api), [api])
   const [state, setState] = useState<PageState>({ kind: 'loading' })

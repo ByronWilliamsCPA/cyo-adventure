@@ -32,8 +32,20 @@
       "description": "Whether the player holds the silver key"
     }
   ],
-  "start_node": "n_hall",
+  "start_node": "n_open",
   "nodes": [
+    {
+      "id": "n_open",
+      "body": "You stop here for a while to look around at the new place you have come to, and you wait.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_open",
+          "label": "Go on.",
+          "target": "n_hall"
+        }
+      ]
+    },
     {
       "id": "n_hall",
       "body": "You stand in a long hall. A silver door waits at the far end. A side passage leads to an exit.",

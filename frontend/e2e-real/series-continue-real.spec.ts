@@ -53,11 +53,21 @@ test('the seeded child continues a real series into book 2', async ({ page }) =>
   await expect(page).toHaveURL(/\/read\//)
   await expect(page.getByTestId('reader')).toBeVisible()
 
-  // Book 1's start node offers a courage-setting choice and a plain one,
-  // both converging on a middle node whose single choice reaches the
-  // success ending: at most two clicks.
+  // Book 1's start node (n_e1_start) no longer carries a choice straight
+  // into the fork: PL-25 (see scripts/seed_dev_data.py's _series_blob
+  // docstring) requires the first real decision to sit at least 2 nodes in
+  // for band 10-13, so a single-choice prelude (c_n_e1_start_on) now
+  // precedes it. From there the walk is: take the brave fork
+  // (c_n_e1_brave, sets courage=3, the value this test proves carries into
+  // book 2 below), through its own single onward choice
+  // (c_n_e1_fork_brave_on) into the shared hub, then explore
+  // (c_n_e1_explore) and its onward choice (c_n_e1_explore_on) into the
+  // success ending. Five clicks total.
+  await page.getByTestId('choice-c_n_e1_start_on').click()
   await page.getByTestId('choice-c_n_e1_brave').click()
-  await page.locator('[data-testid^="choice-"]').first().click()
+  await page.getByTestId('choice-c_n_e1_fork_brave_on').click()
+  await page.getByTestId('choice-c_n_e1_explore').click()
+  await page.getByTestId('choice-c_n_e1_explore_on').click()
   await expect(page.getByTestId('ending-screen')).toBeVisible()
 
   const continueButton = page.getByTestId('continue-series')
@@ -66,23 +76,36 @@ test('the seeded child continues a real series into book 2', async ({ page }) =>
 
   // Book 2 opens at its declared series entry node.
   await expect(page).toHaveURL(/\/read\/[^/]+\/s_dev_ember_2\//)
-  await expect(page.getByTestId('passage-body')).toContainText(
-    'Ember Trail 2: the trail begins.'
-  )
+  await expect(page.getByTestId('passage-body')).toContainText('Ember Trail 2: the trail begins.')
+
+  // Walk book 2's PLAIN fork, never its brave one, to reach the shared hub
+  // (n_e2_hub) where the gated choice lives. This is deliberate: book 2 has
+  // its OWN c_n_e2_brave choice that sets courage=3 locally (see
+  // _series_blob), so taking the brave fork here would unlock
+  // c_n_e2_carried regardless of anything carried from book 1, and the
+  // carries_state proof below would show nothing. By taking the plain fork
+  // instead (c_n_e2_start_on, then c_n_e2_plain, then
+  // c_n_e2_fork_plain_on), book 2's own courage stays at its initial 0, so
+  // the only way c_n_e2_carried's courage>=2 condition can be true is a
+  // real carry-in from book 1's brave path above.
+  await page.getByTestId('choice-c_n_e2_start_on').click()
+  await page.getByTestId('choice-c_n_e2_plain').click()
+  await page.getByTestId('choice-c_n_e2_fork_plain_on').click()
 
   // carries_state:true proof (the point of the whole flow): book 1's brave path
   // set courage=3, and that var_state carried through the real reading-state
   // persistence into book 2, unlocking the choice gated on courage>=2. That
   // choice is hidden on a fresh, non-carried play of book 2 (asserted by the
-  // next test), so its presence here proves the carry happened rather than
-  // being a choice that is simply always shown. See scripts/seed_dev_data.py's
-  // _series_blob for the gated choice and its condition.
+  // next test), and it cannot have been unlocked by book 2's own brave fork
+  // because the walk above deliberately avoided it, so its presence here
+  // proves the carry happened rather than being a choice that is simply
+  // always shown or one that book 2 unlocked on its own. See
+  // scripts/seed_dev_data.py's _series_blob for the gated choice and its
+  // condition.
   await expect(page.getByTestId('choice-c_n_e2_carried')).toBeVisible()
 })
 
-test('book 2 played fresh, without a carried courage, hides the gated choice', async ({
-  page,
-}) => {
+test('book 2 played fresh, without a carried courage, hides the gated choice', async ({ page }) => {
   await page.goto('/kids')
   await page.getByText('Dev Reader').click()
   await expect(page).toHaveURL(/\/library\//)
@@ -94,13 +117,40 @@ test('book 2 played fresh, without a carried courage, hides the gated choice', a
   await page.getByRole('link', { name: 'Ember Trail 2' }).click()
   await expect(page).toHaveURL(/\/read\/[^/]+\/s_dev_ember_2\//)
   await expect(page.getByTestId('reader')).toBeVisible()
-  await expect(page.getByTestId('passage-body')).toContainText(
-    'Ember Trail 2: the trail begins.'
-  )
+  await expect(page.getByTestId('passage-body')).toContainText('Ember Trail 2: the trail begins.')
 
-  // The plain choice is always offered; the courage-gated choice is hidden
-  // (visibleChoices drops a false-condition choice, matching runtime semantics)
-  // because no book-1 courage was carried in.
+  // Landing on n_e2_start only offers the single prelude choice
+  // (c_n_e2_plain lives one node deeper, on n_e2_decision1); click through
+  // it before the plain choice exists to assert on.
+  await page.getByTestId('choice-c_n_e2_start_on').click()
+
+  // The plain choice is always offered on the decision node.
   await expect(page.getByTestId('choice-c_n_e2_plain')).toBeVisible()
+
+  // Walk the PLAIN fork to the shared hub, exactly like the positive test
+  // above, so this negative assertion is checked at the same node
+  // (n_e2_hub) rather than on the entry passage where the gated choice
+  // does not even live anymore.
+  await page.getByTestId('choice-c_n_e2_plain').click()
+  await page.getByTestId('choice-c_n_e2_fork_plain_on').click()
+
+  // Assert we are actually ON the hub (its own always-visible choices are
+  // present, and its passage body matches) IN THE SAME assertion block as
+  // the count-0 check below. A bare toHaveCount(0) on a test id is
+  // satisfied both by a correctly-hidden choice AND by a choice that does
+  // not exist anywhere on the page (a renamed id, or a walk that landed on
+  // the wrong node entirely), so it can pass for the wrong reason. Pinning
+  // the node first makes a wrong-node walk fail loudly here instead of
+  // letting the count-0 check pass vacuously.
+  await expect(page.getByTestId('passage-body')).toContainText(
+    'Ember Trail 2: the trail opens onto a ridge.'
+  )
+  await expect(page.getByTestId('choice-c_n_e2_explore')).toBeVisible()
+  await expect(page.getByTestId('choice-c_n_e2_rush')).toBeVisible()
+
+  // The courage-gated choice is hidden (visibleChoices drops a
+  // false-condition choice, matching runtime semantics) because no book-1
+  // courage was carried in, and book 2's own brave fork (which would also
+  // set courage=3) was never taken on this walk.
   await expect(page.getByTestId('choice-c_n_e2_carried')).toHaveCount(0)
 })

@@ -6,9 +6,11 @@ skinparam backgroundColor #FAFAFA
 skinparam roundCorner 8
 hide empty description
 
-[*] --> n_start
-state n_start #BBDEFB
-n_start : setup · 110w
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 70w
+state n_start #FFF9C4
+n_start : choice · 50w
 state la_tunnel #D1C4E9
 la_tunnel : rising · 95w
 state la_fork #FFF9C4
@@ -151,6 +153,7 @@ da_coins : rising · 95w
 state da_coins2 #C8E6C9
 da_coins2 : success (positive)
 da_coins2 : "{C2_PRIZE2}"
+n_open --> n_start : Listen for which one carries.
 n_start --> la_tunnel : Follow {ROUTE_A_LURE} to the left.
 n_start --> ra_drip : Follow {ROUTE_B_LURE} to the right.
 n_start --> da_dark : Follow {ROUTE_C_LURE} straight down.
@@ -235,7 +238,7 @@ legend right
   The Cave of Echoes
   Band 8-11 · Tier 1 · ~8 min
   Topology: time_cave
-  64 nodes · 16 endings (10+ / 6n / 0-)
+  65 nodes · 16 endings (10+ / 6n / 0-)
   Production-eligible
   Scale: short · prose
 endlegend

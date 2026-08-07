@@ -693,9 +693,11 @@ calls and their successful `PersonalizationValuesView(...)` constructions, and a
 `sentinel_pattern=SENTINEL_RE.pattern` to both of those constructions.
 
 In `get_personalization_values`, resolve the map once, immediately after the reachability check
-and before the subject lookup, so a book the caller may not address never triggers a disk read:
+and before the subject lookup, so a book the caller may not address never triggers a disk read.
+This snippet is shown at its existing indentation inside the function body, not as standalone
+top-level code:
 
-```python
+```text
     if not _book_is_reachable(book, ctx.principal.family_id):
         return _empty_values_view()
     # Resolved once per call, after reachability and before any subject lookup:

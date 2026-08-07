@@ -6,9 +6,11 @@ skinparam backgroundColor #FAFAFA
 skinparam roundCorner 8
 hide empty description
 
-[*] --> n_start
-state n_start #BBDEFB
-n_start : setup · 128w
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 80w
+state n_start #FFF9C4
+n_start : choice · 55w
 state av_x0 #D1C4E9
 av_x0 : rising · 96w
 state av_x1 #FFF9C4
@@ -366,6 +368,7 @@ e_neu_caretaker : "Waiting for the Keepers"
 state e_set_dawn #E0E0E0
 e_set_dawn : setback (neutral)
 e_set_dawn : "Caught by {DAWN_CLEANER}"
+n_open --> n_start : Step out into the hall.
 n_start --> av_x0 : Enter {ROUTE_A_ZONE}.
 n_start --> sv_x0 : Cross into {ROUTE_B_ZONE}.
 n_start --> ds_x0 : Slip into {ROUTE_C_ZONE}.
@@ -580,7 +583,7 @@ legend right
   The Clockwork Menagerie
   Band 8-11 · Tier 1 · ~18 min
   Topology: branch_and_bottleneck
-  166 nodes · 27 endings (14+ / 6n / 7-)
+  167 nodes · 27 endings (14+ / 6n / 7-)
   Production-eligible
   Scale: long · prose
 endlegend

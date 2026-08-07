@@ -6,6 +6,7 @@ import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import { usePageTitle } from '../hooks/usePageTitle'
 import { AGE_BANDS, type AgeBandValue } from '../profiles/profilesApi'
 import { makeThresholdsApi } from './moderationThresholdsApi'
 import type { ThresholdListView, ThresholdView } from '../client/types.gen'
@@ -43,6 +44,7 @@ const isFloorInRange = (value: number) => value >= 0 && value <= 1
  * backend re-checks the admin role on every call regardless.
  */
 export function ModerationThresholdsPage() {
+  usePageTitle('Moderation Thresholds')
   const api = useApi()
   const thresholdsApi = useMemo(() => makeThresholdsApi(api), [api])
 

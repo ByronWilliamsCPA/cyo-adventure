@@ -14,8 +14,20 @@
     "topology": "time_cave"
   },
   "variables": [],
-  "start_node": "start",
+  "start_node": "n_open",
   "nodes": [
+    {
+      "id": "n_open",
+      "body": "You stop here for a while and look around at the new place you have come to.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_open",
+          "label": "Go on.",
+          "target": "start"
+        }
+      ]
+    },
     {
       "id": "start",
       "body": "<<FILL role=setup words=120 beats='introduce the hero at the forest edge'>>",

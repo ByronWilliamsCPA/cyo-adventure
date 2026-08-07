@@ -122,7 +122,12 @@ def test_anti_template_guard_pilot_fills_score_as_different() -> None:
     assert report.median_distance >= 0.60
     assert report.p25_distance >= 0.45
     assert report.templated_nodes == ()
-    assert report.node_count == 64
+    # Compared against the fills rather than a literal: the claim is "the guard
+    # scored every node the two fills share", which is what makes the margins
+    # above meaningful. A literal instead measures how many nodes this pair of
+    # fills happens to have, so it fails whenever they legitimately change shape
+    # (they did, when PL-25's floor added an establishing node to the skeleton).
+    assert report.node_count == len(a.nodes) == len(b.nodes)
 
 
 @pytest.mark.unit

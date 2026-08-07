@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "<<FILL role=setup words=55 beats='{HERO} the young {SPECIES} stands in {HOME}; tonight is {EVENT} and there is still so much to gather; warm and excited, never worried'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Count what is still needed.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "<<FILL role=setup words=90 beats='{HERO} the young {SPECIES} stands in {HOME}; tonight is {EVENT} and there is still so much to gather; {HERO} counts on her paws what she needs and decides where to set out first; warm and excited, never worried'>>",
+      "body": "<<FILL role=choice words=40 beats='{HERO} counts on her paws what she needs and decides where to set out first'>>",
       "is_ending": false,
       "choices": [
         {

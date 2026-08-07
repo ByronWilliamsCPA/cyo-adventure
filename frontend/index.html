@@ -2,7 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- PNG fallback, declared after the SVG deliberately: a browser that
+         understands `image/svg+xml` picks the vector one, and a browser that
+         does not (older Safari/iOS) ignores the unrecognized type and falls
+         back to this. Reuses the existing PWA icon rather than adding an
+         asset. Note the pre-existing favicon (/vite.svg) was SVG-only too,
+         so this closes a gap that predates the favicon swap. -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa-icon-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -10,6 +17,51 @@
     <meta name="apple-mobile-web-app-title" content="Adventure" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="A choose-your-own-adventure reading app for kids" />
+    <!-- Canonical + social preview tags. This is a private family deployment
+         (homelab-first per the ADRs, no public marketing site), so unlike a
+         typical SPA these exist for link-preview correctness (a guardian
+         pasting the URL into a family chat) rather than search-engine SEO.
+         Hardcoded to the one real production origin rather than computed
+         from window.location, matching how the rest of this static shell
+         (title, description) is already origin-agnostic markup filled in
+         with real values, not templated per-deploy. -->
+    <link rel="canonical" href="https://cyo.williamshome.family/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="CYO Adventure" />
+    <meta property="og:title" content="CYO Adventure" />
+    <meta property="og:description" content="A choose-your-own-adventure reading app for kids" />
+    <meta property="og:url" content="https://cyo.williamshome.family/" />
+    <!-- #ASSUME: external-resources: reuses the existing 512px PWA icon
+         (public/pwa-icon-512.png, generated from the Mascot art) as a
+         functional stand-in. It is square, not the 1200x630 landscape most
+         link-preview surfaces prefer, so Slack/iMessage/etc. will crop it
+         into a thumbnail rather than a banner.
+         #VERIFY: swap for a proper 1200x630 og-image asset once one is
+         designed; no code change needed elsewhere, just this src/width/height. -->
+    <meta property="og:image" content="https://cyo.williamshome.family/pwa-icon-512.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="CYO Adventure" />
+    <meta name="twitter:description" content="A choose-your-own-adventure reading app for kids" />
+    <meta name="twitter:image" content="https://cyo.williamshome.family/pwa-icon-512.png" />
+    <!-- Structured data: minimal WebApplication entry so a link preview or
+         AI crawler that parses JSON-LD gets a correct, machine-readable
+         description instead of none at all. EducationalApplication fits a
+         kids' reading app better than the schema.org default (a generic
+         'Application' subtype); no offers/price fields since this is a
+         private family app, not something sold or listed. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "CYO Adventure",
+        "description": "A choose-your-own-adventure reading app for kids",
+        "url": "https://cyo.williamshome.family/",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any (installable PWA)"
+      }
+    </script>
     <!-- W4.3: corrected from a leftover navy (#1d3557) to the parchment/amber
          palette (design-system/src/tokens.css). Two scheme-scoped tags, not
          one: a manifest's theme_color has no per-color-scheme variant (see

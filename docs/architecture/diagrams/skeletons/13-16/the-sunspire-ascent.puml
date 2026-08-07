@@ -6,9 +6,11 @@ skinparam backgroundColor #FAFAFA
 skinparam roundCorner 8
 hide empty description
 
-[*] --> n_start
-state n_start #BBDEFB
-n_start : setup · 88w
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 55w
+state n_start #FFF9C4
+n_start : choice · 40w
 state a_ap1 #D1C4E9
 a_ap1 : rising · 60w
 state a_ap2 #D1C4E9
@@ -585,6 +587,7 @@ s_b2b : climax · 78w
 state e_clever #C8E6C9
 e_clever : success (positive)
 e_clever : "{CLEVER_PRIZE}"
+n_open --> n_start : Walk the last stretch to the base.
 n_start --> a_ap1 : Cross {AP1_NAME}.
 n_start --> a_ap2 : Climb {AP2_NAME}.
 n_start --> a_ap3 : Slip into {AP3_NAME}.
@@ -937,7 +940,7 @@ legend right
   The Sunspire Ascent
   Band 13-16 · Tier 1 · ~15 min
   Topology: branch_and_bottleneck
-  252 nodes · 74 endings (2+ / 5n / 67-)
+  253 nodes · 74 endings (2+ / 5n / 67-)
   Production-eligible
   Scale: medium · gamebook
 endlegend

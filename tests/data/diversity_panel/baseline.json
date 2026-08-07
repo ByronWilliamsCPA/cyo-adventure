@@ -1,29 +1,29 @@
 {
   "atg_pairs": {
     "cave-dino~cave-sea": {
-      "big_over_uni_ratio": 1.158362,
-      "mean_bigram_distance": 0.885457,
-      "median_distance": 0.783196,
-      "p10_distance": 0.673129,
-      "p25_distance": 0.731728,
+      "big_over_uni_ratio": 1.156945,
+      "mean_bigram_distance": 0.884493,
+      "median_distance": 0.782609,
+      "p10_distance": 0.673548,
+      "p25_distance": 0.732394,
       "templated_node_count": 0,
       "verdict": "pass"
     },
     "cave-dino~cave-space": {
-      "big_over_uni_ratio": 1.127314,
-      "mean_bigram_distance": 0.896712,
-      "median_distance": 0.802299,
-      "p10_distance": 0.722459,
-      "p25_distance": 0.761302,
+      "big_over_uni_ratio": 1.126758,
+      "mean_bigram_distance": 0.89528,
+      "median_distance": 0.8,
+      "p10_distance": 0.718102,
+      "p25_distance": 0.759494,
       "templated_node_count": 0,
       "verdict": "pass"
     },
     "cave-sea~cave-space": {
-      "big_over_uni_ratio": 1.121374,
-      "mean_bigram_distance": 0.911033,
-      "median_distance": 0.821919,
+      "big_over_uni_ratio": 1.120883,
+      "mean_bigram_distance": 0.90973,
+      "median_distance": 0.821053,
       "p10_distance": 0.746835,
-      "p25_distance": 0.78591,
+      "p25_distance": 0.784091,
       "templated_node_count": 0,
       "verdict": "pass"
     },
@@ -33,23 +33,23 @@
       "median_distance": 0.0,
       "p10_distance": 0.0,
       "p25_distance": 0.0,
-      "templated_node_count": 64,
+      "templated_node_count": 65,
       "verdict": "fail"
     },
     "cave-space~cave-space-swap": {
-      "big_over_uni_ratio": 1.234091,
-      "mean_bigram_distance": 0.069357,
-      "median_distance": 0.064037,
+      "big_over_uni_ratio": 1.222852,
+      "mean_bigram_distance": 0.07015,
+      "median_distance": 0.065574,
       "p10_distance": 0.0,
-      "p25_distance": 0.035558,
-      "templated_node_count": 64,
+      "p25_distance": 0.035714,
+      "templated_node_count": 65,
       "verdict": "fail"
     },
     "skyship~skyship-submarine": {
-      "big_over_uni_ratio": 1.228574,
-      "mean_bigram_distance": 0.8453,
-      "median_distance": 0.689655,
-      "p10_distance": 0.5625,
+      "big_over_uni_ratio": 1.226982,
+      "mean_bigram_distance": 0.845855,
+      "median_distance": 0.690981,
+      "p10_distance": 0.562772,
       "p25_distance": 0.612245,
       "templated_node_count": 0,
       "verdict": "pass"
@@ -102,33 +102,33 @@
       "band": "8-11",
       "content_token_count": 2895,
       "distinct_1": 0.34715,
-      "distinct_2": 0.879195,
-      "fingerprint": "e5c023e716aa9775fccbbfc9c83c48e924116afd3a148b9fbd0d3a027ead98c5",
-      "self_bleu_lite": 0.39452
+      "distinct_2": 0.879505,
+      "fingerprint": "df88494b052f6462962daf704f646afc8a3749d36e9b8cf84fc7e418eb05ac52",
+      "self_bleu_lite": 0.392027
     },
     "cave-sea": {
       "band": "8-11",
       "content_token_count": 2988,
       "distinct_1": 0.335341,
-      "distinct_2": 0.883379,
-      "fingerprint": "e5c023e716aa9775fccbbfc9c83c48e924116afd3a148b9fbd0d3a027ead98c5",
-      "self_bleu_lite": 0.381134
+      "distinct_2": 0.883681,
+      "fingerprint": "df88494b052f6462962daf704f646afc8a3749d36e9b8cf84fc7e418eb05ac52",
+      "self_bleu_lite": 0.379113
     },
     "cave-space": {
       "band": "8-11",
       "content_token_count": 3678,
       "distinct_1": 0.327352,
-      "distinct_2": 0.887659,
-      "fingerprint": "e5c023e716aa9775fccbbfc9c83c48e924116afd3a148b9fbd0d3a027ead98c5",
-      "self_bleu_lite": 0.380999
+      "distinct_2": 0.887628,
+      "fingerprint": "df88494b052f6462962daf704f646afc8a3749d36e9b8cf84fc7e418eb05ac52",
+      "self_bleu_lite": 0.381389
     },
     "clockwork": {
       "band": "8-11",
       "content_token_count": 9330,
       "distinct_1": 0.18746,
-      "distinct_2": 0.819184,
-      "fingerprint": "588dba6042918dbf981a0ff92e52ece9750ec08840f47d7fcd301a476a3784f0",
-      "self_bleu_lite": 0.495402
+      "distinct_2": 0.819164,
+      "fingerprint": "6997d7547dcbae50444151ae7934f08cff2f78ab515d099a9ef1d56e43fd8b1e",
+      "self_bleu_lite": 0.495722
     },
     "clover": {
       "band": "3-5",
@@ -142,61 +142,61 @@
       "band": "5-8",
       "content_token_count": 1095,
       "distinct_1": 0.398174,
-      "distinct_2": 0.923513,
-      "fingerprint": "ac3ea9862481fcfc5152b7910576c927ca9b0f48c4f81c74cc29b03af90d4a04",
-      "self_bleu_lite": 0.314437
+      "distinct_2": 0.924386,
+      "fingerprint": "0fe43cda4c780a38211bb4b87edbc4dfe03da33437c4d55decae2fcecc4e6450",
+      "self_bleu_lite": 0.31354
     },
     "skyship": {
       "band": "8-11",
       "content_token_count": 4780,
       "distinct_1": 0.286611,
-      "distinct_2": 0.889055,
-      "fingerprint": "e68b7ec93eb5df979d70b4324cae19ec3530c966fce40c75e0568e76bf3d3882",
-      "self_bleu_lite": 0.389575
+      "distinct_2": 0.889032,
+      "fingerprint": "a74c778ae4e843a3b0f857ce5623948c744edd9741b57fb1e7f3f7da49c7ff08",
+      "self_bleu_lite": 0.389259
     },
     "skyship-submarine": {
       "band": "8-11",
       "content_token_count": 4007,
       "distinct_1": 0.366858,
-      "distinct_2": 0.932752,
-      "fingerprint": "e68b7ec93eb5df979d70b4324cae19ec3530c966fce40c75e0568e76bf3d3882",
-      "self_bleu_lite": 0.29534
+      "distinct_2": 0.932734,
+      "fingerprint": "a74c778ae4e843a3b0f857ce5623948c744edd9741b57fb1e7f3f7da49c7ff08",
+      "self_bleu_lite": 0.294548
     }
   },
   "ps_pairs": {
     "cave-dino~cave-sea": {
-      "leaf_similarity": 0.216804,
-      "perceived_similarity": 0.522688,
+      "leaf_similarity": 0.217391,
+      "perceived_similarity": 0.522981,
       "same_tree": true,
       "structural_similarity": 1.0,
       "theme_similarity": 0.571429
     },
     "cave-dino~cave-space": {
-      "leaf_similarity": 0.197701,
-      "perceived_similarity": 0.532184,
+      "leaf_similarity": 0.2,
+      "perceived_similarity": 0.533333,
       "same_tree": true,
       "structural_similarity": 1.0,
       "theme_similarity": 0.666667
     },
     "cave-sea~cave-space": {
-      "leaf_similarity": 0.178081,
-      "perceived_similarity": 0.503326,
+      "leaf_similarity": 0.178947,
+      "perceived_similarity": 0.503759,
       "same_tree": true,
       "structural_similarity": 1.0,
       "theme_similarity": 0.571429
     },
     "cave-sea~clockwork": {
-      "leaf_similarity": 0.839031,
-      "perceived_similarity": 0.657038,
+      "leaf_similarity": 0.83921,
+      "perceived_similarity": 0.658101,
       "same_tree": false,
-      "structural_similarity": 0.625077,
+      "structural_similarity": 0.628319,
       "theme_similarity": 0.25
     },
     "cave-sea~skyship": {
-      "leaf_similarity": 0.750872,
-      "perceived_similarity": 0.609213,
+      "leaf_similarity": 0.751113,
+      "perceived_similarity": 0.610488,
       "same_tree": false,
-      "structural_similarity": 0.612591,
+      "structural_similarity": 0.616436,
       "theme_similarity": 0.25
     },
     "cave-space~cave-space-identical": {
@@ -207,22 +207,22 @@
       "theme_similarity": 1.0
     },
     "cave-space~cave-space-swap": {
-      "leaf_similarity": 0.935963,
-      "perceived_similarity": 0.967982,
+      "leaf_similarity": 0.934426,
+      "perceived_similarity": 0.967213,
       "same_tree": true,
       "structural_similarity": 1.0,
       "theme_similarity": 1.0
     },
     "clockwork~skyship": {
-      "leaf_similarity": 0.853471,
-      "perceived_similarity": 0.754339,
+      "leaf_similarity": 0.853307,
+      "perceived_similarity": 0.754824,
       "same_tree": false,
-      "structural_similarity": 0.869788,
+      "structural_similarity": 0.871681,
       "theme_similarity": 0.333333
     },
     "skyship~skyship-submarine": {
-      "leaf_similarity": 0.310345,
-      "perceived_similarity": 0.615172,
+      "leaf_similarity": 0.309019,
+      "perceived_similarity": 0.614509,
       "same_tree": true,
       "structural_similarity": 1.0,
       "theme_similarity": 0.8
@@ -231,8 +231,8 @@
   "rar_sequence": 0.4,
   "schema_version": 1,
   "struct_pairs": {
-    "cave-sea~clockwork": 0.374923,
-    "cave-sea~skyship": 0.387409,
-    "clockwork~skyship": 0.130212
+    "cave-sea~clockwork": 0.371681,
+    "cave-sea~skyship": 0.383564,
+    "clockwork~skyship": 0.128319
   }
 }

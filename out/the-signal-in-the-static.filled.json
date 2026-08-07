@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "Wren Callahan can't sleep. She climbs the ladder to the attic, where her late grandfather's shortwave radio sits under a dust sheet like something waiting to be woken up. She switches it on anyway, the way she has every night for a week now. Out of the hiss comes the same loop she heard last night: a woman's flat, careful voice reading a string of numbers, over and over, then a slow tone that counts downward and resets, starting the whole cycle again from the top. It should sound like nothing, an old machine talking to itself in an empty room. Instead it sounds like a door left open on purpose, waiting for someone to walk through it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Let the loop run once more.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "Wren Callahan can't sleep. She climbs the ladder to the attic, where her late grandfather's shortwave radio sits under a dust sheet like something waiting to be woken up. She switches it on anyway, the way she has every night for a week now. Out of the hiss comes the same loop she heard last night: a woman's flat, careful voice reading a string of numbers, over and over, then a slow tone that counts downward and resets, starting the whole cycle again from the top. It should sound like nothing, an old machine talking to itself in an empty room. Instead it sounds like a door left open on purpose, waiting for someone to walk through it. Three things pull at her at once. And she can feel each one tugging a different direction. The numbers could be coordinates, if she copies them onto graph paper and treats them like a map the way her grandfather once did. The relay station out on the headland has stood dark for years. But a signal this steady has to come from somewhere real. And in the cedar trunk or the shed out back, her grandfather kept a logbook of everything he ever heard on this radio, including, maybe, just this.",
+      "body": "Three things pull at her at once. And she can feel each one tugging a different direction. The numbers could be coordinates, if she copies them onto graph paper and treats them like a map the way her grandfather once did. The relay station out on the headland has stood dark for years. But a signal this steady has to come from somewhere real. And in the cedar trunk or the shed out back, her grandfather kept a logbook of everything he ever heard on this radio, including, maybe, just this.",
       "is_ending": false,
       "choices": [
         {
