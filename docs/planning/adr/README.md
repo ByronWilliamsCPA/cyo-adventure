@@ -47,8 +47,12 @@ ADRs document significant architectural decisions along with their context and c
 | [ADR-020](./adr-020-mutation-derived-skeletons-and-catalog-growth.md) | Mutation-derived skeletons and catalog growth | Accepted | 2026-07-20 |
 | [ADR-021](./adr-021-service-account-rls-and-worker-deployment.md) | Dedicated least-privilege service accounts, enforced RLS, and in-repo worker deployment | Accepted | 2026-07-20 |
 | [ADR-022](./adr-022-tiered-rls-scoping.md) | Tiered RLS scoping (flat per-family enforcement on the high-sensitivity tables) | Proposed | 2026-07-24 |
-| [ADR-023](./adr-023-story-personalization-slots.md) | Guardian opt-in story personalization (render-time slot substitution) | Proposed | 2026-07-25 |
+| [ADR-023](./adr-023-story-personalization-slots.md) | Guardian opt-in story personalization (render-time slot substitution) | Accepted | 2026-07-29 |
 | [ADR-024](./adr-024-bounded-backtracking-path-replay.md) | Bounded backtracking by forward path replay | Accepted | 2026-07-26 |
+| [ADR-025](./adr-025-additive-storybook-schema-versioning.md) | Additive minor versioning for the Storybook schema | Accepted | 2026-08-01 |
+| [ADR-026](./adr-026-rendered-stop-flow.md) | Rendered-stop flow of linear passages | Accepted | 2026-08-01 |
+| [ADR-027](./adr-027-in-story-illustration.md) | In-story illustration (3-5 pilot) | Accepted | 2026-08-01 |
+| [ADR-028](./adr-028-persistent-reader-characters.md) | Persistent reader characters | Accepted | 2026-08-06 |
 
 ## Creating ADRs
 

@@ -1,7 +1,7 @@
 ---
 title: "ADR-023: Guardian opt-in story personalization (render-time slot substitution)"
 schema_type: planning
-status: proposed
+status: accepted
 owner: core-maintainer
 purpose: "Record the design for guardian opt-in personalization: stories are always generated,
   moderated, and stored with generic sentinel placeholders, and a small per-profile values
