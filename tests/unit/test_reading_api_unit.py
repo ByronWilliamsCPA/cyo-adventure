@@ -1114,6 +1114,53 @@ class TestPutReadingState:
         ):
             await put_reading_state(profile_id_str, "s_syn", body, ctx)
 
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_update_path_forwards_the_row_seed_not_none(self) -> None:
+        """The update path must pass row.seed_var_state, not None, to replay.
+
+        Every other put_reading_state test in this class takes the create
+        path (scalar_result=None), so none of them observes this call site's
+        seed_var_state=row.seed_var_state argument (api/reading.py). The body
+        below is constructed to be asymmetric: it replays correctly (and
+        would be ACCEPTED) if the seed were None, but the existing row
+        carries seed_var_state={"courage": 3}, so the same body must be
+        REJECTED once c_go's +2 effect is applied on top of the real seed
+        (3 + 2 = 5, not the submitted 2). A test that passed either way
+        (i.e. that would also pass if reading.py forwarded None) would prove
+        nothing about which value was threaded through; this one only
+        passes if the row's seed reaches validate_reading_state.
+        """
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        book = _published_book("s_syn", family_id)
+        version = _approved_version("s_syn", 1, _story_blob())
+        existing = _state_row(profile_id, "s_syn", current_node="n_start")
+        existing.seed_var_state = {"courage": 3}
+        session = _FakeSession(
+            get_map={
+                (Storybook, "s_syn"): book,
+                (StorybookVersion, ("s_syn", 1)): version,
+            },
+            scalar_result=existing,
+        )
+        ctx = _ctx(_child_principal(family_id, profile_id), session)
+        body = ReadingStateBody(
+            version=1,
+            current_node="n_end",
+            var_state={"courage": 2},  # correct only if seed_var_state=None
+            path=["n_start", "n_end"],
+            visit_set=["n_start", "n_end"],
+            choice_path=["c_go"],
+            state_revision=3,  # matches _state_row's default
+        )
+        profile_id_str = str(profile_id)
+        with pytest.raises(
+            ValidationError,
+            match=r"submitted reading state does not match a replay of choice_path",
+        ):
+            await put_reading_state(profile_id_str, "s_syn", body, ctx)
+
 
 # ---------------------------------------------------------------------------
 # record_completion

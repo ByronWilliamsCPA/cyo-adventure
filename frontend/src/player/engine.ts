@@ -301,11 +301,13 @@ export function replayRecordedPath(
   live: ReadingState,
   seed?: VarState
 ): ReadingState[] | null {
-  // The recorded path must begin where a read with THIS seed begins. A
-  // seeded read may enter at a node other than start_node, so comparing
-  // against story.start_node was over-strict and disabled Go back for
-  // every continuation. Comparing against the seeded start's own node
-  // keeps the fail-closed guarantee without the false positives.
+  // The recorded path must begin where a read with THIS seed begins. The
+  // seeded start supplies the carried variables the read actually began
+  // with; replaying from declared initials made the terminal var_state
+  // comparison in searchPathReplay fail for every seeded read, so Go back
+  // was disabled. entryNode is null here, so initial.current_node is still
+  // story.start_node in every case: the node comparison below is unchanged,
+  // and the fail-closed guarantee it enforces is unchanged with it.
   let initial: ReadingState
   try {
     initial = seed === undefined ? start(story) : startContinuation(story, null, seed)

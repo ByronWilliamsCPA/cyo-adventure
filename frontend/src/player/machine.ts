@@ -76,7 +76,9 @@ export interface ReaderContext {
   // escape an assign() action or the context factory; the actor would die
   // (or render would crash into the generic AppErrorBoundary instead of the
   // reader's own recovery screen) and even RESTART could stop working.
-  // #VERIFY: machine.test.ts "recovers from a throwing transition".
+  // #VERIFY: machine.test.ts "surfaces context.error instead of dying when a
+  // choice does not exist on the node" and "surfaces context.error instead
+  // of crashing when start_node is dangling".
   error: boolean
 }
 

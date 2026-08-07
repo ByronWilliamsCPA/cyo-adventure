@@ -581,10 +581,14 @@ async def put_reading_state(
     # Today row.seed_var_state is always NULL (Task 1 added the column but
     # nothing writes it until Task 6), so this is identical to the prior
     # unseeded behaviour and only changes once seeding goes live.
-    # #VERIFY: tests/unit/test_replay.py::
+    # #VERIFY: tests/unit/test_reading_api_unit.py::
+    # TestPutReadingState::test_update_path_forwards_the_row_seed_not_none
+    # proves this call site forwards row.seed_var_state specifically (an
+    # asymmetric body that is accepted under None but rejected under the
+    # row's seed); tests/unit/test_replay.py::
     # test_replay_of_a_seeded_read_starts_from_the_seed and
     # test_replay_rejects_a_state_claiming_a_seed_it_was_not_given cover the
-    # underlying seeded-replay behaviour this call site now threads through.
+    # underlying seeded-replay behaviour this call site threads through.
     await _validate_against_pinned_version(
         ctx, body, book, require_current=False, seed_var_state=row.seed_var_state
     )

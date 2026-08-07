@@ -41,7 +41,12 @@ const seededStory = corpus.traces.find(
 )!.story
 
 function play(story: Storybook, choices: string[], seed?: VarState): ReadingState {
-  let state = startContinuation(story, null, seed)
+  // Route an unseeded trace through plain start() rather than
+  // startContinuation(story, null, undefined): the two are equivalent today,
+  // but routing every trace through the continuation path left start()
+  // itself uncovered by the conformance corpus, the one suite whose job is
+  // to catch exactly this class of divergence between the two.
+  let state = seed === undefined ? start(story) : startContinuation(story, null, seed)
   for (const choiceId of choices) {
     state = choose(story, state, choiceId)
   }
