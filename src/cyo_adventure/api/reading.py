@@ -90,6 +90,16 @@ async def _view(session: AsyncSession, row: ReadingState) -> ReadingStateView:
     ``character_id`` therefore still resolves a retired character's name
     correctly, which is the right answer to "whose adventure is this".
     """
+    # #ASSUME: external resources: this helper reaches the database now, so it
+    # needs a live session and every call site must await it. The name is read
+    # live rather than snapshotted because Character rows are only marked
+    # is_active=False on retirement, never deleted, so the lookup still
+    # resolves for a read whose bound character has since been retired.
+    # #VERIFY: tests/integration/test_reading_character_binding.py::
+    # test_starting_a_read_binds_the_active_character_and_seeds_its_state
+    # asserts the active character's name comes back, and
+    # test_a_read_in_progress_keeps_its_recorded_seed asserts the same name
+    # still resolves after that character is retired mid-book.
     character_name: str | None = None
     if row.character_id is not None:
         character_name = await session.scalar(
@@ -142,6 +152,15 @@ async def _attributes_of(
     Returns:
         dict[str, int]: Attribute name to value; empty if none are stored.
     """
+    # #ASSUME: data integrity: the seed is exactly the attribute rows persisted
+    # for this character, with no defaulting or synthesis here. A character
+    # with no stored rows therefore carries an empty seed, which
+    # StoryEngine.start_continuation treats as "no carry" and falls back to the
+    # story's declared initials rather than zeroing anything.
+    # #VERIFY: tests/integration/test_reading_character_binding.py::
+    # test_starting_a_read_binds_the_active_character_and_seeds_its_state
+    # asserts the persisted seed equals the exact attribute rows written for
+    # the bound character.
     rows = await session.scalars(
         select(CharacterAttribute).where(
             CharacterAttribute.character_id == character_id
@@ -159,6 +178,27 @@ async def _resolve_active_character(
     the caller, never from a request body, so its result cannot be steered
     by anything the client sent.
     """
+    # #CRITICAL: security: profile_id is the AUTHENTICATED profile taken from
+    # the route path, never a request-body field. If a client could steer this
+    # query it could bind another profile's character, and because the seed
+    # becomes the replay baseline, seeding would become an arbitrary-variable-
+    # write primitive that replay validation would then bless. The marker lives
+    # here, on the resolver, and not only at the call site, so an edit that
+    # widens this signature to accept a caller-supplied id sees it.
+    # #VERIFY: tests/integration/test_reading_character_binding.py::
+    # test_a_client_supplied_character_id_is_rejected
+    #
+    # #CRITICAL: data integrity: scalar() with no LIMIT and no ORDER BY is
+    # safe ONLY because db/models.py declares the partial unique index
+    # uq_character_one_active on child_profile_id WHERE is_active, so at most
+    # one row can ever match. The safety lives in the schema, not in this
+    # query: relax that index and this call site silently picks an arbitrary
+    # character, with nothing raising anywhere.
+    # #VERIFY: tests/unit/test_character_models.py::
+    # test_only_one_character_per_profile_may_be_active proves the declared
+    # index is unique and partial; tests/integration/test_schema_parity.py::
+    # test_migrated_character_one_active_index_is_partial proves the migrated
+    # database carries it as a partial index too.
     return await session.scalar(
         select(Character).where(
             Character.child_profile_id == profile_id,
@@ -177,6 +217,13 @@ async def _bind_active_character(
             seed (both ``None`` together when the profile has no active
             character; an unseeded read is the normal case, not an error).
     """
+    # #ASSUME: data integrity: a profile with no active character seeds
+    # nothing and both halves of the return are None together. An unseeded
+    # read is the normal case, not an error, so this must never raise and must
+    # never substitute a synthesized default seed for the missing character.
+    # #VERIFY: tests/integration/test_reading_character_binding.py::
+    # test_starting_a_read_with_no_active_character_is_unseeded asserts both
+    # the response fields and the persisted columns are NULL.
     character = await _resolve_active_character(session, profile_id)
     if character is None:
         return None, None
@@ -646,6 +693,28 @@ async def put_reading_state(
         # from another book rewrite the baseline this read is validated
         # against, invalidating a save the child legitimately holds.
         # #VERIFY: same module, test_a_read_in_progress_keeps_its_recorded_seed
+        #
+        # #EDGE: data integrity: a first save that omits choice_path is checked
+        # only against the structural floor, so it can persist a var_state the
+        # bound seed could never have produced. Nothing here can tell the
+        # difference: the divergence is detectable only with a replay proof,
+        # which is exactly what choice_path supplies. Every later save that
+        # DOES carry a choice_path replays from the stored seed, disagrees, and
+        # 422s, so the read wedges permanently. Accepted deliberately rather
+        # than fixed server-side: today's client
+        # (frontend/src/offline/sync.ts::toPutPayload) sends no choice_path at
+        # all, so an equality check here would 422 legitimate saves the moment
+        # a story mutates a seeded variable. The remedy is client-side and is a
+        # hard prerequisite for Task 9: the player must derive its starting
+        # var_state from the seed_var_state this response now exposes instead
+        # of from the story's declared initials.
+        # #VERIFY: nothing proves the wedge today, and nothing can while the
+        # client omits choice_path; do not read a green suite as evidence the
+        # condition is closed. The nearest real evidence is the complementary
+        # case, tests/integration/test_reading_character_binding.py::
+        # test_a_first_save_carrying_a_choice_path_replays_from_the_bound_seed,
+        # which proves the seed IS enforced on this create path whenever a
+        # choice_path is present. Revisit this marker when Task 9 lands.
         character_id, seed_var_state = await _bind_active_character(ctx.session, parsed)
         await _validate_against_pinned_version(
             ctx, body, book, require_current=True, seed_var_state=seed_var_state
@@ -686,6 +755,23 @@ async def put_reading_state(
     # test_replay_of_a_seeded_read_starts_from_the_seed and
     # test_replay_rejects_a_state_claiming_a_seed_it_was_not_given cover the
     # underlying seeded-replay behaviour this call site threads through.
+    #
+    # #CRITICAL: data integrity: this branch must FORWARD the stored
+    # reading_state.seed_var_state column and must never re-derive the seed
+    # from the profile's currently-active character. Recomputing is the
+    # natural-looking implementation and it rewrites history mid-book: a
+    # retirement, or a writeback from another book, would move the baseline a
+    # read in progress is validated against and reject a save the child
+    # legitimately holds. The create branch above cannot express this rule,
+    # since there is nothing yet to recompute from; this is the branch where
+    # "never recomputed" is a live constraint.
+    # #VERIFY: tests/integration/test_reading_character_binding.py::
+    # test_a_read_in_progress_keeps_its_recorded_seed retires the bound
+    # character mid-book and then saves from the original seed, expecting 200,
+    # which a recomputing implementation would 422; tests/unit/
+    # test_reading_api_unit.py::TestPutReadingState::
+    # test_update_path_forwards_the_row_seed_not_none pins the forwarding of
+    # row.seed_var_state specifically.
     await _validate_against_pinned_version(
         ctx, body, book, require_current=False, seed_var_state=row.seed_var_state
     )
@@ -736,6 +822,9 @@ async def _create_reading_state(
     )
     _apply_body(row, body)
     ctx.session.add(row)
+    # Ordering dependency: _view() queries when a character is bound, which
+    # autoflushes this pending INSERT, so the row must already be fully
+    # populated by _apply_body and added before the view runs.
     return await _view(ctx.session, row)
 
 

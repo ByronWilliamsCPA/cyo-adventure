@@ -299,6 +299,15 @@ async def test_a_client_supplied_character_id_is_rejected(
         headers=auth(seed.child_token),
     )
     assert resp.status_code == 422, resp.text
+    # Assert WHY it is a 422, not merely that it is one: this is the single
+    # test the task's security property rests on, so it must fail for exactly
+    # one reason. A refactor that made some other part of this body invalid
+    # would keep a bare status assertion green while extra="forbid" was gone.
+    detail = resp.json()["detail"]
+    assert any(
+        "character_id" in entry["loc"] and entry["type"] == "extra_forbidden"
+        for entry in detail
+    ), detail
 
 
 @pytest.mark.integration
@@ -343,6 +352,55 @@ async def test_saving_a_state_reached_from_the_seed_validates(
         headers=auth(seed.child_token),
     )
     assert resp.status_code == 200, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_a_first_save_carrying_a_choice_path_replays_from_the_bound_seed(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """Case 4c: the CREATE path threads the freshly bound seed into replay.
+
+    The seed argument reaches ``_check_replay`` only when ``choice_path`` is
+    present. Every other case here either omits ``choice_path`` on its first
+    save or sends one on a second save, which goes down the update branch, so
+    without this case the create call site's ``seed_var_state=seed_var_state``
+    argument has no regression guard at all: reverting it to ``None`` leaves
+    the whole suite green.
+
+    The submitted state is legitimately reachable from the recorded seed
+    (``might=2`` carried in, then the story's single choice), so it must save.
+    Under ``seed_var_state=None`` replay would instead start from the declared
+    initial ``might=0`` and reject this state as tampered.
+    """
+    await _seed_binding_story(sessions, seed)
+    await _seed_attributes(sessions, seed.character_id, might=2, wits=0, nerve=0)
+
+    resp = await client.put(
+        f"/api/v1/reading-state/{seed.child_profile_id}/{_SEEDED_STORY_ID}",
+        json={
+            "version": _SEEDED_STORY_VERSION,
+            "current_node": "n_end",
+            "var_state": {"might": 2},
+            "path": ["n_start", "n_end"],
+            "visit_set": ["n_start", "n_end"],
+            "save_slots": {},
+            "state_revision": 0,
+            "choice_path": ["c_press_on"],
+        },
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["character_id"] == str(seed.character_id)
+    assert body["seed_var_state"] == {"might": 2, "wits": 0, "nerve": 0}
+
+    async with sessions() as session:
+        row = await session.get(ReadingState, (seed.child_profile_id, _SEEDED_STORY_ID))
+        assert row is not None
+        assert row.seed_var_state == {"might": 2, "wits": 0, "nerve": 0}
 
 
 @pytest.mark.integration
@@ -455,3 +513,8 @@ async def test_a_read_in_progress_keeps_its_recorded_seed(
     body = resp.json()
     assert body["character_id"] == str(seed.character_id)
     assert body["seed_var_state"] == {"might": 2, "wits": 0, "nerve": 0}
+    # The retired character's name still resolves: _view looks it up live by
+    # the row's persisted character_id, and retirement only flips is_active
+    # (the row is never deleted), so "whose adventure is this" keeps its
+    # answer for a read already in progress.
+    assert body["character_name"] == "Route Matrix Rowan"
