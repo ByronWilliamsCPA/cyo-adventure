@@ -1,7 +1,7 @@
 ---
 schema_type: common
 title: "Persistent Reader Characters: Declared Envelopes over Preset Books"
-status: draft
+status: published
 owner: core-maintainer
 purpose: "Let a reader create a character once and carry it through preset books, with each book declaring the character range it accepts and the validator proving the book safe across exactly that range."
 tags:
@@ -1002,3 +1002,4 @@ ADR's implementation notes and in `AL-101`/`UW-C34`.
 | Nothing stated whether characters reach generation, cover art, or moderation | **Accepted.** Written as invariants in 3.5. Two of them (byte-identical books, per-storybook covers) are what keep the feature cheap and the envelope proof possible |
 | Changed markdown must stay within 120 characters | **Declined.** `.markdownlint.json` sets `MD013: false` and `line-length: false`; no gate enforces a line length on markdown in this repo, and the surrounding tables already exceed it. Raising it here would reformat unrelated content to satisfy a rule the project has switched off |
 | Three fenced blocks lacked a language identifier (MD040) | **Accepted.** Labelled `text` |
+| Front matter said `status: draft` while the banner said "Approved design" | **Accepted.** The front matter was the stale half: D8/D9 record owner approval and step 0 has shipped, so `status: published`. Not `accepted`: the front-matter validator scopes its `status` vocabulary by `schema_type`, and a `common` doc admits only `draft`, `in-review` and `published`, while `accepted` belongs to the ADR schema |
