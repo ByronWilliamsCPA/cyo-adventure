@@ -30,7 +30,7 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
       "id": "n_d00",
@@ -178,8 +178,20 @@
       }
     },
     {
+      "id": "n_open",
+      "body": "<<FILL role=setup words=50 beats='{HERO} musters {PARTY_NAME} at {ENTRANCE} as {DEADLINE} groans'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Call the company to order.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "<<FILL role=setup words=82 beats='{HERO} musters {PARTY_NAME} at {ENTRANCE} as {DEADLINE} groans; {GOAL} lies six legs away across {THRESHOLD}, and every route out demands a first hard choice'>>",
+      "body": "<<FILL role=choice words=40 beats='{GOAL} lies six legs away across {THRESHOLD}, and every route out demands a first hard choice'>>",
       "is_ending": false,
       "choices": [
         {

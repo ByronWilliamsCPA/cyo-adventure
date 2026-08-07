@@ -55,11 +55,23 @@
       "description": "Whether the transmitter core has been secured."
     }
   ],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "<<FILL role=setup words=150 beats='A lone salvage diver on a night boat over a sunken research station; a distress signal still repeats from below; establish the diver and that air is finite'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Check the gauge and go over.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "<<FILL role=setup words=250 beats='A lone salvage diver on a night boat over a sunken research station; a distress signal still repeats from below; establish the diver, the descent, and that air is finite'>>",
+      "body": "<<FILL role=choice words=110 beats='the diver checks her gauge and commits to a way down'>>",
       "is_ending": false,
       "choices": [
         {

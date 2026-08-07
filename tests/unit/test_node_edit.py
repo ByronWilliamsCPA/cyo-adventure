@@ -61,6 +61,26 @@ _NODE_ID = "n_start"
 _CHOICE_ID = "c_follow"
 
 
+def _node(blob: object, node_id: str = _NODE_ID) -> dict[str, object]:
+    """Return the node with the given id from a story blob.
+
+    Looked up by id rather than by position on purpose. These tests all act on
+    ``_NODE_ID``, and indexing the shared ``_CANNED_STORY`` positionally silently
+    retargets every one of them the moment that story changes shape, which is
+    what happened when PL-25's floor forced an establishing node ahead of
+    ``n_start``.
+
+    Args:
+        blob: A story blob dict (or the ORM column holding one).
+        node_id: The node to return; defaults to the node under edit.
+
+    Returns:
+        The matching node dict.
+    """
+    nodes = cast("list[dict[str, object]]", cast("dict[str, object]", blob)["nodes"])
+    return next(node for node in nodes if node["id"] == node_id)
+
+
 def _principal(role: str, *, family_id: uuid.UUID = _FAMILY_A) -> Principal:
     """Return a minimal Principal with the given role and family."""
     return Principal(
@@ -301,7 +321,7 @@ async def test_needs_revision_status_is_editable() -> None:
     )
 
     assert result.status == "needs_revision"
-    assert version_row.blob["nodes"][0]["body"] == "A brand new opening."  # type: ignore[index]
+    assert _node(version_row.blob)["body"] == "A brand new opening."
 
 
 @pytest.mark.asyncio
@@ -465,7 +485,7 @@ async def test_guardian_own_family_edit_allowed() -> None:
     )
 
     assert result.status == "in_review"
-    assert version_row.blob["nodes"][0]["body"] == "Guardian-edited opening."  # type: ignore[index]
+    assert _node(version_row.blob)["body"] == "Guardian-edited opening."
 
 
 # ---------------------------------------------------------------------------
@@ -625,7 +645,7 @@ async def test_edit_contract_unrecoverable_sentinel_free_succeeds() -> None:
     )
 
     assert result.status == "in_review"
-    assert version_row.blob["nodes"][0]["body"] == "A perfectly ordinary edit."  # type: ignore[index]
+    assert _node(version_row.blob)["body"] == "A perfectly ordinary edit."
 
 
 def _wire_personalizable_job(
@@ -715,8 +735,8 @@ async def test_edit_removing_last_sentinel_clears_personalization_eligible(
     """
     story = _story("in_review")
     blob = copy.deepcopy(_CANNED_STORY)
-    nodes = cast("list[dict[str, object]]", blob["nodes"])
-    nodes[0]["body"] = f"{nodes[0]['body']} {wrap('HERO', 'Ada')}"
+    edited = _node(blob)
+    edited["body"] = f"{edited['body']} {wrap('HERO', 'Ada')}"
     version_row = _version_row()
     version_row.blob = blob
     version_row.personalization_eligible = True
@@ -730,7 +750,7 @@ async def test_edit_removing_last_sentinel_clears_personalization_eligible(
     )
 
     assert result.status == "in_review"
-    assert version_row.blob["nodes"][0]["body"] == "Plain prose, no sentinel."  # type: ignore[index]
+    assert _node(version_row.blob)["body"] == "Plain prose, no sentinel."
     assert version_row.personalization_eligible is False
 
 
@@ -745,8 +765,9 @@ async def test_edit_preserving_sentinel_keeps_personalization_eligible(
     """
     story = _story("in_review")
     blob = copy.deepcopy(_CANNED_STORY)
-    nodes = cast("list[dict[str, object]]", blob["nodes"])
-    nodes[1]["body"] = f"{nodes[1]['body']} {wrap('HERO', 'Ada')}"
+    # A node OTHER than the one under edit, so the sentinel survives the edit.
+    other = _node(blob, "n_open")
+    other["body"] = f"{other['body']} {wrap('HERO', 'Ada')}"
     version_row = _version_row()
     version_row.blob = blob
     version_row.personalization_eligible = True
@@ -776,7 +797,7 @@ async def test_edit_sentinel_free_still_succeeds() -> None:
     )
 
     assert result.status == "in_review"
-    assert version_row.blob["nodes"][0]["body"] == "A perfectly ordinary edit."  # type: ignore[index]
+    assert _node(version_row.blob)["body"] == "A perfectly ordinary edit."
 
 
 @pytest.mark.asyncio

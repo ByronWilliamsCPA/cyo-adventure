@@ -223,8 +223,28 @@ def test_warning_only_report_does_not_block() -> None:
             },
         },
         "variables": [],
-        "start_node": "n_start",
+        "start_node": "n_open",
         "nodes": [
+            {
+                # The establishing stop PL-25's floor requires: 8-11 may not put
+                # its first decision at depth 1. Without it this fixture blocks on
+                # PL-25 and the test can no longer observe what it is about, since
+                # "warnings alone do not block" is only measurable on a story whose
+                # sole findings are warnings. Its body stays in the same
+                # deliberately high-register vocabulary as the rest of the fixture
+                # so it does not pull the story-mean FK grade back toward target and
+                # quietly stop RL-13 from firing at all.
+                "id": "n_open",
+                "body": (
+                    "Preliminary observations invariably necessitate considerable "
+                    "deliberation before consequential determinations become "
+                    "practicable."
+                ),
+                "is_ending": False,
+                "choices": [
+                    {"id": "c_open", "label": "Begin.", "target": "n_start"},
+                ],
+            },
             {
                 "id": "n_start",
                 "body": (

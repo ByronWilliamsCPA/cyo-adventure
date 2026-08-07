@@ -231,7 +231,7 @@ issue. This ADR was accepted 2026-08-01, after the 2026-07-28 cutoff, so the rul
 | Item | Home |
 | --- | --- |
 | Enforce decision 2's stamping clause and decision 3's converse. Per the owner ruling of 2026-08-06 this ships as a validator rule ("a document's declared minor must cover the fields it actually uses"), not a publish-path stamper, and lands alongside the first `SCHEMA_MINOR` bump to `1`. Includes pinning a value in the Stage-A prompt (`generation/templates/structure.md`), the one producer that pins none. | `UW-A45`, Phase 5 |
-| Reconcile `import_catalog._needs_legacy_normalization` with `_check_schema_version` so the two acceptance rules cannot disagree, and keep them documented as deliberately separate questions. | `UW-C26` / `AL-080`, delivered by PR [#636](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636) |
+| Reconcile `import_catalog._needs_legacy_normalization` with `_check_schema_version` so the two acceptance rules cannot disagree, and keep them documented as deliberately separate questions. | `UW-C34` / `AL-101`, delivered by PR [#636](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636) |
 
 Two clauses of this ADR create no schedulable item, and are recorded here so their absence from the
 table is a stated conclusion rather than an oversight:

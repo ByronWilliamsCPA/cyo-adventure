@@ -6,9 +6,11 @@ skinparam backgroundColor #FAFAFA
 skinparam roundCorner 8
 hide empty description
 
-[*] --> n_start
-state n_start #BBDEFB
-n_start : setup · 115w
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 70w
+state n_start #FFF9C4
+n_start : choice · 50w
 state a_eng1 #D1C4E9
 a_eng1 : rising · 100w
 state a_eng_deep #FFF9C4
@@ -249,6 +251,7 @@ b_tell_reveal : rising · 95w
 state e_win_discovery #C8E6C9
 e_win_discovery : completion (positive)
 e_win_discovery : "The Secret of {SHIP_NAME}"
+n_open --> n_start : Slip out of the rope coil.
 n_start --> a_eng1 : Slip down toward {ROUTE_A_ZONE}.
 n_start --> b_hold1 : Creep into {ROUTE_B_ZONE}.
 n_start --> c_nest1 : Climb up toward {ROUTE_C_ZONE}.
@@ -409,7 +412,7 @@ legend right
   The Sky-Ship Stowaway
   Band 8-11 · Tier 1 · ~11 min
   Topology: branch_and_bottleneck
-  111 nodes · 20 endings (8+ / 8n / 4-)
+  112 nodes · 20 endings (8+ / 8n / 4-)
   Production-eligible
   Scale: medium · prose
 endlegend

@@ -6,9 +6,11 @@ skinparam backgroundColor #FAFAFA
 skinparam roundCorner 8
 hide empty description
 
-[*] --> n_start
-state n_start #BBDEFB
-n_start : setup · 130w
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 85w
+state n_start #FFF9C4
+n_start : choice · 55w
 state a_office1 #D1C4E9
 a_office1 : rising · 105w
 state a_desk #FFF9C4
@@ -334,6 +336,7 @@ e_neutral_evidence : "{EVIDENCE_PRIZE}"
 state e_neutral_museum #E0E0E0
 e_neutral_museum : discovery (neutral)
 e_neutral_museum : "{MUSEUM_PRIZE}"
+n_open --> n_start : Walk down toward the light.
 n_start --> a_office1 : Try {ROUTE_A_PLACE}.
 n_start --> b_lamp1 : Head for {ROUTE_B_PLACE}.
 n_start --> c_cave1 : Slip into {ROUTE_C_PLACE}.
@@ -562,7 +565,7 @@ legend right
   The Hollow Lighthouse
   Band 10-13 · Tier 1 · ~13 min
   Topology: branch_and_bottleneck
-  148 nodes · 31 endings (10+ / 5n / 16-)
+  149 nodes · 31 endings (10+ / 5n / 16-)
   Production-eligible
   Scale: medium · prose
 endlegend

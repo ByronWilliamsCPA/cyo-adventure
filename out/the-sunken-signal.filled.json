@@ -53,11 +53,23 @@
       "description": "Whether the transmitter core has been secured."
     }
   ],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "The dive boat rocks under a moonless sky, and forty meters down, the dead research station is still calling. Its distress beacon has pulsed for three weeks now, a slow heartbeat on the sonar, long after the station went dark and the company wrote it off. You are the only one who answered the salvage contract.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Check the gauge and go over.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "The dive boat rocks under a moonless sky, and forty meters down, the dead research station is still calling. Its distress beacon has pulsed for three weeks now, a slow heartbeat on the sonar, long after the station went dark and the company wrote it off. You are the only one who answered the salvage contract. You check your rig one last time by the deck light: regulator, lamp, the gauge that says how much breathing gas stands between you and the surface. Not much margin. There never is. Your buddy stays topside on the line, close enough to haul you up if it comes to that, far enough to be no help at all once you are inside. You roll backward off the gunwale into black water and the cold closes over you like a fist. The station waits below, a darker shape in the dark. You can drop straight down the access shaft and save your light, descend past the external equipment locker on the way, or hang here a moment first and listen to the signal, trying to understand what it is. What do you do?",
+      "body": "You check your rig one last time by the deck light: regulator, lamp, the gauge that says how much breathing gas stands between you and the surface. Not much margin. There never is. Your buddy stays topside on the line, close enough to haul you up if it comes to that, far enough to be no help at all once you are inside. You roll backward off the gunwale into black water and the cold closes over you like a fist. The station waits below, a darker shape in the dark. You can drop straight down the access shaft and save your light, descend past the external equipment locker on the way, or hang here a moment first and listen to the signal, trying to understand what it is. What do you do?",
       "is_ending": false,
       "choices": [
         {

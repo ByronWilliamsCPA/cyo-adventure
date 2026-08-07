@@ -38,7 +38,7 @@ to this document.
 | Category | Behaviour | Blocks publish? |
 |----------|-----------|-----------------|
 | Layer 1 (L1) | Pass/fail | Yes |
-| Policy (PL) | Pass/fail (PL-19 story-mean, PL-23 and PL-24 are advisory) | Yes |
+| Policy (PL) | Pass/fail (PL-19 story-mean, PL-23, PL-24, PL-26 and PL-25's ceiling short of its hard limit are advisory) | Yes |
 | Layer 2 (L2) | Pass/fail | Yes (Tier-2 only) |
 | Reading Level (RL) | Advisory | No (warns only) |
 | Choice Grammar (CG) | Advisory, and opt-in | No (warns only, and emits nothing at all by default) |
@@ -48,8 +48,9 @@ to this document.
 
 Layer 1, Policy, and Layer 2 are hard gates, run in that order (`validator/gate.py::run_gate`):
 any failure fails the generation job (it lands in `failed`, not `passed`), so the story never
-advances to `in_review`. The Policy layer's PL-19 story-mean words-per-node sub-check is the
-one advisory exception; its per-node word-cap sub-check is still blocking. The reading-level
+advances to `in_review`. The Policy layer's advisory exceptions are PL-19's story-mean
+words-per-node sub-check (its per-node word-cap sub-check is still blocking), PL-23, PL-24,
+all of PL-26, and PL-25's ceiling short of its hard limit. The reading-level
 check warns and logs but does not block. A safety hit routes the generation job to
 `needs_review` for mandatory human review; the validator does not auto-reject, but no
 auto-publish path exists when the flag is set.
@@ -159,6 +160,29 @@ advisory (WARNING). PL-15..PL-18 are defined below; PL-19 (words-per-node), PL-2
 (band profile not configured, fail closed) is a runtime invariant rather than an
 age-safety rule in its own right; it is defined below.
 
+**Two axes, easily confused.** PL-17 measures *breadth*: how many decision and ending
+nodes exist anywhere in the graph. PL-20, PL-25 and PL-26 measure *depth along a walk*:
+how far the reader travels to finish, how soon they first steer, and how often they
+steer after that. A story can satisfy every breadth floor while walking the reader down
+a corridor, because a corridor with a wide branching bulge at the end still counts
+plenty of decision nodes. That gap is what the depth rules close.
+
+**Path-length rules grade in two tiers on purpose.** A *floor* violation (PL-20: too
+short to be a story) is a correctness failure and blocks. A *ceiling* violation (PL-20's
+long arc, PL-25's buried first choice) is a craft failure and warns, because the ERROR
+tier means unpublishable and a narrow ceiling overshoot is not. PL-25 keeps one blocking
+tier past `band_profile.ARC_CEILING_MULTIPLE` times the band ceiling, where the shape has
+left the observed genre rather than merely run slow.
+
+PL-25 and PL-26 are calibrated against Adams, Beckelhymer and Marr, "Choose Your Own
+Adventure: An Analysis of Interactive Gamebooks Using Graph Theory," *Journal of
+Humanistic Mathematics* 9(2), 2019 ([DOI 10.5642/jhummath.201902.05](https://doi.org/10.5642/jhummath.201902.05)),
+which measured the original CYOA paperback corpus. The node-to-page equivalence that
+lets those page measurements govern our node counts is not an assumption: ADR-011's
+independently derived `_MIN_COMPLETE[("10-13", "short", "prose")]` is 11, matching the
+paper's measured 11-page shortest playthrough exactly. Measurements and the calibration
+invariants that guard them live in `validator/band_profile.py`.
+
 | Rule ID | Layer | Description | Failure Message Template |
 |---------|-------|-------------|--------------------------|
 | PL-15 | Policy | **Ending-kind policy**: no ending whose `kind` is in the band's `forbidden_ending_kinds` (the no-death / no-capture rule). | `PL-15 policy: ending kind '{kind}' is forbidden for band '{age_band}' in story '{story_id}'` |
@@ -168,6 +192,8 @@ age-safety rule in its own right; it is defined below.
 | PL-22 | Policy | **Band profile fail-closed**: added 2026-07-16 per the owner ruling (fail closed). When a story's age band has no configured `BandProfile` (`validator/band_profile.py::profile_for` returns `None`), the gate emits this single blocking finding and returns immediately instead of silently skipping PL-15/16/17 for that band. Unreachable through any valid, enum-constrained `age_band` today (a lockstep test pins the `AgeBand` enum against the configured profiles), so this is a runtime backstop, not a normal-path rule. See `validator/policy.py::validate_policy` and `tests/unit/test_policy.py::test_validate_policy_fails_closed_when_profile_is_none`. | `PL-22 policy: band profile not configured for band '{age_band}' in story '{story_id}'; refusing to validate age safety` |
 | PL-23 | Policy | **Declared read time**: `metadata.estimated_minutes` is ADR-011 section 4's *fastest-finish* clock, the words on the shortest satisfying path divided by the band's `band_profile.reading_pace_wpm` anchor. A declared value differing from the derived one by more than 25% warns. Advisory: a rounded or deliberately padded editorial figure is legitimate, but the field is what a child sees when choosing a book, so a large mismatch is a broken promise. Skipped when the fastest-finish path is under `_MIN_PATH_WORDS_FOR_CLOCK` (200) words, where the derived clock is noise. | `PL-23 clock: declared estimated_minutes {declared} differs from the derived fastest-finish clock {derived} min ({words} words on the shortest satisfying path at {wpm} wpm) by {drift} in story '{story_id}' (advisory only)` |
 | PL-24 | Policy | **Ending mix**: two advisory shape checks over the ending set, which PL-15 (forbidden kinds) and PL-17 (ending count) do not cover. (a) No single `ending.kind` may exceed 60% of endings. (b) A winnability floor that is **style-aware**: prose must have at least 10% positive-valence endings, while a gamebook must have at least 3 distinct positive-valence endings. The gamebook rule is an absolute count, not a share, because a share floor calibrated against the committed corpus would flag every gamebook (all sit at 2-5% positive against prose's 15-70%); that spread is ADR-011 section 5's declared 'few wins and many fails' shape, not nine defects. | `PL-24 mix: ending kind '{kind}' is {n} of {total} endings ({share}), above the {ceiling} share ceiling in story '{story_id}' (advisory only)` |
+| PL-25 | Policy | **Depth to first decision**: nodes on the shortest path from `start_node` up to and including the first node offering >= 2 choices must sit inside the band's `band_profile.first_decision_window`. Past the ceiling WARNS; past `ARC_CEILING_MULTIPLE` x ceiling is an ERROR. Under the floor is an ERROR in one tier: a story opening on its own first choice gives the reader no situation to choose about, and unlike a too-long prologue there is no degree of it that reads as merely slow. The drafting guide states the same constraint from the other side (max choiceless stops in a row is at least 1 in every band). Introduced as a WARNING because 20 committed skeletons predated the rule; escalated once those were fixed and the catalog swept clean (AL-086). Applies to every story with a configured band, scale-classified or not, because a buried first choice is a band-level pacing defect rather than a scale one. A story with no decision node at all is left to PL-17, which already floors decision count. Anchored on JHM 2019 Table 4 (pages to first decision: median 4, range 2-8.25). | `PL-25 opening: first decision is {depth} node(s) in, past the band '{age_band}' ceiling {ceiling}[ and its hard limit {hard}] in story '{story_id}'` (past ceiling: WARNING, or ERROR when also past the hard limit); `PL-25 opening: first decision is {depth} node(s) in, under the band '{age_band}' floor {floor} in story '{story_id}'` (under floor: ERROR, blocking) |
+| PL-26 | Policy | **Decision density on the fastest finish** (advisory): nodes per decision along the fastest satisfying finish must not exceed `band_profile.nodes_per_decision_ceiling`. PL-20 and PL-26 measure the same *minimum node count* but deliberately do not read the same walk. Equally short paths all share a length, so PL-20's tiers are indifferent to which one is picked; they can differ in decision count, so PL-26 reads `policy._fewest_decision_shortest_path`, the equally fast walk carrying the FEWEST decisions, i.e. the worst density among them. That is forced by the rule being a ceiling: it must fire when *any* equally fast walk is a corridor. Sharing PL-20's arbitrary tie-break instead made the verdict flip on node renaming alone, mismeasuring 19 of 58 eligible catalog skeletons (AL-094). A **ceiling only**, deliberately: the rule guards the corridor, a story that satisfies every PL-17 breadth floor while walking the reader past few or no choices. It does not bound density from below, because a shortest path is biased toward decision nodes by construction (out-degree >= 2 makes a node likelier to sit on a fast route) while JHM's 3.28 was measured corpus-wide, so comparing them on the low side compares different quantities. A genuine 'choice gauntlet' guard would have to measure whole-graph density; see AL-084 / UW-C28. The ceiling is keyed by `narrative_style`, following the `_ENDINGS_FRACTION` and `_WORDS_PER_NODE` precedent: prose admits up to 6.0 nodes per decision (above the JHM 3.28 mean with room), a gamebook up to 4.0, because a numbered-section gamebook ends nearly every section in a choice by genre convention and judging it against a prose bar would let a real gamebook corridor pass. A fastest finish offering no decision at all also warns. Requires a declared `length` and `production_eligible`, so it is skipped for unclassified stories. | `PL-26 density: fastest finish averages {density} node(s) per decision ({n} decision(s) over {total} nodes), over the {ceiling} advisory ceiling in story '{story_id}'` |
 
 ---
 
@@ -222,10 +248,14 @@ applies the rules below; `publishing/service.py` raises
 The validator applies rules in this order:
 
 1. L1-1 through L1-7 (graph; all stories). Stop if any L1 rule fails.
-2. PL-15 through PL-21, the PL-22 fail-closed guard, and the PL-23/PL-24 advisories
-   (age-policy gate; all stories). PL-19's story-mean sub-check, PL-23 and PL-24 are
-   advisory; the rest block. PL-22 fires only when the band has no configured
-   profile, in which case it is the sole finding and PL-15..PL-21 do not run.
+2. PL-15 through PL-21, the PL-22 fail-closed guard, and PL-23 through PL-26
+   (age-policy gate; all stories). PL-19's story-mean sub-check, PL-23,
+   PL-24, PL-26 and PL-25's ceiling short of its hard limit are advisory;
+   the rest block, including PL-25's floor. PL-22
+   fires only when the band has no configured profile, in which case it is the sole
+   finding and PL-15..PL-21 do not run. PL-25 runs for any story with a configured
+   band; PL-20 and PL-26 additionally require a declared `length` and
+   `production_eligible`, so an unclassified story is measured on breadth only.
 3. L2-8 through L2-14 (state-space; Tier-2 only). Stop if any L2 rule fails; L2-13 is a
    non-blocking scale advisory and never stops the run.
 4. RL-13 (advisory; all stories). Log warnings; continue.

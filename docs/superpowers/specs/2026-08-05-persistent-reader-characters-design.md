@@ -859,7 +859,7 @@ scheduled nowhere: no register row, no roadmap entry, no issue. The owner funded
 so this prerequisite is discharged and ADR-026 and ADR-027 are unblocked along with it. Two
 residues of that work are scheduled rather than closed: `UW-A45` (nothing ties the emitted
 `schema_version` stamp to `SCHEMA_VERSION`; the owner ruled this ships as a validator rule
-alongside the first `SCHEMA_MINOR` bump) and `UW-C26` / `AL-080` (the importer's duplicate
+alongside the first `SCHEMA_MINOR` bump) and `UW-C34` / `AL-101` (the importer's duplicate
 acceptance rule). Neither blocks the work below.
 
 `accepts_character` remains in the easy class of additive field, a catalog-time validation contract
@@ -981,7 +981,7 @@ Verdict on the two questions asked: Q1 **needs revision**, Q2 **sound with a mer
 
 The PR under review implemented step 0 (ADR-025) and carried this spec as a new file. The review's
 findings against the spec itself are dispositioned here; the ADR-025 code findings are in that
-ADR's implementation notes and in `AL-080`/`UW-C26`.
+ADR's implementation notes and in `AL-101`/`UW-C34`.
 
 | Finding | Disposition |
 |---|---|

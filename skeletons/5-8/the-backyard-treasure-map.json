@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "<<FILL role=setup words=55 beats='{HERO} and {COMPANION} find {MAP} inside a dusty jar under {ROUTE_A_LURE} in {THRESHOLD}; {MAP} is hand-drawn, showing {MAP_LINE} and {TREASURE_MARK} somewhere at the end; sunny, safe, and excited'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Spread out the map.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "<<FILL role=setup words=85 beats='{HERO} and {COMPANION} find {MAP} inside a dusty jar under {ROUTE_A_LURE} in {THRESHOLD}; {MAP} is hand-drawn, showing {MAP_LINE} and {TREASURE_MARK} somewhere at the end; the friends grin and decide which landmark on the map to follow first; sunny, safe, and excited'>>",
+      "body": "<<FILL role=choice words=40 beats='the friends spread {MAP} flat between them and decide which landmark to follow first'>>",
       "is_ending": false,
       "choices": [
         {

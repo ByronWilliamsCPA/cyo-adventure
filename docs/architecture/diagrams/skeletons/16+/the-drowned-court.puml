@@ -6,7 +6,7 @@ skinparam backgroundColor #FAFAFA
 skinparam roundCorner 8
 hide empty description
 
-[*] --> n_start
+[*] --> n_open
 state n_ap_moat #D1C4E9
 n_ap_moat : rising · 70w
 state n_ap_sluice #D1C4E9
@@ -16,8 +16,10 @@ n_ap_scaff : rising · 66w
 state n_ap_undertow #FFCDD2
 n_ap_undertow : setback (negative)
 n_ap_undertow : "Taken by the Undertow"
-state n_start #BBDEFB
-n_start : setup · 92w
+state n_open #BBDEFB
+n_open : setup · 55w
+state n_start #FFF9C4
+n_start : choice · 45w
 state fan_tg_s0 #FFCDD2
 fan_tg_s0 : setback (negative)
 fan_tg_s0 : "Pinned at the {TIDEGATE_TITLE}"
@@ -743,6 +745,7 @@ pad41_b1 : rising · 62w
 n_ap_moat --> n_tidegate_hub : Press on.
 n_ap_sluice --> n_tidegate_hub : Press on.
 n_ap_scaff --> n_tidegate_hub : Press on.
+n_open --> n_start : Check the rig and go over the side.
 n_start --> n_ap_moat : Swim {ROUTE_A_CHAR}.
 n_start --> n_ap_sluice : Force {ROUTE_B_CHAR}.
 n_start --> n_ap_scaff : Climb {ROUTE_C_CHAR}.
@@ -1176,7 +1179,7 @@ legend right
   The Drowned Court
   Band 16+ · Tier 1 · ~18 min
   Topology: branch_and_bottleneck
-  314 nodes · 105 endings (5+ / 2n / 98-)
+  315 nodes · 105 endings (5+ / 2n / 98-)
   Production-eligible
   Scale: medium · gamebook
 endlegend

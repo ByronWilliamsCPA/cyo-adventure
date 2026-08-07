@@ -6,9 +6,11 @@ skinparam backgroundColor #FAFAFA
 skinparam roundCorner 8
 hide empty description
 
-[*] --> n_start
-state n_start #BBDEFB
-n_start : setup · 210w
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 130w
+state n_start #FFF9C4
+n_start : choice · 90w
 state a0_1 #D1C4E9
 a0_1 : rising · 172w
 state a0_2 #FFF9C4
@@ -511,6 +513,7 @@ r4_eg : "{R4_OUTCOME_G}"
 state r4_eh #E0E0E0
 r4_eh : discovery (neutral)
 r4_eh : "{R4_OUTCOME_H}"
+n_open --> n_start : Take the keys and go down.
 n_start --> a0_1 : Investigate {ROUTE_A_APPROACH}.
 n_start --> a1_1 : Seek out {ROUTE_B_APPROACH}.
 n_start --> a2_1 : Open {ROUTE_C_APPROACH}.
@@ -810,7 +813,7 @@ legend right
   The Salt Archive
   Band 16+ · Tier 1 · ~24 min
   Topology: branch_and_bottleneck
-  225 nodes · 54 endings (15+ / 21n / 18-)
+  226 nodes · 54 endings (15+ / 21n / 18-)
   Production-eligible
   Scale: long · prose
 endlegend

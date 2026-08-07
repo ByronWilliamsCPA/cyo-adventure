@@ -6,9 +6,11 @@ skinparam backgroundColor #FAFAFA
 skinparam roundCorner 8
 hide empty description
 
-[*] --> n_start
-state n_start #BBDEFB
-n_start : setup · 210w
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 130w
+state n_start #FFF9C4
+n_start : choice · 90w
 state g0a0_1 #D1C4E9
 g0a0_1 : rising · 165w
 state g0a0_2 #FFF9C4
@@ -318,6 +320,7 @@ e_uncover_truth : "{TRUTH_PRIZE}"
 state e_unsettled_safe #E0E0E0
 e_unsettled_safe : setback (neutral)
 e_unsettled_safe : "Awake and Unharmed"
+n_open --> n_start : Find a seat and take it in.
 n_start --> g0a0_1 : Find {G0A0_LURE}.
 n_start --> g0a1_1 : Walk {G0A1_LURE}.
 n_start --> g0a2_1 : Read {G0A2_LURE}.
@@ -521,7 +524,7 @@ legend right
   The Last Train North
   Band 16+ · Tier 1 · ~14 min
   Topology: branch_and_bottleneck
-  143 nodes · 25 endings (5+ / 9n / 11-)
+  144 nodes · 25 endings (5+ / 9n / 11-)
   Production-eligible
   Scale: medium · prose
 endlegend

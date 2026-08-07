@@ -58,10 +58,23 @@ if TYPE_CHECKING:
 
 _SKELETONS_ROOT = Path(__file__).resolve().parents[2] / "skeletons"
 _CAVE = "8-11/the-cave-of-echoes.json"
+# ADR-020's worked example grafts ``n_lockup`` (36 nodes) onto this host, landing
+# the mutant at exactly the cell maximum of 100 nodes. That stopped being
+# constructible the moment PL-25's floor gave every skeleton an establishing node
+# and the-cave-of-echoes went 64 -> 65 (AL-089), so these tests graft ``n_plan``
+# (34 nodes, a 99-node mutant) instead.
+#
+# The substitute is forced from both sides and the window is genuinely narrow: the
+# cell envelope caps the graft at 35 nodes, while the anti-clone floors reject
+# anything much smaller (``n_demo``, 13 nodes, lands 0.0368 from an in-cell tree
+# against TAU_CELL 0.05 and is discarded as a near-duplicate). Largest-in-envelope
+# is what ``flywheel.strategy._graft_params`` deliberately selects for the same
+# reason. The ADR keeps its original figures: they are dated evidence of a D8 run,
+# not a live fixture.
 _GRAFT = OpParams.of(
     mode="graft",
     donor="the-robot-fair-sabotage",
-    subtree_root="n_lockup",
+    subtree_root="n_plan",
     host_decision="la_crystal_take",
 )
 

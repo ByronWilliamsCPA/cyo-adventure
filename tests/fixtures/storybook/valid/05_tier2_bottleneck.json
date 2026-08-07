@@ -41,8 +41,20 @@
       "description": "The keeper's trust level in the player"
     }
   ],
-  "start_node": "n_arrive",
+  "start_node": "n_open",
   "nodes": [
+    {
+      "id": "n_open",
+      "body": "You stop here for a while to look around at the new place you have come to, and you wait a bit before you go on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_open",
+          "label": "Go on.",
+          "target": "n_arrive"
+        }
+      ]
+    },
     {
       "id": "n_arrive",
       "body": "You arrive at the silver tower. A keeper watches you from the doorway.",

@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "<<FILL role=setup words=85 beats='{HERO}, the youngest apprentice at {INSTITUTION}, is rowed to {THRESHOLD} at {OPENING_MOMENT} and given one task, fill {GOAL} before {DEADLINE} or lose the apprenticeship'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Shoulder the kit and start inland.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "<<FILL role=setup words=135 beats='{HERO}, the youngest apprentice at {INSTITUTION}, is rowed to {THRESHOLD} at {OPENING_MOMENT} and given one task, fill {GOAL} before {DEADLINE} or lose the apprenticeship; {ENTRANCE} opens onto five ways inland, {ROUTE_A_CHAR}, {ROUTE_B_CHAR}, {ROUTE_C_CHAR}, {ROUTE_D_CHAR}, and {ROUTE_E_CHAR}'>>",
+      "body": "<<FILL role=choice words=55 beats='{ENTRANCE} opens onto five ways inland, {ROUTE_A_CHAR}, {ROUTE_B_CHAR}, {ROUTE_C_CHAR}, {ROUTE_D_CHAR}, and {ROUTE_E_CHAR}'>>",
       "is_ending": false,
       "choices": [
         {

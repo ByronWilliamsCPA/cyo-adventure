@@ -6,9 +6,11 @@ skinparam backgroundColor #FAFAFA
 skinparam roundCorner 8
 hide empty description
 
-[*] --> n_start
-state n_start #BBDEFB
-n_start : setup · 88w
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 55w
+state n_start #FFF9C4
+n_start : choice · 40w
 state ap_1 #D1C4E9
 ap_1 : rising · 58w
 state ap_2 #D1C4E9
@@ -872,6 +874,7 @@ e_gate_late : "Benighted at the {Z6_NAME}"
 state e_gate_next #FFCDD2
 e_gate_next : setback (negative)
 e_gate_next : "Turned Back for Next Season"
+n_open --> n_start : Step in under the eaves.
 n_start --> ap_1 : Follow {ROUTE_A_CHAR}.
 n_start --> ap_2 : Take {ROUTE_B_CHAR}.
 n_start --> ap_3 : Walk {ROUTE_C_CHAR}.
@@ -1387,7 +1390,7 @@ legend right
   The Thornwood Trial
   Band 13-16 · Tier 1 · ~24 min
   Topology: branch_and_bottleneck
-  375 nodes · 115 endings (4+ / 0n / 111-)
+  376 nodes · 115 endings (4+ / 0n / 111-)
   Production-eligible
   Scale: long · gamebook
 endlegend

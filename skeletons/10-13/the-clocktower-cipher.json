@@ -28,11 +28,23 @@
     "production_eligible": false
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "<<FILL role=setup words=110 beats='{HEROES} find {THRESHOLD} locked, with a coded note pinned to the door; establish the {CIPHER} mystery and the friends'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Read the note again, together.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "<<FILL role=setup words=175 beats='{HEROES} find {THRESHOLD} locked, with a coded note pinned to the door; establish the {CIPHER} mystery and the friends'>>",
+      "body": "<<FILL role=choice words=70 beats='the {HEROES} read the note through twice and split on what to try first'>>",
       "is_ending": false,
       "choices": [
         {

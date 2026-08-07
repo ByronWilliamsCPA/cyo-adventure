@@ -345,7 +345,7 @@ def _needs_legacy_normalization(blob: dict[str, object]) -> bool:
     """
     # #CRITICAL: data integrity: every "not legacy" return below protects a
     # document this build cannot parse from being rewritten to "2.0" and
-    # admitted as if it were parseable. That is the AL-080 defect class: a
+    # admitted as if it were parseable. That is the AL-101 defect class: a
     # gate that rewrites the evidence it should have refused. The version
     # bounds are therefore all checked BEFORE the topology fallthrough, so
     # the outcome never depends on whether metadata.topology happens to be
