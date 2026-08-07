@@ -44,6 +44,33 @@ export const CHARACTER_LOOKS: readonly string[] = Array.from(
 )
 
 /**
+ * Placeholder swatches for the twelve `look` ids (avatar_01..avatar_12).
+ * This catalog has no illustrated art yet (unlike the profile-level named
+ * avatar set in profiles/avatars.ts); each swatch just needs to be visually
+ * distinct so a child can tell the twelve apart. Swap for real artwork later
+ * without touching CHARACTER_LOOKS' ids or order.
+ *
+ * Shared by every surface that shows a character's chosen look
+ * (CharacterCreator's own choice grid, CharacterPicker's tiles, and
+ * LibraryPage's active-character strip), so a look picked once reads the
+ * same everywhere instead of only during creation.
+ */
+export const LOOK_SWATCHES: Record<string, string> = {
+  avatar_01: '🔴',
+  avatar_02: '🟠',
+  avatar_03: '🟡',
+  avatar_04: '🟢',
+  avatar_05: '🔵',
+  avatar_06: '🟣',
+  avatar_07: '🟤',
+  avatar_08: '⚫',
+  avatar_09: '⚪',
+  avatar_10: '🔶',
+  avatar_11: '🔷',
+  avatar_12: '⭐',
+}
+
+/**
  * Backend bound on CharacterName (api/schemas.py): 1-32 characters,
  * NFC-normalized server-side. This constant exists so the creator's
  * client-side length check and its message can never drift from the number

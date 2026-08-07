@@ -116,6 +116,23 @@
   line-height: 1;
 }
 
+/* CharacterPicker's tile avatar: same bordered-circle shape as
+   profiles/AvatarCircle so a picker tile reads as a sibling of
+   ProfilePickerPage's tiles, with the look swatch as the primary visual
+   identifier rather than name text alone. */
+.character-tile__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  border: 3px solid var(--color-amber, #e07f2e);
+  background: var(--color-parchment, #f8f3e8);
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
 .character-tile__name {
   font-size: var(--text-lg, 1.25rem);
 }

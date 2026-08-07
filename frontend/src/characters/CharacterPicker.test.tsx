@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -52,6 +52,10 @@ describe('CharacterPicker', () => {
     expect(lunaTile).toHaveAttribute('aria-checked', 'true')
     expect(rexTile).toHaveAttribute('aria-checked', 'false')
     expect(screen.getByText('Currently reading as')).toBeInTheDocument()
+    // The chosen look's swatch is shown on each tile (avatar-led, mirroring
+    // ProfilePickerPage's AvatarCircle), not just during creation.
+    expect(within(lunaTile).getByText('🔴')).toBeInTheDocument()
+    expect(within(rexTile).getByText('🟠')).toBeInTheDocument()
   })
 
   it('choosing a different character calls activate and updates selection without a page reload', async () => {

@@ -11,6 +11,7 @@ import {
   ARCHETYPE_ROSTER,
   CHARACTER_LOOKS,
   CHARACTER_NAME_MAX_LENGTH,
+  LOOK_SWATCHES,
   makeCharactersApi,
   type CharacterArchetype,
 } from './characterApi'
@@ -41,26 +42,6 @@ const ARCHETYPE_HINTS: Record<CharacterArchetype, string> = {
   scholar: 'Loves to learn',
   healer: 'Helps others feel better',
   wildheart: 'Wild and free',
-}
-
-// Placeholder swatches for the twelve `look` ids (avatar_01..avatar_12).
-// This catalog has no illustrated art yet (unlike the profile-level named
-// avatar set in profiles/avatars.ts); each swatch just needs to be visually
-// distinct so a child can tell the twelve apart. Swap for real artwork
-// later without touching CHARACTER_LOOKS' ids or order.
-const LOOK_SWATCHES: Record<string, string> = {
-  avatar_01: '🔴',
-  avatar_02: '🟠',
-  avatar_03: '🟡',
-  avatar_04: '🟢',
-  avatar_05: '🔵',
-  avatar_06: '🟣',
-  avatar_07: '🟤',
-  avatar_08: '⚫',
-  avatar_09: '⚪',
-  avatar_10: '🔶',
-  avatar_11: '🔷',
-  avatar_12: '⭐',
 }
 
 function nameTooLongMessage(): string {

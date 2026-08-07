@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router'
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
 import { CharacterPicker } from '../characters/CharacterPicker'
+import { LOOK_SWATCHES } from '../characters/characterApi'
 import { useActiveCharacter } from '../characters/useActiveCharacter'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { logApiError } from '../hooks/logApiError'
@@ -541,6 +542,12 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
       {!readOnly && activeCharacter.state.status === 'ready' ? (
         <section className="library__character" aria-label="Your character">
           <p className="library__character-current">
+            {/* Decorative: the visible "Playing as <name>" text already
+                carries the accessible name, so the swatch is never
+                announced twice by assistive tech. */}
+            <span className="library__character-avatar" aria-hidden="true">
+              {LOOK_SWATCHES[activeCharacter.state.character.look]}
+            </span>
             Playing as <strong>{activeCharacter.state.character.name}</strong>
           </p>
           <Button

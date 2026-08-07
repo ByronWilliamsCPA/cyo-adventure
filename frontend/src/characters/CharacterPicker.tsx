@@ -9,7 +9,7 @@ import { useApi } from '../hooks/useApi'
 import { Mascot } from '../kid/Mascot'
 
 import { CharacterCreator } from './CharacterCreator'
-import { makeCharactersApi, type CharacterArchetype } from './characterApi'
+import { LOOK_SWATCHES, makeCharactersApi, type CharacterArchetype } from './characterApi'
 import './characters.css'
 
 import type { CharacterView } from '../client/types.gen'
@@ -204,6 +204,13 @@ export function CharacterPicker({ profileId, onActiveCharacterChange }: Characte
                 if (!isActive) activate(character.id)
               }}
             >
+              {/* Avatar-led, mirroring ProfilePickerPage's AvatarCircle as the
+                  tile's primary visual identifier: decorative (aria-hidden)
+                  since the visible name text below already carries the
+                  accessible name, so the swatch is never announced twice. */}
+              <span className="character-tile__avatar" aria-hidden="true">
+                {LOOK_SWATCHES[character.look]}
+              </span>
               <span className="character-tile__name">{character.name}</span>
               <span className="character-tile__hint">{archetypeLabel(character.archetype)}</span>
               {/* aria-checked above already carries the selected state to
