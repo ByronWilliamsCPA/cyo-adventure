@@ -38,7 +38,7 @@ def test_player_trace_reaches_expected_state(trace: dict[str, Any]) -> None:
     """Replaying a trace's choices reaches the pinned expected state."""
     story = Storybook.model_validate(trace["story"])
     engine = StoryEngine(story)
-    state = engine.start()
+    state = engine.start_continuation(trace.get("seed"))
     for choice_id in trace["choices"]:
         state = engine.choose(state, choice_id)
     expected = trace["expected"]

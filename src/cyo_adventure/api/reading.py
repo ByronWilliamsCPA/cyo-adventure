@@ -56,6 +56,8 @@ from cyo_adventure.utils.logging import get_logger
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from cyo_adventure.storybook.evaluator import VarState
+
 _logger = get_logger(__name__)
 
 router = APIRouter(
@@ -263,6 +265,7 @@ async def _validate_against_pinned_version(
     book: Storybook,
     *,
     require_current: bool,
+    seed_var_state: VarState | None,
 ) -> None:
     """Load the pinned story version and validate the save against it.
 
@@ -278,6 +281,9 @@ async def _validate_against_pinned_version(
             version than the currently published one (a since-superseded
             republish), so re-checking current/published/approved on every
             update would break that supported scenario.
+        seed_var_state: The server-held seed the persisted row began from, or
+            ``None`` for an unseeded read (see ``put_reading_state`` for how
+            each call site sources this).
 
     Raises:
         ResourceNotFoundError: If ``body.version`` has no persisted version
@@ -314,6 +320,7 @@ async def _validate_against_pinned_version(
         visit_set=body.visit_set,
         choice_path=body.choice_path,
         save_slots=body.save_slots,
+        seed_var_state=seed_var_state,
     )
 
 
@@ -538,7 +545,18 @@ async def put_reading_state(
         # M1: the create path establishes a NEW pin; require the current,
         # published, approved version so a first save cannot pin to a
         # superseded or never-approved version (require_current=True).
-        await _validate_against_pinned_version(ctx, body, book, require_current=True)
+        # #ASSUME: data integrity: no row exists yet on the create path, so
+        # there is no persisted seed to pass; Task 6 is where character-seeded
+        # reads start writing reading_state.seed_var_state on creation, at
+        # which point this call site threads that seed through instead of
+        # None.
+        # #VERIFY: tests/integration/test_reading_state.py::
+        # test_reading_state_round_trip exercises this create call site today;
+        # re-check it (and add a seeded variant) once Task 6 populates
+        # seed_var_state on creation.
+        await _validate_against_pinned_version(
+            ctx, body, book, require_current=True, seed_var_state=None
+        )
         return _create_reading_state(ctx, parsed, storybook_id, body)
     # Idempotent replay: the same event was already applied; return current row.
     if body.event_id is not None and row.last_event_id == body.event_id:
@@ -556,7 +574,20 @@ async def put_reading_state(
     # so this path does not re-require the current/published/approved
     # version (require_current=False); only structural/replay validation
     # runs.
-    await _validate_against_pinned_version(ctx, body, book, require_current=False)
+    # #CRITICAL: data integrity: row is already loaded above (the FOR UPDATE
+    # select), so pass its persisted seed_var_state rather than None: a
+    # character-seeded read must replay from the seed the server recorded on
+    # creation, not from declared initials (see replay.py::_check_replay).
+    # Today row.seed_var_state is always NULL (Task 1 added the column but
+    # nothing writes it until Task 6), so this is identical to the prior
+    # unseeded behaviour and only changes once seeding goes live.
+    # #VERIFY: tests/unit/test_replay.py::
+    # test_replay_of_a_seeded_read_starts_from_the_seed and
+    # test_replay_rejects_a_state_claiming_a_seed_it_was_not_given cover the
+    # underlying seeded-replay behaviour this call site now threads through.
+    await _validate_against_pinned_version(
+        ctx, body, book, require_current=False, seed_var_state=row.seed_var_state
+    )
     _apply_body(row, body)
     return _view(row)
 
