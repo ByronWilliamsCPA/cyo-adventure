@@ -513,6 +513,40 @@ unresolved marker is a straightforward visual defect and must never appear. The 
 not "sentinels are always safe to display" but "sentinels degrade safely to correct prose
 everywhere, and are shown deliberately in review and never in the reader".
 
+### 11. Amendment (2026-08-07): the `character_name` slot (ADR-028 persistent characters)
+
+ADR-028 introduces persistent reader characters (the `character` table). This amendment adds a
+twelfth entry, `character_name`, to the closed taxonomy in section 7, with a structural property
+none of the other eleven share.
+
+- **Slot**: `character_name`, the persistent character's chosen name.
+- **Ring ceiling**: ring 1 only, permanently, not a default open to a future ring-2 raise the way
+  rows 3 and 4b were. A character name is unreviewed child free text (see the next bullet), and
+  the three-ring boundary (ADR-018) keeps unreviewed child free text inside ring 1 only,
+  categorically.
+- **`REAL_PERSON_PERSONALIZATION_FIELDS` membership**: included, alongside the protagonist first
+  name and the sibling name, because nothing stops a child naming a character after themselves or
+  a real person.
+- **Guardian toggle**: defaults off, like every other slot in this ADR. Enabling it never widens
+  ring reach, since there is no ring-2 path for this slot to widen into.
+- **Validation**: at set time, `PersonalizationSlotBody` and the database's
+  `ck_cpp_value_cardinality` CHECK reject any value field on this slot type; at render time, an
+  absent active character resolves to silent omission, the same generic-default fallback every
+  other slot already uses, never a placeholder.
+- **The property that sets it apart, and its three consequences.** Every other slot's value lives
+  in the `child_profile_personalization` row itself; this slot's value is synthesized at render
+  time from the profile's active `character.name`, so its row carries only the consent toggle.
+  Three consequences follow directly.
+  1. Turning the toggle off is the only way to clear the slot; blanking the character's name is
+     not a clear, since the child can simply rename their character and the slot repopulates.
+  2. Purging a profile's personalization must delete from `character` as well as from
+     `child_profile_personalization`, or the purge silently leaves the child's chosen name in the
+     database while reporting the slot purged (`PURGE_TARGETS`,
+     `purge_profile_personalization()`, `src/cyo_adventure/api/personalization.py`).
+  3. The exactly-one-value constraint (formerly `ck_cpp_exactly_one_value`, renamed
+     `ck_cpp_value_cardinality`) had to become slot-scoped rather than a flat count of one, because
+     this is the first slot type for which zero values is the correct shape, not a defect.
+
 ## Options Considered
 
 ### Option 1: Client-side render-time substitution over stored sentinels ✓

@@ -2750,16 +2750,20 @@ export type PersonalizationReceiveView = {
  * One slot's proposed value and ring flags, inside the PUT replace body.
  *
  * Exactly one of ``value_text``, ``value_enum``, ``value_profile_id`` may be
- * set, mirroring ``ChildProfilePersonalization.ck_cpp_exactly_one_value``.
- * This is a shape check only: the closed-vocabulary, structural, denylist,
- * and sibling-in-family checks (plan section 5.2) run in the route handler
- * via ``storybook.personalization_values``, not here.
+ * set, mirroring ``ChildProfilePersonalization.ck_cpp_value_cardinality``,
+ * except for ``"character_name"`` (ADR-028), for which that constraint (and
+ * this validator) requires all three to be absent: the slot's value is
+ * synthesized from the profile's active character, not stored here, so a
+ * consent row for it carries only the ring flags. This is a shape check
+ * only: the closed-vocabulary, structural, denylist, and sibling-in-family
+ * checks (plan section 5.2) run in the route handler via
+ * ``storybook.personalization_values``, not here.
  */
 export type PersonalizationSlotBody = {
     /**
      * Slot Type
      */
-    slot_type: 'protagonist_first_name' | 'pronoun_set' | 'sibling_name' | 'pet_species' | 'pet_name' | 'kinship_label' | 'favorite_color' | 'favorite_food' | 'favorite_hobby' | 'home_type' | 'dedication';
+    slot_type: 'protagonist_first_name' | 'pronoun_set' | 'sibling_name' | 'pet_species' | 'pet_name' | 'kinship_label' | 'favorite_color' | 'favorite_food' | 'favorite_hobby' | 'home_type' | 'dedication' | 'character_name';
     /**
      * Value Text
      */

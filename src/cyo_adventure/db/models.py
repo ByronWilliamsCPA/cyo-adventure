@@ -246,7 +246,7 @@ _USER_STATUS_VALUES = (
 _PERSONALIZATION_SLOT_TYPE_VALUES = (
     "'protagonist_first_name', 'pronoun_set', 'sibling_name', 'pet_species', "
     "'pet_name', 'kinship_label', 'favorite_color', 'favorite_food', "
-    "'favorite_hobby', 'home_type', 'dedication'"
+    "'favorite_hobby', 'home_type', 'dedication', 'character_name'"
 )
 _PERSONALIZATION_RING2_SLOT_TYPE_VALUES = (
     "'protagonist_first_name', 'sibling_name', 'pet_species', 'pet_name', "
@@ -776,10 +776,12 @@ class ChildProfilePersonalization(CreatedAtMixin, UpdatedAtMixin, Base):
     values (mirrored from ``storybook.theme_contract.PERSONALIZATION_FIELDS``)
     to exactly one of three value shapes (free text, a closed enum choice, or
     a reference to another profile, e.g. a sibling), never more than one at a
-    time. ``ring1_enabled``/``ring2_enabled`` are per-slot consent flags: ring
-    1 permits the value into this family's own stories, ring 2 additionally
-    permits it into stories shared with connected families
-    (``FamilyConnection``).
+    time, EXCEPT ``character_name`` (ADR-028), whose row carries none of the
+    three: its value lives in ``Character.name`` and is synthesized at
+    resolve time, so its consent row is a bare toggle. ``ring1_enabled``/
+    ``ring2_enabled`` are per-slot consent flags: ring 1 permits the value
+    into this family's own stories, ring 2 additionally permits it into
+    stories shared with connected families (``FamilyConnection``).
 
     #CRITICAL: security: ``ck_cpp_ring2_ceiling`` is a DB CHECK, not just API
     validation, so ``pronoun_set`` and ``dedication`` rows are structurally
@@ -795,10 +797,27 @@ class ChildProfilePersonalization(CreatedAtMixin, UpdatedAtMixin, Base):
             f"slot_type IN ({_PERSONALIZATION_SLOT_TYPE_VALUES})",
             name="ck_cpp_slot_type",
         ),
+        # Renamed from ck_cpp_exactly_one_value: character_name (ADR-028) is
+        # the one slot_type whose value lives outside this table entirely
+        # (synthesized at resolve time from the active Character's name), so
+        # its row must carry NONE of the three value columns rather than
+        # exactly one. The other eleven slot types keep the original
+        # exactly-one rule unchanged.
+        # #CRITICAL: data integrity: this is a real design collision, not a
+        # relaxation. Storing the character's name a second time in
+        # value_text would make a second, driftable copy of the same fact;
+        # the CASE keeps character_name structurally incapable of carrying
+        # any value at all.
+        # #VERIFY: tests/unit/test_personalization_vocab_drift.py::
+        # test_orm_value_cardinality_constraint_present,
+        # tests/unit/test_character_name_slot.py.
         CheckConstraint(
-            "(value_text IS NOT NULL)::int + (value_enum IS NOT NULL)::int "
-            "+ (value_profile_id IS NOT NULL)::int = 1",
-            name="ck_cpp_exactly_one_value",
+            "CASE WHEN slot_type = 'character_name' "
+            "THEN (value_text IS NULL AND value_enum IS NULL "
+            "AND value_profile_id IS NULL) "
+            "ELSE ((value_text IS NOT NULL)::int + (value_enum IS NOT NULL)::int "
+            "+ (value_profile_id IS NOT NULL)::int = 1) END",
+            name="ck_cpp_value_cardinality",
         ),
         CheckConstraint(
             f"NOT ring2_enabled OR slot_type IN "

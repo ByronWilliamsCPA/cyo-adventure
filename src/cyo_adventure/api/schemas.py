@@ -2742,6 +2742,11 @@ _PersonalizationSlotType = Literal[
     "favorite_hobby",
     "home_type",
     "dedication",
+    # ADR-028: the persistent-character's name. See
+    # storybook.theme_contract.PERSONALIZATION_FIELDS for the full rationale;
+    # this Literal is a hand-maintained mirror of that set, drift-guarded by
+    # tests/unit/test_personalization_vocab_drift.py.
+    "character_name",
 ]
 
 _PERSONALIZATION_SLOT_TYPE_COUNT = len(get_args(_PersonalizationSlotType))
@@ -2814,10 +2819,14 @@ class PersonalizationSlotBody(BaseModel):
     """One slot's proposed value and ring flags, inside the PUT replace body.
 
     Exactly one of ``value_text``, ``value_enum``, ``value_profile_id`` may be
-    set, mirroring ``ChildProfilePersonalization.ck_cpp_exactly_one_value``.
-    This is a shape check only: the closed-vocabulary, structural, denylist,
-    and sibling-in-family checks (plan section 5.2) run in the route handler
-    via ``storybook.personalization_values``, not here.
+    set, mirroring ``ChildProfilePersonalization.ck_cpp_value_cardinality``,
+    except for ``"character_name"`` (ADR-028), for which that constraint (and
+    this validator) requires all three to be absent: the slot's value is
+    synthesized from the profile's active character, not stored here, so a
+    consent row for it carries only the ring flags. This is a shape check
+    only: the closed-vocabulary, structural, denylist, and sibling-in-family
+    checks (plan section 5.2) run in the route handler via
+    ``storybook.personalization_values``, not here.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -2835,13 +2844,37 @@ class PersonalizationSlotBody(BaseModel):
 
     @model_validator(mode="after")
     def _exactly_one_value(self) -> PersonalizationSlotBody:
-        """Reject a slot body with zero or more than one value field set."""
+        """Reject a slot body whose value-field count does not match its slot.
+
+        #CRITICAL: data integrity: character_name is the one slot_type
+        that must carry NO value field; every other slot_type must carry
+        exactly one. Without this branch, a PUT body for character_name
+        either 422s unconditionally (present == 0 always fails the old
+        `!= 1` check, making the slot unusable through its own API) or, if
+        the check were simply relaxed to `<= 1`, a caller could smuggle a
+        value_text onto character_name that this schema would accept and
+        the database's `ck_cpp_value_cardinality` CHECK would then be the
+        only thing left to reject it, as a raw IntegrityError instead of a
+        clean 422.
+        #VERIFY: tests/unit/test_character_name_slot.py and
+        tests/unit/test_api_schemas_personalization.py.
+        """
         present = sum(
             value is not None
             for value in (self.value_text, self.value_enum, self.value_profile_id)
         )
-        if present != 1:
-            msg = "exactly one of value_text, value_enum, value_profile_id must be set"
+        expected = 0 if self.slot_type == "character_name" else 1
+        if present != expected:
+            if expected == 0:
+                msg = (
+                    "character_name carries no value; its value is "
+                    "synthesized from the active character"
+                )
+            else:
+                msg = (
+                    "exactly one of value_text, value_enum, value_profile_id "
+                    "must be set"
+                )
             raise ValueError(msg)
         return self
 
@@ -2873,9 +2906,10 @@ class PersonalizationSlotView(BaseModel):
     value_profile_id: str | None
     ring1_enabled: bool
     ring2_enabled: bool
-    # Derived from the taxonomy ceiling (every slot type except pronoun_set
-    # and dedication), so the UI can grey out what the DB CHECK would reject
-    # anyway rather than reimplementing the ceiling list in TypeScript.
+    # Derived from the taxonomy ceiling (every slot type except pronoun_set,
+    # dedication, and character_name), so the UI can grey out what the DB
+    # CHECK would reject anyway rather than reimplementing the ceiling list
+    # in TypeScript.
     ring2_eligible: bool
 
 
