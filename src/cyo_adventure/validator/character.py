@@ -6,9 +6,11 @@ namespace rather than extending ``L2-*`` because, like ``SR-*``, they prove a
 cross-artifact handoff rather than a within-story property: the character comes
 from outside the book.
 
-This module ships the rules that need no state-space walk. The remaining
-character rules need one and ship in later tasks of this plan, alongside the
-walk machinery they depend on.
+This module ships every CH-* rule except CH-8. CH-1, CH-2, CH-5, CH-6, and
+CH-7 need no state-space walk; CH-3a, CH-3b, and CH-4 below walk the story
+once per envelope entry state (plus once more for the book's own declared
+initial) to prove a property across the states a seeded reader can actually
+arrive in.
 
 Deliberately not spelled out as literal rule ids: the catalog lockstep guard
 (``tests/unit/test_validator_rules_catalog.py``) scans this file's whole text,
@@ -18,19 +20,27 @@ does not exist yet.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import itertools
+from typing import TYPE_CHECKING, Final
 
+from cyo_adventure.player.engine import StoryEngine
 from cyo_adventure.storybook.character_vocabulary import (
     CANONICAL_CHARACTER_VARIABLES,
 )
+from cyo_adventure.validator.layer2 import ever_visible_choice_ids, validate_layer2
 from cyo_adventure.validator.report import (
     Severity,
     ValidationFinding,
     ValidationReport,
 )
-from cyo_adventure.validator.series import MAX_ENTRY_STATES
+from cyo_adventure.validator.series import (
+    MAX_ENTRY_STATES,
+    satisfying_ending_reachable,
+)
+from cyo_adventure.validator.walk import walk_configurations
 
 if TYPE_CHECKING:
+    from cyo_adventure.storybook.evaluator import VarState
     from cyo_adventure.storybook.models import CharacterRange, Storybook, Variable
 
 
@@ -67,6 +77,20 @@ def validate_character(story: Storybook) -> ValidationReport:
     _check_ch6_uncovered_canonical_names(story, declared, report)
     _check_ch5_envelope_size(story, report)
     _check_ch7_series_exclusivity(story, report)
+
+    # CH-3a/CH-3b/CH-4 walk the story once per envelope entry state. Tier-1
+    # mirrors Layer 2's own short-circuit (`validate_layer2` returns an empty
+    # report for `story.metadata.tier == 1`), and a Tier-1 book can only reach
+    # this branch with an empty envelope in the first place (any canonical
+    # name in `accepts_character` would already be a CH-1 "no variable of
+    # that name" finding, since Tier-1 stories declare no variables at all),
+    # so skipping the walk here costs nothing a Tier-1 book could use anyway.
+    if story.metadata.tier != 1:
+        states = envelope_states(story.accepts_character or {})
+        _check_ch3a_union_dead_branches(story, states, report)
+        _check_ch3b_per_state_regressions(story, states, report)
+        _check_ch4_satisfying_ending_reachable(story, states, report)
+
     return report
 
 
@@ -302,6 +326,197 @@ def _check_ch7_series_exclusivity(story: Storybook, report: ValidationReport) ->
                     f"CH-7 character: book {series.book_index} of "
                     f"state-carrying series '{series.series_id}' may not also "
                     f"declare accepts_character"
+                ),
+            )
+        )
+
+
+def envelope_states(envelope: dict[str, CharacterRange]) -> list[VarState]:
+    """Enumerate every distinct entry state a character envelope admits.
+
+    The Cartesian product of each variable's inclusive range, in sorted
+    variable-name order for determinism. An empty envelope returns a single
+    empty-dict state (the empty assignment), matching :func:`envelope_size`'s
+    convention that an opted-in-with-nothing-declared book still has exactly
+    one state: the book's own declared initials.
+
+    Args:
+        envelope: The parsed ``accepts_character`` mapping.
+
+    Returns:
+        list[VarState]: One dict per distinct entry state. Bounded by
+        :data:`~cyo_adventure.validator.series.MAX_ENTRY_STATES` in practice,
+        because CH-5 already errors on any envelope admitting more; this
+        function does not itself enforce the cap, so it is not safe to call
+        on an envelope CH-5 has flagged without also checking CH-5's result.
+    """
+    names = sorted(envelope)
+    ranges = [range(envelope[name].min, envelope[name].max + 1) for name in names]
+    return [
+        dict(zip(names, combination, strict=True))
+        for combination in itertools.product(*ranges)
+    ]
+
+
+def _check_ch3a_union_dead_branches(
+    story: Storybook, states: list[VarState], report: ValidationReport
+) -> None:
+    """CH-3a: a conditional choice invisible across every configuration, union-wide.
+
+    L2-11 already proves this from the book's own declared initials alone.
+    This rule extends the same "is this choice ever visible" test to the
+    union of the baseline walk and a walk from every envelope entry state,
+    because a choice a non-carried reader would never see might still be
+    reachable for a reader who arrives already carrying some variable value,
+    or vice versa (a book whose own internal effects, not any envelope state,
+    set the variable in question can make a choice visible from the baseline
+    walk alone, as in the "six-way archetype" fixture in
+    ``tests/unit/test_character_rules.py``).
+
+    Deliberately union-quantified rather than per-state: a choice invisible
+    in one envelope state but visible in another (or at baseline) is not
+    dead, it is state-gated exactly as its condition intends. Reporting it
+    per state would rediscover every legitimately state-gated choice in a
+    book like the six-way fixture as a false dead branch.
+    """
+    engine = StoryEngine(story)
+    ever_visible = ever_visible_choice_ids(walk_configurations(story), engine)
+    for state in states:
+        ever_visible |= ever_visible_choice_ids(
+            walk_configurations(story, carried=state), engine
+        )
+
+    for node in story.nodes:
+        for choice in node.choices:
+            if choice.condition is None:
+                continue  # unconditional choices are never dead branches
+            if choice.id in ever_visible:
+                continue
+            report.add(
+                ValidationFinding(
+                    rule_id="CH-3a",
+                    severity=Severity.ERROR,
+                    story_id=story.id,
+                    node_id=node.id,
+                    choice_id=choice.id,
+                    message=(
+                        f"CH-3a character: choice '{choice.id}' on node "
+                        f"'{node.id}' is never visible in the baseline walk "
+                        f"or in any of the {len(states)} accepts_character "
+                        f"entry states, in story '{story.id}'"
+                    ),
+                )
+            )
+
+
+_PER_STATE_RULES: Final[frozenset[str]] = frozenset({"L2-9", "L2-10", "L2-14"})
+
+
+def _signature(finding: ValidationFinding) -> str:
+    """Return an identity for a Layer-2 finding, for baseline diffing.
+
+    #ASSUME: data integrity: this deliberately includes ``message``, unlike
+    ``series._l2_error_signatures``'s ``rule_id|node_id`` (SR-9 needs to match
+    the SAME structural defect across a DIFFERENT var_state: a continuation's
+    carried state is almost never equal to the receiving book's own declared
+    initial, so a message, which embeds var_state, would never match there
+    even for the same defect). CH-3b's comparison runs the other way: it
+    diffs each envelope state's findings against this SAME book's own
+    baseline, and none of L2-9, L2-10, or L2-14 (``_PER_STATE_RULES``) ever
+    set ``choice_id`` (only L2-11 does, and L2-11 is CH-3a's rule). Without
+    the message, two dead ends on the same node at two different var_states
+    collapse into one signature, and a reader who arrives at a var_state the
+    book's own baseline never suffers gets silently waved through as "already
+    known". Including the message, which embeds var_state, is what lets a
+    truly new per-state defect survive the diff while the book's own,
+    already-known baseline defect still gets suppressed.
+    #VERIFY: test_ch3b_distinguishes_two_dead_branches_on_one_node exercises
+    this directly; docs/planning/authoring-lessons-log.md records the
+    fixture/signature investigation that found the weaker signature masks it.
+
+    Args:
+        finding: A Layer-2 ``ValidationFinding``.
+
+    Returns:
+        str: A signature stable across runs for the same book and var_state.
+    """
+    return (
+        f"{finding.rule_id}|{finding.node_id or ''}|{finding.choice_id or ''}"
+        f"|{finding.message}"
+    )
+
+
+def _render_state(state: VarState) -> str:
+    """Render an entry state compactly and deterministically for a message."""
+    return "{" + ", ".join(f"{name}={state[name]}" for name in sorted(state)) + "}"
+
+
+def _check_ch3b_per_state_regressions(
+    story: Storybook, states: list[VarState], report: ValidationReport
+) -> None:
+    """CH-3b: an envelope entry state must not introduce a new per-state defect.
+
+    L2-9 (stateful dead end), L2-10 (loop escape), and L2-14 (all-forbidden
+    decision) are per-state properties: whether a configuration is a dead
+    end, cannot escape, or offers only forbidden outcomes depends on the
+    variable state it is reached in, unlike L2-11's union-wide "ever visible"
+    question (CH-3a's rule). A book may already carry one of these defects
+    from its own declared initials; that is this book's own accepted
+    baseline, not a regression the envelope introduced. This rule walks each
+    envelope state, and reports only the L2-9/L2-10/L2-14 findings that do
+    not also appear in the baseline walk, per :func:`_signature`.
+    """
+    baseline = {
+        _signature(finding)
+        for finding in validate_layer2(story).errors
+        if finding.rule_id in _PER_STATE_RULES
+    }
+    for state in states:
+        for finding in validate_layer2(story, carried=state).errors:
+            if finding.rule_id not in _PER_STATE_RULES:
+                continue
+            if _signature(finding) in baseline:
+                continue
+            report.add(
+                ValidationFinding(
+                    rule_id="CH-3b",
+                    severity=Severity.ERROR,
+                    story_id=story.id,
+                    node_id=finding.node_id,
+                    choice_id=finding.choice_id,
+                    message=(
+                        f"CH-3b character: accepts_character entry state "
+                        f"{_render_state(state)} raises {finding.rule_id}, "
+                        f"which this book's own baseline walk does not: "
+                        f"{finding.message}"
+                    ),
+                )
+            )
+
+
+def _check_ch4_satisfying_ending_reachable(
+    story: Storybook, states: list[VarState], report: ValidationReport
+) -> None:
+    """CH-4: every envelope entry state must still be able to reach a win.
+
+    Reuses SR-5's own reachability test
+    (:func:`~cyo_adventure.validator.series.satisfying_ending_reachable`)
+    rather than a second implementation, so "the reader can still win" cannot
+    silently drift between the series continuation case and the character
+    envelope case.
+    """
+    for state in states:
+        if satisfying_ending_reachable(story, state):
+            continue
+        report.add(
+            ValidationFinding(
+                rule_id="CH-4",
+                severity=Severity.ERROR,
+                story_id=story.id,
+                message=(
+                    f"CH-4 character: accepts_character entry state "
+                    f"{_render_state(state)} cannot reach any satisfying "
+                    f"ending, in story '{story.id}'"
                 ),
             )
         )

@@ -275,3 +275,331 @@ def test_a_ch_error_blocks_the_gate() -> None:
     result = run_gate(data)
     assert any(f.rule_id == "CH-2" for f in result.report.findings)
     assert result.blocked is True
+
+
+# ---------------------------------------------------------------------------
+# CH-3a / CH-3b / CH-4: the walk-based envelope rules
+# ---------------------------------------------------------------------------
+
+
+def _six_way_archetype_story(**overrides: Any) -> dict[str, Any]:
+    """A Tier-2 story whose own graph, not any carried envelope, sets ``archetype``.
+
+    "gate" offers two choices: "build" (visible only at ``archetype == 0``,
+    the declared initial) and "to_hall" (visible only at ``archetype != 0``).
+    "build" leads to a node offering six unconditional picks, one per
+    archetype code, each of which sets ``archetype`` and loops back to
+    "gate" rather than going straight to "hall". That loop-back is load
+    bearing: it is what makes "to_hall" visible from the single
+    declared-initial walk (once "gate" is revisited with
+    ``archetype != 0``), with no envelope state required at all. Sending
+    ``pick_i`` straight to "hall" instead would leave "to_hall" invisible in
+    every configuration of that single walk (nothing else ever revisits
+    "gate" at a nonzero archetype), which is a genuine L2-11 dead branch at
+    baseline, not the envelope-only scenario this fixture exists to isolate.
+
+    This is exactly the fixture CH-3a's union quantification needs: a naive
+    per-state check, walking each of the seven envelope states
+    (``archetype`` 0-6) in isolation, would flag "build" as dead in every
+    ``archetype != 0`` state (nothing in that single-state walk ever sets
+    archetype back to 0) and flag "to_hall" as dead in the ``archetype == 0``
+    state. Taking the union across the baseline walk and all seven envelope
+    walks together correctly recognises both choices are visible somewhere,
+    so CH-3a stays silent; a per-state check would reject what the union
+    check accepts.
+    """
+    data: dict[str, Any] = {
+        "schema_version": "2.1",
+        "id": "ch-six-way",
+        "version": 1,
+        "title": "Six Way",
+        "metadata": {
+            "age_band": "13-16",
+            "reading_level": {
+                "scheme": "flesch_kincaid",
+                "target": 6.0,
+                "tolerance": 1.0,
+            },
+            "tier": 2,
+            "estimated_minutes": 5,
+            "ending_count": 1,
+            "topology": "loop_and_grow",
+        },
+        "variables": [
+            {"name": "archetype", "type": "int", "initial": 0, "min": 0, "max": 6},
+        ],
+        "accepts_character": {"archetype": {"min": 0, "max": 6}},
+        "start_node": "gate",
+        "nodes": [
+            {
+                "id": "gate",
+                "body": "A gate stands before you.",
+                "choices": [
+                    {
+                        "id": "build",
+                        "label": "Choose who you are.",
+                        "target": "build",
+                        "condition": {"==": [{"var": "archetype"}, 0]},
+                    },
+                    {
+                        "id": "to_hall",
+                        "label": "Enter the hall.",
+                        "target": "hall",
+                        "condition": {"!=": [{"var": "archetype"}, 0]},
+                    },
+                ],
+            },
+            {
+                "id": "build",
+                "body": "Pick who you will be.",
+                "choices": [
+                    {
+                        "id": f"pick_{i}",
+                        "label": f"Become archetype {i}.",
+                        "target": "gate",
+                        "effects": [{"op": "set", "var": "archetype", "value": i}],
+                    }
+                    for i in range(1, 7)
+                ],
+            },
+            {
+                "id": "hall",
+                "body": "You arrive in the hall.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e_hall",
+                    "kind": "success",
+                    "valence": "positive",
+                    "title": "You Arrive",
+                },
+            },
+        ],
+    }
+    data.update(overrides)
+    return data
+
+
+def test_ch3a_accepts_what_a_per_state_check_would_reject() -> None:
+    data = _six_way_archetype_story()
+    assert _ids(Storybook.model_validate(data), "CH-3a") == []
+
+
+def test_the_six_way_book_passes_the_existing_gate_from_declared_initials() -> None:
+    """L2-11 (the existing, non-envelope-aware dead-branch check) stays clean.
+
+    Pins that the six-way fixture's own graph, walked only from its declared
+    initial (no carried state at all), already makes every choice visible.
+    If this regresses, the fixture itself is broken and the CH-3a tests above
+    would not be testing what they claim to.
+    """
+    data = _six_way_archetype_story()
+    result = run_gate(data)
+    assert [f.rule_id for f in result.report.findings if f.rule_id == "L2-11"] == []
+
+
+def test_ch3a_reports_a_branch_invisible_in_every_state() -> None:
+    """A choice gated on an impossible value is dead in the union too.
+
+    ``archetype`` never carries 7: the canonical vocabulary and this story's
+    own declared bounds both cap it at 6. A choice visible only at
+    ``archetype == 7`` is therefore invisible in the baseline walk and in
+    every one of the seven envelope states, so it is dead under the union
+    quantification too, unlike the six legitimate branches above.
+    """
+    data = _six_way_archetype_story()
+    data["nodes"][0]["choices"].append(
+        {
+            "id": "to_secret",
+            "label": "Slip through a secret door.",
+            "target": "hall",
+            "condition": {"==": [{"var": "archetype"}, 7]},
+        }
+    )
+    assert len(_ids(Storybook.model_validate(data), "CH-3a")) >= 1
+
+
+def _masked_second_dead_end_story(**overrides: Any) -> dict[str, Any]:
+    """A book with one baseline L2-9 defect that a naive signature would hide again.
+
+    "hold" is a stateful dead end at the declared initial (``might == 0``):
+    its only choice, "leave", needs ``might == 1``. That is a real, pre-existing
+    defect in this book's own baseline walk (accepted here, not fixed, so the
+    fixture can prove CH-3b distinguishes it from a *new* one). At
+    ``might == 2`` "leave" is still invisible (``2 != 1``), so "hold" is a
+    dead end there too, for the reader's own accepts_character-carried
+    reason, not the book's.
+
+    Neither L2-9 finding ever sets ``choice_id`` (only L2-11 does), so the
+    ``rule_id|node_id|choice_id`` signature is identical for both:
+    ``L2-9|hold|``. A signature built from only those three fields cannot
+    tell "the book's own known defect" apart from "a new defect this reader's
+    carried state introduces" when both land on the same node, which is
+    exactly the masking this fixture is built to exercise.
+    """
+    data: dict[str, Any] = {
+        "schema_version": "2.1",
+        "id": "ch-masked-dead-end",
+        "version": 1,
+        "title": "Masked Dead End",
+        "metadata": {
+            "age_band": "13-16",
+            "reading_level": {
+                "scheme": "flesch_kincaid",
+                "target": 6.0,
+                "tolerance": 1.0,
+            },
+            "tier": 2,
+            "estimated_minutes": 5,
+            "ending_count": 1,
+            "topology": "gauntlet",
+        },
+        "variables": [
+            {"name": "might", "type": "int", "initial": 0, "min": 0, "max": 2},
+        ],
+        "accepts_character": {"might": {"min": 0, "max": 2}},
+        "start_node": "start",
+        "nodes": [
+            {
+                "id": "start",
+                "body": "You approach a locked door.",
+                "choices": [
+                    {
+                        "id": "wait_here",
+                        "label": "Wait by the door.",
+                        "target": "hold",
+                    }
+                ],
+            },
+            {
+                "id": "hold",
+                "body": "You wait, hoping for a way through.",
+                "choices": [
+                    {
+                        "id": "leave",
+                        "label": "Force the door open.",
+                        "target": "win",
+                        "condition": {"==": [{"var": "might"}, 1]},
+                    }
+                ],
+            },
+            {
+                "id": "win",
+                "body": "The door gives way.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e_win",
+                    "kind": "success",
+                    "valence": "positive",
+                    "title": "Through",
+                },
+            },
+        ],
+    }
+    data.update(overrides)
+    return data
+
+
+def test_ch3b_distinguishes_two_dead_branches_on_one_node() -> None:
+    """The might == 2 dead end at "hold" must survive baseline diffing.
+
+    ``might == 0`` (the declared initial) reproduces the book's own baseline
+    defect and must stay suppressed; ``might == 1`` is clean ("leave" becomes
+    visible); ``might == 2`` is a second, genuinely different dead end on the
+    same node that a ``rule_id|node_id|choice_id``-only signature would wrongly
+    collapse into the baseline one, because L2-9 never sets ``choice_id``.
+    """
+    data = _masked_second_dead_end_story()
+    assert len(_ids(Storybook.model_validate(data), "CH-3b")) >= 1
+
+
+def _unreachable_win_for_one_state_story(**overrides: Any) -> dict[str, Any]:
+    """A book where only ``might == 2`` can still reach its satisfying ending.
+
+    "branch" offers exactly one visible choice per state: "advance"
+    (``might >= 2``) reaches the success ending "win"; "retreat"
+    (``might < 2``) reaches the setback ending "lose". A reader carried in at
+    ``might`` 0 or 1 can therefore never reach "win"; only ``might == 2`` can.
+    """
+    data: dict[str, Any] = {
+        "schema_version": "2.1",
+        "id": "ch-narrow-win",
+        "version": 1,
+        "title": "Narrow Win",
+        "metadata": {
+            "age_band": "13-16",
+            "reading_level": {
+                "scheme": "flesch_kincaid",
+                "target": 6.0,
+                "tolerance": 1.0,
+            },
+            "tier": 2,
+            "estimated_minutes": 5,
+            "ending_count": 2,
+            "topology": "branch_and_bottleneck",
+        },
+        "variables": [
+            {"name": "might", "type": "int", "initial": 0, "min": 0, "max": 2},
+        ],
+        "accepts_character": {"might": {"min": 0, "max": 2}},
+        "start_node": "branch",
+        "nodes": [
+            {
+                "id": "branch",
+                "body": "You size up the wall.",
+                "choices": [
+                    {
+                        "id": "advance",
+                        "label": "Climb over.",
+                        "target": "win",
+                        "condition": {">=": [{"var": "might"}, 2]},
+                    },
+                    {
+                        "id": "retreat",
+                        "label": "Turn back.",
+                        "target": "lose",
+                        "condition": {"<": [{"var": "might"}, 2]},
+                    },
+                ],
+            },
+            {
+                "id": "win",
+                "body": "You clear the wall.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e_win",
+                    "kind": "success",
+                    "valence": "positive",
+                    "title": "Over",
+                },
+            },
+            {
+                "id": "lose",
+                "body": "You turn back, wall unclimbed.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e_lose",
+                    "kind": "setback",
+                    "valence": "negative",
+                    "title": "Turned Back",
+                },
+            },
+        ],
+    }
+    data.update(overrides)
+    return data
+
+
+def test_ch4_reports_the_states_that_cannot_win() -> None:
+    data = _unreachable_win_for_one_state_story()
+    assert len(_ids(Storybook.model_validate(data), "CH-4")) == 2
+
+
+def test_ch4_is_silent_when_every_state_can_win() -> None:
+    """Reuses the six-way fixture: "hall" is reachable from all seven states.
+
+    The six-way graph loops every archetype value back through "gate" and on
+    to "hall", so a satisfying ending is reachable from the baseline and
+    every one of the seven envelope states; CH-4 must not flag any of them.
+    """
+    data = _six_way_archetype_story()
+    assert _ids(Storybook.model_validate(data), "CH-4") == []

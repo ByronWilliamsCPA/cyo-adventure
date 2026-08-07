@@ -345,8 +345,15 @@ def _l2_error_signatures(book: Storybook, carried: VarState | None) -> set[str]:
     return {f"{finding.rule_id}|{finding.node_id or ''}" for finding in report.errors}
 
 
-def _satisfying_ending_reachable(book: Storybook, carried: VarState) -> bool:
+def satisfying_ending_reachable(book: Storybook, carried: VarState) -> bool:
     """Whether a satisfying ending is still reachable entering with ``carried``.
+
+    Public: CH-4 (``validator/character.py``) imports this same reachability
+    test to check every envelope entry state can still win, rather than
+    maintaining a second implementation of "the reader can still win" that
+    could silently drift from SR-9's. Exported under a public name for the
+    same reason as ``MAX_ENTRY_STATES`` above; ``_satisfying_ending_reachable``
+    keeps this module's own SR-9 caller unchanged.
 
     Args:
         book: The receiving book.
@@ -366,6 +373,9 @@ def _satisfying_ending_reachable(book: Storybook, carried: VarState) -> bool:
         if node.ending is not None and node.ending.kind in _SATISFYING_KINDS
     }
     return any(key[0] in satisfying for key in result.configs)
+
+
+_satisfying_ending_reachable = satisfying_ending_reachable
 
 
 def _check_continuation_entry_states(
