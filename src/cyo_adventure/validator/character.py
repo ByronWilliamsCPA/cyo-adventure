@@ -9,15 +9,12 @@ from outside the book.
 CH-1, CH-2, CH-5, CH-6, and CH-7 need no state-space walk; CH-3a, CH-3b, and
 CH-4 below walk the story once per envelope entry state (plus once more for
 the book's own declared initial) to prove a property across the states a
-seeded reader can actually arrive in. The Character Envelope catalog section
-holds one further id in reserve for a rule this module does not implement;
-see its RESERVED row in ``docs/planning/validator-rules.md``.
-
-That reserved id is deliberately not spelled out by number here: the catalog
-lockstep guard (``tests/unit/test_validator_rules_catalog.py``) scans this
-file's whole text for anything that looks like a rule id, so naming an
-unimplemented id in prose would make the guard treat it as shipped and skip
-the very RESERVED-row check that keeps it honest.
+seeded reader can actually arrive in. CH-8 walks the story once more, always
+against the book's own declared initials (never an envelope entry state), to
+catch a build node whose branching would multiply that single baseline walk
+past the cap before ``L2-12`` does; it runs whenever the envelope declares an
+``archetype`` span, independent of the CH-3a/CH-3b/CH-4 walk-rule tier and
+envelope-size gates below.
 """
 
 from __future__ import annotations
@@ -79,6 +76,7 @@ def validate_character(story: Storybook) -> ValidationReport:
     _check_ch6_uncovered_canonical_names(story, declared, report)
     _check_ch5_envelope_size(story, report)
     _check_ch7_series_exclusivity(story, report)
+    _check_ch8_build_node_cost(story, report)
 
     # CH-3a/CH-3b/CH-4 walk the story once per envelope entry state. Tier-1
     # mirrors Layer 2's own short-circuit (`validate_layer2` returns an empty
@@ -605,3 +603,82 @@ def _check_ch4_satisfying_ending_reachable(
                 ),
             )
         )
+
+
+# The walk cap CH-8 divides by. Kept as a module constant rather than read from
+# walk_configurations' default so that changing the walk's cap is a deliberate
+# two-place edit; silently re-deriving this threshold would move the authoring
+# contract without anyone deciding to.
+_WALK_CAP: Final[int] = 100_000
+
+
+def build_node_headroom(story: Storybook, *, arity: int) -> bool:
+    """Report whether a story's base closure can host a build node.
+
+    A declared-but-never-set variable is a constant within a walk and costs
+    nothing. A build node sets ``archetype``, so it takes ``arity`` distinct
+    values along different paths and every downstream node forks that many
+    ways. Measured at 6.00x on ``10-13/the-glass-comet``.
+
+    Args:
+        story: The story to measure.
+        arity: The build node's branching factor, that is, how many distinct
+            values it can set.
+
+    Returns:
+        bool: True if the base closure leaves room for the idiom.
+    """
+    if arity < 1:
+        msg = f"build node arity must be at least 1, got {arity}"
+        raise ValueError(msg)
+    baseline = walk_configurations(story)
+    if baseline.capped:
+        return False
+    return len(baseline.configs) <= _WALK_CAP // arity
+
+
+def _check_ch8_build_node_cost(story: Storybook, report: ValidationReport) -> None:
+    """CH-8: a book too large to host its build node fails before L2-12.
+
+    Without this the author meets the same wall as an opaque L2-12 cap ERROR,
+    which names the walk rather than the cause and offers no fix. The envelope
+    declares the arity, so the check is available pre-flight.
+
+    #CRITICAL: data integrity: ``arity`` is derived from ``span.min``/
+    ``span.max``, both declared, schema-valid, attacker-influenced values from
+    a generation-pipeline artifact. ``CharacterRange`` enforces ``min <=
+    max``, so ``arity`` is never negative, and the ``arity < 1`` guard below
+    (matched by :func:`build_node_headroom`'s own ``ValueError`` guard) rules
+    out the one remaining value, zero, that would make the floor division
+    below a ``ZeroDivisionError``. Neither guard reads a walk; both run before
+    the one call that does (:func:`walk_configurations`, inside
+    :func:`build_node_headroom`), so a book with no archetype envelope, or an
+    envelope with a single-value archetype span, never pays for a walk it has
+    no possible finding from.
+    #VERIFY: tests/unit/test_character_rules.py::
+    test_ch8_is_silent_for_a_single_value_archetype_span
+    """
+    envelope = story.accepts_character or {}
+    span = envelope.get("archetype")
+    if span is None:
+        # Only a mutable in-book variable multiplies the walk. Gamebook stats
+        # are seeded and never set, so they stay constant and cost nothing.
+        return
+    arity = span.max - span.min
+    if arity < 1:
+        return
+    if build_node_headroom(story, arity=arity):
+        return
+    threshold = _WALK_CAP // arity
+    report.add(
+        _finding(
+            story,
+            "CH-8",
+            (
+                f"CH-8 character: a {arity}-way build node needs a base "
+                f"closure at or under {threshold:,} configurations, which "
+                f"this book exceeds; it cannot host the archetype "
+                f"build-node idiom"
+            ),
+        )
+    )

@@ -261,7 +261,7 @@ cross-artifact handoff rather than a within-story property. All are ERROR severi
 | CH-5 | Character | **Envelope size**: the envelope admits no more entry states than `_MAX_ENTRY_STATES`. An ERROR rather than SR-9's truncate-and-warn, because an envelope is declared rather than emergent. | `CH-5 character: accepts_character admits {n} entry states, above the {cap} cap; narrow a range or declare fewer variables` |
 | CH-6 | Character | **Namespace reservation, both directions**: a canonical variable name may be declared only by a book that opted in *and* covered it in the envelope. The opt-out half rejects a book that declares no `accepts_character` but still declares a canonical name (G3 carry is name-match, so a book that never opted in can still be seeded). The opt-in half rejects an opted-in book that declares a canonical-named variable its envelope omits: CH-1 only ever walks envelope -> variable, so this converse direction (variable -> envelope) needs its own check, or an uncovered canonical variable would still be seeded by G3 over states this book's Layer 2 walk never proved. | `CH-6 character: '{name}' is a reserved canonical character variable, but this story declares no accepts_character envelope; rename the variable or opt in` (opt-out half) / `CH-6 character: '{name}' is a reserved canonical character variable declared by this story, but accepts_character does not cover it; add it to the envelope or rename the variable` (opt-in half) |
 | CH-7 | Character | **Series exclusivity**: a book declaring `accepts_character` is not a non-first book of a `carries_state` series. Two independent sources of carried state in one book is unproved in v1. | `CH-7 character: book {index} of state-carrying series '{series_id}' may not also declare accepts_character` |
-| CH-8 | Character | **RESERVED, not implemented here.** Held open for a future character-envelope rule; `validator/character.py` implements CH-1 through CH-7 (plus CH-3a/CH-3b) only. Do not assign this id to an unrelated rule; when a real CH-8 proposal lands, replace this row rather than reusing the number elsewhere. | n/a |
+| CH-8 | Character | **Build-node cost pre-flight**: a book whose base closure exceeds `cap / arity` configurations cannot host an archetype build node. Measured at 6.00x for a six-way node, so the threshold is about 16,600 against the 100,000 walk cap. Fails here with a named cause rather than as an opaque L2-12 cap ERROR. | `CH-8 character: a {arity}-way build node needs a base closure at or under {threshold} configurations, which this book exceeds; it cannot host the archetype build-node idiom` |
 
 ---
 
@@ -280,10 +280,13 @@ The validator applies rules in this order:
    `production_eligible`, so an unclassified story is measured on breadth only.
 3. L2-8 through L2-14 (state-space; Tier-2 only). Stop if any L2 rule fails; L2-13 is a
    non-blocking scale advisory and never stops the run.
-4. CH-1, CH-2, CH-3a, CH-3b, CH-4, CH-5, CH-6, CH-7 (character envelope; ADR-028,
+4. CH-1, CH-2, CH-3a, CH-3b, CH-4, CH-5, CH-6, CH-7, CH-8 (character envelope; ADR-028,
    participating books only). CH-3a, CH-3b, and CH-4 walk the story once per
    `accepts_character` entry state plus once for the baseline, and run only for
-   Tier-2 stories; see `validator/character.py`. CH-8 has not shipped yet.
+   Tier-2 stories; see `validator/character.py`. CH-8 runs one further baseline
+   walk, unconditioned by tier or the CH-3a/CH-3b/CH-4 envelope-size gate above,
+   but only when the envelope declares an `archetype` span; it catches a build
+   node that would multiply that walk past the cap before L2-12 does.
 5. RL-13 (advisory; all stories). Log warnings; continue.
 6. CG-1 through CG-4 (advisory; all stories) **only when `run_gate` is called with
    `enforce_grammar=True`**, which no production caller does today. Log warnings; continue.

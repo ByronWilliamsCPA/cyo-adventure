@@ -7,8 +7,10 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
+import pytest
+
 from cyo_adventure.storybook.models import Storybook
-from cyo_adventure.validator.character import validate_character
+from cyo_adventure.validator.character import build_node_headroom, validate_character
 from cyo_adventure.validator.gate import run_gate
 from cyo_adventure.validator.layer2 import validate_layer2
 from cyo_adventure.validator.report import Severity, ValidationFinding, ValidationReport
@@ -21,6 +23,27 @@ _VALID_TIER2_FIXTURE = (
     / "valid"
     / "03_tier2_lantern.json"
 )
+
+_SKELETONS = Path(__file__).resolve().parents[2] / "skeletons"
+
+
+def _load_skeleton(relative: str) -> Storybook:
+    """Load a catalog skeleton by its band-relative path, without an envelope."""
+    path = _SKELETONS / f"{relative}.json"
+    return Storybook.model_validate(json.loads(path.read_text(encoding="utf-8")))
+
+
+def _load_skeleton_with_archetype(relative: str) -> Storybook:
+    """Load a catalog skeleton and opt it in to a six-way archetype envelope."""
+    path = _SKELETONS / f"{relative}.json"
+    data: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
+    data["schema_version"] = "2.1"
+    data["variables"] = [
+        *data.get("variables", []),
+        {"name": "archetype", "type": "int", "initial": 0, "min": 0, "max": 6},
+    ]
+    data["accepts_character"] = {"archetype": {"min": 0, "max": 6}}
+    return Storybook.model_validate(data)
 
 
 def _story_dict(**overrides: Any) -> dict[str, Any]:
@@ -729,3 +752,84 @@ def test_ch4_is_silent_when_every_state_can_win() -> None:
     """
     data = _six_way_archetype_story()
     assert _ids(Storybook.model_validate(data), "CH-4") == []
+
+
+# ---------------------------------------------------------------------------
+# CH-8: build-node cost pre-flight
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("skeleton", "fits"),
+    [
+        ("10-13/the-glass-comet", True),
+        ("10-13/the-flooded-quarter", False),
+        ("10-13/the-winter-of-the-wolf-queen", False),
+    ],
+)
+def test_ch8_matches_the_measured_catalog_outcomes(skeleton: str, fits: bool) -> None:
+    """CH-8 must reject the two books that cap out, before they reach L2-12.
+
+    Measured 2026-08-05: glass-comet 638 configs goes to 3,829 under the
+    six-way build-node idiom; flooded-quarter (19,236) and
+    winter-of-the-wolf-queen (28,512) both cap.
+    """
+    story = _load_skeleton(skeleton)
+    assert build_node_headroom(story, arity=6) is fits
+
+
+def test_ch8_reports_a_book_that_cannot_host_its_build_node() -> None:
+    story = _load_skeleton_with_archetype("10-13/the-flooded-quarter")
+    findings = [f for f in validate_character(story).findings if f.rule_id == "CH-8"]
+    assert len(findings) == 1
+    assert "16,666" in findings[0].message
+
+
+def test_ch8_is_silent_for_a_book_with_headroom() -> None:
+    story = _load_skeleton_with_archetype("10-13/the-glass-comet")
+    assert [f for f in validate_character(story).findings if f.rule_id == "CH-8"] == []
+
+
+def test_ch8_is_silent_when_the_envelope_has_no_archetype_span() -> None:
+    """CH-8 returns early without a walk when accepts_character omits archetype.
+
+    Distinct from ``test_ch8_is_silent_for_a_book_with_headroom`` above: this
+    proves the *early-return* path (no ``archetype`` key at all), not the
+    walk-and-compare path. Reuses ``might``, which every catalog book's own
+    CH-1/CH-2 tests already exercise, so a mutation that deleted the ``span
+    is None`` guard would surface here as a spurious walk over an unrelated
+    variable rather than as a wrong finding.
+    """
+    data = _story_dict(accepts_character={"might": {"min": 0, "max": 2}})
+    findings = [
+        f
+        for f in validate_character(Storybook.model_validate(data)).findings
+        if f.rule_id == "CH-8"
+    ]
+    assert findings == []
+
+
+def test_ch8_is_silent_for_a_single_value_archetype_span() -> None:
+    """A 0-0 archetype span is arity 0: never a build node, never a walk.
+
+    Guards the ``arity < 1`` early return, the twin of
+    :func:`build_node_headroom`'s own ``ValueError`` guard for the same input.
+    """
+    data = _story_dict()
+    data["variables"] = [
+        {"name": "archetype", "type": "int", "initial": 0, "min": 0, "max": 0},
+    ]
+    data["accepts_character"] = {"archetype": {"min": 0, "max": 0}}
+    findings = [
+        f
+        for f in validate_character(Storybook.model_validate(data)).findings
+        if f.rule_id == "CH-8"
+    ]
+    assert findings == []
+
+
+def test_build_node_headroom_rejects_arity_below_one() -> None:
+    data = _story_dict()
+    story = Storybook.model_validate(data)
+    with pytest.raises(ValueError, match="arity must be at least 1"):
+        build_node_headroom(story, arity=0)
