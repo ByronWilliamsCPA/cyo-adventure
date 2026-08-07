@@ -287,7 +287,11 @@ def _check_state_carry(series_books: list[_Book], report: ValidationReport) -> N
 # one is unbounded work for a rule whose job is to catch a broken handoff, not to
 # enumerate one. When the cap bites, SR-9 says so rather than reporting a clean
 # chain over a truncated sample.
-_MAX_ENTRY_STATES = 64
+#
+# Public: CH-5 (validator/character.py) imports this same cap for the character
+# envelope. It is exported under a public name rather than accessed by importing
+# ``validator/character.py`` across the module's private-name boundary.
+MAX_ENTRY_STATES = 64
 
 
 def _satisfying_exit_states(book: Storybook) -> tuple[list[VarState], bool]:
@@ -299,7 +303,7 @@ def _satisfying_exit_states(book: Storybook) -> tuple[list[VarState], bool]:
     Returns:
         tuple: The distinct exit states (deduplicated, deterministically
             ordered), and whether the walk capped or the state list was
-            truncated at :data:`_MAX_ENTRY_STATES`.
+            truncated at :data:`MAX_ENTRY_STATES`.
     """
     result = walk_configurations(book)
     endings = {
@@ -317,7 +321,7 @@ def _satisfying_exit_states(book: Storybook) -> tuple[list[VarState], bool]:
             continue
         seen.add(signature)
         states.append(dict(reading_state.var_state))
-        if len(states) >= _MAX_ENTRY_STATES:
+        if len(states) >= MAX_ENTRY_STATES:
             return states, True
     return states, result.capped
 
@@ -339,8 +343,15 @@ def _l2_error_signatures(book: Storybook, carried: VarState | None) -> set[str]:
     return {f"{finding.rule_id}|{finding.node_id or ''}" for finding in report.errors}
 
 
-def _satisfying_ending_reachable(book: Storybook, carried: VarState) -> bool:
+def satisfying_ending_reachable(book: Storybook, carried: VarState) -> bool:
     """Whether a satisfying ending is still reachable entering with ``carried``.
+
+    Public: CH-4 (``validator/character.py``) imports this same reachability
+    test to check every envelope entry state can still win, rather than
+    maintaining a second implementation of "the reader can still win" that
+    could silently drift from SR-9's. Exported under a public name for the
+    same reason as ``MAX_ENTRY_STATES`` above; ``_satisfying_ending_reachable``
+    keeps this module's own SR-9 caller unchanged.
 
     Args:
         book: The receiving book.
@@ -360,6 +371,9 @@ def _satisfying_ending_reachable(book: Storybook, carried: VarState) -> bool:
         if node.ending is not None and node.ending.kind in _SATISFYING_KINDS
     }
     return any(key[0] in satisfying for key in result.configs)
+
+
+_satisfying_ending_reachable = satisfying_ending_reachable
 
 
 def _check_continuation_entry_states(
@@ -430,7 +444,7 @@ def _check_continuation_entry_states(
                     story_id=book.id,
                     message=(
                         f"SR-9 series: book {series.book_index} '{book.id}' has more "
-                        f"than {_MAX_ENTRY_STATES} distinct satisfying exit states or "
+                        f"than {MAX_ENTRY_STATES} distinct satisfying exit states or "
                         f"capped its walk, so the continuation handoff into "
                         f"'{receiver.id}' was checked over a truncated sample"
                     ),

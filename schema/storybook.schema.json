@@ -13,6 +13,40 @@
       "title": "AgeBand",
       "type": "string"
     },
+    "CharacterRange": {
+      "additionalProperties": false,
+      "description": "One variable's accepted range in a book's character envelope.\n\nBounds are inclusive on both ends, matching ``Variable.min``/``Variable.max``,\nincluding at the type level: ``min``/``max`` are typed ``bool | int`` (not\nplain ``int``) and checked with the same ``_check_story_int_bound`` helper\n``Variable`` uses, so a declared JSON ``true``/``false`` is rejected\nexplicitly instead of being silently coerced to ``1``/``0``, and the\n``MAX_ABS_STORY_INT`` magnitude cap applies here exactly as it does to\n``Variable``. CH-2 requires this range to *equal* the declared variable's\nbounds rather than merely sit inside them: G3's runtime clamp is to\ndeclared bounds, so a narrower envelope would let the runtime admit states\nthe validator never walked, invisibly.",
+      "properties": {
+        "max": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "title": "Max"
+        },
+        "min": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "title": "Min"
+        }
+      },
+      "required": [
+        "min",
+        "max"
+      ],
+      "title": "CharacterRange",
+      "type": "object"
+    },
     "Choice": {
       "additionalProperties": false,
       "description": "A reader-facing choice edge from one node to a target node.",
@@ -539,6 +573,21 @@
   "additionalProperties": false,
   "description": "A complete, versioned branching story graph.",
   "properties": {
+    "accepts_character": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/CharacterRange"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Accepts Character"
+    },
     "id": {
       "minLength": 1,
       "title": "Id",
@@ -556,7 +605,7 @@
       "type": "array"
     },
     "schema_version": {
-      "default": "2.0",
+      "default": "2.1",
       "title": "Schema Version",
       "type": "string"
     },

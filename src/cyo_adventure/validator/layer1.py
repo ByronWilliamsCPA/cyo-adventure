@@ -27,6 +27,8 @@ from cyo_adventure.storybook.condition import (
     referenced_vars,
     validate_condition,
 )
+from cyo_adventure.storybook.field_minors import FIELD_MINORS
+from cyo_adventure.storybook.models import SCHEMA_MAJOR, parse_schema_version
 from cyo_adventure.storybook.schema_export import build_schema
 from cyo_adventure.validator.band_profile import (
     mvp_node_budget,
@@ -285,6 +287,7 @@ def validate_layer1(
     report = ValidationReport()
     story = _Story(data)
     _check_schema(data, story, report)
+    _check_field_minors(data, story.story_id, report)
     _check_references(story, report)
     _check_logic(story, report)
     if story.start_node is not None and story.nodes:
@@ -311,6 +314,57 @@ def _check_schema(
                 message=(
                     f"L1-1 schema: document does not conform to Storybook schema "
                     f"at '{location}': {error.message}"
+                ),
+            )
+        )
+
+
+def _check_field_minors(
+    data: Mapping[str, object], story_id: str, report: ValidationReport
+) -> None:
+    """L1-8: a document must declare a minor covering the fields it uses.
+
+    ``extra="forbid"`` catches a field this build does not know. It cannot
+    catch the opposite error, a document that uses a field this build *does*
+    know while declaring an older minor that did not define it, because the
+    field parses cleanly. That document is invalid under ADR-025 decision 3 and
+    would otherwise be admitted silently.
+
+    Reads the raw mapping rather than a parsed model on purpose: after parsing,
+    an absent field and an explicit ``null`` are indistinguishable, and both
+    are uses of the key as far as the declared minor is concerned.
+
+    Args:
+        data: The raw decoded story mapping.
+        story_id: Story id for the finding, best-effort from the raw mapping.
+        report: Report to append findings to.
+    """
+    raw_version = data.get("schema_version")
+    if not isinstance(raw_version, str):
+        # A missing or non-string version is L1-1's finding to report. Emitting
+        # a second finding here would only add noise to the same defect.
+        return
+    try:
+        _, declared_minor = parse_schema_version(raw_version)
+    except ValueError:
+        # Same reasoning: L1-1 owns malformed-version reporting.
+        return
+
+    for field, introduced_at in sorted(FIELD_MINORS.items()):
+        if field not in data:
+            continue
+        if declared_minor >= introduced_at:
+            continue
+        report.add(
+            ValidationFinding(
+                rule_id="L1-8",
+                severity=Severity.ERROR,
+                story_id=story_id,
+                message=(
+                    f"L1-8 schema: field '{field}' was introduced at schema "
+                    f"minor {introduced_at}, but this document declares "
+                    f"'{raw_version}'; stamp it at least "
+                    f"{SCHEMA_MAJOR}.{introduced_at}"
                 ),
             )
         )

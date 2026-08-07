@@ -669,6 +669,13 @@ Deliberately gated so the owner can stop after any phase with value banked.
    sharp and needs the Phase 2 lint before more content.
 4. Safety: zero new moderation findings attributable to the mechanics layer.
 
+**Ruling (2026-08-05): GO.** The owner ruled GO on SQ-22 and gate OG5. The design is recorded in
+[ADR-028](./adr/adr-028-persistent-reader-characters.md) and specified in
+[2026-08-05-persistent-reader-characters-design.md](../superpowers/specs/2026-08-05-persistent-reader-characters-design.md).
+Phase 1's exit criterion, a participating book staying under 25% of the configuration cap, is retained as a
+pilot gate; the largest book in the catalog today sits at 51%, so it is a real constraint on which skeletons
+can participate.
+
 ## 9. Honest bottom line
 
 The surprising finding of this exploration is how little needs to be

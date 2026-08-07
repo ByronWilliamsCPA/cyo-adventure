@@ -625,6 +625,32 @@ def _check_loop_escape(
         report.add(_l2_10_finding(ctx.story_id, node_id, var_state))
 
 
+def ever_visible_choice_ids(result: WalkResult, engine: StoryEngine) -> set[str]:
+    """Return the set of choice ids that are visible in at least one config.
+
+    Public: CH-3a (``validator/character.py``) imports this same primitive to
+    reuse L2-11's "is this choice ever reachable" test over walks it runs
+    itself (one baseline walk plus one walk per envelope entry state), rather
+    than duplicating the traversal. It is exported under a public name rather
+    than accessed by importing ``validator/layer2.py``'s private-name
+    boundary; ``_ever_visible_choice_ids`` below keeps this module's own
+    ``_WalkContext``-based caller unchanged.
+
+    Args:
+        result: A completed walk's configuration/edge closure.
+        engine: A ``StoryEngine`` for the same story the walk was run over.
+
+    Returns:
+        set[str]: Every choice id that engine.visible_choices returned for any
+            configuration in ``result``.
+    """
+    ever_visible: set[str] = set()
+    for rs in result.configs.values():
+        for choice in engine.visible_choices(rs):
+            ever_visible.add(choice.id)
+    return ever_visible
+
+
 def _ever_visible_choice_ids(ctx: _WalkContext) -> set[str]:
     """Return the set of choice ids that are visible in at least one config.
 
@@ -635,11 +661,7 @@ def _ever_visible_choice_ids(ctx: _WalkContext) -> set[str]:
         set[str]: Every choice id that engine.visible_choices returned for any
             reachable configuration.
     """
-    ever_visible: set[str] = set()
-    for _, rs in _configs_as_reading_states(ctx):
-        for choice in ctx.engine.visible_choices(rs):
-            ever_visible.add(choice.id)
-    return ever_visible
+    return ever_visible_choice_ids(ctx.result, ctx.engine)
 
 
 def _reachable_node_ids(ctx: _WalkContext) -> set[str]:

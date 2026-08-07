@@ -36,11 +36,23 @@ from cyo_adventure.core.exceptions import ProjectBaseError, ValidationError
 from cyo_adventure.db.models import CATALOG_FAMILY_ID, Storybook
 from cyo_adventure.generation.import_story import ImportRequest, import_filled_story
 from cyo_adventure.generation.skeleton_match import resolve_skeleton_path
+from cyo_adventure.storybook.models import (
+    SCHEMA_MAJOR,
+    SCHEMA_MINOR,
+    parse_schema_version,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from sqlalchemy.ext.asyncio import AsyncSession
+
+# ADR-025 decision 3 (no backfill): a normalized legacy fill gains no field
+# beyond 2.0, so it is stamped at 2.0 rather than at the current minor.
+# Stamping it higher would claim semantics the document does not have. This
+# is deliberately NOT SCHEMA_VERSION and must not be changed when the minor
+# is bumped.
+LEGACY_NORMALIZED_SCHEMA_VERSION = "2.0"
 
 _DEFAULT_MODEL = "catalog-import"
 _PROMPT_VERSION = "catalog-import-v1"
@@ -299,11 +311,30 @@ def _load_blob(repo_root: Path, rel_path: str) -> dict[str, object]:
 def _needs_legacy_normalization(blob: dict[str, object]) -> bool:
     """Detect the older Storybook shape structurally, not by filename.
 
-    A legacy blob is missing the (now-required) ``metadata.topology`` field,
-    or declares a ``schema_version`` other than the current "2.0". Detecting
-    this structurally (rather than hardcoding the 3 known filenames) means
-    any future manifest entry with the same stale shape is caught
-    automatically instead of silently failing the gate.
+    Exactly two things make a blob legacy: a ``schema_version`` key that is
+    absent entirely (the pre-versioning shape), or one naming a major below
+    :data:`SCHEMA_MAJOR`. Everything else is either supported or refused, and
+    the difference matters because "legacy" here means "rewrite it".
+
+    A version this build cannot parse is deliberately NOT legacy. That covers
+    a higher major ("3.0"), a future same-major minor ("2.1" when
+    :data:`SCHEMA_MINOR` is 0), a present-but-unparseable string ("3.0.0",
+    "v3.0"), and a present-but-non-string value. Each must reach
+    :func:`cyo_adventure.validator.gate.run_gate` unmodified and be rejected
+    there by :meth:`cyo_adventure.storybook.models.Storybook._check_schema_version`,
+    rather than be silently rewritten to "2.0" and admitted as if it were the
+    document this build actually implements. Note the asymmetry with an
+    absent key: absent means the document never claimed a version, so
+    stamping one on is a repair; present-but-wrong is a claim this build has
+    to refuse, and overwriting it destroys the evidence for the refusal.
+
+    Only for a version this build implements does the absence of
+    ``metadata.topology`` decide the outcome: any same-major document at or
+    below :data:`SCHEMA_MINOR` (not merely one at exactly the current minor)
+    reaches the topology check, and is legacy when ``metadata.topology`` is
+    missing. Detecting the legacy shape structurally (rather than hardcoding
+    the 3 known filenames) means any future manifest entry with the same
+    stale shape is caught automatically instead of silently failing the gate.
 
     Args:
         blob: The parsed filled story JSON.
@@ -312,9 +343,49 @@ def _needs_legacy_normalization(blob: dict[str, object]) -> bool:
         True if the blob needs :func:`_normalize_legacy_fill` before it can
         pass :func:`cyo_adventure.validator.gate.run_gate`.
     """
-    metadata = blob.get("metadata")
-    if blob.get("schema_version") != "2.0":
+    # #CRITICAL: data integrity: every "not legacy" return below protects a
+    # document this build cannot parse from being rewritten to "2.0" and
+    # admitted as if it were parseable. That is the AL-101 defect class: a
+    # gate that rewrites the evidence it should have refused. The version
+    # bounds are therefore all checked BEFORE the topology fallthrough, so
+    # the outcome never depends on whether metadata.topology happens to be
+    # present.
+    # #VERIFY: tests/unit/test_import_catalog.py::TestNeedsLegacyNormalization
+    # asserts False for a future minor, a higher major, an unparseable
+    # string, and a non-string value, each both with and without
+    # metadata.topology; and True only for an absent key and a pre-2.0 major.
+    if "schema_version" not in blob:
+        # The pre-versioning shape: no claim was ever made, so normalization
+        # stamps one on rather than overwriting one.
         return True
+
+    version = blob.get("schema_version")
+
+    # A present but non-string value (a JSON number, or an explicit null) is
+    # a malformed claim, not an absent one. It is refused, not repaired.
+    if not isinstance(version, str):
+        return False
+
+    try:
+        major, doc_minor = parse_schema_version(version)
+    except ValueError:
+        # Syntactically unparseable ("3.0.0", "v3.0"). Same reasoning as the
+        # non-string case: a claim this build cannot read is refused.
+        return False
+
+    # Pre-SCHEMA_MAJOR documents are the legacy shape and need normalization.
+    if major < SCHEMA_MAJOR:
+        return True
+
+    # Anything this build cannot parse (a higher major, or a newer minor) is
+    # not legacy and must never be rewritten: it reaches run_gate unmodified
+    # so _check_schema_version refuses it by name. The topology check below
+    # applies only to documents this build actually implements, which after a
+    # minor bump means any same-major version at or below SCHEMA_MINOR.
+    if major > SCHEMA_MAJOR or doc_minor > SCHEMA_MINOR:
+        return False
+
+    metadata = blob.get("metadata")
     return not (isinstance(metadata, dict) and "topology" in metadata)
 
 
@@ -375,8 +446,10 @@ def _normalize_legacy_fill(
     clear the validation gate, each copied verbatim from the source skeleton
     rather than invented:
 
-    1. ``schema_version``: bumped to "2.0" (the current model only accepts
-       this value; the fills were serialized against a stale "1.0" writer).
+    1. ``schema_version``: stamped at "2.0" because a normalized legacy fill
+       gains no field beyond 2.0 (see
+       :data:`LEGACY_NORMALIZED_SCHEMA_VERSION`); deliberately not stamped
+       at the current minor.
     2. ``metadata.topology`` and ``metadata.production_eligible``: backfilled
        from the skeleton's own metadata. ``topology`` is a required field
        with no default. ``production_eligible`` is preserved as ``False``
@@ -408,7 +481,7 @@ def _normalize_legacy_fill(
             files (verified 0 mismatches), so it only guards a future
             manifest entry misclassified as legacy.
     """
-    blob["schema_version"] = "2.0"
+    blob["schema_version"] = LEGACY_NORMALIZED_SCHEMA_VERSION
     _normalize_legacy_metadata(blob, skeleton)
     _normalize_legacy_endings(blob, skeleton)
     return blob

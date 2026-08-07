@@ -128,3 +128,94 @@ def test_structure_features_reports_topology_and_ending_histograms() -> None:
     assert features.n_endings > 0
     assert pytest.approx(sum(features.ending_kind_hist), abs=1e-9) == 1.0
     assert pytest.approx(sum(features.valence_hist), abs=1e-9) == 1.0
+
+
+# The digest of ``_PINNED_STORY`` below, recorded 2026-08-06. Any change to
+# this literal is a change to every fingerprint ever stored in this repo.
+_PINNED_DIGEST = "fe244dd047d94a30eaad50f4fc414613714d429c890065d6828431edbf4daa91"
+
+# A fixed story, written inline rather than loaded from a file so that no
+# fixture edit can move the digest silently. Deliberately minimal: two nodes,
+# one ending, no variables, so the only thing that can rotate its digest is a
+# change to the hashing itself or to the Storybook model's field set.
+_PINNED_METADATA: dict[str, object] = {
+    "age_band": "8-11",
+    "reading_level": {
+        "scheme": "flesch_kincaid",
+        "target": 4.0,
+        "tolerance": 1.0,
+    },
+    "tier": 1,
+    "estimated_minutes": 5,
+    "ending_count": 1,
+    "topology": "branch_and_bottleneck",
+}
+
+_PINNED_STORY: dict[str, object] = {
+    "schema_version": "2.1",
+    "id": "fingerprint-pin",
+    "version": 1,
+    "title": "Fingerprint Pin",
+    "metadata": _PINNED_METADATA,
+    "start_node": "start",
+    "nodes": [
+        {
+            "id": "start",
+            "body": "You stand at the gate.",
+            "choices": [{"id": "go", "label": "Go in.", "target": "end"}],
+        },
+        {
+            "id": "end",
+            "body": "You are inside.",
+            "is_ending": True,
+            "ending": {
+                "id": "e_end",
+                "kind": "success",
+                "valence": "positive",
+                "title": "Inside",
+            },
+        },
+    ],
+}
+
+
+@pytest.mark.unit
+def test_structure_fingerprint_is_pinned_to_a_literal_digest() -> None:
+    """A digest rotation must fail here first, with an obvious cause.
+
+    ``_strip_leaf_content`` is a blacklist: it pops the four known prose keys
+    and hashes everything else the dump contains, so **every** additive
+    ``Storybook`` field enters the digest automatically, whether or not it
+    says anything about graph shape. That rotates every fingerprint stored
+    anywhere in the repo, and those stores are not all under ``tests/``:
+    ``out/ws2/*/fingerprint-manifest.json`` holds 45 committed acceptance
+    manifests that no test loads. The ADR-025 schema minor that added
+    ``accepts_character`` rotated 19 of them, and the only signal at the time
+    was one unrelated panel-baseline test going red.
+
+    If this assertion fails, that is the signal, not a bug in this test. The
+    fix is: regenerate ``tests/data/diversity_panel/baseline.json`` and the
+    ``out/ws2`` manifests, then update ``_PINNED_DIGEST`` in the same change.
+    """
+    assert structure_fingerprint(_PINNED_STORY) == _PINNED_DIGEST
+
+
+@pytest.mark.unit
+def test_structure_fingerprint_pin_moves_when_a_field_is_added() -> None:
+    """The pin above is load-bearing: an extra top-level key must change it.
+
+    Without this, ``_PINNED_DIGEST`` could be pinned against a hash that
+    ignored the field set entirely and the test above would still pass.
+    ``accepts_character`` is the real field that caused the incident, so
+    supplying a non-default value for it is the exact mutation being guarded.
+    """
+    tier2_metadata = {**_PINNED_METADATA, "tier": 2}
+    opted_in: dict[str, object] = {
+        **_PINNED_STORY,
+        "metadata": tier2_metadata,
+        "variables": [
+            {"name": "might", "type": "int", "initial": 0, "min": 0, "max": 2}
+        ],
+        "accepts_character": {"might": {"min": 0, "max": 2}},
+    }
+    assert structure_fingerprint(opted_in) != _PINNED_DIGEST
