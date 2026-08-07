@@ -10,11 +10,13 @@ import type { Storybook } from './types'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const tracesPath = path.resolve(here, '../../../schema/conformance/player_traces.json')
-const lantern = (
+const traces = (
   JSON.parse(readFileSync(tracesPath, 'utf-8')) as {
-    traces: { story: Storybook }[]
+    traces: { name: string; story: Storybook }[]
   }
-).traces[0].story
+).traces
+const lantern = traces[0].story
+const seededStory = traces.find((t) => t.name === 'seeded_might_carries_into_the_read')!.story
 
 describe('reader machine', () => {
   it('starts in the reading state at the start node', () => {
@@ -42,6 +44,24 @@ describe('reader machine', () => {
     actor.send({ type: 'RESTART' })
     expect(actor.getSnapshot().value).toBe('reading')
     expect(actor.getSnapshot().context.reading.current_node).toBe('n_entrance')
+  })
+
+  it('RESTART preserves the seed rather than fabricating declared initials', () => {
+    // #460: a continuation read restarted with start() re-derives
+    // might=0 from the declared initial, discarding the value the child
+    // actually carried in. The reader has no way back to it.
+    const actor = createActor(readerMachine, {
+      input: { story: seededStory, seed: { might: 2 } },
+    }).start()
+    actor.send({ type: 'CHOOSE', choiceId: 'c_press_on' })
+    actor.send({ type: 'RESTART' })
+    expect(actor.getSnapshot().context.reading.var_state.might).toBe(2)
+  })
+
+  it('RESTART with no seed still starts from declared initials', () => {
+    const actor = createActor(readerMachine, { input: { story: seededStory } }).start()
+    actor.send({ type: 'RESTART' })
+    expect(actor.getSnapshot().context.reading.var_state.might).toBe(0)
   })
 })
 

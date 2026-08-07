@@ -9,46 +9,58 @@
  *
  * BACK undoes the last choice by recomputing the state as if the child had
  * made every recorded choice except the last one: the engine replays the
- * recorded path from the start (never reversing effects, so on_enter effects
- * are recomputed faithfully). It is guarded to be unavailable at the start
- * node with an empty choice history, and for states the engine cannot
- * faithfully replay (continuation reads). From `ended` it returns into the
- * story, which is where trying the other path is most valuable.
+ * recorded path from the read's own start, the seeded start when this
+ * machine was given a seed (never reversing effects, so on_enter effects are
+ * recomputed faithfully). It is guarded to be unavailable at the start node
+ * with an empty choice history, and for states the engine cannot faithfully
+ * replay against that start. From `ended` it returns into the story, which
+ * is where trying the other path is most valuable.
  */
 
 import { assign, setup } from 'xstate'
 
-import { back, canGoBack, choose, isEnding, start } from './engine'
-import type { ReadingState, Storybook } from './types'
+import { back, canGoBack, choose, isEnding, start, startContinuation } from './engine'
+import type { ReadingState, Storybook, VarState } from './types'
 
-// start() throws on a dangling start_node (same contract as choose()/back()),
-// but has no prior reading state to fall back on. On that throw, hand back an
-// inert placeholder ReadingState with error: true instead of letting the
-// throw escape: Reader.tsx renders the error branch before ever reading
-// `current_node` off a real node, so the placeholder is never dereferenced.
-function safeStart(story: Storybook): { reading: ReadingState; error: boolean } {
+// An inert placeholder ReadingState, used when start()/startContinuation()
+// throws and there is no prior reading state to fall back on. Reader.tsx
+// renders the error branch before ever reading `current_node` off a real
+// node, so the placeholder is never dereferenced.
+function emptyReading(story: Storybook): ReadingState {
+  return {
+    current_node: story.start_node,
+    var_state: {},
+    path: [],
+    visit_set: [],
+    version: story.version,
+    state_revision: 0,
+    save_slots: {},
+  }
+}
+
+// start()/startContinuation() throw on a dangling start node (same contract
+// as choose()/back()). On that throw, hand back emptyReading() with
+// error: true instead of letting the throw escape (see emptyReading above).
+function safeStart(story: Storybook, seed?: VarState): { reading: ReadingState; error: boolean } {
   try {
-    return { reading: start(story), error: false }
+    return {
+      reading: seed === undefined ? start(story) : startContinuation(story, null, seed),
+      error: false,
+    }
   } catch (err) {
     console.error('reader: start failed', err)
-    return {
-      reading: {
-        current_node: story.start_node,
-        var_state: {},
-        path: [],
-        visit_set: [],
-        version: story.version,
-        state_revision: 0,
-        save_slots: {},
-      },
-      error: true,
-    }
+    return { reading: emptyReading(story), error: true }
   }
 }
 
 export interface ReaderContext {
   story: Storybook
   reading: ReadingState
+  // The character's carried stats, if any. Threaded into safeStart() so
+  // RESTART (and the seed-aware Go back guard/action below) re-derive the
+  // same seeded start the read began with, instead of fabricating declared
+  // initials (#460).
+  seed?: VarState
   // Set when a transition could not be applied (a structurally invalid
   // choice: a dangling target or corrupted cached state). choose()/back()
   // throw on that by contract (shared with the Python conformance corpus),
@@ -74,6 +86,7 @@ export type ReaderEvent =
 export interface ReaderInput {
   story: Storybook
   reading?: ReadingState
+  seed?: VarState
 }
 
 export const readerMachine = setup({
@@ -97,26 +110,26 @@ export const readerMachine = setup({
       }
     }),
     applyBack: assign(({ context }) => {
-      const previous = back(context.story, context.reading)
+      const previous = back(context.story, context.reading, context.seed)
       // The canGoBack guard makes null unreachable in practice; keeping the
       // no-op branch means a raw BACK can never corrupt the reading state.
       /* v8 ignore next */
       return previous === null ? {} : { reading: previous }
     }),
-    reset: assign(({ context }) => safeStart(context.story)),
+    reset: assign(({ context }) => safeStart(context.story, context.seed)),
   },
   guards: {
     reachedEnding: ({ context }) => isEnding(context.story, context.reading),
-    canGoBack: ({ context }) => canGoBack(context.story, context.reading),
+    canGoBack: ({ context }) => canGoBack(context.story, context.reading, context.seed),
   },
 }).createMachine({
   id: 'reader',
   context: ({ input }) => {
     if (input.reading) {
-      return { story: input.story, reading: input.reading, error: false }
+      return { story: input.story, reading: input.reading, seed: input.seed, error: false }
     }
-    const { reading, error } = safeStart(input.story)
-    return { story: input.story, reading, error }
+    const { reading, error } = safeStart(input.story, input.seed)
+    return { story: input.story, reading, seed: input.seed, error }
   },
   initial: 'reading',
   states: {

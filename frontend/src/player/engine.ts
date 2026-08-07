@@ -288,23 +288,32 @@ function searchPathReplay(
   return false
 }
 
-/** Replay live.path from the story's start, returning the state after each
+// #VERIFY: engine.test.ts "offers Go back on a seeded read", "still fails
+// closed when the recorded path does not start where it should", and
+// "fails closed for a continuation state (path does not begin at
+// start_node)".
+/** Replay live.path from the read's own start (the seeded start when a seed
+ * is given, story.start_node otherwise), returning the state after each
  * recorded step (result[i] is the state after i choices), or null when no
  * replay of the recorded path reproduces the live state. */
-function replayRecordedPath(story: Storybook, live: ReadingState): ReadingState[] | null {
-  // #EDGE: data-integrity: a continuation read starts mid-story with carried
-  // variables (see the #CRITICAL note on startContinuation) and can never be
-  // reproduced by replaying from start_node, so it gets no Go back rather
-  // than a wrong one.
-  // #VERIFY: engine.test.ts "fails closed for a continuation state".
-  if (live.path.length === 0 || live.path[0] !== story.start_node) return null
+export function replayRecordedPath(
+  story: Storybook,
+  live: ReadingState,
+  seed?: VarState
+): ReadingState[] | null {
+  // The recorded path must begin where a read with THIS seed begins. A
+  // seeded read may enter at a node other than start_node, so comparing
+  // against story.start_node was over-strict and disabled Go back for
+  // every continuation. Comparing against the seeded start's own node
+  // keeps the fail-closed guarantee without the false positives.
   let initial: ReadingState
   try {
-    initial = start(story)
+    initial = seed === undefined ? start(story) : startContinuation(story, null, seed)
   } catch {
     // A dangling start node: fail closed, same as the dead-branch case above.
     return null
   }
+  if (live.path.length === 0 || live.path[0] !== initial.current_node) return null
   const states = [initial]
   return searchPathReplay(story, live, states, { remaining: MAX_REPLAY_STEPS }) ? states : null
 }
@@ -324,10 +333,11 @@ function replayRecordedPath(story: Storybook, live: ReadingState): ReadingState[
 /** The reading state as if the child had made every recorded choice except
  * the last one, recomputed via replay (never by reversing effects); null when
  * there is nothing to undo or the recorded path cannot be faithfully replayed
- * from the start (continuation reads). The input is not mutated. */
-export function back(story: Storybook, state: ReadingState): ReadingState | null {
+ * from the read's own start (the seeded start when a seed is given). The
+ * input is not mutated. */
+export function back(story: Storybook, state: ReadingState, seed?: VarState): ReadingState | null {
   if (state.path.length <= 1) return null
-  const states = replayRecordedPath(story, state)
+  const states = replayRecordedPath(story, state, seed)
   if (states === null) return null
   const previous = states[states.length - 2]
   return {
@@ -344,7 +354,7 @@ export function back(story: Storybook, state: ReadingState): ReadingState | null
 }
 
 /** Whether Go back is available: at least one recorded choice, and the
- * recorded path is faithfully replayable from the start. */
-export function canGoBack(story: Storybook, state: ReadingState): boolean {
-  return back(story, state) !== null
+ * recorded path is faithfully replayable from the read's own start. */
+export function canGoBack(story: Storybook, state: ReadingState, seed?: VarState): boolean {
+  return back(story, state, seed) !== null
 }
