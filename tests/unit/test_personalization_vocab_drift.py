@@ -447,7 +447,7 @@ def test_split_migration_sweeps_the_consent_scope_too() -> None:
     """
     ddl = _executable_ddl(_split_favorite_migration())
     assert "personalization_disclosure_consent" in ddl, (
-        "the newest slot_type migration does not touch "
+        "the D6 split migration does not touch "
         "personalization_disclosure_consent.covered_slot_types, the second "
         "(unconstrained) store of this same vocabulary"
     )

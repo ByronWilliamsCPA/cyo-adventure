@@ -80,6 +80,7 @@ from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.personalization_values import (
     CHARACTER_NAME_SLOT_TYPE,
     SIBLING_SLOT_TYPE,
+    character_name_violations,
     personalization_value_for_payload,
     validate_personalization_value,
 )
@@ -963,11 +964,36 @@ async def _ring1_values(session: AsyncSession, subject: ChildProfile) -> dict[st
             # carries the toggle and nothing else, and turning the toggle off is
             # the ONLY way to clear the slot. Blanking the name is not a clear: the
             # child renames their character and the slot repopulates.
-            # #VERIFY: tests/unit/test_character_name_slot.py and
-            # tests/integration/test_personalization_purge.py
+            # #VERIFY: tests/integration/test_personalization_api.py::
+            # test_ring1_character_name_resolves_from_the_active_character,
+            # ::test_ring1_character_name_absent_when_the_toggle_is_off,
+            # ::test_ring1_character_name_absent_when_no_character_is_active,
+            # ::test_ring1_character_name_survives_a_rename.
             character_name = await _active_character_name(session, subject.id)
             if character_name is not None:
-                values[row.slot_type] = character_name
+                # #CRITICAL: security: this slot's value never passes through
+                # `personalization_value_for_payload`, because that function's
+                # shape rule forbids a `value_text` on character_name. Without
+                # the explicit call below it would therefore be the ONE slot of
+                # twelve that reaches the render payload with no structural or
+                # denylist check at all, and it is the least trustworthy of the
+                # twelve: the author is the child, not a guardian, and the
+                # payload ships beside `sentinel_pattern` for substitution into
+                # story prose. `character_name_violations` runs exactly the two
+                # value-dependent checks the other slots get; a failure takes
+                # the same silent-omission path (ADR-023's render-time fallback
+                # contract), logged through the same `_log_dropped_slot` seam.
+                # #VERIFY: tests/integration/test_personalization_api.py::
+                # test_ring1_character_name_is_dropped_when_the_name_is_unsafe,
+                # tests/unit/test_personalization_values.py::
+                # test_character_name_violations_rejects_a_sentinel_shaped_name.
+                violations = character_name_violations(
+                    character_name, AgeBand(subject.age_band)
+                )
+                if violations:
+                    _log_dropped_slot(row.slot_type, subject.id)(violations)
+                else:
+                    values[row.slot_type] = character_name
             continue
         rendered = personalization_value_for_payload(
             row.slot_type,
@@ -1477,7 +1503,8 @@ async def purge_profile_personalization(
     target value rather than delete both tables outright.
     #VERIFY: tests/integration/test_personalization_purge.py::
     test_purging_character_name_clears_the_character_row and
-    ::test_purge_targets_is_exhaustive_over_personalization_fields
+    tests/unit/test_personalization_purge_targets.py::
+    test_purge_targets_is_exhaustive_over_personalization_fields
 
     Args:
         session: The request session (part of the caller's unit of work;

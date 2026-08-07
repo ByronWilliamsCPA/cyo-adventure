@@ -321,8 +321,9 @@ def _shape_violations(
     policy rather than closing a hole.
 
     #VERIFY: tests/unit/test_personalization_values.py asserts each of the
-    three rules rejects, and that a correctly-shaped value still passes.
-    tests/unit/test_character_name_slot.py asserts the character_name rule.
+    three rules rejects, and that a correctly-shaped value still passes;
+    ::test_character_name_slot_with_any_value_column_rejected asserts the
+    character_name rule for all three columns.
 
     Args:
         slot_type: The slot the value is bound to.
@@ -475,6 +476,67 @@ def validate_personalization_value(  # noqa: PLR0913
             SlotViolation(slot_type, "sibling_outside_family", sibling_message)
         )
 
+    return violations
+
+
+def character_name_violations(name: str, age_band: AgeBand) -> list[SlotViolation]:
+    """Return every reason a synthesized character name must not be rendered.
+
+    The `character_name` slot cannot go through
+    :func:`validate_personalization_value`: its value lives in `character`,
+    not in a value column, so `_shape_violations` above rejects any attempt
+    to pass it as `value_text`. This function applies the SAME two
+    value-dependent checks that function runs over a text value, against the
+    same helpers, so the twelfth slot is gated identically to the other
+    eleven without routing a value through a shape rule built to forbid it.
+    The closed-vocabulary and sibling-in-family checks are deliberately
+    absent: neither applies to a slot with no vocabulary and no profile
+    reference.
+
+    #CRITICAL: security: a character name is UNREVIEWED CHILD FREE TEXT
+    (ADR-028 section 11), the least trustworthy of the twelve slots: the
+    author is the child rather than a guardian, and the resolved value is
+    shipped to the reader beside `SENTINEL_RE.pattern` for substitution into
+    story prose. Without these checks a child naming a character
+    `{~HERO:x~}`, `<<FILL ...>>`, or a band-denylisted term would have that
+    string rendered into a story. This is the same "only defense against a
+    personalization value forging a template token or introducing
+    band-forbidden content into rendered prose" that
+    :func:`validate_personalization_value` documents, applied to the one
+    slot that would otherwise skip it entirely.
+    #VERIFY: tests/unit/test_personalization_values.py::
+    test_character_name_violations_rejects_a_sentinel_shaped_name,
+    ::test_character_name_violations_rejects_a_control_character,
+    ::test_character_name_violations_rejects_a_band_denylisted_name,
+    ::test_character_name_violations_accepts_an_ordinary_name, and the
+    render-time omission tests in
+    tests/integration/test_personalization_api.py.
+
+    Args:
+        name: The active character's stored name.
+        age_band: The subject profile's reading age band, used to resolve the
+            band-mandatory denylist floor.
+
+    Returns:
+        A list of `SlotViolation`s (each carrying `CHARACTER_NAME_SLOT_TYPE`
+        as its `slot_id`), in the same fixed order
+        :func:`validate_personalization_value` uses: structural, then
+        denylist. Empty when the name may be rendered.
+    """
+    violations = [
+        replace(violation, slot_id=CHARACTER_NAME_SLOT_TYPE)
+        for violation in structural_value_violations(name)
+    ]
+    violations.extend(
+        SlotViolation(
+            CHARACTER_NAME_SLOT_TYPE,
+            f"forbid:{bundle_id}",
+            f"value matches a denylisted term in bundle '{bundle_id}'",
+        )
+        for bundle_id in sorted(
+            denylisted_bundles(name, band_mandatory_bundles(age_band))
+        )
+    )
     return violations
 
 

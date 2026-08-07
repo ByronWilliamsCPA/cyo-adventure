@@ -508,7 +508,7 @@ One guardian-set personalization value per `(child_profile_id, slot_type)` pair
 | Column | Type | Notes |
 | -------- | ------ | ------- |
 | child_profile_id | UUID PK FK | child_profile.id; `ON DELETE CASCADE` |
-| slot_type | VARCHAR(32) PK | One of the nine closed slot types; CHECK `ck_cpp_slot_type` |
+| slot_type | VARCHAR(32) PK | One of the twelve closed slot types; CHECK `ck_cpp_slot_type` |
 | value_text | TEXT NULL | Free-text value |
 | value_enum | VARCHAR(64) NULL | Closed-vocabulary value |
 | value_profile_id | UUID FK NULL | child_profile.id when the value IS another profile (a sibling); `ON DELETE CASCADE`, indexed by `ix_cpp_value_profile_id` |
@@ -518,12 +518,15 @@ One guardian-set personalization value per `(child_profile_id, slot_type)` pair
 | updated_at | TIMESTAMPTZ | |
 
 Three CHECK constraints carry the rules the API must not be the only thing
-enforcing. `ck_cpp_exactly_one_value` requires exactly one of the three value
-columns to be set, so a row can never be ambiguous about what it holds.
-`ck_cpp_ring2_ceiling` makes `pronoun_set` and `dedication` rows structurally
-incapable of carrying `ring2_enabled = true`, which means a future API that
-skipped application-layer validation still could not widen those two slots past
-the owning family. `ck_cpp_slot_type` pins the vocabulary itself;
+enforcing. `ck_cpp_value_cardinality` (renamed from `ck_cpp_exactly_one_value`
+by ADR-028) is slot-scoped: `character_name` rows must set NONE of the three
+value columns, because that slot's value lives in `character` and is
+synthesized at resolve time, and every other slot type must set exactly one, so
+a row can never be ambiguous about what it holds. `ck_cpp_ring2_ceiling` makes
+`pronoun_set`, `dedication`, and `character_name` rows structurally incapable of
+carrying `ring2_enabled = true`, which means a future API that skipped
+application-layer validation still could not widen those three slots past the
+owning family. `ck_cpp_slot_type` pins the vocabulary itself;
 `tests/unit/test_personalization_vocab_drift.py` pins both CHECK lists against
 `PERSONALIZATION_FIELDS` so the two cannot drift apart silently.
 

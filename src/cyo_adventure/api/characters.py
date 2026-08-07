@@ -36,8 +36,11 @@ from cyo_adventure.core.exceptions import (
     AuthorizationError,
     ResourceNotFoundError,
     StateTransitionError,
+    ValidationError,
 )
 from cyo_adventure.db.models import Character, CharacterAttribute, ChildProfile
+from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.storybook.personalization_values import character_name_violations
 
 if TYPE_CHECKING:
     import uuid
@@ -66,6 +69,45 @@ def _require_guardian(principal: Principal) -> None:
     if not principal.is_guardian:
         msg = "guardian role required"
         raise AuthorizationError(msg)
+
+
+def _reject_unsafe_character_name(name: str, age_band: str) -> None:
+    """Reject a character name that must never reach rendered story prose.
+
+    #CRITICAL: security: a character name is the personalization slot with
+    the least trustworthy author (the child, not a guardian) and it is
+    substituted into child-facing prose at read time via the
+    ``character_name`` slot (ADR-028 section 11). ``CharacterName``'s own
+    length bound and NFC normalization do not stop a name that forges a
+    ``{SLOT}`` token, a ``<<FILL ...>>`` directive, an untrusted-input
+    fence, an embedded control character, or a band-denylisted term. The
+    resolver in ``api/personalization.py`` runs the identical check and
+    silently omits the slot, so a name that slipped past this one is never
+    rendered; this call is the write-time half, so the child learns at the
+    moment of naming rather than losing their character's name from a story
+    with no explanation.
+    #VERIFY: tests/integration/test_characters_api.py::
+    test_create_character_rejects_a_sentinel_shaped_name,
+    ::test_create_character_rejects_a_control_character_in_the_name,
+    ::test_create_character_rejects_a_band_denylisted_name,
+    ::test_rename_character_rejects_a_sentinel_shaped_name.
+
+    Args:
+        name: The submitted character name.
+        age_band: The owning profile's reading age band, which selects the
+            band-mandatory denylist floor.
+
+    Raises:
+        ValidationError: If any structural or denylist rule rejects the name.
+    """
+    violations = character_name_violations(name, AgeBand(age_band))
+    if violations:
+        # `value=` is deliberately omitted, matching the personalization PUT
+        # route: violation messages name the slot and the rule, never the
+        # candidate, so echoing the name back would be the only place the
+        # child's own free text entered an error payload.
+        msg = "; ".join(violation.message for violation in violations)
+        raise ValidationError(msg, field="name")
 
 
 async def _attributes_of(
@@ -229,7 +271,9 @@ async def create_character(body: CharacterCreateBody, ctx: Context) -> Character
         CharacterView: The stored, active character with zeroed stats.
 
     Raises:
-        ValidationError: If profile_id is not a UUID.
+        ValidationError: If profile_id is not a UUID, or the name fails the
+            structural or band-denylist check (see
+            ``_reject_unsafe_character_name``).
         AuthorizationError: If the profile is not the caller's.
         ResourceNotFoundError: If the profile row does not exist.
         StateTransitionError: If a concurrent request already activated a
@@ -247,6 +291,7 @@ async def create_character(body: CharacterCreateBody, ctx: Context) -> Character
     if profile is None:
         msg = f"profile '{body.profile_id}' not found"
         raise ResourceNotFoundError(msg)
+    _reject_unsafe_character_name(body.name, profile.age_band)
     # #CRITICAL: concurrency: see _retire_active_character's docstring; the
     # retire and this insert share the same session/transaction.
     await _retire_active_character(ctx.session, profile_id)
@@ -299,8 +344,11 @@ async def update_character(
         CharacterView: The updated character.
 
     Raises:
-        ValidationError: If character_id is not a UUID.
-        ResourceNotFoundError: If no character with this id exists.
+        ValidationError: If character_id is not a UUID, or a submitted name
+            fails the structural or band-denylist check (see
+            ``_reject_unsafe_character_name``).
+        ResourceNotFoundError: If no character with this id exists, or its
+            owning profile row has gone missing.
         AuthorizationError: If the character's profile is not the caller's.
     """
     parsed = parse_uuid(character_id, "character_id")
@@ -315,6 +363,15 @@ async def update_character(
     # ::test_family_a_child_cannot_reach_stranger_family_profile).
     authorize_profile(ctx.principal, row.child_profile_id)
     if body.name is not None:
+        # The band comes from the character's OWN profile, loaded here rather
+        # than taken from the request, for the same reason the authorization
+        # above does: a client-supplied band would let a caller pick the
+        # emptiest denylist floor.
+        profile = await ctx.session.get(ChildProfile, row.child_profile_id)
+        if profile is None:
+            msg = f"profile '{row.child_profile_id}' not found"
+            raise ResourceNotFoundError(msg)
+        _reject_unsafe_character_name(body.name, profile.age_band)
         row.name = body.name
     if body.archetype is not None:
         row.archetype = body.archetype

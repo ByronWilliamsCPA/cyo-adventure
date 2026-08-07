@@ -122,10 +122,11 @@ entity "child_profile_personalization" as child_profile_personalization #FFF3E0 
   updated_at : TIMESTAMPTZ
   --
   ON DELETE CASCADE on BOTH FKs (child-linked data)
-  CHECK ck_cpp_slot_type (closed 9-value vocabulary)
-  CHECK ck_cpp_exactly_one_value (text | enum | profile ref)
-  CHECK ck_cpp_ring2_ceiling (pronoun_set, dedication
-    structurally cannot be ring-2)
+  CHECK ck_cpp_slot_type (closed 12-value vocabulary)
+  CHECK ck_cpp_value_cardinality (character_name: none;
+    every other slot: exactly one of text | enum | profile ref)
+  CHECK ck_cpp_ring2_ceiling (pronoun_set, dedication,
+    character_name structurally cannot be ring-2)
   INDEX ix_cpp_value_profile_id (referencing side of the FK)
 }
 

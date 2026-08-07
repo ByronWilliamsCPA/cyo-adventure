@@ -410,3 +410,90 @@ async def test_concurrent_activations_collide_into_a_409_not_a_500(
         "expected the losing concurrent activation to raise "
         f"StateTransitionError, got {b_result!r}"
     )
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_character_rejects_a_sentinel_shaped_name(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A sentinel-shaped character name is refused at set time: 422.
+
+    A character's name resolves into the `character_name` personalization
+    slot, and the resolved payload ships it to the reader beside
+    `sentinel_pattern` for substitution into story prose. A name carrying the
+    sentinel's own braces is a template-forgery vector, so it must never
+    reach the database, let alone a rendered story.
+    """
+    resp = await client.post(
+        "/api/v1/characters",
+        json=_create_body(str(seed.child_profile_id), name="{~HERO:friend~}"),
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_character_rejects_a_control_character_in_the_name(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A name carrying a control character is refused at set time: 422."""
+    resp = await client.post(
+        "/api/v1/characters",
+        json=_create_body(str(seed.child_profile_id), name="Ro\x07sa"),
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_character_rejects_a_band_denylisted_name(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A name matching the profile's band-mandatory denylist: 422.
+
+    The denylist floor is band-scoped, so this needs a profile in a band that
+    actually mandates the `weapon` bundle. The shared ``seed`` profiles are
+    all 10-13, where it is not mandatory, so this builds a test-local 5-8
+    profile in family A rather than changing the shared seed (other modules
+    hardcode family A's profile roster).
+    """
+    async with sessions() as setup_session:
+        young = ChildProfile(
+            family_id=seed.family_id,
+            display_name="Reader A's Younger Sibling",
+            age_band="5-8",
+        )
+        setup_session.add(young)
+        await setup_session.flush()
+        young_id: uuid.UUID = young.id
+        await setup_session.commit()
+
+    resp = await client.post(
+        "/api/v1/characters",
+        json=_create_body(str(young_id), name="Captain Sword"),
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_rename_character_rejects_a_sentinel_shaped_name(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """The rename path is gated too, not only creation: 422.
+
+    A gate on POST alone would be bypassed by creating a clean character and
+    then renaming it, which is the same free-text channel one request later.
+    """
+    resp = await client.patch(
+        f"/api/v1/characters/{seed.character_id}",
+        json={"name": "{~HERO:friend~}"},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422, resp.text

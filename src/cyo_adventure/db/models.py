@@ -809,8 +809,10 @@ class ChildProfilePersonalization(CreatedAtMixin, UpdatedAtMixin, Base):
         # the CASE keeps character_name structurally incapable of carrying
         # any value at all.
         # #VERIFY: tests/unit/test_personalization_vocab_drift.py::
-        # test_orm_value_cardinality_constraint_present,
-        # tests/unit/test_character_name_slot.py.
+        # test_orm_value_cardinality_constraint_present (the ORM text) and
+        # tests/integration/test_personalization_purge.py::
+        # test_character_name_row_carrying_a_value_is_rejected_by_the_database
+        # (the CHECK actually executing against Postgres).
         CheckConstraint(
             "CASE WHEN slot_type = 'character_name' "
             "THEN (value_text IS NULL AND value_enum IS NULL "

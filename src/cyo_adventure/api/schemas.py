@@ -11,7 +11,7 @@ import json
 import re
 import unicodedata
 from datetime import date, datetime
-from typing import Annotated, Literal, get_args
+from typing import Annotated, Literal
 
 from pydantic import (
     AfterValidator,
@@ -23,7 +23,11 @@ from pydantic import (
 )
 
 from cyo_adventure.api.residence_countries import ASSIGNED_RESIDENCE_COUNTRY_CODES
-from cyo_adventure.db.models import RING_GOAL_DAYS_MAX, RING_GOAL_DAYS_MIN
+from cyo_adventure.db.models import (
+    _PERSONALIZATION_RING2_SLOT_TYPE_VALUES,
+    RING_GOAL_DAYS_MAX,
+    RING_GOAL_DAYS_MIN,
+)
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
 from cyo_adventure.storybook.character_vocabulary import ARCHETYPE_ROSTER
@@ -1557,6 +1561,39 @@ class ProfileUpdateBody(BaseModel):
     time_capture_paused: bool | None = None
 
 
+def _nfc(value: str) -> str:
+    """NFC-normalize a user-supplied personalization value.
+
+    Shared by the guardian-authored personalization value types below and by
+    ``CharacterName`` (ADR-028), whose value is a child-authored free-text
+    name that resolves into the same ``character_name`` personalization slot
+    and therefore needs the same canonical stored form.
+
+    Args:
+        value: The raw submitted string.
+
+    Returns:
+        str: The NFC-normalized string.
+    """
+    # #ASSUME: data-integrity: the denylist and distinctness matching in
+    # `validator/slots.py::_normalize` already NFC-normalizes before it
+    # compares, so this is NOT what stops a decomposed spelling from evading
+    # the denylist; that hole does not exist. What this fixes is that the
+    # value is STORED in whatever form the client sent. Two consequences,
+    # both real and both small: the 120-character structural limit is
+    # measured on the raw form, so a decomposed spelling can be rejected at a
+    # length its precomposed twin passes; and the replace route's change
+    # detection compares stored text to submitted text with `!=`, so
+    # re-saving a visually identical name from a client that normalizes
+    # differently reads as an edit and rewrites the row. Normalizing at the
+    # edge makes the stored form canonical and both problems go away. NFC is
+    # idempotent, so an already-normalized value (nearly all of them) is
+    # unchanged.
+    # #VERIFY: tests/unit/test_api_schemas_personalization.py::
+    # test_decomposed_and_precomposed_text_values_normalize_identically.
+    return unicodedata.normalize("NFC", value)
+
+
 # ---------------------------------------------------------------------------
 # Character schemas (ADR-028)
 # ---------------------------------------------------------------------------
@@ -1568,7 +1605,19 @@ class ProfileUpdateBody(BaseModel):
 # six names.
 _CHARACTER_ARCHETYPE_PATTERN = "^(" + "|".join(ARCHETYPE_ROSTER) + ")$"
 
-CharacterName = Annotated[str, Field(min_length=1, max_length=32)]
+# A character's name resolves into the `character_name` personalization slot
+# and is substituted into child-facing story prose, so it is constrained the
+# same way the other real-person free-text slot values are: NFC-normalized at
+# the edge (see `_nfc`), with the structural and band-denylist checks run in
+# the route handler via `storybook.personalization_values`, exactly as
+# `protagonist_first_name` gets them from `api/personalization.py`'s PUT. The
+# checks cannot move into this type: the denylist floor depends on the owning
+# profile's age band, which no request body carries.
+# #VERIFY: tests/unit/test_api_schemas_personalization.py::
+# test_character_name_is_nfc_normalized_like_a_personalization_value;
+# tests/integration/test_characters_api.py::
+# test_create_character_rejects_a_sentinel_shaped_name.
+CharacterName = Annotated[str, Field(min_length=1, max_length=32), AfterValidator(_nfc)]
 CharacterArchetype = Annotated[str, Field(pattern=_CHARACTER_ARCHETYPE_PATTERN)]
 CharacterLook = Annotated[str, Field(pattern=r"^avatar_(0[1-9]|1[0-2])$")]
 
@@ -2749,7 +2798,23 @@ _PersonalizationSlotType = Literal[
     "character_name",
 ]
 
-_PERSONALIZATION_SLOT_TYPE_COUNT = len(get_args(_PersonalizationSlotType))
+# The bound on `Ring2ConsentGrantBody.covered_slot_types` below. Derived from
+# the RING-2 ceiling, not from `_PersonalizationSlotType`: that list is every
+# slot type that exists, and three of them (pronoun_set, dedication, and
+# ADR-028's character_name) are permanently ring-1-only, so they can never be
+# an admissible member of a consent scope. Bounding a ring-2-only list by the
+# whole vocabulary counted members that cannot legally appear in it, and each
+# new ring-1-only slot loosened the bound further for no reason.
+#
+# Counted off `ck_cpp_ring2_ceiling`'s own literal body rather than a fourth
+# hand-written copy of the ceiling (the copy-count problem AL-123 records);
+# `tests/unit/test_personalization_vocab_drift.py` already pins that literal
+# against PERSONALIZATION_FIELDS, so this bound inherits that guard.
+# #VERIFY: tests/unit/test_api_schemas_personalization.py::
+# test_covered_slot_types_bound_is_the_ring2_ceiling_not_the_whole_vocabulary.
+_PERSONALIZATION_RING2_SLOT_TYPE_COUNT = len(
+    re.findall(r"'([^']*)'", _PERSONALIZATION_RING2_SLOT_TYPE_VALUES)
+)
 
 # The structural gate (`validator/slots.py::_charset_violations`) rejects any
 # candidate longer than this, and it is the authority: it runs on every
@@ -2758,34 +2823,6 @@ _PERSONALIZATION_SLOT_TYPE_COUNT = len(get_args(_PersonalizationSlotType))
 # rather than a slot violation two layers in. It was 200, which meant values
 # of 121 to 200 characters were accepted here only to be rejected downstream.
 _PERSONALIZATION_VALUE_MAX_LENGTH = 120
-
-
-def _nfc(value: str) -> str:
-    """NFC-normalize a guardian-supplied personalization value.
-
-    Args:
-        value: The raw submitted string.
-
-    Returns:
-        str: The NFC-normalized string.
-    """
-    # #ASSUME: data-integrity: the denylist and distinctness matching in
-    # `validator/slots.py::_normalize` already NFC-normalizes before it
-    # compares, so this is NOT what stops a decomposed spelling from evading
-    # the denylist; that hole does not exist. What this fixes is that the
-    # value is STORED in whatever form the client sent. Two consequences,
-    # both real and both small: the 120-character structural limit is
-    # measured on the raw form, so a decomposed spelling can be rejected at a
-    # length its precomposed twin passes; and the replace route's change
-    # detection compares stored text to submitted text with `!=`, so
-    # re-saving a visually identical name from a client that normalizes
-    # differently reads as an edit and rewrites the row. Normalizing at the
-    # edge makes the stored form canonical and both problems go away. NFC is
-    # idempotent, so an already-normalized value (nearly all of them) is
-    # unchanged.
-    # #VERIFY: tests/unit/test_api_schemas_personalization.py::
-    # test_decomposed_and_precomposed_text_values_normalize_identically.
-    return unicodedata.normalize("NFC", value)
 
 
 def _dedupe_slot_types(values: list[str]) -> list[str]:
@@ -2856,8 +2893,9 @@ class PersonalizationSlotBody(BaseModel):
         the database's `ck_cpp_value_cardinality` CHECK would then be the
         only thing left to reject it, as a raw IntegrityError instead of a
         clean 422.
-        #VERIFY: tests/unit/test_character_name_slot.py and
-        tests/unit/test_api_schemas_personalization.py.
+        #VERIFY: tests/unit/test_api_schemas_personalization.py::
+        test_character_name_slot_body_validates_with_no_value_field and
+        ::test_character_name_slot_body_with_a_value_text_is_rejected.
         """
         present = sum(
             value is not None
@@ -2957,12 +2995,13 @@ class Ring2ConsentGrantBody(BaseModel):
     # but nothing bounded the list's LENGTH: `["dedication"] * 100_000` is
     # every-element-eligible and would have been written verbatim into the
     # consent row's JSONB column and echoed back by `GET /v1/me`. The bound is
-    # the number of slot types that exist, since covering one twice conveys
-    # nothing, and `_dedupe_slot_types` makes that bound reachable only by a
-    # genuinely distinct list.
+    # the number of RING-2 ELIGIBLE slot types, since covering one twice
+    # conveys nothing and a ring-1-only slot can never be covered at all, and
+    # `_dedupe_slot_types` makes that bound reachable only by a genuinely
+    # distinct list.
     covered_slot_types: Annotated[
         list[str],
-        Field(min_length=1, max_length=_PERSONALIZATION_SLOT_TYPE_COUNT),
+        Field(min_length=1, max_length=_PERSONALIZATION_RING2_SLOT_TYPE_COUNT),
         AfterValidator(_dedupe_slot_types),
     ]
     policy_version: Annotated[str, StringConstraints(max_length=32)]

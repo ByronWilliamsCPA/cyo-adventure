@@ -666,7 +666,9 @@ export const listCharactersApiV1CharactersGet = <ThrowOnError extends boolean = 
  * CharacterView: The stored, active character with zeroed stats.
  *
  * Raises:
- * ValidationError: If profile_id is not a UUID.
+ * ValidationError: If profile_id is not a UUID, or the name fails the
+ * structural or band-denylist check (see
+ * ``_reject_unsafe_character_name``).
  * AuthorizationError: If the profile is not the caller's.
  * ResourceNotFoundError: If the profile row does not exist.
  * StateTransitionError: If a concurrent request already activated a
@@ -720,8 +722,11 @@ export const deleteCharacterApiV1CharactersCharacterIdDelete = <ThrowOnError ext
  * CharacterView: The updated character.
  *
  * Raises:
- * ValidationError: If character_id is not a UUID.
- * ResourceNotFoundError: If no character with this id exists.
+ * ValidationError: If character_id is not a UUID, or a submitted name
+ * fails the structural or band-denylist check (see
+ * ``_reject_unsafe_character_name``).
+ * ResourceNotFoundError: If no character with this id exists, or its
+ * owning profile row has gone missing.
  * AuthorizationError: If the character's profile is not the caller's.
  */
 export const updateCharacterApiV1CharactersCharacterIdPatch = <ThrowOnError extends boolean = false>(options: Options<UpdateCharacterApiV1CharactersCharacterIdPatchData, ThrowOnError>): RequestResult<UpdateCharacterApiV1CharactersCharacterIdPatchResponses, UpdateCharacterApiV1CharactersCharacterIdPatchErrors, ThrowOnError> => (options.client ?? client).patch<UpdateCharacterApiV1CharactersCharacterIdPatchResponses, UpdateCharacterApiV1CharactersCharacterIdPatchErrors, ThrowOnError>({
