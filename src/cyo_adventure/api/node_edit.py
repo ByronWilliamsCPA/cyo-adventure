@@ -527,12 +527,33 @@ async def edit_node(
     # edited blob is re-validated, not just the touched node, because L1/L2
     # are graph-wide checks.
     # #VERIFY: tests/unit/test_node_edit.py::test_gate_failing_edit_rejected_422.
-    # #CRITICAL: timing: run_gate is pure synchronous CPU, measured at 3.7s on a
-    # 746-node story. Called inline in an async handler it stalls the whole event
-    # loop for that window, blocking every other in-flight request including a
-    # child mid-read (AL-035). anyio.to_thread keeps the loop responsive.
+    # #CRITICAL: timing: run_gate is pure synchronous CPU, and a character
+    # envelope multiplies its cost by roughly the envelope's entry-state
+    # count, because the CH-3a/CH-3b/CH-4 rules re-walk the story once per
+    # entry state. Re-measured 2026-08-06 against real catalog skeletons:
+    # the largest book (skeletons/16+/the-longwinter-station.json, 248 nodes,
+    # 51,241 base configurations) runs in 0.8s with no envelope and 49.6s
+    # with the canonical 27-state accepts_character envelope, a 64x
+    # multiplier. The figure this marker used to quote, 3.7s on a 746-node
+    # story, is a no-envelope measurement and is no longer the worst case:
+    # budget against tens of seconds. A book an ERROR-severity CH rule
+    # rejects is cheap again (0.98s on the same book) because
+    # validator/character.py skips the walk block once any CH ERROR is in
+    # the report, but that only covers the rejected path.
+    # Calling this inline in an async handler would stall the whole event
+    # loop for that window, blocking every other in-flight request including
+    # a child mid-read (AL-035); anyio.to_thread keeps the loop responsive.
+    # It does not bound the hold: run_sync dispatches to anyio's fixed-size
+    # worker pool (40 threads by default), so enough concurrent edits on a
+    # character-enabled large book exhaust the pool and stall every other
+    # offloaded call in the process, the generation worker's own gate runs
+    # included. Latent today only because no catalog book declares
+    # accepts_character.
     # #VERIFY: the handler's existing tests still pass; the gate is pure and
-    # holds no session, so running it off-loop is safe.
+    # holds no session, so running it off-loop is safe. Re-measure the worst
+    # case before the first character-enabled book ships, by timing run_gate
+    # over the longwinter-station skeleton with a might/wits/nerve 0-2
+    # envelope; cap concurrency on this route if the figure has grown.
     gate_result = await run_sync(run_gate, new_blob)
     if gate_result.blocked:
         msg = "edited passage failed the validation gate"
