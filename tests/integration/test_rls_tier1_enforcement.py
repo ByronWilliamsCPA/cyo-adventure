@@ -41,8 +41,8 @@ from sqlalchemy.pool import NullPool
 from cyo_adventure.api.deps import Role, _device_principal
 from cyo_adventure.core.database import apply_family_rls_context
 from cyo_adventure.core.device_grant import mint_device_grant_token
+from cyo_adventure.db.models import Character, DeviceGrant, Family, User
 from cyo_adventure.db.models import ChildProfile as ChildProfileModel
-from cyo_adventure.db.models import DeviceGrant, Family, User
 from tests.integration._migration_utils import migrate_and_connect_as
 
 if TYPE_CHECKING:
@@ -60,6 +60,11 @@ _CYO_API_ROLE = "cyo_api"
 # ADR-022 candidate Tier 1 table: children's PII, hard NOT NULL family_id,
 # never crosses families. The canonical table the enforcement contract targets.
 _TIER1_TABLE = "child_profile"
+
+# ADR-028 Tier 1 table: a persistent character carries a denormalized
+# family_id (see supabase/migrations/20260806120000_add_persistent_characters.sql),
+# so it gets the same family_scoped policy as child_profile above.
+_CHARACTER_TABLE = "character"
 
 
 @dataclass(frozen=True)
@@ -107,16 +112,13 @@ async def tier1_env(pg_url: str) -> AsyncIterator[_Tier1Env]:
                 family_id=family_a, role="guardian", authn_subject="guardian-rls-a"
             )
             session.add(guardian)
-            session.add_all(
-                [
-                    ChildProfileModel(
-                        family_id=family_a, display_name="Reader A", age_band="8-11"
-                    ),
-                    ChildProfileModel(
-                        family_id=family_b, display_name="Reader B", age_band="8-11"
-                    ),
-                ]
+            profile_a = ChildProfileModel(
+                family_id=family_a, display_name="Reader A", age_band="8-11"
             )
+            profile_b = ChildProfileModel(
+                family_id=family_b, display_name="Reader B", age_band="8-11"
+            )
+            session.add_all([profile_a, profile_b])
             await session.flush()
             session.add(
                 DeviceGrant(
@@ -125,6 +127,31 @@ async def tier1_env(pg_url: str) -> AsyncIterator[_Tier1Env]:
                     jti=grant_jti,
                     expires_at=datetime.now(UTC) + timedelta(days=90),
                 )
+            )
+            # ADR-028: a character per profile, so the character table's own
+            # family_scoped policy (identical shape to child_profile's) has
+            # rows in both families to prove it filters, not just that it
+            # runs. child_profile_id is a real FK to the profile above, so
+            # its family_id must (and does) match that profile's family_id;
+            # the composite fk_character_profile_family constraint would
+            # reject a mismatched pair even at the owner (BYPASSRLS) connection.
+            session.add_all(
+                [
+                    Character(
+                        child_profile_id=profile_a.id,
+                        family_id=family_a,
+                        name="Aria",
+                        archetype="scout",
+                        look="avatar_01",
+                    ),
+                    Character(
+                        child_profile_id=profile_b.id,
+                        family_id=family_b,
+                        name="Bram",
+                        archetype="guardian",
+                        look="avatar_02",
+                    ),
+                ]
             )
             await session.commit()
             grant_authorized_by = guardian.id
@@ -223,6 +250,70 @@ async def test_tier1_admin_context_reads_across_families(
         )
         count = (
             await session.execute(text(f"SELECT count(*) FROM {_TIER1_TABLE}"))  # noqa: S608
+        ).scalar_one()
+    assert count == 2, "the admin escape hatch must read across families"
+
+
+async def test_character_unset_context_returns_zero_rows(
+    tier1_env: _Tier1Env,
+) -> None:
+    """ADR-028: with no ``app.family_id`` set, ``character`` exposes zero rows.
+
+    The same fail-closed keystone as ``test_tier1_unset_context_returns_zero_rows``,
+    pinned separately for ``character`` because it is a distinct table with its
+    own ``family_scoped`` policy (added by
+    supabase/migrations/20260806120000_add_persistent_characters.sql); a policy
+    typo on this table would not be caught by the child_profile assertion above.
+    """
+    async with tier1_env.sessions() as session:
+        count = (
+            await session.execute(text(f"SELECT count(*) FROM {_CHARACTER_TABLE}"))  # noqa: S608
+        ).scalar_one()
+    assert count == 0
+
+
+async def test_character_context_scopes_reads_to_caller_family(
+    tier1_env: _Tier1Env,
+) -> None:
+    """ADR-028: setting ``app.family_id`` exposes only the caller's own character.
+
+    The positive counterpart to the fail-closed test above: with the context
+    set to family A, family A's own character is visible and family B's is not.
+    """
+    async with tier1_env.sessions() as session:
+        await apply_family_rls_context(
+            session, family_id=tier1_env.family_a, is_admin=False
+        )
+        visible = (
+            (
+                await session.execute(
+                    text(f"SELECT family_id FROM {_CHARACTER_TABLE}")  # noqa: S608
+                )
+            )
+            .scalars()
+            .all()
+        )
+    assert visible, "family A's own character must be visible with its context set"
+    assert all(str(fid) == str(tier1_env.family_a) for fid in visible), (
+        "a foreign family's character leaked past the Tier 1 policy"
+    )
+
+
+async def test_character_admin_context_reads_across_families(
+    tier1_env: _Tier1Env,
+) -> None:
+    """ADR-028: the ``app.is_admin='true'`` escape hatch reads across families.
+
+    Pins the same cross-family admin branch as
+    ``test_tier1_admin_context_reads_across_families``, on ``character``'s own
+    policy rather than ``child_profile``'s.
+    """
+    async with tier1_env.sessions() as session:
+        await apply_family_rls_context(
+            session, family_id=tier1_env.family_a, is_admin=True
+        )
+        count = (
+            await session.execute(text(f"SELECT count(*) FROM {_CHARACTER_TABLE}"))  # noqa: S608
         ).scalar_one()
     assert count == 2, "the admin escape hatch must read across families"
 
