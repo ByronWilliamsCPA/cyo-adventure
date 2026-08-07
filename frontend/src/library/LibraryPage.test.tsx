@@ -399,10 +399,11 @@ describe('LibraryPage', () => {
     resolveList({ data: { stories: [] } })
 
     await new Promise((resolve) => setTimeout(resolve, 0))
-    // 2, not 1: W3.2's progress fetch fires from its own parallel mount
-    // effect alongside the library list call; the point of this test (no
-    // state write survives unmount) is unaffected by which endpoints fired.
-    expect(mockGet).toHaveBeenCalledTimes(2)
+    // 3, not 1: W3.2's progress fetch and Task 8's active-character fetch
+    // each fire from their own parallel mount effect alongside the library
+    // list call; the point of this test (no state write survives unmount)
+    // is unaffected by which endpoints fired.
+    expect(mockGet).toHaveBeenCalledTimes(3)
     expect(document.body.textContent).toBe('')
   })
 

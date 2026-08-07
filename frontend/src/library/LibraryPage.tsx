@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
+import { CharacterPicker } from '../characters/CharacterPicker'
+import { useActiveCharacter } from '../characters/useActiveCharacter'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
@@ -94,6 +96,13 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   const recommendationsApi = useMemo(() => makeRecommendationsApi(api), [api])
   const progressApi = useMemo(() => makeProgressApi(api, profileId), [api, profileId])
   const [state, setState] = useState<LibraryState>({ status: 'loading' })
+  // Task 8: which character (if any) is active for this profile, and the
+  // toggle for the inline switcher below the heading. Fetched independently
+  // of the shelf itself, the same best-effort-sibling shape as `progress`
+  // above: this widget renders nothing unless the fetch resolves to
+  // 'ready', so it can never gate or delay the shelf.
+  const activeCharacter = useActiveCharacter(profileId)
+  const [showCharacterPicker, setShowCharacterPicker] = useState(false)
   // W3.2: the Endings Gallery / "Every path walked!" data source, fetched
   // independently of the shelf (best-effort, like history/recommendations):
   // a failed or slow fetch degrades to no ribbon and no gallery button,
@@ -526,6 +535,33 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   return (
     <div className="library">
       <h1 className="library__heading">My Books</h1>
+      {/* Suppressed under readOnly (guardian preview-as-child): a guardian
+          previewing a child's shelf can look but never switch or create that
+          child's character, mirroring RequestStory's own suppression above. */}
+      {!readOnly && activeCharacter.state.status === 'ready' ? (
+        <section className="library__character" aria-label="Your character">
+          <p className="library__character-current">
+            Playing as <strong>{activeCharacter.state.character.name}</strong>
+          </p>
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-expanded={showCharacterPicker}
+            onClick={() => setShowCharacterPicker((open) => !open)}
+          >
+            {showCharacterPicker ? 'Hide characters' : 'Switch character'}
+          </Button>
+          {showCharacterPicker ? (
+            <CharacterPicker
+              profileId={profileId}
+              onActiveCharacterChange={() => {
+                activeCharacter.refresh()
+                setShowCharacterPicker(false)
+              }}
+            />
+          ) : null}
+        </section>
+      ) : null}
       {offline ? (
         <p className="library__offline-banner" role="status">
           No internet. These books are ready to read.

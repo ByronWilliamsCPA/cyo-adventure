@@ -1,5 +1,7 @@
 import { matchPath, Outlet, useLocation } from 'react-router'
 
+import { CharacterCreator } from '../characters/CharacterCreator'
+import { useActiveCharacter } from '../characters/useActiveCharacter'
 import { ThemeToggle } from '../theme/ThemeToggle'
 import { KidNav } from './KidNav'
 import { useKidProfile } from './useKidProfile'
@@ -26,6 +28,17 @@ import './kid.css'
  * still in flight, or a failed lookup) leaves both attributes unset, which
  * band-tokens.css treats as the neutral tier -- never a stale prior child's
  * band.
+ *
+ * First-run character gate (library route only): a profile with no
+ * character yet sees the creator instead of the library Outlet. Gated on
+ * `status === 'none'` specifically, never on 'loading'/'error'/anything
+ * else, so a lookup that is still in flight or failed cannot be
+ * misread as "no character" and bounce a returning child into re-creating
+ * one; see useActiveCharacter.ts's own defensiveness note.
+ * #VERIFY: KidShell.test.tsx's existing library-route assertions keep
+ * passing unmodified (they never produce a well-formed empty character
+ * list), plus the character-gate coverage in CharacterPicker.test.tsx /
+ * CharacterCreator.test.tsx for the creator itself.
  */
 export function KidShell() {
   const location = useLocation()
@@ -33,6 +46,7 @@ export function KidShell() {
   const readMatch = matchPath('/read/:profileId/:storybookId/:version', location.pathname)
   const navProfileId = libraryMatch?.params.profileId
   const profile = useKidProfile(navProfileId ?? readMatch?.params.profileId)?.profile ?? null
+  const activeCharacter = useActiveCharacter(libraryMatch ? navProfileId : undefined)
 
   // #EDGE: accessibility: while the profile lookup is in flight or has failed,
   // data-reduce-motion is unset and the guardian-set app-level reduce_motion
@@ -48,7 +62,11 @@ export function KidShell() {
       {navProfileId ? <KidNav profileId={navProfileId} /> : null}
       <ThemeToggle className="kid-shell__theme-toggle" />
       <main className="kid-shell__main">
-        <Outlet />
+        {libraryMatch && navProfileId && activeCharacter.state.status === 'none' ? (
+          <CharacterCreator profileId={navProfileId} onCreated={activeCharacter.refresh} />
+        ) : (
+          <Outlet />
+        )}
       </main>
     </div>
   )

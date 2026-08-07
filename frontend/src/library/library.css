@@ -50,6 +50,20 @@
   margin: 0;
 }
 
+/* Task 8: active-character strip below the heading. */
+.library__character {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+}
+
+.library__character-current {
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  margin: 0;
+}
+
 /* UX-K1: offline shelf banner. */
 .library__offline-banner {
   font-family: var(--font-sans);
