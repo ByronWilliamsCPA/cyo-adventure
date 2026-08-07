@@ -10,6 +10,7 @@ from unittest.mock import patch
 import pytest
 
 from cyo_adventure.storybook.models import Storybook
+from cyo_adventure.validator import character as character_module
 from cyo_adventure.validator.character import build_node_headroom, validate_character
 from cyo_adventure.validator.gate import run_gate
 from cyo_adventure.validator.layer2 import validate_layer2
@@ -965,6 +966,62 @@ def test_ch8_rejects_a_narrow_declared_span_that_still_means_six_archetypes() ->
     result = run_gate(data)
     assert result.blocked is True
     assert any(f.rule_id == "CH-8" for f in result.report.findings)
+
+
+def _narrow_win_with_archetype_dict() -> dict[str, Any]:
+    """The CH-4 fixture, opted in to an ``archetype`` span as well as ``might``.
+
+    ``might`` 0-2 crossed with ``archetype`` 0-6 is 21 entry states, well
+    under ``MAX_ENTRY_STATES``, so the walk block is size-eligible and CH-4
+    fires on the 14 states that cannot reach "win". Adding ``archetype`` is
+    what makes CH-8 applicable to the same fixture: CH-8 returns early when
+    the envelope declares no ``archetype`` span at all.
+    """
+    data = _unreachable_win_for_one_state_story()
+    data["variables"] = [
+        *data["variables"],
+        {"name": "archetype", "type": "int", "initial": 0, "min": 0, "max": 6},
+    ]
+    data["accepts_character"] = {
+        "might": {"min": 0, "max": 2},
+        "archetype": {"min": 0, "max": 6},
+    }
+    return data
+
+
+def test_ch_walk_rules_do_not_run_on_a_book_ch8_has_already_blocked(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A CH ERROR other than CH-5 must also stop the walk rules from running.
+
+    The walk block used to be entered on envelope size alone, so a book CH-8
+    had already rejected still paid for a full walk per entry state: measured
+    on longwinter-station with a seven-state archetype envelope, CH-8 decided
+    the rejection in about 0.7s and the walk then ran for roughly 11.5s more
+    on a book that was already blocked.
+
+    Elapsed time is not the assertion, because a timing assertion passes in
+    both worlds on a fast machine. Instead the same fixture is run twice. The
+    control run proves the walk rules genuinely produce findings here (14
+    CH-4 findings, one per entry state that cannot reach the satisfying
+    ending) and that CH-8 is silent. Shrinking ``_WALK_CAP`` then makes CH-8
+    fire on that identical fixture, and the CH-4 findings must disappear:
+    they can only disappear because the walk block was skipped.
+    """
+    data = _narrow_win_with_archetype_dict()
+    story = Storybook.model_validate(data)
+
+    control = validate_character(story)
+    assert "CH-8" not in control.rule_ids()
+    assert len([f for f in control.findings if f.rule_id == "CH-4"]) == 14
+
+    # A cap of 6 puts CH-8's threshold at 1 configuration, which this book
+    # exceeds, so CH-8 rejects it without any envelope-size rule firing.
+    monkeypatch.setattr(character_module, "_WALK_CAP", 6)
+    blocked = validate_character(story)
+    assert "CH-8" in blocked.rule_ids()
+    assert "CH-5" not in blocked.rule_ids()
+    assert blocked.rule_ids().isdisjoint({"CH-3a", "CH-3b", "CH-4"})
 
 
 def test_build_node_headroom_rejects_arity_below_one() -> None:

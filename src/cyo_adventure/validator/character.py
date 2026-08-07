@@ -106,13 +106,29 @@ def validate_character(story: Storybook) -> ValidationReport:
     # `run_gate` to a `MemoryError`, which in production is the generation
     # worker process, not a request handler with a timeout. Recompute the
     # size cheaply (`envelope_size` is O(#vars), never materializes a state)
-    # and skip straight past the walk block when it is already over the cap:
-    # CH-5 has fired and the book is blocked either way, so the walk below
-    # would prove nothing that is not already settled.
+    # and skip straight past the walk block when it is already over the cap.
+    #
+    # The same reasoning generalises past CH-5 to *any* CH ERROR already in
+    # the report: the book is blocked either way, so the walk below would
+    # prove nothing that is not already settled, and it is not free. Each
+    # walk rule re-walks the story once per entry state, so an envelope at
+    # the cap multiplies the Layer-2 walk by up to `MAX_ENTRY_STATES`;
+    # measured on the largest catalog book, a CH-8 rejection that is already
+    # decided in under a second then spent roughly eleven further seconds
+    # walking a rejected book. Both conditions are kept rather than folded
+    # into one: the size check is the memory guard and must survive
+    # independently of CH-5's severity, while the error check is the time
+    # guard and covers the rules (CH-8 above all) that decide rejection
+    # without saying anything about envelope size.
     # #VERIFY: tests/unit/test_character_rules.py::
     # test_ch_walk_rules_skip_an_oversized_envelope_instead_of_enumerating_it
+    # and test_ch_walk_rules_do_not_run_on_a_book_ch8_has_already_blocked
     envelope = story.accepts_character or {}
-    if story.metadata.tier != 1 and envelope_size(envelope) <= MAX_ENTRY_STATES:
+    if (
+        story.metadata.tier != 1
+        and not report.errors
+        and envelope_size(envelope) <= MAX_ENTRY_STATES
+    ):
         states = envelope_states(envelope)
         _check_ch3a_union_dead_branches(story, states, report)
         _check_ch3b_per_state_regressions(story, states, report)
