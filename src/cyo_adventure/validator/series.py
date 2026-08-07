@@ -290,10 +290,8 @@ def _check_state_carry(series_books: list[_Book], report: ValidationReport) -> N
 #
 # Public: CH-5 (validator/character.py) imports this same cap for the character
 # envelope. It is exported under a public name rather than accessed by importing
-# ``validator/character.py`` across the module's private-name boundary; the
-# private alias below keeps this module's own references and tests unchanged.
+# ``validator/character.py`` across the module's private-name boundary.
 MAX_ENTRY_STATES = 64
-_MAX_ENTRY_STATES = MAX_ENTRY_STATES
 
 
 def _satisfying_exit_states(book: Storybook) -> tuple[list[VarState], bool]:
@@ -305,7 +303,7 @@ def _satisfying_exit_states(book: Storybook) -> tuple[list[VarState], bool]:
     Returns:
         tuple: The distinct exit states (deduplicated, deterministically
             ordered), and whether the walk capped or the state list was
-            truncated at :data:`_MAX_ENTRY_STATES`.
+            truncated at :data:`MAX_ENTRY_STATES`.
     """
     result = walk_configurations(book)
     endings = {
@@ -323,7 +321,7 @@ def _satisfying_exit_states(book: Storybook) -> tuple[list[VarState], bool]:
             continue
         seen.add(signature)
         states.append(dict(reading_state.var_state))
-        if len(states) >= _MAX_ENTRY_STATES:
+        if len(states) >= MAX_ENTRY_STATES:
             return states, True
     return states, result.capped
 
@@ -446,7 +444,7 @@ def _check_continuation_entry_states(
                     story_id=book.id,
                     message=(
                         f"SR-9 series: book {series.book_index} '{book.id}' has more "
-                        f"than {_MAX_ENTRY_STATES} distinct satisfying exit states or "
+                        f"than {MAX_ENTRY_STATES} distinct satisfying exit states or "
                         f"capped its walk, so the continuation handoff into "
                         f"'{receiver.id}' was checked over a truncated sample"
                     ),

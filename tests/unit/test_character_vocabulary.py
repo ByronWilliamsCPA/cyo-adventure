@@ -74,7 +74,7 @@ def test_stat_envelope_is_twenty_seven_states() -> None:
     """Range 0-2 rather than 0-3 is the choice that keeps the envelope at 27.
 
     Three stats at 0-3 would be 64 states, which is exactly the
-    ``_MAX_ENTRY_STATES`` ceiling CH-5 enforces, leaving no headroom.
+    ``MAX_ENTRY_STATES`` ceiling CH-5 enforces, leaving no headroom.
     """
     span = 1
     for stat in ("might", "wits", "nerve"):

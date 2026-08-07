@@ -80,7 +80,7 @@ def _canonical(name: str, low: int, high: int) -> CanonicalVariable:
 
 
 # Range 0-2 rather than 0-3 for the stats is an envelope-size decision: three
-# stats at 0-3 is 64 states, which is exactly the _MAX_ENTRY_STATES ceiling, and
+# stats at 0-3 is 64 states, which is exactly the MAX_ENTRY_STATES ceiling, and
 # at 0-2 it is 27. A four-band degrees-of-success ladder still fits: >= 2 crit,
 # == 1 pass, == 0 with a local resource = scrape, == 0 without = fail.
 CANONICAL_CHARACTER_VARIABLES: Final[Mapping[str, CanonicalVariable]] = (
