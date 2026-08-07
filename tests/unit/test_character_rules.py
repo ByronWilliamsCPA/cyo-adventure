@@ -120,7 +120,7 @@ def test_ch1_rejects_a_type_mismatch() -> None:
     data = _story_dict()
     data["variables"] = [{"name": "might", "type": "bool", "initial": False}]
     data["accepts_character"] = {"might": {"min": 0, "max": 2}}
-    assert "CH-1" in _ids(Storybook.model_validate(data), "CH-1")
+    assert _ids(Storybook.model_validate(data), "CH-1") == ["CH-1"]
 
 
 def test_ch2_rejects_an_envelope_narrower_than_the_declared_bounds() -> None:
@@ -190,6 +190,42 @@ def test_ch6_is_silent_for_a_book_using_no_canonical_name() -> None:
     assert _ids(Storybook.model_validate(data), "CH-6") == []
 
 
+def test_ch6_rejects_an_uncovered_canonical_name_in_an_opted_in_book() -> None:
+    """CH-6's other half: the converse of CH-1's envelope -> variable direction.
+
+    CH-1 only ever walks accepts_character -> variables, so an opted-in book
+    that declares a second canonical-named variable outside its envelope
+    passes CH-1 cleanly. Without this half, that variable would still be
+    seeded by G3 name-match over states this book's Layer 2 walk never
+    proved. If only CH-1 existed, this scenario would produce no CH-6
+    finding at all.
+    """
+    data = _story_dict(accepts_character={"might": {"min": 0, "max": 2}})
+    data["variables"].append(
+        {"name": "wits", "type": "int", "initial": 0, "min": 0, "max": 2}
+    )
+    assert _ids(Storybook.model_validate(data), "CH-6") == ["CH-6"]
+
+
+def test_ch7_still_runs_for_an_opted_in_book_with_an_empty_envelope() -> None:
+    """Pins the ``None``-vs-``{}`` branch: ``accepts_character={}`` opts in.
+
+    ``None`` means "did not opt in"; ``{}`` means "opted in with an empty
+    envelope declared". A slip to ``if not story.accepts_character:`` would
+    route this empty-but-opted-in book through the opt-out branch, which
+    only ever runs CH-6, so CH-7 would never be evaluated and this later,
+    state-carrying book would wrongly pass despite also declaring
+    ``accepts_character``.
+    """
+    data = _story_dict(accepts_character={})
+    data["metadata"]["series"] = {
+        "series_id": "s1",
+        "book_index": 2,
+        "carries_state": True,
+    }
+    assert _ids(Storybook.model_validate(data), "CH-7") == ["CH-7"]
+
+
 def test_ch7_rejects_a_later_book_of_a_state_carrying_series() -> None:
     data = _story_dict(accepts_character={"might": {"min": 0, "max": 2}})
     data["metadata"]["series"] = {
@@ -206,6 +242,23 @@ def test_ch7_allows_the_first_book_of_a_series() -> None:
         "series_id": "s1",
         "book_index": 1,
         "carries_state": True,
+    }
+    assert _ids(Storybook.model_validate(data), "CH-7") == []
+
+
+def test_ch7_allows_a_later_book_of_an_episodic_series() -> None:
+    """The ``carries_state`` conjunct: both other CH-7 tests set it ``True``.
+
+    Without this case, deleting ``series.carries_state and`` from CH-7's
+    condition would leave the suite green: an episodic (``carries_state:
+    False``) later book would wrongly light up CH-7 and nothing would catch
+    it.
+    """
+    data = _story_dict(accepts_character={"might": {"min": 0, "max": 2}})
+    data["metadata"]["series"] = {
+        "series_id": "s1",
+        "book_index": 2,
+        "carries_state": False,
     }
     assert _ids(Storybook.model_validate(data), "CH-7") == []
 

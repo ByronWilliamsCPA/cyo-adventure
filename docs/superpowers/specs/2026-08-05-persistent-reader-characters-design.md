@@ -356,7 +356,7 @@ handoff**, not a within-story property.
 | `CH-3b` | ERROR | **Per-state.** For every envelope state, entry raises no `L2-9`, `L2-10`, or `L2-14` error the book does not raise from its own declared initials |
 | `CH-4` | ERROR | For every envelope state, a satisfying ending remains reachable |
 | `CH-5` | ERROR | Envelope size exceeds `_MAX_ENTRY_STATES` |
-| `CH-6` | ERROR | A book that does not declare `accepts_character` may not declare a variable whose name is in the canonical vocabulary |
+| `CH-6` | ERROR | **Both directions.** A canonical variable name may be declared only by a book that opted in AND covered it in the envelope: (a) a book that does not declare `accepts_character` may not declare a variable whose name is in the canonical vocabulary; (b) an opted-in book may not declare a canonical-named variable its envelope omits, since G3 carry is name-match and would seed it over states this book's own Layer 2 walk never proved (CH-1 only ever walks envelope -> variable, never the converse) |
 | `CH-7` | ERROR | A book declaring `accepts_character` is not a non-first book of a `carries_state` series |
 | `CH-8` | ERROR | A book with a build node whose base closure exceeds `cap / (build_node_arity)` configurations (section 4.3.2) |
 

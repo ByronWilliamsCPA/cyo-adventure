@@ -228,9 +228,9 @@ cross-artifact handoff rather than a within-story property. All are ERROR severi
 | Rule ID | Layer | Description | Failure Message Template |
 |---------|-------|-------------|--------------------------|
 | CH-1 | Character | **Vocabulary and declaration**: every `accepts_character` name is in the canonical vocabulary and is declared in `variables` with a matching type. | `CH-1 character: accepts_character declares '{name}', which is not in the canonical vocabulary {names}` / `CH-1 character: accepts_character declares '{name}' but the story declares no variable of that name` / `CH-1 character: '{name}' is declared as {actual} but the canonical vocabulary defines it as {expected}` |
-| CH-2 | Character | **Range equality**: each envelope range equals the declared variable's `min`/`max`. Equality, not containment: G3's runtime clamp is to declared bounds, so a narrower envelope would silently admit states the validator never walked. | `CH-2 character: accepts_character range for '{name}' is {a}-{b} but the variable declares {c}-{d}; they must be equal` |
+| CH-2 | Character | **Range equality**: each envelope range equals the declared variable's `min`/`max`. Equality, not containment: G3's runtime clamp is to declared bounds, so a narrower envelope would silently admit states the validator never walked. A variable with absent `min`/`max` cannot equal a bound at all, so an opted-in variable must declare both. | `CH-2 character: accepts_character range for '{name}' is {a}-{b} but the variable declares {c}-{d}; they must be equal` / `CH-2 character: '{name}' is in accepts_character but declares no min/max bounds; an opted-in variable must declare bounds equal to its envelope range {a}-{b}` |
 | CH-5 | Character | **Envelope size**: the envelope admits no more entry states than `_MAX_ENTRY_STATES`. An ERROR rather than SR-9's truncate-and-warn, because an envelope is declared rather than emergent. | `CH-5 character: accepts_character admits {n} entry states, above the {cap} cap; narrow a range or declare fewer variables` |
-| CH-6 | Character | **Namespace reservation**: a book that declares no `accepts_character` may not declare a variable whose name is in the canonical vocabulary. G3 carry is name-match, so without this a book that never opted in can still be seeded. | `CH-6 character: '{name}' is a reserved canonical character variable, but this story declares no accepts_character envelope; rename the variable or opt in` |
+| CH-6 | Character | **Namespace reservation, both directions**: a canonical variable name may be declared only by a book that opted in *and* covered it in the envelope. The opt-out half rejects a book that declares no `accepts_character` but still declares a canonical name (G3 carry is name-match, so a book that never opted in can still be seeded). The opt-in half rejects an opted-in book that declares a canonical-named variable its envelope omits: CH-1 only ever walks envelope -> variable, so this converse direction (variable -> envelope) needs its own check, or an uncovered canonical variable would still be seeded by G3 over states this book's Layer 2 walk never proved. | `CH-6 character: '{name}' is a reserved canonical character variable, but this story declares no accepts_character envelope; rename the variable or opt in` (opt-out half) / `CH-6 character: '{name}' is a reserved canonical character variable declared by this story, but accepts_character does not cover it; add it to the envelope or rename the variable` (opt-in half) |
 | CH-7 | Character | **Series exclusivity**: a book declaring `accepts_character` is not a non-first book of a `carries_state` series. Two independent sources of carried state in one book is unproved in v1. | `CH-7 character: book {index} of state-carrying series '{series_id}' may not also declare accepts_character` |
 
 ---
@@ -246,13 +246,15 @@ The validator applies rules in this order:
    profile, in which case it is the sole finding and PL-15..PL-21 do not run.
 3. L2-8 through L2-14 (state-space; Tier-2 only). Stop if any L2 rule fails; L2-13 is a
    non-blocking scale advisory and never stops the run.
-4. RL-13 (advisory; all stories). Log warnings; continue.
-5. CG-1 through CG-4 (advisory; all stories) **only when `run_gate` is called with
+4. CH-1, CH-2, CH-5, CH-6, CH-7 (character envelope; ADR-028, participating books only).
+   The rules that need a state-space walk ship in later tasks; see `validator/character.py`.
+5. RL-13 (advisory; all stories). Log warnings; continue.
+6. CG-1 through CG-4 (advisory; all stories) **only when `run_gate` is called with
    `enforce_grammar=True`**, which no production caller does today. Log warnings; continue.
-6. SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.
-7. SR-1 through SR-9 (series chain; series stories only) run **later and elsewhere**, at
+7. SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.
+8. SR-1 through SR-9 (series chain; series stories only) run **later and elsewhere**, at
    publish time over the whole chain rather than inside `run_gate` over one story. A book
-   can clear steps 1-6 at generation time and still be refused at publish by an SR error.
+   can clear steps 1-7 at generation time and still be refused at publish by an SR error.
 
 Stopping at the first Layer-1 failure is allowed for efficiency; all Layer-1 failures may also
 be collected in a single pass before reporting, which is preferred for repair-stage prompts

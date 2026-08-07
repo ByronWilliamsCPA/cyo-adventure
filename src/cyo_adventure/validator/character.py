@@ -28,7 +28,7 @@ from cyo_adventure.validator.report import (
     ValidationFinding,
     ValidationReport,
 )
-from cyo_adventure.validator.series import _MAX_ENTRY_STATES
+from cyo_adventure.validator.series import MAX_ENTRY_STATES
 
 if TYPE_CHECKING:
     from cyo_adventure.storybook.models import CharacterRange, Storybook, Variable
@@ -47,12 +47,24 @@ def validate_character(story: Storybook) -> ValidationReport:
     report = ValidationReport()
     declared = {variable.name: variable for variable in story.variables}
 
+    # #CRITICAL: data integrity: `story.accepts_character` distinguishes
+    # `None` ("did not opt in") from `{}` ("opted in and declared an empty
+    # envelope"); `Storybook.accepts_character` carries its own #CRITICAL
+    # marker protecting that round trip. This is the first place a `None`-vs-
+    # `{}` collapse would change behaviour: a slip to `if not
+    # story.accepts_character:` would route an opted-in empty envelope
+    # through the opt-out branch below (CH-6's reserved-name check) instead of
+    # the opt-in branch (CH-1/CH-2/CH-6/CH-5/CH-7), changing which findings an
+    # opted-in-with-nothing-declared book can receive.
+    # #VERIFY: tests/unit/test_character_rules.py::
+    # test_ch7_still_runs_for_an_opted_in_book_with_an_empty_envelope
     if story.accepts_character is None:
         _check_ch6_reserved_names(story, declared, report)
         return report
 
     _check_ch1_names_and_types(story, declared, report)
     _check_ch2_range_equality(story, declared, report)
+    _check_ch6_uncovered_canonical_names(story, declared, report)
     _check_ch5_envelope_size(story, report)
     _check_ch7_series_exclusivity(story, report)
     return report
@@ -79,9 +91,11 @@ def _check_ch1_names_and_types(
                 _finding(
                     story,
                     "CH-1",
-                    f"CH-1 character: accepts_character declares '{name}', "
-                    f"which is not in the canonical vocabulary "
-                    f"{sorted(CANONICAL_CHARACTER_VARIABLES)}",
+                    (
+                        f"CH-1 character: accepts_character declares '{name}', "
+                        f"which is not in the canonical vocabulary "
+                        f"{sorted(CANONICAL_CHARACTER_VARIABLES)}"
+                    ),
                 )
             )
             continue
@@ -91,8 +105,10 @@ def _check_ch1_names_and_types(
                 _finding(
                     story,
                     "CH-1",
-                    f"CH-1 character: accepts_character declares '{name}' but "
-                    f"the story declares no variable of that name",
+                    (
+                        f"CH-1 character: accepts_character declares '{name}' "
+                        f"but the story declares no variable of that name"
+                    ),
                 )
             )
             continue
@@ -101,9 +117,11 @@ def _check_ch1_names_and_types(
                 _finding(
                     story,
                     "CH-1",
-                    f"CH-1 character: '{name}' is declared as "
-                    f"{variable.type.value} but the canonical vocabulary "
-                    f"defines it as {canonical.type.value}",
+                    (
+                        f"CH-1 character: '{name}' is declared as "
+                        f"{variable.type.value} but the canonical vocabulary "
+                        f"defines it as {canonical.type.value}"
+                    ),
                 )
             )
 
@@ -136,10 +154,12 @@ def _check_ch2_range_equality(
                 _finding(
                     story,
                     "CH-2",
-                    f"CH-2 character: '{name}' is in accepts_character but "
-                    f"declares no min/max bounds; an opted-in variable must "
-                    f"declare bounds equal to its envelope range "
-                    f"{span.min}-{span.max}",
+                    (
+                        f"CH-2 character: '{name}' is in accepts_character but "
+                        f"declares no min/max bounds; an opted-in variable must "
+                        f"declare bounds equal to its envelope range "
+                        f"{span.min}-{span.max}"
+                    ),
                 )
             )
             continue
@@ -148,9 +168,11 @@ def _check_ch2_range_equality(
                 _finding(
                     story,
                     "CH-2",
-                    f"CH-2 character: accepts_character range for '{name}' is "
-                    f"{span.min}-{span.max} but the variable declares "
-                    f"{variable.min}-{variable.max}; they must be equal",
+                    (
+                        f"CH-2 character: accepts_character range for '{name}' "
+                        f"is {span.min}-{span.max} but the variable declares "
+                        f"{variable.min}-{variable.max}; they must be equal"
+                    ),
                 )
             )
 
@@ -185,14 +207,16 @@ def _check_ch5_envelope_size(story: Storybook, report: ValidationReport) -> None
     """
     envelope = story.accepts_character or {}
     size = envelope_size(envelope)
-    if size > _MAX_ENTRY_STATES:
+    if size > MAX_ENTRY_STATES:
         report.add(
             _finding(
                 story,
                 "CH-5",
-                f"CH-5 character: accepts_character admits {size} entry states, "
-                f"above the {_MAX_ENTRY_STATES} cap; narrow a range or declare "
-                f"fewer variables",
+                (
+                    f"CH-5 character: accepts_character admits {size} entry "
+                    f"states, above the {MAX_ENTRY_STATES} cap; narrow a range "
+                    f"or declare fewer variables"
+                ),
             )
         )
 
@@ -200,12 +224,16 @@ def _check_ch5_envelope_size(story: Storybook, report: ValidationReport) -> None
 def _check_ch6_reserved_names(
     story: Storybook, declared: dict[str, Variable], report: ValidationReport
 ) -> None:
-    """CH-6: a book that has not opted in may not use a canonical name.
+    """CH-6 (opt-out half): a book that has not opted in may not use a canonical name.
 
-    Without this rule, "a book omitting accepts_character behaves exactly as
-    today" is false: G3 carry is name-match, so it seeds *any* book declaring a
-    canonical name, opted in or not. The catalog scan found zero current
-    clashes, so reserving the names costs nothing today.
+    CH-6's full statement is "a canonical variable name may be declared only
+    by a book that opted in AND covered it in the envelope"; this half proves
+    the non-participating side, called only when ``story.accepts_character is
+    None``. Without it, "a book omitting accepts_character behaves exactly as
+    today" is false: G3 carry is name-match, so it seeds *any* book declaring
+    a canonical name, opted in or not. The catalog scan found zero current
+    clashes, so reserving the names costs nothing today. The opted-in half is
+    ``_check_ch6_uncovered_canonical_names`` below.
     """
     for name in sorted(declared):
         if name in CANONICAL_CHARACTER_VARIABLES:
@@ -213,9 +241,44 @@ def _check_ch6_reserved_names(
                 _finding(
                     story,
                     "CH-6",
-                    f"CH-6 character: '{name}' is a reserved canonical "
-                    f"character variable, but this story declares no "
-                    f"accepts_character envelope; rename the variable or opt in",
+                    (
+                        f"CH-6 character: '{name}' is a reserved canonical "
+                        f"character variable, but this story declares no "
+                        f"accepts_character envelope; rename the variable or "
+                        f"opt in"
+                    ),
+                )
+            )
+
+
+def _check_ch6_uncovered_canonical_names(
+    story: Storybook, declared: dict[str, Variable], report: ValidationReport
+) -> None:
+    """CH-6 (opt-in half): a declared canonical name must be covered by the envelope.
+
+    CH-1 quantifies over *envelope* names, proving each is declared as a
+    variable. This is the converse direction of the same correspondence: an
+    opted-in book may still declare a canonical-named variable its envelope
+    omits, and G3 carry is name-match, so the runtime would seed that
+    variable from the reader's character over states this book's own Layer 2
+    walk never proved, having walked only from the book's own declared
+    initial for that variable. CH-2 does not catch this: it only ever walks
+    envelope -> variable, never variable -> envelope. Called only when
+    ``story.accepts_character is not None``.
+    """
+    envelope = story.accepts_character or {}
+    for name in sorted(declared):
+        if name in CANONICAL_CHARACTER_VARIABLES and name not in envelope:
+            report.add(
+                _finding(
+                    story,
+                    "CH-6",
+                    (
+                        f"CH-6 character: '{name}' is a reserved canonical "
+                        f"character variable declared by this story, but "
+                        f"accepts_character does not cover it; add it to the "
+                        f"envelope or rename the variable"
+                    ),
                 )
             )
 
@@ -235,8 +298,10 @@ def _check_ch7_series_exclusivity(story: Storybook, report: ValidationReport) ->
             _finding(
                 story,
                 "CH-7",
-                f"CH-7 character: book {series.book_index} of state-carrying "
-                f"series '{series.series_id}' may not also declare "
-                f"accepts_character",
+                (
+                    f"CH-7 character: book {series.book_index} of "
+                    f"state-carrying series '{series.series_id}' may not also "
+                    f"declare accepts_character"
+                ),
             )
         )

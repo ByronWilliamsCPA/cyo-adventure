@@ -287,7 +287,13 @@ def _check_state_carry(series_books: list[_Book], report: ValidationReport) -> N
 # one is unbounded work for a rule whose job is to catch a broken handoff, not to
 # enumerate one. When the cap bites, SR-9 says so rather than reporting a clean
 # chain over a truncated sample.
-_MAX_ENTRY_STATES = 64
+#
+# Public: CH-5 (validator/character.py) imports this same cap for the character
+# envelope. It is exported under a public name rather than accessed by importing
+# ``validator/character.py`` across the module's private-name boundary; the
+# private alias below keeps this module's own references and tests unchanged.
+MAX_ENTRY_STATES = 64
+_MAX_ENTRY_STATES = MAX_ENTRY_STATES
 
 
 def _satisfying_exit_states(book: Storybook) -> tuple[list[VarState], bool]:
