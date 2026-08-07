@@ -112,6 +112,89 @@ def _parse_sql_string_list(fragment: str) -> set[str]:
     return set(re.findall(r"'([^']*)'", fragment))
 
 
+# The two clause shapes `ck_character_attribute_value_range` mixes: a single
+# name compared with `=` (archetype) and several names compared with `IN`
+# (the three stats). Each clause pairs its name(s) with one
+# `value_int BETWEEN <low> AND <high>` bound.
+_NAME_EQ_RANGE_RE = re.compile(
+    r"name\s*=\s*'([^']*)'\s*AND\s*value_int\s*BETWEEN\s*(\d+)\s*AND\s*(\d+)"
+)
+_NAME_IN_RANGE_RE = re.compile(
+    r"name\s+IN\s*\(([^)]*)\)\s*AND\s*value_int\s*BETWEEN\s*(\d+)\s*AND\s*(\d+)"
+)
+
+
+def _parse_value_range_clauses(fragment: str) -> dict[str, tuple[int, int]]:
+    """Parse a `(name = 'x' AND value_int BETWEEN a AND b) OR (...)` fragment.
+
+    ``ck_character_attribute_value_range`` hand-types its numeric bounds
+    (I-2): a name-set drift guard alone would let a widened archetype
+    roster pass the vocabulary test above while the database still rejects
+    the new archetype's code at write time with a CHECK violation. This
+    parses both clause shapes (a single name behind `=`, several names
+    behind `IN (...)`) into one mapping so the bounds can be compared
+    against ``CANONICAL_CHARACTER_VARIABLES`` directly.
+
+    Args:
+        fragment: The CHECK constraint's SQL text (ORM ``sqltext`` or a
+            migration excerpt covering the full constraint body).
+
+    Returns:
+        dict[str, tuple[int, int]]: Each attribute name mapped to its
+        ``(inclusive low, inclusive high)`` bound.
+    """
+    bounds: dict[str, tuple[int, int]] = {}
+    for name, low, high in _NAME_EQ_RANGE_RE.findall(fragment):
+        bounds[name] = (int(low), int(high))
+    for names_fragment, low, high in _NAME_IN_RANGE_RE.findall(fragment):
+        for name in _parse_sql_string_list(names_fragment):
+            bounds[name] = (int(low), int(high))
+    return bounds
+
+
+def _expected_attribute_value_bounds() -> dict[str, tuple[int, int]]:
+    """The per-name (min, max) bounds `CANONICAL_CHARACTER_VARIABLES` declares.
+
+    archetype's max is ``len(ARCHETYPE_ROSTER)``, derived rather than
+    hand-typed (see ``storybook.character_vocabulary``), so this stays
+    correct if the roster ever grows.
+    """
+    return {
+        name: (variable.min, variable.max)
+        for name, variable in CANONICAL_CHARACTER_VARIABLES.items()
+    }
+
+
+def _migration_value_range_bounds(path: Path) -> dict[str, tuple[int, int]]:
+    """Extract ``ck_character_attribute_value_range``'s bounds from a migration.
+
+    The constraint body mixes several parenthesized clauses, so (unlike
+    ``_migration_check_list``'s single ``IN (...)`` capture) this slices out
+    the whole statement housing the anchor, up to the next statement
+    terminator, and hands that window to ``_parse_value_range_clauses``.
+
+    Args:
+        path: The migration file to parse.
+
+    Returns:
+        dict[str, tuple[int, int]]: Each attribute name mapped to its
+        ``(inclusive low, inclusive high)`` bound.
+
+    Raises:
+        AssertionError: If the anchor does not appear exactly once in the
+            migration's executable DDL.
+    """
+    ddl = _executable_ddl(path)
+    anchor = "ck_character_attribute_value_range"
+    assert ddl.count(anchor) == 1, (
+        f"expected exactly 1 occurrence of {anchor!r} in {path.name}, "
+        f"found {ddl.count(anchor)}"
+    )
+    start = ddl.index(anchor)
+    end = ddl.index(";", start)
+    return _parse_value_range_clauses(ddl[start:end])
+
+
 def _migration_check_list(anchor: str, column: str, path: Path) -> set[str]:
     """Extract a migration's ``<column> IN (...)`` literal list near an anchor.
 
@@ -210,3 +293,30 @@ def test_orm_look_check_matches_avatar_ids() -> None:
     """The ORM's ck_character_look CHECK equals the twelve avatar ids."""
     sqltext = _orm_check_sqltext(Character, "ck_character_look")
     assert _parse_sql_string_list(sqltext) == _AVATAR_LOOK_IDS
+
+
+def test_migration_attribute_value_range_matches_canonical_bounds() -> None:
+    """The migration's numeric CHECK bounds equal CANONICAL_CHARACTER_VARIABLES.
+
+    I-2: the tests above only guard the attribute NAME set; a widened
+    archetype roster could pass those while this hand-typed numeric range
+    still rejects the new code at write time. Deriving the expected bounds
+    from ``CANONICAL_CHARACTER_VARIABLES`` (whose archetype max is
+    ``len(ARCHETYPE_ROSTER)``) closes that gap.
+    """
+    migration = _newest_migration_defining("ck_character_attribute_value_range")
+    assert (
+        _migration_value_range_bounds(migration) == _expected_attribute_value_bounds()
+    )
+
+
+def test_orm_attribute_value_range_matches_canonical_bounds() -> None:
+    """The ORM's numeric CHECK bounds equal CANONICAL_CHARACTER_VARIABLES.
+
+    The ORM-side counterpart to the migration test above; see its docstring
+    for the failure this closes.
+    """
+    sqltext = _orm_check_sqltext(
+        CharacterAttribute, "ck_character_attribute_value_range"
+    )
+    assert _parse_value_range_clauses(sqltext) == _expected_attribute_value_bounds()
