@@ -36,12 +36,15 @@ from cyo_adventure.api.schemas import (
     error_responses,
 )
 from cyo_adventure.api.sentinel_log import strip_and_log
+from cyo_adventure.characters.seeding import character_seed
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     ResourceNotFoundError,
     ValidationError,
 )
 from cyo_adventure.db.models import (
+    Character,
+    CharacterAttribute,
     Completion,
     ReadingState,
     Series,
@@ -55,6 +58,8 @@ from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+
+    from sqlalchemy.ext.asyncio import AsyncSession
 
     from cyo_adventure.storybook.evaluator import VarState
 
@@ -76,8 +81,20 @@ def _parse_uuid(raw: str, field: str) -> uuid.UUID:
         raise ValidationError(msg, field=field, value=raw) from exc
 
 
-def _view(row: ReadingState) -> ReadingStateView:
-    """Build the response view from a reading-state row."""
+async def _view(session: AsyncSession, row: ReadingState) -> ReadingStateView:
+    """Build the response view from a reading-state row.
+
+    ``character_name`` is looked up live rather than stored, because
+    Character rows are never deleted on retirement (only marked
+    ``is_active=False``); a live lookup by the row's persisted
+    ``character_id`` therefore still resolves a retired character's name
+    correctly, which is the right answer to "whose adventure is this".
+    """
+    character_name: str | None = None
+    if row.character_id is not None:
+        character_name = await session.scalar(
+            select(Character.name).where(Character.id == row.character_id)
+        )
     return ReadingStateView(
         child_profile_id=str(row.child_profile_id),
         storybook_id=row.storybook_id,
@@ -90,13 +107,81 @@ def _view(row: ReadingState) -> ReadingStateView:
         state_revision=row.state_revision,
         updated_by_device_id=row.updated_by_device_id,
         last_synced_at=row.last_synced_at,
+        character_id=str(row.character_id) if row.character_id is not None else None,
+        character_name=character_name,
+        seed_var_state=dict(row.seed_var_state)
+        if row.seed_var_state is not None
+        else None,
     )
 
 
-def _conflict(row: ReadingState, detail: str) -> JSONResponse:
+async def _conflict(
+    session: AsyncSession, row: ReadingState, detail: str
+) -> JSONResponse:
     """Build a 409 conflict response carrying the current row."""
-    body = ConflictView(detail=detail, current_row=_view(row))
+    body = ConflictView(detail=detail, current_row=await _view(session, row))
     return JSONResponse(status_code=409, content=body.model_dump(mode="json"))
+
+
+async def _attributes_of(
+    session: AsyncSession, character_id: uuid.UUID
+) -> dict[str, int]:
+    """Return the stored attribute rows for one character as a flat dict.
+
+    Mirrors ``characters.py::_attributes_of`` exactly, duplicated rather than
+    imported: that name is module-private (leading underscore) and this
+    package's convention is a small explained duplicate over widening
+    another module's public surface for one call site (see
+    ``personalization.py::_is_active`` mirroring
+    ``family_connections.py::_is_active``).
+
+    Args:
+        session: The request session.
+        character_id: The character whose attributes are read.
+
+    Returns:
+        dict[str, int]: Attribute name to value; empty if none are stored.
+    """
+    rows = await session.scalars(
+        select(CharacterAttribute).where(
+            CharacterAttribute.character_id == character_id
+        )
+    )
+    return {row.name: row.value_int for row in rows.all()}
+
+
+async def _resolve_active_character(
+    session: AsyncSession, profile_id: uuid.UUID
+) -> Character | None:
+    """Return the profile's active character row, or ``None`` if it has none.
+
+    The one query this whole feature rests on: it takes ``profile_id`` from
+    the caller, never from a request body, so its result cannot be steered
+    by anything the client sent.
+    """
+    return await session.scalar(
+        select(Character).where(
+            Character.child_profile_id == profile_id,
+            Character.is_active.is_(True),
+        )
+    )
+
+
+async def _bind_active_character(
+    session: AsyncSession, profile_id: uuid.UUID
+) -> tuple[uuid.UUID | None, VarState | None]:
+    """Resolve the profile's active character and seed a read start from it.
+
+    Returns:
+        tuple[uuid.UUID | None, VarState | None]: The character's id and its
+            seed (both ``None`` together when the profile has no active
+            character; an unseeded read is the normal case, not an error).
+    """
+    character = await _resolve_active_character(session, profile_id)
+    if character is None:
+        return None, None
+    attributes = await _attributes_of(session, character.id)
+    return character.id, character_seed(attributes)
 
 
 async def _load_readable_storybook(
@@ -365,7 +450,7 @@ async def get_reading_state(
     if row is None:
         msg = f"no reading state for profile '{profile_id}' on '{storybook_id}'"
         raise ResourceNotFoundError(msg)
-    return _view(row)
+    return await _view(ctx.session, row)
 
 
 @router.get("/series-next/{profile_id}/{storybook_id}")
@@ -545,30 +630,45 @@ async def put_reading_state(
         # M1: the create path establishes a NEW pin; require the current,
         # published, approved version so a first save cannot pin to a
         # superseded or never-approved version (require_current=True).
-        # #ASSUME: data integrity: no row exists yet on the create path, so
-        # there is no persisted seed to pass; Task 6 is where character-seeded
-        # reads start writing reading_state.seed_var_state on creation, at
-        # which point this call site threads that seed through instead of
-        # None.
-        # #VERIFY: tests/integration/test_reading_state.py::
-        # test_reading_state_round_trip exercises this create call site today;
-        # re-check it (and add a seeded variant) once Task 6 populates
-        # seed_var_state on creation.
+        #
+        # #CRITICAL: security: the bound character is resolved from the
+        # AUTHENTICATED profile, never from the request. A client-supplied
+        # character_id would let one profile seed a read with another's
+        # numbers, and because the seed becomes the replay baseline, it would
+        # promote seeding into an arbitrary-variable-write primitive that
+        # replay validation would then bless.
+        # #VERIFY: tests/integration/test_reading_character_binding.py::
+        # test_a_client_supplied_character_id_is_rejected
+        #
+        # #CRITICAL: data integrity: the seed is snapshotted into
+        # reading_state.seed_var_state at read start and never recomputed.
+        # Recomputing on save would let a mid-book retirement or a writeback
+        # from another book rewrite the baseline this read is validated
+        # against, invalidating a save the child legitimately holds.
+        # #VERIFY: same module, test_a_read_in_progress_keeps_its_recorded_seed
+        character_id, seed_var_state = await _bind_active_character(ctx.session, parsed)
         await _validate_against_pinned_version(
-            ctx, body, book, require_current=True, seed_var_state=None
+            ctx, body, book, require_current=True, seed_var_state=seed_var_state
         )
-        return _create_reading_state(ctx, parsed, storybook_id, body)
+        return await _create_reading_state(
+            ctx,
+            parsed,
+            storybook_id,
+            body,
+            character_id=character_id,
+            seed_var_state=seed_var_state,
+        )
     # Idempotent replay: the same event was already applied; return current row.
     if body.event_id is not None and row.last_event_id == body.event_id:
-        return _view(row)
+        return await _view(ctx.session, row)
     # A stale-session version mismatch is a concurrency conflict, not a lookup
     # failure: it must 409 even when body.version has no persisted version row
     # (the client is out of date, not malformed), so this check runs before
     # version validation below.
     if body.version != row.version:
-        return _conflict(row, "reading_state version mismatch")
+        return await _conflict(ctx.session, row, "reading_state version mismatch")
     if body.state_revision != row.state_revision:
-        return _conflict(row, "reading_state revision mismatch")
+        return await _conflict(ctx.session, row, "reading_state revision mismatch")
     # M1: an update to an ALREADY-established row may legitimately continue
     # against an older, since-superseded version the row is pinned to,
     # so this path does not re-require the current/published/approved
@@ -578,9 +678,6 @@ async def put_reading_state(
     # select), so pass its persisted seed_var_state rather than None: a
     # character-seeded read must replay from the seed the server recorded on
     # creation, not from declared initials (see replay.py::_check_replay).
-    # Today row.seed_var_state is always NULL (Task 1 added the column but
-    # nothing writes it until Task 6), so this is identical to the prior
-    # unseeded behaviour and only changes once seeding goes live.
     # #VERIFY: tests/unit/test_reading_api_unit.py::
     # TestPutReadingState::test_update_path_forwards_the_row_seed_not_none
     # proves this call site forwards row.seed_var_state specifically (an
@@ -593,13 +690,30 @@ async def put_reading_state(
         ctx, body, book, require_current=False, seed_var_state=row.seed_var_state
     )
     _apply_body(row, body)
-    return _view(row)
+    return await _view(ctx.session, row)
 
 
-def _create_reading_state(
-    ctx: Context, profile_id: uuid.UUID, storybook_id: str, body: ReadingStateBody
+async def _create_reading_state(
+    ctx: Context,
+    profile_id: uuid.UUID,
+    storybook_id: str,
+    body: ReadingStateBody,
+    *,
+    character_id: uuid.UUID | None,
+    seed_var_state: VarState | None,
 ) -> ReadingStateView:
     """Create the first reading-state row for a profile/story pair.
+
+    Args:
+        ctx: The request context (principal + session).
+        profile_id: The child profile starting the read.
+        storybook_id: The story being started.
+        body: The save payload.
+        character_id: The bound active character's id, or ``None`` if the
+            profile has none (resolved server-side; see
+            ``_bind_active_character``).
+        seed_var_state: The seed derived from that character's attributes,
+            or ``None`` for an unseeded read.
 
     Raises:
         ValidationError: If the first save does not start at ``state_revision`` 0;
@@ -617,10 +731,12 @@ def _create_reading_state(
         storybook_id=storybook_id,
         version=body.version,
         current_node=body.current_node,
+        character_id=character_id,
+        seed_var_state=seed_var_state,
     )
     _apply_body(row, body)
     ctx.session.add(row)
-    return _view(row)
+    return await _view(ctx.session, row)
 
 
 def _apply_body(row: ReadingState, body: ReadingStateBody) -> None:

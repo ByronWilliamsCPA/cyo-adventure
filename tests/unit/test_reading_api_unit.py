@@ -409,18 +409,23 @@ class TestParseUuid:
 
 class TestView:
     @pytest.mark.unit
-    def test_view_maps_all_fields(self) -> None:
+    @pytest.mark.asyncio
+    async def test_view_maps_all_fields(self) -> None:
         """_view() maps every ReadingState attribute to ReadingStateView."""
         profile_id = uuid.uuid4()
         row = _state_row(
             profile_id, "s", version=2, current_node="ch3", state_revision=7
         )
-        v = _view(row)
+        session = _FakeSession()
+        v = await _view(session, row)
         assert v.child_profile_id == str(profile_id)
         assert v.storybook_id == "s"
         assert v.version == 2
         assert v.current_node == "ch3"
         assert v.state_revision == 7
+        assert v.character_id is None
+        assert v.character_name is None
+        assert v.seed_var_state is None
 
 
 # ---------------------------------------------------------------------------
@@ -430,21 +435,25 @@ class TestView:
 
 class TestConflict:
     @pytest.mark.unit
-    def test_conflict_response_has_409_status(self) -> None:
+    @pytest.mark.asyncio
+    async def test_conflict_response_has_409_status(self) -> None:
         """_conflict() produces a JSONResponse with status 409."""
         profile_id = uuid.uuid4()
         row = _state_row(profile_id, "s")
-        response = _conflict(row, "revision mismatch")
+        session = _FakeSession()
+        response = await _conflict(session, row, "revision mismatch")
         assert response.status_code == 409
 
     @pytest.mark.unit
-    def test_conflict_response_body_contains_detail(self) -> None:
+    @pytest.mark.asyncio
+    async def test_conflict_response_body_contains_detail(self) -> None:
         """The 409 response body includes the provided detail string."""
         import json
 
         profile_id = uuid.uuid4()
         row = _state_row(profile_id, "s")
-        response = _conflict(row, "version mismatch")
+        session = _FakeSession()
+        response = await _conflict(session, row, "version mismatch")
         body = json.loads(response.body)
         assert body["detail"] == "version mismatch"
         assert "current_row" in body
@@ -653,9 +662,11 @@ class TestPutReadingState:
             str(profile_id), "story-1", _body(state_revision=0), ctx
         )
 
-        # Two scalar() calls now: the M1 assignment lookup, then the locked
-        # read-modify-write read this test is about.
-        assert len(session.scalar_calls) == 2
+        # Three scalar() calls now: the M1 assignment lookup, the locked
+        # read-modify-write read this test is about, then the create path's
+        # active-character binding lookup (Task 6; the fake session's seeded
+        # scalar_result of None means "no character" for that third call).
+        assert len(session.scalar_calls) == 3
         stmt = cast("Select[Any]", session.scalar_calls[1])
         # The row scope lives in the WHERE clause; the SELECT column list names
         # every column, so checking the full statement would not catch a dropped

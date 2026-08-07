@@ -3546,6 +3546,14 @@ export type ReadingStateBody = {
  * ReadingStateView
  *
  * A reading-state row returned to the client.
+ *
+ * ``character_id``, ``character_name``, and ``seed_var_state`` are
+ * server-derived (Task 6, ADR-028 spec section 7.3): the server resolves
+ * the profile's active character at read start and snapshots its
+ * attributes as the replay baseline. None of the three may be set by a
+ * client; ``ReadingStateBody`` has no such fields and is
+ * ``extra="forbid"``, so a request that tries is rejected before this
+ * view is ever built.
  */
 export type ReadingStateView = {
     /**
@@ -3596,6 +3604,20 @@ export type ReadingStateView = {
      * Last Synced At
      */
     last_synced_at: string | null;
+    /**
+     * Character Id
+     */
+    character_id: string | null;
+    /**
+     * Character Name
+     */
+    character_name: string | null;
+    /**
+     * Seed Var State
+     */
+    seed_var_state: {
+        [key: string]: boolean | number | string;
+    } | null;
 };
 
 /**
