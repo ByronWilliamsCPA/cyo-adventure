@@ -649,6 +649,10 @@
          <lastmod>2026-08-07</lastmod>
     </url>
     <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/adr/adr-028-persistent-reader-characters/</loc>
+         <lastmod>2026-08-07</lastmod>
+    </url>
+    <url>
          <loc>https://cyo-adventure.readthedocs.io/planning/evidence/sentinel-reinsertion/</loc>
          <lastmod>2026-08-07</lastmod>
     </url>
@@ -758,6 +762,10 @@
     </url>
     <url>
          <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-07-10-supabase-environments-pipeline-design/</loc>
+         <lastmod>2026-08-07</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-08-05-persistent-reader-characters-design/</loc>
          <lastmod>2026-08-07</lastmod>
     </url>
     <url>

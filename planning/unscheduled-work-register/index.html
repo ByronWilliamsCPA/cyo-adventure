@@ -4083,6 +4083,27 @@ validator treats a missing entry there as a build failure.</p>
 <td>5</td>
 <td>unscheduled</td>
 </tr>
+<tr>
+<td>UW-A45</td>
+<td><strong>Nothing ties the emitted <code>schema_version</code> stamp to <code>SCHEMA_VERSION</code>, so ADR-025 decision 2's stamping clause and decision 3's converse are unenforced.</strong> Found 2026-08-06 during the final whole-branch review of the ADR-025 implementation (branch <code>feat/persistent-characters</code>). <code>Storybook.schema_version</code> defaults to <code>SCHEMA_VERSION</code> only when the field is absent from the input; every real producer supplies it explicitly and hardcodes <code>"2.0"</code> (the 61 committed skeleton documents under <code>skeletons/</code>; note <code>skeletons/*/*.json</code> matches 124 files, the other 63 being <code>.contract.json</code>/<code>.lineage.json</code> sidecars on a different versioning scheme, <code>scripts/build_series_book.py</code>, <code>scripts/seed_dev_data.py</code>, <code>scripts/seed_series_catalog.py</code>). Outside <code>_normalize_legacy_fill</code>, no <em>Python</em> in <code>src/</code> ever assigns <code>blob["schema_version"]</code>, but that scan misses the primary production path: the Stage-A prompt (<code>generation/templates/structure.md:27</code>) requires the model to emit <code>schema_version</code> and pins no value, so an LLM-generated skeleton carries whatever the model chose. That producer, not the hardcoded scripts, is the one this row's fix most needs to cover. (<code>scripts/build_series_book.py:315</code> is also not a hardcode: it reads <code>spec.get("schema_version", "2.0")</code>.) So decision 2's "It stamps newly-published blobs with the current version" and decision 3's converse (a story only carries a field defined at the minor it was published at) both hold today only because no minor beyond <code>0</code> has ever existed, not because anything enforces them. Recorded rather than fixed in this branch, since rewriting every producer was out of scope for a schema-versioning fix. <strong>Owner ruling given 2026-08-06: neither a publish-path stamper nor a hand-update sweep. Enforce the converse instead, with a validator rule requiring a document's declared minor to cover the fields it actually uses:</strong> if a document uses any field introduced at minor N, its <code>schema_version</code> must be <code>&gt;= N</code>. This is deterministic, needs no producer changes, and leaves a plain <code>2.0</code> skeleton correctly stamped <code>2.0</code> rather than force-bumping every catalog file on each minor. It enforces decision 3 (a story only carries fields defined at its published minor) directly and makes decision 2's stamping clause unnecessary for correctness: an under-declared document fails the gate instead of being silently admitted. Scheduled into the ADR-025 follow-on plan alongside the <code>SCHEMA_MINOR</code> bump to <code>1</code>; this row closes when that rule ships with tests. <strong>Implemented (2026-08-06) on <code>feat/persistent-characters</code> (PR #636)</strong>, which delivers the declared-minor-covers-used-fields validator rule per the owner ruling above. Flips to <code>done</code> when that rule (L1-8) ships with tests. <strong>Shipped on this branch 2026-08-06</strong>: <code>L1-8</code> (<code>src/cyo_adventure/validator/layer1.py::_check_field_minors</code>, registry <code>src/cyo_adventure/storybook/field_minors.py</code>) with tests in <code>tests/unit/test_field_minor_floor.py</code>, catalogued in <code>docs/planning/validator-rules.md</code>. Status stays <code>verify</code> rather than <code>done</code> per the AL-101/AL-102 norm: <code>feat/persistent-characters</code> is unmerged, and this row needs a PR/commit citation that survives the squash merge before it can close. Flips to <code>done</code> once the PR merges; cite the PR number here, not this commit's SHA.</td>
+<td>025</td>
+<td>5</td>
+<td>verify</td>
+</tr>
+<tr>
+<td>UW-A46</td>
+<td><strong>Pathfinder Phase 0 pilot: one participating skeleton in a 13-16 gamebook cell, built to <a href="../adr/adr-028-persistent-reader-characters/">ADR-028</a>'s <code>accepts_character</code> envelope and proven by the CH-* validator rules.</strong> Owner ruled GO on SQ-22 / gate OG5 (2026-08-05); see <a href="../story-structure-improvement-plan/">story-structure-improvement-plan.md</a> SQ-22/OG5 and <a href="../pathfinder-structure-exploration/">pathfinder-structure-exploration.md</a> section 8. Blocked on the CH-* rules landing first (this same authoring plan).</td>
+<td>028</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-A47</td>
+<td><strong>A character-enabled book holds a synchronous <code>run_gate</code> call for tens of seconds against a fixed-size 40-thread pool, and nothing bounds how many can be in flight at once.</strong> Found 2026-08-06 while re-measuring the two <code>#CRITICAL: timing</code> markers on <code>feat/persistent-characters</code> (PR <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636">#636</a>). Measured on the <code>longwinter-station</code> catalog skeleton (248 nodes, 51,241 base configurations): <code>run_gate</code> takes 0.77s with no envelope and <strong>49.58s</strong> with the canonical 27-state stat envelope, a ~64x multiplier, because CH-3b and CH-4 re-walk Layer 2 once per entry state. Both <code>api/node_edit.py</code> and <code>api/generation.py</code> offload via <code>await run_sync(run_gate, ...)</code> onto AnyIO's default worker-thread pool (40 threads), and both routes are guardian-reachable. A book this size passing the CH rules is admissible, not an error case, so CH-5 and CH-8 do not catch it: they reject envelopes that are too large or graphs that are too expensive to expand, and this one is neither. Forty concurrent gate calls on comparable books exhaust the pool for roughly a minute, at which point every other <code>run_sync</code> caller in the process (not just these two routes) queues behind them. Recorded rather than fixed here because the fix is an architectural choice, not a tuning constant. <strong>To do:</strong> pick one of (a) move <code>run_gate</code> for character-enabled books onto the existing RQ queue so it never occupies a request thread, (b) give the gate its own bounded <code>CapacityLimiter</code> so saturation degrades these two routes instead of the whole process, or &copy; memoise the per-entry-state Layer 2 walk, whose cost is dominated by re-deriving the same configuration set 27 times. Whichever is chosen, add a test that fails when a guardian-reachable route can hold a worker thread past a stated budget.</td>
+<td>028</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-b-debt-register-phase-linkage">Cluster B: debt-register phase linkage<a class="headerlink" href="#cluster-b-debt-register-phase-linkage" title="Permanent link">&para;</a></h2>
@@ -4423,6 +4444,150 @@ substantially the same work under different headings. Do not triple-book.</p>
 <td>UW-C33</td>
 <td><code>AL-100</code> The frontend format gate is scoped to <code>src/**</code>, not the tree: <code>format:check</code> runs <code>prettier --check "src/**/*.{ts,tsx,css,json}"</code> (frontend/package.json), so <code>e2e/</code>, <code>e2e-real/</code>, <code>eslint.config.js</code>, <code>index.html</code>, and <code>README.md</code> are unchecked, and <code>npx prettier --check .</code> reports 130 unformatted files under <code>frontend/</code>. This is the TypeScript twin of the Python gap PR #635 closed with the <code>format-tree</code> job, which deliberately does not cover it (ruff does not format TypeScript). The gap has TWO loci, not one: the pre-commit hook <code>frontend-prettier</code> is scoped the same way (<code>files: ^frontend/src/</code> plus the same four extensions), so staging an <code>e2e-real</code> spec reports "no files to check" and passes. Fixing only the npm script leaves the hook blind. Widen both, honouring <code>.prettierignore</code> (which already exempts <code>src/client/</code>, <code>dist/</code>, <code>coverage/</code>, <code>playwright-report/</code>, <code>test-results/</code>), and land the resulting mechanical reformat as its own commit so it is reviewable as formatting rather than mixed into a behaviour change.</td>
 <td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C34</td>
+<td><code>AL-101</code> <code>import_catalog._needs_legacy_normalization</code> duplicated <code>Storybook._check_schema_version</code>'s version-acceptance rule as an independent copy; the two could disagree, and did: a same-major, unsupported document was silently normalized and admitted instead of rejected under ADR-025's accepted range. Fixed in PR <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636">#636</a> (branch <code>feat/persistent-characters</code>), which squash-merges, so the branch-local SHAs will not survive onto <code>main</code>; unmerged as of 2026-08-06, so the lesson stays <code>open</code> rather than <code>applied</code> until the squash SHA lands.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C35</td>
+<td><code>AL-102</code> adding <code>Storybook.accepts_character</code> moved every committed diversity-panel fingerprint uniformly (an R5-only finding on all 8 fixtures); the regenerate-and-check procedure was followed in PR <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636">#636</a> (branch <code>feat/persistent-characters</code>), which squash-merges, so the branch-local SHA will not survive onto <code>main</code>; unmerged as of 2026-08-06, so the lesson stays <code>open</code> rather than <code>applied</code> until the squash SHA lands.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C36</td>
+<td><code>AL-103</code> (split from <code>AL-102</code>): <code>diversity/structure.py::structure_fingerprint</code> has no notion of a field still at its schema default, so any additive <code>Storybook</code> field moves every fixture's fingerprint the day it ships regardless of use. Excluding default-valued fields from the hash is a diversity-module design change needing its own pass to confirm it cannot mask a genuine change that happens to equal a default value; out of ADR-025 Task 3's scope.</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C37</td>
+<td><code>AL-104</code> <code>validator/gate.py::run_gate</code>'s <code>blocked</code> prefix tuple <code>("L1", "L2", "PL")</code> is unreachable for Layer 1: the early return on any Layer-1 ERROR (<code>gate.py:113-120</code>) fires before the prefix-tuple computation (<code>gate.py:160-164</code>) is ever reached, so removing <code>"L1"</code> from the tuple left every L1-8 test passing. Finding only, established by mutation; <code>gate.py</code> was not changed.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C38</td>
+<td><code>AL-105</code> the task-5 design spec and the shipped <code>CH-6</code> both stated only the opt-out half of the namespace-reservation rule; neither quantified over an opted-in book that declares a canonical-named variable its envelope omits, so that variable would still be seeded by G3 name-match over states no CH rule proved. Broadened <code>CH-6</code> to the full bidirectional statement in both the spec and the catalog, and implemented the opt-in half (<code>_check_ch6_uncovered_canonical_names</code>) alongside the existing opt-out half, under the same rule id with a distinct message. Catalog scan confirms zero regressions against the committed catalog. Unmerged as of 2026-08-06 (branch <code>feat/persistent-characters</code>), so the lesson stays <code>open</code>.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C39</td>
+<td><code>AL-106</code> the task-6 brief's inline example Storybook JSON used a stale schema shape (<code>Choice.text</code>, a JSONLogic-style <code>Effect</code> missing <code>op</code>, <code>ending.type</code>, and non-existent <code>"resolution"</code>/<code>"satisfying"</code> enum values) that would fail <code>Storybook.model_validate</code> outright; caught by cross-checking <code>storybook/models.py</code> and a real passing fixture before writing any test fixture, so no code was affected, only the authoring approach. Propose a standing lint or generator keeping brief/spec example JSON in sync with the live schema.</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C40</td>
+<td><code>AL-107</code> the task-6 brief specified CH-3b's baseline-diff signature as the literal tuple <code>rule_id \| node_id \| choice_id</code>; none of L2-9, L2-10, or L2-14 ever populate <code>choice_id</code>, so that signature collapses every finding for a given rule on a given node into one bucket regardless of which branch or variable state produced it, a falsified-by-mutation total loss of the intended per-state distinction. The shipped fix widens the signature with the finding's <code>message</code> (which embeds the differing <code>var_state</code>), a deliberate divergence from <code>series.py::_l2_error_signatures</code> documented in both docstrings. Unmerged as of 2026-08-06 (branch <code>feat/persistent-characters</code>), so the lesson stays <code>open</code>.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C41</td>
+<td><code>AL-108</code> <code>validator/character.py</code>'s module docstring described a CH rule as reserved/unimplemented specifically so the catalog lockstep guard would not mis-scan the mention as shipped; that guard only scans for rule-id tokens and has no notion of stale reserved/unimplemented prose, so implementing CH-8 and replacing the catalog RESERVED row left the module docstring itself stale with no test failing. Caught only by re-reading the docstring before committing. Propose extending the lockstep guard to flag "not implemented"/"RESERVED" phrasing adjacent to a rule id the module's own code does emit. Unmerged as of 2026-08-06 (branch <code>feat/persistent-characters</code>), so the lesson stays <code>open</code>.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C42</td>
+<td><code>AL-109</code> CH-8 computed <code>arity = span.max - span.min</code> from the declared, attacker-influenced <code>accepts_character</code> envelope span rather than from the canonical vocabulary, letting a schema-valid <code>archetype: 1..6</code> declaration (still meaning six real archetypes) read as arity 5, moving the rule's own threshold from 16,666 to 20,000 configs and letting a real 19,236-config book through with zero findings and <code>run_gate</code> returning <code>blocked=False</code>. Fixed by deriving <code>arity</code> from <code>len(ARCHETYPE_ROSTER)</code>, a code-owned constant, with a regression test pinning the exact bypass. General lesson: a threshold derived from a document-controlled value is not a guard, even when the value is schema-valid. Unmerged as of 2026-08-06 (branch <code>feat/persistent-characters</code>), so the lesson stays <code>open</code>.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C43</td>
+<td><code>AL-110</code> <code>_RULE_ID_RE</code> in the rule-catalog lockstep test is a hand-maintained family list; <code>CH</code> plus the <code>[ab]?</code> suffix is the third family to join it only after already going undocumented (following <code>SR</code> and <code>CG</code>). Propose deriving the family list from the validator package's own rule ids instead of hand-maintaining it.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C44</td>
+<td><code>AL-111</code> <code>docs/planning/validator-rules.md</code> carries two contradictory <code>SR-8</code> rows, a real implemented rule and a stale RESERVED placeholder citing a PR that merged 2026-07-28; invisible to both lockstep tests because <code>SR-8</code> is emitted in code and so excluded from the set either test inspects for catalog-only ids. Propose a duplicate-id assertion in <code>test_validator_rules_catalog.py</code>, then reconcile the rows.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C45</td>
+<td><code>AL-112</code> task-6-review.md found an unbounded-enumeration Critical (a <code>MemoryError</code> risk via <code>envelope_states</code>) and a capped-walk fail-open/fail-closed pair (CH-3b silently clean, CH-3a reading the same capped walk as ground truth) that the pre-fix suite passed over; fixed in commit <code>4000d28d</code> with pinning tests. Propose treating "does enumeration hit its own cap" as a first-class test case for every rule reading a walk, not only the rule capping it.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C46</td>
+<td><code>AL-113</code> mutation testing across task 6 and task 7 repeatedly found assertions weaker than they read: an <code>if False:</code> mutation defeating a <code>&gt;= 1</code> count, an untested <code>&lt;=</code> decision boundary, an untested fail-closed branch, and a far-away constant mutation proving only readback; all fixed with boundary-adjacent pinning tests. Propose choosing mutations adjacent to the real boundary, with a fixture landing exactly on it, rather than large arbitrary changes.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C47</td>
+<td><code>AL-114</code> merging upstream main collided on every append-only id this branch had allocated (<code>AL-080</code> through <code>AL-086</code>, <code>UW-C26</code> through <code>UW-C32</code>); resolved by renumbering above upstream's true maximum, since <code>--ours</code>/<code>--theirs</code> would have silently deleted rows and orphaned citations. Propose a merge-time-shared id source or a mandatory renumber-above-maximum rule, plus a no-duplicate-id check.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C48</td>
+<td><code>AL-115</code> a markdown link from <code>docs/**</code> resolving outside <code>docs/</code> aborts <code>mkdocs build --strict</code> (<code>validation.links.not_found</code> defaults to <code>warn</code>, <code>strict: true</code> promotes it), and no local gate catches it: no pre-commit hook builds the docs, and <code>docs.yml</code> runs only on <code>paths: docs/**</code>. Add a pre-commit check that fails on such a link. Record the absolute <code>blob/main</code> URL alternative as rejected: it satisfies mkdocs but hands lychee live targets that rot as line numbers move.</td>
+<td>doc</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C49</td>
+<td><code>AL-116</code> catalog measurements in docs quote glob matches rather than artifact counts: <code>skeletons/*/*.json</code> matches 124 files but only 61 are skeletons, the rest being <code>.contract.json</code> and <code>.lineage.json</code> sidecars, which halved a stated backfill population. Add a <code>scripts/</code> helper reporting skeleton counts (total, by band, with/without <code>variables</code>) so ADRs and specs cite one computed source instead of each re-globbing.</td>
+<td>doc</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C50</td>
+<td><code>AL-117</code> RAD markers asserting a path is unreachable via schema-export equivalence are falsified by every <code>model_validator(mode="after")</code> added, because JSON Schema cannot express one. Audit remaining <code>#EDGE</code>/<code>#ASSUME</code> markers in <code>validator/</code> for the same assumption, and cover each claimed-unreachable path with an unmocked test rather than one that patches the failure into existence.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C51</td>
+<td><code>AL-118</code> Append-only register ids are claimed at write time but collide at merge time, and both obvious conflict resolutions silently delete legitimate rows while <code>check_lessons_log.py</code> and <code>check_work_linkage.py</code> both stay green, since a deleted row breaks no linkage. Add a duplicate-and-contiguity pass to both checkers so a <code>--ours</code>/<code>--theirs</code> resolution fails a gate rather than passing one, and document the keep-both-and-renumber resolution (including the repo-wide sweep for external citations of the renumbered ids) in the register's linkage contract.</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C52</td>
+<td><code>AL-119</code> <code>check_docs_frontmatter.py</code> scopes its allowed <code>status</code> values by <code>schema_type</code>, so a repo-wide <code>grep '^status:'</code> suggests values that are illegal in the document being edited (<code>accepted</code> is used by 26 ADRs and rejected in a <code>common</code> doc). Have the error message name the document's own <code>schema_type</code> and the full allowed set for it, so the fix is derivable from the failure without reading the validator.</td>
+<td>doc</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C53</td>
+<td>Extracting <code>_check_story_int_bound</code> out of <code>Variable._check_int</code> (PR <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636">#636</a>, branch <code>feat/persistent-characters</code>) changed the check order from all-bools-then-all-magnitudes to per-field. Every message string is byte-identical rule for rule, and the only case the reordering can be observed in (one variable violating two rules at once) is unreachable from every producer in the tree today, so nothing observable changed. But no test covers the ordering on either side of the refactor, so the next refactor of this function has nothing to break. Add a case that builds a two-violation variable directly and pins which message wins.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C54</td>
+<td><code>tests/unit/test_field_minor_floor.py</code>'s two-direction lockstep pair cannot catch a new <code>Storybook</code> field misfiled into <code>BASELINE_FIELDS</code> instead of <code>FIELD_MINORS</code>, because both satisfy the "is registered" predicate the pair actually checks. A field introduced at minor N but filed as baseline would bypass the L1-8 floor silently, which is the exact failure L1-8 exists to prevent. Self-declared in <code>src/cyo_adventure/storybook/field_minors.py</code>'s module docstring rather than tracked anywhere that schedules work. Closing it needs a git-history check (when did this field first appear in the model) and an answer to a design question first: what counts as "introduced at" for a field that moved between files, was renamed, or was split. Status <code>decision</code> for that reason, not for the implementation.</td>
+<td>5</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-C55</td>
+<td><code>AL-120</code> Regenerating a committed derived artifact wholesale cannot distinguish "my change moved this" from "this was already stale", and both render green. Of the 45 <code>out/ws2/*/fingerprint-manifest.json</code> bundles, only 19 were rotated by this branch's <code>accepts_character</code> minor; 26 were already stale before the branch existed, because nothing runs <code>scripts/check_theme_contract.py --fingerprint-manifest</code> in CI. PR <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636">#636</a> regenerated the 19 only and left the 26 as evidence. Two open items: run the manifest comparison in CI so digest drift is reported the day it happens, and triage the 26 stale bundles on their own, separately from any schema change.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C56</td>
+<td><code>AL-121</code> An early-exit guard protecting expensive work was keyed on the rule that usually causes the exit (CH-5's envelope-size cap) rather than on the decision itself, so every other CH rule that already rejected the book still paid for a full per-entry-state Layer 2 walk; CH-8, which fires precisely on the expensive books, was the worst case (12.22s to 0.98s once fixed). Fixed in PR <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636">#636</a>, which squash-merges, so the branch-local SHA will not survive onto <code>main</code>; unmerged as of 2026-08-06, so the lesson stays <code>open</code> rather than <code>applied</code> until the squash SHA lands. Sweep the remaining validator dispatchers for guards keyed on a rule id where the intent is "this artifact is already rejected".</td>
+<td>now</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C57</td>
+<td><code>AL-122</code> An integrity rule compared two values that both came from the document it was validating (CH-2's <code>accepts_character</code> span against the same book's declared variable bounds), so it constrained internal consistency and not the artifact: a book could redefine the canonical 0-2 vocabulary as 0-9 with zero findings. The canonical constants, the only code-owned operand available, were read by no production code. Fixed in PR <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636">#636</a> by adding a containment leg to CH-2; the lesson stays <code>open</code> until that squash SHA lands on <code>main</code>, matching the <code>AL-121</code>/<code>UW-C56</code> handling on the same branch. Sweep the other validator families for rules whose every operand is document-supplied, and pin any code-owned bound they should be reading with a boundary test rather than a far-away constant mutation.</td>
+<td>now</td>
 <td>unscheduled</td>
 </tr>
 </tbody>
@@ -5839,7 +6004,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 6, 2026 23:55:16 UTC">August 6, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 7, 2026 05:16:52 UTC">August 7, 2026</span>
   </span>
 
     

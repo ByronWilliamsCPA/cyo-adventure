@@ -3315,10 +3315,43 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#implementation-notes-2026-08-06-first-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation notes (2026-08-06, first implementation)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#consequences" class="md-nav__link">
     <span class="md-ellipsis">
       
         Consequences
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#follow-on-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Follow-on work
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
       
     </span>
   </a>
@@ -3349,16 +3382,22 @@
 <blockquote>
 <p><strong>Status</strong>: Accepted (2026-08-01), on owner direction recorded in
 <a href="../../design-review-kid-appeal-2026-08-01/">design-review-kid-appeal-2026-08-01.md</a> section 8
-(question F1).
+(question F1). The frontmatter <code>status: accepted</code> refers to the decision, which is settled;
+implementation is tracked separately and is not a frontmatter state in this repo.
+First implemented (2026-08-06) by the ADR-025 implementation plan in PR
+<a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636">#636</a> (branch
+<code>feat/persistent-characters</code>), <strong>which had not merged when this line was written</strong>; treat
+"Implementation notes" below as describing that branch until #636 lands on <code>main</code>.
 <strong>Cross-sign</strong>: <code>storybook/models.py</code>, <code>storybook/schema_export.py</code>, <code>schema/storybook.schema.json</code>,
 both player engines, and the conformance corpus. No database migration; published blobs are not
 rewritten.
-<strong>Scope</strong>: this ADR is a design record only. Nothing in it ships with the commit that accepts it:
-<code>_check_schema_version</code> still requires exact equality with <code>SCHEMA_VERSION = "2.0"</code>, there is no
-<code>SCHEMA_MINOR</code> constant, and no range check exists anywhere. The decision text below is written in
-the present tense as a specification of the target state, in the same voice as
-<a href="../adr-027-in-story-illustration/">ADR-027</a>, which carries the identical disclaimer.
-Implementation is separately scheduled work.</p>
+<strong>Scope</strong>: this ADR was a design record only when accepted. As of the commit that accepted it,
+<code>_check_schema_version</code> still required exact equality with <code>SCHEMA_VERSION = "2.0"</code>, there was no
+<code>SCHEMA_MINOR</code> constant, and no range check existed anywhere. The decision text below was written
+in the present tense as a specification of the target state, in the same voice as
+<a href="../adr-027-in-story-illustration/">ADR-027</a>, which carries a similar disclaimer.
+Implementation was separately scheduled work at that time; see "Implementation notes" below for
+what is actually true in the tree now.</p>
 </blockquote>
 <h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
 <p>The Storybook schema moves from "exactly <code>2.0</code> or reject" to a declared <strong>accepted range</strong> of minor
@@ -3438,6 +3477,104 @@ with a deploy sequence and a compatibility window, for additions that by constru
 nothing about how an existing story reads. The decision keeps the major-bump discipline for
 changes that genuinely are breaking; it only declines to treat "one new optional field" as one of
 them.</p>
+<h2 id="implementation-notes-2026-08-06-first-implementation">Implementation notes (2026-08-06, first implementation)<a class="headerlink" href="#implementation-notes-2026-08-06-first-implementation" title="Permanent link">&para;</a></h2>
+<p>Two enforcement points carry the decision, backed by one constant convention:</p>
+<ol>
+<li><code>Storybook._check_schema_version</code> (<code>storybook/models.py</code>) delegates to
+   <code>is_supported_schema_version</code>, which accepts any <code>SCHEMA_MAJOR.x</code> with <code>x &lt;= SCHEMA_MINOR</code> and
+   returns <code>False</code>, never raises, for a version outside that range, a malformed string, or a
+   non-string value. <code>parse_schema_version</code> is the one function that parses a raw <code>MAJOR.MINOR</code>
+   string and the one that raises <code>ValueError</code> when it is malformed; <code>is_supported_schema_version</code>
+   takes <code>object</code>, catches that, and turns both the malformed and the wrong-type case into a
+   <code>False</code> result rather than propagating an exception out of a trust boundary.</li>
+<li><code>import_catalog._needs_legacy_normalization</code> asks a narrower question than the parser does: "is
+   this the legacy shape I should rewrite", via <code>parse_schema_version</code> directly, not
+   <code>is_supported_schema_version</code>. Because "legacy" means "rewrite it", the predicate returns <code>True</code>
+   for exactly two inputs, and the three paths are distinct:</li>
+<li><strong>Legacy (rewritten).</strong> The <code>schema_version</code> key is absent entirely (the pre-versioning
+     shape, where no claim was ever made so stamping one on is a repair), or it names a major
+     below <code>SCHEMA_MAJOR</code>.</li>
+<li><strong>Supported (topology decides).</strong> Any same-major version at or below <code>SCHEMA_MINOR</code>, not
+     merely one at exactly the current minor, falls through to the <code>metadata.topology</code> check and
+     is legacy only if that key is missing.</li>
+<li><strong>Refused (never rewritten, returns before the topology check).</strong> A higher major, a
+     same-major future minor such as <code>2.1</code>, an unparseable string such as <code>3.0.0</code> or <code>v3.0</code>, and
+     a present-but-non-string value. Each reaches <code>run_gate</code> unmodified to be rejected loudly by
+     <code>_check_schema_version</code>. This is decided by the version bound alone, so the outcome does not
+     depend on whether <code>metadata.topology</code> happens to be present.</li>
+</ol>
+<p>The asymmetry between an absent key and a present-but-wrong one is the whole point: overwriting
+   a wrong claim destroys the evidence the refusal rests on. The importer's job is detecting the
+   legacy pre-versioning shape, not deciding what this build can parse; those are different
+   questions on purpose, and collapsing them into one call would let a same-major, unsupported
+   document masquerade as <code>2.0</code>.</p>
+<p>Backing both: <code>SCHEMA_MINOR</code> in <code>storybook/models.py</code> is the single place a minor is bumped, and
+<code>SCHEMA_VERSION</code> is derived from it so the two cannot drift.
+<code>LEGACY_NORMALIZED_SCHEMA_VERSION = "2.0"</code> in <code>import_catalog.py</code> is a separate, deliberately fixed
+constant pinning the stamp the legacy normalizer writes; it must never be changed to track
+<code>SCHEMA_MINOR</code>, or a future minor bump would start rewriting legacy blobs to a version this build
+never actually normalized them for.</p>
+<p><strong>The exported JSON Schema is deliberately not a third enforcement point.</strong>
+<code>schema/storybook.schema.json</code> constrains <code>schema_version</code> to <code>{"type": "string"}</code> with no
+<code>pattern</code>, <code>enum</code>, or <code>const</code>, so L1-1 (schema conformance) accepts <code>"3.0"</code> and <code>"banana"</code> alike.
+The range check is a <code>model_validator(mode="after")</code>, which has no JSON Schema representation, so
+it can only run at the Pydantic boundary. A document with an unsupported version therefore passes
+L1-1 and is refused in <code>validator/gate.py::_parse_storybook</code>, which reports it as a normal L1-1
+finding carrying Pydantic's own message. That path is reachable by design, not a schema-drift
+anomaly, and no amount of keeping <code>schema_export.build_schema()</code> in sync with <code>models.py</code> would
+change it.</p>
+<p>This is the same accepted-range mechanism decision 2 describes; the importer's legacy-detection
+question is implementation detail decision 2's text did not need to anticipate.</p>
+<p><strong>Known gap: decision 2's stamping clause and decision 3's converse are not enforced.</strong> Neither
+enforcement point above ties the emitted <code>schema_version</code> stamp to <code>SCHEMA_VERSION</code>.
+<code>Storybook.schema_version</code> defaults to <code>SCHEMA_VERSION</code> only when the field is absent from the
+input, and every real producer supplies it explicitly. The full inventory, which is more varied
+than "hardcoded at <code>2.0</code>":</p>
+<table>
+<thead>
+<tr>
+<th>Producer</th>
+<th>How the value is chosen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The 61 committed skeleton documents under <code>skeletons/</code></td>
+<td>Literal <code>"2.0"</code> in each. (<code>skeletons/*/*.json</code> matches 124 files; the other 63 are <code>.contract.json</code> and <code>.lineage.json</code> sidecars carrying their own <code>contract_version</code>/<code>lineage_version</code>, not the Storybook schema.)</td>
+</tr>
+<tr>
+<td><code>scripts/seed_dev_data.py:167</code>, <code>scripts/seed_series_catalog.py:145</code></td>
+<td>Literal <code>"2.0"</code>.</td>
+</tr>
+<tr>
+<td><code>scripts/build_series_book.py:315</code></td>
+<td><code>str(spec.get("schema_version", "2.0"))</code>: spec-driven, with <code>"2.0"</code> only as a fallback, so a series spec can already declare any string.</td>
+</tr>
+<tr>
+<td><code>generation/templates/structure.md:27</code> (Stage-A prompt)</td>
+<td><strong>Unpinned.</strong> The prompt lists <code>schema_version</code> among the required top-level fields but states no value, so an LLM-generated skeleton carries whatever the model emitted.</td>
+</tr>
+<tr>
+<td><code>import_catalog._normalize_legacy_fill</code></td>
+<td><code>LEGACY_NORMALIZED_SCHEMA_VERSION</code>, pinned at <code>"2.0"</code> on purpose (see above).</td>
+</tr>
+</tbody>
+</table>
+<p>The Stage-A prompt is the significant omission: it is the primary production path, not a script,
+and it is the one producer with no pinned value at all. Note also that the scan behind this
+inventory is narrower than it first appears: outside <code>_normalize_legacy_fill</code>, no Python in <code>src/</code>
+assigns <code>blob["schema_version"]</code>, but that is a statement about Python assignment only, and the
+prompt template above determines an emitted version without ever performing one. (Unrelated
+namespace, listed so nobody "fixes" it: <code>diversity/panel.py</code> and
+<code>scripts/capture_stage0_baseline.py</code> each carry their own integer <code>schema_version</code> for
+diversity-panel and safety-baseline artifacts. Neither is the Storybook schema.)</p>
+<p>So decision 2's "It stamps newly-published blobs with the current version" and decision 3's
+converse ("A story only carries a new field if it was published... at the minor that defines it")
+are both unenforced today; they hold only because no minor beyond <code>0</code> has ever existed. The
+concrete open question for the next minor bump: after <code>SCHEMA_MINOR = 1</code>, what stamps a document
+<code>2.1</code>, given 61 skeletons hardcode <code>"2.0"</code>, the Stage-A prompt pins nothing, and nothing in <code>src/</code>
+rewrites the field? Recorded rather than fixed here, since fixing every producer was out of scope
+for this branch; see <code>UW-A45</code> in <code>unscheduled-work-register.md</code>.</p>
 <h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Unblocks, without further format debate: ending <code>rarity</code>/<code>is_secret</code> metadata (design review
@@ -3449,6 +3586,43 @@ them.</p>
 <li>Cost accepted: two engines plus corpus per runtime-visible field (already the standing tax,
   design review 5.3), and a per-minor discipline that additions land in <code>models.py</code>,
   <code>schema_export.py</code>, the JSON schema, and the changelog together.</li>
+</ul>
+<h2 id="follow-on-work">Follow-on work<a class="headerlink" href="#follow-on-work" title="Permanent link">&para;</a></h2>
+<p>Per the <a href="../">ADR follow-on rule</a>, every consequent item cites a phase, a <code>UW-*</code> row, or an
+issue. This ADR was accepted 2026-08-01, after the 2026-07-28 cutoff, so the rule applies to it.</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Home</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enforce decision 2's stamping clause and decision 3's converse. Per the owner ruling of 2026-08-06 this ships as a validator rule ("a document's declared minor must cover the fields it actually uses"), not a publish-path stamper, and lands alongside the first <code>SCHEMA_MINOR</code> bump to <code>1</code>. Includes pinning a value in the Stage-A prompt (<code>generation/templates/structure.md</code>), the one producer that pins none.</td>
+<td><code>UW-A45</code>, Phase 5</td>
+</tr>
+<tr>
+<td>Reconcile <code>import_catalog._needs_legacy_normalization</code> with <code>_check_schema_version</code> so the two acceptance rules cannot disagree, and keep them documented as deliberately separate questions.</td>
+<td><code>UW-C34</code> / <code>AL-101</code>, delivered by PR <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636">#636</a></td>
+</tr>
+</tbody>
+</table>
+<p>Two clauses of this ADR create no schedulable item, and are recorded here so their absence from the
+table is a stated conclusion rather than an oversight:</p>
+<ul>
+<li><strong>Decision 4 (corpus gating)</strong> and <strong>decision 5 (rolling-deploy sequencing)</strong> are preconditions on
+  each future minor bump, not standalone work. There is nothing to schedule until a minor is
+  actually proposed, at which point both become acceptance criteria of that minor's own change.
+  They are restated in "Consequences" as the standing per-minor discipline.</li>
+</ul>
+<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../adr-001-story-format-json-storybook/">ADR-001</a> chose the JSON Storybook format and recorded
+  "exactly one accepted version" as technical debt. This ADR supersedes that clause; ADR-001's
+  Technical Debt section is annotated accordingly.</li>
+<li><a href="../adr-027-in-story-illustration/">ADR-027</a> is one of the additions this ADR unblocks, and
+  shares the "design record written in the present tense" disclaimer in the status block above.</li>
 </ul>
 
 
@@ -3472,7 +3646,7 @@ them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 7, 2026 05:16:52 UTC">August 7, 2026</span>
   </span>
 
     

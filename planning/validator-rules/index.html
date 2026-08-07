@@ -3342,6 +3342,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#character-envelope-participating-books-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Character Envelope (Participating Books Only)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rule-application-order" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3534,6 +3545,12 @@ must be sound before a state-space walk is meaningful.</p>
 <td>1</td>
 <td><strong>Length budget</strong>: node count must be within the (band x length x style) cell budget single-sourced in <code>validator/band_profile.py</code> (band-based per <a href="../adr/adr-011-story-scale-framework/">ADR-011</a>, not tier-based); branch depth must be within bounds; <code>metadata.ending_count</code> must equal the count of distinct ending nodes found in <code>nodes</code>.</td>
 <td><code>L1-7 budget: {budget_type} out of range in story '{story_id}': {actual} (allowed {min}..{max})</code></td>
+</tr>
+<tr>
+<td>L1-8</td>
+<td>1</td>
+<td><strong>Field-minor floor</strong> (ADR-025 decision 3): a document that uses a field introduced at schema minor N must declare a <code>schema_version</code> whose minor is at least N. Presence of the key is the trigger, not its value: an explicit <code>null</code> counts as use and fires the floor, but an absent key does not. Enforces the converse of ADR-025's stamping clause, so an under-declared document fails the gate rather than being silently admitted. The field-to-minor registry is <code>storybook/field_minors.py</code>.</td>
+<td><code>L1-8 schema: field '{field}' was introduced at schema minor {minor}, but this document declares '{declared}'; stamp it at least {major}.{minor}</code></td>
 </tr>
 </tbody>
 </table>
@@ -3925,8 +3942,80 @@ applies the rules below; <code>publishing/service.py</code> raises
 <tr>
 <td>SR-9</td>
 <td>Series</td>
-<td><strong>A satisfying exit must leave the next book winnable</strong> (added 2026-07-26, B3). For a <code>carries_state</code> chain, every distinct variable state at a satisfying ending of book N is carried into book N+1 under the WS-G G3 rules (name match, type match, int clamp), and book N+1 must still work from there. Closes the gap SR-5 and Layer 2 both leave open: SR-5 tests ending existence and never traces state across the join, and Layer 2 only ever walks from <code>start_node</code> with the declared initials, so the state a continuation reader actually arrives with is outside every other rule's view. Two distinct failures are reported. (a) <strong>The receiving book stops being sound</strong>: its Layer-2 rules are re-run seeded from the carried entry, and any ERROR not also raised from its own declared initials is a cross-book defect. (b) <strong>The continuation is unwinnable</strong>: no satisfying ending is reachable from the carried entry, so a reader wins book N into a dead campaign. Entry states are sampled up to <code>_MAX_ENTRY_STATES</code> (64); exceeding that, or a capped walk, is reported as a truncated check rather than silently passed.</td>
+<td><strong>A satisfying exit must leave the next book winnable</strong> (added 2026-07-26, B3). For a <code>carries_state</code> chain, every distinct variable state at a satisfying ending of book N is carried into book N+1 under the WS-G G3 rules (name match, type match, int clamp), and book N+1 must still work from there. Closes the gap SR-5 and Layer 2 both leave open: SR-5 tests ending existence and never traces state across the join, and Layer 2 only ever walks from <code>start_node</code> with the declared initials, so the state a continuation reader actually arrives with is outside every other rule's view. Two distinct failures are reported. (a) <strong>The receiving book stops being sound</strong>: its Layer-2 rules are re-run seeded from the carried entry, and any ERROR not also raised from its own declared initials is a cross-book defect. (b) <strong>The continuation is unwinnable</strong>: no satisfying ending is reachable from the carried entry, so a reader wins book N into a dead campaign. Entry states are sampled up to <code>MAX_ENTRY_STATES</code> (64, <code>validator/series.py</code>); exceeding that, or a capped walk, is reported as a truncated check rather than silently passed.</td>
 <td><code>SR-9 series: book {index} '{book_id}' can be completed with carried state {carried}, but entering book {next_index} '{next_id}' with that state raises Layer-2 errors it does not raise from its own declared initials: {new_errors} (an acquisition branch for a carried variable must be redesigned, not copied)</code> / <code>... leaves no satisfying ending reachable (the reader wins book {index} into an unwinnable continuation)</code> / <code>SR-9 series: book {index} '{book_id}' has more than {max} distinct satisfying exit states or capped its walk, so the continuation handoff into '{next_id}' was checked over a truncated sample</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="character-envelope-participating-books-only">Character Envelope (Participating Books Only)<a class="headerlink" href="#character-envelope-participating-books-only" title="Permanent link">&para;</a></h2>
+<p>Rules proving that a book declaring <code>accepts_character</code> is safe across exactly the states a seeded reader can
+arrive in. Enforced by <code>validator/character.py</code>; specified in
+<a href="../adr/adr-028-persistent-reader-characters/">ADR-028</a> decision 5. Like the <code>SR</code> family these prove a
+cross-artifact handoff rather than a within-story property. All are ERROR severity and all set <code>blocked</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Rule ID</th>
+<th>Layer</th>
+<th>Description</th>
+<th>Failure Message Template</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CH-1</td>
+<td>Character</td>
+<td><strong>Vocabulary and declaration</strong>: every <code>accepts_character</code> name is in the canonical vocabulary and is declared in <code>variables</code> with a matching type.</td>
+<td><code>CH-1 character: accepts_character declares '{name}', which is not in the canonical vocabulary {names}</code> / <code>CH-1 character: accepts_character declares '{name}' but the story declares no variable of that name</code> / <code>CH-1 character: '{name}' is declared as {actual} but the canonical vocabulary defines it as {expected}</code></td>
+</tr>
+<tr>
+<td>CH-2</td>
+<td>Character</td>
+<td><strong>Range equality</strong>: each envelope range equals the declared variable's <code>min</code>/<code>max</code>. Equality, not containment: G3's runtime clamp is to declared bounds, so a narrower envelope would silently admit states the validator never walked. A variable with absent <code>min</code>/<code>max</code> cannot equal a bound at all, so an opted-in variable must declare both.</td>
+<td><code>CH-2 character: accepts_character range for '{name}' is {a}-{b} but the variable declares {c}-{d}; they must be equal</code> / <code>CH-2 character: '{name}' is in accepts_character but declares no min/max bounds; an opted-in variable must declare bounds equal to its envelope range {a}-{b}</code></td>
+</tr>
+<tr>
+<td>CH-3a</td>
+<td>Character</td>
+<td><strong>Union dead branch</strong>: a conditional choice must be visible in at least one configuration across the baseline walk (declared initials) and a walk from every <code>accepts_character</code> entry state, taken together. Union-quantified rather than per-state, unlike CH-3b: a choice invisible in one entry state but visible in another, or at baseline, is legitimately state-gated, not dead. Tier-2 only (mirrors Layer 2's own tier gate); walks once per entry state plus once for the baseline.</td>
+<td><code>CH-3a character: choice '{choice_id}' on node '{node_id}' is never visible in the baseline walk or in any of the {n} accepts_character entry states, in story '{story_id}'</code></td>
+</tr>
+<tr>
+<td>CH-3b</td>
+<td>Character</td>
+<td><strong>Per-state regression</strong>: an <code>accepts_character</code> entry state must not raise an L2-9 (stateful dead end), L2-10 (loop escape), or L2-14 (all-forbidden decision) that the book's own baseline walk (declared initials) does not already raise. Per-state, unlike CH-3a: whether a configuration is a dead end, cannot escape, or offers only forbidden outcomes is a property of the variable state it is reached in. The baseline diff is keyed on rule id, node id, choice id, and message (message embeds <code>var_state</code>), deliberately wider than SR-9's shared <code>rule_id\|node_id</code> signature: none of L2-9/L2-10/L2-14 ever set <code>choice_id</code>, so without the message two dead ends on the same node at two different entry states would collapse into one signature and mask the second as "already known". Tier-2 only.</td>
+<td><code>CH-3b character: accepts_character entry state {state} raises {rule_id}, which this book's own baseline walk does not: {message}</code></td>
+</tr>
+<tr>
+<td>CH-4</td>
+<td>Character</td>
+<td><strong>Satisfying-ending reachability</strong>: every <code>accepts_character</code> entry state must still be able to reach a satisfying ending. Reuses SR-9's own reachability test (<code>satisfying_ending_reachable</code>) rather than a second implementation, so "the reader can still win" cannot drift between the series-continuation case and the character-envelope case. Tier-2 only.</td>
+<td><code>CH-4 character: accepts_character entry state {state} cannot reach any satisfying ending, in story '{story_id}'</code></td>
+</tr>
+<tr>
+<td>CH-5</td>
+<td>Character</td>
+<td><strong>Envelope size</strong>: the envelope admits no more entry states than <code>MAX_ENTRY_STATES</code> (64, <code>validator/series.py</code>). An ERROR rather than SR-9's truncate-and-warn, because an envelope is declared rather than emergent.</td>
+<td><code>CH-5 character: accepts_character admits {n} entry states, above the {cap} cap; narrow a range or declare fewer variables</code></td>
+</tr>
+<tr>
+<td>CH-6</td>
+<td>Character</td>
+<td><strong>Namespace reservation, both directions</strong>: a canonical variable name may be declared only by a book that opted in <em>and</em> covered it in the envelope. The opt-out half rejects a book that declares no <code>accepts_character</code> but still declares a canonical name (G3 carry is name-match, so a book that never opted in can still be seeded). The opt-in half rejects an opted-in book that declares a canonical-named variable its envelope omits: CH-1 only ever walks envelope -&gt; variable, so this converse direction (variable -&gt; envelope) needs its own check, or an uncovered canonical variable would still be seeded by G3 over states this book's Layer 2 walk never proved.</td>
+<td><code>CH-6 character: '{name}' is a reserved canonical character variable, but this story declares no accepts_character envelope; rename the variable or opt in</code> (opt-out half) / <code>CH-6 character: '{name}' is a reserved canonical character variable declared by this story, but accepts_character does not cover it; add it to the envelope or rename the variable</code> (opt-in half)</td>
+</tr>
+<tr>
+<td>CH-7</td>
+<td>Character</td>
+<td><strong>Series exclusivity</strong>: a book declaring <code>accepts_character</code> is not a non-first book of a <code>carries_state</code> series. Two independent sources of carried state in one book is unproved in v1.</td>
+<td><code>CH-7 character: book {index} of state-carrying series '{series_id}' may not also declare accepts_character</code></td>
+</tr>
+<tr>
+<td>CH-8</td>
+<td>Character</td>
+<td><strong>Build-node cost pre-flight</strong>: a book whose base closure exceeds <code>cap / arity</code> configurations cannot host an archetype build node. <code>arity</code> is always <code>len(ARCHETYPE_ROSTER)</code> (6), the canonical vocabulary's real-archetype count; it is never derived from the envelope's declared span, because that span is attacker-influenced (a declared <code>1..6</code> span still names all six archetypes but would read as arity 5 if the span's own width were trusted). Measured at 6.00x for a six-way node, so the threshold is exactly 16,666 configurations: <code>100_000 // 6</code>, floor division against the 100,000 walk cap. Fails here with a named cause rather than as an opaque L2-12 cap ERROR. Fires on any book whose envelope declares an <code>archetype</code> span at all, including a carrier-only later book in a series that never sets <code>archetype</code> itself and pays no real build-node cost; that is a deliberate over-approximation, not a claim the book actually contains a build node.</td>
+<td><code>CH-8 character: a {arity}-way build node needs a base closure at or under {threshold} configurations, which this book exceeds; it cannot host the archetype build-node idiom</code></td>
 </tr>
 </tbody>
 </table>
@@ -3945,13 +4034,21 @@ applies the rules below; <code>publishing/service.py</code> raises
    <code>production_eligible</code>, so an unclassified story is measured on breadth only.</li>
 <li>L2-8 through L2-14 (state-space; Tier-2 only). Stop if any L2 rule fails; L2-13 is a
    non-blocking scale advisory and never stops the run.</li>
+<li>CH-1, CH-2, CH-3a, CH-3b, CH-4, CH-5, CH-6, CH-7, CH-8 (character envelope; ADR-028,
+   participating books only). CH-3a, CH-3b, and CH-4 walk the story once per
+   <code>accepts_character</code> entry state plus once for the baseline, and run only for
+   Tier-2 stories; see <code>validator/character.py</code>. CH-8 runs one further baseline
+   walk, unconditioned by tier or the CH-3a/CH-3b/CH-4 envelope-size gate above,
+   but only when the envelope declares an <code>archetype</code> span; it catches a build
+   node that would multiply that walk past the cap before L2-12 does, using a
+   fixed vocabulary-derived arity rather than the declared span's own width.</li>
 <li>RL-13 (advisory; all stories). Log warnings; continue.</li>
 <li>CG-1 through CG-4 (advisory; all stories) <strong>only when <code>run_gate</code> is called with
    <code>enforce_grammar=True</code></strong>, which no production caller does today. Log warnings; continue.</li>
 <li>SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.</li>
 <li>SR-1 through SR-9 (series chain; series stories only) run <strong>later and elsewhere</strong>, at
    publish time over the whole chain rather than inside <code>run_gate</code> over one story. A book
-   can clear steps 1-6 at generation time and still be refused at publish by an SR error.</li>
+   can clear steps 1-7 at generation time and still be refused at publish by an SR error.</li>
 </ol>
 <p>Stopping at the first Layer-1 failure is allowed for efficiency; all Layer-1 failures may also
 be collected in a single pass before reporting, which is preferred for repair-stage prompts
@@ -4001,7 +4098,7 @@ to address only the flagged node ids and rule violations, changing nothing else.
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 6, 2026 23:55:16 UTC">August 6, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 7, 2026 05:16:52 UTC">August 7, 2026</span>
   </span>
 
     
