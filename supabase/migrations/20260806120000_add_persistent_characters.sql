@@ -134,6 +134,14 @@ CREATE TABLE IF NOT EXISTS "public"."character_book_completion" (
         ON DELETE CASCADE
 );
 
+-- character_id is the trailing column of the composite primary key above, so
+-- the PK index cannot serve a CASCADE delete from character (a scan for that
+-- column needs it leading). Postgres never indexes the referencing side of a
+-- foreign key automatically (see ix_character_child_profile_id's comment for
+-- the same rule).
+CREATE INDEX IF NOT EXISTS ix_character_book_completion_character_id
+    ON "public"."character_book_completion" (character_id);
+
 -- 5. reading_state: the character bound to this reading session, and the
 -- character-attribute snapshot it was seeded from. Both nullable: an
 -- unseeded reading state (no character carried into this book) is the
@@ -144,6 +152,15 @@ ALTER TABLE "public"."reading_state"
     ADD COLUMN IF NOT EXISTS character_id UUID
         REFERENCES "public"."character"(id) ON DELETE SET NULL,
     ADD COLUMN IF NOT EXISTS seed_var_state JSONB;
+
+-- character_id has no index of its own (unlike storybook_id and
+-- child_profile_id, which are covered by reading_state's own primary key); a
+-- character deletion (SET NULL above) would otherwise sequentially scan this
+-- table. Postgres never indexes the referencing side of a foreign key
+-- automatically (see ix_character_child_profile_id's comment for the same
+-- rule).
+CREATE INDEX IF NOT EXISTS ix_reading_state_character_id
+    ON "public"."reading_state" (character_id);
 
 -- #CRITICAL: security: RLS is the ONLY gate on the PostgREST path (see
 -- 20260729000000_add_child_profile_personalization.sql's identical note); a

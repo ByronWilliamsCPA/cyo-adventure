@@ -983,6 +983,15 @@ class CharacterBookCompletion(CreatedAtMixin, Base):
             ondelete="CASCADE",
             name="fk_cbc_reading_state",
         ),
+        # character_id is the trailing column of the composite primary key
+        # above, so the PK index cannot serve a CASCADE delete from
+        # character (a scan for that column needs it leading). Postgres
+        # never indexes the referencing side of a foreign key automatically
+        # (see ix_character_child_profile_id's comment for the same rule).
+        Index(
+            "ix_character_book_completion_character_id",
+            "character_id",
+        ),
     )
 
     reading_state_child_profile_id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
@@ -1419,6 +1428,13 @@ class ReadingState(CreatedAtMixin, UpdatedAtMixin, Base):
             [_FK_STORYBOOK_VERSION_STORYBOOK_ID, _FK_STORYBOOK_VERSION_VERSION],
             ondelete="CASCADE",
         ),
+        # ADR-028: character_id has no index of its own (unlike storybook_id
+        # and child_profile_id above, which are covered by the primary key);
+        # a character deletion (SET NULL below) would otherwise sequentially
+        # scan this table. Postgres never indexes the referencing side of a
+        # foreign key automatically (see ix_character_child_profile_id's
+        # comment for the same rule).
+        Index("ix_reading_state_character_id", "character_id"),
     )
 
     # #CRITICAL: data-integrity: CASCADE both FKs (Phase 3a): reading state is
