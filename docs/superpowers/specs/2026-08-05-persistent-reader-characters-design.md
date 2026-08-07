@@ -75,7 +75,7 @@ Each claim below was verified by reading the code, not inferred. They drive the 
 4. **SR-9 is the proof template.** `validator/series.py`
    proves a receiving book safe when entered with each distinct satisfying exit state of the
    sending book: `_satisfying_exit_states`, an `_l2_error_signatures` baseline diff, and
-   `_satisfying_ending_reachable`. Caps at `_MAX_ENTRY_STATES = 64` and warns when the cap bites.
+   `_satisfying_ending_reachable`. Caps at `MAX_ENTRY_STATES = 64` and warns when the cap bites.
 5. **`_l2_error_signatures` keys on `rule_id|node_id` only** (series.py:325-339). It deliberately
    drops the message because the message embeds variable state. It also drops `choice_id`, so two
    distinct dead branches on the same node collapse to one signature.
@@ -236,25 +236,36 @@ The seed is untrusted client input (ground truth 8). A child can forge a within-
 sheet via history manipulation. **Accepted**: single-player, own book, no shared score, no unlock
 economy.
 
-The guarantee that *does* hold, stated precisely, rests on **four** rules and fails if any one of
-them is weakened:
+The guarantee that *does* hold is that every state a reader can arrive in has been walked. G3's
+clamp to declared bounds is equivalent to a clamp to the proven envelope, so a forged seed cannot
+reach a state outside it. Cheating changes difficulty; it can never reach an unvalidated state.
 
-1. `CH-2` equality: the declared variable bounds **equal** the declared envelope, so the envelope
-   the validator walked is exactly the range the clamp permits.
-2. `CH-2` canonical containment: those bounds lie within the canonical range, so the clamp cannot
-   be widened past the vocabulary by an authoring mistake.
-3. `CH-1` set equality: no canonical variable is carried that the envelope did not vary, so there
-   is no unproven dimension for a forged seed to move in.
-4. `CH-6` namespace reservation: a book that does not opt in cannot declare a canonical name at
-   all, so it can never receive a carry it was not proven for.
+**The authoritative list of what that guarantee rests on is
+[ADR-028](../../planning/adr/adr-028-persistent-reader-characters.md)'s "Integrity posture", which
+carries the `#CRITICAL` marker.** It enumerates eight conditions, not the four this section
+originally claimed. Do not treat the list below as current; it is kept only to record what the
+design got wrong, since two of the errors are the kind a later reader would re-derive.
 
-Given all four, G3's clamp to declared bounds is equivalent to a clamp to the proven envelope, and
-a forged seed cannot reach a state outside it. Cheating changes difficulty; it can never reach an
-unvalidated state.
+This section originally named four rules: `CH-2` equality, `CH-2` canonical containment, `CH-1` set
+equality, and `CH-6` namespace reservation. Verified against the implementation, that list is wrong
+in three ways.
 
-To be recorded as a `#CRITICAL` marker naming all four rules, so that weakening any one of them in
-future shows up as breaking a stated invariant rather than as a local rule change. Must be
-revisited if rewards or cross-family visibility ever attach to a character.
+- **`CH-2` canonical containment is not part of the guarantee.** The worked justification given here
+  was that a forged `might: 3` would survive into a book declaring `0..3`. But a book declaring
+  `0..3` has envelope `0..3` and therefore *walked* `might=3`; the reader lands in a proven state.
+  Narrowing below the vocabulary is safe by the same mechanism `CH-2` equality already provides.
+  Containment is still worth enforcing, on the two unrelated grounds ADR-028 records: it restores
+  `CH-8`'s arity precondition against a *wider*-than-canonical declaration, and it keeps the proven
+  state space inside the vocabulary for the unbuilt character writer path.
+- **`CH-1` set equality is not what closes that direction.** `CH-1` checks that each envelope name is
+  canonical, is declared, and has a matching type. It only ever walks envelope to variable. The
+  converse (an opted-in book declaring a canonical variable its envelope omits) is closed by
+  `CH-6`'s opt-in half.
+- **Four rules was an undercount.** `CH-2`'s absent-bounds rejection, `CH-7`, `CH-5` remaining a
+  blocking ERROR, `"CH"` remaining in the gate's blocked-prefix tuple, `CH-3b`'s fail-closed on a
+  capped walk, and `CH-3b`'s per-state signature are each load-bearing on their own.
+
+Must be revisited if rewards or cross-family visibility ever attach to a character.
 
 > The draft claimed this guarantee came from an `accepts_character` clamp. No such clamp exists at
 > runtime; `_clamp` uses declared variable bounds only. The guarantee is real but it is `CH-2`'s
@@ -429,7 +440,7 @@ in-story, so they stay constant within a walk and cost nothing.
 
 Envelope size is the product of the ranges. For the gamebook example above, **27 states**; for a
 prose book declaring only `archetype` at 0-6, **7 states**. Both are under the existing
-`_MAX_ENTRY_STATES = 64`, and `CH-5` errors if a future declaration is not.
+`MAX_ENTRY_STATES = 64`, and `CH-5` errors if a future declaration is not.
 
 A book omitting `accepts_character` accepts no character. This is enforced, not assumed: `CH-6`
 (section 5.1) reserves the canonical names so that a book which has not opted in cannot be seeded
@@ -481,7 +492,7 @@ handoff**, not a within-story property.
 | `CH-3a` | ERROR | **Union-quantified.** A conditional choice that is invisible in *every* configuration across the baseline walk and all envelope walks combined is a dead branch |
 | `CH-3b` | ERROR | **Per-state.** For every envelope state, entry raises no `L2-9`, `L2-10`, or `L2-14` error the book does not raise from its own declared initials |
 | `CH-4` | ERROR | For every envelope state, a satisfying ending remains reachable |
-| `CH-5` | ERROR | Envelope size exceeds `_MAX_ENTRY_STATES` |
+| `CH-5` | ERROR | Envelope size exceeds `MAX_ENTRY_STATES` |
 | `CH-6` | ERROR | **Both directions.** A canonical variable name may be declared only by a book that opted in AND covered it in the envelope: (a) a book that does not declare `accepts_character` may not declare a variable whose name is in the canonical vocabulary; (b) an opted-in book may not declare a canonical-named variable its envelope omits, since G3 carry is name-match and would seed it over states this book's own Layer 2 walk never proved (CH-1 only ever walks envelope -> variable, never the converse) |
 | `CH-7` | ERROR | A book declaring `accepts_character` is not a non-first book of a `carries_state` series |
 | `CH-8` | ERROR | A book with a build node whose base closure exceeds `cap / (build_node_arity)` configurations (section 4.3.2) |

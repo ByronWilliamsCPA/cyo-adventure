@@ -119,7 +119,7 @@ New module `validator/character.py`, namespace `CH-*`. It sits in its own namesp
 | `CH-3a` | ERROR | Union-quantified: a conditional choice invisible in every configuration across the baseline walk and all envelope walks combined is a dead branch |
 | `CH-3b` | ERROR | Per-state: for every envelope state, entry raises no `L2-9`, `L2-10`, or `L2-14` error the book does not raise from its own declared initials |
 | `CH-4` | ERROR | For every envelope state, a satisfying ending remains reachable |
-| `CH-5` | ERROR | Envelope size exceeds `_MAX_ENTRY_STATES` |
+| `CH-5` | ERROR | Envelope size exceeds `MAX_ENTRY_STATES` |
 | `CH-6` | ERROR | A book not declaring `accepts_character` may not declare a canonical variable name |
 | `CH-7` | ERROR | A book declaring `accepts_character` is not a non-first book of a `carries_state` series |
 | `CH-8` | ERROR | A book with a build node whose base closure exceeds `cap / build_node_arity` configurations |
@@ -184,11 +184,40 @@ block approval of an already-published series at runtime.
 
 <!-- #CRITICAL: data integrity: a seeded entry state that the validator never proved can reach a child
      reader, because the runtime clamp to declared bounds hides the discrepancy rather than reporting it.
-     #VERIFY: CH-2 equality plus CH-6 namespace reservation are the two rules that make this false; both
-     must have tests that fail against a containment reading and against a no-op reading respectively. -->
+     #VERIFY: every row of the conditions table below is load-bearing on its own; each must stay pinned by
+     a test that fails when that row alone is weakened. Do not relax a row because the surrounding rules
+     look sufficient. They are not independent, and the failure mode is silent by construction. -->
 
-The guarantee this ADR makes is that **every state a reader can arrive in has been walked**. It rests on two
-rules and fails silently without either: CH-2's equality (not containment) and CH-6's namespace reservation.
+The guarantee this ADR makes is that **every state a reader can arrive in has been walked**.
+
+The mechanism is narrower than it looks, and stating it first is what makes the conditions legible.
+`StoryEngine.start_continuation` clamps every carried value to the story's **declared variable bounds**
+(`player/engine.py`; `frontend/src/player/engine.ts` mirrors it). `envelope_states` enumerates the
+**envelope**. Those are two different objects, and CH-2's equality is the only thing forcing them to be
+the same set. The clamp target and the walked set coincide by construction, not by coincidence.
+
+Eight conditions hold the guarantee up. It fails silently without any one of them.
+
+| # | Condition | Why it is load-bearing |
+| --- | --- | --- |
+| 1 | CH-2 requires **equality**, not containment, between the envelope span and the declared bounds | The clamp targets the declared bounds and the walk enumerates the envelope; equality is what makes those one set. |
+| 2 | CH-2 rejects a declared variable with an **absent** `min` or `max` | The clamp is a no-op when a bound is `None`, so an opted-in unbounded variable admits any forged integer, unclamped and unwalked. |
+| 3 | CH-6 enforces namespace reservation in **both** directions | Seeding is by name match, so a non-opted-in book declaring a canonical name is seeded with no proof; and an opted-in book may declare a canonical variable its envelope omits, which CH-1 and CH-2 never reach (CH-1 only walks envelope to variable). |
+| 4 | CH-7 forbids a character in a non-first book of a `carries_state` series | The walk enumerates envelope states **or** series carried states, never their cross product, so two carry sources into one book is a state space nothing walks. |
+| 5 | CH-5 stays a blocking **ERROR** | The walk is skipped whenever the envelope exceeds `MAX_ENTRY_STATES`, and that skip is independent of CH-5's severity. Downgrade CH-5 and the book is both unwalked and unblocked. |
+| 6 | `"CH"` stays in `gate.py`'s blocked-prefix tuple | Without it every CH ERROR is reported but not blocking, which makes rows 1 to 5 advisory. This grew more load-bearing when the walk began skipping on **any** CH error rather than only CH-5: that skip is sound only because a CH error blocks. |
+| 7 | CH-3b fails **closed** when the Layer 2 walk hits its cap | A capped walk returns only an L2-12 finding, which is not in the per-state rule set, so a capped state would otherwise read exactly like a clean one. |
+| 8 | CH-3b's per-state signature includes the finding **message** | The message embeds the variable state; without it two dead ends on one node at two different states collapse into a single signature, and a genuinely new per-state defect is suppressed as an already-known baseline. |
+
+CH-2 also requires the declared range to lie inside the canonical vocabulary range. That check is **not**
+one of the eight, and recording why matters, because it reads like one. A book declaring `archetype: 0..3`
+walks exactly `0..3`, and a reader carrying `5` is clamped to `3`, so the reader lands in a proven state
+either way; narrowing is safe by the same mechanism row 1 already guarantees. Containment earns its place
+on two other grounds. It restores CH-8's precondition, since CH-8 derives arity from
+`len(ARCHETYPE_ROSTER)` rather than from the document, and a wider-than-canonical declaration would
+silently under-measure the real configuration count. And it keeps the proven state space inside the
+vocabulary, which the unbuilt character writer path assumes when it projects a walked value back onto a
+persistent character.
 
 ## Follow-on work
 
