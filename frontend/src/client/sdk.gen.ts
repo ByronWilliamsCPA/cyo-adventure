@@ -661,6 +661,9 @@ export const listCharactersApiV1CharactersGet = <ThrowOnError extends boolean = 
  * ValidationError: If profile_id is not a UUID.
  * AuthorizationError: If the profile is not the caller's.
  * ResourceNotFoundError: If the profile row does not exist.
+ * StateTransitionError: If a concurrent request already activated a
+ * character for this profile between the retire check above and
+ * this insert's flush (HTTP 409).
  */
 export const createCharacterApiV1CharactersPost = <ThrowOnError extends boolean = false>(options: Options<CreateCharacterApiV1CharactersPostData, ThrowOnError>): RequestResult<CreateCharacterApiV1CharactersPostResponses, CreateCharacterApiV1CharactersPostErrors, ThrowOnError> => (options.client ?? client).post<CreateCharacterApiV1CharactersPostResponses, CreateCharacterApiV1CharactersPostErrors, ThrowOnError>({
     responseType: 'json',
@@ -740,6 +743,9 @@ export const updateCharacterApiV1CharactersCharacterIdPatch = <ThrowOnError exte
  * ValidationError: If character_id is not a UUID.
  * ResourceNotFoundError: If no character with this id exists.
  * AuthorizationError: If the character's profile is not the caller's.
+ * StateTransitionError: If a concurrent request already activated a
+ * different character for this profile between the retire check
+ * below and this activation's flush (HTTP 409).
  */
 export const activateCharacterApiV1CharactersCharacterIdActivatePost = <ThrowOnError extends boolean = false>(options: Options<ActivateCharacterApiV1CharactersCharacterIdActivatePostData, ThrowOnError>): RequestResult<ActivateCharacterApiV1CharactersCharacterIdActivatePostResponses, ActivateCharacterApiV1CharactersCharacterIdActivatePostErrors, ThrowOnError> => (options.client ?? client).post<ActivateCharacterApiV1CharactersCharacterIdActivatePostResponses, ActivateCharacterApiV1CharactersCharacterIdActivatePostErrors, ThrowOnError>({
     responseType: 'json',

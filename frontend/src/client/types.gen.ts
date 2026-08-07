@@ -5792,6 +5792,10 @@ export type CreateCharacterApiV1CharactersPostErrors = {
      */
     404: ErrorResponse;
     /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
+    /**
      * Validation Error
      */
     422: HttpValidationError;
@@ -5917,6 +5921,10 @@ export type ActivateCharacterApiV1CharactersCharacterIdActivatePostErrors = {
      * The referenced resource does not exist.
      */
     404: ErrorResponse;
+    /**
+     * The action conflicts with the resource's current state.
+     */
+    409: ErrorResponse;
     /**
      * Validation Error
      */

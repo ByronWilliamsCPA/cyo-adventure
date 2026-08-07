@@ -517,6 +517,7 @@ class Stranger:
     guardian_token: str
     child_token: str
     child_profile_id: uuid.UUID
+    character_id: uuid.UUID
 
 
 @pytest_asyncio.fixture
@@ -554,6 +555,20 @@ async def stranger(sessions: async_sessionmaker[AsyncSession]) -> Stranger:
                 ),
             ]
         )
+
+        # ADR-028: a character on profile_c, owned by family C, so the
+        # id-addressed character routes (PATCH/activate/retire) in
+        # _CROSS_FAMILY_CHILD_ROUTE_KEYS have a real, stranger-owned
+        # character_id to substitute into the reverse-direction IDOR test
+        # (test_family_a_child_cannot_reach_stranger_family_profile).
+        character_c = Character(
+            child_profile_id=profile_c.id,
+            family_id=fam_c.id,
+            name="Stranger Character",
+            archetype="scout",
+            look="avatar_01",
+        )
+        session.add(character_c)
         await session.commit()
 
         return Stranger(
@@ -561,4 +576,5 @@ async def stranger(sessions: async_sessionmaker[AsyncSession]) -> Stranger:
             guardian_token="guardian-c",
             child_token="child-c",
             child_profile_id=profile_c.id,
+            character_id=character_c.id,
         )

@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING
 
 from fastapi import APIRouter
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 
 from cyo_adventure.api.deps import (
     Context,
@@ -31,7 +32,11 @@ from cyo_adventure.api.schemas import (
     error_responses,
 )
 from cyo_adventure.characters.seeding import initial_attributes
-from cyo_adventure.core.exceptions import AuthorizationError, ResourceNotFoundError
+from cyo_adventure.core.exceptions import (
+    AuthorizationError,
+    ResourceNotFoundError,
+    StateTransitionError,
+)
 from cyo_adventure.db.models import Character, CharacterAttribute, ChildProfile
 
 if TYPE_CHECKING:
@@ -150,10 +155,19 @@ async def _retire_active_character(
     # UPDATE below must be flushed before the replacement is marked active, or
     # Postgres rejects the activation and leaves the profile with a retired
     # incumbent and no active character: a worse state than the one it
-    # started in.
+    # started in. That ordering says nothing about real concurrent requests:
+    # two overlapping activate-or-create calls for the same profile can both
+    # run this SELECT and both see zero active incumbents (each transaction's
+    # write is invisible to the other until commit), so both proceed to mark
+    # their own row active. Postgres then serializes the second flush behind
+    # the first's uncommitted uq_character_one_active entry and rejects it
+    # with an IntegrityError once the first commits; the caller (below in
+    # this module) catches that and raises StateTransitionError, an HTTP 409,
+    # rather than letting it surface as an unhandled 500.
     # #VERIFY: tests/integration/test_characters_api.py::
     # test_creating_a_second_character_retires_the_incumbent_atomically,
-    # ::test_activating_a_replacement_retires_the_incumbent_atomically.
+    # ::test_activating_a_replacement_retires_the_incumbent_atomically,
+    # ::test_concurrent_activations_collide_into_a_409_not_a_500.
     stmt = select(Character).where(
         Character.child_profile_id == profile_id, Character.is_active.is_(True)
     )
@@ -199,7 +213,7 @@ async def list_characters(profile_id: str, ctx: Context) -> CharacterListView:
     return CharacterListView(characters=views)
 
 
-@router.post("/characters", status_code=201, responses=error_responses(404))
+@router.post("/characters", status_code=201, responses=error_responses(404, 409))
 async def create_character(body: CharacterCreateBody, ctx: Context) -> CharacterView:
     """Create a character for a child profile, activating it.
 
@@ -218,6 +232,9 @@ async def create_character(body: CharacterCreateBody, ctx: Context) -> Character
         ValidationError: If profile_id is not a UUID.
         AuthorizationError: If the profile is not the caller's.
         ResourceNotFoundError: If the profile row does not exist.
+        StateTransitionError: If a concurrent request already activated a
+            character for this profile between the retire check above and
+            this insert's flush (HTTP 409).
     """
     # #CRITICAL: security: a caller may only create a character for a profile
     # it owns; family_id is never taken from the request (see below).
@@ -248,7 +265,11 @@ async def create_character(body: CharacterCreateBody, ctx: Context) -> Character
         look=body.look,
     )
     ctx.session.add(row)
-    await ctx.session.flush()
+    try:
+        await ctx.session.flush()
+    except IntegrityError as exc:
+        msg = f"profile '{profile_id}' already has an active character"
+        raise StateTransitionError(msg) from exc
     await ctx.session.refresh(row, ["created_at"])
     attributes = initial_attributes(body.archetype)
     ctx.session.add_all(
@@ -287,7 +308,11 @@ async def update_character(
     # #CRITICAL: security: load-then-authorize: the character's OWN profile,
     # never a client-supplied one, is what gates this write.
     # #VERIFY: tests/integration/test_authz_matrix.py's ROUTE_TABLE entry for
-    # ("PATCH", "/api/v1/characters/{character_id}") and its cross-family sweep.
+    # ("PATCH", "/api/v1/characters/{character_id}"), which is now a member of
+    # both _CROSS_FAMILY_ROUTE_KEYS (test_cross_family_guardian_is_rejected,
+    # ::test_cross_family_guardian_from_stranger_family_is_rejected) and
+    # _CROSS_FAMILY_CHILD_ROUTE_KEYS (test_cross_family_child_from_stranger_family_is_rejected,
+    # ::test_family_a_child_cannot_reach_stranger_family_profile).
     authorize_profile(ctx.principal, row.child_profile_id)
     if body.name is not None:
         row.name = body.name
@@ -300,7 +325,7 @@ async def update_character(
     return _view(row, attributes)
 
 
-@router.post("/characters/{character_id}/activate", responses=error_responses(404))
+@router.post("/characters/{character_id}/activate", responses=error_responses(404, 409))
 async def activate_character(character_id: str, ctx: Context) -> CharacterView:
     """Make a retired character active again, retiring whichever is active now.
 
@@ -315,6 +340,9 @@ async def activate_character(character_id: str, ctx: Context) -> CharacterView:
         ValidationError: If character_id is not a UUID.
         ResourceNotFoundError: If no character with this id exists.
         AuthorizationError: If the character's profile is not the caller's.
+        StateTransitionError: If a concurrent request already activated a
+            different character for this profile between the retire check
+            below and this activation's flush (HTTP 409).
     """
     parsed = parse_uuid(character_id, "character_id")
     row = await _load_character(ctx.session, parsed)
@@ -325,13 +353,38 @@ async def activate_character(character_id: str, ctx: Context) -> CharacterView:
     # rather than corrupt, but it fails on the ACTIVATE, leaving the child
     # with a retired incumbent and no active character: a worse state than
     # the one they started in. Both statements share this request's
-    # session, which commits once.
+    # session, which commits once. Two genuinely CONCURRENT activate requests
+    # for different characters on the same profile are a distinct risk this
+    # single-transaction ordering does not cover: each request's own
+    # _retire_active_character can run before the other's activation commits,
+    # so both see no incumbent and both proceed. Postgres then serializes the
+    # second flush behind the first's uncommitted uq_character_one_active
+    # entry and rejects it with an IntegrityError once the first commits,
+    # which is caught below and re-raised as StateTransitionError (HTTP 409)
+    # rather than surfacing as an unhandled 500.
     # #VERIFY: tests/integration/test_characters_api.py::
-    # test_activating_a_replacement_retires_the_incumbent_atomically
-    await _retire_active_character(ctx.session, row.child_profile_id, exclude_id=row.id)
+    # test_activating_a_replacement_retires_the_incumbent_atomically,
+    # ::test_concurrent_activations_collide_into_a_409_not_a_500.
+    # #ASSUME: data integrity: profile_id is captured now, before the flush
+    # that can fail, rather than read off `row` inside the except block
+    # below. A failed flush's rollback restores the pre-flush snapshot and
+    # expires row's attributes, so `row.child_profile_id` after that point is
+    # a lazy-load against a session already left DEACTIVE by the failure;
+    # that load raises PendingRollbackError, pre-empting the
+    # StateTransitionError this handler means to raise before it is even
+    # constructed.
+    # #VERIFY: test_concurrent_activations_collide_into_a_409_not_a_500 pins
+    # this: it failed with PendingRollbackError, not StateTransitionError,
+    # until this local variable was introduced.
+    profile_id = row.child_profile_id
+    await _retire_active_character(ctx.session, profile_id, exclude_id=row.id)
     row.is_active = True
     row.retired_at = None
-    await ctx.session.flush()
+    try:
+        await ctx.session.flush()
+    except IntegrityError as exc:
+        msg = f"profile '{profile_id}' already has an active character"
+        raise StateTransitionError(msg) from exc
     attributes = await _attributes_of(ctx.session, row.id)
     return _view(row, attributes)
 

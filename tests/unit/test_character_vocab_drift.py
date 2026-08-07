@@ -21,8 +21,9 @@ them should be the one this module reads, not this one.
 
 ``character.look`` has no Python-layer source of truth (the twelve avatar
 ids are a frontend asset-naming convention, not a domain vocabulary), so its
-two tests compare the migration and the ORM directly against each other
-rather than against a third store.
+tests compare the migration, the ORM, and ``api/schemas.py``'s
+``CharacterLook`` pattern directly against each other (and against this
+module's own ``_AVATAR_LOOK_IDS``) rather than against a third store.
 """
 
 from __future__ import annotations
@@ -31,8 +32,10 @@ import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from pydantic import TypeAdapter, ValidationError
 from sqlalchemy import CheckConstraint
 
+from cyo_adventure.api.schemas import CharacterLook
 from cyo_adventure.db.models import Character, CharacterAttribute
 from cyo_adventure.storybook.character_vocabulary import (
     ARCHETYPE_ROSTER,
@@ -293,6 +296,33 @@ def test_orm_look_check_matches_avatar_ids() -> None:
     """The ORM's ck_character_look CHECK equals the twelve avatar ids."""
     sqltext = _orm_check_sqltext(Character, "ck_character_look")
     assert _parse_sql_string_list(sqltext) == _AVATAR_LOOK_IDS
+
+
+def test_pydantic_look_pattern_matches_avatar_ids() -> None:
+    """CharacterLook's regex accepts exactly the twelve avatar ids, no others.
+
+    M-4: ``CharacterCreateBody``/``CharacterUpdateBody``'s ``look`` field
+    (``api/schemas.py::CharacterLook``, ``r"^avatar_(0[1-9]|1[0-2])$"``) is a
+    fourth, uncoupled copy of this same twelve-id vocabulary, expressed as a
+    regex rather than a literal list, so it cannot be compared with
+    ``_parse_sql_string_list`` like the migration/ORM copies above. Probing
+    it functionally against a wider candidate range (``avatar_00`` through
+    ``avatar_13``) and comparing the accepted subset against this module's
+    own ``_AVATAR_LOOK_IDS`` ties it to the same vocabulary the migration
+    and ORM tests guard, so a regex typo that widens or narrows the accepted
+    set (e.g. an off-by-one that also accepts ``avatar_00`` or
+    ``avatar_13``) fails loudly here.
+    """
+    adapter = TypeAdapter(CharacterLook)
+    candidates = (f"avatar_{i:02d}" for i in range(14))
+    accepted: set[str] = set()
+    for candidate in candidates:
+        try:
+            adapter.validate_python(candidate)
+        except ValidationError:
+            continue
+        accepted.add(candidate)
+    assert accepted == _AVATAR_LOOK_IDS
 
 
 def test_migration_attribute_value_range_matches_canonical_bounds() -> None:

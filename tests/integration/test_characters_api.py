@@ -8,14 +8,23 @@ CI-loud-failure guarantee.
 
 from __future__ import annotations
 
+import asyncio
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 import pytest
 
+from cyo_adventure.api import characters as characters_module
+from cyo_adventure.api.deps import Principal, RequestContext, Role
+from cyo_adventure.core.exceptions import StateTransitionError
+from cyo_adventure.db.models import Character, ChildProfile
 from tests.integration.conftest import Seed, auth
 
 if TYPE_CHECKING:
+    import uuid
+
     from httpx import AsyncClient
+    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 
 def _create_body(profile_id: str, *, name: str = "Ember") -> dict[str, str]:
@@ -65,14 +74,37 @@ async def test_kid_creates_character_for_own_profile(
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_kid_cannot_create_character_for_sibling_profile(
-    client: AsyncClient, seed: Seed
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
 ) -> None:
-    """A kid principal creating for a profile that is not their own: 403."""
+    """A kid principal creating for a genuine sibling profile: 403.
+
+    Builds a second child profile inside family A, the caller's own family:
+    a real sibling. This is a test-local row, not part of the shared
+    ``seed`` fixture, because ``seed`` is reused across the whole
+    integration suite and other tests (e.g. test_profiles.py,
+    test_families_api.py) hardcode family A's profile count and roster; a
+    sibling baked into the shared seed silently breaks those unrelated
+    assertions. This is distinct from the cross-family case covered by
+    ``test_guardian_cannot_create_character_for_another_familys_profile``
+    and the authz matrix's cross-family sweeps, which use
+    ``other_child_profile_id`` (family B).
+    """
+    async with sessions() as setup_session:
+        sibling = ChildProfile(
+            family_id=seed.family_id,
+            display_name="Reader A's Sibling",
+            age_band="10-13",
+        )
+        setup_session.add(sibling)
+        await setup_session.flush()
+        sibling_id: uuid.UUID = sibling.id
+        await setup_session.commit()
+
     resp = await client.post(
         "/api/v1/characters",
-        # child_token's own profile is child_profile_id; other_child_profile_id
-        # belongs to family B, a sibling from this caller's point of view.
-        json=_create_body(str(seed.other_child_profile_id)),
+        json=_create_body(str(sibling_id)),
         headers=auth(seed.child_token),
     )
     assert resp.status_code == 403, resp.text
@@ -227,6 +259,30 @@ async def test_guardian_can_delete_character(client: AsyncClient, seed: Seed) ->
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+async def test_cross_family_guardian_cannot_delete_character(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A family-B guardian deleting family A's character: 403/404, never 204.
+
+    DELETE is role-gated to GUARDIAN only, so it is absent from
+    ``_CROSS_FAMILY_ROUTE_KEYS`` in ``test_authz_matrix.py``: that sweep
+    resolves DELETE's ``RouteSpec`` via ``_random_uuid_path``, which would
+    404 unconditionally regardless of the ownership check, proving nothing
+    about IDOR safety. This test exercises the real character id
+    (``seed.character_id``) against a real, disallowed guardian
+    (``seed.other_guardian_token``) instead, so a 403/404 here can only come
+    from the endpoint's own ownership check.
+    """
+    resp = await client.delete(
+        f"/api/v1/characters/{seed.character_id}",
+        headers=auth(seed.other_guardian_token),
+    )
+    assert resp.status_code in (403, 404), resp.text
+    assert not (200 <= resp.status_code < 300), resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
 async def test_retiring_the_only_active_character_leaves_none_active(
     client: AsyncClient, seed: Seed
 ) -> None:
@@ -246,3 +302,111 @@ async def test_retiring_the_only_active_character_leaves_none_active(
     assert listing.status_code == 200, listing.text
     characters = listing.json()["characters"]
     assert all(not c["is_active"] for c in characters)
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_concurrent_activations_collide_into_a_409_not_a_500(
+    sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """Two genuinely concurrent activations for one profile: 409, never a 500.
+
+    Bypasses HTTP to control transaction overlap directly (the codebase's
+    only prior "race" test, test_provider_allowlist_api.py::
+    test_add_duplicate_pair_is_409, is actually two sequential requests, and
+    sequential activate calls here never collide: each correctly
+    retire-then-activates). Two independent sessions each activate a
+    different character on seed.child_profile_id, sequenced so both retire
+    checks run before either commits: both see zero active incumbents (each
+    transaction's write is invisible to the other under READ COMMITTED)
+    and both proceed to mark their own row active. Postgres then serializes
+    the second flush behind the first's uncommitted uq_character_one_active
+    entry and rejects it with an IntegrityError once the first commits; the
+    handler (api/characters.py::activate_character) must catch that and
+    raise StateTransitionError, never let it surface as an unhandled 500.
+    """
+    async with sessions() as setup_session:
+        # Both characters are constructed already retired: is_active
+        # defaults to True on the Character model, and seed.character_id is
+        # already active, so a "second" row built with the default would
+        # collide with it immediately at this setup flush, before either
+        # concurrent activation below ever runs.
+        second = Character(
+            child_profile_id=seed.child_profile_id,
+            family_id=seed.family_id,
+            name="Second Character",
+            archetype="scout",
+            look="avatar_02",
+            is_active=False,
+            retired_at=datetime.now(UTC),
+        )
+        setup_session.add(second)
+        first_row = await setup_session.get(Character, seed.character_id)
+        assert first_row is not None
+        # Retire the incumbent too: the profile starts with zero active
+        # characters, so both concurrent activations below see "no
+        # incumbent" and race to become the sole active one.
+        first_row.is_active = False
+        first_row.retired_at = datetime.now(UTC)
+        await setup_session.flush()
+        second_id: uuid.UUID = second.id
+        await setup_session.commit()
+
+    principal = Principal(
+        subject="guardian-a-concurrency-test",
+        user_id=seed.admin_user_id,
+        role=Role.GUARDIAN,
+        family_id=seed.family_id,
+        profile_ids=frozenset({seed.child_profile_id}),
+    )
+
+    session_a = sessions()
+    session_b = sessions()
+    try:
+        ctx_a = RequestContext(principal=principal, session=session_a)
+        ctx_b = RequestContext(principal=principal, session=session_b)
+
+        a_flushed = asyncio.Event()
+        release_a = asyncio.Event()
+
+        async def _activate_a() -> object:
+            view = await characters_module.activate_character(
+                str(seed.character_id), ctx_a
+            )
+            a_flushed.set()
+            await release_a.wait()
+            await session_a.commit()
+            return view
+
+        async def _activate_b() -> object:
+            await a_flushed.wait()
+            return await characters_module.activate_character(str(second_id), ctx_b)
+
+        async def _release_after_delay() -> None:
+            # #CRITICAL: timing: session_b's flush blocks at the real
+            # Postgres level (MVCC waiting on session_a's uncommitted unique
+            # index entry), not on a Python-level lock, so this sleep only
+            # needs to outlast the time for session_b to reach that wait; the
+            # collision itself is serialized by Postgres, not by this delay.
+            # #VERIFY: a flaky failure here (session_b returning 200 instead
+            # of raising) would mean 0.2s was too short on a slow CI runner;
+            # widen the sleep rather than removing the synchronization.
+            await asyncio.sleep(0.2)
+            release_a.set()
+
+        results = await asyncio.gather(
+            _activate_a(),
+            _activate_b(),
+            _release_after_delay(),
+            return_exceptions=True,
+        )
+    finally:
+        await session_a.close()
+        await session_b.close()
+
+    a_result, b_result, _release_result = results
+    assert not isinstance(a_result, BaseException), a_result
+    assert isinstance(b_result, StateTransitionError), (
+        "expected the losing concurrent activation to raise "
+        f"StateTransitionError, got {b_result!r}"
+    )
