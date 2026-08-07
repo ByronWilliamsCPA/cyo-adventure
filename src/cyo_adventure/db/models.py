@@ -966,8 +966,13 @@ class CharacterBookCompletion(CreatedAtMixin, Base):
     already?" read is racy under concurrent sync. INSERT ... ON CONFLICT DO
     NOTHING against this key makes the second attempt a no-op in the
     database.
-    #VERIFY: tests/integration/test_character_progression.py::
-    test_replayed_completion_does_not_increment_twice
+    #VERIFY: the schema-level mechanism (this primary key shape) is pinned
+    today by tests/unit/test_character_models.py::
+    test_completion_pk_is_what_makes_writeback_idempotent. Forward reference
+    (does not exist yet): the behavioral no-double-increment case is
+    intended to be covered by tests/integration/test_character_progression.py::
+    test_replayed_completion_does_not_increment_twice, added by the
+    progression-writeback task later in this plan.
     """
 
     __tablename__ = "character_book_completion"

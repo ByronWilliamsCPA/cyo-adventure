@@ -11,8 +11,11 @@
 -- in this repository (see the same personalization migration's slot_type IN
 -- (...) CHECK); this also keeps this migration's CHECK literal text bytewise
 -- identical to the equivalent SQLAlchemy CheckConstraint text in db/models.py,
--- which is what tests/unit/test_character_vocab_drift.py and
--- tests/integration/test_schema_parity.py both rely on.
+-- which is what tests/unit/test_character_vocab_drift.py's literal-fragment
+-- parser relies on. tests/integration/test_schema_parity.py compares
+-- pg_get_constraintdef output from two live catalogs instead, so identifier
+-- quoting is normalized away before that comparison ever runs and it does
+-- not depend on this convention.
 --
 -- Tier classification (ADR-022): "character" carries a direct family_id
 -- column (denormalized from its owning profile) so it gets the Tier 1
@@ -104,8 +107,13 @@ CREATE TABLE IF NOT EXISTS "public"."character_attribute" (
 -- makes the second attempt a no-op in the database rather than an
 -- application-side (and racy, under concurrent sync) "have we done this
 -- already?" read.
--- #VERIFY: tests/integration/test_character_progression.py::
--- test_replayed_completion_does_not_increment_twice
+-- #VERIFY: the schema-level mechanism (this primary key shape) is pinned
+-- today by tests/unit/test_character_models.py::
+-- test_completion_pk_is_what_makes_writeback_idempotent. Forward reference
+-- (does not exist yet): the behavioral no-double-increment case is intended
+-- to be covered by tests/integration/test_character_progression.py::
+-- test_replayed_completion_does_not_increment_twice, added by the
+-- progression-writeback task later in this plan.
 --
 -- The spec names this key (reading_state_id, character_id), but reading_state
 -- has a composite key (child_profile_id, storybook_id) and no surrogate id,
