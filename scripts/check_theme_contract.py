@@ -50,7 +50,11 @@ The manifest is a flat JSON object of ``{skeleton_slug: fingerprint}``, keyed
 by ``contract.skeleton_slug`` once the contract has loaded. When omitted,
 that comparison is skipped with a printed note; it is not counted as a
 failure, since it is a wave-level bookkeeping aid, not a property this
-script can derive from the skeleton alone.
+script can derive from the skeleton alone. When it *is* supplied, a mismatch
+is a failure and exits non-zero, like every numbered check above. Note that
+an additive schema minor rotates every stored fingerprint (see
+``cyo_adventure.diversity.structure.structure_fingerprint``), so a mismatch
+means "the digest moved", which is not always "the skeleton changed".
 """
 
 from __future__ import annotations
@@ -233,7 +237,19 @@ def main(argv: list[str] | None = None) -> int:
         detail = "; ".join(f.message for f in gate_result.report.errors)
     _report("1", "run_gate(skeleton) not blocked", passed=ok, detail=detail)
 
-    # --- Optional manifest fingerprint comparison (not a pass/fail check) --
+    # --- Optional manifest fingerprint comparison -------------------------
+    # "Optional" means only that it runs when --fingerprint-manifest is
+    # passed. Once passed it is a pass/fail check like any other: the
+    # `all_passed &= matches` below makes a mismatch exit non-zero, and
+    # tests/unit/test_check_theme_contract.py::
+    # test_fingerprint_manifest_mismatch_fails pins that behaviour.
+    #
+    # A mismatch does not only mean "this skeleton was tampered with". Any
+    # additive Storybook field rotates every stored digest, because
+    # `diversity/structure.py::structure_fingerprint` strips leaf prose by
+    # blacklist and hashes whatever else the dump contains; the schema minor
+    # that added `accepts_character` rotated 19 stored manifests at once.
+    # Check the schema version before hunting for a structural edit.
     if fingerprint_manifest_arg:
         manifest_path = Path(fingerprint_manifest_arg).resolve()
         try:
