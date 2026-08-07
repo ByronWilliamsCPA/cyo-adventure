@@ -62,7 +62,7 @@ def _require_guardian(principal: Principal) -> None:
     # (irreversible progression loss); a child may create, rename, and switch
     # between characters, but never delete one outright.
     # #VERIFY: tests/integration/test_characters_api.py::
-    # test_child_cannot_delete_character, ::test_guardian_can_delete_character.
+    # test_kid_cannot_delete_character, ::test_guardian_can_delete_character.
     if not principal.is_guardian:
         msg = "guardian role required"
         raise AuthorizationError(msg)
