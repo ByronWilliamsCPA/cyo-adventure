@@ -616,6 +616,45 @@ class TestRateLimitingByEnvironment:
 
 
 # ---------------------------------------------------------------------------
+# Unit-of-work commit ordering (issue #461)
+# ---------------------------------------------------------------------------
+
+
+class TestUnitOfWorkMiddleware:
+    """create_app() wires UnitOfWorkMiddleware as the innermost user middleware.
+
+    Position is the contract, not just presence. Starlette applies the
+    most-recently-added user middleware first, so being added first puts this
+    one closest to the route; the commit then lands as late as it can while
+    still preceding every outer layer's view of the response.
+    """
+
+    @pytest.mark.unit
+    def test_unit_of_work_middleware_is_wired(self) -> None:
+        """The middleware is present in the stack create_app builds."""
+        from cyo_adventure.middleware import UnitOfWorkMiddleware
+
+        app = create_app()
+
+        assert any(m.cls is UnitOfWorkMiddleware for m in app.user_middleware)
+
+    @pytest.mark.unit
+    def test_unit_of_work_middleware_is_innermost(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """It sits last in user_middleware, which is the innermost position."""
+        from cyo_adventure.core.config import settings
+        from cyo_adventure.middleware import UnitOfWorkMiddleware
+
+        # Production wires the most layers, so it is the strictest arrangement
+        # in which to assert the position.
+        monkeypatch.setattr(settings, "environment", "production")
+        app = create_app()
+
+        assert app.user_middleware[-1].cls is UnitOfWorkMiddleware
+
+
+# ---------------------------------------------------------------------------
 # Trusted host allowlist (SEC-B3)
 # ---------------------------------------------------------------------------
 

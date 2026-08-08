@@ -17,6 +17,7 @@ Authorization rules (docs/planning/authorization-matrix.md):
 from __future__ import annotations
 
 import uuid
+from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import TYPE_CHECKING, Annotated, Any
@@ -44,9 +45,13 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.db.models import ChildProfile, DeviceGrant, User
+from cyo_adventure.middleware.unit_of_work import (
+    UNIT_OF_WORK_STATE_KEY,
+    RequestUnitOfWork,
+)
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncIterator, Callable
+    from collections.abc import AsyncGenerator, AsyncIterator, Callable
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -205,27 +210,74 @@ class Principal:
         return profile_id in self.profile_ids
 
 
-async def get_db_session() -> AsyncIterator[AsyncSession]:
-    """Yield a request-scoped session, committing on success.
+@asynccontextmanager
+async def request_unit_of_work(
+    request: Request, session: AsyncSession
+) -> AsyncGenerator[AsyncSession, None]:
+    """Run one request's unit of work over ``session``.
 
-    Handlers never call ``commit`` directly (see the package CLAUDE.md); this
-    unit-of-work commits when the request succeeds and rolls back on error.
+    Publishes the unit of work on the request state so
+    :class:`~cyo_adventure.middleware.unit_of_work.UnitOfWorkMiddleware` can
+    commit it before the response is sent, and owns the two decisions the
+    middleware cannot see: rollback when the handler raised, and close when the
+    request is done.
+
+    Shared with the integration-test session override rather than duplicated
+    there, so tests exercise the real commit ordering instead of a copy that
+    can drift from it.
+
+    Args:
+        request: The request whose state carries the unit of work.
+        session: The session this request's work runs on.
 
     Yields:
         AsyncSession: The session for the request.
     """
-    # #CRITICAL: data integrity: the unit-of-work commits exactly once at request
-    # end; a handler that needs partial durability must flush, not commit.
-    # #VERIFY: handlers raise on failure so the except path rolls back.
-    session = get_session()
+    # #CRITICAL: data integrity: the unit of work commits exactly once, and by
+    # design that commit normally happens in the middleware (before the
+    # response is sent), not here. The commit below is the fallback for a
+    # request that produced no ``http.response.start`` for the middleware to
+    # intercept; ``RequestUnitOfWork`` settles once, so the two can never both
+    # take effect. A handler that needs partial durability must flush, not
+    # commit (see the package CLAUDE.md).
+    # #VERIFY: tests/unit/test_unit_of_work.py asserts commit-before-response
+    # ordering and single-commit semantics; tests/unit/test_api_deps.py
+    # asserts this generator's own commit/rollback/close contract.
+    #
+    # #ASSUME: data integrity: nothing touches this session after the commit.
+    # The commit ends the transaction, which also drops the RLS GUCs
+    # ``apply_family_rls_context`` set with ``is_local => true``. That holds
+    # today because the response body is serialized before
+    # ``http.response.start`` is emitted, and the one handler whose work
+    # outlives its return (the SSE stream) already declines this dependency in
+    # favour of ``SessionFactory``.
+    # #VERIFY: any future handler doing database work after its response has
+    # started must open its own session via ``SessionFactory``.
+    uow = RequestUnitOfWork(session)
+    setattr(request.state, UNIT_OF_WORK_STATE_KEY, uow)
     try:
         yield session
-        await session.commit()
+        await uow.commit()
     except Exception:
-        await session.rollback()
+        await uow.rollback()
         raise
     finally:
-        await session.close()
+        await uow.close()
+
+
+async def get_db_session(request: Request) -> AsyncIterator[AsyncSession]:
+    """Yield a request-scoped session, committing before the response is sent.
+
+    Handlers never call ``commit`` directly (see the package CLAUDE.md).
+
+    Args:
+        request: The request whose state carries the unit of work.
+
+    Yields:
+        AsyncSession: The session for the request.
+    """
+    async with request_unit_of_work(request, get_session()) as session:
+        yield session
 
 
 DbSession = Annotated["AsyncSession", Depends(get_db_session)]

@@ -81,16 +81,18 @@ which requires the dev signing secrets described under "Required environment" be
 
 ### Request pacing (mandatory)
 
-Every newman invocation must pass `--delay-request 1100` (CI does; the local command below does), for
-two reasons:
+Every newman invocation must pass `--delay-request 1100` (CI does; the local command below does). It
+was introduced for two reasons, of which only the second is still load-bearing:
 
-1. **Commit visibility.** The app's unit-of-work commits when the request's yield-dependency tears
-   down, which happens after the response is sent. A zero-delay runner can therefore receive a 201 and
-   fire the next request before the created row is committed, producing intermittent 403/404s on
-   just-created resources. The delay serializes each request against the previous one's commit. This
-   is a mitigation, not the fix: any sufficiently fast client can hit the same race, and the durable
-   fix is committing the unit-of-work before the response is sent
-   (`api/deps.py::get_db_session`), tracked as follow-up work.
+1. **Commit visibility (fixed; kept as belt and braces).** The app's unit of work used to commit when
+   the request's yield-dependency tore down, which happens after the response is sent, so a zero-delay
+   runner could receive a 201 and fire the next request before the created row was committed,
+   producing intermittent 403/404s on just-created resources. The delay was the mitigation. The
+   durable fix landed for issue #461: `UnitOfWorkMiddleware`
+   (`middleware/unit_of_work.py`) commits at `http.response.start`, before any byte reaches the
+   client, and `api/deps.py::request_unit_of_work` keeps the rollback decision in the dependency. The
+   delay is no longer load-bearing for this reason and is retained only because reason 2 requires it
+   anyway.
 2. **Rate limiting.** Wherever `RateLimitMiddleware` is enabled (any non-`local` environment; the
    compose/CI stack runs `ENVIRONMENT=local`, where it is off), the delay keeps any 60-second window
    under the 60 requests/minute ceiling.
