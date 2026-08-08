@@ -3,7 +3,8 @@ schema_type: planning
 title: "Handoff: RAD #VERIFY Citation Debt (baseline D-2)"
 description: "Work order for the separate team retiring the RAD #VERIFY citation baseline (137
   grandfathered stale citation sites across 122 distinct file/citation pairs): the derived
-  numbers, the gate's real ceiling, what the hook does not scan, the fix-one-row workflow with
+  numbers, the gate's real ceiling, the split between CI scope (whole tree) and hook scope
+  (narrow), the one tree neither scans, the fix-one-row workflow with
   its shrink-only contract, and a suggested attack order."
 tags:
   - planning
@@ -22,7 +23,9 @@ component: Tooling
 source: "rad-citation-baseline.toml (137 grandfathered sites across 122 distinct file/citation
   pairs, parsed with tomllib on 2026-08-08);
   scripts/check_rad_citations.py module docstring, Deliberate non-goals;
-  .pre-commit-config.yaml:396-399 (hook scope regex verified against the live config);
+  .pre-commit-config.yaml:398-399 (the hook's files: key and its scope regex, verified against
+  the live config); .github/workflows/ci.yml (the rad-citations job, --all over the whole tree,
+  shipped in d9a6a93e);
   CLAUDE.md Response-Aware Development section; src/cyo_adventure/CLAUDE.md RAD Assumption
   Tagging section. Gate shipped in 65ee8ffc on branch feat/persistent-characters-runtime."
 ---
@@ -66,9 +69,12 @@ of those `#VERIFY` citations went stale: the named test was renamed, deleted, or
 in the first place, so the citation points at nothing. A stale citation is worse than no citation:
 it reads as proof the assumption is guarded while the thing it names does not exist.
 
-A new pre-commit hook, `check-rad-citations` (`scripts/check_rad_citations.py`, wired at
-`.pre-commit-config.yaml:392`), now resolves every `#VERIFY` citation it can parse against the
-repo's real test files and functions, and fails the commit on anything unresolvable. Because the
+`scripts/check_rad_citations.py` now resolves every `#VERIFY` citation it can parse against the
+repo's real test files and functions, and fails on anything unresolvable. It runs in two places
+with two scopes: the `check-rad-citations` pre-commit hook (`.pre-commit-config.yaml:392`) over
+staged files in the narrow pattern below, and the `rad-citations` CI job
+(`.github/workflows/ci.yml`, shipped in `d9a6a93e`) over the whole tree with `--all`. CI is the
+authoritative scope; see "What the gate does NOT cover" below. Because the
 existing stale citations vastly outnumber what one commit could fix, they were captured into
 `rad-citation-baseline.toml` as a grandfathered list: the gate does not fail on anything already
 in that file, only on citations that are new or newly broken. That baseline file is this backlog.
@@ -156,25 +162,40 @@ a clean starting line, not one that is already lying about its own count. See th
 failures" section below for what the 12 notes are; they are not part of this backlog's 122 pairs
 (137 sites).
 
-## What the gate does NOT cover (verified against `.pre-commit-config.yaml`)
+## What the gate does NOT cover (CI scope and hook scope are different)
 
-The hook's `files:` pattern, at `.pre-commit-config.yaml:398-399`, is:
+The authoritative scope is CI, not the hook, and the two are deliberately different sizes. Read
+them separately or you will understate the gate by two whole trees.
+
+**CI scope: the whole tree.** As of `d9a6a93e` on this branch, the `rad-citations` CI job
+(`.github/workflows/ci.yml`) runs `scripts/check_rad_citations.py --all` on every push, pull
+request and merge_group, so the authoritative gate scope is the WHOLE TREE, including `tests/`
+and `frontend/e2e/`. That job is also a required input to the `ci-gate` roll-up, so a stale
+citation anywhere in those trees fails the build regardless of local hook state, and
+`git commit --no-verify` no longer bypasses it.
+
+**Hook scope: narrower, on purpose.** The pre-commit hook stays narrower: staged files within
+`src/`, `scripts/`, `frontend/src/`, plus every baselined file. Its `files:` pattern, at
+`.pre-commit-config.yaml:398-399`, is:
 
 ```text
 ^(src/.*\.py|scripts/.*\.py|frontend/src/.*\.tsx?|rad-citation-baseline\.toml)$
 ```
 
-That is exactly four things: `src/**/*.py`, `scripts/**/*.py`, `frontend/src/**/*.ts(x)`, and the
-baseline file itself. `tests/`, `supabase/`, and `frontend/e2e/` are not in that pattern, and I
-confirmed by reading the config directly rather than trusting the module docstring's claim about
-it: those three trees are outside the hook's scope, full stop. All three carry their own
-`#VERIFY` markers (tests reference other tests, fixtures, and helper files; `supabase/` migrations
-and `frontend/e2e/` specs do too). None of those citations are baselined, because the tool that
-would have found them going stale never looks at those files, on a clean run or a dirty one. This
-is not a gap the baseline can close: it is unguarded territory the gate was never pointed at. If
-this team wants that scope covered, that is new work, not part of retiring this backlog's 122
-pairs (137 sites) here; flag
-it separately rather than treating it as part of this backlog's exit criteria.
+The narrowness is a latency choice for the commit path, not a statement about what is guarded.
+CI is what guards.
+
+**What is genuinely uncovered: `supabase/` (SQL) only.** `--all` walks Python, TypeScript and
+TSX; it does not parse SQL, so `#VERIFY` markers inside `supabase/` migrations are the one tree
+no run of this gate inspects. That, and only that, is scope this backlog does not cover and
+would be new work. Do not restate `tests/` or `frontend/e2e/` as uncovered: `--all` walks them,
+which the run quoted above demonstrates directly through its
+`tests/integration/test_cover_service.py:78` note.
+
+**`--write-baseline` is not an escape hatch.** It is a maintenance command to pair with
+`--assert-no-growth` review, never a way to clear a CI failure. Regenerating the baseline to make
+a red job green re-grandfathers the very debt this workstream exists to retire, which is the
+failure mode `AL-130` / `UW-C65` records after it happened once already.
 
 ## Workflow for fixing one row
 

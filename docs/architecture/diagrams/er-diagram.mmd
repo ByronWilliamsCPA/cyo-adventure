@@ -118,8 +118,8 @@ erDiagram
 
     child_profile_personalization {
         uuid child_profile_id PK, FK "ON DELETE CASCADE"
-        varchar(32) slot_type PK "9 slot types; ck_cpp_slot_type"
-        text value_text "NULL; exactly one value column is set"
+        varchar(32) slot_type PK "12 slot types; ck_cpp_slot_type"
+        text value_text "NULL; ck_cpp_value_cardinality: character_name sets none, every other slot exactly one"
         varchar(64) value_enum "NULL"
         uuid value_profile_id FK "NULL; sibling reference, ON DELETE CASCADE"
         boolean ring1_enabled "default false; own family only"

@@ -24,8 +24,14 @@ tags:
 > changed and which of its findings measurement falsified.
 > **Depends on**: [ADR-025](./adr-025-additive-storybook-schema-versioning.md). `accepts_character`
 > cannot exist while the parser demands exact `"2.0"` and every model sets `extra="forbid"`.
-> **Amends**: [ADR-023](./adr-023-story-personalization-slots.md), by the in-place amendment dated
-> 2026-08-06 in that document, which adds the `character_name` slot.
+> **Amends**: [ADR-023](./adr-023-story-personalization-slots.md), by its **section 11, "Amendment
+> (2026-08-07): the `character_name` slot"**, which adds the `character_name` slot as a twelfth
+> entry in that ADR's closed taxonomy. That section is the authority. ADR-023 also carries an
+> earlier "Amendment (2026-08-06)" block on the same slot, appended after its body and therefore
+> sitting later in the file; it was **superseded on 2026-08-07** and contradicts the shipped shape
+> on three points (the slot sets no value column, `ck_cpp_slot_type` and
+> `ck_cpp_value_cardinality` both changed, and the toggle is the only clear). Do not implement
+> from it.
 > **Cross-sign**: both player engines and the conformance corpus, once seeding becomes a runtime path.
 
 ## TL;DR
@@ -251,6 +257,11 @@ RESTART reopens from the new character's numbers. A related residual covers a fr
 reach the network or is served a service-worker-cached `characters` response with no `seed_var_state`
 at all: it still opens from declared initials.
 
+**This residual has a home**: [UW-A49](../unscheduled-work-register.md), Phase 5. It is tracked
+rather than merely narrated, per `adr/README.md`'s rule that every consequent of an Accepted ADR
+carries a register row, an issue, or a phase before merge. That row names the three candidate
+fixes and the trigger that forces the decision (anything that starts sending `choice_path`).
+
 `api/reading.py` carries the full `#EDGE` marker, including its own judgement that calling this
 "latent" undersells it, and that marker is the authority. Two things follow for anyone extending this
 design. Anything that starts sending `choice_path` (a native client, the offline queue, replay-based
@@ -280,7 +291,9 @@ persistent character.
   rather than caveats on it. The branch is **unmerged and unpushed**, so nothing here is on `main` and
   no citation above proves anything yet. And the chain ships with the **accepted residual** recorded
   under "Integrity posture" above: the bound seed can disagree with the seed the client opened from,
-  and the mismatch degrades Go back for the rest of that read instead of being reported.
+  and the mismatch degrades Go back for the rest of that read instead of being reported. That
+  residual is scheduled as [UW-A49](../unscheduled-work-register.md) (Phase 5), which also records
+  the trigger that escalates it from a degraded button to a permanently wedged read.
   [UW-A46](../unscheduled-work-register.md) does **not** cover any of this work and is not closed by
   this branch; see the next bullet for what that row actually tracks.
 - **Still unbuilt, and what `UW-A46` tracks**: the pathfinder pilot skeleton itself, a real
@@ -311,7 +324,9 @@ persistent character.
 
 ## Related
 
-- [ADR-023](./adr-023-story-personalization-slots.md), amended 2026-08-06 for the `character_name` slot
+- [ADR-023](./adr-023-story-personalization-slots.md), amended for the `character_name` slot by its
+  section 11 dated 2026-08-07 (the authority); its earlier 2026-08-06 block on the same slot is
+  superseded
 - [ADR-025](./adr-025-additive-storybook-schema-versioning.md), the hard prerequisite
 - [pathfinder-structure-exploration.md](../pathfinder-structure-exploration.md), SQ-22 / OG5
 - [capability-register.md](../capability-register.md), K3 and K18

@@ -515,6 +515,11 @@ everywhere, and are shown deliberately in review and never in the reader".
 
 ### 11. Amendment (2026-08-07): the `character_name` slot (ADR-028 persistent characters)
 
+> **This section is the authority on `character_name`.** It supersedes the earlier
+> "Amendment (2026-08-06): the `character_name` personalization slot" section near the end of this
+> document, which describes a shape the implementation did not take. ADR-028's `**Amends**` header
+> points here.
+
 ADR-028 introduces persistent reader characters (the `character` table). This amendment adds a
 twelfth entry, `character_name`, to the closed taxonomy in section 7, with a structural property
 none of the other eleven share.
@@ -1026,7 +1031,27 @@ out of.
   exists. **Fixed in this same change**, since the table was already being edited to add ADR-023;
   the row records Accepted / 2026-07-20, matching that file's own status line.
 
-## Amendment (2026-08-06): the `character_name` personalization slot
+## Amendment (2026-08-06): the `character_name` personalization slot [SUPERSEDED 2026-08-07]
+
+> **Superseded on 2026-08-07 by section 11, "Amendment (2026-08-07): the `character_name` slot",
+> above.**
+> Kept for the record; do not implement from it. It sits later in this file than the amendment that
+> replaces it purely because it was appended after the body, which is exactly why this banner is
+> here. Three of its claims were falsified once the slot was actually built, and section 11 is the
+> authority on all three:
+>
+> - **Shape.** This section calls the slot "free text" alongside `pet_name`. It is not: the
+>   `character_name` row carries **no** value column at all, and
+>   `ck_cpp_value_cardinality` rejects any value field set on this slot type. The value is
+>   synthesized at render time from the active `character.name`.
+> - **DB CHECK impact.** This section says "no DB CHECK migration on `slot_type`, no change to
+>   three-shape validation". Both happened: `ck_cpp_slot_type` moved to a closed 12-value
+>   vocabulary, and the old flat `ck_cpp_exactly_one_value` had to be renamed and made
+>   slot-scoped as `ck_cpp_value_cardinality`, because this is the first slot for which zero
+>   values is the correct shape.
+> - **Clearing semantics.** This section says the guardian "can clear it". Turning the toggle off
+>   is the *only* way to clear it; blanking the character's name is not a clear, since the child
+>   can rename the character and the slot repopulates.
 
 [ADR-028](./adr-028-persistent-reader-characters.md) adds a persistent reader character. Its name must be
 able to render in prose, which needs a personalization slot. Personalization is keyed
@@ -1057,6 +1082,36 @@ amendment.
 
 **Not implemented by this amendment.** The slot ships with the character API, not with the validator work in
 ADR-028 steps 2 and 3. This section records the ruling so the implementation has an authority to cite.
+
+## Follow-on work
+
+Required by `adr/README.md` for any ADR materially amended after 2026-07-28. Section 11's
+`character_name` amendment (2026-08-07) is such an amendment, and this section is where its
+consequents get a home. Every item cites a register row or a phase; nothing here is left as
+"future work".
+
+- **Set-time validation on the slot's source column is ordered wrong**:
+  [UW-C69](../unscheduled-work-register.md) (Phase 5). `CharacterName` (`api/schemas.py`) applies
+  its `max_length=32` bound **before** `AfterValidator(_nfc)` normalizes, while
+  `db/models.py`'s `name` column is `VARCHAR(32)`. Because NFC can change a codepoint count, an
+  input that clears the bound can still overflow the column, surfacing as a database error rather
+  than the 422 that section 11's "Validation" bullet promises. This is the one open defect the
+  amendment itself creates.
+- **The amendment's other three clauses are implemented, not follow-ons.** Recorded here so a
+  future reader does not re-open them: the ring-1 ceiling and the `REAL_PERSON_*` membership are
+  enforced in `storybook/theme_contract.py` and the `ck_cpp_ring2_ceiling` CHECK; the zero-value
+  shape is enforced by `PersonalizationSlotBody` and `ck_cpp_value_cardinality`; and the purge
+  coupling (consequence 2) is `PURGE_TARGETS[character_name] = "character"` plus
+  `purge_profile_personalization()` in `api/personalization.py`, covered by
+  `tests/integration/test_personalization_purge.py` and
+  `tests/unit/test_personalization_purge_targets.py`.
+- **Prose rendering of a character's appearance is out of scope, not deferred work.** The
+  2026-08-06 block already ruled `look` is an avatar enum with no prose substitution and therefore
+  no compliance surface. Adding one would be a new amendment with its own decision, so it gets no
+  register row here; recording the boundary is what stops it drifting into an untracked assumption.
+- **Standing, not new**: the OD-5 reassessment in "Review Schedule" above re-opens at every
+  deployment-phase boundary, and [UW-H03](../unscheduled-work-register.md) carries the `G2` counsel
+  gate. Neither is created by the 2026-08-07 amendment; both still govern it.
 
 ## Related
 

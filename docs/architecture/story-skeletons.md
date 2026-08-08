@@ -173,6 +173,13 @@ field: a mapping from canonical variable name to the inclusive range the skeleto
 itself safe across. A character is a seeded `VarState`, carried into the book by the existing
 name-match seeding path; omitting the field means the book accepts no character at all.
 
+**Zero catalog skeletons declare an envelope today.** `grep -rl accepts_character skeletons/`
+returns nothing: every rule described below is implemented, tested, and unreached, so no reader
+can currently be bound to a character through a catalog book. Two pilots were drafted during the
+ADR-028 workstream and both were withdrawn on 2026-08-08 (see `UW-A46`, `AL-129`, `AL-131`). Read
+this section as the contract a future participating skeleton must meet, not as a description of
+anything in the catalog now.
+
 The canonical vocabulary is four variables: `archetype` (0-6, declared by prose cells) and
 `might`/`wits`/`nerve` (0-2 each, declared by gamebook cells). `archetype` and the stats never
 appear in the same envelope: in a mechanics-driven gamebook the stat spread already is the
@@ -200,13 +207,19 @@ multiplier (`docs/planning/unscheduled-work-register.md` rows UW-A47 and UW-A48)
 change what `CH-5`'s 64-state cap admits; it changes how long an admissible skeleton takes to
 gate.
 
-The unit that makes this predictable is the **config-walk**: base configurations multiplied by
-entry states (the envelope's states plus the skeleton's own baseline). Cost runs at roughly
+The unit that makes this predictable is the **config-walk**: base configurations multiplied by the
+envelope's entry states. The skeleton's own declared-initial walk is counted separately, not folded
+into that multiplier, because it runs whether or not an envelope is declared. Cost runs at roughly
 **3.5e-5 seconds per config-walk** on large graphs, measured across skeletons spanning three orders
-of magnitude of walk count, and `the-longwinter-station`'s 1,383,507 config-walks at 48.8s of
-envelope-attributable time is the anchor point. Against the ~12s gate budget that is a ceiling near
-**340,000 config-walks**, which is a pre-flight arithmetic check an author can run before drafting
-any prose. The authoring-facing version of that check, with the per-envelope table it implies, is in
+of magnitude of walk count, and the anchor point is `the-longwinter-station`: 51,241 base
+configurations x 27 envelope states = 1,383,507 config-walks at 48.8s of envelope-attributable
+time, with the remaining 0.77s of the 49.58s whole-gate run being that baseline walk.
+
+**No per-run gate budget exists.** An earlier revision of this section compared the anchor against a
+"~12s gate budget"; no such budget was ever set, in the roadmap, in CI config, or in any ADR, so the
+comparison has been removed rather than replaced with another number. The measured 49.58s whole-gate
+run on this skeleton (`UW-A47`, `UW-A48`) is the reference point authors should size against, and
+the authoring-facing arithmetic that follows from it, including the per-envelope table, is in
 `.claude/skills/cyo-author/reference/skeleton-format.md`.
 
 **The stat-gate wall (`L2-11`).** A skeleton declaring a `might`/`wits`/`nerve` envelope cannot gate

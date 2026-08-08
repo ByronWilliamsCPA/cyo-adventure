@@ -89,7 +89,10 @@ seeded into it. Once declared, every name in the envelope must also be declared 
 the runtime clamp is to the *declared* bounds; a narrower envelope would let the runtime
 silently admit a state the validator never walked). Never widen or narrow the envelope
 relative to the variable's declared bounds, and never add a canonical name to `variables`
-without also covering it in the envelope (`CH-1`/`CH-6` both reject that combination).
+without also covering it in the envelope (`CH-6`'s opt-in half rejects that combination).
+`CH-1` does not: it only ever walks envelope -> variable, proving each envelope name is
+declared, so a canonical variable the envelope omits is invisible to it. `CH-6` is the only
+rule covering that direction (`validator/character.py::_check_ch6_uncovered_canonical_names`).
 
 ### Canonical vocabulary
 
@@ -213,34 +216,58 @@ The mechanism above gives you a number you can compute from the skeleton's shape
 spirit as `CH-8`'s check. The unit of cost is the **config-walk**:
 
 ```text
-config-walks = base configurations x (envelope states + 1)
-gate seconds ~= config-walks x 3.5e-5
+envelope config-walks = base configurations x envelope states
+envelope gate seconds ~= envelope config-walks x 3.5e-5
+whole-gate seconds    ~= envelope gate seconds + the skeleton's own no-envelope gate time
 ```
+
+Count **envelope states only**, not envelope states plus one. The skeleton's own declared-initial
+walk happens whether or not an envelope is declared, so it belongs in the second term of the third
+line, not inside the multiplier. Folding it in double-counts a walk you were already paying for and
+puts the arithmetic out of step with the measurement below.
 
 `3.5e-5` seconds per config-walk is the measured constant on the large graphs where this actually
 bites: `the-longwinter-station`'s 51,241 base configurations across the 27-state stat envelope is
-1,383,507 config-walks, and the envelope's share of the gate run is 48.8s of the 49.58s total. It
-holds across measurements spanning three orders of magnitude, from a few hundred config-walks to
-1.38M. Small graphs come in under it because fixed overhead dominates and there are fewer nodes to
-revisit per walk, so treating `3.5e-5` as flat is **conservative**: the estimate is an upper bound
-for a small skeleton, and accurate for a large one.
+51,241 x 27 = 1,383,507 config-walks, and the envelope's share of the gate run is 48.8s of the
+49.58s total (the remaining 0.77s is that baseline walk). 1,383,507 x 3.5e-5 = 48.4s, which is the
+measurement the constant is fitted to. It holds across measurements spanning three orders of
+magnitude, from a few hundred config-walks to 1.38M. Small graphs come in under it because fixed
+overhead dominates and there are fewer nodes to revisit per walk, so treating `3.5e-5` as flat is
+**conservative**: the estimate is an upper bound for a small skeleton, and accurate for a large one.
 
-Against the roughly 12s a gate run is budgeted, that puts the practical ceiling at about
-**340,000 config-walks**. Worked backwards, that is what a given envelope costs you in base
-configurations:
+#### There is no gate-run time budget, so this is a reference point, not a limit
 
-| Envelope | States | Base configurations you can afford |
-|---|---|---|
-| `archetype` only | 7 | ~42,000 |
-| One stat, 0-2 | 3 | ~85,000 |
-| Two stats, 0-2 | 9 | ~34,000 |
-| Canonical three stats, 0-2 | 27 | ~12,000 |
+**No per-run gate budget has been set for this project.** Nothing in the roadmap, CI config, or any
+ADR states a wall-clock ceiling a `run_gate` call must come in under, and an earlier revision of
+this section asserted one ("roughly 12s") that never existed. Do not reintroduce a budget number
+without a source.
 
-Two things to note before you use the table. It is a **latency** budget, not an admissibility one:
-`CH-5`'s state cap and the 100,000-configuration walk cap are the hard limits, and a skeleton over
-this line still gates, just slowly. And it interacts with `CH-8`: an `archetype` envelope also
+What does exist is a measurement, and it is the only honest anchor: `run_gate` on
+`skeletons/16+/the-longwinter-station.json` (248 nodes, 51,241 base configurations) takes **0.77s
+with no envelope and 49.58s with the canonical 27-state `might`/`wits`/`nerve` envelope**, recorded
+in `docs/planning/unscheduled-work-register.md` rows `UW-A47` and `UW-A48`. That is the slowest gate
+run anyone has measured on this catalog. Compare your own skeleton against it:
+
+| Envelope | States | Base configurations that reach the measured anchor | Estimated gate seconds at the 100,000-configuration walk cap |
+|---|---|---|---|
+| `archetype` only | 7 | ~198,000, above the walk cap, so unreachable | ~25s |
+| One stat, 0-2 | 3 | ~461,000, above the walk cap, so unreachable | ~11s |
+| Two stats, 0-2 | 9 | ~154,000, above the walk cap, so unreachable | ~32s |
+| Canonical three stats, 0-2 | 27 | 51,241, which is the measurement itself | ~95s |
+
+Read the table this way. Column 3 divides the measured 1,383,507 config-walks by the envelope's
+state count, so it answers "how big would my skeleton have to be to hurt as much as the worst one
+we have measured?". For every envelope except the canonical three-stat one the answer is "bigger
+than the 100,000-configuration walk cap allows", which is why the three-stat envelope is the only
+shape that has produced a slow gate run in practice. Column 4 runs the arithmetic the other way, at
+the largest skeleton the walk cap admits, and shows the canonical envelope can reach roughly twice
+the measured worst case while still being perfectly admissible.
+
+Two things to note before you use either column. This is **latency**, not admissibility: `CH-5`'s
+64-state cap and the 100,000-configuration walk cap are the hard limits, and a slow skeleton under
+both still gates and still publishes. And it interacts with `CH-8`: an `archetype` envelope also
 multiplies base configurations six ways at the build node, so run `CH-8`'s 16,666 check first and
-this one against the post-build-node count.
+this arithmetic against the post-build-node count.
 
 ## Series continuations: carried variables (Tier-2)
 
