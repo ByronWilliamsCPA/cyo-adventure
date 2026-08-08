@@ -189,6 +189,58 @@ describe('saveProgress', () => {
     ).rejects.toBeInstanceOf(LocalWriteError)
     expect(await listQueue()).toHaveLength(0)
   })
+
+  /**
+   * Regression for the offline-resume seed loss: the plain machine
+   * ReadingState saveProgress is actually called with (see `makeState`)
+   * never carries `character_name`/`seed_var_state`, unlike every other test
+   * in this file that seeds the cache directly via `viewShapedState` and
+   * never exercises the real save path. Before this fix, saveProgress's
+   * optimistic pre-network write replaced the cached View wholesale with the
+   * plain state, and the offline branch below never got a chance to
+   * overwrite it again with the server's real View: a resume in that window
+   * would read `character_name`/`seed_var_state` off the degraded row and
+   * silently open unseeded (see reader/characterSeed.ts::deriveCharacterSeed).
+   */
+  it('carries the previously cached character seed forward into an offline save', async () => {
+    // Seed the cache the way a real resume would: the server's own
+    // ReadingStateView, character fields included.
+    await db.putReadingState('p1', 's1', viewShapedState('n_start', 0))
+    const api = fakeApi(() => {
+      throw new OfflineError()
+    })
+    const result = await saveProgress(api, 'p1', 's1', makeState('n_mid', 0), { newId: ids })
+    expect(result.kind).toBe('queued')
+
+    const cached = (await getReadingState('p1', 's1')) as unknown as {
+      character_name?: string
+      seed_var_state?: Record<string, unknown>
+      current_node: string
+    }
+    // The offline save still landed (the machine's own progress is not
+    // lost)...
+    expect(cached.current_node).toBe('n_mid')
+    // ...and the character binding carried forward from the previous cache
+    // row instead of being silently dropped.
+    expect(cached.character_name).toBe('Astra')
+    expect(cached.seed_var_state).toEqual({ has_sword: true })
+  })
+
+  it('does not invent a character seed when the previous cache row had none', async () => {
+    // No previous cache row at all, and `makeState` itself never carries the
+    // two fields: nothing here should manufacture one from thin air.
+    const api = fakeApi(() => {
+      throw new OfflineError()
+    })
+    await saveProgress(api, 'p1', 's1', makeState('n_mid', 0), { newId: ids })
+
+    const cached = (await getReadingState('p1', 's1')) as unknown as {
+      character_name?: string
+      seed_var_state?: unknown
+    }
+    expect(cached.character_name).toBeUndefined()
+    expect(cached.seed_var_state).toBeUndefined()
+  })
 })
 
 describe('toPutPayload', () => {
