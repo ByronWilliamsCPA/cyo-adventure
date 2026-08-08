@@ -329,10 +329,15 @@ async def test_retiring_the_only_active_character_leaves_none_active(
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_concurrent_activations_collide_into_a_409_not_a_500(
+async def test_concurrent_activations_collide_into_a_state_transition_error_not_a_500(
     sessions: async_sessionmaker[AsyncSession], seed: Seed
 ) -> None:
-    """Two genuinely concurrent activations for one profile: 409, never a 500.
+    """Two concurrent activations collide into StateTransitionError, not a 500.
+
+    The name says StateTransitionError, not 409, because this test bypasses
+    HTTP deliberately (see below) and so never observes a status code. The
+    StateTransitionError -> 409 mapping in app.py is exercised over real HTTP
+    by ``test_creating_past_the_per_profile_character_cap_is_a_409``.
 
     Bypasses HTTP to control transaction overlap directly (the codebase's
     only prior "race" test, test_provider_allowlist_api.py::
@@ -433,6 +438,70 @@ async def test_concurrent_activations_collide_into_a_409_not_a_500(
         "expected the losing concurrent activation to raise "
         f"StateTransitionError, got {b_result!r}"
     )
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_creating_past_the_per_profile_character_cap_is_a_409(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A profile at MAX_CHARACTERS_PER_PROFILE cannot create another: 409.
+
+    Nothing else bounds a profile's character row count: creating retires the
+    incumbent and inserts another, and the per-IP rate limiter bounds request
+    rate, not per-resource totals. The boundary is pinned from BOTH sides in
+    one test: the create at cap-1 must still succeed (a cap that rejects one
+    row early would be an off-by-one nobody would notice) and only the create
+    that would be the (cap+1)th is refused. A blanket "any create 409s"
+    assertion would pass against a cap of zero.
+
+    The filler rows are inserted directly rather than created over HTTP: the
+    route's own behaviour is what the two HTTP calls below exercise, and 48
+    extra POSTs would spend most of the test re-proving the create path while
+    burning the 60 req/min budget the client fixture resets per test. They
+    are all retired, because ``uq_character_one_active`` permits exactly one
+    active row per profile and ``seed.character_id`` already holds it.
+    """
+    cap = characters_module.MAX_CHARACTERS_PER_PROFILE
+    async with sessions() as setup_session:
+        setup_session.add_all(
+            [
+                Character(
+                    child_profile_id=seed.child_profile_id,
+                    family_id=seed.family_id,
+                    name=f"Filler {index}",
+                    archetype="scout",
+                    look="avatar_01",
+                    is_active=False,
+                    retired_at=datetime.now(UTC),
+                )
+                # seed.character_id is already one of the profile's
+                # characters, so this leaves the profile holding cap - 1.
+                for index in range(cap - 2)
+            ]
+        )
+        await setup_session.commit()
+
+    at_cap_minus_one = await client.post(
+        "/api/v1/characters",
+        json=_create_body(str(seed.child_profile_id), name="Last Allowed"),
+        headers=auth(seed.guardian_token),
+    )
+    assert at_cap_minus_one.status_code == 201, at_cap_minus_one.text
+
+    over_cap = await client.post(
+        "/api/v1/characters",
+        json=_create_body(str(seed.child_profile_id), name="One Too Many"),
+        headers=auth(seed.guardian_token),
+    )
+    assert over_cap.status_code == 409, over_cap.text
+    # The message must be actionable, not a bare refusal: it names the
+    # ceiling and the way out.
+    message = over_cap.json()["message"]
+    assert str(cap) in message, message
+    assert "delete" in message, message
 
 
 @pytest.mark.integration

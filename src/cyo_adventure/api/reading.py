@@ -216,8 +216,10 @@ async def _bind_active_character(
 
     Returns:
         tuple[uuid.UUID | None, VarState | None]: The character's id and its
-            seed (both ``None`` together when the profile has no active
-            character; an unseeded read is the normal case, not an error).
+            seed. The seed half is ``None`` whenever there is nothing to
+            carry, both when the profile has no active character and in the
+            (API-unreachable) case of an active character with no stored
+            attribute rows; an unseeded read is the normal case, not an error.
     """
     # #ASSUME: data integrity: a profile with no active character seeds
     # nothing and both halves of the return are None together. An unseeded
@@ -230,7 +232,14 @@ async def _bind_active_character(
     if character is None:
         return None, None
     attributes = await _attributes_of(session, character.id)
-    return character.id, character_seed(attributes)
+    # `or None` collapses the empty seed to NULL rather than persisting `{}`.
+    # A character with zero attribute rows is unreachable through the API
+    # (create always writes the four canonical rows via initial_attributes),
+    # and downstream behaviour is identical either way because `if carried:`
+    # is falsy for both, but `{}` would be a third persisted shape that the
+    # "both halves are None together" contract above does not describe, and it
+    # would surface as `seed_var_state: {}` on the wire instead of `null`.
+    return character.id, (character_seed(attributes) or None)
 
 
 async def _load_readable_storybook(

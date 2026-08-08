@@ -15,7 +15,7 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from fastapi import APIRouter
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 
 from cyo_adventure.api.deps import (
@@ -44,12 +44,31 @@ from cyo_adventure.storybook.personalization_values import character_name_violat
 
 if TYPE_CHECKING:
     import uuid
+    from collections.abc import Sequence
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(
     prefix="/api/v1", tags=["characters"], responses=error_responses(401, 403)
 )
+
+# The most characters one profile may hold, active and retired together.
+#
+# This is an abuse and runaway-retry ceiling, NOT a product limit on how many
+# characters a child may have. Creating a character retires the incumbent and
+# inserts another, so without this nothing bounds a profile's row count: the
+# only other limit is the global 60 req/min per-IP RateLimitMiddleware, which
+# permits roughly 86,400 creates per profile per day from one client, and
+# api/remoderate.py already records in this repository that an IP rate limit
+# "does nothing to bound" a per-resource total. A stuck client retry loop
+# reaches the same unbounded state with no adversary at all.
+#
+# 50 is chosen far above anything a real reader produces (a character is
+# designed to persist across many books, so a child accumulates a handful,
+# not dozens) and far below the point where the unpaginated GET /characters
+# response or its attribute fan-in becomes expensive. Raising it is a product
+# decision; removing it re-opens the unbounded growth.
+MAX_CHARACTERS_PER_PROFILE = 50
 
 
 def _require_guardian(principal: Principal) -> None:
@@ -128,6 +147,81 @@ async def _attributes_of(
         )
     )
     return {row.name: row.value_int for row in rows.all()}
+
+
+async def _attributes_for(
+    session: AsyncSession, character_ids: Sequence[uuid.UUID]
+) -> dict[uuid.UUID, dict[str, int]]:
+    """Return the attribute rows for several characters in one round trip.
+
+    The batched counterpart to ``_attributes_of``, for the list route: one
+    query per listed character turns a single GET into 1+N round trips, and
+    the list is unpaginated.
+
+    Args:
+        session: The request session.
+        character_ids: The characters whose attributes are read. An empty
+            sequence issues no query at all: ``IN ()`` is a query whose answer
+            is already known.
+
+    Returns:
+        dict[uuid.UUID, dict[str, int]]: Character id to that character's
+        attribute dict. A character with no stored attribute rows is absent
+        from the mapping entirely rather than mapped to an empty dict, so
+        callers must supply their own default.
+    """
+    if not character_ids:
+        return {}
+    rows = await session.scalars(
+        select(CharacterAttribute).where(
+            CharacterAttribute.character_id.in_(character_ids)
+        )
+    )
+    grouped: dict[uuid.UUID, dict[str, int]] = {}
+    for row in rows.all():
+        grouped.setdefault(row.character_id, {})[row.name] = row.value_int
+    return grouped
+
+
+async def _reject_when_at_character_cap(
+    session: AsyncSession, profile_id: uuid.UUID
+) -> None:
+    """Refuse another character once a profile sits at the hard ceiling.
+
+    Args:
+        session: The request session.
+        profile_id: The already-authorized profile the character would join.
+
+    Raises:
+        StateTransitionError: If the profile already holds
+            ``MAX_CHARACTERS_PER_PROFILE`` characters, active and retired
+            together (HTTP 409).
+    """
+    # #CRITICAL: security: this is the ONLY bound on a profile's character row
+    # count; see MAX_CHARACTERS_PER_PROFILE's comment for why the per-IP rate
+    # limiter is not one. The count is a SELECT count(*), never a load of the
+    # rows, so the check itself cannot become the cost it exists to prevent,
+    # and it counts retired characters too: retiring is the cheap half of the
+    # create path, so a cap over active rows alone would bound nothing.
+    # #VERIFY: tests/integration/test_characters_api.py::
+    # test_creating_past_the_per_profile_character_cap_is_a_409.
+    total = await session.scalar(
+        select(func.count())
+        .select_from(Character)
+        .where(Character.child_profile_id == profile_id)
+    )
+    if (total or 0) >= MAX_CHARACTERS_PER_PROFILE:
+        # The message names only the caller's own profile's situation and the
+        # ceiling, never another family's data, and it says what to do next:
+        # a delete frees a slot, and an existing character can be activated
+        # instead of a new one being created.
+        msg = (
+            f"profile '{profile_id}' already holds the maximum of "
+            f"{MAX_CHARACTERS_PER_PROFILE} characters; delete an old character "
+            "to free a slot, or activate an existing one instead of creating "
+            "another"
+        )
+        raise StateTransitionError(msg)
 
 
 def _view(row: Character, attributes: dict[str, int]) -> CharacterView:
@@ -219,7 +313,7 @@ async def _retire_active_character(
     # #VERIFY: tests/integration/test_characters_api.py::
     # test_creating_a_second_character_retires_the_incumbent_atomically,
     # ::test_activating_a_replacement_retires_the_incumbent_atomically,
-    # ::test_concurrent_activations_collide_into_a_409_not_a_500.
+    # ::test_concurrent_activations_collide_into_a_state_transition_error_not_a_500.
     stmt = select(Character).where(
         Character.child_profile_id == profile_id, Character.is_active.is_(True)
     )
@@ -259,9 +353,11 @@ async def list_characters(profile_id: str, ctx: Context) -> CharacterListView:
         .order_by(Character.is_active.desc(), Character.created_at.desc())
     )
     characters = rows.all()
-    views = [
-        _view(row, await _attributes_of(ctx.session, row.id)) for row in characters
-    ]
+    # One batched attribute query for the whole page, not one per row: the
+    # ordering above is what the response promises, and it is unaffected by
+    # how the attributes are fetched.
+    attributes = await _attributes_for(ctx.session, [row.id for row in characters])
+    views = [_view(row, attributes.get(row.id, {})) for row in characters]
     return CharacterListView(characters=views)
 
 
@@ -302,6 +398,15 @@ async def create_character(body: CharacterCreateBody, ctx: Context) -> Character
         msg = f"profile '{body.profile_id}' not found"
         raise ResourceNotFoundError(msg)
     _reject_unsafe_character_name(body.name, profile.age_band)
+    # The per-profile ceiling. Deliberately documented here and in
+    # _reject_when_at_character_cap rather than in this handler's DOCSTRING:
+    # FastAPI publishes a route docstring as the operation's OpenAPI
+    # `description`, and @hey-api/openapi-ts copies that description verbatim
+    # into the committed frontend/src/client/sdk.gen.ts JSDoc, so editing the
+    # prose above would fail the `contract` drift job without changing a
+    # single byte of the actual wire contract. The extra 409 this raises is
+    # already declared in the route decorator's error_responses(404, 409).
+    await _reject_when_at_character_cap(ctx.session, profile_id)
     # #CRITICAL: concurrency: see _retire_active_character's docstring; the
     # retire and this insert share the same session/transaction.
     await _retire_active_character(ctx.session, profile_id)
@@ -367,7 +472,8 @@ async def update_character(
     # never a client-supplied one, is what gates this write.
     # #VERIFY: tests/integration/test_authz_matrix.py's ROUTE_TABLE entry for
     # ("PATCH", "/api/v1/characters/{character_id}"), which is now a member of
-    # both _CROSS_FAMILY_ROUTE_KEYS (test_cross_family_guardian_is_rejected,
+    # both _CROSS_FAMILY_ROUTE_KEYS
+    # (tests/integration/test_authz_matrix.py::test_cross_family_guardian_is_rejected,
     # ::test_cross_family_guardian_from_stranger_family_is_rejected) and
     # _CROSS_FAMILY_CHILD_ROUTE_KEYS (test_cross_family_child_from_stranger_family_is_rejected,
     # ::test_family_a_child_cannot_reach_stranger_family_profile).
@@ -429,7 +535,7 @@ async def activate_character(character_id: str, ctx: Context) -> CharacterView:
     # rather than surfacing as an unhandled 500.
     # #VERIFY: tests/integration/test_characters_api.py::
     # test_activating_a_replacement_retires_the_incumbent_atomically,
-    # ::test_concurrent_activations_collide_into_a_409_not_a_500.
+    # ::test_concurrent_activations_collide_into_a_state_transition_error_not_a_500.
     # #ASSUME: data integrity: profile_id is captured now, before the flush
     # that can fail, rather than read off `row` inside the except block
     # below. A failed flush's rollback restores the pre-flush snapshot and
@@ -438,9 +544,10 @@ async def activate_character(character_id: str, ctx: Context) -> CharacterView:
     # that load raises PendingRollbackError, pre-empting the
     # StateTransitionError this handler means to raise before it is even
     # constructed.
-    # #VERIFY: test_concurrent_activations_collide_into_a_409_not_a_500 pins
-    # this: it failed with PendingRollbackError, not StateTransitionError,
-    # until this local variable was introduced.
+    # #VERIFY: tests/integration/test_characters_api.py::
+    # test_concurrent_activations_collide_into_a_state_transition_error_not_a_500
+    # pins this: it failed with PendingRollbackError, not
+    # StateTransitionError, until this local variable was introduced.
     profile_id = row.child_profile_id
     await _retire_active_character(ctx.session, profile_id, exclude_id=row.id)
     row.is_active = True

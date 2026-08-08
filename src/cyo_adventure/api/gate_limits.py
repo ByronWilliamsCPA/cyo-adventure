@@ -45,5 +45,26 @@ def gate_limiter() -> anyio.CapacityLimiter:
     limiter would not bound anything, since a fresh instance has full
     capacity again.
     #VERIFY: tests/unit/test_gate_capacity_limiter.py::test_both_gate_call_sites_share_one_limiter.
+
+    #EDGE: concurrency: the memoized limiter is bound to the FIRST event loop
+    that uses it, for the process lifetime. ``anyio.CapacityLimiter(n)``
+    returns an adapter that lazily creates the backend limiter on first
+    acquire and caches it forever, so the object handed back here carries
+    borrower state belonging to whichever loop touched it first. A server
+    process runs exactly one loop, so this is inert in production; a test
+    suite is the case that is not, because every ``pytest-asyncio`` test gets
+    a fresh loop and a token left borrowed by a cancelled or timed-out
+    acquire would persist into the next test with a borrower task from a dead
+    loop. The cache is therefore cleared between tests rather than the
+    singleton being weakened here.
+    #VERIFY: no test discriminates this one, and saying so is the honest
+    answer: a leaked borrower is an order-dependent flake between tests, not
+    a property any single test can assert about itself. The mitigation
+    removes the precondition instead of detecting the symptom: the autouse
+    ``_reset_gate_limiter`` fixture in tests/conftest.py clears this memo
+    around every test, so no limiter outlives the loop that created it. The
+    only test that borrows tokens at all, and therefore the only one that
+    could leak one, is tests/unit/test_gate_capacity_limiter.py::
+    test_calls_beyond_the_limit_queue_rather_than_spawn.
     """
     return anyio.CapacityLimiter(settings.gate_max_concurrency)

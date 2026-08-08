@@ -41,8 +41,25 @@
 -- columns against a unique constraint by set, not by declared order (see
 -- character's own FK below, which references child_profile in (id,
 -- family_id) order).
-ALTER TABLE "public"."child_profile"
-    ADD CONSTRAINT uq_child_profile_family_id_id UNIQUE (family_id, id);
+-- Guarded so a retry after a mid-file failure (a lock timeout on a populated
+-- child_profile, an interrupted deploy) does not abort here with "constraint
+-- already exists" and mask the real first-run error. Every other statement in
+-- this file is already idempotent via IF NOT EXISTS / DROP ... IF EXISTS;
+-- ADD CONSTRAINT has no such clause, so it takes the DO-block form the
+-- sibling migration 20260807000000_add_character_name_personalization_slot.sql
+-- uses for the same reason.
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint
+        WHERE conname = 'uq_child_profile_family_id_id'
+          AND conrelid = '"public"."child_profile"'::regclass
+    ) THEN
+        ALTER TABLE "public"."child_profile"
+            ADD CONSTRAINT uq_child_profile_family_id_id UNIQUE (family_id, id);
+    END IF;
+END
+$$;
 
 -- 2. character: one row per persistent character, owned by one profile.
 CREATE TABLE IF NOT EXISTS "public"."character" (
