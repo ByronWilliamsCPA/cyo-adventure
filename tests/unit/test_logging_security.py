@@ -2,15 +2,16 @@
 
 What IS logged on an auth failure (verified by reading the source; OPS-005):
 
-* ``src/cyo_adventure/api/deps.py`` contains **no** logger calls, and that is
+* ``src/cyo_adventure/api/deps.py`` emits **no auth events**, and that is
   deliberate: ``AuthenticationError``/``AuthorizationError`` is raised from
   89 call sites across 35 files (``api/deps.py``, most of ``api/*``,
   ``core/child_session.py``, ``core/device_grant.py``, ``publishing/``,
   ``covers/``), and every one of them passes through the single global
   handler below on its way to a response. Rather than instrument each raise
   site (and risk a future one forgetting to), the auth-event logging is
-  centralized there. ``test_deps_module_has_no_dedicated_auth_event_logging``
-  below pins that ``deps.py`` stays logger-free by design.
+  centralized there. ``test_deps_module_logs_no_auth_events`` below pins the
+  module's complete set of log call sites, so any addition has to be declared
+  there rather than appearing quietly next to an auth raise.
 * ``src/cyo_adventure/app.py::_handle_project_error`` emits the generic
   ``project_error`` warning for every ``ProjectBaseError``
   (``error``/``message``/``status_code``/``details``), same as before, AND
@@ -317,36 +318,60 @@ async def test_readiness_check_db_failure_logs_generic_error_without_dsn(
     assert _FAKE_DSN not in captured
 
 
-def test_deps_module_has_no_dedicated_auth_event_logging() -> None:
-    """Pin the design choice: deps.py stays logger-free by design (OPS-005).
+def test_deps_module_logs_no_auth_events() -> None:
+    """Pin every log call in the auth seam by name (OPS-005).
 
-    ``api/deps.py`` (the auth seam) neither imports a logger nor calls one,
-    and that is deliberate rather than an oversight: every
-    ``AuthenticationError``/``AuthorizationError`` it raises (12 of the 89
-    sites, the other 77 being spread across 34 further files) already passes
-    through the single
-    global handler (``app.py::_handle_project_error``), which is where
+    ``api/deps.py`` emits no auth event of its own, and that is deliberate
+    rather than an oversight: every ``AuthenticationError``/
+    ``AuthorizationError`` it raises (12 of the 89 sites, the other 77 being
+    spread across 34 further files) already passes through the single global
+    handler (``app.py::_handle_project_error``), which is where
     ``security_auth_failed``/``security_authz_denied`` are emitted with the
     request's client address, path, and method. Logging directly in
     ``deps.py`` as well would duplicate that event (and risk a
-    differently-shaped one) for no benefit; this test guards against that
-    drift. If a future change moves auth-event emission out of the central
-    handler and into ``deps.py`` itself, update this test to assert the new
-    call site's shape rather than deleting it silently.
+    differently-shaped one) for no benefit.
+
+    This asserts the module's complete, ordered list of log event names
+    rather than the absence of a logger object, because the module does now
+    hold one: ``request_unit_of_work`` logs when it takes the fallback commit
+    path, which is the only trace a silently bypassed ``UnitOfWorkMiddleware``
+    would leave. Reading the call sites out of the AST rather than the
+    namespace keeps the guard pointed at what is actually emitted, and an
+    event name that is not a plain string literal lands in the list as
+    ``None`` so it cannot slip past the comparison. Any new log line in this
+    module fails here until it is declared; an auth event added here fails
+    here and should be moved to the central handler instead.
     """
-    # Arrange / Act: inspect the module's namespace for logging seams.
+    # Arrange: parse the module rather than importing its namespace, so the
+    # assertion sees call sites instead of module attributes.
+    import ast
+    import inspect
+
     import cyo_adventure.api.deps as deps_module
 
-    logger_like = [
-        name
-        for name, value in vars(deps_module).items()
-        if "logger" in name.lower() or "Logger" in type(value).__name__
-    ]
+    tree = ast.parse(inspect.getsource(deps_module))
 
-    # Assert: no logger in the auth seam; security-event emission lives
-    # centrally in app.py::_handle_project_error instead (see docstring).
-    assert logger_like == [], (
-        "api/deps.py now has a logger; auth-event logging may have moved out "
-        "of the central app.py::_handle_project_error handler. Update this "
-        f"test to match the new call site. Found: {logger_like}"
+    # Act: collect one entry per `logger.<level>(...)` call, in source order.
+    event_names: list[str | None] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        func = node.func
+        if not isinstance(func, ast.Attribute):
+            continue
+        target = func.value
+        if not isinstance(target, ast.Name) or target.id != "logger":
+            continue
+        first = node.args[0] if node.args else None
+        if isinstance(first, ast.Constant) and isinstance(first.value, str):
+            event_names.append(first.value)
+        else:
+            event_names.append(None)
+
+    # Assert: the one declared event, and nothing auth-shaped alongside it.
+    assert event_names == ["unit_of_work_committed_in_dependency_fallback"], (
+        "api/deps.py's log call sites changed. If an auth event was added, "
+        "move it to the central app.py::_handle_project_error handler "
+        "instead; otherwise declare the new event name here. "
+        f"Found: {event_names}"
     )

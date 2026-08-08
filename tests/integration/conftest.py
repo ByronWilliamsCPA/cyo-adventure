@@ -20,13 +20,18 @@ from typing import TYPE_CHECKING
 
 import pytest
 import pytest_asyncio
+from fastapi import Request
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import create_engine, insert, text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 from testcontainers.community.postgres import PostgresContainer
 
-from cyo_adventure.api.deps import get_db_session, get_session_factory
+from cyo_adventure.api.deps import (
+    get_db_session,
+    get_session_factory,
+    request_unit_of_work,
+)
 from cyo_adventure.app import app
 from cyo_adventure.core.database import Base
 from cyo_adventure.db.models import (
@@ -313,16 +318,13 @@ async def client(
 ) -> AsyncIterator[AsyncClient]:
     """Provide an HTTP client with the DB session dependency overridden."""
 
-    async def _override() -> AsyncIterator[AsyncSession]:
-        session = sessions()
-        try:
+    # Only the SESSION is swapped, for the container engine; the unit-of-work
+    # semantics come from the same context manager production uses, so the
+    # commit still lands where UnitOfWorkMiddleware puts it (before the
+    # response is sent) rather than in a copy of the logic that can drift.
+    async def _override(request: Request) -> AsyncIterator[AsyncSession]:
+        async with request_unit_of_work(request, sessions()) as session:
             yield session
-            await session.commit()
-        except Exception:
-            await session.rollback()
-            raise
-        finally:
-            await session.close()
 
     app.dependency_overrides[get_db_session] = _override
     # A route whose database work outlives the handler call cannot use the
