@@ -98,21 +98,37 @@ expanded in place below.
 
 ### Now queue (days, before Phase 4b starts)
 
-**2026-07-20 audit status: 3 of 5 done, 1 done modulo unverifiable infra secrets, 1 not
-done.**
+**2026-08-08 re-audit: 4 of 5 done, 1 not done.** (Prior 2026-07-20 status: 3 done, 1 done
+modulo unverifiable infra secrets, 1 not done.) The change is item 2, whose only open caveat
+was that the repo cannot see whether GitHub environment secrets are populated. That is now
+settled, and by evidence rather than inspection: both scheduled tiers complete real
+email/password sign-ins against their live targets, which is impossible with absent or wrong
+secrets. Item 5 is unchanged and remains the single blocker; it is owner-gated, not
+engineering work. Note that a tier being *red* does not reopen items 2 or 3: what those items
+claim is that the harness exists and is wired, and a tier that runs, authenticates, and
+reports real assertion failures has demonstrated exactly that.
 
 1. ✅ **Done.** Both PRs merged (#267, #268, folded into #270). Both review conditions
    satisfied: `capability-register.md`'s A12 entry names the admin child-PIN authority
    with an explicit ADR-014 cross-reference, and `authorization-matrix.md` carries rows
    for the new admin endpoints (admin users CRUD, admin child-profile CRUD incl. PIN,
    family-connection CRUD).
-2. 🟡 **Workflow done, secrets unverifiable from the repo.** `.github/workflows/e2e-staging.yml`
-   exists, scheduled daily, and references the three `staging` environment secrets; whether
-   they are actually populated in GitHub cannot be checked from this repo.
-3. ✅ **Done.** `e2e-prod.yml` exists (scheduled daily, 30 min after staging) with a
-   dedicated "alert on failure" step that opens/comments on an issue labeled `e2e-alert`.
-   Requires a `production` GitHub Environment with its own secrets before the first
-   scheduled run can succeed (same infra-secrets caveat as item 2).
+2. ✅ **Done, and the secrets caveat is resolved.** `.github/workflows/e2e-staging.yml` exists,
+   is scheduled daily, and references the three `staging` environment secrets. Re-verified
+   2026-08-08: the 2026-08-07 run signed in and completed its main tier 15 of 15, so the
+   secrets are populated. Its only red is the post-tier `device-grant-sweep`, which reports
+   that the test family still holds an active device grant. That is a known harness artifact,
+   not a product defect and not a secrets problem: a serial-block retry runs on a **new**
+   worker, so the failed first attempt never reaches its own revoke step and leaks its grant,
+   while the retried attempt passes and the tier reports green. This run shows exactly that
+   shape (test 15 failed, retried as 17-19 and passed, sweep then found the orphan).
+3. ✅ **Done, same caveat resolved.** `e2e-prod.yml` exists (scheduled daily, 30 min after
+   staging) with a dedicated "alert on failure" step that opens/comments on an issue labeled
+   `e2e-alert`. Re-verified 2026-08-08: the `production` environment's secrets are populated
+   and the tier authenticates against live production, evidenced by the 2026-08-07 run's 21
+   passed. Its 2 failures are a real product defect it correctly caught
+   ([#639](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639) / `UW-L07`), and the
+   alert path also works: the failure job is maintaining issue #623 as designed.
 4. ✅ **Done.** `validator-rules.md` has a PL-22 entry (band profile fail-closed);
    `authorization-matrix.md` carries rows for the already-shipped admin surfaces.
 5. ❌ **Not done.** `adr-018-childrens-privacy-compliance.md` is still `status: proposed`
@@ -351,7 +367,7 @@ The old wording stands in historical sections above; this table governs.
 |-----------|--------------------------------------|-----|------------------------|
 | M0-M3 | Foundations through enforced approval gate | done | ✅ Delivered |
 | M4 = **R1-alpha** | Core loop live internally, web only (Phases 0-3 + 4a; historic "R1") | done | ✅ Feature-complete 2026-07-03, live 2026-07-05 |
-| M4.1: R1-alpha sign-off | Funded provider keys; merged PRs + safety fixes redeployed; live E2E checklist executed once with a sign-off row; Now-queue items 1-4; **plus, added 2026-07-28: the ADR-021 production cutover (`UW-A03`), which the ADR itself names M4.1 as the review gate for** | ~1 wk | 🟡 Cutover done. Funded provider keys confirmed 2026-08-04; the ADR-021 production cutover (`UW-A03`) verified live 2026-08-04 (`cyo_api` holds all active production connections, `rolbypassrls=false`; see `UW-A03`/`UW-M08`); merged PRs and safety fixes redeployed (verified 2026-07-30). **Still open**: the live E2E checklist (`UW-F17`, 0/38 steps, no sign-off row) and re-verification of Now-queue items 1-4, last checked 2026-07-20 |
+| M4.1: R1-alpha sign-off | Funded provider keys; merged PRs + safety fixes redeployed; live E2E checklist executed once with a sign-off row; Now-queue items 1-4; **plus, added 2026-07-28: the ADR-021 production cutover (`UW-A03`), which the ADR itself names M4.1 as the review gate for** | ~1 wk | 🟡 Cutover done. Funded provider keys confirmed 2026-08-04; the ADR-021 production cutover (`UW-A03`) verified live 2026-08-04 (`cyo_api` holds all active production connections, `rolbypassrls=false`; see `UW-A03`/`UW-M08`); merged PRs and safety fixes redeployed (verified 2026-07-30). **Still open**: the live E2E checklist (`UW-F17`) and, as of 2026-08-08, a live P1 defect this milestone cannot sign off over. Two corrections to what this cell used to claim. The "0/38 steps, no sign-off row" was already stale when written: a PARTIAL 5-of-38 run with a sign-off row was recorded on 2026-08-04. It now stands at **10 of 38**, advanced 2026-08-08 against the deployed revision `631c0d8a` (v0.68.0), with `UW-L04` confirmed live and Section 1a's open routing question resolved. And Now-queue items 1-4 are **re-verified as of 2026-08-08** (all four done; item 2's unverifiable-secrets caveat is resolved by both scheduled tiers completing real sign-ins), so that clause is closed. What replaces them as the gate is `UW-L07` / [#639](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639): guardian profile resolution reads a Tier 1 table before applying the RLS context, so every guardian in production sees zero profiles. It fails closed, so it is an outage of the profiles surface rather than a leak, but signing off R1-alpha while the guardian console cannot list a family's children is not defensible. The remaining 28 checklist steps stay owner-gated as before (interactive credentials, a maintenance window for the mutating worker-restart step, funded provider quota for Sections 2 and 4, and a second device for Section 5) |
 | M4b: Editor + engagement | G6, K6, K7, G5, G2 usable by a real guardian, G3, K15, G15 view, K5/K8 test pins | 3-4 wks | ✅ Substantially delivered 2026-07-17 (PR #270); open: bookmarks (not built), G15 storage/download view (device list/revoke UI shipped 2026-07-28), K5/K8 test pins |
 | M4c: Family loops | S9, G10, G9, K12 complete, G7 real budget consent + G13 balance | 2-3 wks | ✅ Substantially delivered 2026-07-17 (PR #270); push channel closed 2026-07-28 (SSE stream, G10 now ✅); open: S9's server-scheduled digest job |
 | M4d: Connections | G17 consent, K17 surfaces, A15 enforcement guard (ADR-016 ring 2) | 2-3 wks, overlaps 4c | ✅ Substantially delivered 2026-07-17 (PR #270). Corrected 2026-08-01: this row said "Delivered" while the phase table said "Substantially delivered"; code validation settles it as the latter. Dual consent is genuinely enforced twice over (`recommendations.py:203` `_is_dual_consented`, plus a second ring-2 gate in `personalization.py`). Open: the erasure CASCADE is migrated but no test creates a `FamilyConnection` then deletes a family, and `models.py:786-789`'s `#VERIFY` points at `test_deletion_drill.py`, where the only connection lives in an *export* test; no integration or e2e test drives ring-2 dual consent over the real stack |
