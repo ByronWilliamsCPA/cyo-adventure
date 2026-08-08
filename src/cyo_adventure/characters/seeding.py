@@ -52,6 +52,20 @@ def initial_attributes(archetype: str) -> dict[str, int]:
     Raises:
         ValueError: If ``archetype`` is not in the canonical roster.
     """
+    # #ASSUME: data integrity: this is the ONE place a new character's
+    # Character.archetype string and its "archetype"-named CharacterAttribute
+    # int code are derived from the same input and written together (by
+    # api/characters.py::create_character, in one transaction). That is also
+    # the ONLY thing that keeps the two representations agreeing; see
+    # db/models.py Character.archetype's docstring for the full account of
+    # why no CHECK/FK/trigger backs it. Do not add a second call site that
+    # derives one representation without going through this function for the
+    # other, or the two can drift.
+    # #VERIFY: no test proves the invariant from outside this function's own
+    # correctness; tests/unit/test_character_seeding.py exercises this
+    # mapping directly, and the write-path restrictions that keep it the
+    # only writer are covered by the tests cited on Character.archetype's
+    # docstring.
     code = ARCHETYPE_CODES.get(archetype)
     if code is None:
         msg = f"'{archetype}' is not a canonical archetype"

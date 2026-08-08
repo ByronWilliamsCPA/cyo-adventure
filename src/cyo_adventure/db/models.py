@@ -904,6 +904,38 @@ class Character(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
     ``is_active`` and ``retired_at`` are two spellings of one fact and are
     kept agreeing by a CHECK; a partial unique index allows any number of
     retired characters per profile but exactly one active.
+
+    #ASSUME: data integrity: ``archetype`` (this string column, e.g.
+    ``"scout"``) and the ``CharacterAttribute`` row named ``"archetype"``
+    (an int code, e.g. ``1``, keyed by position in
+    ``storybook/character_vocabulary.py::ARCHETYPE_ROSTER`` via
+    ``ARCHETYPE_CODES``) are two independent representations of the same
+    fact, and nothing in the schema ties them together: no CHECK, trigger,
+    or FK compares this column against ``character_attribute``. The
+    invariant holds today purely at the application layer, by construction:
+    ``characters/seeding.py::initial_attributes`` writes both from the same
+    ``archetype`` argument in the same ``create_character`` transaction
+    (``api/characters.py``), ``CharacterUpdateBody`` has no ``archetype``
+    field so a PATCH can never change this column, and
+    ``characters/progression.py::_PROGRESSION_VARIABLES`` explicitly
+    excludes ``ARCHETYPE_VARIABLE_NAME`` so book-completion writes can never
+    touch the attribute row either. A future writer that adds any other path
+    to either representation (a new PATCH field, a progression variable, a
+    direct ORM update) can silently desync them; nothing downstream of the
+    write would notice. Deliberately not closing this with a new DB-level
+    trigger or CHECK in this fix pass: a trigger on a live table carries
+    lock risk disproportionate to reinforcing an invariant two independent,
+    already-reviewed write-path restrictions already hold.
+    #VERIFY: no test proves the cross-representation invariant from the
+    schema's side, and saying so is the honest answer; the write-path
+    restrictions above are covered by
+    tests/integration/test_characters_api.py::
+    test_patch_with_archetype_is_rejected_not_silently_dropped (PATCH never
+    accepts archetype) and
+    tests/integration/test_character_progression.py::
+    test_archetype_is_never_raised_by_a_completion (a book completion never
+    touches the attribute row), but neither test would catch a NEW writer
+    that bypassed both.
     """
 
     __tablename__ = "character"
@@ -956,6 +988,16 @@ class CharacterAttribute(Base):
     an int, because Tier-2 conditions are a JSONLogic subset with no string
     comparison and no boolean carry need has been demonstrated. Adding it
     later is additive; removing a shipped column is not.
+
+    #ASSUME: data integrity: the row with ``name == "archetype"`` on this
+    table stores the SAME fact as ``Character.archetype`` above, just coded
+    as an int (``storybook/character_vocabulary.py::ARCHETYPE_CODES``, 1-6
+    by roster position) instead of a string, because Tier-2 conditions can
+    only compare ints. See ``Character.archetype``'s docstring for the full
+    account of why nothing in the schema enforces the two agreeing, and
+    which application-layer restrictions hold the invariant instead.
+    #VERIFY: same citations as ``Character.archetype``; no schema-level test
+    exists for this table either.
     """
 
     __tablename__ = "character_attribute"
