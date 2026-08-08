@@ -1,5 +1,5 @@
 {
-  "schema_version": "2.0",
+  "schema_version": "2.1",
   "id": "sk_storm_chasers_club",
   "title": "The Storm Chasers Club",
   "version": 1,
@@ -10,7 +10,7 @@
       "target": 4.5,
       "tolerance": 1.5
     },
-    "tier": 1,
+    "tier": 2,
     "themes": [
       "weather",
       "teamwork",
@@ -30,7 +30,22 @@
     "narrative_style": "prose",
     "production_eligible": true
   },
-  "variables": [],
+  "variables": [
+    {
+      "name": "archetype",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 6,
+      "description": "Which storm-club specialty the reader has leaned into so far; 0 means not yet chosen."
+    }
+  ],
+  "accepts_character": {
+    "archetype": {
+      "min": 0,
+      "max": 6
+    }
+  },
   "start_node": "n_start",
   "nodes": [
     {
@@ -152,12 +167,26 @@
         {
           "id": "c_rapick_window",
           "label": "Clean and reseat the corroded connector at {ROUTE_A_WINDOW}.",
-          "target": "r_a_fix"
+          "target": "r_a_fix",
+          "effects": [
+            {
+              "op": "set",
+              "var": "archetype",
+              "value": 4
+            }
+          ]
         },
         {
           "id": "c_rapick_bypass",
           "label": "Run the spare cable over the rafters to bypass the damage.",
-          "target": "r_b_spool"
+          "target": "r_b_spool",
+          "effects": [
+            {
+              "op": "set",
+              "var": "archetype",
+              "value": 6
+            }
+          ]
         }
       ]
     },
@@ -170,6 +199,19 @@
           "id": "c_rafix_desk",
           "label": "Head back to the radio desk.",
           "target": "r_a_meter"
+        },
+        {
+          "id": "c_rafix_explain",
+          "label": "Explain to {ROUTE_A_MENTOR} exactly why the fix will hold.",
+          "target": "r_a_meter",
+          "condition": {
+            "==": [
+              {
+                "var": "archetype"
+              },
+              4
+            ]
+          }
         }
       ]
     },
@@ -627,12 +669,26 @@
         {
           "id": "c_msplit_test",
           "label": "Re-plot the last hour and test the forecast track.",
-          "target": "m_a_replot"
+          "target": "m_a_replot",
+          "effects": [
+            {
+              "op": "set",
+              "var": "archetype",
+              "value": 1
+            }
+          ]
         },
         {
           "id": "c_msplit_board",
           "label": "Run the timeline board for the room.",
-          "target": "m_b_board"
+          "target": "m_b_board",
+          "effects": [
+            {
+              "op": "set",
+              "var": "archetype",
+              "value": 2
+            }
+          ]
         }
       ]
     },
@@ -1179,12 +1235,26 @@
         {
           "id": "c_fgpick_farm",
           "label": "Help with the animals and the tarp first.",
-          "target": "f_g_goats"
+          "target": "f_g_goats",
+          "effects": [
+            {
+              "op": "set",
+              "var": "archetype",
+              "value": 5
+            }
+          ]
         },
         {
           "id": "c_fgpick_gauge",
           "label": "Swap the gauge fast, then help the farm.",
-          "target": "f_g_swap"
+          "target": "f_g_swap",
+          "effects": [
+            {
+              "op": "set",
+              "var": "archetype",
+              "value": 3
+            }
+          ]
         }
       ]
     },
