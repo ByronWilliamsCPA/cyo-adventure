@@ -65,11 +65,23 @@
       "description": "The pale singers coral key, key to the drowned choir."
     }
   ],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "<<FILL role=setup words=60 beats='Barrowmere three weeks after Harrowstone, the Brass Lantern sign newly hung'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Cross into the square.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "<<FILL role=setup words=90 beats='Barrowmere three weeks after Harrowstone, the Brass Lantern sign newly hung, a marshals summons nailed beneath it naming the company, and town talk of pale strangers buying rope and salt on the south road'>>",
+      "body": "<<FILL role=choice words=45 beats='a marshals summons nailed beneath it naming the company, and town talk of pale strangers buying rope and salt on the south road'>>",
       "is_ending": false,
       "choices": [
         {

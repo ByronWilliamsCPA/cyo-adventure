@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "<<FILL role=setup words=55 beats='{HERO} reaches the foot of the cursed {TOWER} as {OPENING_MOMENT} begins to fall, {GOAL} at its summit dark for a hundred years'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Walk the last stretch to the base.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "<<FILL role=setup words=88 beats='{HERO} reaches the foot of the cursed {TOWER} as {OPENING_MOMENT} begins to fall, {GOAL} at its summit dark for a hundred years; four ways lead to the {TOWER} base, {AP1_NAME}, {AP2_NAME}, {AP3_NAME}, and {AP4_NAME}'>>",
+      "body": "<<FILL role=choice words=40 beats='four ways lead to the {TOWER} base, {AP1_NAME}, {AP2_NAME}, {AP3_NAME}, and {AP4_NAME}'>>",
       "is_ending": false,
       "choices": [
         {

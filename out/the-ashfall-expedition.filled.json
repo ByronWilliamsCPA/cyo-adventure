@@ -30,8 +30,20 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
+    {
+      "id": "n_open",
+      "body": "You are Captain Mira Voss, and the ashfall expedition is yours to bring home. At base camp the caldera groans and shudders behind you, throwing grit into a sky already the colour of old iron.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Call the company to order.",
+          "target": "n_start"
+        }
+      ]
+    },
     {
       "id": "n_d00",
       "body": "You send a scout wide along the drifted ash while the column holds and waits. The loop eats an hour of failing daylight before it pays, but nobody is lost, and the scout brings hard word of exactly where the ground will hold. You file the party across the tested ground, careful and unhurried; the scout closes the loop and rejoins the column where the safe line reaches the next waypoint.",
@@ -179,7 +191,7 @@
     },
     {
       "id": "n_start",
-      "body": "You are Captain Mira Voss, and the ashfall expedition is yours to bring home. At base camp the caldera groans and shudders behind you, throwing grit into a sky already the colour of old iron. The last living valley lies six long legs out across the dead country, and every soul mustered here is counting on you to find the line. You can hold the safe line, scout a flanking route, cut straight across the open ash, send a light party to test the ground, or push on through the failing light.",
+      "body": "The last living valley lies six long legs out across the dead country, and every soul mustered here is counting on you to find the line. You can hold the safe line, scout a flanking route, cut straight across the open ash, send a light party to test the ground, or push on through the failing light.",
       "is_ending": false,
       "choices": [
         {

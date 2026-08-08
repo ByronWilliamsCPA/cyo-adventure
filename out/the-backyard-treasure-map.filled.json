@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "Nina and Theo were best friends. One sunny afternoon they were playing in Grandpa's backyard. Under the big oak tree, they found something special. It was a dusty old jar. Inside was a rolled-up map! Someone had drawn it by hand. A dotted line twisted across the yard to a red X.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Spread out the map.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "Nina and Theo were best friends. One sunny afternoon they were playing in Grandpa's backyard. Under the big oak tree, they found something special. It was a dusty old jar. Inside was a rolled-up map! Someone had drawn it by hand. A dotted line twisted across the yard to a red X. The line brushed the big oak. It looped past the little shed. Then it dipped down toward the stream. Which landmark should they follow first? Nina grinned. Theo grinned too.",
+      "body": "The line brushed the big oak. It looped past the little shed. Then it dipped down toward the stream. Which landmark should they follow first? Nina grinned. Theo grinned too.",
       "is_ending": false,
       "choices": [
         {

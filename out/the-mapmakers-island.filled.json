@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "The rowboat scraped onto the sand at first light, and Wren climbed out with a satchel, a flask, and one blank sheet of paper. The mate pointed at the island and made the rule plain. Fill that paper with a true chart before the ship returns at dusk, or the apprenticeship goes to somebody else. Then the oars dipped and the little boat pulled away, and Wren stood alone on a shore that no map had ever named.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Shoulder the kit and start inland.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "The rowboat scraped onto the sand at first light, and Wren climbed out with a satchel, a flask, and one blank sheet of paper. The mate pointed at the island and made the rule plain. Fill that paper with a true chart before the ship returns at dusk, or the apprenticeship goes to somebody else. Then the oars dipped and the little boat pulled away, and Wren stood alone on a shore that no map had ever named. Five separate ways led inland from the beach. A tangled mangrove coast steamed away to the left, and a green forest ridge climbed directly ahead. Dark caverns breathed cool air from below, while a leaning survey tower waited out on the headland. And to the right, wide tidal flats glittered like a mirror. Wren breathed slowly and weighed the choices.",
+      "body": "Five separate ways led inland from the beach. A tangled mangrove coast steamed away to the left, and a green forest ridge climbed directly ahead. Dark caverns breathed cool air from below, while a leaning survey tower waited out on the headland. And to the right, wide tidal flats glittered like a mirror. Wren breathed slowly and weighed the choices.",
       "is_ending": false,
       "choices": [
         {

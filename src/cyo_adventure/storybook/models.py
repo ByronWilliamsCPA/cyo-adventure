@@ -14,6 +14,7 @@ loops, termination) are the validator's job in later phases, not the schema's.
 
 from __future__ import annotations
 
+import re
 from enum import StrEnum
 from typing import Self
 
@@ -26,7 +27,97 @@ from cyo_adventure.storybook.condition import (
     referenced_vars,
 )
 
-SCHEMA_VERSION = "2.0"
+# ADR-025 minor 1 (2026-08-06) adds Storybook.accepts_character. Every field
+# introduced at a minor must be registered in storybook/field_minors.py, which
+# is what L1-8 checks a document's declared version against.
+# #CRITICAL: data integrity: a field added here without a matching
+# storybook/field_minors.py entry lets a document under-declare its
+# schema_version while still using the field; L1-8
+# (validator/layer1.py::_check_field_minors, which ships on this same
+# change) reads that registry to catch exactly this, so a missed
+# registration is silently unenforceable rather than merely undertested.
+# #VERIFY: tests/unit/test_field_minor_floor.py covers L1-8 end to end,
+# including test_l1_8_alone_sets_blocked_true_through_the_gate. The
+# registration itself is held by the two-direction lockstep pair in that
+# file: test_every_storybook_field_is_registered_or_baselined (no field
+# escapes the registry) and test_no_field_minors_entry_names_a_field_that_
+# does_not_exist (no registry entry outlives its field). Adding a field
+# here without registering it fails the first of those. Tracked by UW-A45
+# in docs/planning/unscheduled-work-register.md.
+SCHEMA_MAJOR = 2
+SCHEMA_MINOR = 1
+SCHEMA_VERSION = f"{SCHEMA_MAJOR}.{SCHEMA_MINOR}"
+
+_SCHEMA_VERSION_RE = re.compile(r"(0|[1-9]\d*)\.(0|[1-9]\d*)", re.ASCII)
+
+
+def parse_schema_version(value: str) -> tuple[int, int]:
+    """Split a ``MAJOR.MINOR`` schema version into its integer parts.
+
+    Args:
+        value: The raw ``schema_version`` string from a document.
+
+    Returns:
+        tuple[int, int]: The major and minor components.
+
+    Raises:
+        ValueError: If ``value`` is not exactly two dot-separated
+            non-negative integers.
+        TypeError: If ``value`` is not a string. This is deliberately not
+            caught here: a non-string reaching a parser typed ``str`` is a
+            caller bug, not a malformed document. Callers holding untrusted
+            JSON should use :func:`is_supported_schema_version`, which takes
+            ``object`` and folds both cases into ``False``.
+    """
+    match = _SCHEMA_VERSION_RE.fullmatch(value)
+    if match is None:
+        msg = f"malformed schema_version {value!r}; expected MAJOR.MINOR"
+        raise ValueError(msg)
+    return int(match.group(1)), int(match.group(2))
+
+
+def is_supported_schema_version(
+    value: object, *, major: int = SCHEMA_MAJOR, minor: int = SCHEMA_MINOR
+) -> bool:
+    """Report whether this build can parse a document at ``value``.
+
+    ADR-025 accepts any same-major version whose minor is at or below the
+    deployed minor. A newer minor is refused explicitly here rather than
+    left for ``extra="forbid"`` to catch: with ``extra="forbid"`` everywhere,
+    a newer-minor document that actually uses one of its new fields already
+    fails at the model boundary, just with a confusing "extra fields not
+    permitted" error instead of a version-specific one. This check buys two
+    things ``extra="forbid"`` alone cannot: a clearer refusal that names the
+    version rather than a field, and rejection of a newer-minor document
+    that happens not to populate any new field, which is otherwise
+    indistinguishable from a valid document at the deployed minor.
+
+    ``value`` is typed ``object`` rather than ``str`` on purpose. Callers hold
+    a raw JSON value whose type is not yet established (a document may carry
+    ``"schema_version": null`` or a bare number), and a total predicate that
+    answers False is more useful at a trust boundary than one that raises
+    ``TypeError``.
+
+    Args:
+        value: The raw ``schema_version`` value from a document, of any type.
+        major: The major version this build implements.
+        minor: The highest minor version this build implements.
+
+    Returns:
+        bool: True if the document can be parsed by this build.
+    """
+    # #CRITICAL: data integrity: a malformed or non-string version must never
+    # be treated as supported, or an unparseable document reaches the model as
+    # if valid.
+    # #VERIFY: covered by test_supported_version_rejects_malformed_without_raising
+    # and test_supported_version_rejects_non_string_without_raising
+    if not isinstance(value, str):
+        return False
+    try:
+        doc_major, doc_minor = parse_schema_version(value)
+    except ValueError:
+        return False
+    return doc_major == major and doc_minor <= minor
 
 
 class AgeBand(StrEnum):
@@ -288,6 +379,43 @@ class StoryMetadata(BaseModel):
     series: Series | None = None
 
 
+def _check_story_int_bound(value: bool | int, *, subject: str, label: str) -> None:
+    """Reject a boolean-typed bound and enforce the story-wide int magnitude cap.
+
+    Shared by ``Variable._check_int`` and ``CharacterRange`` so both apply the
+    same two invariants to every declared int: a bound typed ``bool | int``
+    (not plain ``int``) lets a JSON ``true``/``false`` survive Pydantic's
+    coercion as an actual bool instead of being silently collapsed to
+    ``1``/``0``, so it can be rejected explicitly here rather than admitted as
+    an integer; and every declared int must stay within ``MAX_ABS_STORY_INT``.
+
+    Args:
+        value: The declared bound, typed ``bool | int`` so a boolean literal
+            is distinguishable from an integer one.
+        subject: Human-readable name of the field being validated; used only
+            to compose the raised message.
+        label: Which bound this is (for example ``"min"`` or ``"initial"``);
+            used only to compose the raised message.
+
+    Raises:
+        ValueError: If ``value`` is a bool, or its magnitude exceeds
+            ``MAX_ABS_STORY_INT``.
+    """
+    if isinstance(value, bool):
+        msg = f"{subject} {label} must not be boolean"
+        raise ValueError(msg)  # noqa: TRY004 - Pydantic needs ValueError
+    # #CRITICAL: data integrity: exact Python arithmetic and the client's
+    # IEEE-754 doubles can never disagree about a declared int bound's value
+    # if every caller of this shared check (Variable's initial/min/max and
+    # CharacterRange's min/max) is bounded against MAX_ABS_STORY_INT here.
+    # #VERIFY: tests/unit/test_storybook_schema.py::
+    # test_int_variable_rejects_out_of_range_declaration and
+    # tests/unit/test_models.py::test_character_range_rejects_out_of_range_bound.
+    if abs(value) > MAX_ABS_STORY_INT:
+        msg = f"{subject} {label} magnitude must be <= {MAX_ABS_STORY_INT}, got {value}"
+        raise ValueError(msg)
+
+
 class Variable(BaseModel):
     """A declared story state variable with a type-consistent initial value."""
 
@@ -349,26 +477,11 @@ class Variable(BaseModel):
         if isinstance(self.initial, bool):
             msg = f"int variable '{self.name}' needs an integer initial value"
             raise ValueError(msg)  # noqa: TRY004 - Pydantic needs ValueError
-        for bound_label, bound_value in (("min", self.min), ("max", self.max)):
-            if isinstance(bound_value, bool):
-                msg = f"int variable '{self.name}' {bound_label} must not be boolean"
-                raise ValueError(msg)  # noqa: TRY004 - Pydantic needs ValueError
-        # #CRITICAL: data integrity: exact Python arithmetic and the client's
-        # IEEE-754 doubles can never disagree about a declared int bound if
-        # every declared int is checked against MAX_ABS_STORY_INT here.
-        # #VERIFY: tests/unit/test_storybook_schema.py::
-        # test_int_variable_rejects_out_of_range_declaration.
-        for label, declared in (
-            ("initial", self.initial),
-            ("min", self.min),
-            ("max", self.max),
-        ):
-            if declared is not None and abs(declared) > MAX_ABS_STORY_INT:
-                msg = (
-                    f"int variable '{self.name}' {label} magnitude must be "
-                    f"<= {MAX_ABS_STORY_INT}, got {declared}"
-                )
-                raise ValueError(msg)
+        subject = f"int variable '{self.name}'"
+        _check_story_int_bound(self.initial, subject=subject, label="initial")
+        for label, bound in (("min", self.min), ("max", self.max)):
+            if bound is not None:
+                _check_story_int_bound(bound, subject=subject, label=label)
         self._check_int_bounds()
 
     def _check_int_bounds(self) -> None:
@@ -504,6 +617,41 @@ class Node(BaseModel):
         return self
 
 
+class CharacterRange(BaseModel):
+    """One variable's accepted range in a book's character envelope.
+
+    Bounds are inclusive on both ends, matching ``Variable.min``/``Variable.max``,
+    including at the type level: ``min``/``max`` are typed ``bool | int`` (not
+    plain ``int``) and checked with the same ``_check_story_int_bound`` helper
+    ``Variable`` uses, so a declared JSON ``true``/``false`` is rejected
+    explicitly instead of being silently coerced to ``1``/``0``, and the
+    ``MAX_ABS_STORY_INT`` magnitude cap applies here exactly as it does to
+    ``Variable``. CH-2 requires this range to *equal* the declared variable's
+    bounds rather than merely sit inside them: G3's runtime clamp is to
+    declared bounds, so a narrower envelope would let the runtime admit states
+    the validator never walked, invisibly.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    # `bool` is included in the union (not just `int`) for the same reason as
+    # `Variable.min`/`Variable.max`: it lets a declared `true`/`false` bound
+    # survive Pydantic's coercion as an actual bool so `_check_bounds` can
+    # reject it explicitly instead of silently admitting `1`/`0`.
+    min: bool | int
+    max: bool | int
+
+    @model_validator(mode="after")
+    def _check_bounds(self) -> Self:
+        subject = "accepts_character range"
+        for label, bound in (("min", self.min), ("max", self.max)):
+            _check_story_int_bound(bound, subject=subject, label=label)
+        if self.min > self.max:
+            msg = f"accepts_character range min {self.min} exceeds max {self.max}"
+            raise ValueError(msg)
+        return self
+
+
 class Storybook(BaseModel):
     """A complete, versioned branching story graph."""
 
@@ -515,6 +663,19 @@ class Storybook(BaseModel):
     title: str = Field(min_length=1)
     metadata: StoryMetadata
     variables: list[Variable] = Field(default_factory=list)
+    # Absent means the book accepts no character. This is enforced rather than
+    # assumed: CH-6 reserves the canonical variable names so a book that has
+    # not opted in cannot be seeded by G3 name-match through an accidental
+    # collision. ``None`` and ``{}`` are therefore different states and the
+    # default must not be a factory.
+    # #CRITICAL: data integrity: a default_factory=dict, a
+    # model_dump(exclude_none=True) added to some future serializer, or a
+    # "| None" cleanup would each silently collapse the None-vs-{} states
+    # CH-6 depends on, with the test suite still green if nothing pins the
+    # round trip.
+    # #VERIFY: tests/unit/test_models.py::
+    # test_accepts_character_none_vs_empty_dict_survive_round_trip.
+    accepts_character: dict[str, CharacterRange] | None = None
     start_node: str = Field(min_length=1)
     nodes: list[Node] = Field(min_length=1)
 
@@ -534,15 +695,36 @@ class Storybook(BaseModel):
         return self
 
     def _check_schema_version(self) -> None:
-        """Reject a schema_version this model does not implement.
+        """Reject a schema_version outside the range this build implements.
+
+        ADR-025: any same-major version at or below ``SCHEMA_MINOR`` parses.
+        A newer minor is refused explicitly here rather than left for
+        ``extra="forbid"`` to catch: that guard only fails a document that
+        actually populates a field the current minor does not define, and
+        even then with a confusing "extra fields not permitted" error. This
+        check gives a version-specific refusal and also catches a
+        newer-minor document that happens not to use any new field, which
+        ``extra="forbid"`` alone would let through.
 
         Raises:
-            ValueError: If ``schema_version`` is not the supported version.
+            ValueError: If ``schema_version`` is malformed, a different
+                major, or a newer minor than this build implements.
         """
-        if self.schema_version != SCHEMA_VERSION:
+        # #CRITICAL: data integrity: this is the only check that refuses a
+        # document by VERSION. Field shape, unknown fields, and topology are
+        # each covered elsewhere (Pydantic field validation, extra="forbid",
+        # the sibling _check_* validators, and validator.gate.run_gate), so
+        # this is one gate among several, not the only one; what no other
+        # check does is refuse a document whose fields all happen to be
+        # well-formed but whose minor this build does not implement.
+        # #VERIFY: test_storybook_rejects_a_newer_minor,
+        # test_storybook_rejects_a_different_major, and
+        # test_storybook_rejects_a_malformed_version in tests/unit/test_models.py
+        if not is_supported_schema_version(self.schema_version):
             msg = (
                 f"unsupported schema_version '{self.schema_version}'; "
-                f"this model implements {SCHEMA_VERSION}"
+                f"this build implements {SCHEMA_MAJOR}.0 through "
+                f"{SCHEMA_VERSION}"
             )
             raise ValueError(msg)
 

@@ -223,8 +223,28 @@ def test_warning_only_report_does_not_block() -> None:
             },
         },
         "variables": [],
-        "start_node": "n_start",
+        "start_node": "n_open",
         "nodes": [
+            {
+                # The establishing stop PL-25's floor requires: 8-11 may not put
+                # its first decision at depth 1. Without it this fixture blocks on
+                # PL-25 and the test can no longer observe what it is about, since
+                # "warnings alone do not block" is only measurable on a story whose
+                # sole findings are warnings. Its body stays in the same
+                # deliberately high-register vocabulary as the rest of the fixture
+                # so it does not pull the story-mean FK grade back toward target and
+                # quietly stop RL-13 from firing at all.
+                "id": "n_open",
+                "body": (
+                    "Preliminary observations invariably necessitate considerable "
+                    "deliberation before consequential determinations become "
+                    "practicable."
+                ),
+                "is_ending": False,
+                "choices": [
+                    {"id": "c_open", "label": "Begin.", "target": "n_start"},
+                ],
+            },
             {
                 "id": "n_start",
                 "body": (
@@ -446,11 +466,39 @@ def test_all_valid_fixtures_pass_gate(filename: str) -> None:
 
 
 @pytest.mark.unit
+def test_parse_storybook_reports_unsupported_schema_version() -> None:
+    """An unsupported schema_version reaches _parse_storybook unpatched.
+
+    This is the non-simulated version of the two tests below, and the reason
+    the handler's docstring calls the path reachable rather than defensive:
+    schema/storybook.schema.json constrains schema_version to
+    {"type": "string"} with no pattern or enum, so a higher major clears L1-1
+    and is refused by Storybook's after-validator. The finding must carry
+    Pydantic's own message so the reader learns WHICH validator refused it,
+    rather than being told the schema may have drifted.
+    """
+    data = dict(_load(_VALID / "01_hello_world.json"))
+    data["schema_version"] = "3.0"
+
+    result = run_gate(data)
+
+    assert result.blocked is True
+    l1_1 = [f for f in result.report.findings if f.rule_id == "L1-1"]
+    assert l1_1, "Expected a synthetic L1-1 finding for the unsupported version"
+    assert any("unsupported schema_version" in f.message for f in l1_1), (
+        f"L1-1 finding must name the version refusal, got: {[f.message for f in l1_1]}"
+    )
+    assert not any("schema drift" in f.message for f in l1_1)
+
+
+@pytest.mark.unit
 def test_defensive_parse_failure_sets_blocked() -> None:
     """When Pydantic raises after a clean L1, the gate must block defensively.
 
-    This exercises the rare schema-drift scenario: L1 passes but model_validate
-    still raises. We simulate it by patching Storybook.model_validate.
+    Unlike test_parse_storybook_reports_unsupported_schema_version above, this
+    simulates a genuine drift between the exported schema and the models by
+    patching Storybook.model_validate, so the handler is covered even for
+    failures no real document currently produces.
     """
     from pydantic import ValidationError as PydanticValidationError
 

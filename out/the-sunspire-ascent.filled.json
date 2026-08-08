@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "You are Rowan, and the Sunspire throws its shadow over you as the night begins to fall; for a hundred years the beacon at its summit has stood cold and dark, and the old curse has turned back every climber who tried to light it. Tonight you mean to be the one who does not.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Walk the last stretch to the base.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "You are Rowan, and the Sunspire throws its shadow over you as the night begins to fall; for a hundred years the beacon at its summit has stood cold and dark, and the old curse has turned back every climber who tried to light it. Tonight you mean to be the one who does not. Four ways lead to the tower base. The crumbled causeway crosses the old moat, and thick ivy climbs the north face. A servants' tunnel gapes low in the wall, and the wide front stair waits, grand and open, straight ahead.",
+      "body": "Four ways lead to the tower base. The crumbled causeway crosses the old moat, and thick ivy climbs the north face. A servants' tunnel gapes low in the wall, and the wide front stair waits, grand and open, straight ahead.",
       "is_ending": false,
       "choices": [
         {

@@ -36,16 +36,34 @@ def test_hand_authored_story_passes_layer1(path: Path) -> None:
     assert report.ok, [f.message for f in report.errors]
 
 
+# The single choice off the establishing stop that PL-25's floor requires both
+# fixtures to open on. It is spelled out at the head of every playthrough rather
+# than skipped over in the walk loop: these lists are literal scripts of what a
+# reader clicks, and a reader does click it.
+_OPEN = "c_n_open"
+
 # (story path, choice ids to play, expected ending id)
 _PLAYTHROUGHS = [
-    (_TIER1, ["c_pools", "c_rock", "c_cave", "c_open_box"], "e_treasure"),
-    (_TIER1, ["c_pools", "c_rock", "c_shell", "c_keep_pearl"], "e_pearl"),
-    (_TIER1, ["c_gull", "c_echo", "c_seal", "c_follow_seal"], "e_safe"),
-    (_TIER2, ["c_shed", "c_toolbox", "c_take_key", "c_unlock", "c_wind"], "e_clock"),
-    (_TIER2, ["c_shed", "c_toolbox", "c_take_key", "c_wait"], "e_garden"),
-    (_TIER2, ["c_hedge", "c_squeeze", "c_to_fountain2", "c_dive"], "e_treasure2"),
-    (_TIER2, ["c_hedge", "c_path", "c_to_fountain3", "c_coin"], "e_wish"),
-    (_TIER2, ["c_hedge", "c_squeeze", "c_to_gate2", "c_climb", "c_wind"], "e_clock"),
+    (_TIER1, [_OPEN, "c_pools", "c_rock", "c_cave", "c_open_box"], "e_treasure"),
+    (_TIER1, [_OPEN, "c_pools", "c_rock", "c_shell", "c_keep_pearl"], "e_pearl"),
+    (_TIER1, [_OPEN, "c_gull", "c_echo", "c_seal", "c_follow_seal"], "e_safe"),
+    (
+        _TIER2,
+        [_OPEN, "c_shed", "c_toolbox", "c_take_key", "c_unlock", "c_wind"],
+        "e_clock",
+    ),
+    (_TIER2, [_OPEN, "c_shed", "c_toolbox", "c_take_key", "c_wait"], "e_garden"),
+    (
+        _TIER2,
+        [_OPEN, "c_hedge", "c_squeeze", "c_to_fountain2", "c_dive"],
+        "e_treasure2",
+    ),
+    (_TIER2, [_OPEN, "c_hedge", "c_path", "c_to_fountain3", "c_coin"], "e_wish"),
+    (
+        _TIER2,
+        [_OPEN, "c_hedge", "c_squeeze", "c_to_gate2", "c_climb", "c_wind"],
+        "e_clock",
+    ),
 ]
 
 
@@ -75,7 +93,7 @@ def test_tier2_dark_choice_hidden_without_courage() -> None:
     engine = StoryEngine(story)
     state = engine.start()
     # Low-courage route to the fountain: the brave dive must not be offered.
-    for choice_id in ["c_hedge", "c_path", "c_to_fountain3"]:
+    for choice_id in [_OPEN, "c_hedge", "c_path", "c_to_fountain3"]:
         state = engine.choose(state, choice_id)
     visible = {c.id for c in engine.visible_choices(state)}
     assert "c_dive" not in visible

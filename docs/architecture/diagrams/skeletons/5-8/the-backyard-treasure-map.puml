@@ -6,9 +6,11 @@ skinparam backgroundColor #FAFAFA
 skinparam roundCorner 8
 hide empty description
 
-[*] --> n_start
-state n_start #BBDEFB
-n_start : setup · 85w
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 55w
+state n_start #FFF9C4
+n_start : choice · 40w
 state o_intro #D1C4E9
 o_intro : rising · 68w
 state o_fork #FFF9C4
@@ -141,6 +143,7 @@ s_bank_6 : rising · 72w
 state e_buttons #C8E6C9
 e_buttons : completion (positive)
 e_buttons : "{C2_PRIZE}"
+n_open --> n_start : Spread out the map.
 n_start --> o_intro : Follow the map to {ROUTE_A_LURE}.
 n_start --> r_intro : Follow the map to {ROUTE_B_LURE}.
 n_start --> s_intro : Follow the map down to {ROUTE_C_LURE}.
@@ -218,7 +221,7 @@ legend right
   The Backyard Treasure Map
   Band 5-8 · Tier 1 · ~7 min
   Topology: time_cave
-  61 nodes · 12 endings (6+ / 6n / 0-)
+  62 nodes · 12 endings (6+ / 6n / 0-)
   Production-eligible
   Scale: medium · prose
 endlegend

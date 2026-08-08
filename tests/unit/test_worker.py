@@ -395,7 +395,14 @@ class TestCannedStorySchemaValid:
         book = Storybook.model_validate(_CANNED_STORY)
         assert book.id == "s_mock_generated"
         assert book.metadata.tier == 1
-        assert len(book.nodes) == 7
+        # Compared against the source rather than a literal: the assertion is
+        # "validation drops no node", which is what makes the round-trip
+        # meaningful. A literal count instead measures how many nodes the mock
+        # story happens to have, so it fails whenever the story legitimately
+        # changes shape (it did, when PL-25's floor forced an opening node).
+        source_nodes = _CANNED_STORY["nodes"]
+        assert isinstance(source_nodes, list)
+        assert len(book.nodes) == len(source_nodes)
 
     def test_canned_story_json_round_trips(self) -> None:
         """JSON-serialised canned story round-trips through Storybook validation."""

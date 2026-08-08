@@ -36,6 +36,7 @@ from cyo_adventure.generation.import_catalog import (
     _print_summary,
     build_arg_parser,
 )
+from cyo_adventure.storybook.models import SCHEMA_MAJOR, SCHEMA_MINOR, SCHEMA_VERSION
 from cyo_adventure.validator.gate import run_gate
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -171,9 +172,6 @@ class TestLoadBlob:
 
 @pytest.mark.unit
 class TestNeedsLegacyNormalization:
-    def test_true_for_stale_schema_version(self) -> None:
-        assert _needs_legacy_normalization(_minimal_legacy_blob()) is True
-
     def test_true_for_missing_topology(self) -> None:
         blob = _minimal_current_blob()
         blob["schema_version"] = "2.0"
@@ -189,6 +187,93 @@ class TestNeedsLegacyNormalization:
         blob = _minimal_current_blob()
         blob["metadata"] = "not-a-dict"
         assert _needs_legacy_normalization(blob) is True
+
+    def test_current_version_with_topology_is_not_legacy(self) -> None:
+        blob = {"schema_version": SCHEMA_VERSION, "metadata": {"topology": "branching"}}
+        assert _needs_legacy_normalization(blob) is False
+
+    def test_pre_2_0_blob_is_legacy(self) -> None:
+        blob = {"schema_version": "1.0", "metadata": {"topology": "branching"}}
+        assert _needs_legacy_normalization(blob) is True
+
+    def test_missing_version_is_legacy(self) -> None:
+        blob = {"metadata": {"topology": "branching"}}
+        assert _needs_legacy_normalization(blob) is True
+
+    def test_a_future_minor_is_not_treated_as_legacy(self) -> None:
+        # A newer minor is a document this build cannot parse. It must fail the
+        # parser loudly, not be silently rewritten by the legacy normalizer.
+        newer = f"{SCHEMA_MAJOR}.{SCHEMA_MINOR + 1}"
+        blob = {"schema_version": newer, "metadata": {"topology": "branching"}}
+        assert _needs_legacy_normalization(blob) is False
+
+    def test_a_future_minor_without_topology_is_not_legacy(self) -> None:
+        # Same boundary as test_a_future_minor_is_not_treated_as_legacy, but
+        # with metadata.topology absent entirely: this is the case C1 found
+        # falling through to the topology check and being misclassified as
+        # legacy. The version bound must reject it before the topology
+        # fallthrough is ever consulted.
+        newer = f"{SCHEMA_MAJOR}.{SCHEMA_MINOR + 1}"
+        blob = {"schema_version": newer}
+        assert _needs_legacy_normalization(blob) is False
+
+    def test_higher_major_is_not_legacy(self) -> None:
+        # A higher major is a future breaking schema revision this build has
+        # never heard of. It must fail the parser loudly, not be silently
+        # rewritten as 2.0.
+        higher = f"{SCHEMA_MAJOR + 1}.0"
+        blob = {"schema_version": higher, "metadata": {"topology": "branching"}}
+        assert _needs_legacy_normalization(blob) is False
+
+    def test_higher_major_without_topology_is_not_legacy(self) -> None:
+        # Same boundary as test_higher_major_is_not_legacy, but with
+        # metadata.topology absent entirely; see
+        # test_a_future_minor_without_topology_is_not_legacy.
+        higher = f"{SCHEMA_MAJOR + 1}.0"
+        blob = {"schema_version": higher}
+        assert _needs_legacy_normalization(blob) is False
+
+    @pytest.mark.parametrize(
+        "version", ["not-a-version", "3.0.0", "v3.0", "03.0", "2", "2.1.0", ""]
+    )
+    def test_malformed_version_is_not_legacy(self, version: str) -> None:
+        # A version string this build cannot parse is a claim it must refuse,
+        # not a document it may repair. Rewriting it to "2.0" would admit an
+        # unparseable document as if it were parseable, destroying the very
+        # evidence the refusal rests on.
+        blob = {"schema_version": version, "metadata": {"topology": "branching"}}
+        assert _needs_legacy_normalization(blob) is False
+
+    @pytest.mark.parametrize("version", ["not-a-version", "3.0.0", "v3.0"])
+    def test_malformed_version_without_topology_is_not_legacy(
+        self, version: str
+    ) -> None:
+        # Same boundary with metadata.topology absent: the version check must
+        # decide the outcome before the topology fallthrough is consulted.
+        assert _needs_legacy_normalization({"schema_version": version}) is False
+
+    @pytest.mark.parametrize("version", [None, 2, 2.0, ["2.0"], {"major": 2}])
+    def test_non_string_version_is_not_legacy(self, version: object) -> None:
+        # An explicit JSON null or number is a malformed claim, not an absent
+        # one, so it is refused rather than repaired. Contrast
+        # test_missing_version_is_legacy, where the key is absent entirely.
+        blob = {"schema_version": version, "metadata": {"topology": "branching"}}
+        assert _needs_legacy_normalization(blob) is False
+
+    def test_earlier_minor_still_uses_the_topology_check(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # Once SCHEMA_MINOR advances, a same-major document BELOW the current
+        # minor is still supported, so it must reach the topology check rather
+        # than be short-circuited by the version bound.
+        monkeypatch.setattr(import_catalog_module, "SCHEMA_MINOR", 1)
+        supported = f"{SCHEMA_MAJOR}.0"
+        assert _needs_legacy_normalization({"schema_version": supported}) is True
+        with_topology = {
+            "schema_version": supported,
+            "metadata": {"topology": "branching"},
+        }
+        assert _needs_legacy_normalization(with_topology) is False
 
 
 @pytest.mark.unit

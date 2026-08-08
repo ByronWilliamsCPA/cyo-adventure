@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "Maya ducks under the lighthouse rocks with Biscuit at her heels, right as the tide begins pulling back from the sea caves. Her aunt, who keeps the lighthouse, knows they are exploring the cove until the tide turns. Three dark openings wait in the cliff, and cool air breathes out of each one. Each mouth sends back its own sound: the left one hums, warm and low, while the right one drips, slow and steady. Straight ahead, something almost whispers in the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Listen for which one carries.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "Maya ducks under the lighthouse rocks with Biscuit at her heels, right as the tide begins pulling back from the sea caves. Her aunt, who keeps the lighthouse, knows they are exploring the cove until the tide turns. Three dark openings wait in the cliff, and cool air breathes out of each one. Each mouth sends back its own sound: the left one hums, warm and low, while the right one drips, slow and steady. Straight ahead, something almost whispers in the dark. Biscuit's tail thumps on the sand as Maya checks the wet line on the rocks behind her. She has about an hour before the sea comes back and seals every cave mouth shut. She switches on her torch and picks the sound that calls to her first.",
+      "body": "Biscuit's tail thumps on the sand as Maya checks the wet line on the rocks behind her. She has about an hour before the sea comes back and seals every cave mouth shut. She switches on her torch and picks the sound that calls to her first.",
       "is_ending": false,
       "choices": [
         {

@@ -102,11 +102,13 @@ awkward to generate and lint programmatically. Wrong shape for an automated pipe
 
 ### Technical Debt
 
-- Schema versioning: current policy pins to schema version `2.0` and rejects any other
-  version outright (exactly one accepted version); the read-time upcaster chain is not
-  built. If multiple concurrent schema versions ever need to coexist, an in-memory
-  upcaster keyed by `schema_version` with a golden fixture per version is the intended
-  path, but it is deliberately deferred while a single version is enforced.
+- Schema versioning: **superseded by [ADR-025](./adr-025-additive-storybook-schema-versioning.md)
+  (accepted 2026-08-01, implemented 2026-08-06).** This ADR's original policy pinned to schema
+  version `2.0` and rejected any other version outright (exactly one accepted version). The parser
+  now accepts a range: any `SCHEMA_MAJOR.x` with `x <=` the deployed `SCHEMA_MINOR`, where a minor
+  may only add optional fields with behavior-preserving defaults. The range is what removes the
+  need for an upcaster in the additive case, so the read-time upcaster chain is still not built
+  and is still the intended path if a *major* version ever has to coexist with another.
 - Storage: story blobs are stored inline in Postgres JSONB (`storybook_version.blob`) at
   launch per [ADR-009](./adr-009-supabase-platform.md); object storage via `blob_ref` is
   deferred until catalog size warrants externalizing blobs.
@@ -118,13 +120,14 @@ awkward to generate and lint programmatically. Wrong shape for an automated pipe
 1. **Schema**: defined once in Pydantic, exported to JSON Schema, shared by generator,
    validator, reader, and editor.
 2. **Player**: a deterministic traversal honoring Runtime Semantics v1.
-3. **Backend read path**: the loader validates `schema_version` and rejects any blob not
-   at the single accepted version (`2.0`); no upcaster chain runs.
+3. **Backend read path**: the loader validates `schema_version` and rejects any blob outside the
+   accepted range (per ADR-025: same major, minor at or below the deployed `SCHEMA_MINOR`); no
+   upcaster chain runs.
 
 ### Testing Strategy
 
 - Unit: schema round-trip (Pydantic to JSON Schema to instance validation); rejection of
-  any blob whose `schema_version` is not the single accepted version.
+  any blob whose `schema_version` falls outside the accepted range.
 - Integration: a valid and a known-bad fixture corpus (see the tech spec testing
   strategy).
 

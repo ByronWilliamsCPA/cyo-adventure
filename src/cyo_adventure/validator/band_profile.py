@@ -114,14 +114,39 @@ def profile_for(age_band: str) -> BandProfile | None:
 MVP_MIN_NODES = 8
 MVP_MAX_NODES = 45
 
+# PL-25 requires every story to establish its situation before the first
+# decision (its floor is 2: the first decision is no earlier than the second
+# node). That stop costs one node of branch depth, and the two depth budgets
+# account for it differently:
+#   - A production cell's max_depth is ~2.5x its min_complete floor, and those
+#     floors are JHM *page* counts for a whole playthrough, which already
+#     include the pages before the first decision (corpus median 4). The
+#     establishing stop is therefore inside the cell budget already.
+#   - The band-level max_depth triple predates ADR-011 and derives from nothing
+#     measured. ``mvp_node_budget`` below is the ONLY consumer that grants it
+#     the establishing-stop allowance: ``resolve_node_budget``'s step-3
+#     band-level fallback (a production-eligible story with no length, or an
+#     off-matrix length), ``layer1._COMPACT_BUDGETS``, and
+#     ``generation.prompts._budget_block`` (which reads ``resolve_node_budget``
+#     transitively) all use the same band-level max_depth with no allowance.
+#     The validator therefore allows ``max_depth + 1`` on the MVP path only,
+#     while those three other consumers state and enforce the un-allowanced
+#     max_depth; a production story that lands on the band-level fallback is
+#     told one less depth than an MVP shell gets for the identical
+#     opening-stop cost.
+# Without this allowance PL-25 and L1-7 contradict each other for any MVP shell
+# authored to its band depth cap: satisfying the opening rule puts it one node
+# over budget. See AL-087.
+ESTABLISHING_STOP_DEPTH = 1
+
 
 def mvp_node_budget(age_band: str) -> tuple[int, int, int] | None:
     """Return the MVP/Test ``(min_nodes, max_nodes, max_depth)`` for a band.
 
     The node-count envelope is band-independent (``MVP_MIN_NODES`` ..
-    ``MVP_MAX_NODES``); the branch-depth cap is inherited from the band's
-    production profile so an MVP shell stays within its band's structural
-    depth.
+    ``MVP_MAX_NODES``); the branch-depth cap stays anchored to the band's
+    production profile so an MVP shell keeps its band's structural depth, plus
+    ``ESTABLISHING_STOP_DEPTH`` for the opening stop PL-25 requires.
 
     Args:
         age_band: The story age band value (for example ``"10-13"``).
@@ -133,7 +158,7 @@ def mvp_node_budget(age_band: str) -> tuple[int, int, int] | None:
     profile = profile_for(age_band)
     if profile is None:
         return None
-    return (MVP_MIN_NODES, MVP_MAX_NODES, profile.max_depth)
+    return (MVP_MIN_NODES, MVP_MAX_NODES, profile.max_depth + ESTABLISHING_STOP_DEPTH)
 
 
 # Genre-faithful production node envelopes, keyed on the ADR-011 story-scale
@@ -341,6 +366,136 @@ def min_complete_floor(age_band: str, length: str, narrative_style: str) -> int 
         ``None`` when the combination is not an offered cell.
     """
     return _MIN_COMPLETE.get((age_band, length, narrative_style))
+
+
+# PL-25 depth-to-first-decision window per band, in nodes: the count of nodes on
+# the shortest path from ``start_node`` up to and including the first node that
+# offers two or more choices. Anchored on Adams, Beckelhymer and Marr, "Choose
+# Your Own Adventure: An Analysis of Interactive Gamebooks Using Graph Theory",
+# Journal of Humanistic Mathematics 9(2), 2019 (DOI 10.5642/jhummath.201902.05),
+# Table 4: across the 40-book corpus, pages to the first decision have a median
+# of 4 and a range of 2 to 8.25. That corpus sits in the 8-11/10-13 reading
+# range, so those bands take the measured window directly; the outer bands are
+# product-defined scalings and are tunable, like the ADR-011 3-5/16+ budgets.
+#   - Below the floor is an unconditional ERROR, graded in one tier: a story
+#     that opens on its first choice asks the reader to pick before any
+#     situation exists, a correctness failure rather than a matter of pacing
+#     degree. No book in the JHM corpus branches before page 2, which is what
+#     puts the floor at 2 for every band that has measured backing. 3-5 keeps
+#     a floor of 1 because a pre-reader picture book can legitimately open on
+#     its first choice and no evidence covers that band.
+#   - Above the ceiling is a WARNING: a buried first choice is a craft defect,
+#     not an unpublishable one. Past ``ARC_CEILING_MULTIPLE`` times the
+#     ceiling (the JHM corpus's own longest-to-shortest playthrough ratio) it
+#     escalates to an ERROR: a story that far past the window sits outside the
+#     observed genre rather than merely slow, which is the long unbranching
+#     prologue this rule exists to catch and the shape an LLM generator
+#     produces most readily. See ``policy._check_first_decision_depth`` for
+#     the full tiering.
+# #ASSUME: data-integrity: this table is the single source for the PL-25 window.
+# #VERIFY: test_band_profile.py::test_first_decision_window_covers_every_band.
+#   - No ceiling sits below the corpus median of 4, and the two bands the corpus
+#     actually covers admit its full measured range (ceiling 9 >= the 8.25 max).
+#     A threshold that blocks pacing the source corpus calls typical, or that
+#     blocks a book the corpus contains, is miscalibrated by construction; both
+#     defects were present in this table's first draft and both are now asserted
+#     in test_band_profile.py.
+_FIRST_DECISION_DEPTH: dict[str, tuple[int, int]] = {
+    "3-5": (1, 5),
+    "5-8": (2, 5),
+    "8-11": (2, 9),
+    "10-13": (2, 9),
+    "13-16": (2, 10),
+    "16+": (2, 10),
+}
+
+
+def first_decision_window(age_band: str) -> tuple[int, int] | None:
+    """Return the PL-25 ``(floor, ceiling)`` depth-to-first-decision for a band.
+
+    Args:
+        age_band: The story age band value (for example ``"8-11"``).
+
+    Returns:
+        The ``(floor, ceiling)`` node-count window, or ``None`` when the band is
+        not configured.
+    """
+    return _FIRST_DECISION_DEPTH.get(age_band)
+
+
+# PL-26 decision-density advisory on the fastest-finish path: the MAXIMUM nodes
+# per decision, keyed on narrative style. JHM 2019 Table 4 measures a mean of
+# 3.28 pages between decisions, but that corpus is CYOA prose paperbacks, so the
+# anchor is a prose anchor and applying it to a gamebook is a category error: a
+# numbered-section gamebook ends nearly every section in a choice by genre
+# convention. Style-keying follows _ENDINGS_FRACTION and _WORDS_PER_NODE, which
+# already split the same way.
+#   - prose: sits above the 3.28 anchor with room, because one corpus in one band
+#     cluster cannot justify a tight bound.
+#   - gamebook: product-defined and tunable. No measured gamebook corpus backs
+#     it; it exists so the rule stays silent on genre-faithful section density
+#     rather than firing on every gamebook in the library.
+#
+# A ceiling only, deliberately. PL-26 exists to catch the corridor: a story that
+# satisfies every PL-17 breadth floor while walking the reader past few or no
+# choices. The symmetric low bound this started as had to go, because measuring
+# density along a SHORTEST path is biased toward finding high density: a decision
+# node has out-degree >= 2, so it is likelier to sit on a fast route than a
+# linear node is, while JHM's 3.28 was measured corpus-wide. Comparing the two on
+# the low side compares different quantities, the same category error the
+# style-keying above fixes. A genuine "choice gauntlet" guard would have to
+# measure whole-graph density instead; see AL-084 / UW-C28.
+#
+# Scale-invariant by construction: it constrains a ratio, not a count, so a
+# 340-node long-form world and a 23-node picture book are judged on one axis.
+# This is the density companion to PL-20, which bounds the same path's length but
+# says nothing about how often the reader actually steers along it.
+# #ASSUME: data-integrity: this table is the single source for the PL-26
+# nodes-per-decision ceiling, keyed on narrative_style, anchored on Adams,
+# Beckelhymer and Marr, Journal of Humanistic Mathematics 9(2), 2019, Table 4
+# (mean 3.28 pages between decisions). An unrecognized narrative_style is not
+# an error: nodes_per_decision_ceiling below silently falls back to the prose
+# value, so a typo'd or new style is graded against the wrong genre convention
+# rather than failing loudly.
+# #VERIFY: test_band_profile.py::
+# test_prose_density_ceiling_sits_above_the_measured_anchor,
+# ::test_gamebook_density_ceiling_is_tighter_than_prose, and
+# ::test_unknown_style_density_falls_back_to_prose (the silent-default case).
+_NODES_PER_DECISION_CEILING: dict[str, float] = {
+    "prose": 6.0,
+    "gamebook": 4.0,
+}
+
+
+def nodes_per_decision_ceiling(narrative_style: str) -> float:
+    """Return the PL-26 maximum nodes-per-decision for a narrative style.
+
+    Args:
+        narrative_style: ``"prose"`` or ``"gamebook"``.
+
+    Returns:
+        The advisory ceiling; an unknown style falls back to the prose ceiling.
+    """
+    return _NODES_PER_DECISION_CEILING.get(
+        narrative_style, _NODES_PER_DECISION_CEILING["prose"]
+    )
+
+
+# PL-20 companion ceiling: how far the shortest satisfying path may exceed the
+# cell's ``min_complete_floor`` before warning. JHM 2019 records a longest
+# playthrough of 27.5 pages against a shortest of 11; that 2.5 ratio is the
+# multiple used here, applied against the cell floor rather than as an absolute
+# node count so it stays meaningful from a 10-node picture book to a 750-node
+# gamebook. Tunable.
+# #ASSUME: data-integrity: this is the single source for the ceiling multiple
+# PL-20's arc ceiling, PL-25's ceiling escalation, and PL-25's hard limit all
+# read; a change here moves all three at once. Anchored on Adams, Beckelhymer
+# and Marr, Journal of Humanistic Mathematics 9(2), 2019, Table 4: the
+# longest-vs-shortest playthrough ratio in the 40-book corpus is exactly
+# 27.5 / 11 = 2.5.
+# #VERIFY: test_band_profile.py::
+# test_arc_ceiling_multiple_matches_the_measured_playthrough_ratio.
+ARC_CEILING_MULTIPLE = 2.5
 
 
 # Breadth-scaled PL-17 floors for a scale-classified production story. The band

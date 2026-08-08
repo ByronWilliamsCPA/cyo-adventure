@@ -11,7 +11,10 @@
       "tolerance": 1.0
     },
     "tier": 1,
-    "themes": ["everyday life", "friendship"],
+    "themes": [
+      "everyday life",
+      "friendship"
+    ],
     "estimated_minutes": 3,
     "ending_count": 4,
     "content_flags": {
@@ -22,15 +25,35 @@
     "topology": "sorting_hat"
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
+    {
+      "id": "n_open",
+      "body": "You stop here for a while and look around at the new place.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_open",
+          "label": "Go on.",
+          "target": "n_start"
+        }
+      ]
+    },
     {
       "id": "n_start",
       "body": "It is market day in the village square! Colorful stalls line the cobblestones, and the smell of fresh bread drifts through the air. Do you visit the toy stall or follow the sound of music?",
       "is_ending": false,
       "choices": [
-        {"id": "c_toys", "label": "Visit the toy stall.", "target": "n_toys"},
-        {"id": "c_music", "label": "Follow the music.", "target": "n_music"}
+        {
+          "id": "c_toys",
+          "label": "Visit the toy stall.",
+          "target": "n_toys"
+        },
+        {
+          "id": "c_music",
+          "label": "Follow the music.",
+          "target": "n_music"
+        }
       ]
     },
     {
@@ -38,8 +61,16 @@
       "body": "The toy stall is full of carved wooden animals and spinning tops. The stall keeper, Mr. Finch, waves hello and lets you pick one to try. Do you choose a wooden fox or a spinning top?",
       "is_ending": false,
       "choices": [
-        {"id": "c_fox", "label": "Choose the wooden fox.", "target": "n_end_fox"},
-        {"id": "c_top", "label": "Choose the spinning top.", "target": "n_end_top"}
+        {
+          "id": "c_fox",
+          "label": "Choose the wooden fox.",
+          "target": "n_end_fox"
+        },
+        {
+          "id": "c_top",
+          "label": "Choose the spinning top.",
+          "target": "n_end_top"
+        }
       ]
     },
     {
@@ -47,8 +78,16 @@
       "body": "A fiddler plays a cheerful tune near the fountain, and a little girl is dancing in circles, giggling the whole time. Do you join the dance or sit and listen quietly?",
       "is_ending": false,
       "choices": [
-        {"id": "c_dance", "label": "Join the dance.", "target": "n_end_dance"},
-        {"id": "c_listen", "label": "Sit and listen.", "target": "n_end_listen"}
+        {
+          "id": "c_dance",
+          "label": "Join the dance.",
+          "target": "n_end_dance"
+        },
+        {
+          "id": "c_listen",
+          "label": "Sit and listen.",
+          "target": "n_end_listen"
+        }
       ]
     },
     {

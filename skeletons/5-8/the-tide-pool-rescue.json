@@ -17,7 +17,7 @@
       "perseverance",
       "friendship"
     ],
-    "estimated_minutes": 7,
+    "estimated_minutes": 10,
     "ending_count": 12,
     "content_flags": {
       "violence": "none",
@@ -58,13 +58,28 @@
     },
     {
       "id": "n_meet",
-      "body": "<<FILL role=rising words=80 beats='out on the rocks {HERO} hears tiny voices; {OPENING_MOMENT} has left some tide-pool friends stranded too high and dry, a {Q1_SPECIES} {Q1_PLIGHT}, a {Q2_SPECIES} {Q2_PLIGHT}, a {Q3_SPECIES} {Q3_PLIGHT}, and a {Q4_SPECIES} {Q4_PLIGHT}; far off {DEADLINE_SIGN}; {HERO} decides to help everyone before {DEADLINE}, starting with the {Q1_SPECIES}'>>",
+      "body": "<<FILL role=choice words=80 beats='out on the rocks {HERO} hears tiny voices; {OPENING_MOMENT} has left some tide-pool friends stranded too high and dry, a {Q1_SPECIES} {Q1_PLIGHT}, a {Q2_SPECIES} {Q2_PLIGHT}, a {Q3_SPECIES} {Q3_PLIGHT}, and a {Q4_SPECIES} {Q4_PLIGHT}; far off {DEADLINE_SIGN} says {TIDE} is already on its way and will reach the rocks by {DEADLINE}; they are all calling at once and {HERO} can only reach one at a time, so he picks who to go to first'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_meet_star",
           "label": "Hurry to the {Q1_SPECIES} on the high ledge.",
           "target": "st_scene"
+        },
+        {
+          "id": "c_meet_fish",
+          "label": "Follow {Q2_SIGN} across the rocks.",
+          "target": "t_st_fi"
+        },
+        {
+          "id": "c_meet_crab",
+          "label": "Follow {Q3_SIGN} to the seaweed patch.",
+          "target": "t_fi_cr"
+        },
+        {
+          "id": "c_meet_snail",
+          "label": "Climb toward {Q4_SIGN} on the dry rock.",
+          "target": "t_cr_pw"
         }
       ]
     },
@@ -179,13 +194,18 @@
     },
     {
       "id": "st_thanks",
-      "body": "<<FILL role=choice words=60 beats='{Q1_NAME} presses one arm up against the glassy top of the water like a high five and burbles thank you; just then {Q2_SIGN} comes from a puddle across the rocks; someone else needs help; {HERO} can hurry toward the sound, or sit with {COMPANION} and let {TIDE} finish the rescuing'>>",
+      "body": "<<FILL role=choice words=60 beats='{Q1_NAME} presses one arm up against the glassy top of the water like a high five and burbles thank you; back across the rocks other small voices are still calling, and {TIDE} is coming on; {HERO} can pick his way out to the pools again, watch {TIDE} arrive, or sit with {COMPANION} and let it finish the rescuing'>>",
       "is_ending": false,
       "choices": [
         {
-          "id": "c_st_next",
-          "label": "Hurry toward the flappy splashing sound.",
-          "target": "t_st_fi"
+          "id": "c_st_back",
+          "label": "Pick your way back out to the pools.",
+          "target": "n_meet"
+        },
+        {
+          "id": "c_st_done",
+          "label": "Watch {TIDE} come in over the pools.",
+          "target": "n_alldone"
         },
         {
           "id": "c_st_rest",
@@ -196,7 +216,7 @@
     },
     {
       "id": "t_st_fi",
-      "body": "<<FILL role=rising words=60 beats='{HERO} hops carefully from flat rock to flat rock toward the splashing; out past the pools {TIDE} has crept one sparkly step closer, glittering as it comes; {COMPANION} waves {HAT} from {ENTRANCE}; the splashing gets louder in a puddle no bigger than a dinner plate'>>",
+      "body": "<<FILL role=rising words=60 beats='{HERO} hops carefully from flat rock to flat rock toward {Q2_SIGN}; out past the pools {TIDE} has crept one sparkly step closer, glittering as it comes; {COMPANION} waves {HAT} from {ENTRANCE}; the splashing gets louder in a puddle no bigger than a dinner plate'>>",
       "is_ending": false,
       "choices": [
         {
@@ -323,19 +343,24 @@
     },
     {
       "id": "fi_thanks",
-      "body": "<<FILL role=rising words=60 beats='{Q2_NAME} leaps one sparkling thank-you hop and races another lap; from over by the seaweed patch comes {Q3_SIGN}, like tiny castanets; someone else is stuck; {HERO} waves goodbye to {Q2_NAME} and turns toward the sound'>>",
+      "body": "<<FILL role=choice words=60 beats='{Q2_NAME} leaps one sparkling thank-you hop and races another lap; out across the rocks somebody else is still calling, and {TIDE} is coming on; {HERO} waves goodbye and can head back toward the pools or stay and watch the water arrive'>>",
       "is_ending": false,
       "choices": [
         {
-          "id": "c_fi_next",
-          "label": "Follow the clack-clack sound to the seaweed.",
-          "target": "t_fi_cr"
+          "id": "c_fi_back",
+          "label": "Head back out toward the calling.",
+          "target": "n_meet"
+        },
+        {
+          "id": "c_fi_done",
+          "label": "Watch {TIDE} come in over the pools.",
+          "target": "n_alldone"
         }
       ]
     },
     {
       "id": "t_fi_cr",
-      "body": "<<FILL role=rising words=60 beats='{HERO} crosses the rocks toward the clacking; behind him {TIDE} has slid another sparkly step up the sand, filling the farthest pools first like little cups; the seaweed patch ahead is green and shiny, and something in the middle of it is waving'>>",
+      "body": "<<FILL role=rising words=60 beats='{HERO} crosses the rocks toward {Q3_SIGN}; behind him {TIDE} has slid another sparkly step up the sand, filling the farthest pools first like little cups; the seaweed patch ahead is green and shiny, and something in the middle of it is waving'>>",
       "is_ending": false,
       "choices": [
         {
@@ -456,13 +481,18 @@
     },
     {
       "id": "cr_thanks",
-      "body": "<<FILL role=choice words=60 beats='{Q3_NAME} clacks a happy drumroll on a pebble and scuttles a thank-you circle around his pool; high on the dry rock above, {Q4_SIGN}, a {Q4_SPECIES} shell a long way from any water; {HERO} can head up to help, or watch from {COMPANION}'s {TOWEL} while {TIDE} fetches the little {Q4_SPECIES} itself'>>",
+      "body": "<<FILL role=choice words=60 beats='{Q3_NAME} clacks a happy drumroll on a pebble and scuttles a thank-you circle around his pool; another voice is still calling somewhere back across the rocks, and {TIDE} is coming on; {HERO} can go and find it, watch the water arrive, or watch from {COMPANION}'s {TOWEL} while {TIDE} does the rest'>>",
       "is_ending": false,
       "choices": [
         {
-          "id": "c_cr_next",
-          "label": "Head for the tiny shell far up the rock.",
-          "target": "t_cr_pw"
+          "id": "c_cr_back",
+          "label": "Go and find who is calling.",
+          "target": "n_meet"
+        },
+        {
+          "id": "c_cr_done",
+          "label": "Watch {TIDE} come in over the pools.",
+          "target": "n_alldone"
         },
         {
           "id": "c_cr_rest",
@@ -473,7 +503,7 @@
     },
     {
       "id": "t_cr_pw",
-      "body": "<<FILL role=rising words=60 beats='{HERO} tiptoes up the dry rock, keeping his feet on the rough gray parts the way {COMPANION} likes; {TIDE} is closer now, filling pool after pool behind him with happy gurgles; near the top, a shell no bigger than a button sits all alone in the sunshine'>>",
+      "body": "<<FILL role=rising words=60 beats='{HERO} tiptoes up the dry rock toward {Q4_SIGN}, keeping his feet on the rough gray parts the way {COMPANION} likes; {TIDE} is closer now, filling pool after pool behind him with happy gurgles; near the top, a shell no bigger than a button sits all alone in the sunshine'>>",
       "is_ending": false,
       "choices": [
         {
@@ -594,19 +624,24 @@
     },
     {
       "id": "pw_thanks",
-      "body": "<<FILL role=rising words=60 beats='{Q4_NAME} settles onto her favorite green stone with a tiny happy squeak, home at last; just then a bright gurgle runs all along the rocks; {TIDE} is arriving, filling the pools like a friend opening every door on the street; {HERO} lifts his head'>>",
+      "body": "<<FILL role=choice words=60 beats='{Q4_NAME} settles onto her favorite green stone with a tiny happy squeak, home at last; a bright gurgle runs all along the rocks as {TIDE} comes on; {HERO} can look back across the rocks for anyone still calling, or stay and watch the water arrive'>>",
       "is_ending": false,
       "choices": [
         {
+          "id": "c_pw_back",
+          "label": "Look back across the rocks for anyone else.",
+          "target": "n_meet"
+        },
+        {
           "id": "c_pw_done",
-          "label": "Look up at the sparkling line of {TIDE}.",
+          "label": "Watch {TIDE} come in over the pools.",
           "target": "n_alldone"
         }
       ]
     },
     {
       "id": "n_alldone",
-      "body": "<<FILL role=rising words=80 beats='{HERO} stands tall on the flat rocks; every friend is safe, {Q1_NAME} stretched out in her pool, {Q2_NAME} zooming in the deep one, {Q3_NAME} drumming by the seaweed, {Q4_NAME} snug on her green stone; {TIDE} sweeps closer in sparkly stripes, warm and friendly, coming to welcome everyone home; {COMPANION} gives {HERO} a proud thumbs up from {ENTRANCE}'>>",
+      "body": "<<FILL role=rising words=80 beats='{HERO} stands tall on the flat rocks and looks back over the pools he reached; every friend he got to is safe and settled, waving or drumming or zooming in the water; {TIDE} sweeps closer in sparkly stripes, warm and friendly, coming to welcome everyone home and to finish what {HERO} started; {COMPANION} gives {HERO} a proud thumbs up from {ENTRANCE}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -618,7 +653,7 @@
     },
     {
       "id": "n_tide",
-      "body": "<<FILL role=choice words=85 beats='the first thin finger of {TIDE} slides across the rocks and fills the nearest pool right up to its brim; the water is home and the whole rescue is complete; the pools fizz and sparkle like a celebration; {HERO} can follow {TIDE} from pool to pool to see each friend greet it, climb up beside {COMPANION} on {ENTRANCE} to watch it all at once, or open {PICNIC} to celebrate the rescue team'>>",
+      "body": "<<FILL role=choice words=85 beats='the first thin finger of {TIDE} slides across the rocks and fills the nearest pool right up to its brim; the water is home, and it is reaching every pool {HERO} could not get to as well; the pools fizz and sparkle like a celebration; {HERO} can follow {TIDE} from pool to pool to see each friend greet it, climb up beside {COMPANION} on {ENTRANCE} to watch it all at once, or open {PICNIC} to celebrate the rescue team'>>",
       "is_ending": false,
       "choices": [
         {

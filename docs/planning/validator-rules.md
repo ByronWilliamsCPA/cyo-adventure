@@ -38,7 +38,7 @@ to this document.
 | Category | Behaviour | Blocks publish? |
 |----------|-----------|-----------------|
 | Layer 1 (L1) | Pass/fail | Yes |
-| Policy (PL) | Pass/fail (PL-19 story-mean, PL-23 and PL-24 are advisory) | Yes |
+| Policy (PL) | Pass/fail (PL-19 story-mean, PL-23, PL-24, PL-26 and PL-25's ceiling short of its hard limit are advisory) | Yes |
 | Layer 2 (L2) | Pass/fail | Yes (Tier-2 only) |
 | Reading Level (RL) | Advisory | No (warns only) |
 | Choice Grammar (CG) | Advisory, and opt-in | No (warns only, and emits nothing at all by default) |
@@ -48,8 +48,9 @@ to this document.
 
 Layer 1, Policy, and Layer 2 are hard gates, run in that order (`validator/gate.py::run_gate`):
 any failure fails the generation job (it lands in `failed`, not `passed`), so the story never
-advances to `in_review`. The Policy layer's PL-19 story-mean words-per-node sub-check is the
-one advisory exception; its per-node word-cap sub-check is still blocking. The reading-level
+advances to `in_review`. The Policy layer's advisory exceptions are PL-19's story-mean
+words-per-node sub-check (its per-node word-cap sub-check is still blocking), PL-23, PL-24,
+all of PL-26, and PL-25's ceiling short of its hard limit. The reading-level
 check warns and logs but does not block. A safety hit routes the generation job to
 `needs_review` for mandatory human review; the validator does not auto-reject, but no
 auto-publish path exists when the flag is set.
@@ -81,6 +82,7 @@ must be sound before a state-space walk is meaningful.
 | L1-5 | 1 | **No trap loops (graph)**: every strongly connected component must have at least one exit edge leading toward an ending. A SCC with no exit is a trap loop. | `L1-5 trap: strongly connected component containing node '{node_id}' has no exit edge in story '{story_id}' (nodes in SCC: {scc_nodes})` |
 | L1-6 | 1 | **Condition and effect consistency**: conditions must use only whitelisted operators; every variable referenced in a condition or effect must be declared in `variables`; comparisons must agree in type with the declared variable type; no reachable transition may push an `int` variable past its declared `min` or `max`. | `L1-6 logic: {issue_type} in story '{story_id}' at {location}: {detail} (var='{var}', declared_type={declared_type}, bound={bound}, attempted={attempted})` |
 | L1-7 | 1 | **Length budget**: node count must be within the (band x length x style) cell budget single-sourced in `validator/band_profile.py` (band-based per [ADR-011](./adr/adr-011-story-scale-framework.md), not tier-based); branch depth must be within bounds; `metadata.ending_count` must equal the count of distinct ending nodes found in `nodes`. | `L1-7 budget: {budget_type} out of range in story '{story_id}': {actual} (allowed {min}..{max})` |
+| L1-8 | 1 | **Field-minor floor** (ADR-025 decision 3): a document that uses a field introduced at schema minor N must declare a `schema_version` whose minor is at least N. Presence of the key is the trigger, not its value: an explicit `null` counts as use and fires the floor, but an absent key does not. Enforces the converse of ADR-025's stamping clause, so an under-declared document fails the gate rather than being silently admitted. The field-to-minor registry is `storybook/field_minors.py`. | `L1-8 schema: field '{field}' was introduced at schema minor {minor}, but this document declares '{declared}'; stamp it at least {major}.{minor}` |
 
 ---
 
@@ -159,6 +161,29 @@ advisory (WARNING). PL-15..PL-18 are defined below; PL-19 (words-per-node), PL-2
 (band profile not configured, fail closed) is a runtime invariant rather than an
 age-safety rule in its own right; it is defined below.
 
+**Two axes, easily confused.** PL-17 measures *breadth*: how many decision and ending
+nodes exist anywhere in the graph. PL-20, PL-25 and PL-26 measure *depth along a walk*:
+how far the reader travels to finish, how soon they first steer, and how often they
+steer after that. A story can satisfy every breadth floor while walking the reader down
+a corridor, because a corridor with a wide branching bulge at the end still counts
+plenty of decision nodes. That gap is what the depth rules close.
+
+**Path-length rules grade in two tiers on purpose.** A *floor* violation (PL-20: too
+short to be a story) is a correctness failure and blocks. A *ceiling* violation (PL-20's
+long arc, PL-25's buried first choice) is a craft failure and warns, because the ERROR
+tier means unpublishable and a narrow ceiling overshoot is not. PL-25 keeps one blocking
+tier past `band_profile.ARC_CEILING_MULTIPLE` times the band ceiling, where the shape has
+left the observed genre rather than merely run slow.
+
+PL-25 and PL-26 are calibrated against Adams, Beckelhymer and Marr, "Choose Your Own
+Adventure: An Analysis of Interactive Gamebooks Using Graph Theory," *Journal of
+Humanistic Mathematics* 9(2), 2019 ([DOI 10.5642/jhummath.201902.05](https://doi.org/10.5642/jhummath.201902.05)),
+which measured the original CYOA paperback corpus. The node-to-page equivalence that
+lets those page measurements govern our node counts is not an assumption: ADR-011's
+independently derived `_MIN_COMPLETE[("10-13", "short", "prose")]` is 11, matching the
+paper's measured 11-page shortest playthrough exactly. Measurements and the calibration
+invariants that guard them live in `validator/band_profile.py`.
+
 | Rule ID | Layer | Description | Failure Message Template |
 |---------|-------|-------------|--------------------------|
 | PL-15 | Policy | **Ending-kind policy**: no ending whose `kind` is in the band's `forbidden_ending_kinds` (the no-death / no-capture rule). | `PL-15 policy: ending kind '{kind}' is forbidden for band '{age_band}' in story '{story_id}'` |
@@ -168,6 +193,8 @@ age-safety rule in its own right; it is defined below.
 | PL-22 | Policy | **Band profile fail-closed**: added 2026-07-16 per the owner ruling (fail closed). When a story's age band has no configured `BandProfile` (`validator/band_profile.py::profile_for` returns `None`), the gate emits this single blocking finding and returns immediately instead of silently skipping PL-15/16/17 for that band. Unreachable through any valid, enum-constrained `age_band` today (a lockstep test pins the `AgeBand` enum against the configured profiles), so this is a runtime backstop, not a normal-path rule. See `validator/policy.py::validate_policy` and `tests/unit/test_policy.py::test_validate_policy_fails_closed_when_profile_is_none`. | `PL-22 policy: band profile not configured for band '{age_band}' in story '{story_id}'; refusing to validate age safety` |
 | PL-23 | Policy | **Declared read time**: `metadata.estimated_minutes` is ADR-011 section 4's *fastest-finish* clock, the words on the shortest satisfying path divided by the band's `band_profile.reading_pace_wpm` anchor. A declared value differing from the derived one by more than 25% warns. Advisory: a rounded or deliberately padded editorial figure is legitimate, but the field is what a child sees when choosing a book, so a large mismatch is a broken promise. Skipped when the fastest-finish path is under `_MIN_PATH_WORDS_FOR_CLOCK` (200) words, where the derived clock is noise. | `PL-23 clock: declared estimated_minutes {declared} differs from the derived fastest-finish clock {derived} min ({words} words on the shortest satisfying path at {wpm} wpm) by {drift} in story '{story_id}' (advisory only)` |
 | PL-24 | Policy | **Ending mix**: two advisory shape checks over the ending set, which PL-15 (forbidden kinds) and PL-17 (ending count) do not cover. (a) No single `ending.kind` may exceed 60% of endings. (b) A winnability floor that is **style-aware**: prose must have at least 10% positive-valence endings, while a gamebook must have at least 3 distinct positive-valence endings. The gamebook rule is an absolute count, not a share, because a share floor calibrated against the committed corpus would flag every gamebook (all sit at 2-5% positive against prose's 15-70%); that spread is ADR-011 section 5's declared 'few wins and many fails' shape, not nine defects. | `PL-24 mix: ending kind '{kind}' is {n} of {total} endings ({share}), above the {ceiling} share ceiling in story '{story_id}' (advisory only)` |
+| PL-25 | Policy | **Depth to first decision**: nodes on the shortest path from `start_node` up to and including the first node offering >= 2 choices must sit inside the band's `band_profile.first_decision_window`. Past the ceiling WARNS; past `ARC_CEILING_MULTIPLE` x ceiling is an ERROR. Under the floor is an ERROR in one tier: a story opening on its own first choice gives the reader no situation to choose about, and unlike a too-long prologue there is no degree of it that reads as merely slow. The drafting guide states the same constraint from the other side (max choiceless stops in a row is at least 1 in every band). Introduced as a WARNING because 20 committed skeletons predated the rule; escalated once those were fixed and the catalog swept clean (AL-086). Applies to every story with a configured band, scale-classified or not, because a buried first choice is a band-level pacing defect rather than a scale one. A story with no decision node at all is left to PL-17, which already floors decision count. Anchored on JHM 2019 Table 4 (pages to first decision: median 4, range 2-8.25). | `PL-25 opening: first decision is {depth} node(s) in, past the band '{age_band}' ceiling {ceiling}[ and its hard limit {hard}] in story '{story_id}'` (past ceiling: WARNING, or ERROR when also past the hard limit); `PL-25 opening: first decision is {depth} node(s) in, under the band '{age_band}' floor {floor} in story '{story_id}'` (under floor: ERROR, blocking) |
+| PL-26 | Policy | **Decision density on the fastest finish** (advisory): nodes per decision along the fastest satisfying finish must not exceed `band_profile.nodes_per_decision_ceiling`. PL-20 and PL-26 measure the same *minimum node count* but deliberately do not read the same walk. Equally short paths all share a length, so PL-20's tiers are indifferent to which one is picked; they can differ in decision count, so PL-26 reads `policy._fewest_decision_shortest_path`, the equally fast walk carrying the FEWEST decisions, i.e. the worst density among them. That is forced by the rule being a ceiling: it must fire when *any* equally fast walk is a corridor. Sharing PL-20's arbitrary tie-break instead made the verdict flip on node renaming alone, mismeasuring 19 of 58 eligible catalog skeletons (AL-094). A **ceiling only**, deliberately: the rule guards the corridor, a story that satisfies every PL-17 breadth floor while walking the reader past few or no choices. It does not bound density from below, because a shortest path is biased toward decision nodes by construction (out-degree >= 2 makes a node likelier to sit on a fast route) while JHM's 3.28 was measured corpus-wide, so comparing them on the low side compares different quantities. A genuine 'choice gauntlet' guard would have to measure whole-graph density; see AL-084 / UW-C28. The ceiling is keyed by `narrative_style`, following the `_ENDINGS_FRACTION` and `_WORDS_PER_NODE` precedent: prose admits up to 6.0 nodes per decision (above the JHM 3.28 mean with room), a gamebook up to 4.0, because a numbered-section gamebook ends nearly every section in a choice by genre convention and judging it against a prose bar would let a real gamebook corridor pass. A fastest finish offering no decision at all also warns. Requires a declared `length` and `production_eligible`, so it is skipped for unclassified stories. | `PL-26 density: fastest finish averages {density} node(s) per decision ({n} decision(s) over {total} nodes), over the {ceiling} advisory ceiling in story '{story_id}'` |
 
 ---
 
@@ -213,7 +240,28 @@ applies the rules below; `publishing/service.py` raises
 | SR-6 | Series | **Young and Tier-1 chains are episodic**: a young-band or Tier-1 book must run with `carries_state=false`. Carrying state across books assumes a reader who returns to a specific save; the young bands and the variable-free tier do not support that contract. | `SR-6 series: book '{book_id}' is a young or Tier-1 story and must run an episodic (carries_state=false) series` |
 | SR-7 | Series | **Uniform carry mode**: `carries_state` must be the same across every book of a chain; a chain must not mix state-carrying and episodic books. | `SR-7 series: the chain mixes state-carrying and episodic books; carries_state must be uniform across a series` |
 | SR-8 | Series | **RESERVED, not implemented here.** Claimed by the open PR for the authoring-lessons workstream (#416). Do not reuse this id on `main` until that PR lands or closes; a rule id is free only when no *open* PR has claimed it. | n/a |
-| SR-9 | Series | **A satisfying exit must leave the next book winnable** (added 2026-07-26, B3). For a `carries_state` chain, every distinct variable state at a satisfying ending of book N is carried into book N+1 under the WS-G G3 rules (name match, type match, int clamp), and book N+1 must still work from there. Closes the gap SR-5 and Layer 2 both leave open: SR-5 tests ending existence and never traces state across the join, and Layer 2 only ever walks from `start_node` with the declared initials, so the state a continuation reader actually arrives with is outside every other rule's view. Two distinct failures are reported. (a) **The receiving book stops being sound**: its Layer-2 rules are re-run seeded from the carried entry, and any ERROR not also raised from its own declared initials is a cross-book defect. (b) **The continuation is unwinnable**: no satisfying ending is reachable from the carried entry, so a reader wins book N into a dead campaign. Entry states are sampled up to `_MAX_ENTRY_STATES` (64); exceeding that, or a capped walk, is reported as a truncated check rather than silently passed. | `SR-9 series: book {index} '{book_id}' can be completed with carried state {carried}, but entering book {next_index} '{next_id}' with that state raises Layer-2 errors it does not raise from its own declared initials: {new_errors} (an acquisition branch for a carried variable must be redesigned, not copied)` / `... leaves no satisfying ending reachable (the reader wins book {index} into an unwinnable continuation)` / `SR-9 series: book {index} '{book_id}' has more than {max} distinct satisfying exit states or capped its walk, so the continuation handoff into '{next_id}' was checked over a truncated sample` |
+| SR-9 | Series | **A satisfying exit must leave the next book winnable** (added 2026-07-26, B3). For a `carries_state` chain, every distinct variable state at a satisfying ending of book N is carried into book N+1 under the WS-G G3 rules (name match, type match, int clamp), and book N+1 must still work from there. Closes the gap SR-5 and Layer 2 both leave open: SR-5 tests ending existence and never traces state across the join, and Layer 2 only ever walks from `start_node` with the declared initials, so the state a continuation reader actually arrives with is outside every other rule's view. Two distinct failures are reported. (a) **The receiving book stops being sound**: its Layer-2 rules are re-run seeded from the carried entry, and any ERROR not also raised from its own declared initials is a cross-book defect. (b) **The continuation is unwinnable**: no satisfying ending is reachable from the carried entry, so a reader wins book N into a dead campaign. Entry states are sampled up to `MAX_ENTRY_STATES` (64, `validator/series.py`); exceeding that, or a capped walk, is reported as a truncated check rather than silently passed. | `SR-9 series: book {index} '{book_id}' can be completed with carried state {carried}, but entering book {next_index} '{next_id}' with that state raises Layer-2 errors it does not raise from its own declared initials: {new_errors} (an acquisition branch for a carried variable must be redesigned, not copied)` / `... leaves no satisfying ending reachable (the reader wins book {index} into an unwinnable continuation)` / `SR-9 series: book {index} '{book_id}' has more than {max} distinct satisfying exit states or capped its walk, so the continuation handoff into '{next_id}' was checked over a truncated sample` |
+
+---
+
+## Character Envelope (Participating Books Only)
+
+Rules proving that a book declaring `accepts_character` is safe across exactly the states a seeded reader can
+arrive in. Enforced by `validator/character.py`; specified in
+[ADR-028](./adr/adr-028-persistent-reader-characters.md) decision 5. Like the `SR` family these prove a
+cross-artifact handoff rather than a within-story property. All are ERROR severity and all set `blocked`.
+
+| Rule ID | Layer | Description | Failure Message Template |
+|---------|-------|-------------|--------------------------|
+| CH-1 | Character | **Vocabulary and declaration**: every `accepts_character` name is in the canonical vocabulary and is declared in `variables` with a matching type. | `CH-1 character: accepts_character declares '{name}', which is not in the canonical vocabulary {names}` / `CH-1 character: accepts_character declares '{name}' but the story declares no variable of that name` / `CH-1 character: '{name}' is declared as {actual} but the canonical vocabulary defines it as {expected}` |
+| CH-2 | Character | **Range equality**: each envelope range equals the declared variable's `min`/`max`. Equality, not containment: G3's runtime clamp is to declared bounds, so a narrower envelope would silently admit states the validator never walked. A variable with absent `min`/`max` cannot equal a bound at all, so an opted-in variable must declare both. | `CH-2 character: accepts_character range for '{name}' is {a}-{b} but the variable declares {c}-{d}; they must be equal` / `CH-2 character: '{name}' is in accepts_character but declares no min/max bounds; an opted-in variable must declare bounds equal to its envelope range {a}-{b}` |
+| CH-3a | Character | **Union dead branch**: a conditional choice must be visible in at least one configuration across the baseline walk (declared initials) and a walk from every `accepts_character` entry state, taken together. Union-quantified rather than per-state, unlike CH-3b: a choice invisible in one entry state but visible in another, or at baseline, is legitimately state-gated, not dead. Tier-2 only (mirrors Layer 2's own tier gate); walks once per entry state plus once for the baseline. | `CH-3a character: choice '{choice_id}' on node '{node_id}' is never visible in the baseline walk or in any of the {n} accepts_character entry states, in story '{story_id}'` |
+| CH-3b | Character | **Per-state regression**: an `accepts_character` entry state must not raise an L2-9 (stateful dead end), L2-10 (loop escape), or L2-14 (all-forbidden decision) that the book's own baseline walk (declared initials) does not already raise. Per-state, unlike CH-3a: whether a configuration is a dead end, cannot escape, or offers only forbidden outcomes is a property of the variable state it is reached in. The baseline diff is keyed on rule id, node id, choice id, and message (message embeds `var_state`), deliberately wider than SR-9's shared `rule_id\|node_id` signature: none of L2-9/L2-10/L2-14 ever set `choice_id`, so without the message two dead ends on the same node at two different entry states would collapse into one signature and mask the second as "already known". Tier-2 only. | `CH-3b character: accepts_character entry state {state} raises {rule_id}, which this book's own baseline walk does not: {message}` |
+| CH-4 | Character | **Satisfying-ending reachability**: every `accepts_character` entry state must still be able to reach a satisfying ending. Reuses SR-9's own reachability test (`satisfying_ending_reachable`) rather than a second implementation, so "the reader can still win" cannot drift between the series-continuation case and the character-envelope case. Tier-2 only. | `CH-4 character: accepts_character entry state {state} cannot reach any satisfying ending, in story '{story_id}'` |
+| CH-5 | Character | **Envelope size**: the envelope admits no more entry states than `MAX_ENTRY_STATES` (64, `validator/series.py`). An ERROR rather than SR-9's truncate-and-warn, because an envelope is declared rather than emergent. | `CH-5 character: accepts_character admits {n} entry states, above the {cap} cap; narrow a range or declare fewer variables` |
+| CH-6 | Character | **Namespace reservation, both directions**: a canonical variable name may be declared only by a book that opted in *and* covered it in the envelope. The opt-out half rejects a book that declares no `accepts_character` but still declares a canonical name (G3 carry is name-match, so a book that never opted in can still be seeded). The opt-in half rejects an opted-in book that declares a canonical-named variable its envelope omits: CH-1 only ever walks envelope -> variable, so this converse direction (variable -> envelope) needs its own check, or an uncovered canonical variable would still be seeded by G3 over states this book's Layer 2 walk never proved. | `CH-6 character: '{name}' is a reserved canonical character variable, but this story declares no accepts_character envelope; rename the variable or opt in` (opt-out half) / `CH-6 character: '{name}' is a reserved canonical character variable declared by this story, but accepts_character does not cover it; add it to the envelope or rename the variable` (opt-in half) |
+| CH-7 | Character | **Series exclusivity**: a book declaring `accepts_character` is not a non-first book of a `carries_state` series. Two independent sources of carried state in one book is unproved in v1. | `CH-7 character: book {index} of state-carrying series '{series_id}' may not also declare accepts_character` |
+| CH-8 | Character | **Build-node cost pre-flight**: a book whose base closure exceeds `cap / arity` configurations cannot host an archetype build node. `arity` is always `len(ARCHETYPE_ROSTER)` (6), the canonical vocabulary's real-archetype count; it is never derived from the envelope's declared span, because that span is attacker-influenced (a declared `1..6` span still names all six archetypes but would read as arity 5 if the span's own width were trusted). Measured at 6.00x for a six-way node, so the threshold is exactly 16,666 configurations: `100_000 // 6`, floor division against the 100,000 walk cap. Fails here with a named cause rather than as an opaque L2-12 cap ERROR. Fires on any book whose envelope declares an `archetype` span at all, including a carrier-only later book in a series that never sets `archetype` itself and pays no real build-node cost; that is a deliberate over-approximation, not a claim the book actually contains a build node. | `CH-8 character: a {arity}-way build node needs a base closure at or under {threshold} configurations, which this book exceeds; it cannot host the archetype build-node idiom` |
 
 ---
 
@@ -222,19 +270,31 @@ applies the rules below; `publishing/service.py` raises
 The validator applies rules in this order:
 
 1. L1-1 through L1-7 (graph; all stories). Stop if any L1 rule fails.
-2. PL-15 through PL-21, the PL-22 fail-closed guard, and the PL-23/PL-24 advisories
-   (age-policy gate; all stories). PL-19's story-mean sub-check, PL-23 and PL-24 are
-   advisory; the rest block. PL-22 fires only when the band has no configured
-   profile, in which case it is the sole finding and PL-15..PL-21 do not run.
+2. PL-15 through PL-21, the PL-22 fail-closed guard, and PL-23 through PL-26
+   (age-policy gate; all stories). PL-19's story-mean sub-check, PL-23,
+   PL-24, PL-26 and PL-25's ceiling short of its hard limit are advisory;
+   the rest block, including PL-25's floor. PL-22
+   fires only when the band has no configured profile, in which case it is the sole
+   finding and PL-15..PL-21 do not run. PL-25 runs for any story with a configured
+   band; PL-20 and PL-26 additionally require a declared `length` and
+   `production_eligible`, so an unclassified story is measured on breadth only.
 3. L2-8 through L2-14 (state-space; Tier-2 only). Stop if any L2 rule fails; L2-13 is a
    non-blocking scale advisory and never stops the run.
-4. RL-13 (advisory; all stories). Log warnings; continue.
-5. CG-1 through CG-4 (advisory; all stories) **only when `run_gate` is called with
+4. CH-1, CH-2, CH-3a, CH-3b, CH-4, CH-5, CH-6, CH-7, CH-8 (character envelope; ADR-028,
+   participating books only). CH-3a, CH-3b, and CH-4 walk the story once per
+   `accepts_character` entry state plus once for the baseline, and run only for
+   Tier-2 stories; see `validator/character.py`. CH-8 runs one further baseline
+   walk, unconditioned by tier or the CH-3a/CH-3b/CH-4 envelope-size gate above,
+   but only when the envelope declares an `archetype` span; it catches a build
+   node that would multiply that walk past the cap before L2-12 does, using a
+   fixed vocabulary-derived arity rather than the declared span's own width.
+5. RL-13 (advisory; all stories). Log warnings; continue.
+6. CG-1 through CG-4 (advisory; all stories) **only when `run_gate` is called with
    `enforce_grammar=True`**, which no production caller does today. Log warnings; continue.
-6. SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.
-7. SR-1 through SR-9 (series chain; series stories only) run **later and elsewhere**, at
+7. SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.
+8. SR-1 through SR-9 (series chain; series stories only) run **later and elsewhere**, at
    publish time over the whole chain rather than inside `run_gate` over one story. A book
-   can clear steps 1-6 at generation time and still be refused at publish by an SR error.
+   can clear steps 1-7 at generation time and still be refused at publish by an SR error.
 
 Stopping at the first Layer-1 failure is allowed for efficiency; all Layer-1 failures may also
 be collected in a single pass before reporting, which is preferred for repair-stage prompts

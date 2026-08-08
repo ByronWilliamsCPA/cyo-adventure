@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "Maren Coll reached the Salt Archive after dark, the previous keeper's keys still cold from the mail. The building stood high on the cliff above Saltmere, a stack of stone vaults that had guarded the town's records since Elias Verrin raised its walls a century ago. She had accepted the post to be distant from her own life, and the sea answered by breaking its habits on her very first night. The low tide should have drawn the water down and away. Instead it arrived wrong, climbing the rock in darkness, and below her the oldest vaults began to drink it in. She could hear the archive swallowing. Salt water moved along the lower floors, patient and deliberate, exactly as though it had been invited. In her pocket lay a note from Nan Ostler, the last living soul who had ever fed the archive its papers, asking urgently to speak before the year turned.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Take the keys and go down.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "Maren Coll reached the Salt Archive after dark, the previous keeper's keys still cold from the mail. The building stood high on the cliff above Saltmere, a stack of stone vaults that had guarded the town's records since Elias Verrin raised its walls a century ago. She had accepted the post to be distant from her own life, and the sea answered by breaking its habits on her very first night. The low tide should have drawn the water down and away. Instead it arrived wrong, climbing the rock in darkness, and below her the oldest vaults began to drink it in. She could hear the archive swallowing. Salt water moved along the lower floors, patient and deliberate, exactly as though it had been invited. In her pocket lay a note from Nan Ostler, the last living soul who had ever fed the archive its papers, asking urgently to speak before the year turned. Four ways to meet the drowning opened in front of her now. She could descend and catalogue the flooding vaults, or seek out old Nan across the headland. She could break the founder's sealed ledger, or walk out onto the cliff and read the reclaiming sea itself. Whatever she chose, the water was already rising, and it did not intend to wait for her.",
+      "body": "Four ways to meet the drowning opened in front of her now. She could descend and catalogue the flooding vaults, or seek out old Nan across the headland. She could break the founder's sealed ledger, or walk out onto the cliff and read the reclaiming sea itself. Whatever she chose, the water was already rising, and it did not intend to wait for her.",
       "is_ending": false,
       "choices": [
         {
@@ -2622,7 +2634,7 @@
         "id": "e_040",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Broke From the Founder’s Fear of Loss"
+        "title": "Broke From the Founder\u2019s Fear of Loss"
       }
     },
     {
@@ -2954,7 +2966,7 @@
         "id": "e_048",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Went Off the Founder’s Map and Kept a Scrap"
+        "title": "Went Off the Founder\u2019s Map and Kept a Scrap"
       }
     },
     {

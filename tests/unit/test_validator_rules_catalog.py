@@ -42,7 +42,14 @@ _CATALOG = _REPO_ROOT / "docs" / "planning" / "validator-rules.md"
 # production (``enforce_grammar`` defaults False, UW-C24) made it worse rather
 # than harmless, because the day that flag flips is the day four undocumented
 # rules start reporting.
-_RULE_ID_RE = re.compile(r"\b(?:CG|L1|L2|PL|RL|SAFE|SR)-\d+\b")
+#
+# CH joined this list on 2026-08-06 with ADR-028. The optional [ab] suffix
+# joined at the same time: CH-3 splits into a union-quantified CH-3a and a
+# per-state CH-3b, and "\d+\b" cannot match "CH-3a" because there is no word
+# boundary between "3" and "a". Without the suffix both rules would be enforced
+# in code and invisible here, which is the same drift that let the SR and CG
+# families go undocumented.
+_RULE_ID_RE = re.compile(r"\b(?:CG|CH|L1|L2|PL|RL|SAFE|SR)-\d+[ab]?\b")
 
 # Families the catalog delegates elsewhere rather than defining inline. PL-19,
 # PL-20 and PL-21 are specified in ADR-011 and the catalog says so explicitly;

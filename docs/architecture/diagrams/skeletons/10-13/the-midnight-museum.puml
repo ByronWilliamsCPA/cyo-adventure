@@ -6,9 +6,11 @@ skinparam backgroundColor #FAFAFA
 skinparam roundCorner 8
 hide empty description
 
-[*] --> n_start
-state n_start #BBDEFB
-n_start : setup · 120w
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 75w
+state n_start #FFF9C4
+n_start : choice · 50w
 state a_gems1 #D1C4E9
 a_gems1 : rising · 100w
 state a_gems_case #FFF9C4
@@ -214,6 +216,7 @@ e_neutral_evidence : "{VB_RESULT1}"
 state e_neutral_wiser #E0E0E0
 e_neutral_wiser : discovery (neutral)
 e_neutral_wiser : "{VD_RESULT}"
+n_open --> n_start : Feel your way to the hub.
 n_start --> a_gems1 : Slip into {ROUTE_A_PLACE}.
 n_start --> b_egypt1 : Head for {ROUTE_B_PLACE}.
 n_start --> c_archive1 : Try {ROUTE_C_PLACE} downstairs.
@@ -352,7 +355,7 @@ legend right
   The Midnight Museum
   Band 10-13 · Tier 1 · ~9 min
   Topology: branch_and_bottleneck
-  94 nodes · 19 endings (7+ / 3n / 9-)
+  95 nodes · 19 endings (7+ / 3n / 9-)
   Production-eligible
   Scale: short · prose
 endlegend

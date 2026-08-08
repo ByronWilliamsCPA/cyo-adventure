@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "<<FILL role=setup words=55 beats='{HERO} reaches the eaves of the {THRESHOLD} as the {TRIAL} {DEADLINE_SIGN} sounds, one day to cross the whole enchanted {SETTING_KIND} and reach the {Z6_NAME} by {DEADLINE} to be named among the {WARDEN}s'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Step in under the eaves.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "<<FILL role=setup words=88 beats='{HERO} reaches the eaves of the {THRESHOLD} as the {TRIAL} {DEADLINE_SIGN} sounds, one day to cross the whole enchanted {SETTING_KIND} and reach the {Z6_NAME} by {DEADLINE} to be named among the {WARDEN}s; four ways lead in, {ROUTE_A_CHAR}, {ROUTE_B_CHAR}, {ROUTE_C_CHAR}, and {ROUTE_D_CHAR}'>>",
+      "body": "<<FILL role=choice words=40 beats='four ways lead in, {ROUTE_A_CHAR}, {ROUTE_B_CHAR}, {ROUTE_C_CHAR}, and {ROUTE_D_CHAR}'>>",
       "is_ending": false,
       "choices": [
         {

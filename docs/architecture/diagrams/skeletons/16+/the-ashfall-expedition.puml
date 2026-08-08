@@ -6,7 +6,7 @@ skinparam backgroundColor #FAFAFA
 skinparam roundCorner 8
 hide empty description
 
-[*] --> n_start
+[*] --> n_open
 state n_d00 #D1C4E9
 n_d00 : rising · 70w
 state n_b00_0_0 #D1C4E9
@@ -35,8 +35,10 @@ n_b00_2_2 : rising · 82w
 state n_e00_2 #FFCDD2
 n_e00_2 : setback (negative)
 n_e00_2 : "Forced Retreat to {ENTRANCE}"
-state n_start #BBDEFB
-n_start : setup · 82w
+state n_open #BBDEFB
+n_open : setup · 50w
+state n_start #FFF9C4
+n_start : choice · 40w
 state n_b01_0_0 #D1C4E9
 n_b01_0_0 : rising · 70w
 state n_b01_0_1 #D1C4E9
@@ -1169,6 +1171,7 @@ n_b00_1_1 --> n_e00_1 : Commit to the crossing.
 n_b00_2_0 --> n_b00_2_1 : Keep going.
 n_b00_2_1 --> n_b00_2_2 : Keep going.
 n_b00_2_2 --> n_e00_2 : Commit to the crossing.
+n_open --> n_start : Call the company to order.
 n_start --> n_h01 : Press on along the safe line.
 n_start --> n_d00 : Scout a flanking line before moving up.
 n_start --> n_b00_0_0 : Cut straight across the open {HAZARD} to...
@@ -1833,7 +1836,7 @@ legend right
   The Ashfall Expedition
   Band 16+ · Tier 1 · ~30 min
   Topology: branch_and_bottleneck
-  505 nodes · 143 endings (3+ / 0n / 140-)
+  506 nodes · 143 endings (3+ / 0n / 140-)
   Production-eligible
   Scale: long · gamebook
 endlegend

@@ -65,11 +65,23 @@
    "description": "The Redtooth shamans bone sigil, key to the wardens ways."
   }
  ],
- "start_node": "n_start",
+ "start_node": "n_open",
  "nodes": [
   {
+   "id": "n_open",
+   "body": "You reach Barrowmere at dusk, three days out from Millbrook with your grandmother's short sword on your hip and four coppers hidden in your boot. The market row is shutting stall by stall, and up on the wall a watchman calls the hour into the cooling air.",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_open",
+     "label": "Come in under the gate lamp.",
+     "target": "n_start"
+    }
+   ]
+  },
+  {
    "id": "n_start",
-   "body": "You reach Barrowmere at dusk, three days out from Millbrook with your grandmother's short sword on your hip and four coppers hidden in your boot. The market row is shutting stall by stall, and up on the wall a watchman calls the hour into the cooling air. A small crowd has gathered at the notice board under the gate lamp, reading something and not talking about it. Across the way, candles burn along the gate square wall, and a little road shrine flickers beside the arch. Past all of it, warm as a promise kept, hangs the creaking sign of the Gull and Lantern.",
+   "body": "A small crowd has gathered at the notice board under the gate lamp, reading something and not talking about it. Across the way, candles burn along the gate square wall, and a little road shrine flickers beside the arch. Past all of it, warm as a promise kept, hangs the creaking sign of the Gull and Lantern.",
    "is_ending": false,
    "choices": [
     {

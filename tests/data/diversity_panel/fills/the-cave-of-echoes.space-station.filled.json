@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "Priya drifts through the docking airlock of the derelict station Halcyon, her repair-drone Pip humming along beside her. The station has powered down for its scheduled low-power drift, and for these quiet hours the corridors are hers to explore. Ahead, three dark openings breathe out stale, cool air, each one carrying its own signal. From the left comes a resonant power-hum, steady and low. From the right drifts a hiss of venting coolant. From straight ahead, faint and blinking, comes an intermittent beacon-ping.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Listen for which one carries.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "Priya drifts through the docking airlock of the derelict station Halcyon, her repair-drone Pip humming along beside her. The station has powered down for its scheduled low-power drift, and for these quiet hours the corridors are hers to explore. Ahead, three dark openings breathe out stale, cool air, each one carrying its own signal. From the left comes a resonant power-hum, steady and low. From the right drifts a hiss of venting coolant. From straight ahead, faint and blinking, comes an intermittent beacon-ping. Priya knows the reactor will spin back up and seal the bulkheads before long. She has to choose a signal to follow, and choose it now.",
+      "body": "Priya knows the reactor will spin back up and seal the bulkheads before long. She has to choose a signal to follow, and choose it now.",
       "is_ending": false,
       "choices": [
         {

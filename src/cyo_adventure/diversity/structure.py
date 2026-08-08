@@ -147,6 +147,23 @@ def structure_fingerprint(story: Storybook | Mapping[str, object]) -> str:
             labels, which is the shipped fill contract. A titled ending, a
             story title, or a rewritten choice label does not affect the
             fingerprint, since all three are leaf content, not structure.
+
+    Note:
+        **Every additive** :class:`~cyo_adventure.storybook.models.Storybook`
+        **field moves this hash**, including one that says nothing about
+        graph shape. :func:`_strip_leaf_content` is a *blacklist*: it pops
+        the four known prose keys and hashes whatever else the dump
+        contains, so a new field is included by default rather than
+        excluded by default. Adding one therefore rotates every digest ever
+        stored, and stored digests live outside the test suite, in
+        ``out/ws2/*/fingerprint-manifest.json`` and in
+        ``tests/data/diversity_panel/baseline.json``. The ADR-025 minor that
+        added ``accepts_character`` rotated 19 committed manifests this way
+        before anyone noticed. Adding a field means regenerating those
+        artifacts in the same change;
+        ``tests/unit/test_diversity_structure.py::
+        test_structure_fingerprint_is_pinned_to_a_literal_digest`` fails
+        first so the rotation announces itself.
     """
     model = coerce_storybook(story)
     canonical = _strip_leaf_content(model.model_dump(mode="json"))

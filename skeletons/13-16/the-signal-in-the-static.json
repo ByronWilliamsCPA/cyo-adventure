@@ -30,11 +30,23 @@
     "production_eligible": true
   },
   "variables": [],
-  "start_node": "n_start",
+  "start_node": "n_open",
   "nodes": [
     {
+      "id": "n_open",
+      "body": "<<FILL role=setup words=100 beats='{HERO} cannot sleep, so she climbs to the attic and switches on {KIN}'s old radio set; out of {NOISE} comes {SIGNAL} she heard last night, a voice reading a string of numbers, then {DEADLINE_SIGN} that resets and begins again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open",
+          "label": "Let the loop run once more.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
       "id": "n_start",
-      "body": "<<FILL role=setup words=155 beats='{HERO} cannot sleep, so she climbs to the attic and switches on {KIN}'s old radio set; out of {NOISE} comes {SIGNAL} she heard last night, a voice reading a string of numbers, then {DEADLINE_SIGN} that resets and begins again; three threads tug at her, {ROUTE_A_CLUE} buried in the numbers, {THRESHOLD}, and {ROUTE_C_CLUE} {KIN} kept'>>",
+      "body": "<<FILL role=choice words=60 beats='three threads tug at her, {ROUTE_A_CLUE} buried in the numbers, {THRESHOLD}, and {ROUTE_C_CLUE} {KIN} kept'>>",
       "is_ending": false,
       "choices": [
         {

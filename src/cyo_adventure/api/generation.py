@@ -631,10 +631,25 @@ async def validate_storybook_version(
         raise ResourceNotFoundError(msg)
 
     # #CRITICAL: timing: this route is guardian-reachable and run_gate is a
-    # multi-second synchronous CPU burn on a large story, so calling it inline
-    # let any guardian stall the entire API on demand (AL-035).
+    # synchronous CPU burn on a large story, so calling it inline let any
+    # guardian stall the entire API on demand (AL-035). Re-measured
+    # 2026-08-06 against real catalog skeletons: the largest book
+    # (skeletons/16+/the-longwinter-station.json, 248 nodes) runs in 0.8s
+    # with no character envelope and 49.6s with the canonical 27-state
+    # accepts_character envelope, a 64x multiplier, because the
+    # CH-3a/CH-3b/CH-4 rules re-walk the story once per entry state. Do not
+    # budget against the older 3.7s no-envelope figure quoted in
+    # api/node_edit.py's sibling marker; this is tens of seconds, not
+    # seconds. run_sync moves that off the event loop but does not bound the
+    # hold: anyio's worker pool is fixed-size (40 threads by default), so
+    # enough concurrent validations of a character-enabled large book
+    # exhaust it and stall every other offloaded call in the process,
+    # including the generation worker's own gate runs. Latent today only
+    # because no catalog book declares accepts_character.
     # #VERIFY: existing validate_version tests; behaviour is unchanged apart
-    # from yielding the event loop.
+    # from yielding the event loop. Re-measure the worst case before the
+    # first character-enabled book ships, by timing run_gate over the
+    # longwinter-station skeleton with a might/wits/nerve 0-2 envelope.
     result = await run_sync(run_gate, sv.blob)
     return ValidateResponse(
         blocked=result.blocked,
