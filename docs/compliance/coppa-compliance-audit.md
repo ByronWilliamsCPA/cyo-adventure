@@ -63,7 +63,7 @@ regardless of tier.
 > first. Re-verified against the code on 2026-08-06:
 >
 > - **C-01 is closed on its engineering half.** A consent record and a gate both exist. Consent is
->   captured by `POST /v1/onboarding` and persisted to paired, CHECK-enforced columns
+>   captured by `POST /api/v1/onboarding` and persisted to paired, CHECK-enforced columns
 >   (`db/models.py:415-417`); `api/profiles.py::_require_consent` (defined at line 290) gates profile
 >   creation at line 511. The audit's evidence line, "no consent code in `src/`/`frontend/src`", no
 >   longer holds. What remains open is the *legal* question of whether the chosen mechanism satisfies

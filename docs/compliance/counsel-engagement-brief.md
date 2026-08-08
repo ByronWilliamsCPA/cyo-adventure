@@ -82,7 +82,7 @@ built and shipped, not a design proposal:
   identity binding for the consent record rather than as a separate identity-verification step in
   its own right.
 - Before that guardian can create any child profile, our application (a dedicated screen, the
-  source file is `frontend/src/components/GuardianConsentPage.tsx`) presents specific consent
+  source file is `frontend/src/auth/GuardianConsentPage.tsx`) presents specific consent
   language and asks the guardian to do one of two things: draw a signature with a mouse, finger,
   or stylus on an on-screen canvas, or type their full legal name into a text field as an
   attestation in lieu of a drawn signature.
@@ -93,10 +93,19 @@ built and shipped, not a design proposal:
   typed name: the guardian's IP address, a timestamp, the version number of the consent language
   they agreed to, and the Supabase-authenticated account ID from the sign-in step above. This
   record is persisted in our database and is not editable by the guardian afterward.
-- No child profile, and therefore no collection of any information about a specific child, is
-  permitted to proceed until this consent record exists; this is enforced in code
-  (`src/cyo_adventure/api/profiles.py`, the function informally referred to internally as the
-  consent gate), not merely by a policy statement.
+- No guardian-created child profile, and therefore no collection of any information about a
+  specific child through the guardian-facing flow, is permitted to proceed until this consent
+  record exists; this is enforced in code (`src/cyo_adventure/api/profiles.py`, the
+  `_require_consent` check), not merely by a policy statement.
+- One other code path can create a child profile, and we flag it so counsel is working from a
+  complete picture rather than discovering it later. An administrator, meaning our own staff
+  rather than a guardian, can create a profile in any family through an admin-only endpoint
+  (`src/cyo_adventure/api/admin_profiles.py`), and that endpoint performs an administrator
+  authorization check but not the consent check described above. It is not reachable by
+  guardians and exists for support and operational correction. We do not believe it changes
+  the answer to the question in Section 1.3, which is about the guardian consent flow, but we
+  are not asking counsel to assume that: if the existence of a staff-operated bypass affects
+  the analysis, we would rather hear so now than after a filing.
 
 ### 1.3 The precise question for counsel
 

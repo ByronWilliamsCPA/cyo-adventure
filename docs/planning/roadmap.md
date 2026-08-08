@@ -60,7 +60,7 @@ full v1 (Phase 4b and Phase 5) and the later release rungs (R2/R3).
 | 3 Safety + Review | ✅ Delivered (backend) | moderation pipeline (#36), publish state machine + approval/send-back + core invariant (#34), review-surface API + save-state integrity (#45); guardian console UI is Phase 4a |
 | 4a Library + Profiles | ✅ Delivered (R1 feature-complete) | app shell/auth #56, profiles #60, library #68, guardian console #76, intake #69, assign #75 (all merged 2026-07-03) |
 | 4b Editor + Engagement | ✅ Substantially delivered (2026-07-20 audit) | Shipped 2026-07-17 in PR #270: node editor (`PATCH .../nodes/{id}`), endings tracker UI, read-aloud/TTS, guardian content-controls UI (banned themes), per-child permission envelopes, kid feedback flag. Real gaps remaining: bookmarks (not built at all), guardian device/storage view (revoke exists, download visibility doesn't) |
-| 4c Family Loops (NEW 2026-07-16) | ✅ Substantially delivered (2026-07-28 audit) | Shipped 2026-07-17 in PR #270: notification feed (`GET /notifications` + `NotificationBell.tsx`), guardian engagement visibility (`GET /families/me/reading-summary` + `ReadingPage.tsx`), kid-facing generation status, budget consent (envelopes + `GET /families/me/budget`). Push channel closed 2026-07-28: authenticated SSE (`GET /v1/notifications/stream`), `notificationsStream.ts` consumer wired into `NotificationBell.tsx` as a fallback-preserving addition to the poll (G10 flipped to ✅). Remaining gap: no server-scheduled digest job (S9 stays 🟡, narrowed to this one piece) |
+| 4c Family Loops (NEW 2026-07-16) | ✅ Substantially delivered (2026-07-28 audit) | Shipped 2026-07-17 in PR #270: notification feed (`GET /notifications` + `NotificationBell.tsx`), guardian engagement visibility (`GET /families/me/reading-summary` + `ReadingPage.tsx`), kid-facing generation status, budget consent (envelopes + `GET /families/me/budget`). Push channel closed 2026-07-28: authenticated SSE (`GET /api/v1/notifications/stream`), `notificationsStream.ts` consumer wired into `NotificationBell.tsx` as a fallback-preserving addition to the poll (G10 flipped to ✅). Remaining gap: no server-scheduled digest job (S9 stays 🟡, narrowed to this one piece) |
 | 4d Connections (NEW 2026-07-16) | ✅ Substantially delivered (2026-07-20 audit) | Shipped 2026-07-17 in PR #270: dual-guardian consent flow with an enforced guard at the recommendations read path (`api/recommendations.py::_is_dual_consented()`), kid-facing recommendation chips. Privacy-model erasure coverage for connections not independently re-verified in this audit pass |
 | 5 Hardening | 🟡 Partially delivered | Redis-backed rate limiter, ADR-007 purge job, offline-copy revocation, operator runbook, and a re-screen first cut are merged (see checklist below); performance pass, Sentry backups/restore drill, admin audit view, and the nightly/staging test ladder remain open |
 
@@ -119,14 +119,16 @@ done.**
    this row ("Not done ... only a working recommendation and no progress note since
    2026-07-16") is **superseded and was already understating the position when written**: the
    ADR was substantively amended 2026-08-01 and again 2026-08-06. Current state, decision by
-   decision: **D1** mechanism chosen and *implemented* (`POST /v1/onboarding` consent payload,
-   `GuardianConsentPage.tsx`, gated by `api/profiles.py::_require_consent`), with one named
-   legal question outstanding; **D2** child-directed posture confirmed by the owner 2026-08-06;
-   **D3** US-only confirmed 2026-07-20; **D4** artifact ownership confirmed (owner drafts,
-   counsel reviews) and both rule-mandated artifacts now exist
-   ([information-security-program.md](../compliance/information-security-program.md),
-   [data-retention-policy.md](../compliance/data-retention-policy.md)), with Safe Harbor
-   sequencing settled as counsel-first; **D5** corpus constraint confirmed 2026-08-06. The
+   decision: **D1** mechanism chosen and *implemented* (`POST /api/v1/onboarding` consent
+   payload, `GuardianConsentPage.tsx`, gated by `api/profiles.py::_require_consent`), with one
+   named legal question outstanding; **D2** child-directed posture confirmed by the owner
+   2026-08-06; **D3** US-only confirmed 2026-07-20; **D4** artifact ownership confirmed (owner
+   drafts, counsel reviews), with
+   [information-security-program.md](../compliance/information-security-program.md) published
+   and [data-retention-policy.md](../compliance/data-retention-policy.md) drafted 2026-08-06
+   but **not yet published** (three data classes still await an owner ruling on their deletion
+   window, tracked at `UW-N07`), and Safe Harbor sequencing settled as counsel-first; **D5**
+   corpus constraint confirmed 2026-08-06. The
    packet counsel receives is assembled at
    [counsel-engagement-brief.md](../compliance/counsel-engagement-brief.md). The ADR stays
    `status: proposed` and this row stays open because the remaining work is external: retaining
@@ -681,7 +683,7 @@ undo), bookmarks (a distinct save-slot feature) is not built at all.**
 - [x] Guardian device list/revoke view: every currently-active device grant for the
       family, with a revoke action per device (`GuardianShell` "Devices" nav item ->
       `frontend/src/guardian/DevicesPage.tsx`, calling the existing family-scoped
-      `GET`/`DELETE /v1/device-grants` endpoints in `api/device_grants.py`) (G15, ADR-014's
+      `GET`/`DELETE /api/v1/device-grants` endpoints in `api/device_grants.py`) (G15, ADR-014's
       own lost-device mitigation).
 - [ ] Guardian storage/download view: which books are downloaded on which device (G15
       remainder). No backend `offline/` module exists to report per-device download state;
@@ -717,7 +719,7 @@ This is the highest-leverage gap the capability review found after initiation it
 
 **Status (2026-07-28 update): all shipped 2026-07-17 in PR #270, plus the push transport
 closed 2026-07-28. Delivery is now poll-based (client re-polls with `since`) AND
-push-based (authenticated SSE, `GET /v1/notifications/stream`, with the poll kept as a
+push-based (authenticated SSE, `GET /api/v1/notifications/stream`, with the poll kept as a
 fallback for a connection that cannot use SSE); "alert on safety" was already a real,
 code-enforced distinct tier via `severity`. The one genuine remaining gap is a
 server-scheduled digest job, which no code in this repo implements.**

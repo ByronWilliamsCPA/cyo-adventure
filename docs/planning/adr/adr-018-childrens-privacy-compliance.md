@@ -178,7 +178,7 @@ satisfies 312.5(b)(2)(i)'s "signed" requirement is the single highest-risk open 
 this decision and should be the first thing reviewed in the drafted consent-flow copy
 (`docs/compliance/` DPIA and Privacy Notice drafts, in progress).
 
-**Implemented 2026-07-20.** `POST /v1/onboarding`'s `consent` payload
+**Implemented 2026-07-20.** `POST /api/v1/onboarding`'s `consent` payload
 (`accepted`/`policy_version`/`signer_name`) persists onto
 `User.consent_accepted_at`/`consent_policy_version`/`consent_signer_name`/`consent_ip`
 (paired, CHECK-enforced); `api/profiles.py::_require_consent` gates
@@ -252,22 +252,30 @@ elsewhere in this repository.
   most of the WISP's substance; what is missing is the written program document that names
   it, its cadence, and its owner.
 
-  **Status corrected 2026-08-06: both artifacts now exist, so neither is an open drafting
-  task.** (a) The written Information Security Program is
+  **Status corrected 2026-08-06: both artifacts now exist, but only (a) satisfies the rule
+  today.** (a) is complete and published; (b) is drafted, not yet published, and still
+  carries three data classes with no deletion window set, so D4's published-policy leg is
+  not yet met. (a) The written Information Security Program is
   [information-security-program.md](../../compliance/information-security-program.md),
   `status: published`, and it already carries all four mandated elements: the annual
   risk-assessment cadence (section 3), the vulnerability-testing cadence tied to the
   scanner suite and `SECURITY.md`'s severity/response table (section 3), vendor and
   service-provider due diligence over this ADR's counterparty list (section 4), and a named
   compliance owner (section 2). It predates this amendment, which is why the amendment
-  described it as missing. (b) The published written data-retention policy is
-  [data-retention-policy.md](../../compliance/data-retention-policy.md), created 2026-08-06.
-  It consolidates the per-category schedule resolved 2026-07-20 in
-  `coppa-gdpr-remediation-plan.md` (which governs, and is reproduced rather than
-  re-derived) with the guardian-facing table in `privacy-notice.md` and the per-activity
-  view in `records-of-processing-activities.md`, and adopts the additional categories
-  `UW-N07` names. Both go to counsel as review items under this decision's
-  owner-drafts/counsel-reviews split, not as work still to be done.
+  described it as missing. (b) The written data-retention policy is
+  [data-retention-policy.md](../../compliance/data-retention-policy.md), created 2026-08-06
+  and currently `status: draft`. It consolidates the per-category schedule resolved
+  2026-07-20 in `coppa-gdpr-remediation-plan.md` (which governs, and is reproduced rather
+  than re-derived) with the guardian-facing table in `privacy-notice.md` and the
+  per-activity view in `records-of-processing-activities.md`, and adopts the additional
+  categories `UW-N07` names. **Three of its classes carry no window yet** and are written
+  as "Not yet set, owner ruling required" rather than given an invented number: consent
+  evidence, product analytics, and application logs. The rule requires a hard deletion
+  timeline for *each* class of children's data, and product analytics and application logs
+  are both children's data, so (b) does not discharge D4 until those three rulings land and
+  the document moves to `status: published`. That residual is tracked at `UW-N07`. Both go
+  to counsel under this decision's owner-drafts/counsel-reviews split: (a) as finished work
+  for review, (b) as a draft with three named gaps.
 - **Evaluate COPPA Safe Harbor membership (PRIVO, kidSAFE, ESRB Privacy Certified) as an
   explicit Track 2 task.** A Safe Harbor program would answer D1's flagged highest-risk
   question (whether the signature-capture flow satisfies 312.5(b)(2)(i)) with a
@@ -309,7 +317,7 @@ no planned corpus needs child-originated data.
 wanted in a training set, the D1 consent flow gains a separate opt-in toggle first, before
 any such data is collected for that purpose: a `policy_version` bump plus an independent,
 default-off checkbox whose refusal has no effect on service access. That is a small change
-against the existing `POST /v1/onboarding` consent payload and `GuardianConsentPage.tsx`,
+against the existing `POST /api/v1/onboarding` consent payload and `GuardianConsentPage.tsx`,
 but it must precede collection, not follow it.
 
 Decision needed: owner confirms the corpus constraint as the default, or opts to build the
