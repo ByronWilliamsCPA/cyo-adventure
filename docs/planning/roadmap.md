@@ -115,9 +115,24 @@ done.**
    scheduled run can succeed (same infra-secrets caveat as item 2).
 4. ✅ **Done.** `validator-rules.md` has a PL-22 entry (band profile fail-closed);
    `authorization-matrix.md` carries rows for the already-shipped admin surfaces.
-5. ❌ **Not done.** `adr-018-childrens-privacy-compliance.md` is still `status: proposed`
-   with D1/D2/D3 each showing only a working recommendation and no counsel sign-off or
-   progress note since 2026-07-16.
+5. 🟡 **Owner side done 2026-08-06; blocked on external counsel.** The 2026-07-20 wording of
+   this row ("Not done ... only a working recommendation and no progress note since
+   2026-07-16") is **superseded and was already understating the position when written**: the
+   ADR was substantively amended 2026-08-01 and again 2026-08-06. Current state, decision by
+   decision: **D1** mechanism chosen and *implemented* (`POST /v1/onboarding` consent payload,
+   `GuardianConsentPage.tsx`, gated by `api/profiles.py::_require_consent`), with one named
+   legal question outstanding; **D2** child-directed posture confirmed by the owner 2026-08-06;
+   **D3** US-only confirmed 2026-07-20; **D4** artifact ownership confirmed (owner drafts,
+   counsel reviews) and both rule-mandated artifacts now exist
+   ([information-security-program.md](../compliance/information-security-program.md),
+   [data-retention-policy.md](../compliance/data-retention-policy.md)), with Safe Harbor
+   sequencing settled as counsel-first; **D5** corpus constraint confirmed 2026-08-06. The
+   packet counsel receives is assembled at
+   [counsel-engagement-brief.md](../compliance/counsel-engagement-brief.md). The ADR stays
+   `status: proposed` and this row stays open because the remaining work is external: retaining
+   counsel and getting rulings. Register home: `UW-M03`. **This is a long-lead item on the
+   critical path to Phase 7 and the R2/R3 rungs, and it does not block R1;** every week the
+   engagement is not started is a week added to R2/R3 regardless of engineering pace.
 
 ### Where every open register item lands
 
