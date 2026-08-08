@@ -12,11 +12,13 @@ component: Development-Tools
 source: "Direct review of src/cyo_adventure/api, src/cyo_adventure/db/models.py, src/cyo_adventure/events, frontend/src/offline, frontend/src/player at commit 65883a1 (2026-08-08), synthesizing docs/planning/privacy-model.md (v0.3), docs/planning/adr/adr-016, adr-017, adr-018 (amended 2026-08-01), and docs/compliance/records-of-processing-activities.md, processor-dpa-checklist.md, coppa-compliance-audit.md (commit c9dbfa9, 2026-07-10), coppa-gdpr-remediation-plan.md, gdpr-compliance-review.md"
 ---
 
-> **Status**: Draft | **Version**: 1.0 | **Compiled**: 2026-08-08
-> **Code reviewed at**: commit `65883a1` on `main`
+> **Status**: Draft | **Version**: 1.1 | **Compiled**: 2026-08-08 | **Updated**: 2026-08-08
+> **Code reviewed at**: commit `65883a1` on `main` (Section 5's two resolutions re-verified against
+> the working tree directly, same date)
 > **Scope**: `src/cyo_adventure/api/`, `src/cyo_adventure/db/models.py`, `src/cyo_adventure/events/`,
 > `src/cyo_adventure/story_requests/`, `src/cyo_adventure/moderation/`, `src/cyo_adventure/generation/`,
-> `frontend/src/offline/`, `frontend/src/player/`
+> `src/cyo_adventure/covers/`, `src/cyo_adventure/core/observability.py`, `frontend/src/offline/`,
+> `frontend/src/player/`
 
 ## 0. Important disclaimer
 
@@ -24,8 +26,24 @@ This is an engineering-derived record, not legal advice, consistent with the sta
 carried by every sibling document in this directory. Several rows below cite
 `coppa-compliance-audit.md` (dated 2026-07-10), which predates the ADR-018 consent implementation
 (2026-07-20) and the D5 AI-training amendment (2026-08-01). Where a newer document supersedes an
-older finding this record says so and cites both. Two direct conflicts between project documents
-are recorded rather than silently resolved: see [Section 5](#5-flagged-conflicts).
+older finding this record says so and cites both. Two conflicts between project documents that this
+matrix originally flagged as unresolved (cover-art PII screening, Sentry wiring status) have since
+been checked directly against current code and resolved: see [Section 5](#5-resolved-conflicts).
+Neither resolution changes Section 1's open-blocker flag on Event 6 (the classifier leg, ADR-018
+Blocker 1b), which is a separate, still-genuinely-open item.
+
+This matrix, together with `docs/security/assurance-register.md` (a broader, project-agnostic
+17-category control-and-obligation catalog), was checked 2026-08-08 against GDPR, GDPR-K, COPPA,
+and applicable US state law for whether enough is captured to *monitor* what is collected and how
+it is used, not only to describe it once. That verification found the event/vendor-level analysis
+in this matrix substantially sufficient, but found no operating mechanism that keeps either document
+current as code changes (the register's own reassessment trigger, O-70, and quarterly state-law
+refresh, O-108, are both specified and unbuilt), and found two regulatory areas absent from both
+documents at the time: GDPR Article 8's per-member-state child-consent age, and US state sectoral
+security law. The state-sectoral-security gap was closed the same day: `assurance-register.md` now
+carries O-120 and two not-applicable determinations (NYDFS Part 500, California SB-327). GDPR
+Article 8 remains unrecorded as of this update; low urgency while GDPR has not attached (US-only,
+per the register's T4 determination), but still an open item, not a closed one.
 
 An interactive version of this record (sortable summary table, per-event cards) was also published
 as a Claude Artifact during authoring; this markdown file is the durable, versioned copy and is the
@@ -119,11 +137,16 @@ event matrix in Section 3 can reference it by name instead of repeating it. "DPA
 
 - **Purpose**: admin-triggered AI cover art per storybook version, from a metadata-derived prompt
   (ADR-017).
-- **What it receives**: see the flagged conflict in Section 5. Two project documents disagree on
-  whether a protagonist name and prose excerpt reach this prompt unscreened.
+- **What it receives**: title, protagonist name (recovered from `concept.brief`), themes, a
+  240-character prose excerpt, and age band (`covers/prompt.py::build_cover_prompt`), **screened by
+  the PII guard before dispatch**. Verified directly in code: `covers/service.py:243-254` recovers
+  the owning concept's protagonist name and family id, builds the prompt, then calls
+  `assert_prompt_pii_safe(prompt, forbidden=pii)` against the family's registered child display
+  names before the Gemini call. This resolves the conflict previously recorded here; see Section 5,
+  which now records the resolution rather than an open disagreement.
 - **Retention**: unconfirmed; DPA not yet executed.
 - **Training permitted**: unconfirmed.
-- **Status**: documentation conflict; DPA not executed.
+- **Status**: PII-guarded (verified 2026-08-08); DPA not executed.
 
 ### Cloudflare R2, cover-image object storage
 
@@ -151,10 +174,16 @@ event matrix in Section 3 can reference it by name instead of repeating it. "DPA
 
 - **Purpose**: exception monitoring, hardcoded by design to exclude child-linked content;
   correlation IDs only, no reading-state snapshots.
-- **What it receives**: incidental only, if any event above throws an exception mid-request.
+- **What it receives**: incidental only, if any event above throws an exception mid-request, and
+  only when a DSN is configured (see Status). Integration is verified in code:
+  `core/observability.py::init_sentry`, called from `app.py:603`, wraps `sentry_sdk.init(...)` with
+  `send_default_pii=False` on every call path, asserted by
+  `tests/unit/test_observability.py::test_init_sentry_disables_pii`.
 - **Retention**: per Sentry's platform default; not independently confirmed.
 - **Training permitted**: N/A.
-- **Status**: no child content by design; wiring status disputed, see Section 5.
+- **Status**: integration exists in current code (`sentry-sdk>=2.66.0` dependency, `pyproject.toml`)
+  and is a documented no-op unless `SENTRY_DSN` is set (`core/config.py:953`, unset by default in
+  `.env.example`). Resolves the conflict previously recorded here; see Section 5.
 
 ---
 
@@ -417,45 +446,58 @@ Facts that apply across the whole matrix rather than to any one row.
 
 ---
 
-## 5. Flagged conflicts
+## 5. Resolved conflicts
 
-Two places where the project's own compliance documents disagree with each other. Rather than
-silently pick a side, both are recorded here so whoever owns the fix can re-verify against current
-code.
+Two places where the project's own compliance documents disagreed with each other as of the
+2026-08-08 compiling of this matrix. Both are now resolved against current code (verified
+2026-08-08) rather than left open; the original disagreement is kept below the resolution so the
+record of what was uncertain, and why, is not lost.
 
 ### Google Gemini cover-art prompt: does child-derived content reach it unscreened?
 
-ADR-017 and `privacy-model.md` v0.3 (both 2026-07-16 / 2026-07-29) state cover-art prompts "derive
-only from story metadata" and that "no child PII reaches the image provider," describing the same
-posture as the PII guard on the text-generation path.
+**Resolved: no, it is PII-guarded.** Direct read of current code confirms `covers/service.py:243-254`
+recovers the owning concept's protagonist name and family id
+(`_recover_concept_context`), builds the prompt (`build_cover_prompt`), builds a `PiiContext` from
+the family's registered child display names (`_pii_context_for_family`), and calls
+`assert_prompt_pii_safe(prompt, forbidden=pii)` before the Gemini call, raising and failing the
+cover job rather than dispatching an unscreened prompt. The guard's own comment at
+`covers/service.py:246-252` states it was added specifically because the cover-art prompt was, at
+one point, "the one path in the generation pipeline with zero PII screening." Two tests exercise
+the block: `tests/integration/test_cover_service.py::test_generate_cover_blocks_on_registered_child_name_in_prompt`
+and `::test_generate_cover_blocks_on_email_shaped_content_in_prompt`, both asserting the job reaches
+`cover_status == "failed"` and the image provider is never called. `git log -p` on
+`covers/service.py` shows the guard call already present in the earliest tracked revision reachable
+from `main`, so no exact introduction date is recoverable from history, only that it predates this
+matrix's authoring.
 
-`coppa-compliance-audit.md` (dated 2026-07-10, finding H-02) found the opposite in code at that
-commit: `covers/` never imports the PII guard at all, and the cover prompt includes the protagonist
-name recovered from `concept.brief` plus a 240-character prose excerpt, "the weakest egress path in
-the system."
-
-The audit predates the ADR by six days and the privacy-model revision by nineteen; it is possible
-H-02 was remediated in that window and the newer documents are simply the more current truth. It is
-equally possible the newer documents describe intent rather than shipped behavior, echoing this same
-audit's finding M-04 (a different document asserting a control that didn't exist). This record did
-not re-read `covers/prompt.py` and `covers/service.py` against current `main` to settle it, and
-should not paper over the disagreement by picking whichever answer sounds better.
-**Re-verify `covers/prompt.py` and `covers/service.py` directly before treating either claim as
-current.**
+**What was uncertain and why**: ADR-017 and `privacy-model.md` v0.3 (2026-07-16 / 2026-07-29) stated
+cover-art prompts "derive only from story metadata" with "no child PII reaches the image provider."
+`coppa-compliance-audit.md` (dated 2026-07-10, finding H-02) had found the opposite at that commit:
+`covers/` importing no PII guard at all. The audit predates both newer documents, and the newer
+documents turn out to be the current truth; H-02 was a real finding at the commit it audited and has
+since been fixed, not a case of a document asserting a control that never existed (contrast with the
+audit's own finding M-04, which is a case of exactly that pattern elsewhere in the same audit).
 
 ### Sentry: wired up, or not?
 
-`records-of-processing-activities.md` and `processor-dpa-checklist.md` both list Sentry as a live
-processor with a DPA row awaiting execution, describing it as receiving error telemetry today.
+**Resolved: wired up, currently inactive by default.** Direct read of current code confirms a real
+integration exists: `sentry-sdk>=2.66.0` is a declared dependency (`pyproject.toml:88`),
+`core/observability.py::init_sentry` wraps `sentry_sdk.init(...)` with `send_default_pii=False`
+asserted by `tests/unit/test_observability.py::test_init_sentry_disables_pii`, and `app.py:603`
+calls `init_sentry(settings)` on startup. It is a documented no-op unless `SENTRY_DSN` is set
+(`core/observability.py:75-77`, `core/config.py:953`), and `.env.example` ships it unset. So: the
+code path is live in `main`; whether Sentry is actually *receiving* telemetry from any given
+deployment depends on whether that deployment's environment sets `SENTRY_DSN`, which this record
+does not have visibility into.
 
-`coppa-compliance-audit.md` (2026-07-10) reports the opposite as a "negative finding (good)": "No
-Sentry integration exists (only a commented `SENTRY_DSN` placeholder... no `sentry_sdk` import
-anywhere)."
-
-Same pattern as above: the audit is the older source. Given Sentry is explicitly designed to
-exclude child-linked content either way, this conflict is lower-stakes for the child-origin matrix
-specifically than the cover-art one, but it changes whether Sentry belongs in Section 2's vendor
-register as live or as planned-only.
+**What was uncertain and why**: `records-of-processing-activities.md` and
+`processor-dpa-checklist.md` both listed Sentry as a live processor. `coppa-compliance-audit.md`
+(2026-07-10) had reported the opposite as a "negative finding (good)": no Sentry integration
+existed, no `sentry_sdk` import anywhere. Same pattern as the cover-art conflict: the audit is the
+older source, and the integration was built after that audit ran. Sentry's design (PII excluded by
+contract, verified by test) means this conflict was always lower-stakes for child data specifically
+than the cover-art one, but it does settle where Sentry belongs in Section 2's vendor register: as
+an integration that exists in code, not as planned-only.
 
 ---
 
@@ -499,9 +541,11 @@ leaves the family regardless of this mechanism.
 | --- | --- |
 | `docs/planning/privacy-model.md` | Data classification, retention rules, and the classifier/generation-leg blocker split this matrix's event-level detail is grounded in. |
 | `docs/planning/adr/adr-016-recommendation-sharing-social-boundary.md` | Source for Event 9's ring-2 consent model. |
-| `docs/planning/adr/adr-017-ai-cover-art.md` | Source for the Google Gemini vendor entry; one side of the Section 5 conflict. |
+| `docs/planning/adr/adr-017-ai-cover-art.md` | Source for the Google Gemini vendor entry; the ADR side of the Section 5 cover-art resolution, confirmed correct against current code. |
 | `docs/planning/adr/adr-018-childrens-privacy-compliance.md` | Source for D1 and D5 in Section 6, and the Blocker 1a/1b split referenced in Event 6. |
-| `docs/compliance/records-of-processing-activities.md` | Source for the vendor list and retention table this matrix's Section 2 draws from; one side of the Section 5 Sentry conflict. |
+| `docs/compliance/records-of-processing-activities.md` | Source for the vendor list and retention table this matrix's Section 2 draws from; the RoPA side of the Section 5 Sentry resolution, confirmed correct against current code. |
 | `docs/compliance/processor-dpa-checklist.md` | Source for each vendor's DPA-execution status in Section 2. |
-| `docs/compliance/coppa-compliance-audit.md` | Source for the H-02 and M-04 findings central to Section 5's conflicts; also the origin of several file:line citations reused here after re-verification against current code. |
+| `docs/compliance/coppa-compliance-audit.md` | Source for the H-02 and M-04 findings central to Section 5's now-resolved conflicts, both since fixed in code; also the origin of several file:line citations reused here after re-verification against current code. |
 | `docs/compliance/coppa-gdpr-remediation-plan.md` | Source for the retention windows referenced throughout Section 3. |
+| `docs/security/assurance-spine.md` | Portable, project-agnostic 17-category control-and-obligation spine; the source of the seventeen SP categories and the regime-applicability trigger method `assurance-register.md` instantiates. |
+| `docs/security/assurance-register.md` | This project's instantiation of the spine: 117 obligation rows (O-01 to O-120) plus the regulatory-applicability determination for every spine-catalogued regime, including O-120 (state information-security statutes) added during this matrix's 2026-08-08 sufficiency verification. The broader monitoring-capability record this matrix's event-level detail feeds into. |

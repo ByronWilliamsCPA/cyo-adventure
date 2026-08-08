@@ -108,6 +108,7 @@ discovery. This is the same treatment GDPR gets: written down before it binds.
 | --- | --- | --- |
 | **State comprehensive privacy** (20 states as of Feb 2026) | First user outside the operator's household in a covered state, above any applicable threshold | O-97 jurisdiction matrix owns the determination |
 | **State minors' design codes** (CA AADC, MD, NE, VT, CT, TX SCOPE, FL HB 3, UT) | Public launch. Track enactment and litigation status separately; several are partially enjoined | O-94, O-97 |
+| **State information-security statutes** (NY SHIELD Act, Massachusetts 201 CMR 17.00) | First NY or MA resident outside the operator's household. Neither statute carries a minimum company-size or record-count threshold, unlike several comprehensive-privacy laws | O-120. Distinct from O-97's comprehensive-privacy/design-code determination and from O-61's COPPA-scoped, children-only security program: SHIELD and 201 CMR protect **all** NY/MA residents' private information |
 | **App store accountability acts** (TX SB 2420, UT, LA, AL) | Store distribution at R2/R3. Duties land on the **developer**: age rating, ingest store age and consent signals, re-trigger consent on significant change | O-98 |
 | **App store policies** (Apple Kids, Google Play Families) | Store submission | O-99 |
 | **GDPR / UK GDPR** | First EU or UK child or guardian | O-57 to O-60, O-93, O-34 |
@@ -127,8 +128,13 @@ discovery. This is the same treatment GDPR gets: written down before it binds.
 HIPAA (no PHI), GLBA (not a financial institution), SOX and SEC disclosure (not a public company),
 FCRA (no consumer reports or eligibility decisions), VPPA (no video), FedRAMP, CMMC, NIST 800-171,
 DFARS (no government contract), EAR/ITAR/OFAC (no export-controlled technology; geo-restriction
-still worth considering at public launch), NIS2, DORA, DMA, Data Act, eIDAS 2 (no trigger).
-Each carries the obvious reassessment trigger: the fact that made it N/A changing.
+still worth considering at public launch), NIS2, DORA, DMA, Data Act, eIDAS 2 (no trigger),
+**NYDFS Part 500 / 23 NYCRR 500** (not a DFS-licensed bank, insurer, or financial-services entity;
+T3 sector exclusion), **California SB-327** (Cal. Civil Code §§ 1798.91.04-1798.91.06; not a
+manufacturer of a physical connected/IoT device, the product is software-only).
+Each carries the obvious reassessment trigger: the fact that made it N/A changing (for NYDFS, the
+product adding a DFS-licensed offering; for SB-327, manufacturing or white-labeling a physical
+connected device).
 
 ### DSA Art. 28 and UK OSA classification
 
@@ -331,10 +337,18 @@ First tranche of work. Each invalidates multiple rows at once.
 
 ## Register rows
 
-One hundred and sixteen items, carrying provisional `O-nn` IDs that become `SEC-nnn` when the
+One hundred and seventeen items, carrying provisional `O-nn` IDs that become `SEC-nnn` when the
 namespace lands. Three are deferred triggers (O-76, O-98, O-99), so the active count is one hundred
-and thirteen, which is **far above** the ~60 ceiling one maintainer can review meaningfully.
+and fourteen, which is **far above** the ~60 ceiling one maintainer can review meaningfully.
 Trimming is the maintainer's decision, not a silent truncation.
+
+**O-120 added post-reconciliation (compliance-verification pass, after 2026-08-02).** The
+2026-08-02 reconciliation below fixed the count at 116/113; a subsequent compliance-verification
+pass found the state-sectoral-security family (NY SHIELD Act, Massachusetts 201 CMR 17.00, NYDFS
+Part 500, California SB-327) absent from every applicability table, a genuine gap under this
+document's own instantiation contract, and added O-120 plus the two not-applicable determinations
+(NYDFS, SB-327) in the regulatory-applicability tables above. The count is 117/114 as of that
+addition; recount before trusting either figure further, per the method below.
 
 Each row carries the fifteen fields the spine's row schema requires. Where a field could not be
 derived from the row's own check, the enclosing section, or this document's audit sections, it
@@ -349,8 +363,8 @@ active", and the lifecycle section separately recorded a decision to accept "81 
 figures were wrong, and the error was load-bearing rather than cosmetic: it presented the register
 as six rows over a review ceiling it is actually fifty-three rows over, and it recorded a
 row-budget decision whose stated purpose was to prevent a budget being silently exceeded. The
-authoritative count is a count of `#### O-<digits>` headings within this section: 116 rows, IDs
-running O-01 to O-119 with O-63, O-64, and O-65 unassigned. Recount with
+authoritative count is a count of `#### O-<digits>` headings within this section: 117 rows, IDs
+running O-01 to O-120 with O-63, O-64, and O-65 unassigned. Recount with
 `grep -cE '^#### O-[0-9]+$'`. Note that O-117 and O-119 also appear as the first cell of the
 initial-build commitments table below; those are cross-references to rows defined here, not
 additional rows, and the heading-anchored pattern above deliberately excludes them.
@@ -2563,6 +2577,48 @@ posture at a trust boundary must be verified from outside that boundary.
   by a suspect workflow run is rotated automatically; agent identities can be revoked within a
   written, annually tested target time
 
+#### O-120
+
+- **Category:** SP-11
+- **Framework ref:** not determined
+- **Legal ref:** NY SHIELD Act (NY General Business Law §899-bb, amending §899-aa); Massachusetts
+  201 CMR 17.00 (Standards for the Protection of Personal Information of Residents of the
+  Commonwealth, M.G.L. c. 93H)
+- **Class:** MANUAL
+- **Protected property:** A written information security program exists covering **all** NY and MA
+  residents' private information, not only children's, implementing reasonable administrative,
+  technical, and physical safeguards (SHIELD) and 201 CMR 17.00's more prescriptive technical
+  requirements (encryption of personal information in transit and at rest, unique authentication
+  credentials, access controls) once a Massachusetts resident exists.
+- **Verification target:** The written information security program document, checked specifically
+  for all-resident scope (not the COPPA-scoped, children-only program at O-61), and, once a
+  Massachusetts resident exists, the 201 CMR 17.00 technical controls (encryption of PI in transit
+  and at rest, unique credentials, access control) in the deployed system.
+- **Failure oracle:** A NY or MA resident's private information is collected with no written
+  security program covering it, or, once a Massachusetts resident exists, the program does not
+  implement 201 CMR 17.00's named technical requirements.
+- **Negative control:** not determined
+- **Trigger:** First NY or MA resident outside the operator's household. Neither statute carries a
+  minimum company-size or record-count threshold, unlike several comprehensive-privacy laws;
+  attachment is not deferrable by scale the way some other state regimes are.
+- **Existing coverage:** none. O-61's written children's-data security program (COPPA §312.8) is
+  adjacent but does not satisfy this row on its own: SHIELD and 201 CMR protect all NY/MA
+  residents' private information, not only children's, and 201 CMR's specific technical mandates
+  (encryption, unique credentials) go beyond what O-61's Check text names. A single written
+  program could satisfy both rows if scoped and drafted to cover both populations; that scoping
+  decision has not been made.
+- **Phase home:** unassigned
+- **Owner:** core-maintainer
+- **Last verified:** not verified
+- **Status:** mechanism unproven
+- **Check:** A written information security program, distinct in scope from O-61's children-only
+  program, covers all NY and MA residents' private information with reasonable safeguards (SHIELD
+  Act) and 201 CMR 17.00's specific technical requirements (encryption of PI in transit and at
+  rest, unique authentication credentials, access controls), in place before the first NY or MA
+  resident outside the operator's household is onboarded. Filed under SP-11 rather than SP-13
+  because, unlike O-61 and the state minors' design codes at O-94/O-97, neither statute is a
+  protected-population duty: both attach to any resident's private information regardless of age
+
 ### SP-12 Data Lifecycle, Rights, Processors, Transfers
 
 #### O-31
@@ -3418,11 +3474,14 @@ different question.
 6. **Decide the row budget, against the corrected count.** A prior entry recorded "Decided
    2026-08-02: 81 rows accepted, no trimming", on the reasoning that a budget silently exceeded is
    indistinguishable from one never considered. That reasoning holds; the number did not. The
-   register carries 116 rows, 113 of them active, so the decision was taken against a figure 35
-   rows below the real one and the budget was silently exceeded after all, by the very entry
-   written to prevent it. Reopened: decide whether 113 active rows is accepted, or trim to the ~60
-   ceiling. This is the maintainer's call and is deliberately left open rather than re-decided
-   here.
+   register carried 116 rows, 113 of them active, as of the 2026-08-02 reconciliation, so the
+   decision was taken against a figure 35 rows below the real one and the budget was silently
+   exceeded after all, by the very entry written to prevent it. A subsequent compliance-verification
+   pass added O-120 (state information-security statutes, absent from every applicability table
+   until then), moving the count to 117 rows, 114 active. Reopened: decide whether the active count,
+   now 114, is accepted, or trim to the ~60 ceiling. This is the maintainer's call and is
+   deliberately left open rather than re-decided here; the point of recording the new addition here
+   is so the next person who reopens this item recounts rather than trusts either historical figure.
 7. **Promote the spine.** `assurance-spine.md` is written to be lifted into whatever global
    standards set the operator's tooling keeps, so other projects instantiate it rather than
    rediscovering it. The spine deliberately names no concrete install path, because that path is a
