@@ -155,6 +155,54 @@ describe('CharacterPicker error and permission states', () => {
     expect(screen.queryByText('We lost your character')).toBeNull()
   })
 
+  it('disables every tile while an activation is in flight, so a second tap cannot start a concurrent activate', async () => {
+    const TARA = {
+      id: 'char-3',
+      profile_id: 'p1',
+      name: 'Tara',
+      archetype: 'scholar',
+      look: 'avatar_03',
+      is_active: false,
+      books_completed: 0,
+      attributes: {},
+      created_at: '2026-08-03T00:00:00Z',
+      retired_at: null,
+    }
+    mockGet.mockResolvedValue({ data: { characters: [LUNA, REX, TARA] } })
+    // Holds Rex's activate() request open so its response is fully under
+    // this test's control, mirroring the exact race the fix closes: a
+    // second tile is tapped while the first activation is still in flight.
+    let resolveActivate: ((value: { data: typeof REX }) => void) | undefined
+    mockPost.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveActivate = resolve
+        })
+    )
+    const user = userEvent.setup()
+    render(<CharacterPicker profileId="p1" />)
+
+    const rexTile = await screen.findByRole('button', { name: /Rex/ })
+    const taraTile = screen.getByRole('button', { name: /Tara/ })
+    await user.click(rexTile)
+
+    // Rex's request is still pending: every tile, not just Rex's own, must
+    // be disabled so a second tap cannot start a concurrent activate() call.
+    expect(rexTile).toBeDisabled()
+    expect(taraTile).toBeDisabled()
+    await user.click(taraTile)
+    expect(mockPost).toHaveBeenCalledTimes(1)
+
+    resolveActivate?.({ data: { ...REX, is_active: true } })
+    await waitFor(() => expect(rexTile).toHaveAttribute('aria-pressed', 'true'))
+
+    // Tara's blocked tap never reached the API: only Rex's own request was
+    // ever sent, and it is the one that won.
+    expect(mockPost).toHaveBeenCalledTimes(1)
+    expect(mockPost).toHaveBeenCalledWith('/v1/characters/char-2/activate')
+    expect(taraTile).toBeEnabled()
+  })
+
   it('shows a retry message and re-enables the tile when activate fails', async () => {
     mockGet.mockResolvedValue({ data: { characters: [LUNA, REX] } })
     mockPost.mockRejectedValue(new Error('activate boom'))

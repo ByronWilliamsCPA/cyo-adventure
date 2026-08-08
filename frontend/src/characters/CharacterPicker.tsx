@@ -115,14 +115,34 @@ export function CharacterPicker({ profileId, onActiveCharacterChange }: Characte
   // character stops-being/becomes active in the same render pass with no
   // reload. #VERIFY: CharacterPicker.test.tsx "choosing a different
   // character calls activate and updates selection without a page reload".
+
+  // #ASSUME: concurrency: `activatingIdRef` mirrors `activatingId` so the
+  // settle handlers below can tell a CURRENT activation's response apart
+  // from a STALE one without waiting on a re-render (state updates are not
+  // synchronously readable from inside the very closure that scheduled
+  // them). Every tile is also disabled for the whole grid, not just the one
+  // being activated (see the `disabled={activatingId !== null}` below), so a
+  // second tap cannot start a concurrent `activate()` call through the UI in
+  // the first place; the ref check is the second, defensive layer for the
+  // case a caller invokes `activate` some other way. Without both, tapping A
+  // then B would let A's `.finally` clear B's still-in-flight busy state,
+  // and whichever request resolved last (not whichever the child tapped
+  // last) would win `is_active` and fire `onActiveCharacterChange`.
+  // #VERIFY: CharacterPicker.test.tsx "disables every tile while an
+  // activation is in flight, so a second tap cannot start a concurrent
+  // activate".
+  const activatingIdRef = useRef<string | null>(null)
+
   const activate = useCallback(
     (characterId: string) => {
+      if (activatingIdRef.current !== null) return
       setActivateError(null)
       setActivatingId(characterId)
+      activatingIdRef.current = characterId
       charactersApi
         .activate(characterId)
         .then((activated) => {
-          if (!isMountedRef.current) return
+          if (!isMountedRef.current || activatingIdRef.current !== characterId) return
           setState((prev) =>
             prev.status === 'ready'
               ? {
@@ -137,11 +157,17 @@ export function CharacterPicker({ profileId, onActiveCharacterChange }: Characte
         })
         .catch((err: unknown) => {
           logApiError('character activate failed', err)
-          if (!isMountedRef.current) return
+          if (!isMountedRef.current || activatingIdRef.current !== characterId) return
           setActivateError("That didn't work. Let's try again.")
         })
         .finally(() => {
-          if (isMountedRef.current) setActivatingId(null)
+          // Only the activation that is still current clears the shared
+          // busy state; a stale settle (already superseded, or the request
+          // this function early-returned on) must not clobber it.
+          if (activatingIdRef.current === characterId) {
+            activatingIdRef.current = null
+            if (isMountedRef.current) setActivatingId(null)
+          }
         })
     },
     [charactersApi, onActiveCharacterChange]
@@ -205,7 +231,12 @@ export function CharacterPicker({ profileId, onActiveCharacterChange }: Characte
                 type="button"
                 aria-pressed={isActive}
                 aria-busy={busy || undefined}
-                disabled={busy}
+                // Every tile, not just the one being activated: see the
+                // #ASSUME note on `activate` above. Disabling only `busy`'s
+                // own tile left every OTHER tile tappable while a request
+                // was in flight, which is exactly the race that let a second
+                // `activate()` start concurrently.
+                disabled={activatingId !== null}
                 className={isActive ? 'character-tile character-tile--selected' : 'character-tile'}
                 onClick={() => {
                   if (!isActive) activate(character.id)
