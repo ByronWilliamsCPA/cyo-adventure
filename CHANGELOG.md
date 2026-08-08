@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.68.1] - 2026-08-08
+
+### Bug Fixes
+
+- **deps**: Bump gitpython to 3.1.58 and nanoid to 3.3.18 for new advisories
+  ([#644](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/644),
+  [`88d360d`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/88d360d7fb0992e79ea54f48e5d9d4e581e8dd36))
+
+
+## [0.68.0] - 2026-08-07
+
+### Features
+
+- **storybook**: Add schema minor 1 accepts_character and the CH-* character rules; no corpus story
+  declares minor 1 yet (ADR-025 decision 4)
+  ([#636](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/636),
+  [`4fc65e5`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/4fc65e5bc828b6f69bac46daeda3ff107d75611b))
+
+
 ## [0.67.0] - 2026-08-07
 
 ### Features
@@ -3230,6 +3249,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.68.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.0...v0.68.1
+[0.68.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.67.0...v0.68.0
 [0.67.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.5...v0.67.0
 [0.66.5]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.4...v0.66.5
 [0.66.4]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.3...v0.66.4

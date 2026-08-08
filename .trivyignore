@@ -15,7 +15,11 @@
 #   - openssl / libssl CVE-2026-45447: resolved by `apt-get upgrade`.
 #   - Go stdlib / esbuild CVEs: frontend/node_modules excluded via .dockerignore.
 #
-# Last reviewed: 2026-08-02 (added the single-CVE linux-libc-dev 6.12.100-1+dhi0
+# Last reviewed: 2026-08-08 (added the single-CVE linux-libc-dev CVE-2026-68480
+# block from the PR #644 Container Security run. Note that the 2026-08-04 review
+# which added CVE-2026-64561 did not bump this stamp; it is folded in here rather
+# than backdated, so this line now covers both. Prior review 2026-08-02: added
+# the single-CVE linux-libc-dev 6.12.100-1+dhi0
 # block from the PR #547 Container Security run. CVE-2026-64530 and
 # CVE-2026-64531 were never added here: they were fixed outright by that same
 # base-image digest bump, which is why they are recorded in
@@ -180,3 +184,48 @@ CVE-2026-63879
 # running kernel binary, and the container runs on the host's kernel.
 # Documented in docs/known-vulnerabilities.md; reassess 2026-09-30.
 CVE-2026-64561
+
+# linux-libc-dev newly-disclosed CVE, confirmed via the PR #644 Container
+# Security run against ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13
+# (workflow run 31262431949): empty Fixed Version, status "affected", and the
+# run's only finding (Total: 1, HIGH: 1, CRITICAL: 0). The base-image version is
+# unchanged at 6.12.100-1+dhi0 and the pinned digest is byte-identical on main
+# and the PR head (sha256:f4a77e21...), while the last run that actually
+# executed this job (30973596262, 2026-08-05) was clean, so this is a Trivy feed
+# refresh rather than anything that PR introduced. Note that main's own tip
+# shows this job "skipped", because container-security.yml skips on
+# chore(release): tips; a green main is not evidence either way here.
+# Independently corroborated against the Debian security tracker on 2026-08-08:
+# trixie (6.12.94-1) and trixie-security (6.12.101-1) both record "vulnerable",
+# as do bookworm and forky (7.1.6-1); the fix landed only in sid (7.1.7-1),
+# which this base image does not track. The defect is in the x86 SRSO Safe-RET
+# speculative-execution mitigation, which is running-kernel CPU-mitigation code
+# whose exploitation requires injecting interrupts on the host. Same
+# kernel-UAPI-headers non-applicability rationale as the blocks above:
+# compile-time headers, not a running kernel binary, and the container runs on
+# the host's kernel. Documented in docs/known-vulnerabilities.md; reassess
+# 2026-09-30.
+CVE-2026-68480
+
+# linux-libc-dev newly-disclosed CVE, confirmed via the PR #644 Container
+# Security run against ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13
+# (workflow run 31262431949): empty Fixed Version, status "affected", and the
+# run's only finding (Total: 1, HIGH: 1, CRITICAL: 0). The base-image digest is
+# unchanged at sha256:f4a77e21fb25b71ccb183a25a53a1e87db2a3c11b422941b25708c2b5f3b1b13
+# (linux-libc-dev 6.12.100-1+dhi0) and is byte-identical on main and the PR head,
+# and the last run that actually executed this workflow (30973596262, 2026-08-05)
+# was clean, so this is a Trivy feed refresh rather than anything PR #644
+# introduced: that PR changes three lockfiles and no Dockerfile. Note main's own
+# tip reports this job as skipped, because container-security.yml skips on
+# `chore(release):` tips, so a green main is not evidence either way here.
+# Independently corroborated against the Debian security tracker on 2026-08-08:
+# trixie (6.12.94-1) and trixie-security (6.12.101-1) both record "vulnerable",
+# as do bookworm, bullseye, and forky (7.1.6-1); the fix landed only in sid
+# (7.1.7-1), which this base image does not track. The defect is in the x86
+# Safe-RET speculative-execution mitigation for AMD SRSO hardware, reachable only
+# by an attacker able to inject interrupts into a running kernel's mitigation
+# sequence. Same kernel-UAPI-headers non-applicability rationale as the blocks
+# above: compile-time headers, not a running kernel binary, and the container
+# runs on the host's kernel, whose mitigation state this image cannot influence
+# or patch. Documented in docs/known-vulnerabilities.md; reassess 2026-09-30.
+CVE-2026-68480
