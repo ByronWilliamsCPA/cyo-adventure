@@ -38,7 +38,8 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 
-from cyo_adventure.api.deps import Role, _device_principal
+from cyo_adventure.api import deps
+from cyo_adventure.api.deps import Role, _device_principal, require_principal
 from cyo_adventure.core.database import apply_family_rls_context
 from cyo_adventure.core.device_grant import mint_device_grant_token
 from cyo_adventure.db.models import ChildProfile as ChildProfileModel
@@ -74,6 +75,10 @@ class _Tier1Env:
     # row, so it exists regardless of policy and only RLS decides visibility.
     grant_jti: uuid.UUID
     grant_authorized_by: uuid.UUID
+    # Family A's single seeded child profile id, so the guardian-branch
+    # resolution test can assert on the exact set require_principal returns,
+    # not merely that it is non-empty.
+    profile_a: uuid.UUID
 
 
 @pytest_asyncio.fixture
@@ -107,11 +112,12 @@ async def tier1_env(pg_url: str) -> AsyncIterator[_Tier1Env]:
                 family_id=family_a, role="guardian", authn_subject="guardian-rls-a"
             )
             session.add(guardian)
+            profile_a = ChildProfileModel(
+                family_id=family_a, display_name="Reader A", age_band="8-11"
+            )
             session.add_all(
                 [
-                    ChildProfileModel(
-                        family_id=family_a, display_name="Reader A", age_band="8-11"
-                    ),
+                    profile_a,
                     ChildProfileModel(
                         family_id=family_b, display_name="Reader B", age_band="8-11"
                     ),
@@ -128,6 +134,7 @@ async def tier1_env(pg_url: str) -> AsyncIterator[_Tier1Env]:
             )
             await session.commit()
             grant_authorized_by = guardian.id
+            profile_a_id = profile_a.id
     finally:
         await admin_engine.dispose()
 
@@ -140,6 +147,7 @@ async def tier1_env(pg_url: str) -> AsyncIterator[_Tier1Env]:
             family_b=family_b,
             grant_jti=grant_jti,
             grant_authorized_by=grant_authorized_by,
+            profile_a=profile_a_id,
         )
     finally:
         await api_engine.dispose()
@@ -276,3 +284,70 @@ async def test_device_principal_resolves_under_tier1_rls(
     assert principal.role is Role.DEVICE
     assert principal.family_id == tier1_env.family_a
     assert principal.profile_ids == frozenset()
+
+
+async def test_child_profile_invisible_without_context(tier1_env: _Tier1Env) -> None:
+    """A bare child_profile lookup for family A with no context sees nothing.
+
+    Mirrors ``test_device_grant_invisible_without_context`` for the guardian
+    branch's Tier 1 read: ``child_profile`` is Tier 1, so a ``cyo_api`` caller
+    that never set ``app.family_id`` matches the policy predicate against NULL
+    and gets ZERO ROWS, exactly as ``_resolve_profiles`` did when
+    ``require_principal`` called it before applying the RLS context. Kept
+    separate from the positive resolution test below so a future policy
+    widening fails HERE rather than leaving that test green for the wrong
+    reason.
+    """
+    async with tier1_env.sessions() as session:
+        count = (
+            await session.execute(
+                text("SELECT count(*) FROM child_profile WHERE family_id = :family_id"),
+                {"family_id": str(tier1_env.family_a)},
+            )
+        ).scalar_one()
+    assert count == 0, (
+        "child_profile must stay fail-closed without context; if this row is "
+        "visible the Tier 1 policy was weakened, not the auth path fixed"
+    )
+
+
+async def test_guardian_principal_resolves_profiles_under_tier1_rls(
+    tier1_env: _Tier1Env, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """``require_principal``'s guardian branch must resolve profiles under Tier 1 RLS.
+
+    The end-to-end counterpart to the device test above, for the OTHER
+    pre-cutover-invisible defect: the guardian/admin branch of
+    ``require_principal`` calls ``_resolve_profiles`` (a Tier 1
+    ``child_profile`` read) BEFORE it applied ``apply_family_rls_context``, so
+    every guardian resolved an empty ``profile_ids`` once ``cyo_api`` became
+    NOBYPASSRLS in production (the 2026-08-04 cutover, UW-A03). Exercising the real function is
+    the point, not a hand-rolled query, since the defect was in WHERE
+    ``require_principal`` set its RLS context relative to its own Tier 1
+    read, not in the SQL ``_resolve_profiles`` issues.
+
+    Only the token-verification seam is neutralised (routing to the guardian
+    branch and resolving the subject), never any RLS, role, or policy
+    behaviour: the session still connects as the NOBYPASSRLS ``cyo_api`` role
+    from ``tier1_env``, and the Tier 1 policy on ``child_profile`` is fully
+    live.
+    """
+    monkeypatch.setattr(deps, "unverified_audience", lambda _token: None)
+
+    async def _fake_resolve_subject(_token: str) -> str:
+        return "guardian-rls-a"
+
+    monkeypatch.setattr(deps, "_resolve_subject", _fake_resolve_subject)
+
+    async with tier1_env.sessions() as session:
+        principal = await require_principal(
+            session=session, authorization="Bearer irrelevant-once-routed"
+        )
+
+    assert principal.role is Role.GUARDIAN
+    assert principal.family_id == tier1_env.family_a
+    assert principal.profile_ids == frozenset({tier1_env.profile_a}), (
+        "the guardian's own family profile must resolve; an empty set here "
+        "is the production defect: _resolve_profiles ran before the RLS "
+        "context was applied"
+    )

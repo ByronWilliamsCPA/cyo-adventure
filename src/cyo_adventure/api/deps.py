@@ -542,6 +542,34 @@ async def require_principal(
         if user.status != "active":
             msg = "unknown subject"
             raise AuthenticationError(msg)
+        # #CRITICAL: security: the RLS context MUST be established here, before
+        # _resolve_profiles, not only at the end of require_principal.
+        # child_profile is an ADR-022 Tier 1 family_scoped table and
+        # _resolve_profiles is a pre-principal read of one for the guardian
+        # branch; its policy predicate
+        # (family_id::text = current_setting('app.family_id', true) OR
+        # current_setting('app.is_admin', true) = 'true') is unsatisfiable
+        # while both GUCs are unset, so the query below would match zero rows
+        # for every guardian. That is exactly what production did from the
+        # 2026-08-04 cutover to the NOBYPASSRLS cyo_api role (UW-A03, verified
+        # live that day; the daily e2e-prod tier went red the next morning and
+        # stayed red): GET /v1/me
+        # returned a correct family_id with an always-empty profile_ids, and
+        # GET /v1/profiles then short-circuited to an empty list, rendering
+        # the guardian console's "No profiles yet" state for every family.
+        # Deriving from the already-verified `user` row (never from request
+        # input) is not a bypass: user.family_id and user.is_admin were just
+        # read back from the row matched by the verified authn_subject above,
+        # so this only lets the database enforce that the profiles query
+        # matches the account that owns them. Pre-cutover this call is a
+        # no-op (RLS never applies to a table's owner); post-cutover it is
+        # the one thing standing between a guardian and their own children.
+        # #VERIFY: tests/integration/test_rls_tier1_enforcement.py::
+        # test_guardian_principal_resolves_profiles_under_tier1_rls and
+        # ::test_child_profile_invisible_without_context.
+        await apply_family_rls_context(
+            session, family_id=user.family_id, is_admin=bool(user.is_admin)
+        )
         profile_ids = await _resolve_profiles(session, user)
         # #CRITICAL: security: coerce the ORM role string to the closed Role enum
         # at the auth boundary; an unmodeled DB role raises ValueError -> 500
@@ -566,17 +594,21 @@ async def require_principal(
     # request input) on the same session the route will use, so the Tier 1
     # family_scoped policies enforce per-family isolation post-cutover. Every
     # principal branch above (guardian, admin, child, device) carries a
-    # family_id, so this one choke point covers them all. Two of the three
-    # branches resolve without needing the context this sets: guardian/admin read
-    # the "user" row just above under the Tier 2 blanket policy, and child does
-    # no database read at all. The device branch is the exception: it reads a
-    # Tier 1 table, so _device_principal applies this same context itself from
-    # its verified claim first, and this call re-applies identical values. Do not
-    # "optimize" that earlier call away; without it the device lookup matches
-    # zero rows, which is what broke staging from the 2026-07-18 cutover until
-    # 2026-08-02. A no-op pre-cutover (owner bypasses RLS); load-bearing and
-    # fail-closed after, which is why staging caught this and the
-    # owner-connected tiers did not.
+    # family_id, so this one choke point covers them all. The child branch
+    # resolves without needing the context this sets: it does no database
+    # read at all. The guardian/admin and device branches each read a Tier 1
+    # table before reaching this line (child_profile and device_grant
+    # respectively), so each applies this same context itself, from its own
+    # verified source, immediately before that read; this call re-applies
+    # identical values for both. Do not "optimize" either earlier call away:
+    # without the device one, the device lookup matches zero rows, which is
+    # what broke staging from the 2026-07-18 cutover until 2026-08-02; without
+    # the guardian/admin one, _resolve_profiles matches zero rows, which is
+    # what broke every guardian's profile listing in production from the
+    # 2026-08-04 cutover to the NOBYPASSRLS cyo_api role until this fix. Both
+    # are a no-op pre-cutover (the owner bypasses RLS); both are load-bearing
+    # and fail-closed after, which is why an owner-connected fixture can never
+    # reproduce either regression.
     # #VERIFY: tests/integration/test_rls_tier1_enforcement.py.
     await apply_family_rls_context(
         session, family_id=principal.family_id, is_admin=principal.is_admin
