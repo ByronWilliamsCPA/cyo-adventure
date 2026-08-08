@@ -1125,9 +1125,9 @@ async def record_completion(
         # child maxing their own character's stats, never a value beyond the
         # vocabulary ceiling and never another profile's character.
         # #VERIFY: no test in this suite proves this boundary; closing it is
-        # a hard prerequisite tracked for a later task (the player deriving
-        # its starting var_state from seed_var_state, per the choice_path
-        # note above), not attempted here.
+        # a hard prerequisite tracked as UW-C72 in unscheduled-work-register.md
+        # (the player deriving its starting var_state from seed_var_state, per
+        # the choice_path note above), not attempted here.
         await record_progression(
             ctx.session,
             reading_state=reading_state_row,
