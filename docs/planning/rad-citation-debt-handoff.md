@@ -1,8 +1,8 @@
 ---
 schema_type: planning
 title: "Handoff: RAD #VERIFY Citation Debt (baseline D-2)"
-description: "Work order for the separate team retiring the RAD #VERIFY citation baseline (137
-  grandfathered stale citation sites across 122 distinct file/citation pairs): the derived
+description: "Work order for the separate team retiring the RAD #VERIFY citation baseline (136
+  grandfathered stale citation sites across 121 distinct file/citation pairs): the derived
   numbers, the gate's real ceiling, the split between CI scope (whole tree) and hook scope
   (narrow), the one tree neither scans, the fix-one-row workflow with
   its shrink-only contract, and a suggested attack order."
@@ -20,7 +20,7 @@ purpose: "Assign the RAD citation backlog to a receiving team with the numbers d
   baseline as proof that the RAD claims are verified. The document assigns the work; it fixes
   no row itself."
 component: Tooling
-source: "rad-citation-baseline.toml (137 grandfathered sites across 122 distinct file/citation
+source: "rad-citation-baseline.toml (136 grandfathered sites across 121 distinct file/citation
   pairs, parsed with tomllib on 2026-08-08);
   scripts/check_rad_citations.py module docstring, Deliberate non-goals;
   .pre-commit-config.yaml:398-399 (the hook's files: key and its scope regex, verified against
@@ -90,25 +90,37 @@ site** rather than per distinct citation string, so a citation that is stale in 
 one file now occupies three rows, not one. Two counts follow from that, and they answer different
 questions, so keep them separate:
 
-- **137 grandfathered sites**, all in the `[python]` table; `[typescript]` is empty (0 rows). This
+> **Correction (2026-08-08):** these figures previously read 137 sites / 122 pairs. That was the
+> file's header comment, and it was stale by exactly one in both counts: someone had fixed one
+> citation in `scripts/reset_e2e_real_state.py` and hand-deleted its row, as the workflow below
+> requires, without re-running `--write-baseline` to regenerate the header that summarizes the
+> body. Regenerating the baseline reproduced a byte-identical body and rewrote only the header
+> comment, which is how the drift was confirmed to be in the comment, not the debt. The header is
+> now correct; every count below reflects the live file.
+
+- **136 grandfathered sites**, all in the `[python]` table; `[typescript]` is empty (0 rows). This
   is the file's row count today, and it is **the number the gate's `--assert-no-growth BASE_REF`
-  ratchet compares against a base ref: it must only ever go down.** Treat 137 as the ceiling this
+  ratchet compares against a base ref: it must only ever go down.** Treat 136 as the ceiling this
   backlog is measured against.
-- **122 distinct (file, citation) pairs**: the count of distinct work items, each one a citation to
-  repoint, write, or delete. 122 is exactly the file's row count before the per-site rewrite, which
-  is how we know the rewrite was purely additive duplication and grandfathered nothing new.
-- The globally distinct citation **string** count is **121**, not 122: one citation string repeats
-  across two different files. Do not write "122 distinct citation strings"; that number is the
-  pair count, not the string count.
+- **121 distinct (file, citation) pairs**: the count of distinct work items, each one a citation to
+  repoint, write, or delete. At the point the per-site rewrite was verified, this count was 122,
+  exactly the file's row count from before that rewrite, which is how we know the rewrite itself
+  was purely additive duplication and grandfathered nothing new. One pair has since been fixed and
+  its row deleted (the `scripts/reset_e2e_real_state.py` fix described in the correction above),
+  bringing the live count to 121; that drop is a real fix landing, not baseline drift.
+- The globally distinct citation **string** count is **120**, not 121: one citation string repeats
+  across two different files (`test_reclaim_after_completed_run_does_not_re_execute`, shared by
+  `src/cyo_adventure/generation/worker.py` and `src/cyo_adventure/generation/queue.py`). Do not
+  write "121 distinct citation strings"; that number is the pair count, not the string count.
 - **48 distinct files** carry at least one row: **45 under `src/`** (123 sites, 111 pairs) and
-  **3 under `scripts/`** (14 sites, 11 pairs). There is no third tree; every baselined file is
+  **3 under `scripts/`** (13 sites, 10 pairs). There is no third tree; every baselined file is
   under `src/` or `scripts/`.
 - **7 files contain a repeated citation string**, and those repeats contribute the **15 extra
-  sites** (137 minus 122). Those seven, as pairs to sites:
+  sites** (136 minus 121). Those seven, as pairs to sites:
 
   | Pairs | Sites | File |
   | --- | --- | --- |
-  | 8 | 11 | `scripts/reset_e2e_real_state.py` |
+  | 7 | 10 | `scripts/reset_e2e_real_state.py` |
   | 8 | 12 | `src/cyo_adventure/api/generation.py` |
   | 5 | 6 | `src/cyo_adventure/api/story_requests.py` |
   | 9 | 12 | `src/cyo_adventure/db/models.py` |
@@ -116,13 +128,13 @@ questions, so keep them separate:
   | 5 | 6 | `src/cyo_adventure/generation/worker.py` |
   | 3 | 5 | `src/cyo_adventure/moderation/classifiers.py` |
 
-- Top files by **site** count, where the work concentrates (73 of 137 sites, just over half):
+- Top files by **site** count, where the work concentrates (72 of 136 sites, just over half):
 
   | Sites | Pairs | File |
   | --- | --- | --- |
   | 12 | 8 | `src/cyo_adventure/api/generation.py` |
   | 12 | 9 | `src/cyo_adventure/db/models.py` |
-  | 11 | 8 | `scripts/reset_e2e_real_state.py` |
+  | 10 | 7 | `scripts/reset_e2e_real_state.py` |
   | 7 | 7 | `src/cyo_adventure/api/node_edit.py` |
   | 6 | 5 | `src/cyo_adventure/api/story_requests.py` |
   | 6 | 5 | `src/cyo_adventure/generation/worker.py` |
@@ -134,6 +146,32 @@ questions, so keep them separate:
   Ranking by sites is not the same top ten as ranking by pairs: it brings in
   `src/cyo_adventure/moderation/classifiers.py` (3 pairs, 5 sites) and drops
   `src/cyo_adventure/api/profiles.py` (4 pairs, 4 sites).
+
+### Reproducing these numbers
+
+Do not re-quote the figures above; re-derive them, the same way this correction was found. Either
+command reads the live baseline rather than trusting a comment that can drift from it:
+
+```bash
+# Rewrites the header to match the body; diff the file afterward to see if anything moved.
+uv run python scripts/check_rad_citations.py --write-baseline --all
+
+# Or parse it directly without writing anything:
+python3 -c "
+import tomllib
+with open('rad-citation-baseline.toml', 'rb') as f:
+    py = tomllib.load(f)['python']
+sites = sum(len(v) for v in py.values())
+pairs = sum(len(set(v)) for v in py.values())
+print(f'{len(py)} files, {pairs} pairs, {sites} sites')
+"
+```
+
+`--write-baseline --all` is the authoritative form: it is the same command that generated this
+file's body, so its header is definitionally correct against the body it just wrote. A header that
+disagrees with a fresh `--write-baseline --all` run, with an unchanged body, is exactly the failure
+mode this correction fixes: someone deleted a row by hand instead of running the regeneration
+command afterward.
 
 ### Why the file is keyed per site, not per citation string
 
@@ -153,14 +191,14 @@ as work proceeds.
 uv run python scripts/check_rad_citations.py --all
 ```
 
-Exit code: **0**. The run printed **12 non-failing notes** and nothing else; there are currently
+Exit code: **0**. The run printed **11 non-failing notes** and nothing else; there are currently
 zero "stale" findings (a citation resolving to nothing) and zero "baseline drift" findings (a
 baselined row whose citation has since been fixed and should have been deleted but was not). In
 other words: the baseline accurately reflects the current backlog, no new debt has crept in since
 it was written, and the file that has to shrink over the life of this workstream is doing so from
 a clean starting line, not one that is already lying about its own count. See the "notes, not
-failures" section below for what the 12 notes are; they are not part of this backlog's 122 pairs
-(137 sites).
+failures" section below for what the 11 notes are; they are not part of this backlog's 121 pairs
+(136 sites).
 
 ## What the gate does NOT cover (CI scope and hook scope are different)
 
@@ -230,7 +268,7 @@ failure mode `AL-130` / `UW-C65` records after it happened once already.
    telling you to delete it. The reason this is enforced rather than left to memory: a baseline
    that can silently keep rows nobody needs anymore is a baseline that can be gamed by fixing
    citations without ever shrinking the number the team is accountable for. Shrink-only, checked
-   automatically, is what keeps 137 an honest number instead of a ratchet that only the last
+   automatically, is what keeps 136 an honest number instead of a ratchet that only the last
    editor's memory prevents from drifting upward.
 
 ## Suggested order of attack
@@ -239,14 +277,14 @@ Work by file, not by scattering one-row fixes across the tree, because the "read
 decide, fix, delete the row" cycle has a fixed cost per file (open it, understand the surrounding
 code) that amortizes over multiple rows in the same file. On that basis:
 
-1. **Start with the concentration.** The ten files listed above hold 73 of 137 sites (just over
+1. **Start with the concentration.** The ten files listed above hold 72 of 136 sites (just over
    half) in ten files instead of forty-eight. Clearing those first produces the fastest visible
    movement in the baseline's site count and front-loads the files where a single read of the
    surrounding code pays off the most times.
-2. **Within that set, do `scripts/reset_e2e_real_state.py` early.** All 8 of its distinct citation
+2. **Within that set, do `scripts/reset_e2e_real_state.py` early.** All 7 of its distinct citation
    strings name tests with no path at all (`test_reset_e2e_real_state_*`), suggesting a single test
    module was renamed or restructured wholesale; if so, one investigation likely resolves most or
-   all of its 11 grandfathered sites at once rather than requiring 8 independent judgment calls.
+   all of its 10 grandfathered sites at once rather than requiring 7 independent judgment calls.
 3. **Treat `src/cyo_adventure/db/models.py` (12 sites, 9 pairs) and
    `src/cyo_adventure/api/generation.py` (12 sites, 8 pairs) as the two highest-value single files
    after that**, since they are the largest concentrations in `src/`.
@@ -267,7 +305,7 @@ fine to commit.
 Take the row that would exist for `src/cyo_adventure/api/deps.py` at line 613 (this exact file is
 not currently in the baseline, since its citation happens to still resolve after a repoint that
 already landed elsewhere in this branch's history, but the shape of the problem it shows up is
-exactly what most of the 122 real (file, citation) pairs look like):
+exactly what most of the 121 real (file, citation) pairs look like):
 
 ```python
 # #CRITICAL: security: a child principal is scoped to EXACTLY its one
@@ -314,17 +352,17 @@ citation was never updated to follow it. Fixing this row means:
    file were currently baselined, which as noted it is not).
 
 Nothing above was changed as part of writing this handoff; this is a walkthrough of the mechanics
-against a real citation site, offered as a template for the other 122 pairs.
+against a real citation site, offered as a template for the other 121 pairs.
 
-## Notes, not failures: the 12 bare-name ambiguity notes
+## Notes, not failures: the 11 bare-name ambiguity notes
 
-The `--all` run above printed 12 lines like this one, none of which count against this backlog's
-122 pairs (137 sites):
+The `--all` run above printed 11 lines like this one, none of which count against this backlog's
+121 pairs (136 sites):
 
 ```text
-src/cyo_adventure/api/characters.py:368: note: test_cross_family_guardian_is_rejected: resolves
-against 2 same-named test functions (tests/integration/test_authz_matrix.py,
-tests/unit/test_reading_history_api_unit.py); a bare citation cannot say which one actually
+src/cyo_adventure/publishing/service.py:285: note: test_approve_stamps_resulting_storybook_id:
+resolves against 2 same-named test functions (tests/integration/test_publishing_service.py,
+tests/unit/test_publishing_service_unit.py); a bare citation cannot say which one actually
 covers this assumption
 ```
 
@@ -336,9 +374,9 @@ design (a deliberately lenient choice that keeps false positives at zero), so it
 of the look-alikes the author meant, and says so rather than silently picking one. Because the
 citation still resolves, this never fails the gate and never blocks a commit.
 
-These 12 are not part of this backlog and do not need a baseline row. But disambiguating them is
+These 11 are not part of this backlog and do not need a baseline row. But disambiguating them is
 cheap while you are already in the area: change the bare name to a file-qualified one
 (`tests/integration/test_authz_matrix.py::test_cross_family_guardian_is_rejected`) so a future
 reader, and the checker, both know exactly which of the same-named tests is meant. If you touch
 one of these files while working this backlog, it costs one extra line edit to fix the note
-too; there is no requirement to go out of your way for the other 11.
+too; there is no requirement to go out of your way for the other 10.

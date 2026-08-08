@@ -53,7 +53,7 @@
 # command to pair with --assert-no-growth review, never a way to
 # clear a CI failure.
 #
-# Entries: 122 (file, citation) row(s) covering 137 grandfathered site(s) (137 python site(s), 0 typescript site(s))
+# Entries: 121 (file, citation) row(s) covering 136 grandfathered site(s) (136 python site(s), 0 typescript site(s))
 
 [python]
 "scripts/check_fill_integrity.py" = [
