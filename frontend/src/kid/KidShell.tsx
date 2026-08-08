@@ -1,6 +1,5 @@
 import { matchPath, Outlet, useLocation } from 'react-router'
 
-import { CharacterCreator } from '../characters/CharacterCreator'
 import { useActiveCharacter } from '../characters/useActiveCharacter'
 import { ThemeToggle } from '../theme/ThemeToggle'
 import { KidNav } from './KidNav'
@@ -31,21 +30,23 @@ import type { KidOutletContext } from './kidOutletContext'
  * band-tokens.css treats as the neutral tier -- never a stale prior child's
  * band.
  *
- * First-run character gate (library route only): a profile with no
- * character yet sees the creator instead of the library Outlet. Gated on
- * `status === 'none'` specifically, never on 'loading'/'error'/anything
- * else, so a lookup that is still in flight or failed cannot be
- * misread as "no character" and bounce a returning child into re-creating
- * one; see useActiveCharacter.ts's own defensiveness note.
- * #VERIFY: KidShell.test.tsx's "KidShell first-run character gate" suite,
- * every case of which mounts KidShell itself, so deleting the gate fails
- * them: "shows the creator instead of the library when the profile has no
- * character" (the positive 'none' arm: creator present AND the library
- * Outlet absent), "renders the library Outlet when the profile already has
- * an active character" ('ready'), "renders the library Outlet while the
- * character lookup is still in flight" ('loading'), and "renders the
- * library Outlet when the character lookup fails" ('error'), the last two
- * pinning the deliberate fail-safe.
+ * Character lookup (library route only): resolved here and handed down
+ * through the Outlet context so the library route can decide, per book,
+ * whether opening it needs a character first (LibraryPage.tsx's
+ * `accepts_character` gate). This shell never gates the route itself on the
+ * result; the library Outlet always renders. An earlier version of this
+ * branch swapped the whole library for CharacterCreator whenever a profile
+ * had no character yet, hard-gating every kid into creating one before
+ * reaching their library even though zero catalog books could use one and
+ * there was no skip affordance. The owner rejected that: the creator now
+ * appears only when a child opens a book that actually declares
+ * `accepts_character`, decided at the book, not the route.
+ * #VERIFY: KidShell.test.tsx's "KidShell library route character lookup"
+ * suite, whose first case ("renders the library Outlet even when the
+ * profile has no character") fails if this method regresses to swapping the
+ * Outlet for the creator again; the remaining cases pin that the lookup
+ * still only runs on the library route and still hands its result through
+ * the Outlet context regardless of status ('ready'/'loading'/'error').
  */
 export function KidShell() {
   const location = useLocation()
@@ -78,11 +79,7 @@ export function KidShell() {
       {navProfileId ? <KidNav profileId={navProfileId} /> : null}
       <ThemeToggle className="kid-shell__theme-toggle" />
       <main className="kid-shell__main">
-        {libraryMatch && navProfileId && activeCharacter.state.status === 'none' ? (
-          <CharacterCreator profileId={navProfileId} onCreated={activeCharacter.refresh} />
-        ) : (
-          <Outlet context={outletContext} />
-        )}
+        <Outlet context={outletContext} />
       </main>
     </div>
   )

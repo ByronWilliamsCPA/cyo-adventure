@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, useNavigate, useParams } from 'react-router'
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
+import { CharacterCreator } from '../characters/CharacterCreator'
 import { CharacterPicker } from '../characters/CharacterPicker'
 import { LOOK_SWATCHES } from '../characters/characterApi'
 import { useActiveCharacter } from '../characters/useActiveCharacter'
@@ -93,6 +94,7 @@ export interface LibraryPageProps {
  */
 export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   const { profileId } = useParams()
+  const navigate = useNavigate()
   const api = useApi()
   const libraryApi = useMemo(() => makeLibraryApi(api), [api])
   const recommendationsApi = useMemo(() => makeRecommendationsApi(api), [api])
@@ -116,6 +118,21 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   const ownActiveCharacter = useActiveCharacter(shellActiveCharacter ? undefined : profileId)
   const activeCharacter = shellActiveCharacter ?? ownActiveCharacter
   const [showCharacterPicker, setShowCharacterPicker] = useState(false)
+  // Owner decision (gate-rework): a click on a gated card (needsCharacterFor
+  // below) parks its read target here instead of navigating immediately, so
+  // the creator can be shown in the card's place and the child still lands
+  // in the read they chose once one exists. Replaces an earlier design where
+  // KidShell gated the whole library route on "this profile has no
+  // character yet", which hard-gated every kid with no skip affordance even
+  // though zero catalog books could use one.
+  const [pendingRead, setPendingRead] = useState<{
+    to: string
+    state?: { personalizationEligible: boolean }
+  } | null>(null)
+  const handleNeedsCharacter = useCallback(
+    (to: string, state?: { personalizationEligible: boolean }) => setPendingRead({ to, state }),
+    []
+  )
   // W3.2: the Endings Gallery / "Every path walked!" data source, fetched
   // independently of the shelf (best-effort, like history/recommendations):
   // a failed or slow fetch degrades to no ribbon and no gallery button,
@@ -415,6 +432,29 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   )
 
   if (!profileId) return null
+  // Rendered ahead of every load-state branch below, and regardless of
+  // `state.status`, so a background refetch flipping back to 'loading' (the
+  // 'online' reconnect effect above, or a manual retry) can never yank the
+  // creator out from under a child mid-form.
+  // #ASSUME: timing dependencies: `activeCharacter.refresh()` and
+  // `navigate()` both fire from `onCreated` without waiting on each other;
+  // the read target was already fixed when the gate first triggered, so
+  // refresh's result is not needed to decide where to go next.
+  // #VERIFY: LibraryPage.test.tsx "LibraryPage character gate" suite, "lands
+  // in the read the child originally chose after creating a character".
+  if (pendingRead) {
+    const target = pendingRead
+    return (
+      <CharacterCreator
+        profileId={profileId}
+        onCreated={() => {
+          activeCharacter.refresh()
+          setPendingRead(null)
+          void navigate(target.to, { state: target.state })
+        }}
+      />
+    )
+  }
   if (state.status === 'loading') {
     // Branded, kid-facing loading state (Pip + short reassurance), matching
     // the reader's "Opening your story…" pattern so every wait on the kid
@@ -491,6 +531,19 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   const offlineDownloaded = state.status === 'offline' ? state.downloaded : null
   const isDownloaded = (item: LibraryItemView): boolean =>
     offlineDownloaded === null || offlineDownloaded.has(item.id)
+  // ADR-028 / gate-rework: the positive signal only. `accepts_character`
+  // undefined or false, or an active-character status other than exactly
+  // 'none' ('loading', 'error', 'unauthenticated', 'forbidden', 'ready'),
+  // all skip the gate and go straight to the read. Failing open on every
+  // unknown character status is deliberate: the backend already treats an
+  // unseeded read as normal (`_bind_active_character` returns `(None,
+  // None)`), so the worst case is a read without a character, never a child
+  // locked out of a book they are allowed to read.
+  // #ASSUME: data integrity: `item.accepts_character === true` is the only
+  // positive signal; `undefined` reads as `false`, never as "needs one".
+  // #VERIFY: LibraryPage.test.tsx "LibraryPage character gate" suite.
+  const needsCharacterFor = (item: LibraryItemView): boolean =>
+    item.accepts_character === true && activeCharacter.state.status === 'none'
   // K6/K17 decorations only exist on a live (ready) fetch; an offline shelf has
   // neither history nor recommendations, so both degrade to no badges.
   const history = state.status === 'ready' ? state.history : []
@@ -618,6 +671,8 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
             recommendation={recommendationFor(hero)}
             everyPathWalked={everyPathWalkedFor(hero)}
             onOpenGallery={setGalleryStorybookId}
+            needsCharacter={needsCharacterFor(hero)}
+            onNeedsCharacter={handleNeedsCharacter}
           />
         </section>
       ) : null}
@@ -644,6 +699,8 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
                   recommendation={recommendationFor(item)}
                   everyPathWalked={everyPathWalkedFor(item)}
                   onOpenGallery={setGalleryStorybookId}
+                  needsCharacter={needsCharacterFor(item)}
+                  onNeedsCharacter={handleNeedsCharacter}
                 />
               </li>
             ))}

@@ -1,6 +1,7 @@
 import 'fake-indexeddb/auto'
 
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { IDBFactory } from 'fake-indexeddb'
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -944,6 +945,156 @@ describe('LibraryPage active-character source', () => {
     expect(await screen.findByText('Luna')).toBeInTheDocument()
     expect(characterCalls()).toHaveLength(1)
     expect(characterCalls()[0]).toEqual(['/v1/characters', { params: { profile_id: 'p1' } }])
+  })
+})
+
+/**
+ * ADR-028 / gate-rework: the character creator gates a book, not the
+ * library route (KidShell no longer gates there at all, see KidShell.test.tsx).
+ * A book shows the creator first only when it declares `accepts_character:
+ * true` AND the profile's active character status is exactly `'none'`; every
+ * other combination goes straight to the read, failing open rather than
+ * ever locking a child out of a book they are allowed to read.
+ */
+describe('LibraryPage character gate', () => {
+  const READY_CHARACTER = {
+    id: 'char-2',
+    profile_id: 'p1',
+    name: 'Rex',
+    archetype: 'guardian',
+    look: 'avatar_02',
+    is_active: true,
+    books_completed: 0,
+    attributes: {},
+    seed_var_state: {},
+    created_at: '2026-08-01T00:00:00Z',
+    retired_at: null,
+  }
+  const NEW_CHARACTER = {
+    id: 'char-3',
+    profile_id: 'p1',
+    name: 'Rex',
+    archetype: 'scout',
+    look: 'avatar_01',
+    is_active: true,
+    books_completed: 0,
+    attributes: {},
+    seed_var_state: {},
+    created_at: '2026-08-08T00:00:00Z',
+    retired_at: null,
+  }
+  const GATED_BOOK = {
+    ...NOT_STARTED,
+    id: 'sg1',
+    title: 'The Gated Quest',
+    accepts_character: true,
+  }
+  const FALSE_GATE_BOOK = {
+    ...NOT_STARTED,
+    id: 'su1',
+    title: 'The Open Trail',
+    accepts_character: false,
+  }
+  const UNDEFINED_GATE_BOOK = { ...NOT_STARTED, id: 'sn1', title: 'The Undeclared Path' }
+
+  /**
+   * Renders LibraryPage under an Outlet that hands down a fixed
+   * active-character state (mirroring the "LibraryPage active-character
+   * source" describe block above), plus a real `/read/...` route so a click
+   * that should navigate straight through can be observed landing there.
+   */
+  function renderWithCharacterState(
+    state: { status: string; character?: unknown },
+    items: unknown[]
+  ) {
+    mockGet.mockImplementation((url: string) =>
+      url === '/v1/characters'
+        ? Promise.resolve({ data: { characters: [] } })
+        : Promise.resolve({ data: { stories: items } })
+    )
+    return render(
+      <MemoryRouter initialEntries={['/library/p1']}>
+        <Routes>
+          <Route element={<Outlet context={{ activeCharacter: { state, refresh: vi.fn() } }} />}>
+            <Route path="/library/:profileId" element={<LibraryPage />} />
+            <Route path="/read/:profileId/:storybookId/:version" element={<div>Reader Page</div>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    )
+  }
+
+  it('shows the creator, not the read, for accepts_character true + status none', async () => {
+    renderWithCharacterState({ status: 'none' }, [GATED_BOOK])
+    fireEvent.click(await screen.findByRole('link', { name: /the gated quest/i }))
+
+    expect(await screen.findByRole('heading', { name: /make your character/i })).toBeInTheDocument()
+    expect(screen.queryByText('Reader Page')).not.toBeInTheDocument()
+  })
+
+  it('goes straight to the read for accepts_character false + status none', async () => {
+    renderWithCharacterState({ status: 'none' }, [FALSE_GATE_BOOK])
+    fireEvent.click(await screen.findByRole('link', { name: /the open trail/i }))
+
+    expect(await screen.findByText('Reader Page')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /make your character/i })).not.toBeInTheDocument()
+  })
+
+  it('goes straight to the read for accepts_character undefined + status none', async () => {
+    renderWithCharacterState({ status: 'none' }, [UNDEFINED_GATE_BOOK])
+    fireEvent.click(await screen.findByRole('link', { name: /the undeclared path/i }))
+
+    expect(await screen.findByText('Reader Page')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /make your character/i })).not.toBeInTheDocument()
+  })
+
+  it('goes straight to the read for accepts_character true + status ready', async () => {
+    renderWithCharacterState({ status: 'ready', character: READY_CHARACTER }, [GATED_BOOK])
+    fireEvent.click(await screen.findByRole('link', { name: /the gated quest/i }))
+
+    expect(await screen.findByText('Reader Page')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /make your character/i })).not.toBeInTheDocument()
+  })
+
+  it('goes straight to the read for accepts_character true + status loading (fail-open)', async () => {
+    renderWithCharacterState({ status: 'loading' }, [GATED_BOOK])
+    fireEvent.click(await screen.findByRole('link', { name: /the gated quest/i }))
+
+    expect(await screen.findByText('Reader Page')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /make your character/i })).not.toBeInTheDocument()
+  })
+
+  it('lands in the read the child originally chose after creating a character', async () => {
+    mockPost.mockResolvedValueOnce({ data: NEW_CHARACTER })
+    const user = userEvent.setup()
+    renderWithCharacterState({ status: 'none' }, [GATED_BOOK])
+    fireEvent.click(await screen.findByRole('link', { name: /the gated quest/i }))
+    await screen.findByRole('heading', { name: /make your character/i })
+
+    // Same interaction sequence as CharacterCreator.test.tsx's own submit
+    // test: userEvent (not fireEvent) is what actually drives these
+    // controlled radio inputs' onChange handlers.
+    await user.type(screen.getByLabelText("What's their name?"), 'Rex')
+    await user.click(screen.getByRole('radio', { name: /Scout/ }))
+    await user.click(screen.getByRole('radio', { name: /^Look 1\b/ }))
+    await user.click(screen.getByRole('button', { name: /start my adventure/i }))
+
+    // Lands on the exact read the child chose before the creator interrupted
+    // them (GATED_BOOK's own id and version), not just any read route.
+    expect(await screen.findByText('Reader Page')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /make your character/i })).not.toBeInTheDocument()
+  })
+
+  it('still renders and behaves as a real link for a non-gated book, which is what the e2e smoke depends on', async () => {
+    renderWithCharacterState({ status: 'none' }, [FALSE_GATE_BOOK])
+    const link = await screen.findByRole('link', { name: /the open trail/i })
+    expect(link).toHaveAttribute(
+      'href',
+      `/read/p1/${FALSE_GATE_BOOK.id}/${FALSE_GATE_BOOK.version}`
+    )
+
+    fireEvent.click(link)
+    expect(await screen.findByText('Reader Page')).toBeInTheDocument()
   })
 })
 

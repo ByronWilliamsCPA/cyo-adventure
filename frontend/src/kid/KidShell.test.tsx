@@ -185,15 +185,20 @@ function mockCharacterList(characters: { resolve?: unknown; reject?: Error; pend
 }
 
 /**
- * The first-run character gate itself, mounted through KidShell rather than
- * through the two character components in isolation. This is the suite
- * KidShell.tsx's gate `#VERIFY` cites: deleting the gate (rendering the
- * Outlet unconditionally) must fail the positive case below, and loosening
- * it (gating on anything other than `status === 'none'`) must fail the
- * fail-safe cases. The component tests in src/characters/ never mount
- * KidShell, so none of them can catch either change.
+ * The library-route character lookup and its Outlet plumbing, mounted
+ * through KidShell rather than through the two character components in
+ * isolation. This used to be a first-run gate that swapped the whole
+ * library Outlet for CharacterCreator whenever a profile had no character
+ * yet; the owner rejected that (every kid hard-gated with no skip
+ * affordance, while zero catalog books could use one), so the gate now
+ * lives per book in LibraryPage.tsx instead. This suite keeps proving the
+ * lookup itself: it only runs on the library route, it hands its result
+ * through the Outlet context regardless of status, and the library Outlet
+ * always renders no matter what that status is. The component tests in
+ * src/characters/ never mount KidShell, so none of them can catch a
+ * regression back to the old route-wide gate.
  */
-describe('KidShell first-run character gate', () => {
+describe('KidShell library route character lookup', () => {
   let errorSpy: MockInstance
 
   beforeEach(() => {
@@ -204,14 +209,16 @@ describe('KidShell first-run character gate', () => {
     errorSpy.mockRestore()
   })
 
-  it('shows the creator instead of the library when the profile has no character', async () => {
+  it('renders the library Outlet even when the profile has no character', async () => {
     mockCharacterList({ resolve: [] })
     renderShellAt('/library/p1')
 
-    expect(await screen.findByRole('heading', { name: /Make your character/i })).toBeInTheDocument()
-    // Both halves matter: the creator appearing is not the claim on its own,
-    // since an unconditional Outlet would render the library underneath it.
-    expect(screen.queryByText('Library Page')).not.toBeInTheDocument()
+    // The owner-decided behaviour: a profile with no character yet goes
+    // straight to the library, same as any other profile. Nothing about
+    // 'none' specifically should ever swap the Outlet for the creator here
+    // again; that decision now belongs to LibraryPage per book.
+    expect(await screen.findByText('Library Page')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /Make your character/i })).not.toBeInTheDocument()
   })
 
   it('renders the library Outlet when the profile already has an active character', async () => {
