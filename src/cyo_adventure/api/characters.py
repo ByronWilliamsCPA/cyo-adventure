@@ -38,6 +38,7 @@ from cyo_adventure.core.exceptions import (
     StateTransitionError,
     ValidationError,
 )
+from cyo_adventure.db.integrity import is_character_one_active_conflict
 from cyo_adventure.db.models import Character, CharacterAttribute, ChildProfile
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.personalization_values import character_name_violations
@@ -186,7 +187,10 @@ async def _attributes_for(
 async def _reject_when_at_character_cap(
     session: AsyncSession, profile_id: uuid.UUID
 ) -> None:
-    """Refuse another character once a profile sits at the hard ceiling.
+    """Refuse another character once a profile's row count reaches the ceiling.
+
+    This is a check-then-act, unlocked race, not a strict guarantee; see the
+    #ASSUME marker below for the accepted, bounded overshoot.
 
     Args:
         session: The request session.
@@ -195,7 +199,7 @@ async def _reject_when_at_character_cap(
     Raises:
         StateTransitionError: If the profile already holds
             ``MAX_CHARACTERS_PER_PROFILE`` characters, active and retired
-            together (HTTP 409).
+            together, at the moment this check runs (HTTP 409).
     """
     # #CRITICAL: security: this is the ONLY bound on a profile's character row
     # count; see MAX_CHARACTERS_PER_PROFILE's comment for why the per-IP rate
@@ -205,6 +209,29 @@ async def _reject_when_at_character_cap(
     # create path, so a cap over active rows alone would bound nothing.
     # #VERIFY: tests/integration/test_characters_api.py::
     # test_creating_past_the_per_profile_character_cap_is_a_409.
+    #
+    # #ASSUME: concurrency: this check-then-act is unlocked, like every other
+    # per-resource cap in this codebase (count_active_jobs_for_family in
+    # api/generation.py, the open-flag count in api/flags.py,
+    # count_pending_for_profile in story_requests/service.py): two concurrent
+    # creates can both read total=49 and both insert, landing the profile at
+    # 51 rather than the ceiling of 50. Bounded, not unbounded: N concurrent
+    # requests overshoot by at most N-1 rows, and the per-IP rate limiter
+    # still caps how large N can practically get. The cap is an abuse and
+    # runaway-retry throttle (see MAX_CHARACTERS_PER_PROFILE's comment), not
+    # a correctness invariant anything downstream depends on being exact, so
+    # this off-by-one is accepted rather than fixed, matching its three
+    # siblings above.
+    # #VERIFY: no test proves the bound is race-free, and saying so is the
+    # honest answer -- a strict guarantee would need either a trigger-backed
+    # row-count constraint (a new trigger on a live table, out of scope for a
+    # fix pass: lock risk disproportionate to a soft abuse ceiling) or a
+    # per-profile advisory lock (which would serialize character creation
+    # across every guardian and child in a family for a limit "chosen far
+    # above anything a real reader produces"). What IS pinned is the
+    # sequential case: tests/integration/test_characters_api.py::
+    # test_creating_past_the_per_profile_character_cap_is_a_409 proves the
+    # 409 fires for one request at a time.
     total = await session.scalar(
         select(func.count())
         .select_from(Character)
@@ -425,9 +452,21 @@ async def create_character(body: CharacterCreateBody, ctx: Context) -> Character
         look=body.look,
     )
     ctx.session.add(row)
+    # #CRITICAL: data integrity: only the uq_character_one_active race is
+    # translated to the "already has an active character" 409; every other
+    # IntegrityError this flush could raise (ck_character_archetype,
+    # ck_character_look, ck_character_not_active_and_retired,
+    # fk_character_profile_family) is a real defect, not a benign race, and
+    # must propagate as itself rather than be relabeled as a state conflict
+    # that misdirects debugging.
+    # #VERIFY: tests/unit/test_characters_integrity.py::
+    # test_create_character_translates_only_the_one_active_race,
+    # ::test_create_character_propagates_other_integrity_errors.
     try:
         await ctx.session.flush()
     except IntegrityError as exc:
+        if not is_character_one_active_conflict(exc):
+            raise
         msg = f"profile '{profile_id}' already has an active character"
         raise StateTransitionError(msg) from exc
     await ctx.session.refresh(row, ["created_at"])
@@ -552,9 +591,18 @@ async def activate_character(character_id: str, ctx: Context) -> CharacterView:
     await _retire_active_character(ctx.session, profile_id, exclude_id=row.id)
     row.is_active = True
     row.retired_at = None
+    # #CRITICAL: data integrity: mirrors create_character's flush guard --
+    # only the uq_character_one_active race becomes the "already has an
+    # active character" 409; any other IntegrityError propagates unchanged
+    # rather than being relabeled as a state conflict it is not.
+    # #VERIFY: tests/unit/test_characters_integrity.py::
+    # test_activate_character_translates_only_the_one_active_race,
+    # ::test_activate_character_propagates_other_integrity_errors.
     try:
         await ctx.session.flush()
     except IntegrityError as exc:
+        if not is_character_one_active_conflict(exc):
+            raise
         msg = f"profile '{profile_id}' already has an active character"
         raise StateTransitionError(msg) from exc
     attributes = await _attributes_of(ctx.session, row.id)
