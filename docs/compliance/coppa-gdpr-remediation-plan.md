@@ -193,11 +193,16 @@ the four ADR-018 items, in ADR-018 itself; each resolution is marked "pending co
 confirmation" where that ADR's own Validation checklist requires counsel sign-off before the
 decision is final, per the "we draft, counsel reviews" model adopted this round.
 
-- **VPC method.** *Resolved: signature-capture layered on the existing Supabase/Google OAuth
-  login* (canvas or typed-name signature-equivalent + checkbox, logged server-side), ruling out
-  both card-verification and a third-party ID vendor. See Section 5 ("VPC method") and ADR-018
-  D1 for the full record; the "does a typed/canvas signature count as signed" question is
-  flagged for counsel.
+- **VPC method.** *Mechanism built; its legal sufficiency is OPEN, not resolved.* A typed
+  full-legal-name attestation plus checkbox, layered on the existing Supabase/Google OAuth
+  login and logged server-side with IP, timestamp, and account id. **As built the typed name
+  is the only signature-equivalent; a canvas-drawn signature was considered in the 2026-07-20
+  framing and never implemented.** The card-verification rejection was **withdrawn on
+  2026-08-08** (16 CFR 312.5(b)(2)(ii) requires no *monetary* transaction, so the "we are not
+  monetized" objection was never valid); the third-party ID vendor remains ruled out. The
+  question for counsel is no longer "does a typed signature count as signed" but whether this
+  is an enumerated 312.5(b)(2) method **at all**, and it carries adverse authority (FTC
+  v. AgeCheq, January 2015). See ADR-018 D1 and `counsel-engagement-brief.md` Section 1.3.
 - **Supabase project region.** *Resolved: stay US.* You've confirmed Supabase stays in the US,
   with a possible future move from `us-east-1` to a US-west region. See Section 5 ("Supabase
   region") for why this is compliance-neutral and needs no further analysis.
@@ -283,8 +288,11 @@ all shipped (commit on `claude/gdpr-compliance-review-qzyvc2`).**
   afterward. `api/profiles.py::_require_consent` gates `POST /api/v1/profiles` (400) on this
   record existing, satisfying "gate all child-profile creation ... behind this record
   existing." Frontend: `GuardianConsentPage.tsx`, a typed full-legal-name attestation +
-  checkbox (the FTC's "sign and submit electronically" method, 312.5(b)(2)(i); see ADR-018
-  D1), reached automatically via a new `AuthStatus = 'needs-consent'` that `ProtectedRoute`
+  checkbox (built on the belief that this was the FTC's "sign and submit electronically"
+  method at 312.5(b)(2)(i); **that premise was falsified on 2026-08-08, no such method exists
+  in the rule text**, and whether the flow is an enumerated method at all is now the open
+  question, see ADR-018 D1), reached automatically via a new `AuthStatus = 'needs-consent'`
+  that `ProtectedRoute`
   routes to before any other guardian page. Also fixed a real, independent gap found while
   wiring this in: the frontend never called `POST /v1/onboarding` at all before this change,
   so a brand-new guardian's first `GET /v1/me` would have 401'd on "unknown subject" -- this
@@ -666,6 +674,11 @@ marked **(no default)** genuinely need your input.
   ruling out both the card-verification and third-party-vendor options below to avoid PCI
   scope and a new processor respectively. The options originally drafted here are kept for
   reference, not because any of them was chosen:
+  - **Superseded 2026-08-08, twice over.** (1) Only the typed-name half was ever built; there
+    is no canvas. (2) The card-verification rejection is withdrawn: 312.5(b)(2)(ii) requires
+    no monetary transaction, so a zero-charge card verification is back on the table and may
+    be the cheapest enumerated method available. "Resolved" above describes an owner decision
+    about what to build, never a legal conclusion that it suffices. ADR-018 D1 governs.
 - *Originally open, but now well-scoped: no paid tier exists, and the product's stated
   design is that a guardian registers before any child can use the app.* That said, per
   `PROJECT-PLAN.md` there is currently no onboarding/signup endpoint at all, and `POST /profiles`
@@ -841,6 +854,10 @@ section used to carry):
   server-side). No new vendor, no PCI scope. The one flagged legal question (does a
   typed/canvas signature satisfy 312.5(b)(2)(i)'s "signed") is the top item for counsel's
   review of the drafted consent flow and Privacy Notice.
+  **Amended 2026-08-08**: no canvas was built; the flagged question was mis-framed, because
+  312.5(b)(2)(i) has no "sign and submit electronically" method to satisfy, so the real
+  question is whether any enumerated method applies; and the card-verification exclusion is
+  withdrawn. See ADR-018 D1 and `counsel-engagement-brief.md` Sections 1.3 and 1.4.
 - **Retention windows**: the draft table in Section 5 is accepted as-is; Phase 4b can now
   publish it as the retention policy.
 - **ZDR/processor-paperwork owner**: the account owner (not counsel, not a hired vendor

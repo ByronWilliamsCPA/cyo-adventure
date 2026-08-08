@@ -290,6 +290,24 @@ a new `AuthStatus = 'needs-consent'`. This is the engineering half of D1; the fl
 counsel-review question above is unchanged by implementation and still needs an answer
 before this ADR can flip to Accepted.
 
+**Gate hole found and closed 2026-08-08.** The implementation above covered only the
+guardian-facing create path. `POST /api/v1/admin/profiles`
+(`api/admin_profiles.py::create_admin_profile`, WS-J) is a second child-data collection point
+and enforced no consent requirement at all, so an admin could create a child profile in a
+family that had never consented; a test reproduced this before the fix and got a `201`. It is
+now gated by that module's own `_require_family_consent`. The two gates deliberately ask
+different questions: the guardian-facing one reads the **caller's** consent record, correct
+because the caller is the child's parent, while the admin one reads the **target family's**,
+correct because the caller is not. Any non-`child` row in the target family satisfies it, not
+only `role='guardian'`, since an adult holding the `admin` base role can still be the parent
+of their own family and a guardian-only test would lock such a family out while adding no
+protection. Note what this gap was and was not: it is an enforcement gap under
+16 CFR 312.5(a)(1), which binds regardless of **which** VPC method D1 lands on, so it was
+fixable without waiting on counsel and is independent of everything else in this decision.
+**Verified**: `tests/integration/test_admin_profiles_api.py::
+test_admin_create_requires_target_family_consent` (negative) and
+`::test_admin_create_allowed_when_target_family_has_consented` (positive).
+
 **Related, newly decided the same day, not itself part of D1**: a guardian self-signup
 admin-approval gate. An uninvited guardian's own first-login JIT provisioning now starts
 `User.status='awaiting_approval'` instead of `active`; `api/deps.py::require_principal`
