@@ -155,8 +155,18 @@ export interface ReaderProps {
    * for converting a JSON `null` (no character) to `undefined` before it
    * reaches this prop, since `ReaderInput.seed` is typed `VarState |
    * undefined`, never `| null`.
-   * #VERIFY: ReaderPage.test.tsx "carries the character seed through
-   * RESTART inside the reader".
+   *
+   * #ASSUME: data-integrity: this prop is already `undefined` (not `null`)
+   * when no character is bound, because the only production caller routes
+   * every value through `characterSeed.ts::deriveCharacterSeed`, which does
+   * the `?? undefined` conversion once at the boundary. A `null` arriving
+   * here would type-check nowhere but would, if forced through, flip
+   * `safeStart`'s `seed === undefined` branch and silently change which of
+   * `start()`/`startContinuation()` every RESTART and Go back calls.
+   * #VERIFY: ReaderPage.test.tsx "converts a null seed_var_state to
+   * undefined at the boundary" pins the conversion; ReaderPage.test.tsx
+   * "carries the character seed through RESTART inside the reader" pins the
+   * rendered consequence of a seed that does arrive.
    */
   seed?: VarState
 }
@@ -443,9 +453,29 @@ export function Reader({
   // machine event this integration must not add (see useFlowedStop.ts).
   // #VERIFY: Reader.test.tsx "go back at a flowed band rewinds the whole
   // stop, landing on the previous stop's terminal choice, not mid-flow".
+  //
+  // #CRITICAL: data-integrity: this availability check and the machine's BACK
+  // guard (machine.ts: `canGoBack(context.story, context.reading,
+  // context.seed)`) MUST be computed from the same seed. `back()` replays the
+  // recorded path from the read's own start and accepts only an exact
+  // var_state match, so a seed-blind availability check disagrees with the
+  // seed-aware guard on every seeded read: the button renders and the BACK
+  // event is silently swallowed (a dead control on the kid surface), or the
+  // inverse hides a button that would have worked. Passing `seed` on BOTH
+  // branches is what keeps the two in lock-step; a future branch added here
+  // must pass it too.
+  // #VERIFY: Reader.test.tsx "the Go back button and the BACK event agree on a
+  // seeded read" pins the non-flowed branch (no `ageBand`, so `flowedStop` is
+  // null there); "the flowed branch's Go back button and the BACK event agree
+  // on a seeded read" pins the flowed branch above by rendering a Reader that
+  // is both flowed AND seeded. stops.test.ts "rewinds a stop on a seeded read
+  // only when the seed is forwarded" only proves stops.ts forwards the
+  // parameter it is given; it cannot observe whether this call site passes
+  // one at all, so it does not pin the flowed branch by itself.
   const canUndo = useMemo(
-    () => (flowedStop ? canGoBackOneStop(story, flowedStop) : canGoBack(story, reading)),
-    [story, reading, flowedStop]
+    () =>
+      flowedStop ? canGoBackOneStop(story, flowedStop, seed) : canGoBack(story, reading, seed),
+    [story, reading, flowedStop, seed]
   )
   const goBackSteps = flowedStop ? flowedStop.nodeIds.length : 1
   // Labelled "Go back a page" (not bare "Go back"): on the ending screen it

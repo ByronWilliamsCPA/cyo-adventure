@@ -31,7 +31,7 @@ from cyo_adventure.api.schemas import (
     CharacterView,
     error_responses,
 )
-from cyo_adventure.characters.seeding import initial_attributes
+from cyo_adventure.characters.seeding import character_seed, initial_attributes
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     ResourceNotFoundError,
@@ -140,6 +140,15 @@ def _view(row: Character, attributes: dict[str, int]) -> CharacterView:
     Returns:
         CharacterView: The wire-safe view.
     """
+    # #CRITICAL: data integrity: the seed is computed here by the SAME
+    # character_seed() the read-start binding uses
+    # (reading.py::_bind_active_character), never by a second mapping. The
+    # client opens a fresh read from this value (ADR-028 Task 9), and the
+    # server later replays that read against the seed it recorded, so two
+    # mappings that drift would 422 the first save carrying a choice_path
+    # and wedge the read. See CharacterView's own docstring.
+    # #VERIFY: tests/integration/test_reading_character_binding.py::
+    # test_character_view_seed_matches_the_seed_a_read_start_would_bind.
     return CharacterView(
         id=str(row.id),
         profile_id=str(row.child_profile_id),
@@ -149,6 +158,7 @@ def _view(row: Character, attributes: dict[str, int]) -> CharacterView:
         is_active=row.is_active,
         books_completed=row.books_completed,
         attributes=attributes,
+        seed_var_state=character_seed(attributes),
         created_at=row.created_at,
         retired_at=row.retired_at,
     )

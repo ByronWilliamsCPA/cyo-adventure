@@ -730,6 +730,32 @@ export type CharacterUpdateBody = {
  * CharacterView
  *
  * A character as returned to a kid or guardian.
+ *
+ * ``seed_var_state`` is the server's own answer to "what numbers would a
+ * read started by this character carry": exactly what
+ * ``reading.py::_bind_active_character`` snapshots onto a new
+ * reading-state row. It is exposed because a FRESH read has no
+ * reading-state row yet, so there is no ``ReadingStateView`` to read a
+ * seed off, and the player must still open the book from the bound
+ * character's numbers rather than the story's declared initials (ADR-028
+ * Task 9, issue #460, and the ``#EDGE`` marker on ``put_reading_state``'s
+ * create path).
+ *
+ * #CRITICAL: data integrity: this field exists so the client CONSUMES a
+ * server-derived seed instead of re-deriving one from ``attributes``. A
+ * second, client-side attribute-to-seed mapping would be free to drift
+ * from ``characters/seeding.py::character_seed``, and the two disagreeing
+ * is not a cosmetic bug: the server replays a submitted state from the
+ * stored seed (``player/replay.py::validate_reading_state``), so the
+ * first save carrying a ``choice_path`` would 422 and wedge the read
+ * permanently. Both this view and the read-start binding call
+ * ``character_seed`` on the same stored attribute rows, so there is
+ * exactly one mapping.
+ * #VERIFY: tests/integration/test_reading_character_binding.py::
+ * test_character_view_seed_matches_the_seed_a_read_start_would_bind
+ * asserts this field equals the ``seed_var_state`` the reading-state
+ * create path persists for the same character, so a change to either
+ * side alone fails.
  */
 export type CharacterView = {
     /**
@@ -765,6 +791,12 @@ export type CharacterView = {
      */
     attributes: {
         [key: string]: number;
+    };
+    /**
+     * Seed Var State
+     */
+    seed_var_state: {
+        [key: string]: boolean | number | string;
     };
     /**
      * Created At

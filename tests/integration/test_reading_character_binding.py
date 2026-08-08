@@ -518,3 +518,44 @@ async def test_a_read_in_progress_keeps_its_recorded_seed(
     # (the row is never deleted), so "whose adventure is this" keeps its
     # answer for a read already in progress.
     assert body["character_name"] == "Route Matrix Rowan"
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_character_view_seed_matches_the_seed_a_read_start_would_bind(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """ADR-028 Task 9: one mapping, read by both surfaces.
+
+    A fresh read has no reading-state row, so the client cannot read a seed
+    off ``ReadingStateView``; it reads ``CharacterView.seed_var_state``
+    instead and opens the book from that. This test is what forbids the two
+    sides drifting: it asserts the value the client is handed BEFORE the
+    first save is byte-identical to the seed the create path then records,
+    for the same character and the same attribute rows. A second
+    attribute-to-seed mapping on either side fails here, and would
+    otherwise only surface as a permanent 422 the first time a save carries
+    a choice_path.
+    """
+    await _seed_attributes(sessions, seed.character_id, might=2, wits=1, nerve=0)
+
+    listed = await client.get(
+        "/api/v1/characters",
+        params={"profile_id": str(seed.child_profile_id)},
+        headers=auth(seed.child_token),
+    )
+    assert listed.status_code == 200, listed.text
+    active = [c for c in listed.json()["characters"] if c["is_active"]]
+    assert len(active) == 1
+    exposed_seed = active[0]["seed_var_state"]
+    assert exposed_seed == {"might": 2, "wits": 1, "nerve": 0}
+
+    started = await client.put(
+        f"/api/v1/reading-state/{seed.child_profile_id}/{seed.storybook_id}",
+        json=_save_body(seed.version, node="n_entrance", revision=0),
+        headers=auth(seed.child_token),
+    )
+    assert started.status_code == 200, started.text
+    assert started.json()["seed_var_state"] == exposed_seed

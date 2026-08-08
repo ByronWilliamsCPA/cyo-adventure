@@ -27,6 +27,7 @@ import { reconcilePersonalizationValues } from '../offline/revocation'
 import { parseContinuation } from '../player/series'
 import { KID_PICKER_PATH } from '../routes'
 import { BackToLibrary } from './BackToLibrary'
+import { makeFetchActiveCharacterBinding } from './characterSeed'
 import { ReaderPage } from './ReaderPage'
 
 // #ASSUME: security: router location.state is untrusted input, same caveat as
@@ -82,6 +83,10 @@ export function ReaderRoute() {
   // NO_SERVER_STATE/NO_RECORD_COMPLETION comment in ReaderPage.tsx for the
   // regression this pattern guards against).
   const fetchServerState = useMemo(() => makeFetchServerState(api), [api])
+  // ADR-028 Task 9: the fresh-read half of the character binding. Memoized on
+  // the same stable `api` identity as every port above and below it, for the
+  // same reason: ReaderPage's load() depends on it by identity.
+  const fetchActiveCharacter = useMemo(() => makeFetchActiveCharacterBinding(api), [api])
   const recordCompletion = useMemo(() => makeRecordCompletion(api), [api])
   const fetchSeriesNext = useMemo(() => makeFetchSeriesNext(api), [api])
   const fetchReadingHistory = useMemo(() => makeFetchReadingHistory(api), [api])
@@ -282,6 +287,7 @@ export function ReaderRoute() {
         api={syncApi}
         fetchStory={fetchStory}
         fetchServerState={fetchServerState}
+        fetchActiveCharacter={fetchActiveCharacter}
         recordCompletion={recordCompletion}
         fetchSeriesNext={fetchSeriesNext}
         continuation={continuation}

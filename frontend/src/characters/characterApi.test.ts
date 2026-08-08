@@ -18,6 +18,7 @@ const LUNA: CharacterView = {
   is_active: true,
   books_completed: 0,
   attributes: {},
+  seed_var_state: {},
   created_at: '2026-08-01T00:00:00Z',
   retired_at: null,
 }

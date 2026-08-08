@@ -17,6 +17,7 @@ import { OfflineError } from '../offline/sync'
 import type { ValuesPayload } from '../player/personalization'
 import type { ContinuationSeed } from '../player/series'
 import type { ReadingState, Storybook, VarState } from '../player/types'
+import type { CharacterBinding } from './characterSeed'
 import { deriveCharacterSeed } from './characterSeed'
 import { ReaderPage } from './ReaderPage'
 
@@ -1145,7 +1146,12 @@ describe('deriveCharacterSeed (ADR-028 Task 9)', () => {
     })
   })
 
-  it('converts a null seed_var_state to undefined before it reaches the rendered reader', () => {
+  // Named for what this test actually observes: it calls deriveCharacterSeed
+  // directly and inspects its return value, so it pins the conversion AT THE
+  // BOUNDARY. It renders nothing, so it cannot speak for what the rendered
+  // reader receives; "carries the character seed through RESTART inside the
+  // reader" below is the test that observes the rendered consequence.
+  it('converts a null seed_var_state to undefined at the boundary', () => {
     // The real 422-shaped trap this guards: the server sends `null` (JSON),
     // not an absent key, when no character is bound. `readerMachine`'s
     // ReaderInput.seed is typed `VarState | undefined`, and safeStart
@@ -1272,5 +1278,96 @@ describe('ReaderPage character binding in the reader chrome (ADR-028 Task 9, clo
     // story's declared initial (has_sword: false, which would hide this
     // choice).
     expect(screen.getByTestId('choice-c_sword')).toBeTruthy()
+  })
+})
+
+describe('ReaderPage fresh-read character seeding (ADR-028 Task 9, I1)', () => {
+  it("seeds a fresh read from the profile's active character", async () => {
+    // No local row and no server row: the genuinely fresh case, where nothing
+    // has snapshotted a seed yet and the pre-fix code opened from the story's
+    // declared initials (has_sword: false), which is issue #460's headline
+    // defect.
+    const fetchActiveCharacter = vi.fn(() =>
+      Promise.resolve<CharacterBinding | null>({
+        characterName: 'Astra',
+        seed: { has_sword: true },
+      })
+    )
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(seedStory)}
+          fetchServerState={() => Promise.resolve<ReadingState | null>(null)}
+          fetchActiveCharacter={fetchActiveCharacter}
+          profileId="p_fresh_char"
+          storybookId="s_seed"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    expect(fetchActiveCharacter).toHaveBeenCalledWith('p_fresh_char')
+    // The discriminator: c_sword's condition is `{ var: 'has_sword' }`, which
+    // is false under the story's declared initial. It can only be visible if
+    // the fetched seed genuinely reached the machine's start.
+    expect(screen.getByTestId('choice-c_sword')).toBeTruthy()
+    expect(screen.getByTestId('reader-character-name')).toHaveTextContent('Astra')
+  })
+
+  it('opens unseeded when the profile has no active character', async () => {
+    const fetchActiveCharacter = vi.fn(() => Promise.resolve<CharacterBinding | null>(null))
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(seedStory)}
+          fetchServerState={() => Promise.resolve<ReadingState | null>(null)}
+          fetchActiveCharacter={fetchActiveCharacter}
+          profileId="p_fresh_nochar"
+          storybookId="s_seed"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    // Pre-ADR-028 behavior exactly: declared initials, no chrome, no error.
+    expect(screen.queryByTestId('choice-c_sword')).toBeNull()
+    expect(screen.getByTestId('choice-c_plain')).toBeTruthy()
+    expect(screen.queryByTestId('reader-character-name')).toBeNull()
+  })
+
+  it('does not seed a continuation read from the active character', async () => {
+    // A WS-G series continuation already built its own opening state from the
+    // previous book's carried variables. Layering the character seed on top
+    // would invent a client-side merge the server has no counterpart for, and
+    // would make RESTART drop the series carry.
+    const fetchActiveCharacter = vi.fn(() =>
+      Promise.resolve<CharacterBinding | null>({
+        characterName: 'Astra',
+        seed: { has_sword: true },
+      })
+    )
+    const continuation: ContinuationSeed = { entryNode: null, varState: { has_sword: false } }
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(seedStory)}
+          fetchServerState={() => Promise.resolve<ReadingState | null>(null)}
+          fetchActiveCharacter={fetchActiveCharacter}
+          continuation={continuation}
+          profileId="p_cont_char"
+          storybookId="s_seed"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    // The continuation carry wins outright: the character lookup is never even
+    // made, so there is no seed to merge and no name to show.
+    expect(fetchActiveCharacter).not.toHaveBeenCalled()
+    expect(screen.queryByTestId('choice-c_sword')).toBeNull()
+    expect(screen.queryByTestId('reader-character-name')).toBeNull()
   })
 })

@@ -706,17 +706,49 @@ async def put_reading_state(
         # than fixed server-side: today's client
         # (frontend/src/offline/sync.ts::toPutPayload) sends no choice_path at
         # all, so an equality check here would 422 legitimate saves the moment
-        # a story mutates a seeded variable. The remedy is client-side and is a
-        # hard prerequisite for Task 9: the player must derive its starting
-        # var_state from the seed_var_state this response now exposes instead
-        # of from the story's declared initials.
+        # a story mutates a seeded variable.
+        #
+        # STATUS (Task 9 landed): the client-side remedy this marker asked for
+        # is now in place for an ONLINE fresh read. CharacterView.seed_var_state
+        # exposes the server-computed seed before any row exists, and
+        # frontend/src/reader/ReaderPage.tsx opens a fresh read from it via
+        # startContinuation() instead of the story's declared initials. Two
+        # narrow residuals keep this marker open rather than closing it:
+        #   1. A fresh read that cannot reach the network, OR IS SERVED A
+        #      CACHED characters response (the frontend service worker's
+        #      catch-all /v1/* rule is NetworkFirst with a 5s timeout over a
+        #      7-day cache: vite.config.ts; a body cached before this deploy
+        #      has no seed_var_state at all), still opens from declared
+        #      initials, and its queued first save can persist a var_state
+        #      the bound seed could not have produced.
+        #   2. The active character can change between the client's seed fetch
+        #      and this create path's own _bind_active_character call (a
+        #      guardian or a second tab switching characters in that window),
+        #      so the two can disagree even online. The row then carries the
+        #      NEW character's seed over a var_state actually produced from
+        #      the OLD character's seed; nothing 422s at save time (residual 1
+        #      applies here too: no choice_path to replay against), but on the
+        #      read's next resume `canGoBack` fails closed against that
+        #      mismatched seed, so Go back silently disappears for the rest of
+        #      that read, and RESTART reopens from the new character's
+        #      numbers. Not a wedge and not a defect Task 9 introduced, but
+        #      worse than "latent" undersells it.
+        # Both are latent, not live, for exactly the reason above: the client
+        # sends no choice_path. Anything that starts sending one must close
+        # them first (cache the active character's seed alongside the offline
+        # story blob, and echo the seed the client actually started from so
+        # this path can reject a mismatch rather than record a different one).
         # #VERIFY: nothing proves the wedge today, and nothing can while the
         # client omits choice_path; do not read a green suite as evidence the
         # condition is closed. The nearest real evidence is the complementary
         # case, tests/integration/test_reading_character_binding.py::
         # test_a_first_save_carrying_a_choice_path_replays_from_the_bound_seed,
         # which proves the seed IS enforced on this create path whenever a
-        # choice_path is present. Revisit this marker when Task 9 lands.
+        # choice_path is present. The client half is pinned by
+        # tests/integration/test_reading_character_binding.py::
+        # test_character_view_seed_matches_the_seed_a_read_start_would_bind
+        # (one mapping, both sides) and frontend/src/reader/ReaderPage.test.tsx
+        # "seeds a fresh read from the profile's active character".
         character_id, seed_var_state = await _bind_active_character(ctx.session, parsed)
         await _validate_against_pinned_version(
             ctx, body, book, require_current=True, seed_var_state=seed_var_state
