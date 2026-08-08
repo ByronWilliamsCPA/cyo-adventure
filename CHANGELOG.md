@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.68.2] - 2026-08-08
+
+### Bug Fixes
+
+- **auth**: Apply Tier 1 RLS context before guardian profile resolution
+  ([#641](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/641),
+  [`eb894c6`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/eb894c66d003999b32f7e4c492f0ad011dd7536a))
+
+
 ## [0.68.1] - 2026-08-08
 
 ### Bug Fixes
@@ -3249,6 +3258,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.68.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.1...v0.68.2
 [0.68.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.0...v0.68.1
 [0.68.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.67.0...v0.68.0
 [0.67.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.66.5...v0.67.0
