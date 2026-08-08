@@ -26,7 +26,7 @@ import {
   stripSentinels,
   type ValuesPayload,
 } from '../player/personalization'
-import { SATISFYING_ENDING_KINDS, seriesMeta } from '../player/series'
+import { SATISFYING_ENDING_KINDS, seriesMeta, type ContinuationSeed } from '../player/series'
 import { canGoBackOneStop } from '../player/stops'
 import type { ReadingState, Storybook } from '../player/types'
 import type { ReadingTimeApi } from '../offline/readingTimeSync'
@@ -49,6 +49,13 @@ import './reader.css'
 export interface ReaderProps {
   story: Storybook
   initialReading?: ReadingState
+  /**
+   * The continuation seed this book was opened with (WS-G), forwarded to the
+   * machine so "Read again" restarts the continuation rather than the book's
+   * own start node (issue #460). Omitted (most callers, and any non-series
+   * book) is the ordinary new-reader restart.
+   */
+  continuation?: ContinuationSeed
   onProgress?: (reading: ReadingState) => void
   /** Called once with the ending id when the reader reaches an ending. */
   onComplete?: (endingId: string) => void
@@ -140,6 +147,7 @@ export interface ReaderProps {
 export function Reader({
   story,
   initialReading,
+  continuation,
   onProgress,
   onComplete,
   profileId,
@@ -160,7 +168,7 @@ export function Reader({
   const navigate = useNavigate()
   const fontScale = useReaderFontScale(profileId)
   const [snapshot, send] = useMachine(readerMachine, {
-    input: { story, reading: initialReading },
+    input: { story, reading: initialReading, continuation },
   })
   const { reading, error: choiceError } = snapshot.context
   const node = story.nodes.find((n) => n.id === reading.current_node)
