@@ -163,6 +163,29 @@ async def test_patch_with_attributes_is_rejected_not_silently_dropped(
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+async def test_patch_with_archetype_is_rejected_not_silently_dropped(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """PATCH with archetype set: 422, never a silent drop.
+
+    archetype is identity, not a re-pickable preference
+    (characters/progression.py's _PROGRESSION_VARIABLES excludes it as "set
+    once at creation/build and never raised"), and it is absent from
+    CharacterUpdateBody; extra=forbid turns the attempt into a 422 rather
+    than writing the Character.archetype column while leaving the persisted
+    character_attribute row (and therefore every future read's seed) bound
+    to the original archetype.
+    """
+    resp = await client.patch(
+        f"/api/v1/characters/{seed.character_id}",
+        json={"archetype": "trickster"},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
 async def test_creating_a_second_character_retires_the_incumbent_atomically(
     client: AsyncClient, seed: Seed
 ) -> None:

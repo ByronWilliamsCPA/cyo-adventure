@@ -341,13 +341,13 @@ async def create_character(body: CharacterCreateBody, ctx: Context) -> Character
 async def update_character(
     character_id: str, body: CharacterUpdateBody, ctx: Context
 ) -> CharacterView:
-    """Rename or re-choose a character's archetype/look.
+    """Rename or re-choose a character's look.
 
     Args:
         character_id: The character to update.
-        body: The fields to change; omitted fields are untouched. Attributes
-            and books_completed are absent from the body by design (see
-            ``CharacterUpdateBody``'s docstring) and cannot be set here.
+        body: The fields to change; omitted fields are untouched. Attributes,
+            books_completed, and archetype are absent from the body by design
+            (see ``CharacterUpdateBody``'s docstring) and cannot be set here.
         ctx: The request context (principal + unit-of-work session).
 
     Returns:
@@ -383,8 +383,6 @@ async def update_character(
             raise ResourceNotFoundError(msg)
         _reject_unsafe_character_name(body.name, profile.age_band)
         row.name = body.name
-    if body.archetype is not None:
-        row.archetype = body.archetype
     if body.look is not None:
         row.look = body.look
     await ctx.session.flush()

@@ -1646,18 +1646,25 @@ class CharacterCreateBody(BaseModel):
 
 
 class CharacterUpdateBody(BaseModel):
-    """A partial update: name, look, and archetype are all re-choosable.
+    """A partial update: name and look are re-choosable; archetype is not.
 
-    Attributes and books_completed are absent by design. They are
-    server-derived and no principal may write them (spec section 3.4);
-    ``extra="forbid"`` turns an attempt into a 422 rather than a silent
-    drop.
+    Attributes, books_completed, and archetype are absent by design.
+    Attributes and books_completed are server-derived and no principal may
+    write them (spec section 3.4). archetype is identity, not a re-pickable
+    preference: ``characters/progression.py``'s ``_PROGRESSION_VARIABLES``
+    excludes it on the stated grounds that it is "set once at
+    creation/build and never raised", and ``Character.archetype`` (the
+    string column) has no update path that also rewrites the persisted
+    ``character_attribute`` row holding the integer code a read binds from
+    (``characters/seeding.py::initial_attributes``); a PATCH that touched
+    only the column would leave the two permanently disagreeing. In all
+    three cases ``extra="forbid"`` turns an attempt into a 422 rather than
+    a silent drop.
     """
 
     model_config = ConfigDict(extra="forbid")
 
     name: CharacterName | None = None
-    archetype: CharacterArchetype | None = None
     look: CharacterLook | None = None
 
 

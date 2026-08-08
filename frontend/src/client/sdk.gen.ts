@@ -709,13 +709,13 @@ export const deleteCharacterApiV1CharactersCharacterIdDelete = <ThrowOnError ext
 /**
  * Update Character
  *
- * Rename or re-choose a character's archetype/look.
+ * Rename or re-choose a character's look.
  *
  * Args:
  * character_id: The character to update.
- * body: The fields to change; omitted fields are untouched. Attributes
- * and books_completed are absent from the body by design (see
- * ``CharacterUpdateBody``'s docstring) and cannot be set here.
+ * body: The fields to change; omitted fields are untouched. Attributes,
+ * books_completed, and archetype are absent from the body by design
+ * (see ``CharacterUpdateBody``'s docstring) and cannot be set here.
  * ctx: The request context (principal + unit-of-work session).
  *
  * Returns:
