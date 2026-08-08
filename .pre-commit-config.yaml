@@ -366,6 +366,40 @@ repos:
         pass_filenames: true
         stages: [pre-commit]
 
+      # A RAD #VERIFY line names the test that proves the assumption above it.
+      # A citation naming a test that does not exist is worse than no citation:
+      # it reads as proof while the named test, not existing, proves nothing.
+      # The existing backlog is recorded in rad-citation-baseline.toml and is
+      # grandfathered; the hook blocks new and newly-broken citations, and
+      # also reports a baseline row that has stopped being stale so the debt
+      # list can only shrink.
+      # TypeScript citations are checked for file existence only, because they
+      # paraphrase an it() title rather than quoting it; see the script's
+      # module docstring.
+      #
+      # Ceiling (read before trusting a green run): this hook proves a cited
+      # test EXISTS. It cannot and does not prove that test would FAIL if the
+      # tagged property were removed; whether a cited test discriminates the
+      # claim it is cited for remains a human review judgement. See
+      # "Deliberate non-goals" in scripts/check_rad_citations.py's module
+      # docstring.
+      #
+      # Scope: this hook's files: regex below covers src/, scripts/,
+      # frontend/src/, and the baseline file. It does NOT scan tests/,
+      # supabase/, or frontend/e2e/, all of which carry #VERIFY markers of
+      # their own; a stale citation in any of those trees is invisible to
+      # this gate.
+      - id: check-rad-citations
+        # Quoted: an unquoted " #" would start a YAML comment and truncate
+        # the name to "RAD".
+        name: "RAD #VERIFY citations name tests that exist"
+        entry: python scripts/check_rad_citations.py
+        language: system
+        files: >-
+          ^(src/.*\.py|scripts/.*\.py|frontend/src/.*\.tsx?|rad-citation-baseline\.toml)$
+        pass_filenames: true
+        stages: [pre-commit]
+
 
   # ============================================================================
   # Python Docstring Coverage
