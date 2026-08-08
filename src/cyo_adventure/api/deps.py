@@ -553,17 +553,23 @@ async def require_principal(
         # for every guardian. That is exactly what production did from the
         # 2026-08-04 cutover to the NOBYPASSRLS cyo_api role (UW-A03, verified
         # live that day; the daily e2e-prod tier went red the next morning and
-        # stayed red): GET /v1/me
-        # returned a correct family_id with an always-empty profile_ids, and
-        # GET /v1/profiles then short-circuited to an empty list, rendering
-        # the guardian console's "No profiles yet" state for every family.
+        # stayed red): GET /api/v1/me returned a correct family_id with an
+        # always-empty profile_ids, and GET /api/v1/profiles then
+        # short-circuited to an empty list, rendering the guardian console's
+        # "No profiles yet" state for every family.
         # Deriving from the already-verified `user` row (never from request
         # input) is not a bypass: user.family_id and user.is_admin were just
-        # read back from the row matched by the verified authn_subject above,
-        # so this only lets the database enforce that the profiles query
-        # matches the account that owns them. Pre-cutover this call is a
-        # no-op (RLS never applies to a table's owner); post-cutover it is
-        # the one thing standing between a guardian and their own children.
+        # read back from the row matched by the verified authn_subject above.
+        # For a guardian without the admin capability, that lets the database
+        # enforce that the profiles query matches the account owning it. For an
+        # adult who also holds admin, app.is_admin='true' satisfies the policy's
+        # second disjunct for every row, so _resolve_profiles' own family_id
+        # filter is the only scoping left; that escape hatch is deliberate per
+        # ADR-022 and is exactly what the end-of-function call has always
+        # opened, not an artifact of moving this one earlier. Pre-cutover this
+        # call is a no-op (RLS never applies to a table's owner); post-cutover
+        # it is the one thing standing between a guardian and their own
+        # children.
         # #VERIFY: tests/integration/test_rls_tier1_enforcement.py::
         # test_guardian_principal_resolves_profiles_under_tier1_rls and
         # ::test_child_profile_invisible_without_context.
@@ -593,17 +599,23 @@ async def require_principal(
     # app.family_id / app.is_admin GUCs from the VERIFIED principal (never from
     # request input) on the same session the route will use, so the Tier 1
     # family_scoped policies enforce per-family isolation post-cutover. Every
-    # principal branch above (guardian, admin, child, device) carries a
-    # family_id, so this one choke point covers them all. The child branch
-    # resolves without needing the context this sets: it does no database
-    # read at all. The guardian/admin and device branches each read a Tier 1
-    # table before reaching this line (child_profile and device_grant
-    # respectively), so each applies this same context itself, from its own
-    # verified source, immediately before that read; this call re-applies
-    # identical values for both. Do not "optimize" either earlier call away:
+    # principal branch above carries a family_id, so this one choke point
+    # covers them all. Of the three branches, exactly two make a pre-principal
+    # Tier 1 read and so must apply this context themselves, earlier: the
+    # device-grant branch (device_grant) and the guardian case of the else
+    # branch (child_profile, via _resolve_profiles, which queries it only when
+    # user.role is GUARDIAN, so an admin-only or child row never reaches it).
+    # The child-session branch does no database read at all, and the else
+    # branch's own select(User) is Tier 2 (blanket service_rw), so neither
+    # needs it. For those two this call re-applies the same family_id.
+    # app.is_admin can differ between the two calls for a legacy
+    # (role='admin', is_admin=false) row, where __post_init__ derives True for
+    # the principal while the earlier call passed the stored False; that is
+    # harmless precisely because such a row makes no Tier 1 read in between.
+    # Do not "optimize" either earlier call away:
     # without the device one, the device lookup matches zero rows, which is
     # what broke staging from the 2026-07-18 cutover until 2026-08-02; without
-    # the guardian/admin one, _resolve_profiles matches zero rows, which is
+    # the guardian one, _resolve_profiles matches zero rows, which is
     # what broke every guardian's profile listing in production from the
     # 2026-08-04 cutover to the NOBYPASSRLS cyo_api role until this fix. Both
     # are a no-op pre-cutover (the owner bypasses RLS); both are load-bearing
@@ -703,10 +715,15 @@ async def _device_principal(session: AsyncSession, token: str) -> Principal:
     #
     # #CRITICAL: security: the RLS context MUST be established here, before the
     # lookup, not only at the end of require_principal. device_grant is an
-    # ADR-022 Tier 1 family_scoped table and this is the ONLY pre-principal read
-    # of one; its policy predicate
-    # (family_id::text = current_setting('app.family_id', true)) is unsatisfiable
-    # while the GUC is unset, so the query below would match zero rows and EVERY
+    # ADR-022 Tier 1 family_scoped table and this is one of two pre-principal
+    # reads of one (the other is _resolve_profiles reading child_profile on the
+    # guardian path); its policy predicate
+    # (family_id::text = current_setting('app.family_id', true) OR
+    # current_setting('app.is_admin', true) = 'true') is unsatisfiable
+    # while both GUCs are unset. The is_admin disjunct is inert on this path by
+    # construction: a device token carries no admin capability, so the call
+    # below passes is_admin=False and only the family_id half can ever match.
+    # With no context at all the query below would match zero rows and EVERY
     # device request would be rejected as unverifiable. That is exactly what
     # staging did from the 2026-07-18 Tier 1 cutover until 2026-08-02; the
     # owner-connected tiers (local, e2e-real-*) never reproduced it because RLS
