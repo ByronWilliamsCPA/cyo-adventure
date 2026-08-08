@@ -3496,16 +3496,18 @@ folder) and <code>device_grant_token</code> (a backend-signed device grant, mint
 device-grants folder). Both exercise the non-guardian verification branches of <code>api/deps.py</code> end to end,
 which requires the dev signing secrets described under "Required environment" below.</p>
 <h3 id="request-pacing-mandatory">Request pacing (mandatory)<a class="headerlink" href="#request-pacing-mandatory" title="Permanent link">&para;</a></h3>
-<p>Every newman invocation must pass <code>--delay-request 1100</code> (CI does; the local command below does), for
-two reasons:</p>
+<p>Every newman invocation must pass <code>--delay-request 1100</code> (CI does; the local command below does). It
+was introduced for two reasons, of which only the second is still load-bearing:</p>
 <ol>
-<li><strong>Commit visibility.</strong> The app's unit-of-work commits when the request's yield-dependency tears
-   down, which happens after the response is sent. A zero-delay runner can therefore receive a 201 and
-   fire the next request before the created row is committed, producing intermittent 403/404s on
-   just-created resources. The delay serializes each request against the previous one's commit. This
-   is a mitigation, not the fix: any sufficiently fast client can hit the same race, and the durable
-   fix is committing the unit-of-work before the response is sent
-   (<code>api/deps.py::get_db_session</code>), tracked as follow-up work.</li>
+<li><strong>Commit visibility (fixed; kept as belt and braces).</strong> The app's unit of work used to commit when
+   the request's yield-dependency tore down, which happens after the response is sent, so a zero-delay
+   runner could receive a 201 and fire the next request before the created row was committed,
+   producing intermittent 403/404s on just-created resources. The delay was the mitigation. The
+   durable fix landed for issue #461: <code>UnitOfWorkMiddleware</code>
+   (<code>middleware/unit_of_work.py</code>) commits at <code>http.response.start</code>, before any byte reaches the
+   client, and <code>api/deps.py::request_unit_of_work</code> keeps the rollback decision in the dependency. The
+   delay is no longer load-bearing for this reason and is retained only because reason 2 requires it
+   anyway.</li>
 <li><strong>Rate limiting.</strong> Wherever <code>RateLimitMiddleware</code> is enabled (any non-<code>local</code> environment; the
    compose/CI stack runs <code>ENVIRONMENT=local</code>, where it is off), the delay keeps any 60-second window
    under the 60 requests/minute ceiling.</li>
@@ -3587,7 +3589,7 @@ pushing.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 04:02:38 UTC">August 5, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 23:28:25 UTC">August 8, 2026</span>
   </span>
 
     

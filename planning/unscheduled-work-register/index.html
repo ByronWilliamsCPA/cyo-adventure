@@ -5741,9 +5741,9 @@ complete; each is filed as a GitHub issue.</p>
 </tr>
 <tr>
 <td>UW-L02</td>
-<td><code>api/deps.py:208-228</code> commits in the teardown half of a yield-dependency, which FastAPI runs after the response is sent. Documented at <code>docs/api/README.md:88-95</code> as follow-up work; mitigated only by an 1100 ms newman delay that also serves as rate-limit spacing, so it cannot be tuned for the race alone.</td>
+<td><code>api/get_db_session</code> commits in the teardown half of a yield-dependency, which FastAPI runs after the response is sent, so a client could act on a <code>201</code> whose row no other connection could yet see. Was mitigated only by an 1100 ms newman delay that also serves as rate-limit spacing, so it could not be tuned for the race alone. <strong>Fixed in <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/647">#647</a></strong>, split across two layers because neither can see both facts it needs: <code>middleware/unit_of_work.py</code> commits at the ASGI <code>http.response.start</code> message, which is the last moment before any byte reaches the client and the only place <em>where</em> to commit is observable; the dependency keeps the rollback, because it sits inside <code>ExceptionMiddleware</code> and is the only layer that can tell a raised <code>HTTPException(403)</code> from a deliberately returned <code>JSONResponse(404)</code>, which is <em>whether</em> to commit. <code>RequestUnitOfWork</code> settles exactly once so whichever half acts first decides. The dependency's commit survives as the fallback for a request that never emits a response start.</td>
 <td><a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/461">#461</a></td>
-<td>unscheduled</td>
+<td>verify</td>
 </tr>
 <tr>
 <td>UW-L03</td>
@@ -6010,7 +6010,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 22:50:03 UTC">August 8, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 23:28:25 UTC">August 8, 2026</span>
   </span>
 
     
