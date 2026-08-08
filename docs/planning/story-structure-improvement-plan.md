@@ -306,9 +306,10 @@ flips to `done` with a Ref at that point, not before.
 #### OG7: phase disposition for the SQ program
 
 **Decision recorded 2026-08-06 (owner choice).** Section 11.1's mapping table is **adopted in
-full**, including the two stretches the plan flagged as "mild" (Stage 1's SQ-07 to SQ-10 and
-Stage 3's SQ-15/SQ-17 take `content` even though they are selection and measurement code rather
-than prose authoring). SQ-01 takes the single token `R1`, reversing `UW-G14`'s `content` cell, on
+full**, including all five rows the plan flagged "mild" and, among those, the two that stretch the
+`content` token (Stage 1's SQ-07 to SQ-10 and Stage 3's SQ-15/SQ-17 take `content` even though they
+are selection and measurement code rather than prose authoring). SQ-01 takes the single token `R1`,
+reversing `UW-G14`'s `content` cell, on
 the plan's own argument that a library with zero reachable catalog books is the core reading loop
 failing rather than a catalog-growth shortfall. SQ-16 and SQ-18 keep `4b`; SQ-19, SQ-22 and SQ-24
 take no new token.
@@ -459,10 +460,11 @@ section 8 is where the owner rules on the mapping below; nothing here edits a re
 manifest.
 
 > **Ruled 2026-08-06.** OG7 adopted this table in full, including both rows marked "Yes, explicit
-> owner call" and both stretches marked "Mild". One amendment: `UW-G12`'s `Phase` flips to `content`
-> immediately rather than on SQ-11's landing. See section 8.1 for the reasoning and the register
-> edits, which are made. The table below is preserved as written, as the argument the ruling
-> accepted; the `Owner call?` column records what was *asked*, not what is still open.
+> owner call" and all five rows carrying a "Mild" flag, two of which stretch the `content` token
+> (Stage 1's SQ-07 to SQ-10 and Stage 3's SQ-15/SQ-17). One amendment: `UW-G12`'s `Phase` flips to
+> `content` immediately rather than on SQ-11's landing. See section 8.1 for the reasoning and the
+> register edits, which are made. The table below is preserved as written, as the argument the
+> ruling accepted; the `Owner call?` column records what was *asked*, not what is still open.
 
 **Proposed mapping, reasoned from the actual work, not asserted by fiat:**
 
