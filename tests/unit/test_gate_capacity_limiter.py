@@ -19,6 +19,7 @@ from cyo_adventure.api import generation as generation_module
 from cyo_adventure.api import node_edit as node_edit_module
 from cyo_adventure.api.gate_limits import gate_limiter
 from cyo_adventure.core.config import Settings
+from cyo_adventure.core.exceptions import ConfigurationError
 
 _GATE_CALL_MODULES = (node_edit_module, generation_module)
 
@@ -87,6 +88,49 @@ async def test_the_gate_limiter_is_smaller_than_the_anyio_default_pool() -> None
     assert gate_limiter().total_tokens < default_pool_size
     with pytest.raises(pydantic.ValidationError):
         Settings(gate_max_concurrency=default_pool_size)
+
+
+@pytest.mark.unit
+def test_the_gate_limiter_is_smaller_than_the_database_connection_pool() -> None:
+    """The live default limiter also respects the DB connection pool ceiling.
+
+    Both ``run_gate`` call sites (api/node_edit.py, api/generation.py) hold a
+    checked-out ``AsyncSession`` for the whole offloaded gate call, so the
+    connection pool (``database_pool_size + database_max_overflow``, 15 by
+    default) is a second, independent ceiling alongside the AnyIO thread
+    pool asserted above. At the compiled-in defaults (gate_max_concurrency=4,
+    pool 5+10=15) the connection pool does not bind, so this only proves the
+    live default is compatible with it, not that the cross-field check
+    exists; test_gate_max_concurrency_at_the_connection_pool_ceiling_rejected
+    below exercises the check itself by shrinking the pool until it does
+    bind.
+    """
+    total_db_connections = (
+        Settings.model_fields["database_pool_size"].default
+        + Settings.model_fields["database_max_overflow"].default
+    )
+    assert gate_limiter().total_tokens < total_db_connections
+
+
+@pytest.mark.unit
+def test_gate_max_concurrency_at_the_connection_pool_ceiling_rejected() -> None:
+    """A limiter at or above the connection pool bounds nothing against it.
+
+    Shrinks database_pool_size/database_max_overflow down to a total smaller
+    than the AnyIO thread-pool ceiling (39), so this exercises the
+    connection-pool cross-field check in isolation: a version of
+    core/config.py that deleted
+    ``_require_gate_concurrency_within_connection_pool`` but kept the
+    unrelated ``le=39`` Field bound would still construct this Settings
+    instance without error, since gate_max_concurrency=10 is well under 39.
+    Mirrors test_the_gate_limiter_is_smaller_than_the_anyio_default_pool's
+    use of ConfigurationError rather than pydantic.ValidationError, since
+    ConfigurationError does not subclass ValueError and so is not wrapped by
+    pydantic when raised from a model_validator (see the sibling
+    _reject_dev_database_url_outside_local validator for the same pattern).
+    """
+    with pytest.raises(ConfigurationError):
+        Settings(gate_max_concurrency=10, database_pool_size=5, database_max_overflow=4)
 
 
 @pytest.mark.unit

@@ -18,6 +18,24 @@ saturation event degrades these two routes (a queued request still holds its
 HTTP connection and may time out) instead of starving the whole service. The
 latency half of the problem, memoising the per-entry-state Layer 2 walk that
 drives the multiplier, is tracked separately as ``UW-A48``.
+
+The AnyIO worker-thread pool is not the only resource this limiter bounds,
+and as of ``database_pool_size``/``database_max_overflow`` defaulting to
+5/10 (15 total), it is not even the tightest one. Both ``api/node_edit.py``
+and ``api/generation.py`` call ``run_gate`` from inside a request handler
+that has already checked out an ``AsyncSession`` (a DB connection) before
+reaching the gate call, and that session stays checked out for the entire
+offloaded, synchronous ``run_sync(run_gate, ...)`` hold, up to the 49.58s
+worst case above. A limiter sized only against the 40-thread AnyIO default
+(``settings.gate_max_concurrency``'s ``le=39`` Field bound) can therefore
+still be large enough to check out more connections than the pool has,
+which exhausts the connection pool for every other route in the process,
+not just these two, well before the thread pool this module was built to
+protect is threatened. ``core/config.py::Settings._require_gate_concurrency_within_connection_pool``
+enforces the tighter, connection-pool-relative ceiling at startup
+(``gate_max_concurrency < database_pool_size + database_max_overflow``), so
+whichever of the two pools is smaller in a given deployment is the one
+that actually binds.
 """
 
 from __future__ import annotations
