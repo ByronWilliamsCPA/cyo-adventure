@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { createActor } from 'xstate'
 import { describe, expect, it, vi } from 'vitest'
 
-import { startContinuation } from './engine'
+import { choose, startContinuation } from './engine'
 import { readerMachine } from './machine'
 import type { ContinuationSeed } from './series'
 import type { Storybook } from './types'
@@ -320,16 +320,31 @@ describe('reader machine RESTART on a continuation read (issue #460)', () => {
     expect(reading.current_node).toBe('n_woods')
     expect(reading.path).toEqual(['n_woods'])
     expect(reading.var_state).toEqual(carried)
+
+    // The seed is provenance, not a one-shot token: `reset` reads it without
+    // clearing it, so a second RESTART must reproduce the same continuation
+    // start rather than decaying to the new-reader path.
+    actor.send({ type: 'RESTART' })
+    const again = actor.getSnapshot().context.reading
+    expect(again.current_node).toBe('n_woods')
+    expect(again.path).toEqual(['n_woods'])
+    expect(again.var_state).toEqual(carried)
   })
 
   it('restarts to the continuation entry point even when the read resumed from saved progress', () => {
     // The seed is ignored for the INITIAL state whenever saved progress exists
     // (ReaderPage's rule), but the carried series state is a fact about the
     // child's history, so a restart must still honour it.
-    const saved = {
-      ...startContinuation(book2, 'n_woods', { torch: true, coins: 4 }),
-      current_node: 'n_river',
-    }
+    // Built by actually taking the choice rather than by overriding
+    // current_node, so the fixture keeps the invariant the server enforces on
+    // saved progress (player/replay.py::_check_structure: current_node ===
+    // path[path.length - 1]). A hand-patched current_node is a state no save
+    // path could ever have produced.
+    const saved = choose(
+      book2,
+      startContinuation(book2, 'n_woods', { torch: true, coins: 4 }),
+      'c_river'
+    )
     const actor = createActor(readerMachine, {
       input: { story: book2, reading: saved, continuation: seed },
     })
@@ -351,15 +366,33 @@ describe('reader machine RESTART on a continuation read (issue #460)', () => {
   })
 
   it('surfaces context.error instead of dying when the continuation restart throws', () => {
-    // startContinuation throws on the same contract as start(): an entry node
-    // that resolves to a dangling start_node has no node to enter.
+    // startContinuation throws on the same contract as start(): an unknown
+    // entryNode falls back to start_node (engine.ts), so a dangling start_node
+    // is the one condition under which it has no node to enter.
+    //
+    // `reading` is supplied on purpose. Without it the initial-context factory
+    // calls safeStart itself and context.error is already true before RESTART
+    // is ever sent, which makes the assertion below pass whether or not
+    // `reset` has a working catch. Starting from a healthy state and asserting
+    // error is false first means only reset's own catch can flip it.
+    //
+    // What this test deliberately does NOT prove: that the continuation branch
+    // threw rather than the start() branch. startContinuation can only throw
+    // where start() would throw too, so no fixture can separate them; the two
+    // tests above are what pin the continuation branch.
     const corruptedBook2: Storybook = { ...book2, start_node: 'n_does_not_exist' }
+    const healthy = startContinuation(book2, 'n_woods', { torch: true, coins: 4 })
     const logSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     try {
       const actor = createActor(readerMachine, {
-        input: { story: corruptedBook2, continuation: { entryNode: 'n_also_missing' } },
+        input: {
+          story: corruptedBook2,
+          reading: healthy,
+          continuation: { entryNode: 'n_also_missing' },
+        },
       })
       actor.start()
+      expect(actor.getSnapshot().context.error).toBe(false)
       actor.send({ type: 'RESTART' })
       const snapshot = actor.getSnapshot()
       expect(snapshot.status).toBe('active')
