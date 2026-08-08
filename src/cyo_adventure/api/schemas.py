@@ -214,6 +214,15 @@ class LibraryItem(BaseModel):
     # never breaks personalization, it only means one extra network round
     # trip for a non-personalizable book.
     personalization_eligible: bool = False
+    # ADR-028: whether this book declares a persistent-character envelope
+    # (``Storybook.accepts_character is not None``), read verbatim off the
+    # stored blob at listing time, not off a DB column. The frontend uses
+    # this to decide whether to show the character creator for this book at
+    # all; a book that never opted in must never surface one. False for any
+    # document that omits the field entirely (including every pre-2.1 book),
+    # matching the same "absent means no character" default the schema
+    # itself enforces (storybook/models.py::Storybook.accepts_character).
+    accepts_character: bool = False
 
 
 class LibraryView(BaseModel):

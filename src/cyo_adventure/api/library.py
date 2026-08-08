@@ -219,6 +219,23 @@ def _blob_age_band(blob: Mapping[str, object]) -> str:
     return ""
 
 
+def _accepts_character(blob: Mapping[str, object]) -> bool:
+    """Return whether a stored Storybook blob declares a character envelope.
+
+    Mirrors the schema's own "absent means no character" default
+    (``storybook/models.py::Storybook.accepts_character``): the field is
+    declared only when present and not ``None``; an empty dict ``{}`` still
+    counts as declared (ADR-028), so this checks presence, not truthiness.
+
+    Args:
+        blob: The stored Storybook content blob.
+
+    Returns:
+        bool: True when ``accepts_character`` is present and not None.
+    """
+    return blob.get("accepts_character") is not None
+
+
 def _library_item(
     storybook_id: str,
     blob: Mapping[str, object],
@@ -258,6 +275,12 @@ def _library_item(
             ``StorybookVersion.personalization_eligible`` (Stage B). Defaults
             to False, matching the column's own default for a version that
             predates it or carries no personalizable slots.
+
+    Note:
+        ``accepts_character`` is derived from ``blob`` itself (via
+        ``_accepts_character``), unlike the parameters above which come from
+        DB columns: ADR-028 declares the envelope in the Storybook document,
+        not a separate version-row column.
 
     Returns:
         LibraryItem: The listing item with safe, finite, correctly typed
@@ -336,6 +359,7 @@ def _library_item(
         cover_url=cover_url,
         published_at=published_at,
         personalization_eligible=personalization_eligible,
+        accepts_character=_accepts_character(blob),
     )
 
 

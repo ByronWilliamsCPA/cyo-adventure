@@ -2441,6 +2441,10 @@ export type LibraryItem = {
      * Personalization Eligible
      */
     personalization_eligible?: boolean;
+    /**
+     * Accepts Character
+     */
+    accepts_character?: boolean;
 };
 
 /**
