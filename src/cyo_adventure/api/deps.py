@@ -49,11 +49,14 @@ from cyo_adventure.middleware.unit_of_work import (
     UNIT_OF_WORK_STATE_KEY,
     RequestUnitOfWork,
 )
+from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, AsyncIterator, Callable
 
     from sqlalchemy.ext.asyncio import AsyncSession
+
+logger = get_logger(__name__)
 
 
 class Role(StrEnum):
@@ -246,17 +249,29 @@ async def request_unit_of_work(
     #
     # #ASSUME: data integrity: nothing touches this session after the commit.
     # The commit ends the transaction, which also drops the RLS GUCs
-    # ``apply_family_rls_context`` set with ``is_local => true``. That holds
-    # today because the response body is serialized before
-    # ``http.response.start`` is emitted, and the one handler whose work
-    # outlives its return (the SSE stream) already declines this dependency in
-    # favour of ``SessionFactory``.
-    # #VERIFY: any future handler doing database work after its response has
-    # started must open its own session via ``SessionFactory``.
+    # ``apply_family_rls_context`` set with ``is_local => true``. Two kinds of
+    # work can outlive a handler's return, and both are accounted for today:
+    # the SSE stream (api/notifications.py) already declines this dependency in
+    # favour of ``SessionFactory``, and Starlette runs ``BackgroundTasks``
+    # after ``http.response.start``, but the only two (api/generation.py,
+    # api/story_requests.py) enqueue by id and touch no session.
+    # #VERIFY: any future streaming handler OR background task doing database
+    # work after its response has started must open its own session via
+    # ``SessionFactory``. A read on this session would silently return zero
+    # rows once the GUCs are gone, and a write would autobegin a transaction
+    # that ``close`` discards; neither failure raises.
     uow = RequestUnitOfWork(session)
     setattr(request.state, UNIT_OF_WORK_STATE_KEY, uow)
     try:
         yield session
+        if not uow.settled:
+            # Reached only when no ``http.response.start`` gave the middleware
+            # a chance to commit. Logged because the alternative failure of the
+            # two-layer handshake (middleware removed, reordered, or otherwise
+            # bypassed) also lands here, and would otherwise restore the exact
+            # post-response commit ordering of issue #461 with no error, no
+            # failing test, and no other trace.
+            logger.debug("unit_of_work_committed_in_dependency_fallback")
         await uow.commit()
     except Exception:
         await uow.rollback()
@@ -269,6 +284,12 @@ async def get_db_session(request: Request) -> AsyncIterator[AsyncSession]:
     """Yield a request-scoped session, committing before the response is sent.
 
     Handlers never call ``commit`` directly (see the package CLAUDE.md).
+
+    HTTP routes only. FastAPI fills a ``Request`` parameter only when the
+    connection actually is one, so on a WebSocket route this dependency raises
+    ``TypeError`` for the missing argument. No WebSocket route exists today; a
+    future one needs its own session via ``SessionFactory``, since there is no
+    ``http.response.start`` for the middleware to commit against either.
 
     Args:
         request: The request whose state carries the unit of work.

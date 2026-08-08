@@ -12,15 +12,19 @@ list from a probe middleware sitting outside the middleware under test.
 
 from __future__ import annotations
 
+import asyncio
+import json
 from typing import TYPE_CHECKING, Any
 
 import pytest
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy.exc import IntegrityError
 
 from cyo_adventure.api import deps
 from cyo_adventure.middleware.unit_of_work import (
+    _INTERNAL_ERROR_BODY,
     UNIT_OF_WORK_STATE_KEY,
     RequestUnitOfWork,
     UnitOfWorkMiddleware,
@@ -53,10 +57,25 @@ class _RecordingSession:
 
 
 class _FailingSession(_RecordingSession):
-    """A session whose commit fails, standing in for a constraint violation."""
+    """A session whose commit fails the way a constraint violation does.
+
+    ``IntegrityError`` rather than a bare ``RuntimeError`` because the
+    middleware handles ``SQLAlchemyError`` specifically; a non-SQLAlchemy error
+    takes the propagate-to-ServerErrorMiddleware path instead, which
+    :class:`_ExplodingSession` covers.
+    """
 
     async def commit(self) -> None:
         """Record the attempt, then fail the way a real commit can."""
+        self.log.append("commit")
+        raise IntegrityError("INSERT ...", (), Exception("duplicate key"))
+
+
+class _ExplodingSession(_RecordingSession):
+    """A session whose commit fails with a non-SQLAlchemy error."""
+
+    async def commit(self) -> None:
+        """Record the attempt, then fail in a way the middleware does not map."""
         self.log.append("commit")
         msg = "commit exploded"
         raise RuntimeError(msg)
@@ -288,9 +307,14 @@ async def test_commit_failure_becomes_a_500(monkeypatch: pytest.MonkeyPatch) -> 
     """A failing commit reaches the client as a 500, not as a false success.
 
     Because the commit runs before ``http.response.start`` is forwarded, no
-    status has been committed to the wire yet, so the error handler can still
-    replace the handler's success response with a 500. Committing after the
-    send would leave the client holding a 2xx for work that never landed.
+    status has been committed to the wire yet, so the handler's success
+    response can still be replaced with a 500. Committing after the send would
+    leave the client holding a 2xx for work that never landed.
+
+    The 500 carries the standard JSON envelope rather than Starlette's
+    plain-text default, because this middleware sends it rather than raising:
+    a sent response travels back out through the CORS, gzip, and correlation
+    layers that wrap this one, and a raised exception skips all of them.
     """
     log: list[str] = []
     app = _app_with_fake_session(monkeypatch, _FailingSession(log))
@@ -299,4 +323,113 @@ async def test_commit_failure_becomes_a_500(monkeypatch: pytest.MonkeyPatch) -> 
         response = await client.get("/returns-404")
 
     assert response.status_code == 500
+    assert response.headers["content-type"] == "application/json"
+    assert response.content == _INTERNAL_ERROR_BODY
     assert log.count("commit") == 1
+    # The regression assertion for the settle-before-await defect: a failed
+    # commit must leave the unit of work rollback-eligible, so the abort is
+    # explicit rather than left to the connection pool's reset-on-return.
+    assert log == ["commit", "rollback", "close"]
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_non_sqlalchemy_commit_failure_still_rolls_back(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An unmapped commit error propagates, and the dependency still aborts.
+
+    The middleware handles ``SQLAlchemyError`` only, so this one unwinds to
+    Starlette's ``ServerErrorMiddleware``. That path is deliberately not
+    swallowed, but it must not cost the rollback: the dependency's ``except``
+    clause sees the exception on its way past.
+    """
+    log: list[str] = []
+    app = _app_with_fake_session(monkeypatch, _ExplodingSession(log))
+    transport = ASGITransport(app=app, raise_app_exceptions=False)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.get("/returns-404")
+
+    assert response.status_code == 500
+    assert log == ["commit", "rollback", "close"]
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_failed_commit_leaves_the_unit_of_work_unsettled() -> None:
+    """A commit that raises does not consume the single settle.
+
+    Settling before the await would mark a failed commit as settled and make
+    every later rollback a silent no-op.
+    """
+    log: list[str] = []
+    session: Any = _FailingSession(log)
+    uow = RequestUnitOfWork(session)
+
+    with pytest.raises(IntegrityError):
+        await uow.commit()
+
+    assert not uow.settled
+    await uow.rollback()
+    assert log == ["commit", "rollback"]
+    assert uow.settled
+
+
+@pytest.mark.unit
+def test_internal_error_body_matches_the_app_envelope() -> None:
+    """The middleware's 500 body is byte-identical to the app's envelope.
+
+    Duplicated rather than imported because ``app`` imports this middleware;
+    this asserts the duplication cannot drift.
+    """
+    from cyo_adventure.app import _INTERNAL_ERROR
+
+    assert json.loads(_INTERNAL_ERROR_BODY) == _INTERNAL_ERROR
+
+
+def _bare_request() -> Any:
+    """Build a Request over a minimal HTTP scope, with no middleware above it."""
+    from starlette.requests import Request
+
+    return Request(_http_scope())
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_response_that_never_starts_commits_in_the_dependency() -> None:
+    """With no ``http.response.start``, the dependency's fallback commits.
+
+    This is the path the fallback exists for: no response message means the
+    middleware never gets its chance, so the unit of work must still settle
+    rather than leaking an open transaction back to the pool.
+    """
+    log: list[str] = []
+    session: Any = _RecordingSession(log)
+
+    async with deps.request_unit_of_work(_bare_request(), session):
+        pass
+
+    assert log == ["commit", "close"]
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_cancelled_request_closes_without_settling() -> None:
+    """A cancelled request neither commits nor rolls back, but always closes.
+
+    ``CancelledError`` is a ``BaseException``, so the ``except Exception``
+    rollback clause never sees it. The abort then comes from the pool's
+    reset-on-return when ``close`` hands the connection back, which is why
+    ``close`` lives in a ``finally``.
+    """
+    log: list[str] = []
+    session: Any = _RecordingSession(log)
+    # Built outside the block so the only call inside it is the one under
+    # test (S5778, enforced by the check-pytest-raises-scope hook).
+    request = _bare_request()
+
+    with pytest.raises(asyncio.CancelledError):
+        async with deps.request_unit_of_work(request, session):
+            raise asyncio.CancelledError
+
+    assert log == ["close"]
