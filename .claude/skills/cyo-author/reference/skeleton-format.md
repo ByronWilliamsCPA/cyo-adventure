@@ -67,6 +67,181 @@ old `good` -> `kind: success` / `valence: positive`; old `neutral` ->
 `kind: discovery` (or `setback`) / `valence: neutral`; old `failure` ->
 `kind: setback` or `capture` / `valence: negative`.
 
+## Character envelope (`accepts_character`)
+
+A skeleton opts into the persistent reader character (ADR-028) by declaring an
+`accepts_character` field on the story. Absence means the book accepts no character at all;
+this is enforced, not assumed (`CH-6` reserves the four canonical variable names below so an
+opted-out book cannot be seeded by an accidental name collision). The envelope is a mapping
+from canonical variable name to the inclusive range the book proves itself safe across:
+
+```json
+"accepts_character": {
+  "might": { "min": 0, "max": 2 },
+  "wits":  { "min": 0, "max": 2 },
+  "nerve": { "min": 0, "max": 2 }
+}
+```
+
+Declare an envelope only when the skeleton actually wants a returning reader's character
+seeded into it. Once declared, every name in the envelope must also be declared in
+`variables` with the identical `min`/`max` (`CH-2` requires equality, not containment, because
+the runtime clamp is to the *declared* bounds; a narrower envelope would let the runtime
+silently admit a state the validator never walked). Never widen or narrow the envelope
+relative to the variable's declared bounds, and never add a canonical name to `variables`
+without also covering it in the envelope (`CH-1`/`CH-6` both reject that combination).
+
+### Canonical vocabulary
+
+| Name | Type | Range | Declared by | Meaning |
+|---|---|---|---|---|
+| `archetype` | int | 0-6 | prose cells | `0` means not yet chosen; `1`-`6` are the six archetypes in roster order (`scout`, `guardian`, `trickster`, `scholar`, `healer`, `wildheart`). Gates flavour and prose colour only, never a difficulty check. |
+| `might` | int | 0-2 | gamebook cells | Trained force |
+| `wits` | int | 0-2 | gamebook cells | Trained cleverness |
+| `nerve` | int | 0-2 | gamebook cells | Trained composure |
+
+### Why `archetype` and the stats never appear in the same envelope
+
+This is not an arbitrary style rule, and it is not a hard prohibition enforced by a single
+CH-* check either: an author who declares both would most often hit `CH-5`'s 64-state envelope
+cap before anything else, since `archetype`'s 7 states crossed with all three stats' 27 states
+is 189, well over the limit. The real reason is architectural, from ADR-028 decision 2: in a
+mechanics-driven gamebook, **the stat spread already is the archetype** (a Scout is `wits 2 /
+nerve 1 / might 0`). Declaring a separate `archetype` variable there would carry redundant
+identity information with no mechanism keeping it in sync with the stats. `archetype` earns
+its keep only in prose cells, which have no stats to infer identity from in the first place.
+So a gamebook skeleton declares `might`/`wits`/`nerve`; a prose skeleton declares `archetype`;
+no skeleton declares both.
+
+### The archetype build node
+
+A first-time reader has no character yet, so a participating prose skeleton declares
+`archetype: 0` as its own initial value ("not yet chosen") and keeps an in-story **build
+node** that sets `archetype` to 1-6 along different paths. This is what lets a returning
+reader (seeded with `archetype` already 1-6) and a first-time reader (seeded with `archetype
+== 0`) share the same graph.
+
+The build node's own choices must be gated on `archetype == 0`. A **gate node** precedes it
+and routes a returning reader (`archetype != 0`) past it. A skeleton that always routes
+through the build node is non-conforming: a returning reader would land on a page where every
+choice reads as already-resolved and is hidden, which is a runtime break (a zero-choice page),
+not merely a validator artifact, and it also raises `L2-9`/`L2-10` at the gate. Never author a
+build node without a preceding bypass.
+
+### What CH-8 requires
+
+Declaring `archetype` in the envelope commits the skeleton to hosting that build node (an
+`archetype`-gated skeleton with no build node leaves the variable permanently 0, which makes
+every archetype-gated flavour branch unreachable and fails `L2-11` before any CH-* rule even
+runs). Because the build node sets `archetype` to one of six real values along different
+paths, every downstream node forks six ways, multiplying the baseline walk instead of leaving
+it constant. `CH-8` pre-flights this cost: a skeleton whose own base closure (its
+declared-initials configuration count) exceeds 16,666 configurations (`100_000 // 6`, the
+walk cap divided by the six-way branching factor) cannot host the idiom and fails with a named
+cause instead of an opaque `L2-12` cap error. Keep a build-node skeleton's non-character graph
+small; `CH-8` fires on any skeleton whose envelope declares `archetype` at all, even a
+carrier-only later series book that never itself sets the variable, so this is a pre-flight
+gate on the declaration, not proof that a given skeleton's own graph actually contains the
+node.
+
+### The stat-gate wall: never gate a choice directly on a stat threshold
+
+**Read this before drafting a single node of a `might`/`wits`/`nerve` skeleton.** It is the first
+blocking error a stat-envelope author hits, it fires on the most natural thing you would write, and
+nothing in the gate output points at the envelope as the cause.
+
+A stat is seeded and never set in-book (that immutability is exactly what keeps the 27-state walk
+cheap). So a choice conditioned directly on a stat threshold, `might >= 2`, is **unconditionally
+unreachable in the skeleton's own baseline configuration** whenever the skeleton's declared initial
+sits on the other side of the threshold, and `L2-11` errors it out as a dead branch before any CH-*
+rule runs. `validator/layer2.py::_check_dead_branches` walks only the single declared-initial
+baseline with **zero `accepts_character` awareness**, so it cannot see that the envelope proves the
+branch reachable at other entry states. `CH-3a`'s union-quantified walk does not rescue you either:
+`L2-11` is raised on the baseline walk independently, before the union is taken.
+
+The archetype build node above is *not* the fix here. That idiom works because `archetype` is set
+in-story; a stat book deliberately has no mutating node, and adding one would forfeit the cost
+property that makes the envelope affordable.
+
+The working authoring-only pattern is a **`resolve` pairing**:
+
+1. Add an ordinary, non-canonical boolean variable (`resolve` or similar). It is not in the envelope
+   and not in the canonical vocabulary, so `CH-6` is untroubled.
+2. Immediately before the gate, put an unconditioned binary player choice that sets `resolve` either
+   way. Both settings must be reachable by ordinary play.
+3. XOR-combine `resolve` with the stat threshold on the gated choice, rather than testing the stat
+   alone.
+
+At the fixed baseline value of the stat, the pair collapses to depend only on `resolve`, so both
+branches are reachable through ordinary play and `L2-11` is satisfied. At other envelope states the
+condition still genuinely differentiates on the stat, which is what `CH-3a`, `CH-3b`, and `CH-4`
+need. Measured cost: zero added configurations per walk.
+
+**Know what you are buying.** This is a workaround, not a mechanism, and the limitation it leaves
+behind is real rather than cosmetic. Because the gate must be preceded by a free player choice that
+can flip the outcome, **the reader cannot perceive their stat deciding anything**. The stat stops
+being a character trait the reader feels and becomes a hidden modifier behind a coin flip they just
+made themselves. A whole book built this way reads as scaffolding: every station is mechanically
+identical and no choice visibly turns on who the character is. A 13-16 pilot was drafted on exactly
+this pattern in 2026-08 and withdrawn for that reason. Use the pattern for a small number of
+genuinely stat-flavoured moments; do not plan a book whose spine depends on it. Whether
+`_check_dead_branches` should become envelope-aware, which would remove the need for the workaround
+entirely, is an open validator question tracked as `UW-C64` in
+`docs/planning/unscheduled-work-register.md`.
+
+### What the envelope costs at gate time
+
+`CH-3a`, `CH-3b`, and `CH-4` each re-walk Layer 2 once per distinct entry state the envelope
+admits (plus once more for the skeleton's own declared initial), because those rules prove a
+property across every state a seeded reader can actually arrive in, not just the skeleton's
+default state. Cost therefore scales with how many states the envelope admits: an
+`archetype`-only envelope is 7 states; the canonical three-stat envelope above is 3 x 3 x 3 =
+27 states. On the largest catalog skeleton at the time this was measured
+(`skeletons/16+/the-longwinter-station.json`, 248 nodes, 51,241 base configurations), the gate
+took 0.77s with no envelope declared and 49.58s with the canonical 27-state envelope, a
+roughly 64x multiplier (recorded in `docs/planning/unscheduled-work-register.md` rows UW-A47
+and UW-A48). This cost is per gate run, not per read, and it does not by itself make a
+skeleton invalid: `CH-5`'s 64-state cap is the hard ceiling, and a skeleton under that cap is
+still admissible however slow it is to gate. But it is a real, mechanism-driven cost, not a
+fixed constant, so a narrower envelope (fewer canonical names, narrower ranges) keeps a
+character-enabled skeleton's gate runs fast in the same way a narrower state space keeps any
+Tier-2 skeleton's gate runs fast.
+
+#### Pre-flight arithmetic: do this before drafting prose
+
+The mechanism above gives you a number you can compute from the skeleton's shape alone, in the same
+spirit as `CH-8`'s check. The unit of cost is the **config-walk**:
+
+```text
+config-walks = base configurations x (envelope states + 1)
+gate seconds ~= config-walks x 3.5e-5
+```
+
+`3.5e-5` seconds per config-walk is the measured constant on the large graphs where this actually
+bites: `the-longwinter-station`'s 51,241 base configurations across the 27-state stat envelope is
+1,383,507 config-walks, and the envelope's share of the gate run is 48.8s of the 49.58s total. It
+holds across measurements spanning three orders of magnitude, from a few hundred config-walks to
+1.38M. Small graphs come in under it because fixed overhead dominates and there are fewer nodes to
+revisit per walk, so treating `3.5e-5` as flat is **conservative**: the estimate is an upper bound
+for a small skeleton, and accurate for a large one.
+
+Against the roughly 12s a gate run is budgeted, that puts the practical ceiling at about
+**340,000 config-walks**. Worked backwards, that is what a given envelope costs you in base
+configurations:
+
+| Envelope | States | Base configurations you can afford |
+|---|---|---|
+| `archetype` only | 7 | ~42,000 |
+| One stat, 0-2 | 3 | ~85,000 |
+| Two stats, 0-2 | 9 | ~34,000 |
+| Canonical three stats, 0-2 | 27 | ~12,000 |
+
+Two things to note before you use the table. It is a **latency** budget, not an admissibility one:
+`CH-5`'s state cap and the 100,000-configuration walk cap are the hard limits, and a skeleton over
+this line still gates, just slowly. And it interacts with `CH-8`: an `archetype` envelope also
+multiplies base configurations six ways at the build node, so run `CH-8`'s 16,666 check first and
+this one against the post-build-node count.
+
 ## Series continuations: carried variables (Tier-2)
 
 When a book is book 2+ of a `carries_state=true` series, any variable acquired in

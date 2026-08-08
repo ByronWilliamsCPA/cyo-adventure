@@ -17,6 +17,13 @@ source: "docs/planning/tech-spec.md section Authoring Pipeline, Stage B; docs/pl
 
 ## Usage
 
+> **`src/cyo_adventure/generation/templates/prose.md` is the authoritative template, not this
+> file.** That is the file the orchestrator actually loads and injects. This document is a design-time
+> snapshot and it has drifted before: until 2026-08-08 it instructed the model to match a
+> non-existent `ending.type` field while the live template already used the correct
+> `kind`/`valence` split. Read the live template before relying on any instruction here, and treat a
+> disagreement as this file being wrong. Tracked as `UW-C63`.
+
 This template is rendered by the generation orchestrator and passed to the `GenerationProvider`
 as the user-turn message for Stage B. The system prompt is a fixed, versioned template (not
 shown here). Stage B receives the approved skeleton from Stage A as its primary input.
@@ -83,7 +90,10 @@ written as final prose. The output must be the full Storybook JSON, not a diff o
    semantic intent of the beat description in the skeleton.
 5. **Ending nodes**: the `body` of an ending node should bring the story to a
    satisfying close. Do not end with a question or a choice. The emotional tone should
-   match the `ending.type` (`success`, `failure`, `bittersweet`, `open`).
+   match the ending's `kind` (`success`, `setback`, `death`, `capture`, `completion`,
+   `discovery`) and `valence` (`positive`, `neutral`, `negative`). There is no
+   `ending.type` field; this document claimed one, with a four-value vocabulary
+   (`success`, `failure`, `bittersweet`, `open`) that the schema has never had.
 6. **Age-appropriate content**: follow `metadata.themes` and the system-level content
    policy. Do not introduce content categories not listed in `themes_allowed` from the
    original brief.

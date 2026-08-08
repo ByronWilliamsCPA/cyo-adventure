@@ -165,13 +165,71 @@ allowlist (`generation/allowlist.py`, workstream WS-C PR #170) and
 `generation/provider.py::build_provider`. Which skeleton is picked and which provider
 fills it are independent decisions within the same authoring plan.
 
+## Character envelope (`accepts_character`)
+
+A skeleton may opt into the persistent reader character introduced by
+[ADR-028](../planning/adr/adr-028-persistent-reader-characters.md) by declaring an `accepts_character`
+field: a mapping from canonical variable name to the inclusive range the skeleton proves
+itself safe across. A character is a seeded `VarState`, carried into the book by the existing
+name-match seeding path; omitting the field means the book accepts no character at all.
+
+The canonical vocabulary is four variables: `archetype` (0-6, declared by prose cells) and
+`might`/`wits`/`nerve` (0-2 each, declared by gamebook cells). `archetype` and the stats never
+appear in the same envelope: in a mechanics-driven gamebook the stat spread already is the
+archetype, so `archetype` carries identity only in prose cells that have no stats to infer it
+from. A participating prose skeleton keeps an in-story build node, gated behind a bypass node,
+that sets `archetype` from its initial `0` ("not yet chosen") to 1-6 for a first-time reader,
+while a returning reader arrives already carrying a value and is routed past it.
+
+The `CH-1` through `CH-8` rules (`validator/character.py`) prove a declared envelope safe
+before publication: vocabulary and range checks that need no state-space walk (`CH-1`, `CH-2`,
+`CH-5`, `CH-6`, `CH-7`), three rules that re-walk Layer 2 once per envelope entry state to
+prove no dead branch, no new per-state defect, and a satisfying ending remains reachable
+(`CH-3a`, `CH-3b`, `CH-4`), and a build-node cost pre-flight (`CH-8`) that rejects a skeleton
+too large to host the archetype build node's six-way branching before the walk cap would. Full
+rule definitions live in [`docs/planning/validator-rules.md`](../planning/validator-rules.md);
+authoring guidance for declaring an envelope, the archetype/stats split, and the build node
+idiom lives in `.claude/skills/cyo-author/reference/skeleton-format.md`.
+
+**Gate-time cost is mechanism-driven, not fixed.** Because `CH-3a`/`CH-3b`/`CH-4` re-walk the
+story once per entry state, cost scales with how many states the envelope admits: 7 for an
+`archetype`-only envelope, 3 x 3 x 3 = 27 for the canonical three-stat envelope. Measured on
+`skeletons/16+/the-longwinter-station.json` (248 nodes, 51,241 base configurations), the gate
+took 0.77s with no envelope and 49.58s with the canonical 27-state envelope, a roughly 64x
+multiplier (`docs/planning/unscheduled-work-register.md` rows UW-A47 and UW-A48). This does not
+change what `CH-5`'s 64-state cap admits; it changes how long an admissible skeleton takes to
+gate.
+
+The unit that makes this predictable is the **config-walk**: base configurations multiplied by
+entry states (the envelope's states plus the skeleton's own baseline). Cost runs at roughly
+**3.5e-5 seconds per config-walk** on large graphs, measured across skeletons spanning three orders
+of magnitude of walk count, and `the-longwinter-station`'s 1,383,507 config-walks at 48.8s of
+envelope-attributable time is the anchor point. Against the ~12s gate budget that is a ceiling near
+**340,000 config-walks**, which is a pre-flight arithmetic check an author can run before drafting
+any prose. The authoring-facing version of that check, with the per-envelope table it implies, is in
+`.claude/skills/cyo-author/reference/skeleton-format.md`.
+
+**The stat-gate wall (`L2-11`).** A skeleton declaring a `might`/`wits`/`nerve` envelope cannot gate
+a choice condition directly on a stat threshold. `validator/layer2.py::_check_dead_branches` walks
+only the skeleton's single declared-initial baseline configuration with no `accepts_character`
+awareness, so a `might >= 2` branch is unconditionally unreachable in baseline whenever the declared
+initial sits below the threshold, and `L2-11` blocks publication before any CH-* rule runs. `CH-3a`'s
+union-quantified walk does not suppress it, because `L2-11` is raised on the baseline walk
+independently. The archetype build-node idiom does not transfer, since a stat book deliberately has
+no in-story mutating node. The authoring workaround (an auxiliary non-canonical `resolve` boolean,
+reset by an unconditioned choice immediately before the gate and XOR-combined with the stat
+threshold) is documented in `.claude/skills/cyo-author/reference/skeleton-format.md`, and it carries
+a real cost rather than a cosmetic one: because a free player choice must be able to flip the
+outcome, **the reader cannot perceive the stat deciding anything**, which is why a 13-16 pilot built
+on the pattern was withdrawn in 2026-08. Making `_check_dead_branches` envelope-aware would remove
+the need for the workaround; that is an open validator question tracked as `UW-C64`.
+
 ## Data dictionary
 
 Sourced from `src/cyo_adventure/storybook/models.py` (the enforced schema), with one
 exception: node `role` is a FILL-directive convention read by
 `generation/diagram.py`, not a field the structural gate enforces. Where
-`.claude/skills/cyo-author/reference/skeleton-format.md` disagrees, the model wins;
-see template feedback for the doc-correction follow-up.
+`.claude/skills/cyo-author/reference/skeleton-format.md` disagrees, the model wins.
 
 | Variable | Type | Preset options / constraint |
 | --- | --- | --- |
