@@ -132,9 +132,21 @@ inside this exact runbook and currently have no other owner; treat them as in-sc
    gating policy; complete Q3's fail-safe direction audit before treating step 4's sweep verdicts as
    trustworthy; add Q4's anomaly summary (and optionally `--strict`) to the importer if not already
    present.
+
+   **Ruled 2026-08-06 under gate OG1**: Q1, Q2 and Q3 are **hard blockers on step 4**, not
+   parallel work. The sweep may not run, and its verdicts may not be relied on, until all three are
+   closed. Q4 (importer observability, `--strict`) is explicitly **not** a blocker and may land after
+   promotion. Rationale in `story-structure-improvement-plan.md` §8.1: the sweep is the entire gate
+   between this inventory and a child reader, so a gate whose failure direction is unaudited (Q3)
+   evidences only that a run completed, and Q1 is the standing proof that provider binding does not
+   do what the configuration says it does.
 4. Run the #529 re-moderation sweep over the full set (re-run entries included); triage FLAGs to the
    owner queue.
-5. Owner executes gate OG1 (publish list); promote approved books via `promote_catalog_story`.
+5. Gate OG1 was ruled 2026-08-06 (see `story-structure-improvement-plan.md` §8.1), so this step is
+   now execution, not a decision point: promote every book passing step 4's sweep via
+   `promote_catalog_story`, kid bands first, **holding back `the-sunken-temple` and
+   `the-harrowstone-keep`** pending the A9 restructure. Re-authoring through SQ-04 first was
+   considered and consciously rejected on cost.
 6. Fix anything else the runbook surfaces (expected: little beyond #347; the tooling is otherwise
    tested).
 7. Write the runbook as `docs/runbooks/catalog-import-publish.md`, with the DB-state check and #347's
