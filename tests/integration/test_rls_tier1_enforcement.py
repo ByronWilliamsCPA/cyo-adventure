@@ -75,10 +75,16 @@ class _Tier1Env:
     # row, so it exists regardless of policy and only RLS decides visibility.
     grant_jti: uuid.UUID
     grant_authorized_by: uuid.UUID
-    # Family A's single seeded child profile id, so the guardian-branch
-    # resolution test can assert on the exact set require_principal returns,
-    # not merely that it is non-empty.
+    # Family A's seeded child profile ids, so the guardian-branch resolution
+    # test can assert on the exact set require_principal returns, not merely
+    # that it is non-empty. TWO of them deliberately: with a single profile,
+    # `== frozenset({profile_a})`, `len(...) == 1` and "resolved something"
+    # are indistinguishable, so a partial-resolution defect would pass.
     profile_a: uuid.UUID
+    profile_a2: uuid.UUID
+    # Family B's profile, so the cross-family test can assert it is ABSENT
+    # from a family A principal rather than only that family A's is present.
+    profile_b: uuid.UUID
 
 
 @pytest_asyncio.fixture
@@ -111,18 +117,31 @@ async def tier1_env(pg_url: str) -> AsyncIterator[_Tier1Env]:
             guardian = User(
                 family_id=family_a, role="guardian", authn_subject="guardian-rls-a"
             )
-            session.add(guardian)
+            # A dual-role adult in the SAME family: base role guardian plus the
+            # orthogonal admin capability. Its context sets app.is_admin='true',
+            # which satisfies the Tier 1 policy's second disjunct for every row
+            # in child_profile, so this account is the one that proves
+            # _resolve_profiles' own family_id filter still scopes the result.
+            guardian_admin = User(
+                family_id=family_a,
+                role="guardian",
+                is_admin=True,
+                authn_subject="guardian-admin-rls-a",
+            )
+            guardian_b = User(
+                family_id=family_b, role="guardian", authn_subject="guardian-rls-b"
+            )
+            session.add_all([guardian, guardian_admin, guardian_b])
             profile_a = ChildProfileModel(
                 family_id=family_a, display_name="Reader A", age_band="8-11"
             )
-            session.add_all(
-                [
-                    profile_a,
-                    ChildProfileModel(
-                        family_id=family_b, display_name="Reader B", age_band="8-11"
-                    ),
-                ]
+            profile_a2 = ChildProfileModel(
+                family_id=family_a, display_name="Reader A2", age_band="5-7"
             )
+            profile_b = ChildProfileModel(
+                family_id=family_b, display_name="Reader B", age_band="8-11"
+            )
+            session.add_all([profile_a, profile_a2, profile_b])
             await session.flush()
             session.add(
                 DeviceGrant(
@@ -135,6 +154,8 @@ async def tier1_env(pg_url: str) -> AsyncIterator[_Tier1Env]:
             await session.commit()
             grant_authorized_by = guardian.id
             profile_a_id = profile_a.id
+            profile_a2_id = profile_a2.id
+            profile_b_id = profile_b.id
     finally:
         await admin_engine.dispose()
 
@@ -148,6 +169,8 @@ async def tier1_env(pg_url: str) -> AsyncIterator[_Tier1Env]:
             grant_jti=grant_jti,
             grant_authorized_by=grant_authorized_by,
             profile_a=profile_a_id,
+            profile_a2=profile_a2_id,
+            profile_b=profile_b_id,
         )
     finally:
         await api_engine.dispose()
@@ -224,15 +247,25 @@ async def test_tier1_admin_context_reads_across_families(
     families' profiles, where a same-family non-admin (the test above) sees
     only its own. Pins the ``OR current_setting('app.is_admin', true) = 'true'``
     branch that a fail-closed-only suite would leave unexercised.
+
+    Asserts on the DISTINCT families reached, not on a row count: the claim is
+    "reads across families", which is independent of how many profiles the
+    fixture happens to seed per family, and a bare count silently doubles as
+    an assertion about the seeding.
     """
     async with tier1_env.sessions() as session:
         await apply_family_rls_context(
             session, family_id=tier1_env.family_a, is_admin=True
         )
-        count = (
-            await session.execute(text(f"SELECT count(*) FROM {_TIER1_TABLE}"))  # noqa: S608
-        ).scalar_one()
-    assert count == 2, "the admin escape hatch must read across families"
+        visible = (
+            (await session.execute(text(f"SELECT family_id FROM {_TIER1_TABLE}")))  # noqa: S608
+            .scalars()
+            .all()
+        )
+    assert {str(fid) for fid in visible} >= {
+        str(tier1_env.family_a),
+        str(tier1_env.family_b),
+    }, "the admin escape hatch must read across families"
 
 
 async def test_device_grant_invisible_without_context(tier1_env: _Tier1Env) -> None:
@@ -297,6 +330,13 @@ async def test_child_profile_invisible_without_context(tier1_env: _Tier1Env) -> 
     separate from the positive resolution test below so a future policy
     widening fails HERE rather than leaving that test green for the wrong
     reason.
+
+    Deliberately narrower than ``test_tier1_unset_context_returns_zero_rows``
+    above, which already asserts an unfiltered ``count(*)`` on the same table
+    is zero. The added ``WHERE family_id`` is the point: it pins the exact
+    shape ``_resolve_profiles`` issues, so a policy that started admitting
+    rows for a NAMED family (rather than for all families) would fail here
+    while the unfiltered assertion stayed green.
     """
     async with tier1_env.sessions() as session:
         count = (
@@ -317,12 +357,12 @@ async def test_guardian_principal_resolves_profiles_under_tier1_rls(
     """``require_principal``'s guardian branch must resolve profiles under Tier 1 RLS.
 
     The end-to-end counterpart to the device test above, for the OTHER
-    pre-cutover-invisible defect: the guardian/admin branch of
-    ``require_principal`` calls ``_resolve_profiles`` (a Tier 1
-    ``child_profile`` read) BEFORE it applied ``apply_family_rls_context``, so
-    every guardian resolved an empty ``profile_ids`` once ``cyo_api`` became
-    NOBYPASSRLS in production (the 2026-08-04 cutover, UW-A03). Exercising the real function is
-    the point, not a hand-rolled query, since the defect was in WHERE
+    pre-cutover-invisible defect: the guardian branch of ``require_principal``
+    calls ``_resolve_profiles`` (a Tier 1 ``child_profile`` read) BEFORE it
+    applied ``apply_family_rls_context``, so every guardian resolved an empty
+    ``profile_ids`` once ``cyo_api`` became NOBYPASSRLS in production (the
+    2026-08-04 cutover, UW-A03). Exercising the real function is the point,
+    not a hand-rolled query, since the defect was in WHERE
     ``require_principal`` set its RLS context relative to its own Tier 1
     read, not in the SQL ``_resolve_profiles`` issues.
 
@@ -346,8 +386,88 @@ async def test_guardian_principal_resolves_profiles_under_tier1_rls(
 
     assert principal.role is Role.GUARDIAN
     assert principal.family_id == tier1_env.family_a
-    assert principal.profile_ids == frozenset({tier1_env.profile_a}), (
-        "the guardian's own family profile must resolve; an empty set here "
-        "is the production defect: _resolve_profiles ran before the RLS "
-        "context was applied"
+    assert principal.profile_ids == frozenset(
+        {tier1_env.profile_a, tier1_env.profile_a2}
+    ), (
+        "BOTH of the guardian's own family profiles must resolve; an empty "
+        "set here is the production defect (_resolve_profiles ran before the "
+        "RLS context was applied) and a partial set means the context was "
+        "applied but scopes more narrowly than the family"
+    )
+
+
+async def test_dual_role_guardian_admin_still_scoped_to_own_family(
+    tier1_env: _Tier1Env, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """An adult holding guardian + admin resolves only their OWN family.
+
+    The dual-role account is the case where the Tier 1 policy stops scoping
+    anything: ``apply_family_rls_context`` sets ``app.is_admin='true'``, which
+    satisfies the policy's second disjunct
+    (``current_setting('app.is_admin', true) = 'true'``) for EVERY row in
+    ``child_profile``, across all families. What keeps the result correct is
+    then purely application-level, the ``ChildProfile.family_id ==
+    user.family_id`` filter inside ``_resolve_profiles``.
+
+    So this test pins the layer the database is not defending. Deleting that
+    WHERE clause would leave every other test in this module green and only
+    fail here, which is exactly the regression worth catching: a dual-role
+    adult silently resolving every family's children.
+    """
+    monkeypatch.setattr(deps, "unverified_audience", lambda _token: None)
+
+    async def _fake_resolve_subject(_token: str) -> str:
+        return "guardian-admin-rls-a"
+
+    monkeypatch.setattr(deps, "_resolve_subject", _fake_resolve_subject)
+
+    async with tier1_env.sessions() as session:
+        principal = await require_principal(
+            session=session, authorization="Bearer irrelevant-once-routed"
+        )
+
+    assert principal.is_admin is True, (
+        "fixture drift: this test is meaningless unless the account actually "
+        "carries the admin capability that opens the policy's escape hatch"
+    )
+    assert principal.profile_ids == frozenset(
+        {tier1_env.profile_a, tier1_env.profile_a2}
+    ), (
+        "a dual-role adult must still resolve only their own family; the RLS "
+        "policy admits every row for app.is_admin='true', so seeing family "
+        "B's profile here means _resolve_profiles' family_id filter is gone"
+    )
+    assert tier1_env.profile_b not in principal.profile_ids
+
+
+async def test_guardian_principal_does_not_resolve_another_family(
+    tier1_env: _Tier1Env, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Family B's guardian resolves family B's profiles and none of family A's.
+
+    The positive test above proves the context is applied; on its own it
+    cannot distinguish "scoped to family A" from "scoped to nothing at all",
+    because family A is the only family it ever resolves. Running the same
+    real ``require_principal`` for the OTHER family is what makes the
+    assertion directional: the two tests together pin that ``profile_ids``
+    tracks the caller's family rather than returning a fixed set.
+    """
+    monkeypatch.setattr(deps, "unverified_audience", lambda _token: None)
+
+    async def _fake_resolve_subject(_token: str) -> str:
+        return "guardian-rls-b"
+
+    monkeypatch.setattr(deps, "_resolve_subject", _fake_resolve_subject)
+
+    async with tier1_env.sessions() as session:
+        principal = await require_principal(
+            session=session, authorization="Bearer irrelevant-once-routed"
+        )
+
+    assert principal.family_id == tier1_env.family_b
+    assert principal.profile_ids == frozenset({tier1_env.profile_b}), (
+        "family B's guardian must resolve exactly family B's profile"
+    )
+    assert not principal.profile_ids & {tier1_env.profile_a, tier1_env.profile_a2}, (
+        "family A's profiles must never appear in family B's principal"
     )
