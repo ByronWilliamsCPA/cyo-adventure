@@ -3861,10 +3861,10 @@ validator treats a missing entry there as a build failure.</p>
 </tr>
 <tr>
 <td>UW-A13</td>
-<td>"Read again" on a continuation resets to <code>start_node</code> and discards carried variables. The ADR defers this "as its own defect". Canonical duplicate of debt <code>SL10</code> and diversity <code>B4</code>; tracked as UW-L01 / <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/460">#460</a>.</td>
+<td>"Read again" on a continuation resets to <code>start_node</code> and discards carried variables. The ADR defers this "as its own defect". Canonical duplicate of debt <code>SL10</code> and diversity <code>B4</code>; tracked as UW-L01 / <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/460">#460</a>. <strong>Fixed in <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/648">#648</a></strong> by retaining the continuation seed in the reader machine's context, so <code>RESTART</code> reproduces the continuation start. The guarantee is session-scoped: the seed still travels only in router <code>location.state</code>, so a read re-entered after a reload restarts as a new reader. That residual is the open half of <code>SL10</code>, not of this row.</td>
 <td>024</td>
 <td>issue:460</td>
-<td>unscheduled</td>
+<td>done</td>
 </tr>
 <tr>
 <td>UW-A14</td>
@@ -5735,9 +5735,9 @@ complete; each is filed as a GitHub issue.</p>
 <tbody>
 <tr>
 <td>UW-L01</td>
-<td><code>machine.ts:108</code> wires <code>RESTART</code> to <code>start(story)</code>, the new-reader entry point, so a restart on a continuation read reseeds <code>var_state</code> from the book's declared initials and returns to <code>story.start_node</code>, discarding both carried series state and the continuation entry node. Root cause: the machine context keeps only <code>{story, reading, error}</code>, dropping the <code>entryNode</code>/<code>varState</code> pair that <code>ReaderPage.tsx:246</code> passed to <code>startContinuation</code>, so <code>reset</code> cannot reproduce a continuation even in principle. Canonical across ADR-024's deferred defect, debt <code>SL10</code>, diversity <code>B4</code>, and s5-handoff <code>B4</code>.</td>
+<td><code>machine.ts:108</code> wires <code>RESTART</code> to <code>start(story)</code>, the new-reader entry point, so a restart on a continuation read reseeds <code>var_state</code> from the book's declared initials and returns to <code>story.start_node</code>, discarding both carried series state and the continuation entry node. Root cause: the machine context keeps only <code>{story, reading, error}</code>, dropping the <code>entryNode</code>/<code>varState</code> pair that <code>ReaderPage.tsx:246</code> passed to <code>startContinuation</code>, so <code>reset</code> cannot reproduce a continuation even in principle. Canonical across ADR-024's deferred defect, debt <code>SL10</code>, diversity <code>B4</code>, and s5-handoff <code>B4</code>. <strong>Fixed in <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/648">#648</a></strong>: <code>ReaderContext</code> now carries the <code>ContinuationSeed</code>, and both the initial-context factory and <code>reset</code> route through one <code>safeStart(story, continuation?)</code>, so a restart reproduces the continuation entry node and carried variables. Scope of the close: the machine can now reproduce a continuation, which is what this row said it could not do "even in principle". The seed is still supplied per session from router <code>location.state</code>, so a reload before the first save loses it; that remainder is tracked as the open half of <code>SL10</code>.</td>
 <td><a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/460">#460</a></td>
-<td>unscheduled</td>
+<td>done</td>
 </tr>
 <tr>
 <td>UW-L02</td>
@@ -6010,7 +6010,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 20:42:54 UTC">August 8, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 22:50:03 UTC">August 8, 2026</span>
   </span>
 
     
