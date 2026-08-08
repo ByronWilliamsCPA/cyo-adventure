@@ -30,7 +30,7 @@
 # not scanned by this hook at all, so a citation going stale in any of
 # those trees produces no row here and no failure anywhere.
 #
-# Entries: 123 (123 python, 0 typescript)
+# Entries: 122 (122 python, 0 typescript)
 
 [python]
 "scripts/check_fill_integrity.py" = [
@@ -250,9 +250,6 @@
 ]
 "src/cyo_adventure/story_requests/brief.py" = [
     "test_story_requests.py::test_content_flag_cap_looser_than_band_is_clamped",
-]
-"src/cyo_adventure/validator/character.py" = [
-    "test_canonical_bounds_are_read_by_the_validator",
 ]
 
 [typescript]
