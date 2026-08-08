@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Manual end-to-end verification checklist for the R1 internal-web deployment, covering the full kid-request, guardian-review, assign, and read journey against the production stack.">
+        <meta name="description" content="End-to-end verification checklist for the R1 internal-web deployment, covering the full kid-request, guardian-review, assign, and read journey against the production stack. Steps are settled either by an automated production test or by a manual pass, per the evidence tiers below.">
       
       
         <meta name="author" content="Byron Williams">
@@ -3379,6 +3379,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#2026-08-08-partial-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2026-08-08 partial run
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3409,7 +3420,13 @@
 <h2 id="how-to-use-this-checklist">How to use this checklist<a class="headerlink" href="#how-to-use-this-checklist" title="Permanent link">&para;</a></h2>
 <p>Run top to bottom against <code>https://cyo.williamshome.family</code> after every deploy. The PR #112 real-backend
 smoke tier (<code>frontend/e2e-real/</code>, <code>npm run test:e2e:real</code>, local-only, <code>--workers=1</code>) is the automated
-pre-deploy gate against a local stack; this checklist is the manual post-deploy verification against prod.</p>
+pre-deploy gate against a local stack; this checklist is the post-deploy verification against prod.</p>
+<p><strong>A step is settled by evidence, not by who produced it.</strong> Changed 2026-08-08: this document was
+originally manual-only, on the assumption that nothing automated ran against production. The daily
+<code>e2e-prod</code> cron changed that, so a step may now be ticked from an automated production test under the
+tier rules below, or from a manual pass. What has not changed is that every mutating step, and every
+step spending provider quota, stays manual: automation is admitted as evidence, not as authority to
+write to the real family.</p>
 <p><strong>Accounts</strong> (prod seeding is manual; NEVER run <code>scripts/seed_dev_data.py</code> in prod).
 Both accounts below are real Supabase email/password logins. Role columns verified
 directly against the production database on 2026-08-04:</p>
@@ -3455,6 +3472,10 @@ approve (the four-eyes collapse this project accepted for a single family); and
 Section 1a's "lands on a review queue, not the guardian console" expectation needs
 re-deriving, because a <code>role='guardian'</code> account lands on the guardian console by
 design and reaches <code>/admin</code> as an added capability.</p>
+<p><strong>That re-derivation was done on 2026-08-08 and Section 1a is rewritten.</strong> The old
+expectation was unsatisfiable by any production account, so it was a defect in this
+checklist rather than in the product; the corrected assertion and the code that
+settles it are recorded in Section 1a.</p>
 <p>A third adult account exists that this checklist does not use and must not
 disturb: sub <code>774ea02b</code>, also dual-role, in its own isolated "E2E Test Family"
 (<code>84b96700</code>). It belongs to the automated <code>e2e-prod</code> tier described below. Its
@@ -3481,10 +3502,28 @@ describe. It asserts, unattended and every day:</p>
 <li>A real device grant round-trips: authorize, open the kid library on the
   authorized device, revoke.</li>
 </ul>
-<p>None of those steps is ticked below, because the tier drives a <em>different</em> account
-in a <em>different</em> family and asserts renders rather than the journeys this checklist
-specifies. Treat it as reducing the risk that Sections 1, 1a, and the device-grant
-leg of Section 4 are broken, not as evidence that they passed.</p>
+<p><strong>Revised 2026-08-08.</strong> The paragraph that stood here said none of those steps could
+be ticked from this tier, because it drives a <em>different</em> account in a <em>different</em>
+family and asserts renders rather than journeys. That reasoning was too strict, and
+holding to it left steps unticked that the tier genuinely settles. The distinction
+that actually matters is what a step claims, not which account produced the evidence:</p>
+<ul>
+<li>Steps that assert a <strong>property of the deployed system</strong> are settled by this tier
+  whichever account exercises them. An unauthenticated redirect, the absence of the
+  Apple button, the readiness probe's content type, and a dual-role adult's landing
+  surface do not vary by family. Those are ticked, each citing the spec and date.</li>
+<li>Steps that assert a <strong>journey through specific data</strong> are not. Anything about the
+  real family's books, requests, or children needs the accounts in the table above,
+  because the test account's family is separately seeded.</li>
+</ul>
+<p>Since 2026-08-05 the tier has also stopped being uniformly green: four consecutive
+runs failed on the two profile-count assertions (the most recent 2026-08-08 14:07 UTC,
+run <code>31261130564</code>), which is how issue
+<a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639">#639</a> was found. A red
+tier is doing its job here. Note the corollary for the steps it covers: a serial
+describe block aborts at its first failure, so a green <em>tier</em> is not the same as an
+executed <em>step</em>, and any step ticked from this tier must cite a test that actually
+ran rather than a suite that passed.</p>
 <h3 id="known-blockers-resolve-before-running-this-checklist-end-to-end">Known blockers (resolve before running this checklist end to end)<a class="headerlink" href="#known-blockers-resolve-before-running-this-checklist-end-to-end" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>API keys must be funded before Sections 2 and 4.</strong> Both OpenRouter
@@ -3507,13 +3546,23 @@ leg of Section 4 are broken, not as evidence that they passed.</p>
       <code>sw.js</code> and <code>registerSW.js</code> also return <code>Cache-Control: no-store, no-cache, must-revalidate</code>, so the
       stale-service-worker login loop that <code>frontend/nginx.conf</code> guards against cannot recur.</li>
 <li class="task-list-item">
-<p><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>GET /api/v1/health/live</code> and <code>/api/v1/health/ready</code> return 200 <strong>with
+<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <code>GET /api/v1/health/live</code> and <code>/api/v1/health/ready</code> return 200 <strong>with
       <code>content-type: application/json</code></strong>. Assert the content type, not just the status: see the defect
-      below for why a bare 200 is not evidence here. <strong>Blocked on a production redeploy</strong>, not on a
-      verifier: the code fix is on this branch but the deployed frontend image still carries the old
-      nginx config. Tick this only after production runs an image built from this change, and prefer
-      running <code>frontend/e2e-prod/health-probe.spec.ts</code>, which asserts exactly this and is now part of the
-      daily tier.</p>
+      below for why a bare 200 is not evidence here. <strong>Verified 2026-08-08</strong>, and the redeploy this step
+      was blocked on has happened: production serves the <code>UW-L04</code> fix, and as of 2026-08-07 serves
+      revision <code>631c0d8a</code> (v0.68.0). The evidence is <code>frontend/e2e-prod/health-probe.spec.ts</code> on the
+      daily cron, whose three tests have passed against live production on 2026-08-05, 2026-08-06 and
+      2026-08-07 (runs <code>31014411104</code>, <code>31117078366</code>, <code>31188046612</code>): the canonical endpoint answers as
+      real FastAPI JSON, the old shadowed <code>/health</code> path returns exactly 404, and the <code>/nginx-health</code>
+      control answers. Note that <code>631c0d8a</code> was not committed until 2026-08-07 05:26 UTC, so the two
+      earlier passes were served by an earlier revision. That widens rather than weakens the claim: the
+      fix has been live across at least two deployed revisions, not just the current one. Those three
+      tests together are what a bare status
+      check cannot give you: the 404 proves nginx's stub is gone rather than merely moved, and the
+      control proves nginx is up, so a green canonical probe cannot be nginx answering for FastAPI.
+      Prefer that spec over a hand-run <code>curl</code> from a workstation, which on this network resolves
+      <code>cyo.williamshome.family</code> to a LAN address by split-horizon DNS and does not traverse the ingress
+      path CI exercises.</p>
 <p><strong>The prior "verified live 2026-07-07: both 200" note was a false pass, and the defect it hid is
   worth understanding.</strong> Established 2026-08-04: every backend router except <code>health</code> carried its own
   <code>/api/v1</code> prefix, and <code>frontend/nginx.conf</code> proxies only <code>location /api/</code>. <code>health.router</code> was
@@ -3558,25 +3607,61 @@ leg of Section 4 are broken, not as evidence that they passed.</p>
 </ul>
 <h2 id="1-guardian-sign-in-and-profiles">1. Guardian sign-in and profiles<a class="headerlink" href="#1-guardian-sign-in-and-profiles" title="Permanent link">&para;</a></h2>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Unauthenticated visit to <code>/guardian</code> redirects to login</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Guardian email/password sign-in succeeds (Apple button hidden behind its config flag per ADR-009)</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Create or edit a child profile; preset avatar picker works</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Sign out and back in; session resumes</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Unauthenticated visit to <code>/guardian</code> redirects to login. Verified 2026-08-08 by
+      <code>guardian-profiles.spec.ts:36</code> on the daily production cron; it asserts the destination pathname
+      (<code>ProtectedRoute</code> carries the attempted location in router state, not the URL) plus the rendered
+      sign-in heading.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Guardian email/password sign-in succeeds (Apple button hidden behind its config flag per ADR-009).
+      Verified 2026-08-08. Two independent signals in the same run: <code>signInAsProdTestAdmin</code> completes
+      and every authenticated test downstream of it reaches a rendered console, and
+      <code>guardian-profiles.spec.ts:48</code> asserts Apple is absent <em>while</em> asserting Google is present, so a
+      page that rendered no provider buttons at all cannot satisfy the absence claim vacuously.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Create or edit a child profile; preset avatar picker works. <strong>NOT RUN on 2026-08-08.</strong> The
+      read-only half (opening the dialog to confirm the avatar picker renders) is automated at
+      <code>guardian-profiles.spec.ts:89</code>, but it did not execute: its serial describe block aborted at the
+      preceding test, which failed on issue <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639">#639</a>.
+      The create/edit half mutates the live family and stays manual regardless.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Sign out and back in; session resumes. <strong>NOT RUN on 2026-08-08</strong>, same serial-block abort as
+      above. Nothing suggests it is broken; it simply never executed. Note that
+      <code>guardian-profiles.spec.ts:104</code> covers only the sign-out half (it asserts the return to the login
+      screen); nothing automated asserts that signing back in resumes the session, so even a green tier
+      would leave the second half of this step manual.</li>
 </ul>
 <h2 id="1a-admin-sign-in-and-review-queue-access">1a. Admin sign-in and review queue access<a class="headerlink" href="#1a-admin-sign-in-and-review-queue-access" title="Permanent link">&para;</a></h2>
 <p>Approving account: <code>byronawilliams@gmail.com</code> (sub <code>21985c35</code>, <code>role='guardian'</code> with
 <code>is_admin=true</code>, family <code>3a152319</code>). It is not <code>role='admin'</code>; see the Correction in
 the Accounts section above.</p>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Admin email/password sign-in succeeds</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Sign-in lands on a review queue that loads (not the guardian console). <strong>Re-derive this
-      expectation before ticking it.</strong> Because this account is <code>role='guardian'</code>, the shells route it to
-      the guardian console by design and expose <code>/admin</code> as an additional capability, so "not the guardian
-      console" is likely the wrong assertion for the current role model rather than a defect. Decide what
-      the correct landing surface is for a dual-role adult, then either fix this line or file the routing
-      behaviour as a defect.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Admin email/password sign-in succeeds. Verified 2026-08-08 by <code>guardian-admin-smoke.spec.ts:67</code>
+      on the daily production cron. Note the account: that spec calls <code>signInAsProdTestAdmin</code>, so it
+      drives sub <code>774ea02b</code> (family <code>84b96700</code>), not the approving account named above. Both hold
+      <code>is_admin=true</code>, and this step asserts the admin capability rather than anything family-specific,
+      so the substitution is sound; it is called out so the "this account" below is not misread.
+      All nine surfaces render for it, four under <code>/admin</code>
+      (<code>/admin</code>, <code>/admin/requests</code>, <code>/admin/moderation-thresholds</code>, <code>/admin/moderation-dashboard</code>),
+      which an account without the admin capability could not reach.</li>
+<li class="task-list-item">
+<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Sign-in lands on the <strong>Guardian</strong> console (<code>/guardian</code>); the Admin console is reachable from
+      there via the "Admin console" nav link. <strong>The expectation was re-derived on 2026-08-08 and this
+      line was corrected: the old "not the guardian console" wording was wrong, not the product.</strong>
+      <code>LoginPage.tsx</code> computes the post-sign-in destination as
+      <code>principal?.role === 'admin' ? ADMIN_CONSOLE_PATH : GUARDIAN_CONSOLE_PATH</code>, so it branches on the
+      base <code>role</code> alone and <code>is_admin</code> does not affect the landing surface at all. This account is
+      <code>role='guardian'</code> with <code>is_admin=true</code>, so <code>/guardian</code> is the correct and intended destination.
+      The capability surfaces as cross-links instead: <code>GuardianShell.tsx:168</code> renders the "Admin console"
+      link only when <code>principal?.isAdmin</code>, and <code>AdminShell.tsx</code> renders the return link only when
+      <code>role === 'guardian'</code>. No defect: the old assertion would have been satisfiable only by an account
+      with <code>role='admin'</code>, and no production account has that role.</p>
+<p><strong>Evidence scope, stated precisely because this tick is settled from code plus a unit test rather
+  than from production.</strong> The landing destination is settled from <code>LoginPage.tsx</code> above. The nav link
+  itself is asserted only at <code>GuardianShell.test.tsx:161,169</code> (jsdom, both the present-when-admin and
+  absent-when-not cases); no spec in <code>frontend/e2e-prod/</code> asserts the "Admin console" string, so the
+  cron run does not cover it. Closing that gap is the one piece of automatable work this step still
+  wants: an <code>e2e-prod</code> assertion that the link renders for the admin-capable account.</p>
+</li>
 </ul>
 <h2 id="2-guardian-authoring-path-intake-to-published-book">2. Guardian authoring path (intake to published book)<a class="headerlink" href="#2-guardian-authoring-path-intake-to-published-book" title="Permanent link">&para;</a></h2>
+<p><strong>All 7 steps NOT RUN on 2026-08-08, for a stated reason rather than by omission.</strong> Every step here spends live provider quota (OpenRouter generation plus the OpenAI Stage-0 classifier) and writes real content into the real family, and it needs an interactive sign-in as both <code>c1f33430</code> and <code>21985c35</code>. None of that is available to an unattended pass, and none of it is engineering work: it is an owner decision to authorize the spend and the writes. Tracked under <code>UW-F17</code>. Also re-read the Known blockers note above before starting: classifier quota exhaustion surfaces as a job that stalls at the moderation step with no error in the UI, so a hang here is a 429 in the worker logs until proven otherwise.</p>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Submit a story request via Intake; job status shows "Generating..."</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> RQ worker picks up the job (worker logs show the generation; OpenRouter + classifier calls succeed)</li>
@@ -3588,6 +3673,7 @@ the Accounts section above.</p>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Send-back / revision loop works on a second story</li>
 </ul>
 <h2 id="3-assignment-surfaces">3. Assignment surfaces<a class="headerlink" href="#3-assignment-surfaces" title="Permanent link">&para;</a></h2>
+<p><strong>All 3 steps NOT RUN on 2026-08-08.</strong> They depend on Section 2 having produced a published book in the real family, so they inherit its provider-quota and interactive-session gates. The read-only halves closest to these steps <em>are</em> covered daily by <code>guardian-books-and-isolation.spec.ts</code> (the books page lists assigned books with a content-review badge each, and the assign dialog surfaces only redacted content-review tags), and both passed against live production on 2026-08-07. That is not a tick, because these steps assert the <em>act</em> of assigning in the real family, which is mutating.</p>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Books page lists published books with content badges; assign to a child from there</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Assign dialog shows redacted content-review tags (category/verdict/message only; no raw
@@ -3595,6 +3681,7 @@ the Accounts section above.</p>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> "Assign more" flow from the console works</li>
 </ul>
 <h2 id="4-kid-request-a-story-loop-the-completed-r1-journey">4. Kid request-a-story loop (the completed R1 journey)<a class="headerlink" href="#4-kid-request-a-story-loop-the-completed-r1-journey" title="Permanent link">&para;</a></h2>
+<p><strong>All 8 steps NOT RUN on 2026-08-08</strong>, same two gates as Section 2 (provider quota plus an interactive session), with one addition worth stating: several steps here are deliberately destructive of quota by design, notably submitting 5 pending requests to observe the 6<sup>th</sup> return the 409 cap message. The device-grant leg that this journey opens with <em>is</em> exercised daily against live production by <code>kid-device-grant.spec.ts</code> (authorize, open the kid library, revoke), all three green on 2026-08-07, so the mechanism is not the risk here. The untested part is the request-to-published journey itself.</p>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> From the guardian console, hand off to the kid surface; the profile picker appears and selecting a
       profile lands on that child's library</li>
@@ -3609,6 +3696,7 @@ the Accounts section above.</p>
       page, seeing the same content tags, and the book appears in the kid's library</li>
 </ul>
 <h2 id="5-kid-reading-loop">5. Kid reading loop<a class="headerlink" href="#5-kid-reading-loop" title="Permanent link">&para;</a></h2>
+<p><strong>All 5 steps NOT RUN on 2026-08-08.</strong> These need an assigned book from Sections 2 to 4, so they carry those gates, plus one this pass cannot satisfy by any means: a <strong>second physical device</strong> and a <strong>real offline transition</strong>. Airplane mode is not simulable in a way that would make the offline step's pass meaningful, since the point is the browser's own network-loss handling and the service worker's cached state, not a mocked failure. This is the one section that stays manual permanently rather than pending automation.</p>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Open an assigned book; reader plays through choices to an ending</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Completion is recorded (guardian progress view reflects it)</li>
@@ -3619,11 +3707,14 @@ the Accounts section above.</p>
 </ul>
 <h2 id="6-cross-family-isolation-spot-check">6. Cross-family isolation spot check<a class="headerlink" href="#6-cross-family-isolation-spot-check" title="Permanent link">&para;</a></h2>
 <p>The "if seeded" hedge below is obsolete, and resolving it makes this section cheaper to run than it
-looks. Verified by direct read-only query on 2026-08-04, production holds <strong>three</strong> families:</p>
+looks. <strong>Re-verified by direct read-only query on 2026-08-08: production now holds four families, not
+the three recorded on 2026-08-04, and the real family has gained a third child profile.</strong> Re-run this
+query rather than trusting the table, because both numbers have moved once already:</p>
 <table>
 <thead>
 <tr>
 <th>Family</th>
+<th>Created</th>
 <th>Contents</th>
 <th>Role here</th>
 </tr>
@@ -3631,30 +3722,70 @@ looks. Verified by direct read-only query on 2026-08-04, production holds <stron
 <tbody>
 <tr>
 <td><code>3a152319</code></td>
-<td>2 profiles, 6 assignments, 1 story request, 5 grants, 3 reading states</td>
+<td>2026-07-05</td>
+<td><strong>3</strong> active profiles, 4 users, 1 story request</td>
 <td>the real family</td>
 </tr>
 <tr>
 <td><code>84b96700</code></td>
-<td>1 profile, 5 assignments, 0 story requests, 4 grants, 0 reading states</td>
+<td>2026-07-15</td>
+<td>1 active profile, 2 users, 0 story requests</td>
 <td>E2E test family</td>
 </tr>
 <tr>
 <td><code>0ca7a109</code></td>
+<td>2026-07-20</td>
 <td>nothing at all, and <strong>no user rows</strong></td>
 <td>orphan, see <code>UW-L05</code></td>
+</tr>
+<tr>
+<td><code>adb9e257</code></td>
+<td>2026-08-05</td>
+<td>0 profiles, 0 requests, but <strong>1 guardian user</strong></td>
+<td>new, see <code>UW-L05</code></td>
 </tr>
 </tbody>
 </table>
 <p>The automated test account already sits in <code>84b96700</code>, so it <em>is</em> the second family's guardian. That
 makes this section verifiable read-only with no extra seeding: the assertion is that the test account
-sees exactly its own 1 profile and 0 story requests while the real family has 2 and 1.</p>
+sees exactly its own 1 profile and 0 story requests while the real family has 3 and 1.</p>
+<p><code>adb9e257</code> is a different shape from <code>0ca7a109</code> and is the more interesting of the two. It has a
+guardian user, so unlike the orphan it is reachable and could in principle be signed into, which makes
+it the first genuine third-family cross-family subject this checklist has ever had. It is folded into
+<code>UW-L05</code> because it is the same provenance question: guardian accounts are created by an empty
+<code>POST /v1/onboarding</code> with no signup form, so both rows sit on the path a partially-failed or
+unattended JIT provisioning would leave behind.</p>
+<p><strong>A drift trap this creates, worth fixing before it bites.</strong> <code>guardian-books-and-isolation.spec.ts:212</code>
+carries a comment justifying its <code>toHaveCount(1)</code>. All three numbers in it are now wrong, not just the
+two in its closing clause: it opens "The real family has 2 child profiles" (it now has 3), then reasons
+"not 2, and certainly not 3, the sum across every family in the database" (the database-wide sum is now
+4). The opening sentence matters most, because it is the first thing a reader re-deriving the
+expectation hits. The assertion itself is still correct and still fails correctly; only its stated
+reason no longer distinguishes the case it was written to catch. Assertions pinned to live production
+data need their justifying counts re-checked whenever this table moves. Tracked as <code>UW-L05</code>, alongside
+the two unexplained families that caused the drift.</p>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A second family's guardian cannot see the first family's requests, books, or children.
       <strong>Automated</strong> in <code>frontend/e2e-prod/guardian-books-and-isolation.spec.ts</code>.
+      <strong>FAILING against live production as of 2026-08-08</strong>: issue
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639">#639</a> / <code>UW-L07</code>. Do not tick this
+      until that fix is deployed. The failure is not an isolation breach; it is the opposite, an
+      over-restriction that returns zero rows to everyone.
       #ASSUME: data integrity: this is an emptiness assertion, so it passes vacuously against a page
       that failed to render at all. #VERIFY: the spec asserts the heading and empty-state copy render
-      <em>before</em> asserting the count; keep that positive control if you edit it.</li>
+      <em>before</em> asserting the count; keep that positive control if you edit it.
+      <strong>The positive control was necessary but not sufficient, and #639 is the proof.</strong> The requests
+      half of this test asserts the E2E family sees zero story requests, with the heading and the
+      component's own empty-state copy as its control. Under #639 the page renders perfectly and the
+      count is genuinely zero, because <code>story_request</code> is <code>family_scoped</code> too and the same missing GUC
+      empties it for every caller. So that assertion passed, on a build where cross-family scoping was
+      not working at all. Only the profiles half caught it, and only because it expects a <strong>non-zero</strong>
+      count.
+      #ASSUME: data integrity: a rendered-page control is assumed to distinguish "scoped correctly to
+      zero rows" from "scoped to zero rows for everyone", and #639 shows it does not: both render
+      identically. #VERIFY: an emptiness assertion over a Tier 1 table needs a non-empty companion
+      assertion in the same test, over a table subject to the same policy; a rendered-heading control
+      proves the page loaded, never that the scoping mechanism ran.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Kid surfaces never expose guardian-only fields. The concrete contract (<code>api/review_surface.py</code>)
       is that guardian-facing responses are story-level and node-id-free: they carry <code>flagged_count</code>,
       <code>node_count</code>, and merged concern rows, and never <code>flagged_passages</code> or raw node <code>prose</code>.
@@ -3679,6 +3810,12 @@ sees exactly its own 1 profile and 0 story requests while the real family has 2 
 <td>both at revision <code>f1b561b6</code> (v0.63.0); backend <code>@sha256:de9a9f6a</code>, frontend <code>@sha256:4d608898</code></td>
 <td>PARTIAL, 5 of 38 steps</td>
 <td>Section 0 only. Sections 1 to 6 not run. Detail below.</td>
+</tr>
+<tr>
+<td>2026-08-08</td>
+<td>both at revision <code>631c0d8a</code> (v0.68.0); backend <code>@sha256:6a92ab44</code>, frontend <code>@sha256:7d7bd249</code></td>
+<td><strong>PARTIAL, 10 of 38 steps, and a live P1 defect found</strong></td>
+<td>Sections 0, 1, 1a advanced from CI evidence. <code>UW-L04</code> confirmed deployed. Section 1a's open routing question resolved from code. Guardian profile resolution is broken in production: <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639">#639</a> / <code>UW-L07</code>. Detail below.</td>
 </tr>
 </tbody>
 </table>
@@ -3748,6 +3885,76 @@ The outcome is right and the ADR-021 goal is met, but the mechanism differs from
 compose file, and inside the worker process <code>get_session()</code> and <code>get_worker_session()</code>
 resolve to the same identity. A regression in which worker code calls <code>get_session()</code>
 would therefore be invisible in production. Tracked as <code>UW-A44</code>.</p>
+<h3 id="2026-08-08-partial-run">2026-08-08 partial run<a class="headerlink" href="#2026-08-08-partial-run" title="Permanent link">&para;</a></h3>
+<p><strong>Deployed revision.</strong> Both <code>cyo-adventure-backend</code> and <code>cyo-adventure-frontend</code> on <code>docker-host</code>
+carry <code>org.opencontainers.image.revision=631c0d8a1ed7d9e69ea0dee73607009b31dd4c6d</code>, which is
+<code>chore(release): v0.68.0 (#638)</code>. Production is level with <code>main</code> for the first time in this
+checklist's history; the 2026-08-04 run found it one release behind. As before,
+<code>org.opencontainers.image.version</code> reads <code>0.1.0</code> on both images and tracks nothing, so the revision
+SHA remains the only reliable deployed-version identifier.</p>
+<p><strong>What ran, and what it cost.</strong> No interactive session and no production mutation. Everything ticked
+here rests on the daily <code>e2e-prod</code> cron (<code>.github/workflows/e2e-prod.yml</code>), which signs into live
+production as the real isolated test account, plus read-only queries against the live Supabase project
+and <code>docker inspect</code> on <code>docker-host</code>. The run for <code>631c0d8a</code> on 2026-08-07 reports <strong>21 passed, 2
+failed</strong>. Five further steps ticked, taking the checklist from 5 to 10 of 38.</p>
+<p><strong><code>UW-L04</code> is closed out here.</strong> The health-probe step had been blocked on a redeploy since 2026-08-04.
+That redeploy has happened, and <code>health-probe.spec.ts</code>'s three assertions have passed on three
+consecutive days. This also corrects a stale belief worth naming: the fix was recorded internally as
+"merged but not deployed", and the CI evidence falsifies that. A merge-versus-deploy claim about
+production should be settled against a probe that ran from outside, not against merge state.</p>
+<p><strong>Section 1a's open question is resolved, and the checklist was wrong, not the product.</strong> The old
+assertion demanded that the approving account land somewhere other than the guardian console.
+<code>LoginPage.tsx</code> branches solely on the base <code>role</code>, so a <code>role='guardian'</code> account with <code>is_admin=true</code>
+lands on <code>/guardian</code> by design and reaches <code>/admin</code> through a capability-gated nav link. Since no
+production account has <code>role='admin'</code>, the old assertion was unsatisfiable by anything in production.
+The step is rewritten to assert the real contract and is ticked.</p>
+<p><strong>A live P1 defect, found by the run rather than by the checklist.</strong>
+Issue <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639">#639</a>, register row <code>UW-L07</code>.
+<code>require_principal</code> resolves a guardian's child profiles from the Tier 1 <code>child_profile</code> table roughly
+36 lines <em>before</em> it calls <code>apply_family_rls_context</code>. With <code>app.family_id</code> unset,
+<code>current_setting(..., true)</code> is NULL, the <code>family_scoped</code> predicate is unsatisfiable, and the read
+returns zero rows. Every guardian in production therefore has an empty <code>profile_ids</code>;
+<code>GET /v1/profiles</code> short-circuits on it and the console renders "No profiles yet" over a family that
+has three children. The failure is fail-closed, so this is an outage of the profiles surface and not a
+data leak, and the underlying rows are intact.</p>
+<p>Three things about it are worth carrying forward:</p>
+<ul>
+<li><strong>Why it stayed invisible.</strong> RLS never applies to a table's owner. Before ADR-021 the API connected
+  as <code>postgres</code>, so the policy was inert and the ordering bug had no effect. The cutover to <code>cyo_api</code>
+  is what activated it. Any ordering bug of this shape is undetectable until the cutover lands, which
+  is an argument for testing as the non-owner role rather than for testing more.</li>
+<li><strong>It is a recurrence, not a novel bug.</strong> <code>_device_principal</code> already applies the context before its
+  Tier 1 reads and carries a <code>#CRITICAL</code> comment naming the identical staging outage of 2026-07-18 to
+  2026-08-02. That fix was applied to the device branch only. A fix that names its own failure mode in
+  a comment but is applied to one call site is a half fix. Sharper still: two <code>#CRITICAL</code> blocks in
+  <code>deps.py</code> assert as fact the very thing the bug disproves, one of them claiming the device read is
+  "the ONLY pre-principal read" of a Tier 1 table. See <code>UW-L07</code> for the exact lines; the fix has to
+  correct those comments too.</li>
+<li><strong>The regression test that would have caught it did not exist.</strong>
+  <code>tests/integration/test_rls_tier1_enforcement.py</code> covers the device branch and has no guardian
+  equivalent exercising the real <code>require_principal</code> path as <code>cyo_api</code>.</li>
+</ul>
+<p><strong>An isolation assertion that passed for the wrong reason.</strong> See Section 6. The requests-queue half of
+the cross-family test was satisfied <em>by</em> #639: <code>story_request</code> is <code>family_scoped</code> too, so it returned
+zero rows to everyone while the page rendered perfectly and its positive control held. Only the
+profiles half, which expects a non-zero count, caught the failure. A rendered-heading control proves
+the page loaded; it never proves the scoping mechanism ran.</p>
+<p><strong>Production data has drifted since 2026-08-04</strong> in two ways that affect assertions, not just
+inventory: a fourth family (<code>adb9e257</code>) appeared on 2026-08-05 carrying one guardian user and no
+profiles, and the real family gained a third child profile. Section 6's table is updated and the
+consequences for the isolation spec's justifying comment are recorded there.</p>
+<p><strong>Owner-gated remainder, unchanged in shape from 2026-08-04.</strong> Of the 28 untouched steps, 26 need one
+of four things this pass could not supply, none of which is engineering work: interactive credentials
+for subs <code>c1f33430</code> and <code>21985c35</code>; an authorized maintenance window for the single mutating Section 0
+step (worker restart); funded OpenRouter and classifier quota plus permission to write real content
+into the live family (Sections 2 and 4); and a second physical device with a real offline transition
+(Section 5).</p>
+<p><strong>The remaining 2 are the exception, and are engineering-blocked.</strong> Section 1's two unticked steps are
+blocked twice over: they are gated on an interactive session like the other 26, <em>and</em> their automated
+read-only halves cannot execute until #639 / <code>UW-L07</code> is fixed, because the serial describe block
+aborts at the failing test ahead of them. Section 6's cross-family step is blocked the same way and is
+explicitly marked do-not-tick above. So the honest summary is "owner-gated except for the #639 fix",
+not "owner-gated throughout".</p>
 
 
 
@@ -3770,7 +3977,7 @@ would therefore be invisible in production. Tracked as <code>UW-A44</code>.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 04:02:38 UTC">August 5, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 20:13:19 UTC">August 8, 2026</span>
   </span>
 
     

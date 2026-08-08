@@ -5052,21 +5052,44 @@ backlog, and a <a href="../test-traceability-matrix/">test traceability matrix</
 register ID, per the register's maintenance rule. Phases 4c and 4d are new; 4b and 5 are
 expanded in place below.</p>
 <h3 id="now-queue-days-before-phase-4b-starts">Now queue (days, before Phase 4b starts)<a class="headerlink" href="#now-queue-days-before-phase-4b-starts" title="Permanent link">&para;</a></h3>
-<p><strong>2026-07-20 audit status: 3 of 5 done, 1 done modulo unverifiable infra secrets, 1 not
-done.</strong></p>
+<p><strong>2026-08-08 re-audit: items 1 through 4 are done.</strong> (Prior 2026-07-20 status: 3 done, 1 done
+modulo unverifiable infra secrets, 1 not done.) The change is item 2, whose only open caveat
+was that the repo cannot see whether GitHub environment secrets are populated. That is now
+settled, and by evidence rather than inspection: both scheduled tiers complete real
+email/password sign-ins against their live targets, which is impossible with absent or wrong
+secrets. This re-audit did not reassess item 5, which is owner-gated rather than engineering
+work; read its own row below for current status rather than inferring it from this header.
+Note that a tier being <em>red</em> does not reopen items 2 or 3: what those items claim is that the
+harness exists and is wired, and a tier that runs, authenticates, and reports real assertion
+failures has demonstrated exactly that.</p>
 <ol>
 <li>✅ <strong>Done.</strong> Both PRs merged (#267, #268, folded into #270). Both review conditions
    satisfied: <code>capability-register.md</code>'s A12 entry names the admin child-PIN authority
    with an explicit ADR-014 cross-reference, and <code>authorization-matrix.md</code> carries rows
    for the new admin endpoints (admin users CRUD, admin child-profile CRUD incl. PIN,
    family-connection CRUD).</li>
-<li>🟡 <strong>Workflow done, secrets unverifiable from the repo.</strong> <code>.github/workflows/e2e-staging.yml</code>
-   exists, scheduled daily, and references the three <code>staging</code> environment secrets; whether
-   they are actually populated in GitHub cannot be checked from this repo.</li>
-<li>✅ <strong>Done.</strong> <code>e2e-prod.yml</code> exists (scheduled daily, 30 min after staging) with a
-   dedicated "alert on failure" step that opens/comments on an issue labeled <code>e2e-alert</code>.
-   Requires a <code>production</code> GitHub Environment with its own secrets before the first
-   scheduled run can succeed (same infra-secrets caveat as item 2).</li>
+<li>✅ <strong>Done, and the secrets caveat is resolved.</strong> <code>.github/workflows/e2e-staging.yml</code> exists,
+   is scheduled daily, and references the three <code>staging</code> environment secrets. Re-verified
+   2026-08-08: the 2026-08-07 run signed in and its main tier reported green, so the
+   secrets are populated. Stated precisely, the tier ran 16 tests, 15 passing and 1 flaky;
+   "15 of 15" would understate the retry. Its only red is the post-tier <code>device-grant-sweep</code>,
+   which reports that the test family still holds active device grants. That is a known
+   harness artifact, not a product defect and not a secrets problem: a serial-block retry runs
+   on a <strong>new</strong> worker, so the failed first attempt never reaches its own revoke step and leaks
+   its grant, while the retried attempt passes and the tier reports green. This run shows
+   exactly that shape (test 15 failed, retried as 17-19 and passed, sweep then found the
+   leak). One caveat the mechanism does not fully explain: the sweep names <strong>three</strong> grants
+   (<code>bb2ced27</code>, <code>260fcc51</code>, <code>b631c2e2</code>), not one, which points at accumulation across runs
+   rather than a single retry, and means the sweep is reporting a backlog that nothing clears.</li>
+<li>✅ <strong>Done, same caveat resolved.</strong> <code>e2e-prod.yml</code> exists (scheduled daily, 30 min after
+   staging) with a dedicated "alert on failure" step that opens/comments on an issue labeled
+   <code>e2e-alert</code>. Re-verified 2026-08-08: the <code>production-e2e</code> environment's secrets are populated
+   and the tier authenticates against live production, evidenced by the 2026-08-07 run's 21
+   passed. Note the environment name: the workflow deliberately does <strong>not</strong> use <code>production</code>,
+   which carries a required-reviewer protection rule that would park a scheduled, unattended run
+   in <code>waiting</code> indefinitely; <code>e2e-prod.yml</code> carries a <code>#CRITICAL</code> comment saying so. Its 2 failures are a real product defect it correctly caught
+   (<a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639">#639</a> / <code>UW-L07</code>), and the
+   alert path also works: the failure job is maintaining issue #623 as designed.</li>
 <li>✅ <strong>Done.</strong> <code>validator-rules.md</code> has a PL-22 entry (band profile fail-closed);
    <code>authorization-matrix.md</code> carries rows for the already-shipped admin surfaces.</li>
 <li>❌ <strong>Not done.</strong> <code>adr-018-childrens-privacy-compliance.md</code> is still <code>status: proposed</code>
@@ -5419,7 +5442,7 @@ The old wording stands in historical sections above; this table governs.</p>
 <td>M4.1: R1-alpha sign-off</td>
 <td>Funded provider keys; merged PRs + safety fixes redeployed; live E2E checklist executed once with a sign-off row; Now-queue items 1-4; <strong>plus, added 2026-07-28: the ADR-021 production cutover (<code>UW-A03</code>), which the ADR itself names M4.1 as the review gate for</strong></td>
 <td>~1 wk</td>
-<td>🟡 Cutover done. Funded provider keys confirmed 2026-08-04; the ADR-021 production cutover (<code>UW-A03</code>) verified live 2026-08-04 (<code>cyo_api</code> holds all active production connections, <code>rolbypassrls=false</code>; see <code>UW-A03</code>/<code>UW-M08</code>); merged PRs and safety fixes redeployed (verified 2026-07-30). <strong>Still open</strong>: the live E2E checklist (<code>UW-F17</code>, 0/38 steps, no sign-off row) and re-verification of Now-queue items 1-4, last checked 2026-07-20</td>
+<td>🟡 Cutover done. Funded provider keys confirmed 2026-08-04; the ADR-021 production cutover (<code>UW-A03</code>) verified live 2026-08-04 (<code>cyo_api</code> holds all active production connections, <code>rolbypassrls=false</code>; see <code>UW-A03</code>/<code>UW-M08</code>); merged PRs and safety fixes redeployed (verified 2026-07-30). <strong>Still open</strong>: the live E2E checklist (<code>UW-F17</code>) and, as of 2026-08-08, a live P1 defect this milestone cannot sign off over. Two corrections to what this cell used to claim. The "0/38 steps, no sign-off row" was already stale when written: a PARTIAL 5-of-38 run with a sign-off row was recorded on 2026-08-04. It now stands at <strong>10 of 38</strong>, advanced 2026-08-08 against the deployed revision <code>631c0d8a</code> (v0.68.0), with <code>UW-L04</code> confirmed live and Section 1a's open routing question resolved. And Now-queue items 1-4 are <strong>re-verified as of 2026-08-08</strong> (all four done; item 2's unverifiable-secrets caveat is resolved by both scheduled tiers completing real sign-ins), so that clause is closed. What replaces them as the gate is <code>UW-L07</code> / <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639">#639</a>: guardian profile resolution reads a Tier 1 table before applying the RLS context, so every guardian in production sees zero profiles. It fails closed, so it is an outage of the profiles surface rather than a leak, but signing off R1-alpha while the guardian console cannot list a family's children is not defensible. The remaining 28 checklist steps stay owner-gated as before (interactive credentials, a maintenance window for the mutating worker-restart step, funded provider quota for Sections 2 and 4, and a second device for Section 5)</td>
 </tr>
 <tr>
 <td>M4b: Editor + engagement</td>
@@ -5449,7 +5472,7 @@ The old wording stands in historical sections above; this table governs.</p>
 <td><strong>M5.1 = R1 (full): "the web app functions properly"</strong></td>
 <td>Every family-tier register row at delivered status; the five golden journeys green on the full test ladder</td>
 <td><strong>~9-13 wks cumulative from start</strong></td>
-<td>🟡 Closer than scheduled: the register's K/G/A/S rows are now mostly ✅/🟡 with few ❌ remaining (see capability-register.md v1.7); the live E2E sign-off (<code>r1-live-e2e-checklist.md</code>) is still an empty, unexecuted table. <strong>Added 2026-08-06 by owner ruling OG7</strong> (<code>story-structure-improvement-plan.md</code> §8.1): the catalog is also reachable-empty, and <code>UW-G14</code> (promoting the 23 authored books) now carries the <code>R1</code> token as a named blocker of this row, on the argument that a library with zero reachable catalog books is not a family-tier row at delivered status, it is the core reading loop failing for any family that has not completed a custom request</td>
+<td>🟡 Closer than scheduled: the register's K/G/A/S rows are now mostly ✅/🟡 with few ❌ remaining (see capability-register.md v1.7); the live E2E sign-off (<code>r1-live-e2e-checklist.md</code>) has been executed twice and stands at 10 of 38 steps ticked as of 2026-08-08, with the remaining 28 owner-gated except for the #639 fix (see the M4.1 row above for the evidence tiers). <strong>Added 2026-08-06 by owner ruling OG7</strong> (<code>story-structure-improvement-plan.md</code> §8.1): the catalog is also reachable-empty, and <code>UW-G14</code> (promoting the 23 authored books) now carries the <code>R1</code> token as a named blocker of this row, on the argument that a library with zero reachable catalog books is not a family-tier row at delivered status, it is the core reading loop failing for any family that has not completed a custom request</td>
 </tr>
 <tr>
 <td>M6 = R2: TestFlight iOS</td>
@@ -6205,7 +6228,7 @@ and Tier-2 corpora.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 18:34:55 UTC">August 8, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 20:13:19 UTC">August 8, 2026</span>
   </span>
 
     
