@@ -33,10 +33,18 @@ tags:
 > obligation. Added: D6 data inventory and processing map, D7 the security program as a
 > continuing obligation, and a Sources and references section that splits primary authority from
 > practitioner commentary.)
+> **Amended**: 2026-08-08, later the same day, after reading the Future of Privacy Forum's June 2023
+> VPC white paper. Adverse authority added to D1 (the FTC's 2015 AgeCheq denial, which reaches the
+> 312.5(b)(1) fallback and not only the enumerated-method question); the 312.5(b)(3) framing in D1
+> and D4 corrected from authorisation to risk reduction; new D8 recording the internal-operations
+> exception at 312.5(c)(7) as a route to a consent-free free tier; new D9 scoping California
+> SB 976, whose core provisions take effect 2027-01-01 and whose VPC framework incorporates
+> COPPA's approved-method list, so D1's answer propagates into state law.
 > **This does not flip the status.** Every decision below is an owner choice pending counsel
 > confirmation; only counsel closing D1 through D5 moves this ADR to Accepted. **D6 and D7 are
 > owner-side obligations rather than counsel questions**, and are deliberately excluded from the
-> counsel engagement, which stays scoped at five questions.
+> counsel engagement. **D8 rides on Question 1A as a sub-question** rather than becoming a sixth.
+> The engagement stays scoped at five questions.
 > **Relates to**: [ADR-008](./adr-008-public-app-store-launch.md) (Kids Category posture,
 > part 5), [ADR-009](./adr-009-supabase-platform.md) (processor, DPA), [ADR-016](./adr-016-recommendation-sharing-social-boundary.md)
 > (contact boundary), [ADR-017](./adr-017-ai-cover-art.md) (image-leg counterparties),
@@ -54,7 +62,11 @@ launch), the public artifacts, and, since the amended COPPA Rule passed its 2026
 compliance date, whether any training corpus may ever contain child-originated data (D5).
 D6 and D7, added 2026-08-08, are owner-side obligations rather than counsel questions: a
 complete data inventory with a purpose and a provenance per element, and the security program
-treated as a continuing obligation with evidence rather than as a document that exists.
+treated as a continuing obligation with evidence rather than as a document that exists. D8, added
+the same day, records the one route that does not require solving D1: the internal-operations
+exception at 312.5(c)(7) would make a free tier that cannot request stories consent-free and
+notice-free, which is the tiering design the owner proposed early on and the project shelved before
+anyone noticed it had a legal basis.
 
 ## Context
 
@@ -210,6 +222,41 @@ that may be the route by which the shipped implementation becomes usable rather 
 replaced. `docs/compliance/counsel-engagement-brief.md` Sections 1.1, 1.3, and 1.5 carry the
 corrected framing and the questions actually put to counsel.
 
+**Adverse authority found 2026-08-08, and it is close to on-point. Read this before relying on
+anything above.** The Future of Privacy Forum's June 2023 white paper *The State of Play: Is
+Verifiable Parental Consent Fit For Purpose?* describes the FTC's January 2015 conclusion of its
+review of AgeCheq Inc.'s second proposed VPC method, a "Device-Signed Parental Consent Form." The
+Commission declined to approve it, and two elements of the reasoning apply to what we shipped:
+
+- The Commission noted that **in the 2013 Rule digital signatures were specifically excluded from
+  the enumerated methods, because a digital signature alone is not a reliable means of obtaining
+  consent**, and that AgeCheq's device-signing step did not "add indicia of reliability to the
+  digital signature." This is independent support for the correction above: the absence of an
+  in-app signature method is deliberate, not an omission we are reading into the text.
+- The method failed the general standard at 312.5(b)(1) because a child in the household could
+  intercept the SMS code that bound the signature to an adult. **Our mechanism has the same shape**:
+  a signature artifact (weaker than AgeCheq's, being a typed name) bound to an adult by a second
+  step (an authenticated Google session, which on a shared family tablet is plausibly easier for a
+  child to reach than an intercepted text message).
+
+**Consequence for this decision.** The D1 risk is larger than this ADR has recorded. It is not only
+that we are probably outside 312.5(b)(2); the fallback argument, that the flow satisfies 312.5(b)(1)
+on general reasonableness, has adverse authority sitting directly on it. Nobody here has read the
+Commission's decision; this entry is sourced from FPF's description and quotation of it. The primary
+documents are *FTC Concludes Review of AgeCheq's Second Proposed COPPA Verifiable Parental Consent
+Method* (January 29, 2015) and *AgeCheq Inc.'s Application Pursuant to Section 312.12(a)...*
+(October 1, 2014). **Read the decision before treating this entry as settled**, and note that FPF
+predates the 2025 amendments.
+
+**Correction to the 312.5(b)(3) framing above, same date.** The sentence above says Safe Harbor
+approval "may be the route by which the shipped implementation becomes usable rather than replaced."
+That implies approval is a precondition to relying on a non-enumerated method. Per the same FPF
+source, it is not: an operator may rely on an unenumerated method meeting 312.5(b)(1) without prior
+approval, and the approval route buys certainty rather than permission. FPF also records that no
+operator has submitted a VPC method for FTC approval since 2015. The accurate framing is **risk
+reduction, not authorisation**, and the live question is how much risk the current flow carries,
+which the AgeCheq material above suggests is more than previously assumed.
+
 **The payment-card rejection above is withdrawn (2026-08-08), and the reason it was made no longer
 exists.** The 2026-07-20 decision ruled out a payment-card transaction partly on PCI scope and
 partly because the app is not monetized, treating a payment-based consent method as something that
@@ -346,6 +393,18 @@ elsewhere in this repository.
   shipped flow sits outside 312.5(b)(2), this stops being an optional cost-saver and becomes
   a candidate route to making the existing implementation lawful without rebuilding it. The
   sequencing decision below stands; what changes is the value of the evaluation's outcome.
+
+  **Corrected later the same day.** "Making the existing implementation lawful" is wrong, for the
+  reason recorded at the end of D1: approval under 312.5(b)(3) is not a precondition to relying on
+  a non-enumerated method, so the implementation is not waiting on a program's blessing to be
+  lawful. A Safe Harbor program sells **certainty about a judgment we are already making and
+  already carrying the risk of**, which is a real product but a different one. Two facts sharpen
+  the evaluation rather than changing its sequencing: the AgeCheq material in D1 suggests the risk
+  being carried is larger than assumed, which raises what certainty is worth; and no operator has
+  submitted a VPC method for FTC approval since 2015, which suggests the direct-to-FTC route under
+  312.12 is cold and a program is the practical channel. Also note, from the same source, that the
+  FTC has previously removed an organisation from the approved safe harbor list, so membership is
+  not a permanent shield and the choice of program matters.
 
   **Sequencing decided 2026-08-06 (owner choice): alongside, counsel first.** D1 goes to
   counsel now rather than waiting on a Safe Harbor evaluation, because counsel scheduling is
@@ -507,6 +566,113 @@ obligation with dated evidence per cadence rather than as a completed artifact, 
 internal or published, and (c) that a change to the service-provider set is itself a trigger for
 re-running vendor diligence. Item (c) has a live instance waiting on it.
 
+### D8: The internal-operations exception and a consent-free free tier (added 2026-08-08)
+
+**This reopens a design the project set aside, and it reopens it on a legal basis rather than a
+product one.** Early in the ADR-018 work the owner proposed tiering the product: a free tier that
+cannot request stories and keeps data on the device, and a paid or otherwise consent-gated tier that
+unlocks story requests and cross-device sync. The idea was set aside as an unattractive amount of
+engineering, since eight tables key to `child_profile_id` and `api/reading.py::_require_assignment`
+gates reads on a server-side assignment row. What nobody checked at the time was whether the design
+had a specific legal payoff. It appears to.
+
+**The exception.** 16 CFR 312.5(c)(7) excepts from the prior-consent requirement an operator that
+collects **a persistent identifier and no other personal information** and uses that identifier
+**only** to support the internal operations of the service. Per the Future of Privacy Forum's
+June 2023 white paper, the exception also carries **no notice obligation**, and "support for internal
+operations" is read broadly: analysing site functioning, authenticating users, personalising content,
+statistical reporting and analytics, debugging, and similar. The same source gives saving a game
+score or achievement level as an example of permitted personalisation.
+
+**Why the free tier fits and the current product does not.** The disqualifying words are "and no
+other personal information." As built, a child types a free-text story wish that we store against a
+profile, which is other personal information under 312.2 and breaks the exception. **Remove story
+requests and that data disappears**, leaving a session identifier used for authentication and
+progress personalisation. On that reading a free tier requires neither VPC nor notice. The owner's
+original "cannot request stories" restriction turns out to be precisely the condition the exception
+needs, arrived at by product intuition before anyone knew why it was the right line.
+
+**One likely relaxation of the original design.** The original proposal kept all free-tier data on
+the device. If saving reading position is personalisation within the exception, the free tier could
+sync progress across a family's devices and still qualify, which is a materially better product than
+device-locked reading and removes much of the engineering objection that shelved the idea.
+
+**Why this matters strategically, stated bluntly.** D1 is in trouble. The AgeCheq material recorded
+there suggests the shipped consent mechanism is probably outside the enumerated methods and that its
+312.5(b)(1) fallback has adverse authority on it. D8 is the only option on the table that does not
+require solving D1 at all: it makes a whole tier of the product consent-free rather than
+consent-compliant. That does not rescue story requests, which remain the feature that forces VPC,
+but it decouples a usable free product from an unresolved legal question, and it is worth pricing
+against the cost of retrofitting an enumerated method.
+
+**Sourcing and its limit.** The exception's scope here is taken from a June 2023 secondary source
+and therefore describes the pre-2025 Rule. The internal-operations exception is exactly the kind of
+provision the 2025 amendments plausibly touched. **Nothing may be built against this entry until the
+exception's current scope is confirmed against the amended text.** This is asked of counsel as a
+sub-question of Question 1A in the engagement brief rather than as a sixth question; the engagement
+stays scoped at five.
+
+**Decision needed:** owner rules on whether the free tier is pursued, contingent on counsel
+confirming the exception's current scope and whether reading-progress sync survives inside it.
+
+### D9: California SB 976 and the state-law gap, made concrete (added 2026-08-08)
+
+**This turns an abstract gap into a dated one.** The Validation checklist below records that D3's
+US-only decision removes GDPR-K and the UK AADC but says nothing about US state law. California
+SB 976, the *Protecting Our Kids from Social Media Addiction Act* (2024), is the first concrete
+instance, and it has a near-term date attached.
+
+**The facts, as we understand them.** The California Department of Justice is conducting a
+rulemaking under Cal. Health & Safety Code section 27001(b). A notice of proposed rulemaking
+published 2026-05-15 and comments closed 2026-06-30. **Core provisions take effect 2027-01-01.**
+The statute prohibits providing an "addictive feed" to a minor without either a reasonable
+determination that the user is an adult or verifiable parental consent, and the proposed
+regulations set a performance-based age-assurance framework that **rejects age declaration as a
+standalone solution** while permitting layered approaches.
+
+**Threshold question, and our tentative answer is probably "out of scope."** SB 976 targets
+addictive feeds and the services built around them. This product has no user-generated content, no
+social graph, no messaging (ADR-016's contact boundary), no advertising, and no infinite feed; a
+child reads books a guardian assigned. On that description we do not believe we are a covered
+service. **We are recording this as an open question rather than a conclusion**, because the
+product does expose a recommendations surface (`api/recommendations`), and because the source we
+have does not address whether non-social services such as reading or educational apps fall inside
+the definition. The cost of being wrong is a statute with a 2027-01-01 date, so the check is worth
+making rather than assuming.
+
+**Two findings that matter even if we are out of scope.**
+
+1. **D1's answer propagates into state law.** The proposed California VPC framework ties acceptable
+   methods to COPPA's approved list. Whatever conclusion counsel reaches about our typed-name
+   mechanism under 16 CFR 312.5 is therefore not contained to COPPA; a mechanism that is not an
+   approved COPPA method is unlikely to be acceptable under a state regime that incorporates that
+   list by reference. This is an argument for resolving D1 properly rather than minimally.
+2. **A no-account, no-purchase, no-government-ID option may be required.** We understand the
+   proposal to require that operators offer at least one consent option that requires none of an
+   account, a purchase, or a government-issued ID. If that survives to the final text and we are in
+   scope, it would rule out the payment-card route reopened in D1, the government-ID match, and the
+   face-match-to-ID method **as sole options**, leaving email plus, text message plus, the
+   toll-free call, the video conference, and the mailed or scanned form. That points at the same
+   place D8 and the email-plus analysis already point, which is worth noting as convergence rather
+   than coincidence.
+
+**Sourcing and its limits, which are significant here.** This entry is drawn from a Future of
+Privacy Forum blog post dated 2026-07-15 describing FPF's own comments in the rulemaking. Two
+cautions follow. **It is advocacy**: FPF's recommendations, such as replacing static approved-method
+lists with criteria-based standards, are what FPF asked for, not what the regulations say, and this
+entry should not be read as conflating them. **And the regulations are proposed, not final**: the
+comment period closed six weeks ago and the final text may differ. Nothing here is settled law. One
+fact from the same source is worth carrying forward independently because it updates a
+2023-vintage claim to 2026: COPPA has approved only two new VPC methods since 2013, with no new
+submissions since 2015.
+
+**Decision needed:** owner rules on whether SB 976 scoping is added to the counsel engagement or
+handled separately. It is **not** in the engagement today, and adding it would break the five-question
+scope. Our recommendation is to keep it out of this engagement and raise it as a short follow-on
+question once D1 is answered, since D1's answer is an input to it. Note also that California's
+Age-Appropriate Design Code Act (AB 2273) is a separate statute with its own litigation history,
+and is not covered by this entry.
+
 ## Consequences
 
 - ✅ Compliance stops being folklore spread over four documents; Phase 7 becomes the
@@ -556,8 +722,13 @@ finished.
       been re-run over the service-provider set as it stands after the 2026-07-28 change (AWS
       Bedrock, Microsoft Azure, Google Vertex).
 - [ ] State children's-privacy and age-appropriate-design statutes are scoped. D3 confirms a
-      US-only launch, which removes GDPR-K and the UK AADC but does not remove US state law; no
-      decision on that exists anywhere in this ADR (see Sources and references).
+      US-only launch, which removes GDPR-K and the UK AADC but does not remove US state law.
+      **D9 makes this concrete for California SB 976, whose core provisions take effect
+      2027-01-01**; the scoping question there (are we a covered service at all?) is open, and
+      California's AB 2273 and other states remain entirely unscoped.
+- [ ] **D8**: the current scope of the internal-operations exception at 312.5(c)(7) is confirmed
+      against the amended rule text, including whether reading-progress sync survives inside it,
+      before any free-tier engineering starts. The entry is sourced from a pre-amendment document.
 - [ ] P7-08 checklist maps one-to-one to the "already decided" list and the closed
       decisions.
 - [ ] Deletion E2E (family erasure incl. Apple revocation) and the kid-context SDK audit
@@ -578,11 +749,36 @@ secondary column is a lead, and belongs in this ADR only with its provenance att
 | [16 CFR 312.5, Parental consent](https://www.law.cornell.edu/cfr/text/16/312.5) (Cornell Legal Information Institute) | The enumerated VPC methods at (b)(2), the general standard at (b)(1), the safe-harbor approval route at (b)(3), and the prior-consent exceptions at (c). | Cornell is an unofficial reproduction. It was used on 2026-08-08 because `ecfr.gov` redirected automated retrieval and `ftc.gov` returned HTTP 403. **Counsel should confirm against the eCFR or the printed CFR**, not against this copy. |
 | [Federal Register doc. 2025-05904](https://www.federalregister.gov/d/2025-05904), COPPA Rule amendments, 90 Fed. Reg. 16918 | The 2025 amendments themselves: what changed, the Commission's stated reasoning, and the Statement of Basis and Purpose. | The document number was resolved against the Federal Register public API on 2026-08-08, which is how the 90 Fed. Reg. 16918 citation was confirmed. The API returns metadata; **the text of the amendments has not been read in full by anyone on this project.** |
 | [Apple Developer: Kids Apps](https://developer.apple.com/app-store/kids-apps/) | Platform requirements for the Kids Category, which is the basis of D2's child-directed declaration. | Authoritative for Apple's rules, which are contractual rather than legal. Apple's requirements are stricter than COPPA in places; satisfying one does not satisfy the other. |
+| FTC, *FTC Concludes Review of AgeCheq's Second Proposed COPPA Verifiable Parental Consent Method* (January 29, 2015), and *AgeCheq Inc.'s Application Pursuant to Section 312.12(a)...* (October 1, 2014) | The Commission's reasoning on why a digital signature plus a device-binding step fails 312.5(b)(1), and its statement that digital signatures were deliberately excluded from the enumerated methods. **The single most important authority for D1.** | **Cited, not read.** Surfaced via the FPF paper below and quoted from it. URLs are omitted deliberately: `ftc.gov` returned HTTP 403 to automated retrieval on 2026-08-08, so the links are unverifiable from here and would risk the link-check gate. Retrieve manually or via counsel. |
 
 ### Secondary sources (practitioner commentary; leads, not authority)
 
 These are useful for spotting what changed and what practitioners think it means. None should be
 cited in this ADR as a statement of the rule.
+
+- **[Future of Privacy Forum, *The State of Play: Is Verifiable Parental Consent Fit For Purpose?*](https://fpf.org/wp-content/uploads/2023/06/FPF-VPC-White-Paper-06-02-23-final2.pdf)**
+  (June 2023). **The most productive source this project has used, and the only secondary source
+  here that changed conclusions rather than confirming them.** It supplied the AgeCheq authority in
+  D1, the internal-operations analysis in D8, the correction that 312.5(b)(3) approval is optional,
+  and independent confirmation that method (i) is a physical form returned by mail, fax, or scan.
+  It is a research paper from a privacy think tank rather than vendor or client-alert content, and
+  it footnotes the FTC's own published decisions, which is what makes it usable as a lead
+  generator. **Its hard limit: it is dated June 2023 and describes the 2013 Rule throughout.** Every
+  claim taken from it needs checking against the amended text, and D8 in particular must not be
+  built against until that check happens.
+- **[FPF, *FPF Submits Comments to Inform California Children's Social Media Protections Rulemaking Process*](https://fpf.org/blog/fpf-submits-comments-to-inform-california-childrens-social-media-protections-rulemaking-process/)**
+  (2026-07-15). The source for D9. **Read it as advocacy**: it describes FPF's own comments in the
+  SB 976 rulemaking, so its recommendations are asks rather than rule text, and the regulations it
+  discusses are proposed rather than final. Useful for two things independent of that: the
+  2027-01-01 effective date, and the current state of the COPPA approval channel (two new methods
+  since 2013, no submissions since 2015), which updates the same claim from the 2023 white paper
+  above.
+- **Vendor marketing on "building a COPPA-compliant learning platform"** (Intellivon, reviewed
+  2026-08-08). **Recorded as rejected, not as a reference.** It carries no citation to any part of
+  16 CFR Part 312, lists "signed consent forms" as a method without the return channel that
+  constitutes method (i), and presents consent vendors as if they were themselves enumerated
+  methods. Both errors are the same shape as the ones this ADR has already had to correct, which is
+  why it is named here: someone will find it again, and this entry is cheaper than re-litigating it.
 
 - **"FTC's COPPA Rule changes include AI training consent requirement"** (Data Protection Report).
   **Read this entry together with the D5 correction above.** This ADR's original D5 framing, that AI

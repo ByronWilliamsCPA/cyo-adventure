@@ -102,10 +102,37 @@ product bear on it:
   a star rating; and reading-progress state. Separately, a child's session is a backend-minted,
   profile-scoped token; a child never holds an email address, a phone number, or a third-party
   account. We are aware that a persistent identifier is itself personal information under
-  16 CFR 312.2, and also that 16 CFR 312.5(c)(7) permits collecting one without prior consent where
-  it is used solely to provide support for the internal operations of the service and nothing else
-  is collected from the child. We do not know whether our session token sits inside that exception,
-  and we would like to.
+  16 CFR 312.2, and also that 16 CFR 312.5(c)(7) excepts collecting one from the prior-consent
+  requirement where the operator collects **a persistent identifier and no other personal
+  information** and uses it **only** to support the internal operations of the service. Our reading
+  of that exception is that it does not reach us as the product stands, because the free-text wish
+  is other personal information once we hold it against a profile. We would like that confirmed,
+  because the exception matters a great deal to a product change we are considering, described
+  immediately below.
+
+**A design question that rides on 1A, and that we would like counsel to answer at the same time.**
+We are evaluating a **free tier in which a child cannot request stories at all**, reading only from
+a pre-published catalogue. Our understanding of 312.5(c)(7) is that removing story requests removes
+the only child-originated content that is plainly personal information, which would leave the tier
+collecting a session identifier and nothing else. If that is right, the free tier would sit inside
+the internal-operations exception, and would require **neither verifiable parental consent nor
+notice**. Two specific things we want tested rather than assumed:
+
+- **Does saving reading progress break the exception?** We understand "support for internal
+  operations" to cover authenticating users and personalising content, and we have seen the saving
+  of a game score or achievement level given as an example of permitted personalisation. Reading
+  position looks to us like the same kind of artifact. If it is, the free tier could still sync
+  progress across a family's devices rather than being confined to one device, which materially
+  changes the product. If it is not, we would confine the tier to on-device state.
+- **Does anything else we hold defeat it?** A child in the free tier would still have a profile
+  display name chosen by the guardian and an age band set by the guardian. On our reading those are
+  collected from the parent rather than from the child and so are not counted against the exception,
+  but that reading is doing a lot of work and we would rather have it checked than build on it.
+
+We flag that our understanding of this exception comes from a June 2023 secondary source and
+therefore describes the pre-amendment Rule. **Please confirm the exception's current scope against
+the amended text before we build against it.** This is the one place in this packet where an answer
+would change what we build rather than what we write.
 
 Our own tentative reading, which we would rather have corrected than confirmed politely, is that
 1A resolves against us: we store the child's free text against that child's profile record, which
@@ -247,11 +274,17 @@ which of these is the cheapest lawful path for a product of this shape. We previ
 list by excluding anything that implied charging money; Section 1.4 explains why we no longer think
 that exclusion was correct, so please treat all three options below as genuinely open:
 
-- **312.5(b)(3), via a Safe Harbor program.** An FTC-approved program may approve a member's use
-  of a non-enumerated method that meets the general standard in 312.5(b)(1). If this is the
-  realistic route for our current implementation, it converts the Safe Harbor evaluation described
-  in Section 1.5 from a business option into the legal mechanism that makes what we already built
-  usable, and we would want to know that now rather than after further engineering.
+- **312.5(b)(3), via a Safe Harbor program.** An FTC-approved program may approve a member's use of
+  a non-enumerated method that meets the general standard in 312.5(b)(1). **We are correcting an
+  overstatement we made here in an earlier draft.** We had described this as the mechanism that
+  would make what we already built "usable," which implied that approval is a precondition to
+  relying on a non-enumerated method. We now understand that it is not: an operator may rely on an
+  unenumerated method that meets 312.5(b)(1) without any prior approval, and the approval route
+  exists to give the operator certainty rather than permission. If that is right, the accurate
+  framing of this option is **risk reduction, not authorisation**, and the question for counsel is
+  how much risk we are carrying today rather than whether we are permitted to operate at all. Given
+  the AgeCheq material above, we suspect the honest answer is "more than we assumed," which is
+  precisely why we want the distinction stated correctly rather than flatteringly.
 - **"Email plus" (viii) or "text message plus" (ix).** Both are conditioned on the operator not
   "disclosing" children's personal information as 16 CFR 312.2 defines that term. **We have twice
   changed our own position on whether that condition is met, and we now think it is genuinely
@@ -290,27 +323,57 @@ Two sub-questions that inform the main one either way:
   signature-capture step would already satisfy 312.5(b)(1); the two together bound how much work
   the signature step is doing.
 
-**Adverse material we believe exists, and would rather surface than have counsel find.** We are not
+**Adverse authority, which we are supplying rather than waiting for counsel to find.** We are not
 asking for a favourable answer, and we would rather pay for the unfavourable one now than discover
-it later. Two lines of authority appear to us to cut against the mechanism we built, and we raise
-them so the analysis starts from the hard cases. **We have not verified either against a primary
-source and we are not asserting them as accurate; please treat both as leads to check, and tell us
-if we have them wrong.**
+it later. There is a Commission decision that appears to us to be close to on-point against the
+mechanism we built, and we would rather the analysis start there than arrive there.
 
-- We understand the Federal Trade Commission's 2013 Statement of Basis and Purpose accompanying the
-  COPPA Rule amendments to have addressed electronic-signature mechanisms and to have taken a
-  restrictive view of a signature captured by finger or stylus inside an application, on reasoning
-  about the assurance such a mark actually provides. If that is right, and if the reasoning extends
-  from a drawn mark to a typed name, it applies fairly directly to what we built.
-- We understand the Commission to have denied at least one application for approval of a new
-  consent method in the mid-2010s, in a matter we believe involved a company called AgeCheq, and to
-  have done so on grounds concerning whether the proposed method added assurance beyond an existing
-  account relationship. If our recollection of the reasoning is close, it is relevant to the
-  sub-question above about whether the Google/Supabase login is doing the legal work.
+In **January 2015 the FTC concluded its review of AgeCheq Inc.'s second proposed verifiable
+parental consent method**, a "Device-Signed Parental Consent Form," and declined to approve it. As
+we understand the decision, AgeCheq proposed that a parent register with an intermediary, complete
+a parental identity declaration, receive a code by text message, enter that code, and then digitally
+sign a certification that they owned the device. The Commission found the method was not reasonably
+calculated to ensure the person consenting was the parent, reasoning that a child could intercept
+the text-message code. It further noted that **in the 2013 Rule, digital signatures were
+specifically excluded from the enumerated VPC methods because a digital signature alone is not a
+reliable means of obtaining consent**, and that AgeCheq's device-signing step did not "add indicia
+of reliability to the digital signature."
 
-If either of these is real and reads as we expect, the likely answer to Section 1.3 is that we are
-outside the enumerated methods and should proceed by the 312.5(b)(3) route or replace the mechanism.
-We would find that a useful answer, not an unwelcome one.
+**Why we think this is the hard case for us, stated plainly.** The structure of AgeCheq's method and
+the structure of ours are close analogues. Both pair a signature artifact with a second step
+intended to bind that signature to a real adult: AgeCheq used possession of a device proven by an
+SMS code, we use an authenticated Google account session. If the Commission's objection was that a
+child in the same household can defeat the binding step, that objection appears at least as strong
+against ours, since a logged-in browser session on a shared family tablet is plausibly easier for a
+child to reach than an intercepted text message. And our signature artifact is a typed name, which
+we would expect to be treated as weaker than the digital signature the Commission was addressing,
+not stronger.
+
+**This is why we are asking Section 1.3 as two questions rather than one.** The AgeCheq reasoning
+does not only bear on whether we are inside the enumerated list at 312.5(b)(2), where we already
+expect the answer to be no. It bears on the fallback: it is an application of the general
+"reasonably calculated" standard at 312.5(b)(1) to a comparable belt-and-braces method, and the
+answer was no. If that reading is right, the sub-question above about whether the Google/Supabase
+login is doing the legal work has an adverse answer already sitting on it, and our position is
+weaker than the rest of this packet assumes.
+
+**Sourcing, so counsel can weigh our account appropriately.** We have not read the Commission's
+decision. We are working from the Future of Privacy Forum's June 2023 white paper *The State of
+Play: Is Verifiable Parental Consent Fit For Purpose?*, which describes the decision and quotes the
+"indicia of reliability" language. The underlying primary documents it cites are: *FTC Concludes
+Review of AgeCheq's Second Proposed COPPA Verifiable Parental Consent Method* (January 29, 2015);
+*AgeCheq Inc.'s Application Pursuant to Section 312.12(a)...* (October 1, 2014); and, for AgeCheq's
+earlier and separately denied first application, *FTC Concludes Review of AgeCheq Inc.'s Application
+for Approval of Verifiable Parental Consent Method* (November 21, 2014). **Please read the decision
+rather than our summary of it.** We also note the FPF paper predates the 2025 amendments, so its
+account of the Rule is the 2013 Rule; the Commission's reasoning about signature reliability is
+unlikely to have reversed, but we are not in a position to assert that.
+
+One related point from the same source that cuts the other way and that we record for completeness:
+AgeCheq's **first** application was denied for lack of novelty, because it combined methods already
+on the enumerated list (a financial transaction plus a printed, signed, returned declaration form).
+If that is right, combining two enumerated methods needs no approval at all, which may be relevant
+to the retrofit option below.
 
 ### 1.4 Why we ruled out two other FTC-recognized methods
 
@@ -362,6 +425,19 @@ opinion. If counsel concludes we sit outside the enumerated methods in 312.5(b)(
 than something that later overrides it. That would be a materially different and more urgent
 recommendation than the one this section anticipates, so please say so plainly if it is the
 conclusion.
+
+**A correction to that update, which narrows it.** The paragraph above still overstates the case, and
+we would rather fix it than have counsel spend time on our error. Approval under 312.5(b)(3) is not
+a precondition to using a non-enumerated method; an operator may rely on a method meeting the
+general standard at 312.5(b)(1) without seeking approval from anyone. So a Safe Harbor program does
+not "supply the answer" in the sense of making an otherwise-unusable implementation lawful. What it
+supplies is **certainty about a judgment we are currently making ourselves and carrying the risk
+of**. We understand, further, that no operator has submitted a VPC method for FTC approval since
+2015, which suggests the approval channel is little used and may be slow. The practical question we
+would like answered is therefore narrower than this section originally framed it: **is the residual
+risk of continuing to rely on our own 312.5(b)(1) judgment acceptable, or is it large enough that
+the certainty is worth buying?** The AgeCheq material in Section 1.3 is the main reason we now
+think that question has a real answer rather than an obvious one.
 
 ### 1.6 A threshold sub-question: is a separate signature step required at all?
 
