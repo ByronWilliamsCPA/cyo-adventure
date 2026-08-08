@@ -27,8 +27,16 @@ tags:
 > **Amended**: 2026-08-06 (owner decisions recorded on D2, D4, and D5; Safe Harbor sequencing
 > settled as counsel-first; D4's two rule-mandated artifacts confirmed to exist; counsel
 > engagement packaged in [counsel-engagement-brief.md](../../compliance/counsel-engagement-brief.md)).
+> **Amended**: 2026-08-08 (three corrections against primary rule text, and two requirements this
+> ADR had recorded as satisfied when they were not. Corrected: D1's "sign and submit
+> electronically" premise, D1's payment-card rejection, and D5's statement of the AI-training
+> obligation. Added: D6 data inventory and processing map, D7 the security program as a
+> continuing obligation, and a Sources and references section that splits primary authority from
+> practitioner commentary.)
 > **This does not flip the status.** Every decision below is an owner choice pending counsel
-> confirmation; only counsel closing D1 through D5 moves this ADR to Accepted.
+> confirmation; only counsel closing D1 through D5 moves this ADR to Accepted. **D6 and D7 are
+> owner-side obligations rather than counsel questions**, and are deliberately excluded from the
+> counsel engagement, which stays scoped at five questions.
 > **Relates to**: [ADR-008](./adr-008-public-app-store-launch.md) (Kids Category posture,
 > part 5), [ADR-009](./adr-009-supabase-platform.md) (processor, DPA), [ADR-016](./adr-016-recommendation-sharing-social-boundary.md)
 > (contact boundary), [ADR-017](./adr-017-ai-cover-art.md) (image-leg counterparties),
@@ -44,6 +52,9 @@ verifiable-parental-consent mechanism, the audience classification, the launch g
 (US-only first vs EU/UK in scope, which decides whether GDPR-K and the UK AADC bind at
 launch), the public artifacts, and, since the amended COPPA Rule passed its 2026-04-22
 compliance date, whether any training corpus may ever contain child-originated data (D5).
+D6 and D7, added 2026-08-08, are owner-side obligations rather than counsel questions: a
+complete data inventory with a purpose and a provenance per element, and the security program
+treated as a continuing obligation with evidence rather than as a document that exists.
 
 ## Context
 
@@ -63,12 +74,22 @@ passed. Nothing changes for the internal tier, but the Track 2 launch gate (ADR-
 verify against the amended rule text, not the 2013 rule this ADR was originally drafted
 against. The amendments relevant here: biometric identifiers (facial templates,
 voiceprints) join the definition of personal information with no temporary-use exception;
-using or disclosing children's personal information to train AI models requires its own
-separate, unbundled verifiable parental consent (new D5 below); operators must maintain a
+16 CFR 312.5(a)(2) requires a separate, unbundled verifiable parental consent for
+**disclosing** children's personal information to third parties where that disclosure is not
+integral to the requested service, with AI training discussed as an example of such a
+disclosure (D5 below, as corrected 2026-08-08); operators must maintain a
 written Information Security Program and a published written data-retention policy with
-hard deletion timelines (folded into D4 below). Dates and rule text above should be
-re-confirmed against the Federal Register during the counsel review that closes this ADR;
-they entered this document from secondary sources.
+hard deletion timelines (D4 and the new D7 below).
+
+**Citation status, updated 2026-08-08.** The Federal Register document number `2025-05904` was
+resolved directly against the Federal Register's public API on 2026-08-08 and corresponds to a
+COPPA Rule document published at **90 Fed. Reg. 16918**; that volume-and-page citation is now
+recorded here as verified against a primary source rather than a secondary one. **The dates are
+not.** The 2025-04-22 publication, 2025-06-23 effective, and 2026-04-22 full-compliance dates
+above still entered this document from secondary sources and remain on the Validation checklist
+for counsel confirmation, as does the substance of each amendment summarised above. Verifying that
+a citation resolves is not the same as verifying what the cited text says, and this ADR should not
+be read as claiming the latter.
 
 ## Already decided (consolidated; sources binding)
 
@@ -188,6 +209,24 @@ program may approve a non-enumerated method meeting the general standard in 312.
 that may be the route by which the shipped implementation becomes usable rather than
 replaced. `docs/compliance/counsel-engagement-brief.md` Sections 1.1, 1.3, and 1.5 carry the
 corrected framing and the questions actually put to counsel.
+
+**The payment-card rejection above is withdrawn (2026-08-08), and the reason it was made no longer
+exists.** The 2026-07-20 decision ruled out a payment-card transaction partly on PCI scope and
+partly because the app is not monetized, treating a payment-based consent method as something that
+would force a monetization decision the owner had not made. Reading 16 CFR 312.5(b)(2)(ii) directly
+on 2026-08-08, the method requires a card or online payment system used "in connection with a
+transaction" that notifies the primary account holder of each discrete transaction; there is no
+requirement that the transaction be **monetary**, and the word "monetary" appears to have been
+removed from this provision by the 2025 amendments. If that reading holds, a zero-charge card
+verification qualifies, the "we are not monetized" half of the rejection was never a valid
+objection, and the paid-tier/free-tier framing that the 2026-07-20 entry says is "superseded" was
+being superseded for the wrong reason. The PCI half is also weaker than recorded, since a hosted
+payment page keeps card data out of our systems. **Consequence for this decision: (b)(2)(ii) is
+back on the table as a candidate enumerated method and may be the cheapest one available**, which
+matters precisely because the chosen mechanism's own enumerated status is now in doubt. This is put
+to counsel at `counsel-engagement-brief.md` Section 1.4. Nothing here reopens the separate,
+still-valid objection to coupling consent to a future product-pricing decision; it observes that
+the objection no longer forces a choice, because no charge is required.
 
 **Flagged for counsel**: whether a typed-name attestation captured inside our own application
 is an enumerated 312.5(b)(2) method **at all** is the single highest-risk open question in
@@ -323,6 +362,30 @@ or develop AI models as non-integral to the service: it requires its own separat
 verifiable parental consent, unbundled from the core-service consent, and refusing it
 cannot cost the child access to the core service.
 
+**Correction, 2026-08-08: the sentence above overstates the rule, and it should not be relied on
+as written.** It was drafted from secondary practitioner commentary, not from the rule text, and
+the commentary's framing is broader than what the text supports. Reading 16 CFR 312.5(a)(2)
+directly, the separate-consent obligation is anchored to **disclosure to third parties** that is
+not integral to the service the child requested. AI training appears in the Commission's
+explanatory material as a worked example of such a non-integral disclosure, rather than as a
+free-standing rule reaching every first-party use of children's data for model development. The
+practical difference matters to this project: on the narrow reading, D5 is a constraint about
+**who we send data to**, which puts it in the same family as the counterparty list in "already
+decided" item 6; on the broad reading it is additionally a constraint about **what we do in
+house**. Whether an operator training its own model, in house, on data it already lawfully
+collected falls inside the provision at all is not something this ADR should assert in either
+direction.
+
+**Why the decision below is unaffected.** The corpus constraint recorded in this decision excludes
+child-originated data from every training and evaluation set, which satisfies the broad reading and
+the narrow one at the same time. The correction therefore changes what this ADR *claims about the
+law*, not what the project *does*, and no engineering work is reopened by it. The reason to fix it
+anyway is that a future decision to relax the constraint would be priced against the wrong rule,
+and because this ADR is an input to the counsel engagement, where an overstated premise costs
+billable time to unwind. The question is put to counsel at `counsel-engagement-brief.md`
+Section 2.3, and the underlying claim is already on the Validation checklist below as a
+secondary-sourced fact needing Federal Register confirmation.
+
 This intersects one live plan directly: the proposed self-labeled moderation corpus (human
 review decisions collected as future fine-tuning and evaluation data for the moderation
 reviewer, the Gate 3/4 follow-on from the 2026-08-01 datasets research). Whether the
@@ -359,6 +422,93 @@ independent, default-off opt-in whose refusal cannot affect service access) must
 confirmation that the segregated-consent obligation does not trigger under the constraint,
 not a design question.
 
+### D6: A complete data inventory and processing map (added 2026-08-08)
+
+**These two decisions, D6 and D7, are owner-side obligations, not counsel questions.** The counsel
+engagement brief scopes itself to five questions and must stay at five;
+neither of these is added to it. They are recorded here because both are requirements this ADR was
+treating as satisfied by documents that do not actually satisfy them.
+
+**The requirement.** A single authoritative map of every data element the system holds, recording
+for each one: what it is, **from whom it is collected** (the child directly, the guardian about the
+child, staff, or the generation pipeline), **why it is collected** (the specific product function
+that needs it), who it is disclosed to, how long it is kept, and how it is deleted. The "from whom"
+and "why" columns are the load-bearing ones and are the ones currently missing.
+
+**Why this is a requirement and not documentation hygiene.** Four separate obligations take this map
+as their input, and none of them can be discharged correctly without it:
+
+- **16 CFR 312.4(d)**, the content of the notice published on the service, is a description of what
+  is collected and why.
+- **16 CFR 312.4(b) and (c)**, the direct notice to the parent, has its own content list. This ADR
+  had not distinguished it from the published notice at all; the gap is recorded in
+  `counsel-engagement-brief.md` Section 3.
+- **16 CFR 312.10**, the retention obligation, requires a business need and a deletion timeline per
+  class of children's data. D4 already records that three classes carry no window (`UW-N07`). A
+  window cannot be justified without a stated purpose, so the missing "why" column is upstream of
+  that residual rather than a separate problem.
+- **The Rule's necessity limit**, which bars conditioning a child's participation on collecting more
+  personal information than is reasonably necessary to participate, is unassessable per element
+  until each element has a stated purpose. Today we could not answer "why do we hold this?" for
+  every field from any single document.
+
+**Why the existing documents do not already do this.** Four documents each hold part of it and no
+document reconciles them: `privacy-model.md` holds the child-linked data classification,
+`records-of-processing-activities.md` holds a per-activity view, `data-retention-policy.md` holds
+per-category windows, and `processor-dpa-checklist.md` holds counterparties. They are separately
+maintained, and nothing checks that they agree with each other or with the schema. The specific
+column no document has is provenance: whether a given element was collected **from the child** or
+**from the guardian about the child**. That distinction is not cosmetic. It is what Question 1A in
+the counsel brief turns on, because information an operator collects from a parent is treated
+differently from information collected online from a child, and most of what this product holds
+about a child is guardian-entered.
+
+**Decision needed:** owner confirms the map is a P7-08 deliverable, names the single document that
+owns it (extending `records-of-processing-activities.md` is the cheapest option, since it is
+already per-activity and already lists recipients), and rules on whether it is generated from the
+ORM models or maintained by hand. Generated is strongly preferable: a hand-maintained inventory
+drifts from the schema silently, and this ADR already carries one instance of exactly that failure
+in D4's three windowless classes.
+
+### D7: The Information Security Program as a continuing obligation (added 2026-08-08)
+
+**The requirement.** 16 CFR 312.8 places a substantive, continuing security obligation on the
+operator: reasonable procedures to protect the confidentiality, security, and integrity of
+children's personal information, including due diligence over the service providers that receive
+it. The amended rule's addition is that the program be **written**.
+
+**What this ADR currently gets wrong about it.** D4 lists the written Information Security Program
+as one of the "public artifacts," alongside the privacy notice and the retention policy, and
+records it as complete because the document exists. Two problems follow from that placement:
+
+1. **It is not a public artifact.** The retention policy is published because the Rule requires the
+   retention practice to appear in the online notice. The security program is an internal document.
+   Filing them under one heading invites publishing something that describes our controls to
+   anyone who asks, which is a security decision nobody has actually made. D4's list should be read
+   as "artifacts counsel reviews," not "artifacts we publish," and the two are different sets.
+2. **A document is not a program.** `information-security-program.md` names an annual
+   risk-assessment cadence, a vulnerability-testing cadence, vendor due diligence, and an owner.
+   D4 records those four elements as present, which they are, **as text**. Nothing in this
+   repository records that any of those cadences has run. An obligation discharged by writing that
+   we will do something annually is not discharged until the year's instance exists and is
+   evidenced.
+
+**A concrete gap this reframing surfaces.** The service-provider set changed materially on
+2026-07-28: enabling zero-data-retention for the frontier vendors moved generation traffic onto
+**AWS Bedrock, Microsoft Azure, and Google Vertex** as OpenRouter sub-processors (see "already
+decided" item 6). The security program's vendor due-diligence section predates that change. So the
+program document currently describes diligence over a counterparty list that is no longer the
+counterparty list. That is precisely the failure mode a written-but-unexercised program produces,
+and it argues for treating vendor-set changes as a trigger that re-runs diligence rather than as a
+documentation update.
+
+**Decision needed:** owner confirms (a) that the security program is tracked as a continuing
+obligation with dated evidence per cadence rather than as a completed artifact, (b) whether it is
+internal or published, and (c) that a change to the service-provider set is itself a trigger for
+re-running vendor diligence. Item (c) has a live instance waiting on it.
+
+## Consequences
+
 - ✅ Compliance stops being folklore spread over four documents; Phase 7 becomes the
   implementation of this ADR and P7-08 its checklist.
 - ✅ The already-decided list above is now contestable and testable (deletion E2E,
@@ -367,6 +517,13 @@ not a design question.
   Proposed is itself the tracking signal.
 - ⚠️ Counsel review is a real dependency and cost; the recommendations above are
   design positions, not legal conclusions.
+- ⚠️ **Added 2026-08-08.** Three claims in this ADR were restated from secondary commentary as
+  though they were rule text, and two of them (D1's enumerated-method premise, D1's payment-card
+  rejection) drove real engineering decisions before anyone read the provision. The Sources and
+  references section below exists to make that failure mode harder to repeat, but it is a
+  convention rather than a control: nothing in CI checks whether a legal claim in this repository
+  is sourced. Treat every unattributed legal assertion in the compliance document set as
+  unverified until it carries a primary citation.
 
 ## Validation
 
@@ -377,14 +534,76 @@ counsel receives is assembled at
 every unchecked box below is external: retaining counsel and getting rulings. No checkbox is
 ticked by internal work alone, which is why none are ticked here.
 
+**Correction to that note, 2026-08-08: the owner-side prerequisites are not done.** The claim above
+was true of D1 through D5 and remains true of them. It was wrong as a claim about the ADR as a
+whole, because two obligations had been recorded as satisfied by documents that do not satisfy them
+(D6, D7) and were therefore invisible to a checklist derived from the D-list. The lesson worth
+keeping is that "every remaining item is external" was itself the signal to re-check, since an
+internal register that reports zero internal work left is more likely to be incomplete than
+finished.
+
 - [ ] D1-D5 closed with counsel; status flipped to Accepted with the choices recorded.
 - [ ] Amended-rule facts (dates, biometric definition, AI-training consent, WISP and
       retention-policy mandates) re-confirmed against the Federal Register text during
-      counsel review; they entered this ADR from secondary sources.
+      counsel review; they entered this ADR from secondary sources. **The 90 Fed. Reg. 16918
+      citation is confirmed as of 2026-08-08 (see Context); nothing about the amendments' content
+      is.**
+- [ ] **D6**: the data inventory and processing map exists in one named document, carries a
+      provenance column (collected from the child vs from the guardian) and a purpose column for
+      every element, and is reconciled against the ORM models rather than maintained by hand.
+- [ ] **D7**: the security program is tracked as a continuing obligation with dated evidence for
+      each cadence it names, its internal-vs-published status is ruled on, and vendor diligence has
+      been re-run over the service-provider set as it stands after the 2026-07-28 change (AWS
+      Bedrock, Microsoft Azure, Google Vertex).
+- [ ] State children's-privacy and age-appropriate-design statutes are scoped. D3 confirms a
+      US-only launch, which removes GDPR-K and the UK AADC but does not remove US state law; no
+      decision on that exists anywhere in this ADR (see Sources and references).
 - [ ] P7-08 checklist maps one-to-one to the "already decided" list and the closed
       decisions.
 - [ ] Deletion E2E (family erasure incl. Apple revocation) and the kid-context SDK audit
       pass before submission.
+
+## Sources and references
+
+Recorded 2026-08-08. This list exists because several claims in this ADR entered it from
+secondary commentary and were restated as if they were rule text, twice with material
+consequences (see the D1 and D5 corrections above). The split below is the point of the section:
+**a claim sourced from the primary column can be relied on here; a claim sourced from the
+secondary column is a lead, and belongs in this ADR only with its provenance attached.**
+
+### Primary sources
+
+| Source | What it is authoritative for | Retrieval note |
+|---|---|---|
+| [16 CFR 312.5, Parental consent](https://www.law.cornell.edu/cfr/text/16/312.5) (Cornell Legal Information Institute) | The enumerated VPC methods at (b)(2), the general standard at (b)(1), the safe-harbor approval route at (b)(3), and the prior-consent exceptions at (c). | Cornell is an unofficial reproduction. It was used on 2026-08-08 because `ecfr.gov` redirected automated retrieval and `ftc.gov` returned HTTP 403. **Counsel should confirm against the eCFR or the printed CFR**, not against this copy. |
+| [Federal Register doc. 2025-05904](https://www.federalregister.gov/d/2025-05904), COPPA Rule amendments, 90 Fed. Reg. 16918 | The 2025 amendments themselves: what changed, the Commission's stated reasoning, and the Statement of Basis and Purpose. | The document number was resolved against the Federal Register public API on 2026-08-08, which is how the 90 Fed. Reg. 16918 citation was confirmed. The API returns metadata; **the text of the amendments has not been read in full by anyone on this project.** |
+| [Apple Developer: Kids Apps](https://developer.apple.com/app-store/kids-apps/) | Platform requirements for the Kids Category, which is the basis of D2's child-directed declaration. | Authoritative for Apple's rules, which are contractual rather than legal. Apple's requirements are stricter than COPPA in places; satisfying one does not satisfy the other. |
+
+### Secondary sources (practitioner commentary; leads, not authority)
+
+These are useful for spotting what changed and what practitioners think it means. None should be
+cited in this ADR as a statement of the rule.
+
+- **"FTC's COPPA Rule changes include AI training consent requirement"** (Data Protection Report).
+  **Read this entry together with the D5 correction above.** This ADR's original D5 framing, that AI
+  training requires its own separate consent as a category of use, matches this article's headline
+  proposition and does not match what 16 CFR 312.5(a)(2) says, which is anchored to third-party
+  disclosure. This is the clearest example in the project of a secondary source's framing being
+  absorbed as rule text, and it is kept in this list for that reason rather than despite it.
+- **"New COPPA Obligations for AI Technologies Collecting Data from Children"** (Akin).
+- **"Children's Online Privacy in 2025: The Amended COPPA Rule"** (Loeb & Loeb).
+- **"State Kids' Privacy Laws: 2025 Review and 2026 Outlook"** (Keller and Heckman). **Relevant to a
+  gap in D3.** D3 confirms a US-only launch and treats that as removing the geography question by
+  putting GDPR-K and the UK AADC out of scope. It does not follow that no sub-national law applies:
+  a US-only launch is exactly the posture in which state children's-privacy and age-appropriate-design
+  statutes bind. This ADR records no decision on them. That is an open gap, not a settled scope
+  boundary, and it is not currently in the counsel engagement.
+- **"Children's Privacy Mid-Year Update 2026"** (Mayer Brown).
+
+URLs are omitted for the five commentary items above because they were supplied by title and have
+not been resolved from this repository; add a URL only after fetching it, since an unresolved link
+would fail the link-check gate and, more importantly, an invented one would repeat the sourcing
+failure this section exists to prevent.
 
 ## Related
 
