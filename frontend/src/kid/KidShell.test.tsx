@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest'
 
 import { KidShell } from './KidShell'
+import { useKidOutletContext } from './kidOutletContext'
 import { KID_PICKER_PATH } from '../routes'
 import { ThemeProvider } from '../theme/ThemeProvider'
 import { _resetKidProfileFetch } from './useKidProfile'
@@ -151,3 +152,136 @@ describe('KidShell band-tokens.css attributes', () => {
     expect(document.querySelector('.kid-shell')).not.toHaveAttribute('data-reduce-motion')
   })
 })
+
+const LUNA = {
+  id: 'char-1',
+  profile_id: 'p1',
+  name: 'Luna',
+  archetype: 'scout',
+  look: 'avatar_01',
+  is_active: true,
+  books_completed: 0,
+  attributes: {},
+  seed_var_state: {},
+  created_at: '2026-08-01T00:00:00Z',
+  retired_at: null,
+}
+
+/**
+ * Routes the shell's GETs by URL so the character lookup can be varied
+ * independently of the profiles lookup every one of these renders also
+ * performs. `characters` may be a value to resolve, a rejection, or a
+ * never-settling promise (the in-flight case).
+ */
+function mockCharacterList(characters: { resolve?: unknown; reject?: Error; pending?: true }) {
+  mockGet.mockImplementation((url: string) => {
+    if (url === '/v1/characters') {
+      if (characters.pending) return new Promise(() => {})
+      if (characters.reject !== undefined) return Promise.reject(characters.reject)
+      return Promise.resolve({ data: { characters: characters.resolve } })
+    }
+    return Promise.resolve({ data: { profiles: PROFILES } })
+  })
+}
+
+/**
+ * The first-run character gate itself, mounted through KidShell rather than
+ * through the two character components in isolation. This is the suite
+ * KidShell.tsx's gate `#VERIFY` cites: deleting the gate (rendering the
+ * Outlet unconditionally) must fail the positive case below, and loosening
+ * it (gating on anything other than `status === 'none'`) must fail the
+ * fail-safe cases. The component tests in src/characters/ never mount
+ * KidShell, so none of them can catch either change.
+ */
+describe('KidShell first-run character gate', () => {
+  let errorSpy: MockInstance
+
+  beforeEach(() => {
+    errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    errorSpy.mockRestore()
+  })
+
+  it('shows the creator instead of the library when the profile has no character', async () => {
+    mockCharacterList({ resolve: [] })
+    renderShellAt('/library/p1')
+
+    expect(await screen.findByRole('heading', { name: /Make your character/i })).toBeInTheDocument()
+    // Both halves matter: the creator appearing is not the claim on its own,
+    // since an unconditional Outlet would render the library underneath it.
+    expect(screen.queryByText('Library Page')).not.toBeInTheDocument()
+  })
+
+  it('renders the library Outlet when the profile already has an active character', async () => {
+    mockCharacterList({ resolve: [LUNA] })
+    renderShellAt('/library/p1')
+
+    expect(await screen.findByText('Library Page')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /Make your character/i })).not.toBeInTheDocument()
+  })
+
+  it('renders the library Outlet while the character lookup is still in flight', async () => {
+    mockCharacterList({ pending: true })
+    renderShellAt('/library/p1')
+
+    // The fail-safe: 'loading' is not 'none'. A gate that treated "we do not
+    // know yet" as "no character" would bounce a returning child into
+    // re-creating one on every slow connection.
+    expect(await screen.findByText('Library Page')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /Make your character/i })).not.toBeInTheDocument()
+  })
+
+  it('renders the library Outlet when the character lookup fails', async () => {
+    mockCharacterList({ reject: new Error('characters down') })
+    renderShellAt('/library/p1')
+
+    // Same fail-safe on the other unknown: a failed lookup must not be read
+    // as an empty one. useActiveCharacter maps an unparseable or failed
+    // response to 'error' precisely so this branch cannot be reached.
+    expect(await screen.findByText('Library Page')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /Make your character/i })).not.toBeInTheDocument()
+  })
+
+  it('does not look up a character at all off the library route', async () => {
+    mockCharacterList({ resolve: [] })
+    renderShellAt('/read/p1/s1/1')
+
+    await screen.findByText('Reader Page')
+    // The gate is library-route-only, so the reader route must not pay for
+    // the lookup, and a reader-route child must never see the creator even
+    // with an empty character list.
+    expect(mockGet.mock.calls.filter((call) => call[0] === '/v1/characters')).toHaveLength(0)
+    expect(screen.queryByRole('heading', { name: /Make your character/i })).not.toBeInTheDocument()
+  })
+
+  it('hands the resolved character to the library route through the Outlet', async () => {
+    mockCharacterList({ resolve: [LUNA] })
+    // A leaf that reads the context rather than the usual inert stub: this
+    // is the half of the de-duplication that lives in the shell. Its other
+    // half (LibraryPage consuming this instead of fetching again) is
+    // asserted in LibraryPage.test.tsx.
+    render(
+      <ThemeProvider>
+        <MemoryRouter initialEntries={['/library/p1']}>
+          <Routes>
+            <Route element={<KidShell />}>
+              <Route path="library/:profileId" element={<CharacterContextProbe />} />
+            </Route>
+          </Routes>
+        </MemoryRouter>
+      </ThemeProvider>
+    )
+
+    expect(await screen.findByText('context character: Luna')).toBeInTheDocument()
+    // One lookup for the route, not one per consumer.
+    expect(mockGet.mock.calls.filter((call) => call[0] === '/v1/characters')).toHaveLength(1)
+  })
+})
+
+function CharacterContextProbe() {
+  const context = useKidOutletContext()
+  const state = context?.activeCharacter?.state
+  return <p>context character: {state?.status === 'ready' ? state.character.name : 'none'}</p>
+}

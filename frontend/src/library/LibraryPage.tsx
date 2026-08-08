@@ -8,6 +8,7 @@ import { useActiveCharacter } from '../characters/useActiveCharacter'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
+import { useKidOutletContext } from '../kid/kidOutletContext'
 import { EMPTY_PROGRESS, makeProgressApi, type ProgressSummary } from '../kid/progressApi'
 import { Mascot } from '../kid/Mascot'
 import {
@@ -102,7 +103,18 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   // of the shelf itself, the same best-effort-sibling shape as `progress`
   // above: this widget renders nothing unless the fetch resolves to
   // 'ready', so it can never gate or delay the shelf.
-  const activeCharacter = useActiveCharacter(profileId)
+  //
+  // KidShell already resolves this for the library route and hands it down
+  // through the Outlet, so the routed kid library reuses that one lookup
+  // instead of issuing a duplicate GET /v1/characters. The local hook below
+  // stays for the mounts that have no KidShell above them (the guardian
+  // preview-as-child route), and is passed `undefined` when the shell
+  // supplied one, which makes it fetch nothing at all. Both branches must
+  // be present unconditionally: a hook cannot be called conditionally.
+  const kidOutlet = useKidOutletContext()
+  const shellActiveCharacter = kidOutlet?.activeCharacter ?? null
+  const ownActiveCharacter = useActiveCharacter(shellActiveCharacter ? undefined : profileId)
+  const activeCharacter = shellActiveCharacter ?? ownActiveCharacter
   const [showCharacterPicker, setShowCharacterPicker] = useState(false)
   // W3.2: the Endings Gallery / "Every path walked!" data source, fetched
   // independently of the shelf (best-effort, like history/recommendations):

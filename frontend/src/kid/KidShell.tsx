@@ -7,6 +7,8 @@ import { KidNav } from './KidNav'
 import { useKidProfile } from './useKidProfile'
 import './kid.css'
 
+import type { KidOutletContext } from './kidOutletContext'
+
 /**
  * Layout chrome for the kid surface (wireframe section 2: fully separate from
  * the guardian surface, no shared nav or auth UI bridges them).
@@ -35,10 +37,15 @@ import './kid.css'
  * else, so a lookup that is still in flight or failed cannot be
  * misread as "no character" and bounce a returning child into re-creating
  * one; see useActiveCharacter.ts's own defensiveness note.
- * #VERIFY: KidShell.test.tsx's existing library-route assertions keep
- * passing unmodified (they never produce a well-formed empty character
- * list), plus the character-gate coverage in CharacterPicker.test.tsx /
- * CharacterCreator.test.tsx for the creator itself.
+ * #VERIFY: KidShell.test.tsx's "KidShell first-run character gate" suite,
+ * every case of which mounts KidShell itself, so deleting the gate fails
+ * them: "shows the creator instead of the library when the profile has no
+ * character" (the positive 'none' arm: creator present AND the library
+ * Outlet absent), "renders the library Outlet when the profile already has
+ * an active character" ('ready'), "renders the library Outlet while the
+ * character lookup is still in flight" ('loading'), and "renders the
+ * library Outlet when the character lookup fails" ('error'), the last two
+ * pinning the deliberate fail-safe.
  */
 export function KidShell() {
   const location = useLocation()
@@ -47,6 +54,15 @@ export function KidShell() {
   const navProfileId = libraryMatch?.params.profileId
   const profile = useKidProfile(navProfileId ?? readMatch?.params.profileId)?.profile ?? null
   const activeCharacter = useActiveCharacter(libraryMatch ? navProfileId : undefined)
+  // Handed to the library route so it reuses this one lookup instead of
+  // issuing its own identical GET /v1/characters. Null off the library
+  // route, where this shell never fetches one in the first place. Not
+  // memoized: `useActiveCharacter` returns a fresh result object on every
+  // render anyway, so a useMemo here would signal a stability it cannot
+  // deliver. No consumer puts this value in a dependency array.
+  const outletContext: KidOutletContext = {
+    activeCharacter: libraryMatch ? activeCharacter : null,
+  }
 
   // #EDGE: accessibility: while the profile lookup is in flight or has failed,
   // data-reduce-motion is unset and the guardian-set app-level reduce_motion
@@ -65,7 +81,7 @@ export function KidShell() {
         {libraryMatch && navProfileId && activeCharacter.state.status === 'none' ? (
           <CharacterCreator profileId={navProfileId} onCreated={activeCharacter.refresh} />
         ) : (
-          <Outlet />
+          <Outlet context={outletContext} />
         )}
       </main>
     </div>

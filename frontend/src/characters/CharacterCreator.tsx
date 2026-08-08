@@ -1,5 +1,5 @@
 import { isAxiosError } from 'axios'
-import { useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 
 import { Button } from '@ds/components/Button'
 
@@ -11,6 +11,7 @@ import {
   ARCHETYPE_ROSTER,
   CHARACTER_LOOKS,
   CHARACTER_NAME_MAX_LENGTH,
+  LOOK_LABELS,
   LOOK_SWATCHES,
   makeCharactersApi,
   type CharacterArchetype,
@@ -48,6 +49,19 @@ function nameTooLongMessage(): string {
   return `That name is a bit long. Try ${CHARACTER_NAME_MAX_LENGTH} letters or fewer.`
 }
 
+const NAME_ERROR_ID = 'character-name-error'
+
+/**
+ * The accessible name for one look option: its position, then the property
+ * that actually distinguishes it. Without the second half the option is
+ * announced only by an ordinal, since the swatch itself is an aria-hidden
+ * emoji whose spoken name belongs to the platform, not to this app.
+ */
+function lookLabel(look: string, index: number): string {
+  const described = LOOK_LABELS[look]
+  return described ? `Look ${index + 1}, ${described}` : `Look ${index + 1}`
+}
+
 /**
  * The once-per-profile "make your character" form. Visually a sibling of
  * ProfilePickerPage's tile grid (large tappable cards for archetype and
@@ -74,6 +88,21 @@ export function CharacterCreator({ profileId, onCreated }: CharacterCreatorProps
   const [choiceError, setChoiceError] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  // Matches the same guard in CharacterPicker.tsx and useActiveCharacter.ts:
+  // every post-await state write in this module is gated on the component
+  // still being mounted. A child who taps "Start my adventure" and then
+  // leaves (KidShell swaps this creator for the library the moment the
+  // profile has a character) would otherwise land a setState on an unmounted
+  // tree. Harmless in React 19, which dropped the warning, but the point is
+  // that the three async surfaces in this feature behave the same way.
+  const isMountedRef = useRef(true)
+
+  useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -113,11 +142,13 @@ export function CharacterCreator({ profileId, onCreated }: CharacterCreatorProps
         archetype,
         look,
       })
+      if (!isMountedRef.current) return
       setSubmitting(false)
       onCreated?.(character)
     } catch (err) {
-      setSubmitting(false)
       logApiError('character create failed', err)
+      if (!isMountedRef.current) return
+      setSubmitting(false)
       const serverMessage = extractNamingViolationMessage(err)
       if (serverMessage) {
         setSubmitError(serverMessage)
@@ -144,6 +175,11 @@ export function CharacterCreator({ profileId, onCreated }: CharacterCreatorProps
 
       <div className="character-creator__field">
         <label htmlFor="character-name">What&apos;s their name?</label>
+        {/* role="alert" announces the message once, when it appears. That
+            leaves a child who tabs back to the field afterwards with no
+            description of what is wrong, so the field also points at the
+            message programmatically (and reports itself invalid) for as long
+            as the error stands. */}
         <input
           id="character-name"
           className="character-creator__name-input"
@@ -151,6 +187,8 @@ export function CharacterCreator({ profileId, onCreated }: CharacterCreatorProps
           value={name}
           maxLength={64}
           autoComplete="off"
+          aria-invalid={nameError !== null}
+          aria-describedby={nameError ? NAME_ERROR_ID : undefined}
           onChange={(event) => {
             setName(event.target.value)
             if (nameError) setNameError(null)
@@ -158,7 +196,7 @@ export function CharacterCreator({ profileId, onCreated }: CharacterCreatorProps
         />
       </div>
       {nameError ? (
-        <p role="alert" className="character-creator__name-error">
+        <p id={NAME_ERROR_ID} role="alert" className="character-creator__name-error">
           {nameError}
         </p>
       ) : null}
@@ -210,11 +248,16 @@ export function CharacterCreator({ profileId, onCreated }: CharacterCreatorProps
                   : 'character-tile character-tile--look'
               }
             >
+              {/* The visible text stays the bare ordinal (the swatch itself
+                  is the design), but the accessible name names the color, so
+                  the choice does not rest on how a given platform happens to
+                  announce the emoji. */}
               <input
                 type="radio"
                 name="character-look"
                 value={option}
                 checked={look === option}
+                aria-label={lookLabel(option, index)}
                 onChange={() => {
                   setLook(option)
                   setChoiceError(null)

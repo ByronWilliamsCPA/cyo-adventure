@@ -1,7 +1,13 @@
 import type { AxiosInstance } from 'axios'
 import { describe, expect, it, vi } from 'vitest'
 
-import { ARCHETYPE_ROSTER, makeCharactersApi } from './characterApi'
+import {
+  ARCHETYPE_ROSTER,
+  CHARACTER_LOOKS,
+  LOOK_LABELS,
+  LOOK_SWATCHES,
+  makeCharactersApi,
+} from './characterApi'
 
 import type { CharacterView } from '../client/types.gen'
 
@@ -37,6 +43,26 @@ describe('ARCHETYPE_ROSTER', () => {
       'healer',
       'wildheart',
     ])
+  })
+})
+
+describe('LOOK_LABELS', () => {
+  // #VERIFY citation: characterApi.ts's LOOK_LABELS docstring. A look whose
+  // label is missing degrades to a bare ordinal ("Look 7"), which names the
+  // option without describing it, so a look added to CHARACTER_LOOKS without
+  // a matching label must fail here rather than ship as an unannounced
+  // choice.
+  it('gives every look id both a swatch and a spoken label', () => {
+    expect(CHARACTER_LOOKS).toHaveLength(12)
+    for (const look of CHARACTER_LOOKS) {
+      expect(LOOK_SWATCHES[look], `swatch for ${look}`).toBeTruthy()
+      expect(LOOK_LABELS[look], `label for ${look}`).toBeTruthy()
+    }
+  })
+
+  it('gives each look a distinct label, so no two read the same aloud', () => {
+    const labels = CHARACTER_LOOKS.map((look) => LOOK_LABELS[look])
+    expect(new Set(labels).size).toBe(labels.length)
   })
 })
 

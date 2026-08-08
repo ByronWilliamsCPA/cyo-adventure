@@ -52,7 +52,8 @@
 
 .character-creator__name-input:focus-visible {
   border-color: var(--color-amber, #e07f2e);
-  outline: none;
+  outline: 3px solid var(--color-amber-deep, #c17b2a);
+  outline-offset: 2px;
 }
 
 .character-creator__name-error,
@@ -154,11 +155,23 @@
   box-shadow: var(--shadow-md, 0 4px 12px rgba(44, 26, 14, 0.14));
 }
 
+/* The focus ring is the ONLY thing here that may carry focus on its own.
+   The border-color and box-shadow below are identical to
+   .character-tile--selected, so on an already-selected tile they signal
+   nothing new, and the lift is nulled under both reduce-motion rules at the
+   bottom of this file. That left a reduce-motion child with no perceptible
+   focus indicator at all on the tile they are most likely to focus first.
+   An outline is immune to both: it is drawn regardless of transform, and the
+   selected state never draws one. 3px amber-deep at a 3px offset matches the
+   design system's own focus treatment (Button.css), which uses amber-deep
+   rather than bright amber because only amber-deep clears the 3:1 non-text
+   contrast minimum on parchment. */
 .character-tile:focus-visible {
   transform: translateY(-3px);
   border-color: var(--color-amber, #e07f2e);
   box-shadow: var(--shadow-md, 0 4px 12px rgba(44, 26, 14, 0.14));
-  outline: none;
+  outline: 3px solid var(--color-amber-deep, #c17b2a);
+  outline-offset: 3px;
 }
 
 @media (hover: hover) {
@@ -191,6 +204,17 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--space-3, 0.75rem);
+}
+
+/* The <li> is the grid cell; the tile button inside it has to fill that cell
+   or the tiles stop being uniform, which they were when the buttons were
+   themselves the grid children. */
+.character-picker__grid-item {
+  display: flex;
+}
+
+.character-picker__grid-item > .character-tile {
+  flex: 1;
 }
 
 .character-picker__loading {

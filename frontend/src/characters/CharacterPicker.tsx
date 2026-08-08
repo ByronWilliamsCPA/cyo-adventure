@@ -187,43 +187,52 @@ export function CharacterPicker({ profileId, onActiveCharacterChange }: Characte
   return (
     <div className="character-picker">
       <h2 className="character-picker__heading">Choose your character</h2>
-      <div className="character-picker__grid" role="radiogroup" aria-label="Choose your character">
+      {/* A plain list of toggle buttons, deliberately NOT a radiogroup. The
+          ARIA radio pattern promises APG keyboard behavior (arrow keys move
+          the selection, the group is a single tab stop) that this component
+          does not implement: every tile is its own tab stop and there is no
+          arrow-key handling. Rather than build a roving-tabindex model for
+          two-to-a-handful of tiles, the markup states what the widget
+          actually is, a list of independently focusable pressed/unpressed
+          toggles, so the announced contract matches the real behavior. */}
+      <ul className="character-picker__grid" aria-label="Choose your character">
         {characters.map((character) => {
           const isActive = character.is_active
           const busy = activatingId === character.id
           return (
-            <button
-              key={character.id}
-              type="button"
-              role="radio"
-              aria-checked={isActive}
-              aria-busy={busy || undefined}
-              disabled={busy}
-              className={isActive ? 'character-tile character-tile--selected' : 'character-tile'}
-              onClick={() => {
-                if (!isActive) activate(character.id)
-              }}
-            >
-              {/* Avatar-led, mirroring ProfilePickerPage's AvatarCircle as the
-                  tile's primary visual identifier: decorative (aria-hidden)
-                  since the visible name text below already carries the
-                  accessible name, so the swatch is never announced twice. */}
-              <span className="character-tile__avatar" aria-hidden="true">
-                {LOOK_SWATCHES[character.look]}
-              </span>
-              <span className="character-tile__name">{character.name}</span>
-              <span className="character-tile__hint">{archetypeLabel(character.archetype)}</span>
-              {/* aria-checked above already carries the selected state to
-                  assistive tech; this visible text gives a sighted child the
-                  same signal without relying on the selected-state border
-                  color alone. */}
-              {isActive ? (
-                <span className="character-tile__badge">Currently reading as</span>
-              ) : null}
-            </button>
+            <li key={character.id} className="character-picker__grid-item">
+              <button
+                type="button"
+                aria-pressed={isActive}
+                aria-busy={busy || undefined}
+                disabled={busy}
+                className={isActive ? 'character-tile character-tile--selected' : 'character-tile'}
+                onClick={() => {
+                  if (!isActive) activate(character.id)
+                }}
+              >
+                {/* Avatar-led, mirroring ProfilePickerPage's AvatarCircle as
+                    the tile's primary visual identifier: decorative
+                    (aria-hidden) since the visible name text below already
+                    carries the accessible name, so the swatch is never
+                    announced twice. */}
+                <span className="character-tile__avatar" aria-hidden="true">
+                  {LOOK_SWATCHES[character.look]}
+                </span>
+                <span className="character-tile__name">{character.name}</span>
+                <span className="character-tile__hint">{archetypeLabel(character.archetype)}</span>
+                {/* aria-pressed above already carries the selected state to
+                    assistive tech; this visible text gives a sighted child
+                    the same signal without relying on the selected-state
+                    border color alone. */}
+                {isActive ? (
+                  <span className="character-tile__badge">Currently reading as</span>
+                ) : null}
+              </button>
+            </li>
           )
         })}
-      </div>
+      </ul>
       {activateError ? (
         <p role="alert" className="character-picker__error">
           {activateError}

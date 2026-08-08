@@ -71,6 +71,36 @@ export const LOOK_SWATCHES: Record<string, string> = {
 }
 
 /**
+ * The distinguishing property of each swatch, in words.
+ *
+ * #ASSUME: accessibility: the swatches above are emoji, and an emoji's
+ * announced name is chosen by the platform's own emoji table, not by this
+ * app. A child using a screen reader would otherwise hear whatever that
+ * table says (or nothing) for the one attribute that actually tells the
+ * twelve looks apart. Every surface that offers a look as a CHOICE must
+ * therefore build its accessible name from this map rather than leaving the
+ * glyph to speak for itself; the ordinal alone ("Look 7") names the option
+ * without describing it.
+ * #VERIFY: characterApi.test.ts "every look id has both a swatch and a
+ * spoken label", and CharacterCreator.test.tsx "labels each look with its
+ * color, not just its position".
+ */
+export const LOOK_LABELS: Record<string, string> = {
+  avatar_01: 'red',
+  avatar_02: 'orange',
+  avatar_03: 'yellow',
+  avatar_04: 'green',
+  avatar_05: 'blue',
+  avatar_06: 'purple',
+  avatar_07: 'brown',
+  avatar_08: 'black',
+  avatar_09: 'white',
+  avatar_10: 'orange diamond',
+  avatar_11: 'blue diamond',
+  avatar_12: 'gold star',
+}
+
+/**
  * Backend bound on CharacterName (api/schemas.py): 1-32 characters,
  * NFC-normalized server-side. This constant exists so the creator's
  * client-side length check and its message can never drift from the number

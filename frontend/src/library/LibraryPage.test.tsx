@@ -2,7 +2,7 @@ import 'fake-indexeddb/auto'
 
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { IDBFactory } from 'fake-indexeddb'
-import { MemoryRouter, Route, Routes } from 'react-router'
+import { MemoryRouter, Outlet, Route, Routes } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { LibraryPage } from './LibraryPage'
 import { percentComplete } from './bookCardUtils'
@@ -399,11 +399,15 @@ describe('LibraryPage', () => {
     resolveList({ data: { stories: [] } })
 
     await new Promise((resolve) => setTimeout(resolve, 0))
-    // 3, not 1: W3.2's progress fetch and Task 8's active-character fetch
-    // each fire from their own parallel mount effect alongside the library
-    // list call; the point of this test (no state write survives unmount)
-    // is unaffected by which endpoints fired.
-    expect(mockGet).toHaveBeenCalledTimes(3)
+    // Asserted by URL, not by total call count: W3.2's progress fetch and
+    // Task 8's active-character fetch each fire from their own parallel mount
+    // effect alongside the library list call, and the point of this test (no
+    // state write survives unmount) is unaffected by which endpoints fired.
+    // A raw count would break on any unrelated added or de-duplicated fetch.
+    const urls = mockGet.mock.calls.map((call) => call[0] as string)
+    expect(urls).toContain('/v1/library')
+    expect(urls).toContain('/v1/me/progress')
+    expect(urls).toContain('/v1/characters')
     expect(document.body.textContent).toBe('')
   })
 
@@ -864,6 +868,82 @@ describe('LibraryPage', () => {
       ).not.toBeInTheDocument()
       expect(localStorage.getItem('offline_download_eviction')).toBeNull()
     })
+  })
+})
+
+/**
+ * Where the active character comes from. KidShell already resolves it for
+ * the library route, so the routed kid library must reuse that lookup rather
+ * than issue a second identical GET /v1/characters on the surface most
+ * likely to be on a slow home connection. The guardian preview-as-child
+ * route has no KidShell above it, so the local fallback has to stay.
+ */
+describe('LibraryPage active-character source', () => {
+  const LUNA = {
+    id: 'char-1',
+    profile_id: 'p1',
+    name: 'Luna',
+    archetype: 'scout',
+    look: 'avatar_01',
+    is_active: true,
+    books_completed: 0,
+    attributes: {},
+    seed_var_state: {},
+    created_at: '2026-08-01T00:00:00Z',
+    retired_at: null,
+  }
+
+  function routeGets() {
+    mockGet.mockImplementation((url: string) =>
+      url === '/v1/characters'
+        ? Promise.resolve({ data: { characters: [LUNA] } })
+        : Promise.resolve({ data: { stories: [IN_PROGRESS] } })
+    )
+  }
+
+  function characterCalls() {
+    return mockGet.mock.calls.filter((call) => call[0] === '/v1/characters')
+  }
+
+  it("reuses the shell's active character instead of fetching its own", async () => {
+    routeGets()
+    render(
+      <MemoryRouter initialEntries={['/library/p1']}>
+        <Routes>
+          <Route
+            element={
+              <Outlet
+                context={{
+                  activeCharacter: {
+                    state: { status: 'ready', character: LUNA },
+                    refresh: vi.fn(),
+                  },
+                }}
+              />
+            }
+          >
+            <Route path="/library/:profileId" element={<LibraryPage />} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    )
+
+    // The strip renders from the shell's value...
+    expect(await screen.findByText('Luna')).toBeInTheDocument()
+    // ...and the page issued no character fetch of its own to get it.
+    expect(characterCalls()).toHaveLength(0)
+  })
+
+  it('fetches its own active character when mounted outside KidShell', async () => {
+    routeGets()
+    // The guardian preview-as-child mount: no shell above, so the Outlet
+    // context is null and the local hook is the only source. Asserted
+    // through the non-readOnly render, since readOnly suppresses the strip.
+    renderLibrary()
+
+    expect(await screen.findByText('Luna')).toBeInTheDocument()
+    expect(characterCalls()).toHaveLength(1)
+    expect(characterCalls()[0]).toEqual(['/v1/characters', { params: { profile_id: 'p1' } }])
   })
 })
 
