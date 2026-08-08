@@ -969,6 +969,24 @@ class Settings(BaseSettings):
         validation_alias="CYO_ADVENTURE_SENTRY_TRACES_SAMPLE_RATE",
     )
 
+    # --- ADR-028 UW-A47: bound the run_gate worker-thread hold ---
+    # How many concurrent api/gate_limits.py::gate_limiter() holders may
+    # occupy an AnyIO worker thread at once. AnyIO's default worker pool is
+    # process-wide and shared by every run_sync caller (40 threads by
+    # default); a character-enabled book's run_gate call holds one of those
+    # threads for as long as 49.58s (see the #CRITICAL markers in
+    # api/node_edit.py and api/generation.py), and that figure is unchanged
+    # by this setting: it bounds concurrency, not per-call duration.
+    # 4 is a judgment call, not a measurement: it leaves 36 of the 40 pool
+    # threads free for every other run_sync caller in the process (including
+    # the generation worker's own gate runs) while still letting more than
+    # one guardian save an edit at the same time.
+    # #CRITICAL: concurrency: set this at or above 40 (the AnyIO default
+    # pool size) and it bounds nothing, because the limiter would no longer
+    # be smaller than the pool it is meant to protect.
+    # #VERIFY: tests/unit/test_gate_capacity_limiter.py::test_the_gate_limiter_is_smaller_than_the_anyio_default_pool.
+    gate_max_concurrency: int = Field(default=4, ge=1, le=39)
+
     @property
     def worker_database_url_effective(self) -> str:
         """The DSN the worker engine (core/database.py::get_worker_engine) actually uses.
