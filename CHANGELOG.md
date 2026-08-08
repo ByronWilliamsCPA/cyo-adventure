@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.68.4] - 2026-08-08
+
+### Bug Fixes
+
+- **api**: Commit the request unit of work before the response is sent
+  ([#647](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/647),
+  [`92f091e`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/92f091ea6a22d5c542e1c6d4ed8af90c80ea9612))
+
+
 ## [0.68.3] - 2026-08-08
 
 ### Bug Fixes
@@ -3267,6 +3276,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.68.4]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.3...v0.68.4
 [0.68.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.2...v0.68.3
 [0.68.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.1...v0.68.2
 [0.68.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.68.0...v0.68.1
