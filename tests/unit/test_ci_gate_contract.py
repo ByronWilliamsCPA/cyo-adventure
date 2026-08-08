@@ -360,17 +360,20 @@ class TestTheScriptFailsClosedByConstruction:
         assert GATE_SCRIPT.rstrip().endswith("exit 0")
 
 
+# Derived from the gate's own `env:` block rather than hand-listed. The
+# script runs under `set -u`, so a result var the gate reads but this dict
+# omits aborts it on an unbound variable, which surfaces as every execution
+# test in TestGateDecisions failing at once with a message that names bash
+# rather than the missing job. Hand-maintaining the list made adding a gated
+# job a seven-test breakage whose cause was invisible in the assertion output.
+# Deriving it means a new job joins the happy path automatically, and the
+# tests that exercise a failure still override the one key they care about.
+# RELEASE_PR is not derived: it reads `needs.<job>.outputs.release_pr`, not
+# `.result`, so it is deliberately absent from RESULT_VAR_TO_JOB.
 ALL_SUCCESS: dict[str, str] = {
     "EVENT_NAME": "pull_request",
     "RELEASE_PR": "false",
-    "DETECT_RESULT": "success",
-    "CI_RESULT": "success",
-    "FRONTEND_RESULT": "success",
-    "FRONTEND_E2E_RESULT": "success",
-    "DESIGN_SYSTEM_RESULT": "success",
-    "CONTRACT_RESULT": "success",
-    "SCHEMA_DOCS_RESULT": "success",
-    "FORMAT_TREE_RESULT": "success",
+    **dict.fromkeys(RESULT_VAR_TO_JOB, "success"),
 }
 
 
