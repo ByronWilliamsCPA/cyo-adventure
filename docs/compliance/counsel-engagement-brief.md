@@ -61,14 +61,33 @@ The Children's Online Privacy Protection Act ("COPPA," a United States federal l
 6501-6506, implemented by the Federal Trade Commission's rule at 16 CFR Part 312) requires an
 operator of a child-directed online service to obtain verifiable parental consent before
 collecting personal information from a child under 13. The implementing rule lists several
-methods that satisfy this requirement, including a signed consent form returned by mail, fax, or
-electronic scan; a credit-card or other online-payment-system transaction; a toll-free telephone
-call; a video conference with trained personnel; government-issued identification checked against
-a database; and, the method relevant here, having the parent "sign a consent form and return it
-to the operator via postal mail, facsimile, or electronic scan" or, in a related provision often
-read together with it, "sign and submit electronically" a form of consent (16 CFR
-312.5(b)(2)(i)). Our working understanding, to be confirmed by counsel, is that this last method
-is the one our implementation is intended to satisfy.
+methods that satisfy this requirement. We retrieved the current rule text on 2026-08-08 from the
+Cornell Legal Information Institute's copy of 16 CFR 312.5 and set out the enumerated list at
+312.5(b)(2) here so that counsel can correct us against the authoritative text if our reading of
+it is wrong: (i) a consent form signed by the parent and returned to the operator by postal mail,
+facsimile, or electronic scan; (ii) a credit card, debit card, or other online payment system
+transaction that provides notification of each discrete transaction to the primary account
+holder; (iii) a toll-free telephone call to trained personnel; (iv) a video conference with
+trained personnel; (v) government-issued identification checked against a database, deleted
+promptly after verification; (vi) knowledge-based authentication meeting stated difficulty
+conditions; (vii) a government photo ID compared against a camera image of the parent's face by
+facial recognition and confirmed by trained personnel; (viii) "email plus," available only to an
+operator that does not "disclose" children's personal information as defined in 16 CFR 312.2;
+and (ix) "text message plus," available on the same no-disclosure condition. Separately,
+16 CFR 312.5(b)(3) permits a Commission-approved safe harbor program to approve a member
+operator's use of a consent method **not** enumerated in (b)(2), where the program determines
+that the method meets the general standard in 312.5(b)(1).
+
+**A correction we are making against ourselves, and the reason this packet exists in its current
+form.** An earlier draft of this section described the method our implementation targets as
+"sign and submit electronically," presented as part of or adjacent to 312.5(b)(2)(i). We can find
+no such language in the rule. Method (i) reads to us as a description of a *return channel*: the
+parent signs a form away from the service and returns it by mail, fax, or a scanned image. If
+that reading is correct, an electronic signature captured inside our application is not within
+method (i) at all, and the question in Section 1.3 is not whether our signature is good enough
+but whether we are using an enumerated method at all. We would rather counsel begin from the
+corrected reading than from our earlier one. Confirming or rejecting this reading is the single
+most useful thing counsel can do for us.
 
 ### 1.2 What we actually built (concretely, so counsel's technical questions have an address)
 
@@ -116,24 +135,58 @@ built and shipped, not a design proposal:
 
 ### 1.3 The precise question for counsel
 
-**Does a typed full legal name, captured through the flow described in Section 1.2 above, satisfy
-16 CFR 312.5(b)(2)(i)'s requirement that a parent "sign" a consent form, under the
-electronic-signature branch of the FTC's enumerated consent methods?**
+**Is the consent flow described in Section 1.2, a typed full legal name captured inside our own
+application on top of an OAuth login, an enumerated verifiable-parental-consent method under
+16 CFR 312.5(b)(2) at all? If it is not, what is the shortest lawful route to consent for a
+product of this shape?**
 
-We ask only about a typed name because that is the only thing the product captures. If counsel's
-view is that a typed name is insufficient but a drawn signature would suffice, please say so
-explicitly: that would be a build instruction for us, not a description of what exists today.
+Please note the change of shape from our earlier framing, for the reason given in Section 1.1. We
+previously asked whether our signature was *good enough* under 312.5(b)(2)(i). On our corrected
+reading, method (i) describes a return channel for a form signed away from the service, so the
+prior question may presuppose a method that does not cover us. We would rather be told we are
+outside the enumerated list than be reassured we satisfy a branch of it that does not exist.
 
-Two related sub-questions that inform the main one:
+If counsel confirms we are outside 312.5(b)(2), the follow-on question we most need answered is
+which of these is the cheapest lawful path for a service that is not monetized:
+
+- **312.5(b)(3), via a Safe Harbor program.** An FTC-approved program may approve a member's use
+  of a non-enumerated method that meets the general standard in 312.5(b)(1). If this is the
+  realistic route for our current implementation, it converts the Safe Harbor evaluation described
+  in Section 1.5 from a business option into the legal mechanism that makes what we already built
+  usable, and we would want to know that now rather than after further engineering.
+- **"Email plus" (viii) or "text message plus" (ix).** We expect counsel to close this route
+  rather than open it, and we list it so the reasoning is on the record rather than assumed. Both
+  are conditioned on the operator not "disclosing" children's personal information as 16 CFR 312.2
+  defines that term, and Section 1.6 point 4 below records why we believe we do disclose: a child's
+  free-text story "wish" is sent to third-party classification services before a story is
+  generated. If that reading of 312.2 is wrong, or if the disclosure could be engineered away at
+  a cost lower than the alternatives, these become the cheapest routes available and we would want
+  to know it.
+- **Retrofitting an enumerated method.** If one of (i) through (vii) is the only defensible answer,
+  we would want counsel to say which, so the engineering cost is incurred once and against the
+  right target. Section 1.4 records two we already weighed and rejected, with reasons.
+
+We ask about a typed name only, because that is the only thing the product captures; there is no
+drawn signature and no other capture mechanism. If counsel's view is that a typed name fails where
+some other in-app artifact would succeed, please say so explicitly: that is a build instruction for
+us, not a description of what exists today.
+
+Two sub-questions that inform the main one either way:
 
 - Does layering this signature-capture step on top of an existing third-party OAuth login (rather
   than treating the OAuth login itself as, or requiring, a separate identity-verification step)
   change the analysis? Put differently: is the identity binding that the Google/Supabase login
   provides doing legally sufficient work here, or does the FTC's guidance expect an independent
   verification step distinct from the login that a user would perform for any other reason?
-- Does the choice between a drawn signature and a typed-name attestation matter, or are they
-  legally equivalent for this purpose given that both are logged with the same IP address,
-  timestamp, and account binding?
+- Under 312.5(b)(1)'s general reasonableness standard, does the combination we actually log (a
+  typed legal name, an adulthood attestation, a guardianship attestation, a country of residence,
+  a consent-language version, an IP address, a timestamp, and an OAuth-bound account identity)
+  amount to a method "reasonably calculated, in light of available technology," to ensure the
+  person consenting is the parent? We ask because that standard, rather than any single one of the
+  enumerated methods, may be where our implementation is best assessed. Section 1.6 asks the
+  mirror-image version of this question, whether the same flow **stripped of** the
+  signature-capture step would already satisfy 312.5(b)(1); the two together bound how much work
+  the signature step is doing.
 
 ### 1.4 Why we ruled out two other FTC-recognized methods
 
@@ -165,6 +218,15 @@ presumption-of-compliance posture, backed by the program's own audit, for a one-
 on this specific mechanism. We ask counsel to scope the opinion on Section 1.3's question with
 that in mind, for example by noting whether the opinion is durable regardless of a later Safe
 Harbor decision, or is intended to hold only until and unless such membership is obtained.
+
+**One update to that framing, following the correction in Section 1.1.** This section was written
+treating Safe Harbor membership purely as a business option that might *supersede* counsel's
+opinion. If counsel concludes we sit outside the enumerated methods in 312.5(b)(2), then
+312.5(b)(3) makes a Safe Harbor program a route by which our existing implementation could be
+*approved* rather than replaced, which would make it the thing that supplies the answer rather
+than something that later overrides it. That would be a materially different and more urgent
+recommendation than the one this section anticipates, so please say so plainly if it is the
+conclusion.
 
 ### 1.6 A threshold sub-question: is a separate signature step required at all?
 

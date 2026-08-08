@@ -169,17 +169,30 @@ adulthood attestation checkbox (O-119); the app logs IP address, timestamp, and 
 OAuth-authenticated account id server-side alongside it. **As built, the typed name is the
 only signature-equivalent captured**; a canvas-drawn signature was considered in the
 2026-07-20 framing but never implemented, and `GuardianConsentPage.tsx` has no drawing
-surface. Do not describe a drawn signature as available. This is meant
-to satisfy the "sign and submit electronically" method already on the FTC's enumerated
-list (312.5(b)(2)(i)), with the OAuth login supplying the identity binding rather than a
-separate verification step. This applies uniformly regardless of tier; the prior working
-recommendation's paid-tier/free-tier split (Apple IAP as the VPC event) is superseded,
-since the app is not currently monetized and the owner does not want VPC design coupled to
-a future payment decision.
+surface. Do not describe a drawn signature as available. This was designed on the
+understanding that it satisfied a "sign and submit electronically" method on the FTC's
+enumerated list at 312.5(b)(2)(i), with the OAuth login supplying the identity binding
+rather than a separate verification step. The mechanism applies uniformly regardless of
+tier; the prior working recommendation's paid-tier/free-tier split (Apple IAP as the VPC
+event) is superseded, since the app is not currently monetized and the owner does not want
+VPC design coupled to a future payment decision.
 
-**Flagged for counsel**: whether a typed-name attestation captured this way
-satisfies 312.5(b)(2)(i)'s "signed" requirement is the single highest-risk open question in
-this decision and should be the first thing reviewed in the drafted consent-flow copy
+**That premise is now in doubt and must not be restated as settled.** On 2026-08-08 the rule
+text at 16 CFR 312.5(b)(2) was read directly and contains no "sign and submit
+electronically" method. Method (i) reads as a *return channel*: a form signed away from the
+service and returned by postal mail, facsimile, or electronic scan. If that reading holds,
+an electronic signature captured inside our own application is not within method (i) at all,
+and the open question is not whether our signature is good enough but whether we are using
+an enumerated method at all. Note also 312.5(b)(3), under which an FTC-approved Safe Harbor
+program may approve a non-enumerated method meeting the general standard in 312.5(b)(1);
+that may be the route by which the shipped implementation becomes usable rather than
+replaced. `docs/compliance/counsel-engagement-brief.md` Sections 1.1, 1.3, and 1.5 carry the
+corrected framing and the questions actually put to counsel.
+
+**Flagged for counsel**: whether a typed-name attestation captured inside our own application
+is an enumerated 312.5(b)(2) method **at all** is the single highest-risk open question in
+this decision, and it is a broader question than the "is our signature good enough" one this
+ADR originally posed. It should be the first thing reviewed in the drafted consent-flow copy
 (`docs/compliance/` DPIA and Privacy Notice drafts, in progress).
 
 **Implemented 2026-07-20.** `POST /api/v1/onboarding`'s `consent` payload
@@ -282,11 +295,18 @@ elsewhere in this repository.
   for review, (b) as a draft with three named gaps.
 - **Evaluate COPPA Safe Harbor membership (PRIVO, kidSAFE, ESRB Privacy Certified) as an
   explicit Track 2 task.** A Safe Harbor program would answer D1's flagged highest-risk
-  question (whether the signature-capture flow satisfies 312.5(b)(2)(i)) with a
-  presumption-of-compliance posture and ongoing external audit, instead of a one-off
+  question (whether the signature-capture flow is an enumerated 312.5(b)(2) method at all)
+  with a presumption-of-compliance posture and ongoing external audit, instead of a one-off
   counsel opinion, at the cost of a recurring fee and an added vendor. Decision needed:
   whether this evaluation happens before or alongside the counsel review of D1, since a
   yes here changes what D1's counsel question is worth.
+
+  **Reweighted 2026-08-08 by the D1 correction above.** This bullet was written treating a
+  Safe Harbor program as an *alternative* to the counsel opinion. Under 312.5(b)(3) it is
+  also a mechanism for *approving* a non-enumerated method, so if counsel concludes the
+  shipped flow sits outside 312.5(b)(2), this stops being an optional cost-saver and becomes
+  a candidate route to making the existing implementation lawful without rebuilding it. The
+  sequencing decision below stands; what changes is the value of the evaluation's outcome.
 
   **Sequencing decided 2026-08-06 (owner choice): alongside, counsel first.** D1 goes to
   counsel now rather than waiting on a Safe Harbor evaluation, because counsel scheduling is

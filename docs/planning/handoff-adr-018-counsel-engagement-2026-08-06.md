@@ -48,12 +48,17 @@ login: a typed full-legal-name attestation, plus a checkbox, with IP/timestamp/
 account-id logged server-side) and it's already implemented (`POST /api/v1/onboarding`'s `consent`
 payload, `GuardianConsentPage.tsx`, gated via `api/profiles.py::_require_consent`). An earlier
 framing of this decision also mentioned a canvas-drawn signature; **that was never built**, so
-counsel must be asked about a typed name only. **The ADR itself
-names the single highest-risk open question**: whether a typed-name attestation captured
-this way satisfies COPPA Rule 312.5(b)(2)(i)'s "signed" requirement for the "sign and submit
-electronically" consent method. That's the question to put in front of counsel first, it's already
-drafted as a yes/no with supporting detail in the ADR's D1 section, not an open-ended design
-question.
+counsel must be asked about a typed name only.
+
+**The question this handoff recorded has since widened, and this paragraph is the stale version.**
+It said the ask was whether a typed name satisfies COPPA Rule 312.5(b)(2)(i)'s "signed" requirement
+for the "sign and submit electronically" consent method, framed as a drafted yes/no. Reading
+16 CFR 312.5(b)(2) directly on 2026-08-08 found no such method: (i) describes a *return channel*
+for a form signed away from the service. So the live question is the broader one, whether an
+in-app typed signature is an enumerated method **at all**, with 312.5(b)(3) Safe Harbor approval
+as a possible route if it is not. It is no longer a yes/no. See
+`docs/compliance/counsel-engagement-brief.md` Sections 1.1, 1.3, and 1.5, which govern, and
+ADR-018 D1.
 
 ### D2: Audience classification: **owner decision now recorded; counsel confirms it**
 
@@ -123,7 +128,9 @@ consent-toggle, built *before* collection, not after).
 
 Do not send the whole ADR as a first document. Package these together for an efficient engagement:
 
-1. The ADR's D1 section (already-drafted mechanism plus the named 312.5(b)(2)(i) question).
+1. The ADR's D1 section (already-drafted mechanism plus the enumerated-method question, in the
+   widened form recorded in Section 2 above, not the narrow 312.5(b)(2)(i) yes/no this document
+   originally named).
 2. The confirmed D3 answer (US-only launch) as a one-line confirmation ask.
 3. The D4 owner decisions on Safe Harbor sequencing and artifact ownership (both recorded
    2026-08-06), plus the WISP and the retention policy. Send the WISP as finished work and the
